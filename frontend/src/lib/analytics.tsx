@@ -217,8 +217,8 @@ export function useTrackingDecision(): TrackingDecision {
   return decision;
 }
 
-/** New-format Plausible: async per-site script + a CSP-safe programmatic init stub. */
-function mountPlausible(): void {
+/** New-format Plausible: async per-site script + a CSP-safe programmatic init stub. Exported for the auto-capture test. */
+export function mountPlausible(): void {
   if (!PLAUSIBLE_SRC || document.getElementById('lf-plausible')) return;
   const el = document.createElement('script');
   el.id = 'lf-plausible';
@@ -237,7 +237,28 @@ function mountPlausible(): void {
     };
     window.plausible = stub;
   }
-  window.plausible.init?.();
+  /*
+   * autoCapturePageviews: FALSE — load-bearing, not a preference.
+   *
+   * The default is true, which makes Plausible patch history.pushState and
+   * record every SPA navigation by itself. Ejecting the <script> tag on the
+   * next route change does NOT undo that: the runtime has already executed and
+   * its History hook survives the node's removal. So a consented visitor who
+   * landed on a marketing page carried Plausible with them into /signup,
+   * /learn and /admin/* — verified in production on 2026-08-14, where a single
+   * day's native pageviews included /admin/analytics and /admin/users, which
+   * the boundary in pulse/AGENTS.md forbids outright.
+   *
+   * Pageviews are therefore fired MANUALLY, once per navigation the gate has
+   * already approved. This is exactly the treatment GA4 received here
+   * (send_page_view:false plus a manual page_view); Plausible never got it.
+   */
+  window.plausible.init?.({ autoCapturePageviews: false });
+}
+
+/** One pageview for a route the acquisition gate has already allowed. */
+function trackPlausiblePageview(): void {
+  window.plausible?.('pageview');
 }
 
 function mountScript(id: string, src: string, dataset: Record<string, string>): void {
@@ -281,8 +302,13 @@ export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: numb
   // Public acquisition only. Product behavior lives in first-party Insights
   // (and, for consented adult parent surfaces, Umami), not in this traffic KPI.
   useEffect(() => {
-    if (measurable && shouldTrackPublicAcquisition(pathname, session, meLoaded, hasCookieConsent())) mountPlausible();
-    else ejectScript('lf-plausible');
+    if (measurable && shouldTrackPublicAcquisition(pathname, session, meLoaded, hasCookieConsent())) {
+      mountPlausible();
+      // Fired per approved navigation, because the script no longer self-fires.
+      trackPlausiblePageview();
+    } else {
+      ejectScript('lf-plausible');
+    }
   }, [session, meLoaded, pathname, consentVersion, measurable]);
 
   // Umami — adult surfaces only; kid sessions eject unconditionally.

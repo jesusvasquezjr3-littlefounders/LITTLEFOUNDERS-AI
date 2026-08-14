@@ -141,3 +141,57 @@ describe('useTrackingDecision — automated browsers', () => {
     await waitFor(() => expect(result.current).toBe('allowed'));
   });
 });
+
+/*
+ * Plausible's SPA capture.
+ *
+ * init() defaults autoCapturePageviews to true, which patches history.pushState
+ * so the script records every navigation itself. Ejecting the <script> tag on
+ * the next route change does NOT undo that — the runtime has already executed.
+ * A consented visitor who landed on marketing therefore carried Plausible into
+ * /signup, /learn and /admin/*, which pulse/AGENTS.md forbids. Production
+ * confirmed it on 2026-08-14: one day of native pageviews included
+ * /admin/analytics and /admin/users.
+ */
+describe('mountPlausible', () => {
+  /*
+   * PLAUSIBLE_SRC is read from import.meta.env at module load and is unset in
+   * the test env, so the mount is a no-op unless the env is stubbed and the
+   * module re-imported. Getting this wrong yields a test that passes while
+   * asserting nothing.
+   */
+  async function loadWithSrc() {
+    vi.resetModules();
+    vi.stubEnv('VITE_PLAUSIBLE_SRC', 'https://pulse.example/js/script.js');
+    return (await import('./analytics')) as typeof import('./analytics');
+  }
+
+  beforeEach(() => {
+    document.getElementById('lf-plausible')?.remove();
+    delete (window as { plausible?: unknown }).plausible;
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it('disables automatic SPA capture so the boundary cannot be bypassed', async () => {
+    const mod = await loadWithSrc();
+    mod.mountPlausible();
+    expect(document.getElementById('lf-plausible')).not.toBeNull();
+
+    const opts = (window as unknown as { plausible?: { o?: { autoCapturePageviews?: boolean } } }).plausible?.o;
+    // If this ever reverts to the default (true), Plausible patches
+    // history.pushState and records /signup, /learn and /admin/* by itself.
+    expect(opts).toBeDefined();
+    expect(opts?.autoCapturePageviews).toBe(false);
+  });
+
+  it('queues calls made before the async script defines the real implementation', async () => {
+    const mod = await loadWithSrc();
+    mod.mountPlausible();
+    const p = (window as unknown as { plausible?: { q?: unknown[][] } }).plausible;
+    (p as unknown as (e: string) => void)('pageview');
+    expect(p?.q?.some((args) => args[0] === 'pageview')).toBe(true);
+  });
+});

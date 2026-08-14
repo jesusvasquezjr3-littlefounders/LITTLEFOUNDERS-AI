@@ -67,8 +67,18 @@ describe('SignupTimeline', () => {
   it('recalculates the summary when the in-chart range changes', async () => {
     render(<SignupTimeline />);
 
-    await waitFor(() => expect(screen.getByRole('button', { name: 'zoom' })).toBeInTheDocument());
+    /*
+     * Wait for the DATA, not merely the chrome. The zoom control renders as
+     * soon as the chart does, which is before the API promise resolves — so
+     * clicking it early summarises an empty series and the assertion below
+     * fails intermittently. It did exactly that in CI on 2026-08-14 and
+     * blocked a deploy, having previously passed roughly five runs in six.
+     * The full-range total (1 + 0 + 5 + 3) proves the fixture has landed.
+     */
+    await waitFor(() => expect(screen.getByText('9')).toBeInTheDocument());
+
     fireEvent.click(screen.getByRole('button', { name: 'zoom' }));
-    expect(screen.getByText('8')).toBeInTheDocument();
+    // Range covers indices 2..3, so 5 + 3.
+    await waitFor(() => expect(screen.getByText('8')).toBeInTheDocument());
   });
 });
