@@ -55,10 +55,17 @@ describe('SignupTimeline', () => {
   it('loads continuous history and exposes the interactive area chart', async () => {
     render(<SignupTimeline />);
 
-    await waitFor(() => expect(screen.getAllByTestId('signup-area').length).toBeGreaterThan(0));
+    /*
+     * Wait for the DATA, not the chart chrome. The area renders as soon as the
+     * chart mounts, which is before the API promise resolves, so awaiting it
+     * and then asserting the total is a race — it failed in CI on 2026-08-14.
+     * Removing the second (overview) chart did not cause that; it only shifted
+     * the timing enough to expose a race that was always there.
+     */
+    await waitFor(() => expect(screen.getByText('9')).toBeInTheDocument());
+    expect(screen.getAllByTestId('signup-area').length).toBeGreaterThan(0);
     expect(mockApi).toHaveBeenCalledWith('/admin/users/timeline?days=365', { token: 'fake-token' });
     expect(screen.queryByText('admin.users.timelinePeriods.30d')).not.toBeInTheDocument();
-    expect(screen.getByText('9')).toBeInTheDocument();
   });
 
   it('exposes preset buttons as the only range control, with no drag Brush', () => {
