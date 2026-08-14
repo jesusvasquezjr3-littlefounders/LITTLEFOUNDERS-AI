@@ -22,9 +22,23 @@ export function useAdminData<T>(path: string): { data: Loadable<T>; reload: () =
   const [data, setData] = useState<Loadable<T>>({ state: 'loading' });
   const load = useCallback(async () => {
     setData({ state: 'loading' });
-    const token = await getToken();
-    const r = await api<T>(path, { token });
-    setData(r.error ? { state: 'error', code: r.error.code } : { state: 'ready', data: r.data });
+    /*
+     * api() is contracted to RETURN an envelope rather than throw, and this
+     * hook used to rely on that: `await api(...)` with nothing around it. When
+     * something upstream does throw — a rejected token fetch, a mocked client,
+     * a future refactor — the rejection escapes an async callback nothing
+     * awaits, which surfaces as an unhandled rejection that fails the whole
+     * test run (and in a browser, leaves the panel stuck on "loading" forever
+     * with no error state). A thrown failure is still a failure: it belongs in
+     * the error state like any other.
+     */
+    try {
+      const token = await getToken();
+      const r = await api<T>(path, { token });
+      setData(r.error ? { state: 'error', code: r.error.code } : { state: 'ready', data: r.data });
+    } catch {
+      setData({ state: 'error', code: 'INTERNAL' });
+    }
   }, [getToken, path]);
   useEffect(() => {
     void load();
@@ -44,9 +58,16 @@ export function useAdminMutation(): (
   const { getToken } = useAuth();
   return useCallback(
     async (path: string, body?: unknown, method: 'POST' | 'PATCH' | 'DELETE' = 'POST') => {
-      const token = await getToken();
-      // A DELETE with a JSON body trips some proxies; only send one when there is one.
-      return api<unknown>(path, { method, ...(method === 'DELETE' ? {} : { body: body ?? {} }), token });
+      // Same contract as useAdminData: callers branch on the envelope, so a
+      // thrown failure is converted rather than left to escape as an
+      // unhandled rejection that no caller is positioned to catch.
+      try {
+        const token = await getToken();
+        // A DELETE with a JSON body trips some proxies; only send one when there is one.
+        return await api<unknown>(path, { method, ...(method === 'DELETE' ? {} : { body: body ?? {} }), token });
+      } catch {
+        return { data: null, error: { code: 'INTERNAL', message: 'Request failed' } };
+      }
     },
     [getToken],
   );
