@@ -2,6 +2,55 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-14, latest) — GA4 had been silently discarding every command; admin panels reworked
+
+- **GA4 recorded nothing for three weeks (2026-07-24 → 08-14) behind a tag
+  that loaded normally.** `mountGa4` registered `window.gtag = (...args) =>
+  dataLayer.push(args)`, pushing a real Array. gtag.js reads each dataLayer
+  entry as an `arguments` object and ignores anything else, so `js`, `config`
+  and every `page_view` were dropped: the property was never initialised and
+  no `/g/collect` request was ever made. No error, no warning, a healthy-
+  looking tag. Proven over CDP against production rather than deduced — the
+  live dataLayer held `[object Array]` entries with zero google-analytics
+  requests, and replaying the same commands through Google's own
+  function-with-`arguments` form produced a collect immediately. Fixed,
+  deployed, and re-verified live: three `[object Arguments]` and a real
+  collect. The same probe confirmed Plausible and Umami do send, so the
+  auto-capture fix did not silence them.
+- **A VPN exit node had been approved as a staff exclusion.**
+  `169.150.224.130/32`, labelled "Dispositivo del equipo", is CDN77 Houston —
+  it was silently excluding every OTHER visitor using that exit while failing
+  to exclude staff at all, since exit IPs rotate. Revoked with an audit entry.
+  Suggestions now carry `distinctStaffUsers`: a personal device cannot be seen
+  with two different staff accounts, an office NAT or VPN exit can. The console
+  warns and points at `whois`. Warned, not blocked — an office IP is a
+  legitimate exclusion and only the operator knows which is which.
+- **Umami's twelve behavioural dimensions are now read.** Correcting an
+  earlier claim in this session: the five-number aggregate WAS already
+  consumed; the grep that said otherwise searched for the vendor's name, which
+  appears nowhere in the frontend. Under-read, not unread.
+- **One period authority per screen.** The analytics trend chart carried its
+  own presets AND a drag Brush while the page header carried the real picker —
+  three controls, mutually contradictable. Both in-chart controls removed. The
+  signup timeline and email dashboard kept their presets (they have no
+  page-level picker) and lost their Brush, which duplicated them and was
+  drag-only on touch.
+- **Churn risk is bars, not a pie.** Ordered severity levels are not nominal
+  slices: the pie discarded the ordering and forced angle comparison. Now
+  ordered worst-first with both count and share.
+- **The exported PDF is localised and carries the real wordmark.** It was the
+  only surface exempt from §1.8 — English prose with `en-US` formatters pinned
+  at module scope — and its logo was a violet square reading "LF".
+
+### Open
+
+1. §1.11 both-breakpoint verification for the new behaviour panels and the
+   reworked charts. The admin console is behind auth this session held no
+   credential for, and the CDP fixture harness could not clear the role guard.
+2. Maps were reviewed and deliberately left alone: real Natural Earth
+   geometry, 174 countries and 4,584 admin-1 regions, working zoom. Changing
+   them further would be speculative redesign, not correction.
+
 ## Current State (2026-08-14, later) — Both trackers were self-capturing; stored history scoped at read time; monitors corrected
 
 - **Plausible and Umami were both violating the §1.9 boundary in production,
@@ -1073,6 +1122,11 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-14 | **Every dataLayer push must be an `arguments` object, asserted by test.** `mountGa4` uses Google's `function gtag(){dataLayer.push(arguments)}` form, and a test fails if any entry is a real Array. | An arrow function pushing a rest array is silently ignored by gtag.js: the tag loads, the console shows no error, and the property receives nothing. It cost three weeks of GA4 data. No type checker or lint rule can catch it, so it has to be a test. |
+| 2026-08-14 | **Staff-IP exclusions are verified with `whois` before approval, and shared egress is surfaced in the console.** | A CDN77 VPN exit was approved as a "team device", excluding every other visitor behind that exit while failing to exclude staff, because exit IPs rotate. Our own data already held the tell: two different staff accounts at one address. |
+| 2026-08-14 | **One period control per screen.** A chart never carries its own range control when the page has a picker; where a panel has no page-level picker, discrete presets are the control and a drag Brush is not. | Three controls governing one window can only contradict each other, and nothing on screen says which the figures obey. A drag-only affordance also has no tap equivalent, which DESIGN's responsive rules prohibit. |
+| 2026-08-14 | **Ordered categories are drawn as ordered bars, never as a pie.** | A pie has no "worse than" direction and forces angle comparison, which is less accurate than comparing lengths on a shared baseline. Churn severity was losing both its ordering and its readability. |
+| 2026-08-14 | **The exported PDF is localised, and its formatters are built per render.** Period and dimension names are localised in the report service rather than reused from pulse.ts's English-only console constants. | A module-level `Intl` instance pinned to one locale is exactly how the report stayed English regardless of who exported it. Sharing PERIOD_LABELS would have left "Last 30 days" atop a Spanish document. |
 | 2026-08-14 | **Every third-party tracker is mounted with automatic SPA capture OFF and driven explicitly by our own code.** Plausible takes `autoCapturePageviews: false`, Umami `data-auto-track="false"`; each approved navigation emits one pageview from the effect. | Both vendors hook `history.pushState` on load, so the route gate only chose whether to add the tag — the vendor, not our consent logic, was deciding what got recorded. `/admin/content` became the site's #1 page and 79.6% of stored Plausible pageviews were out of boundary. Unmounting a script never revokes what it already installed on `window`/`history`. |
 | 2026-08-14 | **Contaminated analytics history is corrected at read time, per tool, and never silently half-corrected.** Plausible gets an always-on acquisition allowlist inside `plausibleQuery()`; Umami reports `outOfBoundaryPageviews` instead of a scoped total. | Neither vendor can delete by filter, so the choice is read-time scoping or knowingly publishing bad numbers. Umami has no negation filter: `pageviews` is correctable by subtraction but `visits`/`bounces`/`totaltime` are not, and fixing only the summable metric yields a bounce rate computed against visits that still include the removed sessions — internally inconsistent, and worse than an honest caveat. |
 | 2026-08-14 | **A cross-package invariant that cannot share an import gets a CI gate, not a comment.** `check-marketing-paths.mjs` compares the frontend and backend definitions of the acquisition surface and fails on either direction. | Nine packages, no workspaces, so the definition is duplicated by necessity — but the enforcement need not be. Drift produces no error and no visibly wrong number, only a quietly incomplete one: a marketing route added to the frontend alone is recorded and then filtered out of every report. |
