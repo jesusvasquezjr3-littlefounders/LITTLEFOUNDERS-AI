@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import type { Response as SupertestResponse } from 'superagent';
 import { createApp } from '../app.js';
+import { ACQUISITION_SCOPE } from '../services/pulse.js';
 import { resetPulseForTests } from '../services/pulse.js';
 import { resetExclusionsForTests } from '../services/analyticsExclusions.js';
 import { jsonResponse, mintToken } from './helpers.js';
@@ -106,10 +107,17 @@ describe('GET /api/v1/admin/analytics/breakdown', () => {
       pagination: { limit: 5 },
       include: { imports: true }, // GA4-imported history is merged into every query
     });
-    expect(capture[0]).not.toHaveProperty('filters');
+    /*
+     * Every Plausible query carries the acquisition scope, even when the
+     * caller asked for no filters — the stored history predates the
+     * autoCapturePageviews fix and contains /admin/* and product routes that
+     * were never in scope (RUNBOOK, 2026-08-14). It is applied inside
+     * plausibleQuery so no call site can omit it.
+     */
+    expect(capture[0]?.filters).toEqual([ACQUISITION_SCOPE]);
   });
 
-  it('passes validated filters through to Plausible verbatim', async () => {
+  it('passes validated filters through to Plausible, ANDed with the acquisition scope', async () => {
     stubPulseEnv();
     const capture: CapturedQuery[] = [];
     stubFetch({ capture });
@@ -118,7 +126,8 @@ describe('GET /api/v1/admin/analytics/breakdown', () => {
       .get(`/api/v1/admin/analytics/breakdown?dimension=page&filters=${encodeURIComponent(JSON.stringify(filters))}`)
       .set('Authorization', authed());
     expect(res.status).toBe(200);
-    expect(capture[0]?.filters).toEqual(filters);
+    // Caller filters are preserved verbatim, ANDed after the always-on scope.
+    expect(capture[0]?.filters).toEqual([ACQUISITION_SCOPE, ...filters]);
     expect(capture[0]?.dimensions).toEqual(['event:page']);
     expect(capture[0]?.pagination).toEqual({ limit: 8 }); // default
   });
@@ -229,7 +238,7 @@ describe('GET /api/v1/admin/analytics/overview (filters extension)', () => {
     expect(capture).toHaveLength(3); // aggregate + timeseries + previous period
     // A comparison drawn from an unfiltered baseline would invent a trend, so
     // the previous-window query carries the same filters as the other two.
-    for (const query of capture) expect(query.filters).toEqual(filters);
+    for (const query of capture) expect(query.filters).toEqual([ACQUISITION_SCOPE, ...filters]);
   });
 
   it('resolves the window and compares it against the one before it', async () => {

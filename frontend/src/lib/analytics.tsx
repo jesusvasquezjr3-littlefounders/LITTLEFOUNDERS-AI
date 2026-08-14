@@ -64,9 +64,13 @@ interface Plausible {
   o?: unknown;
   init?: (opts?: unknown) => void;
 }
+interface Umami {
+  track: (...args: unknown[]) => void;
+}
 declare global {
   interface Window {
     plausible?: Plausible;
+    umami?: Umami;
     dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
   }
@@ -271,6 +275,30 @@ function mountScript(id: string, src: string, dataset: Record<string, string>): 
   document.head.appendChild(el);
 }
 
+/*
+ * Emit one Umami pageview for the CURRENT route.
+ *
+ * Umami's tracker is deferred, so on the mount that creates the tag
+ * `window.umami` does not exist yet and a direct call would drop the very
+ * first pageview — the landing page, i.e. the one acquisition reporting cares
+ * about most. Defer to the script's own load event in that case. Subsequent
+ * navigations take the fast path because the tracker is already resident.
+ */
+export function mountUmami(): void {
+  if (!UMAMI_SRC || !UMAMI_WEBSITE_ID) return;
+  mountScript('lf-umami', UMAMI_SRC, { 'website-id': UMAMI_WEBSITE_ID, 'auto-track': 'false' });
+}
+
+export function trackUmamiPageview(): void {
+  if (window.umami) {
+    window.umami.track();
+    return;
+  }
+  const el = document.getElementById('lf-umami');
+  if (!el) return;
+  el.addEventListener('load', () => window.umami?.track(), { once: true });
+}
+
 function ejectScript(id: string): void {
   document.getElementById(id)?.remove();
 }
@@ -326,7 +354,19 @@ export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: numb
       ((isGuest && meLoaded && isMarketingPath(pathname) && hasCookieConsent()) || (session != null && meLoaded && isParent));
 
     if (shouldMount) {
-      mountScript('lf-umami', UMAMI_SRC, { 'website-id': UMAMI_WEBSITE_ID });
+      /*
+       * auto-track: FALSE — the same failure Plausible had, for the same
+       * reason. Umami's tracker hooks history.pushState on load and then
+       * reports every SPA navigation itself, so `!isAdminPath(pathname)`
+       * above only ever decided whether to ADD the script tag; it could not
+       * stop a tracker that was already resident. Ejecting the node does not
+       * unhook history. Production confirmed it on 2026-08-14: /admin and
+       * /admin/analytics were among the top recorded paths despite the gate.
+       *
+       * With auto-track off, the gate and the emission are the same decision.
+       */
+      mountUmami();
+      trackUmamiPageview();
     } else {
       ejectScript('lf-umami');
     }

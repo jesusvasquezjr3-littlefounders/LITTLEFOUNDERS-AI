@@ -184,6 +184,14 @@ export function parseRange(period: string, from?: string, to?: string): Analytic
 
 /** Plausible v2 filter clause: [operator, dimension, clauses] — passed through verbatim. */
 export type PlausibleFilter = [string, string, (string | number)[]];
+/**
+ * Stats API v2 also accepts logical operators, whose second element is a list
+ * of nested filters rather than a dimension string. Modelled explicitly so the
+ * acquisition scope below needs no cast — a cast here would be a claim about
+ * the wire format that the compiler could not check.
+ */
+export type PlausibleLogicalFilter = ['and' | 'or' | 'not', PlausibleQueryFilter[]];
+export type PlausibleQueryFilter = PlausibleFilter | PlausibleLogicalFilter;
 
 /** Console dimension key → Plausible Stats API v2 dimension string. */
 export const PLAUSIBLE_DIMENSIONS = {
@@ -243,7 +251,46 @@ export function plausibleConfigured(cfg: PulseConfig): boolean {
 
 /** Filters participate in every cache key — same query + different filters = different entry. */
 function filterCacheKey(filters?: PlausibleFilter[]): string {
-  return filters?.length ? JSON.stringify(filters) : '-';
+  // 'scoped' namespaces the key so entries cached before the acquisition scope
+  // existed can never be served as if they had it applied.
+  return `scoped:${filters?.length ? JSON.stringify(filters) : '-'}`;
+}
+
+/*
+ * Acquisition scope — applied to EVERY Plausible query, retroactively.
+ *
+ * Until 2026-08-14 the tracker self-captured SPA navigations (see RUNBOOK:
+ * "Plausible records /admin/* and product routes"), so twelve months of stored
+ * events include the staff console, the product, and signup. That history
+ * cannot be edited — Plausible has no delete-by-filter — but it can be scoped
+ * at READ time, which fixes every report at once rather than leaving the
+ * console to display known-contaminated numbers until the bad data ages out.
+ *
+ * It is an ALLOWLIST mirroring `isMarketingPath` in frontend/src/lib/
+ * analytics.tsx, not a /admin blocklist: the two definitions of "public
+ * acquisition surface" must not be able to drift apart, and a blocklist would
+ * silently readmit any future non-marketing route nobody remembered to add.
+ * Adding a marketing route means updating BOTH (the frontend gate decides what
+ * is recorded; this decides what is reported).
+ *
+ * Session metrics stay honest under it: Plausible keeps a session whose events
+ * include at least one matching page, so a visitor who landed on marketing and
+ * then signed up still counts as a visitor — they genuinely visited. Only the
+ * events that were never in scope drop out. Measured against production the
+ * day it shipped: 539 stored pageviews → 110 in scope, 57 visitors → 48.
+ */
+const MARKETING_ROOTS = ['how-it-works', 'families', 'faq', 'legal'] as const;
+export const ACQUISITION_SCOPE: PlausibleLogicalFilter = [
+  'or',
+  [
+    ['is', 'event:page', ['/', ...MARKETING_ROOTS.map((r) => `/${r}`)]],
+    ['matches', 'event:page', [`^/(${MARKETING_ROOTS.join('|')})/.*$`]],
+  ],
+];
+
+/** Combine the always-on scope with whatever the caller asked for. */
+export function scoped(filters?: PlausibleQueryFilter[]): PlausibleQueryFilter[] {
+  return filters?.length ? [ACQUISITION_SCOPE, ...filters] : [ACQUISITION_SCOPE];
 }
 
 async function plausibleQuery(cfg: PulseConfig, body: Record<string, unknown>): Promise<unknown | null> {
@@ -255,7 +302,15 @@ async function plausibleQuery(cfg: PulseConfig, body: Record<string, unknown>): 
     // so without this the admin console shows ~zero for any range predating our
     // native tracking even though the GA4 import populated Plausible (verified
     // 2026-07-22). A body may override `include` if it ever needs to.
-    body: JSON.stringify({ site_id: cfg.PLAUSIBLE_SITE_ID, include: { imports: true }, ...body }),
+    body: JSON.stringify({
+      site_id: cfg.PLAUSIBLE_SITE_ID,
+      include: { imports: true },
+      ...body,
+      // Applied here, at the ONE place every Plausible call passes through, so
+      // no present or future call site can report out-of-boundary traffic by
+      // forgetting to opt in.
+      filters: scoped(body.filters as PlausibleQueryFilter[] | undefined),
+    }),
   });
   if (!res.ok) return null;
   return res.json();
@@ -503,6 +558,22 @@ export interface UmamiStats {
   visits: number;
   bounces: number;
   totaltime: number;
+  /**
+   * Pageviews in this window recorded on `/admin/*` — traffic the boundary
+   * never permitted, captured by the auto-track defect fixed on 2026-08-14
+   * (RUNBOOK). Reported rather than subtracted: Umami's API has no negation
+   * filter, so `pageviews` can be corrected by subtraction but `visits`,
+   * `bounces` and `totaltime` cannot (one visitor may span both). Removing
+   * only the summable metric would leave the payload internally inconsistent
+   * — bounce rate computed against a visit count that still includes the
+   * sessions whose pageviews had been taken out. So the caller is told the
+   * size of the contamination and decides, instead of being handed a number
+   * that looks clean and is not.
+   *
+   * `null` means the breakdown could not be read, which is NOT the same as
+   * zero and must not be rendered as "clean".
+   */
+  outOfBoundaryPageviews: number | null;
 }
 
 export function umamiConfigured(cfg: PulseConfig): boolean {
@@ -523,6 +594,8 @@ async function umamiLogin(cfg: PulseConfig): Promise<string | null> {
 }
 
 const UmamiMetric = z.union([z.number(), z.object({ value: z.number() })]);
+/** `/metrics?type=path` rows: { x: path, y: pageviews }. */
+const UmamiPathRows = z.array(z.object({ x: z.string(), y: z.number() }));
 const UmamiStatsSchema = z.object({
   pageviews: UmamiMetric,
   visitors: UmamiMetric,
@@ -561,6 +634,22 @@ export function getUmamiStats(range: AnalyticsRange): Promise<UmamiStats | null>
       });
     };
 
+    /** Authenticated GET against Umami, retrying once on token expiry. */
+    const call2 = async (path: string): Promise<unknown | null> => {
+      const get = async (): Promise<Response | null> => {
+        if (!umamiToken) umamiToken = await umamiLogin(cfg);
+        if (!umamiToken) return null;
+        return fetch(`${cfg.UMAMI_URL}${path}`, { headers: { Authorization: `Bearer ${umamiToken}` } });
+      };
+      let r = await get();
+      if (r && r.status === 401) {
+        umamiToken = null;
+        r = await get();
+      }
+      if (!r || !r.ok) return null;
+      return r.json();
+    };
+
     let res = await call();
     if (res && res.status === 401) {
       umamiToken = null; // expired — re-login once
@@ -569,12 +658,29 @@ export function getUmamiStats(range: AnalyticsRange): Promise<UmamiStats | null>
     if (!res || !res.ok) return null;
     const parsed = UmamiStatsSchema.safeParse(await res.json());
     if (!parsed.success) return null;
+
+    // Best-effort: a failed breakdown degrades to `null`, never to 0, and
+    // never blocks the headline stats.
+    let outOfBoundaryPageviews: number | null = null;
+    const paths = await call2(
+      `/api/websites/${cfg.UMAMI_WEBSITE_ID}/metrics?startAt=${startAt}&endAt=${endAt}&type=path&limit=500`,
+    );
+    if (paths) {
+      const rows = UmamiPathRows.safeParse(paths);
+      if (rows.success) {
+        outOfBoundaryPageviews = rows.data
+          .filter((r) => r.x === '/admin' || r.x.startsWith('/admin/'))
+          .reduce((sum, r) => sum + r.y, 0);
+      }
+    }
+
     return {
       pageviews: metricValue(parsed.data.pageviews),
       visitors: metricValue(parsed.data.visitors),
       visits: metricValue(parsed.data.visits),
       bounces: metricValue(parsed.data.bounces),
       totaltime: metricValue(parsed.data.totaltime),
+      outOfBoundaryPageviews,
     };
   });
 }

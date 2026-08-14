@@ -195,3 +195,57 @@ describe('mountPlausible', () => {
     expect(p?.q?.some((args) => args[0] === 'pageview')).toBe(true);
   });
 });
+
+describe('trackUmamiPageview', () => {
+  /*
+   * Umami had the same auto-capture defect as Plausible: production was
+   * recording /admin and /admin/analytics on 2026-08-14 despite an explicit
+   * !isAdminPath gate, because the tracker hooks history.pushState on load.
+   */
+  async function loadUmami() {
+    vi.resetModules();
+    vi.stubEnv('VITE_UMAMI_SRC', 'https://pulse.example/script.js');
+    vi.stubEnv('VITE_UMAMI_WEBSITE_ID', '82166b5f-4bb2-4e33-9b58-6ee1f93fc1ac');
+    return (await import('./analytics')) as typeof import('./analytics');
+  }
+
+  beforeEach(() => {
+    document.getElementById('lf-umami')?.remove();
+    delete (window as { umami?: unknown }).umami;
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it('waits for the deferred script rather than dropping the first pageview', async () => {
+    const mod = await loadUmami();
+    mod.mountUmami();
+    // The tag exists but the tracker has not executed yet.
+    expect(window.umami).toBeUndefined();
+    mod.trackUmamiPageview();
+
+    const track = vi.fn();
+    (window as { umami?: { track: () => void } }).umami = { track };
+    document.getElementById('lf-umami')!.dispatchEvent(new Event('load'));
+    expect(track).toHaveBeenCalledTimes(1);
+  });
+
+  it('mounts with automatic SPA capture disabled', async () => {
+    const mod = await loadUmami();
+    mod.mountUmami();
+    const el = document.getElementById('lf-umami');
+    // If this reverts, the tracker hooks history and reports /admin/* itself,
+    // regardless of the isAdminPath gate in the effect.
+    expect(el?.getAttribute('data-auto-track')).toBe('false');
+    expect(el?.getAttribute('data-website-id')).toBe('82166b5f-4bb2-4e33-9b58-6ee1f93fc1ac');
+  });
+
+  it('emits immediately once the tracker is resident', async () => {
+    const mod = await loadUmami();
+    const track = vi.fn();
+    (window as { umami?: { track: () => void } }).umami = { track };
+    mod.trackUmamiPageview();
+    expect(track).toHaveBeenCalledTimes(1);
+  });
+});

@@ -86,3 +86,17 @@ Five Railway services in `littlefounders-b2c`, defined under `pulse/railway/`:
 - `/CLAUDE.md` §1.2 (stack), §1.5 (service map), §1.9 (child safety).
 - `backend/AGENTS.md` — the Core proxy endpoints that read from Pulse.
 - `RUNBOOK.md` — backup/restore + incident procedures.
+
+
+## Tracker capture mode — both vendors, non-negotiable
+
+Plausible and Umami each auto-capture SPA navigations by default: on load they hook `history.pushState` and report every route change themselves. Mounting and ejecting the `<script>` tag does NOT control this — ejecting removes the node, not the hook the script already installed. On 2026-08-14 both were found recording `/admin/*` and product routes in production despite correct-looking route gates (RUNBOOK: "Plausible records `/admin/*` and product routes").
+
+Therefore, in `frontend/src/lib/analytics.tsx`:
+
+- Plausible mounts with `init({ autoCapturePageviews: false })` and the effect calls `trackPlausiblePageview()` per approved navigation.
+- Umami mounts with `data-auto-track="false"` and the effect calls `trackUmamiPageview()`, which binds to the script's `load` event on first mount because the tracker is deferred.
+
+The rule: **the predicate that authorises the mount must be the only thing that can emit an event.** Any tracker added here is mounted with automatic capture off and driven explicitly, or the vendor — not this document — defines the §1.9 boundary. Both options are covered by A/B-verified tests in `analytics.test.tsx`; reverting either makes its test fail.
+
+Reads of stored history are scoped at query time — see the RUNBOOK entry for what that does and does not reach per tool.
