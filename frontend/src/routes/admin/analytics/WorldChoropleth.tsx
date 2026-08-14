@@ -419,6 +419,17 @@ export function WorldChoropleth({ rows, selected, onSelect, onUnplaceable, zoome
       </div>
 
       {/*
+        A region Plausible reported but the map could not place. Named rather
+        than dropped: an unmatched label silently discarded looks exactly like
+        a state with no visitors, which is how a labelling mismatch would hide.
+      */}
+      {zoomed && unresolvedRegions.length > 0 && (
+        <p className="lf-caption mt-2 rounded-lg border border-outline/40 bg-surface-sunken/40 p-2 text-content-muted">
+          {t('admin.analytics.geo.unmatchedRegions', { regions: unresolvedRegions.slice(0, 6).join(', ') })}
+        </p>
+      )}
+
+      {/*
         Legend with real ranges, not an unlabelled gradient.
         Every level of this wraps: five swatches with number ranges are wider
         than a 375px viewport, and a non-wrapping inner row pushed the whole
