@@ -124,6 +124,47 @@ Pulse services can't sleep, the only larger cut is *consolidation* — e.g. paus
 `pulse-umami` pre-launch (Plausible already covers the headline KPIs) would save
 ~$3–4/mo but makes behavioral analytics dormant. Left running by choice.
 
+## Recurring "server crashed" emails — triage, 2026-08-13
+
+**First, establish who is sending them.** Railway and Uptime Kuma both email
+about failure and the messages read alike. They mean different things and only
+one of them indicates a crash.
+
+```
+railway deployment list --service <name>     # CRASHED/FAILED rows = a real crash
+railway logs --service <name> --since 7d     # "Starting Container" repeated = restart loop
+curl -s https://pulse-kuma-production.up.railway.app/api/status-page/heartbeat/pulse
+```
+
+A service that crashed shows a `CRASHED` deployment or repeated container
+starts. A Kuma alert shows neither: the container is fine and a monitor is
+unhappy.
+
+**What it was on 2026-08-13.** Every application service was healthy — no
+`CRASHED` deployment anywhere, exactly one container start each, no OOM, no
+fatal, no unhandled rejection. The emails came from Kuma monitor #4
+("Arcade / gamegen"), which had been failing every 60 seconds with
+`getaddrinfo ENOTFOUND gamegen.railway.internal` since the Game Engine was
+deleted (`10936f3e`, schema retired in `0033`). 0 of 100 heartbeats up, 0%
+24-hour uptime, for weeks. **Fix: delete the monitor in Kuma.** The rule that
+prevents a repeat is in `pulse/AGENTS.md` #7.
+
+**Two findings worth keeping from the same sweep:**
+
+- `storage`, `studio`, `meta` and `supavisor` show no active deployment because
+  they are `SLEEPING` — deliberately idled since 2026-07-18 for cost. That is
+  not an outage. Do not "fix" it.
+- Every Node service logs three
+  `express-rate-limit: async error during store initialization.
+  ClientClosedError: The client is closed` stacks at boot. The limiters are
+  constructed at import time, before `index.ts` connects Redis, so each
+  `RedisStore.init()` runs against a closed client. It self-heals once Redis
+  connects and the limiter fails open by design (`passOnStoreError: true`), so
+  it is noise — but it is noise that costs time during exactly this kind of
+  triage. Any fix must be exercised against a real Redis: the test suite uses
+  `MemoryStore`, so the Redis path is untested and this file has already caused
+  one total outage.
+
 ## DuckDB refuses to rename a warehouse table — incident 2026-08-13
 
 **Symptom.** After a dataintel deploy, the log shows

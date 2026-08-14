@@ -80,6 +80,34 @@ have actually been seen working from. Two properties to preserve:
   rather than "nothing is excluded" when Vault cannot answer; the console
   answers 502 and the browser keeps whatever exclusion it already persisted.
 
+## Monitors (Uptime Kuma)
+
+The status page is `pulse`; Core reads it through
+`/api/v1/admin/health/services`. The set below is the source of truth — if it
+disagrees with Kuma, one of them is wrong and it is usually this file.
+
+| # | Monitor | Target |
+|---|---|---|
+| 1 | Core (backend) | `littlefounders-backend.railway.internal:4000/health` |
+| 2 | Forge (coursegen) | `coursegen.railway.internal:4001/health` |
+| 3 | Echo (audiogen) | `audiogen.railway.internal:4002/health` |
+| 5 | Guardian (parent-id-check) | `parent-id-check.railway.internal:4004/health` |
+| 6 | Courier (email-server) | `email-server.railway.internal:4005/health` |
+| 7 | Depot (filebase) | `filebase.railway.internal:4006/health` |
+| 8 | Plausible | pulse-plausible `/api/health` |
+| 9 | Umami | pulse-umami `/api/heartbeat` |
+
+**Retiring a service retires its monitor, in the same change.** Monitor #4
+("Arcade / gamegen") outlived the service it watched: the Game Engine was
+removed on the owner's call (`10936f3e`, schema retired in `0033`) and the
+Railway service deleted, but the monitor kept resolving
+`gamegen.railway.internal` every 60 seconds, failing every time, and emailing
+about it for weeks. An alert for something that no longer exists trains people
+to ignore alerts, which is worse than having none.
+
+**Known gap:** Prism (`picturegen`, 4007) and Data Intel (`dataintel`, 4008)
+have no monitor. Both expose `/health`. Add them.
+
 ## Campaign attribution contract
 
 Use all three supported tags on every external post, email, partner link, and

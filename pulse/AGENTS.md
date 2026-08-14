@@ -53,14 +53,20 @@ Five Railway services in `littlefounders-b2c`, defined under `pulse/railway/`:
    Plausible/Umami/Kuma API tokens server-side (§1.5 pattern). The ONLY
    browser-facing Pulse surfaces are the two tracker scripts and Plausible's
    GA OAuth callback.
-7. **State needs volumes.** `pulse-db` (PGDATA), `pulse-clickhouse`
+7. **A monitor's lifetime is its service's lifetime.** Adding a service adds
+   a Kuma monitor; RETIRING a service removes its monitor in the same change.
+   The set is documented in `pulse/README.md` and must match Kuma. A monitor
+   left pointing at a deleted service fails forever and emails forever — that
+   is what happened to `gamegen` after the Game Engine was removed, and the
+   noise was indistinguishable from a real outage until someone read the logs.
+8. **State needs volumes.** `pulse-db` (PGDATA), `pulse-clickhouse`
    (/var/lib/clickhouse), `pulse-kuma` (/app/data). A Kuma redeploy without
    its volume wipes every monitor. Daily `pg_dump` of pulse-db runs via
    `.github/workflows/pulse-backup.yml` (Vault-backup pattern).
-8. **Private networking is IPv6.** Every listener binds `::` (Plausible
+9. **Private networking is IPv6.** Every listener binds `::` (Plausible
    `LISTEN_IP`, Umami `HOSTNAME`, ClickHouse `listen_host`). A service that
    binds 0.0.0.0 is silently unreachable at `*.railway.internal`.
-9. **Secrets only in Railway variables.** `pulse/.env.example` is the
+10. **Secrets only in Railway variables.** `pulse/.env.example` is the
    placeholder contract; `npm run secrets:check` gates every commit.
 
 ## Upgrade protocol

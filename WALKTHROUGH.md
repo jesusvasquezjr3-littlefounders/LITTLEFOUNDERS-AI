@@ -2,6 +2,41 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-13) — Production review: no service has crashed; the alerts came from a monitor watching a deleted service
+
+Reviewed all 23 Railway services and a week of logs after repeated
+"server crashed" emails.
+
+- **Nothing crashed.** No `CRASHED` or `FAILED` deployment in the last week on
+  any service, exactly one container start each (no restart loops), and no OOM,
+  fatal, segfault or unhandled rejection in any log. Health confirms it: Core,
+  Forge, Echo, Guardian, Courier and Umami at 100% over 24 hours, Depot 99.93%,
+  Plausible 99.65%.
+- **The emails were Uptime Kuma monitor #4, "Arcade (gamegen)".** It resolves
+  `gamegen.railway.internal` every 60 seconds and has failed every time since
+  the Game Engine was deleted on the owner's call (`10936f3e`, schema retired
+  in `0033`) — 0 of 100 heartbeats up, 0% 24-hour uptime. The monitor outlived
+  the service by weeks because nothing tied the two together. It is a dashboard
+  deletion (Kuma stores monitors in its own volume behind its own login, so it
+  cannot be removed from the repo or the CLI).
+- **Monitoring gap found:** Prism (`picturegen`) and Data Intel (`dataintel`)
+  have no monitor at all, despite both exposing `/health`. Two production
+  services were unwatched.
+- **Not outages, do not "fix":** `storage`, `studio`, `meta` and `supavisor`
+  show no active deployment because they are SLEEPING, idled deliberately since
+  2026-07-18 for cost. Plausible's 4 FAILED deployments are from 2026-07-20,
+  during Pulse setup, and its single 500 on 2026-08-13 falls inside this
+  session's own deploy window.
+- **Known benign noise, deliberately NOT changed:** every Node service logs
+  three rate-limiter store-init errors at boot because the limiters are built
+  at import time, before Redis connects. It self-heals and fails open. A fix is
+  untestable here (the suite uses `MemoryStore`) and this file already caused
+  one total outage, so it is documented in RUNBOOK rather than changed blind.
+
+The monitor set is now written down in `pulse/README.md`, and `pulse/AGENTS.md`
+#7 makes a monitor's lifetime the same as its service's, so retiring a service
+retires its alert in the same change.
+
 ## Current State (2026-08-13) — DEPLOYED TO PRODUCTION
 
 Merged to `main` as `c4a49156` (+ fixes `59c75087`, `06d4a4e9`). Vault
