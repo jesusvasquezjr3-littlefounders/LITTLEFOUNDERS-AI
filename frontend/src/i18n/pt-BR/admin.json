@@ -370,11 +370,6 @@
       "trendEmpty": "Ainda não há tráfego registrado neste período.",
       "chartSubtitle": "Explore o volume, compare a métrica e arraste a linha inferior para ampliar.",
       "metricAria": "Métrica de tendência analítica",
-      "rangeAria": "Intervalo da tendência analítica",
-      "range7d": "7D",
-      "range30d": "30D",
-      "range90d": "90D",
-      "rangeall": "Tudo",
       "chartRange": "{{start}} a {{end}}",
       "dailyAverage": "Média diária",
       "pagesPerVisitor": "Páginas por visitante",
@@ -382,10 +377,9 @@
       "average": "Média do intervalo",
       "peakDay": "Dia de pico",
       "chartSummaryAria": "Resumo do intervalo analítico selecionado",
-      "chartOverviewAria": "Visão geral completa da tendência analítica",
-      "chartZoomHint": "Arraste os controles da linha inferior para focar em uma janela menor.",
       "signalsAria": "Sinais de analytics da web",
-      "comparedWith": "Comparado com {{window}}"
+      "comparedWith": "Comparado com {{window}}",
+      "trendLegend": "Média de {{days}} dias"
     },
     "behavior": {
       "title": "Comportamento (superfícies adultas)",

@@ -370,11 +370,6 @@
       "trendEmpty": "No traffic recorded in this period yet.",
       "chartSubtitle": "Explore volume, compare the selected metric, and drag the lower timeline to zoom.",
       "metricAria": "Analytics trend metric",
-      "rangeAria": "Analytics trend range",
-      "range7d": "7D",
-      "range30d": "30D",
-      "range90d": "90D",
-      "rangeall": "All",
       "chartRange": "{{start}} to {{end}}",
       "dailyAverage": "Daily average",
       "pagesPerVisitor": "Pages per visitor",
@@ -382,10 +377,9 @@
       "average": "Range average",
       "peakDay": "Peak day",
       "chartSummaryAria": "Summary for the selected analytics range",
-      "chartOverviewAria": "Full analytics trend overview",
-      "chartZoomHint": "Drag the handles in the lower timeline to focus on a smaller window.",
       "signalsAria": "Web analytics signals",
-      "comparedWith": "Compared with {{window}}"
+      "comparedWith": "Compared with {{window}}",
+      "trendLegend": "{{days}}-day average"
     },
     "behavior": {
       "title": "Behavioral (adult surfaces)",

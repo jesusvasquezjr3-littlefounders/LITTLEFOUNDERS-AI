@@ -23,9 +23,7 @@ vi.mock('recharts', () => ({
   ComposedChart: ({ children }: { children: ReactNode }) => <svg>{children}</svg>,
   Area: () => <g data-testid="analytics-area" />,
   Bar: () => null,
-  Brush: ({ onChange }: { onChange?: (range: { startIndex?: number; endIndex?: number }) => void }) => (
-    <g role="button" aria-label="zoom" onClick={() => onChange?.({ startIndex: 2, endIndex: 3 })} />
-  ),
+  Line: ({ dataKey }: { dataKey?: string }) => <g data-testid={`analytics-line-${String(dataKey)}`} />,
   CartesianGrid: () => null,
   Label: () => null,
   ReferenceDot: () => null,
@@ -56,9 +54,36 @@ describe('AnalyticsTrendChart', () => {
     expect(screen.getByText('18')).toBeInTheDocument();
   });
 
-  it('recalculates the visible summary after brush zoom', () => {
+  it('offers no period control of its own — the page-level picker is the only authority', () => {
+    /*
+     * This chart used to carry 7d/30d/90d/all presets and a drag Brush while
+     * the page header carried its own picker, so one screen had three ways to
+     * pick a window that could disagree. Both were removed; a regression here
+     * means the contradiction is back.
+     */
     render(<AnalyticsTrendChart data={points} />);
-    fireEvent.click(screen.getByRole('button', { name: 'zoom' }));
-    expect(screen.getByText('8')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'zoom' })).not.toBeInTheDocument();
+    for (const key of ['range7d', 'range30d', 'range90d', 'rangeall']) {
+      expect(screen.queryByRole('button', { name: `admin.analytics.web.${key}` })).not.toBeInTheDocument();
+    }
+    // The whole fetched series is always summarised: 1 + 0 + 5 + 3.
+    expect(screen.getByText('9')).toBeInTheDocument();
+  });
+
+  it('withholds the moving average until a full window exists', () => {
+    // Four points cannot support a 7-day mean. Drawing one anyway would
+    // invent a trend at the chart edge, which is where readers look hardest.
+    render(<AnalyticsTrendChart data={points} />);
+    expect(screen.queryByTestId('analytics-line-trend')).not.toBeInTheDocument();
+  });
+
+  it('draws the 7-day moving average once the series is long enough', () => {
+    const long = Array.from({ length: 10 }, (_, i) => ({
+      date: `2026-08-${String(i + 1).padStart(2, '0')}`,
+      visitors: i + 1,
+      pageviews: (i + 1) * 2,
+    }));
+    render(<AnalyticsTrendChart data={long} />);
+    expect(screen.getByTestId('analytics-line-trend')).toBeInTheDocument();
   });
 });

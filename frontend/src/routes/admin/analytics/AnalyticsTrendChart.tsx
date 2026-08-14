@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Area,
   Bar,
-  Brush,
   CartesianGrid,
   ComposedChart,
   Label,
+  Line,
   ReferenceDot,
   ReferenceLine,
   ResponsiveContainer,
@@ -26,27 +26,45 @@ interface Point {
 
 interface ChartPoint extends Point {
   value: number;
-}
-
-interface Range {
-  startIndex: number;
-  endIndex: number;
+  /** Trailing 7-day mean; null until a full window exists. */
+  trend?: number | null;
 }
 
 type Metric = 'visitors' | 'pageviews';
 
-const RANGE_PRESETS = [
-  { key: '7d', days: 7 },
-  { key: '30d', days: 30 },
-  { key: '90d', days: 90 },
-  { key: 'all', days: null },
-] as const;
+/*
+ * There is exactly ONE period authority on this page: the picker at the top.
+ *
+ * This chart used to carry its own 7d/30d/90d/all presets AND a drag Brush,
+ * so the same screen offered three ways to choose a window that disagreed
+ * with each other — the header could say "last 30 days" while the chart drew
+ * seven, and nothing on screen explained which number the cards belonged to.
+ * Both were removed rather than synchronised: a second control that can only
+ * ever contradict the first is not a feature.
+ *
+ * The freed affordance went to something the reader actually needs.
+ */
 
-function validRange(range: Range, length: number): Range {
-  const last = Math.max(length - 1, 0);
-  const startIndex = Math.min(Math.max(range.startIndex, 0), last);
-  const endIndex = Math.min(Math.max(range.endIndex, startIndex), last);
-  return { startIndex, endIndex };
+/** Trailing simple moving average — the standard smoother for daily counts. */
+const SMOOTHING_WINDOW = 7;
+
+/**
+ * Daily traffic counts are dominated by weekday/weekend seasonality, so the
+ * raw line answers "was Tuesday busy?" when the question is almost always
+ * "is this going up?". A trailing 7-day mean removes exactly one weekly cycle,
+ * which is why the window is 7 and not a rounder number.
+ *
+ * It is `null` until a full window exists: extending a mean over 3 points and
+ * drawing it identically to a real one would invent a trend at the very edge
+ * of the chart, where readers look hardest.
+ */
+function withMovingAverage(points: ChartPoint[]): ChartPoint[] {
+  return points.map((point, index) => {
+    if (index < SMOOTHING_WINDOW - 1) return { ...point, trend: null };
+    let sum = 0;
+    for (let i = index - SMOOTHING_WINDOW + 1; i <= index; i += 1) sum += points[i]?.value ?? 0;
+    return { ...point, trend: sum / SMOOTHING_WINDOW };
+  });
 }
 
 function toDate(date: string): Date {
@@ -56,11 +74,6 @@ function toDate(date: string): Date {
 export function AnalyticsTrendChart({ data }: { data: Point[] }) {
   const { t, i18n } = useTranslation();
   const [metric, setMetric] = useState<Metric>('visitors');
-  const [range, setRange] = useState<Range>({ startIndex: 0, endIndex: Math.max(data.length - 1, 0) });
-
-  useEffect(() => {
-    setRange({ startIndex: 0, endIndex: Math.max(data.length - 1, 0) });
-  }, [data.length]);
 
   const dateFormat = useMemo(
     () => new Intl.DateTimeFormat(i18n.resolvedLanguage, { month: 'short', day: 'numeric', year: 'numeric' }),
@@ -76,11 +89,9 @@ export function AnalyticsTrendChart({ data }: { data: Point[] }) {
     () => data.map((point) => ({ ...point, value: point[metric] })),
     [data, metric],
   );
-  const selectedRange = validRange(range, fullPoints.length);
-  const visibleData = useMemo(
-    () => fullPoints.slice(selectedRange.startIndex, selectedRange.endIndex + 1),
-    [fullPoints, selectedRange.endIndex, selectedRange.startIndex],
-  );
+  // The window is whatever the page-level picker fetched — the whole series.
+  const visibleData = useMemo(() => withMovingAverage(fullPoints), [fullPoints]);
+  const showTrend = visibleData.length >= SMOOTHING_WINDOW;
   const summary = useMemo(() => {
     const values = visibleData.map((point) => point.value);
     const total = values.reduce((sum, value) => sum + value, 0);
@@ -90,16 +101,9 @@ export function AnalyticsTrendChart({ data }: { data: Point[] }) {
     const latest = values[values.length - 1] ?? 0;
     return { total, peak, average, change: latest - first, max: Math.max(peak, 1) };
   }, [visibleData]);
-  const rangeStart = fullPoints[selectedRange.startIndex];
-  const rangeEnd = fullPoints[selectedRange.endIndex];
+  const rangeStart = fullPoints[0];
+  const rangeEnd = fullPoints[fullPoints.length - 1];
   const latestPoint = visibleData[visibleData.length - 1];
-  const selectedPreset =
-    selectedRange.startIndex === 0 && selectedRange.endIndex === fullPoints.length - 1
-      ? 'all'
-      : RANGE_PRESETS.find(
-          (preset) => preset.days !== null && selectedRange.startIndex === Math.max(fullPoints.length - preset.days, 0),
-        )?.key ?? 'all';
-
   const rangeLabel = rangeStart && rangeEnd
     ? t('admin.analytics.web.chartRange', {
         start: dateFormat.format(toDate(rangeStart.date)),
@@ -107,13 +111,6 @@ export function AnalyticsTrendChart({ data }: { data: Point[] }) {
       })
     : '';
   const changeTone = summary.change >= 0 ? 'text-success' : 'text-error';
-
-  const selectPreset = (days: number | null) => {
-    setRange({
-      startIndex: days === null ? 0 : Math.max(fullPoints.length - days, 0),
-      endIndex: Math.max(fullPoints.length - 1, 0),
-    });
-  };
 
   const tooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
     if (!active || !payload?.length || !label) return null;
@@ -160,27 +157,19 @@ export function AnalyticsTrendChart({ data }: { data: Point[] }) {
         </div>
       </div>
 
-      <div className="flex min-w-0 flex-col gap-3 rounded-xl border border-outline/40 bg-surface-sunken/50 p-2 sm:flex-row sm:items-center sm:justify-between sm:p-2.5">
-        <div className="flex min-w-max items-center gap-1 overflow-x-auto" role="group" aria-label={t('admin.analytics.web.rangeAria')}>
-          {RANGE_PRESETS.map((preset) => (
-            <button
-              key={preset.key}
-              type="button"
-              aria-pressed={selectedPreset === preset.key}
-              onClick={() => selectPreset(preset.days)}
-              className={cn(
-                'min-h-10 rounded-lg px-3 text-sm font-semibold transition-colors',
-                selectedPreset === preset.key ? 'bg-content text-surface shadow-sm' : 'text-content-muted hover:bg-surface hover:text-content',
-              )}
-            >
-              {t(`admin.analytics.web.range${preset.key}`)}
-            </button>
-          ))}
-        </div>
-        <div className="flex items-center gap-2 px-2 sm:justify-end">
-          <Icon name="show_chart" className="!text-[18px] text-primary" />
+      <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-xl border border-outline/40 bg-surface-sunken/50 p-2.5">
+        <div className="flex items-center gap-2">
+          <Icon name="date_range" className="!text-[18px] text-primary" />
           <span className="lf-caption whitespace-nowrap text-content-muted">{rangeLabel}</span>
         </div>
+        {showTrend && (
+          <div className="flex items-center gap-2">
+            <span className="inline-block h-0.5 w-5 rounded-full bg-accent" />
+            <span className="lf-caption whitespace-nowrap text-content-muted">
+              {t('admin.analytics.web.trendLegend', { days: SMOOTHING_WINDOW })}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label={t('admin.analytics.web.chartSummaryAria')}>
@@ -213,30 +202,31 @@ export function AnalyticsTrendChart({ data }: { data: Point[] }) {
               <ReferenceLine y={summary.average} stroke="rgb(var(--lf-content-muted))" strokeDasharray="2 5" strokeOpacity={0.7}>
                 <Label value={t('admin.analytics.web.average')} position="insideTopLeft" fill="rgb(var(--lf-content-muted))" fontSize={11} />
               </ReferenceLine>
+              {showTrend && (
+                /*
+                 * Drawn after the raw series so it reads as an overlay, not a
+                 * competing measurement. connectNulls stays FALSE: the first
+                 * six days have no full window, and bridging that gap would
+                 * draw a mean where none was computed.
+                 */
+                <Line
+                  type="monotone"
+                  dataKey="trend"
+                  name={t('admin.analytics.web.trendLegend', { days: SMOOTHING_WINDOW })}
+                  stroke="rgb(var(--lf-accent))"
+                  strokeWidth={2}
+                  dot={false}
+                  connectNulls={false}
+                  isAnimationActive={false}
+                />
+              )}
               {latestPoint && (
                 <ReferenceDot x={latestPoint.date} y={latestPoint.value} r={4} fill="rgb(var(--lf-accent))" stroke="rgb(var(--lf-surface))" strokeWidth={2} label={{ value: numberFormat.format(latestPoint.value), position: 'right', fill: 'rgb(var(--lf-content))', fontSize: 12, fontWeight: 700 }} />
               )}
             </ComposedChart>
           </ResponsiveContainer>
         </div>
-        {fullPoints.length > 1 && (
-          <div className="mt-2 h-24 w-full border-t border-outline/30 pt-2" aria-label={t('admin.analytics.web.chartOverviewAria')}>
-            <ResponsiveContainer>
-              <ComposedChart data={fullPoints} margin={{ top: 3, right: 8, left: -12, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="analyticsTrendOverview" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="rgb(var(--lf-primary))" stopOpacity={0.28} />
-                    <stop offset="100%" stopColor="rgb(var(--lf-primary))" stopOpacity={0.03} />
-                  </linearGradient>
-                </defs>
-                <Area type="monotone" dataKey="value" stroke="rgb(var(--lf-primary))" strokeWidth={1.5} fill="url(#analyticsTrendOverview)" dot={false} isAnimationActive={false} />
-                <Brush dataKey="date" height={28} startIndex={selectedRange.startIndex} endIndex={selectedRange.endIndex} travellerWidth={12} stroke="rgb(var(--lf-primary))" fill="rgb(var(--lf-surface-sunken))" tickFormatter={() => ''} onChange={({ startIndex, endIndex }) => setRange({ startIndex: startIndex ?? 0, endIndex: endIndex ?? Math.max(fullPoints.length - 1, 0) })} />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
-        )}
       </div>
-      <p className="lf-caption text-content-faint">{t('admin.analytics.web.chartZoomHint')}</p>
     </Card>
   );
 }
