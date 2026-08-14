@@ -2,6 +2,45 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-13) — DEPLOYED TO PRODUCTION
+
+Merged to `main` as `c4a49156` (+ fixes `59c75087`, `06d4a4e9`). Vault
+migrations `0045` and `0046` applied to production before any service shipped;
+the ledger now holds 46 receipts. Backend, dataintel, coursegen, filebase,
+parent-id-check, pulse and frontend all deployed green.
+
+**Verified in production, not inferred:**
+
+- `GET /api/v1/analytics/tracking-decision` answers
+  `{"excluded":false,"degraded":false}` with `Cache-Control: no-store`.
+  `degraded:false` is the meaningful part: Core successfully read the new
+  exclusion registry, so `0045` is live and working.
+- `dataintel_users_sync.is_staff` returns 29 users with 2 flagged, both
+  `superadmin` — matching the measurement this whole change started from.
+- dataintel logged `warehouse migrated to staff-free views (renamed:
+  fact_events, fact_segment_attempts, dim_sessions, dim_users)`, then
+  `duckdb initialised` and `Sync complete`.
+- The Terms render in FULL in all three locales on littlefounders.ai: 20
+  clauses and 117 paragraphs each (30,071 / 33,053 / 31,078 characters for
+  en-US / es-MX / pt-BR — the same document in three languages).
+- `repo gates` passed on this commit and had FAILED on its predecessor
+  `a831a00c`. That is the legal locale-parity gate which had blocked automatic
+  frontend deploys; `frontend CD` ran for the first time in weeks.
+
+**Two incidents on the way in, both recorded in RUNBOOK.md:** DuckDB refused to
+rename a table with dependent indexes (the migration test's fixture had none,
+so it passed while production failed), and frontend CI failed with all 476
+tests passing because an unhandled rejection escaped `useAdminData`. Both are
+fixed, and in both cases reverting the fix reproduces the failure in the test
+that now covers it.
+
+**Still open:** the region map is live but unverified against real region
+traffic — Plausible's `visit:region` is documented to return ISO 3166-2 codes
+(`US-MD`), which is how the 4,584 generated region shapes are keyed, but the
+production instance sits on Railway's private network and could not be queried
+from a workstation. Zooming into a country with traffic in the console
+confirms it in seconds.
+
 ## Current State (2026-08-13) — Map zoom to real regions, and every intel chart was drawing its axes in black
 
 - **Zoom into a country and see its states.** Clicking a country now zooms the

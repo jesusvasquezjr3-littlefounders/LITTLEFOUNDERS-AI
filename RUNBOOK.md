@@ -124,6 +124,50 @@ Pulse services can't sleep, the only larger cut is *consolidation* — e.g. paus
 `pulse-umami` pre-launch (Plausible already covers the headline KPIs) would save
 ~$3–4/mo but makes behavioral analytics dormant. Left running by choice.
 
+## DuckDB refuses to rename a warehouse table — incident 2026-08-13
+
+**Symptom.** After a dataintel deploy, the log shows
+`duckdb init failed (non-fatal): Dependency Error: Cannot alter entry
+"fact_events" because there are entries that depend on it`, the service keeps
+answering `/health`, and the intelligence console serves stale numbers because
+sync never runs. Same shape as the 2026-08-09 incident: `initDb` catches the
+error as non-fatal, so nothing restarts and nothing pages.
+
+**Cause.** DuckDB will not rename a table that other objects depend on, and a
+deployed warehouse carries every `idx_fact_events_*` index from `schema.sql`.
+
+**Fix.** `migrateWarehouse()` (`dataintel/src/db/duckdb.ts`) drops the
+dependent indexes via `duckdb_indexes()` before the rename; `schema.sql`
+recreates them against the `_raw` table moments later in the same startup.
+
+**The lesson worth keeping.** The migration test built its fixture with a bare
+`CREATE TABLE` and no indexes — a shape no real warehouse ever has. It passed
+while production failed. Any test covering a migration must build the fixture
+the way the deployed database actually looks, indexes included; reverting the
+fix must reproduce the production error in that test, or the case is assumed
+rather than covered.
+
+## Frontend CI fails with every test passing — incident 2026-08-13
+
+**Symptom.** `frontend CI` exits 1 while reporting `476 passed`, with
+`Errors 1 error` and an `Error: Network error` unhandled rejection. `frontend
+CD` then skips (it gates on CI success), so the SPA silently does not deploy
+while every other service does.
+
+**Cause.** An unhandled rejection, not an assertion. `useAdminData` did
+`await api(...)` with no `try`, relying on `api()` always returning an
+envelope. A test that makes every call throw, plus any new component mounting
+that hook, lets the rejection escape an async callback nothing awaits.
+
+**Fix.** Both admin hooks convert a throw into the envelope their callers
+already branch on (`adminShared.tsx`). In a browser the same path previously
+left the panel on "loading" forever with no error state.
+
+**Watch for.** A test mock returning a fresh `getToken` identity per render
+re-runs the hook's effect forever and OOMs the vitest worker rather than
+failing — the stable-dependency rule in `frontend/AGENTS.md` applies to mocks
+as much as to product code.
+
 ## Published content invisible to users (RLS policy silently missing) — incident 2026-07-13
 
 **Symptom:** a fully-published course (every row `status='published'`, all counts correct via service-role/psql) renders **zero lessons** for real logged-in users. No errors anywhere — the API returns `lessons: []`.
