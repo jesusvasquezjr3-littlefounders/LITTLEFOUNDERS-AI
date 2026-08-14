@@ -70,10 +70,29 @@ export async function migrateWarehouse(): Promise<string[]> {
   const renamed: string[] = [];
 
   for (const name of RENAMED_TABLES) {
-    if (existing.has(name) && !existing.has(`${name}_raw`)) {
-      await run(`ALTER TABLE ${name} RENAME TO ${name}_raw`);
-      renamed.push(name);
+    if (!existing.has(name) || existing.has(`${name}_raw`)) continue;
+
+    /*
+     * Indexes must go FIRST. DuckDB refuses to rename a table that anything
+     * depends on ("Cannot alter entry ... because there are entries that
+     * depend on it"), and a deployed warehouse has every idx_fact_events_*
+     * from schema.sql attached to it. Dropping them is safe and cheap:
+     * schema.sql recreates each one against the _raw table immediately
+     * afterwards, in the same startup.
+     *
+     * This is what a real warehouse does and a freshly CREATE'd fixture does
+     * not — the first attempt at this migration was tested against a table
+     * with no indexes, passed, and then failed on the production volume.
+     */
+    const indexes = await all<{ index_name: string }>(
+      `SELECT index_name FROM duckdb_indexes() WHERE table_name = '${name}'`,
+    );
+    for (const index of indexes) {
+      await run(`DROP INDEX IF EXISTS ${index.index_name}`);
     }
+
+    await run(`ALTER TABLE ${name} RENAME TO ${name}_raw`);
+    renamed.push(name);
   }
   return renamed;
 }

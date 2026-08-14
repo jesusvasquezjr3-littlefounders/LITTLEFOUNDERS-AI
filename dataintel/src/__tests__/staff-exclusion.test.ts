@@ -130,15 +130,21 @@ describe('warehouse migration from a pre-filter deployment', () => {
          route_class VARCHAR, device VARCHAR, locale VARCHAR, referrer_class VARCHAR, ordinal INTEGER,
          value DOUBLE, created_at TIMESTAMP NOT NULL, ingested_at TIMESTAMP);
        INSERT INTO fact_events (event_id, event_type, role, user_id, created_at)
-         VALUES (1, 'page_view', 'superadmin', '${STAFF}', '2026-08-01'), (2, 'page_view', 'universal', '${LEARNER}', '2026-08-01');`,
+         VALUES (1, 'page_view', 'superadmin', '${STAFF}', '2026-08-01'), (2, 'page_view', 'universal', '${LEARNER}', '2026-08-01');
+       CREATE INDEX idx_fact_events_user_time ON fact_events(user_id, created_at);
+       CREATE INDEX idx_fact_events_created ON fact_events(created_at);`,
     );
 
     const tables = await all(db, 'SELECT table_name FROM duckdb_tables()');
     const existing = new Set(tables.map((t) => String(t.table_name)));
     for (const name of ['fact_events', 'fact_segment_attempts', 'dim_sessions', 'dim_users']) {
-      if (existing.has(name) && !existing.has(`${name}_raw`)) {
-        await exec(db, `ALTER TABLE ${name} RENAME TO ${name}_raw`);
-      }
+      if (!existing.has(name) || existing.has(`${name}_raw`)) continue;
+      // Indexes first — DuckDB refuses to rename a table anything depends on.
+      // A deployed warehouse always has them; the fixture must too, or this
+      // test passes while production fails (it did, on 2026-08-13).
+      const indexes = await all(db, `SELECT index_name FROM duckdb_indexes() WHERE table_name = '${name}'`);
+      for (const index of indexes) await exec(db, `DROP INDEX IF EXISTS ${String(index.index_name)}`);
+      await exec(db, `ALTER TABLE ${name} RENAME TO ${name}_raw`);
     }
     await exec(db, schemaSql);
 
@@ -146,6 +152,10 @@ describe('warehouse migration from a pre-filter deployment', () => {
     expect(Number((await all(db, 'SELECT COUNT(*) AS n FROM fact_events_raw'))[0]?.n)).toBe(2);
     const visible = await all(db, 'SELECT event_id FROM fact_events');
     expect(visible.map((r) => Number(r.event_id))).toEqual([2]);
+
+    // schema.sql rebuilt the indexes against the physical table.
+    const rebuilt = await all(db, `SELECT index_name FROM duckdb_indexes() WHERE table_name = 'fact_events_raw'`);
+    expect(rebuilt.length).toBeGreaterThan(0);
   });
 });
 
