@@ -535,6 +535,11 @@
       "namePlaceholder": "Office wifi",
       "add": "Add",
       "forwardOnly": "Exclusions apply from the moment you add them. Data already recorded stays exactly as it is."
+    },
+    "coverage": {
+      "none": "No internal traffic is excluded yet, so staff visits are still counted in these figures. Add this device under Internal traffic below. Exclusions apply from the moment they are added and cannot change data already recorded.",
+      "partial": "Part of this window predates the first exclusion ({{date}}), so the earlier days still include staff visits. Later data is filtered.",
+      "covered": "Internal traffic has been excluded since {{date}}. Data recorded before that date still includes staff visits."
     }
   },
   "emails": {

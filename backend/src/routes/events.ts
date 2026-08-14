@@ -4,6 +4,7 @@ import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
 import { eventsRateLimiter } from '../middleware/rateLimit.js';
 import { isIpExcluded } from '../services/analyticsExclusions.js';
+import { isBotUserAgent } from '../services/botDetection.js';
 import {
   DEVICES,
   LOCALES,
@@ -160,6 +161,16 @@ export function eventsRouter(): Router {
      * telemetry is worse than admitting a staff session.
      */
     if ((await isIpExcluded(req.ip)) === true) return ok(res, { accepted: 0 }, 202);
+
+    /*
+     * Non-human traffic gate. Plausible and GA4 drop known crawlers before
+     * storage; this endpoint filtered nothing, so the dataset we fully control
+     * was the least defended of the three. Dropped like the consent and
+     * internal-traffic gates: acknowledged (202, accepted 0), never an error,
+     * so a misclassified client does not retry in a loop. The agent string is
+     * read for the decision and never stored (§1.9).
+     */
+    if (isBotUserAgent(req.get('user-agent'))) return ok(res, { accepted: 0 }, 202);
 
     // Anonymous path: no Authorization header AND an anonId present.
     const hasAuth = (req.get('authorization') ?? '').startsWith('Bearer ');

@@ -2,6 +2,44 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-14) — Retroactive filtering confirmed, non-human traffic filtered, datacenter blocking assessed and refused
+
+- **The warehouse filter IS retroactive, verified against production.** Over a
+  90-day window dataintel reports 3,539 excluded events against 383 included
+  (90.2%) and 24 excluded segment attempts — every staff row in history, back
+  to the earliest on 2026-08-10, matching Vault's own totals exactly. The
+  intelligence console needed nothing further.
+- **Plausible, Umami and GA4 cannot be rewritten**, and the console now says
+  so where the numbers are. It also says something more urgent that was
+  invisible: the exclusion registry is EMPTY in production, so no staff address
+  is being excluded from web analytics yet — the panel is deployed, nobody has
+  used it, and the figures still contain staff visits. The note distinguishes
+  three states: nothing excluded, the window predating the first exclusion, and
+  fully covered.
+- **Non-human traffic now has three layers.** `navigator.webdriver` stops
+  WebDriver-controlled browsers in the SPA before a hit is sent (including this
+  project's own verification runs, which loaded the marketing site repeatedly).
+  User-agent classification stops crawlers and scripted clients at both
+  `tracking-decision` and `POST /api/v1/events`. Plausible and GA4 continue to
+  drop known bots before storage — confirmed for Plausible by production data:
+  twelve months of browser breakdown contains no bot category at all. Our own
+  ingest had no filter, which made the dataset we fully control the least
+  defended.
+- **Datacenter/ASN filtering: assessed, deliberately not built.** The ranges
+  are published and easy to consume (AWS alone: 10,646 IPv4 + 6,108 IPv6
+  prefixes) and `net.BlockList` already matches CIDRs. It is refused because
+  the false positives are real users: corporate egress, VPNs, and decisively
+  iCloud Private Relay, which carries genuine Safari sessions — Safari is this
+  platform's second browser by volume. Silently deleting real iPhone traffic is
+  a worse failure than counting a few cloud-hosted bots. Operators can still
+  exclude a specific range explicitly through the existing registry.
+- **A design bias, written into the tests:** a missed crawler inflates a
+  number, a misclassified human deletes a session that nothing downstream can
+  recover. Six real browser agents are asserted never to match, and that
+  assertion is not to be relaxed to catch one more bot. Twelve existing tests
+  failed on this change because supertest sends no user agent — they now send a
+  real one, which is what production always does.
+
 ## Current State (2026-08-13) — Production review: no service has crashed; the alerts came from a monitor watching a deleted service
 
 Reviewed all 23 Railway services and a week of logs after repeated

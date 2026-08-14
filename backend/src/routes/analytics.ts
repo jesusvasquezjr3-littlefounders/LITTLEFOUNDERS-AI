@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { ok } from '../lib/http.js';
 import { isIpExcluded } from '../services/analyticsExclusions.js';
+import { isBotUserAgent } from '../services/botDetection.js';
 
 /*
  * GET /api/v1/analytics/tracking-decision — the ONE public read of the
@@ -31,6 +32,16 @@ export function analyticsRouter(): Router {
   const router = Router();
 
   router.get('/tracking-decision', async (req, res) => {
+    /*
+     * A crawler that runs JavaScript asks this too. Answering "excluded" stops
+     * it mounting any tracker, which keeps it out of Plausible/Umami/GA4 in
+     * the same breath as staff traffic — cheaper and earlier than filtering it
+     * downstream, and it costs a real visitor nothing.
+     */
+    if (isBotUserAgent(req.get('user-agent'))) {
+      res.setHeader('Cache-Control', 'no-store');
+      return ok(res, { excluded: true, degraded: false });
+    }
     const excluded = await isIpExcluded(req.ip);
     res.setHeader('Cache-Control', 'no-store');
     ok(res, { excluded: excluded === true, degraded: excluded === null });

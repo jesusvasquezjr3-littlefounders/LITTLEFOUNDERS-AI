@@ -535,6 +535,11 @@
       "namePlaceholder": "Wi-Fi do escritório",
       "add": "Adicionar",
       "forwardOnly": "As exclusões valem a partir do momento em que você as adiciona. Os dados já registrados permanecem como estão."
+    },
+    "coverage": {
+      "none": "Ainda não há tráfego interno excluído, então as visitas da equipe continuam contando nestes números. Adicione este dispositivo em Tráfego interno, abaixo. As exclusões valem a partir do momento em que são adicionadas e não alteram dados já registrados.",
+      "partial": "Parte desta janela é anterior à primeira exclusão ({{date}}), então os primeiros dias ainda incluem visitas da equipe. Os dados posteriores estão filtrados.",
+      "covered": "O tráfego interno é excluído desde {{date}}. Os dados registrados antes dessa data ainda incluem visitas da equipe."
     }
   },
   "emails": {

@@ -10,6 +10,16 @@ import {
 import { jsonResponse, mintToken } from './helpers.js';
 
 /*
+ * Requests in these tests carry a real browser agent because production ones
+ * always do. Core drops analytics traffic with a missing or crawler user agent
+ * (services/botDetection.ts), so a UA-less supertest request is not a neutral
+ * default — it is a bot as far as the gate is concerned.
+ */
+const BROWSER_UA =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36';
+
+
+/*
  * Internal-traffic exclusion registry (Vault 0045) — the control that makes
  * staff traffic stop counting. Covers the address arithmetic (where a silent
  * bug would either exclude nobody or exclude the whole internet), the admin
@@ -144,6 +154,7 @@ describe('GET /api/v1/analytics/tracking-decision', () => {
     stubRest();
     const res = await request(createApp())
       .get('/api/v1/analytics/tracking-decision')
+      .set('User-Agent', BROWSER_UA)
       .set('X-Forwarded-For', OFFICE_IP);
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual({ excluded: true, degraded: false });
@@ -154,6 +165,7 @@ describe('GET /api/v1/analytics/tracking-decision', () => {
     stubRest();
     const res = await request(createApp())
       .get('/api/v1/analytics/tracking-decision')
+      .set('User-Agent', BROWSER_UA)
       .set('X-Forwarded-For', '198.51.100.4');
     expect(res.body.data).toEqual({ excluded: false, degraded: false });
   });
@@ -162,6 +174,7 @@ describe('GET /api/v1/analytics/tracking-decision', () => {
     stubRest({ exclusions: null });
     const res = await request(createApp())
       .get('/api/v1/analytics/tracking-decision')
+      .set('User-Agent', BROWSER_UA)
       .set('X-Forwarded-For', OFFICE_IP);
     expect(res.body.data).toEqual({ excluded: false, degraded: true });
   });
@@ -175,6 +188,7 @@ describe('POST /api/v1/events — internal-traffic gate', () => {
     stubRest({ calls });
     const res = await request(createApp())
       .post('/api/v1/events')
+      .set('User-Agent', BROWSER_UA)
       .set('X-Forwarded-For', OFFICE_IP)
       .send(batch);
     expect(res.status).toBe(202);

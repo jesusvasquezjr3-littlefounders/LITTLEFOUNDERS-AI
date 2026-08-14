@@ -3,6 +3,8 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 import { getConfig } from '../config.js';
 
+
+
 /*
  * CORS is an origin allowlist for exactly one consumer (the SPA), with
  * credentials deliberately off — auth travels in the Authorization header,

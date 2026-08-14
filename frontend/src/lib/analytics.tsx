@@ -141,12 +141,37 @@ function applyVendorOptOuts(excluded: boolean): void {
   writeFlag('local', 'umami.disabled', excluded ? '1' : null);
 }
 
+/**
+ * An automated browser, by its own admission.
+ *
+ * `navigator.webdriver` is set by every WebDriver-controlled session
+ * (Playwright, Selenium, Puppeteer's non-stealth mode, headless Chrome under
+ * automation) and is false for real users. Checking it costs nothing and stops
+ * a whole class of non-human traffic before a single hit is sent — including
+ * this project's own browser verification runs, which would otherwise be
+ * recorded as visitors on the marketing site.
+ */
+function isAutomatedBrowser(): boolean {
+  try {
+    return navigator.webdriver === true;
+  } catch {
+    return false;
+  }
+}
+
 export function useTrackingDecision(): TrackingDecision {
   const [decision, setDecision] = useState<TrackingDecision>(() =>
-    readFlag('local', EXCLUSION_FLAG) === '1' ? 'excluded' : 'pending',
+    isAutomatedBrowser() || readFlag('local', EXCLUSION_FLAG) === '1' ? 'excluded' : 'pending',
   );
 
   useEffect(() => {
+    // Automation never graduates to 'allowed', whatever the server answers.
+    if (isAutomatedBrowser()) {
+      setDecision('excluded');
+      applyVendorOptOuts(true);
+      return;
+    }
+
     const cached = readFlag('session', SESSION_FLAG);
     if (cached === 'excluded' || cached === 'allowed') {
       setDecision(cached);

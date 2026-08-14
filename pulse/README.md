@@ -108,6 +108,46 @@ to ignore alerts, which is worse than having none.
 **Known gap:** Prism (`picturegen`, 4007) and Data Intel (`dataintel`, 4008)
 have no monitor. Both expose `/health`. Add them.
 
+## Non-human traffic
+
+Three layers, in the order a request meets them.
+
+| Layer | What it stops | Where |
+|---|---|---|
+| `navigator.webdriver` | WebDriver-controlled browsers (Playwright, Selenium, Puppeteer, headless automation) — including our own browser verification runs | SPA tracker gate, before any hit is sent |
+| User-agent classification | Search, SEO, AI, uptime and security crawlers, plus scripted clients (curl, python-requests, Postman) | Core: `GET /api/v1/analytics/tracking-decision` and `POST /api/v1/events` |
+| Vendor filtering | Known bots, dropped before storage | Plausible CE and GA4, built in |
+
+Plausible's own filtering is confirmed by production data: twelve months of
+`visit:browser` contains Chrome, Safari, Mobile App, Firefox, Opera and Edge,
+and no bot category at all. Our first-party ingest had no equivalent until
+`botDetection.ts`, which made the one dataset we fully control the least
+defended of the three.
+
+The classifier's bias is deliberate: **a missed crawler inflates a number, a
+misclassified human deletes a real session.** The test suite asserts that six
+real browser agents are never matched, and that assertion is not to be relaxed
+in order to catch one more bot.
+
+### Datacenter and ASN filtering — assessed, deliberately NOT automatic
+
+The data is available: AWS publishes 10,646 IPv4 and 6,108 IPv6 prefixes, GCP
+and Cloudflare publish theirs, and `net.BlockList` already matches CIDRs for
+the internal-traffic registry, so wiring it up would be straightforward.
+
+It is not wired up because the false positives land on real users. Traffic from
+cloud ranges is not only bots: corporate egress, VPNs and — decisively —
+**iCloud Private Relay**, which routes genuine Safari sessions through partner
+networks. Safari is this platform's second browser by volume. A blanket
+datacenter block would silently delete a meaningful share of real iPhone
+traffic, and nothing downstream could tell those sessions had ever existed.
+That is a worse failure than the one it fixes.
+
+What to do instead when a specific range is genuinely non-human: add it to the
+internal-traffic registry (Analytics → Internal traffic), which already accepts
+any CIDR, and label it. That keeps the decision explicit, reversible and
+attributable to a person rather than to a heuristic.
+
 ## Campaign attribution contract
 
 Use all three supported tags on every external post, email, partner link, and

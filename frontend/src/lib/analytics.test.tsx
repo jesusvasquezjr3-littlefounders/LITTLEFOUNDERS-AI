@@ -97,3 +97,47 @@ describe('useTrackingDecision', () => {
     expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 });
+
+/*
+ * Automated browsers announce themselves via navigator.webdriver. Excluding
+ * them costs a real user nothing and removes a whole class of non-human
+ * traffic before a single hit is sent — including this project's own browser
+ * verification runs, which loaded the marketing site repeatedly today and
+ * would otherwise have been counted as visitors.
+ */
+describe('useTrackingDecision — automated browsers', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+  afterEach(() => {
+    Object.defineProperty(navigator, 'webdriver', { value: false, configurable: true });
+    vi.unstubAllGlobals();
+  });
+
+  it('never tracks a WebDriver-controlled session, whatever the server says', async () => {
+    Object.defineProperty(navigator, 'webdriver', { value: true, configurable: true });
+    const fetchSpy = vi.fn(() =>
+      Promise.resolve({ ok: true, json: () => Promise.resolve({ data: { excluded: false, degraded: false }, error: null }) }),
+    );
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const { result } = renderHook(() => useTrackingDecision());
+    await waitFor(() => expect(result.current).toBe('excluded'));
+    // It does not even ask: the decision is local and final.
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(window.localStorage.getItem('plausible_ignore')).toBe('true');
+  });
+
+  it('leaves an ordinary browser to the normal decision path', async () => {
+    Object.defineProperty(navigator, 'webdriver', { value: false, configurable: true });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve({ ok: true, json: () => Promise.resolve({ data: { excluded: false, degraded: false }, error: null }) }),
+      ),
+    );
+    const { result } = renderHook(() => useTrackingDecision());
+    await waitFor(() => expect(result.current).toBe('allowed'));
+  });
+});

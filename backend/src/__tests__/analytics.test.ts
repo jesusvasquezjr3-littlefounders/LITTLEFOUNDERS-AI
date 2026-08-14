@@ -7,6 +7,16 @@ import { resetExclusionsForTests } from '../services/analyticsExclusions.js';
 import { jsonResponse, mintToken } from './helpers.js';
 
 /*
+ * Requests in these tests carry a real browser agent because production ones
+ * always do. Core drops analytics traffic with a missing or crawler user agent
+ * (services/botDetection.ts), so a UA-less supertest request is not a neutral
+ * default — it is a bot as far as the gate is concerned.
+ */
+const BROWSER_UA =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36';
+
+
+/*
  * /api/v1/admin/analytics — breakdown / report / report.pdf / exclusions
  * (admin.test.ts pattern: Plausible + the PostgREST role check stubbed at the
  * fetch layer, Pulse env via vi.stubEnv, caches dropped between tests).
@@ -309,6 +319,7 @@ describe('analytics exclusions are enforced, not decorative', () => {
     );
     const res = await request(createApp())
       .get('/api/v1/analytics/tracking-decision')
+      .set('User-Agent', BROWSER_UA)
       .set('X-Forwarded-For', '203.0.113.7');
     expect(res.status).toBe(200);
     expect(res.body.data.excluded).toBe(true);

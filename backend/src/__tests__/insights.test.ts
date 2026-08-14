@@ -6,6 +6,16 @@ import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
 import { makeDb } from './learnFixtures.js';
 
 /*
+ * Requests in these tests carry a real browser agent because production ones
+ * always do. Core drops analytics traffic with a missing or crawler user agent
+ * (services/botDetection.ts), so a UA-less supertest request is not a neutral
+ * default — it is a bot as far as the gate is concerned.
+ */
+const BROWSER_UA =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36';
+
+
+/*
  * First-party telemetry (/INSIGHTS.md): the §1.9 consent gate is the point
  * of this suite. A kid's events are recorded ONLY while a verified guardian
  * has granted consent — fail-closed on everything else — and identity/role
@@ -36,11 +46,13 @@ afterEach(() => vi.unstubAllGlobals());
 
 const as = (userId: string) => (req: request.Test) => req.set('Authorization', `Bearer ${mintToken({ sub: userId })}`);
 const postEvents = (app: ReturnType<typeof createApp>, userId: string, events: unknown[]) =>
-  as(userId)(request(app).post('/api/v1/events')).send({ events });
+  as(userId)(request(app).post('/api/v1/events')
+      .set('User-Agent', BROWSER_UA)).send({ events });
 
 describe('POST /api/v1/events', () => {
   it('401s without a session', async () => {
-    const res = await request(createApp()).post('/api/v1/events').send({ events: [{ event: 'session_start' }] });
+    const res = await request(createApp()).post('/api/v1/events')
+      .set('User-Agent', BROWSER_UA).send({ events: [{ event: 'session_start' }] });
     expect(res.status).toBe(401);
   });
 
@@ -152,7 +164,8 @@ describe('POST /api/v1/events', () => {
 describe('anonymous acquisition path', () => {
   const ANON_ID = '77777777-7777-4777-8777-777777777777';
   const postAnon = (events: unknown[]) =>
-    request(createApp()).post('/api/v1/events').send({ events, anonId: ANON_ID });
+    request(createApp()).post('/api/v1/events')
+      .set('User-Agent', BROWSER_UA).send({ events, anonId: ANON_ID });
 
   it('records the WHOLE signup funnel, including signup_complete', async () => {
     const res = await postAnon([
@@ -181,7 +194,8 @@ describe('anonymous acquisition path', () => {
   });
 
   it('registers the visitor with campaign attribution', async () => {
-    await request(createApp()).post('/api/v1/events').send({
+    await request(createApp()).post('/api/v1/events')
+      .set('User-Agent', BROWSER_UA).send({
       events: [{ event: 'page_view', routeClass: 'marketing' }],
       anonId: ANON_ID,
       visitor: { referrerClass: 'campaign', utmSource: 'meta_ads', utmCampaign: 'spring_launch', device: 'mobile' },
@@ -387,7 +401,8 @@ describe('insights: review regressions', () => {
     db.anon_visitors = [{ anon_id: anonId, utm_campaign: 'spring', converted_user_id: null, converted_at: null }];
 
     // Exactly what the OAuth landing sends: it never touches /auth/signup.
-    const res = await as(ADULT_ID)(request(app).post('/api/v1/events'))
+    const res = await as(ADULT_ID)(request(app).post('/api/v1/events')
+      .set('User-Agent', BROWSER_UA))
       .send({ events: [{ event: 'signup_complete', routeClass: 'marketing' }], anonId });
     expect(res.status).toBe(202);
 
@@ -406,7 +421,8 @@ describe('insights: review regressions', () => {
 
     // A second person logging in on the same family device must not steal the
     // attribution from the signup that actually came from the campaign.
-    await as(ADULT_ID)(request(app).post('/api/v1/events'))
+    await as(ADULT_ID)(request(app).post('/api/v1/events')
+      .set('User-Agent', BROWSER_UA))
       .send({ events: [{ event: 'login_complete', routeClass: 'marketing' }], anonId });
 
     const visitor = db.anon_visitors[0] as Record<string, unknown>;

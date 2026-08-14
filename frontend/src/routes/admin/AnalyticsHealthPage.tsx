@@ -20,6 +20,7 @@ import { FilterBar } from './analytics/FilterBar';
 import { BreakdownCard } from './analytics/BreakdownCard';
 import { ReportExportCard } from './analytics/ReportExportCard';
 import { ExclusionsCard } from './analytics/ExclusionsCard';
+import { ExclusionCoverageNote } from './analytics/ExclusionCoverageNote';
 import { PeriodPicker } from './analytics/PeriodPicker';
 import { AnalyticsGeoMap } from './analytics/AnalyticsGeoMap';
 import { AnalyticsTrendChart } from './analytics/AnalyticsTrendChart';
@@ -263,6 +264,8 @@ export function AnalyticsHealthPage() {
                 {t('admin.analytics.web.comparedWith', { window: deltas.window })}
               </p>
             )}
+            {/* How far the internal-traffic exclusion actually reaches. */}
+            <ExclusionCoverageNote windowStart={overview.state === 'ready' ? overview.data.from : null} />
             {webSignals && (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label={t('admin.analytics.web.signalsAria')}>
                 <SignalCard icon="today" label={t('admin.analytics.web.dailyAverage')} value={nf.format(Math.round(webSignals.dailyVisitors))} />
