@@ -118,7 +118,7 @@ completeness — any `lesson-images` url not covered by the map fails the run
 Dry-run by default; first real run 2026-07-25 rewrote 334 urls across 120
 documents (the PNG→WebP migration: 1.5 GB → 51 MB on Depot).
 
-### Image backfill (`npm run images:backfill -- --course <slug> [--reuse-only] [--dry-run]`)
+### Image backfill (`npm run images:backfill -- --course <slug> [--restyle-scenes] [--reuse-only] [--dry-run]`)
 
 **Operator-triggered only.** Fills in missing illustrations on lessons that are **already published or in review**, without regenerating any content. For every `lesson_document` of a published-or-review lesson in the course, it runs the same shared per-type images stage as generation (`illustrateSegments`) over the STORED `document`, then PATCHes **only** the `document` column back.
 
@@ -128,3 +128,28 @@ documents (the PNG→WebP migration: 1.5 GB → 51 MB on Depot).
 - `--dry-run` runs the full illustration pass but performs no Vault writes.
 - `--reuse-only` builds a deterministic, course-local index of approved object art and fills exact normalized-label matches without contacting Prism. It needs only Vault credentials, never bills image generation, and deliberately cannot fill scene anchors: a scene must match its own learning context. It is the first remediation step before a paid visual repair.
 - Prints a per-document line plus a final total (documents scanned / patched / generated / reused / placed / skipped). Exit 0 on any clean run (even all-skipped / quota-exhausted); exit 1 only on an unexpected error. Normal generation needs Vault (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) and Prism credentials.
+
+#### `--restyle-scenes` — repairing art that is present but wrong
+
+Everything above only ever ADDS an image, which is what makes re-runs
+idempotent and free. It therefore cannot fix a catalog whose scenes are all
+*present* and all *wrong* (the 2026-08-14 incident). `--restyle-scenes` is the
+repair pass:
+
+- Selects lessons whose `illustration_style_version` is not the current
+  `FORGE_ILLUSTRATION_STYLE_VERSION`; lessons already on it are untouched.
+- **Clears scene-purpose images only** — segment-level anchors and
+  `story_scene.art.image_url`. Object tiles are never cleared: the tile style
+  version did not move, so re-billing them would be pure waste.
+- Re-illustrates the **authoring locale once** and copies the resulting scene
+  URLs to the sibling locales by segment id. LF illustrations carry no text, so
+  one drawing serves all three — running this per locale would pay three times
+  for the same picture. It therefore **refuses `--locale`**.
+- Re-stamps `illustration_style_version` on each repaired document, but only
+  when the repair actually completed. If the redraw produced nothing (quota,
+  `--reuse-only`), the CLEARED document is still written and the stamp is
+  withheld: an empty anchor renders as no image, which is honest, while the
+  stale one is an actively misleading picture — and the missing stamp keeps the
+  lesson visible to `verify:course` as incomplete.
+- Always dry-run first: `--dry-run` reports how many scenes are stale and how
+  many redraws a real pass would bill, with no writes and no spend.

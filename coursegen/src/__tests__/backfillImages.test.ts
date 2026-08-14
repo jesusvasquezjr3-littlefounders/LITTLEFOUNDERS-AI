@@ -48,7 +48,7 @@ describe('backfillImages orchestration', () => {
       { courseSlug: 'financial-education' },
     );
 
-    expect(summary).toEqual({ scanned: 3, patched: 2, imagesGenerated: 3, imagesInherited: 0, imagesPlaced: 3, skipped: 1, notConfigured: false });
+    expect(summary).toEqual({ scanned: 3, patched: 2, imagesGenerated: 3, imagesInherited: 0, imagesPlaced: 3, skipped: 1, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0 });
     // Only a and c were written — b (0 images) was not.
     expect(writeDocument).toHaveBeenCalledTimes(2);
     expect(writeDocument.mock.calls.map((call) => call[0].lessonId)).toEqual(['a', 'c']);
@@ -92,7 +92,7 @@ describe('backfillImages orchestration', () => {
     expect(illustrate).toHaveBeenCalledTimes(2);
     expect(writeDocument).not.toHaveBeenCalled(); // dry-run: zero writes
     // patched still counts what WOULD be written, so the operator sees the impact.
-    expect(summary).toEqual({ scanned: 2, patched: 2, imagesGenerated: 4, imagesInherited: 0, imagesPlaced: 4, skipped: 0, notConfigured: false });
+    expect(summary).toEqual({ scanned: 2, patched: 2, imagesGenerated: 4, imagesInherited: 0, imagesPlaced: 4, skipped: 0, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0 });
   });
 
   it('exits cleanly on a fully quota-exhausted run — every document skipped, nothing patched', async () => {
@@ -113,7 +113,7 @@ describe('backfillImages orchestration', () => {
     );
 
     expect(writeDocument).not.toHaveBeenCalled();
-    expect(summary).toEqual({ scanned: 2, patched: 0, imagesGenerated: 0, imagesInherited: 0, imagesPlaced: 0, skipped: 2, notConfigured: false });
+    expect(summary).toEqual({ scanned: 2, patched: 0, imagesGenerated: 0, imagesInherited: 0, imagesPlaced: 0, skipped: 2, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0 });
   });
 
   it('short-circuits the whole pass (and never writes) when Prism is NOT_CONFIGURED', async () => {
@@ -136,7 +136,7 @@ describe('backfillImages orchestration', () => {
     // Stopped after the first doc's not-configured result: no writes, nothing scanned.
     expect(illustrate).toHaveBeenCalledTimes(1);
     expect(writeDocument).not.toHaveBeenCalled();
-    expect(summary).toEqual({ scanned: 0, patched: 0, imagesGenerated: 0, imagesInherited: 0, imagesPlaced: 0, skipped: 0, notConfigured: true });
+    expect(summary).toEqual({ scanned: 0, patched: 0, imagesGenerated: 0, imagesInherited: 0, imagesPlaced: 0, skipped: 0, notConfigured: true, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0 });
     expect(log).toHaveBeenCalledWith(expect.stringContaining('Prism (PICTUREGEN_URL) not configured'));
   });
 
@@ -151,7 +151,7 @@ describe('backfillImages orchestration', () => {
 
     expect(illustrate).not.toHaveBeenCalled();
     expect(writeDocument).not.toHaveBeenCalled();
-    expect(summary).toEqual({ scanned: 0, patched: 0, imagesGenerated: 0, imagesInherited: 0, imagesPlaced: 0, skipped: 0, notConfigured: false });
+    expect(summary).toEqual({ scanned: 0, patched: 0, imagesGenerated: 0, imagesInherited: 0, imagesPlaced: 0, skipped: 0, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0 });
   });
 
   it('builds a deterministic course-local index and patches inherited art without any Prism request', async () => {
@@ -175,7 +175,7 @@ describe('backfillImages orchestration', () => {
     );
 
     expect(request).not.toHaveBeenCalled();
-    expect(summary).toEqual({ scanned: 2, patched: 1, imagesGenerated: 0, imagesInherited: 1, imagesPlaced: 1, skipped: 1, notConfigured: false });
+    expect(summary).toEqual({ scanned: 2, patched: 1, imagesGenerated: 0, imagesInherited: 1, imagesPlaced: 1, skipped: 1, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0 });
     expect(writeDocument).toHaveBeenCalledTimes(1);
     expect(writeDocument.mock.calls[0]![0].lessonId).toBe('target');
   });
@@ -321,5 +321,140 @@ describe('backfillImages style-version handshake', () => {
     expect(probeStyleVersion).not.toHaveBeenCalled();
     expect(writeDocument).not.toHaveBeenCalled();
     expect(summary).toMatchObject({ scanned: 1, patched: 1 });
+  });
+});
+
+/*
+ * --restyle-scenes — the repair path for the 2026-08-14 incident. The published
+ * catalog does not LACK scene art; it holds the wrong scene art, so the normal
+ * add-only backfill is structurally unable to fix it.
+ */
+describe('backfillImages --restyle-scenes', () => {
+  const STALE = 'v7-old+v8-qwen-image-max-object-white-flat-vector';
+
+  /** A document with one scene anchor and one object tile, both already filled. */
+  function sceneDoc(sceneUrl: string | undefined, tileUrl = 'http://depot.test/tile.webp'): LessonDocumentParsed {
+    return {
+      meta: { title: 'Contar la caja' },
+      segments: [
+        { id: 's1', type: 'best_decision', prompt_md: 'Liruf cuenta la caja.', payload: {}, ...(sceneUrl ? { image_url: sceneUrl } : {}) },
+        { id: 's2', type: 'picture_choice', prompt_md: 'Elige.', payload: { options: [{ id: 'o1', label: 'Alcancía', image_url: tileUrl }] } },
+      ],
+    } as unknown as LessonDocumentParsed;
+  }
+
+  function staleRow(lessonId: string, locale: string, sceneUrl: string): BackfillDocRow {
+    return { lessonId, lessonSlug: `slug-${lessonId}`, locale, illustrationStyleVersion: STALE, document: sceneDoc(sceneUrl) };
+  }
+
+  /** Illustrate fake that fills every empty scene anchor with a fresh URL. */
+  function redrawing(url: string) {
+    return vi.fn<BackfillDeps['illustrate']>().mockImplementation(async (document) => {
+      const clone = structuredClone(document) as unknown as { segments: Array<{ type: string; image_url?: string }> };
+      let generated = 0;
+      for (const segment of clone.segments) {
+        if (segment.type === 'best_decision' && !segment.image_url) {
+          segment.image_url = url;
+          generated++;
+        }
+      }
+      return { document: clone as unknown as LessonDocumentParsed, generated };
+    });
+  }
+
+  it('pays ONCE per lesson and copies the redrawn scene to the sibling locales', async () => {
+    const rows = [
+      staleRow('a', 'es-MX', 'http://depot.test/lemonade.webp'),
+      staleRow('a', 'en-US', 'http://depot.test/lemonade.webp'),
+      staleRow('a', 'pt-BR', 'http://depot.test/lemonade.webp'),
+    ];
+    const illustrate = redrawing('http://depot.test/fresh.webp');
+    const writeDocument = vi.fn<BackfillDeps['writeDocument']>().mockResolvedValue(undefined);
+
+    const summary = await backfillImages(
+      { listDocuments: async () => rows, illustrate, writeDocument },
+      { courseSlug: 'financial-education', restyleScenes: true },
+    );
+
+    // One paid pass for three documents — illustrations carry no text.
+    expect(illustrate).toHaveBeenCalledTimes(1);
+    expect(illustrate.mock.calls[0]![1]).toMatchObject({ scope: 'financial-education/slug-a' });
+    expect(summary.scenesCleared).toBe(3);
+    expect(summary.scenesCopiedToLocales).toBe(2);
+    expect(writeDocument).toHaveBeenCalledTimes(3);
+
+    for (const [, body] of writeDocument.mock.calls as Array<[BackfillDocRow, BackfillWriteBody]>) {
+      const segments = (body.document as unknown as { segments: Array<{ image_url?: string; payload: Record<string, unknown> }> }).segments;
+      expect(segments[0]!.image_url).toBe('http://depot.test/fresh.webp');
+      // The tile is untouched — its style version never moved.
+      expect((segments[1]!.payload.options as Array<{ image_url?: string }>)[0]!.image_url).toBe('http://depot.test/tile.webp');
+      expect(body.illustration_style_version).toBe(FORGE_ILLUSTRATION_STYLE_VERSION);
+    }
+  });
+
+  it('leaves lessons that are already on the current style completely alone', async () => {
+    const rows = [row('a', 'es-MX', sceneDoc('http://depot.test/good.webp'))];
+    const illustrate = redrawing('http://depot.test/fresh.webp');
+    const writeDocument = vi.fn<BackfillDeps['writeDocument']>().mockResolvedValue(undefined);
+
+    const summary = await backfillImages(
+      { listDocuments: async () => rows, illustrate, writeDocument },
+      { courseSlug: 'financial-education', restyleScenes: true },
+    );
+
+    expect(illustrate).not.toHaveBeenCalled();
+    expect(writeDocument).not.toHaveBeenCalled();
+    expect(summary.lessonsAlreadyCurrent).toBe(1);
+  });
+
+  /*
+   * An emptied anchor renders as no image, which is honest; the stale one is an
+   * actively misleading picture. So the clear is persisted even when the redraw
+   * could not happen — but the style stamp is NOT advanced, leaving the lesson
+   * visible to the release check as missing coverage.
+   */
+  it('persists the clear but withholds the style stamp when the redraw produced nothing', async () => {
+    const rows = [staleRow('a', 'es-MX', 'http://depot.test/lemonade.webp')];
+    const illustrate = vi
+      .fn<BackfillDeps['illustrate']>()
+      .mockImplementation(async (document) => ({ document, generated: 0 }));
+    const writeDocument = vi.fn<BackfillDeps['writeDocument']>().mockResolvedValue(undefined);
+
+    await backfillImages(
+      { listDocuments: async () => rows, illustrate, writeDocument },
+      { courseSlug: 'financial-education', restyleScenes: true, reuseOnly: true },
+    );
+
+    const [, body] = writeDocument.mock.calls[0]! as [BackfillDocRow, BackfillWriteBody];
+    expect((body.document as unknown as { segments: Array<{ image_url?: string }> }).segments[0]!.image_url).toBeUndefined();
+    expect(body.illustration_style_version).toBeUndefined();
+  });
+
+  it('dry-run reports the repair without writing anything', async () => {
+    const rows = [staleRow('a', 'es-MX', 'http://depot.test/lemonade.webp')];
+    const writeDocument = vi.fn<BackfillDeps['writeDocument']>().mockResolvedValue(undefined);
+
+    const summary = await backfillImages(
+      { listDocuments: async () => rows, illustrate: redrawing('http://depot.test/fresh.webp'), writeDocument },
+      { courseSlug: 'financial-education', restyleScenes: true, dryRun: true },
+    );
+
+    expect(writeDocument).not.toHaveBeenCalled();
+    expect(summary.patched).toBe(1);
+    expect(summary.imagesGenerated).toBe(1);
+  });
+
+  /*
+   * Clearing one locale's scenes and repointing only that locale would leave a
+   * lesson rendering two different pictures for one segment depending on the
+   * language the child reads it in.
+   */
+  it('refuses to run against a single locale', async () => {
+    await expect(
+      backfillImages(
+        { listDocuments: async () => [], illustrate: vi.fn(), writeDocument: vi.fn() },
+        { courseSlug: 'financial-education', restyleScenes: true, locale: 'es-MX' },
+      ),
+    ).rejects.toThrow(/all locales/i);
   });
 });

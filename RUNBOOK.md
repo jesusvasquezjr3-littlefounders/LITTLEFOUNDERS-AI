@@ -427,3 +427,61 @@ behind a VPN cannot do. Use this rather than excluding a VPN exit.
 the wrong tool for a rotating one. Treat every suggestion as a claim to verify,
 not a queue to clear: the cost of a wrong exclusion is invisible, permanent,
 and lands on real users rather than on staff.
+
+## Every exercise intro shows the same picture (failure mode closed 2026-08-14)
+
+**Symptom.** Across a published course, exercise intros nearly all show one
+image — for financial-education, a lemonade stand — regardless of what the
+lesson is about. Exercises whose comprehension depends on the picture become
+misleading rather than merely unhelpful. Coverage reports 100%, CI is green,
+nothing errored.
+
+**Cause (four layers, all required).**
+1. `LF_VISUAL_IDENTITY` in `picturegen/src/judge/promptJudge.ts` ended with a
+   SUBJECT — *"Cheerful lemonade-stand world…"*. That brief is injected into
+   every prompt of every purpose, so it is the default subject whenever the
+   label supplies none.
+2. `coursegen` asked for scene anchors using the segment's `prompt_md`, which
+   for the story/discussion types is a bare INSTRUCTION ("Escucha la
+   conversación…"), leaving the art director with no subject at all.
+3. The scene cache descriptor contained nothing identifying the lesson, so
+   segments in unrelated lessons sharing a prompt were served ONE asset.
+4. Neither the pixel verifier (`has_text`/`has_person` only) nor the release
+   check (presence only) asks whether an image shows the right thing.
+
+**Diagnosis query** (read-only; confirms concentration before spending
+anything):
+
+```sql
+WITH seg AS (
+  SELECT ld.lesson_id, s->>'image_url' AS img
+  FROM public.lesson_documents ld,
+       LATERAL jsonb_array_elements(ld.document->'segments') s
+  WHERE ld.locale = 'es-MX' AND s->>'image_url' IS NOT NULL
+)
+SELECT img, count(*) AS uses, count(DISTINCT lesson_id) AS lessons
+FROM seg GROUP BY img ORDER BY uses DESC LIMIT 15;
+```
+
+A healthy catalog has one lesson per scene URL. Object tiles are SUPPOSED to
+repeat — that sharing is what keeps illustration affordable — so read the two
+classes separately.
+
+**Recovery.**
+1. Deploy the fixed `picturegen` and `coursegen` together. Forge preflights
+   Prism's `/health` `style_version` and refuses a paid pass on drift, so a
+   half-deploy fails closed rather than smuggling mixed art into Vault.
+2. Measure, do not guess: `npm run images:backfill -- --course <slug>
+   --restyle-scenes --dry-run`. It reports stale scenes and the redraws a real
+   pass would bill, with no writes and no spend.
+3. Run for real without `--dry-run`. It clears stale scene art, redraws the
+   authoring locale once per lesson, copies to the sibling locales free, and
+   re-stamps `illustration_style_version` only where the repair completed.
+4. `npm run verify:course -- <slug>` — the scene-distinctness check must pass.
+
+**Prevention.** The rule that would have prevented all of it is one line: a
+style brief describes STYLE and must never name a SUBJECT (picturegen/AGENTS.md
+has the long form). The rule that would have CAUGHT it is the distinctness
+check now in `verify:course`. Note which of the two is cheap to enforce
+mechanically — presence checks feel like coverage and are not: every one of
+those wrong images was present.

@@ -466,6 +466,7 @@ async function processSlot(
         required: options.requireImages,
         ledger,
         inherit,
+        scope: `${course.catalog.course.slug}/${slot.lesson.slug}`,
       });
       documents = { ...documents, [AUTHORING_LOCALE]: illustratedSource.document };
       // Image outcomes must LEAVE this function. They used to be destructured away,
@@ -514,6 +515,7 @@ async function processSlot(
           required: options.requireImages,
           ledger,
           inherit: localeInherit,
+          scope: `${course.catalog.course.slug}/${slot.lesson.slug}`,
         });
         documents = { ...documents, [locale]: illustrated.document };
         imagesGenerated += illustrated.generated ?? 0;

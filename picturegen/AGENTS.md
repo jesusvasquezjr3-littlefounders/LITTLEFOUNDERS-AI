@@ -22,8 +22,8 @@ only, constant-time compared.
 ## Cache-first — the core value (non-negotiable)
 
 An identical request must **NEVER** hit the paid image API twice. Every
-generation is keyed by `sha256(model size "STYLE_VERSION | purpose | label |
-context")` — for the four object-tile purposes the descriptor collapses to
+generation is keyed by `sha256(model size "STYLE_VERSION | purpose | scope |
+label | context")` — for the four object-tile purposes the descriptor collapses to
 `"OBJECT_TILE_STYLE_VERSION | object_tile | label"` (their deterministic
 prompt depends only on the label, so purpose/context must not fragment the
 key) — in `picture_assets` (UNIQUE `prompt_hash`) — the key hashes the
@@ -50,6 +50,13 @@ purposes are the deliberate exception: they collapse to one `object_tile`
 key component (same label = same paid request = one asset), so adding a
 purpose to `DETERMINISTIC_OBJECT_TILE_PURPOSES`/`OBJECT_TILE_PURPOSES` merges
 its keys into the shared tile keyspace instead of minting new ones.
+
+**`scope` separates scenes; it must never reach tiles.** A SCENE depicts one
+lesson's situation, so the caller's `scope` (`<course>/<lesson>`) is part of
+its key. A TILE is the same drawing everywhere, so `scope` is dropped from its
+key — letting it in would fragment "Limones" per lesson and re-bill the object
+catalog once per lesson of the course, destroying the collapse this section
+exists to protect. Both halves are pinned by tests in `pictureRoutes.test.ts`.
 
 **Strengthening a defect-exclusion clause is also cache-safe.** Changing the
 no-text/no-people language in `PICTORIAL_CLAUSE` or `BASE_NEGATIVE` does not
@@ -134,18 +141,60 @@ high-contrast educational vector language with deliberate geometric forms,
 ABSOLUTELY NO PEOPLE, no logos, and no text. Object tiles use their strict
 white/transparent-background exception; scenes use a complete setting.
 
-## The pictorial verifier — the mechanical no-text guarantee
+### The style brief describes STYLE. It must never name a SUBJECT.
+
+**Non-negotiable, and the most expensive rule in this file to relearn.**
+`LF_VISUAL_IDENTITY` reaches every prompt of every purpose. Until 2026-08-14 it
+ended with *"Cheerful lemonade-stand world: hand-made stands, jars of coins,
+lemons, sunny neighborhoods."* — one sentence of CONTENT inside a style guide.
+Whenever a label carried no concrete subject of its own, that sentence became
+the subject, and the published financial-education catalog opened nearly every
+exercise with the same lemonade stand, in lessons about markets, budgets and
+fraud alike. The children who could not tell the exercises apart were the ones
+who paid for it.
+
+So, when editing the brief or `PURPOSE_GUIDANCE`:
+
+- Describe line, colour, composition, materials, mood. Never a place, a prop
+  set, or a scenario.
+- Do not add "for example" subjects to illustrate a composition rule. An
+  example subject in a brief that reaches every prompt is a default subject.
+- The brief now states the rule positively (`SUBJECT DISCIPLINE: … carries no
+  default scene of its own`). Keep that clause: silence is not a prohibition,
+  and a generative model asked for a scene with no subject WILL invent one.
+- The subject arrives in `label`, and callers are responsible for it being a
+  real subject — see coursegen's `sceneAnchorSubject`, which derives the
+  situation from the lesson's narrative instead of from its instruction text.
+
+## The pictorial verifier — form AND subject
 
 Prompt engineering alone cannot make `qwen-image` text-free (its signature
 strength IS text rendering): the first live v3 batch grew a fake wordmark on
 a "lemonade stand" and engraved quoted denominations onto coins despite a
 prompt demanding "absolutely no text". So `src/verify/pictorialCheck.ts` has a
 vision model (`VERIFY_MODEL`, default `qwen-vl-plus`, same DashScope account)
-look at the ACTUAL PIXELS of every fresh generation and answer: any readable
-letters/words/numerals, or any person/character? (A bare `$` on a coin is
-acceptable iconography.) On `has_text` OR `has_person` the whole judge →
+look at the ACTUAL PIXELS of every fresh generation and answer three
+questions: any readable letters/words/numerals? any person/character? (A bare
+`$` on a coin is acceptable iconography.) and — added 2026-08-14 —
+**`depicts_subject`: does the picture actually show what was commissioned?**
+
+That third question is the defect of CONTENT, and its absence is why the
+lemonade-stand incident shipped: text and people are defects of FORM, and both
+of the original checks pass happily on a beautiful, on-style illustration of
+entirely the wrong situation. The service now sends `label` as the `subject`
+and treats an explicit `false` as a defect. Two asymmetries are deliberate and
+must survive future edits:
+
+- The inspector is told to be **generous** — different framing, colours, extra
+  props or a partial view all count as a match, and only a plainly different
+  situation is a `false`. A false negative costs a paid redraw of a fine image.
+- A **missing** answer (`null`) never blocks a `clean` verdict. Treating
+  silence as failure would turn any quieter verifier into an endless paid
+  redraw loop.
+
+On `has_text` OR `has_person` OR `depicts_subject === false` the whole judge →
 generate pass re-runs (the judge is nondeterministic, so each retry is a new
-composition), up to
+composition) with the exact defect fed back into the next prompt, up to
 `PICTUREGEN_VERIFY_ATTEMPTS` (default 3, 0 disables); exhaustion throws
 `IMAGE_VERIFICATION_FAILED` and caches **nothing** (the consumer's icon
 fallback covers the slot; a later retry regenerates fresh). A verifier
@@ -154,9 +203,9 @@ on the inspector. For the four object-tile purposes a deterministic edge-pixel
 checker also requires a white or transparent canvas: a gray/colored canvas,
 white-card inset, border, frame, floor, or broad shadow is a defect. It avoids
 asking a vision model to segment the colored object from its background. The
-failure envelope states whether text, a person, a non-white background, or a
-combination exhausted the retries without exposing the vision model's
-free-form prose. Judge hard rules complement it: never name denominations
+failure envelope states whether text, a person, a non-white background, a wrong
+subject, or a combination exhausted the retries without exposing the vision
+model's free-form prose. Judge hard rules complement it: never name denominations
 (even quoted — they get engraved verbatim), never mention text-carrying props
 (signs, banners, price tags, chalkboards, menus).
 

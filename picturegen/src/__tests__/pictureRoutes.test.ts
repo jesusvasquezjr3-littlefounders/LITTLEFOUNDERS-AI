@@ -15,8 +15,11 @@ const CRAFTED_PROMPT = 'A cheerful jar of coins on a sunny lemonade stand';
 // Cache key hashes the REQUEST descriptor, never the judged prompt — the judge
 // is nondeterministic, so a prompt-keyed cache never hits. Object-tile purposes
 // collapse to a label-only descriptor (deterministic prompt ignores purpose and
-// context); every other purpose keeps (purpose | label | context).
-const HIT_HASH = pictureAssetHash('qwen-image-max', '1328*1328', 'v7-qwen-image-max-flat-vector | generic | a jar of coins | ');
+// context); every other purpose keeps (purpose | scope | label | context).
+// The descriptors are spelled out rather than derived from
+// requestCacheDescriptor on purpose: this is the cache-key FORMAT contract, and
+// a drift in it silently orphans (scene) or wrongly shares (tile) stored art.
+const HIT_HASH = pictureAssetHash('qwen-image-max', '1328*1328', 'v8-qwen-image-max-flat-vector-subject-true | generic |  | a jar of coins | ');
 const MISS_HASH = pictureAssetHash('qwen-image-max', '1328*1328', 'v8-qwen-image-max-object-white-flat-vector | object_tile | a jar of coins');
 
 const storedRow: PictureAssetRow = {
@@ -120,6 +123,33 @@ describe('requestCacheDescriptor — object-tile key collapsing', () => {
     expect(sceneA).not.toBe(sceneB);
     expect(sceneA).toContain('scene');
     expect(sceneA).toContain('lesson A');
+  });
+
+  /*
+   * The 2026-08-14 regression, pinned. Two lessons whose segments carry the
+   * SAME prompt text (instructions repeat verbatim across a course) used to
+   * produce one identical descriptor, so the whole catalog shared one scene
+   * image. `scope` is the only thing in the key that says who is asking.
+   */
+  it('separates two lessons that ask for the same scene text', () => {
+    const shared = { label: 'Escucha la conversación', context: 'Escucha la conversación', purpose: 'scene_anchor' } as const;
+    const lessonA = requestCacheDescriptor({ ...shared, scope: 'financial-education/ahorro-1' });
+    const lessonB = requestCacheDescriptor({ ...shared, scope: 'financial-education/trueque-4' });
+    expect(lessonA).not.toBe(lessonB);
+    expect(requestCacheDescriptor(shared)).not.toBe(lessonA);
+  });
+
+  /*
+   * The other half of the same invariant: scope must NOT reach tiles. A tile
+   * is the same drawing everywhere, and letting scope in would fragment the
+   * key per lesson and re-bill "Limones" once per lesson of the course — the
+   * exact cost blow-up the collapse exists to prevent.
+   */
+  it('ignores scope for object tiles so one tile still serves the whole catalog', () => {
+    const a = requestCacheDescriptor({ label: 'Limones', purpose: 'item_card', scope: 'financial-education/ahorro-1' });
+    const b = requestCacheDescriptor({ label: 'Limones', purpose: 'memory_card', scope: 'investing/riesgo-9' });
+    expect(a).toBe(b);
+    expect(a).toBe('v8-qwen-image-max-object-white-flat-vector | object_tile | Limones');
   });
 
   it('collapse membership matches the judge OBJECT_TILE_PURPOSES set for every purpose', () => {
@@ -231,7 +261,7 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('boom', { status: 500 })));
 
     const fbPrompt = fallbackPrompt({ label: 'a piggy bank', context: 'saving money', purpose: 'generic' }).prompt;
-    const fbHash = pictureAssetHash('qwen-image-max', '1328*1328', 'v7-qwen-image-max-flat-vector | generic | a piggy bank | saving money');
+    const fbHash = pictureAssetHash('qwen-image-max', '1328*1328', 'v8-qwen-image-max-flat-vector-subject-true | generic |  | a piggy bank | saving money');
 
     const findByHash = vi.fn().mockResolvedValue(null);
     const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([7]), contentType: 'image/png' });
@@ -281,7 +311,39 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     // re-rolling the same instruction.
     expect(craftImagePrompt.mock.calls[0]![0]).toEqual(expect.objectContaining({ previousDefect: undefined }));
     expect(craftImagePrompt.mock.calls[1]![0]).toEqual(
-      expect.objectContaining({ previousDefect: { nonWhiteBackground: false, text: true, person: false } }),
+      expect.objectContaining({ previousDefect: { nonWhiteBackground: false, text: true, person: false, subject: false } }),
+    );
+  });
+
+  /*
+   * The 2026-08-14 defect class, end to end: an image with no text and no
+   * people that simply shows the wrong thing. Both original checks pass on it,
+   * so before `depicts_subject` existed this was cached and shipped.
+   */
+  it('rejects and redraws an image that is clean but depicts the wrong subject', async () => {
+    const craftImagePrompt = vi.fn().mockResolvedValue({ prompt: CRAFTED_PROMPT, negative: 'text' });
+    const findByHash = vi.fn().mockResolvedValue(null);
+    const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([9]), contentType: 'image/png' });
+    const verifyPictorial = vi.fn()
+      .mockResolvedValueOnce({ verdict: 'defect', hasText: false, hasPerson: false, depictsSubject: false })
+      .mockResolvedValueOnce({ verdict: 'clean', hasText: false, hasPerson: false, depictsSubject: true });
+    const uploadFile = vi.fn().mockResolvedValue(uploadResult);
+    const insertAsset = vi.fn().mockImplementation(async (r: PictureAssetRow) => ({ ...storedRow, ...r }));
+
+    const app = createApp({ pictures: { generatePicture: { craftImagePrompt, findByHash, generateImage, verifyPictorial, uploadFile, insertAsset } } });
+    const res = await request(app)
+      .post('/api/v1/pictures')
+      .set('x-internal-api-key', KEY)
+      .send({ label: 'El mostrador del banco al abrir', purpose: 'scene_anchor', scope: 'financial-education/banco-1' });
+
+    expect(res.status).toBe(200);
+    expect(generateImage).toHaveBeenCalledTimes(2);
+    // Only the matching image is stored — the wrong-subject one is discarded.
+    expect(insertAsset).toHaveBeenCalledTimes(1);
+    // The verifier is told what to look for, and the retry restates it.
+    expect(verifyPictorial.mock.calls[0]![2]).toEqual(expect.objectContaining({ subject: 'El mostrador del banco al abrir' }));
+    expect(craftImagePrompt.mock.calls[1]![0]).toEqual(
+      expect.objectContaining({ previousDefect: { nonWhiteBackground: false, text: false, person: false, subject: true } }),
     );
   });
 

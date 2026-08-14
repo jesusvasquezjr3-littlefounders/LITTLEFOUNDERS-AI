@@ -13,7 +13,7 @@ import { CharacterActor } from '@/components/characters/control/CharacterActor'
 import { narrationUnitId, useNarration } from '../../player/narration'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
-import { SunkenWell, VisualMark } from '../../core/primitives'
+import { SceneAnchor, SunkenWell, VisualMark } from '../../core/primitives'
 import type {
   CheckpointSegment,
   ConceptRevealSegment,
@@ -182,12 +182,18 @@ export function StoryScene({ segment, onContentDone }: ExerciseProps) {
             size="lg"
           />
         ) : null}
-        {payload.art ? (
-          <VisualMark
-            icon={payload.art.icon}
-            imageUrl={payload.art.image_url}
-            iconClassName={cn('text-[64px]', ART_TINT_CLASSES[payload.art.tint] ?? 'text-primary')}
-            imgClassName="h-32 w-32 rounded-lg object-contain"
+        {/* The AI illustration is commissioned as a WIDE establishing scene
+            (coursegen asks Prism for a ~16:9 `scene_anchor`), so it gets the
+            same full-width treatment as a segment scene anchor. It used to be
+            squeezed into a 128px square, which letterboxed a panorama down to
+            roughly 128×72 and made the setting unreadable. The `icon` fallback
+            is a single glyph and stays at glyph size. */}
+        {payload.art?.image_url ? (
+          <SceneAnchor imageUrl={payload.art.image_url} />
+        ) : payload.art ? (
+          <Icon
+            name={payload.art.icon}
+            className={cn('text-[64px]', ART_TINT_CLASSES[payload.art.tint] ?? 'text-primary')}
           />
         ) : null}
         <MarkdownLite

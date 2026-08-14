@@ -157,6 +157,16 @@ images stage now fills every such slot). A 40px monochrome glyph is not
 recognizable to a young child; the illustration is. Icons/text remain the
 zero-cost fallback — never emojis.
 
+**Scene vs tile (2026-08-14).** The two are different pictures and must be
+rendered differently. A TILE is one object at thumbnail size — `VisualMark`, a
+few dozen px. A SCENE is a wide ~16:9 establishing illustration and belongs in
+the `SceneAnchor` primitive (full width, `max-h-52` / `sm:max-h-64`): the
+segment-level `image_url`, and `story_scene`'s `payload.art.image_url`, which
+is commissioned with the same scene purpose. `story_scene` art used to render
+in a 128px square, letterboxing a panorama to ~128×72 and making the setting
+unreadable. An anchor is also OPTIONAL by design — a segment whose content
+names no concrete situation carries none rather than a generic one.
+
 ### 5.1 `story` family (content, ungraded — 6)
 
 1. **`story_dialogue`** — `{ lines: [{character, emotion?, action?, text_md}] (1–12) }` →

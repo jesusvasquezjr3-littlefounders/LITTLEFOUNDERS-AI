@@ -10,7 +10,7 @@
 import { runAllGates } from './pipeline/gates.js';
 import { loadCourseCatalog } from './catalog/loader.js';
 import { checkProgression } from './catalog/progression.js';
-import { inspectIllustrationCoverage } from './pipeline/images.js';
+import { collectSceneImages, inspectIllustrationCoverage } from './pipeline/images.js';
 import { FORGE_ILLUSTRATION_STYLE_VERSION } from './pipeline/illustrationStyle.js';
 
 const COURSE = process.argv[2] ?? 'first-lemonade-stand';
@@ -219,6 +219,44 @@ interface Check {
     'every planned visual target has an approved illustration',
     visualGaps.length === 0,
     `${presentVisuals}/${requiredVisuals} present${visualGaps.length > 0 ? `; missing in ${visualGaps.slice(0, 5).join(', ')}` : ''}`,
+  );
+
+  /*
+   * ---- scene distinctness (added 2026-08-14) --------------------------------
+   * Coverage counts PRESENCE, and presence is exactly what the "same lemonade
+   * stand everywhere" catalog had: 100% of planned visuals present, every one
+   * of them the same file. This check is the cheap half of the fix — no API
+   * calls, no vision model — and it is the one that would have caught the
+   * incident in CI.
+   *
+   * A scene depicts ONE lesson's situation, so it may not serve a second
+   * lesson. The three locale documents of a single lesson legitimately share
+   * one drawing (illustrations carry no text), hence counting distinct
+   * LESSONS per URL rather than distinct documents.
+   *
+   * Object tiles are deliberately excluded and reported informationally
+   * instead: a tile SHOULD be shared catalog-wide — that sharing is what keeps
+   * illustration affordable — so the same rule applied to tiles would fail
+   * every healthy course.
+   */
+  const sceneLessonsByUrl = new Map<string, Set<string>>();
+  for (const d of docs) {
+    for (const url of collectSceneImages(d.document as never).values()) {
+      const lessons = sceneLessonsByUrl.get(url) ?? new Set<string>();
+      lessons.add(d.lesson_id);
+      sceneLessonsByUrl.set(url, lessons);
+    }
+  }
+  const sharedScenes = [...sceneLessonsByUrl.entries()]
+    .filter(([, lessons]) => lessons.size > 1)
+    .sort((a, b) => b[1].size - a[1].size);
+  const worstScene = sharedScenes[0];
+  add(
+    'no scene illustration is reused across lessons',
+    sharedScenes.length === 0,
+    sharedScenes.length === 0
+      ? `${sceneLessonsByUrl.size} distinct scene image(s), each in exactly one lesson`
+      : `${sharedScenes.length} scene image(s) shared across lessons; worst serves ${worstScene![1].size} lessons (${worstScene![0]})`,
   );
 
   /*

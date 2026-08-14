@@ -1,5 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
-import { illustrateSegments, inspectIllustrationCoverage } from '../pipeline/images.js';
+import {
+  applySceneImages,
+  clearSceneImages,
+  collectSceneImages,
+  illustrateSegments,
+  inspectIllustrationCoverage,
+  sceneAnchorSubject,
+} from '../pipeline/images.js';
 import { ProviderNotConfiguredError, ProviderHttpError } from '../providers/errors.js';
 import { PicturegenGenerationError } from '../providers/picturegen.js';
 import { estimateCostUsd, UsageLedger } from '../providers/usage.js';
@@ -240,16 +247,108 @@ describe('illustrateSegments (via Prism/picturegen)', () => {
     const doc = docWith(bestDecisionSeg());
     const request = okPicture();
 
-    const result = await illustrateSegments(doc, {}, { request: request as never });
+    const result = await illustrateSegments(doc, { scope: 'financial-education/billete-grande' }, { request: request as never });
 
     expect(result.generated).toBe(1);
     expect(request).toHaveBeenCalledWith({
+      // best_decision states its situation in prompt_md, so that IS the subject.
       label: 'Liruf recibe un billete grande.',
-      context: 'Liruf recibe un billete grande.',
+      // The lesson title grounds it without becoming the subject.
+      context: 'Lección de prueba — Liruf recibe un billete grande.',
       purpose: 'scene_anchor',
+      scope: 'financial-education/billete-grande',
     });
     const seg = result.document.segments.find((s) => s.type === 'best_decision')! as { image_url?: string };
     expect(seg.image_url?.startsWith('http')).toBe(true);
+  });
+
+  /*
+   * The 2026-08-14 incident, at its source. These types print an INSTRUCTION in
+   * prompt_md and describe the actual situation elsewhere in the payload. Sending
+   * the instruction as the subject is what left the art director with nothing to
+   * draw, so it fell back on the identity brief's own lemonade stand.
+   */
+  it('anchors a story_dialogue on the conversation, not on "Escucha la conversación"', async () => {
+    const doc = docWith({
+      id: 'sd1',
+      type: 'story_dialogue',
+      prompt_md: 'Escucha la conversación entre Dina y Liruf.',
+      difficulty: 1,
+      xp: 0,
+      payload: {
+        lines: [
+          { character: 'liruf', text_md: 'La feria abre mañana y mi puesto de tamales no tiene mesa.' },
+          { character: 'dina', text_md: 'Podemos pedir prestada la mesa plegable del salón.' },
+        ],
+      },
+    });
+    const request = okPicture();
+
+    await illustrateSegments(doc, {}, { request: request as never });
+
+    const sent = request.mock.calls[0]![0] as { label: string; context: string };
+    expect(sent.label).toContain('La feria abre mañana');
+    expect(sent.label).toContain('mesa plegable');
+    expect(sent.label).not.toContain('Escucha la conversación');
+    // The instruction survives only as grounding context, never as the subject.
+    expect(sent.context).toContain('Escucha la conversación');
+  });
+
+  it('anchors an eavesdrop on its context_md scene setting', async () => {
+    const doc = docWith({
+      id: 'ev1',
+      type: 'eavesdrop',
+      prompt_md: 'Toca los términos para entenderlos mejor.',
+      difficulty: 1,
+      xp: 0,
+      payload: {
+        context_md: 'Dina y Liruf cuentan la caja del puesto de jugos al cerrar.',
+        lines: [
+          { character: 'dina', text_md: 'Hoy tuvimos buena ==ganancia==.', notes: ['Lo que queda después de pagar todo.'] },
+          { character: 'liruf', text_md: 'Guardemos una parte.' },
+        ],
+      },
+    });
+    const request = okPicture();
+
+    await illustrateSegments(doc, {}, { request: request as never });
+
+    expect((request.mock.calls[0]![0] as { label: string }).label).toBe(
+      'Dina y Liruf cuentan la caja del puesto de jugos al cerrar.',
+    );
+  });
+
+  it('unwraps ==highlight== markers so the art director reads prose, not engine syntax', () => {
+    const subject = sceneAnchorSubject(
+      {
+        type: 'eavesdrop',
+        prompt_md: 'Toca los términos.',
+        payload: { context_md: 'Revisan el ==presupuesto== del mes.' },
+      },
+      undefined,
+    );
+    expect(subject?.label).toBe('Revisan el presupuesto del mes.');
+  });
+
+  /*
+   * Silence beats a confident wrong picture: with no situation to draw, no
+   * request is made at all and the exercise renders without an image.
+   */
+  it('requests NO anchor when the segment describes no situation', async () => {
+    const doc = docWith({
+      id: 'sd2',
+      type: 'story_dialogue',
+      prompt_md: '',
+      difficulty: 1,
+      xp: 0,
+      payload: { lines: [{ character: 'dina', text_md: '' }] },
+    });
+    const request = okPicture();
+
+    const result = await illustrateSegments(doc, {}, { request: request as never });
+
+    expect(request).not.toHaveBeenCalled();
+    expect(result.generated).toBe(0);
   });
 
   it('skips a single failing target (icon fallback) without failing the whole lesson', async () => {
@@ -354,5 +453,97 @@ describe('illustrateSegments (via Prism/picturegen)', () => {
     expect(request).toHaveBeenCalledTimes(1); // only the option WITHOUT image_url
     const options = (result.document.segments.find((s) => s.type === 'picture_choice')!.payload as { options: { image_url?: string }[] }).options;
     expect(options[0]!.image_url).toBe('http://localhost:4006/files/existing.png');
+  });
+});
+
+/*
+ * The repair primitives that make an already-published catalog fixable.
+ * illustrateSegments only ever ADDS, so without these the 1,208 lessons that
+ * each HAVE a (wrong) scene anchor could never be corrected in place.
+ */
+describe('scene repair helpers', () => {
+  function docWithScenes() {
+    return buildDocument({
+      segments: [
+        {
+          id: 'bd1',
+          type: 'best_decision',
+          prompt_md: 'Liruf recibe un billete grande.',
+          difficulty: 1,
+          xp: 10,
+          image_url: 'http://depot.test/stale-scene.webp',
+          payload: { options: [{ id: 'a', text_md: 'Guardar' }, { id: 'b', text_md: 'Gastar' }] },
+          answer: { correct_option_id: 'a' },
+        },
+        {
+          id: 'ss1',
+          type: 'story_scene',
+          prompt_md: 'Mira la escena.',
+          difficulty: 1,
+          xp: 0,
+          payload: {
+            backdrop: 'base',
+            body_md: 'El puesto abre.',
+            art: { icon: 'store', tint: 'primary', image_url: 'http://depot.test/stale-art.webp' },
+          },
+        },
+        {
+          id: 'pc1',
+          type: 'picture_choice',
+          prompt_md: 'Elige.',
+          difficulty: 1,
+          xp: 10,
+          payload: { options: [{ id: 'o1', icon: 'savings', label: 'Alcancía', image_url: 'http://depot.test/tile.webp' }] },
+          answer: { correct_option_id: 'o1' },
+        },
+      ] as never,
+    });
+  }
+
+  it('clears scene images and story_scene art but never object tiles', () => {
+    const { document, cleared } = clearSceneImages(docWithScenes());
+
+    expect(cleared).toBe(2);
+    const [anchor, scene, choice] = document.segments as unknown as Array<{ image_url?: string; payload: Record<string, unknown> }>;
+    expect(anchor!.image_url).toBeUndefined();
+    expect((scene!.payload.art as { image_url?: string }).image_url).toBeUndefined();
+    // The tile's style version did not move — re-billing it would be pure waste.
+    expect((choice!.payload.options as { image_url?: string }[])[0]!.image_url).toBe('http://depot.test/tile.webp');
+  });
+
+  it('leaves the input document untouched (callers hold the stored row)', () => {
+    const original = docWithScenes();
+    clearSceneImages(original);
+    expect((original.segments as unknown as Array<{ image_url?: string }>)[0]!.image_url).toBe('http://depot.test/stale-scene.webp');
+  });
+
+  it('collects scene URLs by segment id, ignoring tiles', () => {
+    expect([...collectSceneImages(docWithScenes()).entries()]).toEqual([
+      ['bd1', 'http://depot.test/stale-scene.webp'],
+      ['ss1', 'http://depot.test/stale-art.webp'],
+    ]);
+  });
+
+  /*
+   * One drawing serves all three locale documents — the same rule the
+   * generation pipeline uses when it illustrates es-MX before localizing.
+   * Copying is what keeps a repair from paying three times per picture.
+   */
+  it('copies the authoring locale scenes into a sibling by segment id', () => {
+    const sibling = clearSceneImages(docWithScenes()).document;
+    const fresh = new Map([['bd1', 'http://depot.test/fresh-scene.webp'], ['ss1', 'http://depot.test/fresh-art.webp']]);
+
+    const { document, applied } = applySceneImages(sibling, fresh);
+
+    expect(applied).toBe(2);
+    const segments = document.segments as unknown as Array<{ image_url?: string; payload: Record<string, unknown> }>;
+    expect(segments[0]!.image_url).toBe('http://depot.test/fresh-scene.webp');
+    expect((segments[1]!.payload.art as { image_url?: string }).image_url).toBe('http://depot.test/fresh-art.webp');
+  });
+
+  it('never overwrites a scene the sibling already has', () => {
+    const { document, applied } = applySceneImages(docWithScenes(), new Map([['bd1', 'http://depot.test/other.webp']]));
+    expect(applied).toBe(0);
+    expect((document.segments as unknown as Array<{ image_url?: string }>)[0]!.image_url).toBe('http://depot.test/stale-scene.webp');
   });
 });
