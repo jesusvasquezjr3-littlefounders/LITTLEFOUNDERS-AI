@@ -13,7 +13,7 @@ import {
   WORLD_SPHERE_PATH,
   WORLD_WIDTH,
 } from './worldGeography';
-import { cachedRegions, hasRegions, loadRegions } from './regionLoader';
+import { buildRegionIndex, cachedRegions, hasRegions, loadRegions, resolveRegionCode } from './regionLoader';
 import type { RegionShape } from './regionTypes';
 
 /*
@@ -112,15 +112,29 @@ export function WorldChoropleth({ rows, selected, onSelect, onUnplaceable, zoome
     };
   }, [zoomed]);
 
-  /** Region traffic by ISO 3166-2, e.g. `MX-JAL`. */
-  const regionValues = useMemo(() => {
+  /*
+   * Region traffic keyed by the geometry's ISO 3166-2 code.
+   *
+   * Plausible labels regions by NAME in this deployment ("Jalisco", "Mexico
+   * City") even though its documentation promises codes, so every row is
+   * resolved through the index rather than assumed to be a code. Rows that
+   * cannot be resolved are counted, not dropped: the panel says how many so a
+   * silent mismatch cannot masquerade as "no traffic there".
+   */
+  const regionIndex = useMemo(() => buildRegionIndex(regions), [regions]);
+  const { regionValues, unresolvedRegions } = useMemo(() => {
     const byCode = new Map<string, number>();
+    const unresolved: string[] = [];
     for (const row of regionRows) {
-      const code = row.label.trim().toUpperCase();
-      if (code) byCode.set(code, (byCode.get(code) ?? 0) + row.visitors);
+      const code = resolveRegionCode(regionIndex, row.label);
+      if (!code) {
+        if (row.label.trim()) unresolved.push(row.label);
+        continue;
+      }
+      byCode.set(code, (byCode.get(code) ?? 0) + row.visitors);
     }
-    return byCode;
-  }, [regionRows]);
+    return { regionValues: byCode, unresolvedRegions: unresolved };
+  }, [regionRows, regionIndex]);
   const regionMax = Math.max(...regionValues.values(), 0);
 
   const { valueByCode, max, total, unplaceable } = useMemo(() => {

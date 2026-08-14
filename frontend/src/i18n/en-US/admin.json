@@ -461,7 +461,8 @@
       "topRegions": "Top regions in {{country}}",
       "regionCount_one": "{{count}} region",
       "regionCount_other": "{{count}} regions",
-      "legendTitleRegion": "Visitors per region"
+      "legendTitleRegion": "Visitors per region",
+      "unmatchedRegions": "Not matched to the map: {{regions}}"
     },
     "toolsTitle": "Exports & controls",
     "reports": {
