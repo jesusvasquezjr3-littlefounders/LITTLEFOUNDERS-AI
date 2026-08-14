@@ -1,5 +1,5 @@
 import { query } from '../db/duckdb.js';
-import { pathQuery, sankeyQuery } from '../db/queries.js';
+import { pathQuery, sankeyQuery, type AnalyticsWindow } from '../db/queries.js';
 
 export interface PathTransition {
   fromEvent: string;
@@ -42,9 +42,10 @@ type SankeyRow = {
 export async function getTopPaths(
   fromEvent: string,
   limit: number,
+  window: AnalyticsWindow,
 ): Promise<PathTransition[] | null> {
   try {
-    const q = pathQuery(fromEvent, limit);
+    const q = pathQuery(fromEvent, limit, window);
     const rows = await query<PathRow>(q.sql, ...q.params);
 
     return rows.map((r) => ({

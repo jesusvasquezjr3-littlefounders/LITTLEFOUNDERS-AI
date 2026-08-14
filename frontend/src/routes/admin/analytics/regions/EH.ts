@@ -1,0 +1,10 @@
+/*
+ * GENERATED FILE — do not edit by hand. Run `npm run map:gen:regions`.
+ * 1 admin-1 regions for EH, from Natural Earth 10m (public
+ * domain), projected with the SAME geoNaturalEarth1 / 1000x500
+ * viewBox as worldGeography.ts so they align with the country outline exactly.
+ * Keys are ISO 3166-2, matching Plausible's visit:region dimension.
+ */
+import type { RegionShape } from '../regionTypes';
+
+export const REGIONS: RegionShape[] = [{"code":"EH-X01~","name":"Western Sahara","d":"M477.65,164.28L477.63,165.44L477.55,169.4L477.49,169.46L468.93,169.46L468.74,177.24L467.85,177.77L467.15,177.93L466.1,178.72L465.69,179.54L465.86,180.34L465.95,183.18L465.98,183.96L462.63,183.96L455.67,183.96L455.31,185.38L455.36,185.72L455.25,185.5L455.53,183.69L456.28,183.53L458.84,183.47L459.6,183.59L461.22,183.59L461.67,183.13L461.8,182.32L462.9,180.92L463.07,179.52L463.52,177.5L463.88,176.63L464.2,176.32L465.41,175.73L466.09,174.42L466.4,174.12L467.76,173.09L468.1,172.21L468.82,169.46L469.71,169.12L469.93,168.53L470.73,167.48L470.61,166.7L471.83,166.3L472.79,166.36L473.55,166.77L474.12,166.61L474.89,166.77L475.73,166.06L477.33,165.96L477.44,165.74L477.3,164.28Z","centroid":[468.24,174.97]}];

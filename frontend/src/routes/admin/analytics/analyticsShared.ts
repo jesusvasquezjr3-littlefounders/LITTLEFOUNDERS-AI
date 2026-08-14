@@ -7,8 +7,39 @@
  * into one tuple (OR semantics), distinct dimensions AND together.
  */
 
-export type Period = 'day' | '7d' | '30d' | 'month' | '6mo' | '12mo';
-export const PERIODS: Period[] = ['day', '7d', '30d', 'month', '6mo', '12mo'];
+export type Period = 'day' | '7d' | '30d' | 'month' | '6mo' | '12mo' | 'year' | 'all' | 'custom';
+
+/** Presets offered in the picker, in the order they appear. `custom` is chosen separately. */
+export const PERIODS: Period[] = ['day', '7d', '30d', 'month', '6mo', '12mo', 'year', 'all'];
+
+/**
+ * A window: a preset, or an explicit inclusive day range. Every analytics
+ * request on the page is built from ONE of these, so the map, the breakdowns,
+ * the behavioural card and the exports can never describe different windows.
+ */
+export interface PeriodSelection {
+  period: Period;
+  from?: string;
+  to?: string;
+}
+
+/** Serialize a selection to the query fragment Core expects (no leading `?`). */
+export function periodQuery(selection: PeriodSelection): string {
+  if (selection.period !== 'custom') return `period=${selection.period}`;
+  return `period=custom&from=${selection.from ?? ''}&to=${selection.to ?? ''}`;
+}
+
+/** A selection is only usable once a custom range actually has both ends. */
+export function isCompleteSelection(selection: PeriodSelection): boolean {
+  return selection.period !== 'custom' || Boolean(selection.from && selection.to);
+}
+
+/** The `period=…` fragment, already serialized — what child cards receive. */
+export type PeriodQuery = string;
+
+export function todayIso(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
 export type DimensionKey =
   | 'page'
@@ -113,19 +144,63 @@ export function countryLabel(code: string, locale?: string): string {
 
 /* ── Response shapes (backend contract) ─────────────────────────────── */
 
+export interface Aggregate {
+  visitors: number;
+  pageviews: number;
+  bounce_rate: number;
+  visit_duration: number;
+}
+
 export interface OverviewData {
   period: Period;
-  aggregate: { visitors: number; pageviews: number; bounce_rate: number; visit_duration: number };
+  /** Resolved window bounds. The UI states these, not the label it asked for. */
+  from: string;
+  to: string;
+  aggregate: Aggregate;
   timeseries: { date: string; visitors: number; pageviews: number }[];
+  /** Null when there is nothing to compare against, or the comparison read failed. */
+  previous: (Aggregate & { from: string; to: string }) | null;
 }
 
 export interface BehaviorData {
   period: Period;
+  from: string;
+  to: string;
   pageviews: number;
   visitors: number;
   visits: number;
   bounces: number;
   totaltime: number;
+}
+
+/* ── Internal-traffic exclusions ─────────────────────────────────────── */
+
+export interface ExclusionRow {
+  id: string;
+  network: string;
+  label: string;
+  reason: string | null;
+  created_by: string | null;
+  created_at: string;
+  revoked_at: string | null;
+  revoked_by: string | null;
+}
+
+export interface StaffSighting {
+  address: string;
+  userId: string;
+  displayName: string;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  hits: number;
+}
+
+export interface ExclusionsData {
+  self: { ip: string | null; excluded: boolean };
+  active: ExclusionRow[];
+  suggestions: StaffSighting[];
+  coveredAddresses: string[];
+  windowDays: number;
 }
 
 export interface HealthData {
@@ -148,8 +223,9 @@ export interface BreakdownData {
 }
 
 /**
- * Base URL for the ONE raw (non-envelope) route: /admin/analytics/report.pdf
- * needs a manual fetch with the Bearer header (a plain <a href> can't carry
- * it). Mirrors the constant in src/lib/api.ts, which doesn't export it.
+ * Base URL for the raw (non-envelope) export routes: report.pdf/.csv/.xlsx
+ * need a manual fetch with the Bearer header, which a plain <a href> cannot
+ * carry. Re-exported from the API client rather than re-derived, so the two
+ * cannot drift apart.
  */
-export const API_BASE_URL: string = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:4000';
+export { BASE_URL as API_BASE_URL } from '@/lib/api';

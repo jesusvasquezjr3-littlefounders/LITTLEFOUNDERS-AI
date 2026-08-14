@@ -52,12 +52,13 @@ function stubPulseEnv(): void {
 }
 
 /** fetch stub: PostgREST roles + the three Pulse upstreams. */
-function stubFetch(opts: { roles?: string[]; plausibleStatus?: number; umamiStatus?: number; kumaStatus?: number; retentionStatus?: number } = {}) {
+function stubFetch(opts: { roles?: string[]; plausibleStatus?: number; umamiStatus?: number; kumaStatus?: number; retentionStatus?: number; capture?: string[] } = {}) {
   const roles = (opts.roles ?? ['admin']).map((role) => ({ role }));
   vi.stubGlobal(
     'fetch',
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
+      opts.capture?.push(url);
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, roles));
       if (url.includes('/rest/v1/rpc/admin_retention_at_distance')) {
         if (opts.retentionStatus) return Promise.resolve(jsonResponse(opts.retentionStatus, {}));
@@ -162,7 +163,23 @@ describe('GET /api/v1/admin/analytics/behavior', () => {
     stubFetch();
     const res = await request(createApp()).get('/api/v1/admin/analytics/behavior?period=30d').set('Authorization', authed());
     expect(res.status).toBe(200);
-    expect(res.body.data).toEqual({ period: '30d', pageviews: 500, visitors: 200, visits: 250, bounces: 90, totaltime: 60000 });
+    expect(res.body.data).toMatchObject({ period: '30d', pageviews: 500, visitors: 200, visits: 250, bounces: 90, totaltime: 60000 });
+    // The behavioural card states the same resolved window the web-analytics
+    // cards do; it used to translate the period on its own and describe a
+    // different one under the same label.
+    expect(res.body.data.from).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(res.body.data.to).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it('asks Umami for the same calendar window Plausible resolves for "month"', async () => {
+    stubPulseEnv();
+    const urls: string[] = [];
+    stubFetch({ capture: urls });
+    await request(createApp()).get('/api/v1/admin/analytics/behavior?period=month').set('Authorization', authed());
+    const statsCall = urls.find((url) => url.includes('/api/websites/') && url.includes('startAt='));
+    expect(statsCall).toBeTruthy();
+    const startAt = Number(new URL(statsCall as string).searchParams.get('startAt'));
+    expect(new Date(startAt).getUTCDate()).toBe(1); // month-to-date, not "30 days ago"
   });
 
   it('502s when Umami errors after login', async () => {

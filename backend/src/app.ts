@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import { cors } from './middleware/cors.js';
 import { globalRateLimiter } from './middleware/rateLimit.js';
 import { adminRouter } from './routes/admin.js';
+import { analyticsRouter } from './routes/analytics.js';
 import { familyRouter } from './routes/family.js';
 import { authRouter } from './routes/auth.js';
 import { eventsRouter } from './routes/events.js';
@@ -53,6 +54,10 @@ export function createApp(): express.Express {
   app.use(globalRateLimiter);
   app.use(express.json({ limit: '64kb' }));
 
+  // Public, session-less: the tracker gate asks whether THIS visitor's address
+  // is on the internal-traffic exclusion list before mounting any analytics
+  // script (routes/analytics.ts). One call per browser session.
+  app.use('/api/v1/analytics', analyticsRouter());
   app.use('/api/v1/auth', authRouter());
   app.use('/api/v1/verification', verificationRouter());
   app.use('/api/v1/learn', learnRouter());

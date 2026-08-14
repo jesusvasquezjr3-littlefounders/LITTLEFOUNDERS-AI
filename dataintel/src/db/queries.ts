@@ -76,6 +76,78 @@ export function buildWhere(filters: Record<string, unknown>): QueryResult {
   return { sql: `WHERE ${clauses.join(' AND ')}`, params };
 }
 
+/*
+ * ── Time window ────────────────────────────────────────────────────────────
+ *
+ * Every analytical query is bounded by ONE of these. Ten of them previously had
+ * no time bound at all — `engagementQuery` aggregated all of history while
+ * returning fields named `sessions_30d`, and the console's period selector
+ * changed nothing on the lesson, engagement, funnel, path and time-to-value
+ * tabs. An unbounded number displayed under a period label is not a slow query,
+ * it is a wrong answer.
+ *
+ * Values are interpolated rather than bound as parameters, matching the
+ * existing `INTERVAL '${days}' DAY` pattern here: DuckDB cannot parameterise an
+ * interval literal. Both forms are therefore validated to a closed shape before
+ * they reach SQL — `days` is an integer, `from`/`to` must match YYYY-MM-DD
+ * exactly — so no caller-controlled text can reach the query text.
+ */
+
+export interface AnalyticsWindow {
+  /** Trailing window length in days. Used when `from`/`to` are absent. */
+  days: number;
+  /** Explicit inclusive range, YYYY-MM-DD. */
+  from?: string;
+  to?: string;
+}
+
+const DAY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Reject anything that is not a plain calendar day before it can reach SQL. */
+function safeDay(value: string): string {
+  if (!DAY_PATTERN.test(value) || Number.isNaN(Date.parse(`${value}T00:00:00Z`))) {
+    throw new Error(`invalid window date: ${value}`);
+  }
+  return value;
+}
+
+export function normalizeWindow(window: AnalyticsWindow): AnalyticsWindow {
+  const days = Math.max(1, Math.min(3650, Math.trunc(window.days)));
+  /*
+   * A HALF-SPECIFIED range is an error, not a reason to fall back. Quietly
+   * substituting the trailing window would answer a question nobody asked and
+   * label it with the range the caller thought they had set.
+   */
+  if (window.from !== undefined || window.to !== undefined) {
+    if (!window.from || !window.to) throw new Error('window needs both from and to, or neither');
+    return { days, from: safeDay(window.from), to: safeDay(window.to) };
+  }
+  return { days };
+}
+
+/**
+ * SQL predicate bounding `column` to the window. `to` is inclusive of the whole
+ * day, so a range ending today does not silently drop today's events.
+ */
+export function windowSql(column: string, window: AnalyticsWindow): string {
+  const w = normalizeWindow(window);
+  if (w.from && w.to) {
+    return `${column} >= DATE '${w.from}' AND ${column} < DATE '${w.to}' + INTERVAL 1 DAY`;
+  }
+  return `${column} >= CURRENT_DATE - INTERVAL '${w.days}' DAY`;
+}
+
+/** Same predicate prefixed for appending to an existing WHERE clause. */
+export function andWindow(column: string, window: AnalyticsWindow): string {
+  return `AND ${windowSql(column, window)}`;
+}
+
+/** A window's own label, for exports and disclosure. */
+export function windowLabel(window: AnalyticsWindow): string {
+  const w = normalizeWindow(window);
+  return w.from && w.to ? `${w.from} to ${w.to}` : `last ${w.days} days`;
+}
+
 export function dailyUsersQuery(days: number): QueryResult {
   const sql = `\
     WITH dates AS (
@@ -158,7 +230,7 @@ export function cohortRetentionQuery(weeks: number): QueryResult {
   return { sql, params: [] };
 }
 
-export function activationFunnelQuery(): QueryResult {
+export function activationFunnelQuery(window: AnalyticsWindow): QueryResult {
   const sql = `\
     WITH steps AS (
       SELECT
@@ -170,7 +242,8 @@ export function activationFunnelQuery(): QueryResult {
         MAX(CASE WHEN event_type = 'lesson_complete'   THEN 1 ELSE 0 END) AS completed_lesson
       FROM fact_events fe
       LEFT JOIN dim_anon_conversions ac ON fe.anon_id = ac.anon_id
-      WHERE fe.user_id IS NOT NULL OR fe.anon_id IS NOT NULL
+      WHERE (fe.user_id IS NOT NULL OR fe.anon_id IS NOT NULL)
+        ${andWindow('fe.created_at', window)}
       GROUP BY identity_id
     )
     SELECT 'visited'          AS step, COUNT(*) FILTER (WHERE visited = 1)          AS users FROM steps
@@ -186,7 +259,7 @@ export function activationFunnelQuery(): QueryResult {
   return { sql, params: [] };
 }
 
-export function lessonDropoffQuery(limit: number): QueryResult {
+export function lessonDropoffQuery(limit: number, window: AnalyticsWindow): QueryResult {
   const sql = `\
     WITH lesson_activity AS (
       SELECT
@@ -200,6 +273,7 @@ export function lessonDropoffQuery(limit: number): QueryResult {
       FROM fact_events fe
       JOIN dim_lessons l ON fe.lesson_id = l.lesson_id
       WHERE fe.event_type IN ('lesson_start', 'lesson_abandon', 'lesson_complete')
+        ${andWindow('fe.created_at', window)}
       GROUP BY l.lesson_id, l.slug, l.title_en
     )
     SELECT
@@ -225,6 +299,7 @@ export function lessonDropoffQuery(limit: number): QueryResult {
 export function segmentCalibrationQuery(
   minLearners: number,
   limit: number,
+  window: AnalyticsWindow,
 ): QueryResult {
   const sql = `\
     WITH segment_attempts AS (
@@ -237,6 +312,7 @@ export function segmentCalibrationQuery(
         AVG(CASE WHEN hints_used > 0 THEN 1.0 ELSE 0.0 END) AS hint_rate,
         AVG(score) FILTER (WHERE attempt_number = 1) AS first_try_avg_score
       FROM fact_segment_attempts
+      WHERE ${windowSql('created_at', window)}
       GROUP BY lesson_id, segment_id
       HAVING COUNT(DISTINCT user_id) >= $1
     )
@@ -264,7 +340,7 @@ export function segmentCalibrationQuery(
   return { sql, params: [minLearners, limit] };
 }
 
-export function featureAdoptionQuery(): QueryResult {
+export function featureAdoptionQuery(window: AnalyticsWindow): QueryResult {
   const sql = `\
     SELECT
       route_class,
@@ -276,6 +352,7 @@ export function featureAdoptionQuery(): QueryResult {
       MAX(created_at) AS last_seen
     FROM fact_events
     WHERE route_class IS NOT NULL
+      ${andWindow('created_at', window)}
     GROUP BY route_class, role
     ORDER BY users DESC`;
   return { sql, params: [] };
@@ -302,7 +379,7 @@ export function sessionDepthQuery(days: number, limit: number): QueryResult {
   return { sql, params: [limit] };
 }
 
-export function timeToValueQuery(limit: number): QueryResult {
+export function timeToValueQuery(limit: number, window: AnalyticsWindow): QueryResult {
   const sql = `\
     WITH first_touch AS (
       SELECT
@@ -344,12 +421,13 @@ export function timeToValueQuery(limit: number): QueryResult {
     LEFT JOIN first_complete fc  ON ft.user_id = fc.user_id
     LEFT JOIN dim_users du       ON ft.user_id = du.user_id
     WHERE fl.first_lesson_at IS NOT NULL
+      ${andWindow('ft.first_seen', window)}
     ORDER BY sec_to_first_lesson ASC
     LIMIT $1`;
   return { sql, params: [limit] };
 }
 
-export function engagementQuery(limit: number): QueryResult {
+export function engagementQuery(limit: number, window: AnalyticsWindow): QueryResult {
   const sql = `\
     SELECT
       fe.user_id,
@@ -366,6 +444,7 @@ export function engagementQuery(limit: number): QueryResult {
     FROM fact_events fe
     LEFT JOIN dim_users du USING (user_id)
     WHERE fe.user_id IS NOT NULL
+      ${andWindow('fe.created_at', window)}
     GROUP BY fe.user_id, du.role, du.xp_points, du.lessons_completed, du.streak_days, du.longest_streak
     ORDER BY total_events DESC
     LIMIT $1`;
@@ -601,7 +680,7 @@ export function trendQuery(
   return { sql, params: [] };
 }
 
-export function pathQuery(fromEvent: string, limit: number): QueryResult {
+export function pathQuery(fromEvent: string, limit: number, window: AnalyticsWindow): QueryResult {
   const sql = `\
     WITH events_ordered AS (
       SELECT
@@ -615,6 +694,7 @@ export function pathQuery(fromEvent: string, limit: number): QueryResult {
         created_at
       FROM fact_events
       WHERE session_id IS NOT NULL
+        ${andWindow('created_at', window)}
     ),
     transitions AS (
       SELECT

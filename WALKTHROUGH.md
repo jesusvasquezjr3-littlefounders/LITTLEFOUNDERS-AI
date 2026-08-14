@@ -2,6 +2,163 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-13) — Map zoom to real regions, and every intel chart was drawing its axes in black
+
+- **Zoom into a country and see its states.** Clicking a country now zooms the
+  map to that country's projected bounds and draws its real admin-1 regions:
+  4,584 states, provinces and departments across 238 countries, generated at
+  author time from Natural Earth 10m (`npm run map:gen:regions`) and simplified
+  through a shared topology so neighbouring borders move together and never
+  open a gap. Region traffic comes from Plausible's `visit:region`, which
+  reports the ISO 3166-2 codes the geometry is keyed by, so a lookup is a plain
+  object access with no name matching.
+- **The regions are one chunk per country** (Mexico 22 KB, the United States
+  55 KB), fetched only on zoom — 243 build chunks now exist where the whole set
+  would have been 2.4 MB in the bundle. The loader had to move OUT of the
+  `regions/` directory: Vite refuses a variable import that targets its own
+  directory and silently emitted no chunks at all until it was relocated.
+- **Zoom is real geometry, not a scaled image.** The viewBox animates to the
+  country's projected bounds, so borders stay crisp and the regions land exactly
+  inside the country outline already on screen. While zoomed, neighbouring
+  countries drop to neutral context, the legend rescales to region values and
+  says so, and shares are of that country's total rather than the world's —
+  each of those was wrong in the first pass and fixed after looking at it.
+- **Every chart in the intelligence console was drawing its chrome in black.**
+  28 references passed the design tokens as bare `var(--lf-outline)`, but those
+  tokens hold space-separated CHANNELS (`226 232 240`), not colours — so grid
+  lines, axis lines, tick labels and the gradient fills under every trend line
+  resolved to an invalid value and fell back to black, in both themes. On dark
+  mode that is black on near-black. The series colours were correct, which is
+  why it survived: the data was visible and only the frame was missing.
+  Verified in a browser in dark mode after the fix. Two of the palette entries
+  also referenced tokens that do not exist at all (`--lf-muted`, `--lf-faint`).
+
+## Current State (2026-08-13) — Data Intelligence made trustworthy: staff excluded from the warehouse, every query bounded by a real window
+
+Built locally on `main`, all service gates green, NOT deployed. Requires Vault
+migration 0046 to be applied BEFORE the dataintel deploy (see below).
+
+- **Measured first, against production, rather than assumed.** A read-only
+  probe through `railway run` found that 3,502 of 3,869 first-party events
+  (90.5%) were stamped `superadmin`, produced by 2 accounts against 29
+  non-staff ones, and that 24 of 24 `lesson_segment_attempts` were staff-owned.
+  Every metric in the intelligence console — DAU, activation funnel, retention
+  cohorts, churn ranking, time-to-value, lesson calibration, the whole
+  pedagogical layer — was describing the platform team testing the product.
+- **Staff exclusion is now structural, not a filter to remember.** The plain
+  warehouse table names became staff-free VIEWS over `*_raw` physical tables,
+  which made all 95 existing query sites correct in one move and makes the
+  clean name the path of least resistance for new ones. Only the sync writer,
+  the rename migration and one deliberate disclosure service may touch a `_raw`
+  table; a test fails the build if anything else does.
+- **Neither existing role field could answer "is this staff?".** The event
+  stamp is the highest-priority role (a superadmin who is also a parent stamps
+  `parent`), and `dataintel_users_sync.role` was the most recently GRANTED
+  role, which flips with grant order. Vault 0046 adds `is_staff` as an EXISTS
+  over the whole role set, and the views test both it and the stamp.
+- **A missing flag now fails loudly instead of silently readmitting staff.**
+  If `is_staff` is absent (0046 not applied), the sync refuses with an
+  explicit message rather than defaulting everyone to non-staff. Every metric
+  reading zero is unmistakably broken; a 90% inflation looks plausible.
+- **The period selector was decorative.** It reached 4 of 17 requests. Ten
+  queries had no time bound at all — `engagementQuery` aggregated all of
+  history while returning fields named `sessions_30d` — so switching from
+  "7 days" to "1 year" left the funnel, drop-off, calibration, leaderboard,
+  paths and time-to-value tabs unchanged, sitting on screen beside a period
+  label. A shared `AnalyticsWindow` is now threaded from route to SQL, custom
+  `from`/`to` ranges are supported alongside presets, cohort weeks derive from
+  the same selection, and a half-specified range is an error rather than a
+  silent fallback.
+- **The console now discloses what it hides.** A new
+  `/quality/staff-exclusion` endpoint reports the removed share, and the page
+  states it. A filter that silently stopped would otherwise be
+  indistinguishable from one that is working.
+- **Exports.** `/admin/intel-export.{csv,xlsx}` render the active window in
+  Core (the `/intel` proxy reads bodies as text, which would corrupt a
+  spreadsheet), with the window, generation time and staff-exclusion caveat on
+  the file itself.
+- **Verified.** dataintel 185 tests, backend 349, frontend 463, type-check,
+  lint and builds green. Vault 0046 applied twice against the local stack
+  (idempotent) as `supabase_admin`; note that `CREATE OR REPLACE VIEW` can only
+  APPEND columns, so `is_staff` sits at the end of the select list. One
+  intermittent failure was observed in the pre-existing `SignupTimeline`
+  interactive-chart test (once in ~6 full runs, passes in isolation and passes
+  with the changes reverted) — flaky, not caused by this work.
+- **DEPLOY ORDER MATTERS.** Vault 0046 must be applied before dataintel ships,
+  or the sync will refuse to run. The warehouse rename happens automatically on
+  first boot (`migrateWarehouse`) and preserves every row.
+
+## Current State (2026-08-13) — Analytics made trustworthy: enforceable internal-traffic exclusion, real geography, real windows, real exports
+
+Built locally on `main`, all service gates green, NOT yet deployed.
+
+- **Internal traffic can now actually be excluded, and the control is real.**
+  Vault `0045` adds `analytics_ip_exclusions` (cidr, soft-revoked, one active
+  row per network) and `analytics_staff_ip_sightings` (admin/superadmin
+  addresses only, §1.9). Enforcement is at the two points we own, because
+  Plausible CE still has no ingestion IP blocklist: the SPA asks
+  `GET /api/v1/analytics/tracking-decision` once per browser session and
+  mounts NO tracker for an excluded address (setting Plausible's and Umami's
+  own localStorage opt-outs as backup), and `POST /api/v1/events` drops
+  excluded batches so the first-party funnel counts the same population.
+  The console offers one-click exclusion of the current device, of addresses
+  staff have actually been seen working from, and manual CIDR entry.
+  Exclusion is FORWARD-ONLY and the panel says so on screen.
+- **The previous exclusions panel was removed in `02758833` for claiming an
+  enforcement that did not exist.** This one is the opposite case: the claim
+  is narrower than before and the enforcement is ours, testable, and tested.
+- **GA4 was measuring a different population than Plausible.** Its gate
+  checked only "marketing path + not a kid", so every signed-in visitor —
+  staff included — was counted as marketing traffic, while Plausible (which
+  requires an anonymous, consented session) was not. The two could never be
+  reconciled. GA4 now follows the same acquisition boundary.
+- **The behavioural card and the web-analytics cards described different
+  windows under one label.** Umami translated the period itself: `month`
+  became "the last 30 days" while Plausible read it as "since the 1st", and
+  `6mo` became a flat 182 days. One resolver (`resolveRange`) now feeds both.
+- **Windows are now selectable and stated.** Presets gained `year` and `all`,
+  plus an explicit custom range (`?period=custom&from=&to=`, validated for
+  order, future dates and absurd length). Every response carries the RESOLVED
+  `from`/`to`, which the page displays instead of restating the label it asked
+  for, and every KPI carries a previous-period comparison computed from the
+  equally long window immediately before. A comparison that could not be made
+  is absent, never rendered as 0%.
+- **The map is a real map.** The seven hand-drawn continent polygons and their
+  39-entry dot lookup are replaced by Natural Earth 110m geometry, projected
+  at author time into `worldGeography.ts` (`npm run map:gen`) so the browser
+  ships no projection library: 174 drawn countries, plus 61 micro-state
+  centroids so a country too small to draw still gets a real position, plus an
+  on-screen list of any country the map cannot place at all. Choropleth by
+  visitors with a legend printing real value ranges. Code-split (60 kB gzip)
+  so it loads only on the analytics page.
+- **Exports are three formats of one query.** `report.csv` (one rectangular
+  BOM-prefixed table discriminated by a `section` column, no comment lines
+  that break strict parsers) and `report.xlsx` (branded workbook: Summary with
+  KPIs vs previous window, Daily trend, one sheet per breakdown) join
+  `report.pdf`; `?rows=1..200` lets a spreadsheet hold more than a PDF page
+  can. Every export states its window, its filters and its generation time,
+  and filenames now carry the resolved dates rather than a period label.
+- **Report branding was wrong.** The PDF drew itself in papaya `#ff775c` on
+  navy `#080f28` — a palette DESIGN.md no longer contains — on the one
+  artefact that leaves the building. Corrected to the indigo/slate tokens of
+  record, with per-KPI change indicators coloured by whether the movement is
+  good rather than by its sign. Two more report defects fixed while there: the
+  section subtitle was pinned to a fixed 58pt offset and therefore printed
+  straight through every section title, and the "data range" line was derived
+  from the first and last days that HAD traffic rather than the window that was
+  actually queried, silently shrinking the reported period exactly when a
+  campaign produced nothing.
+- **Verified.** Backend 349 tests, frontend 463 tests, type-check, lint and
+  builds green in both services; migration `0045` applied twice against the
+  local Vault (idempotent) with cidr masking, the partial unique index, the
+  revoke/re-add cycle and the sighting counter checked directly in psql; the
+  UI screenshotted at a true 375px and 1280px viewport (CDP device emulation,
+  since headless Chrome's window has a 500px floor) in light and dark mode,
+  `scrollWidth == viewport` with zero overflowing elements at both. The
+  known, owner-accepted `marketing.json` legal locale-parity failure in
+  `npm run i18n:check` is unchanged by this work; `admin.json` is at exact
+  three-locale parity (1,142 keys).
+
 ## Current State (2026-08-13) — Acquisition analytics integrity deployed
 
 - **Pulse acquisition integrity correction is live.** Release `02758833`

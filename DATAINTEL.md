@@ -147,6 +147,41 @@ answered only by their dedicated endpoints; the service rejects a false
 relabeling with `400 VALIDATION_ERROR` rather than presenting an approximation
 as a precise statistic.
 
+## 4b. Data boundaries (staff exclusion and time windows)
+
+Two contracts govern every number this service produces.
+
+**Staff traffic is excluded before any metric is computed.** Measured against
+production on 2026-08-13: 3,502 of 3,869 first-party events (90.5%) were
+`superadmin`, produced by 2 accounts, and 24 of 24 `lesson_segment_attempts`
+were staff-owned. Every DAU, funnel, cohort, churn score, time-to-value and
+lesson-calibration figure was therefore describing the platform team.
+
+The exclusion is structural rather than a filter each query must remember:
+
+| Name | What it is |
+|---|---|
+| `fact_events_raw`, `fact_segment_attempts_raw`, `dim_sessions_raw`, `dim_users_raw` | physical tables, written only by the sync worker |
+| `fact_events`, `fact_segment_attempts`, `dim_sessions`, `dim_users` | staff-free VIEWS, read by every analytical query |
+| `v_staff_users` | `dim_users_raw` where `is_staff` |
+
+`is_staff` comes from Vault migration 0046 (`dataintel_users_sync`) as an
+EXISTS over the whole role set. The views also test the event-time role stamp,
+because a superadmin who is also a parent stamps `parent`, and
+`dim_users.role` is only the most recently granted role. Anonymous rows
+(no `user_id`) are KEPT: they are the pre-signup funnel and cannot be
+staff-attributed.
+
+`GET /api/v1/intel/quality/staff-exclusion` reports how much was removed, and
+the console shows it: a filter that silently stopped looks exactly like one
+that is working.
+
+**Every analytical query is bounded by a window.** `AnalyticsWindow` accepts a
+trailing `days` count or an explicit `from`/`to` pair (the same contract as the
+Pulse analytics routes, so one selection drives both consoles). A
+half-specified range raises rather than falling back. Ten queries previously
+had no bound at all — the console's period selector reached 4 of 17 requests.
+
 ## 5. DuckDB star schema
 
 DuckDB stores a star schema optimized for analytical queries:

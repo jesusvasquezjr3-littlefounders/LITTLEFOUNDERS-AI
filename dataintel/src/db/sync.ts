@@ -180,6 +180,14 @@ function mapUserRow(row: Record<string, unknown>): Record<string, unknown> {
   return {
     user_id: row.user_id ?? row.id,
     role: row.role ?? null,
+    /*
+     * Authoritative staff marker (Vault 0046). Defaults to TRUE when the
+     * source does not supply it: an unknown user is treated as staff and
+     * therefore EXCLUDED from the metrics. That is the safe direction — a
+     * missing flag silently readmitting staff is how the console came to
+     * report 90% of its events from two accounts.
+     */
+    is_staff: row.is_staff === undefined || row.is_staff === null ? true : Boolean(row.is_staff),
     created_at: row.created_at ?? null,
     locale: row.locale ?? null,
     xp_points: row.xp_points ?? 0,
@@ -363,7 +371,7 @@ async function syncEventsTable(): Promise<{ rows: number; elapsed: number }> {
 
     await exec('BEGIN TRANSACTION');
     try {
-      await batchInsert('fact_events', EVENT_COLUMNS, mapped);
+      await batchInsert('fact_events_raw', EVENT_COLUMNS, mapped);
       await exec('COMMIT');
     } catch (err) {
       await exec('ROLLBACK');
@@ -392,6 +400,7 @@ async function syncEventsTable(): Promise<{ rows: number; elapsed: number }> {
 const USER_COLUMNS = [
   'user_id',
   'role',
+  'is_staff',
   'created_at',
   'locale',
   'xp_points',
@@ -468,6 +477,24 @@ async function syncDimTable(
     if (raw.length === 0) {
       hasMore = false;
       break;
+    }
+
+    /*
+     * Contract guard for the staff marker.
+     *
+     * mapUserRow treats a missing `is_staff` as staff, so an un-migrated Vault
+     * (0046 not applied) would classify EVERY user as staff and drive every
+     * metric to zero. That is the safe direction — an obviously broken console
+     * beats a plausible-looking one — but only if the operator is told WHY.
+     * A silent floor of zeroes is indistinguishable from "nobody used the
+     * product this week", which is exactly the confusion this whole change
+     * exists to end.
+     */
+    if (targetTable === 'dim_users_raw' && raw.length > 0 && !('is_staff' in (raw[0] as object))) {
+      throw new Error(
+        'dataintel_users_sync is missing is_staff — apply Vault migration 0046 before syncing, ' +
+          'otherwise every user is treated as staff and all metrics read zero',
+      );
     }
 
     const mapped = raw.map(mapper);
@@ -561,7 +588,7 @@ export async function syncTable(
       case 'users':
         return await syncDimTable(
           'users',
-          'dim_users',
+          'dim_users_raw',
           'dataintel_users_sync',
           mapUserRow,
           USER_COLUMNS,
@@ -579,7 +606,7 @@ export async function syncTable(
       case 'sessions':
         return await syncDimTable(
           'sessions',
-          'dim_sessions',
+          'dim_sessions_raw',
           'dataintel_sessions_sync',
           mapSessionRow,
           SESSION_COLUMNS,
@@ -588,7 +615,7 @@ export async function syncTable(
       case 'attempts':
         return await syncDimTable(
           'attempts',
-          'fact_segment_attempts',
+          'fact_segment_attempts_raw',
           'dataintel_attempts_sync',
           mapAttemptRow,
           ATTEMPT_COLUMNS,

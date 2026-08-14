@@ -32,13 +32,21 @@ export function useAdminData<T>(path: string): { data: Loadable<T>; reload: () =
   return { data, reload: load };
 }
 
-/** Fire a POST admin action and return the envelope result. */
-export function useAdminMutation(): (path: string, body?: unknown) => Promise<ApiResult<unknown>> {
+/**
+ * Fire an admin action and return the envelope result. POST by default;
+ * `method` covers the routes that revoke rather than create.
+ */
+export function useAdminMutation(): (
+  path: string,
+  body?: unknown,
+  method?: 'POST' | 'PATCH' | 'DELETE',
+) => Promise<ApiResult<unknown>> {
   const { getToken } = useAuth();
   return useCallback(
-    async (path: string, body?: unknown) => {
+    async (path: string, body?: unknown, method: 'POST' | 'PATCH' | 'DELETE' = 'POST') => {
       const token = await getToken();
-      return api<unknown>(path, { method: 'POST', body: body ?? {}, token });
+      // A DELETE with a JSON body trips some proxies; only send one when there is one.
+      return api<unknown>(path, { method, ...(method === 'DELETE' ? {} : { body: body ?? {} }), token });
     },
     [getToken],
   );

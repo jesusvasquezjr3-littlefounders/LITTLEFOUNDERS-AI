@@ -22,6 +22,7 @@
     "tools:test": "node --test agent/tools/*.test.mjs",
     "test:all": "bash agent/tools/run-all.sh test",
     "typecheck:all": "bash agent/tools/run-all.sh type-check",
-    "lint:all": "bash agent/tools/run-all.sh lint"
+    "lint:all": "bash agent/tools/run-all.sh lint",
+    "legal:sync": "node agent/tools/sync-legal-i18n.mjs"
   }
 }

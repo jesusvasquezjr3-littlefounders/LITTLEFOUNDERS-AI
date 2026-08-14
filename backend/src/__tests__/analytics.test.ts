@@ -3,6 +3,7 @@ import request from 'supertest';
 import type { Response as SupertestResponse } from 'superagent';
 import { createApp } from '../app.js';
 import { resetPulseForTests } from '../services/pulse.js';
+import { resetExclusionsForTests } from '../services/analyticsExclusions.js';
 import { jsonResponse, mintToken } from './helpers.js';
 
 /*
@@ -126,7 +127,7 @@ describe('GET /api/v1/admin/analytics/breakdown', () => {
     stubPulseEnv();
     stubFetch();
     const res = await request(createApp())
-      .get('/api/v1/admin/analytics/breakdown?dimension=source&limit=51')
+      .get('/api/v1/admin/analytics/breakdown?dimension=source&limit=201')
       .set('Authorization', authed());
     expect(res.status).toBe(400);
     expect(res.body.error.code).toBe('VALIDATION_ERROR');
@@ -206,7 +207,7 @@ describe('GET /api/v1/admin/analytics/breakdown', () => {
 });
 
 describe('GET /api/v1/admin/analytics/overview (filters extension)', () => {
-  it('passes filters through to both Plausible queries', async () => {
+  it('passes filters through to every Plausible query, comparison included', async () => {
     stubPulseEnv();
     const capture: CapturedQuery[] = [];
     stubFetch({ capture });
@@ -215,8 +216,49 @@ describe('GET /api/v1/admin/analytics/overview (filters extension)', () => {
       .get(`/api/v1/admin/analytics/overview?filters=${encodeURIComponent(JSON.stringify(filters))}`)
       .set('Authorization', authed());
     expect(res.status).toBe(200);
-    expect(capture).toHaveLength(2); // aggregate + timeseries
+    expect(capture).toHaveLength(3); // aggregate + timeseries + previous period
+    // A comparison drawn from an unfiltered baseline would invent a trend, so
+    // the previous-window query carries the same filters as the other two.
     for (const query of capture) expect(query.filters).toEqual(filters);
+  });
+
+  it('resolves the window and compares it against the one before it', async () => {
+    stubPulseEnv();
+    const capture: CapturedQuery[] = [];
+    stubFetch({ capture });
+    const res = await request(createApp())
+      .get('/api/v1/admin/analytics/overview?period=7d')
+      .set('Authorization', authed());
+    expect(res.status).toBe(200);
+    expect(res.body.data.from).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(res.body.data.to).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(res.body.data.previous).toMatchObject({ visitors: 120 });
+    const comparison = capture.find((q) => Array.isArray((q as { date_range?: unknown }).date_range));
+    expect(comparison).toBeTruthy();
+  });
+
+  it('accepts an explicit custom range and rejects an impossible one', async () => {
+    stubPulseEnv();
+    const capture: CapturedQuery[] = [];
+    stubFetch({ capture });
+    const okRes = await request(createApp())
+      .get('/api/v1/admin/analytics/overview?period=custom&from=2026-06-01&to=2026-06-30')
+      .set('Authorization', authed());
+    expect(okRes.status).toBe(200);
+    expect((capture[0] as { date_range?: unknown }).date_range).toEqual(['2026-06-01', '2026-06-30']);
+
+    for (const query of [
+      'period=custom&from=2026-06-30&to=2026-06-01',
+      'period=custom&from=2026-06-01',
+      'period=custom&from=not-a-date&to=2026-06-30',
+      'period=fortnight',
+    ]) {
+      const bad = await request(createApp())
+        .get(`/api/v1/admin/analytics/overview?${query}`)
+        .set('Authorization', authed());
+      expect(bad.status).toBe(400);
+      expect(bad.body.error.code).toBe('VALIDATION_ERROR');
+    }
   });
 
   it('400s on malformed filters', async () => {
@@ -230,12 +272,47 @@ describe('GET /api/v1/admin/analytics/overview (filters extension)', () => {
   });
 });
 
-describe('retired analytics exclusions route', () => {
-  it('does not expose a non-enforced IP blocklist as an analytics control', async () => {
-    stubFetch();
-    const res = await request(createApp()).get('/api/v1/admin/analytics/exclusions').set('Authorization', authed());
-    expect(res.status).toBe(404);
-    expect(res.body.error.code).toBe('NOT_FOUND');
+/*
+ * The exclusions control was removed in 02758833 because it claimed an
+ * enforcement (a Plausible CE `IP_BLOCKLIST`) that does not exist. It is back
+ * in Vault 0045 with enforcement we actually own — the tracker gate and
+ * first-party ingest — and the guarantee this file has to keep is that the
+ * route never again becomes decoration: an excluded address must change the
+ * public tracking decision. Full CRUD coverage lives in
+ * analytics-exclusions.test.ts.
+ */
+describe('analytics exclusions are enforced, not decorative', () => {
+  it('turns an excluded address into a do-not-track decision the SPA obeys', async () => {
+    resetExclusionsForTests();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes('/rest/v1/analytics_ip_exclusions')) {
+          return Promise.resolve(
+            jsonResponse(200, [
+              {
+                id: '33333333-3333-4333-8333-333333333333',
+                network: '203.0.113.0/24',
+                label: 'Office',
+                reason: null,
+                created_by: ADMIN_ID,
+                created_at: '2026-08-13T00:00:00.000Z',
+                revoked_at: null,
+                revoked_by: null,
+              },
+            ]),
+          );
+        }
+        throw new Error(`analytics.test: unexpected fetch ${url}`);
+      }),
+    );
+    const res = await request(createApp())
+      .get('/api/v1/analytics/tracking-decision')
+      .set('X-Forwarded-For', '203.0.113.7');
+    expect(res.status).toBe(200);
+    expect(res.body.data.excluded).toBe(true);
+    resetExclusionsForTests();
   });
 });
 
@@ -309,8 +386,10 @@ describe('GET /api/v1/admin/analytics/report.pdf', () => {
       .parse(binaryParser);
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toBe('application/pdf');
+    // The filename carries the WINDOW, not the label: two "30d" exports taken
+    // a week apart are different documents and must not share a name.
     expect(res.headers['content-disposition']).toMatch(
-      /^attachment; filename="littlefounders-analytics-marketing-30d-\d{4}-\d{2}-\d{2}\.pdf"$/,
+      /^attachment; filename="littlefounders-analytics-marketing-\d{4}-\d{2}-\d{2}_to_\d{4}-\d{2}-\d{2}\.pdf"$/,
     );
     const body = res.body as Buffer;
     expect(body.subarray(0, 5).toString('latin1')).toBe('%PDF-');

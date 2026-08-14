@@ -349,3 +349,53 @@ describe('AdminIntelPage — accessibility', () => {
     expect(screen.getByText('admin.intel.trends.metricDau')).toBeInTheDocument();
   });
 });
+
+/*
+ * The period selector used to reach 4 of 17 requests: the funnel, drop-off,
+ * calibration, leaderboard, churn, cohort, quality and content-health tabs
+ * ignored it entirely and showed lifetime figures under a period label. That
+ * is invisible on screen — every number still renders — so it needs a test
+ * that reads the actual request URLs rather than the rendered output.
+ */
+describe('AdminIntelPage — the period reaches every request', () => {
+  const intelCalls = (): string[] =>
+    mockApi.mock.calls.map(([path]) => String(path)).filter((path) => path.startsWith('/admin/intel/'));
+
+  it('sends a window on every intel request', async () => {
+    renderPage();
+    await flushPromises();
+
+    const calls = intelCalls();
+    expect(calls.length).toBeGreaterThan(10);
+
+    /*
+     * CATALOGS, not measurements. These answer "what exists" rather than "what
+     * happened", so a time window would be meaningless: an experiment or an
+     * alert rule is configured, not observed. Their RESULTS are windowed
+     * elsewhere. Every other endpoint must carry the selection.
+     */
+    const CATALOG_ENDPOINTS = ['/admin/intel/experiments', '/admin/intel/alerts'];
+
+    // Cohort retention is expressed in weeks, derived from the same selection.
+    const unbounded = calls
+      .filter((path) => !CATALOG_ENDPOINTS.some((catalog) => path === catalog || path.startsWith(`${catalog}?`)))
+      .filter((path) => !/[?&](days|weeks)=/.test(path));
+    expect(unbounded, `these requests carry no window: ${unbounded.join(', ')}`).toEqual([]);
+  });
+
+  it('derives cohort weeks from the same selection rather than a fixed 12', async () => {
+    renderPage();
+    await flushPromises();
+    const cohorts = intelCalls().find((path) => path.includes('/retention/cohorts'));
+    // The default selection is 30 days, so ~4 weeks — not the hard-coded 12.
+    expect(cohorts).toContain('weeks=4');
+  });
+
+  it('does not ask the warehouse for staff-inflated figures without saying so', async () => {
+    renderPage();
+    await flushPromises();
+    // The disclosure read is part of the page load: an operator must be able to
+    // see how much was filtered, not just trust that something was.
+    expect(intelCalls().some((path) => path.includes('/quality/staff-exclusion'))).toBe(true);
+  });
+});

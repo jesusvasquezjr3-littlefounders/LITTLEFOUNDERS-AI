@@ -352,7 +352,10 @@
       "30d": "Últimos 30 días",
       "month": "Este mes",
       "6mo": "Últimos 6 meses",
-      "12mo": "Últimos 12 meses"
+      "12mo": "Últimos 12 meses",
+      "year": "Este año",
+      "all": "Todo el tiempo",
+      "custom": "Rango personalizado"
     },
     "unavailableTitle": "Analíticas no disponibles",
     "unavailableBody": "Pulse no respondió. El producto no se ve afectado, revisa los servicios de Pulse en Railway.",
@@ -381,7 +384,8 @@
       "chartSummaryAria": "Resumen del rango analítico seleccionado",
       "chartOverviewAria": "Vista general completa de la tendencia analítica",
       "chartZoomHint": "Arrastra los controles de la línea inferior para enfocarte en una ventana más pequeña.",
-      "signalsAria": "Señales de analítica web"
+      "signalsAria": "Señales de analítica web",
+      "comparedWith": "Comparado con {{window}}"
     },
     "behavior": {
       "title": "Comportamiento (superficies adultas)",
@@ -446,38 +450,90 @@
       "mapAria": "Mapamundi con concentración de visitantes por país",
       "topCountries": "Países principales",
       "totalVisitorsLabel": "visitantes entre los países reportados",
-      "moreVisitors": "Los puntos grandes representan más visitantes",
-      "low": "Menor",
-      "high": "Mayor",
-      "filterHint": "Selecciona un país para agregarlo como filtro global."
+      "filterHint": "Selecciona un país para agregarlo como filtro global.",
+      "legendTitle": "Visitantes por país",
+      "visitorsWord": "visitantes",
+      "countryCount_one": "{{count}} país",
+      "countryCount_other": "{{count}} países",
+      "unmapped": "La escala del mapa no permite dibujar {{countries}}, así que aparecen solo en la lista.",
+      "backToWorld": "Volver al mundo",
+      "zoomInto": "Acercar a {{country}}",
+      "topRegions": "Principales regiones de {{country}}",
+      "regionCount_one": "{{count}} región",
+      "regionCount_other": "{{count}} regiones",
+      "legendTitleRegion": "Visitantes por región"
     },
     "toolsTitle": "Exportaciones y controles",
     "reports": {
-      "title": "Reportes por equipo (PDF)",
-      "caption": "Reportes PDF listos para decidir, con encabezado de marca, gráfico de tendencia, concentración de audiencia y tablas detalladas usando el periodo y filtros actuales.",
+      "title": "Reportes del equipo",
+      "caption": "Exporta la ventana y los filtros actuales como documento con marca, hoja de cálculo o CSV plano.",
       "failed": "No se pudo generar el reporte. Inténtalo de nuevo.",
       "audienceLabel": "Vista del reporte",
-      "includesTitle": "Incluye en cada reporte",
-      "includes": {
-        "summary": "Resumen ejecutivo de KPIs",
-        "trend": "Gráfico diario de tráfico",
-        "segments": "Barras de concentración de audiencia",
-        "tables": "Tablas detalladas de desgloses"
-      },
       "descriptions": {
         "marketing": "Fuentes de adquisición, canales, campañas, países y referencias.",
         "sales": "Adquisición, rutas de entrada, países, dispositivos y contexto de conversión.",
         "frontend": "Páginas, rutas de entrada y salida, dispositivos, navegadores y sistemas operativos.",
         "full": "La vista analítica completa con todas las dimensiones disponibles."
       },
-      "currentSelection": "Listo para exportar: {{audience}}",
+      "currentSelection": "{{audience}} listo para exportar",
       "download": "Descargar reporte",
       "audiences": {
         "marketing": "Marketing",
         "sales": "Ventas",
         "frontend": "Frontend",
         "full": "Reporte completo"
-      }
+      },
+      "formatLabel": "Formato",
+      "formats": {
+        "pdf": {
+          "name": "Reporte PDF",
+          "hint": "Documento con marca para compartir"
+        },
+        "xlsx": {
+          "name": "Hoja de cálculo",
+          "hint": "Una hoja por desglose, lista para tablas dinámicas"
+        },
+        "csv": {
+          "name": "CSV",
+          "hint": "Una tabla plana para cualquier herramienta"
+        }
+      },
+      "rowsLabel": "Filas por desglose",
+      "rowsOption_one": "{{count}} fila",
+      "rowsOption_other": "{{count}} filas",
+      "rowsHint": "El PDF se mantiene legible con 10. Las hojas de cálculo admiten muchas más.",
+      "provenance": "Cada exportación indica la ventana que cubre, los filtros aplicados y cuándo se generó."
+    },
+    "customFrom": "Desde",
+    "customTo": "Hasta",
+    "customApply": "Aplicar",
+    "customInvalid": "La fecha inicial debe ser anterior a la final.",
+    "rangeTo": "a",
+    "exclusions": {
+      "title": "Tráfico interno",
+      "caption": "Deja de contar a tu propio equipo. Una dirección excluida nunca carga un medidor de analítica y sus eventos se descartan al llegar.",
+      "unavailable": "No se pudo leer la lista de exclusiones.",
+      "yourDevice": "Este dispositivo",
+      "unknownAddress": "Dirección no disponible",
+      "selfExcluded": "Ya está excluido",
+      "excludeSelf": "Excluir este dispositivo",
+      "selfLabel": "Dispositivo del equipo",
+      "detectedTitle": "Direcciones detectadas del equipo",
+      "detectedWindow": "Últimos {{days}} días",
+      "detectedEmpty": "No se detectaron direcciones del equipo en esta ventana.",
+      "seenBy_one": "{{name}}, {{count}} solicitud, visto {{when}}",
+      "seenBy_other": "{{name}}, {{count}} solicitudes, visto {{when}}",
+      "exclude": "Excluir",
+      "activeTitle_one": "{{count}} exclusión activa",
+      "activeTitle_other": "{{count}} exclusiones activas",
+      "activeEmpty": "Todavía no hay nada excluido.",
+      "revoke": "Deshacer",
+      "manualTitle": "Agregar una red manualmente",
+      "networkLabel": "Dirección o rango",
+      "nameLabel": "Nombre",
+      "namePlaceholder": "Wifi de la oficina",
+      "add": "Agregar",
+      "forwardOnly": "Las exclusiones aplican desde el momento en que las agregas. Los datos ya registrados no cambian."
     }
   },
   "emails": {
@@ -822,8 +878,8 @@
     "tabs": {
       "home": "Inicio",
       "trends": "Tendencias",
-    "funnels": "Embudos",
-    "learning": "Aprendizaje",
+      "funnels": "Embudos",
+      "learning": "Aprendizaje",
       "retention": "Retención",
       "segments": "Segmentos",
       "people": "Personas",
@@ -831,10 +887,10 @@
       "alerts": "Alertas",
       "settings": "Configuración"
     },
-  "home": {
-    "consentTitle": "Cobertura de analítica de aprendizaje",
-    "consentHint": "El consentimiento mantiene el límite para telemetría conductual infantil. Las calificaciones autoritativas permanecen dentro del producto.",
-    "consentPending": "Cargando",
+    "home": {
+      "consentTitle": "Cobertura de analítica de aprendizaje",
+      "consentHint": "El consentimiento mantiene el límite para telemetría conductual infantil. Las calificaciones autoritativas permanecen dentro del producto.",
+      "consentPending": "Cargando",
       "kpiDau": "Usuarios Activos Diarios",
       "kpiEvents": "Eventos ({{days}}d)",
       "kpiRetention": "Retención Semana 1",
@@ -869,7 +925,7 @@
       "dauTitle": "DAU",
       "sparklineHint": ""
     },
-  "funnels": {
+    "funnels": {
       "title": "Análisis de Embudos",
       "subtitle": "Sigue la progresión de usuarios a través de embudos de conversión configurables.",
       "empty": "Define los pasos del embudo para comenzar el análisis.",
@@ -1033,11 +1089,10 @@
       "days365": "365 días"
     },
     "export": {
-      "csv": "Exportar CSV",
-      "json": "Exportar JSON",
-      "comingSoon": "Exportación próximamente",
-      "downloading": "Descargando…",
-      "note": "La exportación no incluye user_id ni anon_id. Las sesiones se reasignan por archivo."
+      "label": "Exportar este periodo",
+      "csv": "CSV",
+      "xlsx": "Hoja de cálculo",
+      "failed": "No se pudo generar la exportación. Inténtalo de nuevo."
     },
     "retry": "Reintentar",
     "kpi": {
@@ -1059,111 +1114,120 @@
       "colStart": "Inicio"
     },
     "learning": {
-    "dropoffTitle": "Abandono de lecciones",
-    "dropoffSubtitle": "Dónde salen los aprendices de una lección, medido a partir de inicios y abandonos explícitos.",
-    "calibrationTitle": "Calibración de ejercicios",
-    "calibrationSubtitle": "Las calificaciones autoritativas de Core revelan cuándo el contenido es muy difícil, muy fácil o requiere una explicación más clara.",
-    "colLesson": "Lección",
-    "colStarts": "Inicios",
-    "colCompleted": "Completadas",
-    "colAbandon": "Abandono",
-    "colTime": "Tiempo antes de salir",
-    "colSegment": "Ejercicio",
-    "colLearners": "Aprendices",
-    "colScore": "Calificación promedio",
-    "colAttempts": "Intentos por aprendiz",
-    "colHints": "Uso de ayudas",
-    "colFirstTry": "Calificación del primer intento",
-    "unavailable": "Datos insuficientes",
-    "minutes": "{{count}} min",
-    "readinessTitle": "Preparación de la evidencia",
-    "readinessSubtitle": "Verificaciones de confianza para los datos detrás de las recomendaciones de aprendizaje y Tutor.",
-    "readinessReady": "Lista para interpretar",
-    "readinessAttention": "Requiere atención",
-    "readinessUnavailable": "Las señales de calidad del almacén no están disponibles. Trata los hallazgos de aprendizaje como no verificados hasta que se recupere la sincronización.",
-    "idempotency": "Eventos seguros ante reintentos",
-    "eventContext": "Contexto de eventos de aprendizaje",
-    "skillContext": "Intentos etiquetados por habilidad",
-    "versionContext": "Intentos con versión de lección",
-    "syncedRows": "{{count}} filas sincronizadas",
-    "syncError": "Falló la última sincronización",
-    "fresh": "Actualizado",
-    "stale": "Desactualizado",
-    "skillHealthTitle": "Efectividad del contenido por habilidad",
-    "skillHealthSubtitle": "Prioriza revisar la instrucción solo cuando existe evidencia independiente suficiente de aprendices.",
-    "colSkill": "Habilidad",
-    "colPriority": "Prioridad",
-    "colMastery": "Dominio estimado",
-    "colLowMastery": "Bajo dominio",
-    "priority": {
-      "review": "Revisar contenido",
-      "monitor": "Monitorear",
-      "insufficient_evidence": "Falta evidencia"
+      "dropoffTitle": "Abandono de lecciones",
+      "dropoffSubtitle": "Dónde salen los aprendices de una lección, medido a partir de inicios y abandonos explícitos.",
+      "calibrationTitle": "Calibración de ejercicios",
+      "calibrationSubtitle": "Las calificaciones autoritativas de Core revelan cuándo el contenido es muy difícil, muy fácil o requiere una explicación más clara.",
+      "colLesson": "Lección",
+      "colStarts": "Inicios",
+      "colCompleted": "Completadas",
+      "colAbandon": "Abandono",
+      "colTime": "Tiempo antes de salir",
+      "colSegment": "Ejercicio",
+      "colLearners": "Aprendices",
+      "colScore": "Calificación promedio",
+      "colAttempts": "Intentos por aprendiz",
+      "colHints": "Uso de ayudas",
+      "colFirstTry": "Calificación del primer intento",
+      "unavailable": "Datos insuficientes",
+      "minutes": "{{count}} min",
+      "readinessTitle": "Preparación de la evidencia",
+      "readinessSubtitle": "Verificaciones de confianza para los datos detrás de las recomendaciones de aprendizaje y Tutor.",
+      "readinessReady": "Lista para interpretar",
+      "readinessAttention": "Requiere atención",
+      "readinessUnavailable": "Las señales de calidad del almacén no están disponibles. Trata los hallazgos de aprendizaje como no verificados hasta que se recupere la sincronización.",
+      "idempotency": "Eventos seguros ante reintentos",
+      "eventContext": "Contexto de eventos de aprendizaje",
+      "skillContext": "Intentos etiquetados por habilidad",
+      "versionContext": "Intentos con versión de lección",
+      "syncedRows": "{{count}} filas sincronizadas",
+      "syncError": "Falló la última sincronización",
+      "fresh": "Actualizado",
+      "stale": "Desactualizado",
+      "skillHealthTitle": "Efectividad del contenido por habilidad",
+      "skillHealthSubtitle": "Prioriza revisar la instrucción solo cuando existe evidencia independiente suficiente de aprendices.",
+      "colSkill": "Habilidad",
+      "colPriority": "Prioridad",
+      "colMastery": "Dominio estimado",
+      "colLowMastery": "Bajo dominio",
+      "priority": {
+        "review": "Revisar contenido",
+        "monitor": "Monitorear",
+        "insufficient_evidence": "Falta evidencia"
+      },
+      "commandKicker": "Operación de aprendizaje",
+      "commandTitle": "Convierte la evidencia de aprendizaje en acciones claras",
+      "commandSubtitle": "Revisa cada curso, lección y perfil de aprendizaje publicado sin confundir un conjunto vacío con una señal saludable.",
+      "catalogCourses": "Cursos publicados",
+      "catalogLessons": "Lecciones publicadas",
+      "attemptsLabel": "Intentos calificados",
+      "activeLearners": "Aprendices con evidencia",
+      "pulseTitle": "Pulso de aprendizaje",
+      "pulseSubtitle": "Volumen de intentos y calificación promedio durante el periodo seleccionado.",
+      "directoryTitle": "Directorio de evidencia de aprendizaje",
+      "directorySubtitle": "Abre una fila para ver el resumen completo. Las métricas permanecen no disponibles hasta contar con evidencia independiente suficiente.",
+      "directory": {
+        "courses": "Cursos",
+        "lessons": "Lecciones",
+        "learners": "Aprendices"
+      },
+      "evidenceLabel": "Evidencia",
+      "evidence": {
+        "awaiting_evidence": "Esperando evidencia",
+        "limited": "Evidencia limitada",
+        "sufficient": "Evidencia suficiente"
+      },
+      "evidenceHint": {
+        "awaiting_evidence": "El catálogo está listo, pero aún no llegan intentos calificados a esta vista.",
+        "limited": "Las señales iniciales son visibles. Mantén el seguimiento hasta reunir evidencia de más aprendices independientes.",
+        "sufficient": "Hay evidencia independiente suficiente para priorizar el seguimiento pedagógico."
+      },
+      "attention": {
+        "awaiting_evidence": "Esperando evidencia",
+        "monitor": "Monitorear",
+        "review": "Revisar contenido",
+        "healthy": "Saludable"
+      },
+      "course": "Curso",
+      "lesson": "Lección",
+      "learner": "Aprendiz",
+      "untitledCourse": "Curso sin título",
+      "untitledLesson": "Lección sin título",
+      "lessonsCount": "{{count}} lecciones",
+      "colDetail": "Detalle",
+      "inspect": "Inspeccionar",
+      "retryRate": "Tasa de reintentos",
+      "avgTime": "Tiempo promedio",
+      "seconds": "{{count}} seg",
+      "syncCoverage": "{{count}} intentos autoritativos están disponibles actualmente en el almacén.",
+      "privateLearner": "Perfil de aprendiz",
+      "roleUnavailable": "Rol no disponible",
+      "recommendation": "Siguiente acción recomendada",
+      "recommendationHint": "Se deriva de calificaciones autoritativas y evidencia interpretable por habilidad.",
+      "supportSkills": "Habilidades que requieren apoyo",
+      "firstTry": "Calificación del primer intento",
+      "action": {
+        "remediate": "Iniciar refuerzo",
+        "practice": "Practicar otra vez",
+        "retrieve": "Programar recuperación",
+        "continue": "Continuar"
+      },
+      "learnerPulseTitle": "Línea de práctica",
+      "learnerPulseSubtitle": "Intentos calificados registrados durante el periodo seleccionado.",
+      "learnerCoursesTitle": "Retroalimentación por curso",
+      "learnerCoursesSubtitle": "Dónde este aprendiz ha generado evidencia autoritativa.",
+      "learnerSkillsTitle": "Retroalimentación por habilidad",
+      "learnerSkillsSubtitle": "Estado de dominio interpretable y la siguiente acción de aprendizaje.",
+      "learnerNoEvidence": "No hay evidencia de aprendizaje disponible para este perfil durante el periodo seleccionado."
     },
-    "commandKicker": "Operación de aprendizaje",
-    "commandTitle": "Convierte la evidencia de aprendizaje en acciones claras",
-    "commandSubtitle": "Revisa cada curso, lección y perfil de aprendizaje publicado sin confundir un conjunto vacío con una señal saludable.",
-    "catalogCourses": "Cursos publicados",
-    "catalogLessons": "Lecciones publicadas",
-    "attemptsLabel": "Intentos calificados",
-    "activeLearners": "Aprendices con evidencia",
-    "pulseTitle": "Pulso de aprendizaje",
-    "pulseSubtitle": "Volumen de intentos y calificación promedio durante el periodo seleccionado.",
-    "directoryTitle": "Directorio de evidencia de aprendizaje",
-    "directorySubtitle": "Abre una fila para ver el resumen completo. Las métricas permanecen no disponibles hasta contar con evidencia independiente suficiente.",
-    "directory": {
-      "courses": "Cursos",
-      "lessons": "Lecciones",
-      "learners": "Aprendices"
-    },
-    "evidenceLabel": "Evidencia",
-    "evidence": {
-      "awaiting_evidence": "Esperando evidencia",
-      "limited": "Evidencia limitada",
-      "sufficient": "Evidencia suficiente"
-    },
-    "evidenceHint": {
-      "awaiting_evidence": "El catálogo está listo, pero aún no llegan intentos calificados a esta vista.",
-      "limited": "Las señales iniciales son visibles. Mantén el seguimiento hasta reunir evidencia de más aprendices independientes.",
-      "sufficient": "Hay evidencia independiente suficiente para priorizar el seguimiento pedagógico."
-    },
-    "attention": {
-      "awaiting_evidence": "Esperando evidencia",
-      "monitor": "Monitorear",
-      "review": "Revisar contenido",
-      "healthy": "Saludable"
-    },
-    "course": "Curso",
-    "lesson": "Lección",
-    "learner": "Aprendiz",
-    "untitledCourse": "Curso sin título",
-    "untitledLesson": "Lección sin título",
-    "lessonsCount": "{{count}} lecciones",
-    "colDetail": "Detalle",
-    "inspect": "Inspeccionar",
-    "retryRate": "Tasa de reintentos",
-    "avgTime": "Tiempo promedio",
-    "seconds": "{{count}} seg",
-    "syncCoverage": "{{count}} intentos autoritativos están disponibles actualmente en el almacén.",
-    "privateLearner": "Perfil de aprendiz",
-    "roleUnavailable": "Rol no disponible",
-    "recommendation": "Siguiente acción recomendada",
-    "recommendationHint": "Se deriva de calificaciones autoritativas y evidencia interpretable por habilidad.",
-    "supportSkills": "Habilidades que requieren apoyo",
-    "firstTry": "Calificación del primer intento",
-    "action": {
-      "remediate": "Iniciar refuerzo",
-      "practice": "Practicar otra vez",
-      "retrieve": "Programar recuperación",
-      "continue": "Continuar"
-    },
-    "learnerPulseTitle": "Línea de práctica",
-    "learnerPulseSubtitle": "Intentos calificados registrados durante el periodo seleccionado.",
-    "learnerCoursesTitle": "Retroalimentación por curso",
-    "learnerCoursesSubtitle": "Dónde este aprendiz ha generado evidencia autoritativa.",
-    "learnerSkillsTitle": "Retroalimentación por habilidad",
-    "learnerSkillsSubtitle": "Estado de dominio interpretable y la siguiente acción de aprendizaje.",
-    "learnerNoEvidence": "No hay evidencia de aprendizaje disponible para este perfil durante el periodo seleccionado."
+    "staffExcluded": {
+      "title": "La actividad del equipo está excluida",
+      "events_one": "{{events}} evento removido ({{share}})",
+      "events_other": "{{events}} eventos removidos ({{share}})",
+      "attempts_one": "{{attempts}} intento de lección removido",
+      "attempts_other": "{{attempts}} intentos de lección removidos",
+      "accounts_one": "{{count}} cuenta del equipo",
+      "accounts_other": "{{count}} cuentas del equipo"
     }
   },
   "insights": {

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { CookiePreferencesButton } from '@/components/CookieConsentBanner';
 import { Badge, Card, Icon } from '@/components/ui';
+import { cn } from '@/lib/utils';
 
 interface LegalDocumentViewerProps {
   doc: 'terms' | 'privacy';
@@ -16,6 +17,32 @@ const TERM_CLAUSES = [
 const PRIVACY_SECTIONS = [
   's1', 's2', 's3', 's4', 's5', 's6', 's7', 's8'
 ] as const;
+
+/*
+ * Every paragraph a section actually has, in order.
+ *
+ * This used to be a hard-coded allowlist ("c2, c4, c5… have a p2; c2 and c8
+ * have a p3"), which silently truncated the contract: 48 paragraphs existed in
+ * the locale files and were never rendered in any language, including most of
+ * the personal-data clause and all but the opening line of clauses 14 and 15.
+ * A legal document that displays some of its clauses is worse than one that
+ * displays none, because it looks complete.
+ *
+ * i18next returns the key itself when a key is absent, which is the signal used
+ * to stop walking. The cap is a loop guard, not a content limit.
+ */
+const MAX_PARAGRAPHS_PER_SECTION = 40;
+
+function sectionParagraphs(t: (key: string) => string, prefix: string, key: string): string[] {
+  const paragraphs: string[] = [];
+  for (let index = 1; index <= MAX_PARAGRAPHS_PER_SECTION; index += 1) {
+    const lookup = `marketing.legal.${prefix}.${key}.p${index}`;
+    const value = t(lookup);
+    if (!value || value === lookup) break;
+    paragraphs.push(value);
+  }
+  return paragraphs;
+}
 
 export function LegalDocumentViewer({ doc }: LegalDocumentViewerProps) {
   const { t } = useTranslation();
@@ -232,18 +259,7 @@ export function LegalDocumentViewer({ doc }: LegalDocumentViewerProps) {
           ) : (
             filteredSectionKeys.map((key) => {
               const title = t(`marketing.legal.${prefix}.${key}.title`);
-              const p1 = t(`marketing.legal.${prefix}.${key}.p1`);
-
-              // Optional p2 & p3
-              const hasP2 = isTerms ? ['c2', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10', 'c11', 'c13'].includes(key) : ['s2', 's3', 's5'].includes(key);
-              const hasP3 = isTerms ? ['c2', 'c8'].includes(key) : false;
-
-              const p2 = hasP2 ? t(`marketing.legal.${prefix}.${key}.p2`) : null;
-              const p3 = hasP3 ? t(`marketing.legal.${prefix}.${key}.p3`) : null;
-
-              // Defined items for c1 & c3
-              const isC1 = isTerms && key === 'c1';
-              const isC3 = isTerms && key === 'c3';
+              const paragraphs = sectionParagraphs(t, prefix, key);
 
               return (
                 <section
@@ -267,46 +283,14 @@ export function LegalDocumentViewer({ doc }: LegalDocumentViewerProps) {
                     </button>
                   </div>
 
-                  <p className="lf-body mt-4 text-content-muted leading-relaxed">
-                    {p1}
-                  </p>
-
-                  {/* Render C1 definitions list if present */}
-                  {isC1 && (
-                    <ul className="mt-4 space-y-2 rounded-md bg-surface-sunken p-4 text-sm text-content-muted">
-                      <li>• <strong>{t('marketing.legal.terms.c1.items.child')}</strong></li>
-                      <li>• <strong>{t('marketing.legal.terms.c1.items.tutor')}</strong></li>
-                      <li>• <strong>{t('marketing.legal.terms.c1.items.content')}</strong></li>
-                      <li>• <strong>{t('marketing.legal.terms.c1.items.ai')}</strong></li>
-                      <li>• <strong>{t('marketing.legal.terms.c1.items.platform')}</strong></li>
-                      <li>• <strong>{t('marketing.legal.terms.c1.items.services')}</strong></li>
-                      <li>• <strong>{t('marketing.legal.terms.c1.items.user')}</strong></li>
-                      <li>• <strong>{t('marketing.legal.terms.c1.items.childUser')}</strong></li>
-                      <li>• <strong>{t('marketing.legal.terms.c1.items.tutorUser')}</strong></li>
-                      <li>• <strong>{t('marketing.legal.terms.c1.items.universalUser')}</strong></li>
-                    </ul>
-                  )}
-
-                  {/* Render C3 user types list if present */}
-                  {isC3 && (
-                    <ul className="mt-4 space-y-2 rounded-md bg-surface-sunken p-4 text-sm text-content-muted">
-                      <li>• <strong>{t('marketing.legal.terms.c3.items.universal')}</strong></li>
-                      <li>• <strong>{t('marketing.legal.terms.c3.items.tutor')}</strong></li>
-                      <li>• <strong>{t('marketing.legal.terms.c3.items.child')}</strong></li>
-                    </ul>
-                  )}
-
-                  {p2 && (
-                    <p className="lf-body mt-3 text-content-muted leading-relaxed">
-                      {p2}
+                  {paragraphs.map((paragraph, index) => (
+                    <p
+                      key={`${key}-p${index + 1}`}
+                      className={cn('lf-body text-content-muted leading-relaxed', index === 0 ? 'mt-4' : 'mt-3')}
+                    >
+                      {paragraph}
                     </p>
-                  )}
-
-                  {p3 && (
-                    <p className="lf-body mt-3 text-content-muted leading-relaxed">
-                      {p3}
-                    </p>
-                  )}
+                  ))}
                 </section>
               );
             })

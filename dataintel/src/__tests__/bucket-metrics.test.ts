@@ -27,7 +27,7 @@ let nextEventId = 1;
 
 async function seedEvent(userId: string, sessionId: string, daysAgo: number): Promise<void> {
   await execute(
-    `INSERT INTO fact_events (event_id, user_id, session_id, event_type, created_at)
+    `INSERT INTO fact_events_raw (event_id, user_id, session_id, event_type, created_at)
      VALUES (?, ?, ?, 'nav_view', CURRENT_TIMESTAMP - INTERVAL (?) DAY)`,
     nextEventId++,
     userId,

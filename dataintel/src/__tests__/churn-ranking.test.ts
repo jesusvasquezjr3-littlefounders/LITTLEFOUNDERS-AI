@@ -22,14 +22,14 @@ async function seedUser(
   lessonsCompleted: number,
 ): Promise<void> {
   await execute(
-    `INSERT INTO fact_events (event_id, user_id, event_type, created_at)
+    `INSERT INTO fact_events_raw (event_id, user_id, event_type, created_at)
      VALUES (?, ?, 'nav_view', CURRENT_TIMESTAMP - INTERVAL (?) DAY)`,
     nextEventId++,
     userId,
     daysAgo,
   );
   await execute(
-    `INSERT INTO dim_users (user_id, role, lessons_completed) VALUES (?, 'universal', ?)`,
+    `INSERT INTO dim_users_raw (user_id, role, lessons_completed) VALUES (?, 'universal', ?)`,
     userId,
     lessonsCompleted,
   );

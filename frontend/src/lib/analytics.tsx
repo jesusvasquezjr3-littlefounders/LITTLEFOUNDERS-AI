@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
+import { BASE_URL } from '@/lib/api';
 import { hasCookieConsent } from '@/lib/visitor';
 
 /*
@@ -42,6 +43,12 @@ import { hasCookieConsent } from '@/lib/visitor';
  *     navigation out of the marketing area.
  * COOKIE NOTE: GA4 uses cookies and is mounted only after explicit optional
  * consent. Revoking that choice removes the script and known GA4 cookies.
+ *
+ * INTERNAL-TRAFFIC EXCLUSION (Vault 0045): before ANY of the three mounts,
+ * the gate asks Core whether this visitor's address is on the staff exclusion
+ * list. Plausible CE has no ingestion-side IP blocklist, so this — not
+ * loading the script in the first place — is the only place the exclusion can
+ * actually be enforced. See useTrackingDecision below.
  *
  * Plausible/Umami self-track SPA navigations; env-unset (local dev) = no-op.
  */
@@ -88,6 +95,101 @@ export function shouldTrackPublicAcquisition(
 
 function isAdminPath(pathname: string): boolean {
   return pathname === '/admin' || pathname.startsWith('/admin/');
+}
+
+/* ── Internal-traffic exclusion (Vault 0045) ───────────────────────────────
+ *
+ * `pending` is a real state, not a loading detail: mounting a tracker before
+ * the answer arrives would send the very pageview the exclusion exists to
+ * prevent. The check costs one request per browser session.
+ *
+ * The localStorage flag is what makes exclusion survive a Core outage — an
+ * excluded staff machine stays excluded even when the check cannot run. It is
+ * also CLEARED on an `allowed` answer, so revoking an exclusion in the console
+ * genuinely re-enables measurement instead of being a one-way door.
+ */
+
+type TrackingDecision = 'pending' | 'allowed' | 'excluded';
+
+const EXCLUSION_FLAG = 'lf_analytics_excluded';
+const SESSION_FLAG = 'lf_analytics_decision';
+
+function readFlag(store: 'local' | 'session', key: string): string | null {
+  try {
+    return (store === 'local' ? window.localStorage : window.sessionStorage).getItem(key);
+  } catch {
+    return null; // Safari private mode / storage disabled
+  }
+}
+
+function writeFlag(store: 'local' | 'session', key: string, value: string | null): void {
+  try {
+    const target = store === 'local' ? window.localStorage : window.sessionStorage;
+    if (value === null) target.removeItem(key);
+    else target.setItem(key, value);
+  } catch {
+    /* storage unavailable — the in-memory decision still gates this session */
+  }
+}
+
+/**
+ * Belt-and-braces for anything that might load outside this gate: Plausible
+ * and Umami both honour their own documented localStorage opt-outs.
+ */
+function applyVendorOptOuts(excluded: boolean): void {
+  writeFlag('local', 'plausible_ignore', excluded ? 'true' : null);
+  writeFlag('local', 'umami.disabled', excluded ? '1' : null);
+}
+
+export function useTrackingDecision(): TrackingDecision {
+  const [decision, setDecision] = useState<TrackingDecision>(() =>
+    readFlag('local', EXCLUSION_FLAG) === '1' ? 'excluded' : 'pending',
+  );
+
+  useEffect(() => {
+    const cached = readFlag('session', SESSION_FLAG);
+    if (cached === 'excluded' || cached === 'allowed') {
+      setDecision(cached);
+      applyVendorOptOuts(cached === 'excluded');
+      return;
+    }
+
+    let cancelled = false;
+    const settle = (next: 'allowed' | 'excluded', persist: boolean): void => {
+      if (cancelled) return;
+      setDecision(next);
+      applyVendorOptOuts(next === 'excluded');
+      writeFlag('session', SESSION_FLAG, next);
+      if (persist) writeFlag('local', EXCLUSION_FLAG, next === 'excluded' ? '1' : null);
+    };
+
+    void fetch(`${BASE_URL}/api/v1/analytics/tracking-decision`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((body: { data?: { excluded?: boolean; degraded?: boolean } } | null) => {
+        const data = body?.data;
+        if (!data) {
+          // Unreadable answer: fall back to whatever this device already knows.
+          settle(readFlag('local', EXCLUSION_FLAG) === '1' ? 'excluded' : 'allowed', false);
+          return;
+        }
+        // A degraded answer is an assumption, not a fact — never let it CLEAR
+        // a stored exclusion, or an outage would quietly re-admit staff.
+        if (data.degraded) {
+          settle(readFlag('local', EXCLUSION_FLAG) === '1' ? 'excluded' : 'allowed', false);
+          return;
+        }
+        settle(data.excluded === true ? 'excluded' : 'allowed', true);
+      })
+      .catch(() => {
+        settle(readFlag('local', EXCLUSION_FLAG) === '1' ? 'excluded' : 'allowed', false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return decision;
 }
 
 /** New-format Plausible: async per-site script + a CSP-safe programmatic init stub. */
@@ -148,13 +250,15 @@ function mountGa4(): void {
 export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: number }) {
   const { session, roles, meLoaded } = useAuth();
   const { pathname } = useLocation();
+  const decision = useTrackingDecision();
+  const measurable = decision === 'allowed';
 
   // Public acquisition only. Product behavior lives in first-party Insights
   // (and, for consented adult parent surfaces, Umami), not in this traffic KPI.
   useEffect(() => {
-    if (shouldTrackPublicAcquisition(pathname, session, meLoaded, hasCookieConsent())) mountPlausible();
+    if (measurable && shouldTrackPublicAcquisition(pathname, session, meLoaded, hasCookieConsent())) mountPlausible();
     else ejectScript('lf-plausible');
-  }, [session, meLoaded, pathname, consentVersion]);
+  }, [session, meLoaded, pathname, consentVersion, measurable]);
 
   // Umami — adult surfaces only; kid sessions eject unconditionally.
   useEffect(() => {
@@ -165,6 +269,7 @@ export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: numb
     const isParent = roles.includes('parent');
 
     const shouldMount =
+      measurable &&
       !isKid &&
       !isAdminPath(pathname) &&
       ((isGuest && meLoaded && isMarketingPath(pathname) && hasCookieConsent()) || (session != null && meLoaded && isParent));
@@ -174,12 +279,22 @@ export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: numb
     } else {
       ejectScript('lf-umami');
     }
-  }, [session, roles, meLoaded, pathname]);
+  }, [session, roles, meLoaded, pathname, measurable]);
 
-  // GA4 — public marketing pages only, never app/kid (module header §1.9 scope).
+  /*
+   * GA4 — public marketing pages only, never app/kid (module header §1.9 scope).
+   *
+   * The session check is load-bearing and was MISSING: GA4 gated only on
+   * "marketing path + not a kid", so every signed-in visitor — including staff
+   * checking the public site between admin tasks — was recorded as marketing
+   * traffic, while Plausible (which requires an anonymous session) was not.
+   * The two tools measured different populations and could not be reconciled.
+   * GA4 now follows the same acquisition boundary as Plausible.
+   */
   useEffect(() => {
     if (!GA4_ID) return;
-    const onMarketing = isMarketingPath(pathname) && !roles.includes('kid') && hasCookieConsent();
+    const onMarketing =
+      measurable && shouldTrackPublicAcquisition(pathname, session, meLoaded, hasCookieConsent()) && !roles.includes('kid');
     // Re-assert the hard kill-switch every route change: GA4 stays fully inert
     // off marketing paths / for kids, even if its script is already resident.
     (window as unknown as Record<string, unknown>)[`ga-disable-${GA4_ID}`] = !onMarketing;
@@ -189,7 +304,7 @@ export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: numb
     }
     mountGa4();
     window.gtag?.('event', 'page_view', { page_path: pathname });
-  }, [pathname, roles, consentVersion]);
+  }, [pathname, roles, consentVersion, session, meLoaded, measurable]);
 
   return null;
 }

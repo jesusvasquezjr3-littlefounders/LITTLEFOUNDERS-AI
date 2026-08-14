@@ -82,11 +82,24 @@ describe('schema.sql evolution', () => {
        );`,
     );
 
+    /*
+     * The rename step that initDb runs BEFORE the schema (db/duckdb.ts
+     * migrateWarehouse). A deployed warehouse still owns the plain table names
+     * that schema.sql now defines as staff-free views, so without this the
+     * CREATE OR REPLACE VIEW lands on a table and the whole schema fails.
+     */
+    for (const name of ['fact_events', 'fact_segment_attempts', 'dim_sessions', 'dim_users']) {
+      const tables = (await all(db, 'SELECT table_name FROM duckdb_tables()')).map((r) => String(r.table_name));
+      if (tables.includes(name) && !tables.includes(`${name}_raw`)) {
+        await exec(db, `ALTER TABLE ${name} RENAME TO ${name}_raw`);
+      }
+    }
+
     await expect(exec(db, schemaSql)).resolves.toBeUndefined();
 
     const eventCols = (await all(
       db,
-      `SELECT column_name FROM information_schema.columns WHERE table_name = 'fact_events'`,
+      `SELECT column_name FROM information_schema.columns WHERE table_name = 'fact_events_raw'`,
     )).map((r) => String(r.column_name));
     expect(eventCols).toEqual(
       expect.arrayContaining([

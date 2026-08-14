@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
 import { eventsRateLimiter } from '../middleware/rateLimit.js';
+import { isIpExcluded } from '../services/analyticsExclusions.js';
 import {
   DEVICES,
   LOCALES,
@@ -148,6 +149,17 @@ export function eventsRouter(): Router {
     if (!parsed.success) {
       return fail(res, 400, 'VALIDATION_ERROR', 'events must be an array of 1-25 items');
     }
+
+    /*
+     * Internal-traffic gate (Vault 0045). An operator who declared a network
+     * "ours" means it for the first-party funnel too — otherwise the console
+     * would show clean acquisition KPIs next to an Insights funnel still
+     * counting the team's own clicks. Dropped like the consent gate drops:
+     * acknowledged (202, accepted 0), never an error, so the beacon does not
+     * retry. UNKNOWN (Vault unreachable) accepts the batch — losing real
+     * telemetry is worse than admitting a staff session.
+     */
+    if ((await isIpExcluded(req.ip)) === true) return ok(res, { accepted: 0 }, 202);
 
     // Anonymous path: no Authorization header AND an anonId present.
     const hasAuth = (req.get('authorization') ?? '').startsWith('Bearer ');

@@ -2,6 +2,7 @@ import { query } from '../db/duckdb.js';
 import {
   activationFunnelQuery,
   customFunnelQuery,
+  type AnalyticsWindow,
 } from '../db/queries.js';
 
 export interface FunnelStep {
@@ -30,9 +31,9 @@ const ACTIVATION_STEP_ORDER: Record<string, number> = {
   completed_lesson: 5,
 };
 
-export async function getActivationFunnel(): Promise<FunnelStep[] | null> {
+export async function getActivationFunnel(window: AnalyticsWindow): Promise<FunnelStep[] | null> {
   try {
-    const { sql, params } = activationFunnelQuery();
+    const { sql, params } = activationFunnelQuery(window);
     const rows = await query<ActivationFunnelRow>(sql, ...params);
 
     const sorted = [...rows].sort(

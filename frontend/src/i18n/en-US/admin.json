@@ -352,7 +352,10 @@
       "30d": "Last 30 days",
       "month": "This month",
       "6mo": "Last 6 months",
-      "12mo": "Last 12 months"
+      "12mo": "Last 12 months",
+      "year": "This year",
+      "all": "All time",
+      "custom": "Custom range"
     },
     "unavailableTitle": "Analytics unavailable",
     "unavailableBody": "Pulse didn't answer. The product is unaffected, check the Pulse services on Railway.",
@@ -381,7 +384,8 @@
       "chartSummaryAria": "Summary for the selected analytics range",
       "chartOverviewAria": "Full analytics trend overview",
       "chartZoomHint": "Drag the handles in the lower timeline to focus on a smaller window.",
-      "signalsAria": "Web analytics signals"
+      "signalsAria": "Web analytics signals",
+      "comparedWith": "Compared with {{window}}"
     },
     "behavior": {
       "title": "Behavioral (adult surfaces)",
@@ -446,38 +450,90 @@
       "mapAria": "World map showing visitor concentration by country",
       "topCountries": "Top countries",
       "totalVisitorsLabel": "visitors across reported countries",
-      "moreVisitors": "Larger points mean more visitors",
-      "low": "Lower",
-      "high": "Higher",
-      "filterHint": "Select a country to add it as a global filter."
+      "filterHint": "Select a country to add it as a global filter.",
+      "legendTitle": "Visitors per country",
+      "visitorsWord": "visitors",
+      "countryCount_one": "{{count}} country",
+      "countryCount_other": "{{count}} countries",
+      "unmapped": "The map scale is too coarse to draw {{countries}}, so they appear only in the list.",
+      "backToWorld": "Back to world",
+      "zoomInto": "Zoom into {{country}}",
+      "topRegions": "Top regions in {{country}}",
+      "regionCount_one": "{{count}} region",
+      "regionCount_other": "{{count}} regions",
+      "legendTitleRegion": "Visitors per region"
     },
     "toolsTitle": "Exports & controls",
     "reports": {
-      "title": "Team reports (PDF)",
-      "caption": "Decision-ready PDF reports with a logo header, trend chart, audience concentration, and detailed tables using the current period and filters.",
+      "title": "Team reports",
+      "caption": "Export the current window and filters as a branded document, a spreadsheet, or a flat CSV.",
       "failed": "Could not generate the report. Try again.",
       "audienceLabel": "Report view",
-      "includesTitle": "Included in every report",
-      "includes": {
-        "summary": "Executive KPI summary",
-        "trend": "Daily traffic chart",
-        "segments": "Audience concentration bars",
-        "tables": "Detailed breakdown tables"
-      },
       "descriptions": {
         "marketing": "Acquisition sources, channels, campaigns, countries, and referrers.",
         "sales": "Acquisition, entry paths, countries, devices, and conversion context.",
         "frontend": "Pages, entry and exit paths, devices, browsers, and operating systems.",
         "full": "The complete analytics view with every available dimension."
       },
-      "currentSelection": "Ready to export: {{audience}}",
+      "currentSelection": "{{audience}} ready to export",
       "download": "Download report",
       "audiences": {
         "marketing": "Marketing",
         "sales": "Sales",
         "frontend": "Frontend",
         "full": "Full report"
-      }
+      },
+      "formatLabel": "Format",
+      "formats": {
+        "pdf": {
+          "name": "PDF report",
+          "hint": "Branded document for sharing"
+        },
+        "xlsx": {
+          "name": "Spreadsheet",
+          "hint": "One sheet per breakdown, ready to pivot"
+        },
+        "csv": {
+          "name": "CSV",
+          "hint": "One flat table for any tool"
+        }
+      },
+      "rowsLabel": "Rows per breakdown",
+      "rowsOption_one": "{{count}} row",
+      "rowsOption_other": "{{count}} rows",
+      "rowsHint": "The PDF stays readable at 10. Spreadsheets hold far more.",
+      "provenance": "Every export states the window it covers, the filters in force, and when it was generated."
+    },
+    "customFrom": "From",
+    "customTo": "To",
+    "customApply": "Apply",
+    "customInvalid": "The start date must come before the end date.",
+    "rangeTo": "to",
+    "exclusions": {
+      "title": "Internal traffic",
+      "caption": "Stop counting your own team. An excluded address never loads an analytics tracker, and its events are dropped on arrival.",
+      "unavailable": "Could not read the exclusion list.",
+      "yourDevice": "This device",
+      "unknownAddress": "Address unavailable",
+      "selfExcluded": "Already excluded",
+      "excludeSelf": "Exclude this device",
+      "selfLabel": "Staff device",
+      "detectedTitle": "Detected staff addresses",
+      "detectedWindow": "Last {{days}} days",
+      "detectedEmpty": "No staff addresses seen in this window.",
+      "seenBy_one": "{{name}}, {{count}} request, last seen {{when}}",
+      "seenBy_other": "{{name}}, {{count}} requests, last seen {{when}}",
+      "exclude": "Exclude",
+      "activeTitle_one": "{{count}} active exclusion",
+      "activeTitle_other": "{{count}} active exclusions",
+      "activeEmpty": "Nothing is excluded yet.",
+      "revoke": "Undo",
+      "manualTitle": "Add a network by hand",
+      "networkLabel": "Address or range",
+      "nameLabel": "Name",
+      "namePlaceholder": "Office wifi",
+      "add": "Add",
+      "forwardOnly": "Exclusions apply from the moment you add them. Data already recorded stays exactly as it is."
     }
   },
   "emails": {
@@ -822,8 +878,8 @@
     "tabs": {
       "home": "Home",
       "trends": "Trends",
-    "funnels": "Funnels",
-    "learning": "Learning",
+      "funnels": "Funnels",
+      "learning": "Learning",
       "retention": "Retention",
       "segments": "Segments",
       "people": "People",
@@ -831,10 +887,10 @@
       "alerts": "Alerts",
       "settings": "Settings"
     },
-  "home": {
-    "consentTitle": "Learning analytics coverage",
-    "consentHint": "Consent remains the boundary for kid behavioural telemetry. Authoritative grades stay inside the product.",
-    "consentPending": "Loading",
+    "home": {
+      "consentTitle": "Learning analytics coverage",
+      "consentHint": "Consent remains the boundary for kid behavioural telemetry. Authoritative grades stay inside the product.",
+      "consentPending": "Loading",
       "kpiDau": "Daily Active Users",
       "kpiEvents": "Events ({{days}}d)",
       "kpiRetention": "Week 1 Retention",
@@ -869,7 +925,7 @@
       "dauTitle": "DAU",
       "sparklineHint": ""
     },
-  "funnels": {
+    "funnels": {
       "title": "Funnel Analysis",
       "subtitle": "Track user progression through configurable conversion funnels.",
       "empty": "Define funnel steps to begin analysis.",
@@ -1033,11 +1089,10 @@
       "days365": "365 days"
     },
     "export": {
-      "csv": "Export CSV",
-      "json": "Export JSON",
-      "comingSoon": "Export coming soon",
-      "downloading": "Downloading…",
-      "note": "Export carries no user_id or anon_id. Sessions are re-keyed per file."
+      "label": "Export this window",
+      "csv": "CSV",
+      "xlsx": "Spreadsheet",
+      "failed": "Could not build the export. Try again."
     },
     "retry": "Retry",
     "kpi": {
@@ -1059,111 +1114,120 @@
       "colStart": "Start"
     },
     "learning": {
-    "dropoffTitle": "Lesson abandonment",
-    "dropoffSubtitle": "Where learners leave a lesson, measured from explicit starts and abandons.",
-    "calibrationTitle": "Exercise calibration",
-    "calibrationSubtitle": "Authoritative Core grades reveal where content is too difficult, too easy, or needs clearer teaching.",
-    "colLesson": "Lesson",
-    "colStarts": "Starts",
-    "colCompleted": "Completed",
-    "colAbandon": "Abandoned",
-    "colTime": "Time before exit",
-    "colSegment": "Exercise",
-    "colLearners": "Learners",
-    "colScore": "Average score",
-    "colAttempts": "Attempts per learner",
-    "colHints": "Hint use",
-    "colFirstTry": "First attempt score",
-    "unavailable": "Not enough data",
-    "minutes": "{{count}} min",
-    "readinessTitle": "Evidence readiness",
-    "readinessSubtitle": "Trust checks for the data behind learning and Tutor recommendations.",
-    "readinessReady": "Ready to interpret",
-    "readinessAttention": "Needs attention",
-    "readinessUnavailable": "Warehouse quality signals are unavailable. Treat learning findings as unverified until the sync recovers.",
-    "idempotency": "Retry-safe events",
-    "eventContext": "Learning event context",
-    "skillContext": "Skill-tagged attempts",
-    "versionContext": "Versioned lesson attempts",
-    "syncedRows": "{{count}} synced rows",
-    "syncError": "Last sync failed",
-    "fresh": "Fresh",
-    "stale": "Stale",
-    "skillHealthTitle": "Content effectiveness by skill",
-    "skillHealthSubtitle": "Prioritizes instructional review only after enough independent learner evidence exists.",
-    "colSkill": "Skill",
-    "colPriority": "Priority",
-    "colMastery": "Estimated mastery",
-    "colLowMastery": "Below mastery",
-    "priority": {
-      "review": "Review content",
-      "monitor": "Monitor",
-      "insufficient_evidence": "Need more evidence"
+      "dropoffTitle": "Lesson abandonment",
+      "dropoffSubtitle": "Where learners leave a lesson, measured from explicit starts and abandons.",
+      "calibrationTitle": "Exercise calibration",
+      "calibrationSubtitle": "Authoritative Core grades reveal where content is too difficult, too easy, or needs clearer teaching.",
+      "colLesson": "Lesson",
+      "colStarts": "Starts",
+      "colCompleted": "Completed",
+      "colAbandon": "Abandoned",
+      "colTime": "Time before exit",
+      "colSegment": "Exercise",
+      "colLearners": "Learners",
+      "colScore": "Average score",
+      "colAttempts": "Attempts per learner",
+      "colHints": "Hint use",
+      "colFirstTry": "First attempt score",
+      "unavailable": "Not enough data",
+      "minutes": "{{count}} min",
+      "readinessTitle": "Evidence readiness",
+      "readinessSubtitle": "Trust checks for the data behind learning and Tutor recommendations.",
+      "readinessReady": "Ready to interpret",
+      "readinessAttention": "Needs attention",
+      "readinessUnavailable": "Warehouse quality signals are unavailable. Treat learning findings as unverified until the sync recovers.",
+      "idempotency": "Retry-safe events",
+      "eventContext": "Learning event context",
+      "skillContext": "Skill-tagged attempts",
+      "versionContext": "Versioned lesson attempts",
+      "syncedRows": "{{count}} synced rows",
+      "syncError": "Last sync failed",
+      "fresh": "Fresh",
+      "stale": "Stale",
+      "skillHealthTitle": "Content effectiveness by skill",
+      "skillHealthSubtitle": "Prioritizes instructional review only after enough independent learner evidence exists.",
+      "colSkill": "Skill",
+      "colPriority": "Priority",
+      "colMastery": "Estimated mastery",
+      "colLowMastery": "Below mastery",
+      "priority": {
+        "review": "Review content",
+        "monitor": "Monitor",
+        "insufficient_evidence": "Need more evidence"
+      },
+      "commandKicker": "Learning operations",
+      "commandTitle": "Turn learning evidence into clear next actions",
+      "commandSubtitle": "Inspect each published course, lesson, and learner profile without confusing an empty dataset with a healthy one.",
+      "catalogCourses": "Published courses",
+      "catalogLessons": "Published lessons",
+      "attemptsLabel": "Graded attempts",
+      "activeLearners": "Learners with evidence",
+      "pulseTitle": "Learning pulse",
+      "pulseSubtitle": "Attempt volume and average score over the selected period.",
+      "directoryTitle": "Learning evidence directory",
+      "directorySubtitle": "Open a row for the complete evidence summary. Metrics stay unavailable until enough independent evidence exists.",
+      "directory": {
+        "courses": "Courses",
+        "lessons": "Lessons",
+        "learners": "Learners"
+      },
+      "evidenceLabel": "Evidence",
+      "evidence": {
+        "awaiting_evidence": "Awaiting evidence",
+        "limited": "Limited evidence",
+        "sufficient": "Sufficient evidence"
+      },
+      "evidenceHint": {
+        "awaiting_evidence": "The catalog is ready, but no graded attempts have reached this view yet.",
+        "limited": "Early signals are visible. Keep monitoring until more independent learners contribute evidence.",
+        "sufficient": "Enough independent evidence is available to prioritize instructional follow-up."
+      },
+      "attention": {
+        "awaiting_evidence": "Awaiting evidence",
+        "monitor": "Monitor",
+        "review": "Review content",
+        "healthy": "Healthy"
+      },
+      "course": "Course",
+      "lesson": "Lesson",
+      "learner": "Learner",
+      "untitledCourse": "Untitled course",
+      "untitledLesson": "Untitled lesson",
+      "lessonsCount": "{{count}} lessons",
+      "colDetail": "Detail",
+      "inspect": "Inspect",
+      "retryRate": "Retry rate",
+      "avgTime": "Average time",
+      "seconds": "{{count}} sec",
+      "syncCoverage": "{{count}} authoritative attempts currently available in the warehouse.",
+      "privateLearner": "Learner profile",
+      "roleUnavailable": "Role unavailable",
+      "recommendation": "Recommended next action",
+      "recommendationHint": "Derived from authoritative grades and interpretable skill evidence.",
+      "supportSkills": "Skills needing support",
+      "firstTry": "First attempt score",
+      "action": {
+        "remediate": "Start remediation",
+        "practice": "Practice again",
+        "retrieve": "Schedule retrieval",
+        "continue": "Continue"
+      },
+      "learnerPulseTitle": "Practice timeline",
+      "learnerPulseSubtitle": "Graded attempts recorded during the selected period.",
+      "learnerCoursesTitle": "Course feedback",
+      "learnerCoursesSubtitle": "Where this learner has produced authoritative evidence.",
+      "learnerSkillsTitle": "Skill feedback",
+      "learnerSkillsSubtitle": "Interpretable mastery state and the next learning action.",
+      "learnerNoEvidence": "No learning evidence is available for this profile in the selected period."
     },
-    "commandKicker": "Learning operations",
-    "commandTitle": "Turn learning evidence into clear next actions",
-    "commandSubtitle": "Inspect each published course, lesson, and learner profile without confusing an empty dataset with a healthy one.",
-    "catalogCourses": "Published courses",
-    "catalogLessons": "Published lessons",
-    "attemptsLabel": "Graded attempts",
-    "activeLearners": "Learners with evidence",
-    "pulseTitle": "Learning pulse",
-    "pulseSubtitle": "Attempt volume and average score over the selected period.",
-    "directoryTitle": "Learning evidence directory",
-    "directorySubtitle": "Open a row for the complete evidence summary. Metrics stay unavailable until enough independent evidence exists.",
-    "directory": {
-      "courses": "Courses",
-      "lessons": "Lessons",
-      "learners": "Learners"
-    },
-    "evidenceLabel": "Evidence",
-    "evidence": {
-      "awaiting_evidence": "Awaiting evidence",
-      "limited": "Limited evidence",
-      "sufficient": "Sufficient evidence"
-    },
-    "evidenceHint": {
-      "awaiting_evidence": "The catalog is ready, but no graded attempts have reached this view yet.",
-      "limited": "Early signals are visible. Keep monitoring until more independent learners contribute evidence.",
-      "sufficient": "Enough independent evidence is available to prioritize instructional follow-up."
-    },
-    "attention": {
-      "awaiting_evidence": "Awaiting evidence",
-      "monitor": "Monitor",
-      "review": "Review content",
-      "healthy": "Healthy"
-    },
-    "course": "Course",
-    "lesson": "Lesson",
-    "learner": "Learner",
-    "untitledCourse": "Untitled course",
-    "untitledLesson": "Untitled lesson",
-    "lessonsCount": "{{count}} lessons",
-    "colDetail": "Detail",
-    "inspect": "Inspect",
-    "retryRate": "Retry rate",
-    "avgTime": "Average time",
-    "seconds": "{{count}} sec",
-    "syncCoverage": "{{count}} authoritative attempts currently available in the warehouse.",
-    "privateLearner": "Learner profile",
-    "roleUnavailable": "Role unavailable",
-    "recommendation": "Recommended next action",
-    "recommendationHint": "Derived from authoritative grades and interpretable skill evidence.",
-    "supportSkills": "Skills needing support",
-    "firstTry": "First attempt score",
-    "action": {
-      "remediate": "Start remediation",
-      "practice": "Practice again",
-      "retrieve": "Schedule retrieval",
-      "continue": "Continue"
-    },
-    "learnerPulseTitle": "Practice timeline",
-    "learnerPulseSubtitle": "Graded attempts recorded during the selected period.",
-    "learnerCoursesTitle": "Course feedback",
-    "learnerCoursesSubtitle": "Where this learner has produced authoritative evidence.",
-    "learnerSkillsTitle": "Skill feedback",
-    "learnerSkillsSubtitle": "Interpretable mastery state and the next learning action.",
-    "learnerNoEvidence": "No learning evidence is available for this profile in the selected period."
+    "staffExcluded": {
+      "title": "Staff activity is excluded",
+      "events_one": "{{events}} event removed ({{share}})",
+      "events_other": "{{events}} events removed ({{share}})",
+      "attempts_one": "{{attempts}} lesson attempt removed",
+      "attempts_other": "{{attempts}} lesson attempts removed",
+      "accounts_one": "{{count}} staff account",
+      "accounts_other": "{{count}} staff accounts"
     }
   },
   "insights": {

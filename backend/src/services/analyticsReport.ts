@@ -1,48 +1,41 @@
 import PDFDocument from 'pdfkit';
+import { DIMENSION_TITLES, PERIOD_LABELS } from './pulse.js';
 import type { PlausibleBreakdownRow, PlausibleDimensionKey, PlausibleReportData } from './pulse.js';
 
 /*
- * Branded analytics report PDF (staff console → "Download report"). Pure
- * pdfkit vector/text — NO image fetches, NO headless browser — so rendering
- * stays Railway-light and offline-safe. Brand tokens come from /DESIGN.md:
- * papaya is the accent, navy is the ink (never white on papaya).
+ * Branded analytics report PDF (staff console → Export). Pure pdfkit
+ * vector/text — NO image fetches, NO headless browser — so rendering stays
+ * Railway-light and offline-safe. Brand tokens come from /DESIGN.md: indigo
+ * is the accent, slate is the ink.
  *
  * The report is an internal (staff-only) English document, like the audit
  * log — it is not part of the user-facing i18n surface.
  */
 
-// /DESIGN.md tokens.
-const PAPAYA = '#ff775c';
-const PAPAYA_STRONG = '#e55f45';
-const BRAND_BLUE = '#456dff';
-const NAVY = '#080f28';
-// Neutral supporting greys (non-brand, print-safe).
-const MUTED = '#5b6172';
-const RULE = '#e3e5ec';
-const SOFT_BLUE = '#edf2ff';
-const SOFT_PAPAYA = '#fff0ec';
+/*
+ * /DESIGN.md tokens, resolved to hex because a PDF has no CSS variables.
+ *
+ * These were a papaya/navy pair (#ff775c / #080f28) that the design system no
+ * longer contains: DESIGN.md's brand is indigo #4f46e5 on slate ink #0f172a.
+ * Every exported report was therefore wearing a palette the product had
+ * stopped using — the one artefact that leaves the building and gets shown to
+ * people. Kept in sync with src/index.css by name below.
+ */
+const ACCENT = '#4f46e5'; // --lf-accent, indigo-600
+const ACCENT_STRONG = '#4338ca'; // --lf-accent-strong, indigo-700
+const DELIGHT = '#8b5cf6'; // --lf-delight, violet-500 (decorative only)
+const INK = '#0f172a'; // --lf-content, slate-900
+const MUTED = '#475569'; // --lf-content-muted, slate-600
+const RULE = '#e2e8f0'; // --lf-outline, slate-200
+const SOFT_ACCENT = '#eef2ff'; // --lf-accent-soft, indigo-50
+const SOFT_SURFACE = '#f1f5f9'; // --lf-surface-sunken, slate-100
+const SUCCESS = '#047857'; // --lf-success-strong, emerald-700
+const ERROR = '#b91c1c'; // --lf-error-strong, red-700
 const WHITE = '#ffffff';
 
 const MARGIN = 48;
 const BOTTOM_MARGIN = 64; // reserves the footer band
 const ROW_H = 18;
-
-const DIMENSION_TITLES: Record<PlausibleDimensionKey, string> = {
-  page: 'Top pages',
-  source: 'Top sources',
-  referrer: 'Top referrers',
-  channel: 'Channels',
-  country: 'Countries',
-  region: 'Regions',
-  device: 'Devices',
-  browser: 'Browsers',
-  os: 'Operating systems',
-  entry_page: 'Entry pages',
-  exit_page: 'Exit pages',
-  utm_source: 'UTM sources',
-  utm_medium: 'UTM mediums',
-  utm_campaign: 'UTM campaigns',
-};
 
 const AUDIENCE_TITLES: Record<PlausibleReportData['audience'], string> = {
   marketing: 'Marketing',
@@ -54,15 +47,6 @@ const AUDIENCE_TITLES: Record<PlausibleReportData['audience'], string> = {
 const intFmt = new Intl.NumberFormat('en-US');
 const dateFmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 const shortDateFmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
-
-const PERIOD_LABELS: Record<PlausibleReportData['period'], string> = {
-  day: 'Today',
-  '7d': 'Last 7 days',
-  '30d': 'Last 30 days',
-  month: 'This month',
-  '6mo': 'Last 6 months',
-  '12mo': 'Last 12 months',
-};
 
 function formatDuration(seconds: number): string {
   const total = Math.round(seconds);
@@ -105,7 +89,7 @@ function drawWatermark(doc: PDFKit.PDFDocument): void {
   const cy = doc.page.height / 2;
   doc.save();
   doc.rotate(-38, { origin: [cx, cy] });
-  doc.font('Helvetica-Bold').fontSize(52).fillColor(NAVY).fillOpacity(0.05);
+  doc.font('Helvetica-Bold').fontSize(52).fillColor(INK).fillOpacity(0.05);
   // y offsets stay well inside the page so pdfkit's text layout never
   // triggers an automatic page break from inside the watermark pass.
   for (const offset of [-190, 0, 190]) {
@@ -122,67 +106,101 @@ function drawWatermark(doc: PDFKit.PDFDocument): void {
 function drawHeader(doc: PDFKit.PDFDocument, data: PlausibleReportData): void {
   // Two-tone brand bar and a compact vector wordmark that is available in every
   // deployment. The PDF must not depend on a frontend filesystem asset.
-  doc.rect(0, 0, doc.page.width, 6).fill(PAPAYA);
-  doc.rect(doc.page.width * 0.72, 0, doc.page.width * 0.28, 6).fill(BRAND_BLUE);
+  doc.rect(0, 0, doc.page.width, 6).fill(ACCENT);
+  doc.rect(doc.page.width * 0.72, 0, doc.page.width * 0.28, 6).fill(DELIGHT);
   drawLogo(doc, MARGIN, 34);
   doc
     .font('Helvetica-Bold')
     .fontSize(13)
-    .fillColor(PAPAYA_STRONG)
+    .fillColor(ACCENT_STRONG)
     .text(`Analytics Report: ${AUDIENCE_TITLES[data.audience]}`, MARGIN, 76, { lineBreak: false });
   doc
     .font('Helvetica')
     .fontSize(9)
     .fillColor(MUTED)
-    .text(`Period: ${PERIOD_LABELS[data.period]}  |  Generated: ${formatDate(data.generatedAt.slice(0, 10))}  |  Source: Plausible via Pulse`, MARGIN, 96, {
+    .text(`${PERIOD_LABELS[data.period]}  |  Generated ${formatDate(data.generatedAt.slice(0, 10))}  |  Source: Plausible via Pulse`, MARGIN, 96, {
       lineBreak: false,
     });
-  const firstDate = data.timeseries[0]?.date;
-  const lastDate = data.timeseries[data.timeseries.length - 1]?.date;
-  if (firstDate && lastDate) {
-    doc
-      .font('Helvetica-Bold')
-      .fontSize(8)
-      .fillColor(BRAND_BLUE)
-      .text(`Data range: ${formatDate(firstDate)} to ${formatDate(lastDate)}`, MARGIN, 108, { lineBreak: false });
-  }
+  /*
+   * The window comes from the RESOLVED range, not from the first and last
+   * points of the series. Those are the days that had traffic — printing them
+   * as "the data range" silently shrank the reported window whenever the
+   * period began or ended quietly, which is exactly when someone is trying to
+   * work out whether a campaign did anything.
+   */
   doc
-    .moveTo(MARGIN, 124)
-    .lineTo(doc.page.width - MARGIN, 124)
+    .font('Helvetica-Bold')
+    .fontSize(8)
+    .fillColor(ACCENT_STRONG)
+    .text(`Window: ${formatDate(data.from)} to ${formatDate(data.to)}`, MARGIN, 108, { lineBreak: false });
+
+  const filterText = data.appliedFilters.length ? `Filters: ${data.appliedFilters.join('  AND  ')}` : 'Filters: none';
+  doc
+    .font('Helvetica')
+    .fontSize(8)
+    .fillColor(MUTED)
+    .text(toLatin1(filterText), MARGIN, 119, { lineBreak: false, width: contentWidth(doc), ellipsis: true });
+
+  doc
+    .moveTo(MARGIN, 133)
+    .lineTo(doc.page.width - MARGIN, 133)
     .lineWidth(1)
     .strokeColor(RULE)
     .stroke();
-  doc.y = 138;
+  doc.y = 147;
 }
 
 function drawLogo(doc: PDFKit.PDFDocument, x: number, y: number): void {
   doc.save();
-  doc.roundedRect(x, y, 28, 28, 8).fill(BRAND_BLUE);
+  doc.roundedRect(x, y, 28, 28, 8).fill(DELIGHT);
   doc.font('Helvetica-Bold').fontSize(11).fillColor(WHITE).text('LF', x, y + 8, { width: 28, align: 'center', lineBreak: false });
-  doc.font('Helvetica-Bold').fontSize(18).fillColor(NAVY).text('LittleFounders', x + 38, y + 5, { lineBreak: false });
+  doc.font('Helvetica-Bold').fontSize(18).fillColor(INK).text('LittleFounders', x + 38, y + 5, { lineBreak: false });
   doc.restore();
 }
 
-function drawKpiBlock(doc: PDFKit.PDFDocument, aggregate: PlausibleReportData['aggregate']): void {
+/**
+ * Percent change against the previous window. `null` when there is nothing to
+ * compare (all-time, or the comparison read failed) — printed as a dash, never
+ * as 0%, which would assert a flat trend nobody measured.
+ */
+function changeOf(current: number, previous: number | undefined): number | null {
+  if (previous === undefined || previous === 0) return null;
+  return (current - previous) / previous;
+}
+
+function drawKpiBlock(doc: PDFKit.PDFDocument, data: PlausibleReportData): void {
+  const { aggregate, previous } = data;
   const cards = [
-    { label: 'Visitors', value: intFmt.format(aggregate.visitors) },
-    { label: 'Pageviews', value: intFmt.format(aggregate.pageviews) },
-    { label: 'Bounce rate', value: `${Math.round(aggregate.bounceRate * 10) / 10}%` },
-    { label: 'Avg visit duration', value: formatDuration(aggregate.visitDuration) },
+    { label: 'Visitors', value: intFmt.format(aggregate.visitors), change: changeOf(aggregate.visitors, previous?.visitors), higherIsBetter: true },
+    { label: 'Pageviews', value: intFmt.format(aggregate.pageviews), change: changeOf(aggregate.pageviews, previous?.pageviews), higherIsBetter: true },
+    { label: 'Bounce rate', value: `${Math.round(aggregate.bounceRate * 10) / 10}%`, change: changeOf(aggregate.bounceRate, previous?.bounceRate), higherIsBetter: false },
+    { label: 'Avg visit duration', value: formatDuration(aggregate.visitDuration), change: changeOf(aggregate.visitDuration, previous?.visitDuration), higherIsBetter: true },
   ];
   const gap = 12;
   const w = (contentWidth(doc) - gap * (cards.length - 1)) / cards.length;
-  const h = 56;
+  const h = 64;
   const top = doc.y;
   cards.forEach((card, i) => {
     const x = MARGIN + i * (w + gap);
     doc.roundedRect(x, top, w, h, 6).lineWidth(1).strokeColor(RULE).stroke();
-    doc.rect(x, top + 8, 3, h - 16).fill(i === 0 ? PAPAYA : BRAND_BLUE);
-    doc.font('Helvetica').fontSize(8).fillColor(MUTED).text(card.label.toUpperCase(), x + 12, top + 12, {
+    doc.rect(x, top + 8, 3, h - 16).fill(i === 0 ? ACCENT : DELIGHT);
+    doc.font('Helvetica').fontSize(8).fillColor(MUTED).text(card.label.toUpperCase(), x + 12, top + 11, {
       width: w - 20,
       lineBreak: false,
     });
-    doc.font('Helvetica-Bold').fontSize(16).fillColor(NAVY).text(card.value, x + 12, top + 27, {
+    doc.font('Helvetica-Bold').fontSize(16).fillColor(INK).text(card.value, x + 12, top + 25, {
+      width: w - 20,
+      lineBreak: false,
+    });
+    // Direction is coloured by whether the movement is GOOD, not by its sign:
+    // a bounce rate falling 20% is a win and must not print in red.
+    const changeText =
+      card.change === null
+        ? 'no comparison'
+        : `${card.change >= 0 ? '+' : ''}${(card.change * 100).toFixed(1)}% vs previous`;
+    const tone =
+      card.change === null ? MUTED : (card.change >= 0) === card.higherIsBetter ? SUCCESS : ERROR;
+    doc.font('Helvetica').fontSize(7.5).fillColor(tone).text(changeText, x + 12, top + 46, {
       width: w - 20,
       lineBreak: false,
     });
@@ -193,9 +211,27 @@ function drawKpiBlock(doc: PDFKit.PDFDocument, aggregate: PlausibleReportData['a
 function drawSectionTitle(doc: PDFKit.PDFDocument, title: string, subtitle?: string): void {
   ensureRoom(doc, subtitle ? 42 : 28);
   const y = doc.y;
-  doc.font('Helvetica-Bold').fontSize(14).fillColor(NAVY).text(title, MARGIN, y, { lineBreak: false });
-  doc.moveTo(MARGIN, y + 19).lineTo(MARGIN + 46, y + 19).lineWidth(2).strokeColor(PAPAYA).stroke();
-  if (subtitle) doc.font('Helvetica').fontSize(8).fillColor(MUTED).text(subtitle, MARGIN + 58, y + 4, { lineBreak: false });
+  doc.font('Helvetica-Bold').fontSize(14).fillColor(INK).text(title, MARGIN, y, { lineBreak: false });
+  /*
+   * The subtitle starts after the MEASURED title, not at a fixed offset. It
+   * used to be pinned to MARGIN + 58, so every title longer than 58pt (which
+   * is all of them: "Traffic over time", "Audience composition") had its
+   * subtitle printed straight through it.
+   */
+  const titleWidth = doc.widthOfString(title);
+  doc.moveTo(MARGIN, y + 19).lineTo(MARGIN + 46, y + 19).lineWidth(2).strokeColor(ACCENT).stroke();
+  if (subtitle) {
+    const subtitleX = MARGIN + titleWidth + 12;
+    doc
+      .font('Helvetica')
+      .fontSize(8)
+      .fillColor(MUTED)
+      .text(toLatin1(subtitle), subtitleX, y + 5, {
+        lineBreak: false,
+        width: Math.max(doc.page.width - MARGIN - subtitleX, 40),
+        ellipsis: true,
+      });
+  }
   doc.y = y + (subtitle ? 32 : 28);
 }
 
@@ -210,7 +246,7 @@ function drawTrendChart(doc: PDFKit.PDFDocument, data: PlausibleReportData): voi
   drawSectionTitle(doc, 'Traffic over time', 'Daily visitors with pageview volume');
 
   const top = doc.y;
-  doc.fillOpacity(1).roundedRect(MARGIN, top, chartW, chartH, 8).fill(SOFT_BLUE);
+  doc.fillOpacity(1).roundedRect(MARGIN, top, chartW, chartH, 8).fill(SOFT_ACCENT);
   const plotX = MARGIN + 34;
   const plotY = top + 18;
   const plotW = chartW - 48;
@@ -230,7 +266,7 @@ function drawTrendChart(doc: PDFKit.PDFDocument, data: PlausibleReportData): voi
   series.forEach((point, index) => {
     const x = xFor(index);
     const barTop = yFor(point.pageviews);
-    doc.save().fillOpacity(0.3).rect(x - barW / 2, barTop, barW, plotY + plotH - barTop).fill(BRAND_BLUE).restore();
+    doc.save().fillOpacity(0.3).rect(x - barW / 2, barTop, barW, plotY + plotH - barTop).fill(DELIGHT).restore();
   });
 
   const line = series.map((point, index) => ({ x: xFor(index), y: yFor(point.visitors) }));
@@ -240,12 +276,12 @@ function drawTrendChart(doc: PDFKit.PDFDocument, data: PlausibleReportData): voi
   doc.save();
   doc.moveTo(firstLinePoint.x, plotY + plotH).lineTo(firstLinePoint.x, firstLinePoint.y);
   line.slice(1).forEach((point) => doc.lineTo(point.x, point.y));
-  doc.lineTo(lastLinePoint.x, plotY + plotH).closePath().fillOpacity(0.78).fill(SOFT_PAPAYA);
+  doc.lineTo(lastLinePoint.x, plotY + plotH).closePath().fillOpacity(0.78).fill(SOFT_SURFACE);
   doc.restore();
   doc.save();
   doc.moveTo(firstLinePoint.x, firstLinePoint.y);
   line.slice(1).forEach((point) => doc.lineTo(point.x, point.y));
-  doc.lineWidth(2).strokeColor(PAPAYA_STRONG).stroke();
+  doc.lineWidth(2).strokeColor(ACCENT_STRONG).stroke();
   doc.restore();
 
   doc.font('Helvetica').fontSize(7).fillColor(MUTED);
@@ -257,9 +293,9 @@ function drawTrendChart(doc: PDFKit.PDFDocument, data: PlausibleReportData): voi
   });
 
   const legendY = top + chartH - 16;
-  doc.circle(MARGIN + 16, legendY + 2, 3).fill(PAPAYA_STRONG);
+  doc.circle(MARGIN + 16, legendY + 2, 3).fill(ACCENT_STRONG);
   doc.font('Helvetica').fontSize(8).fillColor(MUTED).text('Visitors', MARGIN + 24, legendY - 2, { lineBreak: false });
-  doc.fillOpacity(0.45).rect(MARGIN + 83, legendY - 1, 7, 7).fill(BRAND_BLUE);
+  doc.fillOpacity(0.45).rect(MARGIN + 83, legendY - 1, 7, 7).fill(DELIGHT);
   doc.text('Pageviews', MARGIN + 96, legendY - 2, { lineBreak: false });
   doc.fillOpacity(1);
   doc.y = top + chartH + 20;
@@ -292,8 +328,8 @@ function drawSnapshotBars(doc: PDFKit.PDFDocument, data: PlausibleReportData): v
     const row = Math.floor(index / 2);
     const x = MARGIN + column * (cardW + gap);
     const y = startY + row * (cardH + gap);
-    doc.roundedRect(x, y, cardW, cardH, 7).fill(column === 0 ? SOFT_PAPAYA : SOFT_BLUE);
-    doc.font('Helvetica-Bold').fontSize(10).fillColor(NAVY).text(DIMENSION_TITLES[dimension], x + 12, y + 12, { lineBreak: false });
+    doc.roundedRect(x, y, cardW, cardH, 7).fill(column === 0 ? SOFT_SURFACE : SOFT_ACCENT);
+    doc.font('Helvetica-Bold').fontSize(10).fillColor(INK).text(DIMENSION_TITLES[dimension], x + 12, y + 12, { lineBreak: false });
     const max = Math.max(...rows.map((item) => item.visitors), 1);
     rows.forEach((item, rowIndex) => {
       const rowY = y + 35 + rowIndex * 19;
@@ -301,7 +337,7 @@ function drawSnapshotBars(doc: PDFKit.PDFDocument, data: PlausibleReportData): v
       const label = fitLabel(doc, item.label || '(none)', labelW);
       doc.font('Helvetica').fontSize(7.5).fillColor(MUTED).text(label, x + 12, rowY, { width: labelW, lineBreak: false });
       doc.roundedRect(x + 12, rowY + 10, cardW - 74, 3, 1.5).fill(RULE);
-      doc.roundedRect(x + 12, rowY + 10, Math.max(3, ((cardW - 74) * item.visitors) / max), 3, 1.5).fill(column === 0 ? PAPAYA_STRONG : BRAND_BLUE);
+      doc.roundedRect(x + 12, rowY + 10, Math.max(3, ((cardW - 74) * item.visitors) / max), 3, 1.5).fill(column === 0 ? ACCENT_STRONG : DELIGHT);
       numberCell(doc, item.visitors, x + cardW - 54, rowY - 1, 42);
     });
   });
@@ -352,12 +388,12 @@ function drawBreakdownSection(doc: PDFKit.PDFDocument, title: string, rows: Plau
   // Heading + column heads + first row travel together across page breaks.
   ensureRoom(doc, 30 + ROW_H * 2);
   const headingY = doc.y;
-  doc.font('Helvetica-Bold').fontSize(12).fillColor(NAVY).text(title, MARGIN, headingY, { lineBreak: false });
+  doc.font('Helvetica-Bold').fontSize(12).fillColor(INK).text(title, MARGIN, headingY, { lineBreak: false });
   doc
     .moveTo(MARGIN, headingY + 17)
     .lineTo(MARGIN + 42, headingY + 17)
     .lineWidth(2)
-    .strokeColor(PAPAYA)
+    .strokeColor(ACCENT)
     .stroke();
   doc.y = headingY + 26;
   drawColumnHeads();
@@ -376,7 +412,7 @@ function drawBreakdownSection(doc: PDFKit.PDFDocument, title: string, rows: Plau
     const y = doc.y;
     doc.font('Helvetica').fontSize(9).fillColor(MUTED);
     doc.text(String(i + 1), MARGIN, y, { width: rankW - 6, lineBreak: false });
-    doc.fillColor(NAVY);
+    doc.fillColor(INK);
     doc.text(fitLabel(doc, row.label || '(none)', labelW - 8), labelX, y, { width: labelW - 8, lineBreak: false });
     numberCell(doc, row.visitors, visitorsX, y, numW);
     numberCell(doc, row.pageviews, pageviewsX, y, numW);
@@ -438,7 +474,7 @@ export function renderAnalyticsReportPdf(data: PlausibleReportData): Promise<Buf
       drawWatermark(doc);
 
       drawHeader(doc, data);
-      drawKpiBlock(doc, data.aggregate);
+      drawKpiBlock(doc, data);
       drawTrendChart(doc, data);
       drawSnapshotBars(doc, data);
       for (const [dimension, rows] of Object.entries(data.breakdowns) as [PlausibleDimensionKey, PlausibleBreakdownRow[]][]) {

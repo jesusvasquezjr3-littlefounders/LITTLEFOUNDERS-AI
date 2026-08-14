@@ -141,6 +141,86 @@ export type Database = {
           },
         ]
       }
+      analytics_ip_exclusions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          label: string
+          network: unknown
+          reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          label: string
+          network: unknown
+          reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          label?: string
+          network?: unknown
+          reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_ip_exclusions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "analytics_ip_exclusions_revoked_by_fkey"
+            columns: ["revoked_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      analytics_staff_ip_sightings: {
+        Row: {
+          address: unknown
+          first_seen_at: string
+          hits: number
+          last_seen_at: string
+          user_id: string
+        }
+        Insert: {
+          address: unknown
+          first_seen_at?: string
+          hits?: number
+          last_seen_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: unknown
+          first_seen_at?: string
+          hits?: number
+          last_seen_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_staff_ip_sightings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       anon_visitors: {
         Row: {
           anon_id: string
@@ -2309,6 +2389,10 @@ export type Database = {
       }
       is_blocked: { Args: { a: string; b: string }; Returns: boolean }
       is_verified_guardian_of: { Args: { kid: string }; Returns: boolean }
+      record_staff_ip_sighting: {
+        Args: { p_address: unknown; p_user_id: string }
+        Returns: undefined
+      }
       refresh_insights_rollups: {
         Args: { window_days?: number }
         Returns: string

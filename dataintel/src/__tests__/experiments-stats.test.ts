@@ -30,7 +30,7 @@ let nextEventId = 1;
 async function seedUserEvents(userId: string, count: number): Promise<void> {
   for (let i = 0; i < count; i++) {
     await execute(
-      `INSERT INTO fact_events (event_id, user_id, event_type, created_at)
+      `INSERT INTO fact_events_raw (event_id, user_id, event_type, created_at)
        VALUES (?, ?, 'nav_view', CURRENT_TIMESTAMP + INTERVAL 1 SECOND)`,
       nextEventId++,
       userId,

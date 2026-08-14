@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { AnalyticsWindow } from '../db/queries.js';
 import { Router } from 'express';
 import { ok, fail } from '../lib/http.js';
 import * as metrics from '../services/metrics.js';
@@ -15,11 +16,44 @@ import * as alerts from '../services/alerts.js';
 import * as lessons from '../services/lessons.js';
 import * as sessions from '../services/sessions.js';
 import * as learning from '../services/learning.js';
+import * as staffAudit from '../services/staffAudit.js';
 import * as dataQuality from '../services/dataQuality.js';
 
 // ── Reusable Zod schemas ─────────────────────────────────────────────
 
 const daysSchema = z.coerce.number().int().min(1).max(365).default(30);
+
+/*
+ * The window every analytical route is bound by.
+ *
+ * Before this, ten endpoints took no time bound at all and the console's period
+ * selector reached only four of seventeen requests: an operator switched from
+ * "7 days" to "1 year" and the funnel, drop-off, calibration, leaderboard,
+ * paths and time-to-value tabs did not move, because those numbers covered all
+ * of history regardless. They sat on screen beside a period label, which made
+ * them worse than missing.
+ *
+ * Accepts either a trailing `days` count or an explicit `from`/`to` pair, the
+ * same contract as the Pulse analytics routes, so one selection drives both
+ * consoles.
+ */
+const windowSchema = z.object({
+  days: z.coerce.number().int().min(1).max(3650).default(30),
+  from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+});
+
+function parseWindow(query: unknown): AnalyticsWindow {
+  const parsed = windowSchema.parse(query);
+  if (parsed.from && parsed.to) {
+    if (Date.parse(parsed.from) > Date.parse(parsed.to)) {
+      throw new z.ZodError([{ code: 'custom', path: ['from'], message: 'from must not be after to' }]);
+    }
+    return { days: parsed.days, from: parsed.from, to: parsed.to };
+  }
+  return { days: parsed.days };
+}
+
 const limitSchema = z.coerce.number().int().min(1).max(1000);
 // Flat time-series features only accept metrics that have an exact event-fact
 // definition. Retention, activation and completions have different cohorts or
@@ -168,7 +202,7 @@ export function intelRouter(): Router {
   router.get('/engagement/leaderboard', async (req, res) => {
     try {
       const limit = limitSchema.default(50).parse(req.query.limit ?? '50');
-      const result = await metrics.getEngagement(limit);
+      const result = await metrics.getEngagement(limit, parseWindow(req.query));
       if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Engagement data unavailable');
       return ok(res, result);
     } catch (err) {
@@ -180,7 +214,7 @@ export function intelRouter(): Router {
   router.get('/metrics/timetovalue', async (req, res) => {
     try {
       const limit = limitSchema.default(500).parse(req.query.limit ?? '500');
-      const result = await metrics.getTimeToValue(limit);
+      const result = await metrics.getTimeToValue(limit, parseWindow(req.query));
       if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Time-to-value data unavailable');
       return ok(res, result);
     } catch (err) {
@@ -194,7 +228,7 @@ export function intelRouter(): Router {
   router.get('/lessons/dropoff', async (req, res) => {
     try {
       const limit = limitSchema.default(25).parse(req.query.limit ?? '25');
-      const result = await lessons.getLessonDropoff(limit);
+      const result = await lessons.getLessonDropoff(limit, parseWindow(req.query));
       if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Lesson dropoff data unavailable');
       return ok(res, result);
     } catch (err) {
@@ -207,7 +241,7 @@ export function intelRouter(): Router {
     try {
       const minLearners = z.coerce.number().int().min(1).default(2).parse(req.query.minLearners ?? '2');
       const limit = limitSchema.default(50).parse(req.query.limit ?? '50');
-      const result = await lessons.getSegmentCalibration(minLearners, limit);
+      const result = await lessons.getSegmentCalibration(minLearners, limit, parseWindow(req.query));
       if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Calibration data unavailable');
       return ok(res, result);
     } catch (err) {
@@ -233,9 +267,9 @@ export function intelRouter(): Router {
 
   // ═══ Funnels ═══════════════════════════════════════════════════════
 
-  router.get('/funnels/activation', async (_req, res) => {
+  router.get('/funnels/activation', async (req, res) => {
     try {
-      const result = await funnels.getActivationFunnel();
+      const result = await funnels.getActivationFunnel(parseWindow(req.query));
       if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Activation funnel unavailable');
       return ok(res, result);
     } catch (err) {
@@ -493,7 +527,7 @@ export function intelRouter(): Router {
     try {
       const fromEvent = z.string().min(1).max(100).parse(req.query.fromEvent);
       const limit = limitSchema.default(10).parse(req.query.limit ?? '10');
-      const result = await paths.getTopPaths(fromEvent, limit);
+      const result = await paths.getTopPaths(fromEvent, limit, parseWindow(req.query));
       if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Path data unavailable');
       return ok(res, result);
     } catch (err) {
@@ -573,6 +607,27 @@ export function intelRouter(): Router {
       const limit = limitSchema.default(100).parse(req.query.limit ?? '100');
       const result = await learning.getLearnerLearningDetail(userId, days, limit);
       if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Learner learning detail unavailable');
+      return ok(res, result);
+    } catch (err) {
+      if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);
+      return fail(res, 500, 'INTERNAL', (err as Error).message);
+    }
+  });
+
+  /*
+   * How much this console is NOT showing you.
+   *
+   * Every other number here is staff-free, and a filter that silently stopped
+   * working looks exactly like a filter that is working. Publishing the removed
+   * share makes the exclusion visible, and gives an operator a way to answer
+   * "did the team's testing get counted?" without that testing leaking back
+   * into the metrics.
+   */
+  router.get('/quality/staff-exclusion', async (req, res) => {
+    try {
+      const window = parseWindow(req.query);
+      const result = await staffAudit.getStaffExclusionReport(window.days);
+      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Staff exclusion report unavailable');
       return ok(res, result);
     } catch (err) {
       if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);

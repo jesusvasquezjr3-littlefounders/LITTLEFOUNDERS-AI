@@ -19,6 +19,7 @@
     "lesson-contract:check": "tsx scripts/contract-check.ts"
   },
   "dependencies": {
+    "exceljs": "^4.4.0",
     "express": "^5.1.0",
     "express-rate-limit": "^8.5.2",
     "helmet": "^8.3.0",

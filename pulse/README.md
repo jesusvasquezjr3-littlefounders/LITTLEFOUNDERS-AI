@@ -33,8 +33,10 @@ Browser ──▶ Core /api/v1/admin/analytics/*  ──▶ Plausible Stats API 
 
 The browser never calls Pulse for data (§1.5). API tokens live only in Core's
 Railway variables. Core caches responses (Plausible's default limit: 600 req/h).
-Core also serves per-dimension breakdowns, audience report bundles, and a
-branded PDF export (`/api/v1/admin/analytics/{breakdown,report,report.pdf}`).
+Core also serves per-dimension breakdowns, audience report bundles, and the
+three export formats
+(`/api/v1/admin/analytics/{breakdown,report,report.pdf,report.csv,report.xlsx}`),
+plus the internal-traffic exclusion registry (`/analytics/exclusions`).
 
 ## Environment
 
@@ -49,10 +51,34 @@ in Railway. Secrets generated with `openssl rand -base64 48`.
 | Umami (events) | Marketing + signed-in parent product surfaces | ❌ not mounted on kid or admin sessions |
 | Umami (replay/heatmaps) | Marketing + signed-in parent product surfaces only | ❌ **NEVER** — non-negotiable |
 
-Plausible CE v3.2.1 has no documented `IP_BLOCKLIST` environment setting.
-Do not claim that an IP list filters ingestion. Instead, tracker mounting is
-the enforceable boundary: public acquisition excludes authenticated, OAuth,
-product, and `/admin/*` routes before a pageview can be sent.
+### Excluding internal traffic
+
+Plausible CE v3.2.1 still has **no** ingestion-side IP blocklist, and there is
+no environment setting that adds one. Never claim an IP list filters Plausible.
+
+The enforceable boundary is tracker MOUNTING, and it is where the exclusion
+registry (Vault 0045) is applied:
+
+1. Public acquisition already excludes authenticated, OAuth, product and
+   `/admin/*` routes before a pageview can be sent.
+2. On top of that, the SPA asks Core
+   (`GET /api/v1/analytics/tracking-decision`) once per browser session
+   whether the visitor's address is excluded. If it is, **no** tracker is
+   mounted — not Plausible, not Umami, not GA4 — and Plausible's and Umami's
+   own localStorage opt-outs are set as a second line of defence.
+3. Core's first-party ingest (`POST /api/v1/events`) drops batches from
+   excluded networks, so the Insights funnel counts the same population the
+   web KPIs do.
+
+Operators manage the list from the console (Analytics → Internal traffic),
+which offers one-click exclusion of the current device and of addresses staff
+have actually been seen working from. Two properties to preserve:
+
+- **Forward-only.** An exclusion stops future collection. It cannot remove
+  events already stored in Plausible, Umami or GA4, and the panel says so.
+- **A failed read is not an empty list.** Every reader returns "unknown"
+  rather than "nothing is excluded" when Vault cannot answer; the console
+  answers 502 and the browser keeps whatever exclusion it already persisted.
 
 ## Campaign attribution contract
 
