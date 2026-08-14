@@ -14,6 +14,7 @@
     "docs:check": "bash agent/tools/check-docs-sync.sh",
     "secrets:check": "bash agent/tools/check-secrets.sh",
     "i18n:check": "bash agent/tools/check-i18n.sh",
+    "paths:check": "node agent/tools/check-marketing-paths.mjs",
     "deps:check": "bash agent/tools/check-dep-drift.sh",
     "git:diff-check": "bash agent/tools/check-clean-tree.sh",
     "release:readiness": "bash agent/tools/release-readiness.sh",

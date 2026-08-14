@@ -252,6 +252,7 @@ All of these must pass, in every service you touched:
 - [ ] `npm run docs:check` (root) — AGENTS.md == CLAUDE.md
 - [ ] `npm run secrets:check` (root) — no credential patterns in tracked files
 - [ ] Frontend changes: `npm run i18n:check` (root) — 3-locale key parity + hardcoded-string scan
+- [ ] `npm run paths:check` (root) — the acquisition surface agrees across `frontend/` and `backend/`
 - [ ] Files added/moved/deleted: `npm run repo:map` (root) — regenerate the map
 - [ ] Docs updated per the stewardship table (§8)
 - [ ] No `any` without a written justification in the PR/commit body
@@ -298,6 +299,7 @@ All of these must pass, in every service you touched:
 | New skill installed | `TEAM_PROTOCOL.md` catalog + `_SOURCE.md` attribution |
 | Any edit to this file | Mirror to `CLAUDE.md` byte-identically |
 | Incident / recovery procedure learned | `RUNBOOK.md` |
+| New public marketing route | `frontend/src/lib/analytics.tsx` (`MARKETING_PREFIXES`) **and** `backend/src/services/pulse.ts` (`MARKETING_ROOTS`) — the tracker records it, the read-time scope reports it; `npm run paths:check` enforces the pair |
 | Change to legal document (any locale) | Mirror to ALL three `/LEGAL/*.md` files + sync `frontend/src/i18n/*/marketing.json` in same commit (§1.8) |
 
 **Golden rule:** every substantial change is documented in the same commit that makes it. Undocumented architecture is a regression.

@@ -1063,17 +1063,17 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-08-13) — Map zoom to real regions, and every intel chart was drawing its axes in black
+## Current State (2026-08-14) — Retroactive filtering confirmed, non-human traffic filtered, datacenter blocking assessed and refused
 
-- **Zoom into a country and see its states.** Clicking a country now zooms the
-  map to that country's projected bounds and draws its real admin-1 regions:
-  4,584 states, provinces and departments across 238 countries, generated at
-  author time from Natural Earth 10m (`npm run map:gen:regions`) and simplified
-  through a shared topology so neighbouring borders move together and never
-  open a gap. Region traffic comes from Plausible's `visit:region`, which
-  reports the ISO 3166-2 codes the geometry is keyed by, so a lookup is a plain
-  object access with no name matching.
-- **The regions are one chunk per country** (Mexico 22 KB, the United States
+- **The warehouse filter IS retroactive, verified against production.** Over a
+  90-day window dataintel reports 3,539 excluded events against 383 included
+  (90.2%) and 24 excluded segment attempts — every staff row in history, back
+  to the earliest on 2026-08-10, matching Vault's own totals exactly. The
+  intelligence console needed nothing further.
+- **Plausible, Umami and GA4 cannot be rewritten**, and the console now says
+  so where the numbers are. It also says something more urgent that was
+  invisible: the exclusion registry is EMPTY in production, so no staff address
+  is being excluded from web analytics yet — the panel is deployed, nobody has
 ```
 
 ### agent/README.md
@@ -2796,6 +2796,26 @@ export default tseslint.config(
 //     subset of the frontend original (the React/ComponentType registry
 ```
 
+### backend/src/__tests__/acquisition-scope.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { ACQUISITION_SCOPE, scoped, type PlausibleQueryFilter } from '../services/pulse.js';
+
+/*
+ * The stored Plausible history predates the autoCapturePageviews fix and
+ * contains /admin/* and product routes that the acquisition boundary never
+ * permitted. Plausible cannot delete by filter, so the correction is applied
+ * at read time — which means these predicates ARE the correction, and a
+ * regression here silently republishes contaminated numbers.
+ */
+
+/** Mirrors the reference implementation of the filter Plausible evaluates. */
+function inScope(path: string): boolean {
+  const [, clauses] = ACQUISITION_SCOPE;
+  return clauses.some((clause) => {
+```
+
 ### backend/src/__tests__/admin-emails.test.ts
 
 ```
@@ -2871,9 +2891,9 @@ import {
 import { jsonResponse, mintToken } from './helpers.js';
 
 /*
- * Internal-traffic exclusion registry (Vault 0045) — the control that makes
- * staff traffic stop counting. Covers the address arithmetic (where a silent
- * bug would either exclude nobody or exclude the whole internet), the admin
+ * Requests in these tests carry a real browser agent because production ones
+ * always do. Core drops analytics traffic with a missing or crawler user agent
+ * (services/botDetection.ts), so a UA-less supertest request is not a neutral
 ```
 
 ### backend/src/__tests__/analytics-export.test.ts
@@ -2903,17 +2923,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import type { Response as SupertestResponse } from 'superagent';
 import { createApp } from '../app.js';
+import { ACQUISITION_SCOPE } from '../services/pulse.js';
 import { resetPulseForTests } from '../services/pulse.js';
 import { resetExclusionsForTests } from '../services/analyticsExclusions.js';
 import { jsonResponse, mintToken } from './helpers.js';
 
 /*
- * /api/v1/admin/analytics — breakdown / report / report.pdf / exclusions
- * (admin.test.ts pattern: Plausible + the PostgREST role check stubbed at the
- * fetch layer, Pulse env via vi.stubEnv, caches dropped between tests).
+ * Requests in these tests carry a real browser agent because production ones
+ * always do. Core drops analytics traffic with a missing or crawler user agent
+ * (services/botDetection.ts), so a UA-less supertest request is not a neutral
+ * default — it is a bot as far as the gate is concerned.
  */
-
-const ADMIN_ID = '22222222-2222-4222-8222-222222222222';
 ```
 
 ### backend/src/__tests__/auth.test.ts
@@ -2934,6 +2954,26 @@ const SESSION = {
 
 afterEach(() => vi.unstubAllGlobals());
 
+```
+
+### backend/src/__tests__/bot-detection.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { classifyUserAgent, isBotUserAgent } from '../services/botDetection.js';
+import { resetExclusionsForTests } from '../services/analyticsExclusions.js';
+import { jsonResponse } from './helpers.js';
+
+/*
+ * Non-human traffic. Plausible and GA4 drop known crawlers before storage;
+ * our own ingest did not, so the dataset we fully control was the least
+ * defended of the three.
+ *
+ * The false-positive direction matters more than the false-negative one: a
+ * missed crawler inflates a number, but a misclassified human DELETES a real
+ * session, and nothing downstream can tell it ever existed. Hence the second
 ```
 
 ### backend/src/__tests__/ciPathFilters.test.ts
@@ -2964,6 +3004,8 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 import { getConfig } from '../config.js';
 
+
+
 /*
  * CORS is an origin allowlist for exactly one consumer (the SPA), with
  * credentials deliberately off — auth travels in the Authorization header,
@@ -2972,8 +3014,6 @@ import { getConfig } from '../config.js';
  * actually reach the page that asked for them.
  */
 describe('CORS', () => {
-  const allowed = getConfig().FRONTEND_URL;
-
 ```
 
 ### backend/src/__tests__/courseTree.test.ts
@@ -3087,13 +3127,13 @@ import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
 import { makeDb } from './learnFixtures.js';
 
 /*
- * First-party telemetry (/INSIGHTS.md): the §1.9 consent gate is the point
- * of this suite. A kid's events are recorded ONLY while a verified guardian
- * has granted consent — fail-closed on everything else — and identity/role
- * are stamped server-side, never trusted from the client.
+ * Requests in these tests carry a real browser agent because production ones
+ * always do. Core drops analytics traffic with a missing or crawler user agent
+ * (services/botDetection.ts), so a UA-less supertest request is not a neutral
+ * default — it is a bot as far as the gate is concerned.
  */
-
-const PARENT_ID = '11111111-1111-4111-8111-111111111111';
+const BROWSER_UA =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36';
 ```
 
 ### backend/src/__tests__/intel-export.test.ts
@@ -3718,6 +3758,7 @@ import {
 import { Router } from 'express';
 import { ok } from '../lib/http.js';
 import { isIpExcluded } from '../services/analyticsExclusions.js';
+import { isBotUserAgent } from '../services/botDetection.js';
 
 /*
  * GET /api/v1/analytics/tracking-decision — the ONE public read of the
@@ -3729,7 +3770,6 @@ import { isIpExcluded } from '../services/analyticsExclusions.js';
  * list that lived only in a dashboard would change no number anywhere.
  *
  * Contract notes:
- *  - Anonymous by design (the caller is a marketing visitor with no session)
 ```
 
 ### backend/src/routes/auth.ts
@@ -3761,6 +3801,7 @@ import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
 import { eventsRateLimiter } from '../middleware/rateLimit.js';
 import { isIpExcluded } from '../services/analyticsExclusions.js';
+import { isBotUserAgent } from '../services/botDetection.js';
 import {
   DEVICES,
   LOCALES,
@@ -3769,7 +3810,6 @@ import {
   ROUTE_CLASSES,
   attributeSignup,
   getRolesForGate,
-  hasActiveAnalyticsConsent,
 ```
 
 ### backend/src/routes/family.ts
@@ -3970,6 +4010,26 @@ import type { PlausibleBreakdownRow, PlausibleDimensionKey, PlausibleReportData 
  */
 
 /*
+```
+
+### backend/src/services/botDetection.ts
+
+```
+/*
+ * Non-human traffic detection for first-party telemetry.
+ *
+ * WHERE THE GAP WAS. Plausible CE drops known crawlers by user-agent before
+ * storage (verified against production: twelve months of browser breakdown
+ * contains Chrome, Safari, Mobile App, Firefox, Opera and Edge, and no bot
+ * category at all), and GA4 filters known bots by default. Our OWN ingest
+ * (`POST /api/v1/events`) filtered nothing, so the one dataset we fully
+ * control was the least defended.
+ *
+ * WHAT THIS IS NOT. User-agent matching is a floor, not a wall: a crawler that
+ * lies about its agent passes, and no honest measurement claims otherwise. It
+ * catches the large, well-behaved majority — search engines, SEO and uptime
+ * crawlers, preview bots, scripted clients — which is exactly the traffic that
+ * quietly inflates a funnel. Anything cleverer than that is an arms race we
 ```
 
 ### backend/src/services/courseTree.ts
@@ -14620,6 +14680,26 @@ vi.mock('@/auth/AuthContext', () => ({
 }));
 ```
 
+### frontend/src/routes/admin/__tests__/adminShared.test.tsx
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import { renderHook, waitFor } from '@testing-library/react';
+import { useAdminData, useAdminMutation } from '../adminShared';
+
+/*
+ * Both admin data hooks are contracted to hand callers an ENVELOPE, never to
+ * throw: every consumer branches on `state`/`error` and none of them wrap the
+ * call in a try.
+ *
+ * They used to rely on api() honouring that by itself. When something upstream
+ * threw instead — a rejected token fetch, a mocked client, a future refactor —
+ * the rejection escaped an async callback nothing awaits. In CI that surfaced
+ * as an unhandled rejection which failed a run where all 476 tests passed; in
+ * a browser it leaves the panel on "loading" forever with no error state and
+ * no way for the user to know anything went wrong.
+```
+
 ### frontend/src/routes/admin/adminNav.ts
 
 ```
@@ -14780,6 +14860,26 @@ import { cn } from '@/lib/utils';
  */
 ```
 
+### frontend/src/routes/admin/analytics/ExclusionCoverageNote.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import { useAdminData } from '../adminShared';
+import type { ExclusionsData } from './analyticsShared';
+
+/*
+ * States, beside the web-analytics figures, exactly how far the internal-traffic
+ * exclusion reaches.
+ *
+ * This is the honest answer to "apply the filtering to previous statistics".
+ * The warehouse filter IS retroactive — its views hide staff rows wherever they
+ * sit in history — but Plausible, Umami and GA4 store their own data upstream,
+ * and an exclusion added today cannot remove a pageview recorded last week.
+ * Two failure modes follow, and both are silent without this:
+```
+
 ### frontend/src/routes/admin/analytics/ExclusionsCard.test.tsx
 
 ```
@@ -14938,6 +15038,26 @@ export type Period = 'day' | '7d' | '30d' | 'month' | '6mo' | '12mo' | 'year' | 
 export const PERIODS: Period[] = ['day', '7d', '30d', 'month', '6mo', '12mo', 'year', 'all'];
 
 /**
+```
+
+### frontend/src/routes/admin/analytics/regionLoader.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { buildRegionIndex, normalizeRegionName, resolveRegionCode } from './regionLoader';
+import { REGIONS as MX } from './regions/MX';
+import { REGIONS as US } from './regions/US';
+
+/*
+ * These labels are the REAL ones returned by the production Plausible instance
+ * on 2026-08-13, captured from inside Railway's private network:
+ *
+ *   "Mexico City", "Guanajuato", "Jalisco", "Virginia", "Oregon",
+ *   "State of Mexico", "Iowa", "Nuevo Leon", "Baja California"
+ *
+ * The Stats API v2 docs promise ISO 3166-2 codes for visit:region, and
+ * visit:country really does return codes — but regions come back as names
+ * here. Keying the choropleth on codes alone matched nothing and would have
 ```
 
 ### frontend/src/routes/admin/analytics/regionLoader.ts

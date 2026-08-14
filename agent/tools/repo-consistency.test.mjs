@@ -49,8 +49,24 @@ function packageDirs() {
   );
 }
 
-// ROADMAP's production migration handoff names the unapplied delta range; its
-// upper bound must be the highest migration the repo actually ships.
+/*
+ * The migration docs must not go stale against the repo.
+ *
+ * This assertion originally required ROADMAP.md and the frozen 2026-08-01
+ * audit snapshot to name the SAME unapplied delta range, with its upper bound
+ * equal to the highest shipped migration. That held while one handoff was
+ * pending and both documents described it. It stopped being expressible on
+ * 2026-08-14, when a read-only ledger probe confirmed production at 46/46
+ * (`0001` … `0046`) with nothing pending: there is no current "unapplied
+ * range", and forcing a dated audit snapshot to carry today's numbers would
+ * falsify a historical record to satisfy a test.
+ *
+ * So the coupling is split. ROADMAP.md tracks the LIVE state and must name a
+ * high-water mark equal to the highest migration the repo ships — the check
+ * that actually prevents someone under-applying. The audit keeps its own
+ * 2026-08-02 range, asserted only to be present and well-formed, because a
+ * snapshot's job is to stay true to its date.
+ */
 {
   const migrations = readdirSync(path.join(root, 'database/migrations'))
     .map((entry) => /^(\d{4})_.+\.sql$/.exec(entry)?.[1])
@@ -61,12 +77,23 @@ function packageDirs() {
 
   const roadmap = readFileSync(path.join(root, 'ROADMAP.md'), 'utf8');
   const delta = /unapplied deltas `(\d{4})`–`(\d{4})`/.exec(roadmap);
-  assert.ok(delta?.[1] && delta?.[2], 'ROADMAP.md must state the unapplied migration delta range');
+  assert.ok(delta?.[1] && delta?.[2], 'ROADMAP.md must state the migration delta range it last handed off');
   assert.ok(delta[1] <= delta[2], 'ROADMAP.md delta range must be ordered');
   assert.equal(
     delta[2],
     highest,
     'ROADMAP.md delta upper bound must match the highest shipped migration',
+  );
+
+  // The verified production high-water mark, stated as `NN/NN`, must also
+  // agree with the repo — this is the number an operator acts on.
+  const highWater = /production at \*\*(\d+)\/(\d+)\*\*/.exec(roadmap);
+  assert.ok(highWater, 'ROADMAP.md must state the verified production high-water mark as **NN/NN**');
+  assert.equal(highWater[1], highWater[2], 'a partially applied ledger must not be recorded as verified');
+  assert.equal(
+    Number(highWater[2]),
+    migrations.length,
+    'ROADMAP.md production high-water mark must match the migration count the repo ships',
   );
 
   const audit = readFileSync(path.join(root, 'COURSEGEN_AUDIT_2026-08-01.md'), 'utf8');
@@ -75,10 +102,13 @@ function packageDirs() {
     /Post-audit correction, 2026-08-02/,
     'the audit snapshot must carry the bracketed migration-state correction',
   );
-  assert.ok(
-    audit.includes(`\`${delta[1]}\`–\`${delta[2]}\``),
-    'the audit correction must state the same delta range as ROADMAP.md',
+  // Deliberately NOT compared against ROADMAP's range: this is a dated
+  // snapshot and its numbers are correct AS OF its date.
+  assert.match(
+    audit,
+    /`\d{4}`–`\d{4}`/,
+    'the audit correction must still state a well-formed delta range',
   );
 }
 
-console.log('repo-consistency OK — setup coverage, README count, and migration-delta docs match the repo');
+console.log('repo-consistency OK — setup coverage, README count, and migration docs match the repo');

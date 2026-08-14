@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   gates:
-    name: docs sync + secrets + i18n parity
+    name: docs sync + secrets + i18n parity + marketing paths
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -39,3 +39,16 @@ jobs:
       # frontend/** changes. A locale file edited on its own still has to pass.
       - name: i18n 3-locale key parity + hardcoded-string scan
         run: bash agent/tools/check-i18n.sh
+
+      # The acquisition surface is declared in frontend/ AND backend/ (no
+      # workspaces, so no shared import). Either file can change alone, which
+      # is why this belongs in the unfiltered job rather than either CI.
+      - name: Marketing paths agree across packages
+        run: node agent/tools/check-marketing-paths.mjs
+
+      # The agent/tools/*.test.mjs suite existed but ran in NO workflow, so it
+      # rotted unnoticed: on 2026-08-14 it was failing because ROADMAP.md still
+      # named migration 0033 as the ceiling while the repo shipped 0046. A gate
+      # nobody runs is documentation, not enforcement.
+      - name: Repo tool self-tests
+        run: npm run tools:test
