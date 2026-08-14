@@ -1,7 +1,8 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
+import { trackMarketingGoal } from '@/lib/analytics';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
 import { CharacterActor } from '@/components/characters/control/CharacterActor';
@@ -20,7 +21,8 @@ const VALUES = [
 
 export function Landing() {
   const { t } = useTranslation();
-  const { session, startGuestSession } = useAuth();
+  const { session, meLoaded, startGuestSession } = useAuth();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
   const [startingGuest, setStartingGuest] = useState(false);
   const [guestError, setGuestError] = useState(false);
@@ -31,6 +33,18 @@ export function Landing() {
   // starts a guest session and drops the visitor straight into onboarding.
   // Signed-in visitors keep the plain declarative Link above (ctaTo).
   async function startAsGuest() {
+    /*
+     * The acquisition conversion. Reported BEFORE the await, not after: the
+     * call navigates away on success, and an event fired after a route change
+     * would be attributed to the destination rather than to the marketing
+     * page that actually earned it.
+     *
+     * trackMarketingGoal re-checks the same gate the pageview path uses, so
+     * this is a no-op for a signed-in visitor, a non-consented one, or any
+     * surface outside the public marketing set — this component never has to
+     * reason about the boundary itself.
+     */
+    trackMarketingGoal('guest_start', { pathname, session, meLoaded });
     setStartingGuest(true);
     setGuestError(false);
     const { error } = await startGuestSession();
@@ -53,7 +67,12 @@ export function Landing() {
   }) {
     if (session) {
       return (
-        <Link to={ctaTo} data-cta={dataCta} className={wrapperClassName}>
+        <Link
+          to={ctaTo}
+          data-cta={dataCta}
+          className={wrapperClassName}
+          onClick={() => trackMarketingGoal('cta_signup_start', { pathname, session, meLoaded })}
+        >
           <Button className={`group ${buttonClassName ?? ''}`}>
             {ctaLabel}
             <Icon name="arrow_forward" className="transition-transform duration-200 motion-safe:group-hover:translate-x-0.5" />
@@ -88,7 +107,12 @@ export function Landing() {
             <p className="lf-body-lg mt-6 max-w-xl text-on-inverse-muted">{t('marketing.hero.subtitle')}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <PrimaryCta dataCta="hero-primary" wrapperClassName="sm:inline-block" buttonClassName="w-full sm:w-auto" />
-              <Link to="/how-it-works" data-cta="hero-secondary" className="sm:inline-block">
+              <Link
+                to="/how-it-works"
+                data-cta="hero-secondary"
+                className="sm:inline-block"
+                onClick={() => trackMarketingGoal('cta_secondary', { pathname, session, meLoaded })}
+              >
                 <Button variant="secondary" className="w-full border-white/20 bg-white/10 text-on-inverse hover:border-white/40 hover:bg-white/15 hover:text-on-inverse sm:w-auto">
                   <Icon name="play_circle" />
                   {t('marketing.hero.ctaSecondary')}

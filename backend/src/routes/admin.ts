@@ -737,6 +737,99 @@ export function adminRouter(): Router {
     });
   });
 
+  /*
+   * Behaviour export. Umami's panel reached parity with Plausible's on
+   * dimensions and series but had no download, so the one dataset an analyst
+   * might want to pivot was the one they could not take with them.
+   *
+   * Every dimension in one file, discriminated by section — the same shape as
+   * the analytics report export, so parsing one means parsing both.
+   */
+  router.get('/analytics/behavior/export', async (req, res) => {
+    const parsed = PeriodSchema.safeParse(req.query);
+    const range = parsed.success ? rangeFromQuery(parsed.data) : null;
+    if (!parsed.success || !range) {
+      fail(res, 400, 'VALIDATION_ERROR', PERIOD_MESSAGE);
+      return;
+    }
+    const format = req.query.format === 'xlsx' ? 'xlsx' : 'csv';
+    if (!umamiConfigured(getPulseConfig())) {
+      fail(res, 503, PULSE_UNCONFIGURED, 'Umami is not configured on this deployment');
+      return;
+    }
+
+    const dimensions = Object.keys(UMAMI_DIMENSIONS) as UmamiDimension[];
+    const [stats, series, ...breakdowns] = await Promise.all([
+      getUmamiStats(range),
+      getUmamiSeries(range),
+      ...dimensions.map((dimension) => getUmamiBreakdown(range, dimension, 200)),
+    ]);
+    // One failed dimension fails the export. A spreadsheet silently missing a
+    // sheet is worse than a download that did not happen: nothing in the file
+    // would say the browser breakdown is absent rather than empty.
+    if (!stats || !series || breakdowns.some((rows) => rows === null)) {
+      fail(res, 502, UPSTREAM_FAILED, 'Umami did not answer');
+      return;
+    }
+
+    const resolved = resolveRange(range);
+    const from = new Date(resolved.startMs).toISOString().slice(0, 10);
+    const to = new Date(resolved.endMs).toISOString().slice(0, 10);
+    const meta = {
+      title: 'LittleFounders — behaviour',
+      window: `${from} to ${to}`,
+      generatedAt: new Date().toISOString(),
+      notes: [
+        'Source: Umami via Pulse. Adult surfaces only (marketing + signed-in parent product); never kid roles or /admin.',
+        stats.outOfBoundaryPageviews === null
+          ? 'Out-of-boundary pageviews: could not be read (NOT zero).'
+          : `Includes ${stats.outOfBoundaryPageviews} /admin/* pageviews recorded before the 2026-08-14 tracker fix.`,
+      ],
+    };
+    const sheets = [
+      {
+        name: 'summary',
+        columns: ['metric', 'value'],
+        rows: [
+          ['pageviews', stats.pageviews],
+          ['visitors', stats.visitors],
+          ['visits', stats.visits],
+          ['bounces', stats.bounces],
+          ['totaltime_seconds', stats.totaltime],
+          ['out_of_boundary_pageviews', stats.outOfBoundaryPageviews],
+        ] as (string | number | null)[][],
+      },
+      {
+        name: 'daily',
+        columns: ['date', 'pageviews', 'sessions'],
+        rows: series.map((point) => [point.date, point.pageviews, point.sessions]),
+      },
+      ...dimensions.map((dimension, index) => ({
+        name: dimension,
+        columns: [dimension, 'views'],
+        // '' is Umami's "not recorded"; label it so a blank cell is not read
+        // as a broken export.
+        rows: (breakdowns[index] ?? []).map((row) => [row.label === '' ? '(not recorded)' : row.label, row.value]),
+      })),
+    ];
+
+    const filename = `littlefounders-behaviour-${from}_to_${to}.${format}`;
+    if (format === 'xlsx') {
+      const xlsx = await renderTablesXlsx(meta, sheets);
+      res
+        .status(200)
+        .setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        .setHeader('Content-Disposition', `attachment; filename="${filename}"`)
+        .send(xlsx);
+      return;
+    }
+    res
+      .status(200)
+      .setHeader('Content-Type', 'text/csv; charset=utf-8')
+      .setHeader('Content-Disposition', `attachment; filename="${filename}"`)
+      .send(renderTablesCsv(meta, sheets));
+  });
+
   /** System health (Uptime Kuma): per-service status, latency, 24h uptime. */
   router.get('/health/services', async (_req, res) => {
     if (!kumaConfigured(getPulseConfig())) {

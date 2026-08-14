@@ -412,7 +412,10 @@
         "region": "Regiões",
         "city": "Cidades",
         "event": "Eventos"
-      }
+      },
+      "boundaryNote_one": "Inclui {{count}} visualização de /admin registrada antes da correção de 14 ago 2026.",
+      "boundaryNote_other": "Inclui {{count}} visualizações de /admin registradas antes da correção de 14 ago 2026. Não podem ser filtradas na leitura: o Umami não tem filtro de negação.",
+      "boundaryUnknown": "Não foi possível verificar o tráfego fora do limite — é desconhecido, não zero."
     },
     "filters": {
       "dimensionLabel": "Filtrar por",

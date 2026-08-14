@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
-import { isMarketingPath, shouldTrackPublicAcquisition, useTrackingDecision } from './analytics';
+import { isMarketingPath, shouldTrackPublicAcquisition, trackMarketingGoal, useTrackingDecision } from './analytics';
 
 describe('public acquisition tracker boundary', () => {
   it('accepts only consented, identity-resolved guest marketing routes', () => {
@@ -304,5 +304,73 @@ describe('mountGa4', () => {
     mod.mountGa4();
     mod.mountGa4();
     expect(document.querySelectorAll('#lf-ga4')).toHaveLength(1);
+  });
+});
+
+describe('trackMarketingGoal', () => {
+  /*
+   * Conversion goals are the first custom events this product has ever sent
+   * to a third party, so the test that matters most is the one proving they
+   * CANNOT escape the acquisition boundary — not the one proving they fire.
+   */
+  const MARKETING = { pathname: '/', session: null, meLoaded: true };
+
+  function spies() {
+    const plausible = vi.fn();
+    const umami = vi.fn();
+    const gtag = vi.fn();
+    (window as unknown as { plausible: unknown }).plausible = plausible;
+    (window as unknown as { umami: unknown }).umami = { track: umami };
+    (window as unknown as { gtag: unknown }).gtag = gtag;
+    return { plausible, umami, gtag };
+  }
+
+  beforeEach(() => {
+    window.localStorage.clear();
+    document.cookie = 'lf_cc=granted; path=/';
+    Object.defineProperty(navigator, 'webdriver', { value: false, configurable: true });
+  });
+
+  it('reports to all three tools when the visitor is anonymous, consented and on marketing', () => {
+    const { plausible, umami, gtag } = spies();
+    trackMarketingGoal('guest_start', MARKETING);
+    expect(plausible).toHaveBeenCalledWith('guest_start', { props: { path: '/' } });
+    expect(umami).toHaveBeenCalledWith('guest_start', { path: '/' });
+    expect(gtag).toHaveBeenCalledWith('event', 'guest_start', { page_path: '/' });
+  });
+
+  it('reports NOTHING from a product or admin surface', () => {
+    const { plausible, umami, gtag } = spies();
+    for (const pathname of ['/learn', '/admin/analytics', '/onboarding', '/signup']) {
+      trackMarketingGoal('cta_signup_start', { ...MARKETING, pathname });
+    }
+    expect(plausible).not.toHaveBeenCalled();
+    expect(umami).not.toHaveBeenCalled();
+    expect(gtag).not.toHaveBeenCalled();
+  });
+
+  it('reports nothing for a signed-in visitor, even on a marketing page', () => {
+    const { plausible } = spies();
+    trackMarketingGoal('cta_signup_start', { ...MARKETING, session: { id: 'x' } });
+    expect(plausible).not.toHaveBeenCalled();
+  });
+
+  it('reports nothing without cookie consent', () => {
+    document.cookie = 'lf_cc=denied; path=/';
+    const { plausible } = spies();
+    trackMarketingGoal('cta_signup_start', MARKETING);
+    expect(plausible).not.toHaveBeenCalled();
+  });
+
+  it('reports nothing from an excluded device or an automated browser', () => {
+    const { plausible } = spies();
+    window.localStorage.setItem('lf_analytics_excluded', '1');
+    trackMarketingGoal('cta_signup_start', MARKETING);
+    expect(plausible).not.toHaveBeenCalled();
+
+    window.localStorage.clear();
+    Object.defineProperty(navigator, 'webdriver', { value: true, configurable: true });
+    trackMarketingGoal('cta_signup_start', MARKETING);
+    expect(plausible).not.toHaveBeenCalled();
   });
 });

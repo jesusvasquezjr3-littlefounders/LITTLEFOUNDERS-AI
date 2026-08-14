@@ -112,3 +112,12 @@ Therefore, in `frontend/src/lib/analytics.tsx`:
 The rule: **the predicate that authorises the mount must be the only thing that can emit an event.** Any tracker added here is mounted with automatic capture off and driven explicitly, or the vendor — not this document — defines the §1.9 boundary. Both options are covered by A/B-verified tests in `analytics.test.tsx`; reverting either makes its test fail.
 
 Reads of stored history are scoped at query time — see the RUNBOOK entry for what that does and does not reach per tool.
+
+
+## Conversion goals — the boundary applies to events too
+
+Both trackers received nothing but pageviews until 2026-08-14, so the console could say which marketing page was VISITED but never which one converted. `trackMarketingGoal()` in `frontend/src/lib/analytics.tsx` now reports a closed set of goals to Plausible, Umami and GA4 at once — two behavioural datasets disagreeing about the same conversion is worse than either alone.
+
+**Only actions taken ON a public marketing surface, by an anonymous consented visitor, are ever reported.** Product events — onboarding steps, placement answers, lesson activity — are NOT sent to any third party; they belong to first-party Insights, which carries the kid-consent gate. That is a §1.9 decision, not a limitation: sending them would reopen exactly the boundary violation the 2026-08-14 work closed, and a conversion metric does not justify it.
+
+The emitter reuses `shouldTrackPublicAcquisition`, the same predicate as the pageview path, so a goal can never be reported from a surface a pageview would not have been. Goal names are a closed union, so a typo cannot silently create a new goal. Five tests cover the refusals (product/admin surface, signed-in visitor, no consent, excluded device, automated browser) — the refusals matter more than the emission.

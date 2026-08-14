@@ -346,6 +346,24 @@ export function AnalyticsHealthPage() {
             </div>
           )}
 
+          {behavior.state === 'ready' && behavior.data.outOfBoundaryPageviews !== 0 && (
+            /*
+             * Contamination is disclosed, not silently corrected. Umami's API
+             * has no negation filter, so `pageviews` could be fixed by
+             * subtraction but `visits`/`bounces` could not — correcting only
+             * the summable metric would leave the card internally
+             * inconsistent. `null` reads as "unknown", never as clean.
+             */
+            <p className="lf-caption flex items-start gap-1.5 rounded-lg bg-warning-soft p-2.5 text-warning-strong">
+              <Icon name="info" className="!text-[16px] shrink-0" />
+              <span>
+                {behavior.data.outOfBoundaryPageviews === null
+                  ? t('admin.analytics.behavior.boundaryUnknown')
+                  : t('admin.analytics.behavior.boundaryNote', { count: behavior.data.outOfBoundaryPageviews })}
+              </span>
+            </p>
+          )}
+
           {behaviorSeries.state === 'ready' && <BehaviorTrendChart data={behaviorSeries.data.series} />}
 
           {/*

@@ -34,6 +34,13 @@ function stubUmami(opts: { metrics?: unknown; series?: unknown; fail?: boolean; 
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'admin' }]));
       if (url.includes('/api/auth/login')) return Promise.resolve(jsonResponse(200, { token: 'umami-token' }));
       if (opts.fail) return Promise.resolve(jsonResponse(500, {}));
+      // /stats must precede /metrics: both are website sub-paths and the
+      // aggregate is what the export depends on.
+      if (url.includes('/stats')) {
+        return Promise.resolve(
+          jsonResponse(200, { pageviews: 1245, visitors: 72, visits: 229, bounces: 75, totaltime: 94921 }),
+        );
+      }
       if (url.includes('/pageviews')) return Promise.resolve(jsonResponse(200, opts.series ?? { pageviews: [], sessions: [] }));
       if (url.includes('/metrics')) return Promise.resolve(jsonResponse(200, opts.metrics ?? []));
       return Promise.resolve(jsonResponse(200, {}));
@@ -167,6 +174,35 @@ describe('GET /api/v1/admin/analytics/behavior/series', () => {
     stubUmami({ fail: true });
     const res = await request(createApp())
       .get('/api/v1/admin/analytics/behavior/series')
+      .set('Authorization', auth())
+      .set('User-Agent', BROWSER_UA);
+    expect(res.status).toBe(502);
+    expect(res.body.error.code).toBe('UPSTREAM_FAILED');
+  });
+});
+
+describe('GET /api/v1/admin/analytics/behavior/export', () => {
+  it('returns one CSV covering every dimension, with the not-recorded bucket named', async () => {
+    stubUmami({ metrics: [{ x: null, y: 40 }, { x: '/', y: 56 }], series: { pageviews: [], sessions: [] } });
+    const res = await request(createApp())
+      .get('/api/v1/admin/analytics/behavior/export?period=30d&format=csv')
+      .set('Authorization', auth())
+      .set('User-Agent', BROWSER_UA);
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toContain('text/csv');
+    expect(res.headers['content-disposition']).toContain('littlefounders-behaviour-');
+    // Every dimension gets a section, and the blank bucket is labelled rather
+    // than exported as an empty cell that reads like a broken file.
+    for (const section of ['summary', 'daily', 'path', 'referrer', 'browser', 'city', 'event']) {
+      expect(res.text).toContain(section);
+    }
+    expect(res.text).toContain('(not recorded)');
+  });
+
+  it('502s rather than shipping a spreadsheet with a silently missing sheet', async () => {
+    stubUmami({ fail: true });
+    const res = await request(createApp())
+      .get('/api/v1/admin/analytics/behavior/export?period=7d')
       .set('Authorization', auth())
       .set('User-Agent', BROWSER_UA);
     expect(res.status).toBe(502);

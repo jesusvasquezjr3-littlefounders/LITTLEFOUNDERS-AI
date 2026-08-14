@@ -335,6 +335,49 @@ export function mountGa4(): void {
   window.gtag('config', GA4_ID, { send_page_view: false });
 }
 
+/*
+ * ── Acquisition conversion goals ───────────────────────────────────────────
+ *
+ * Until now both trackers received nothing but pageviews, so the console
+ * could say which marketing page was VISITED but never which one converted.
+ * The funnel that used to answer that lives in GA4-imported history; nothing
+ * in the running product emitted a single custom event.
+ *
+ * SCOPE IS DELIBERATELY NARROW, and it is a §1.9 boundary decision rather
+ * than a limitation: only actions taken ON a public marketing surface by an
+ * anonymous, consented visitor are reported. Product events (onboarding
+ * steps, placement answers, lesson activity) are NOT sent here — they belong
+ * to first-party Insights, which has the kid-consent gate. Sending them to a
+ * third party is exactly the boundary violation this session spent its time
+ * removing, and a conversion metric is not worth reopening it.
+ *
+ * The emitter reuses the SAME predicate as the pageview path, so a goal can
+ * never be reported from a surface a pageview would not have been.
+ */
+
+/** Goal names are a closed set — a typo must not silently create a new goal. */
+export const MARKETING_GOALS = [
+  'cta_signup_start',
+  'cta_secondary',
+  'guest_start',
+] as const;
+export type MarketingGoal = (typeof MARKETING_GOALS)[number];
+
+export function trackMarketingGoal(
+  goal: MarketingGoal,
+  context: { pathname: string; session: object | null | undefined; meLoaded: boolean },
+): void {
+  if (isAutomatedBrowser()) return;
+  if (readFlag('local', EXCLUSION_FLAG) === '1') return;
+  if (!shouldTrackPublicAcquisition(context.pathname, context.session, context.meLoaded, hasCookieConsent())) return;
+
+  // Both tools, one call: two behavioural datasets disagreeing about the same
+  // conversion is worse than either one alone.
+  window.plausible?.(goal, { props: { path: context.pathname } });
+  window.umami?.track(goal, { path: context.pathname });
+  window.gtag?.('event', goal, { page_path: context.pathname });
+}
+
 export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: number }) {
   const { session, roles, meLoaded } = useAuth();
   const { pathname } = useLocation();

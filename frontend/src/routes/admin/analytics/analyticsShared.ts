@@ -225,6 +225,12 @@ export interface BehaviorData {
   visits: number;
   bounces: number;
   totaltime: number;
+  /**
+   * `/admin/*` pageviews Umami stored before the 2026-08-14 tracker fix.
+   * `null` means the breakdown could not be read — NOT zero, and it must
+   * never be rendered as "clean".
+   */
+  outOfBoundaryPageviews: number | null;
 }
 
 /* ── Internal-traffic exclusions ─────────────────────────────────────── */

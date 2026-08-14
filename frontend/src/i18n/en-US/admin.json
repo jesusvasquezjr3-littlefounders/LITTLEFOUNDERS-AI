@@ -412,7 +412,10 @@
         "region": "Regions",
         "city": "Cities",
         "event": "Events"
-      }
+      },
+      "boundaryNote_one": "Includes {{count}} /admin pageview recorded before the 2026-08-14 tracker fix.",
+      "boundaryNote_other": "Includes {{count}} /admin pageviews recorded before the 2026-08-14 tracker fix. They cannot be filtered out at read time — Umami has no negation filter.",
+      "boundaryUnknown": "Could not check for out-of-boundary pageviews — this is unknown, not zero."
     },
     "filters": {
       "dimensionLabel": "Filter by",
