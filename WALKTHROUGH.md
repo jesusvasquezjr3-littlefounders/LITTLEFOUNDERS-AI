@@ -2,6 +2,71 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-14, later) — Both trackers were self-capturing; stored history scoped at read time; monitors corrected
+
+- **Plausible and Umami were both violating the §1.9 boundary in production,
+  and the route gates were not at fault.** Each vendor auto-captures SPA
+  navigations by default: on load they hook `history.pushState` and report
+  every route change themselves, so mounting and ejecting the `<script>` tag
+  only ever decided whether to ADD the tracker, never whether it reported.
+  Ejecting removes the node, not the hook the script already installed.
+  Measured, not estimated: `/admin/content` was the **#1 page on the whole
+  site**; of 539 stored Plausible pageviews only 110 were ever in scope
+  (**79.6% out of boundary**), and 88 of Umami's twelve-month pageviews were
+  `/admin/*` (**31.5%**), across all eleven admin routes. Fixed with
+  `autoCapturePageviews: false` / `data-auto-track="false"` plus an explicit
+  pageview per approved navigation, so the predicate that authorises the mount
+  is now the only thing that can emit an event. Umami's tracker is deferred, so
+  its first call binds to the script's `load` event — calling directly on the
+  creating mount drops the landing pageview, the one acquisition most needs.
+- **The stored history is corrected at READ time**, since neither vendor
+  supports delete-by-filter. Plausible gets an always-on allowlist mirroring
+  `isMarketingPath`, applied inside `plausibleQuery()` — the single choke point
+  every call passes through, so no call site can omit it. Verified against
+  production: twelve months of top pages returns only `/`, `/families`,
+  `/how-it-works`, `/faq`, `/legal/*`, zero out-of-boundary rows, GA4 imports
+  included. Umami CANNOT be scoped — its API has no negation filter, and
+  correcting only the summable metric would leave the payload internally
+  inconsistent — so `getUmamiStats` reports `outOfBoundaryPageviews` and the
+  caller decides; `null` means unreadable, never "clean".
+- **The two-package coupling this created is now a gate, not a comment.**
+  "Public acquisition surface" is declared in the frontend (what is recorded)
+  and the backend (what is reported) and cannot share an import. Drift is
+  silent and asymmetric: a route added to the frontend only is recorded and
+  then filtered out of every report, so a real marketing page reads as one
+  nobody visits. `npm run paths:check` fails on either direction.
+- **`agent/tools/*.test.mjs` ran in NO workflow and had rotted into failure.**
+  ROADMAP.md still named migration `0033` as the ceiling while the repo ships
+  `0046`. A read-only ledger probe confirmed production at **46/46** with
+  nothing pending, so the "pending sign-off" entry was stale in status as well
+  as numbers. The suite now runs in CI, because a gate nobody runs is
+  documentation rather than enforcement.
+- **Kuma corrected:** monitor #4 (`Arcade / gamegen`, 0% uptime for weeks, the
+  actual source of the "server crashed" emails) deleted; Prism (#10) and Data
+  Intel (#11) added and attached to the status page. Data Intel is a **Keyword**
+  monitor on `"duckdb":"up"` — its `/health` returns 200 while reporting the
+  warehouse down, so a plain HTTP check is decorative.
+- **A staff-IP suggestion was NOT approved, deliberately.** All three detected
+  addresses resolve to CDN77/Datacamp VPN exit nodes, not devices — the tell
+  was two different staff accounts sharing one address. Approving them would
+  delete every other user of that exit server while failing to exclude staff at
+  all, since exit IPs rotate. See RUNBOOK for the `whois` check to run before
+  approving any suggestion.
+
+### Open for the next session (review agreed with the owner)
+
+1. Confirm over a normal traffic day that `/admin/*` and product routes no
+   longer appear in Plausible or Umami. Nothing has appeared since the deploy,
+   but that window carried almost no traffic and is not evidence.
+2. Confirm monitor #11 was created as **HTTP(s) - Keyword** and not plain
+   HTTP(s) — the status-page API does not expose monitor type, and with the
+   warehouse healthy both look identical.
+3. Decide whether to build a device-level analytics opt-out for VPN-using
+   staff. Proposed, not built: a manual `plausible_ignore` does NOT survive,
+   because `applyVendorOptOuts()` clears it whenever Core answers "allowed".
+4. Optional: no admin page consumes the Umami endpoint, so
+   `outOfBoundaryPageviews` is available but invisible.
+
 ## Current State (2026-08-14) — Retroactive filtering confirmed, non-human traffic filtered, datacenter blocking assessed and refused
 
 - **The warehouse filter IS retroactive, verified against production.** Over a
@@ -1008,6 +1073,11 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-14 | **Every third-party tracker is mounted with automatic SPA capture OFF and driven explicitly by our own code.** Plausible takes `autoCapturePageviews: false`, Umami `data-auto-track="false"`; each approved navigation emits one pageview from the effect. | Both vendors hook `history.pushState` on load, so the route gate only chose whether to add the tag — the vendor, not our consent logic, was deciding what got recorded. `/admin/content` became the site's #1 page and 79.6% of stored Plausible pageviews were out of boundary. Unmounting a script never revokes what it already installed on `window`/`history`. |
+| 2026-08-14 | **Contaminated analytics history is corrected at read time, per tool, and never silently half-corrected.** Plausible gets an always-on acquisition allowlist inside `plausibleQuery()`; Umami reports `outOfBoundaryPageviews` instead of a scoped total. | Neither vendor can delete by filter, so the choice is read-time scoping or knowingly publishing bad numbers. Umami has no negation filter: `pageviews` is correctable by subtraction but `visits`/`bounces`/`totaltime` are not, and fixing only the summable metric yields a bounce rate computed against visits that still include the removed sessions — internally inconsistent, and worse than an honest caveat. |
+| 2026-08-14 | **A cross-package invariant that cannot share an import gets a CI gate, not a comment.** `check-marketing-paths.mjs` compares the frontend and backend definitions of the acquisition surface and fails on either direction. | Nine packages, no workspaces, so the definition is duplicated by necessity — but the enforcement need not be. Drift produces no error and no visibly wrong number, only a quietly incomplete one: a marketing route added to the frontend alone is recorded and then filtered out of every report. |
+| 2026-08-14 | **A repo-consistency assertion was split rather than satisfied.** ROADMAP now tracks the live migration state and must state a verified production high-water mark; the frozen 2026-08-01 audit keeps its own dated range, asserted only to be well-formed. | The original test required both documents to name the same unapplied range. With production at 46/46 and nothing pending, that is no longer expressible, and making a dated snapshot carry today's numbers would falsify a historical record to satisfy a test. The replacement is net stricter — it catches a new migration shipping without a doc update, a stale high-water mark, and a partial ledger recorded as verified. |
+| 2026-08-14 | **Staff-IP exclusion suggestions are verified with `whois` before approval; VPN and datacenter exits are never excluded.** | All three detected staff addresses were CDN77/Datacamp VPN exits. Excluding one removes every other person using that exit server — silently, unrecoverably — while failing to exclude staff at all, because exit IPs rotate. Same reasoning that already refused ASN blocking over iCloud Private Relay. |
 | 2026-08-02 | **The production migration runner stays Bash 3.2-compatible and is integration-tested without a network.** Migration-file collection uses a portable `while read` loop instead of `mapfile`, and `railway-migrate.test.mjs` executes the dry-run against fake Railway/`psql` binaries. | The macOS system Bash is 3.2 and has no `mapfile`; the first integration test caught the failure before production. A fake no-write session also proves the forwarded base64/`psql` pipeline is actually executed, not merely syntactically present. |
 | 2026-08-02 | **The Railway migration runner passes its remote pipeline as an executable `sh -c` argument, without literal wrapper quotes.** The transport was shell-audited after the handoff script was added. | Literal single quotes around the whole forwarded command would make the remote shell treat the base64/`psql` pipeline as a string instead of running it. Keeping the base64 payload quoted inside the command preserves safe transport while ensuring the dry-run and apply paths actually execute remotely. |
 | 2026-08-02 | **Every object-tile purpose guide repeats the pure-white/transparent edge-to-edge rule and the original animated-editorial vector brief.** The deterministic tile prompt and the art-director role guidance now agree; scenes retain complete setting backgrounds. | Four legacy role descriptions still said "near-plain warm background", which could reintroduce a colored canvas if the deterministic path is expanded or a future director call uses the role text. Repeating the constraint at both prompt layers makes the requested visual contract resilient without another paid generation. |

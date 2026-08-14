@@ -96,6 +96,24 @@ disagrees with Kuma, one of them is wrong and it is usually this file.
 | 7 | Depot (filebase) | `filebase.railway.internal:4006/health` |
 | 8 | Plausible | pulse-plausible `/api/health` |
 | 9 | Umami | pulse-umami `/api/heartbeat` |
+| 10 | Prism (picturegen) | `picturegen.railway.internal:4007/health` |
+| 11 | Data Intel (dataintel) | `dataintel.railway.internal:4008/health` — **Keyword** monitor, see below |
+
+Monitor #4 is absent by design: see the retirement note below. Numbering is
+Kuma's own and is never reused.
+
+**Data Intel is a Keyword monitor, not a plain HTTP one.** Its `/health`
+answers `200 status:"ok"` *while* reporting `components.duckdb: "down"` — that
+is exactly how the warehouse died silently after a deploy twice (RUNBOOK,
+2026-08-09 and 2026-08-13). An HTTP-200 monitor stays green through the outage
+it exists to catch. The keyword is `"duckdb":"up"`, matched against the
+compact JSON the service actually emits (no spaces after the colons — verify
+with `curl` before changing it, since a keyword that never matches makes the
+monitor permanently red and equally useless).
+
+**A monitor is not live until it is on the status page.** Creating it in Kuma
+is half the job: Core reads `/api/status-page/pulse`, so a monitor left out of
+the `Services` group runs, alerts, and stays invisible to `/admin`.
 
 **Retiring a service retires its monitor, in the same change.** Monitor #4
 ("Arcade / gamegen") outlived the service it watched: the Game Engine was
@@ -105,8 +123,10 @@ Railway service deleted, but the monitor kept resolving
 about it for weeks. An alert for something that no longer exists trains people
 to ignore alerts, which is worse than having none.
 
-**Known gap:** Prism (`picturegen`, 4007) and Data Intel (`dataintel`, 4008)
-have no monitor. Both expose `/health`. Add them.
+Executed 2026-08-14: monitor #4 deleted, and Prism (#10) and Data Intel (#11)
+added and attached to the `Services` group. Verified through the status-page
+API — ten monitors, all `UP`. The "server crashed" emails traced to #4 should
+stop with it.
 
 ## Non-human traffic
 

@@ -53,20 +53,32 @@ Five Railway services in `littlefounders-b2c`, defined under `pulse/railway/`:
    Plausible/Umami/Kuma API tokens server-side (§1.5 pattern). The ONLY
    browser-facing Pulse surfaces are the two tracker scripts and Plausible's
    GA OAuth callback.
-7. **A monitor's lifetime is its service's lifetime.** Adding a service adds
-   a Kuma monitor; RETIRING a service removes its monitor in the same change.
+7. **A monitor's lifetime is its service's lifetime, and a monitor is not live
+   until it is on the status page.** Adding a service adds a Kuma monitor AND
+   attaches it to the status page's `Services` group — Core reads
+   `/api/status-page/pulse`, so a monitor that exists but is not on the page
+   runs and alerts while staying invisible to `/admin`. RETIRING a service
+   removes its monitor in the same change.
    The set is documented in `pulse/README.md` and must match Kuma. A monitor
    left pointing at a deleted service fails forever and emails forever — that
    is what happened to `gamegen` after the Game Engine was removed, and the
    noise was indistinguishable from a real outage until someone read the logs.
-8. **State needs volumes.** `pulse-db` (PGDATA), `pulse-clickhouse`
+8. **A health endpoint that degrades inside a 200 needs a Keyword monitor.**
+   `dataintel` answers `200 status:"ok"` while reporting
+   `components.duckdb: "down"`; an HTTP-200 monitor is green throughout the
+   outage it exists to catch. Match the compact JSON the service really emits
+   (`"duckdb":"up"`) — confirm with `curl` first, because a keyword that never
+   matches is a permanently red monitor, which is the same failure wearing the
+   opposite colour. Any service whose `/health` can report a dead dependency
+   without changing its status code gets the same treatment.
+9. **State needs volumes.** `pulse-db` (PGDATA), `pulse-clickhouse`
    (/var/lib/clickhouse), `pulse-kuma` (/app/data). A Kuma redeploy without
    its volume wipes every monitor. Daily `pg_dump` of pulse-db runs via
    `.github/workflows/pulse-backup.yml` (Vault-backup pattern).
-9. **Private networking is IPv6.** Every listener binds `::` (Plausible
+10. **Private networking is IPv6.** Every listener binds `::` (Plausible
    `LISTEN_IP`, Umami `HOSTNAME`, ClickHouse `listen_host`). A service that
    binds 0.0.0.0 is silently unreachable at `*.railway.internal`.
-10. **Secrets only in Railway variables.** `pulse/.env.example` is the
+11. **Secrets only in Railway variables.** `pulse/.env.example` is the
    placeholder contract; `npm run secrets:check` gates every commit.
 
 ## Upgrade protocol

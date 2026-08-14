@@ -149,6 +149,12 @@ deleted (`10936f3e`, schema retired in `0033`). 0 of 100 heartbeats up, 0%
 24-hour uptime, for weeks. **Fix: delete the monitor in Kuma.** The rule that
 prevents a repeat is in `pulse/AGENTS.md` #7.
 
+**Executed 2026-08-14.** Monitor #4 deleted; Prism (#10) and Data Intel (#11)
+created and attached to the `Services` group. Verified via the status-page API:
+ten monitors, all `UP`. Data Intel is deliberately a **Keyword** monitor
+(`"duckdb":"up"`) — see `pulse/AGENTS.md` #8 for why a plain HTTP check would
+have been decorative.
+
 **Two findings worth keeping from the same sweep:**
 
 - `storage`, `studio`, `meta` and `supavisor` show no active deployment because
@@ -368,3 +374,49 @@ Run it through `bash database/scripts/local-stack.sh psql` (args pass through) l
 - **Plausible** — `plausibleQuery()` in `backend/src/services/pulse.ts` now ANDs an always-on `ACQUISITION_SCOPE` allowlist into every request, mirroring `isMarketingPath`. It is applied at that one choke point so no call site can omit it. Verified against production: twelve months of top pages returns only `/`, `/families`, `/how-it-works`, `/faq`, `/legal/*` — zero out-of-boundary rows, GA4 imports included. Adding a marketing route means updating the frontend gate AND this list.
 - **Umami** — its API has no negation filter, so the aggregate cannot be scoped. `pageviews` could be corrected by subtraction but `visits`/`bounces`/`totaltime` could not (one visitor may span both), and correcting only the summable metric would leave the payload internally inconsistent. So `getUmamiStats` reports `outOfBoundaryPageviews` alongside the totals and the caller decides. `null` means the breakdown could not be read — it is NOT zero and must never be rendered as "clean".
 - **Data Intel** — needs no backfill: `is_staff` is a join against `user_roles` evaluated at query time, so every historical query is already filtered (measured over 90 days: 3,539 events excluded, 383 kept).
+
+
+## Staff-IP exclusion suggestions can be VPN exit nodes — do not approve blindly (2026-08-14)
+
+**What happened.** With the internal-traffic exclusion registry empty, the
+auto-detector had collected four staff sightings across three addresses, and
+the obvious next step was to approve them. A `whois` check first showed all
+three belong to **CDN77 / Datacamp** — `169.150.224.129/130` is CDN77 Houston,
+`84.17.44.225` is CDN77 LAX. They are consumer **VPN exit nodes**, not devices
+and not an office. The tell was in our own data before the lookup: two
+different staff accounts (`jesusv@`, `raul@`) appeared on the *same* address,
+which a personal device cannot explain.
+
+**Why approving them would have been wrong, in both directions.** An exclusion
+on a VPN exit removes every OTHER person using that same exit server — real
+users, silently, with no way to tell afterwards that they existed. And it does
+not even achieve its purpose, because exit IPs rotate: the same staff member
+reappears on a different node tomorrow and is counted again. It is the same
+reasoning that made us refuse datacenter/ASN blocking outright — iCloud Private
+Relay egresses from datacenter ranges carrying genuine Safari sessions.
+
+**Diagnose before approving any suggestion:**
+
+```
+whois <address> | grep -iE '^(netname|descr|orgname|org-name):'
+whois -h whois.ripe.net <address> | grep -iE '^(netname|descr):'   # RIPE-delegated space
+```
+
+A residential or business ISP name is a real device or office and is safe to
+exclude at `/32`. A CDN, hosting, cloud or "VPN" name is not. Two distinct
+staff accounts sharing one address is itself a red flag — check before acting.
+
+**What to do instead.** Nothing, for a VPN. The residual exposure is already
+small: Plausible and GA4 both require `session === null`, so a signed-in staff
+member is never recorded regardless of address; the leak is only staff browsing
+the public site signed OUT. Note also that setting `plausible_ignore` /
+`umami.disabled` by hand does NOT work on our site — `applyVendorOptOuts()`
+clears both keys whenever Core answers "allowed", by design, so that revoking
+an exclusion genuinely re-enables measurement. A durable fix for VPN-using
+staff would need a device-level opt-out that is not derived from IP; that is
+proposed, not built.
+
+**Prevention.** The exclusion panel is the right tool for a stable egress and
+the wrong tool for a rotating one. Treat every suggestion as a claim to verify,
+not a queue to clear: the cost of a wrong exclusion is invisible, permanent,
+and lands on real users rather than on staff.
