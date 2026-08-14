@@ -2,9 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Area,
-  AreaChart,
   Bar,
-  Brush,
   CartesianGrid,
   ComposedChart,
   Label,
@@ -319,30 +317,15 @@ export function SignupTimeline() {
             </ComposedChart>
           </ResponsiveContainer>
         </div>
-        <div className="mt-2 h-24 w-full border-t border-outline/30 pt-2" aria-label={t('admin.users.timelineOverviewAria')}>
-          <ResponsiveContainer>
-            <AreaChart data={fullPoints} margin={{ top: 3, right: 8, left: -12, bottom: 0 }}>
-              <defs>
-                <linearGradient id="signupTimelineOverview" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="rgb(var(--lf-primary))" stopOpacity={0.28} />
-                  <stop offset="100%" stopColor="rgb(var(--lf-primary))" stopOpacity={0.03} />
-                </linearGradient>
-              </defs>
-              <Area type="monotone" dataKey={metric === 'daily' ? 'count' : 'cumulative'} stroke="rgb(var(--lf-primary))" strokeWidth={1.5} fill="url(#signupTimelineOverview)" dot={false} isAnimationActive={false} />
-              <Brush
-                dataKey="date"
-                height={28}
-                startIndex={selectedRange.startIndex}
-                endIndex={selectedRange.endIndex}
-                travellerWidth={12}
-                stroke="rgb(var(--lf-primary))"
-                fill="rgb(var(--lf-surface-sunken))"
-                tickFormatter={() => ''}
-                onChange={({ startIndex, endIndex }) => setRange({ startIndex: startIndex ?? 0, endIndex: endIndex ?? Math.max(fullPoints.length - 1, 0) })}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+        {/*
+          * The drag Brush that lived here was removed. It duplicated the
+          * preset buttons above — two controls setting the same range, so a
+          * reader could not tell which one the figures obeyed — and a drag
+          * handle is a poor affordance on touch, where this console is used
+          * (DESIGN §Responsive: no drag-only control without a tap-accessible
+          * equivalent). The presets ARE that equivalent, so the Brush and the
+          * strip of chart that existed only to host it are both gone.
+          */}
       </div>
       <p className="lf-caption text-content-faint">{t('admin.users.timelineZoomHint')}</p>
     </Card>

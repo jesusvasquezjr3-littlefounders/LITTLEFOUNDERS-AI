@@ -16,7 +16,7 @@ import {
 } from './intel/IntelControls';
 import {
   ResponsiveContainer, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell, ComposedChart,
+  BarChart, Bar, AreaChart, Area, Cell, ComposedChart, LabelList,
 } from 'recharts';
 import type { TooltipProps } from 'recharts';
 
@@ -394,6 +394,9 @@ const TABS_WITH_ICONS: { key: Tab; icon: string }[] = [
   { key: 'experiments', icon: 'science' },
   { key: 'alerts', icon: 'notifications' },
 ];
+
+/** Worst first: the row an operator must act on should not need hunting for. */
+const CHURN_ORDER = ['high', 'medium', 'at_risk', 'active'] as const;
 
 const CHURN_COLORS: Record<string, string> = {
   high: SVG_ERROR,
@@ -1002,11 +1005,24 @@ function LearnerDetailDialog({ detail, learner, loading, onClose, t, nf, pf }: {
 /* ------------------------------------------------------------------ */
 
 function PeopleTab({ data, t, pf: _pf }: { data: IntelBundle; t: (k: string) => string; pf: Intl.NumberFormat }) {
+  /*
+   * Churn buckets are ORDERED severity levels, not nominal slices of a whole.
+   * They were drawn as a pie, which fails twice over: it throws the ordering
+   * away (a pie has no "worse than" direction) and it asks the reader to
+   * compare angles, which is measurably less accurate than comparing the
+   * lengths of bars sharing a baseline. Severity order is fixed here rather
+   * than left to object-key order so "high" is always the top row.
+   */
   const churnData = useMemo(() => {
     if (!data.churnRisk) return [];
     const buckets: Record<string, number> = {};
     data.churnRisk.forEach((r) => { buckets[r.risk_level] = (buckets[r.risk_level] ?? 0) + 1; });
-    return Object.entries(buckets).map(([name, value]) => ({ name, value }));
+    const total = Object.values(buckets).reduce((sum, n) => sum + n, 0);
+    return CHURN_ORDER.filter((name) => buckets[name] !== undefined).map((name) => ({
+      name,
+      value: buckets[name] ?? 0,
+      share: total > 0 ? (buckets[name] ?? 0) / total : 0,
+    }));
   }, [data.churnRisk]);
 
   return (
@@ -1033,15 +1049,37 @@ function PeopleTab({ data, t, pf: _pf }: { data: IntelBundle; t: (k: string) => 
         {churnData.length > 0 ? (
           <div className="h-[280px] w-full">
             <ResponsiveContainer>
-              <PieChart>
-                <Pie data={churnData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label={({ name, value }) => `${name}: ${value}`}>
+              <BarChart data={churnData} layout="vertical" margin={{ top: 4, right: 56, bottom: 4, left: 8 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={SVG_OUTLINE} horizontal={false} />
+                <XAxis type="number" tick={{ fontSize: 11, fill: SVG_CONTENT_MUTED }} axisLine={false} tickLine={false} allowDecimals={false} />
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  width={92}
+                  tick={{ fontSize: 11, fill: SVG_CONTENT }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(name: string) => t(`admin.intel.people.churnLevels.${name}`)}
+                />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: SVG_OUTLINE, fillOpacity: 0.25 }} />
+                <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={34}>
                   {churnData.map((d) => (
                     <Cell key={d.name} fill={CHURN_COLORS[d.name] ?? SVG_PRIMARY} />
                   ))}
-                </Pie>
-                <Tooltip content={<CustomTooltip />} />
-                <Legend />
-              </PieChart>
+                  {/* Count AND share: the count is what you act on, the share
+                      is what the pie was there to convey. Both, or neither
+                      question gets answered. */}
+                  <LabelList
+                    dataKey="value"
+                    position="right"
+                    formatter={(value: number) => {
+                      const row = churnData.find((d) => d.value === value);
+                      return row ? `${value} · ${Math.round(row.share * 100)}%` : String(value);
+                    }}
+                    style={{ fontSize: 11, fill: SVG_CONTENT_MUTED }}
+                  />
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           </div>
         ) : (

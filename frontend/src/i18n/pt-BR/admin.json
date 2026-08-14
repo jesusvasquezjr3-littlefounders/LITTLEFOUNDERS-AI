@@ -1028,7 +1028,13 @@
       "colLessons30d": "Lições (30d)",
       "riskHigh": "Alto",
       "riskMedium": "Médio",
-      "riskLow": "Baixo"
+      "riskLow": "Baixo",
+      "churnLevels": {
+        "high": "Risco alto",
+        "medium": "Risco médio",
+        "at_risk": "Em risco",
+        "active": "Ativos"
+      }
     },
     "experiments": {
       "title": "Experimentos",

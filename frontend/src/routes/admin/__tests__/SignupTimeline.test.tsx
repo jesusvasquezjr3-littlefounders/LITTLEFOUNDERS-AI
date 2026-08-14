@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { SignupTimeline } from '../SignupTimeline';
 
 const { mockApi, mockGetToken } = vi.hoisted(() => ({
@@ -34,9 +34,6 @@ vi.mock('recharts', () => ({
   Tooltip: () => null,
   XAxis: () => null,
   YAxis: () => null,
-  Brush: ({ onChange }: { onChange?: (range: { startIndex?: number; endIndex?: number }) => void }) => (
-    <g role="button" aria-label="zoom" onClick={() => onChange?.({ startIndex: 2, endIndex: 3 })} />
-  ),
 }));
 
 beforeEach(() => {
@@ -64,21 +61,14 @@ describe('SignupTimeline', () => {
     expect(screen.getByText('9')).toBeInTheDocument();
   });
 
-  it('recalculates the summary when the in-chart range changes', async () => {
-    render(<SignupTimeline />);
-
+  it('exposes preset buttons as the only range control, with no drag Brush', () => {
     /*
-     * Wait for the DATA, not merely the chrome. The zoom control renders as
-     * soon as the chart does, which is before the API promise resolves — so
-     * clicking it early summarises an empty series and the assertion below
-     * fails intermittently. It did exactly that in CI on 2026-08-14 and
-     * blocked a deploy, having previously passed roughly five runs in six.
-     * The full-range total (1 + 0 + 5 + 3) proves the fixture has landed.
+     * The chart carried BOTH preset buttons and a drag Brush, two controls
+     * setting the same range with no way to tell which the figures obeyed.
+     * The Brush also failed the touch rule — a drag-only affordance with no
+     * tap equivalent. The presets are that equivalent and stayed.
      */
-    await waitFor(() => expect(screen.getByText('9')).toBeInTheDocument());
-
-    fireEvent.click(screen.getByRole('button', { name: 'zoom' }));
-    // Range covers indices 2..3, so 5 + 3.
-    await waitFor(() => expect(screen.getByText('8')).toBeInTheDocument());
+    render(<SignupTimeline />);
+    expect(screen.queryByRole('button', { name: 'zoom' })).not.toBeInTheDocument();
   });
 });
