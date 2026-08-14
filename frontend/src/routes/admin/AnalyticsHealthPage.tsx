@@ -4,6 +4,7 @@ import { Badge, Card, Icon, StatCard, Table, type TableColumn } from '@/componen
 import { cn } from '@/lib/utils';
 import { AdminAction, AdminPage, useAdminData } from './adminShared';
 import {
+  BEHAVIOR_CARDS,
   BREAKDOWN_CARDS,
   filtersToQuery,
   isCompleteSelection,
@@ -11,6 +12,7 @@ import {
   SECONDARY_BREAKDOWN_CARDS,
   type AnalyticsFilter,
   type BehaviorData,
+  type BehaviorSeriesData,
   type DimensionKey,
   type HealthData,
   type OverviewData,
@@ -18,6 +20,8 @@ import {
 } from './analytics/analyticsShared';
 import { FilterBar } from './analytics/FilterBar';
 import { BreakdownCard } from './analytics/BreakdownCard';
+import { BehaviorBreakdownCard } from './analytics/BehaviorBreakdownCard';
+import { BehaviorTrendChart } from './analytics/BehaviorTrendChart';
 import { ReportExportCard } from './analytics/ReportExportCard';
 import { ExclusionsCard } from './analytics/ExclusionsCard';
 import { ExclusionCoverageNote } from './analytics/ExclusionCoverageNote';
@@ -58,6 +62,7 @@ export function AnalyticsHealthPage() {
     `/admin/analytics/overview?${periodQuery}${filterQuery}`,
   );
   const { data: behavior, reload: reloadBehavior } = useAdminData<BehaviorData>(`/admin/analytics/behavior?${periodQuery}`);
+  const { data: behaviorSeries } = useAdminData<BehaviorSeriesData>(`/admin/analytics/behavior/series?${periodQuery}`);
   const { data: health, reload: reloadHealth } = useAdminData<HealthData>('/admin/health/services');
 
   const handleRefresh = useCallback(() => {
@@ -340,6 +345,25 @@ export function AnalyticsHealthPage() {
               <SignalCard icon="donut_large" label={t('admin.analytics.behavior.bounceRate')} value={pct.format(behaviorSignals.bounceRate)} />
             </div>
           )}
+
+          {behaviorSeries.state === 'ready' && <BehaviorTrendChart data={behaviorSeries.data.series} />}
+
+          {/*
+            * The twelve behavioural dimensions Umami actually collects. Until
+            * 2026-08-14 the console read only the five aggregate numbers
+            * above, so path-level behaviour, referrers, devices, languages,
+            * screens and geography were gathered and never looked at.
+            */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {BEHAVIOR_CARDS.map((card) => (
+              <BehaviorBreakdownCard
+                key={card.dimension}
+                dimension={card.dimension}
+                icon={card.icon}
+                periodQuery={periodQuery}
+              />
+            ))}
+          </div>
           </>
         )}
       </section>

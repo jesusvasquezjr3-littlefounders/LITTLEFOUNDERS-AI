@@ -396,7 +396,29 @@
       "bounces": "Rebotes",
       "averageTime": "Tiempo promedio por visita",
       "bounceRate": "Tasa de rebote de comportamiento",
-      "signalsAria": "Señales de comportamiento"
+      "signalsAria": "Señales de comportamiento",
+      "views": "Vistas",
+      "sessions": "Sesiones",
+      "notRecorded": "Sin registrar",
+      "noRows": "Sin comportamiento registrado en este periodo.",
+      "noSeries": "Sin volumen de comportamiento en este periodo.",
+      "trendTitle": "Volumen de comportamiento",
+      "shareNote": "El porcentaje es sobre las filas mostradas, no sobre todo el tráfico.",
+      "dimensions": {
+        "path": "Páginas",
+        "referrer": "Referencias",
+        "title": "Títulos de página",
+        "query": "Cadenas de consulta",
+        "browser": "Navegadores",
+        "os": "Sistemas operativos",
+        "device": "Dispositivos",
+        "screen": "Tamaños de pantalla",
+        "language": "Idiomas",
+        "country": "Países",
+        "region": "Regiones",
+        "city": "Ciudades",
+        "event": "Eventos"
+      }
     },
     "filters": {
       "dimensionLabel": "Filtrar por",

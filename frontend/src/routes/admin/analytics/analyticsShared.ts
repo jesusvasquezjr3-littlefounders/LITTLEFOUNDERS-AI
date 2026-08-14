@@ -162,6 +162,60 @@ export interface OverviewData {
   previous: (Aggregate & { from: string; to: string }) | null;
 }
 
+/*
+ * Behavioural dimensions (Umami). Twelve of them existed in the warehouse and
+ * the console read none: only the five-number aggregate below was surfaced,
+ * so path-level behaviour, referrers, devices, languages, screens and
+ * geography were collected and never looked at.
+ *
+ * `city` is included deliberately and is safe: Umami is restricted to
+ * marketing plus signed-in ADULT parent surfaces (pulse/AGENTS.md #4) and
+ * never runs for kid roles, so no minor's location can reach it.
+ */
+export type BehaviorDimensionKey =
+  | 'path' | 'referrer' | 'title' | 'query'
+  | 'browser' | 'os' | 'device' | 'screen'
+  | 'language' | 'country' | 'region' | 'city' | 'event';
+
+export const BEHAVIOR_CARDS: { dimension: BehaviorDimensionKey; icon: string }[] = [
+  { dimension: 'path', icon: 'description' },
+  { dimension: 'referrer', icon: 'travel_explore' },
+  { dimension: 'device', icon: 'devices' },
+  { dimension: 'browser', icon: 'web' },
+  { dimension: 'os', icon: 'memory' },
+  { dimension: 'country', icon: 'public' },
+  { dimension: 'region', icon: 'map' },
+  { dimension: 'city', icon: 'location_city' },
+  { dimension: 'language', icon: 'translate' },
+  { dimension: 'screen', icon: 'aspect_ratio' },
+  { dimension: 'title', icon: 'title' },
+  { dimension: 'event', icon: 'bolt' },
+];
+
+export interface BehaviorRow {
+  label: string;
+  value: number;
+}
+
+export interface BehaviorBreakdownData {
+  period: Period;
+  dimension: BehaviorDimensionKey;
+  rows: BehaviorRow[];
+}
+
+export interface BehaviorSeriesPoint {
+  date: string;
+  pageviews: number;
+  sessions: number;
+}
+
+export interface BehaviorSeriesData {
+  period: Period;
+  from: string;
+  to: string;
+  series: BehaviorSeriesPoint[];
+}
+
 export interface BehaviorData {
   period: Period;
   from: string;

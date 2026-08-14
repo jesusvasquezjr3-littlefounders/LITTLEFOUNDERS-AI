@@ -396,7 +396,29 @@
       "bounces": "Bounces",
       "averageTime": "Average time per visit",
       "bounceRate": "Behavior bounce rate",
-      "signalsAria": "Behavior analytics signals"
+      "signalsAria": "Behavior analytics signals",
+      "views": "Views",
+      "sessions": "Sessions",
+      "notRecorded": "Not recorded",
+      "noRows": "No behaviour recorded in this window.",
+      "noSeries": "No behavioural volume in this window.",
+      "trendTitle": "Behavioural volume",
+      "shareNote": "Share is of the rows shown, not of all traffic.",
+      "dimensions": {
+        "path": "Pages",
+        "referrer": "Referrers",
+        "title": "Page titles",
+        "query": "Query strings",
+        "browser": "Browsers",
+        "os": "Operating systems",
+        "device": "Devices",
+        "screen": "Screen sizes",
+        "language": "Languages",
+        "country": "Countries",
+        "region": "Regions",
+        "city": "Cities",
+        "event": "Events"
+      }
     },
     "filters": {
       "dimensionLabel": "Filter by",

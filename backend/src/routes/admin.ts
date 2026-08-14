@@ -39,6 +39,10 @@ import {
   getPlausibleReportData,
   getPulseConfig,
   getUmamiStats,
+  getUmamiBreakdown,
+  getUmamiSeries,
+  UMAMI_DIMENSIONS,
+  type UmamiDimension,
   kumaConfigured,
   parseRange,
   PLAUSIBLE_DIMENSION_KEYS,
@@ -121,6 +125,14 @@ const PeriodSchema = z.object({ ...RANGE_SHAPE });
 const BreakdownQuerySchema = z.object({
   ...RANGE_SHAPE,
   dimension: z.enum(PLAUSIBLE_DIMENSION_KEYS),
+  limit: z.coerce.number().int().min(1).max(200).default(8),
+});
+
+const UMAMI_DIMENSION_KEYS = Object.keys(UMAMI_DIMENSIONS) as [UmamiDimension, ...UmamiDimension[]];
+
+const BehaviorBreakdownSchema = z.object({
+  ...RANGE_SHAPE,
+  dimension: z.enum(UMAMI_DIMENSION_KEYS),
   limit: z.coerce.number().int().min(1).max(200).default(8),
 });
 
@@ -658,6 +670,59 @@ export function adminRouter(): Router {
       from: new Date(resolved.startMs).toISOString().slice(0, 10),
       to: new Date(resolved.endMs).toISOString().slice(0, 10),
       ...stats,
+    });
+  });
+
+  /*
+   * Behavioural breakdowns (Umami).
+   *
+   * Umami holds twelve dimensions of product behaviour that nothing read until
+   * now — the service exposed a five-number aggregate and no page consumed even
+   * that. These mirror the Plausible breakdown/series contract exactly (same
+   * range resolver, same envelope, same limits) so the two panels cannot drift
+   * apart in what a period means.
+   */
+  router.get('/analytics/behavior/breakdown', async (req, res) => {
+    const parsed = BehaviorBreakdownSchema.safeParse(req.query);
+    const range = parsed.success ? rangeFromQuery(parsed.data) : null;
+    if (!parsed.success || !range) {
+      fail(res, 400, 'VALIDATION_ERROR', `${PERIOD_MESSAGE}; dimension one of the behaviour dimension keys; limit 1-200`);
+      return;
+    }
+    if (!umamiConfigured(getPulseConfig())) {
+      fail(res, 503, PULSE_UNCONFIGURED, 'Umami is not configured on this deployment');
+      return;
+    }
+    const rows = await getUmamiBreakdown(range, parsed.data.dimension, parsed.data.limit);
+    if (!rows) {
+      fail(res, 502, UPSTREAM_FAILED, 'Umami did not answer');
+      return;
+    }
+    ok(res, { period: parsed.data.period, dimension: parsed.data.dimension, rows });
+  });
+
+  router.get('/analytics/behavior/series', async (req, res) => {
+    const parsed = PeriodSchema.safeParse(req.query);
+    const range = parsed.success ? rangeFromQuery(parsed.data) : null;
+    if (!parsed.success || !range) {
+      fail(res, 400, 'VALIDATION_ERROR', PERIOD_MESSAGE);
+      return;
+    }
+    if (!umamiConfigured(getPulseConfig())) {
+      fail(res, 503, PULSE_UNCONFIGURED, 'Umami is not configured on this deployment');
+      return;
+    }
+    const series = await getUmamiSeries(range);
+    if (!series) {
+      fail(res, 502, UPSTREAM_FAILED, 'Umami did not answer');
+      return;
+    }
+    const resolved = resolveRange(range);
+    ok(res, {
+      period: parsed.data.period,
+      from: new Date(resolved.startMs).toISOString().slice(0, 10),
+      to: new Date(resolved.endMs).toISOString().slice(0, 10),
+      series,
     });
   });
 

@@ -47,6 +47,19 @@ export function resetPulseForTests(): void {
 const CACHE_TTL_MS = 60_000;
 const responseCache = new Map<string, { at: number; value: unknown }>();
 
+/**
+ * Drop every memoized upstream response.
+ *
+ * The cache is module-level and keyed by resolved range, so two tests asking
+ * for the same window share an answer — including one that stubs a FAILING
+ * upstream and silently receives the previous test's success. Tests call this
+ * per case so each one exercises the code path it claims to.
+ */
+export function resetPulseCacheForTests(): void {
+  responseCache.clear();
+  clearUmamiToken();
+}
+
 async function cached<T>(key: string, load: () => Promise<T>): Promise<T> {
   const hit = responseCache.get(key);
   if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.value as T;
@@ -582,6 +595,11 @@ export function umamiConfigured(cfg: PulseConfig): boolean {
 
 let umamiToken: string | null = null;
 
+/** Used by resetPulseCacheForTests, which is declared above this binding. */
+function clearUmamiToken(): void {
+  umamiToken = null;
+}
+
 async function umamiLogin(cfg: PulseConfig): Promise<string | null> {
   const res = await fetch(`${cfg.UMAMI_URL}/api/auth/login`, {
     method: 'POST',
@@ -682,6 +700,128 @@ export function getUmamiStats(range: AnalyticsRange): Promise<UmamiStats | null>
       totaltime: metricValue(parsed.data.totaltime),
       outOfBoundaryPageviews,
     };
+  });
+}
+
+
+/*
+ * ── Umami breakdowns and series ────────────────────────────────────────────
+ *
+ * Umami was collecting behavioural data that NOTHING read: the only thing
+ * exposed was a five-number aggregate, and no admin page consumed even that.
+ * Twelve dimensions of real product behaviour sat in the database unused.
+ *
+ * Everything below reuses resolveRange(), the same resolver Plausible uses, so
+ * the two panels can never disagree about what "this month" means — that class
+ * of bug (one card reading month-to-date while another read 30 days) has
+ * already been fixed once here and must not come back through a second door.
+ */
+
+/** Console dimension key → Umami `metrics?type=` value. */
+export const UMAMI_DIMENSIONS = {
+  path: 'path',
+  referrer: 'referrer',
+  title: 'title',
+  query: 'query',
+  browser: 'browser',
+  os: 'os',
+  device: 'device',
+  screen: 'screen',
+  language: 'language',
+  country: 'country',
+  region: 'region',
+  city: 'city',
+  event: 'event',
+} as const;
+
+export type UmamiDimension = keyof typeof UMAMI_DIMENSIONS;
+
+export interface UmamiRow {
+  label: string;
+  value: number;
+}
+
+export interface UmamiSeriesPoint {
+  date: string;
+  pageviews: number;
+  sessions: number;
+}
+
+/** `{x,y}` is Umami's shape for every metric and series row. */
+const UmamiXY = z.array(z.object({ x: z.string().nullable(), y: z.number() }));
+const UmamiSeries = z.object({ pageviews: UmamiXY, sessions: UmamiXY });
+
+/**
+ * One authenticated GET against Umami with a single retry on token expiry.
+ * Returns null on any failure — callers must not turn that into an empty list,
+ * because "Umami did not answer" and "there is no traffic" are different
+ * answers and only one of them is safe to render as a zero.
+ */
+async function umamiGet(cfg: PulseConfig, path: string): Promise<unknown | null> {
+  const attempt = async (): Promise<Response | null> => {
+    if (!umamiToken) umamiToken = await umamiLogin(cfg);
+    if (!umamiToken) return null;
+    return fetch(`${cfg.UMAMI_URL}${path}`, { headers: { Authorization: `Bearer ${umamiToken}` } });
+  };
+  let res = await attempt();
+  if (res && res.status === 401) {
+    umamiToken = null;
+    res = await attempt();
+  }
+  if (!res || !res.ok) return null;
+  return res.json();
+}
+
+/**
+ * Top values for one dimension.
+ *
+ * Umami returns `x: null` for "not recorded" (no referrer, unknown region).
+ * Those rows are kept and labelled by the caller rather than dropped: a
+ * breakdown whose rows silently fail to sum to the total invites the reader to
+ * assume data loss.
+ */
+export function getUmamiBreakdown(
+  range: AnalyticsRange,
+  dimension: UmamiDimension,
+  limit: number,
+): Promise<UmamiRow[] | null> {
+  const cfg = getPulseConfig();
+  const resolved = resolveRange(range);
+  return cached(`umami:breakdown:${resolved.key}:${dimension}:${limit}`, async () => {
+    const type = UMAMI_DIMENSIONS[dimension];
+    const body = await umamiGet(
+      cfg,
+      `/api/websites/${cfg.UMAMI_WEBSITE_ID}/metrics` +
+        `?startAt=${resolved.startMs}&endAt=${resolved.endMs}&type=${type}&limit=${limit}`,
+    );
+    if (!body) return null;
+    const parsed = UmamiXY.safeParse(body);
+    if (!parsed.success) return null;
+    return parsed.data.map((row) => ({ label: row.x ?? '', value: row.y }));
+  });
+}
+
+/** Per-day pageviews and sessions for the resolved window. */
+export function getUmamiSeries(range: AnalyticsRange): Promise<UmamiSeriesPoint[] | null> {
+  const cfg = getPulseConfig();
+  const resolved = resolveRange(range);
+  return cached(`umami:series:${resolved.key}`, async () => {
+    const body = await umamiGet(
+      cfg,
+      `/api/websites/${cfg.UMAMI_WEBSITE_ID}/pageviews` +
+        `?startAt=${resolved.startMs}&endAt=${resolved.endMs}&unit=day&timezone=UTC`,
+    );
+    if (!body) return null;
+    const parsed = UmamiSeries.safeParse(body);
+    if (!parsed.success) return null;
+    // Sessions and pageviews are separate arrays that need not align, so the
+    // series is keyed by date rather than zipped by index.
+    const sessions = new Map(parsed.data.sessions.map((p) => [p.x ?? '', p.y]));
+    return parsed.data.pageviews.map((p) => ({
+      date: (p.x ?? '').slice(0, 10),
+      pageviews: p.y,
+      sessions: sessions.get(p.x ?? '') ?? 0,
+    }));
   });
 }
 

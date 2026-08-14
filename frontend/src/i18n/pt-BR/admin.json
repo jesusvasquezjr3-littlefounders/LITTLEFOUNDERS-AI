@@ -396,7 +396,29 @@
       "bounces": "Rejeições",
       "averageTime": "Tempo médio por visita",
       "bounceRate": "Taxa de rejeição comportamental",
-      "signalsAria": "Sinais de comportamento"
+      "signalsAria": "Sinais de comportamento",
+      "views": "Visualizações",
+      "sessions": "Sessões",
+      "notRecorded": "Não registrado",
+      "noRows": "Nenhum comportamento registrado neste período.",
+      "noSeries": "Sem volume de comportamento neste período.",
+      "trendTitle": "Volume de comportamento",
+      "shareNote": "A porcentagem é sobre as linhas exibidas, não sobre todo o tráfego.",
+      "dimensions": {
+        "path": "Páginas",
+        "referrer": "Referências",
+        "title": "Títulos de página",
+        "query": "Strings de consulta",
+        "browser": "Navegadores",
+        "os": "Sistemas operacionais",
+        "device": "Dispositivos",
+        "screen": "Tamanhos de tela",
+        "language": "Idiomas",
+        "country": "Países",
+        "region": "Regiões",
+        "city": "Cidades",
+        "event": "Eventos"
+      }
     },
     "filters": {
       "dimensionLabel": "Filtrar por",
