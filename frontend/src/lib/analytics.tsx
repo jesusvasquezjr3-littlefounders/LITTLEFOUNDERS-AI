@@ -304,11 +304,25 @@ function ejectScript(id: string): void {
 }
 
 /** GA4 gtag loader (public marketing surfaces only — see the module header). */
-function mountGa4(): void {
+export function mountGa4(): void {
   if (!GA4_ID || document.getElementById('lf-ga4')) return;
   const dataLayer = (window.dataLayer = window.dataLayer ?? []);
-  window.gtag = (...args: unknown[]) => {
-    dataLayer.push(args);
+  /*
+   * MUST be a `function` that pushes `arguments` — not an arrow pushing a rest
+   * array. gtag.js processes the dataLayer queue by inspecting each entry as an
+   * `arguments` object; a real Array is silently ignored, so `js`, `config` and
+   * every `event` are discarded and the property receives NOTHING while
+   * gtag.js itself loads normally and the console shows no error.
+   *
+   * That is exactly what happened: GA4 recorded zero data for three weeks
+   * (2026-07-24 → 2026-08-14) with a healthy-looking tag. Proven in production
+   * over CDP, not deduced — the live dataLayer held `[object Array]` entries
+   * and zero `/g/collect` requests; re-registering this function and replaying
+   * the same commands produced a collect request immediately.
+   */
+  window.gtag = function gtag() {
+    // eslint-disable-next-line prefer-rest-params
+    dataLayer.push(arguments);
   };
   const el = document.createElement('script');
   el.id = 'lf-ga4';

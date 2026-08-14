@@ -193,6 +193,8 @@ export interface StaffSighting {
   firstSeenAt: string;
   lastSeenAt: string;
   hits: number;
+  /** Distinct staff accounts seen at this address. >1 means a shared egress. */
+  distinctStaffUsers: number;
 }
 
 export interface ExclusionsData {

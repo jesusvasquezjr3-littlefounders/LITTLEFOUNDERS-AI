@@ -249,3 +249,60 @@ describe('trackUmamiPageview', () => {
     expect(track).toHaveBeenCalledTimes(1);
   });
 });
+
+
+describe('mountGa4', () => {
+  /*
+   * GA4 recorded nothing for three weeks behind a tag that loaded fine. The
+   * cause was the shape of the dataLayer entries, which no type checker, lint
+   * rule or console error can catch — so it has to be a test.
+   */
+  async function loadGa4() {
+    vi.resetModules();
+    vi.stubEnv('VITE_GA4_MEASUREMENT_ID', 'G-0XH7S80QG2');
+    return (await import('./analytics')) as typeof import('./analytics');
+  }
+
+  beforeEach(() => {
+    document.getElementById('lf-ga4')?.remove();
+    delete (window as { dataLayer?: unknown }).dataLayer;
+    delete (window as { gtag?: unknown }).gtag;
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it('pushes arguments objects, never arrays — gtag.js ignores arrays outright', async () => {
+    const mod = await loadGa4();
+    mod.mountGa4();
+    const layer = (window as unknown as { dataLayer: unknown[] }).dataLayer;
+    expect(layer.length).toBeGreaterThan(0);
+    for (const entry of layer) {
+      expect(
+        Object.prototype.toString.call(entry),
+        'a real Array here means GA4 silently receives nothing',
+      ).toBe('[object Arguments]');
+    }
+  });
+
+  it('issues the js and config commands the property needs to initialise', async () => {
+    const mod = await loadGa4();
+    mod.mountGa4();
+    const layer = (window as unknown as { dataLayer: IArguments[] }).dataLayer;
+    const commands = layer.map((a) => a[0]);
+    expect(commands).toContain('js');
+    expect(commands).toContain('config');
+    const config = layer.find((a) => a[0] === 'config');
+    expect(config?.[1]).toBe('G-0XH7S80QG2');
+    // Pageviews are fired manually so GA4 never sees an app/kid pathname.
+    expect((config?.[2] as { send_page_view?: boolean })?.send_page_view).toBe(false);
+  });
+
+  it('loads the tag exactly once', async () => {
+    const mod = await loadGa4();
+    mod.mountGa4();
+    mod.mountGa4();
+    expect(document.querySelectorAll('#lf-ga4')).toHaveLength(1);
+  });
+});

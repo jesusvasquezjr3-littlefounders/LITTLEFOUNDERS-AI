@@ -47,6 +47,22 @@ export interface StaffSighting {
   firstSeenAt: string;
   lastSeenAt: string;
   hits: number;
+  /**
+   * How many DISTINCT staff accounts have been seen at this address.
+   *
+   * A personal device cannot explain more than one. Two or more means a shared
+   * egress — an office NAT, or (the case that actually bit us) a consumer VPN
+   * exit. Excluding a VPN exit removes every OTHER visitor using that same
+   * exit server, silently and unrecoverably, while failing to exclude staff at
+   * all because exit IPs rotate. On 2026-08-14 exactly this happened:
+   * 169.150.224.130 was approved as "Dispositivo del equipo" and turned out to
+   * be CDN77 Houston, seen with two different staff accounts.
+   *
+   * Reported rather than enforced: an office NAT is a legitimate exclusion and
+   * only the operator knows which one this is. The console must show the
+   * count and warn — it must not silently decide.
+   */
+  distinctStaffUsers: number;
 }
 
 /*
@@ -380,10 +396,20 @@ export async function listStaffSightings(days: number, limit: number): Promise<S
   if (!profiles) return null;
   const nameByUser = new Map(profiles.map((profile) => [profile.user_id, profile.display_name]));
 
+  // Counted across the whole fetched window, so a row still reports shared
+  // egress even when the other account's sighting is older than this page.
+  const usersByAddress = new Map<string, Set<string>>();
+  for (const row of rows) {
+    const set = usersByAddress.get(row.address) ?? new Set<string>();
+    set.add(row.user_id);
+    usersByAddress.set(row.address, set);
+  }
+
   return rows.map((row) => ({
     address: row.address,
     userId: row.user_id,
     displayName: nameByUser.get(row.user_id) ?? '—',
+    distinctStaffUsers: usersByAddress.get(row.address)?.size ?? 1,
     firstSeenAt: row.first_seen_at,
     lastSeenAt: row.last_seen_at,
     hits: row.hits,

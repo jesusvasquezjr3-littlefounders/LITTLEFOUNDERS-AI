@@ -303,3 +303,47 @@ describe('/api/v1/admin/analytics/exclusions', () => {
     expect(sighting?.body).toEqual({ p_address: '198.51.100.77', p_user_id: ADMIN_ID });
   });
 });
+
+describe('shared-egress detection on exclusion suggestions', () => {
+  /*
+   * The guard that would have prevented 2026-08-14: a CDN77 VPN exit node was
+   * approved as "Dispositivo del equipo", which silently excluded every other
+   * visitor using that exit while failing to exclude staff at all, because
+   * exit IPs rotate. Our own data already carried the tell — two DIFFERENT
+   * staff accounts at one address, which no personal device can explain.
+   */
+  const auth = () => `Bearer ${mintToken({ sub: ADMIN_ID })}`;
+  const OTHER_ID = '33333333-3333-4333-8333-333333333333';
+  const T0 = '2026-08-14T00:00:00.000Z';
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    resetExclusionsForTests();
+  });
+
+  it('counts DISTINCT staff accounts per address, and reports it on every row', async () => {
+    stubRest({
+      exclusions: [],
+      sightings: [
+        { address: '169.150.224.130', user_id: ADMIN_ID, first_seen_at: T0, last_seen_at: T0, hits: 2 },
+        { address: '169.150.224.130', user_id: OTHER_ID, first_seen_at: T0, last_seen_at: T0, hits: 1 },
+        { address: '203.0.113.7', user_id: ADMIN_ID, first_seen_at: T0, last_seen_at: T0, hits: 9 },
+      ],
+    });
+    const res = await request(createApp())
+      .get('/api/v1/admin/analytics/exclusions')
+      .set('Authorization', auth())
+      .set('User-Agent', BROWSER_UA);
+    expect(res.status).toBe(200);
+
+    const rows: { address: string; distinctStaffUsers: number }[] = res.body.data.suggestions;
+    const shared = rows.filter((r) => r.address === '169.150.224.130');
+    expect(shared).toHaveLength(2);
+    // Both rows must warn — the operator may be looking at either one.
+    for (const row of shared) expect(row.distinctStaffUsers).toBe(2);
+
+    // A genuine single-device sighting must NOT be flagged, or the warning
+    // becomes noise and gets clicked through.
+    expect(rows.find((r) => r.address === '203.0.113.7')?.distinctStaffUsers).toBe(1);
+  });
+});

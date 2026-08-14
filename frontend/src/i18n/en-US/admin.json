@@ -524,6 +524,8 @@
       "detectedEmpty": "No staff addresses seen in this window.",
       "seenBy_one": "{{name}}, {{count}} request, last seen {{when}}",
       "seenBy_other": "{{name}}, {{count}} requests, last seen {{when}}",
+      "sharedEgress_one": "Seen with {{count}} staff account — shared egress. Verify with whois before excluding.",
+      "sharedEgress_other": "Seen with {{count}} different staff accounts, so this is a shared egress (office NAT or VPN exit), not one device. Excluding a VPN exit removes every other visitor behind it and will not exclude staff, because exit IPs rotate. Check whois first.",
       "exclude": "Exclude",
       "activeTitle_one": "{{count}} active exclusion",
       "activeTitle_other": "{{count}} active exclusions",

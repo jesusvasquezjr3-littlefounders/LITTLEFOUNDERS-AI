@@ -524,6 +524,8 @@
       "detectedEmpty": "Nenhum endereço da equipe detectado nesta janela.",
       "seenBy_one": "{{name}}, {{count}} requisição, visto {{when}}",
       "seenBy_other": "{{name}}, {{count}} requisições, visto {{when}}",
+      "sharedEgress_one": "Vista com {{count}} conta da equipe — saída compartilhada. Verifique com whois antes de excluir.",
+      "sharedEgress_other": "Vista com {{count}} contas diferentes da equipe, ou seja, uma saída compartilhada (NAT do escritório ou nó VPN), não um dispositivo. Excluir um nó VPN remove todos os outros visitantes que saem por ali e não excluirá a equipe, porque esses IPs rotacionam. Consulte o whois antes.",
       "exclude": "Excluir",
       "activeTitle_one": "{{count}} exclusão ativa",
       "activeTitle_other": "{{count}} exclusões ativas",

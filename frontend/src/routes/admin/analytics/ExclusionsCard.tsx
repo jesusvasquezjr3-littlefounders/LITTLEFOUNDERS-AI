@@ -144,6 +144,26 @@ export function ExclusionsCard() {
                     >
                       {t('admin.analytics.exclusions.exclude')}
                     </AdminAction>
+                    {sighting.distinctStaffUsers > 1 && (
+                      /*
+                       * Shared egress. A personal device cannot be seen with
+                       * two different staff accounts; an office NAT or a VPN
+                       * exit can. Excluding a VPN exit deletes every other
+                       * visitor behind that same exit — silently, and without
+                       * even excluding staff reliably, since exit IPs rotate.
+                       * On 2026-08-14 this exact address was approved as a
+                       * "team device" and turned out to be a CDN77 exit node.
+                       *
+                       * Warned, not blocked: an office IP is a legitimate
+                       * exclusion and only the operator knows which this is.
+                       */
+                      <p className="lf-caption flex w-full items-start gap-1.5 rounded-lg bg-warning-soft p-2 text-warning-strong">
+                        <Icon name="warning" className="!text-[16px] shrink-0" />
+                        <span>
+                          {t('admin.analytics.exclusions.sharedEgress', { count: sighting.distinctStaffUsers })}
+                        </span>
+                      </p>
+                    )}
                   </li>
                 ))}
               </ul>
