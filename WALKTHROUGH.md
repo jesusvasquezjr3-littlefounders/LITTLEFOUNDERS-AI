@@ -2,7 +2,40 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-08-14, latest) — The style brief was naming a subject: one lemonade stand over almost every exercise
+## Current State (2026-08-15, latest) — A repair that changed a type was orphaning its brief: questions from nowhere
+
+- **Reported from production:** some lessons lack sequentiality — questions
+  appear that the lesson never set up.
+- **Root cause: `planRepair` rewrote `seg.type` in five places and never
+  touched `seg.brief`.** A plan is a TYPE and a BRIEF, and the brief carries the
+  micro-situation. A segment retyped from `quiz_mcq` to `piggy_split` reached
+  the writer as a jar-splitting widget carrying a pricing-decision premise, and
+  the writer authored the mismatch faithfully. It concentrated LATE in the
+  lesson: the money rule targets the last graded segment and the diversify rule
+  scans from the end.
+- **`briefFitsType` guarded only two types** (`type_answer`, `speed_tap`) and
+  returned `true` for everything else, so almost every retype passed as "fits".
+- **Fixed:** `describeMixRuleViolations` states each broken rule in the
+  planner's vocabulary, and the corrective loop re-plans type and brief
+  together — one cheap DeepSeek call, only on a real violation. `planRepair`
+  survives as the last-resort net, still degrading rather than killing a slot,
+  but now prepending an explicit `fixes` line so the fallback is visible.
+  Every type change goes through `retype()`, which stamps `retypedFrom`;
+  `write.ts` turns that into an instruction to RE-ANCHOR the premise in the same
+  characters/objects/stakes rather than force it through a mechanic that cannot
+  express it.
+- **Checked and NOT the cause:** course-level pedagogy is already validated by
+  `catalog/progression.ts` (cold-start, ramp-cliff, retention, expanding-review,
+  variety, load), and the connect-to-prior instruction already requires an
+  explicit retrieval opener rather than a narrative callback.
+- **Correction to the previous entry:** it claimed `gates.ts` contains no image
+  references, from a grep that returned nothing. `grep` was treating that file
+  as binary (very long lines) and silently matching nothing; with `-a` it does
+  reference `image_url`, as part of the localization freeze list. The substantive
+  claim — that no gate validated illustration relevance or distinctness — still
+  holds, and `verify:course` is where the new check went.
+
+## Current State (2026-08-14) — The style brief was naming a subject: one lemonade stand over almost every exercise
 
 - **Reported from production:** across the published financial-education
   catalog, exercise intros nearly always showed the same lemonade-stand

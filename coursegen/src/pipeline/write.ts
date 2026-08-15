@@ -224,8 +224,24 @@ function buildWriteMessages(input: WriteInput, factsBlock: string, issues: strin
     'Your job is not just to satisfy the schema — it is to design exercises a child genuinely WANTS to do, at ' +
     'Duolingo/Brilliant quality: concrete, relatable, decision-driven, never a dry recall drill. Follow the CONTENT PLAYBOOK.';
 
+  /*
+   * A `retypedFrom` segment carries a brief written for a DIFFERENT mechanic:
+   * the planner could not satisfy the mix rules in its allotted attempts, so
+   * the deterministic net changed the type and the brief stayed behind. Left
+   * unflagged, the author dutifully transcribes a decision-quiz premise into a
+   * jar-splitting widget and the child meets an exercise with no relationship
+   * to the story it just read — the "question out of nowhere" report of
+   * 2026-08-15. Naming the mismatch is what lets the author RE-ANCHOR the
+   * premise in the same micro-situation instead of forcing the old one through
+   * a mechanic that cannot express it.
+   */
   const skeletonText = input.skeleton.segments
-    .map((s, i) => `${i + 1}. type="${s.type}" — ${s.brief}`)
+    .map((s, i) => {
+      const line = `${i + 1}. type="${s.type}" — ${s.brief}`;
+      return s.retypedFrom
+        ? `${line}\n   ⚠ This brief was written for "${s.retypedFrom}" and the type CHANGED to "${s.type}". Keep the same characters, objects and stakes, but RE-ANCHOR the premise so it is genuinely a "${s.type}" exercise — never force the old premise into a mechanic that cannot express it, and never leave the child with a question the lesson has not set up.`
+        : line;
+    })
     .join('\n');
   const minimumsText = renderSegmentMinimums(input.skeleton.segments);
 

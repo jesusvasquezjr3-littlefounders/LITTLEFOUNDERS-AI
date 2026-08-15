@@ -1,7 +1,14 @@
 // plan stage — blueprint → segment skeleton (COURSE_ENGINE.md §4).
-// DeepSeek, temp 0.3, JSON mode. MIX RULES are enforced by a deterministic
-// planRepair() BEFORE any LLM retry is spent — cheaper and more reliable
-// than hoping the model self-corrects.
+// DeepSeek, temp 0.3, JSON mode.
+//
+// MIX RULES are enforced by REPLANNING first and repairing only as a last
+// resort. The deterministic `planRepair()` used to run alone, on the reasoning
+// that it was cheaper than hoping the model self-corrects — but it can only
+// change a segment's TYPE, and a plan is a type AND a brief. Retyping in place
+// left the brief describing a mechanic the segment no longer was, and the
+// writer dutifully authored the mismatch: the owner's 2026-08-15 report of
+// "preguntas que salen de la nada". Feeding the violation back costs one cheap
+// DeepSeek call, only when a rule was actually broken, and fixes both halves.
 
 import { z } from 'zod';
 import { completeDeepSeek } from '../providers/deepseek.js';
@@ -10,7 +17,7 @@ import { resolveAllowedTypes, renderPalette } from './prompts/palette.js';
 import { TYPE_TO_FAMILY, CONTENT_TYPES, MONEY_TYPES, FLOW_TYPES, type FamilyName } from '../contract/registry.js';
 import type { TaxonomyFile } from '../catalog/schema.js';
 import type { CompetencyPromptContext } from '../catalog/competencyGraph.js';
-import { withCorrectiveRetry, safeJsonParse, formatZodIssues } from './correctiveRetry.js';
+import { withCorrectiveRetry, safeJsonParse, formatZodIssues, CorrectiveRetryExhaustedError } from './correctiveRetry.js';
 
 export const MIN_SEGMENTS = 8;
 /*
@@ -28,6 +35,24 @@ const MAX_PLAN_ATTEMPTS = 3;
 export const planSegmentSchema = z.object({
   type: z.string().min(1).max(60),
   brief: z.string().min(1).max(400),
+  /**
+   * Set by `planRepair` ONLY, never by the model: the type this segment had
+   * when its `brief` was written, before a last-resort mix-rule repair changed
+   * it. The brief then describes a DIFFERENT mechanic than the one that will be
+   * authored, and the writer is told so explicitly (see write.ts).
+   *
+   * This is the "question out of nowhere" bug (owner report 2026-08-15). The
+   * repair used to rewrite `seg.type` in five places and never touch
+   * `seg.brief`, so a brief written for a decision quiz — "Zara decide si sube
+   * el precio de la limonada" — could arrive at the writer typed as
+   * `piggy_split`. The writer then had to invent a jar-splitting exercise with
+   * no relationship to the narrative the lesson had just set up, and it landed
+   * at the END of the lesson because both the money rule and the diversify rule
+   * scan from the back. Mix-rule violations are now fed back to the PLANNER
+   * first (which re-plans a coherent brief for the corrected type); this flag
+   * only marks the cases where every replan attempt still failed.
+   */
+  retypedFrom: z.string().min(1).max(60).optional(),
 });
 export const planSkeletonSchema = z.object({
   segments: z.array(planSegmentSchema).min(MIN_SEGMENTS).max(MAX_SEGMENTS),
@@ -253,19 +278,91 @@ function briefFitsType(type: string, brief: string): boolean {
   return true;
 }
 
+/*
+ * The ONLY way a repair may change a segment's type. Assigning `seg.type`
+ * directly silently divorces the segment from its `brief`, which was written
+ * for the OLD mechanic — the "question out of nowhere" bug (owner report
+ * 2026-08-15). Recording the original type is what lets write.ts tell the
+ * author, in the prompt, that the brief describes a different exercise and
+ * must be re-anchored rather than transcribed.
+ *
+ * `retypedFrom` always holds the type the BRIEF was written for, so two
+ * successive repairs of one segment do not lose the origin — and a repair
+ * that lands back on the original type clears the flag, because then the
+ * brief and the type agree again.
+ */
+function retype(segment: PlanSegment, next: string): void {
+  if (segment.type === next) return;
+  segment.retypedFrom ??= segment.type;
+  segment.type = next;
+  if (segment.retypedFrom === segment.type) delete segment.retypedFrom;
+}
+
 function repairSemanticTypeConstraints(segments: PlanSegment[], allowed: ReadonlySet<string>, fixes: string[]): void {
   for (const segment of segments) {
     if (segment.type === 'type_answer' && !briefFitsType(segment.type, segment.brief)) {
       const replacement = allowed.has('quiz_mcq') ? 'quiz_mcq' : anyRepairCandidate(allowed);
       fixes.push(`replaced open-ended type_answer with "${replacement}" because its brief is not numeric applied practice`);
-      segment.type = replacement;
+      retype(segment, replacement);
     }
     if (segment.type === 'speed_tap' && !briefFitsType(segment.type, segment.brief)) {
       const replacement = allowed.has('quiz_mcq') ? 'quiz_mcq' : anyRepairCandidate(allowed);
       fixes.push(`replaced underspecified speed_tap with "${replacement}" because its brief does not require 6-14 items`);
-      segment.type = replacement;
+      retype(segment, replacement);
     }
   }
+}
+
+/**
+ * The MIX RULES, expressed as a read-only INSPECTION in the planner's own
+ * vocabulary. Returned strings are fed straight back into the next plan call.
+ *
+ * Why inspect before repairing: the repair can only change a segment's TYPE,
+ * and a type is half of a plan — the other half is the `brief`, which the
+ * repair cannot rewrite. Re-planning fixes both at once, for the price of one
+ * cheap DeepSeek call, and only when a rule was actually broken. The
+ * deterministic repair stays as the last-resort net beneath it.
+ */
+export function describeMixRuleViolations(
+  skeleton: PlanSkeleton,
+  allowedTypes: readonly string[],
+  moneyRequired: boolean,
+): string[] {
+  const allowed = new Set(allowedTypes);
+  const segments = skeleton.segments;
+  const issues: string[] = [];
+
+  for (const [i, seg] of segments.entries()) {
+    if (!allowed.has(seg.type)) {
+      issues.push(`segment ${i + 1} uses type "${seg.type}", which is not in the PALETTE — pick a palette type and write a brief that genuinely fits it`);
+    } else if (!briefFitsType(seg.type, seg.brief)) {
+      issues.push(
+        seg.type === 'type_answer'
+          ? `segment ${i + 1} is type_answer but its brief is not one-step numeric practice — either name the exact number the child types, or choose a different type`
+          : `segment ${i + 1} is speed_tap but its brief does not call for 6-14 short items with a concrete matching rule — fix the brief or choose a different type`,
+      );
+    }
+  }
+
+  if (segments.length > 0 && !CONTENT_TYPES.includes(segments[0]!.type)) {
+    issues.push('segment 1 must be a `story` family type that introduces the concept before anything is graded');
+  }
+
+  const flows = segments.filter((s) => TYPE_TO_FAMILY.get(s.type) === 'storyplay' && FLOW_TYPES.has(s.type)).length;
+  if (flows > MAX_STORYPLAY_FLOWS) {
+    issues.push(`${flows} storyplay flow segments — at most ${MAX_STORYPLAY_FLOWS} is allowed; replace the extras with shorter exercise types`);
+  }
+
+  if (moneyRequired && !segments.some((s) => MONEY_TYPES.includes(s.type))) {
+    issues.push('this topic touches money but no `money` family segment is planned — add one, with a brief built around the money situation');
+  }
+
+  const distinct = new Set(segments.map((s) => s.type)).size;
+  if (distinct < MIN_DISTINCT_TYPES) {
+    issues.push(`only ${distinct} distinct types — use at least ${MIN_DISTINCT_TYPES}, giving each new type a brief written for that mechanic`);
+  }
+
+  return issues;
 }
 
 /**
@@ -292,7 +389,7 @@ export function planRepair(
     const candidate = family ? familyRepairCandidates(family, allowed)[0] : undefined;
     const replacement = candidate ?? anyRepairCandidate(allowed);
     fixes.push(`replaced disallowed type "${seg.type}" with "${replacement}"`);
-    seg.type = replacement;
+    retype(seg, replacement);
   }
 
   // Type-specific minimums and interaction semantics are part of the plan,
@@ -326,7 +423,7 @@ export function planRepair(
       if (storyplayFlowSeen > MAX_STORYPLAY_FLOWS) {
         const replacement = familyRepairCandidates('choice', allowed)[0] ?? anyRepairCandidate(allowed);
         fixes.push(`demoted extra storyplay flow "${seg.type}" to "${replacement}"`);
-        seg.type = replacement;
+        retype(seg, replacement);
       }
     }
   }
@@ -339,7 +436,7 @@ export function planRepair(
       const targetIndex = [...segments].reverse().findIndex((s) => !CONTENT_TYPES.includes(s.type));
       const idx = targetIndex === -1 ? segments.length - 1 : segments.length - 1 - targetIndex;
       fixes.push(`replaced "${segments[idx]!.type}" at position ${idx + 1} with required money-family type "${candidate}"`);
-      segments[idx]!.type = candidate;
+      retype(segments[idx]!, candidate);
     }
   }
 
@@ -365,7 +462,7 @@ export function planRepair(
       if (candidateIndex === -1) continue; // no unused type fits this brief — try the next duplicate
       const [replacement] = unused.splice(candidateIndex, 1);
       fixes.push(`diversified duplicate "${seg.type}" at position ${i + 1} into "${replacement!}"`);
-      seg.type = replacement!;
+      retype(seg, replacement!);
       used.add(replacement!);
     }
   }
@@ -507,22 +604,72 @@ export async function planLesson(ctx: PlanContext, deps: PlanDeps = {}): Promise
   const paletteText = renderPalette(allowed);
   const moneyRequired = isMoneyRequired(ctx);
 
-  const { data, attempts } = await withCorrectiveRetry<PlanSkeleton>({
-    maxAttempts: MAX_PLAN_ATTEMPTS,
-    callModel: async (issues) => {
-      const messages = buildPlanMessages(ctx, paletteText, issues);
-      const result = await complete({ messages, temperature: 0.3, jsonMode: true }, { operation: 'plan', ledger: deps.ledger });
-      return result.content;
-    },
-    parse: (raw) => {
-      const json = safeJsonParse(raw);
-      if (!json.ok) return { ok: false, issues: `invalid JSON: ${json.error}` };
-      const parsed = planSkeletonSchema.safeParse(json.value);
-      if (!parsed.success) return { ok: false, issues: formatZodIssues(parsed.error.issues) };
-      return { ok: true, data: parsed.data };
-    },
-  });
+  /*
+   * MIX-RULE VIOLATIONS ARE A REPLAN, NOT A SILENT MUTATION (owner report
+   * 2026-08-15: "hay preguntas que salen de la nada").
+   *
+   * `planRepair` can only change a segment's TYPE. A plan is a type AND a
+   * brief, and the brief is what carries the micro-situation the lesson has
+   * been building. Retyping in place kept the mix rules satisfied while
+   * handing the writer an exercise mechanic that had nothing to do with the
+   * narrative — and both the money rule and the diversify rule pick their
+   * victim from the END of the lesson, which is exactly where a child feels a
+   * question arrive from nowhere.
+   *
+   * So a violation now goes back to the planner as feedback, and it re-plans
+   * type and brief together. That costs one extra cheap DeepSeek call, only
+   * when a rule was actually broken. `planRepair` still runs underneath as the
+   * last-resort net for the case where every attempt failed — but it is now a
+   * rarity worth logging rather than the normal path.
+   *
+   * The last contract-VALID skeleton is kept so exhaustion degrades to
+   * "repair the best plan we got" instead of killing the slot: a plan whose
+   * only fault is a mix-rule violation is still a usable plan.
+   */
+  let lastValidSkeleton: PlanSkeleton | undefined;
+  let planned: { data: PlanSkeleton; attempts: number } | undefined;
+  let unresolvedViolations: string[] = [];
 
+  try {
+    planned = await withCorrectiveRetry<PlanSkeleton>({
+      maxAttempts: MAX_PLAN_ATTEMPTS,
+      callModel: async (issues) => {
+        const messages = buildPlanMessages(ctx, paletteText, issues);
+        const result = await complete({ messages, temperature: 0.3, jsonMode: true }, { operation: 'plan', ledger: deps.ledger });
+        return result.content;
+      },
+      parse: (raw) => {
+        const json = safeJsonParse(raw);
+        if (!json.ok) return { ok: false, issues: `invalid JSON: ${json.error}` };
+        const parsed = planSkeletonSchema.safeParse(json.value);
+        if (!parsed.success) return { ok: false, issues: formatZodIssues(parsed.error.issues) };
+        lastValidSkeleton = parsed.data;
+        const violations = describeMixRuleViolations(parsed.data, allowed, moneyRequired);
+        if (violations.length > 0) {
+          unresolvedViolations = violations;
+          return {
+            ok: false,
+            issues: `${violations.join('; ')}. Resend the FULL plan with BOTH the type and its brief corrected — a brief written for the old type is not acceptable.`,
+          };
+        }
+        unresolvedViolations = [];
+        return { ok: true, data: parsed.data };
+      },
+    });
+  } catch (err) {
+    // Only mix-rule exhaustion may degrade. An unparseable/contract-invalid
+    // plan never produced a `lastValidSkeleton`, and that is a real failure.
+    if (!(err instanceof CorrectiveRetryExhaustedError) || !lastValidSkeleton) throw err;
+  }
+
+  const data = planned?.data ?? lastValidSkeleton!;
+  const attempts = planned?.attempts ?? MAX_PLAN_ATTEMPTS;
   const { skeleton, fixes } = planRepair(data, allowed, moneyRequired);
+  if (!planned) {
+    fixes.unshift(
+      `planner could not satisfy the mix rules in ${MAX_PLAN_ATTEMPTS} attempts (${unresolvedViolations.join('; ')}) — ` +
+        'fell back to deterministic repair; any retyped segment is flagged for the writer',
+    );
+  }
   return { skeleton, allowedTypes: allowed, fixes, attempts };
 }

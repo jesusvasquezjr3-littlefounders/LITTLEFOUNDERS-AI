@@ -132,6 +132,36 @@ Prism caches on `sha256(model + size + "STYLE_VERSION | purpose | scope | label 
 - **Failure is swallowed on purpose.** If Vault is unreachable the index is empty and images are paid for — the old behaviour. Inheritance is a cost optimisation, never a precondition.
 - The run summary reports `placed / freshly generated (billed) / inherited (free)`, so the saving is visible instead of assumed.
 
+## A repair that changes a TYPE must not orphan its BRIEF (2026-08-15)
+
+Owner report: some lessons contain questions that arrive from nowhere. Root
+cause: `planRepair` rewrote `seg.type` in five places and never touched
+`seg.brief`. A brief is the micro-situation the lesson has been building — "Zara
+decide si sube el precio de la limonada" — so a segment retyped from `quiz_mcq`
+to `piggy_split` reached the writer as a jar-splitting widget with a
+pricing-decision premise. The writer authored the mismatch faithfully, and the
+child met an exercise the lesson had never set up. Worse, it landed LATE: the
+money rule targets the last graded segment and the diversify rule scans from the
+end, so the damage concentrated exactly where a lesson should be paying off.
+
+Rules that follow from it:
+
+- **A mix-rule violation is feedback to the PLANNER, not a mutation.**
+  `describeMixRuleViolations` states each broken rule in the planner's own
+  vocabulary and the corrective loop re-plans type and brief together. One extra
+  cheap DeepSeek call, and only when a rule was actually broken.
+- **`planRepair` is the net, not the path.** It still runs, and it still
+  degrades rather than killing a slot when the planner cannot comply in
+  `MAX_PLAN_ATTEMPTS` — but that case now prepends an explicit `fixes` line, so
+  it is visible in the run report instead of looking like business as usual.
+- **Never assign `seg.type` directly — call `retype()`.** It records
+  `retypedFrom`, which `write.ts` turns into an instruction to RE-ANCHOR the
+  premise in the same characters/objects/stakes rather than force the old one
+  through a mechanic that cannot express it.
+- **A repair can only fix half a plan.** That is the general lesson. Any future
+  deterministic fixer that touches one field of a model-authored pair must
+  either fix both fields or make the divergence visible downstream.
+
 ## A scene anchor's subject is the SITUATION, never the instruction (2026-08-14)
 
 The published financial-education catalog opened almost every exercise with the
