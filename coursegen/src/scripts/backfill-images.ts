@@ -448,12 +448,43 @@ function chunk<T>(items: T[], size: number): T[][] {
   return out;
 }
 
+/*
+ * EVERY `in.(…)` list must be batched, not just the last one.
+ *
+ * A real course puts 300+ topic ids on one query string, past Kong's
+ * request-line limit — the same HTTP 414 that verifyCourse.ts hit on
+ * 2026-08-10 and fixed there with `qChunked`. This script only batched the
+ * final lesson_documents fetch, so `/lessons?topic_id=in.(…300 uuids…)` blew
+ * up the moment it was first pointed at the real financial-education catalog
+ * (reproduced live 2026-08-15). One helper now covers all of them: the URL is
+ * bounded by construction rather than by whichever step someone remembered.
+ */
+export const ID_BATCH_SIZE = 150; // 150 uuids × 37 chars ≈ 5.5KB — comfortably under an 8KB request line
+/*
+ * Documents are fetched in SMALLER batches than bare ids. The binding limit
+ * there is the RESPONSE, not the request line: each row carries a full lesson
+ * document, so 100 lessons already means ~300 documents in one payload.
+ */
+const DOCUMENT_BATCH_SIZE = 100;
+
+export async function selectByIds<T>(
+  pathForBatch: (ids: string[]) => string,
+  ids: string[],
+  select: (path: string) => Promise<T[]> = (path) => vaultSelect<T>(path),
+): Promise<T[]> {
+  const out: T[] = [];
+  for (const batch of chunk(ids, ID_BATCH_SIZE)) {
+    out.push(...(await select(pathForBatch(batch))));
+  }
+  return out;
+}
+
 /**
  * Resolve a course slug to every lesson_document of its published-or-review
  * lessons, walking the hierarchy by id in the same step-by-step `in.(…)` style
  * as backend/src/services/supabaseRest.ts (embedded PostgREST joins are awkward
- * and brittle here). lesson_documents is finally fetched by lesson_id in
- * batches so the GET URL never grows unbounded on a big course.
+ * and brittle here). Every hop is batched so the GET URL never grows unbounded
+ * on a big course.
  */
 async function listCourseDocuments(courseSlug: string): Promise<BackfillDocRow[]> {
   const courses = await vaultSelect<IdRow>(`/courses?slug=eq.${encodeURIComponent(courseSlug)}&select=id`);
@@ -464,23 +495,24 @@ async function listCourseDocuments(courseSlug: string): Promise<BackfillDocRow[]
   const adventureIds = adventures.map((a) => a.id);
   if (adventureIds.length === 0) return [];
 
-  const sagas = await vaultSelect<IdRow>(`/sagas?adventure_id=${inFilter(adventureIds)}&select=id`);
+  const sagas = await selectByIds<IdRow>((ids) => `/sagas?adventure_id=${inFilter(ids)}&select=id`, adventureIds);
   const sagaIds = sagas.map((s) => s.id);
   if (sagaIds.length === 0) return [];
 
-  const topics = await vaultSelect<IdRow>(`/topics?saga_id=${inFilter(sagaIds)}&select=id`);
+  const topics = await selectByIds<IdRow>((ids) => `/topics?saga_id=${inFilter(ids)}&select=id`, sagaIds);
   const topicIds = topics.map((t) => t.id);
   if (topicIds.length === 0) return [];
 
-  const lessons = await vaultSelect<LessonRow>(
-    `/lessons?topic_id=${inFilter(topicIds)}&status=in.(published,review)&select=id,slug`,
+  const lessons = await selectByIds<LessonRow>(
+    (ids) => `/lessons?topic_id=${inFilter(ids)}&status=in.(published,review)&select=id,slug`,
+    topicIds,
   );
   if (lessons.length === 0) return [];
   const slugById = new Map(lessons.map((l) => [l.id, l.slug]));
   const lessonIds = lessons.map((l) => l.id);
 
   const rows: BackfillDocRow[] = [];
-  for (const batch of chunk(lessonIds, 100)) {
+  for (const batch of chunk(lessonIds, DOCUMENT_BATCH_SIZE)) {
     const docs = await vaultSelect<LessonDocRow>(
       `/lesson_documents?lesson_id=${inFilter(batch)}&select=lesson_id,locale,document,illustration_style_version`,
     );

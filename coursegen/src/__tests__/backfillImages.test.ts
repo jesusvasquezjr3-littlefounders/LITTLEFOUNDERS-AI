@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
   backfillImages,
+  ID_BATCH_SIZE,
+  selectByIds,
   type BackfillDeps,
   type BackfillDocRow,
   type BackfillWriteBody,
@@ -456,5 +458,48 @@ describe('backfillImages --restyle-scenes', () => {
         { courseSlug: 'financial-education', restyleScenes: true, locale: 'es-MX' },
       ),
     ).rejects.toThrow(/all locales/i);
+  });
+});
+
+/*
+ * HTTP 414, reproduced live 2026-08-15 against the real financial-education
+ * catalog: `/lessons?topic_id=in.(…300 uuids…)` blew past Kong's request-line
+ * limit. verifyCourse.ts had already been fixed for this exact ceiling on
+ * 2026-08-10; this script had only batched its LAST hop, so the failure simply
+ * moved one level up the hierarchy walk. The guard belongs on the helper, not
+ * on whichever call site someone remembers.
+ */
+describe('selectByIds — every id hop is bounded, not just the last one', () => {
+  it('splits a large id list into batches that fit a request line', async () => {
+    const ids = Array.from({ length: 400 }, (_, i) => `id-${i}`);
+    const seen: string[][] = [];
+    const select = async (path: string) => {
+      seen.push(path.replace(/^.*in\.\(/, '').replace(/\).*$/, '').split(','));
+      return [];
+    };
+
+    await selectByIds((batch) => `/lessons?topic_id=in.(${batch.join(',')})`, ids, select);
+
+    expect(seen.length).toBe(Math.ceil(400 / ID_BATCH_SIZE));
+    for (const batch of seen) expect(batch.length).toBeLessThanOrEqual(ID_BATCH_SIZE);
+    // Nothing dropped, nothing duplicated.
+    expect(seen.flat()).toEqual(ids);
+  });
+
+  it('makes exactly one call for a small list and none for an empty one', async () => {
+    const select = vi.fn().mockResolvedValue([]);
+    await selectByIds((b) => `/x?id=in.(${b.join(',')})`, ['a', 'b'], select);
+    expect(select).toHaveBeenCalledTimes(1);
+
+    select.mockClear();
+    await selectByIds((b) => `/x?id=in.(${b.join(',')})`, [], select);
+    expect(select).not.toHaveBeenCalled();
+  });
+
+  it('concatenates the batches in order', async () => {
+    const ids = Array.from({ length: ID_BATCH_SIZE + 5 }, (_, i) => `id-${i}`);
+    let call = 0;
+    const select = async () => [`batch-${call++}`];
+    await expect(selectByIds<string>((b) => b.join(','), ids, select)).resolves.toEqual(['batch-0', 'batch-1']);
   });
 });

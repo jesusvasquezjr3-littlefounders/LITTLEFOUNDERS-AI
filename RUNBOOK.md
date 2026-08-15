@@ -485,3 +485,29 @@ has the long form). The rule that would have CAUGHT it is the distinctness
 check now in `verify:course`. Note which of the two is cheap to enforce
 mechanically — presence checks feel like coverage and are not: every one of
 those wrong images was present.
+
+## An operator script dies with HTTP 414 walking the course hierarchy (failure mode closed 2026-08-15)
+
+**Symptom.** A script that resolves a course slug to its lessons fails with
+`vault select "/lessons?topic_id=in.(…hundreds of uuids…)" failed: HTTP 414`.
+Nothing is wrong with the data; the GET request line is simply longer than Kong
+will accept.
+
+**Cause.** Every `in.(…)` hop in a hierarchy walk grows with the course. A pilot
+course has a handful of topics and a real one has hundreds, so the ceiling is
+invisible until the script is first pointed at production. `verifyCourse.ts` was
+fixed for this on 2026-08-10 at the topics→lessons hop; `images:backfill` had
+only batched its FINAL lesson_documents hop, so the same failure re-appeared one
+level up on 2026-08-15 — and `verifyCourse` still had an unbatched sagas→topics
+hop of its own.
+
+**Fix / prevention.** Batch on the HELPER, never at the call site. Both scripts
+now route every id list through one chunking function (`selectByIds` /
+`qChunked`, 150 uuids ≈ 5.5KB), so a new hop is bounded by construction rather
+than by whoever remembers. Note the two limits are different: the request LINE
+bounds id-only hops, while the RESPONSE bounds document fetches — lesson
+documents are therefore batched smaller (100), because 100 lessons already means
+~300 full documents in one payload.
+
+**Check before running any hierarchy-walking script against a real course:** grep
+it for `in.(` and confirm each hit goes through the batching helper.
