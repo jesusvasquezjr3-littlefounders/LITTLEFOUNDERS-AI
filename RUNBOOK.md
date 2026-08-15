@@ -545,3 +545,29 @@ preview paid output (the ordinary add-only backfill does), say so LOUDLY in the
 help text and the README — and give operators a guaranteed-free alternative
 (`--reuse-only`). Never let "I didn't pass the scary flag" be the only thing
 standing between a measurement and a four-figure bill.
+
+## Regenerating a lesson that is already LIVE removes it from the child's path (failure mode closed 2026-08-15)
+
+**The trap.** `publishLessonSlot` upserted `status: 'review'` unconditionally —
+correct for a first publish (COURSE_ENGINE §6: a human releases kid-facing
+content), catastrophic for a REGENERATION. The learner RLS policy on `lessons`
+is `status = 'published' AND <published ancestor chain>`, so re-running
+generation over live lessons silently deletes them from every child's course
+until a human re-publishes each one. Found while planning a one-adventure
+content regeneration; no learner was ever affected.
+
+**Now.** Publish READS the slot's status before writing. If the lesson is
+already `published`, the run must state a policy or the write is refused:
+
+- `--on-existing-published keep-published` — swap the content in place; the
+  lesson stays live and no path breaks. The new content ships without a fresh
+  human read.
+- `--on-existing-published demote-to-review` — honour the §6 human gate. The
+  lesson LEAVES the learner catalog until released again. Plan the re-release
+  before you use this on a live course.
+
+Neither is a safe default, which is why there isn't one.
+
+**Before any regeneration over a live course, ask:** how many lessons will this
+touch, and am I prepared to re-publish all of them today? If the answer is no,
+use `keep-published` or scope the run (`--slots`, or one adventure).

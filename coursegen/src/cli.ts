@@ -25,6 +25,7 @@ interface CliOptions {
   dryRun?: boolean;
   runId?: string;
   register?: Register;
+  onExistingPublished?: 'demote-to-review' | 'keep-published';
 }
 
 /** A value-taking flag must never swallow the NEXT flag as its value (§1.14) — `--run-id --dry-run` would silently create a run named "--dry-run". */
@@ -87,6 +88,15 @@ function parseArgs(argv: string[]): CliOptions {
       case '--run-id':
         opts.runId = requireValue('--run-id', argv[++i]);
         break;
+      case '--on-existing-published': {
+        const mode = argv[++i];
+        if (mode !== 'demote-to-review' && mode !== 'keep-published') {
+          console.error("generate: --on-existing-published must be 'demote-to-review' or 'keep-published'");
+          process.exit(1);
+        }
+        opts.onExistingPublished = mode;
+        break;
+      }
       case '--register': {
         const value = argv[++i] ?? '';
         if (!isRegister(value)) {
@@ -107,7 +117,8 @@ function parseArgs(argv: string[]): CliOptions {
 function printUsage(): void {
   console.error(
     'Usage: npm run generate -- --course <slug> [--slots a1-s1-t1-l1,...] ' +
-    '[--locales es-MX,en-US,pt-BR] [--no-images|--require-images] [--dry-run] [--run-id <id>] [--register kid|adult]',
+    '[--locales es-MX,en-US,pt-BR] [--no-images|--require-images] [--dry-run] [--run-id <id>] [--register kid|adult]\n' +
+      "    [--on-existing-published demote-to-review|keep-published]  (required only when the run touches live, already-published lessons)",
   );
 }
 
@@ -131,6 +142,7 @@ async function main(): Promise<void> {
     dryRun: opts.dryRun,
     runId: opts.runId,
     register: opts.register,
+    onExistingPublished: opts.onExistingPublished,
     curriculumRoot: path.join(PACKAGE_ROOT, 'curriculum'),
     runsRoot: path.join(PACKAGE_ROOT, 'runs'),
   });

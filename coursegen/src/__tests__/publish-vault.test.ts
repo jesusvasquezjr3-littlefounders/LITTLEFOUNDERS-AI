@@ -66,17 +66,32 @@ afterEach(() => {
   resetConfigCache();
 });
 
+/*
+ * publish now issues a read before the lessons upsert — it must know whether
+ * the slot is already live before deciding a status (a blind 'review' over a
+ * published lesson removes it from every child's path). Assert on the WRITE
+ * calls so the probe cannot silently shift every index again.
+ */
+function upsertCalls() {
+  return fetchMock.mock.calls.filter((call) => ((call[1] as RequestInit | undefined)?.method ?? 'GET') === 'POST');
+}
+function upsertTables() {
+  return upsertCalls().map((call) => (call[0] as string).split('/rest/v1/')[1]!.split('?')[0]);
+}
+
 describe('publishLessonSlot', () => {
   it('upserts the full hierarchy path in order: courses, adventures, sagas, topics, lessons, lesson_documents', async () => {
     await publishLessonSlot(samplePublishInput());
 
-    const calledTables = fetchMock.mock.calls.map((call) => (call[0] as string).split('/rest/v1/')[1]!.split('?')[0]);
-    expect(calledTables).toEqual(['courses', 'adventures', 'sagas', 'topics', 'lessons', 'lesson_documents']);
+    expect(upsertTables()).toEqual(['courses', 'adventures', 'sagas', 'topics', 'lessons', 'lesson_documents']);
+    // The status probe reads `lessons` before the lessons upsert.
+    const all = fetchMock.mock.calls.map((call) => (call[0] as string).split('/rest/v1/')[1]!.split('?')[0]);
+    expect(all).toEqual(['courses', 'adventures', 'sagas', 'topics', 'lessons', 'lessons', 'lesson_documents']);
   });
 
   it('sends on_conflict query params matching each table\'s unique constraint', async () => {
     await publishLessonSlot(samplePublishInput());
-    const urls = fetchMock.mock.calls.map((call) => call[0] as string);
+    const urls = upsertCalls().map((call) => call[0] as string);
     expect(urls[0]).toContain('on_conflict=slug');
     expect(urls[1]).toContain('on_conflict=course_id,slug');
     expect(urls[2]).toContain('on_conflict=adventure_id,slug');
@@ -87,7 +102,7 @@ describe('publishLessonSlot', () => {
 
   it('sends the service-role key in both apikey and Authorization headers', async () => {
     await publishLessonSlot(samplePublishInput());
-    const init = fetchMock.mock.calls[0]![1] as RequestInit;
+    const init = upsertCalls()[0]![1] as RequestInit;
     const headers = init.headers as Record<string, string>;
     expect(headers.apikey).toBe('srv-test-key');
     expect(headers.Authorization).toBe('Bearer srv-test-key');
@@ -95,14 +110,14 @@ describe('publishLessonSlot', () => {
 
   it('lessons row is inserted with status "review", never "published"', async () => {
     await publishLessonSlot(samplePublishInput());
-    const lessonsCall = fetchMock.mock.calls[4]!;
+    const lessonsCall = upsertCalls()[4]!;
     const body = JSON.parse((lessonsCall[1] as RequestInit).body as string) as [{ status: string }];
     expect(body[0]!.status).toBe('review');
   });
 
   it('lesson_documents row has document.segments with no `answer` field, and a separate answer_keys', async () => {
     await publishLessonSlot(samplePublishInput());
-    const documentsCall = fetchMock.mock.calls[5]!;
+    const documentsCall = upsertCalls()[5]!;
     const body = JSON.parse((documentsCall[1] as RequestInit).body as string) as [
       { document: { segments: Record<string, unknown>[] }; answer_keys: Record<string, unknown> },
     ];
@@ -112,7 +127,7 @@ describe('publishLessonSlot', () => {
 
   it('records the current illustration style so legacy art cannot be inherited silently', async () => {
     await publishLessonSlot(samplePublishInput());
-    const documentsCall = fetchMock.mock.calls[5]!;
+    const documentsCall = upsertCalls()[5]!;
     const body = JSON.parse((documentsCall[1] as RequestInit).body as string) as [{ illustration_style_version: string }];
     expect(body[0]!.illustration_style_version).toBe(FORGE_ILLUSTRATION_STYLE_VERSION);
   });
@@ -120,7 +135,7 @@ describe('publishLessonSlot', () => {
   it('forwards prerequisites and placementProbe into the topics upsert body (0042 competency-graph projection)', async () => {
     const input = samplePublishInput();
     await publishLessonSlot(input);
-    const topicsCall = fetchMock.mock.calls[3]!;
+    const topicsCall = upsertCalls()[3]!;
     const body = JSON.parse((topicsCall[1] as RequestInit).body as string) as [
       { prerequisites: unknown; placement_probe: unknown },
     ];
@@ -132,7 +147,7 @@ describe('publishLessonSlot', () => {
     const input = samplePublishInput();
     input.topic.placementProbe = null;
     await publishLessonSlot(input);
-    const topicsCall = fetchMock.mock.calls[3]!;
+    const topicsCall = upsertCalls()[3]!;
     const body = JSON.parse((topicsCall[1] as RequestInit).body as string) as [{ placement_probe: unknown }];
     expect(body[0]!.placement_probe).toBeNull();
   });
@@ -191,15 +206,85 @@ describe('identity migration (renamed_from)', () => {
     expect(calls.some((c) => c.method === 'PATCH')).toBe(false);
   });
 
-  it('never probes or renames without a declaration (zero extra requests on the hot path)', async () => {
-    const calls: { method: string }[] = [];
+  /*
+   * The hot path carries exactly ONE read — the lesson-status probe — and no
+   * rename. The probe is not optional: publish must know whether it is about
+   * to overwrite live, kid-facing content, because the learner RLS policy
+   * requires `status='published'` and a blind demotion removes the lesson from
+   * every child's path. One GET per slot is the price of never doing that by
+   * accident. A rename PATCH still requires a `renamed_from` declaration.
+   */
+  it('probes the lesson status but never renames without a declaration', async () => {
+    const calls: { method: string; url: string }[] = [];
     fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
-      calls.push({ method: init?.method ?? 'GET' });
+      calls.push({ method: init?.method ?? 'GET', url });
       const table = url.split('/rest/v1/')[1]!.split('?')[0]!;
       return new Response(JSON.stringify([{ id: `fake-${table}-id` }]), { status: 201 });
     });
 
     await publishLessonSlot(samplePublishInput());
-    expect(calls.every((c) => c.method !== 'PATCH' && c.method !== 'GET')).toBe(true);
+
+    expect(calls.some((c) => c.method === 'PATCH')).toBe(false);
+    const reads = calls.filter((c) => c.method === 'GET');
+    expect(reads).toHaveLength(1);
+    expect(reads[0]!.url).toContain('/lessons?');
+    expect(reads[0]!.url).toContain('select=status');
+  });
+});
+
+/*
+ * Regenerating a lesson that is ALREADY live is a different act from publishing
+ * a new one, and this stage used to be unable to tell them apart: it upserted
+ * `status: 'review'` unconditionally. The learner RLS policy on `lessons`
+ * requires `status = 'published'`, so regenerating one adventure of a live
+ * course would have removed ~150 lessons from every child's path mid-course —
+ * silently, as a side effect of an improvement. Found 2026-08-15 while planning
+ * exactly that run; no learner was ever affected.
+ */
+describe('publishLessonSlot — republishing live content is a decision, not a default', () => {
+  function publishedProbe() {
+    fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
+      const table = url.split('/rest/v1/')[1]!.split('?')[0]!;
+      const isProbe = (init?.method ?? 'GET') === 'GET' && url.includes('select=status');
+      return new Response(JSON.stringify(isProbe ? [{ status: 'published' }] : [{ id: `fake-${table}-id` }]), { status: 201 });
+    });
+  }
+
+  it('REFUSES to touch an already-published lesson when the run states no policy', async () => {
+    publishedProbe();
+    await expect(publishLessonSlot(samplePublishInput())).rejects.toThrow(/already status='published'/);
+  });
+
+  it('refuses BEFORE writing the lessons row, so nothing is half-applied', async () => {
+    publishedProbe();
+    await publishLessonSlot(samplePublishInput()).catch(() => undefined);
+    expect(upsertTables()).not.toContain('lesson_documents');
+    const lessonWrites = upsertCalls().filter((c) => (c[0] as string).includes('/lessons?'));
+    expect(lessonWrites).toHaveLength(0);
+  });
+
+  it("keeps the lesson live with 'keep-published' — the child's path is never broken", async () => {
+    publishedProbe();
+    await publishLessonSlot({ ...samplePublishInput(), onExistingPublished: 'keep-published' });
+    const lessonsCall = upsertCalls().find((c) => (c[0] as string).includes('/lessons?'))!;
+    const body = JSON.parse((lessonsCall[1] as RequestInit).body as string) as [{ status: string }];
+    expect(body[0]!.status).toBe('published');
+  });
+
+  it("honours COURSE_ENGINE §6's human gate with 'demote-to-review'", async () => {
+    publishedProbe();
+    await publishLessonSlot({ ...samplePublishInput(), onExistingPublished: 'demote-to-review' });
+    const lessonsCall = upsertCalls().find((c) => (c[0] as string).includes('/lessons?'))!;
+    const body = JSON.parse((lessonsCall[1] as RequestInit).body as string) as [{ status: string }];
+    expect(body[0]!.status).toBe('review');
+  });
+
+  // A brand-new lesson is unaffected: it has no status to preserve, and the
+  // human gate applies to it in full.
+  it("still lands a NEW lesson in 'review' with no policy required", async () => {
+    await publishLessonSlot(samplePublishInput());
+    const lessonsCall = upsertCalls()[4]!;
+    const body = JSON.parse((lessonsCall[1] as RequestInit).body as string) as [{ status: string }];
+    expect(body[0]!.status).toBe('review');
   });
 });

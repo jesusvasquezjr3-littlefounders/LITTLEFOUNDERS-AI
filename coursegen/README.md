@@ -118,7 +118,7 @@ completeness — any `lesson-images` url not covered by the map fails the run
 Dry-run by default; first real run 2026-07-25 rewrote 334 urls across 120
 documents (the PNG→WebP migration: 1.5 GB → 51 MB on Depot).
 
-### Image backfill (`npm run images:backfill -- --course <slug> [--restyle-scenes] [--reuse-only] [--dry-run]`)
+### Image backfill (`npm run images:backfill -- --course <slug> [--adventure <slug>] [--restyle-scenes] [--reuse-only] [--dry-run]`)
 
 **Operator-triggered only.** Fills in missing illustrations on lessons that are **already published or in review**, without regenerating any content. For every `lesson_document` of a published-or-review lesson in the course, it runs the same shared per-type images stage as generation (`illustrateSegments`) over the STORED `document`, then PATCHes **only** the `document` column back.
 
@@ -156,6 +156,10 @@ repair pass:
   as `railway-migrate.sh --confirm-production`. Without it the pass runs
   measurement-only and says so in its first line. This mode CLEARS art before
   redrawing it, so the unsafe default would be expensive in both directions.
+- **`--adventure <slug>` scopes the pass to one adventure.** A 1,208-lesson
+  repair is not something to launch on faith: run one adventure first, look at
+  the result in the app, then commit to the rest. The untouched adventures stay
+  exactly as they were.
 - **`--max-usd <n>` is REQUIRED with `--confirm-spend`.** The pass is an
   unattended loop over a live catalog and `illustrateSegments`'s ledger is
   optional, so without a ceiling nothing bounds it (§1.14: a budget guard that

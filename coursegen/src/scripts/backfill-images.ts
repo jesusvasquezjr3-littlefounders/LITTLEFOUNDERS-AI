@@ -95,6 +95,13 @@ export interface BackfillDeps {
 
 export interface BackfillOptions {
   courseSlug: string;
+  /**
+   * Restrict the pass to ONE adventure of the course. A 1,208-lesson repair is
+   * not something to launch on faith: running a single adventure first puts
+   * real repaired lessons in front of a human for a fraction of the cost, and
+   * the rest of the catalog is untouched if the result is wrong.
+   */
+  adventureSlug?: string;
   /** Illustrate only this locale's documents. Consumption discipline: LF
    *  illustrations carry no text, so one image serves every locale — generate
    *  for es-MX only, then copy the URLs to the sibling locales (SQL or the
@@ -579,14 +586,20 @@ export async function selectByIds<T>(
  * and brittle here). Every hop is batched so the GET URL never grows unbounded
  * on a big course.
  */
-async function listCourseDocuments(courseSlug: string): Promise<BackfillDocRow[]> {
+async function listCourseDocuments(courseSlug: string, adventureSlug?: string): Promise<BackfillDocRow[]> {
   const courses = await vaultSelect<IdRow>(`/courses?slug=eq.${encodeURIComponent(courseSlug)}&select=id`);
   const course = courses[0];
   if (!course) throw new Error(`images:backfill — course "${courseSlug}" not found in Vault`);
 
-  const adventures = await vaultSelect<IdRow>(`/adventures?course_id=eq.${encodeURIComponent(course.id)}&select=id`);
+  const adventures = await vaultSelect<IdRow>(
+    `/adventures?course_id=eq.${encodeURIComponent(course.id)}&select=id` +
+      (adventureSlug ? `&slug=eq.${encodeURIComponent(adventureSlug)}` : ''),
+  );
   const adventureIds = adventures.map((a) => a.id);
-  if (adventureIds.length === 0) return [];
+  if (adventureIds.length === 0) {
+    if (adventureSlug) throw new Error(`images:backfill — adventure "${adventureSlug}" not found in course "${courseSlug}"`);
+    return [];
+  }
 
   const sagas = await selectByIds<IdRow>((ids) => `/sagas?adventure_id=${inFilter(ids)}&select=id`, adventureIds);
   const sagaIds = sagas.map((s) => s.id);
@@ -639,6 +652,7 @@ interface CliOptions {
   restyleScenes?: boolean;
   confirmSpend?: boolean;
   maxUsd?: number;
+  adventure?: string;
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -651,6 +665,9 @@ function parseArgs(argv: string[]): CliOptions {
         break;
       case '--course':
         opts.course = argv[++i];
+        break;
+      case '--adventure':
+        opts.adventure = argv[++i];
         break;
       case '--dry-run':
         opts.dryRun = true;
@@ -683,7 +700,7 @@ async function main(): Promise<void> {
   const opts = parseArgs(process.argv.slice(2));
   if (!opts.course) {
     console.error(
-      'Usage: npm run images:backfill -- --course <slug> [--locale <es-MX|en-US|pt-BR>]\n' +
+      'Usage: npm run images:backfill -- --course <slug> [--adventure <slug>] [--locale <es-MX|en-US|pt-BR>]\n' +
         '                                    [--restyle-scenes [--confirm-spend --max-usd <n>]] [--reuse-only] [--dry-run]',
     );
     process.exit(1);
@@ -692,7 +709,7 @@ async function main(): Promise<void> {
   const dryRun = opts.dryRun ?? false;
 
   console.log(
-    `images:backfill — course "${courseSlug}"${opts.locale ? ` [${opts.locale} only]` : ''}` +
+    `images:backfill — course "${courseSlug}"${opts.adventure ? ` / adventure "${opts.adventure}"` : ''}${opts.locale ? ` [${opts.locale} only]` : ''}` +
       `${opts.restyleScenes ? ' (RESTYLE SCENES — stale scene art is cleared and redrawn)' : ''}` +
       `${opts.restyleScenes && !opts.confirmSpend ? ' [MEASUREMENT ONLY — add --confirm-spend to actually redraw]' : ''}` +
       `${opts.reuseOnly ? ' (reuse-only — no Prism calls)' : ''}${dryRun ? ' (dry-run — no Vault writes)' : ''}`,
@@ -706,7 +723,7 @@ async function main(): Promise<void> {
 
   const summary = await backfillImages(
     {
-      listDocuments: listCourseDocuments,
+      listDocuments: (slug) => listCourseDocuments(slug, opts.adventure),
       illustrate: (document, options) => illustrateSegments(document, options),
       writeDocument: patchLessonDocument,
       probeStyleVersion: prismConfigured ? fetchPrismStyleVersion : undefined,
@@ -714,6 +731,7 @@ async function main(): Promise<void> {
     },
     {
       courseSlug,
+      adventureSlug: opts.adventure,
       locale: opts.locale,
       dryRun,
       reuseOnly: opts.reuseOnly,

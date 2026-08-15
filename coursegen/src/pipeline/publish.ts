@@ -113,6 +113,29 @@ export interface PublishInput {
   };
   /** The full, atomically releasable locale bundle for this slot. */
   documents: Partial<Record<LessonLocale, LessonDocumentParsed>>;
+  /**
+   * What to do when this slot ALREADY EXISTS and is `status='published'` —
+   * i.e. a regeneration of live, kid-facing content rather than a first
+   * publish. There is no safe default, so omitting it makes `publishLessonSlot`
+   * REFUSE the write.
+   *
+   * Why it has to be a decision (found 2026-08-15, before it bit anyone):
+   * this stage upserted `status: 'review'` unconditionally, and the learner
+   * RLS policy on `lessons` requires `status = 'published'`. Regenerating one
+   * adventure of a live course would therefore have DELETED ~150 lessons from
+   * every child's path mid-course — silently, as a side effect of an
+   * improvement — until a human re-published each one.
+   *
+   *  - `demote-to-review` keeps COURSE_ENGINE §6's human gate literally: new
+   *    content is unreviewed, so it leaves the learner-visible catalog until a
+   *    human releases it. Correct, and an outage if you did not plan for it.
+   *  - `keep-published` swaps the content of an already-approved slot in place.
+   *    The lesson stays live and the child's path is never broken, at the cost
+   *    of the new content going out without a fresh human read.
+   *
+   * Both are legitimate; picking one for the operator is not. Fail closed.
+   */
+  onExistingPublished?: 'demote-to-review' | 'keep-published';
 }
 
 /**
@@ -256,6 +279,28 @@ export async function publishLessonSlot(input: PublishInput): Promise<PublishRes
   const xpTotal = computeXpTotal(localeEntries[0]![1]);
 
   await migrateSlugIfRenamed('lessons', `topic_id=eq.${topic.id}`, input.lesson.renamedFrom, input.lesson.slug);
+
+  /*
+   * Is this a FIRST publish or a regeneration of live content? The answer
+   * decides the status we write, and getting it wrong is an outage: the
+   * learner RLS policy on `lessons` requires `status = 'published'`, so
+   * blindly upserting 'review' over a live lesson removes it from every
+   * child's path. Read before write; refuse rather than guess.
+   */
+  const existing = await vaultSelect<{ status: string }>(
+    `/lessons?topic_id=eq.${topic.id}&slug=eq.${encodeURIComponent(input.lesson.slug)}&select=status`,
+  );
+  const wasPublished = existing[0]?.status === 'published';
+  if (wasPublished && !input.onExistingPublished) {
+    throw new Error(
+      `publish: "${input.lesson.slug}" is already status='published' and this run did not say what to do with it. ` +
+        'Re-publishing live kid-facing content is a decision, not a default: pass onExistingPublished=' +
+        "'keep-published' (swap the content in place, lesson stays live, no fresh human review) or " +
+        "'demote-to-review' (COURSE_ENGINE §6's human gate — the lesson LEAVES the learner catalog until released again).",
+    );
+  }
+  const status = wasPublished && input.onExistingPublished === 'keep-published' ? 'published' : 'review';
+
   const [lesson] = await vaultUpsert<RowWithId>(
     'lessons',
     [
@@ -268,7 +313,7 @@ export async function publishLessonSlot(input: PublishInput): Promise<PublishRes
         xp_total: xpTotal,
         estimated_minutes: input.lesson.estimatedMinutes,
         cast: input.lesson.cast,
-        status: 'review',
+        status,
       },
     ],
     'topic_id,slug',
