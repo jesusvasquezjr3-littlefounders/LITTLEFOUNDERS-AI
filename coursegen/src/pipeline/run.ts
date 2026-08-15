@@ -111,6 +111,14 @@ export interface RunOptions {
   maxUsdOverride?: number;
   /** Set by generate:track — links this run's telemetry row to its track. */
   trackId?: string;
+  /**
+   * What to do with slots that are ALREADY `status='published'` — required
+   * whenever a run can touch live content (see PublishInput). Omitted, publish
+   * refuses rather than guessing, because the learner RLS policy requires
+   * `status='published'` and a blind demotion removes the lesson from every
+   * child's path.
+   */
+  onExistingPublished?: 'demote-to-review' | 'keep-published';
 }
 
 export interface RunDeps {
@@ -620,6 +628,7 @@ async function processSlot(
           cast: documents[AUTHORING_LOCALE]!.meta.cast,
         },
         documents,
+        onExistingPublished: options.onExistingPublished,
       };
       const publishResult = await publishLessonSlot(publishInput);
       checkpoint = setSlotState(checkpoint, slot.slotId, 'published', { data: { publishResult } });
