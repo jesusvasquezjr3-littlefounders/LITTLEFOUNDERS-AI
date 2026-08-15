@@ -1064,17 +1064,17 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-08-14, latest) — The style brief was naming a subject: one lemonade stand over almost every exercise
+## Current State (2026-08-15, latest) — A repair that changed a type was orphaning its brief: questions from nowhere
 
-- **Reported from production:** across the published financial-education
-  catalog, exercise intros nearly always showed the same lemonade-stand
-  picture. The exercises depend on the child reading the right image, so a
-  generic one does not merely fail to help — it misleads.
-- **Root cause: `LF_VISUAL_IDENTITY` ended with a SUBJECT.** *"Cheerful
-  lemonade-stand world: hand-made stands, jars of coins, lemons, sunny
-  neighborhoods."* sat inside a brief that is injected verbatim into every
-  prompt of every purpose. `PURPOSE_GUIDANCE.scene_anchor` repeated it. A
-  style brief that names a subject is a default subject.
+- **Reported from production:** some lessons lack sequentiality — questions
+  appear that the lesson never set up.
+- **Root cause: `planRepair` rewrote `seg.type` in five places and never
+  touched `seg.brief`.** A plan is a TYPE and a BRIEF, and the brief carries the
+  micro-situation. A segment retyped from `quiz_mcq` to `piggy_split` reached
+  the writer as a jar-splitting widget carrying a pricing-decision premise, and
+  the writer authored the mismatch faithfully. It concentrated LATE in the
+  lesson: the money rule targets the last graded segment and the diversify rule
+  scans from the end.
 ```
 
 ### agent/README.md
@@ -5717,7 +5717,7 @@ function mockComplete(...responses: string[]) {
 
 ```
 import { describe, expect, it } from 'vitest';
-import { MAX_SEGMENTS, planRepair, planSkeletonSchema, type PlanSkeleton } from '../pipeline/plan.js';
+import { describeMixRuleViolations, MAX_SEGMENTS, planRepair, planSkeletonSchema, type PlanSkeleton } from '../pipeline/plan.js';
 import { resolveAllowedTypes } from '../pipeline/prompts/palette.js';
 import { buildTaxonomy } from './fixtures.js';
 
@@ -5731,6 +5731,26 @@ describe('planRepair', () => {
   it('caps a model-authored lesson to the compact ten-segment learning rhythm', () => {
     expect(MAX_SEGMENTS).toBe(10);
     expect(planSkeletonSchema.safeParse(skeleton(Array.from({ length: 11 }, () => 'quiz_mcq'))).success).toBe(false);
+```
+
+### coursegen/src/__tests__/plan-replan.test.ts
+
+```
+// A mix-rule violation is a REPLAN, not a silent mutation.
+//
+// Owner report 2026-08-15: "hay preguntas que salen de la nada". A plan is a
+// TYPE and a BRIEF. `planRepair` can only change the type, and the brief is
+// what carries the micro-situation the lesson has been building — so a silent
+// retype handed the writer an exercise mechanic with no relationship to the
+// story, at the END of the lesson (both the money rule and the diversify rule
+// scan from the back). Feeding the violation back to the planner fixes type and
+// brief together, for one cheap DeepSeek call, only when a rule was broken.
+
+import { describe, expect, it, vi } from 'vitest';
+import { planLesson, type PlanContext } from '../pipeline/plan.js';
+import { writeLessonDocument, type WriteInput } from '../pipeline/write.js';
+import { buildDocument, buildFacts, buildTaxonomy } from './fixtures.js';
+import type { ChatCompleteRequest, ChatCompleteResult } from '../providers/openaiChat.js';
 ```
 
 ### coursegen/src/__tests__/progression.test.ts
@@ -6787,20 +6807,20 @@ import { withCorrectiveRetry, safeJsonParse, formatZodIssues } from './correctiv
 
 ```
 // plan stage — blueprint → segment skeleton (COURSE_ENGINE.md §4).
-// DeepSeek, temp 0.3, JSON mode. MIX RULES are enforced by a deterministic
-// planRepair() BEFORE any LLM retry is spent — cheaper and more reliable
-// than hoping the model self-corrects.
+// DeepSeek, temp 0.3, JSON mode.
+//
+// MIX RULES are enforced by REPLANNING first and repairing only as a last
+// resort. The deterministic `planRepair()` used to run alone, on the reasoning
+// that it was cheaper than hoping the model self-corrects — but it can only
+// change a segment's TYPE, and a plan is a type AND a brief. Retyping in place
+// left the brief describing a mechanic the segment no longer was, and the
+// writer dutifully authored the mismatch: the owner's 2026-08-15 report of
+// "preguntas que salen de la nada". Feeding the violation back costs one cheap
+// DeepSeek call, only when a rule was actually broken, and fixes both halves.
 
 import { z } from 'zod';
 import { completeDeepSeek } from '../providers/deepseek.js';
 import type { UsageLedger } from '../providers/usage.js';
-import { resolveAllowedTypes, renderPalette } from './prompts/palette.js';
-import { TYPE_TO_FAMILY, CONTENT_TYPES, MONEY_TYPES, FLOW_TYPES, type FamilyName } from '../contract/registry.js';
-import type { TaxonomyFile } from '../catalog/schema.js';
-import type { CompetencyPromptContext } from '../catalog/competencyGraph.js';
-import { withCorrectiveRetry, safeJsonParse, formatZodIssues } from './correctiveRetry.js';
-
-export const MIN_SEGMENTS = 8;
 ```
 
 ### coursegen/src/pipeline/prompts/palette.ts

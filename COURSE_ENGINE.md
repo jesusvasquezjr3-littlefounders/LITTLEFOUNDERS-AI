@@ -390,8 +390,16 @@ validate  catalog + facts + taxonomy (Zod, offline)
 plan      blueprint → segment skeleton    DeepSeek, temp 0.3, JSON mode
    ↓      (palette prompt rendered from LESSON_ENGINE taxonomy + per-tier
           allowlist: tier1/2 EXCLUDE types like confidence_quiz/rank_choices;
-          money family REQUIRED ≥1 per money-topic lesson; narrative-first;
-          deterministic plan-repair before any retry)
+          money family REQUIRED ≥1 per money-topic lesson; narrative-first)
+          A MIX-RULE VIOLATION IS A REPLAN, not a silent repair (2026-08-15).
+          A plan is a TYPE and a BRIEF; `planRepair` can only change the type,
+          so retyping in place left the brief describing a mechanic the segment
+          no longer was — and the writer authored that mismatch, which is a
+          question arriving from nowhere. `describeMixRuleViolations` feeds the
+          broken rules back to the planner, which re-plans both halves.
+          `planRepair` remains beneath it as the last-resort net; whatever it
+          retypes is stamped `retypedFrom` and the write prompt tells the author
+          to RE-ANCHOR the premise instead of transcribing it.
    ↓
 write     skeleton → full LessonDocument (es-MX first, the authoring locale)
           DeepSeek, temp 0.4, JSON mode, corrective retries (max 4) fed with

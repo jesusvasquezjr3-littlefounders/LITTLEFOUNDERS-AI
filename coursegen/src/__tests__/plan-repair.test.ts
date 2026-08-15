@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MAX_SEGMENTS, planRepair, planSkeletonSchema, type PlanSkeleton } from '../pipeline/plan.js';
+import { describeMixRuleViolations, MAX_SEGMENTS, planRepair, planSkeletonSchema, type PlanSkeleton } from '../pipeline/plan.js';
 import { resolveAllowedTypes } from '../pipeline/prompts/palette.js';
 import { buildTaxonomy } from './fixtures.js';
 
@@ -118,5 +118,78 @@ describe('planRepair', () => {
     const { skeleton: repaired } = planRepair(input, tier2Allowed, false);
     const storyplayFlowCount = repaired.segments.filter((s) => s.type === 'flash_match' || s.type === 'lightning_round').length;
     expect(storyplayFlowCount).toBeLessThanOrEqual(1);
+  });
+});
+
+/*
+ * "Preguntas que salen de la nada" (owner report 2026-08-15).
+ *
+ * A plan is a TYPE and a BRIEF. planRepair can only change the type, so every
+ * repair leaves behind a brief describing a mechanic the segment no longer is.
+ * The brief is what carries the micro-situation the lesson has been building,
+ * so a silent retype is exactly how a child meets an exercise with no
+ * relationship to the story it just read — and both the money rule and the
+ * diversify rule pick their victim from the END of the lesson.
+ */
+describe('planRepair — a retyped segment is flagged, never silently divorced from its brief', () => {
+  it('records the type the brief was written for when the money rule retypes a segment', () => {
+    const input = skeleton(['story_scene', 'quiz_mcq', 'true_false', 'match_pairs', 'sort_buckets', 'odd_one_out', 'timeline_order', 'quiz_mcq']);
+    const { skeleton: repaired } = planRepair(input, allowed, true);
+
+    const retyped = repaired.segments.filter((s) => s.retypedFrom);
+    expect(retyped.length).toBeGreaterThan(0);
+    for (const seg of retyped) {
+      expect(seg.retypedFrom).not.toBe(seg.type);
+      // The brief is deliberately untouched — the flag exists precisely because
+      // this text no longer matches the mechanic.
+      expect(seg.brief).toMatch(/^segment \d+$/);
+    }
+  });
+
+  it('flags a disallowed-type replacement', () => {
+    const input = skeleton(['story_scene', 'debug_hunt', 'true_false', 'match_pairs', 'sort_buckets', 'needs_wants', 'coin_count', 'number_input']);
+    const { skeleton: repaired } = planRepair(input, allowed, false);
+    const wasDebugHunt = repaired.segments.find((s) => s.retypedFrom === 'debug_hunt');
+    expect(wasDebugHunt).toBeDefined();
+    expect(wasDebugHunt!.type).not.toBe('debug_hunt');
+  });
+
+  it('leaves untouched segments unflagged, so the writer only sees real mismatches', () => {
+    const input = skeleton(['story_scene', 'quiz_mcq', 'true_false', 'match_pairs', 'sort_buckets', 'needs_wants', 'coin_count', 'number_input']);
+    const { skeleton: repaired, fixes } = planRepair(input, allowed, false);
+    expect(fixes).toEqual([]);
+    expect(repaired.segments.every((s) => s.retypedFrom === undefined)).toBe(true);
+  });
+});
+
+describe('describeMixRuleViolations — the planner gets told, in its own vocabulary', () => {
+  it('is silent on a compliant plan', () => {
+    const ok = skeleton(['story_scene', 'quiz_mcq', 'true_false', 'match_pairs', 'sort_buckets', 'needs_wants', 'coin_count', 'number_input']);
+    expect(describeMixRuleViolations(ok, allowed, false)).toEqual([]);
+  });
+
+  it('names a non-story opener, a missing money segment and too few distinct types', () => {
+    const bad = skeleton(['quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq']);
+    const issues = describeMixRuleViolations(bad, allowed, true).join(' | ');
+    expect(issues).toContain('segment 1 must be a `story` family type');
+    expect(issues).toContain('money');
+    expect(issues).toContain('distinct types');
+  });
+
+  it('names a type that is not in the palette', () => {
+    const bad = skeleton(['story_scene', 'debug_hunt', 'true_false', 'match_pairs', 'sort_buckets', 'needs_wants', 'coin_count', 'number_input']);
+    expect(describeMixRuleViolations(bad, allowed, false).join(' | ')).toContain('"debug_hunt"');
+  });
+
+  /*
+   * The feedback must be actionable by the PLANNER, whose output is
+   * {type, brief} pairs — every message therefore points at a segment number
+   * and says what to change, not merely that something is wrong.
+   */
+  it('every message identifies which segment or which rule to act on', () => {
+    const bad = skeleton(['quiz_mcq', 'debug_hunt', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq']);
+    for (const issue of describeMixRuleViolations(bad, allowed, true)) {
+      expect(issue).toMatch(/segment \d+|at least|no `money` family|storyplay flow/);
+    }
   });
 });
