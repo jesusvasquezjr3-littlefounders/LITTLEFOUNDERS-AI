@@ -215,6 +215,13 @@ export interface ProcessSlotOutcome {
   /** True when the write stage SALVAGED a partial document (segments were dropped). */
   salvaged?: boolean;
   droppedSegments?: number;
+  /**
+   * Deterministic plan repairs applied to this slot. After the replan loop a
+   * non-zero value means the PLANNER could not satisfy the mix rules, so a
+   * segment was retyped away from the brief it was written for. Surfaced
+   * because its silence is what let that defect ship across a whole catalog.
+   */
+  planRepairs?: number;
   error?: string;
   /** The stage state the slot held when it failed (checkpoint `failedFrom`) — the per-stage failure heatmap datum. */
   failedFrom?: SlotState;
@@ -334,6 +341,7 @@ async function processSlot(
   const imageSkipReasons = new Set<string>();
   let salvaged = false;
   let droppedSegments = 0;
+  let planRepairs = 0;
   const gateCtx: GateContext = {
     taxonomy: course.taxonomy,
     tier: slot.tier,
@@ -354,9 +362,26 @@ async function processSlot(
       // QA/authoring override (COURSE_ENGINE.md §4 addendum): forced_types
       // skips the plan-stage LLM call entirely — deterministic, free, and
       // exact-coverage by construction.
-      skeleton = slot.lesson.forced_types
-        ? buildForcedSkeleton(slot.lesson.forced_types, slot.lesson.micro_objective)
-        : (await planLesson(planCtx, { ledger })).skeleton;
+      if (slot.lesson.forced_types) {
+        skeleton = buildForcedSkeleton(slot.lesson.forced_types, slot.lesson.micro_objective);
+      } else {
+        const planned = await planLesson(planCtx, { ledger });
+        skeleton = planned.skeleton;
+        /*
+         * `fixes` used to be destructured away here, and that silence is what
+         * let the 2026-08-15 defect ship across a whole catalog: the plan
+         * repair was retyping segments away from the brief they were written
+         * for, and no run report, log line or telemetry row ever said so. A
+         * repair firing is not routine — after the replan loop it means the
+         * planner could not comply in MAX_PLAN_ATTEMPTS — so surface it per
+         * slot and count it for the summary. Cheap, and it is the difference
+         * between noticing in one run and noticing after 1,208 lessons.
+         */
+        if (planned.fixes.length > 0) {
+          planRepairs += planned.fixes.length;
+          console.warn(`[forge] plan repair on ${slot.slotId}: ${planned.fixes.join('; ')}`);
+        }
+      }
       checkpoint = setSlotState(checkpoint, slot.slotId, 'planned', { data: { skeleton } });
       await store.save(checkpoint);
       live?.onTransition(slot.slotId, 'planned');
@@ -616,7 +641,7 @@ async function processSlot(
         `so nothing was written to Vault. This usually means the checkpoint holds an unexpected state.`;
       checkpoint = setSlotState(checkpoint, slot.slotId, 'failed', { error: message, failedFrom: finalState });
       await saveQuietly(store, checkpoint, slot.slotId);
-      return { slotId: slot.slotId, state: 'failed', error: message, failedFrom: finalState, imagesGenerated, imagesBilled, imagesInherited, salvaged, droppedSegments };
+      return { slotId: slot.slotId, state: 'failed', error: message, failedFrom: finalState, imagesGenerated, imagesBilled, imagesInherited, salvaged, droppedSegments, planRepairs };
     }
     return {
       slotId: slot.slotId,
@@ -627,6 +652,7 @@ async function processSlot(
       imageSkipReasons: [...imageSkipReasons],
       salvaged,
       droppedSegments,
+      planRepairs,
     };
   } catch (err) {
     if (err instanceof BudgetExceededError) throw err; // stop the whole run, don't mark this slot failed
@@ -686,6 +712,7 @@ async function processSlot(
       imagesInherited,
       salvaged,
       droppedSegments,
+      planRepairs,
     };
   }
 }
@@ -780,6 +807,8 @@ export interface RunSummary {
   imageSkipReasons: string[];
   /** Slots whose author response was shorter than its blueprint and was refused. */
   salvagedSlots: { slotId: string; droppedSegments: number }[];
+  /** Slots where the planner could not meet the mix rules and the deterministic repair retyped a segment. */
+  planRepairedSlots: string[];
   stoppedOnBudget: boolean;
   tokensUsed: number;
   usdUsed: number;
@@ -917,6 +946,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
   let imagesInherited = 0;
   const imageSkipReasons = new Set<string>();
   const salvagedSlots: { slotId: string; droppedSegments: number }[] = [];
+  const planRepairedSlots: string[] = [];
   let stoppedOnBudget = false;
   let fatalProviderError: string | null = null;
 
@@ -992,6 +1022,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
       imagesInherited += outcome.imagesInherited ?? 0;
       for (const r of outcome.imageSkipReasons ?? []) imageSkipReasons.add(r);
       if (outcome.salvaged) salvagedSlots.push({ slotId: outcome.slotId, droppedSegments: outcome.droppedSegments ?? 0 });
+      if ((outcome.planRepairs ?? 0) > 0) planRepairedSlots.push(outcome.slotId);
       if (outcome.state === 'published') published.push(outcome.slotId);
       else if (outcome.state === 'already-published') alreadyDone.push(outcome.slotId);
       else if (outcome.state === 'failed')
@@ -1057,6 +1088,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
     imagesInherited,
     imageSkipReasons: [...imageSkipReasons],
     salvagedSlots,
+    planRepairedSlots,
     stoppedOnBudget,
     tokensUsed: ledger.tokens,
     usdUsed: ledger.usd,
