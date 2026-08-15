@@ -167,6 +167,8 @@ frontend/
       onboarding/
         __tests__/
     theme/
+    tutor-scene/
+      lab/
 parent-id-check/
   src/
     __tests__/
@@ -1057,6 +1059,26 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 ### Always-on — design (auto-invoke on any UI task)
 ```
 
+### TUTOR_3D.md
+
+```
+# TUTOR_3D.md — The Tutor's 3D stage
+
+> **Authority:** engine spec (/AGENTS.md §1.1 #6). Domain rules for the code
+> live in `frontend/AGENTS.md` → *Tutor 3D scene*. Product design for the
+> conversational layer is `/ORACLE.md` — **this document covers the STAGE
+> only**, not the tutoring.
+>
+> **Status (2026-08-15):** stage BUILT and rendering for every user on
+> `/tutor`. Conversational layer NOT started. Assets are local-only —
+> publishing them to Depot is the one blocker before deploy.
+
+---
+
+## §1 What exists
+
+```
+
 ### WALKTHROUGH.md
 
 ```
@@ -1064,17 +1086,17 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-08-15, SESSION CLOSE) — Content-quality session: 8 PRs shipped, the repair itself blocked on an unpaid provider
+## Current State (2026-08-15, SESSION CLOSE) — Tutor 3D stage BUILT; handed off for a Blender pass
 
-Session goal: the published financial-education catalog showed the same
-lemonade stand over almost every exercise, and some lessons asked questions the
-lesson never set up. Both were root-caused and fixed; the CODE is in production.
-The data repair is **not** run — the image provider's account is in arrears.
+Session goal: build the Tutor's 3D scenario. It is built, rendering for every
+user on `/tutor`, and green on every gate (542 tests, type-check, lint, build,
+i18n ×3, docs-sync, secrets, paths). Full spec + handoff: **`/TUTOR_3D.md`**.
 
-**Shipped (8 PRs, all CI-green and deployed):** #43 image subject · #44 lesson
-sequencing · #45 HTTP 414 on the course walk · #46 `--dry-run` that spent money
-· #47 missing `--max-usd` ceiling · #48 plan repairs were invisible · #49
-republishing removed live lessons from the child's path · #50 provider outage
+**Stack added with owner sign-off (§1.2):** `three` + `@react-three/fiber` v8.
+R3F v9 / drei v10 require React ≥19 and we are on 18.3.1, so the v8 line is
+forced; drei is deliberately absent. `three` is isolated in a lazy chunk
+(~287 kB gzip) and appears **zero** times in the entry bundle — verified per
+build.
 ```
 
 ### agent/README.md
@@ -10412,7 +10434,7 @@ describe('path traversal defenses', () => {
 import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
-import { fakeAudio, KEY, upload } from './helpers.js';
+import { fakeAudio, fakeGlb, KEY, upload } from './helpers.js';
 
 describe('upload → download roundtrip', () => {
   it('stores an object and serves back byte-identical content', async () => {
@@ -10678,7 +10700,10 @@ npm run build   # type-check + production build
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist/'] },
+  // `public/basis/` holds the minified Basis Universal transcoder copied out of
+  // `three` at build time (scripts/copy-3d-decoders.mjs) — vendor output we do
+  // not author and cannot meaningfully lint.
+  { ignores: ['dist/', 'public/basis/'] },
   ...tseslint.configs.recommended,
   {
     rules: {
@@ -10687,9 +10712,6 @@ export default tseslint.config(
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
-    },
-  },
-);
 ```
 
 ### frontend/index.html
@@ -10728,8 +10750,8 @@ export default tseslint.config(
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "type-check": "tsc --noEmit",
-    "lint": "eslint .",
+    "predev": "node scripts/copy-3d-decoders.mjs",
+    "prebuild": "node scripts/copy-3d-decoders.mjs",
 ```
 
 ### frontend/postcss.config.js
@@ -11961,6 +11983,26 @@ export { StatCard } from './StatCard';
     "forest": "Forest",
 ```
 
+### frontend/src/i18n/en-US/tutor.json
+
+```
+{
+  "scene": {
+    "webglUnavailable": "This device can't display 3D graphics. Your browser doesn't support WebGL, or it's turned off in settings.",
+    "contextLost": "The 3D view was interrupted. It will come back on its own in a moment.",
+    "loadFailed": "The 3D scene couldn't load. Check your connection and try again."
+  },
+  "lab": {
+    "title": "Scene Lab",
+    "subtitle": "Measure a .glb against the Tutor asset budget",
+    "loadModel": "Load a .glb",
+    "noModel": "No model loaded. Pick a .glb to measure it, or explore the placeholder scene.",
+    "runtime": "Runtime",
+    "tier": "Quality tier",
+    "fps": "FPS",
+    "drawCalls": "Draw calls (per frame)",
+```
+
 ### frontend/src/i18n/es-MX/admin.json
 
 ```
@@ -12179,6 +12221,26 @@ export { StatCard } from './StatCard';
     "sunset": "Atardecer",
     "ocean": "Océano",
     "forest": "Bosque",
+```
+
+### frontend/src/i18n/es-MX/tutor.json
+
+```
+{
+  "scene": {
+    "webglUnavailable": "Este dispositivo no puede mostrar gráficos 3D. Tu navegador no es compatible con WebGL, o está desactivado en la configuración.",
+    "contextLost": "La vista 3D se interrumpió. Va a regresar sola en un momento.",
+    "loadFailed": "No se pudo cargar la escena 3D. Revisa tu conexión e inténtalo de nuevo."
+  },
+  "lab": {
+    "title": "Laboratorio de escena",
+    "subtitle": "Mide un .glb contra el presupuesto de assets del Tutor",
+    "loadModel": "Cargar un .glb",
+    "noModel": "No hay modelo cargado. Elige un .glb para medirlo, o explora la escena de prueba.",
+    "runtime": "Ejecución",
+    "tier": "Nivel de calidad",
+    "fps": "FPS",
+    "drawCalls": "Llamadas de dibujo (por cuadro)",
 ```
 
 ### frontend/src/i18n/index.ts
@@ -12419,6 +12481,26 @@ import enErrors from './en-US/errors.json';
     "sunset": "Pôr do sol",
     "ocean": "Oceano",
     "forest": "Floresta",
+```
+
+### frontend/src/i18n/pt-BR/tutor.json
+
+```
+{
+  "scene": {
+    "webglUnavailable": "Este dispositivo não consegue exibir gráficos 3D. Seu navegador não é compatível com WebGL, ou ele está desativado nas configurações.",
+    "contextLost": "A visualização 3D foi interrompida. Ela volta sozinha em um instante.",
+    "loadFailed": "Não foi possível carregar a cena 3D. Verifique sua conexão e tente novamente."
+  },
+  "lab": {
+    "title": "Laboratório de cena",
+    "subtitle": "Meça um .glb em relação ao orçamento de assets do Tutor",
+    "loadModel": "Carregar um .glb",
+    "noModel": "Nenhum modelo carregado. Escolha um .glb para medi-lo, ou explore a cena de teste.",
+    "runtime": "Execução",
+    "tier": "Nível de qualidade",
+    "fps": "FPS",
+    "drawCalls": "Chamadas de desenho (por quadro)",
 ```
 
 ### frontend/src/index.css
@@ -19004,6 +19086,26 @@ export function SectionComingSoon({ section, icon }: { section: 'tutor' | 'tasks
   const { t } = useTranslation();
 ```
 
+### frontend/src/routes/app/TutorPage.tsx
+
+```
+import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { TutorScene } from '@/tutor-scene/TutorScene';
+
+/*
+ * The Tutor product surface.
+ *
+ * The 3D stage is shown to EVERY user (owner decision, 2026-08-15) — it is not
+ * gated by role or by device class. Device capability is handled by the
+ * adaptive quality tiers inside the scene, not by withholding the feature.
+ *
+ * The conversational layer (voice, live tutoring, the personalization contract
+ * in /ORACLE.md) is NOT wired here yet. This is the stage; the connections to
+ * Core, Data Intel and the generation services come next.
+ */
+```
+
 ### frontend/src/routes/app/__tests__/LearnPage.test.tsx
 
 ```
@@ -20329,6 +20431,426 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function systemPrefersDark(): boolean {
   // matchMedia is absent in some test environments (jsdom) — default to light there.
+```
+
+### frontend/src/tutor-scene/Character3D.tsx
+
+```
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useFrame } from '@react-three/fiber';
+import { AnimationMixer, Box3, Group, Vector3 } from 'three';
+import { useSceneModel } from './useSceneModel';
+import { characterScale, CHARACTER_ASSETS, type CharacterAsset } from './assets';
+import type { QualitySettings } from './quality';
+import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
+import { useGround } from './ground';
+import { ContactShadow } from './ContactShadow';
+import { bindRig, resetRig, type Rig } from './rig';
+import { ACTION_SECONDS, LOOPING_ACTIONS, applyCharacterFrame } from './characterActions';
+
+/*
+ * A canonical character standing in the Tutor scene.
+ *
+```
+
+### frontend/src/tutor-scene/ContactShadow.tsx
+
+```
+import { useMemo } from 'react';
+import { CanvasTexture, DoubleSide, SRGBColorSpace } from 'three';
+
+/*
+ * A soft blob shadow under a character.
+ *
+ * Why not real shadows: shadow mapping only runs on the HIGH tier, because a
+ * shadow-casting light re-renders the scene into a depth map every frame. Most
+ * users are not on the high tier, and a character with nothing underneath
+ * reads as a sticker pasted onto the scenery — grounding is the single biggest
+ * cue that a figure is really standing somewhere.
+ *
+ * So this is a radial-gradient alpha blob on a flat plane: one shared texture
+ * across every character, one extra draw call each, no lights involved, and
+ * identical cost on a 2GB phone and a desktop GPU. It composes with real
+```
+
+### frontend/src/tutor-scene/Diorama.tsx
+
+```
+import { useEffect, useMemo, useRef } from 'react';
+import { Box3, Group, Vector3 } from 'three';
+import { useSceneModel } from './useSceneModel';
+import { sceneScale, SCENE_ASSETS, type SceneAsset } from './assets';
+import type { QualitySettings } from './quality';
+import { useGround } from './ground';
+
+/*
+ * The island a Tutor scene takes place on.
+ *
+ * Placement is MEASURED, not authored: both Meshy exports sit below y=0 (by
+ * -0.24 and -0.41 units) and neither is centred on the origin. Rather than ask
+ * an artist to re-export with a specific pivot — a request that gets forgotten
+ * on the next asset — the component measures the loaded bounds, centres the
+ * island on the origin and rests its UNDERSIDE on y=0.
+```
+
+### frontend/src/tutor-scene/SceneCanvas.tsx
+
+```
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
+import { useAdaptiveQuality } from './useAdaptiveQuality';
+import type { QualitySettings, QualityTier } from './quality';
+
+export interface SceneStats {
+  fps: number;
+  tier: QualityTier;
+  /** Draw calls in the last rendered frame — the number that actually predicts mobile cost. */
+  drawCalls: number;
+  triangles: number;
+  pixelRatio: number;
+  /** True once the adaptive loop stopped trying to promote the tier. */
+```
+
+### frontend/src/tutor-scene/SceneLighting.tsx
+
+```
+import { useTheme } from '@/theme/useTheme';
+import type { QualitySettings } from './quality';
+
+/*
+ * Lighting is code, never baked into the .glb — and that is a product
+ * requirement, not a preference. DESIGN.md mandates light AND dark mode, so a
+ * scene lit once at export time is wrong in one of the two themes by
+ * construction. Artists bake ambient OCCLUSION into textures (that is contact
+ * shadow, valid in both themes) and nothing else.
+ *
+ * The light count is also a budget line: every shadow-casting light is an
+ * extra render pass over the whole scene. There is exactly one, and it only
+ * casts on the high tier.
+ */
+
+```
+
+### frontend/src/tutor-scene/TutorScene.tsx
+
+```
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
+import { Box3, Group, Vector3, type PerspectiveCamera } from 'three';
+import { SceneCanvas, type SceneStats } from './SceneCanvas';
+import { SceneLighting } from './SceneLighting';
+import { Diorama } from './Diorama';
+import { Character3D } from './Character3D';
+import { QUALITY_SETTINGS, type QualitySettings } from './quality';
+import { GroundProvider, useGround } from './ground';
+import { findStandingSpots, type StandingSpot } from './standingSpots';
+import type { SCENE_ASSETS } from './assets';
+import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
+
+/*
+ * The Tutor's 3D stage.
+```
+
+### frontend/src/tutor-scene/assets.ts
+
+```
+import type { CharacterId } from '@/components/characters/control/types';
+
+/*
+ * The Tutor's 3D asset manifest.
+ *
+ * `sourceHeightM` is MEASURED, not guessed — `npm run assets:inspect` reports
+ * the bind-pose bounds of each source export and those numbers are recorded
+ * here. They matter because the four characters did not come from one pipeline:
+ * three measure 1.6–1.7 m, while Dina's export is in Unreal's unit scale and
+ * measures 0.028. Normalising at runtime (a scale on the wrapping group) rather
+ * than rewriting vertex data keeps the .glb byte-identical to what the artist
+ * approved, and a skinned mesh scaled by an ancestor group deforms correctly
+ * because the joints are scaled with it.
+ */
+
+```
+
+### frontend/src/tutor-scene/budget.ts
+
+```
+/*
+ * The Tutor 3D asset budget, as CODE rather than as prose in a brief.
+ *
+ * The Tutor scene ships to every user on every device, so these numbers are
+ * the contract between the art pipeline and the runtime. Stating them in a
+ * document means they get checked by whoever remembers to; stating them here
+ * means `/dev/scene-lab` measures a real model against them and says which
+ * line was crossed, before the asset is ever published.
+ *
+ * Derivation: mid-range Android (the constraint, not the target) sustaining
+ * 60fps at DPR 1.5 in a browser that is also running the rest of the SPA.
+ *
+ * TWO DIFFERENT TRIANGLE COUNTS EXIST and confusing them will waste an
+ * afternoon:
+ *   - `scripts/optimize-glb.mjs` reports MESH triangles — how complex the asset
+```
+
+### frontend/src/tutor-scene/characterActions.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { Bone, Object3D, Quaternion } from 'three';
+import { bindRig, resetRig } from './rig';
+import { applyCharacterFrame, ACTION_SECONDS } from './characterActions';
+import { CHARACTER_ACTIONS, CHARACTER_EMOTIONS } from '@/components/characters/control/types';
+
+/*
+ * Builds the exact 24-joint biped skeleton the character exports ship, so the
+ * tests exercise the real bone names rather than an idealised rig.
+ */
+function buildBiped(): Object3D {
+  const root = new Object3D();
+  const names = [
+    'Hips', 'LeftUpLeg', 'LeftLeg', 'LeftFoot', 'LeftToeBase',
+    'RightUpLeg', 'RightLeg', 'RightFoot', 'RightToeBase',
+```
+
+### frontend/src/tutor-scene/characterActions.ts
+
+```
+import { Euler, Quaternion, type Bone } from 'three';
+import type { Rig } from './rig';
+import type { CharacterAction, CharacterEmotion } from '@/components/characters/control/types';
+
+/*
+ * The 12 canonical actions and 7 emotions, driven PROCEDURALLY.
+ *
+ * Why procedural rather than authored clips: every character export ships
+ * exactly one clip, and all of them are locomotion cycles. Meanwhile the
+ * lesson catalog already authors `emotion` and `action` fields against the 2D
+ * rig's vocabulary (components/characters/control/types.ts), so the content to
+ * drive these characters exists — only the clips do not.
+ *
+ * Rather than leave the 3D characters inert until someone opens Blender, the
+ * same 19 states are synthesised from bone rotations. The result is not what a
+```
+
+### frontend/src/tutor-scene/fitCamera.ts
+
+```
+import { Box3, Sphere, Vector3, type Object3D, type PerspectiveCamera } from 'three';
+
+/*
+ * Frames an object regardless of the units it was exported in.
+ *
+ * Necessary because the source assets disagree wildly about scale — three
+ * characters near 1.65 units tall, one at 0.028, and dioramas around 1.9 across
+ * — so a hard-coded camera position frames one asset and misses every other.
+ * Fitting from the measured bounding sphere means "look at this thing" works
+ * before anyone has decided what its real-world size should be.
+ */
+
+export interface FitResult {
+  /** Where the camera should sit. */
+  position: Vector3;
+```
+
+### frontend/src/tutor-scene/governor.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import {
+  initialGovernorState,
+  stepGovernor,
+  DEMOTE_BELOW_FPS,
+  PROMOTE_ABOVE_FPS,
+  WINDOWS_TO_DEMOTE,
+  WINDOWS_TO_PROMOTE,
+  type GovernorState,
+} from './governor';
+
+const SLOW = DEMOTE_BELOW_FPS - 10;
+const FAST = PROMOTE_ABOVE_FPS + 5;
+/** Between the thresholds — the dead band. */
+const FINE = (DEMOTE_BELOW_FPS + PROMOTE_ABOVE_FPS) / 2;
+```
+
+### frontend/src/tutor-scene/governor.ts
+
+```
+import { lowerTier, raiseTier, type QualityTier } from './quality';
+
+/*
+ * The tier-stepping decision, as a PURE reducer.
+ *
+ * It lives outside React deliberately. The first version of this logic ran
+ * inside a `setTier` updater and mutated counters there; React StrictMode
+ * invokes updaters twice to surface exactly that impurity, and it did — one
+ * bad measurement window incremented the demotion counter twice and latched
+ * the tier after a single demotion instead of two, permanently barring a
+ * device that merely hiccuped from climbing back. A pure `(state, fps) =>
+ * state` reducer cannot have that class of bug, and can be tested without
+ * rendering anything.
+ *
+ * Tuning notes — every constant here is an anti-oscillation measure:
+```
+
+### frontend/src/tutor-scene/ground.tsx
+
+```
+import { createContext, useCallback, useContext, useMemo, useRef, type ReactNode } from 'react';
+import { Box3, Object3D, Raycaster, Vector3 } from 'three';
+
+/*
+ * Where is the floor?
+ *
+ * Not answerable from a bounding box. A diorama's highest point is its back
+ * wall or its palm fronds, and its lowest is the underside of the floating
+ * rock — the walkable surface is somewhere in between, at a height that
+ * differs per island and per spot on that island. Placing characters at the
+ * box top put them standing in mid-air above the scenery, which is exactly the
+ * bug this replaces.
+ *
+ * So the ground is MEASURED where the character actually stands: a ray fired
+ * straight down from above that (x, z) returns the first surface it meets.
+```
+
+### frontend/src/tutor-scene/lab/SceneLabPage.tsx
+
+```
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { useTranslation } from 'react-i18next';
+import { SceneCanvas, type SceneStats } from '../SceneCanvas';
+import { SceneLighting } from '../SceneLighting';
+import { useSceneModel } from '../useSceneModel';
+import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from '../quality';
+import { readBudget, TUTOR_ASSET_BUDGET } from '../budget';
+import { fitObject } from '../fitCamera';
+import { TutorScene } from '../TutorScene';
+import { CHARACTER_ACTIONS, type CharacterAction } from '@/components/characters/control/types';
+import { CHARACTER_ASSETS, SCENE_ASSETS } from '../assets';
+import { Vector3, type PerspectiveCamera } from 'three';
+
+```
+
+### frontend/src/tutor-scene/quality.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import {
+  lowerTier,
+  pickInitialTier,
+  QUALITY_SETTINGS,
+  raiseTier,
+  resolveSettings,
+  type DeviceProbe,
+} from './quality';
+
+/** A capable desktop that answered every question. */
+function probe(overrides: Partial<DeviceProbe> = {}): DeviceProbe {
+  return {
+    cores: 8,
+    memoryGb: 16,
+```
+
+### frontend/src/tutor-scene/quality.ts
+
+```
+/*
+ * Device capability probing and quality tiering for the Tutor's 3D scene.
+ *
+ * WHY THIS EXISTS: the owner's mandate is that the Tutor scene is 3D for
+ * EVERY user — not 3D for the users with good hardware and a 2D fallback for
+ * the rest. That makes "does this device cope?" a runtime question we have to
+ * answer continuously, not a capability gate we answer once at the door.
+ *
+ * The design has two halves, and the split is the whole point:
+ *
+ *   1. A STATIC PRIOR (`probeDevice` + `pickInitialTier`) — cheap, synchronous,
+ *      and only used to avoid a bad first second. It is a guess.
+ *   2. MEASURED FRAME TIME (`useAdaptiveQuality`) — the actual authority. A
+ *      device that reports 8 cores and then renders at 22fps IS a low-tier
+ *      device, whatever it claimed.
+```
+
+### frontend/src/tutor-scene/rig.ts
+
+```
+import { Quaternion, type Bone, type Object3D } from 'three';
+
+/*
+ * Maps a loaded skeleton onto the canonical bone slots the action system
+ * drives.
+ *
+ * The exports made this practical: Rho, Zara and Liruf ship the SAME 24-joint
+ * skeleton with conventional names (Hips / Spine / neck / Head /
+ * Left|RightShoulder-Arm-ForeArm-Hand), so one binding serves all three —
+ * including the dinosaur, who is rigged as a biped. Dina is a genuine
+ * quadruped on a different 27-joint rig (tail chain, front/back legs, ears)
+ * and binds to a reduced slot set.
+ *
+ * Lookup is case-insensitive and tolerant of prefixes, because exporters
+ * routinely decorate joint names ("Armature|", "mixamorig:"). A slot that
+```
+
+### frontend/src/tutor-scene/standingSpots.ts
+
+```
+import { Box3, Raycaster, Vector3, type Object3D } from 'three';
+
+/*
+ * Finds places on an island where a character can credibly stand.
+ *
+ * Hand-placing characters against one diorama does not survive contact with
+ * the second: these islands are dense with rocks, a stone table, benches and
+ * palms, and coordinates tuned by eye on one asset put a character standing on
+ * a table or half-inside a boulder on the next. Both happened.
+ *
+ * So the spots are SOLVED, not authored. Candidates are sampled on rings over
+ * the island, a ray finds the surface under each, and a spot is only accepted
+ * if the ground there is flat (the surface normal points up), open (its
+ * neighbours sit at a similar height, so it is not the top of a rock or the
+ * lip of a ledge) and actually on the island. Whatever island ships next needs
+```
+
+### frontend/src/tutor-scene/useAdaptiveQuality.ts
+
+```
+import { useCallback, useMemo, useRef, useState } from 'react';
+import {
+  getDeviceProbe,
+  pickInitialTier,
+  resolveSettings,
+  type DeviceProbe,
+  type QualitySettings,
+} from './quality';
+import { initialGovernorState, stepGovernor, type GovernorState } from './governor';
+
+/*
+ * The measured half of the quality system (quality.ts holds the static half,
+ * governor.ts holds the decision). Frame times are the authority; the static
+ * probe only chose where to start.
+ *
+```
+
+### frontend/src/tutor-scene/useSceneModel.ts
+
+```
+import { useEffect, useMemo } from 'react';
+import { useLoader, useThree } from '@react-three/fiber';
+// `three/examples/jsm/...` rather than the shorter `three/addons/...` alias:
+// both resolve to the same files, but @types/three only ships declarations
+// under examples/jsm, so the alias would type-check as `any`.
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
+import type { Mesh, Object3D } from 'three';
+import type { QualitySettings } from './quality';
+
+/*
+ * Loads an optimized .glb produced by `npm run assets:3d`.
+ *
+ * Two compression schemes are in play and they solve different problems:
 ```
 
 ### frontend/src/vite-env.d.ts

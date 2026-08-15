@@ -2,5 +2,14 @@ public/dev-lessons/
 .vercel
 .env*
 
+# Basis Universal transcoder, copied out of `three` by scripts/copy-3d-decoders.mjs
+# on every dev/build run. Tracking it would let the .wasm drift from the pinned
+# `three` version, and a transcoder mismatch surfaces as corrupt textures.
+public/basis/
+
+# Artist-dropped source .glb files for the Tutor scene. Uncompressed exports are
+# large binaries that belong in Depot (bucket `tutor-scenes`), never in git.
+public/scenes/
+
 # Author-time map generation cache (see scripts/generate-region-maps.mjs)
 .cache/

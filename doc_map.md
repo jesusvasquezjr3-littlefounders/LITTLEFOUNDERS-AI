@@ -36,6 +36,7 @@
 | Course Engine (hierarchy, curriculum catalog, generation pipeline, gates, providers) | COURSE_ENGINE.md | all |
 | Forge production-readiness audit and research synthesis | COURSEGEN_AUDIT_2026-08-01.md | all |
 | AI tutor (Oracle) — approved design, NOT implemented | ORACLE.md | all |
+| Tutor 3D stage (assets, rigs, procedural actions, placement, perf, Blender handoff) | TUTOR_3D.md | all |
 | Analytics warehouse (DuckDB, segmentation, forecasting, experiments) | /DATAINTEL.md · dataintel/AGENTS.md | all |
 | Data intelligence console (/admin/intel) | /DATAINTEL.md | §7 |
 | Task templates | agent/prompts/templates/ | pick by task |

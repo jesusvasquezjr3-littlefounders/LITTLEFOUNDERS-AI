@@ -39,3 +39,43 @@ The SPA: the four product sections (learn, tutor, tasks, profile). Talks ONLY to
 - `/DESIGN.md` — current rules + what's locked (modes, characters, a11y floor).
 - `agent/prompts/templates/new-component.md` — the component protocol.
 - Skills: `impeccable`, `agave`, `emil-design-eng` apply to all UI work here.
+
+## Tutor 3D scene (`src/tutor-scene/`)
+
+The Tutor's stage is 3D for EVERY user (owner decision 2026-08-15, recorded in
+ROADMAP.md) — it is never gated by role or device class. Stack: `three` +
+`@react-three/fiber` **v8**; drei is deliberately absent (its React-18 line is
+frozen and would pin `three` backwards, and it weighs more than the ~150 lines
+it would save). R3F v9 / drei v10 require React ≥19 and are unusable here.
+
+Rules that bite:
+
+- **`three` must only ever be reached through a lazy route.** `TutorPage` and
+  the scene lab are `lazy()` imports; a static import anywhere in the eager
+  graph would put ~285 kB gzipped into the entry bundle of every marketing
+  page. Verified after each build: `WebGLRenderer` must appear in the
+  `TutorScene-*` chunk and NOT in `index-*`.
+- **Quality is measured, never assumed.** `quality.ts` picks a starting tier
+  from a device probe; `governor.ts` — a PURE reducer, deliberately outside
+  React — steps it from real frame times. Never move tier transitions back
+  into a `setState` updater: StrictMode double-invokes those, and the side
+  effects latched the tier after one demotion instead of two.
+- **A device that reports nothing is not a weak device.** `deviceMemory` is
+  Chromium-only; treating absent as zero would push every Safari and Firefox
+  user onto the degraded tier (§1.14).
+- **Placement is solved from geometry, never authored.** Ground height comes
+  from a downward raycast (`ground.tsx`) and standing positions from
+  `standingSpots.ts`. Hand-tuned coordinates do not survive the second
+  diorama — they put a character on top of the stone table on the first one.
+- **Lighting lives in code, never baked into the .glb.** DESIGN.md mandates
+  light AND dark mode, so an asset lit at export time is wrong in one of them
+  by construction. Baked ambient occlusion in textures is fine; baked
+  lightmaps are not.
+- **Assets are budgeted in code** (`budget.ts`), measured against real exports
+  by `/dev/scene-lab` and `npm run assets:3d`, and served from Depot's public
+  `tutor-scenes` bucket in deployed environments (`VITE_SCENE_ASSET_BASE`).
+  Source exports live outside the repo; only optimized output is published.
+
+Asset pipeline: `npm run assets:inspect -- <file.glb>` (read-only report) →
+`npm run assets:3d -- <in.glb> <out.glb> [--max-triangles=N]` (meshopt +
+texture compression + optional decimation, with a hard rig-integrity gate).

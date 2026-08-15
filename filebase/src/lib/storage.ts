@@ -18,6 +18,14 @@ import { getConfig } from '../config.js';
  * bytes never rewrites the file, it just reports `deduplicated: true`.
  */
 
+/*
+ * `model/gltf-binary` (.glb) is the Tutor's 3D scene/character format. It is
+ * deliberately the ONLY 3D entry here: a .glb embeds its own textures,
+ * animations and geometry buffers in one file, so one asset is one hash and
+ * one URL. The multi-file `.gltf` + `.bin` + loose-PNG layout would turn a
+ * single character into N unrelated content-addressed objects plus a manifest
+ * to keep them in sync — exactly the bookkeeping this store exists to avoid.
+ */
 export const MIME_EXT: Readonly<Record<string, string>> = Object.freeze({
   'audio/mpeg': 'mp3',
   'audio/wav': 'wav',
@@ -26,6 +34,7 @@ export const MIME_EXT: Readonly<Record<string, string>> = Object.freeze({
   'image/jpeg': 'jpg',
   'image/webp': 'webp',
   'application/json': 'json',
+  'model/gltf-binary': 'glb',
 });
 
 export const ALLOWED_MIME: ReadonlySet<string> = new Set(Object.keys(MIME_EXT));

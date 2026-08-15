@@ -48,7 +48,9 @@ Behavior on success:
 
 When the read fails mid-flight: *before* any byte leaves (blob deleted between the `stat()` and the open, volume I/O error) the client gets the `404` envelope; *after* the stream started, the response is destroyed, so the client sees a truncated transfer rather than a silently short file. Either way the process survives, and the source stream is also destroyed when the client disconnects (paused audio, closed tab) so an aborted download never leaks an open fd — see `AGENTS.md` (this dir), *A stream error must never be able to kill the process*.
 
-Allowed mime types (each maps to a fixed extension, independent of the uploader's original filename): `audio/mpeg`→mp3, `audio/wav`→wav, `audio/ogg`→ogg, `image/png`→png, `image/jpeg`→jpg, `image/webp`→webp, `application/json`→json.
+Allowed mime types (each maps to a fixed extension, independent of the uploader's original filename): `audio/mpeg`→mp3, `audio/wav`→wav, `audio/ogg`→ogg, `image/png`→png, `image/jpeg`→jpg, `image/webp`→webp, `application/json`→json, `model/gltf-binary`→glb.
+
+`model/gltf-binary` carries the Tutor's 3D scenes and characters (bucket `tutor-scenes`, `visibility: public` — generated geometry with no PII, the same class as lesson audio and images). Only the single-file `.glb` container is accepted, never `.gltf` + `.bin` + loose textures: one asset must be one hash and one URL, or a character becomes N unrelated objects plus a manifest to keep in sync. Browsers load it straight from this route via three.js `GLTFLoader`, so the stored mime is what makes the load succeed.
 
 ## Env vars
 

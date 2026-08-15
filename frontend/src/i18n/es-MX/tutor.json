@@ -1,0 +1,40 @@
+{
+  "scene": {
+    "webglUnavailable": "Este dispositivo no puede mostrar gráficos 3D. Tu navegador no es compatible con WebGL, o está desactivado en la configuración.",
+    "contextLost": "La vista 3D se interrumpió. Va a regresar sola en un momento.",
+    "loadFailed": "No se pudo cargar la escena 3D. Revisa tu conexión e inténtalo de nuevo."
+  },
+  "lab": {
+    "title": "Laboratorio de escena",
+    "subtitle": "Mide un .glb contra el presupuesto de assets del Tutor",
+    "loadModel": "Cargar un .glb",
+    "noModel": "No hay modelo cargado. Elige un .glb para medirlo, o explora la escena de prueba.",
+    "runtime": "Ejecución",
+    "tier": "Nivel de calidad",
+    "fps": "FPS",
+    "drawCalls": "Llamadas de dibujo (por cuadro)",
+    "triangles": "Triángulos (por cuadro)",
+    "pixelRatio": "Densidad de píxeles",
+    "fileSize": "Tamaño del archivo",
+    "locked": "Nivel fijado — este dispositivo no pudo sostener uno más alto",
+    "budget": "Presupuesto",
+    "budgetOk": "Dentro del presupuesto",
+    "budgetOver": "Fuera del presupuesto",
+    "device": "Sondeo del dispositivo",
+    "cores": "Núcleos de CPU",
+    "memory": "Memoria",
+    "maxTexture": "Tamaño máximo de textura",
+    "webgl": "WebGL",
+    "pointer": "Puntero",
+    "pointerCoarse": "táctil",
+    "pointerFine": "ratón",
+    "reducedMotion": "Movimiento reducido",
+    "unknown": "sin reportar",
+    "yes": "sí",
+    "no": "no"
+  },
+  "page": {
+    "title": "Tutor",
+    "subtitle": "Tu lugar de aprendizaje, con el Dr. Rho y Liruf."
+  }
+}
