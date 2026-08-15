@@ -156,6 +156,16 @@ repair pass:
   as `railway-migrate.sh --confirm-production`. Without it the pass runs
   measurement-only and says so in its first line. This mode CLEARS art before
   redrawing it, so the unsafe default would be expensive in both directions.
+- **`--max-usd <n>` is REQUIRED with `--confirm-spend`.** The pass is an
+  unattended loop over a live catalog and `illustrateSegments`'s ledger is
+  optional, so without a ceiling nothing bounds it (§1.14: a budget guard that
+  does not bind is not a guard). Spend is priced at `COST_QWEN_IMAGE_PER_IMAGE`
+  ($0.075 for `qwen-image-max`) per image Prism reports as freshly generated —
+  cache hits are free and are not counted. On reaching the ceiling the pass
+  stops **between lessons** and says so. That is safe to resume: each lesson's
+  three documents are patched and re-stamped as a unit, so finished lessons are
+  current, untouched ones are still stale, and a re-run skips the finished ones
+  via `lessonsAlreadyCurrent`.
 - Always measure first: `npm run images:backfill -- --course <slug>
   --restyle-scenes --dry-run` reports how many scenes are stale — which is
   exactly how many redraws a real pass would bill — with no writes and no spend.
