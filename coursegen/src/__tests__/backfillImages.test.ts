@@ -667,3 +667,94 @@ describe('restyle budget ceiling', () => {
     expect(summary.stoppedOnBudget).toBe(false);
   });
 });
+
+/*
+ * Two defects the 2026-08-15 arrears outage exposed in this repair path, both
+ * caught on a live run that generated nothing and cost nothing.
+ */
+describe('restyle refuses to degrade a catalog it cannot repair', () => {
+  const STALE_V = 'v7-old+v8-qwen-image-max-object-white-flat-vector';
+
+  /** A lesson whose scene anchor is MISSING, not stale — clears zero. */
+  function anchorlessDoc(): LessonDocumentParsed {
+    return {
+      meta: { title: 'T' },
+      segments: [{ id: 's1', type: 'best_decision', prompt_md: 'Rho mira los tres tesoros.', payload: {} }],
+    } as unknown as LessonDocumentParsed;
+  }
+
+  function rows(count: number): BackfillDocRow[] {
+    return Array.from({ length: count }, (_, i) => ({
+      lessonId: `l${i}`,
+      lessonSlug: `slug-${i}`,
+      locale: 'es-MX',
+      illustrationStyleVersion: STALE_V,
+      document: anchorlessDoc(),
+    }));
+  }
+
+  const failingIllustrate = () =>
+    vi.fn<BackfillDeps['illustrate']>().mockImplementation(async (document) => ({ document, generated: 0 }));
+
+  const deps = (illustrate: BackfillDeps['illustrate'], count: number): BackfillDeps => ({
+    listDocuments: async () => rows(count),
+    illustrate,
+    writeDocument: vi.fn().mockResolvedValue(undefined),
+    probeStyleVersion: vi.fn().mockResolvedValue({ styleVersion: FORGE_ILLUSTRATION_STYLE_VERSION }),
+  });
+
+  /*
+   * The stamp bug: nothing stale to clear and nothing drawn is 0 === 0, which
+   * used to read as "complete" and marked a lesson CURRENT with no art at all.
+   * Two published lessons were stamped that way for real before being reverted.
+   */
+  it('never stamps a document whose illustrations are still missing', async () => {
+    const writeDocument = vi.fn<BackfillDeps['writeDocument']>().mockResolvedValue(undefined);
+    await backfillImages(
+      { ...deps(failingIllustrate(), 1), writeDocument },
+      { courseSlug: 'c', restyleScenes: true, confirmSpend: true, maxUsd: 10 },
+    );
+
+    expect(writeDocument).toHaveBeenCalled();
+    for (const [, body] of writeDocument.mock.calls as Array<[BackfillDocRow, BackfillWriteBody]>) {
+      expect(body.illustration_style_version).toBeUndefined();
+    }
+  });
+
+  /*
+   * The walk-on bug: with the provider hard-down, the pass kept clearing art it
+   * could not replace, lesson after lesson. Several barren lessons in a row is
+   * never a content problem.
+   */
+  it('aborts after a run of lessons that need images and get none', async () => {
+    const illustrate = failingIllustrate();
+    await expect(
+      backfillImages(deps(illustrate, 20), { courseSlug: 'c', restyleScenes: true, confirmSpend: true, maxUsd: 100 }),
+    ).rejects.toThrow(/systemic failure/i);
+    // It stopped early rather than walking all twenty.
+    expect(illustrate.mock.calls.length).toBeLessThanOrEqual(3);
+  });
+
+  it('does not abort while images are actually being produced', async () => {
+    const illustrate = vi.fn<BackfillDeps['illustrate']>().mockImplementation(async (document) => {
+      const clone = structuredClone(document) as unknown as { segments: Array<{ image_url?: string }> };
+      clone.segments[0]!.image_url = 'http://depot.test/fresh.webp';
+      return { document: clone as unknown as LessonDocumentParsed, generated: 1 };
+    });
+
+    const summary = await backfillImages(deps(illustrate, 6), {
+      courseSlug: 'c',
+      restyleScenes: true,
+      confirmSpend: true,
+      maxUsd: 100,
+    });
+    expect(summary.scanned).toBe(6);
+  });
+
+  // A measurement-only pass produces zero images BY DESIGN — the breaker must
+  // not fire on it, or `--dry-run` could never survive its own third lesson.
+  it('never fires the breaker on a measurement-only pass', async () => {
+    const summary = await backfillImages(deps(failingIllustrate(), 20), { courseSlug: 'c', restyleScenes: true });
+    expect(summary.scanned).toBe(20);
+  });
+});
