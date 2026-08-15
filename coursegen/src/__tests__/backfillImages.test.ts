@@ -51,7 +51,7 @@ describe('backfillImages orchestration', () => {
       { courseSlug: 'financial-education' },
     );
 
-    expect(summary).toEqual({ scanned: 3, patched: 2, imagesGenerated: 3, imagesInherited: 0, imagesPlaced: 3, skipped: 1, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0 });
+    expect(summary).toEqual({ scanned: 3, patched: 2, imagesGenerated: 3, imagesInherited: 0, imagesPlaced: 3, skipped: 1, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0, usdSpent: 0, stoppedOnBudget: false });
     // Only a and c were written — b (0 images) was not.
     expect(writeDocument).toHaveBeenCalledTimes(2);
     expect(writeDocument.mock.calls.map((call) => call[0].lessonId)).toEqual(['a', 'c']);
@@ -95,7 +95,7 @@ describe('backfillImages orchestration', () => {
     expect(illustrate).toHaveBeenCalledTimes(2);
     expect(writeDocument).not.toHaveBeenCalled(); // dry-run: zero writes
     // patched still counts what WOULD be written, so the operator sees the impact.
-    expect(summary).toEqual({ scanned: 2, patched: 2, imagesGenerated: 4, imagesInherited: 0, imagesPlaced: 4, skipped: 0, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0 });
+    expect(summary).toEqual({ scanned: 2, patched: 2, imagesGenerated: 4, imagesInherited: 0, imagesPlaced: 4, skipped: 0, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0, usdSpent: 0, stoppedOnBudget: false });
   });
 
   it('exits cleanly on a fully quota-exhausted run — every document skipped, nothing patched', async () => {
@@ -116,7 +116,7 @@ describe('backfillImages orchestration', () => {
     );
 
     expect(writeDocument).not.toHaveBeenCalled();
-    expect(summary).toEqual({ scanned: 2, patched: 0, imagesGenerated: 0, imagesInherited: 0, imagesPlaced: 0, skipped: 2, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0 });
+    expect(summary).toEqual({ scanned: 2, patched: 0, imagesGenerated: 0, imagesInherited: 0, imagesPlaced: 0, skipped: 2, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0, usdSpent: 0, stoppedOnBudget: false });
   });
 
   it('short-circuits the whole pass (and never writes) when Prism is NOT_CONFIGURED', async () => {
@@ -139,7 +139,7 @@ describe('backfillImages orchestration', () => {
     // Stopped after the first doc's not-configured result: no writes, nothing scanned.
     expect(illustrate).toHaveBeenCalledTimes(1);
     expect(writeDocument).not.toHaveBeenCalled();
-    expect(summary).toEqual({ scanned: 0, patched: 0, imagesGenerated: 0, imagesInherited: 0, imagesPlaced: 0, skipped: 0, notConfigured: true, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0 });
+    expect(summary).toEqual({ scanned: 0, patched: 0, imagesGenerated: 0, imagesInherited: 0, imagesPlaced: 0, skipped: 0, notConfigured: true, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0, usdSpent: 0, stoppedOnBudget: false });
     expect(log).toHaveBeenCalledWith(expect.stringContaining('Prism (PICTUREGEN_URL) not configured'));
   });
 
@@ -154,7 +154,7 @@ describe('backfillImages orchestration', () => {
 
     expect(illustrate).not.toHaveBeenCalled();
     expect(writeDocument).not.toHaveBeenCalled();
-    expect(summary).toEqual({ scanned: 0, patched: 0, imagesGenerated: 0, imagesInherited: 0, imagesPlaced: 0, skipped: 0, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0 });
+    expect(summary).toEqual({ scanned: 0, patched: 0, imagesGenerated: 0, imagesInherited: 0, imagesPlaced: 0, skipped: 0, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0, usdSpent: 0, stoppedOnBudget: false });
   });
 
   it('builds a deterministic course-local index and patches inherited art without any Prism request', async () => {
@@ -178,7 +178,7 @@ describe('backfillImages orchestration', () => {
     );
 
     expect(request).not.toHaveBeenCalled();
-    expect(summary).toEqual({ scanned: 2, patched: 1, imagesGenerated: 0, imagesInherited: 1, imagesPlaced: 1, skipped: 1, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0 });
+    expect(summary).toEqual({ scanned: 2, patched: 1, imagesGenerated: 0, imagesInherited: 1, imagesPlaced: 1, skipped: 1, notConfigured: false, scenesCleared: 0, scenesCopiedToLocales: 0, lessonsAlreadyCurrent: 0, usdSpent: 0, stoppedOnBudget: false });
     expect(writeDocument).toHaveBeenCalledTimes(1);
     expect(writeDocument.mock.calls[0]![0].lessonId).toBe('target');
   });
@@ -575,10 +575,95 @@ describe('restyle honours the spend gate end to end', () => {
 
     await backfillImages(
       { listDocuments: async () => rows(), illustrate, writeDocument: vi.fn().mockResolvedValue(undefined), probeStyleVersion },
-      { courseSlug: 'financial-education', restyleScenes: true, confirmSpend: true },
+      { courseSlug: 'financial-education', restyleScenes: true, confirmSpend: true, maxUsd: 100 },
     );
 
     expect(probeStyleVersion).toHaveBeenCalled();
     expect(illustrate.mock.calls[0]![1]).toMatchObject({ reuseOnly: false });
+  });
+});
+
+/*
+ * A confirmed restyle spends real money in an unattended loop over a live
+ * catalog. `illustrateSegments` takes an OPTIONAL ledger and this path never
+ * supplied one, so repairing financial-education — 3,397 redraws at
+ * $0.075 each, more with verifier retries — had no kill switch behind it at
+ * all. AGENTS.md §1.14: a budget guard that does not bind is not a guard.
+ */
+describe('restyle budget ceiling', () => {
+  const STALE_V = 'v7-old+v8-qwen-image-max-object-white-flat-vector';
+
+  function lessonRows(count: number): BackfillDocRow[] {
+    return Array.from({ length: count }, (_, i) => ({
+      lessonId: `l${i}`,
+      lessonSlug: `slug-${i}`,
+      locale: 'es-MX',
+      illustrationStyleVersion: STALE_V,
+      document: {
+        meta: { title: 'T' },
+        segments: [{ id: 's1', type: 'best_decision', prompt_md: 'x', payload: {}, image_url: 'http://depot.test/old.webp' }],
+      } as unknown as LessonDocumentParsed,
+    }));
+  }
+
+  /** Every lesson costs exactly one generated image. */
+  const oneImageEach = () =>
+    vi.fn<BackfillDeps['illustrate']>().mockImplementation(async (document) => {
+      const clone = structuredClone(document) as unknown as { segments: Array<{ image_url?: string }> };
+      clone.segments[0]!.image_url = 'http://depot.test/fresh.webp';
+      return { document: clone as unknown as LessonDocumentParsed, generated: 1 };
+    });
+
+  const deps = (illustrate: BackfillDeps['illustrate']): BackfillDeps => ({
+    listDocuments: async () => lessonRows(10),
+    illustrate,
+    writeDocument: vi.fn().mockResolvedValue(undefined),
+    probeStyleVersion: vi.fn().mockResolvedValue({ styleVersion: FORGE_ILLUSTRATION_STYLE_VERSION }),
+  });
+
+  it('refuses a confirmed restyle that states no ceiling', async () => {
+    await expect(
+      backfillImages(deps(oneImageEach()), { courseSlug: 'c', restyleScenes: true, confirmSpend: true }),
+    ).rejects.toThrow(/--max-usd/);
+  });
+
+  it('stops once the ceiling is reached, leaving repaired lessons complete', async () => {
+    const illustrate = oneImageEach();
+    // $0.075/image (COST_QWEN_IMAGE_PER_IMAGE default) → $0.20 buys 3 images.
+    const summary = await backfillImages(deps(illustrate), {
+      courseSlug: 'c',
+      restyleScenes: true,
+      confirmSpend: true,
+      maxUsd: 0.2,
+    });
+
+    expect(summary.stoppedOnBudget).toBe(true);
+    expect(summary.imagesGenerated).toBe(3);
+    expect(summary.usdSpent).toBeCloseTo(0.225, 4);
+    // It stopped BETWEEN lessons, so nothing is half-repaired.
+    expect(illustrate).toHaveBeenCalledTimes(3);
+    expect(summary.patched).toBe(3);
+  });
+
+  it('runs to completion and reports the spend when the ceiling is generous', async () => {
+    const summary = await backfillImages(deps(oneImageEach()), {
+      courseSlug: 'c',
+      restyleScenes: true,
+      confirmSpend: true,
+      maxUsd: 100,
+    });
+
+    expect(summary.stoppedOnBudget).toBe(false);
+    expect(summary.imagesGenerated).toBe(10);
+    expect(summary.usdSpent).toBeCloseTo(0.75, 4);
+  });
+
+  it('never demands a ceiling for a measurement-only pass', async () => {
+    const summary = await backfillImages(
+      deps(vi.fn<BackfillDeps['illustrate']>().mockImplementation(async (document) => ({ document, generated: 0 }))),
+      { courseSlug: 'c', restyleScenes: true },
+    );
+    expect(summary.usdSpent).toBe(0);
+    expect(summary.stoppedOnBudget).toBe(false);
   });
 });

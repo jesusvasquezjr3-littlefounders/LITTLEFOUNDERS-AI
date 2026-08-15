@@ -139,6 +139,24 @@ export interface BackfillOptions {
    * one. Without this flag the pass runs measurement-only and says so.
    */
   confirmSpend?: boolean;
+  /**
+   * Hard ceiling in USD for a confirmed restyle, priced at
+   * `COST_QWEN_IMAGE_PER_IMAGE` per image Prism reports as freshly generated.
+   * On reaching it the pass STOPS between lessons and returns what it has.
+   *
+   * Required, not optional, for a paid restyle. `illustrateSegments` takes an
+   * OPTIONAL ledger and this path never supplied one, so repairing the
+   * financial-education catalog — 3,397 redraws, more with verifier retries —
+   * would have run with no kill switch of any kind behind it. AGENTS.md §1.14
+   * asks that budget guards actually BIND; an unbounded four-figure loop over a
+   * live catalog is the case it was written for.
+   *
+   * Stopping early is SAFE by construction: each lesson is patched and stamped
+   * as a unit, so an interrupted pass leaves finished lessons current and
+   * untouched ones stale. Re-running resumes — `lessonsAlreadyCurrent` skips
+   * whatever was already repaired.
+   */
+  maxUsd?: number;
 }
 
 export interface BackfillSummary {
@@ -161,6 +179,10 @@ export interface BackfillSummary {
   scenesCopiedToLocales: number;
   /** Restyle mode: lessons whose documents were already on the current style and left alone. */
   lessonsAlreadyCurrent: number;
+  /** Restyle mode: USD spent on freshly generated images, at COST_QWEN_IMAGE_PER_IMAGE. */
+  usdSpent: number;
+  /** Restyle mode: true when --max-usd stopped the pass before every lesson was repaired. */
+  stoppedOnBudget: boolean;
 }
 
 /**
@@ -221,6 +243,15 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
   if (opts.restyleScenes && opts.locale) {
     throw new Error('images:backfill — --restyle-scenes covers all locales of a lesson at once; drop --locale.');
   }
+  /*
+   * A confirmed restyle spends real money in an unattended loop over a live
+   * catalog, so it must carry its own ceiling. Refusing here — before the Vault
+   * read, before the Prism probe — means the operator states a number they are
+   * willing to lose, exactly like FORGE_MAX_USD_PER_RUN does for a generation.
+   */
+  if (paid && opts.restyleScenes && !(opts.maxUsd && opts.maxUsd > 0)) {
+    throw new Error('images:backfill — a confirmed --restyle-scenes needs an explicit --max-usd ceiling (e.g. --max-usd 400).');
+  }
 
   const summary: BackfillSummary = {
     scanned: 0,
@@ -233,6 +264,8 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
     scenesCleared: 0,
     scenesCopiedToLocales: 0,
     lessonsAlreadyCurrent: 0,
+    usdSpent: 0,
+    stoppedOnBudget: false,
   };
 
   const allRows = await deps.listDocuments(opts.courseSlug);
@@ -283,7 +316,7 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
   };
 
   if (opts.restyleScenes) {
-    return restyleScenes(deps, opts, { rows, inheritFor, summary, log, paid });
+    return restyleScenes(deps, opts, { rows, inheritFor, summary, log, paid, usdPerImage: getConfig().COST_QWEN_IMAGE_PER_IMAGE });
   }
 
   for (const row of rows) {
@@ -335,6 +368,8 @@ interface RestyleContext {
   log: (line: string) => void;
   /** `spendAllowed(opts)` — false means measurement-only, Prism is never called. */
   paid: boolean;
+  /** COST_QWEN_IMAGE_PER_IMAGE, injected so the orchestration stays testable without env. */
+  usdPerImage: number;
 }
 
 /**
@@ -418,6 +453,7 @@ async function restyleScenes(
     summary.imagesGenerated += result.generated;
     summary.imagesInherited += result.inherited ?? 0;
     summary.imagesPlaced += result.generated + (result.inherited ?? 0);
+    summary.usdSpent = Number((summary.imagesGenerated * ctx.usdPerImage).toFixed(4));
 
     const freshScenes = collectSceneImages(result.document);
     /*
@@ -461,6 +497,18 @@ async function restyleScenes(
       `  ~ ${payer.lessonSlug}: ${cleared.cleared} stale scene(s) → ${result.generated} redrawn, ` +
         `copied to ${writes.length - 1} sibling locale(s)${opts.dryRun ? ' (dry-run, not written)' : ' patched'}`,
     );
+
+    /*
+     * Check AFTER the writes, never before: this lesson's three documents are
+     * already consistent and stamped, so stopping here leaves the catalog in a
+     * valid partial state that a later run resumes from. Breaking mid-lesson
+     * could leave siblings pointing at art the payer no longer has.
+     */
+    if (ctx.paid && opts.maxUsd && summary.usdSpent >= opts.maxUsd) {
+      summary.stoppedOnBudget = true;
+      log(`  ! --max-usd ${opts.maxUsd} reached at $${summary.usdSpent} — stopping cleanly; re-run to resume where this left off`);
+      break;
+    }
   }
 
   return summary;
@@ -590,6 +638,7 @@ interface CliOptions {
   reuseOnly?: boolean;
   restyleScenes?: boolean;
   confirmSpend?: boolean;
+  maxUsd?: number;
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -615,6 +664,13 @@ function parseArgs(argv: string[]): CliOptions {
       case '--confirm-spend':
         opts.confirmSpend = true;
         break;
+      case '--max-usd':
+        opts.maxUsd = Number(argv[++i]);
+        if (!Number.isFinite(opts.maxUsd) || opts.maxUsd <= 0) {
+          console.error('images:backfill — --max-usd needs a positive number of dollars');
+          process.exit(1);
+        }
+        break;
       default:
         console.error(`images:backfill — unknown argument "${arg}"`);
         process.exit(1);
@@ -628,7 +684,7 @@ async function main(): Promise<void> {
   if (!opts.course) {
     console.error(
       'Usage: npm run images:backfill -- --course <slug> [--locale <es-MX|en-US|pt-BR>]\n' +
-        '                                    [--restyle-scenes [--confirm-spend]] [--reuse-only] [--dry-run]',
+        '                                    [--restyle-scenes [--confirm-spend --max-usd <n>]] [--reuse-only] [--dry-run]',
     );
     process.exit(1);
   }
@@ -663,6 +719,7 @@ async function main(): Promise<void> {
       reuseOnly: opts.reuseOnly,
       restyleScenes: opts.restyleScenes,
       confirmSpend: opts.confirmSpend,
+      maxUsd: opts.maxUsd,
     },
   );
 
@@ -677,6 +734,10 @@ async function main(): Promise<void> {
     console.log(`  stale scenes cleared:      ${summary.scenesCleared}`);
     console.log(`  scenes copied to locales:  ${summary.scenesCopiedToLocales} (free — one drawing serves 3 locales)`);
     console.log(`  lessons already current:   ${summary.lessonsAlreadyCurrent}`);
+    console.log(`  USD spent:                 $${summary.usdSpent.toFixed(2)}${opts.maxUsd ? ` of $${opts.maxUsd.toFixed(2)}` : ''}`);
+    if (summary.stoppedOnBudget) {
+      console.log('  STOPPED ON BUDGET — repaired lessons are complete and stamped; re-run to resume the rest');
+    }
   }
   if (summary.notConfigured) {
     console.log('  NOTE: Prism (PICTUREGEN_URL) not configured — images stage skipped entirely (icons remain the fallback)');
