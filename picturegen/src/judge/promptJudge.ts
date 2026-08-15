@@ -20,9 +20,22 @@ import { MAX_NEGATIVE_PROMPT_CHARS, truncateAtCommaBoundary } from '../gen/qwenI
  * for the app UI; THIS brief is the authority for generated illustration
  * style, and is injected verbatim into the judge's system prompt (and into
  * the deterministic fallback) so every asset shares one look.
+ *
+ * STYLE ONLY — NEVER A SUBJECT (production incident 2026-08-14). This brief
+ * used to end with "Cheerful lemonade-stand world: hand-made stands, jars of
+ * coins, lemons, sunny neighborhoods." A brief that names a subject stops
+ * being a style brief: it reaches EVERY prompt, so whenever the label carried
+ * no concrete subject of its own — and a scene anchor's label was the bare
+ * exercise instruction ("Escucha la conversación entre Dina y Liruf.") — that
+ * sentence BECAME the subject. The financial-education catalog came out with a
+ * lemonade stand over almost every exercise intro, in lessons about markets,
+ * budgets and fraud alike. The replacement clause states the opposite rule
+ * explicitly, because an absent instruction is not the same as a forbidding
+ * one: a generative model asked for "a scene" with no subject will always
+ * invent a default, and the only way to stop it is to say so.
  */
 export const LF_VISUAL_IDENTITY =
-  "Strictly two-dimensional flat educational vector graphic in the original LittleFounders style: polished animated-editorial feel, clean geometric shapes, crisp high-contrast visual reasoning, soft rounded corners, warm and friendly, zero text or letters in the image. Never imitate a named third-party brand and never use 3D rendering, photorealism, clay/plastic materials, painterly shading, soft focus or cinematic depth of field. Palette anchored on papaya-coral accents, deep navy and soft blues, with sunny yellows and fresh greens — bright but never neon. Use a pure white or transparent-looking plain background for single-object tiles; reserve complete contextual backgrounds for wide scenes only. Cheerful lemonade-stand world: hand-made stands, jars of coins, lemons, sunny neighborhoods. The frame holds only the physical objects, props, and setting themselves — a still-life composition of the WORLD as it sits between visits, exactly as it would look photographed at dawn before anyone arrived. (The app renders its own non-human characters separately, in a different layer.) No brand logos, no watermarks, no scary/violent elements — this is for young learners.";
+  "Strictly two-dimensional flat educational vector graphic in the original LittleFounders style: polished animated-editorial feel, clean geometric shapes, crisp high-contrast visual reasoning, soft rounded corners, warm and friendly, zero text or letters in the image. Never imitate a named third-party brand and never use 3D rendering, photorealism, clay/plastic materials, painterly shading, soft focus or cinematic depth of field. Palette anchored on papaya-coral accents, deep navy and soft blues, with sunny yellows and fresh greens — bright but never neon. Use a pure white or transparent-looking plain background for single-object tiles; reserve complete contextual backgrounds for wide scenes only. SUBJECT DISCIPLINE: this brief fixes the LOOK and never the CONTENT, and it carries no default scene of its own — draw exactly and only the place, objects and props the label names. A label naming a market stall, a bank counter, a workshop, a bedroom, a school yard or a bus stop gets THAT place rendered in this style; never substitute a stock cheerful-stand scene for a subject you find vague. The frame holds only the physical objects, props, and setting themselves — a still-life composition of the WORLD as it sits between visits, exactly as it would look photographed at dawn before anyone arrived. (The app renders its own non-human characters separately, in a different layer.) No brand logos, no watermarks, no scary/violent elements — this is for young learners.";
 
 export const PICTURE_PURPOSES = [
   'lesson_option',
@@ -55,12 +68,16 @@ const PURPOSE_GUIDANCE: Record<PicturePurpose, string> = {
   memory_card:
     'This is a memory/matching game card face: one bold central object, centered on a pure-white or transparent-looking edge-to-edge canvas, symmetric and friendly, still readable when small.',
   // A wide establishing illustration above the prompt that sets the SITUATION.
+  // The label is a description of THAT situation (Forge derives it from the
+  // segment's own narrative text) — depict it literally. Naming example places
+  // here would re-create the very bug this purpose caused: an art direction
+  // that supplies its own subject overrides whatever the label asked for.
   scene_anchor:
-    'This is a wide ESTABLISHING scene shown above the exercise (roughly 16:9). Show the concrete situation through OBJECTS and SETTING ONLY — the lemonade stand, the goods, coins, jars, the sunny neighborhood — with a complete background, and NO people/characters of any kind. It sets context and mood; it MUST NOT reveal or hint at the answer to the exercise.',
+    'This is a wide ESTABLISHING scene shown above the exercise (roughly 16:9). The label describes the concrete situation of THIS exercise — depict THAT specific place and those specific objects, with a complete background, through OBJECTS and SETTING ONLY and NO people/characters of any kind. Whatever place the label names (a kitchen table, a corner shop, a schoolyard, a bus stop, a workbench) is the place you draw; never fall back on a generic cheerful-stand scene. It sets context and mood; it MUST NOT reveal or hint at the answer to the exercise.',
   scene:
-    'This is a wide story scene: show the objects and setting of the lemonade-stand world with a complete background, and NO people or characters.',
+    'This is a wide story scene: depict the specific place and objects the label names, with a complete background, and NO people or characters.',
   outcome:
-    'This is an OUTCOME/consequence illustration for a story branch ending. Convey the result through the SCENE and OBJECTS (e.g. a full coin jar for success, wilted lemonade for a setback) — never through a person or character, never anything scary or shaming.',
+    'This is an OUTCOME/consequence illustration for a story branch ending. Convey the result through the SCENE and OBJECTS of the situation the label names, shown in their after-state (a container full rather than empty, goods packed away rather than laid out) — never through a person or character, never anything scary or shaming.',
   generic: 'A clear, friendly illustration of the subject with a simple complete background.',
 };
 
@@ -100,6 +117,15 @@ export interface PreviousImageDefect {
   nonWhiteBackground?: boolean;
   text?: boolean;
   person?: boolean;
+  /**
+   * The verifier looked at the pixels and did not find the labelled subject.
+   * Added 2026-08-14 alongside the identity-brief fix: a style brief that
+   * named a subject produced on-style pictures of the WRONG thing, and the
+   * two existing checks (text, person) both pass on a beautiful, irrelevant
+   * illustration. Reinforcing this one restates the subject instead of
+   * re-rolling the same prompt.
+   */
+  subject?: boolean;
 }
 
 export interface JudgeInput {
@@ -153,7 +179,8 @@ const SYSTEM_PROMPT = [
   'CHILD-LEGIBILITY (this is a picture a 6-year-old must read at a glance): draw the ACTUAL, LITERAL object named — never a symbolic or abstract stand-in. A "cost" is drawn as coins/a lemon, never a receipt; a "savings goal" is the actual toy, never a trophy or a target; "ice" is ice cubes, not a snowflake symbol. One dominant subject, bold high-contrast silhouette, unmistakable as the named thing.',
   'QUANTITIES ARE PICTORIAL: Qwen-Image loves rendering captions, so NEVER write an amount, price, or label as something to display ("10 pesos", "2 vasos"). Translate every quantity into visual composition instead — "two golden coins side by side", "a small stack of three coins". If the context mentions prices, show the OBJECTS, never the numbers.',
   "NEVER NAME DENOMINATIONS: never write a currency amount or denomination anywhere in your prompt, not even inside quotation marks — \"'1 peso' coin\" WILL be engraved verbatim onto the coin. Distinguish coins ONLY by size, color, or finish: 'one small copper coin and two larger golden coins'.",
-  'NO TEXT-CARRYING PROPS: never mention signs, signboards, banners, price tags, labels, chalkboards, or menus. When a lemonade stand appears, describe only its awning, wooden table, and props, and state explicitly that the stand has no sign — otherwise the model invents one and fills it with a fake wordmark.',
+  'SUBJECT FIDELITY (the reason this job exists): the label is the SUBJECT and you may not replace it. Read the label, name its place and its objects in your prompt, and depict that. If the label reads as vague or abstract to you, extract the most concrete physical thing it implies and draw THAT — never reach for a default cheerful scene, a lemonade stand, or any stock setting the label did not ask for. An on-style picture of the wrong situation is a total failure: the child is looking at it to understand THIS exercise.',
+  'NO TEXT-CARRYING PROPS: never mention signs, signboards, banners, price tags, labels, chalkboards, or menus. Whenever a stall, shop, counter or stand appears, describe only its awning, table and props, and state explicitly that it carries no sign — otherwise the model invents one and fills it with a fake wordmark.',
   `Reply with STRICT JSON only, no prose, shaped exactly: {"prompt": string, "negative": string}. "prompt" <= ${MAX_PROMPT_CHARS} characters. "negative" lists things to avoid (e.g. "text, letters, watermark, logo, blurry, scary").`,
 ].join('\n');
 
@@ -164,7 +191,7 @@ const SYSTEM_PROMPT = [
  * reads whatever text it's given as content to consider, so "this time do X"
  * is safer than dwelling on the failure. Multiple defects concatenate.
  */
-function reinforcementFor(defect: PreviousImageDefect | undefined): string {
+function reinforcementFor(defect: PreviousImageDefect | undefined, label?: string): string {
   if (!defect) return '';
   const lines: string[] = [];
   if (defect.nonWhiteBackground) {
@@ -176,6 +203,16 @@ function reinforcementFor(defect: PreviousImageDefect | undefined): string {
   if (defect.person) {
     lines.push('RETRY: a still life of the object and setting alone, as in an empty room.');
   }
+  if (defect.subject) {
+    // Restating the subject is the whole point: the previous attempt was
+    // on-style and depicted something else, so re-rolling the same wording
+    // would just draw the same wrong thing again.
+    lines.push(
+      label
+        ? `RETRY: the frame must be filled by this exact subject and nothing substituted for it — ${label}.`
+        : 'RETRY: the frame must be filled by the exact subject named above, with nothing substituted for it.',
+    );
+  }
   return lines.join(' ');
 }
 
@@ -183,7 +220,7 @@ function userMessage(input: JudgeInput): string {
   const purpose = input.purpose ?? 'generic';
   const lines = [`Label: ${input.label}`, `Purpose: ${PURPOSE_GUIDANCE[purpose]}`];
   if (input.context && input.context.trim()) lines.push(`Lesson context: ${input.context.trim()}`);
-  const reinforcement = reinforcementFor(input.previousDefect);
+  const reinforcement = reinforcementFor(input.previousDefect, input.label);
   if (reinforcement) lines.push(reinforcement);
   return lines.join('\n');
 }
@@ -302,7 +339,7 @@ export function fallbackPrompt(input: JudgeInput): CraftedPrompt {
   // The reinforcement is the more time-critical instruction on a retry, so it
   // goes BEFORE the identity block, not after, or it would always be silently
   // truncated away.
-  const reinforcement = reinforcementFor(input.previousDefect);
+  const reinforcement = reinforcementFor(input.previousDefect, input.label);
   const body = reinforcement ? `${head} ${reinforcement} ${LF_VISUAL_IDENTITY}` : `${head} ${LF_VISUAL_IDENTITY}`;
   return { prompt: finalizePrompt(body), negative: baseNegativeFor(input.purpose) };
 }
@@ -336,7 +373,7 @@ function parseCrafted(content: string | null | undefined, purpose?: PicturePurpo
  */
 export async function craftImagePrompt(input: JudgeInput, opts: PromptJudgeOptions): Promise<CraftedPrompt> {
   if (OBJECT_TILE_PURPOSES.has(input.purpose ?? 'generic')) {
-    const reinforcement = reinforcementFor(input.previousDefect);
+    const reinforcement = reinforcementFor(input.previousDefect, input.label);
     return {
       prompt: finalizePrompt(
         // "silhouette" is deliberately ABSENT: qwen-image-max reads it as

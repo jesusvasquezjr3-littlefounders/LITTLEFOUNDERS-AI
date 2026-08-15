@@ -459,13 +459,22 @@ gate      DETERMINISTIC, free, in order:
    ↓
 images    Every concrete-object slot across ALL families (option/item/card
           tiles, memory sides, would-you-rather/flash-match sides, count-objects
-          scene items) gets a real Prism illustration via a per-type plan, plus
+          scene items, key-ideas titles, concept-reveal fronts, lightning-round
+          options) gets a real Prism illustration via a per-type plan, plus
           a segment-level "scene anchor" for scene-worthy text-only types —
           not just picture_choice/memory_flip. Illustrate es-MX pre-localize so
           one image (text-free by design) serves all 3 locales. Icons/text stay
           the zero-cost fallback; Prism's per-purpose art direction
           (item_card / option_card / scene_anchor / outcome) + child-legibility
           rule keep each asset recognizable to a 6-year-old.
+          A scene anchor's SUBJECT is the situation the lesson describes —
+          derived from narrative payload fields (`context_md`, `opening_md`,
+          the branch start node, the opening dialogue lines), never from the
+          instruction printed in `prompt_md` and never from options or answers.
+          A segment that names no situation gets NO anchor: silence beats a
+          confident wrong picture. The request carries `scope`
+          (`<course>/<lesson>`) so a scene belongs to one lesson while tiles
+          still collapse catalog-wide. (2026-08-14 — see WALKTHROUGH.)
    ↓
 review    INDEPENDENT judge = Qwen (decorrelated provider), rubric 1-5 on:
           age_fit, pedagogy, narrative_quality, kid_safety, es-MX naturalness,

@@ -2,7 +2,64 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-08-14, latest) — GA4 had been silently discarding every command; admin panels reworked
+## Current State (2026-08-14, latest) — The style brief was naming a subject: one lemonade stand over almost every exercise
+
+- **Reported from production:** across the published financial-education
+  catalog, exercise intros nearly always showed the same lemonade-stand
+  picture. The exercises depend on the child reading the right image, so a
+  generic one does not merely fail to help — it misleads.
+- **Root cause: `LF_VISUAL_IDENTITY` ended with a SUBJECT.** *"Cheerful
+  lemonade-stand world: hand-made stands, jars of coins, lemons, sunny
+  neighborhoods."* sat inside a brief that is injected verbatim into every
+  prompt of every purpose. `PURPOSE_GUIDANCE.scene_anchor` repeated it. A
+  style brief that names a subject is a default subject.
+- **What made the vacuum: the anchor's label was the INSTRUCTION.**
+  `images.ts` called `fetchOne(ctx, ctx, 'scene_anchor')` with
+  `ctx = plainLabel(prompt_md)`. For the numeric types that is the situation
+  and works fine; for `story_dialogue` / `eavesdrop` / `dialogue_choice` /
+  `story_branch` it is *"Escucha la conversación entre Dina y Liruf."* Asked to
+  draw an instruction, the art director had no subject and the brief's own
+  lemonade stand filled it. Confirmed against real generated documents in
+  `coursegen/runs/full-regen-v4`.
+- **Amplifier: nothing in the scene cache key identified the lesson.** The
+  descriptor was `style | purpose | label | context` with label == context ==
+  the instruction, truncated to 80 chars. Instructions repeat verbatim across a
+  course, so segments in unrelated lessons hashed to ONE asset.
+- **Why no gate caught it.** Prism's verifier asked only `has_text` /
+  `has_person` — defects of FORM, both of which pass on a beautiful picture of
+  the wrong thing. `verify:course` counted only PRESENCE, and presence was
+  never missing: 100% coverage, every anchor the same file.
+- **Fixed, all four layers.** (1) The brief carries style only and now states
+  the rule positively (`SUBJECT DISCIPLINE: … carries no default scene of its
+  own`), because silence is not a prohibition. (2) `sceneAnchorSubject` derives
+  the situation from narrative payload fields — `context_md`, `opening_md`, the
+  branch start node, the first two dialogue lines — never from options or
+  answers, and returns nothing when there is no situation, in which case NO
+  anchor is requested. (3) A `scope` (`<course>/<lesson>`) joins the scene cache
+  key; tiles still collapse catalog-wide, which is the cost win. (4) The
+  verifier now also answers `depicts_subject`, biased toward accepting, with a
+  missing answer never blocking a clean verdict.
+- **Guard rail:** `verify:course` now FAILS if any scene image serves more than
+  one lesson. Free, no API calls, and the check that would have caught this.
+- **Also fixed in passing:** `story_scene` art was commissioned as a wide 16:9
+  scene and rendered in a 128px square; four slots the engine renders but the
+  pipeline never filled (`key_ideas` titles, `concept_reveal` fronts,
+  `lightning_round` options) now illustrate as cached tiles.
+- **`STYLE_VERSION` v7 → v8; the tile version deliberately did NOT move,** so
+  the ~9,179 cached object tiles stay valid and only scenes re-bill.
+- **Repair path:** `images:backfill --restyle-scenes` clears stale scene art,
+  redraws the authoring locale once and copies to the sibling locales free.
+  Withholds the style stamp when a redraw could not complete, so an incomplete
+  repair stays visible to the release check.
+
+### Open
+
+- Production regeneration NOT yet run — awaiting the owner's go-ahead on scope
+  and cost (explicitly requested before any partial generation).
+- The `story_scene` render change was verified by component test, not in a
+  browser at 375/1280 (§1.11): no browser tooling in that session.
+
+## Current State (2026-08-14, earlier) — GA4 had been silently discarding every command; admin panels reworked
 
 - **GA4 recorded nothing for three weeks (2026-07-24 → 08-14) behind a tag
   that loaded normally.** `mountGa4` registered `window.gtag = (...args) =>

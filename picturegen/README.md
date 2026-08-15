@@ -18,8 +18,8 @@ On `POST /api/v1/pictures`, Prism asks the **art-director judge** (an
 OpenAI-compatible chat model) to craft one detailed English illustration
 prompt that depicts the label clearly for a child and enforces the
 LittleFounders visual identity. Before judging, it hashes the stable request
-descriptor `(model, size, style version, purpose, label, context)` — for the
-four object-tile purposes the descriptor collapses to
+descriptor `(model, size, style version, purpose, scope, label, context)` — for
+the four object-tile purposes the descriptor collapses to
 `(model, size, tile style version, label)`, because their deterministic prompt
 depends only on the label — and looks that up in `picture_assets`:
 
@@ -43,14 +43,21 @@ Every response uses the `{ data, error }` envelope (/AGENTS.md §1.6).
 | Method | Path | Body | Description |
 |---|---|---|---|
 | GET | `/health` | — | Service health envelope; `data.style_version` is `STYLE_VERSION+OBJECT_TILE_STYLE_VERSION` so Forge can preflight-assert its style constant before a paid run |
-| POST | `/api/v1/pictures` | `{ label, context?, purpose? }` | Cache-first: get-or-generate an illustration. Returns `{ url, file_id, prompt, model, cached, generated_images }` |
+| POST | `/api/v1/pictures` | `{ label, context?, purpose?, scope? }` | Cache-first: get-or-generate an illustration. Returns `{ url, file_id, prompt, model, cached, generated_images }` |
 
-`label` (1–120 chars) is the subject. `context` (≤2000 chars, optional) grounds
+`label` (1–300 chars) is the subject — one noun for a tile, a sentence
+describing the situation for a scene. `context` (≤2000 chars, optional) grounds
 it in the lesson. `purpose` ∈ `lesson_option | option_card | item_card |
 scene_anchor | memory_card | outcome | scene | generic` (default `generic`)
 picks the per-purpose art direction — the structural role decides the
 composition, so a thumbnail option tile and a wide establishing scene are not
 the same picture.
+
+`scope` (≤200 chars, optional) is the caller's identity for the thing being
+illustrated; Forge sends `<course-slug>/<lesson-slug>`. It joins the cache key
+for SCENE purposes and is ignored for object tiles. A scene belongs to one
+lesson, a tile belongs to the whole catalog, and that asymmetry is the entire
+economics of this service — see *Cache-first* in `AGENTS.md`.
 
 Object-tile purposes (`item_card`, `option_card`, `lesson_option`,
 `memory_card`) are centered literal objects on a pure-white, edge-to-edge

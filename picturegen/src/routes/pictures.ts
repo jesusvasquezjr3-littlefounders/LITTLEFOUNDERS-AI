@@ -5,9 +5,17 @@ import { PICTURE_PURPOSES } from '../judge/promptJudge.js';
 import { ImageError } from '../gen/errors.js';
 
 const CreatePictureBody = z.object({
-  label: z.string().min(1).max(120),
+  /*
+   * 300, not 120: a tile label is one noun ("Limones") but a SCENE label is a
+   * sentence describing the situation to draw. The old 120-char cap was set
+   * when every caller sent a noun, and it is part of why scene anchors ended
+   * up carrying a truncated exercise instruction instead of a real subject.
+   */
+  label: z.string().min(1).max(300),
   context: z.string().max(2000).optional(),
   purpose: z.enum(PICTURE_PURPOSES).default('generic'),
+  /** Caller-side identity (`<course>/<lesson>`); keys SCENE caching, ignored for tiles. */
+  scope: z.string().max(200).optional(),
 });
 
 export interface PicturesRouterDeps {

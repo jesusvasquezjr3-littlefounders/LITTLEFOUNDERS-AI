@@ -121,7 +121,7 @@ When you add a completion call, do not size `maxTokens` by the length of the ANS
 
 ## Image inheritance — illustration is the dominant cost, so never re-pay for the same drawing
 
-Prism caches on `sha256(model + size + "STYLE_VERSION | purpose | label | context")`, so a cache hit needs the label AND the context byte-identical. A REGENERATION rewrites both, so every slot misses the cache and every image is billed again — even when the object is the same lemon. At the configured image unit rate, illustration is a dominant controllable cost; one failed 62-slot run billed 424 fresh generations and published nothing. The active Prism model is `qwen-image-max`; verify its current DashScope tariff before quoting a new pilot total.
+Prism caches on `sha256(model + size + "STYLE_VERSION | purpose | scope | label | context")`, so a cache hit needs the label AND the context byte-identical (and, for scene purposes, the same `scope` — Forge sends `<course-slug>/<lesson-slug>`). A REGENERATION rewrites both, so every slot misses the cache and every image is billed again — even when the object is the same lemon. At the configured image unit rate, illustration is a dominant controllable cost; one failed 62-slot run billed 424 fresh generations and published nothing. The active Prism model is `qwen-image-max`; verify its current DashScope tariff before quoting a new pilot total.
 
 `src/pipeline/imageInheritance.ts` closes that: before asking Prism for "limones", `run.ts` reads the lesson's PREVIOUSLY published documents from Vault and reuses the URL already drawn for that normalized label. Free, no network, and it survives the label/context rewrite that defeats the cache. Since migration `0032`, the donor document must also carry the current `FORGE_ILLUSTRATION_STYLE_VERSION`; legacy/null art is deliberately excluded after a style change. Points that matter when you touch it:
 
@@ -131,6 +131,35 @@ Prism caches on `sha256(model + size + "STYLE_VERSION | purpose | label | contex
 - **Style-aware since migration `0032`:** every published document records `illustration_style_version`; Forge inherits only the current `FORGE_ILLUSTRATION_STYLE_VERSION`. Legacy/null documents are not free donors, so a Prism style bump cannot be bypassed by old lesson URLs.
 - **Failure is swallowed on purpose.** If Vault is unreachable the index is empty and images are paid for — the old behaviour. Inheritance is a cost optimisation, never a precondition.
 - The run summary reports `placed / freshly generated (billed) / inherited (free)`, so the saving is visible instead of assumed.
+
+## A scene anchor's subject is the SITUATION, never the instruction (2026-08-14)
+
+The published financial-education catalog opened almost every exercise with the
+same lemonade stand. Three things had to be true at once, and all three are
+worth carrying forward as rules:
+
+1. **`prompt_md` is not a subject for the story family.** For the numeric types
+   (`coin_count`, `make_change`, `measure_read`, `compare_table`, …) the prompt
+   IS the situation and makes a fine brief. For `story_dialogue`, `eavesdrop`,
+   `dialogue_choice` and `story_branch` it is a bare instruction — *"Escucha la
+   conversación entre Dina y Liruf."* Those types describe their situation
+   elsewhere in the payload, and `sceneAnchorSubject` (`pipeline/images.ts`) now
+   reads it from there: `context_md`, `opening_md`, the start node, the first
+   two dialogue lines. Adding a type to `SCENE_ANCHOR_TYPES` means deciding
+   where its situation actually lives.
+2. **Narrative sources only — never options, items or `answer`.** The anchor
+   must not reveal what the child is being asked to work out.
+3. **No subject → no anchor.** `sceneAnchorSubject` returns `undefined` and the
+   segment renders with no image. Silence beats a confident wrong picture; a
+   generic image above an exercise actively misleads, because a child reads the
+   picture as the thing the question is about.
+
+The other half of the fix lives in Prism (its style brief no longer names a
+subject, and its verifier now checks `depicts_subject`) — see
+`picturegen/AGENTS.md`. Forge's own guard is the release check: **`verify:course`
+fails if any scene image serves more than one lesson.** Coverage counts
+presence, and presence was never the problem — every one of those anchors was
+present.
 
 **A claimed gate that does not exist is worse than no rule.** `write.ts` had told the author for weeks that omitting `count_objects` scene labels "fails the gate" — no such gate existed, so those lessons shipped as bare icons with ZERO pictures in a visual-first product, silently, in all three locales. Found while building inheritance (the lesson yielded 0 inheritable images, which is what exposed it). `countObjectsLabels` now enforces it. When you write "the gate rejects this" in an author instruction, go and confirm the gate.
 

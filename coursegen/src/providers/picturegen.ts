@@ -20,11 +20,17 @@ export type PicturePurpose =
   | 'generic';
 
 export interface PictureRequest {
-  /** What the image depicts — an option label, a card side, a scene name. */
+  /** What the image depicts — an option label, a card side, a scene description. */
   label: string;
-  /** Surrounding lesson text that grounds the subject (prompt_md etc.). */
+  /** Surrounding lesson text that grounds the subject (lesson title, prompt_md). */
   context?: string;
   purpose?: PicturePurpose;
+  /**
+   * `<course-slug>/<lesson-slug>`. Prism folds it into the cache key for SCENE
+   * purposes and ignores it for object tiles, so a tile stays shared across
+   * the whole catalog while a scene belongs to exactly one lesson.
+   */
+  scope?: string;
 }
 
 export interface PictureResult {

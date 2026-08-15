@@ -32,7 +32,14 @@
 // reimplements it.
 
 import { pathToFileURL } from 'node:url';
-import { illustrateSegments, type IllustrateOptions, type IllustrateResult } from '../pipeline/images.js';
+import {
+  applySceneImages,
+  clearSceneImages,
+  collectSceneImages,
+  illustrateSegments,
+  type IllustrateOptions,
+  type IllustrateResult,
+} from '../pipeline/images.js';
 import { buildImageInheritance, type ImageInheritance } from '../pipeline/imageInheritance.js';
 import { FORGE_ILLUSTRATION_STYLE_VERSION } from '../pipeline/illustrationStyle.js';
 import { fetchPrismStyleVersion, type PrismStyleProbe } from '../providers/picturegen.js';
@@ -53,16 +60,27 @@ export interface BackfillDocRow {
   document: LessonDocumentParsed;
 }
 
-/** The PATCH body — intentionally ONLY the `document` column (§8d / audio-untouched invariant). */
+/**
+ * The PATCH body — `document` always (§8d / audio-untouched invariant), plus
+ * `illustration_style_version` ONLY on a restyle pass. A normal backfill adds
+ * missing art to a document whose generation is unchanged and must leave the
+ * stamp alone; a restyle deliberately moves the document to the current
+ * generation, and without re-stamping it the release check would reject its
+ * own repaired output forever.
+ */
 export interface BackfillWriteBody {
   document: LessonDocumentParsed;
+  illustration_style_version?: string;
 }
 
 export interface BackfillDeps {
   /** Fetch every lesson_document to consider for a course slug. */
   listDocuments: (courseSlug: string) => Promise<BackfillDocRow[]>;
   /** The images stage over one document. In production this is `illustrateSegments`. */
-  illustrate: (document: LessonDocumentParsed, options: Pick<IllustrateOptions, 'inherit' | 'reuseOnly'>) => Promise<IllustrateResult>;
+  illustrate: (
+    document: LessonDocumentParsed,
+    options: Pick<IllustrateOptions, 'inherit' | 'reuseOnly' | 'scope'>,
+  ) => Promise<IllustrateResult>;
   /** Persist the illustrated document — PATCHes ONLY `body.document`. */
   writeDocument: (row: BackfillDocRow, body: BackfillWriteBody) => Promise<void>;
   /**
@@ -91,6 +109,25 @@ export interface BackfillOptions {
    * intentionally left for a later paid, fail-closed pass.
    */
   reuseOnly?: boolean;
+  /**
+   * REPAIR MODE. Clears every scene-purpose image from documents whose
+   * `illustration_style_version` is not the current one, then re-illustrates
+   * and re-stamps them.
+   *
+   * Why a separate mode: `illustrateSegments` only ever ADDS — a slot holding
+   * a URL is skipped, which is what makes normal re-runs idempotent and free.
+   * That makes it structurally incapable of fixing the 2026-08-14 incident,
+   * where all 1,208 published lessons HAVE a scene anchor and it is simply the
+   * wrong picture. Object tiles are never cleared: their style version did not
+   * move, so they are still current art and re-billing them would be waste.
+   *
+   * Locale handling is automatic here and deliberately not left to the
+   * operator: the authoring locale is illustrated once and its scene URLs are
+   * copied to the sibling locale documents by segment id (LF illustrations
+   * carry no text, so one drawing serves all three). Running this per-locale
+   * would pay three times for the same picture.
+   */
+  restyleScenes?: boolean;
 }
 
 export interface BackfillSummary {
@@ -107,6 +144,12 @@ export interface BackfillSummary {
   skipped: number;
   /** True when Prism is not configured — the whole pass is skipped, cleanly. */
   notConfigured: boolean;
+  /** Restyle mode: stale scene images removed before re-illustration. */
+  scenesCleared: number;
+  /** Restyle mode: sibling-locale scene slots filled from the authoring locale, free. */
+  scenesCopiedToLocales: number;
+  /** Restyle mode: lessons whose documents were already on the current style and left alone. */
+  lessonsAlreadyCurrent: number;
 }
 
 export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions): Promise<BackfillSummary> {
@@ -141,6 +184,17 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
     }
   }
 
+  /*
+   * A restyle is defined by comparing each document's stamp against the
+   * CURRENT style, so it must see every locale of a lesson at once. Filtering
+   * to one locale would clear that locale's scenes, pay for new ones, and
+   * leave the two siblings pointing at the old art — a lesson rendering two
+   * different pictures for the same segment depending on language.
+   */
+  if (opts.restyleScenes && opts.locale) {
+    throw new Error('images:backfill — --restyle-scenes covers all locales of a lesson at once; drop --locale.');
+  }
+
   const summary: BackfillSummary = {
     scanned: 0,
     patched: 0,
@@ -149,6 +203,9 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
     imagesPlaced: 0,
     skipped: 0,
     notConfigured: false,
+    scenesCleared: 0,
+    scenesCopiedToLocales: 0,
+    lessonsAlreadyCurrent: 0,
   };
 
   const allRows = await deps.listDocuments(opts.courseSlug);
@@ -198,8 +255,16 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
     return new Map([...localeIndex, ...lessonIndex]);
   };
 
+  if (opts.restyleScenes) {
+    return restyleScenes(deps, opts, { rows, inheritFor, summary, log });
+  }
+
   for (const row of rows) {
-    const result = await deps.illustrate(row.document, { inherit: inheritFor(row), reuseOnly: opts.reuseOnly });
+    const result = await deps.illustrate(row.document, {
+      inherit: inheritFor(row),
+      reuseOnly: opts.reuseOnly,
+      scope: `${opts.courseSlug}/${row.lessonSlug}`,
+    });
 
     // No API key at all: illustrateSegments returns 'not-configured' and the
     // ORIGINAL document untouched. Every remaining doc would do the same, so
@@ -228,6 +293,129 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
       summary.skipped++;
       log(`  · ${row.lessonSlug} [${row.locale}]: no new images`);
     }
+  }
+
+  return summary;
+}
+
+/** The locale Forge authors in; its document is the one that pays for scene art. */
+const AUTHORING_LOCALE = 'es-MX';
+
+interface RestyleContext {
+  rows: BackfillDocRow[];
+  inheritFor: (row: BackfillDocRow) => ImageInheritance;
+  summary: BackfillSummary;
+  log: (line: string) => void;
+}
+
+/**
+ * Repair pass for lessons whose SCENE art belongs to a superseded illustration
+ * generation (see BackfillOptions.restyleScenes).
+ *
+ * Per lesson, in order:
+ *   1. skip entirely if every locale document is already on the current style;
+ *   2. clear the scene images from the authoring-locale document and
+ *      re-illustrate it — this is the only step that can spend money;
+ *   3. copy the resulting scene URLs into the sibling locales by segment id,
+ *      free, after clearing their stale ones;
+ *   4. PATCH each changed document together with the current style stamp.
+ *
+ * Object tiles are untouched throughout: their style version did not move.
+ * Step 2 still runs the ordinary plan, so any tile that was missing gets
+ * filled — and Prism serves an already-drawn tile from cache for nothing.
+ */
+async function restyleScenes(
+  deps: BackfillDeps,
+  opts: BackfillOptions,
+  ctx: RestyleContext,
+): Promise<BackfillSummary> {
+  const { rows, inheritFor, summary, log } = ctx;
+
+  const byLesson = new Map<string, BackfillDocRow[]>();
+  for (const row of rows) {
+    const group = byLesson.get(row.lessonId);
+    if (group) group.push(row);
+    else byLesson.set(row.lessonId, [row]);
+  }
+
+  for (const [, group] of byLesson) {
+    const stale = group.filter((r) => r.illustrationStyleVersion !== FORGE_ILLUSTRATION_STYLE_VERSION);
+    if (stale.length === 0) {
+      summary.lessonsAlreadyCurrent++;
+      continue;
+    }
+
+    /*
+     * Prefer the authoring locale as the one that pays. If this lesson has no
+     * es-MX row at all (shouldn't happen, but a partial import could), fall
+     * back to the first stale row rather than skipping the lesson — a repaired
+     * picture in one locale beats leaving all three wrong.
+     */
+    const payer = group.find((r) => r.locale === AUTHORING_LOCALE) ?? stale[0]!;
+    const scope = `${opts.courseSlug}/${payer.lessonSlug}`;
+
+    const cleared = clearSceneImages(payer.document);
+    summary.scenesCleared += cleared.cleared;
+
+    const result = await deps.illustrate(cleared.document, {
+      inherit: inheritFor(payer),
+      reuseOnly: opts.reuseOnly,
+      scope,
+    });
+
+    if (result.skippedReason === 'not-configured') {
+      summary.notConfigured = true;
+      log('Prism (PICTUREGEN_URL) not configured — skipping scene restyle (existing art left untouched)');
+      break;
+    }
+
+    summary.scanned++;
+    summary.imagesGenerated += result.generated;
+    summary.imagesInherited += result.inherited ?? 0;
+    summary.imagesPlaced += result.generated + (result.inherited ?? 0);
+
+    const freshScenes = collectSceneImages(result.document);
+    /*
+     * Write the payer even when nothing new was drawn. On a --reuse-only or
+     * quota-exhausted pass its scenes were cleared and not refilled, and
+     * persisting that is CORRECT: an empty anchor renders as no image, which
+     * is honest, while the stale one is an actively misleading picture. The
+     * stamp is only advanced when the document really is complete, so an
+     * emptied lesson stays visible to the release check as missing coverage.
+     */
+    const payerComplete = freshScenes.size === cleared.cleared;
+    const writes: Array<{ row: BackfillDocRow; body: BackfillWriteBody }> = [
+      {
+        row: payer,
+        body: payerComplete
+          ? { document: result.document, illustration_style_version: FORGE_ILLUSTRATION_STYLE_VERSION }
+          : { document: result.document },
+      },
+    ];
+
+    for (const sibling of group) {
+      if (sibling === payer) continue;
+      const siblingCleared = clearSceneImages(sibling.document);
+      summary.scenesCleared += siblingCleared.cleared;
+      const applied = applySceneImages(siblingCleared.document, freshScenes);
+      summary.scenesCopiedToLocales += applied.applied;
+      const complete = applied.applied === siblingCleared.cleared && payerComplete;
+      writes.push({
+        row: sibling,
+        body: complete
+          ? { document: applied.document, illustration_style_version: FORGE_ILLUSTRATION_STYLE_VERSION }
+          : { document: applied.document },
+      });
+    }
+
+    summary.patched += writes.length;
+    if (!opts.dryRun) {
+      for (const write of writes) await deps.writeDocument(write.row, write.body);
+    }
+    log(
+      `  ~ ${payer.lessonSlug}: ${cleared.cleared} stale scene(s) → ${result.generated} redrawn, ` +
+        `copied to ${writes.length - 1} sibling locale(s)${opts.dryRun ? ' (dry-run, not written)' : ' patched'}`,
+    );
   }
 
   return summary;
@@ -323,6 +511,7 @@ interface CliOptions {
   locale?: string;
   dryRun?: boolean;
   reuseOnly?: boolean;
+  restyleScenes?: boolean;
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -342,6 +531,9 @@ function parseArgs(argv: string[]): CliOptions {
       case '--reuse-only':
         opts.reuseOnly = true;
         break;
+      case '--restyle-scenes':
+        opts.restyleScenes = true;
+        break;
       default:
         console.error(`images:backfill — unknown argument "${arg}"`);
         process.exit(1);
@@ -353,13 +545,19 @@ function parseArgs(argv: string[]): CliOptions {
 async function main(): Promise<void> {
   const opts = parseArgs(process.argv.slice(2));
   if (!opts.course) {
-    console.error('Usage: npm run images:backfill -- --course <slug> [--locale <es-MX|en-US|pt-BR>] [--reuse-only] [--dry-run]');
+    console.error(
+      'Usage: npm run images:backfill -- --course <slug> [--locale <es-MX|en-US|pt-BR>] [--restyle-scenes] [--reuse-only] [--dry-run]',
+    );
     process.exit(1);
   }
   const courseSlug = opts.course;
   const dryRun = opts.dryRun ?? false;
 
-  console.log(`images:backfill — course "${courseSlug}"${opts.locale ? ` [${opts.locale} only]` : ''}${opts.reuseOnly ? ' (reuse-only — no Prism calls)' : ''}${dryRun ? ' (dry-run — no Vault writes)' : ''}`);
+  console.log(
+    `images:backfill — course "${courseSlug}"${opts.locale ? ` [${opts.locale} only]` : ''}` +
+      `${opts.restyleScenes ? ' (RESTYLE SCENES — stale scene art is cleared and redrawn)' : ''}` +
+      `${opts.reuseOnly ? ' (reuse-only — no Prism calls)' : ''}${dryRun ? ' (dry-run — no Vault writes)' : ''}`,
+  );
 
   // Probe only when Prism is actually configured (same gate as pipeline/run.ts):
   // an unconfigured Prism means zero paid calls, and the pass already
@@ -375,7 +573,7 @@ async function main(): Promise<void> {
       probeStyleVersion: prismConfigured ? fetchPrismStyleVersion : undefined,
       log: (line) => console.log(line),
     },
-    { courseSlug, locale: opts.locale, dryRun, reuseOnly: opts.reuseOnly },
+    { courseSlug, locale: opts.locale, dryRun, reuseOnly: opts.reuseOnly, restyleScenes: opts.restyleScenes },
   );
 
   console.log('');
@@ -385,6 +583,11 @@ async function main(): Promise<void> {
   console.log(`  images reused:      ${summary.imagesInherited}`);
   console.log(`  images placed:      ${summary.imagesPlaced}`);
   console.log(`  skipped (no image): ${summary.skipped}`);
+  if (opts.restyleScenes) {
+    console.log(`  stale scenes cleared:      ${summary.scenesCleared}`);
+    console.log(`  scenes copied to locales:  ${summary.scenesCopiedToLocales} (free — one drawing serves 3 locales)`);
+    console.log(`  lessons already current:   ${summary.lessonsAlreadyCurrent}`);
+  }
   if (summary.notConfigured) {
     console.log('  NOTE: Prism (PICTUREGEN_URL) not configured — images stage skipped entirely (icons remain the fallback)');
   }

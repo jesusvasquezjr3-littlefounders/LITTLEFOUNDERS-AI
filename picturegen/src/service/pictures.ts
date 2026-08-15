@@ -36,6 +36,19 @@ export interface GeneratePictureRequest {
   label: string;
   context?: string;
   purpose: PicturePurpose;
+  /**
+   * Opaque caller-side identity for the thing being illustrated — Forge sends
+   * `<course-slug>/<lesson-slug>`. It participates in the cache key for SCENE
+   * purposes only and is ignored for object tiles (see requestCacheDescriptor).
+   *
+   * Why it exists: a scene anchor's descriptor used to be
+   * `style | scene_anchor | <label> | <context>` where both label and context
+   * were the same exercise instruction. Instructions repeat verbatim across a
+   * course, so every `story_dialogue` in a 1,208-lesson catalog hashed to ONE
+   * asset and every lesson showed the same picture. Nothing in the key said
+   * which lesson was asking.
+   */
+  scope?: string;
 }
 
 export interface GeneratePictureResult {
@@ -79,8 +92,18 @@ const defaultDeps: GeneratePictureDeps = {
  * v7 = qwen-image-max provider switch; the model is part of the cache key,
  * while the style discriminator also prevents Forge inheritance from reusing
  * assets produced by the previous model.
+ * v8 = the identity brief no longer names a subject (it used to end with
+ * "Cheerful lemonade-stand world…", which became the subject of every scene
+ * whose label was a bare exercise instruction), and the scene cache key now
+ * carries the caller's `scope`. Every stored SCENE asset is therefore stale
+ * art of a situation the lesson never described, and must be re-drawn. The
+ * object-tile version is deliberately NOT bumped alongside it: tiles never
+ * see LF_VISUAL_IDENTITY (craftImagePrompt short-circuits them to a
+ * deterministic label-only prompt) and never see `scope`, so the ~9,179
+ * cached tiles remain exactly what this build would produce today. Bumping
+ * them too would have re-billed the entire object catalog for no change.
  */
-export const STYLE_VERSION = 'v7-qwen-image-max-flat-vector';
+export const STYLE_VERSION = 'v8-qwen-image-max-flat-vector-subject-true';
 /** Object tiles also inherit the flat-vector identity while retaining white-canvas rules. */
 export const OBJECT_TILE_STYLE_VERSION = 'v8-qwen-image-max-object-white-flat-vector';
 
@@ -117,12 +140,26 @@ function normalizeTileLabel(label: string): string {
   return label.trim().replace(/\s+/g, ' ');
 }
 
-/** Stable per-request cache descriptor — hashed together with (model, size) into the cache key. */
+/**
+ * Stable per-request cache descriptor — hashed together with (model, size)
+ * into the cache key.
+ *
+ * The two branches encode opposite economics, and both are deliberate:
+ *  - TILES collapse as widely as possible. "Limones" is the same drawing in
+ *    every lesson of every course, so purpose and context are dropped and one
+ *    paid generation serves the whole catalog. That collapse is the service's
+ *    main cost win.
+ *  - SCENES must NOT collapse. A scene depicts one lesson's situation, so the
+ *    caller's `scope` joins the key. Without it, the descriptor contained
+ *    nothing that identified the asking lesson, and any two segments sharing a
+ *    prompt (instructions repeat verbatim across a course) were served the
+ *    same file — the 2026-08-14 "same lemonade stand everywhere" incident.
+ */
 export function requestCacheDescriptor(req: GeneratePictureRequest): string {
   if (isObjectTile(req.purpose)) {
     return `${styleVersionFor(req.purpose)} | ${OBJECT_TILE_CACHE_TOKEN} | ${normalizeTileLabel(req.label)}`;
   }
-  return `${styleVersionFor(req.purpose)} | ${req.purpose} | ${req.label} | ${req.context ?? ''}`;
+  return `${styleVersionFor(req.purpose)} | ${req.purpose} | ${req.scope ?? ''} | ${req.label} | ${req.context ?? ''}`;
 }
 
 const EXT_BY_MIME: Record<string, string> = {
@@ -221,26 +258,32 @@ export async function generatePicture(
       if (config.PICTUREGEN_VERIFY_ATTEMPTS === 0) break; // verification disabled
       const whiteCanvas = isObjectTile(req.purpose) ? await deps.verifyWhiteCanvas(image.bytes) : 'clean';
       const inspection = whiteCanvas === 'defect'
-        ? { verdict: 'defect' as const, hasText: false, hasPerson: false }
+        ? { verdict: 'defect' as const, hasText: false, hasPerson: false, depictsSubject: null }
         : await deps.verifyPictorial(image.bytes, image.contentType, {
           apiBase: config.JUDGE_API_BASE,
           apiKey: judgeApiKey(config),
           model: config.VERIFY_MODEL,
+          // The inspector is asked whether the pixels actually show this. An
+          // on-style picture of the WRONG thing passed both original checks
+          // and shipped to children — form was verified, content never was.
+          subject: req.label,
         });
       if (inspection.verdict !== 'defect') break; // clean, or verifier unavailable (accept unverified)
       previousDefect = {
         nonWhiteBackground: whiteCanvas === 'defect',
         text: inspection.hasText === true,
         person: inspection.hasPerson === true,
+        subject: inspection.depictsSubject === false,
       };
       if (attempt === maxTries) {
-      // Every attempt rendered a defect (readable text or a person). Fail the
-      // request WITHOUT caching — the caller falls back to its icon, and a
-      // later retry regenerates fresh.
+      // Every attempt rendered a defect (text, a person, or the wrong
+      // subject). Fail the request WITHOUT caching — the caller falls back to
+      // its icon, and a later retry regenerates fresh.
         const flags = [
           inspection.hasText === true ? 'text' : null,
           inspection.hasPerson === true ? 'person' : null,
           whiteCanvas === 'defect' ? 'non-white background' : null,
+          inspection.depictsSubject === false ? 'wrong subject' : null,
         ].filter((flag): flag is string => flag !== null);
         throw new ImageError(
           'IMAGE_VERIFICATION_FAILED',
