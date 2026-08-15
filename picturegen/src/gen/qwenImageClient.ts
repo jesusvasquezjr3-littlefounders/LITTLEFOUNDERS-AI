@@ -229,6 +229,23 @@ async function pollTask(taskId: string, o: ResolvedOptions): Promise<string> {
   }
 }
 
+/** Provider error text, trimmed to something safe to put in a log line. */
+const MAX_ERROR_DETAIL_CHARS = 300;
+
+/**
+ * DashScope answers failures with a JSON body naming the cause
+ * (`Arrearage`, `InvalidParameter`, quota codes...). Surface it; never let a
+ * body read break the error path that is already reporting a failure.
+ */
+async function readErrorDetail(res: Response): Promise<string> {
+  try {
+    const text = (await res.text()).replace(/\s+/g, ' ').trim();
+    return text ? `: ${text.slice(0, MAX_ERROR_DETAIL_CHARS)}` : '';
+  } catch {
+    return '';
+  }
+}
+
 /** One HTTP call with 429/5xx retry (jittered backoff), bounded by maxAttempts AND the deadline. */
 async function requestJson<T>(url: string, init: RequestInit, o: ResolvedOptions): Promise<T> {
   let lastError: ImageError | null = null;
@@ -249,10 +266,21 @@ async function requestJson<T>(url: string, init: RequestInit, o: ResolvedOptions
       clearTimeout(timer);
 
       if (!res.ok) {
+        /*
+         * READ THE BODY. This used to throw a bare `DashScope responded 400`,
+         * and on 2026-08-15 that cost a live debugging session: every image in
+         * a production repair was failing and the message said nothing about
+         * why. Reproducing the call by hand revealed DashScope's own answer —
+         * `{"code":"Arrearage","message":"Access denied, please make sure your
+         * account is in good standing"}` — an unpaid account, not a code fault
+         * at all. The provider names the cause; discarding it turned a
+         * ten-second read into an investigation.
+         */
+        const detail = await readErrorDetail(res);
         const rateLimited = isRateLimitStatus(res.status);
         const attemptLimit = rateLimited ? rateLimitMaxAttempts : o.maxAttempts;
         if (isRetryableStatus(res.status) && attempt < attemptLimit) {
-          lastError = new ImageError('IMAGE_RATE_LIMITED', `DashScope responded ${res.status}`);
+          lastError = new ImageError('IMAGE_RATE_LIMITED', `DashScope responded ${res.status}${detail}`);
           // The provider's own Retry-After (already capped) always wins over our guess.
           const retryAfterMs = rateLimited ? parseRetryAfterMs(res.headers.get('retry-after')) : undefined;
           await o.sleep(computeWaitMs(attempt, { rateLimited, retryAfterMs, rand: o.rand }));
@@ -260,7 +288,7 @@ async function requestJson<T>(url: string, init: RequestInit, o: ResolvedOptions
         }
         throw new ImageError(
           isRetryableStatus(res.status) ? 'IMAGE_RATE_LIMITED' : 'IMAGE_PROVIDER_ERROR',
-          `DashScope responded ${res.status}`,
+          `DashScope responded ${res.status}${detail}`,
         );
       }
 

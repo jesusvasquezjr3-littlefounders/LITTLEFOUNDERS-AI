@@ -37,6 +37,7 @@ import {
   clearSceneImages,
   collectSceneImages,
   illustrateSegments,
+  inspectIllustrationCoverage,
   type IllustrateOptions,
   type IllustrateResult,
 } from '../pipeline/images.js';
@@ -368,6 +369,9 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
 /** The locale Forge authors in; its document is the one that pays for scene art. */
 const AUTHORING_LOCALE = 'es-MX';
 
+/** Consecutive image-hungry lessons that may produce nothing before the pass aborts. */
+const MAX_BARREN_LESSONS = 3;
+
 interface RestyleContext {
   rows: BackfillDocRow[];
   inheritFor: (row: BackfillDocRow) => ImageInheritance;
@@ -409,6 +413,17 @@ async function restyleScenes(
     if (group) group.push(row);
     else byLesson.set(row.lessonId, [row]);
   }
+
+  /*
+   * CIRCUIT BREAKER. On 2026-08-15 a paid repair walked lesson after lesson
+   * while EVERY image request failed — the DashScope account was in arrears,
+   * so nothing could ever be drawn. Each lesson still got cleared, written and
+   * (before the coverage fix above) stamped, so a systemic outage was quietly
+   * converting a catalog into a worse one. When a paid pass asks for images and
+   * gets none, several lessons in a row, the cause is never that lesson: it is
+   * quota, credentials, arrears or an outage. Stop and say so.
+   */
+  let consecutiveBarrenLessons = 0;
 
   for (const [, group] of byLesson) {
     const stale = group.filter((r) => r.illustrationStyleVersion !== FORGE_ILLUSTRATION_STYLE_VERSION);
@@ -470,8 +485,17 @@ async function restyleScenes(
      * is honest, while the stale one is an actively misleading picture. The
      * stamp is only advanced when the document really is complete, so an
      * emptied lesson stays visible to the release check as missing coverage.
+     *
+     * "Complete" is the SHARED coverage definition, not a scene head-count.
+     * Comparing `freshScenes.size === cleared.cleared` looked equivalent and
+     * was not: a lesson that had NO stored scene art cleared zero and redrew
+     * zero, so 0 === 0 stamped it CURRENT while its anchors were still
+     * missing. Two published lessons were stamped that way on 2026-08-15
+     * before the arrears outage was diagnosed (reverted by hand). Asking
+     * inspectIllustrationCoverage instead means the stamp asserts exactly what
+     * verify:course will later check.
      */
-    const payerComplete = freshScenes.size === cleared.cleared;
+    const payerComplete = inspectIllustrationCoverage(result.document).missing.length === 0;
     const writes: Array<{ row: BackfillDocRow; body: BackfillWriteBody }> = [
       {
         row: payer,
@@ -511,6 +535,19 @@ async function restyleScenes(
      * valid partial state that a later run resumes from. Breaking mid-lesson
      * could leave siblings pointing at art the payer no longer has.
      */
+    if (ctx.paid) {
+      const wantedImages = cleared.cleared > 0 || inspectIllustrationCoverage(result.document).missing.length > 0;
+      consecutiveBarrenLessons = wantedImages && result.generated === 0 ? consecutiveBarrenLessons + 1 : 0;
+      if (consecutiveBarrenLessons >= MAX_BARREN_LESSONS) {
+        throw new Error(
+          `images:backfill — ${MAX_BARREN_LESSONS} lessons in a row needed illustrations and Prism produced none. ` +
+            'That is a systemic failure (quota, credentials, account arrears or a provider outage), not a content problem. ' +
+            'Stopping so the pass cannot keep clearing art it is unable to replace — check the picturegen logs for the ' +
+            "provider's own error message, fix the cause, then re-run to resume.",
+        );
+      }
+    }
+
     if (ctx.paid && opts.maxUsd && summary.usdSpent >= opts.maxUsd) {
       summary.stoppedOnBudget = true;
       log(`  ! --max-usd ${opts.maxUsd} reached at $${summary.usdSpent} — stopping cleanly; re-run to resume where this left off`);

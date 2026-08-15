@@ -571,3 +571,51 @@ Neither is a safe default, which is why there isn't one.
 **Before any regeneration over a live course, ask:** how many lessons will this
 touch, and am I prepared to re-publish all of them today? If the answer is no,
 use `keep-published` or scope the run (`--slots`, or one adventure).
+
+## Every image fails with `DashScope responded 400` — the account is in arrears (2026-08-15)
+
+**Symptom.** A generation or `images:backfill` run logs, for every target:
+
+```
+images: skipping illustration for "…" — picturegen HTTP 502: DashScope responded 400
+```
+
+**Cause.** Not the prompt, not the code. DashScope answers with a body naming
+the reason and the client used to discard it. Reproduced by hand:
+
+```
+{"code":"Arrearage","message":"Access denied, please make sure your account
+ is in good standing."}
+```
+
+The Alibaba Cloud / Model Studio account had an overdue payment. Nothing can be
+generated, and nothing is billed either, until it is settled.
+
+**Diagnosing it in ten seconds** (the client now includes the body in its error,
+so the log alone should say `Arrearage`). To confirm against the provider
+directly, from inside the service so it uses the real credentials:
+
+```
+railway ssh --service picturegen "node -e '…POST /api/v1/services/aigc/multimodal-generation/generation…'"
+```
+
+Print `res.status` AND `await res.text()`. A status without a body is not a
+diagnosis.
+
+**Note the model.** Production runs `IMAGE_MODEL=qwen-image-2.0`, not the
+`qwen-image-max` the style-version strings and the `COST_QWEN_IMAGE_PER_IMAGE`
+default ($0.075) are named for. The model is part of the cache key so the
+catalog is self-consistent, but re-check the tariff for the model actually
+configured before quoting a repair or a run.
+
+**What a run must NOT do while this is happening.** Two guards exist because a
+paid repair walked straight through the outage on 2026-08-15:
+
+- the restyle stamps `illustration_style_version` only when
+  `inspectIllustrationCoverage` reports zero missing images, so a lesson can
+  never be marked current with no art;
+- after 3 consecutive lessons that need images and receive none, the pass
+  ABORTS with "systemic failure" rather than clearing art it cannot replace.
+
+Two lessons were stamped before the first guard existed; they were reverted by
+PATCHing `illustration_style_version` back to the prior composite value.
