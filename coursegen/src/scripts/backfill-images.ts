@@ -128,6 +128,17 @@ export interface BackfillOptions {
    * would pay three times for the same picture.
    */
   restyleScenes?: boolean;
+  /**
+   * Required to let `--restyle-scenes` contact Prism at all. Same shape as
+   * `database/scripts/railway-migrate.sh --confirm-production`: an
+   * irreversible, billable action against the live catalog must be authorized
+   * on the command line, never implied by the absence of `--dry-run`.
+   *
+   * A restyle is the one mode where a mistake is expensive in BOTH directions
+   * — it CLEARS art before redrawing it — so the default has to be the safe
+   * one. Without this flag the pass runs measurement-only and says so.
+   */
+  confirmSpend?: boolean;
 }
 
 export interface BackfillSummary {
@@ -152,8 +163,24 @@ export interface BackfillSummary {
   lessonsAlreadyCurrent: number;
 }
 
+/**
+ * May this invocation make a PAID Prism request? One predicate, used both by
+ * the style-version handshake and by the illustrate calls, so the two can
+ * never disagree about whether money is on the table.
+ *
+ * `--reuse-only` and `--dry-run` block spending in every mode. A restyle
+ * additionally requires `--confirm-spend`, because it CLEARS art before
+ * redrawing it and is therefore the one mode where the unsafe default would be
+ * expensive in both directions.
+ */
+export function spendAllowed(opts: BackfillOptions): boolean {
+  if (opts.reuseOnly || opts.dryRun) return false;
+  return opts.restyleScenes ? Boolean(opts.confirmSpend) : true;
+}
+
 export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions): Promise<BackfillSummary> {
   const log = deps.log ?? (() => undefined);
+  const paid = spendAllowed(opts);
 
   /*
    * Style-version handshake — same preflight pipeline/run.ts enforces before a
@@ -167,7 +194,7 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
    * drift can land in Vault: --reuse-only never contacts Prism at all, and
    * --dry-run never PATCHes a document.
    */
-  if (!opts.reuseOnly && !opts.dryRun && deps.probeStyleVersion) {
+  if (paid && deps.probeStyleVersion) {
     const probe = await deps.probeStyleVersion();
     if ('unavailable' in probe) {
       throw new Error(
@@ -256,7 +283,7 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
   };
 
   if (opts.restyleScenes) {
-    return restyleScenes(deps, opts, { rows, inheritFor, summary, log });
+    return restyleScenes(deps, opts, { rows, inheritFor, summary, log, paid });
   }
 
   for (const row of rows) {
@@ -306,6 +333,8 @@ interface RestyleContext {
   inheritFor: (row: BackfillDocRow) => ImageInheritance;
   summary: BackfillSummary;
   log: (line: string) => void;
+  /** `spendAllowed(opts)` — false means measurement-only, Prism is never called. */
+  paid: boolean;
 }
 
 /**
@@ -330,6 +359,7 @@ async function restyleScenes(
   ctx: RestyleContext,
 ): Promise<BackfillSummary> {
   const { rows, inheritFor, summary, log } = ctx;
+  if (!ctx.paid) log('  measurement-only: Prism will NOT be called (need --confirm-spend, and neither --dry-run nor --reuse-only)');
 
   const byLesson = new Map<string, BackfillDocRow[]>();
   for (const row of rows) {
@@ -357,9 +387,24 @@ async function restyleScenes(
     const cleared = clearSceneImages(payer.document);
     summary.scenesCleared += cleared.cleared;
 
+    /*
+     * A DRY RUN OF THIS MODE MUST NOT SPEND (near-miss 2026-08-15).
+     *
+     * `--dry-run` historically meant "no Vault writes" and still ran the full
+     * paid illustration pass, which is defensible for the ADD-only backfill:
+     * you are previewing art that does not exist yet. It is indefensible here.
+     * A restyle clears every stale scene first, so "preview" would have meant
+     * re-drawing the entire catalog's scenes at full price purely to print a
+     * count — an operator typing `--dry-run` to find out what a repair costs
+     * would have paid for the repair. Caught before it billed anything.
+     *
+     * Nothing is lost by refusing: the number a dry run exists to produce is
+     * `scenesCleared`, which is known BEFORE any Prism call. So the illustrate
+     * pass runs in reuse-only mode, which contacts Prism never.
+     */
     const result = await deps.illustrate(cleared.document, {
       inherit: inheritFor(payer),
-      reuseOnly: opts.reuseOnly,
+      reuseOnly: !ctx.paid,
       scope,
     });
 
@@ -544,6 +589,7 @@ interface CliOptions {
   dryRun?: boolean;
   reuseOnly?: boolean;
   restyleScenes?: boolean;
+  confirmSpend?: boolean;
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -566,6 +612,9 @@ function parseArgs(argv: string[]): CliOptions {
       case '--restyle-scenes':
         opts.restyleScenes = true;
         break;
+      case '--confirm-spend':
+        opts.confirmSpend = true;
+        break;
       default:
         console.error(`images:backfill — unknown argument "${arg}"`);
         process.exit(1);
@@ -578,7 +627,8 @@ async function main(): Promise<void> {
   const opts = parseArgs(process.argv.slice(2));
   if (!opts.course) {
     console.error(
-      'Usage: npm run images:backfill -- --course <slug> [--locale <es-MX|en-US|pt-BR>] [--restyle-scenes] [--reuse-only] [--dry-run]',
+      'Usage: npm run images:backfill -- --course <slug> [--locale <es-MX|en-US|pt-BR>]\n' +
+        '                                    [--restyle-scenes [--confirm-spend]] [--reuse-only] [--dry-run]',
     );
     process.exit(1);
   }
@@ -588,6 +638,7 @@ async function main(): Promise<void> {
   console.log(
     `images:backfill — course "${courseSlug}"${opts.locale ? ` [${opts.locale} only]` : ''}` +
       `${opts.restyleScenes ? ' (RESTYLE SCENES — stale scene art is cleared and redrawn)' : ''}` +
+      `${opts.restyleScenes && !opts.confirmSpend ? ' [MEASUREMENT ONLY — add --confirm-spend to actually redraw]' : ''}` +
       `${opts.reuseOnly ? ' (reuse-only — no Prism calls)' : ''}${dryRun ? ' (dry-run — no Vault writes)' : ''}`,
   );
 
@@ -605,7 +656,14 @@ async function main(): Promise<void> {
       probeStyleVersion: prismConfigured ? fetchPrismStyleVersion : undefined,
       log: (line) => console.log(line),
     },
-    { courseSlug, locale: opts.locale, dryRun, reuseOnly: opts.reuseOnly, restyleScenes: opts.restyleScenes },
+    {
+      courseSlug,
+      locale: opts.locale,
+      dryRun,
+      reuseOnly: opts.reuseOnly,
+      restyleScenes: opts.restyleScenes,
+      confirmSpend: opts.confirmSpend,
+    },
   );
 
   console.log('');

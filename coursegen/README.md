@@ -151,5 +151,18 @@ repair pass:
   withheld: an empty anchor renders as no image, which is honest, while the
   stale one is an actively misleading picture — and the missing stamp keeps the
   lesson visible to `verify:course` as incomplete.
-- Always dry-run first: `--dry-run` reports how many scenes are stale and how
-  many redraws a real pass would bill, with no writes and no spend.
+- **Spending is opt-in here.** A restyle contacts Prism only with
+  `--confirm-spend` (and neither `--dry-run` nor `--reuse-only`), the same shape
+  as `railway-migrate.sh --confirm-production`. Without it the pass runs
+  measurement-only and says so in its first line. This mode CLEARS art before
+  redrawing it, so the unsafe default would be expensive in both directions.
+- Always measure first: `npm run images:backfill -- --course <slug>
+  --restyle-scenes --dry-run` reports how many scenes are stale — which is
+  exactly how many redraws a real pass would bill — with no writes and no spend.
+
+> ⚠️ **`--dry-run` on the ORDINARY (add-only) path is not free.** There it means
+> "no Vault writes" and still runs the full paid illustration pass, because the
+> point is to preview art that does not exist yet. Only the restyle path treats
+> `--dry-run` as no-spend, and only because its measurement (`scenesCleared`) is
+> known before any Prism call. Use `--reuse-only` when you want a guaranteed
+> zero-cost pass on the ordinary path.
