@@ -1064,17 +1064,17 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-08-15, latest) — A repair that changed a type was orphaning its brief: questions from nowhere
+## Current State (2026-08-15, SESSION CLOSE) — Content-quality session: 8 PRs shipped, the repair itself blocked on an unpaid provider
 
-- **Reported from production:** some lessons lack sequentiality — questions
-  appear that the lesson never set up.
-- **Root cause: `planRepair` rewrote `seg.type` in five places and never
-  touched `seg.brief`.** A plan is a TYPE and a BRIEF, and the brief carries the
-  micro-situation. A segment retyped from `quiz_mcq` to `piggy_split` reached
-  the writer as a jar-splitting widget carrying a pricing-decision premise, and
-  the writer authored the mismatch faithfully. It concentrated LATE in the
-  lesson: the money rule targets the last graded segment and the diversify rule
-  scans from the end.
+Session goal: the published financial-education catalog showed the same
+lemonade stand over almost every exercise, and some lessons asked questions the
+lesson never set up. Both were root-caused and fixed; the CODE is in production.
+The data repair is **not** run — the image provider's account is in arrears.
+
+**Shipped (8 PRs, all CI-green and deployed):** #43 image subject · #44 lesson
+sequencing · #45 HTTP 414 on the course walk · #46 `--dry-run` that spent money
+· #47 missing `--max-usd` ceiling · #48 plan repairs were invisible · #49
+republishing removed live lessons from the child's path · #50 provider outage
 ```
 
 ### agent/README.md

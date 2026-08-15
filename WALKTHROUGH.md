@@ -2,7 +2,68 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-08-15, latest) — A repair that changed a type was orphaning its brief: questions from nowhere
+## Current State (2026-08-15, SESSION CLOSE) — Content-quality session: 8 PRs shipped, the repair itself blocked on an unpaid provider
+
+Session goal: the published financial-education catalog showed the same
+lemonade stand over almost every exercise, and some lessons asked questions the
+lesson never set up. Both were root-caused and fixed; the CODE is in production.
+The data repair is **not** run — the image provider's account is in arrears.
+
+**Shipped (8 PRs, all CI-green and deployed):** #43 image subject · #44 lesson
+sequencing · #45 HTTP 414 on the course walk · #46 `--dry-run` that spent money
+· #47 missing `--max-usd` ceiling · #48 plan repairs were invisible · #49
+republishing removed live lessons from the child's path · #50 provider outage
+degraded the catalog.
+
+**The two reported defects share one shape:** a deterministic fixer that can
+only correct HALF of a pair leaves the other half lying. A style brief that
+named a subject reached every prompt and became the subject; a plan repair that
+changed a segment's TYPE left its BRIEF describing another mechanic. Both are
+recorded as rules in AGENTS.md §1.14 and the service AGENTS files.
+
+**Four defects were found by RUNNING the thing, not by reading it** — the
+414, the spending dry-run, the missing budget ceiling, and the publish
+demotion. The measurement run is what surfaced all of them, at zero spend.
+
+**Verified numbers (production, dry-run, no spend):** 1,208 lessons · 3,624
+documents · 10,191 stale scene slots → **3,397 redraws** (÷3 locales; one
+text-free drawing serves all three) → **$254.78** at one attempt each.
+`picture_assets` = 9,179 rows, **zero** created this session.
+
+**Correction to an earlier claim in this session:** an estimate of "$30–90" came
+from the "~$0.02/image" comment in `imageInheritance.ts`, which is the OLD
+model's price. The configured value is `COST_QWEN_IMAGE_PER_IMAGE = 0.075`. A
+second claim — "gates.ts has no image references" — came from a `grep` that
+silently matched nothing because the file's very long lines make grep treat it
+as binary (`grep -a` works). The substantive conclusion held; the evidence did
+not.
+
+### Open (next session)
+
+- **BLOCKER, owner action: the DashScope / Alibaba Model Studio account is in
+  arrears.** Every image call returns `{"code":"Arrearage"}`. Nothing can be
+  generated — and nothing is billed — until it is settled. This also disables
+  the art-director judge and the subject verifier, which default to the same
+  key (`JUDGE_API_KEY ?? IMAGE_API_KEY`), so running images elsewhere without
+  fixing this would re-run the repair with both quality guarantees OFF.
+- **Scene repair, ready to run** the moment the account is live. Pilot first:
+  `archipielago-del-trueque`, 148 lessons, 394 redraws ≈ $29.55,
+  `--restyle-scenes --confirm-spend --max-usd 60`. Then the rest (~3,000, ~$225).
+- **Content regeneration is UNDECIDED.** #44 only affects future generation;
+  the 1,208 published lessons keep the old text, and #48 confirmed plan `fixes`
+  were never persisted, so the affected lessons cannot be identified
+  retrospectively. Owner chose "measure with one adventure first". That run must
+  also choose `--on-existing-published keep-published` (stays live, no fresh
+  human read) or `demote-to-review` (§6 gate honoured, ~148 lessons leave the
+  catalog until re-released). No default exists, deliberately.
+- **Local Qwen inference was evaluated and deferred** (see Decision Log).
+- `story_scene`'s wide-art change is covered by a component test but was **not**
+  verified in a browser at 375/1280 (§1.11) — no browser tooling in the session.
+- Production runs `IMAGE_MODEL=qwen-image-2.0`, while the style-version strings
+  and the price default are named for `qwen-image-max`. Self-consistent (the
+  model is in the cache key) but re-check the real tariff before quoting.
+
+## Current State (2026-08-15) — A repair that changed a type was orphaning its brief: questions from nowhere
 
 - **Reported from production:** some lessons lack sequentiality — questions
   appear that the lesson never set up.
@@ -1212,6 +1273,14 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-15 | **A prompt template that reaches every generation describes STYLE and never a SUBJECT, and the prohibition is stated positively.** `LF_VISUAL_IDENTITY` now carries a `SUBJECT DISCIPLINE` clause instead of an example scene. | It used to end with "Cheerful lemonade-stand world…". Injected into every prompt, that sentence became the subject whenever the label supplied none — a lemonade stand over exercises about markets, budgets and fraud. Silence is not a prohibition: a model asked for a scene with no subject always invents one, so the rule has to be written down. |
+| 2026-08-15 | **A checker that validates the FORM of generated output must also validate its SUBJECT.** The pixel verifier gained `depicts_subject`, biased toward accepting, with a missing answer never blocking. | `has_text` and `has_person` both pass on a beautiful, on-style illustration of entirely the wrong thing. Form was verified from day one; content never was. The asymmetry is deliberate — a false negative costs a paid redraw, and treating silence as failure would loop forever. |
+| 2026-08-15 | **A coverage metric counts DISTINCTNESS, not presence.** `verify:course` fails if any scene image serves more than one lesson; object tiles are exempt and reported informationally. | The broken catalog reported 100% visual coverage. Every planned image was present and they were the same file. Presence-counting is what made a total failure look like success, and the distinctness check costs nothing — no API calls, no vision model. |
+| 2026-08-15 | **A deterministic fixer that can only correct one half of a model-authored pair must either fix both halves or make the divergence visible.** Mix-rule violations are now a REPLAN; `planRepair` survives as a net and stamps `retypedFrom`, which the write prompt turns into a re-anchor instruction. | `planRepair` rewrote `seg.type` in five places and never touched `seg.brief`, so the writer received a mechanic with no relation to the narrative — and always late in the lesson, because both the money rule and the diversify rule pick their victim from the end. That is what "a question out of nowhere" is, mechanically. |
+| 2026-08-15 | **A flag named `--dry-run` means no side effects, and money is the largest side effect.** A restyle needs `--confirm-spend` AND `--max-usd` before it may contact the provider; one predicate (`spendAllowed`) gates both the health probe and every illustrate call. | `--dry-run` meant "no Vault writes" and still ran the full paid pass. Because a restyle CLEARS art before redrawing it, measuring the cost of a repair would have paid for the repair. Caught mid-flight, at zero spend. Where a mode genuinely previews paid output, it now says so loudly and offers `--reuse-only`. |
+| 2026-08-15 | **Re-publishing live kid-facing content is a decision with no default.** Publish reads the slot's status and refuses to write unless the run passes `keep-published` or `demote-to-review`. | The learner RLS policy requires `status='published'`, and publish upserted `'review'` unconditionally. Regenerating one adventure would have removed ~150 lessons from every child's path, silently, as a side effect of an improvement. Both policies are legitimate; choosing one for the operator is not (§1.0.1). |
+| 2026-08-15 | **A provider error surfaces the provider's own message, and a systemic failure aborts instead of walking on.** The DashScope client includes the response body; a restyle stops after 3 consecutive image-hungry lessons that receive nothing. | `DashScope responded 400` said nothing; the body said `Arrearage` — an unpaid account. Meanwhile the pass kept clearing art it could not replace. A status without a body is not a diagnosis, and several barren lessons in a row is never a content problem. |
+| 2026-08-15 | **Local Qwen inference was evaluated for the repair and DEFERRED, not adopted.** | The 8 GB laptop can technically run a quantised 20B image model with CPU offload, at roughly minutes per image — ~7 days for the catalog against $255 of API. It also changes `IMAGE_MODEL`, which is part of the cache key, so new scenes would come from a different model than the 9,179 existing tiles. And the judge/verifier share the blocked key, so local images alone would run the repair with its quality gates off. Revisit for FUTURE courses, where there is no prior catalog to clash with. |
 | 2026-08-14 | **Every dataLayer push must be an `arguments` object, asserted by test.** `mountGa4` uses Google's `function gtag(){dataLayer.push(arguments)}` form, and a test fails if any entry is a real Array. | An arrow function pushing a rest array is silently ignored by gtag.js: the tag loads, the console shows no error, and the property receives nothing. It cost three weeks of GA4 data. No type checker or lint rule can catch it, so it has to be a test. |
 | 2026-08-14 | **Staff-IP exclusions are verified with `whois` before approval, and shared egress is surfaced in the console.** | A CDN77 VPN exit was approved as a "team device", excluding every other visitor behind that exit while failing to exclude staff, because exit IPs rotate. Our own data already held the tell: two different staff accounts at one address. |
 | 2026-08-14 | **One period control per screen.** A chart never carries its own range control when the page has a picker; where a panel has no page-level picker, discrete presets are the control and a drag Brush is not. | Three controls governing one window can only contradict each other, and nothing on screen says which the figures obey. A drag-only affordance also has no tap equivalent, which DESIGN's responsive rules prohibit. |
@@ -1359,6 +1428,9 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 ## Known Issues
 
+- **🔴 The DashScope / Alibaba Model Studio account is IN ARREARS (owner action, 2026-08-15)** — every image call returns `{"code":"Arrearage","message":"Access denied, please make sure your account is in good standing."}`. No image can be generated and nothing is billed until it is settled. It also blocks the art-director judge and the subject verifier, which default to the same key (`JUDGE_API_KEY ?? IMAGE_API_KEY`). This blocks the financial-education scene repair (3,397 redraws, ~$255) and any new course generation. Same class as the standing Vercel/Railway billing items below. RUNBOOK: "Every image fails with `DashScope responded 400`".
+- **Financial-education scene art is still the WRONG art (2026-08-15)** — the pipeline is fixed and deployed, but the 1,208 published lessons keep the images generated under the old style, i.e. a lemonade stand over almost every exercise. The repair is built, measured and ready (`images:backfill --restyle-scenes`); it is waiting only on the arrears above.
+- **Published lesson TEXT still predates the sequencing fix (2026-08-15)** — #44 changes future generation only, and plan `fixes` were never persisted, so the affected lessons cannot be identified retrospectively. Deciding whether to regenerate (and under which `--on-existing-published` policy) is open.
 - **Admin overview KPIs were counting role rows and a capped audit sample (RESOLVED 2026-08-08)** — `/admin/overview` now uses unique primary-role buckets, paged identity/role reads, exact PostgREST status counts, and an exact audit total; an unavailable count fails the whole overview instead of rendering a false zero.
 - **Admin content totals and lesson review were capped and too shallow (RESOLVED 2026-08-08)** — `/admin/content` and `/admin/moderation` now page through all rows, return exact status summaries and hierarchy metadata, and expose a rendered answer-stripped lesson preview with centered full-page overlays.
 - **Postgres backups run daily but on a shared/interim disk** (filebase's Railway volume, not a dedicated one) — works and is drilled, but Railway's billing block should be resolved and a proper dedicated backup volume created when possible (RUNBOOK.md).
