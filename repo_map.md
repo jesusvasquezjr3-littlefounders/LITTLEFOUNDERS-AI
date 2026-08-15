@@ -5201,6 +5201,7 @@ import {
   backfillImages,
   ID_BATCH_SIZE,
   selectByIds,
+  spendAllowed,
   type BackfillDeps,
   type BackfillDocRow,
   type BackfillWriteBody,
@@ -5210,7 +5211,6 @@ import type { LessonDocumentParsed } from '../contract/schema.js';
 import { FORGE_ILLUSTRATION_STYLE_VERSION } from '../pipeline/illustrationStyle.js';
 import type { PrismStyleProbe } from '../providers/picturegen.js';
 
-// The orchestration under test never parses or inspects the document — it only
 ```
 
 ### coursegen/src/__tests__/catalog-loader.test.ts

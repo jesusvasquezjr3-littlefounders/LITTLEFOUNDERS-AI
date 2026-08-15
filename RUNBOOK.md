@@ -511,3 +511,37 @@ documents are therefore batched smaller (100), because 100 lessons already means
 
 **Check before running any hierarchy-walking script against a real course:** grep
 it for `in.(` and confirm each hit goes through the batching helper.
+
+## `--dry-run` is not automatically free (near-miss 2026-08-15)
+
+**What almost happened.** `images:backfill --restyle-scenes --dry-run` was run
+against production financial-education to *measure* the repair. `--dry-run`
+means "no Vault writes"; it did NOT mean "no Prism calls". Because a restyle
+clears every stale scene before re-illustrating, that command was on its way to
+redrawing the whole catalog's scenes at full price purely to print a count. It
+was killed during the document-fetch phase and **billed nothing** — confirmed,
+not assumed: `picture_assets` held 9,179 rows with **zero** created on or after
+2026-08-14.
+
+**Verifying spend after an aborted run** (read-only, from inside the service so
+it uses the service's own credentials — no DB shell needed):
+
+```
+railway ssh --service coursegen "node -e '...'"   # count picture_assets by created_at
+```
+
+`Prefer: count=exact` with `Range: 0-0` returns the count in `content-range`
+without transferring rows.
+
+**Fixed.** A restyle now needs `--confirm-spend` before it may contact Prism at
+all, mirroring `railway-migrate.sh --confirm-production`; without it the pass
+runs measurement-only and prints that on its first line. One predicate,
+`spendAllowed()`, gates both the style-version probe and every illustrate call,
+so the two can never disagree about whether money is on the table.
+
+**The general rule.** A flag named `--dry-run` must mean "no side effects", and
+money is the largest side effect there is. Where a mode genuinely wants to
+preview paid output (the ordinary add-only backfill does), say so LOUDLY in the
+help text and the README — and give operators a guaranteed-free alternative
+(`--reuse-only`). Never let "I didn't pass the scary flag" be the only thing
+standing between a measurement and a four-figure bill.

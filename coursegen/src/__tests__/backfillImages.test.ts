@@ -3,6 +3,7 @@ import {
   backfillImages,
   ID_BATCH_SIZE,
   selectByIds,
+  spendAllowed,
   type BackfillDeps,
   type BackfillDocRow,
   type BackfillWriteBody,
@@ -501,5 +502,83 @@ describe('selectByIds — every id hop is bounded, not just the last one', () =>
     let call = 0;
     const select = async () => [`batch-${call++}`];
     await expect(selectByIds<string>((b) => b.join(','), ids, select)).resolves.toEqual(['batch-0', 'batch-1']);
+  });
+});
+
+/*
+ * NEAR-MISS 2026-08-15. `--dry-run` historically meant "no Vault writes" and
+ * still ran the full PAID illustration pass — defensible for the add-only
+ * backfill (you are previewing art that does not exist yet), indefensible for a
+ * restyle, which clears every stale scene first. An operator typing --dry-run
+ * to find out what a repair costs would have paid for the repair. Caught before
+ * it billed anything; these tests keep it caught.
+ */
+describe('spendAllowed — money is never on the table by default in restyle mode', () => {
+  const base = { courseSlug: 'financial-education' };
+
+  it('blocks a restyle unless it is explicitly confirmed', () => {
+    expect(spendAllowed({ ...base, restyleScenes: true })).toBe(false);
+    expect(spendAllowed({ ...base, restyleScenes: true, confirmSpend: true })).toBe(true);
+  });
+
+  it('blocks a restyle dry-run even when spending was confirmed', () => {
+    expect(spendAllowed({ ...base, restyleScenes: true, confirmSpend: true, dryRun: true })).toBe(false);
+  });
+
+  it('blocks reuse-only everywhere', () => {
+    expect(spendAllowed({ ...base, reuseOnly: true })).toBe(false);
+    expect(spendAllowed({ ...base, restyleScenes: true, confirmSpend: true, reuseOnly: true })).toBe(false);
+  });
+
+  // The add-only path keeps its documented behaviour: --confirm-spend is a
+  // restyle concept, because only a restyle destroys before it rebuilds.
+  it('leaves the ordinary backfill unchanged', () => {
+    expect(spendAllowed(base)).toBe(true);
+    expect(spendAllowed({ ...base, dryRun: true })).toBe(false);
+  });
+});
+
+describe('restyle honours the spend gate end to end', () => {
+  const STALE_V = 'v7-old+v8-qwen-image-max-object-white-flat-vector';
+  const doc1 = (): LessonDocumentParsed =>
+    ({
+      meta: { title: 'T' },
+      segments: [{ id: 's1', type: 'best_decision', prompt_md: 'Liruf cuenta la caja.', payload: {}, image_url: 'http://depot.test/old.webp' }],
+    }) as unknown as LessonDocumentParsed;
+
+  const rows = (): BackfillDocRow[] => [
+    { lessonId: 'a', lessonSlug: 'slug-a', locale: 'es-MX', illustrationStyleVersion: STALE_V, document: doc1() },
+  ];
+
+  it('runs measurement-only without --confirm-spend, and still reports the redraw count', async () => {
+    const illustrate = vi.fn<BackfillDeps['illustrate']>().mockImplementation(async (document) => ({ document, generated: 0 }));
+    const probeStyleVersion = vi.fn<NonNullable<BackfillDeps['probeStyleVersion']>>();
+
+    const summary = await backfillImages(
+      { listDocuments: async () => rows(), illustrate, writeDocument: vi.fn().mockResolvedValue(undefined), probeStyleVersion },
+      { courseSlug: 'financial-education', restyleScenes: true },
+    );
+
+    // Prism is never asked for a picture...
+    expect(illustrate.mock.calls[0]![1]).toMatchObject({ reuseOnly: true });
+    // ...nor even probed, because no paid call can follow.
+    expect(probeStyleVersion).not.toHaveBeenCalled();
+    // And the number the operator came for is still produced.
+    expect(summary.scenesCleared).toBe(1);
+  });
+
+  it('allows the paid redraw once --confirm-spend is given', async () => {
+    const illustrate = vi.fn<BackfillDeps['illustrate']>().mockImplementation(async (document) => ({ document, generated: 1 }));
+    const probeStyleVersion = vi
+      .fn<NonNullable<BackfillDeps['probeStyleVersion']>>()
+      .mockResolvedValue({ styleVersion: FORGE_ILLUSTRATION_STYLE_VERSION });
+
+    await backfillImages(
+      { listDocuments: async () => rows(), illustrate, writeDocument: vi.fn().mockResolvedValue(undefined), probeStyleVersion },
+      { courseSlug: 'financial-education', restyleScenes: true, confirmSpend: true },
+    );
+
+    expect(probeStyleVersion).toHaveBeenCalled();
+    expect(illustrate.mock.calls[0]![1]).toMatchObject({ reuseOnly: false });
   });
 });
