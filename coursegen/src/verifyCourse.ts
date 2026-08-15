@@ -97,11 +97,15 @@ interface Check {
   const sagas = adv.length
     ? ((await q(`sagas?select=id&adventure_id=in.(${adv.map((a) => a.id).join(',')})`)) as { id: string }[])
     : [];
+  // Batched like the hops below it: a saga list is smaller than a topic list,
+  // but "smaller" is not "bounded", and this is the same request-line ceiling
+  // that produced the 2026-08-10 incident one level down. The sibling
+  // images:backfill hit HTTP 414 on exactly this shape on 2026-08-15.
   const topics = sagas.length
-    ? ((await q(`topics?select=id,title&saga_id=in.(${sagas.map((s) => s.id).join(',')})`)) as {
-    id: string;
-    title: unknown;
-    }[])
+    ? await qChunked<{ id: string; title: unknown }>(
+        (batch) => `topics?select=id,title&saga_id=in.(${batch.join(',')})`,
+        sagas.map((s) => s.id),
+      )
     : [];
   const lessons = topics.length
     ? await qChunked<{ id: string; slug: string; status: string; topics?: { sagas?: { adventures?: { age_tier?: string } } } }>(

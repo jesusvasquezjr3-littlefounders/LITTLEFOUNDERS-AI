@@ -5199,6 +5199,8 @@ const NEW_B = 'http://localhost:4006/files/lesson-images/2222.webp';
 import { describe, expect, it, vi } from 'vitest';
 import {
   backfillImages,
+  ID_BATCH_SIZE,
+  selectByIds,
   type BackfillDeps,
   type BackfillDocRow,
   type BackfillWriteBody,
@@ -5209,8 +5211,6 @@ import { FORGE_ILLUSTRATION_STYLE_VERSION } from '../pipeline/illustrationStyle.
 import type { PrismStyleProbe } from '../providers/picturegen.js';
 
 // The orchestration under test never parses or inspects the document — it only
-// routes it through illustrate → writeDocument. Tiny tagged objects are enough
-// to prove the routing (mirrors the DI seams in images.test.ts).
 ```
 
 ### coursegen/src/__tests__/catalog-loader.test.ts
