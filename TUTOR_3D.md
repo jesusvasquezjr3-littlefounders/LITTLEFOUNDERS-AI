@@ -134,12 +134,22 @@ rather than pretended otherwise.
 actions + 7 emotions + `emotion.rest`) authored on Zara's rig. Two rules make
 one file safe on three skeletons that do not share a rest pose (§3):
 
-1. **`sanitizeClip` — rotation only, plus one deliberate root translation.**
+1. **`sanitizeClip` — rotation only, and nothing else.**
    The export is force-sampled, so it carries translation, rotation AND scale
    for all 24 bones of all 20 clips: 1,440 tracks, of which 1,140 describe
-   Zara's skeleton rather than any motion. `Hips.position` is the single
-   exception, because leaving the ground is root motion and cannot be expressed
-   as a rotation.
+   Zara's skeleton rather than any motion.
+
+   **Not even the hips.** A clip can only express leaving the ground as a hips
+   translation in the authoring rig's units — the same absolute-value-shared-
+   between-skeletons mistake — and travel should scale with the jumper anyway.
+   Measured, the baked value was also wrong by three orders of magnitude:
+   Blender pose-bone location is not in armature units, so an authored 32 cm
+   exported as 0.0816 units, or **0.8 mm**. In clip mode the jump did not leave
+   the ground at all, because the procedural lift was disabled at the same time.
+   `CLIP_LIFT` (`characterActions.ts`) now owns travel as a fraction of the
+   character's height — 0.42 for `jump`, 0.16 for `hop` — read from the clip's
+   OWN time so the flight matches the crouch and landing the clip does carry.
+   **The clip carries the mechanics, the runtime carries the travel.**
 2. **`additiveClip` — deltas against `emotion.rest`, never absolute values.**
    The mixer then applies `characterOwnPose × authoredDelta`, which is the same
    relative-offset rule the procedural driver has always followed. A track with

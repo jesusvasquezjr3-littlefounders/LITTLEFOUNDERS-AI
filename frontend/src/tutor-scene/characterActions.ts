@@ -54,9 +54,27 @@ function turn(rig: Rig, bone: Bone | undefined, x: number, y: number, z: number)
 }
 
 /** Smooth 0→1→0 arc — the shape almost every one-shot gesture wants. */
-function arc(progress: number): number {
+export function arc(progress: number): number {
   return Math.sin(Math.min(Math.max(progress, 0), 1) * Math.PI);
 }
+
+/**
+ * Vertical travel, as a fraction of the character's height, for the actions
+ * that genuinely leave the ground.
+ *
+ * THE CLIP CARRIES THE MECHANICS, THE RUNTIME CARRIES THE TRAVEL — and that
+ * split is forced, not stylistic. An authored clip can only express travel as a
+ * translation on the hips, in the authoring rig's own units, which is the same
+ * absolute-value-shared-between-skeletons mistake that re-posed every character
+ * into Zara's body. A jump should also scale with the jumper: 0.42 of height is
+ * 71 cm for a 1.7 m human and 29 cm for a 0.7 m dino, which is right, whereas
+ * one baked distance would be either a hop or a launch depending on who plays it.
+ *
+ * (The baked translation was also wrong by three orders of magnitude — Blender
+ * pose-bone location is not in armature units, so an authored 32 cm exported as
+ * 0.0816 units, or 0.8 mm. Measured, not assumed.)
+ */
+export const CLIP_LIFT: Partial<Record<CharacterAction, number>> = { jump: 0.42, hop: 0.16 };
 
 /** Smooth 0→1 ramp with eased ends. */
 function ease(progress: number): number {

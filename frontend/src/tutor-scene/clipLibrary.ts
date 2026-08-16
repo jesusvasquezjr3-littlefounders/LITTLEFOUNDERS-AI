@@ -131,29 +131,27 @@ export function restClipFrom(clips: readonly AnimationClip[]): AnimationClip | n
   return clips.find((clip) => clip.name === REST_CLIP) ?? null;
 }
 
-/*
- * THE ONLY BONE ALLOWED TO TRANSLATE.
- *
- * Leaving the ground is root motion and cannot be expressed as a rotation, so
- * `jump` and `hop` translate the hips. Every OTHER translation track in these
- * files is not animation at all — a bone's translation in glTF is its rest
- * offset from its parent, i.e. the authoring character's PROPORTIONS.
- */
-const ROOT_MOTION_TRACK = 'Hips.position';
-
 /**
- * Strips everything a shared clip has no business carrying.
+ * Strips everything a shared clip has no business carrying: ROTATION ONLY.
  *
  * The library is exported with `export_force_sampling`, which emits
  * translation, rotation AND scale for all 24 bones of all 20 clips — 1,440
  * tracks, of which 1,140 describe Zara's skeleton rather than any motion.
- * Played on Rho or Liruf those channels overwrite bone offsets with Zara's,
- * which is what pulled their legs together.
+ * A bone's translation in glTF is its rest offset from its parent, so played
+ * on Rho or Liruf those channels overwrite bone offsets with Zara's, which is
+ * what pulled their legs together.
  *
  * Additive conversion alone would already neutralise them (rest minus rest is
  * zero), so this is belt AND braces — but it is the half that states the
  * invariant, and it drops two thirds of the tracks the mixer evaluates per
  * frame. A future re-export with different flags cannot reintroduce the bug.
+ *
+ * NOT EVEN THE HIPS. Leaving the ground is root motion and a clip can only
+ * express it as a translation in the AUTHORING rig's units — the same
+ * absolute-value-shared-between-skeletons mistake, and it should scale with the
+ * jumper anyway. `CLIP_LIFT` in `characterActions.ts` owns travel; the clip owns
+ * the crouch, extension, tuck and landing compression, all of which are
+ * rotations.
  */
 const sanitizeCache = new WeakMap<AnimationClip, AnimationClip>();
 
@@ -161,10 +159,7 @@ export function sanitizeClip(clip: AnimationClip): AnimationClip {
   const cached = sanitizeCache.get(clip);
   if (cached) return cached;
   const kept = clip.tracks.filter(
-    (track) =>
-      track instanceof QuaternionKeyframeTrack ||
-      track.name.endsWith('.quaternion') ||
-      track.name === ROOT_MOTION_TRACK,
+    (track) => track instanceof QuaternionKeyframeTrack || track.name.endsWith('.quaternion'),
   );
   const copy = clip.clone();
   copy.tracks = kept.map((track) => track.clone());

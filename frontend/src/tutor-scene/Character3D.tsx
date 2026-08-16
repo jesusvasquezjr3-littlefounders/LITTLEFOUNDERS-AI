@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { AnimationMixer, Box3, Group, LoopOnce, LoopRepeat, Vector3 } from 'three';
+import { AnimationMixer, Box3, Group, LoopOnce, LoopRepeat, Vector3, type AnimationAction } from 'three';
 import { useSceneModel } from './useSceneModel';
 import { characterScale, CHARACTER_ASSETS, SCENE_ASSET_BASE, type CharacterAsset } from './assets';
 import { MouthCard, hasMouthCard } from './MouthCard';
@@ -9,7 +9,14 @@ import type { CharacterAction, CharacterEmotion, CharacterId } from '@/component
 import { useGround } from './ground';
 import { ContactShadow } from './ContactShadow';
 import { bindRig, resetRig, type Rig, type RigKind } from './rig';
-import { ACTION_SECONDS, LOOPING_ACTIONS, applyCharacterFrame, applyEmotionPosture } from './characterActions';
+import {
+  ACTION_SECONDS,
+  CLIP_LIFT,
+  LOOPING_ACTIONS,
+  applyCharacterFrame,
+  applyEmotionPosture,
+  arc,
+} from './characterActions';
 import { useClipLibrary } from './useClipLibrary';
 import {
   additiveClip,
@@ -189,6 +196,7 @@ export function Character3D({
 
   // One-shot actions restart when the action or its replay key changes.
   const actionLift = useRef(0);
+  const runningAction = useRef<AnimationAction | null>(null);
   const actionStart = useRef(0);
   const startedFor = useRef<string>('');
 
@@ -262,8 +270,12 @@ export function Character3D({
     // a bow completes.
     running.clampWhenFinished = true;
     running.play();
+    // Kept so the frame loop can read the clip's OWN progress for the lift,
+    // rather than running a second, drifting clock beside it.
+    runningAction.current = running;
     return () => {
       running.stop();
+      runningAction.current = null;
       mixer.uncacheAction(additive, scene);
     };
     // actionKey replays the same clip: a one-shot that has already finished
@@ -293,7 +305,20 @@ export function Character3D({
       if (!emotionClip) {
         applyEmotionPosture(bones, emotion, state.clock.elapsedTime + PHASE[id]);
       }
-      actionLift.current = 0;
+      /*
+       * TRAVEL IS NOT IN THE CLIP. A clip can only express leaving the ground
+       * as a hips translation in the authoring rig's units — an absolute value
+       * shared between skeletons, which is the defect this whole layer exists
+       * to avoid, and it would make a 0.7 m dino jump as far as a 1.7 m human.
+       * The lift is read from the clip's OWN time so the flight matches the
+       * crouch and landing the clip does carry.
+       */
+      const travel = CLIP_LIFT[action] ?? 0;
+      const playing = runningAction.current;
+      actionLift.current =
+        travel > 0 && playing && playing.getClip().duration > 0
+          ? arc(playing.time / playing.getClip().duration) * travel * asset.targetHeightM
+          : 0;
     } else if (bones) {
       // Rest pose first; every driver accumulates onto it.
       resetRig(bones);

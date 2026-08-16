@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Bone, Object3D, Quaternion } from 'three';
 import { bindRig, resetRig } from './rig';
-import { applyCharacterFrame, ACTION_SECONDS } from './characterActions';
+import { applyCharacterFrame, ACTION_SECONDS, CLIP_LIFT, arc } from './characterActions';
 import { CHARACTER_ACTIONS, CHARACTER_EMOTIONS } from '@/components/characters/control/types';
 
 /*
@@ -163,5 +163,30 @@ describe('quaternion sanity', () => {
     for (const [bone] of rig.base) {
       expect(Math.abs(new Quaternion().copy(bone.quaternion).length() - 1)).toBeLessThan(1e-6);
     }
+  });
+});
+
+describe('CLIP_LIFT', () => {
+  it('covers exactly the actions that leave the ground', () => {
+    // A clip carries the crouch, extension and landing as rotations; the
+    // TRAVEL is the runtime's, because a distance baked in the authoring rig's
+    // units is neither correct on another skeleton nor scaled to the jumper.
+    expect(Object.keys(CLIP_LIFT).sort()).toEqual(['hop', 'jump']);
+  });
+
+  it('lifts more for a jump than a hop, and both by a fraction of height', () => {
+    expect(CLIP_LIFT.jump!).toBeGreaterThan(CLIP_LIFT.hop!);
+    for (const amount of Object.values(CLIP_LIFT)) {
+      expect(amount).toBeGreaterThan(0);
+      expect(amount).toBeLessThan(1);
+    }
+  });
+
+  it('peaks in the middle of the action and returns to the ground', () => {
+    // A jump that ends off zero leaves the character hovering; one that starts
+    // off zero teleports on the first frame.
+    expect(arc(0)).toBeCloseTo(0, 6);
+    expect(arc(1)).toBeCloseTo(0, 6);
+    expect(arc(0.5)).toBeCloseTo(1, 6);
   });
 });

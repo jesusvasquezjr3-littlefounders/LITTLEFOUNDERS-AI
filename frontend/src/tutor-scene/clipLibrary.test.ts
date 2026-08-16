@@ -116,11 +116,16 @@ describe('sanitizeClip', () => {
     expect(names).not.toContain('Head.scale');
   });
 
-  it('keeps rotation, and keeps the hips translation that IS the jump', () => {
-    // Leaving the ground is root motion and cannot be expressed as a rotation,
-    // so this one translation track is the deliberate exception.
+  it('keeps rotation and NOTHING else — not even the hips', () => {
+    /*
+     * Travel is the runtime's job (`CLIP_LIFT`), not the clip's. A hips
+     * translation is a distance in the AUTHORING rig's units, so sharing it
+     * between skeletons is the same mistake as sharing a rotation absolutely —
+     * and it would make a 0.7 m dino jump as far as a 1.7 m human. Measured,
+     * the baked value was wrong anyway: an authored 32 cm exported as 0.8 mm.
+     */
     const names = sanitizeClip(mixedClip()).tracks.map((track) => track.name);
-    expect(names).toEqual(['Head.quaternion', 'Hips.position']);
+    expect(names).toEqual(['Head.quaternion']);
   });
 
   it('does not mutate the clip it is given', () => {
