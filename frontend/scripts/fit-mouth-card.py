@@ -75,6 +75,18 @@ MOUTHS = {
     # curve through three measured points and the card is built along it, which
     # means the curve lives in the GEOMETRY and his atlas frames can be drawn
     # straight like everyone else's.
+    # Dina's mouth is a thin painted CURVE, not an open shape — much less to
+    # cover than Liruf's grin, which is why the ribbon that fell short on him is
+    # the right tool here. Her numbers look wrong until you remember she was
+    # exported in Unreal scale: everything is ~25x smaller than the others and
+    # is blown back up at runtime.
+    "Dina": {
+        "projection": "ribbon",
+        "curve": ((-0.0038, 0.0142), (0.0, 0.01217), (0.0038, 0.0142)),
+        "band": 0.0038,
+        "depth": 0.0025,
+        "gap": 0.00014,
+    },
     "Liruf": {
         "projection": "ribbon",
         # Left corner, centre, right corner of the mouth LINE, in Blender world
@@ -92,6 +104,11 @@ COLS, ROWS = 11, 7
 # much as the gap: the card is a bilinear patch BETWEEN samples and the face
 # bulges between them, so at 7x5 the real surface rose through the card and the
 # face punched a hole in the mouth.
+#
+# This is in the MODEL'S OWN UNITS, which are not the same units for everyone.
+# Dina was exported in Unreal scale and is blown up ~25x at runtime, so the
+# 3.5 mm that is right for Zara would stand 9 cm off Dina's face. Per-character
+# `gap` overrides exist for exactly that.
 GAP = 0.0035
 
 
@@ -186,6 +203,7 @@ def fit_ribbon(character, spec, dg):
     left, centre, right = spec["curve"]
     band = spec["band"]
     tolerance = spec["depth"]
+    gap = spec.get("gap", GAP)
 
     # An axis inside the muzzle, so rays fan outward and reach the sides of the
     # grin instead of grazing them.
@@ -197,10 +215,23 @@ def fit_ribbon(character, spec, dg):
         if not ok:
             raise RuntimeError("{:s}: curve point {} misses the head".format(character, point))
         samples.append((loc.x, loc.y))
+    # A ribbon FOLLOWS the mouth line; how its rays are FIRED is a separate
+    # question, and answering both with one mechanism is what collapsed Dina's
+    # card. Fitting a circle through her three surface points gives a huge
+    # radius, because a flat face makes them nearly collinear — and then
+    # `abs(distance - radius) <= tolerance` is a knife edge that rejects almost
+    # every vertex, leaving a crumpled scrap of a card.
+    #
+    # So the curvature is MEASURED and the ray mode follows from it: a real
+    # muzzle gets radial rays, a flat face gets parallel ones.
     axis = circle_through(*samples)
-    if axis is None:
-        raise RuntimeError("{:s}: mouth line is straight — use a planar fit".format(character))
-    radius = math.dist(samples[1], axis)
+    half_width = abs(right[0] - left[0]) / 2.0
+    radius = math.dist(samples[1], axis) if axis is not None else float("inf")
+    radial = axis is not None and radius < half_width * 8.0
+    if not radial:
+        # Flat enough to treat as a plane. Fire straight back, from in front.
+        axis = (samples[1][0], samples[1][1] - max(half_width, tolerance) * 2.0)
+        radius = abs(samples[1][1] - axis[1])
 
     # Same split the planar fit uses: each grid point owns a RAY, and the only
     # unknown is how far along it the surface sits. Gaps are filled in DISTANCE
@@ -219,11 +250,15 @@ def fit_ribbon(character, spec, dg):
             # Fire outward from the axis THROUGH the curve point, so the ray
             # meets the surface square-on wherever it sits around the snout.
             # The traced point supplies the angle; the axis supplies the origin.
-            outward = Vector((x - axis[0], samples[1][1] - axis[1], 0.0))
-            if outward.length < 1e-6:
-                outward = Vector((0.0, -1.0, 0.0))
-            outward.normalize()
-            origin = Vector((axis[0], axis[1], z))
+            if radial:
+                outward = Vector((x - axis[0], samples[1][1] - axis[1], 0.0))
+                if outward.length < 1e-6:
+                    outward = Vector((0.0, -1.0, 0.0))
+                outward.normalize()
+                origin = Vector((axis[0], axis[1], z))
+            else:
+                outward = Vector((0.0, 1.0, 0.0))
+                origin = Vector((x, axis[1], z))
             ray_origin[j][i] = origin
             ray_dir[j][i] = outward
             ok, loc, nrm, _a, _b, _c = bpy.context.scene.ray_cast(
@@ -261,8 +296,8 @@ def fit_ribbon(character, spec, dg):
     for j in range(ROWS):
         for i in range(COLS):
             v = ray_origin[j][i] + ray_dir[j][i] * distance[j][i]
-            v = v + (normal[j][i] or ray_dir[j][i]) * GAP
-            positions.append([round(v.x, 6), round(v.z, 6), round(-v.y, 6)])
+            v = v + (normal[j][i] or ray_dir[j][i]) * gap
+            positions.append([round(v.x, 8), round(v.z, 8), round(-v.y, 8)])
     return positions
 
 
@@ -279,6 +314,7 @@ def fit(character, source_glb):
     card_w, card_h = spec["size"]
     depth_tolerance = spec["depth"]
     ray_start_offset = depth_tolerance * 1.6
+    gap = spec.get("gap", GAP)
 
     # The face points -Y in Blender (= +Z in the glTF the runtime loads),
     # confirmed by the `headfront` bone direction AND a four-way render.
@@ -380,7 +416,7 @@ def fit(character, source_glb):
     for j in range(ROWS):
         for i in range(COLS):
             v = ray_origin[j][i] + ray_direction[j][i] * distance[j][i]
-            v = v + (normal[j][i] or c_nrm) * GAP
+            v = v + (normal[j][i] or c_nrm) * gap
             # Blender is Z-up, the runtime's glTF is Y-up.
             positions.append([round(v.x, 6), round(v.z, 6), round(-v.y, 6)])
     return positions

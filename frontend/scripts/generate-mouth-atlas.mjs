@@ -102,6 +102,22 @@ const CHARACTERS = {
     openness: 1.0,
   },
   /*
+   * Dina's painted mouth is a thin CURVE, so her card has almost nothing to
+   * hide — the opposite of Zara, whose card had to cover an open painted smile.
+   * Her shapes are small and her lip line is near-black, matching the single
+   * dark stroke she is drawn with.
+   */
+  dina: {
+    family: 'ellipse',
+    skin: '#FD851F',
+    interior: '#8C2A1E',
+    teeth: '#FFF4E6',
+    tongue: '#D9695C',
+    lipLine: '#451000',
+    spread: 1.15,
+    openness: 0.85,
+  },
+  /*
    * Liruf is not a palette swap of Zara, and assuming he was would have shipped
    * two visible defects:
    *

@@ -158,16 +158,16 @@ assumed.
 - Lost WebGL contexts are recovered rather than left black.
 - `budget.ts` holds the asset budget as code; `/dev/scene-lab` and
   `npm run assets:3d` both measure real files against it.
-- **The lab's per-frame triangle count includes the SHADOW PASS, and the budget
-  it is compared against does not.** `maxTriangles: 100_000` is an ASSET
-  ceiling — `optimize-glb` applies the same number to a single file — while
-  `gl.info.render.triangles` counts every triangle the GPU processed that
-  frame. `high` is the only tier with shadows, so it renders the scene twice
-  and the count doubles exactly: rho + liruf on diorama-a measured
-  **102,424**, which is 2 × the 51,208 those three assets actually contain, and
-  the lab painted "Over budget" in red for a scene that is within its
-  documented cost. The number is not wrong; the COMPARISON is. Frame cost and
-  asset cost need separate ceilings before that readout can be trusted.
+- **Frame cost and asset cost are SEPARATE ceilings**, and conflating them
+  produced a permanent false alarm. `gl.info.render.triangles` counts every
+  triangle submitted, and `high` is the only tier with shadows — so it renders
+  the scene twice and the count doubles exactly: rho + liruf on diorama-a
+  measured **102,424** against assets containing **51,208**. Compared to the
+  100,000 ASSET ceiling that painted "Over budget" in red for a scene
+  comfortably inside its documented cost, which is worse than no readout — it
+  teaches whoever is doing performance work to ignore their only alarm.
+  `maxTrianglesPerFrame` (220,000) now measures live scenes and `maxTriangles`
+  still measures a single .glb.
 - **`three` must only ever be reached through a lazy route.** Verify after each
   build: `WebGLRenderer` appears in the `TutorScene-*` chunk (≈287 kB gzip) and
   NOT in `index-*`.
@@ -236,8 +236,17 @@ reason is worth reading before anyone assumes it is a palette swap.
   which is what a moustache does. His card is deliberately small: a soft
   skin-coloured edge straying onto that near-black moustache would be the one
   part of it the eye finds instantly.
-- **dina** is a quadruped seen mostly in profile, with a single painted curve
-  for a mouth. Her muzzle will hit the same fitting problem as Liruf's.
+- **dina — fitted, NOT shipped, and she failed differently from Liruf.** Her
+  painted mouth is a thin curve, so there is barely anything to cover — the
+  ribbon should have been easy. It collapsed instead: 38 of her 77 card
+  vertices were rejected, because her head is so small that the ray origin
+  (an axis 5.2 mm inside a face 10 mm tall) falls outside the head for the
+  band's top and bottom rows, and those rays never meet a surface. Her card
+  rendered as a crumpled scrap.
+  Fitting her also forced a real fix that outlives her: the RAY MODE is now
+  chosen from measured curvature rather than assumed, and the per-character
+  `gap` exists because she is exported at Unreal scale and blown up ~25x at
+  runtime — the 3.5 mm gap that suits Zara would stand 9 cm off Dina's face.
 
 A card is therefore **three measurements and a shape family**, not a colour:
 the mouth rect, the albedo either side of it, and a projection that suits the

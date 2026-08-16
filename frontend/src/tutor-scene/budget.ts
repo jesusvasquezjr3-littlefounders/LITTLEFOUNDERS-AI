@@ -22,8 +22,20 @@
  */
 
 export interface AssetBudget {
-  /** Whole scene, characters included. */
+  /** Whole scene, characters included. Counts each triangle ONCE. */
   maxTriangles: number;
+  /**
+   * Triangles the GPU may process per frame, which is not the same number.
+   *
+   * `gl.info.render.triangles` counts every triangle SUBMITTED, and the `high`
+   * tier is the only one with shadows — so it renders the scene twice and the
+   * count doubles exactly. Measured: rho + liruf on diorama-a reported 102,424
+   * against assets containing 51,208. Comparing that against the asset ceiling
+   * painted "Over budget" in red for a scene comfortably inside its documented
+   * cost, which is worse than no readout: it trains whoever is doing
+   * performance work to ignore the one alarm they have.
+   */
+  maxTrianglesPerFrame: number;
   /** One character on its own. */
   maxTrianglesPerCharacter: number;
   /**
@@ -39,6 +51,10 @@ export interface AssetBudget {
 
 export const TUTOR_ASSET_BUDGET: Readonly<AssetBudget> = Object.freeze({
   maxTriangles: 100_000,
+  // Two passes at the asset ceiling, plus headroom: a shadow-casting scene
+  // legitimately submits its geometry twice, and that is real GPU work rather
+  // than double counting.
+  maxTrianglesPerFrame: 220_000,
   maxTrianglesPerCharacter: 50_000,
   maxDrawCalls: 30,
   maxTextureSize: 2048,
@@ -69,11 +85,18 @@ export interface BudgetReading {
  * unknown size must not be reported as a passing zero (/AGENTS.md §1.14).
  */
 export function readBudget(
-  stats: { triangles: number; drawCalls: number; fileBytes?: number },
+  stats: { triangles: number; drawCalls: number; fileBytes?: number; perFrame?: boolean },
   budget: AssetBudget = TUTOR_ASSET_BUDGET,
 ): BudgetReading[] {
+  /*
+   * A live scene is measured against the PER-FRAME ceiling; a single .glb
+   * inspected on its own is measured against the asset one. Same field, two
+   * questions, and answering the second with the first is what produced a
+   * permanent false alarm on the only tier that casts shadows.
+   */
+  const triangleLimit = stats.perFrame ? budget.maxTrianglesPerFrame : budget.maxTriangles;
   const readings: BudgetReading[] = [
-    line('triangles', stats.triangles, budget.maxTriangles),
+    line('triangles', stats.triangles, triangleLimit),
     line('drawCalls', stats.drawCalls, budget.maxDrawCalls),
   ];
   if (typeof stats.fileBytes === 'number') {

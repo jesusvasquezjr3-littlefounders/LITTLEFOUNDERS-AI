@@ -167,7 +167,13 @@ export default function SceneLabPage() {
   useEffect(() => () => { if (modelUrl) URL.revokeObjectURL(modelUrl); }, [modelUrl]);
 
   const readings = stats
-    ? readBudget({ triangles: stats.triangles, drawCalls: stats.drawCalls, fileBytes })
+    ? readBudget({
+        triangles: stats.triangles,
+        drawCalls: stats.drawCalls,
+        fileBytes,
+        // The composed scene is a live render; `inspect asset` measures one file.
+        perFrame: composed,
+      })
     : [];
 
   const unknown = t('tutor.lab.unknown');
