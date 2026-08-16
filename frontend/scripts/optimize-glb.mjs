@@ -16,8 +16,8 @@
  * atlas the textures) belongs in the DCC where the artist can see the result.
  */
 import { existsSync } from 'node:fs';
-import { writeFile, stat } from 'node:fs/promises';
-import { basename, resolve } from 'node:path';
+import { writeFile, stat, mkdir } from 'node:fs/promises';
+import { basename, dirname, resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
@@ -172,6 +172,14 @@ transforms.push(
 );
 
 await document.transform(...transforms);
+/*
+ * The output tree is a build output and therefore gitignored, so on a clean
+ * checkout `public/scenes/` does not exist. Creating it here rather than asking
+ * the caller to: the write is the LAST step, so a missing directory threw only
+ * after the whole pipeline had run — minutes of simplification on a diorama,
+ * discarded at the finish line.
+ */
+await mkdir(dirname(output), { recursive: true });
 await writeFile(output, await io.writeBinary(document));
 
 const after = measure(document);
