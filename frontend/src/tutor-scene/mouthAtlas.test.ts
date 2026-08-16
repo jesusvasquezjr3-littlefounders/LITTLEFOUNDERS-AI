@@ -1,3 +1,4 @@
+import { hasMouthCard } from './MouthCard';
 import { describe, expect, it } from 'vitest';
 import { BufferAttribute, Object3D, Bone, BufferGeometry, Vector3 } from 'three';
 import {
@@ -148,5 +149,31 @@ describe('toHeadLocal', () => {
 describe('mouthAtlasUrl', () => {
   it('sits beside the .glb it belongs to', () => {
     expect(mouthAtlasUrl('/scenes', 'zara')).toBe('/scenes/mouth/zara.png');
+  });
+});
+
+describe('which characters carry a card', () => {
+  /*
+   * Two of four, and that is a DECISION rather than unfinished work.
+   *
+   * rho and zara are the human characters and they lip-sync. Liruf's grin and
+   * Dina's smile are painted into the albedo across a curved snout, and a grid
+   * patch cannot cover a large painted feature there cleanly — the last attempt
+   * widened his card by 4 cm a side (measured off a front render: the grin runs
+   * -0.191 to 0.237, the card reached -0.149 to 0.209) and still left red
+   * fragments showing on the `closed` frame, which is the one frame that has to
+   * read as a shut mouth. They keep their painted expressions.
+   */
+  it('gives the two speaking characters a mouth and the companions none', () => {
+    expect(hasMouthCard('rho')).toBe(true);
+    expect(hasMouthCard('zara')).toBe(true);
+    expect(hasMouthCard('liruf')).toBe(false);
+    expect(hasMouthCard('dina')).toBe(false);
+  });
+
+  it('leaves the default lead able to speak', () => {
+    // TutorStage defaults to rho. A default character who cannot lip-sync would
+    // make the whole audio path invisible on first load.
+    expect(hasMouthCard('rho')).toBe(true);
   });
 });

@@ -91,10 +91,18 @@ MOUTHS = {
         "projection": "ribbon",
         # Left corner, centre, right corner of the mouth LINE, in Blender world
         # (x, z). Measured off a gridded front render at a known ortho scale.
-        "curve": ((-0.1489, 0.9163), (0.0309, 0.8481), (0.2085, 0.9163)),
+        #
+        # WIDENED from (-0.1489 .. 0.2085) after the first fit shipped nothing:
+        # the painted grin leaked past BOTH ends of the card, which is not a
+        # depth or projection problem and no amount of tuning those fixed it.
+        # Re-measured against a front render at ortho 0.62 centred on (0.03,
+        # 0.90): the grin actually runs -0.191 to 0.237, so the card was ~4 cm
+        # short on each side. The ends are NOT symmetric because his model is
+        # not — the same asymmetry that leaves his rig without a mirror (§4.2).
+        "curve": ((-0.205, 0.9180), (0.0309, 0.8450), (0.2500, 0.9180)),
         # Band height across the mouth line, in metres. The painted grin is
         # 0.084 m at its centre; the rest is the margin the feather fades over.
-        "band": 0.135,
+        "band": 0.155,
         "depth": 0.075,
     },
 }

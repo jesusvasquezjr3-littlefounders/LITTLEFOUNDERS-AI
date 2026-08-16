@@ -1071,13 +1071,13 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 > only**, not the tutoring.
 >
 > **Status (2026-08-16):** stage BUILT, rendering, and READY AS AN INTEGRATION
-> TARGET — §7b is the contract RAG/TTS plug into. Zara has a working mouth
-> driven by real audio through `useLipSync`; three characters still need their
-> card. ALL TWELVE actions are authored clips; the seven emotions remain
-> procedural posture. Conversational layer NOT started (/ORACLE.md). Assets are
-> local-only — publishing them to Depot is the one blocker before deploy.
+> TARGET — §7b is the contract RAG/TTS plug into. **zara and rho** have working
+> mouths driven by real audio through `useLipSync`; liruf and dina do not (§7.1).
+> All twelve actions AND all seven emotions are authored clips, composed
+> additively over each character's bind pose (§4.0–§4.2). Conversational layer
+> NOT started (/ORACLE.md). Assets are local-only — publishing them to Depot is
+> the one blocker before deploy.
 
----
 ```
 
 ### WALKTHROUGH.md
@@ -20439,7 +20439,7 @@ function systemPrefersDark(): boolean {
 ```
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { AnimationMixer, Box3, Group, LoopOnce, LoopRepeat, Vector3 } from 'three';
+import { AnimationMixer, Box3, Group, LoopOnce, LoopRepeat, Vector3, type AnimationAction } from 'three';
 import { useSceneModel } from './useSceneModel';
 import { characterScale, CHARACTER_ASSETS, SCENE_ASSET_BASE, type CharacterAsset } from './assets';
 import { MouthCard, hasMouthCard } from './MouthCard';
@@ -20448,10 +20448,10 @@ import type { CharacterAction, CharacterEmotion, CharacterId } from '@/component
 import { useGround } from './ground';
 import { ContactShadow } from './ContactShadow';
 import { bindRig, resetRig, type Rig, type RigKind } from './rig';
-import { ACTION_SECONDS, LOOPING_ACTIONS, applyCharacterFrame, applyEmotionPosture } from './characterActions';
-import { useClipLibrary } from './useClipLibrary';
-import { additiveEmotion, clipFor, emotionClipFor, LOOPING_CLIPS, restClipFrom } from './clipLibrary';
-
+import {
+  ACTION_SECONDS,
+  CLIP_LIFT,
+  LOOPING_ACTIONS,
 ```
 
 ### frontend/src/tutor-scene/ContactShadow.tsx
@@ -20557,7 +20557,7 @@ import type { QualitySettings } from './quality';
 ### frontend/src/tutor-scene/TutorScene.tsx
 
 ```
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Box3, Group, Vector3, type PerspectiveCamera } from 'three';
 import { SceneCanvas, type SceneStats } from './SceneCanvas';
@@ -20567,7 +20567,7 @@ import { Character3D } from './Character3D';
 import { QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
 import { findStandingSpots, type StandingSpot } from './standingSpots';
-import { CHARACTER_ASSETS, type SCENE_ASSETS } from './assets';
+import { CHARACTER_ASSETS, characterFootprintM, type SCENE_ASSETS } from './assets';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
 
 /*
@@ -20680,7 +20680,7 @@ describe('readBudget', () => {
 import { describe, expect, it } from 'vitest';
 import { Bone, Object3D, Quaternion } from 'three';
 import { bindRig, resetRig } from './rig';
-import { applyCharacterFrame, ACTION_SECONDS } from './characterActions';
+import { applyCharacterFrame, ACTION_SECONDS, CLIP_LIFT, arc } from './characterActions';
 import { CHARACTER_ACTIONS, CHARACTER_EMOTIONS } from '@/components/characters/control/types';
 
 /*
@@ -20718,40 +20718,40 @@ import type { CharacterAction, CharacterEmotion } from '@/components/characters/
 
 ```
 import { describe, expect, it } from 'vitest';
-import { AnimationClip, QuaternionKeyframeTrack } from 'three';
+import { AnimationClip, QuaternionKeyframeTrack, VectorKeyframeTrack } from 'three';
 import { CHARACTER_ACTIONS } from '@/components/characters/control/types';
 import {
-  additiveEmotion,
+  additiveClip,
+  baseClipName,
   clipFor,
   emotionClipFor,
   LOOPING_CLIPS,
   REST_CLIP,
   restClipFrom,
+  sanitizeClip,
   unknownClipNames,
 } from './clipLibrary';
 
-function quatClip(name: string, values: number[]): AnimationClip {
-  return new AnimationClip(name, -1, [
 ```
 
 ### frontend/src/tutor-scene/clipLibrary.ts
 
 ```
-import { AnimationUtils, type AnimationClip } from 'three';
+import { AnimationUtils, QuaternionKeyframeTrack, type AnimationClip } from 'three';
 import type { CharacterAction, CharacterEmotion } from '@/components/characters/control/types';
 import { SCENE_ASSET_BASE } from './assets';
 
 /*
  * The authored clip library.
  *
- * rho, zara and liruf share ONE 24-joint skeleton with identical bone names,
- * and a three.js AnimationClip binds to nodes BY NAME — so a single file of
- * clips drives all three. `frontend/scripts/author-clips.py` produces it.
+ * rho, zara and liruf share the 24 BONE NAMES the library was authored against,
+ * and a three.js AnimationClip binds to nodes by name — so a single file of
+ * clips can drive all three. `frontend/scripts/author-clips.py` produces it.
  *
- * Dina is a quadruped on her own 27-joint rig. Playing a biped clip on her
- * would bind nothing and leave her frozen in bind pose, which is worse than the
- * procedural motion she has today, so she is excluded by rig kind rather than
- * by hoping the names miss.
+ * WHAT THEY DO NOT SHARE IS A REST POSE, and an earlier version of this comment
+ * claimed otherwise. Measured against Zara, the rig the library is authored on:
+ *
+ *              LeftUpLeg   Hips   Spine02   RightForeArm   foot separation
 ```
 
 ### frontend/src/tutor-scene/fitCamera.ts
@@ -20897,6 +20897,7 @@ import { VISEMES } from './mouthAtlas';
 ### frontend/src/tutor-scene/mouthAtlas.test.ts
 
 ```
+import { hasMouthCard } from './MouthCard';
 import { describe, expect, it } from 'vitest';
 import { BufferAttribute, Object3D, Bone, BufferGeometry, Vector3 } from 'three';
 import {
@@ -20911,7 +20912,6 @@ import {
 } from './mouthAtlas';
 
 describe('visemeOffset', () => {
-  it('gives every viseme its own cell', () => {
 ```
 
 ### frontend/src/tutor-scene/mouthAtlas.ts
