@@ -1,18 +1,34 @@
-import { AnimationUtils, type AnimationClip } from 'three';
+import { AnimationUtils, QuaternionKeyframeTrack, type AnimationClip } from 'three';
 import type { CharacterAction, CharacterEmotion } from '@/components/characters/control/types';
 import { SCENE_ASSET_BASE } from './assets';
 
 /*
  * The authored clip library.
  *
- * rho, zara and liruf share ONE 24-joint skeleton with identical bone names,
- * and a three.js AnimationClip binds to nodes BY NAME — so a single file of
- * clips drives all three. `frontend/scripts/author-clips.py` produces it.
+ * rho, zara and liruf share the 24 BONE NAMES the library was authored against,
+ * and a three.js AnimationClip binds to nodes by name — so a single file of
+ * clips can drive all three. `frontend/scripts/author-clips.py` produces it.
  *
- * Dina is a quadruped on her own 27-joint rig. Playing a biped clip on her
- * would bind nothing and leave her frozen in bind pose, which is worse than the
- * procedural motion she has today, so she is excluded by rig kind rather than
- * by hoping the names miss.
+ * WHAT THEY DO NOT SHARE IS A REST POSE, and an earlier version of this comment
+ * claimed otherwise. Measured against Zara, the rig the library is authored on:
+ *
+ *              LeftUpLeg   Hips   Spine02   RightForeArm   foot separation
+ *   zara            —        —       —           —              0.092
+ *   rho           74deg    70deg   72deg        31deg           0.234
+ *   liruf         39deg    27deg   11deg        73deg           0.447
+ *
+ * 23 of the 24 bones differ. So a clip played ABSOLUTELY dresses every
+ * character in Zara's skeleton: Liruf's feet snap from 0.447 apart to 0.092,
+ * and Rho's torso folds by 70 degrees. Both were visible on screen — Zara stood
+ * correctly and the other two were visibly deformed, which is the tell that a
+ * shared-rig assumption is false rather than the animation being bad.
+ *
+ * Hence the two rules enforced below: a shared clip carries ROTATION ONLY (plus
+ * deliberate root motion), and it is composed ADDITIVELY over whatever pose the
+ * character's own export gives it.
+ *
+ * Dina is a quadruped on her own 27-joint rig with different bone names. She is
+ * excluded by rig kind rather than by hoping the names miss.
  */
 
 export const CLIP_LIBRARY_URL = `${SCENE_ASSET_BASE}/clips-biped.glb`;
@@ -71,25 +87,94 @@ export function restClipFrom(clips: readonly AnimationClip[]): AnimationClip | n
 }
 
 /*
+ * THE ONLY BONE ALLOWED TO TRANSLATE.
+ *
+ * Leaving the ground is root motion and cannot be expressed as a rotation, so
+ * `jump` and `hop` translate the hips. Every OTHER translation track in these
+ * files is not animation at all — a bone's translation in glTF is its rest
+ * offset from its parent, i.e. the authoring character's PROPORTIONS.
+ */
+const ROOT_MOTION_TRACK = 'Hips.position';
+
+/**
+ * Strips everything a shared clip has no business carrying.
+ *
+ * The library is exported with `export_force_sampling`, which emits
+ * translation, rotation AND scale for all 24 bones of all 20 clips — 1,440
+ * tracks, of which 1,140 describe Zara's skeleton rather than any motion.
+ * Played on Rho or Liruf those channels overwrite bone offsets with Zara's,
+ * which is what pulled their legs together.
+ *
+ * Additive conversion alone would already neutralise them (rest minus rest is
+ * zero), so this is belt AND braces — but it is the half that states the
+ * invariant, and it drops two thirds of the tracks the mixer evaluates per
+ * frame. A future re-export with different flags cannot reintroduce the bug.
+ */
+const sanitizeCache = new WeakMap<AnimationClip, AnimationClip>();
+
+export function sanitizeClip(clip: AnimationClip): AnimationClip {
+  const cached = sanitizeCache.get(clip);
+  if (cached) return cached;
+  const kept = clip.tracks.filter(
+    (track) =>
+      track instanceof QuaternionKeyframeTrack ||
+      track.name.endsWith('.quaternion') ||
+      track.name === ROOT_MOTION_TRACK,
+  );
+  const copy = clip.clone();
+  copy.tracks = kept.map((track) => track.clone());
+  sanitizeCache.set(clip, copy);
+  return copy;
+}
+
+/*
  * `makeClipAdditive` MUTATES the clip it is given, so a clip converted twice is
- * converted against itself and the emotion quietly flattens toward nothing.
- * The library is shared by every character on screen, so that would happen on
- * the second character to mount. Convert a CLONE, once, and remember it.
+ * converted against itself and quietly flattens toward nothing. The library is
+ * shared by every character on screen, so that would happen on the second
+ * character to mount. Convert a CLONE, once, and remember it.
  */
 const additiveCache = new WeakMap<AnimationClip, AnimationClip>();
 
-export function additiveEmotion(clip: AnimationClip, reference: AnimationClip): AnimationClip {
+/**
+ * Converts a clip to deltas against the library's rest pose.
+ *
+ * This is what makes ONE library safe on THREE different skeletons. An additive
+ * action is applied as `characterOwnPose * authoredDelta`, so each character
+ * performs the gesture from its own stance instead of being re-posed into
+ * Zara's — the same relative-offset rule the procedural driver already follows
+ * (`characterActions.ts`), now applied to authored clips too.
+ */
+export function additiveClip(clip: AnimationClip, reference: AnimationClip): AnimationClip {
   const cached = additiveCache.get(clip);
   if (cached) return cached;
-  const copy = clip.clone();
+  const clean = sanitizeClip(clip);
+  // Compared against the SANITIZED reference: the check has to describe the
+  // clip `makeClipAdditive` will actually be handed, not the one on disk.
+  const cleanReference = sanitizeClip(reference);
+  const referenceNames = new Set(cleanReference.tracks.map((track) => track.name));
+  /*
+   * A track with no counterpart in the reference is left ABSOLUTE by
+   * `makeClipAdditive` — silently, with no warning. That is precisely the
+   * defect this function exists to prevent, so an unmatched track is a build
+   * error rather than a character who wears someone else's bones for one joint.
+   */
+  const orphans = clean.tracks.filter((track) => !referenceNames.has(track.name));
+  if (orphans.length > 0) {
+    throw new Error(
+      `clipLibrary: "${clip.name}" has ${orphans.length} track(s) absent from "${reference.name}" ` +
+        `(${orphans.slice(0, 3).map((track) => track.name).join(', ')}). ` +
+        'makeClipAdditive would leave them absolute and re-pose the character.',
+    );
+  }
+  const copy = clean.clone();
   /*
    * The reference is an EXPORTED rest clip rather than this clip's own frame 0,
    * because a bone's rest orientation is its bind rotation and not identity —
-   * there is no way to write "no emotion" in clip space without shipping it.
-   * Using frame 0 instead would make every emotion a deviation from ITSELF,
-   * so a held posture like `proud` would pulse back to neutral once per loop.
+   * there is no way to write "no offset" in clip space without shipping it.
+   * Using frame 0 instead would make every clip a deviation from ITSELF, so a
+   * held posture like `proud` would pulse back to neutral once per loop.
    */
-  AnimationUtils.makeClipAdditive(copy, 0, reference, 30);
+  AnimationUtils.makeClipAdditive(copy, 0, cleanReference, 30);
   additiveCache.set(clip, copy);
   return copy;
 }

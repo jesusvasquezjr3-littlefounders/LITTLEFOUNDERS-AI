@@ -11,7 +11,7 @@ import { ContactShadow } from './ContactShadow';
 import { bindRig, resetRig, type Rig, type RigKind } from './rig';
 import { ACTION_SECONDS, LOOPING_ACTIONS, applyCharacterFrame, applyEmotionPosture } from './characterActions';
 import { useClipLibrary } from './useClipLibrary';
-import { additiveEmotion, clipFor, emotionClipFor, LOOPING_CLIPS, restClipFrom } from './clipLibrary';
+import { additiveClip, clipFor, emotionClipFor, LOOPING_CLIPS, restClipFrom } from './clipLibrary';
 
 /*
  * A canonical character standing in the Tutor scene.
@@ -115,17 +115,42 @@ export function Character3D({
   const grounded = surfaceY !== null;
   const groundY = (surfaceY ?? 0) + footOffset;
 
-  // Evaluate the authored clip once to get a usable standing pose, then stop.
-  const mixer = useMemo(() => (animations.length ? new AnimationMixer(scene) : null), [animations, scene]);
+  /*
+   * ONE mixer owns this skeleton, and that is load-bearing rather than tidiness.
+   *
+   * With a second mixer for the clip library, each new AnimationMixer captured
+   * its "original value" from whatever the bones happened to hold at bind time —
+   * which, after a clamped one-shot, is the last frame of the PREVIOUS gesture.
+   * Switching from `bow` to `wave` then layered the wave on top of a held bow.
+   * A single mixer composes the pose and the additive layers explicitly instead.
+   */
+  const mixer = useMemo(() => new AnimationMixer(scene), [scene]);
+
+  /*
+   * THE CHARACTER'S OWN STANCE, held as a pose.
+   *
+   * Every export ships exactly one clip and all of them are locomotion cycles,
+   * so it is evaluated at a single time and paused rather than played. This is
+   * the base the whole animation stack composes over — it is what makes Rho
+   * stand like Rho and Liruf like Liruf — so it stays playing at full weight
+   * instead of being applied once and forgotten.
+   */
   useEffect(() => {
-    if (!mixer || !animations[0]) return;
-    const action = mixer.clipAction(animations[0]);
-    action.play();
-    mixer.setTime(poseAt);
-    action.paused = true;
+    const source = animations[0];
+    if (!source) return;
+    const pose = mixer.clipAction(source);
+    pose.play();
+    /*
+     * `pose.time`, NOT `mixer.setTime`: the mixer clock is shared, so seeking it
+     * would rewind every additive layer to the same instant each time this
+     * effect re-ran, restarting gestures mid-flight.
+     */
+    pose.time = poseAt;
+    pose.paused = true;
+    mixer.update(0);
     return () => {
-      mixer.stopAllAction();
-      mixer.uncacheRoot(scene);
+      pose.stop();
+      mixer.uncacheAction(source, scene);
     };
   }, [mixer, animations, poseAt, scene]);
 
@@ -175,10 +200,17 @@ export function Character3D({
     [clips, action, rigKind],
   );
 
-  const clipMixer = useMemo(() => (clip ? new AnimationMixer(scene) : null), [clip, scene]);
+  /*
+   * The reference pose the library's deltas are measured against. Without it
+   * nothing from the library may play: an absolute clip re-poses the character
+   * into the authoring rig's skeleton, which is a visibly broken character
+   * rather than a missing gesture. Falling back to the procedural driver is the
+   * strictly better failure.
+   */
+  const restClip = useMemo(() => restClipFrom(clips), [clips]);
 
   /*
-   * The EMOTION LAYER, composed additively over the action clip.
+   * The EMOTION LAYER, composed additively like the action.
    *
    * Only meaningful while the mixer owns the skeleton. On the procedural path
    * `applyEmotionPosture` does this job instead, and running both would apply
@@ -188,47 +220,57 @@ export function Character3D({
     () => (rigKind === 'biped' ? emotionClipFor(clips, emotion) : null),
     [clips, emotion, rigKind],
   );
-  const restClip = useMemo(() => restClipFrom(clips), [clips]);
+
+  const clipDriven = clip !== null && restClip !== null;
 
   useEffect(() => {
-    if (!clipMixer || !emotionClip || !restClip) return;
-    const additive = additiveEmotion(emotionClip, restClip);
-    const layer = clipMixer.clipAction(additive);
+    if (!clipDriven || !emotionClip || !restClip) return;
+    const additive = additiveClip(emotionClip, restClip);
+    const layer = mixer.clipAction(additive);
     layer.setLoop(LoopRepeat, Infinity);
     layer.play();
     return () => {
       layer.stop();
-      clipMixer.uncacheAction(additive, scene);
+      mixer.uncacheAction(additive, scene);
     };
-  }, [clipMixer, emotionClip, restClip, scene]);
+  }, [mixer, clipDriven, emotionClip, restClip, scene]);
 
   useEffect(() => {
-    if (!clipMixer || !clip) return;
-    const running = clipMixer.clipAction(clip);
+    if (!clip || !restClip) return;
+    /*
+     * ADDITIVE, not absolute. The three bipeds share bone NAMES but not rest
+     * orientations — 23 of 24 differ, by up to 74 degrees at the hip — so an
+     * absolute clip dresses each of them in Zara's skeleton. Additive makes the
+     * mixer apply `characterOwnPose * authoredDelta`, so the gesture arrives
+     * without the authoring character's stance coming with it.
+     */
+    const additive = additiveClip(clip, restClip);
+    const running = mixer.clipAction(additive);
     running.reset();
     running.setLoop(LOOPING_CLIPS.has(clip.name) ? LoopRepeat : LoopOnce, Infinity);
-    // A finished one-shot HOLDS its last frame. Without this the mixer restores
-    // the bind pose on the final frame and the character snaps upright the
-    // instant a bow completes.
+    // A finished one-shot HOLDS its last frame. Without this the mixer drops
+    // the layer on the final frame and the character snaps upright the instant
+    // a bow completes.
     running.clampWhenFinished = true;
     running.play();
     return () => {
       running.stop();
-      clipMixer.uncacheAction(clip, scene);
+      mixer.uncacheAction(additive, scene);
     };
     // actionKey replays the same clip: a one-shot that has already finished
     // will not restart on its own.
-  }, [clipMixer, clip, scene, actionKey]);
+  }, [mixer, clip, restClip, scene, actionKey]);
 
   useFrame((state, delta) => {
     const group = inner.current;
     if (!group) return;
 
     const bones = rig.current;
-    if (bones && clipMixer) {
+    if (bones && clipDriven) {
       /*
-       * An authored clip OWNS the skeleton this frame. `resetRig` and the
-       * procedural driver are both skipped, because a mixer writes absolute
+       * The mixer OWNS the skeleton this frame: it writes the character's own
+       * pose and then the additive gesture on top of it. `resetRig` and the
+       * procedural driver are both skipped, because they assign absolute
        * orientations and the two layers would fight for the same joints —
        * whichever ran last would win, per bone, which reads as jitter rather
        * than as a bug.
@@ -236,7 +278,7 @@ export function Character3D({
        * Emotion still composes, because it is a RELATIVE offset premultiplied
        * onto whatever the mixer just wrote.
        */
-      clipMixer.update(delta);
+      mixer.update(delta);
       // An authored emotion clip is already blended in additively by the mixer;
       // applying the procedural posture as well would double it.
       if (!emotionClip) {

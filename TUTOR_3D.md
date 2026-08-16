@@ -59,13 +59,36 @@ group, so the .glb stays byte-identical to what the artist approved.
 
 ## §3 The rigs — and the one hard limit
 
-Three characters (rho, zara, liruf) share an **identical 24-joint biped
-skeleton**:
+Three characters (rho, zara, liruf) share the same **24 biped bone NAMES**:
 
 ```
 Hips · Spine · Spine01 · Spine02 · neck · Head · head_end · headfront
 Left|Right: UpLeg · Leg · Foot · ToeBase · Shoulder · Arm · ForeArm · Hand
 ```
+
+> ### ⚠️ They do NOT share a rest pose — and this document said they did
+>
+> Same names, same count, **23 of the 24 bones differ in rest orientation**.
+> Measured against Zara (`scripts/`-driven probe, degrees):
+>
+> | | LeftUpLeg | Hips | Spine02 | RightForeArm | foot separation |
+> |---|---|---|---|---|---|
+> | zara | — | — | — | — | 0.092 |
+> | rho | 74° | 70° | 72° | 31° | 0.234 |
+> | liruf | 39° | 27° | 11° | 73° | 0.447 |
+>
+> **Two consequences, and both bit.**
+>
+> An ABSOLUTE clip authored on one rig re-poses the others into that rig's
+> skeleton. Rho's feet collapsed 60.6% and Liruf's 79.4% — both to exactly
+> Zara's 0.09214 — because glTF stores a bone's rest offset in its
+> `translation` channel, so a force-sampled clip ships the authoring
+> character's PROPORTIONS as if they were motion. Fixed by
+> `sanitizeClip` + `additiveClip` (§4.1); drift is now 0.0% on all three.
+>
+> A gesture's AMPLITUDE is still calibrated to the rig it was authored on, and
+> additive composition does not fix that. It is a separate, open problem —
+> §4.2.
 
 Dina is a **quadruped on her own 27-joint rig**: Hips, chest, head, ear ends, a
 5-segment tail chain, and front/back leg chains.
@@ -105,6 +128,62 @@ Emotions map to **posture**, not expression — there is no face to move (§3).
 That is a weaker channel than the 2D characters have, and it is stated plainly
 rather than pretended otherwise.
 
+### §4.1 The authored clip library — why every clip is ADDITIVE
+
+`frontend/scripts/author-clips.py` produces `clips-biped.glb`: 20 clips (12
+actions + 7 emotions + `emotion.rest`) authored on Zara's rig. Two rules make
+one file safe on three skeletons that do not share a rest pose (§3):
+
+1. **`sanitizeClip` — rotation only, plus one deliberate root translation.**
+   The export is force-sampled, so it carries translation, rotation AND scale
+   for all 24 bones of all 20 clips: 1,440 tracks, of which 1,140 describe
+   Zara's skeleton rather than any motion. `Hips.position` is the single
+   exception, because leaving the ground is root motion and cannot be expressed
+   as a rotation.
+2. **`additiveClip` — deltas against `emotion.rest`, never absolute values.**
+   The mixer then applies `characterOwnPose × authoredDelta`, which is the same
+   relative-offset rule the procedural driver has always followed. A track with
+   no counterpart in the reference **throws**: `AnimationUtils.makeClipAdditive`
+   silently leaves such a track ABSOLUTE, which is exactly the defect being
+   prevented.
+
+The character's own export clip plays underneath at full weight as the base
+pose, on the **same** AnimationMixer. A second mixer captured its "original
+value" from whatever the bones held at bind time — after a clamped one-shot,
+the last frame of the previous gesture — so switching `bow` → `wave` layered
+the wave on top of a held bow.
+
+### §4.2 OPEN: gesture amplitude is calibrated to one rig
+
+Additive composition fixes *proportions*, not *amplitude*. A bone-local delta
+of 150° means something different on a bone whose rest orientation is 73° away,
+so a gesture authored on Zara arrives muted or misaimed on the others.
+Measured, at each gesture's peak frame:
+
+| gesture | zara | rho | liruf |
+|---|---|---|---|
+| `think` | ✅ | ✅ | ✅ |
+| `bow` | ✅ | ✅ | ✅ |
+| `wave` | ✅ | ✅ acceptable | ✅ |
+| `point` | ✅ | ⚠️ weak (10.2 forward) | ❌ **pointed backwards** (−0.9) |
+| `celebrate` | ✅ overhead | ❌ hands at head | ❌ arms stay down |
+
+Two findings worth keeping:
+
+- **Rho physically cannot raise his arms overhead.** Arm reach 15.99 from a
+  shoulder at ~3.2 tops out at 19.2; his crown is at 25.94. Stylized character,
+  big head, short arms. His `celebrate` has to be *arms up and out*, not a
+  retarget of Zara's.
+- **An armature-space retarget is not the fix.** It was implemented and
+  measured (identity check on Zara: 2e-6, so the maths is right). It *helps*
+  Liruf and *hurts* Rho — the rests differ in incompatible ways and no single
+  linear rule serves both. Per-character values are the answer, not a smarter
+  transform.
+
+The intended shape is per-character override clips named `<action>@<id>` in the
+same library, resolved with fallback to the shared `<action>`, so only the four
+clips that actually need it get authored twice.
+
 ### Rules that will bite whoever touches this next
 
 1. **Rotate bones with `premultiply` (parent space), never `multiply` (local
@@ -118,9 +197,13 @@ rather than pretended otherwise.
    `resetRig()` once per frame is what makes accumulation safe.
 3. **A missing bone must never throw mid-frame.** Unbound slots are simply not
    driven.
-4. **Amplitudes are art direction, and they are NOT art-directed yet.** The
-   gestures read, but `celebrate` in particular leaves the arms mid-height
-   instead of overhead. Tuning is numbers in one file plus a screenshot pass.
+4. **Amplitudes are art direction, they are NOT art-directed yet, and they are
+   per-character.** See §4.2 for what is measured and what is still open.
+5. **Never share an absolute clip between these rigs.** Same bone names is not
+   the same skeleton (§3), and the failure is silent on the rig it was authored
+   on — Zara stood correctly through the entire defect while the other two were
+   visibly deformed. If one character looks right and the others do not,
+   suspect the rest pose before suspecting the animation.
 
 ## §5 Placement — solved, never authored
 
