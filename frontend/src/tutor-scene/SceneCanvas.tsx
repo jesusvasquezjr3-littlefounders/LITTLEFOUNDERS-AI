@@ -161,8 +161,23 @@ export function SceneCanvas({ children, className, onStats, onSettings, camera }
     );
   }
 
+  /*
+   * `min-w-0` and the canvas cap are what let this shrink, and both are load
+   * bearing.
+   *
+   * R3F gives the <canvas> explicit width/height ATTRIBUTES, which is an
+   * intrinsic size. A grid or flex item defaults to `min-width: auto`, meaning
+   * it will not shrink below its content's min-content width — so once the
+   * canvas had been sized at a wide viewport, the column could never get
+   * narrower again. Growing a window worked; SHRINKING one left the canvas
+   * stuck at its old width and pushed a horizontal scrollbar onto the page,
+   * which /DESIGN.md and /AGENTS.md §1.11 forbid outright. It reproduced every
+   * time: 1540 px viewport → 659 px left a 760 px canvas and a 780 px document.
+   *
+   * A phone rotating to portrait is the same event.
+   */
   return (
-    <div ref={hostRef} className={cn('relative', className)}>
+    <div ref={hostRef} className={cn('relative min-w-0 [&_canvas]:max-w-full', className)}>
       <Canvas
         key={contextEpoch}
         camera={camera ?? { position: [3, 2, 4], fov: 45 }}
