@@ -1,6 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TutorScene } from '@/tutor-scene/TutorScene';
+import { TutorStage } from '@/tutor-scene/TutorStage';
 
 /*
  * The Tutor product surface.
@@ -10,8 +10,10 @@ import { TutorScene } from '@/tutor-scene/TutorScene';
  * adaptive quality tiers inside the scene, not by withholding the feature.
  *
  * The conversational layer (voice, live tutoring, the personalization contract
- * in /ORACLE.md) is NOT wired here yet. This is the stage; the connections to
- * Core, Data Intel and the generation services come next.
+ * in /ORACLE.md) is NOT wired here yet — but the SEAM for it is. `TutorStage`
+ * takes `speechUrl`, `emotion` and `action`, so connecting audiogen and the
+ * tutoring logic is passing props from this component rather than reaching
+ * into the scene. Nothing below here knows what a transcript is.
  */
 
 /**
@@ -59,7 +61,9 @@ export default function TutorPage() {
           </div>
         }
       >
-        <TutorScene className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-surface-sunken lg:aspect-video" />
+        {/* No `speechUrl` yet: the stage stays on its establishing shot and the
+            mouth stays closed until the conversational layer supplies audio. */}
+        <TutorStage className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-surface-sunken lg:aspect-video" />
       </SceneBoundary>
     </div>
   );

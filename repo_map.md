@@ -168,6 +168,7 @@ frontend/
         __tests__/
     theme/
     tutor-scene/
+      __tests__/
       lab/
 parent-id-check/
   src/
@@ -19091,7 +19092,7 @@ export function SectionComingSoon({ section, icon }: { section: 'tutor' | 'tasks
 ```
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TutorScene } from '@/tutor-scene/TutorScene';
+import { TutorStage } from '@/tutor-scene/TutorStage';
 
 /*
  * The Tutor product surface.
@@ -19101,9 +19102,9 @@ import { TutorScene } from '@/tutor-scene/TutorScene';
  * adaptive quality tiers inside the scene, not by withholding the feature.
  *
  * The conversational layer (voice, live tutoring, the personalization contract
- * in /ORACLE.md) is NOT wired here yet. This is the stage; the connections to
- * Core, Data Intel and the generation services come next.
- */
+ * in /ORACLE.md) is NOT wired here yet — but the SEAM for it is. `TutorStage`
+ * takes `speechUrl`, `emotion` and `action`, so connecting audiogen and the
+ * tutoring logic is passing props from this component rather than reaching
 ```
 
 ### frontend/src/routes/app/__tests__/LearnPage.test.tsx
@@ -20571,6 +20572,46 @@ import type { CharacterAction, CharacterEmotion, CharacterId } from '@/component
 
 /*
  * The Tutor's 3D stage.
+```
+
+### frontend/src/tutor-scene/TutorStage.tsx
+
+```
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { TutorScene, type TutorFraming } from './TutorScene';
+import { useLipSync } from './useLipSync';
+import { VISEME_CLOSED } from './lipSync';
+import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
+
+/*
+ * The Tutor's stage, as the PRODUCT uses it.
+ *
+ * `TutorScene` is the renderer and takes low-level props — a viseme index, a
+ * framing mode. This is the surface the conversational layer talks to, and it
+ * exists so that wiring RAG and TTS is passing props rather than reaching into
+ * the scene: hand it a speech URL and it plays the audio, drives the mouth from
+ * that audio, and moves the camera in close for as long as the character is
+ * talking.
+```
+
+### frontend/src/tutor-scene/__tests__/TutorStage.test.tsx
+
+```
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, act } from '@testing-library/react';
+import { TutorStage } from '../TutorStage';
+
+/*
+ * The scene itself is WebGL and has no place in a jsdom test. What is worth
+ * testing here is the seam the conversational layer will actually use: does a
+ * speech URL start audio, does the stage close in while it plays, and does it
+ * go back when the clip ends.
+ */
+vi.mock('../TutorScene', () => ({
+  TutorScene: (props: Record<string, unknown>) => (
+    <div
+      data-testid="scene"
+      data-framing={String(props.framing)}
 ```
 
 ### frontend/src/tutor-scene/assets.ts

@@ -305,20 +305,37 @@ The runtime normalises her, so this is hygiene, not a bug.
 
 ## §7b The integration contract — what the next layer plugs into
 
-The stage is a RENDERING concern with a small, closed surface. Everything the
-conversational layer needs is props; nothing about DeepSeek, Qwen, retrieval or
-a transcript appears anywhere in `src/tutor-scene/`.
+The stage is a RENDERING concern with a small, closed surface. Nothing in
+`src/tutor-scene/` knows about DeepSeek, Qwen, retrieval, transcripts or
+turn-taking.
+
+**`TutorStage` is the surface the product uses**, and it is what `/tutor`
+renders. Wiring the conversational layer means passing it props, not reaching
+into the scene:
 
 ```tsx
-<TutorScene
-  character="zara"          // who leads. companion is optional.
-  emotion={emotion}         // 7 canonical emotions — posture, not expression
+<TutorStage
+  character="rho"           // who leads. companion is optional.
+  emotion={emotion}         // 7 canonical emotions
   action={action}           // 12 canonical actions
   actionKey={replayCounter} // bump to replay the same one-shot
-  viseme={viseme}           // 0..7, index into VISEMES
-  framing="conversation"    // 'vignette' to establish, 'conversation' to talk
+  speechUrl={audioUrl}      // from audiogen; null when silent
+  onSpeechEnd={next}
 />
 ```
+
+Hand it a speech URL and it plays the audio, drives the mouth from that audio,
+and moves the camera in close for as long as the character is talking. Changing
+the URL INTERRUPTS — a tutor that finishes its sentence after the child has
+moved on is worse than one that stops mid-word. Clearing it stops.
+
+It owns the `<audio>` element on purpose: an element can only ever be adopted
+by one AudioContext, a second attempt throws, and because the analyser ROUTES
+the audio a failed attach is SILENCE rather than merely a still mouth. One
+owner means that cannot happen twice.
+
+`TutorScene` underneath takes the low-level props (`viseme`, `framing`) and is
+what the scene lab drives directly.
 
 **TTS plugs in through `useLipSync`.** `audiogen` returns a URL; the product
 plays it in an `<audio>` element it owns; the hook turns that element's live
