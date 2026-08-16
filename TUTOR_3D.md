@@ -8,9 +8,9 @@
 > **Status (2026-08-16):** stage BUILT, rendering, and READY AS AN INTEGRATION
 > TARGET — §7b is the contract RAG/TTS plug into. Zara has a working mouth
 > driven by real audio through `useLipSync`; three characters still need their
-> card. Authored clips replace 5 of the 19 procedural states. Conversational
-> layer NOT started (/ORACLE.md). Assets are local-only — publishing them to
-> Depot is the one blocker before deploy.
+> card. ALL TWELVE actions are authored clips; the seven emotions remain
+> procedural posture. Conversational layer NOT started (/ORACLE.md). Assets are
+> local-only — publishing them to Depot is the one blocker before deploy.
 
 ---
 
@@ -212,17 +212,21 @@ upgrade path from amplitude-driven to true visemes without touching the model.
 Still open on this item: **rho, liruf and dina have no card yet**, and the
 reason is worth reading before anyone assumes it is a palette swap.
 
-- **liruf — fitted, deliberately NOT shipped.** His grin is measured
+- **liruf — fitted three ways, still NOT shipped.** His grin is measured
   (0.376 × 0.127 m at (0.031, 0.870)), his albedo is measured (snout `#587D5C`,
   jaw `#B2DC86` — his skin is TWO colours across the mouth), and the atlas has
   an `arc` shape family with triangular teeth to match him. What does not work
-  is the FIT. A planar projection compresses the sides of a muzzle to nothing
-  and left the painted grin's corners showing; a cylindrical projection around
-  a fitted muzzle axis covers more but still leaks, because his grin is a 3D
-  arc whose height varies with the angle around the snout while a cylindrical
-  band's height does not. The fix is a fitter that traces the mouth curve in 3D
-  and builds a ribbon along it, rather than sweeping a fixed-height band.
-  `hasMouthCard('liruf')` is false, so he renders exactly as before.
+  is the FIT, and all three projections are now in `fit-mouth-card.py` with
+  their failure modes recorded:
+  **planar** compresses the sides of a muzzle to nothing and leaves the painted
+  grin's corners showing; **cylindrical** sweeps a band of constant height,
+  which a grin whose height varies with the angle around the snout does not
+  follow; **ribbon** traces the mouth line and builds a band across it, which
+  puts the curve in the geometry and covers the most — and still not all of it,
+  with a few stray triangles left in three-quarter view.
+  `hasMouthCard('liruf')` is false, so he renders exactly as before. A
+  half-covering mouth card is worse than none: it makes a character look broken
+  rather than unfinished.
 - **rho has no mouth at all.** His moustache covers the whole region and there
   is nothing painted underneath, so his answer is an animated moustache rather
   than a mouth — same card mechanism, different art.
@@ -326,10 +330,12 @@ fraction of the character's own height — rho's head alone is 47% of his, and a
 fixed metre framing cropped his skull while missing Dina entirely.
 
 **Authored clips replace procedural drivers per action, silently.**
-`clips-biped.glb` carries `idle`, `nod`, `bow`, `celebrate` and `wave`; the
-other 14 states still come from `characterActions.ts`. A character uses a clip
-when one exists for its action and falls back otherwise, so the library can
-fill in without any call site changing. The file is OPTIONAL: a 404 logs once
+`clips-biped.glb` carries ALL TWELVE actions — `idle nod bow celebrate jump hop
+point shake think dance peek wave`, 0.20 MB with no geometry. The seven
+`emotion.*` states still come from `characterActions.ts`, as posture composed
+over whichever clip is playing. A character uses a clip when one exists for its
+action and falls back otherwise, so the library filled in without a single call
+site changing. The file is OPTIONAL: a 404 logs once
 and everything keeps working procedurally, because it is a gitignored build
 output and a fresh checkout must still render a stage.
 
