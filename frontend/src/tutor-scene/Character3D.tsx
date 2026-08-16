@@ -11,7 +11,7 @@ import { ContactShadow } from './ContactShadow';
 import { bindRig, resetRig, type Rig, type RigKind } from './rig';
 import { ACTION_SECONDS, LOOPING_ACTIONS, applyCharacterFrame, applyEmotionPosture } from './characterActions';
 import { useClipLibrary } from './useClipLibrary';
-import { clipFor, LOOPING_CLIPS } from './clipLibrary';
+import { additiveEmotion, clipFor, emotionClipFor, LOOPING_CLIPS, restClipFrom } from './clipLibrary';
 
 /*
  * A canonical character standing in the Tutor scene.
@@ -177,6 +177,31 @@ export function Character3D({
 
   const clipMixer = useMemo(() => (clip ? new AnimationMixer(scene) : null), [clip, scene]);
 
+  /*
+   * The EMOTION LAYER, composed additively over the action clip.
+   *
+   * Only meaningful while the mixer owns the skeleton. On the procedural path
+   * `applyEmotionPosture` does this job instead, and running both would apply
+   * the emotion twice.
+   */
+  const emotionClip = useMemo(
+    () => (rigKind === 'biped' ? emotionClipFor(clips, emotion) : null),
+    [clips, emotion, rigKind],
+  );
+  const restClip = useMemo(() => restClipFrom(clips), [clips]);
+
+  useEffect(() => {
+    if (!clipMixer || !emotionClip || !restClip) return;
+    const additive = additiveEmotion(emotionClip, restClip);
+    const layer = clipMixer.clipAction(additive);
+    layer.setLoop(LoopRepeat, Infinity);
+    layer.play();
+    return () => {
+      layer.stop();
+      clipMixer.uncacheAction(additive, scene);
+    };
+  }, [clipMixer, emotionClip, restClip, scene]);
+
   useEffect(() => {
     if (!clipMixer || !clip) return;
     const running = clipMixer.clipAction(clip);
@@ -212,7 +237,11 @@ export function Character3D({
        * onto whatever the mixer just wrote.
        */
       clipMixer.update(delta);
-      applyEmotionPosture(bones, emotion, state.clock.elapsedTime + PHASE[id]);
+      // An authored emotion clip is already blended in additively by the mixer;
+      // applying the procedural posture as well would double it.
+      if (!emotionClip) {
+        applyEmotionPosture(bones, emotion, state.clock.elapsedTime + PHASE[id]);
+      }
       actionLift.current = 0;
     } else if (bones) {
       // Rest pose first; every driver accumulates onto it.

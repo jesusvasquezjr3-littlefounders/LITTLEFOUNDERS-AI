@@ -1,5 +1,5 @@
-import type { AnimationClip } from 'three';
-import type { CharacterAction } from '@/components/characters/control/types';
+import { AnimationUtils, type AnimationClip } from 'three';
+import type { CharacterAction, CharacterEmotion } from '@/components/characters/control/types';
 import { SCENE_ASSET_BASE } from './assets';
 
 /*
@@ -44,4 +44,52 @@ export function unknownClipNames(
   vocabulary: readonly string[],
 ): string[] {
   return clips.map((clip) => clip.name).filter((name) => !vocabulary.includes(name));
+}
+
+/*
+ * THE EMOTION LAYER.
+ *
+ * Emotions compose ADDITIVELY over whichever action is playing, which is the
+ * only arrangement that does not multiply the library: seven emotions times
+ * twelve actions would be 84 clips to author and re-author. Additive means
+ * seven, each touching head, neck and upper torso only — an emotion that moved
+ * the legs would fight a jump for the same joints.
+ */
+
+/** The reference pose emotion clips are made additive against. */
+export const REST_CLIP = 'emotion.rest';
+
+export function emotionClipFor(
+  clips: readonly AnimationClip[],
+  emotion: CharacterEmotion,
+): AnimationClip | null {
+  return clips.find((clip) => clip.name === `emotion.${emotion}`) ?? null;
+}
+
+export function restClipFrom(clips: readonly AnimationClip[]): AnimationClip | null {
+  return clips.find((clip) => clip.name === REST_CLIP) ?? null;
+}
+
+/*
+ * `makeClipAdditive` MUTATES the clip it is given, so a clip converted twice is
+ * converted against itself and the emotion quietly flattens toward nothing.
+ * The library is shared by every character on screen, so that would happen on
+ * the second character to mount. Convert a CLONE, once, and remember it.
+ */
+const additiveCache = new WeakMap<AnimationClip, AnimationClip>();
+
+export function additiveEmotion(clip: AnimationClip, reference: AnimationClip): AnimationClip {
+  const cached = additiveCache.get(clip);
+  if (cached) return cached;
+  const copy = clip.clone();
+  /*
+   * The reference is an EXPORTED rest clip rather than this clip's own frame 0,
+   * because a bone's rest orientation is its bind rotation and not identity —
+   * there is no way to write "no emotion" in clip space without shipping it.
+   * Using frame 0 instead would make every emotion a deviation from ITSELF,
+   * so a held posture like `proud` would pulse back to neutral once per loop.
+   */
+  AnimationUtils.makeClipAdditive(copy, 0, reference, 30);
+  additiveCache.set(clip, copy);
+  return copy;
 }

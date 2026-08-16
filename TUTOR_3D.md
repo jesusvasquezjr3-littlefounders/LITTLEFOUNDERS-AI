@@ -346,11 +346,18 @@ fixed metre framing cropped his skull while missing Dina entirely.
 
 **Authored clips replace procedural drivers per action, silently.**
 `clips-biped.glb` carries ALL TWELVE actions — `idle nod bow celebrate jump hop
-point shake think dance peek wave`, 0.20 MB with no geometry. The seven
-`emotion.*` states still come from `characterActions.ts`, as posture composed
-over whichever clip is playing. A character uses a clip when one exists for its
-action and falls back otherwise, so the library filled in without a single call
-site changing. The file is OPTIONAL: a 404 logs once
+point shake think dance peek wave` — plus the seven `emotion.*` states and the
+`emotion.rest` reference pose. 0.31 MB, no geometry. A character uses a clip
+when one exists for its action and falls back otherwise, so the library filled
+in without a single call site changing.
+
+**Emotions are ADDITIVE over the action.** Seven emotions times twelve actions
+would be 84 clips to author and re-author; additive means seven, each touching
+head, neck and upper torso only, so an emotion cannot fight a jump for the same
+joints. `emotion.rest` has to be exported rather than synthesised: a bone's
+rest orientation is its own bind rotation, not identity, so "no emotion" cannot
+be written in clip space without shipping it. Dina, on her own rig, keeps the
+procedural posture. The file is OPTIONAL: a 404 logs once
 and everything keeps working procedurally, because it is a gitignored build
 output and a fresh checkout must still render a stage.
 

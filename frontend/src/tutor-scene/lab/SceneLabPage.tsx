@@ -9,7 +9,13 @@ import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from '../quali
 import { readBudget, TUTOR_ASSET_BUDGET } from '../budget';
 import { fitObject } from '../fitCamera';
 import { TutorScene, type TutorFraming } from '../TutorScene';
-import { CHARACTER_ACTIONS, type CharacterAction, type CharacterId } from '@/components/characters/control/types';
+import {
+  CHARACTER_ACTIONS,
+  CHARACTER_EMOTIONS,
+  type CharacterAction,
+  type CharacterEmotion,
+  type CharacterId,
+} from '@/components/characters/control/types';
 import { VISEMES } from '../mouthAtlas';
 import { useLipSync } from '../useLipSync';
 import { CHARACTER_ASSETS, SCENE_ASSETS } from '../assets';
@@ -140,6 +146,7 @@ export default function SceneLabPage() {
   const [lead, setLead] = useState<CharacterId>('rho');
   const [viseme, setViseme] = useState(0);
   const [framing, setFraming] = useState<TutorFraming>('vignette');
+  const [emotion, setEmotion] = useState<CharacterEmotion>('neutral');
   /*
    * A real <audio> element driving the mouth, so the TTS path is exercised end
    * to end here rather than asserted. `audiogen` will hand the product a URL;
@@ -213,6 +220,7 @@ export default function SceneLabPage() {
                 companion={lead === 'liruf' ? 'rho' : 'liruf'}
                 viseme={speaking ? spokenViseme : viseme}
                 framing={framing}
+                emotion={emotion}
               />
             ) : (
             <SceneCanvas className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-surface-sunken lg:aspect-video" onStats={setStats} onSettings={setSettings}>
@@ -302,6 +310,23 @@ export default function SceneLabPage() {
                       }
                     >
                       lead: {id}
+                    </button>
+                  ))
+                : null}
+              {composed
+                ? CHARACTER_EMOTIONS.map((name) => (
+                    <button
+                      key={`emotion-${name}`}
+                      type="button"
+                      data-emotion={name}
+                      onClick={() => setEmotion(name)}
+                      className={
+                        name === emotion
+                          ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                          : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                      }
+                    >
+                      {name}
                     </button>
                   ))
                 : null}

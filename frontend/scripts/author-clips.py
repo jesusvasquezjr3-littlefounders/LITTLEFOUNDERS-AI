@@ -273,6 +273,102 @@ CLIPS = {
         ],
     },
 
+    # ---- EMOTION LAYER -------------------------------------------------
+    #
+    # These are composed ADDITIVELY over whichever action is playing, so they
+    # touch head, neck and upper torso only — an emotion that moved the legs
+    # would fight a jump for the same joints.
+    #
+    # `emotion.rest` is not an emotion. It is the REFERENCE POSE the others are
+    # made additive against, and it has to be exported rather than synthesised:
+    # a bone's rest orientation is its own bind rotation, not identity, so there
+    # is no way to write "no emotion" in clip space without shipping it.
+    "emotion.rest": {
+        "frames": 2,
+        "keys": [
+            (0, {"Head": (0, 0, 0), "neck": (0, 0, 0), "Spine02": (0, 0, 0),
+                 "Spine01": (0, 0, 0)}),
+            (2, {"Head": (0, 0, 0), "neck": (0, 0, 0), "Spine02": (0, 0, 0),
+                 "Spine01": (0, 0, 0)}),
+        ],
+    },
+
+    "emotion.neutral": {
+        "frames": 90,
+        "keys": [
+            (0, {"Head": (0, 1.2, 0), "neck": (0, 0.5, 0)}),
+            (45, {"Head": (-0.8, -1.2, 0.5), "neck": (-0.4, -0.5, 0)}),
+            (90, {"Head": (0, 1.2, 0), "neck": (0, 0.5, 0)}),
+        ],
+    },
+
+    "emotion.happy": {
+        "frames": 72,
+        "keys": [
+            (0, {"Head": (-5, 0, 0), "neck": (-2, 0, 0), "Spine02": (-3, 0, 0)}),
+            (36, {"Head": (-7.5, 2, 1.5), "neck": (-3, 1, 0), "Spine02": (-4.5, 0, 0)}),
+            (72, {"Head": (-5, 0, 0), "neck": (-2, 0, 0), "Spine02": (-3, 0, 0)}),
+        ],
+    },
+
+    "emotion.excited": {
+        "frames": 30,
+        "keys": [
+            # Quick, small and repeating — excitement is FREQUENCY, not
+            # amplitude. A big slow version of this reads as seasick.
+            (0, {"Head": (-7, 0, 0), "neck": (-3, 0, 0), "Spine02": (-5, 0, 0)}),
+            (8, {"Head": (-11, 2.5, 2), "neck": (-4.5, 1, 0), "Spine02": (-7, 0, 0)}),
+            (16, {"Head": (-7, 0, 0), "neck": (-3, 0, 0), "Spine02": (-5, 0, 0)}),
+            (24, {"Head": (-11, -2.5, -2), "neck": (-4.5, -1, 0), "Spine02": (-7, 0, 0)}),
+            (30, {"Head": (-7, 0, 0), "neck": (-3, 0, 0), "Spine02": (-5, 0, 0)}),
+        ],
+    },
+
+    "emotion.thinking": {
+        "frames": 96,
+        "keys": [
+            (0, {"Head": (5, 8, 7), "neck": (2, 3, 3), "Spine01": (0, -2, 0)}),
+            (48, {"Head": (7, 10.5, 9), "neck": (3, 4, 4), "Spine01": (0, -3, 0)}),
+            (96, {"Head": (5, 8, 7), "neck": (2, 3, 3), "Spine01": (0, -2, 0)}),
+        ],
+    },
+
+    "emotion.surprised": {
+        "frames": 54,
+        "keys": [
+            # Held recoil with a tremor. Surprise that keeps re-arriving reads
+            # as a tic; surprise that is perfectly still reads as a statue.
+            (0, {"Head": (-13, 0, 0), "neck": (-5, 0, 0), "Spine02": (5, 0, 0)}),
+            (14, {"Head": (-14.5, 1, 0), "neck": (-5.5, 0, 0), "Spine02": (5.5, 0, 0)}),
+            (32, {"Head": (-13, -1, 0), "neck": (-5, 0, 0), "Spine02": (5, 0, 0)}),
+            (54, {"Head": (-13, 0, 0), "neck": (-5, 0, 0), "Spine02": (5, 0, 0)}),
+        ],
+    },
+
+    "emotion.encouraging": {
+        "frames": 78,
+        "keys": [
+            # Leaning IN. The chest comes forward and the chin drops slightly,
+            # which is what attention looks like from the outside.
+            (0, {"Spine02": (6, 0, 0), "Spine01": (3, 0, 0), "Head": (-3, 0, 0)}),
+            (39, {"Spine02": (8, 0, 0), "Spine01": (4, 0, 0), "Head": (-4.5, 1.5, 0),
+                  "neck": (-1.5, 0, 0)}),
+            (78, {"Spine02": (6, 0, 0), "Spine01": (3, 0, 0), "Head": (-3, 0, 0)}),
+        ],
+    },
+
+    "emotion.proud": {
+        "frames": 84,
+        "keys": [
+            (0, {"Spine02": (-7, 0, 0), "Spine01": (-3, 0, 0), "Head": (-6.5, 0, 0),
+                 "neck": (-2.5, 0, 0)}),
+            (42, {"Spine02": (-8.5, 0, 0), "Spine01": (-4, 0, 0), "Head": (-8, -1.5, 0),
+                  "neck": (-3, 0, 0)}),
+            (84, {"Spine02": (-7, 0, 0), "Spine01": (-3, 0, 0), "Head": (-6.5, 0, 0),
+                  "neck": (-2.5, 0, 0)}),
+        ],
+    },
+
     "wave": {
         "frames": 48,
         "keys": [

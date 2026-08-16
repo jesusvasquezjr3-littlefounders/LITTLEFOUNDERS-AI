@@ -20449,7 +20449,7 @@ import { ContactShadow } from './ContactShadow';
 import { bindRig, resetRig, type Rig, type RigKind } from './rig';
 import { ACTION_SECONDS, LOOPING_ACTIONS, applyCharacterFrame, applyEmotionPosture } from './characterActions';
 import { useClipLibrary } from './useClipLibrary';
-import { clipFor, LOOPING_CLIPS } from './clipLibrary';
+import { additiveEmotion, clipFor, emotionClipFor, LOOPING_CLIPS, restClipFrom } from './clipLibrary';
 
 ```
 
@@ -20673,11 +20673,31 @@ import type { CharacterAction, CharacterEmotion } from '@/components/characters/
  * same 19 states are synthesised from bone rotations. The result is not what a
 ```
 
+### frontend/src/tutor-scene/clipLibrary.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { AnimationClip, QuaternionKeyframeTrack } from 'three';
+import { CHARACTER_ACTIONS } from '@/components/characters/control/types';
+import {
+  additiveEmotion,
+  clipFor,
+  emotionClipFor,
+  LOOPING_CLIPS,
+  REST_CLIP,
+  restClipFrom,
+  unknownClipNames,
+} from './clipLibrary';
+
+function quatClip(name: string, values: number[]): AnimationClip {
+  return new AnimationClip(name, -1, [
+```
+
 ### frontend/src/tutor-scene/clipLibrary.ts
 
 ```
-import type { AnimationClip } from 'three';
-import type { CharacterAction } from '@/components/characters/control/types';
+import { AnimationUtils, type AnimationClip } from 'three';
+import type { CharacterAction, CharacterEmotion } from '@/components/characters/control/types';
 import { SCENE_ASSET_BASE } from './assets';
 
 /*
@@ -20787,10 +20807,10 @@ import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from '../quali
 import { readBudget, TUTOR_ASSET_BUDGET } from '../budget';
 import { fitObject } from '../fitCamera';
 import { TutorScene, type TutorFraming } from '../TutorScene';
-import { CHARACTER_ACTIONS, type CharacterAction, type CharacterId } from '@/components/characters/control/types';
-import { VISEMES } from '../mouthAtlas';
-import { useLipSync } from '../useLipSync';
-import { CHARACTER_ASSETS, SCENE_ASSETS } from '../assets';
+import {
+  CHARACTER_ACTIONS,
+  CHARACTER_EMOTIONS,
+  type CharacterAction,
 ```
 
 ### frontend/src/tutor-scene/lipSync.test.ts
