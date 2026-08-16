@@ -1,14 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { AnimationMixer, Box3, Group, Vector3 } from 'three';
+import { AnimationMixer, Box3, Group, LoopOnce, LoopRepeat, Vector3 } from 'three';
 import { useSceneModel } from './useSceneModel';
-import { characterScale, CHARACTER_ASSETS, type CharacterAsset } from './assets';
+import { characterScale, CHARACTER_ASSETS, SCENE_ASSET_BASE, type CharacterAsset } from './assets';
+import { MouthCard, hasMouthCard } from './MouthCard';
 import type { QualitySettings } from './quality';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
 import { useGround } from './ground';
 import { ContactShadow } from './ContactShadow';
-import { bindRig, resetRig, type Rig } from './rig';
-import { ACTION_SECONDS, LOOPING_ACTIONS, applyCharacterFrame } from './characterActions';
+import { bindRig, resetRig, type Rig, type RigKind } from './rig';
+import { ACTION_SECONDS, LOOPING_ACTIONS, applyCharacterFrame, applyEmotionPosture } from './characterActions';
+import { useClipLibrary } from './useClipLibrary';
+import { clipFor, LOOPING_CLIPS } from './clipLibrary';
 
 /*
  * A canonical character standing in the Tutor scene.
@@ -46,6 +49,14 @@ export interface Character3DProps {
   action?: CharacterAction;
   /** Bump to replay the same one-shot action twice in a row. */
   actionKey?: number;
+  /*
+   * Index into VISEMES (mouthCard.ts). Defaults to `closed`.
+   *
+   * This is the seam lip-sync plugs into: today a caller sets it, later an
+   * audio-amplitude or viseme track drives it, and neither needs the model to
+   * change — which is the whole reason the mouth is a card and not a rig.
+   */
+  viseme?: number;
 }
 
 /** Distinct irrational-ish multipliers keep two characters from breathing in sync. */
@@ -60,6 +71,7 @@ export function Character3D({
   emotion = 'neutral',
   action = 'idle',
   actionKey = 0,
+  viseme = 0,
 }: Character3DProps) {
   const asset: CharacterAsset = CHARACTER_ASSETS[id];
   const { scene, animations } = useSceneModel(asset.url, settings);
@@ -123,8 +135,21 @@ export function Character3D({
    * actual standing posture rather than its bind pose.
    */
   const rig = useRef<Rig | null>(null);
+  /*
+   * The rig's KIND is state, not a ref read.
+   *
+   * Deciding "is this a biped, so may it use the clip library" from
+   * `rig.current` during render silently fails: a ref mutation does not
+   * re-render, so the memo that picks a clip would keep whatever it computed
+   * on the first pass — when `rig.current` is still null and everything looks
+   * like a biped. Dina would then be handed clips authored for a skeleton she
+   * does not have.
+   */
+  const [rigKind, setRigKind] = useState<RigKind | null>(null);
   useEffect(() => {
-    rig.current = bindRig(scene);
+    const bound = bindRig(scene);
+    rig.current = bound;
+    setRigKind(bound.kind);
     return () => {
       rig.current = null;
     };
@@ -135,12 +160,61 @@ export function Character3D({
   const actionStart = useRef(0);
   const startedFor = useRef<string>('');
 
-  useFrame((state) => {
+  /*
+   * AUTHORED CLIPS, when one exists for this action.
+   *
+   * Only for bipeds: rho, zara and liruf share the skeleton the library was
+   * authored on, while Dina is a quadruped on a 27-joint rig whose bone names
+   * do not match. Binding a biped clip to her would resolve nothing and leave
+   * her frozen in bind pose — strictly worse than the procedural motion she has
+   * — so she is excluded by RIG KIND rather than by hoping the names miss.
+   */
+  const { clips } = useClipLibrary();
+  const clip = useMemo(
+    () => (rigKind === 'biped' ? clipFor(clips, action) : null),
+    [clips, action, rigKind],
+  );
+
+  const clipMixer = useMemo(() => (clip ? new AnimationMixer(scene) : null), [clip, scene]);
+
+  useEffect(() => {
+    if (!clipMixer || !clip) return;
+    const running = clipMixer.clipAction(clip);
+    running.reset();
+    running.setLoop(LOOPING_CLIPS.has(clip.name) ? LoopRepeat : LoopOnce, Infinity);
+    // A finished one-shot HOLDS its last frame. Without this the mixer restores
+    // the bind pose on the final frame and the character snaps upright the
+    // instant a bow completes.
+    running.clampWhenFinished = true;
+    running.play();
+    return () => {
+      running.stop();
+      clipMixer.uncacheAction(clip, scene);
+    };
+    // actionKey replays the same clip: a one-shot that has already finished
+    // will not restart on its own.
+  }, [clipMixer, clip, scene, actionKey]);
+
+  useFrame((state, delta) => {
     const group = inner.current;
     if (!group) return;
 
     const bones = rig.current;
-    if (bones) {
+    if (bones && clipMixer) {
+      /*
+       * An authored clip OWNS the skeleton this frame. `resetRig` and the
+       * procedural driver are both skipped, because a mixer writes absolute
+       * orientations and the two layers would fight for the same joints —
+       * whichever ran last would win, per bone, which reads as jitter rather
+       * than as a bug.
+       *
+       * Emotion still composes, because it is a RELATIVE offset premultiplied
+       * onto whatever the mixer just wrote.
+       */
+      clipMixer.update(delta);
+      applyEmotionPosture(bones, emotion, state.clock.elapsedTime + PHASE[id]);
+      actionLift.current = 0;
+    } else if (bones) {
       // Rest pose first; every driver accumulates onto it.
       resetRig(bones);
 
@@ -191,6 +265,17 @@ export function Character3D({
       </group>
       <group ref={inner} position={[0, groundY, 0]} scale={scale}>
         <primitive object={scene} />
+        {/* Only the characters whose card has been fitted carry one; the rest
+            keep their painted mouth rather than get a generic one bolted on. */}
+        {hasMouthCard(id) ? (
+          <MouthCard
+            id={id}
+            scene={scene}
+            assetBase={SCENE_ASSET_BASE}
+            viseme={viseme}
+            anisotropy={settings.anisotropy}
+          />
+        ) : null}
       </group>
     </group>
   );

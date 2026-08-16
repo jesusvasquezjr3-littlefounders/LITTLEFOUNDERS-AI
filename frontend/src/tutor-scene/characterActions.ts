@@ -353,3 +353,18 @@ export function applyCharacterFrame(
   const drivers = rig.kind === 'quadruped' ? QUADRUPED : BIPED;
   return drivers[action](rig, frame.progress, frame.time);
 }
+
+/**
+ * Applies ONLY the emotion posture, for when an authored clip owns the action.
+ *
+ * An AnimationMixer writes absolute bone orientations every frame, so the two
+ * layers cannot both run: `resetRig` would erase the clip, and the procedural
+ * action driver would fight it for the same joints. Emotion survives the switch
+ * because it is expressed as a RELATIVE offset — premultiplied onto whatever
+ * the mixer just wrote — which is the same reason it composes over a procedural
+ * action. That is what lets an authored `wave` and a `proud` posture coexist
+ * without the clip having to be re-authored once per emotion.
+ */
+export function applyEmotionPosture(rig: Rig, emotion: CharacterEmotion, time: number): void {
+  EMOTION_POSTURE[emotion](rig, time);
+}
