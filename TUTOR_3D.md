@@ -6,11 +6,12 @@
 > only**, not the tutoring.
 >
 > **Status (2026-08-16):** stage BUILT, rendering, and READY AS AN INTEGRATION
-> TARGET — §7b is the contract RAG/TTS plug into. Zara has a working mouth
-> driven by real audio through `useLipSync`; three characters still need their
-> card. ALL TWELVE actions are authored clips; the seven emotions remain
-> procedural posture. Conversational layer NOT started (/ORACLE.md). Assets are
-> local-only — publishing them to Depot is the one blocker before deploy.
+> TARGET — §7b is the contract RAG/TTS plug into. **zara and rho** have working
+> mouths driven by real audio through `useLipSync`; liruf and dina do not (§7.1).
+> All twelve actions AND all seven emotions are authored clips, composed
+> additively over each character's bind pose (§4.0–§4.2). Conversational layer
+> NOT started (/ORACLE.md). Assets are local-only — publishing them to Depot is
+> the one blocker before deploy.
 
 ---
 
@@ -114,9 +115,10 @@ Every export ships **exactly one clip**, and all of them are locomotion cycles
 (`walking_man`, `running`, an Unreal take). Looping a walk cycle on a character
 who is standing still and talking reads as a treadmill.
 
-So the authored clip is used as a **pose** (evaluated once, held) and the full
-canonical vocabulary is synthesised procedurally in
-`frontend/src/tutor-scene/characterActions.ts`:
+None of them is played. The base pose is each character's BIND pose (§4.0), and
+the full canonical vocabulary is driven by the authored clip library (§4.1) with
+a procedural fallback in `frontend/src/tutor-scene/characterActions.ts` for any
+state the library has not authored:
 
 - **12 actions** — `idle jump hop wave point celebrate nod shake think dance peek bow`
 - **7 emotions** — `neutral happy excited thinking surprised encouraging proud`
@@ -125,9 +127,9 @@ These are the SAME closed vocabulary as the 2D rig
 (`components/characters/control/types.ts`), so `emotion`/`action` fields already
 authored throughout the lesson catalog drive the 3D cast unchanged.
 
-Emotions map to **posture**, not expression — there is no face to move (§3).
-That is a weaker channel than the 2D characters have, and it is stated plainly
-rather than pretended otherwise.
+Emotions map to **posture**, not expression — there is no face to move (§3),
+beyond the mouth card zara and rho carry. That is a weaker channel than the 2D
+characters have, and it is stated plainly rather than pretended otherwise.
 
 ### §4.0 The base pose is the BIND POSE
 
