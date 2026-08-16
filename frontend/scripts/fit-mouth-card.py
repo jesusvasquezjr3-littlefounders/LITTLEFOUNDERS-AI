@@ -57,17 +57,23 @@ MOUTHS = {
         "depth": 0.05,
         "projection": "planar",
     },
+    # Liruf's grin is an ARC, and that defeated both simpler projections. A
+    # planar fit compressed the sides of his muzzle to nothing and left the
+    # painted corners showing; a cylindrical fit swept a band of FIXED HEIGHT
+    # around the snout, which a mouth whose height varies with the angle does
+    # not follow either. So his card is a RIBBON: the mouth line is traced as a
+    # curve through three measured points and the card is built along it, which
+    # means the curve lives in the GEOMETRY and his atlas frames can be drawn
+    # straight like everyone else's.
     "Liruf": {
-        "centre": (0.0306, 0.8695),
-        "size": (0.58, 0.34),
-        # Tight on purpose. At ±0.16 the radius test accepted rays that had left
-        # the muzzle entirely and struck the ARM, scattering stray card
-        # triangles across his chest in three-quarter view.
+        "projection": "ribbon",
+        # Left corner, centre, right corner of the mouth LINE, in Blender world
+        # (x, z). Measured off a gridded front render at a known ortho scale.
+        "curve": ((-0.1489, 0.9163), (0.0309, 0.8481), (0.2085, 0.9163)),
+        # Band height across the mouth line, in metres. The painted grin is
+        # 0.084 m at its centre; the rest is the margin the feather fades over.
+        "band": 0.135,
         "depth": 0.075,
-        "projection": "cylindrical",
-        # Half-angle the card sweeps around the muzzle axis, in degrees. Set
-        # from where the painted grin actually ends, not from the silhouette.
-        "sweep": 76.0,
     },
 }
 
@@ -98,6 +104,18 @@ def import_glb(path):
     for obj in list(bpy.data.objects):
         bpy.data.objects.remove(obj, do_unlink=True)
     purge_orphans()
+    # A stray mesh left in the scene is not cosmetic: `scene.ray_cast` tests
+    # EVERYTHING, so one forgotten primitive in front of a face silently becomes
+    # the surface the whole card is fitted to. An 80-poly Icosphere survived a
+    # clear during this work and went unnoticed precisely because it happened
+    # not to sit on the ray that was being watched.
+    if bpy.data.objects:
+        raise RuntimeError(
+            "fit-mouth-card: scene not empty after clear — {} would be raycast "
+            "against. Close whatever is re-creating it and retry.".format(
+                [o.name for o in bpy.data.objects]
+            )
+        )
     anchor = bpy.data.objects.new("mcp_import_anchor", None)
     bpy.context.scene.collection.objects.link(anchor)
     bpy.context.view_layer.objects.active = anchor
@@ -128,16 +146,129 @@ def circle_through(p0, p1, p2):
     return (ux, uy)
 
 
+def bezier(p0, p1, p2, t):
+    """Quadratic Bezier whose curve PASSES THROUGH p1 at t=0.5.
+
+    The control point is solved for rather than used directly: p1 is a MEASURED
+    point on the mouth, so a curve that merely leans toward it would not sit on
+    the grin.
+    """
+    control = (
+        2.0 * p1[0] - 0.5 * (p0[0] + p2[0]),
+        2.0 * p1[1] - 0.5 * (p0[1] + p2[1]),
+    )
+    u = 1.0 - t
+    return (
+        u * u * p0[0] + 2 * u * t * control[0] + t * t * p2[0],
+        u * u * p0[1] + 2 * u * t * control[1] + t * t * p2[1],
+    )
+
+
+def fit_ribbon(character, spec, dg):
+    """Build a card that FOLLOWS the mouth line instead of spanning a box.
+
+    For a grin that arcs around a muzzle, a rectangle is the wrong primitive at
+    every orientation: swept flat it loses the sides, swept cylindrically it
+    keeps a constant height the mouth does not have. Tracing the line and
+    building a band across it puts the curve in the geometry, which also means
+    the atlas frames stay straight and the ellipse shape family still applies.
+    """
+    left, centre, right = spec["curve"]
+    band = spec["band"]
+    tolerance = spec["depth"]
+
+    # An axis inside the muzzle, so rays fan outward and reach the sides of the
+    # grin instead of grazing them.
+    samples = []
+    for point in (left, centre, right):
+        ok, loc, _n, _a, _b, _c = bpy.context.scene.ray_cast(
+            dg, Vector((point[0], -3.0, point[1])), Vector((0.0, 1.0, 0.0))
+        )
+        if not ok:
+            raise RuntimeError("{:s}: curve point {} misses the head".format(character, point))
+        samples.append((loc.x, loc.y))
+    axis = circle_through(*samples)
+    if axis is None:
+        raise RuntimeError("{:s}: mouth line is straight — use a planar fit".format(character))
+    radius = math.dist(samples[1], axis)
+
+    # Same split the planar fit uses: each grid point owns a RAY, and the only
+    # unknown is how far along it the surface sits. Gaps are filled in DISTANCE
+    # so a patched vertex stays on its own ray and the UV grid survives.
+    ray_origin = [[None] * COLS for _ in range(ROWS)]
+    ray_dir = [[None] * COLS for _ in range(ROWS)]
+    distance = [[None] * COLS for _ in range(ROWS)]
+    normal = [[None] * COLS for _ in range(ROWS)]
+
+    for j in range(ROWS):
+        for i in range(COLS):
+            t = i / (COLS - 1)
+            x, z_on_curve = bezier(left, centre, right, t)
+            z = z_on_curve + (j / (ROWS - 1) - 0.5) * band
+
+            # Fire outward from the axis THROUGH the curve point, so the ray
+            # meets the surface square-on wherever it sits around the snout.
+            # The traced point supplies the angle; the axis supplies the origin.
+            outward = Vector((x - axis[0], samples[1][1] - axis[1], 0.0))
+            if outward.length < 1e-6:
+                outward = Vector((0.0, -1.0, 0.0))
+            outward.normalize()
+            origin = Vector((axis[0], axis[1], z))
+            ray_origin[j][i] = origin
+            ray_dir[j][i] = outward
+            ok, loc, nrm, _a, _b, _c = bpy.context.scene.ray_cast(
+                dg, origin, outward, distance=radius + tolerance
+            )
+            if ok and abs((loc - origin).length - radius) <= tolerance:
+                distance[j][i] = (loc - origin).length
+                normal[j][i] = nrm.copy()
+
+    # Grow the unknown distances outward from their neighbours. The earlier
+    # version parked a missing vertex at the CENTRE's depth instead, which threw
+    # it off its own ray and scattered stray card triangles across Liruf's chest
+    # in three-quarter view — visible as loose white teeth floating beside his
+    # arm.
+    for _ in range(COLS + ROWS):
+        if not any(distance[j][i] is None for j in range(ROWS) for i in range(COLS)):
+            break
+        for j in range(ROWS):
+            for i in range(COLS):
+                if distance[j][i] is not None:
+                    continue
+                around = [
+                    distance[nj][ni]
+                    for nj, ni in ((j - 1, i), (j + 1, i), (j, i - 1), (j, i + 1))
+                    if 0 <= nj < ROWS and 0 <= ni < COLS and distance[nj][ni] is not None
+                ]
+                if around:
+                    distance[j][i] = sum(around) / len(around)
+                    normal[j][i] = ray_dir[j][i].copy()
+
+    if any(distance[j][i] is None for j in range(ROWS) for i in range(COLS)):
+        raise RuntimeError("{:s}: no ray met the muzzle anywhere".format(character))
+
+    positions = []
+    for j in range(ROWS):
+        for i in range(COLS):
+            v = ray_origin[j][i] + ray_dir[j][i] * distance[j][i]
+            v = v + (normal[j][i] or ray_dir[j][i]) * GAP
+            positions.append([round(v.x, 6), round(v.z, 6), round(-v.y, 6)])
+    return positions
+
+
 def fit(character, source_glb):
     spec = MOUTHS[character]
+    projection = spec.get("projection", "planar")
+    import_glb(source_glb)
+    dg = bpy.context.evaluated_depsgraph_get()
+
+    if projection == "ribbon":
+        return fit_ribbon(character, spec, dg)
+
     centre_x, centre_z = spec["centre"]
     card_w, card_h = spec["size"]
     depth_tolerance = spec["depth"]
     ray_start_offset = depth_tolerance * 1.6
-    projection = spec.get("projection", "planar")
-
-    import_glb(source_glb)
-    dg = bpy.context.evaluated_depsgraph_get()
 
     # The face points -Y in Blender (= +Z in the glTF the runtime loads),
     # confirmed by the `headfront` bone direction AND a four-way render.

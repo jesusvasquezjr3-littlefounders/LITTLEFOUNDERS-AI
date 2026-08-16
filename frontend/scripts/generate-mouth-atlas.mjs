@@ -91,15 +91,22 @@ const CHARACTERS = {
     skinLower: '#B2DC86',
     // Where the snout's colour gives way to the jaw's, as a fraction of cell
     // height from the top. Measured against the mouth's own arc.
-    skinSplit: 0.54,
+    // The ribbon is centred ON the mouth line, so the snout/jaw colour change
+    // sits at the middle of the card rather than somewhere up its face.
+    skinSplit: 0.5,
     interior: '#E74A51',
     teeth: '#F9F7F8',
     tongue: '#D94A55',
     lipLine: '#3F5C44',
     spread: 1.0,
     openness: 1.0,
-    /** Corner lift of the grin, in cell pixels. This is what makes it a grin. */
-    rise: 26,
+    /*
+     * NO corner lift. The grin's curve used to be drawn INTO the atlas, back
+     * when the card was a flat rectangle that had to fake it. His card is now a
+     * ribbon traced along the mouth line, so the curve lives in the geometry —
+     * drawing it again here would bend an already-bent mouth.
+     */
+    rise: 0,
     teethTop: 7,
     teethBottom: 6,
   },
