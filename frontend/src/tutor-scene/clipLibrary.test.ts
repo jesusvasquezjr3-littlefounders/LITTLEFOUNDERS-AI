@@ -121,7 +121,7 @@ describe('sanitizeClip', () => {
      * Travel is the runtime's job (`CLIP_LIFT`), not the clip's. A hips
      * translation is a distance in the AUTHORING rig's units, so sharing it
      * between skeletons is the same mistake as sharing a rotation absolutely —
-     * and it would make a 0.7 m dino jump as far as a 1.7 m human. Measured,
+     * and it would make a 1.9 m dino jump as far as a 1.7 m human. Measured,
      * the baked value was wrong anyway: an authored 32 cm exported as 0.8 mm.
      */
     const names = sanitizeClip(mixedClip()).tracks.map((track) => track.name);

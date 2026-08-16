@@ -34,6 +34,14 @@ export interface CharacterAsset {
   url: string;
   /** Bind-pose height of the source export, in glTF units. Measured, not assumed. */
   sourceHeightM: number;
+  /**
+   * Widest HORIZONTAL extent of the bind pose, in the same source units.
+   * Measured per character, because it is not a function of height: Liruf's
+   * tail makes him 1.03x as long as he is tall while Rho is 0.48x, and Dina is
+   * 1.48x. Placement needs this — two characters whose footprints overlap
+   * intersect, however good the standing spot underneath each of them is.
+   */
+  sourceFootprintM: number;
   /** Height this character should occupy in the scene, in metres. */
   targetHeightM: number;
 }
@@ -48,22 +56,34 @@ export interface CharacterAsset {
  *   liruf — bipedal cartoon dinosaur, same export pipeline and unit scale as
  *           the two humans, so its 1.647 m is a deliberate design choice: a
  *           dino buddy who stands eye-to-eye with the cast. Kept.
- *   dina  — QUADRUPED baby dinosaur, and the one true outlier: exported in
- *           Unreal's unit scale (0.028 tall, 0.042 long — deeper than tall,
- *           which is what gave the quadruped away). Set to 0.70 m at the
- *           shoulder, making her ~1.05 m long: large-dog sized beside a 1.7 m
- *           human, which is what a baby dino companion should read as.
+ *   dina  — QUADRUPED, and the one true outlier: exported in Unreal's unit
+ *           scale (0.0283 tall, 0.0417 long — deeper than tall, which is what
+ *           gave the quadruped away). She is the BIGGEST character, not the
+ *           smallest: 1.90 m tall makes her ~2.80 m long, so she reads as a
+ *           large dinosaur beside a 1.70 m human rather than as a pet.
+ *
+ *           She was 0.70 m — "large-dog sized" — which was a guess about what a
+ *           baby dino companion should be, not a decision anyone made. Owner
+ *           correction 2026-08-16: Dina is a big character, clearly larger than
+ *           Liruf. The ceiling is the island: `diorama-a` is 6.5 m across, and
+ *           at 2.80 m long she already occupies 43% of it with a second
+ *           character standing beside her.
  */
 export const CHARACTER_ASSETS: Readonly<Record<CharacterId, CharacterAsset>> = Object.freeze({
-  dina: { id: 'dina', url: assetUrl('dina.glb'), sourceHeightM: 0.028, targetHeightM: 0.7 },
-  liruf: { id: 'liruf', url: assetUrl('liruf.glb'), sourceHeightM: 1.647, targetHeightM: 1.647 },
-  rho: { id: 'rho', url: assetUrl('rho.glb'), sourceHeightM: 1.7, targetHeightM: 1.7 },
-  zara: { id: 'zara', url: assetUrl('zara.glb'), sourceHeightM: 1.61, targetHeightM: 1.61 },
+  dina: { id: 'dina', url: assetUrl('dina.glb'), sourceHeightM: 0.028, sourceFootprintM: 0.04167, targetHeightM: 1.9 },
+  liruf: { id: 'liruf', url: assetUrl('liruf.glb'), sourceHeightM: 1.647, sourceFootprintM: 1.7, targetHeightM: 1.647 },
+  rho: { id: 'rho', url: assetUrl('rho.glb'), sourceHeightM: 1.7, sourceFootprintM: 0.82109, targetHeightM: 1.7 },
+  zara: { id: 'zara', url: assetUrl('zara.glb'), sourceHeightM: 1.61, sourceFootprintM: 0.82841, targetHeightM: 1.61 },
 });
 
 /** Uniform scale that brings a character to its target height. */
 export function characterScale(asset: CharacterAsset): number {
   return asset.targetHeightM / asset.sourceHeightM;
+}
+
+/** How much ground this character covers once scaled, in metres. */
+export function characterFootprintM(asset: CharacterAsset): number {
+  return asset.sourceFootprintM * characterScale(asset);
 }
 
 export interface SceneAsset {

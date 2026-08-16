@@ -51,10 +51,11 @@ correct behaviour, not a failure.
 
 **Scales** (`frontend/src/tutor-scene/assets.ts`): rho 1.70 m, zara 1.61 m and
 liruf 1.647 m are the exports' own measured heights and are authoritative.
-**Dina was the sole outlier** — exported in Unreal units at 0.028 m tall and
-0.042 m long (deeper than tall, which is what gave the quadruped away) — and is
-normalised to 0.70 m at the shoulder, ~1.05 m long: large-dog sized beside a
-1.7 m human. Normalisation happens at RUNTIME via a scale on the wrapping
+**Dina is the outlier and the biggest character** — exported in Unreal units at
+0.0283 m tall and 0.0417 m long (deeper than tall, which is what gave the
+quadruped away) — normalised to **1.90 m, ~2.80 m long**. She was 0.70 m
+("large-dog sized"), which was a guess nobody made deliberately; owner
+correction 2026-08-16. Normalisation happens at RUNTIME via a scale on the wrapping
 group, so the .glb stays byte-identical to what the artist approved.
 
 ## §3 The rigs — and the one hard limit
@@ -127,6 +128,26 @@ authored throughout the lesson catalog drive the 3D cast unchanged.
 Emotions map to **posture**, not expression — there is no face to move (§3).
 That is a weaker channel than the 2D characters have, and it is stated plainly
 rather than pretended otherwise.
+
+### §4.0 The base pose is the BIND POSE
+
+Nothing plays underneath the gesture layers. This used to evaluate each export's
+own clip at t=0 and hold it, on the stated theory that it was "the character's
+actual standing posture rather than its bind pose". **It is the opposite.**
+Every export ships exactly one clip and all of them are locomotion cycles, so
+frame 0 is a stride:
+
+- **Zara** stood with her legs crossed mid-step.
+- **Liruf**, whose clip is `running`, was frozen **airborne with his legs
+  tucked**.
+
+Every gesture in the product then composed over that. The bind pose is the
+natural standing pose the models were authored in and matches the owner's
+reference captures of all four characters exactly.
+
+With no normal action playing, three.js falls back to each property's ORIGINAL
+value — captured when the mixer first binds, which is the bind pose — and
+applies the additive layers on top. The correct amount of code is none.
 
 ### §4.1 The authored clip library — why every clip is ADDITIVE
 

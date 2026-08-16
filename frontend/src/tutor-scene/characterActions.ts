@@ -67,7 +67,7 @@ export function arc(progress: number): number {
  * translation on the hips, in the authoring rig's own units, which is the same
  * absolute-value-shared-between-skeletons mistake that re-posed every character
  * into Zara's body. A jump should also scale with the jumper: 0.42 of height is
- * 71 cm for a 1.7 m human and 29 cm for a 0.7 m dino, which is right, whereas
+ * 71 cm for a 1.7 m human and 80 cm for a 1.9 m dino, which is right, whereas
  * one baked distance would be either a hop or a launch depending on who plays it.
  *
  * (The baked translation was also wrong by three orders of magnitude — Blender

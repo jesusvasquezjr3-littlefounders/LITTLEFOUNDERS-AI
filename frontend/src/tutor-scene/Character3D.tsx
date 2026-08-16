@@ -52,8 +52,6 @@ export interface Character3DProps {
   position?: [number, number, number];
   /** Y rotation in radians. */
   rotation?: number;
-  /** Seconds into the authored clip to freeze at. */
-  poseAt?: number;
   /**
    * Emotion and action use the SAME closed vocabulary as the 2D rig
    * (components/characters/control/types.ts), so lesson content already
@@ -81,14 +79,13 @@ export function Character3D({
   settings,
   position = [0, 0, 0],
   rotation = 0,
-  poseAt = 0,
   emotion = 'neutral',
   action = 'idle',
   actionKey = 0,
   viseme = 0,
 }: Character3DProps) {
   const asset: CharacterAsset = CHARACTER_ASSETS[id];
-  const { scene, animations } = useSceneModel(asset.url, settings);
+  const { scene } = useSceneModel(asset.url, settings);
   const inner = useRef<Group>(null);
 
   const scale = useMemo(() => characterScale(asset), [asset]);
@@ -141,37 +138,23 @@ export function Character3D({
   const mixer = useMemo(() => new AnimationMixer(scene), [scene]);
 
   /*
-   * THE CHARACTER'S OWN STANCE, held as a pose.
+   * THE BASE POSE IS THE BIND POSE. Nothing is played underneath.
    *
-   * Every export ships exactly one clip and all of them are locomotion cycles,
-   * so it is evaluated at a single time and paused rather than played. This is
-   * the base the whole animation stack composes over — it is what makes Rho
-   * stand like Rho and Liruf like Liruf — so it stays playing at full weight
-   * instead of being applied once and forgotten.
-   */
-  useEffect(() => {
-    const source = animations[0];
-    if (!source) return;
-    const pose = mixer.clipAction(source);
-    pose.play();
-    /*
-     * `pose.time`, NOT `mixer.setTime`: the mixer clock is shared, so seeking it
-     * would rewind every additive layer to the same instant each time this
-     * effect re-ran, restarting gestures mid-flight.
-     */
-    pose.time = poseAt;
-    pose.paused = true;
-    mixer.update(0);
-    return () => {
-      pose.stop();
-      mixer.uncacheAction(source, scene);
-    };
-  }, [mixer, animations, poseAt, scene]);
-
-  /*
-   * Bound AFTER the authored clip has been posed (the effect above runs first
-   * in declaration order), so the captured rest orientations are the character's
-   * actual standing posture rather than its bind pose.
+   * This used to evaluate the export's own clip at t=0 and hold that, on the
+   * theory that it was "the character's actual standing posture rather than its
+   * bind pose". It is the opposite. Every export ships exactly one clip and all
+   * of them are locomotion cycles, so frame 0 is a stride, not a stance:
+   * Zara stood with her legs crossed mid-step, and Liruf — whose clip is
+   * `running` — was frozen AIRBORNE with his legs tucked. Every gesture in the
+   * product then composed over that.
+   *
+   * The bind pose is the natural standing pose the models were authored in, and
+   * it matches the reference captures of all four characters exactly.
+   *
+   * With no normal action playing, three.js falls back to each property's
+   * ORIGINAL value — captured when the mixer first binds, which is the bind
+   * pose — and applies the additive layers on top of it. That is precisely the
+   * base this wants, so the correct amount of code here is none.
    */
   const rig = useRef<Rig | null>(null);
   /*
@@ -192,7 +175,7 @@ export function Character3D({
     return () => {
       rig.current = null;
     };
-  }, [scene, poseAt]);
+  }, [scene]);
 
   // One-shot actions restart when the action or its replay key changes.
   const actionLift = useRef(0);
@@ -309,7 +292,7 @@ export function Character3D({
        * TRAVEL IS NOT IN THE CLIP. A clip can only express leaving the ground
        * as a hips translation in the authoring rig's units — an absolute value
        * shared between skeletons, which is the defect this whole layer exists
-       * to avoid, and it would make a 0.7 m dino jump as far as a 1.7 m human.
+       * to avoid, and it would make a 1.9 m dino jump as far as a 1.7 m human.
        * The lift is read from the clip's OWN time so the flight matches the
        * crouch and landing the clip does carry.
        */
@@ -352,7 +335,7 @@ export function Character3D({
     }
     const t = state.clock.elapsedTime + PHASE[id];
     // Amplitudes are proportional to the character's height, so the same
-    // constants read identically on a 0.7 m dino and a 1.7 m adult. The bob is
+    // constants read identically on a 1.9 m dino and a 1.7 m adult. The bob is
     // ADDED to groundY: assigning it directly would drop every character
     // through the island, because this callback owns position.y outright.
     group.position.y = groundY + actionLift.current + Math.sin(t * 1.1) * 0.006 * asset.targetHeightM;

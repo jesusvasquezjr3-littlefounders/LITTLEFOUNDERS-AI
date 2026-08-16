@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Box3, Group, Vector3, type PerspectiveCamera } from 'three';
 import { SceneCanvas, type SceneStats } from './SceneCanvas';
@@ -8,7 +8,7 @@ import { Character3D } from './Character3D';
 import { QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
 import { findStandingSpots, type StandingSpot } from './standingSpots';
-import { CHARACTER_ASSETS, type SCENE_ASSETS } from './assets';
+import { CHARACTER_ASSETS, characterFootprintM, type SCENE_ASSETS } from './assets';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
 
 /*
@@ -254,24 +254,42 @@ function Cast({
   const { groundRef } = useGround();
   const [spots, setSpots] = useState<StandingSpot[] | null>(null);
 
+  /*
+   * Separation is derived from WHO IS STANDING THERE, not a constant.
+   *
+   * It was a flat 1.3 m, which quietly assumed every character is human-sized.
+   * They are not, and the footprints are measured rather than proportional:
+   * Rho covers 0.82 m, Liruf 1.70 m because of his tail, and Dina 2.83 m. Two
+   * spots 1.3 m apart put Dina straight through Liruf however flat and open the
+   * ground under each of them scored.
+   *
+   * Centres must clear both half-footprints, plus a margin so they read as two
+   * characters sharing a place rather than two characters just barely missing.
+   */
+  const minSeparation = useMemo(() => {
+    const lead = characterFootprintM(CHARACTER_ASSETS[character]);
+    const second = companion ? characterFootprintM(CHARACTER_ASSETS[companion]) : 0;
+    return Math.max(1.3, (lead + second) / 2 + 0.35);
+  }, [character, companion]);
+
   useEffect(() => {
     const ground = groundRef.current;
     if (!ground) return;
     setSpots(
       findStandingSpots(ground, {
         count: companion ? 2 : 1,
-        minSeparation: 1.3,
+        minSeparation,
         // The camera opens on +Z, so the cast gathers on that side of the
         // island instead of behind the back wall.
         preferDirection: new Vector3(0.35, 0, 1),
       }),
     );
-  }, [groundRef, companion]);
+  }, [groundRef, companion, minSeparation]);
 
   /*
    * Report where the LEAD's head is, so the conversation camera has something
    * to frame. Derived from the solved spot and the character's own measured
-   * height rather than a constant: rho is 1.70 m and Dina 0.70 m at the
+   * height rather than a constant: rho is 1.70 m and Dina 1.90 m at the
    * shoulder, and one hard-coded eye level would frame a human's chin and a
    * quadruped's sky.
    *
