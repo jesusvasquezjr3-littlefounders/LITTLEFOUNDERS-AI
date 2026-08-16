@@ -75,6 +75,33 @@ const CHARACTERS = {
     openness: 0.95,
   },
   /*
+   * Rho had NO MOUTH to replace — his moustache covers the whole region and
+   * nothing is painted underneath it. So his card does not cover a mouth, it
+   * ADDS one, in the clean patch of skin that sits below the moustache's centre
+   * and above his chin (measured at 8.3 x 6.8 cm).
+   *
+   * That patch is why he does not need an animated moustache after all: a
+   * moustachioed man's mouth is exactly there, so a normal card in a normal
+   * place reads correctly and reuses the ellipse family. The moustache's curled
+   * tips stay painted and static, which is what a moustache does.
+   */
+  rho: {
+    family: 'ellipse',
+    skin: '#EB926A',
+    // Invented rather than sampled: there is no painted mouth interior on this
+    // character to sample FROM. Chosen against his own albedo so it reads as
+    // the same illustration.
+    interior: '#8E2A22',
+    teeth: '#FFF3E8',
+    tongue: '#D4736A',
+    lipLine: '#B5654A',
+    // The card is small — it must stay inside the skin patch, because a
+    // soft skin-coloured edge overlapping that very dark moustache would be
+    // the one part of the card the eye finds immediately.
+    spread: 1.25,
+    openness: 1.0,
+  },
+  /*
    * Liruf is not a palette swap of Zara, and assuming he was would have shipped
    * two visible defects:
    *

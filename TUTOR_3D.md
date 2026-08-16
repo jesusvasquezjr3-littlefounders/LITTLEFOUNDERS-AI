@@ -227,9 +227,15 @@ reason is worth reading before anyone assumes it is a palette swap.
   `hasMouthCard('liruf')` is false, so he renders exactly as before. A
   half-covering mouth card is worse than none: it makes a character look broken
   rather than unfinished.
-- **rho has no mouth at all.** His moustache covers the whole region and there
-  is nothing painted underneath, so his answer is an animated moustache rather
-  than a mouth — same card mechanism, different art.
+- **rho — SHIPPED, and he never needed an animated moustache.** He has no mouth
+  to replace: his moustache covers the region and nothing is painted under it.
+  But there IS a clean patch of skin between the moustache's centre and his
+  chin, measured at 8.3 x 6.8 cm — which is exactly where a moustachioed man's
+  mouth belongs. So his card ADDS a mouth in a normal place with the ordinary
+  ellipse family, and the moustache's curled tips stay painted and static,
+  which is what a moustache does. His card is deliberately small: a soft
+  skin-coloured edge straying onto that near-black moustache would be the one
+  part of it the eye finds instantly.
 - **dina** is a quadruped seen mostly in profile, with a single painted curve
   for a mouth. Her muzzle will hit the same fitting problem as Liruf's.
 

@@ -57,6 +57,16 @@ MOUTHS = {
         "depth": 0.05,
         "projection": "planar",
     },
+    # Rho's card ADDS a mouth rather than covering one: nothing is painted
+    # under his moustache. It is deliberately small and sits inside the clean
+    # skin patch between the moustache's centre and his chin, because a card
+    # edge straying onto that near-black moustache would be obvious.
+    "Rho": {
+        "centre": (0.006, 0.925),
+        "size": (0.078, 0.039),
+        "depth": 0.04,
+        "projection": "planar",
+    },
     # Liruf's grin is an ARC, and that defeated both simpler projections. A
     # planar fit compressed the sides of his muzzle to nothing and left the
     # painted corners showing; a cylindrical fit swept a band of FIXED HEIGHT
