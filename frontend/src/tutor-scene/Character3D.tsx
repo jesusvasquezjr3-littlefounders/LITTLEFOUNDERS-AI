@@ -11,7 +11,14 @@ import { ContactShadow } from './ContactShadow';
 import { bindRig, resetRig, type Rig, type RigKind } from './rig';
 import { ACTION_SECONDS, LOOPING_ACTIONS, applyCharacterFrame, applyEmotionPosture } from './characterActions';
 import { useClipLibrary } from './useClipLibrary';
-import { additiveClip, clipFor, emotionClipFor, LOOPING_CLIPS, restClipFrom } from './clipLibrary';
+import {
+  additiveClip,
+  baseClipName,
+  clipFor,
+  emotionClipFor,
+  LOOPING_CLIPS,
+  restClipFrom,
+} from './clipLibrary';
 
 /*
  * A canonical character standing in the Tutor scene.
@@ -196,8 +203,8 @@ export function Character3D({
    */
   const { clips } = useClipLibrary();
   const clip = useMemo(
-    () => (rigKind === 'biped' ? clipFor(clips, action) : null),
-    [clips, action, rigKind],
+    () => (rigKind === 'biped' ? clipFor(clips, action, id) : null),
+    [clips, action, rigKind, id],
   );
 
   /*
@@ -217,8 +224,8 @@ export function Character3D({
    * the emotion twice.
    */
   const emotionClip = useMemo(
-    () => (rigKind === 'biped' ? emotionClipFor(clips, emotion) : null),
-    [clips, emotion, rigKind],
+    () => (rigKind === 'biped' ? emotionClipFor(clips, emotion, id) : null),
+    [clips, emotion, rigKind, id],
   );
 
   const clipDriven = clip !== null && restClip !== null;
@@ -247,7 +254,9 @@ export function Character3D({
     const additive = additiveClip(clip, restClip);
     const running = mixer.clipAction(additive);
     running.reset();
-    running.setLoop(LOOPING_CLIPS.has(clip.name) ? LoopRepeat : LoopOnce, Infinity);
+    // The BASE name: `celebrate@rho` loops because `celebrate` does. Reading
+    // the suffixed name here would turn every override into a one-shot.
+    running.setLoop(LOOPING_CLIPS.has(baseClipName(clip.name)) ? LoopRepeat : LoopOnce, Infinity);
     // A finished one-shot HOLDS its last frame. Without this the mixer drops
     // the layer on the final frame and the character snaps upright the instant
     // a bow completes.

@@ -35,7 +35,13 @@ FPS = 30
 SOURCE_GLB = r"C:\Users\mel_f\OneDrive\Escritorio\LITTLEFOUNDERS-AI\glb\Zara.glb"
 
 # Loop set must agree with LOOPING_ACTIONS in src/tutor-scene/characterActions.ts.
+# Matched against the BASE name, so `celebrate@rho` loops because `celebrate`
+# does — an override must never disagree with the clip it overrides.
 LOOPING = {"idle", "celebrate", "dance"}
+
+# A clip named `<action>@<characterId>` overrides `<action>` for that character
+# and is ignored by everyone else (`clipFor` in src/tutor-scene/clipLibrary.ts).
+CHARACTER_SUFFIX = "@"
 
 # frame -> {bone: (x, y, z) degrees}. Frame 0 is the rest pose unless stated.
 CLIPS = {
@@ -369,6 +375,108 @@ CLIPS = {
         ],
     },
 
+    # ---- PER-CHARACTER OVERRIDES ---------------------------------------
+    #
+    # Additive playback fixes PROPORTIONS — every character keeps its own
+    # stance — but it cannot fix AMPLITUDE. A bone-local delta of 150 degrees
+    # means something different on a bone whose rest orientation is 73 degrees
+    # away, so a gesture authored on Zara arrives muted or misaimed on the
+    # others. These four clips are the ones that failed to read at all.
+    #
+    # Every number below was MEASURED before it was chosen, then rendered:
+    # the arm solver reported reach, forward distance along the character's own
+    # measured facing, and hand height against the crown.
+    #
+    # THE FINDING THAT SHAPED THEM: Rho cannot raise his arms overhead. Reach
+    # 15.99 from a shoulder at ~3.2 tops out at 19.2; his crown is at 25.94.
+    # Liruf's arms are shorter still. So their celebrate is NOT a weaker copy
+    # of Zara's overhead pose — it is arms UP AND OUT with the torso carrying
+    # the gesture, which is what a short-armed character actually does.
+
+    "celebrate@rho": {
+        "frames": 54,
+        "keys": [
+            # Arms out and up beside the head, elbows open. At Zara's 150 his
+            # hands landed ON his head, which reads as dismay, not delight.
+            (0, {"LeftArm": (0, 0, -108), "RightArm": (0, 0, 108),
+                 "LeftForeArm": (0, 0, -20), "RightForeArm": (0, 0, 20),
+                 "LeftShoulder": (0, 0, -10), "RightShoulder": (0, 0, 10),
+                 "Spine02": (-9, 0, 0), "Head": (-11, 0, 0)}),
+            (14, {"LeftArm": (0, 0, -120), "RightArm": (0, 0, 120),
+                  "LeftForeArm": (0, 0, -28), "RightForeArm": (0, 0, 28),
+                  "LeftShoulder": (0, 0, -13), "RightShoulder": (0, 0, 13),
+                  "Spine02": (-14, 0, 0), "Spine01": (-5, 0, 0),
+                  "Head": (-17, 0, 0), "Hips": (-4, 0, 0)}),
+            (27, {"LeftArm": (0, 0, -108), "RightArm": (0, 0, 108),
+                  "LeftForeArm": (0, 0, -20), "RightForeArm": (0, 0, 20),
+                  "LeftShoulder": (0, 0, -10), "RightShoulder": (0, 0, 10),
+                  "Spine02": (-9, 0, 0), "Head": (-11, 0, 0)}),
+            (41, {"LeftArm": (0, 0, -122), "RightArm": (0, 0, 122),
+                  "LeftForeArm": (0, 0, -29), "RightForeArm": (0, 0, 29),
+                  "LeftShoulder": (0, 0, -14), "RightShoulder": (0, 0, 14),
+                  "Spine02": (-15, 0, 0), "Spine01": (-6, 0, 0),
+                  "Head": (-18, 0, 0), "Hips": (-4, 0, 0)}),
+            (54, {"LeftArm": (0, 0, -108), "RightArm": (0, 0, 108),
+                  "LeftForeArm": (0, 0, -20), "RightForeArm": (0, 0, 20),
+                  "LeftShoulder": (0, 0, -10), "RightShoulder": (0, 0, 10),
+                  "Spine02": (-9, 0, 0), "Head": (-11, 0, 0)}),
+        ],
+    },
+
+    # LIRUF'S RIG HAS NO MIRROR. Reflecting his right hand across his own
+    # sagittal plane misses the left by 23.4 units under EVERY euler negation
+    # (rho's best is 1.4), so his two arms are stated independently here rather
+    # than derived. That asymmetry is why his celebrate looked one-armed.
+    #
+    # Past a Z of about 110 the two sides diverge visibly — one arm keeps
+    # rising while the other drops — so the amplitude is capped there.
+    "celebrate@liruf": {
+        "frames": 54,
+        "keys": [
+            (0, {"LeftArm": (-22, 0, -100), "RightArm": (-22, 0, 100),
+                 "LeftForeArm": (0, 0, -18), "RightForeArm": (0, 0, 18),
+                 "LeftShoulder": (0, 0, -10), "RightShoulder": (0, 0, 10),
+                 "Spine02": (-9, 0, 0), "Head": (-11, 0, 0)}),
+            (14, {"LeftArm": (-26, 0, -112), "RightArm": (-26, 0, 112),
+                  "LeftForeArm": (0, 0, -20), "RightForeArm": (0, 0, 20),
+                  "LeftShoulder": (0, 0, -11), "RightShoulder": (0, 0, 11),
+                  "Spine02": (-14, 0, 0), "Spine01": (-5, 0, 0),
+                  "Head": (-17, 0, 0), "Hips": (-4, 0, 0)}),
+            (27, {"LeftArm": (-22, 0, -100), "RightArm": (-22, 0, 100),
+                  "LeftForeArm": (0, 0, -18), "RightForeArm": (0, 0, 18),
+                  "LeftShoulder": (0, 0, -10), "RightShoulder": (0, 0, 10),
+                  "Spine02": (-9, 0, 0), "Head": (-11, 0, 0)}),
+            (41, {"LeftArm": (-27, 0, -114), "RightArm": (-27, 0, 114),
+                  "LeftForeArm": (0, 0, -21), "RightForeArm": (0, 0, 21),
+                  "LeftShoulder": (0, 0, -12), "RightShoulder": (0, 0, 12),
+                  "Spine02": (-15, 0, 0), "Spine01": (-6, 0, 0),
+                  "Head": (-18, 0, 0), "Hips": (-4, 0, 0)}),
+            (54, {"LeftArm": (-22, 0, -100), "RightArm": (-22, 0, 100),
+                  "LeftForeArm": (0, 0, -18), "RightForeArm": (0, 0, 18),
+                  "LeftShoulder": (0, 0, -10), "RightShoulder": (0, 0, 10),
+                  "Spine02": (-9, 0, 0), "Head": (-11, 0, 0)}),
+        ],
+    },
+
+    # Liruf's shipped `point` aimed BEHIND him: measured against his own facing
+    # (read from the `headfront` bone rather than assumed to be -Y), the hand
+    # ended up -0.94 forward. This reaches +18.4.
+    "point@liruf": {
+        "frames": 42,
+        "keys": [
+            (0, {}),
+            (6, {"RightArm": (0, 0, -12), "Spine02": (0, -5, 0), "Head": (0, -6, 0)}),
+            (15, {"RightArm": (-75, -20, -30), "RightForeArm": (-10, 0, 6),
+                  "RightShoulder": (0, 0, 8), "Spine02": (0, 10, 0), "Spine01": (0, 5, 0),
+                  "Head": (0, 12, 0), "Hips": (0, 3, 0)}),
+            (26, {"RightArm": (-72, -19, -28), "RightForeArm": (-8, 0, 5),
+                  "RightShoulder": (0, 0, 8), "Spine02": (0, 10, 0), "Spine01": (0, 5, 0),
+                  "Head": (0, 12, 0), "Hips": (0, 3, 0)}),
+            (36, {"RightArm": (0, 0, -6), "Spine02": (0, 2, 0), "Head": (0, 3, 0)}),
+            (42, {}),
+        ],
+    },
+
     "wave": {
         "frames": 48,
         "keys": [
@@ -510,11 +618,15 @@ def build():
         track.name = name
         track.strips.new(name, 0, action)
         armature.animation_data.action = None
+        base = name.split(CHARACTER_SUFFIX)[0]
         report[name] = {
             "frames": spec["frames"],
             "bones": spec["_bones"],
             "missing_bones": sorted(missing),
-            "loop": name in LOOPING,
+            # Looping is a property of the ACTION, not of the override, so an
+            # override cannot silently disagree with the clip it replaces.
+            "loop": base in LOOPING,
+            "overrides": base if base != name else None,
         }
     clear_pose(armature)
     return armature, report

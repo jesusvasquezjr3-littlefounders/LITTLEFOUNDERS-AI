@@ -3,6 +3,7 @@ import { AnimationClip, QuaternionKeyframeTrack, VectorKeyframeTrack } from 'thr
 import { CHARACTER_ACTIONS } from '@/components/characters/control/types';
 import {
   additiveClip,
+  baseClipName,
   clipFor,
   emotionClipFor,
   LOOPING_CLIPS,
@@ -32,6 +33,40 @@ describe('clipFor', () => {
     for (const action of CHARACTER_ACTIONS) {
       expect(clipFor(clips, action)).toBeNull();
     }
+  });
+
+  it('prefers a clip authored for this character', () => {
+    /*
+     * Additive composition fixes proportions but not AMPLITUDE. Rho's arms are
+     * physically too short to pass his own crown, so Zara's overhead
+     * `celebrate` put his hands ON his head; he needs a different pose, not a
+     * scaled one.
+     */
+    const clips = [quatClip('celebrate', IDENTITY), quatClip('celebrate@rho', IDENTITY)];
+    expect(clipFor(clips, 'celebrate', 'rho')?.name).toBe('celebrate@rho');
+  });
+
+  it('falls back to the shared clip for characters with no override', () => {
+    const clips = [quatClip('celebrate', IDENTITY), quatClip('celebrate@rho', IDENTITY)];
+    expect(clipFor(clips, 'celebrate', 'zara')?.name).toBe('celebrate');
+    expect(clipFor(clips, 'celebrate')?.name).toBe('celebrate');
+  });
+
+  it("never hands one character another's override", () => {
+    // The whole point is that these poses are anatomy-specific. Liruf's
+    // celebrate on Rho would be exactly the bug being fixed, in reverse.
+    const clips = [quatClip('celebrate@liruf', IDENTITY)];
+    expect(clipFor(clips, 'celebrate', 'rho')).toBeNull();
+  });
+});
+
+describe('baseClipName', () => {
+  it('strips the character suffix so an override keeps the action semantics', () => {
+    // Looping is a property of the ACTION. Reading the suffixed name is what
+    // would turn `celebrate@rho` into a one-shot that plays once and freezes.
+    expect(baseClipName('celebrate@rho')).toBe('celebrate');
+    expect(LOOPING_CLIPS.has(baseClipName('celebrate@rho'))).toBe(true);
+    expect(baseClipName('wave')).toBe('wave');
   });
 });
 
@@ -167,5 +202,10 @@ describe('the library contract', () => {
   it('flags names outside the canonical vocabulary', () => {
     const clips = [quatClip('wave', IDENTITY), quatClip('moonwalk', IDENTITY)];
     expect(unknownClipNames(clips, CHARACTER_ACTIONS)).toEqual(['moonwalk']);
+  });
+
+  it('accepts an override by its base name but not an invented one', () => {
+    const clips = [quatClip('celebrate@rho', IDENTITY), quatClip('moonwalk@rho', IDENTITY)];
+    expect(unknownClipNames(clips, CHARACTER_ACTIONS)).toEqual(['moonwalk@rho']);
   });
 });

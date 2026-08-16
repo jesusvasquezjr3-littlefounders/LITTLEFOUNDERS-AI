@@ -40,26 +40,63 @@ export const CLIP_LIBRARY_URL = `${SCENE_ASSET_BASE}/clips-biped.glb`;
  */
 export const LOOPING_CLIPS: ReadonlySet<string> = new Set(['idle', 'celebrate', 'dance']);
 
-/**
- * Picks the clip for an action, or null when none has been authored yet.
+/*
+ * PER-CHARACTER OVERRIDES.
  *
- * A missing clip is the NORMAL case, not an error: 5 of the 19 canonical states
- * are authored so far and the procedural driver still owns the rest. Returning
- * null is what lets the two layers coexist while the library fills in.
+ * A clip named `<action>@<characterId>` replaces `<action>` for that character
+ * and is invisible to everyone else. It exists because additive composition
+ * fixes proportions but NOT amplitude: a bone-local delta of 150° means
+ * something different on a bone whose rest orientation is 73° away, so a
+ * gesture authored on Zara arrives muted or misaimed on the others.
+ *
+ * Overriding beats retargeting here, and that is a measured conclusion rather
+ * than a preference — an armature-space retarget was built, verified correct on
+ * the authoring rig (2e-6), and helped Liruf while hurting Rho. Some gestures
+ * cannot be transformed at all: Rho's arms are physically too short to pass his
+ * own crown, so his `celebrate` has to be a DIFFERENT pose, not a scaled one.
+ */
+const OVERRIDE_SEPARATOR = '@';
+
+/** The action a clip animates, with any per-character suffix removed. */
+export function baseClipName(name: string): string {
+  const at = name.indexOf(OVERRIDE_SEPARATOR);
+  return at === -1 ? name : name.slice(0, at);
+}
+
+/**
+ * Picks the clip for an action, preferring one authored for this character.
+ *
+ * A missing clip is the NORMAL case, not an error: the procedural driver owns
+ * every action the library has not authored. Returning null is what lets the
+ * two layers coexist while the library fills in.
  */
 export function clipFor(
   clips: readonly AnimationClip[],
   action: CharacterAction,
+  character?: string,
 ): AnimationClip | null {
+  if (character) {
+    const override = clips.find(
+      (clip) => clip.name === `${action}${OVERRIDE_SEPARATOR}${character}`,
+    );
+    if (override) return override;
+  }
   return clips.find((clip) => clip.name === action) ?? null;
 }
 
-/** Names in the library that are not part of the canonical vocabulary. */
+/**
+ * Names in the library that are not part of the canonical vocabulary.
+ *
+ * An override is checked by its BASE name: `celebrate@rho` is legitimate,
+ * `moonwalk@rho` is not, and neither is a bare `moonwalk`.
+ */
 export function unknownClipNames(
   clips: readonly AnimationClip[],
   vocabulary: readonly string[],
 ): string[] {
-  return clips.map((clip) => clip.name).filter((name) => !vocabulary.includes(name));
+  return clips
+    .map((clip) => clip.name)
+    .filter((name) => !vocabulary.includes(baseClipName(name)));
 }
 
 /*
@@ -78,8 +115,16 @@ export const REST_CLIP = 'emotion.rest';
 export function emotionClipFor(
   clips: readonly AnimationClip[],
   emotion: CharacterEmotion,
+  character?: string,
 ): AnimationClip | null {
-  return clips.find((clip) => clip.name === `emotion.${emotion}`) ?? null;
+  const name = `emotion.${emotion}`;
+  if (character) {
+    const override = clips.find(
+      (clip) => clip.name === `${name}${OVERRIDE_SEPARATOR}${character}`,
+    );
+    if (override) return override;
+  }
+  return clips.find((clip) => clip.name === name) ?? null;
 }
 
 export function restClipFrom(clips: readonly AnimationClip[]): AnimationClip | null {

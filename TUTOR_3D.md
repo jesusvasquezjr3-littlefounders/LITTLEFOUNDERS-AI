@@ -153,36 +153,58 @@ value" from whatever the bones held at bind time — after a clamped one-shot,
 the last frame of the previous gesture — so switching `bow` → `wave` layered
 the wave on top of a held bow.
 
-### §4.2 OPEN: gesture amplitude is calibrated to one rig
+### §4.2 Gesture amplitude is per-character — the `<action>@<id>` overrides
 
 Additive composition fixes *proportions*, not *amplitude*. A bone-local delta
 of 150° means something different on a bone whose rest orientation is 73° away,
 so a gesture authored on Zara arrives muted or misaimed on the others.
-Measured, at each gesture's peak frame:
+Measured at each gesture's peak frame, before any override existed:
 
 | gesture | zara | rho | liruf |
 |---|---|---|---|
 | `think` | ✅ | ✅ | ✅ |
 | `bow` | ✅ | ✅ | ✅ |
 | `wave` | ✅ | ✅ acceptable | ✅ |
-| `point` | ✅ | ⚠️ weak (10.2 forward) | ❌ **pointed backwards** (−0.9) |
-| `celebrate` | ✅ overhead | ❌ hands at head | ❌ arms stay down |
+| `point` | ✅ | ⚠️ weak | ❌ **aimed at nothing** (−0.004 forward) |
+| `celebrate` | ✅ overhead | ❌ hands ON his head | ❌ arms stayed down |
 
-Two findings worth keeping:
+**The mechanism.** A clip named `<action>@<characterId>` replaces `<action>` for
+that character only; `clipFor` falls back to the shared clip for everyone else,
+so exactly the clips that need it get authored twice. `baseClipName` strips the
+suffix wherever the ACTION's semantics are what matter — looping in particular,
+or `celebrate@rho` would play once and freeze.
+
+Three shipped, verified end to end from the exported `.glb` through additive
+composition (`scratchpad/verify-overrides.mjs`), with each character's forward
+direction **measured** from its own `headfront` bone rather than assumed:
+
+| | shared | override |
+|---|---|---|
+| `point@liruf` forward reach | −0.004 | **+0.245** |
+| `celebrate@rho` hand spread | 0.578 | **0.765** |
+| `celebrate@liruf` hand height | 0.629 | **0.684** |
+
+**Three findings worth keeping.**
 
 - **Rho physically cannot raise his arms overhead.** Arm reach 15.99 from a
-  shoulder at ~3.2 tops out at 19.2; his crown is at 25.94. Stylized character,
-  big head, short arms. His `celebrate` has to be *arms up and out*, not a
+  shoulder at ~3.2 tops out at 19.2; his crown is at 25.94. His `celebrate` is
+  *arms up and out with the torso carrying it* — a different pose, not a
   retarget of Zara's.
-- **An armature-space retarget is not the fix.** It was implemented and
-  measured (identity check on Zara: 2e-6, so the maths is right). It *helps*
+- **Liruf's rig has no mirror at all.** Reflecting his right hand across his own
+  sagittal plane misses the left by 23.4 under *every* euler negation (Rho's
+  best is 1.4). His two arms are stated independently in `author-clips.py`;
+  deriving one from the other is what made his celebrate look one-armed.
+- **An armature-space retarget is not the fix.** It was implemented and measured
+  (identity check on the authoring rig: 2e-6, so the maths is right). It *helps*
   Liruf and *hurts* Rho — the rests differ in incompatible ways and no single
-  linear rule serves both. Per-character values are the answer, not a smarter
-  transform.
+  linear rule serves both.
 
-The intended shape is per-character override clips named `<action>@<id>` in the
-same library, resolved with fallback to the shared `<action>`, so only the four
-clips that actually need it get authored twice.
+**Still open:** `point@rho` reaches 0.176 against Zara's 0.213. It reads as a
+gesture but not clearly as *pointing*, and no candidate tried so far improved it
+— his arms are short enough that extension does not register. Not broken, just
+weak. An automated search is the wrong tool here: it optimises the hand's
+position against geometry it cannot see, and every run returned poses with the
+arm inside the torso.
 
 ### Rules that will bite whoever touches this next
 
