@@ -8,8 +8,10 @@ import { useSceneModel } from '../useSceneModel';
 import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from '../quality';
 import { readBudget, TUTOR_ASSET_BUDGET } from '../budget';
 import { fitObject } from '../fitCamera';
-import { TutorScene } from '../TutorScene';
-import { CHARACTER_ACTIONS, type CharacterAction } from '@/components/characters/control/types';
+import { TutorScene, type TutorFraming } from '../TutorScene';
+import { CHARACTER_ACTIONS, type CharacterAction, type CharacterId } from '@/components/characters/control/types';
+import { VISEMES } from '../mouthAtlas';
+import { useLipSync } from '../useLipSync';
 import { CHARACTER_ASSETS, SCENE_ASSETS } from '../assets';
 import { Vector3, type PerspectiveCamera } from 'three';
 
@@ -129,6 +131,24 @@ export default function SceneLabPage() {
   const [composed, setComposed] = useState(true);
   const [action, setAction] = useState<CharacterAction>('idle');
   const [actionKey, setActionKey] = useState(0);
+  /*
+   * The composed scene shipped with a fixed cast of rho + liruf, which meant
+   * the lab could not show two of the four characters at all — including the
+   * only one with a mouth card. A harness whose job is verification has to be
+   * able to put the thing being verified on screen.
+   */
+  const [lead, setLead] = useState<CharacterId>('rho');
+  const [viseme, setViseme] = useState(0);
+  const [framing, setFraming] = useState<TutorFraming>('vignette');
+  /*
+   * A real <audio> element driving the mouth, so the TTS path is exercised end
+   * to end here rather than asserted. `audiogen` will hand the product a URL;
+   * this stands in for it with a clip that is already in the repo.
+   */
+  const speech = useRef<HTMLAudioElement | null>(null);
+  const [speechEl, setSpeechEl] = useState<HTMLAudioElement | null>(null);
+  const [speaking, setSpeaking] = useState(false);
+  const spokenViseme = useLipSync(speaking ? speechEl : null);
   const onFit = useCallback((next: Vector3) => setTarget(next.clone()), []);
 
   const nf = useMemo(() => new Intl.NumberFormat(i18n.language), [i18n.language]);
@@ -160,15 +180,33 @@ export default function SceneLabPage() {
           <p className="lf-body text-content-muted">{t('tutor.lab.subtitle')}</p>
         </header>
 
+        {/* Stand-in for a TTS response. Muted attribute deliberately absent:
+            the analyser taps the element, so it has to actually play. */}
+        <audio
+          ref={(node) => {
+            speech.current = node;
+          }}
+          src="/sounds/edu/lesson_complete.mp3"
+          preload="auto"
+          onEnded={() => setSpeaking(false)}
+        />
+
         {/* Desktop uses the freed width for a viewport + inspector split; mobile stacks (§1.11). */}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-          <div>
+          {/* min-w-0: the desktop template already says minmax(0,1fr), but at
+              mobile this is a single-column grid whose item still defaults to
+              min-width:auto — and the canvas inside it has an intrinsic size. */}
+          <div className="min-w-0">
             {composed ? (
               <TutorScene
                 className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-surface-sunken lg:aspect-video"
                 onStats={setStats}
                 action={action}
                 actionKey={actionKey}
+                character={lead}
+                companion={lead === 'liruf' ? 'rho' : 'liruf'}
+                viseme={speaking ? spokenViseme : viseme}
+                framing={framing}
               />
             ) : (
             <SceneCanvas className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-surface-sunken lg:aspect-video" onStats={setStats} onSettings={setSettings}>
@@ -212,6 +250,72 @@ export default function SceneLabPage() {
               >
                 {composed ? 'inspect asset' : 'composed scene'}
               </button>
+              {composed ? (
+                <button
+                  type="button"
+                  data-speaking={speaking ? 'yes' : 'no'}
+                  onClick={() => {
+                    const el = speech.current;
+                    if (!el) return;
+                    if (speaking) {
+                      el.pause();
+                      el.currentTime = 0;
+                      setSpeaking(false);
+                      return;
+                    }
+                    setSpeechEl(el);
+                    setSpeaking(true);
+                    void el.play();
+                  }}
+                  className="lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content"
+                >
+                  {speaking ? 'stop' : 'speak'}
+                </button>
+              ) : null}
+              {composed ? (
+                <button
+                  type="button"
+                  data-framing={framing}
+                  onClick={() => setFraming((v) => (v === 'vignette' ? 'conversation' : 'vignette'))}
+                  className="lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content"
+                >
+                  {framing}
+                </button>
+              ) : null}
+              {composed
+                ? (Object.keys(CHARACTER_ASSETS) as CharacterId[]).map((id) => (
+                    <button
+                      key={`lead-${id}`}
+                      type="button"
+                      data-lead={id}
+                      onClick={() => setLead(id)}
+                      className={
+                        id === lead
+                          ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                          : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                      }
+                    >
+                      lead: {id}
+                    </button>
+                  ))
+                : null}
+              {composed
+                ? VISEMES.map((name, index) => (
+                    <button
+                      key={`viseme-${name}`}
+                      type="button"
+                      data-viseme={name}
+                      onClick={() => setViseme(index)}
+                      className={
+                        index === viseme
+                          ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                          : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                      }
+                    >
+                      {name}
+                    </button>
+                  ))
+                : null}
               <label className="lf-caption inline-flex cursor-pointer items-center gap-2 rounded-xl bg-accent px-4 py-2 font-semibold text-on-accent">
                 <input type="file" accept=".glb,model/gltf-binary" className="hidden" onChange={onPick} />
                 {t('tutor.lab.loadModel')}
@@ -239,6 +343,13 @@ export default function SceneLabPage() {
               <Row label={t('tutor.lab.tier')} value={stats?.tier ?? unknown} />
               <Row label={t('tutor.lab.fps')} value={stats ? nf.format(stats.fps) : unknown} />
               <Row label={t('tutor.lab.pixelRatio')} value={stats ? stats.pixelRatio.toFixed(2) : unknown} />
+              {/* Lip-sync has to be OBSERVABLE, not inferred from a squint at a
+                  few dozen pixels of mouth. This is the value the stage is
+                  actually being driven with. */}
+              <Row
+                label="viseme"
+                value={`${VISEMES[speaking ? spokenViseme : viseme] ?? '—'}${speaking ? ' (speaking)' : ''}`}
+              />
               {stats?.locked ? <p className="lf-caption mt-2 text-warning-strong">{t('tutor.lab.locked')}</p> : null}
             </section>
 
