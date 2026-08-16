@@ -5,9 +5,12 @@
 > conversational layer is `/ORACLE.md` — **this document covers the STAGE
 > only**, not the tutoring.
 >
-> **Status (2026-08-15):** stage BUILT and rendering for every user on
-> `/tutor`. Conversational layer NOT started. Assets are local-only —
-> publishing them to Depot is the one blocker before deploy.
+> **Status (2026-08-16):** stage BUILT, rendering, and READY AS AN INTEGRATION
+> TARGET — §7b is the contract RAG/TTS plug into. Zara has a working mouth
+> driven by real audio through `useLipSync`; three characters still need their
+> card. Authored clips replace 5 of the 19 procedural states. Conversational
+> layer NOT started (/ORACLE.md). Assets are local-only — publishing them to
+> Depot is the one blocker before deploy.
 
 ---
 
@@ -75,6 +78,11 @@ Dina is a **quadruped on her own 27-joint rig**: Hips, chest, head, ear ends, a
 >
 > This makes lip-sync **impossible** in code today. It is not a tuning problem
 > or a missing feature — the geometry to move does not exist. See §7.
+>
+> Worse than absent: the mouths are **painted into the texture**. Zara's open
+> smile, Liruf's toothy grin and Dina's curve are all albedo, and rho has no
+> mouth at all under his moustache. So the answer was never to move geometry.
+> §7.1 has what shipped.
 
 ## §4 Animation — procedural by necessity
 
@@ -150,6 +158,16 @@ assumed.
 - Lost WebGL contexts are recovered rather than left black.
 - `budget.ts` holds the asset budget as code; `/dev/scene-lab` and
   `npm run assets:3d` both measure real files against it.
+- **The lab's per-frame triangle count includes the SHADOW PASS, and the budget
+  it is compared against does not.** `maxTriangles: 100_000` is an ASSET
+  ceiling — `optimize-glb` applies the same number to a single file — while
+  `gl.info.render.triangles` counts every triangle the GPU processed that
+  frame. `high` is the only tier with shadows, so it renders the scene twice
+  and the count doubles exactly: rho + liruf on diorama-a measured
+  **102,424**, which is 2 × the 51,208 those three assets actually contain, and
+  the lab painted "Over budget" in red for a scene that is within its
+  documented cost. The number is not wrong; the COMPARISON is. Frame cost and
+  asset cost need separate ceilings before that readout can be trusted.
 - **`three` must only ever be reached through a lazy route.** Verify after each
   build: `WebGLRenderer` appears in the `TutorScene-*` chunk (≈287 kB gzip) and
   NOT in `index-*`.
@@ -158,20 +176,84 @@ assumed.
 
 Ordered by value. Items 1–2 are the reason this handoff exists.
 
-### 1. Add a mouth (unblocks lip-sync)
+### 1. Add a mouth (unblocks lip-sync) — SOLVED for `zara`, pending for the rest
 
-No jaw/facial bone exists (§3). Two viable routes, in preference order:
+No jaw/facial bone exists (§3), and **the mouths are painted into the texture
+rather than modelled** — so there is no geometry to deform. That kills both
+routes this handoff originally proposed, and the second one is worth stating
+plainly because it looks viable right up until it is measured:
 
-- **UV mouth atlas (recommended).** Map the mouth region to a small atlas
-  (one 512² texture, ~8 frames: closed, A, E, I, O, U, M/B/P, F/V) and swap the
-  UV offset at runtime. **No rig change at all**, matches the stylized look,
-  and it upgrades from amplitude-driven to true viseme-driven later without
-  touching the model.
-- **Viseme blendshapes.** Best quality, most authoring. Use the ARKit set or
-  the 8-shape subset above.
+- **Viseme blendshapes are out.** Nothing to deform. On rho the whole body is
+  3,080 triangles and the lips share a triangle with the cheek; a viseme would
+  stretch a decal, not open a mouth.
+- **Sliding the mouth region's UV offset is also out.** It presumes a
+  contiguous mouth island. These exports carry a **per-facet shattered UV
+  atlas**: two probe points 4 cm apart on Zara's face resolve to (0.096, 0.153)
+  and (0.447, 0.300). Verified by resolving the UV under seven probe points
+  with barycentric interpolation, not by looking at the texture.
 
-Either way, also consider a single `jaw` bone as a cheap fallback for
-amplitude-driven talking.
+**What shipped instead: a mouth CARD.** A small grid parented to the `Head`
+joint, laid over the painted mouth, with an 8-frame atlas swapped by texture
+offset. It keeps everything the UV route was chosen for — no rig change, and an
+upgrade path from amplitude-driven to true visemes without touching the model.
+
+- `frontend/scripts/generate-mouth-atlas.mjs` (`npm run assets:mouth`) draws the
+  atlas. Skin colour is the character's **albedo** (`#FECBA6` for Zara, within
+  ±2 across four widely separated UV locations), never a sampled render —
+  Blender's view transform darkens and desaturates, and a card matched to a
+  rendered pixel goes wrong the moment the app's lighting hits it.
+- `frontend/scripts/fit-mouth-card.py` raycasts the card grid onto the face and
+  emits `src/tutor-scene/mouthCards.generated.json`. The card is **not a flat
+  quad**: the face bulges ~1.6 cm forward across the mouth's 8.6 cm width, so a
+  flat plate stands that far off the cheek at its corners.
+- `src/tutor-scene/mouthAtlas.ts` + `MouthCard.tsx` build and attach it.
+  `Character3D` takes a `viseme` prop; that is the seam lip-sync plugs into.
+
+Still open on this item: **rho, liruf and dina have no card yet**, and the
+reason is worth reading before anyone assumes it is a palette swap.
+
+- **liruf — fitted, deliberately NOT shipped.** His grin is measured
+  (0.376 × 0.127 m at (0.031, 0.870)), his albedo is measured (snout `#587D5C`,
+  jaw `#B2DC86` — his skin is TWO colours across the mouth), and the atlas has
+  an `arc` shape family with triangular teeth to match him. What does not work
+  is the FIT. A planar projection compresses the sides of a muzzle to nothing
+  and left the painted grin's corners showing; a cylindrical projection around
+  a fitted muzzle axis covers more but still leaks, because his grin is a 3D
+  arc whose height varies with the angle around the snout while a cylindrical
+  band's height does not. The fix is a fitter that traces the mouth curve in 3D
+  and builds a ribbon along it, rather than sweeping a fixed-height band.
+  `hasMouthCard('liruf')` is false, so he renders exactly as before.
+- **rho has no mouth at all.** His moustache covers the whole region and there
+  is nothing painted underneath, so his answer is an animated moustache rather
+  than a mouth — same card mechanism, different art.
+- **dina** is a quadruped seen mostly in profile, with a single painted curve
+  for a mouth. Her muzzle will hit the same fitting problem as Liruf's.
+
+A card is therefore **three measurements and a shape family**, not a colour:
+the mouth rect, the albedo either side of it, and a projection that suits the
+head it sits on.
+
+> ### ⚠ The mouth is 2.4 px at the framing this stage actually ships
+>
+> Measured in the browser, not estimated: at `/dev/scene-lab` the canvas is
+> 760 CSS px wide showing a 6.5 m island, which is ~64 px per metre. Zara stands
+> **104 px tall** and her mouth is **2.4 CSS px / 2.9 device px**.
+>
+> The card is correct and the blocker in §3 is genuinely broken — but at this
+> camera distance **no viseme is distinguishable from any other**. Lip-sync
+> cannot pay for itself until the Tutor frames a speaking character far closer
+> than the island vignette does, which is a CAMERA decision belonging to this
+> document, not an asset one. Until then the mouth is correctness with no
+> visible effect.
+>
+> This is why the art was iterated in Blender renders rather than in the app:
+> the app cannot show the difference.
+
+The card's alpha feather is **anisotropic**, and that is forced by the face, not
+chosen: Zara's nose sits 17.5 px below the top of the card while the mouth
+starts at 28.8 px, so the entire transparent→opaque ramp has 11 px. An
+isotropic blur wide enough to hide the card's side edges **erased her nose** —
+caught only by rendering the card frames beside the untouched face.
 
 ### 2. Author real animation clips
 
@@ -202,6 +284,55 @@ The runtime normalises her, so this is hygiene, not a bug.
 | Gesture amplitude tuning | Nothing — just art direction | Numbers in `characterActions.ts` + a screenshot pass. |
 | Conversational layer | Product decisions in `/ORACLE.md` §3 | Voice/live tutoring. §1.9 applies in full. |
 
+## §7b The integration contract — what the next layer plugs into
+
+The stage is a RENDERING concern with a small, closed surface. Everything the
+conversational layer needs is props; nothing about DeepSeek, Qwen, retrieval or
+a transcript appears anywhere in `src/tutor-scene/`.
+
+```tsx
+<TutorScene
+  character="zara"          // who leads. companion is optional.
+  emotion={emotion}         // 7 canonical emotions — posture, not expression
+  action={action}           // 12 canonical actions
+  actionKey={replayCounter} // bump to replay the same one-shot
+  viseme={viseme}           // 0..7, index into VISEMES
+  framing="conversation"    // 'vignette' to establish, 'conversation' to talk
+/>
+```
+
+**TTS plugs in through `useLipSync`.** `audiogen` returns a URL; the product
+plays it in an `<audio>` element it owns; the hook turns that element's live
+loudness into the `viseme` prop:
+
+```tsx
+const viseme = useLipSync(speaking ? audioElement : null);
+```
+
+Verified end to end in `/dev/scene-lab`: 5 s of real audio drove the mouth
+through 7 distinct visemes. The hook takes an ELEMENT rather than a URL on
+purpose — playback, pausing, interruption and the user gesture that unlocks
+audio all belong to whoever owns the conversation, not to a 3D scene.
+
+Amplitude, not phonemes, because Qwen3-TTS returns no phoneme track. The
+upgrade path costs nothing structurally: a phoneme track would index the SAME
+eight atlas frames, so no model, card or component changes when it arrives.
+That is what the atlas bought.
+
+**`framing` is not decoration.** At `vignette` a character is 104 px tall and
+their mouth 2.4 px, so no viseme is distinguishable from any other. Lip-sync
+only means something in `conversation`, which frames head-and-shoulders by a
+fraction of the character's own height — rho's head alone is 47% of his, and a
+fixed metre framing cropped his skull while missing Dina entirely.
+
+**Authored clips replace procedural drivers per action, silently.**
+`clips-biped.glb` carries `idle`, `nod`, `bow`, `celebrate` and `wave`; the
+other 14 states still come from `characterActions.ts`. A character uses a clip
+when one exists for its action and falls back otherwise, so the library can
+fill in without any call site changing. The file is OPTIONAL: a 404 logs once
+and everything keeps working procedurally, because it is a gitignored build
+output and a fresh checkout must still render a stage.
+
 ## §8 Resuming on another machine
 
 ```bash
@@ -221,7 +352,18 @@ npm run assets:3d -- ../glb/Zara.glb public/scenes/zara.glb  --max-triangles=500
 npm run assets:3d -- ../glb/Liruf.glb public/scenes/liruf.glb --max-triangles=50000
 npm run assets:3d -- "../glb/Meshy_AI_A_stylized_3D_diorama_0815070253_texture.glb" public/scenes/diorama-a.glb --max-triangles=45000
 npm run assets:3d -- "../glb/Meshy_AI_A_stylized_3D_diorama_0815070301_texture.glb" public/scenes/diorama-b.glb --max-triangles=45000
+
+# Mouth atlases (§7.1). Also a build output, also gitignored.
+npm run assets:mouth
+
+# Authored clip library (§7b). Needs Blender on PATH.
+npm run assets:clips
 ```
+
+The optimizer creates `public/scenes/` itself. It did not always: the write is
+the LAST step, so on a clean checkout a missing directory threw only after the
+whole pipeline had run — minutes of diorama simplification discarded at the
+finish line.
 
 Then `npm run dev` and open **`/dev/scene-lab`** — the composed scene with a
 live perf HUD, buttons for all 12 actions, and per-asset inspection. That is

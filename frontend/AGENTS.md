@@ -76,6 +76,58 @@ Rules that bite:
   `tutor-scenes` bucket in deployed environments (`VITE_SCENE_ASSET_BASE`).
   Source exports live outside the repo; only optimized output is published.
 
+- **The mouth is a CARD, and it has to be.** No facial bone exists on any
+  export AND the mouths are painted into the texture, so there is nothing to
+  deform — blendshapes would stretch a decal. Sliding the mouth region's UVs is
+  equally impossible: the exports carry a per-facet shattered UV atlas (two
+  points 4 cm apart on Zara's face resolve to (0.096, 0.153) and
+  (0.447, 0.300)), so there is no mouth island to slide. `MouthCard.tsx`
+  parents a fitted grid to the `Head` joint and swaps an 8-frame atlas by
+  texture offset. Details and the per-character status: `/TUTOR_3D.md` §7.1.
+- **A card's skin colour comes from the ALBEDO, never from a render.** Blender's
+  view transform darkens and desaturates, so a card matched to a rendered pixel
+  is wrong under the app's own lighting. Resolve the UV under the face and
+  sample the source texture.
+- **The card geometry is baked, and it is not flat.** The face bulges ~1.6 cm
+  forward across the mouth's 8.6 cm width, so a flat quad stands off the cheek
+  at its corners — fine head-on, obvious once the camera orbits, and this
+  camera orbits continuously. Refit with `scripts/fit-mouth-card.py` rather
+  than hand-editing `mouthCards.generated.json`.
+- **The atlas texture must not mipmap.** Eight frames sit edge to edge, and
+  minification blends a frame into its neighbour — the mouth smears into the
+  next viseme as the character gets smaller.
+- **A WebGL canvas has an intrinsic size, so its container needs `min-w-0`.**
+  R3F writes width/height ATTRIBUTES onto the `<canvas>`, which gives a grid or
+  flex item a min-content width it refuses to shrink below. The scene therefore
+  GREW with the viewport but never shrank: going from a 1540 px viewport to
+  659 px left a 760 px canvas and a 780 px document, i.e. a horizontally
+  scrolling page, which §1.11 forbids. A phone rotating to portrait is the same
+  event. `SceneCanvas` now carries `min-w-0 [&_canvas]:max-w-full`; any grid
+  item wrapping it needs `min-w-0` too.
+- **Check responsive behaviour by SHRINKING, not only by loading narrow.** A
+  reload at the target width hid this bug completely — the layout was correct
+  every time it was built from scratch and wrong only when it had to give width
+  back.
+- **The mouth card is UNLIT, and that is a known compromise.** Every lit
+  material renders it solid black over the mouth while the same material with a
+  flat colour and no map lights up correctly — the lights reach it, its normals
+  point outward, it is excluded from shadow mapping and it is front-side only.
+  The failure is isolated to "lit shader + this map" and the root cause is not
+  found. Unlit is shippable because the atlas is painted with the character's
+  own albedo, but it will not darken with the face in dark mode.
+- **An authored clip and the procedural driver must never run in the same
+  frame.** An `AnimationMixer` writes ABSOLUTE bone orientations, so `resetRig`
+  erases the clip and the procedural action fights it per bone — which reads as
+  jitter, not as a bug. Emotion still composes over a clip because it is a
+  RELATIVE offset (`applyEmotionPosture`).
+- **Decide "biped or quadruped" from STATE, not from a ref read during render.**
+  `rig.current` is a ref: mutating it does not re-render, so a memo that picks a
+  clip keeps whatever it computed on the first pass — when the rig is still
+  null and everything looks like a biped. Dina would be handed clips authored
+  for a skeleton she does not have.
+
 Asset pipeline: `npm run assets:inspect -- <file.glb>` (read-only report) →
 `npm run assets:3d -- <in.glb> <out.glb> [--max-triangles=N]` (meshopt +
-texture compression + optional decimation, with a hard rig-integrity gate).
+texture compression + optional decimation, with a hard rig-integrity gate) →
+`npm run assets:mouth` (viseme atlases). All outputs land in the gitignored
+`public/scenes/`.
