@@ -8,7 +8,7 @@ import { Character3D } from './Character3D';
 import { QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
 import { findStandingSpots, type StandingSpot } from './standingSpots';
-import type { SCENE_ASSETS } from './assets';
+import { CHARACTER_ASSETS, type SCENE_ASSETS } from './assets';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
 
 /*
@@ -33,6 +33,25 @@ import type { CharacterAction, CharacterEmotion, CharacterId } from '@/component
  * since a drifting camera is precisely what motion sensitivity is about.
  */
 
+/** How the stage frames itself. */
+export type TutorFraming = 'vignette' | 'conversation';
+
+/**
+ * Where the speaking character's head is, and which way they face.
+ *
+ * Solved by the placement pass rather than authored — the same reason a new
+ * diorama needs no coordinates (§5).
+ */
+export interface SpeakerFocus {
+  x: number;
+  y: number;
+  z: number;
+  /** Yaw the character faces, in radians. */
+  facing: number;
+  /** The character's own height in metres, so framing scales to them. */
+  height: number;
+}
+
 export interface TutorSceneProps {
   scene?: keyof typeof SCENE_ASSETS;
   character?: CharacterId;
@@ -44,6 +63,16 @@ export interface TutorSceneProps {
   emotion?: CharacterEmotion;
   action?: CharacterAction;
   actionKey?: number;
+  /**
+   * Index into VISEMES (mouthAtlas.ts), for characters that have a mouth card.
+   * This is the seam lip-sync plugs into — see /TUTOR_3D.md §7.1.
+   */
+  viseme?: number;
+  /**
+   * `vignette` is the island establishing shot; `conversation` closes in on the
+   * speaking character so a mouth is more than 2.4 px tall. See CameraRig.
+   */
+  framing?: TutorFraming;
 }
 
 interface Framing {
@@ -59,7 +88,17 @@ interface Framing {
  * on viewport changes — a phone rotated to landscape is a different framing
  * problem, not the same one.
  */
-function CameraRig({ content, enabled }: { content: React.RefObject<Group>; enabled: boolean }) {
+function CameraRig({
+  content,
+  enabled,
+  mode,
+  focus,
+}: {
+  content: React.RefObject<Group>;
+  enabled: boolean;
+  mode: TutorFraming;
+  focus: SpeakerFocus | null;
+}) {
   const camera = useThree((state) => state.camera) as PerspectiveCamera;
   const size = useThree((state) => state.size);
   const framing = useRef<Framing | null>(null);
@@ -68,6 +107,57 @@ function CameraRig({ content, enabled }: { content: React.RefObject<Group>; enab
   useFrame((state) => {
     const group = content.current;
     if (!group) return;
+
+    /*
+     * CONVERSATION framing — the camera comes to the speaker.
+     *
+     * The island vignette is the right first impression and the wrong way to
+     * hold a conversation. Measured at the vignette's own framing, a character
+     * stands 104 px tall and their MOUTH is 2.4 px: every viseme is identical
+     * at that size, so lip-sync and any authored facial work are invisible on
+     * arrival. No amount of asset quality fixes a distance problem.
+     *
+     * So talking gets its own shot: head-and-shoulders, placed in FRONT of the
+     * character using the facing angle the placement solver already computed,
+     * with a slow drift instead of an orbit — an orbit during dialogue reads as
+     * the room moving rather than the person speaking.
+     */
+    if (mode === 'conversation' && focus) {
+      const elapsed = state.clock.elapsedTime;
+      /*
+       * Frame a FRACTION OF THE CHARACTER, never a fixed number of metres.
+       *
+       * A metre-based framing was measured and looked far too tight, and the
+       * reason is anatomy: these are cartoon proportions and rho's head alone
+       * is 0.81 m — 47% of his height. A 0.70 m tall frame that would be a
+       * comfortable head-and-shoulders on a human cropped his skull and chin.
+       * Dina, at 0.70 m to the shoulder, has the opposite problem. Scaling to
+       * the character's own height is the only version that serves a 1.70 m
+       * human and a large-dog-sized quadruped from one number.
+       */
+      const vFov = (camera.fov * Math.PI) / 180;
+      const aspect = size.width / Math.max(size.height, 1);
+      const framedHeight = focus.height * 0.70;
+      // Portrait viewports lose horizontal room, so they need a little more
+      // distance for the same subject — the same correction the vignette makes.
+      const distance = (framedHeight / 2 / Math.tan(vFov / 2)) * (aspect < 1 ? 1.18 : 1.0) + 0.15;
+      const drift = enabled ? Math.sin(elapsed * 0.19) * 0.05 : 0;
+      const rise = enabled ? Math.sin(elapsed * 0.27) * 0.012 : 0;
+      // The character faces `focus.facing`; standing on that vector puts the
+      // camera in front of them rather than behind, which is the single mistake
+      // this scene has already made once (§5).
+      const yaw = focus.facing + drift;
+      camera.position.set(
+        focus.x + Math.sin(yaw) * distance,
+        focus.y + focus.height * 0.04 + rise,
+        focus.z + Math.cos(yaw) * distance,
+      );
+      camera.near = 0.01;
+      camera.far = 100;
+      camera.updateProjectionMatrix();
+      camera.lookAt(focus.x, focus.y, focus.z);
+      return;
+    }
 
     if (!framing.current) {
       const box = new Box3().setFromObject(group);
@@ -149,6 +239,8 @@ function Cast({
   emotion,
   action,
   actionKey,
+  viseme,
+  onFocus,
 }: {
   character: CharacterId;
   companion: CharacterId | null;
@@ -156,6 +248,8 @@ function Cast({
   emotion: CharacterEmotion;
   action: CharacterAction;
   actionKey: number;
+  viseme: number;
+  onFocus: (focus: SpeakerFocus) => void;
 }) {
   const { groundRef } = useGround();
   const [spots, setSpots] = useState<StandingSpot[] | null>(null);
@@ -173,6 +267,41 @@ function Cast({
       }),
     );
   }, [groundRef, companion]);
+
+  /*
+   * Report where the LEAD's head is, so the conversation camera has something
+   * to frame. Derived from the solved spot and the character's own measured
+   * height rather than a constant: rho is 1.70 m and Dina 0.70 m at the
+   * shoulder, and one hard-coded eye level would frame a human's chin and a
+   * quadruped's sky.
+   *
+   * This hook sits ABOVE the early return on purpose. Placing it after the
+   * `spots` guard changed the hook COUNT between the render before spots
+   * resolved and the one after, which React reports as "Rendered more hooks
+   * than during the previous render" and which took the whole page blank.
+   */
+  const leadSpot = spots?.[0] ?? null;
+  const secondSpot = spots?.[1] ?? null;
+  useEffect(() => {
+    if (!leadSpot) return;
+    const outward = Math.atan2(leadSpot.x, leadSpot.z);
+    const toward = secondSpot
+      ? Math.atan2(secondSpot.x - leadSpot.x, secondSpot.z - leadSpot.z)
+      : outward;
+    const delta = Math.atan2(Math.sin(toward - outward), Math.cos(toward - outward));
+    const height = CHARACTER_ASSETS[character].targetHeightM;
+    onFocus({
+      x: leadSpot.x,
+      // Eye level, as a fraction of the character's own height. Dina is a
+      // quadruped at 0.70 m to the shoulder; a fixed 1.6 m would aim at sky.
+      // Mid-head, not the crown: aiming at the top of the skull put the whole
+      // face in the bottom half of the frame.
+      y: leadSpot.y + height * 0.75,
+      z: leadSpot.z,
+      facing: outward + delta * 0.25,
+      height,
+    });
+  }, [leadSpot, secondSpot, character, onFocus]);
 
   if (!spots || spots.length === 0) return null;
 
@@ -209,6 +338,7 @@ function Cast({
             emotion={emotion}
             action={action}
             actionKey={actionKey}
+            viseme={viseme}
           />
         );
       })}
@@ -225,11 +355,15 @@ export function TutorScene({
   emotion = 'neutral',
   action = 'idle',
   actionKey = 0,
+  viseme = 0,
+  framing = 'vignette',
 }: TutorSceneProps) {
   const [settings, setSettings] = useState<QualitySettings>(QUALITY_SETTINGS.medium);
   const [ready, setReady] = useState(false);
   const onReady = useCallback(() => setReady(true), []);
   const content = useRef<Group>(null);
+  const [focus, setFocus] = useState<SpeakerFocus | null>(null);
+  const onFocus = useCallback((next: SpeakerFocus) => setFocus(next), []);
 
   return (
     <SceneCanvas className={className} onStats={onStats} onSettings={setSettings} camera={{ fov: 36 }}>
@@ -245,11 +379,13 @@ export function TutorScene({
               emotion={emotion}
               action={action}
               actionKey={actionKey}
+              viseme={viseme}
+              onFocus={onFocus}
             />
           </group>
           <Reveal onReady={onReady} />
         </Suspense>
-        <CameraRig content={content} enabled={settings.ambientMotion} />
+        <CameraRig content={content} enabled={settings.ambientMotion} mode={framing} focus={focus} />
       </GroundProvider>
     </SceneCanvas>
   );
