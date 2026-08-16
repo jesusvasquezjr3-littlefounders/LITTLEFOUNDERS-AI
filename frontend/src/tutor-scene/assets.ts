@@ -22,6 +22,9 @@ import type { CharacterId } from '@/components/characters/control/types';
  */
 const ASSET_BASE = import.meta.env.VITE_SCENE_ASSET_BASE ?? '/scenes';
 
+/** Where scene media is served from. Mouth atlases sit under `<base>/mouth/`. */
+export const SCENE_ASSET_BASE = ASSET_BASE;
+
 function assetUrl(file: string): string {
   return `${ASSET_BASE}/${file}`;
 }
