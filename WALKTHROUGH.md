@@ -2,6 +2,65 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-16, SESSION CLOSE) — Catalogue audited and repaired at zero provider cost; 1,208 → 988 published
+
+The owner reported the generated catalogue as poor quality after $1,586 of spend
+and asked for a rescue that does not pay a provider again. The whole catalogue was
+judged, repaired and curated by orchestrated Sonnet 5 agents, and **the result is
+live**: 988 published, 220 archived, 1,332 locale documents rewritten, with **zero
+new `picture_assets` and zero new `speech_assets`** verified against production
+afterwards. No lesson ever entered `review`, because documents were PATCHed
+directly rather than re-published through Forge (whose publish path deliberately
+downgrades a regenerated lesson — `coursegen/src/vault/restClient.ts`).
+
+**What made zero-cost repair possible.** `speech_assets.speech_hash` is
+sha256 over the NARRATED TEXT (migration `0015`), so unchanged narration is a
+guaranteed cache hit. A gate was built that imports Echo's real extractor
+(`audiogen/src/narrate/extractNarratables.ts`) rather than reimplementing it, and
+rejects any patch introducing new narrated text. Frozen: `prompt_md`,
+`explanation_md`, `hints[]`, the story-family bodies, and the option roll-up of the
+seven choice types — editing ONE option label re-records all of them. Free, and
+therefore the entire repair surface: `answer_keys`, `options[].rationale_md`,
+icons, titles, the full payload of every interactive type outside those seven
+(58.6% of graded segments), plus deleting and reordering segments. Agents emitted
+edit OPERATIONS, not rewritten documents, so a field nobody named could not be
+damaged. All 444 shipped documents passed the gate end-to-end against the originals.
+
+**Defects that no existing gate could see.** Answer keys accepting only the Spanish
+word, so an en-US child typing "sample" was marked wrong (44 segments). 720 dead
+image URLs pointing at `placehold.co`, `example.com` and a hallucinated
+`assets.rho.ai`. Icons (`check_circle` vs `cancel`) announcing the correct answer
+in 122 lessons. Arithmetic taught as fact and wrong in 18. Lessons contradicting
+themselves in 105.
+
+**The finding that matters most for the product.** A separate pedagogical pass over
+24 already-clean lessons — ones scoring ~85 on the defect rubric — returned **zero
+PREMIUM**: 14 SOLID, 10 FLAT, mean 60.3. The ceiling is the frozen narration: every
+graded `explanation_md` names a story character and object, so transfer to a child's
+real life is structurally impossible without re-recording (~17,562 TTS calls across
+three locales; Echo budgets by call count and the repo defines no per-call price).
+**Those 24 redesigns are validated but NOT applied** — 23 of 24 remain unshipped,
+pending the audio-budget decision, because redesigning twice would waste the work.
+
+**A curriculum right-sizing to 786 lessons was produced and deliberately FROZEN.**
+327 competencies at 3.02 lessons each, no topic above 4 (a generator ceiling, not a
+pedagogical decision), 100 pairs sharing a byte-identical objective (exact minimum
+vertex cover: 88 lessons). It was frozen because production holds **4 rows in
+`lesson_progress`** — no cohort has used the product, so every quality verdict this
+session is a prediction, not a measurement. Cutting on predicted redundancy before
+any learner data exists is the least informed of the available decisions.
+
+### Open (next session)
+
+- Pilot cohort. Real failure data is the missing input for the frozen 202-lesson cut.
+- Decide the TTS budget (DashScope arrears must clear first). Order matters: cut
+  first, then re-record, or the archived lessons get paid for twice.
+- Codex image session. Ground it in the measured 438 reused images (worst serves 70
+  lessons), not in impressions — a photorealistic asset was seen in ONE lesson while
+  every document is stamped `v7/v8-flat-vector`, so systemic photorealism is
+  unproven.
+- 23 pedagogy redesigns awaiting the audio decision.
+
 ## Current State (2026-08-15, SESSION CLOSE) — Tutor 3D stage BUILT; handed off for a Blender pass
 
 Session goal: build the Tutor's 3D scenario. It is built, rendering for every

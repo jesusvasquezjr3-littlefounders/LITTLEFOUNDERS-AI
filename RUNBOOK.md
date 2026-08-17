@@ -619,3 +619,63 @@ paid repair walked straight through the outage on 2026-08-15:
 
 Two lessons were stamped before the first guard existed; they were reverted by
 PATCHing `illustration_style_version` back to the prior composite value.
+
+## Restore lesson content after the 2026-08-16 catalogue repair
+
+**When you need this:** a repaired lesson reads worse than the original, an
+archived lesson turns out to be needed, or the whole 2026-08-16 pass has to be
+undone. The repair rewrote 444 lessons (1,332 locale documents) and archived 220.
+
+**Archiving is reversible on its own** — it is a status flip, no content was lost:
+
+```sql
+UPDATE public.lessons SET status = 'published' WHERE id = '<lesson_id>';
+```
+
+**Restoring document CONTENT needs the backup**, because the PATCH overwrote the
+row in place and `lesson_documents` keeps no history.
+
+- Backup: `~/Movies/LITTLEFOUNDERS/lf-lesson-backup-2026-08-16/`
+  - `original-lesson-documents-1208.tar.gz` — all 1,208 lessons, three locales
+    each, exactly as they were before the repair (`corpus/docs/<lesson_id>.json`,
+    each holding `locales["es-MX"|"en-US"|"pt-BR"] = {document, answer_keys, audio}`).
+  - `proposed-changes.tar.gz` — what was applied (`release/`), plus the cut list
+    and the judging ledgers.
+- **This backup is the only copy.** It lives outside the repo and outside any
+  session temp directory. If it is lost, the pre-repair content is unrecoverable.
+
+Restore one lesson, all three locales:
+
+```bash
+tar -xzf original-lesson-documents-1208.tar.gz corpus/docs/<lesson_id>.json
+# then PATCH each locale back with the service role key
+node -e '
+const fs=require("fs");
+const rec=JSON.parse(fs.readFileSync("corpus/docs/<lesson_id>.json","utf8"));
+const U=process.env.SUPABASE_URL, K=process.env.SUPABASE_SERVICE_ROLE_KEY;
+(async()=>{ for (const loc of ["es-MX","en-US","pt-BR"]) {
+  const s = rec.locales[loc];
+  const r = await fetch(`${U}/rest/v1/lesson_documents?lesson_id=eq.${rec.lesson_id}&locale=eq.${loc}`, {
+    method:"PATCH", headers:{apikey:K,Authorization:`Bearer ${K}`,"Content-Type":"application/json",Prefer:"return=minimal"},
+    body: JSON.stringify({document:s.document, answer_keys:s.answer_keys}) });
+  console.log(loc, r.status);
+} })()'
+```
+
+Run it from a machine linked to the project, sourcing the keys the same way the
+apply step did: `railway variables --service coursegen --json` (never print them).
+
+**Restoring content does NOT cost anything.** Audio is cached on
+`speech_assets.speech_hash` = sha256 of the narrated text, and the repair never
+changed narrated text, so the original narration is still cache-resident. The same
+is true in reverse: this is why the repair itself billed nothing.
+
+**Verify a restore landed** — compare the segment id list, not just a row count:
+
+```sql
+SELECT locale, jsonb_array_length(document->'segments') AS segments, updated_at
+FROM public.lesson_documents WHERE lesson_id = '<lesson_id>';
+```
+
+All three locales must report the same segment count; the repair kept them in
+lockstep and a restore must too.
