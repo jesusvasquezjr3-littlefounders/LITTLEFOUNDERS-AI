@@ -27,6 +27,8 @@
 | Terminology | GLOSSARY.md | all |
 | Visual design (authoritative tokens); desktop+mobile responsive rules | DESIGN.md | all, esp. §Layout → Responsive Adaptation |
 | Current repo state, past decisions | WALKTHROUGH.md | Current State / Decision Log |
+| Repairing PUBLISHED lesson content without paying a provider | agent/tools/content/README.md | all — the frozen-vs-free field map lives here |
+| Next-session handoff: lesson image assets (generate in Codex, not Prism) | agent/handoff/codex-image-session.md | all; work list in agent/handoff/image-inventory.json |
 | Incidents, rollback | RUNBOOK.md | all |
 | Skills catalog & session rituals | TEAM_PROTOCOL.md | all |
 | Product/architecture context (canonical) | agent/core/CONTEXT.md | all |
@@ -36,6 +38,7 @@
 | Course Engine (hierarchy, curriculum catalog, generation pipeline, gates, providers) | COURSE_ENGINE.md | all |
 | Forge production-readiness audit and research synthesis | COURSEGEN_AUDIT_2026-08-01.md | all |
 | AI tutor (Oracle) — approved design, NOT implemented | ORACLE.md | all |
+| Tutor 3D stage (assets, rigs, procedural actions, placement, perf, Blender handoff) | TUTOR_3D.md | all |
 | Analytics warehouse (DuckDB, segmentation, forecasting, experiments) | /DATAINTEL.md · dataintel/AGENTS.md | all |
 | Data intelligence console (/admin/intel) | /DATAINTEL.md | §7 |
 | Task templates | agent/prompts/templates/ | pick by task |

@@ -69,3 +69,8 @@ audiogen/src/samples/
 
 # Production database dumps (PII + credential hashes — never commit)
 /database/backups/
+
+# Artist source exports for the Tutor 3D scene (~156 MB of uncompressed .glb).
+# Only the OPTIMIZED output is published, via Depot. Source files belong in the
+# team asset store, never in git.
+/glb/

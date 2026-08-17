@@ -21,6 +21,7 @@ import enLearn from './en-US/learn.json';
 import enAdmin from './en-US/admin.json';
 import enOnboarding from './en-US/onboarding.json';
 import enPlacement from './en-US/placement.json';
+import enTutor from './en-US/tutor.json';
 import esCommon from './es-MX/common.json';
 import esMarketing from './es-MX/marketing.json';
 import esErrors from './es-MX/errors.json';
@@ -32,6 +33,7 @@ import esLearn from './es-MX/learn.json';
 import esAdmin from './es-MX/admin.json';
 import esOnboarding from './es-MX/onboarding.json';
 import esPlacement from './es-MX/placement.json';
+import esTutor from './es-MX/tutor.json';
 import ptCommon from './pt-BR/common.json';
 import ptMarketing from './pt-BR/marketing.json';
 import ptErrors from './pt-BR/errors.json';
@@ -43,14 +45,15 @@ import ptLearn from './pt-BR/learn.json';
 import ptAdmin from './pt-BR/admin.json';
 import ptOnboarding from './pt-BR/onboarding.json';
 import ptPlacement from './pt-BR/placement.json';
+import ptTutor from './pt-BR/tutor.json';
 
 export const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
 export type Locale = (typeof LOCALES)[number];
 
 const resources = {
-  'en-US': { translation: { ...enCommon, marketing: enMarketing, errors: enErrors, auth: enAuth, dashboard: enDashboard, profile: enProfile, lesson: enLesson, learn: enLearn, admin: enAdmin, onboarding: enOnboarding, placement: enPlacement } },
-  'es-MX': { translation: { ...esCommon, marketing: esMarketing, errors: esErrors, auth: esAuth, dashboard: esDashboard, profile: esProfile, lesson: esLesson, learn: esLearn, admin: esAdmin, onboarding: esOnboarding, placement: esPlacement } },
-  'pt-BR': { translation: { ...ptCommon, marketing: ptMarketing, errors: ptErrors, auth: ptAuth, dashboard: ptDashboard, profile: ptProfile, lesson: ptLesson, learn: ptLearn, admin: ptAdmin, onboarding: ptOnboarding, placement: ptPlacement } },
+  'en-US': { translation: { ...enCommon, marketing: enMarketing, errors: enErrors, auth: enAuth, dashboard: enDashboard, profile: enProfile, lesson: enLesson, learn: enLearn, admin: enAdmin, onboarding: enOnboarding, placement: enPlacement, tutor: enTutor } },
+  'es-MX': { translation: { ...esCommon, marketing: esMarketing, errors: esErrors, auth: esAuth, dashboard: esDashboard, profile: esProfile, lesson: esLesson, learn: esLearn, admin: esAdmin, onboarding: esOnboarding, placement: esPlacement, tutor: esTutor } },
+  'pt-BR': { translation: { ...ptCommon, marketing: ptMarketing, errors: ptErrors, auth: ptAuth, dashboard: ptDashboard, profile: ptProfile, lesson: ptLesson, learn: ptLearn, admin: ptAdmin, onboarding: ptOnboarding, placement: ptPlacement, tutor: ptTutor } },
 };
 
 void i18n

@@ -540,17 +540,26 @@ function IntroScreen({
         </button>
       </div>
       <div className="flex flex-1 flex-col items-center justify-center gap-6 pb-16 text-center">
-        <div className="flex items-end justify-center">
-          {doc.meta.cast.map((c, i) => (
-            <CharacterActor
-              key={c}
-              character={c}
-              emotion="happy"
-              action={i === 0 ? 'wave' : 'idle'}
-              size={i === 0 ? 'lg' : 'md'}
-              className={cn(i > 0 && '-ml-6')}
-            />
-          ))}
+        {/*
+          A four-character cast measures 632px (one lg + three md, less the
+          overlap) and overflowed a 390px phone, clipping the leading character
+          in half. The row scales down to fit below `sm` and is unchanged from
+          `sm` up; `overflow-hidden` keeps the transform from giving the page a
+          horizontal scrollbar (DESIGN.md §Layout).
+        */}
+        <div className="w-full overflow-hidden">
+          <div className="flex origin-bottom scale-[0.55] items-end justify-center sm:scale-100">
+            {doc.meta.cast.map((c, i) => (
+              <CharacterActor
+                key={c}
+                character={c}
+                emotion="happy"
+                action={i === 0 ? 'wave' : 'idle'}
+                size={i === 0 ? 'lg' : 'md'}
+                className={cn(i > 0 && '-ml-6')}
+              />
+            ))}
+          </div>
         </div>
         <h1 className="lf-display-lg text-content">{doc.meta.title}</h1>
         <ul className="space-y-2">
