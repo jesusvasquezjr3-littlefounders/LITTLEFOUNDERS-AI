@@ -76,6 +76,26 @@ Rules that bite:
   `tutor-scenes` bucket in deployed environments (`VITE_SCENE_ASSET_BASE`).
   Source exports live outside the repo; only optimized output is published.
 
+- **`VITE_SCENE_ASSET_BASE` is not enough on its own.** Depot is CONTENT
+  ADDRESSED — `/files/:bucket/:hash.:ext`, "independent of the uploader's
+  original filename" — so a deployed build asks for the sha256, never for
+  `rho.glb`. `npm run publish:scenes` uploads and writes
+  `sceneManifest.generated.json`, which is committed and is build input. Set the
+  variable only after that manifest is merged, or the resolver throws for every
+  asset. Full sequence: /TUTOR_3D.md §3.2–§3.3.
+
+- **Changing a Vercel env var does NOT change a deployed bundle.** This project
+  has no Git integration on Vercel: `frontend-cd.yml` runs `vercel pull`,
+  `vercel build` ON THE CI RUNNER, then `vercel deploy --prebuilt`. A dashboard
+  "Redeploy" re-serves the same prebuilt output — it finishes in ~3 seconds,
+  which is the tell — and Vite inlines `import.meta.env.*` at build time.
+
+- **`frontend CI` is PATH-FILTERED, and CD hangs off it.** It runs on `main`
+  only for `frontend/**`, `database/types/**` or its own workflow file, and
+  `frontend CD` triggers on that workflow completing. A commit that touches
+  only root-level docs therefore deploys NOTHING. Learned by pushing exactly
+  that and waiting for a deploy that was never going to start.
+
 - **The mouth is a CARD, and it has to be.** No facial bone exists on any
   export AND the mouths are painted into the texture, so there is nothing to
   deform — blendshapes would stretch a decal. Sliding the mouth region's UVs is
