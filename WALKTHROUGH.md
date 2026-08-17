@@ -50,16 +50,45 @@ vertex cover: 88 lessons). It was frozen because production holds **4 rows in
 session is a prediction, not a measurement. Cutting on predicted redundancy before
 any learner data exists is the least informed of the available decisions.
 
-### Open (next session)
+### Open — the agreed sequence, in order
 
-- Pilot cohort. Real failure data is the missing input for the frozen 202-lesson cut.
-- Decide the TTS budget (DashScope arrears must clear first). Order matters: cut
-  first, then re-record, or the archived lessons get paid for twice.
-- Codex image session. Ground it in the measured 438 reused images (worst serves 70
-  lessons), not in impressions — a photorealistic asset was seen in ONE lesson while
-  every document is stamped `v7/v8-flat-vector`, so systemic photorealism is
-  unproven.
-- 23 pedagogy redesigns awaiting the audio decision.
+```
+✅ Lessons audited, repaired, curated   (988 live, $0 provider spend)
+→  NEXT: images, generated in Codex on the ChatGPT subscription — NOT Prism
+→  Test with children
+→  Only if that test disappoints: settle DashScope, re-record audio,
+   lift the pedagogical ceiling
+```
+
+1. **Codex image session — brief and data are ready.** `agent/handoff/codex-image-session.md`,
+   with the measured work list in `agent/handoff/image-inventory.json`. Generate on
+   the subscription; **do not route through Prism and do not settle DashScope to do
+   this** — avoiding that spend is the entire point. Measured against the live
+   catalogue: **332 images serve more than one lesson, touching 470 lessons (48%)**;
+   the worst single image serves **52**; 16 serve 10+. The distribution is top-heavy,
+   so replacing the worst ~20 covers roughly 300 slots. Also: 37 lessons carry no art
+   and 142 `picture_choice` segments render icons instead of pictures (these render
+   correctly and are answerable — an upgrade, not a defect).
+2. **Test with children.** Production holds **4 rows in `lesson_progress`**; nobody
+   has used the product. This is the missing input for everything below, and it is
+   free. Verify the telemetry path end-to-end BEFORE the cohort — this project has
+   twice had telemetry fail silently (tracker autocapture, `learning_stats` reset).
+3. **Then, only if the test disappoints:** settle DashScope and decide the TTS
+   budget (~17,562 calls across three locales to lift the ceiling; Echo budgets by
+   call count and the repo defines no per-call price). Order matters: decide the cut
+   first, then re-record, or archived lessons get paid for twice.
+
+Frozen on purpose, not forgotten: the 202-lesson curriculum cut (988 → 786) and 23
+validated pedagogy redesigns. Both wait on real learner data.
+
+One claim from this session was withdrawn: "the art direction was never applied" is
+**wrong**. `LF_VISUAL_IDENTITY` already carries the SUBJECT DISCIPLINE clause added
+after the lemonade-stand incident. One photorealistic asset was seen in ONE lesson
+while every document is stamped `v7/v8-flat-vector`; systemic photorealism is
+unproven and should be verified, not assumed.
+
+Reusable tooling from this pass lives in `agent/tools/content/` — the zero-spend
+gate, the edit-op applier, and the image inventory.
 
 ## Current State (2026-08-15, SESSION CLOSE) — Tutor 3D stage BUILT; handed off for a Blender pass
 
