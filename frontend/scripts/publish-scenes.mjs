@@ -67,6 +67,12 @@ const MIME = {
 };
 
 const dryRun = process.argv.includes('--dry-run');
+/*
+ * `--only=<substring>` publishes just the matching assets. Depot dedups by
+ * hash, so a partial run is safe to repeat and safe to finish later — which
+ * matters because the .glb mime support and the assets deploy separately.
+ */
+const only = (process.argv.find((a) => a.startsWith('--only=')) ?? '').slice('--only='.length);
 
 function fail(message) {
   console.error(`publish-scenes: ${message}`);
@@ -104,7 +110,11 @@ for (const path of files) {
   const logical = relative(SCENES, path).split('\\').join('/');
   const atlas = logical.match(/^mouth\/(.+)\.png$/);
   if (atlas && !withCards.has(atlas[1])) {
-    skipped.push(logical);
+    skipped.push([logical, 'that character has no fitted card']);
+    continue;
+  }
+  if (only && !logical.includes(only)) {
+    skipped.push([logical, `does not match --only=${only}`]);
     continue;
   }
   const extension = logical.slice(logical.lastIndexOf('.'));
@@ -123,8 +133,8 @@ for (const f of planned) {
 }
 // Named, not silently dropped: a build step that quietly omits files is how a
 // missing asset becomes a mystery in production.
-for (const name of skipped) {
-  console.log(`  ${name.padEnd(24)}      — skipped, that character has no fitted card`);
+for (const [name, why] of skipped) {
+  console.log(`  ${name.padEnd(24)}      — skipped, ${why}`);
 }
 
 if (dryRun) {
@@ -169,6 +179,14 @@ for (const file of planned) {
   published[file.logical] = url.slice(url.lastIndexOf('/') + 1);
   if (body.data.deduplicated) deduped += 1;
   console.log(`  ✓ ${file.logical.padEnd(24)} ${published[file.logical]}${body.data.deduplicated ? '  (already stored)' : ''}`);
+}
+
+if (only) {
+  console.log(`
+publish-scenes: --only run — ${Object.keys(published).length} uploaded, manifest NOT written.`);
+  console.log('  A partial manifest is the dangerous state: some assets resolve and others throw');
+  console.log('  mid-scene. Re-run without --only once every asset can be accepted.');
+  process.exit(0);
 }
 
 const manifest = {

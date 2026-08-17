@@ -167,6 +167,44 @@ absent from the island.
 
 Depot dedups by hash, so re-publishing is idempotent and cheap.
 
+### §3.3 The deploy has an ORDER, and Depot goes first
+
+Attempted 2026-08-17 against the live Depot at
+`https://media-b2c.littlefounders.ai`. Result:
+
+```
+publish-scenes: clips-biped.glb: Depot responded 400
+  — Unsupported mime type: model/gltf-binary
+```
+
+**The `.glb` mime support is on this branch and has never been deployed.** It
+was added in `88d95a6` (`filebase/src/lib/storage.ts`), `main` does not have it,
+and `main` is what is running. This document previously said the bucket was
+"already supported and tested" — true of the CODE, false of the DEPLOYMENT, and
+that distinction is the whole blocker.
+
+Everything else on the path is PROVEN, deliberately, by publishing the two mouth
+atlases on their own with `--only=.png`:
+
+| step | evidence |
+|---|---|
+| credential | reached a 400, not a 401 |
+| bucket + `visibility: public` | both PNGs stored |
+| content-addressed download | `GET .../files/tutor-scenes/<sha256>.png` → 200, `image/png`, exact byte count |
+
+So the order is:
+
+1. **Merge this branch and deploy Depot**, so it accepts `model/gltf-binary`.
+2. `npm run publish:scenes` — Depot dedups by hash, so the two atlases already
+   up come back `deduplicated` and cost nothing.
+3. Commit `sceneManifest.generated.json`.
+4. Set `VITE_SCENE_ASSET_BASE=https://media-b2c.littlefounders.ai/files/tutor-scenes`
+   and redeploy the frontend.
+
+`--only=<substring>` exists for exactly this kind of partial run, and it
+deliberately **does not write the manifest**: a partial manifest is the
+dangerous state, where some assets resolve and others throw mid-scene.
+
 ## §4 Animation — procedural by necessity
 
 Every export ships **exactly one clip**, and all of them are locomotion cycles
@@ -561,7 +599,7 @@ The runtime normalises her, so this is hygiene, not a bug.
 | Item | Blocked on | Notes |
 |---|---|---|
 | KTX2 texture compression | `brew install ktx` | Textures ship as WebP and decode to full RGBA in VRAM. Matters most on 2 GB phones. `npm run assets:3d` warns loudly on every run. |
-| Publish assets to Depot | `FILEBASE_URL` + `INTERNAL_API_KEY` | `npm run publish:scenes` uploads 9 files / 5.90 MB to bucket `tutor-scenes`, then writes `sceneManifest.generated.json`. Commit it, then set `VITE_SCENE_ASSET_BASE` to `<depot>/files/tutor-scenes`. **This is the deploy blocker.** |
+| Publish assets to Depot | **Depot must ship first** (see §3.3) | `npm run publish:scenes` uploads 9 files / 5.90 MB to bucket `tutor-scenes`, then writes `sceneManifest.generated.json`. Commit it, then set `VITE_SCENE_ASSET_BASE` to `<depot>/files/tutor-scenes`. |
 | Gesture amplitude tuning | Nothing — just art direction | Numbers in `characterActions.ts` + a screenshot pass. |
 | Conversational layer | Product decisions in `/ORACLE.md` §3 | Voice/live tutoring. §1.9 applies in full. |
 
