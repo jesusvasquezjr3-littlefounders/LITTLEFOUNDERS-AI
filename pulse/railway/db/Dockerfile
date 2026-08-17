@@ -5,7 +5,7 @@
 # (pulse-ci) demands an exact pin, so we pin the concrete patch inside the
 # same major.minor. Umami requires >=12.14, so 16 satisfies both. Dependabot
 # bumps patches; majors move only alongside the Plausible pin.
-FROM postgres:16.14-alpine
+FROM postgres:16.15-alpine
 
 # First-boot provisioning only (docker-entrypoint-initdb.d runs on an empty
 # volume): creates the second database + per-app roles from Railway variables.
