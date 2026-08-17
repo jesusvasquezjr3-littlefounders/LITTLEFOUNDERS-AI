@@ -73,6 +73,16 @@ export interface TutorSceneProps {
    * speaking character so a mouth is more than 2.4 px tall. See CameraRig.
    */
   framing?: TutorFraming;
+  /**
+   * Fires ONCE, when the island and cast are actually on screen.
+   *
+   * The scene already gated its own visibility on this and kept it to itself,
+   * which left the conversational layer no way to know whether anyone was there
+   * yet. Handing it a line before the assets resolve plays audio at a blank
+   * canvas — the tutor talking to an empty island. Wait for this before the
+   * first line.
+   */
+  onReady?: () => void;
 }
 
 interface Framing {
@@ -375,10 +385,23 @@ export function TutorScene({
   actionKey = 0,
   viseme = 0,
   framing = 'vignette',
+  onReady,
 }: TutorSceneProps) {
   const [settings, setSettings] = useState<QualitySettings>(QUALITY_SETTINGS.medium);
   const [ready, setReady] = useState(false);
-  const onReady = useCallback(() => setReady(true), []);
+  const reveal = useCallback(() => setReady(true), []);
+
+  /*
+   * Announced through a ref rather than by depending on `onReady` identity: a
+   * caller passing an inline arrow changes it every render, and this has to
+   * fire exactly once however the callback is written.
+   */
+  const announced = useRef(false);
+  useEffect(() => {
+    if (!ready || announced.current) return;
+    announced.current = true;
+    onReady?.();
+  }, [ready, onReady]);
   const content = useRef<Group>(null);
   const [focus, setFocus] = useState<SpeakerFocus | null>(null);
   const onFocus = useCallback((next: SpeakerFocus) => setFocus(next), []);
@@ -401,7 +424,7 @@ export function TutorScene({
               onFocus={onFocus}
             />
           </group>
-          <Reveal onReady={onReady} />
+          <Reveal onReady={reveal} />
         </Suspense>
         <CameraRig content={content} enabled={settings.ambientMotion} mode={framing} focus={focus} />
       </GroundProvider>

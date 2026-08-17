@@ -48,6 +48,12 @@ export interface TutorStageProps {
    * 2.4 px tall at the island framing and no viseme is distinguishable there.
    */
   idleFraming?: TutorFraming;
+  /**
+   * Fires ONCE, when the cast is actually on screen. Wait for it before the
+   * first line: speech handed over while the assets are still resolving plays
+   * to a blank canvas.
+   */
+  onReady?: () => void;
 }
 
 export function TutorStage({
@@ -60,6 +66,7 @@ export function TutorStage({
   speechUrl = null,
   onSpeechEnd,
   idleFraming = 'vignette',
+  onReady,
 }: TutorStageProps) {
   const audio = useRef<HTMLAudioElement | null>(null);
   const [element, setElement] = useState<HTMLAudioElement | null>(null);
@@ -113,6 +120,7 @@ export function TutorStage({
         actionKey={actionKey}
         viseme={speaking ? viseme : VISEME_CLOSED}
         framing={speaking ? 'conversation' : idleFraming}
+        onReady={onReady}
       />
     </>
   );

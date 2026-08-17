@@ -554,8 +554,16 @@ into the scene:
   actionKey={replayCounter} // bump to replay the same one-shot
   speechUrl={audioUrl}      // from audiogen; null when silent
   onSpeechEnd={next}
+  onReady={begin}           // fires ONCE, when the cast is actually on screen
 />
 ```
+
+**Wait for `onReady` before the first line.** The scene already gated its own
+visibility on this and kept it to itself, which left the conversational layer no
+way to know whether anyone was there yet: speech handed over while the assets
+are still resolving plays audio at a blank canvas — the tutor talking to an
+empty island. It fires exactly once, through a ref rather than a dependency, so
+an inline arrow callback cannot make it fire every render.
 
 Hand it a speech URL and it plays the audio, drives the mouth from that audio,
 and moves the camera in close for as long as the character is talking. Changing

@@ -16,6 +16,7 @@ vi.mock('../TutorScene', () => ({
       data-viseme={String(props.viseme)}
       data-emotion={String(props.emotion)}
       data-action={String(props.action)}
+      data-hasready={String(typeof props.onReady === 'function')}
     />
   ),
 }));
@@ -94,6 +95,16 @@ describe('TutorStage', () => {
       await Promise.resolve();
     });
     expect(screen.getByTestId('scene').dataset.viseme).toBe('0');
+  });
+
+  it('hands its readiness callback down to the scene', () => {
+    /*
+     * The conversational layer has no other way to know whether anyone is on
+     * screen yet. Speech handed over while the assets are still resolving plays
+     * audio at a blank canvas — the tutor talking to an empty island.
+     */
+    render(<TutorStage onReady={() => undefined} />);
+    expect(screen.getByTestId('scene').dataset.hasready).toBe('true');
   });
 
   it('passes emotion and action straight through', () => {
