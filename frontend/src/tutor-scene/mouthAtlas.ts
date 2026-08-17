@@ -7,6 +7,7 @@ import {
   type Texture,
 } from 'three';
 import type { CharacterId } from '@/components/characters/control/types';
+import { SCENE_ASSET_BASE, sceneAssetUrl } from './assets';
 import generated from './mouthCards.generated.json';
 
 /*
@@ -71,7 +72,10 @@ export function mouthCardFor(id: CharacterId): MouthCardData | null {
 
 /** Atlas image for a character, alongside the .glb it belongs to. */
 export function mouthAtlasUrl(base: string, id: CharacterId): string {
-  return `${base}/mouth/${id}.png`;
+  // `base` is kept in the signature so the lab and the tests can point this
+  // somewhere else, but the resolution goes through the manifest: Depot serves
+  // by content hash, not by name (see assets.ts).
+  return base === SCENE_ASSET_BASE ? sceneAssetUrl(`mouth/${id}.png`) : `${base}/mouth/${id}.png`;
 }
 
 /*

@@ -1,6 +1,6 @@
 import { AnimationUtils, QuaternionKeyframeTrack, type AnimationClip } from 'three';
 import type { CharacterAction, CharacterEmotion } from '@/components/characters/control/types';
-import { SCENE_ASSET_BASE } from './assets';
+import { sceneAssetUrl } from './assets';
 
 /*
  * The authored clip library.
@@ -31,7 +31,7 @@ import { SCENE_ASSET_BASE } from './assets';
  * excluded by rig kind rather than by hoping the names miss.
  */
 
-export const CLIP_LIBRARY_URL = `${SCENE_ASSET_BASE}/clips-biped.glb`;
+export const CLIP_LIBRARY_URL = sceneAssetUrl('clips-biped.glb');
 
 /**
  * Clips that loop. Must agree with LOOPING in `scripts/author-clips.py` and

@@ -138,6 +138,35 @@ good, for two COMPANIONS who do not carry the speech.
 
 rho and zara — the two human characters — lip-sync. That is the decision.
 
+### §3.2 Depot is CONTENT-ADDRESSED — the base URL alone is not enough
+
+This was documented for weeks as "blocked only on credentials". That was wrong,
+and it would have failed on deploy day.
+
+Depot's download route is `/files/:bucket/:hash.:ext`, and its README is
+explicit that the extension mapping is *"independent of the uploader's original
+filename"*. There is no route that serves `rho.glb` under that name. Setting
+`VITE_SCENE_ASSET_BASE` on its own **404s every asset**.
+
+So publishing is two steps, and the second is code:
+
+1. `npm run publish:scenes` uploads each file and records the name Depot serves
+   it under in `src/tutor-scene/sceneManifest.generated.json`. **Commit it** —
+   it is build input and holds no secrets. The manifest stores hashed filenames
+   only, never the host: the host is per-environment and lives in the env var,
+   so a manifest published from staging still resolves in production.
+2. Set `VITE_SCENE_ASSET_BASE` to `<depot>/files/tutor-scenes`.
+
+Every URL now goes through `sceneAssetUrl()` in `assets.ts` — the character
+`.glb`s, the mouth atlases and the clip library, which previously each built
+their own by concatenation. With the env var unset it serves by filename from
+Vite; with it set it resolves through the manifest and **throws** on a missing
+entry, which `TutorPage`'s error boundary turns into the load-failed panel plus
+a named asset in the console. A silent 404 would have been a character quietly
+absent from the island.
+
+Depot dedups by hash, so re-publishing is idempotent and cheap.
+
 ## §4 Animation — procedural by necessity
 
 Every export ships **exactly one clip**, and all of them are locomotion cycles
@@ -532,7 +561,7 @@ The runtime normalises her, so this is hygiene, not a bug.
 | Item | Blocked on | Notes |
 |---|---|---|
 | KTX2 texture compression | `brew install ktx` | Textures ship as WebP and decode to full RGBA in VRAM. Matters most on 2 GB phones. `npm run assets:3d` warns loudly on every run. |
-| Upload optimized `.glb` to Depot | Production credentials + owner authorization | Bucket `tutor-scenes` already supported and tested. Then set `VITE_SCENE_ASSET_BASE`. **This is the deploy blocker.** |
+| Publish assets to Depot | `FILEBASE_URL` + `INTERNAL_API_KEY` | `npm run publish:scenes` uploads 9 files / 5.90 MB to bucket `tutor-scenes`, then writes `sceneManifest.generated.json`. Commit it, then set `VITE_SCENE_ASSET_BASE` to `<depot>/files/tutor-scenes`. **This is the deploy blocker.** |
 | Gesture amplitude tuning | Nothing — just art direction | Numbers in `characterActions.ts` + a screenshot pass. |
 | Conversational layer | Product decisions in `/ORACLE.md` §3 | Voice/live tutoring. §1.9 applies in full. |
 

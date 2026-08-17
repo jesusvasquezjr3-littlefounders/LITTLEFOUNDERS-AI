@@ -1,4 +1,5 @@
 import type { CharacterId } from '@/components/characters/control/types';
+import manifest from './sceneManifest.generated.json';
 
 /*
  * The Tutor's 3D asset manifest.
@@ -22,11 +23,53 @@ import type { CharacterId } from '@/components/characters/control/types';
  */
 const ASSET_BASE = import.meta.env.VITE_SCENE_ASSET_BASE ?? '/scenes';
 
-/** Where scene media is served from. Mouth atlases sit under `<base>/mouth/`. */
+/** Where scene media is served from. */
 export const SCENE_ASSET_BASE = ASSET_BASE;
 
+/**
+ * Whether the assets are being served by Depot rather than by Vite's dev server.
+ */
+const PUBLISHED = Boolean(import.meta.env.VITE_SCENE_ASSET_BASE);
+
+/**
+ * DEPOT IS CONTENT-ADDRESSED, and that changes how every URL here is built.
+ *
+ * Its download route is `/files/:bucket/:hash.:ext`, and the README is explicit
+ * that the extension mapping is "independent of the uploader's original
+ * filename". So a deployed build cannot ask Depot for `rho.glb`; it has to ask
+ * for the sha256 the bytes hashed to. Setting `VITE_SCENE_ASSET_BASE` alone
+ * would 404 every asset — which is exactly what "the only blocker is
+ * credentials" got wrong.
+ *
+ * `scripts/publish-scenes.mjs` uploads each file and records the name Depot
+ * serves it under. The manifest holds only the hashed filenames, never the
+ * host: the host is per-environment and belongs in the env var.
+ */
+const MANIFEST: Readonly<Record<string, string>> = manifest.files;
+
+/**
+ * Resolves a scene asset's logical path — `rho.glb`, `mouth/rho.png` — to the
+ * URL it is actually served from.
+ *
+ * Throws when a deployed build asks for something that was never published.
+ * `TutorPage` wraps the scene in an error boundary, so this surfaces as the
+ * "could not load" panel plus a named asset in the console, rather than as a
+ * character silently missing from the island.
+ */
+export function sceneAssetUrl(logicalPath: string): string {
+  if (!PUBLISHED) return `${ASSET_BASE}/${logicalPath}`;
+  const published = MANIFEST[logicalPath];
+  if (!published) {
+    throw new Error(
+      `scene asset "${logicalPath}" is not in sceneManifest.generated.json. ` +
+        'Run `npm run publish:scenes` against Depot and commit the manifest.',
+    );
+  }
+  return `${ASSET_BASE}/${published}`;
+}
+
 function assetUrl(file: string): string {
-  return `${ASSET_BASE}/${file}`;
+  return sceneAssetUrl(file);
 }
 
 export interface CharacterAsset {

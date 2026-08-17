@@ -23,7 +23,8 @@
     "map:gen:regions": "node scripts/generate-region-maps.mjs",
     "assets:inspect": "node scripts/inspect-glb.mjs",
     "assets:clips": "blender --background --python scripts/author-clips.py",
-    "verify:rig": "node scripts/verify-rig.mjs"
+    "verify:rig": "node scripts/verify-rig.mjs",
+    "publish:scenes": "node scripts/publish-scenes.mjs"
   },
   "dependencies": {
     "@dicebear/collection": "^9.4.2",
