@@ -199,7 +199,32 @@ So the order is:
    up come back `deduplicated` and cost nothing.
 3. Commit `sceneManifest.generated.json`.
 4. Set `VITE_SCENE_ASSET_BASE=https://media-b2c.littlefounders.ai/files/tutor-scenes`
-   and redeploy the frontend.
+   on the Vercel project, then **re-run `frontend CD`** — see below.
+
+> ### ⚠️ "Redeploy" in the Vercel UI does NOT rebuild this project
+>
+> The Vercel project is **not connected to a Git repository**. `frontend-cd.yml`
+> does the work: `vercel pull --environment=production` (which is what fetches
+> the env vars), `vercel build` **on the CI runner**, then
+> `vercel deploy --prebuilt`.
+>
+> So a "Redeploy" from the dashboard re-serves the SAME prebuilt output — it
+> completes in about 3 seconds, which is the tell — and a Vite build inlines
+> `import.meta.env.*` at build time, so the bundle cannot pick up a new
+> variable that way. Changing an env var takes effect only on the next
+> `frontend CD` run.
+>
+> Cost of not knowing this: three redeploys that could never have changed a
+> byte, plus a bundle that was verified as "missing the variable" and blamed on
+> timing.
+>
+> To verify a deployment actually has it, fetch the scene chunk and look:
+>
+> ```
+> curl -s https://littlefounders.ai/ | grep -o '/assets/index-[^"]*\.js'
+> curl -s https://littlefounders.ai/assets/index-<hash>.js >   | grep -o 'useLipSync-[A-Za-z0-9_-]*\.js'
+> curl -s https://littlefounders.ai/assets/useLipSync-<hash>.js >   | grep -c 'media-b2c.littlefounders.ai/files/tutor-scenes'
+> ```
 
 `--only=<substring>` exists for exactly this kind of partial run, and it
 deliberately **does not write the manifest**: a partial manifest is the
