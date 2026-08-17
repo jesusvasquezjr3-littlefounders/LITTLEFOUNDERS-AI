@@ -119,3 +119,98 @@ describe('upload → download roundtrip', () => {
     expect(res.body.error.code).toBe('UNAUTHORIZED');
   });
 });
+
+describe('cross-origin reads', () => {
+  /*
+   * THE BUG THIS SECTION EXISTS FOR.
+   *
+   * Every consumer of this route until now loaded media through an <audio> or
+   * <img> tag, which are no-cors requests and need no CORS header at all. The
+   * Tutor's 3D scene is the first to read the bytes IN SCRIPT, through three.js
+   * GLTFLoader, which uses fetch/XHR — and those are subject to CORS.
+   *
+   * So the published scene failed in the browser with "Failed to fetch" while
+   * `curl` reported 200, the right mime and the exact byte count. A shell client
+   * cannot see this, which is why it reached production.
+   */
+  it('lets a browser READ a public object, not just fetch it', async () => {
+    const app = createApp();
+    const res = await upload(app, {
+      bucket: 'tutor-scenes',
+      visibility: 'public',
+      mime: 'model/gltf-binary',
+      bytes: fakeGlb('cors-public'),
+    });
+    expect(res.status).toBe(200);
+
+    const dl = await request(app)
+      .get(`/files/${res.body.data.id}`)
+      .set('Origin', 'https://littlefounders.ai');
+    expect(dl.status).toBe(200);
+    expect(dl.headers['access-control-allow-origin']).toBe('*');
+    // Without these exposed, a loader sees the body but not its length, and a
+    // ranged read cannot tell where it landed.
+    expect(dl.headers['access-control-expose-headers']).toContain('Content-Length');
+    expect(dl.headers['access-control-expose-headers']).toContain('Content-Range');
+  });
+
+  it('never lets a browser read an INTERNAL object cross-origin', async () => {
+    // Even with the key, no CORS header means script in a page can never read
+    // it — the only way in stays server-to-server.
+    const app = createApp();
+    const res = await upload(app, {
+      bucket: 'lesson-audio',
+      visibility: 'internal',
+      mime: 'audio/mpeg',
+      bytes: fakeAudio(512, 11),
+    });
+    expect(res.status).toBe(200);
+
+    const dl = await request(app)
+      .get(`/files/${res.body.data.id}`)
+      .set('x-internal-api-key', KEY())
+      .set('Origin', 'https://littlefounders.ai');
+    expect(dl.status).toBe(200);
+    expect(dl.headers['access-control-allow-origin']).toBeUndefined();
+  });
+
+  it('scopes the cache to the client for internal objects', async () => {
+    // `public` on a response that required a key invites a shared cache to hand
+    // it to someone who has none.
+    const app = createApp();
+    const res = await upload(app, {
+      bucket: 'lesson-audio',
+      visibility: 'internal',
+      mime: 'audio/mpeg',
+      bytes: fakeAudio(512, 13),
+    });
+    const dl = await request(app)
+      .get(`/files/${res.body.data.id}`)
+      .set('x-internal-api-key', KEY());
+    expect(dl.headers['cache-control']).toBe('private, max-age=31536000, immutable');
+  });
+
+  it('answers the preflight a ranged read triggers', async () => {
+    /*
+     * `Range` is NOT a CORS-safelisted request header, so a ranged read from
+     * script is preflighted — and this route advertises `Accept-Ranges: bytes`,
+     * so callers will try one.
+     */
+    const app = createApp();
+    const res = await upload(app, {
+      bucket: 'tutor-scenes',
+      visibility: 'public',
+      mime: 'model/gltf-binary',
+      bytes: fakeGlb('cors-preflight'),
+    });
+    const pre = await request(app)
+      .options(`/files/${res.body.data.id}`)
+      .set('Origin', 'https://littlefounders.ai')
+      .set('Access-Control-Request-Method', 'GET')
+      .set('Access-Control-Request-Headers', 'range');
+    expect(pre.status).toBe(204);
+    expect(pre.headers['access-control-allow-origin']).toBe('*');
+    expect(pre.headers['access-control-allow-headers']).toContain('Range');
+    expect(pre.headers['access-control-allow-methods']).toContain('GET');
+  });
+});
