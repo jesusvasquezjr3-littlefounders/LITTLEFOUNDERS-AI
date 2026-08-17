@@ -58,6 +58,18 @@ import { Suspense, lazy, useState } from 'react';
 const LessonLabPage = lazy(() => import('@/lesson-engine/lab/LessonLabPage'));
 const LessonViewPage = lazy(() => import('@/lesson-engine/lab/LessonViewPage'));
 
+/* Dev-only harness for the Tutor's 3D layer — measures a real .glb against the
+ * asset budget (tutor-scene/budget.ts). Lazy + DEV-gated for the same reason as
+ * the lesson lab, and additionally because `three` is a large chunk that must
+ * never be pulled into a production entry bundle by a stray import. */
+const SceneLabPage = lazy(() => import('@/tutor-scene/lab/SceneLabPage'));
+
+/* The Tutor's 3D stage. Lazy is MANDATORY, not an optimisation: `three` plus the
+ * scene code is a large chunk, and a static import would put it in the entry
+ * bundle of every route — including the marketing pages of users who never open
+ * the Tutor. */
+const TutorPage = lazy(() => import('@/routes/app/TutorPage'));
+
 /** Both staff roles share the console; Roles & Access narrows to superadmin. */
 const STAFF = ['admin', 'superadmin'];
 
@@ -103,6 +115,16 @@ export function App() {
               element={
                 <Suspense fallback={null}>
                   <LessonViewPage />
+                </Suspense>
+              }
+            />
+          ) : null}
+          {import.meta.env.DEV ? (
+            <Route
+              path="dev/scene-lab"
+              element={
+                <Suspense fallback={null}>
+                  <SceneLabPage />
                 </Suspense>
               }
             />
@@ -210,7 +232,14 @@ export function App() {
             <Route path="learn" element={<LearnPage />} />
             <Route path="learn/:courseSlug" element={<CoursePage />} />
             <Route path="learn/:courseSlug/territory" element={<TerritoryPage />} />
-            <Route path="tutor" element={<SectionComingSoon section="tutor" icon="smart_toy" />} />
+            <Route
+              path="tutor"
+              element={
+                <Suspense fallback={null}>
+                  <TutorPage />
+                </Suspense>
+              }
+            />
             <Route
               path="tasks"
               element={

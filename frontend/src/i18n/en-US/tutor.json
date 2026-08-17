@@ -1,0 +1,40 @@
+{
+  "scene": {
+    "webglUnavailable": "This device can't display 3D graphics. Your browser doesn't support WebGL, or it's turned off in settings.",
+    "contextLost": "The 3D view was interrupted. It will come back on its own in a moment.",
+    "loadFailed": "The 3D scene couldn't load. Check your connection and try again."
+  },
+  "lab": {
+    "title": "Scene Lab",
+    "subtitle": "Measure a .glb against the Tutor asset budget",
+    "loadModel": "Load a .glb",
+    "noModel": "No model loaded. Pick a .glb to measure it, or explore the placeholder scene.",
+    "runtime": "Runtime",
+    "tier": "Quality tier",
+    "fps": "FPS",
+    "drawCalls": "Draw calls (per frame)",
+    "triangles": "Triangles (per frame)",
+    "pixelRatio": "Pixel ratio",
+    "fileSize": "File size",
+    "locked": "Tier locked — this device could not hold a higher one",
+    "budget": "Budget",
+    "budgetOk": "Within budget",
+    "budgetOver": "Over budget",
+    "device": "Device probe",
+    "cores": "CPU cores",
+    "memory": "Memory",
+    "maxTexture": "Max texture size",
+    "webgl": "WebGL",
+    "pointer": "Pointer",
+    "pointerCoarse": "touch",
+    "pointerFine": "mouse",
+    "reducedMotion": "Reduced motion",
+    "unknown": "not reported",
+    "yes": "yes",
+    "no": "no"
+  },
+  "page": {
+    "title": "Tutor",
+    "subtitle": "Your learning place, with Dr. Rho and Liruf."
+  }
+}

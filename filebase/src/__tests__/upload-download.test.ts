@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
-import { fakeAudio, KEY, upload } from './helpers.js';
+import { fakeAudio, fakeGlb, KEY, upload } from './helpers.js';
 
 describe('upload → download roundtrip', () => {
   it('stores an object and serves back byte-identical content', async () => {
@@ -61,6 +61,33 @@ describe('upload → download roundtrip', () => {
     // Only one entry should show up in the listing.
     const list = await request(app).get('/api/v1/files').query({ bucket }).set('x-internal-api-key', KEY());
     expect(list.body.data.items).toHaveLength(1);
+  });
+
+  it('stores a .glb and serves it back with the glTF content type', async () => {
+    const app = createApp();
+    const bytes = fakeGlb('tutor-room');
+
+    const res = await upload(app, {
+      bucket: 'tutor-scenes',
+      mime: 'model/gltf-binary',
+      bytes,
+      filename: 'liruf.glb',
+    });
+    expect(res.status).toBe(200);
+    expect(res.body.error).toBeNull();
+    expect(res.body.data.id).toMatch(/^tutor-scenes\/[a-f0-9]{64}\.glb$/);
+
+    // three.js GLTFLoader fetches this URL directly from the browser, so the
+    // content type has to survive the roundtrip — a wrong one makes the load
+    // fail in a way that looks like a corrupt asset.
+    // `responseType('blob')` is required because superagent has no built-in
+    // parser for `model/gltf-binary` and would otherwise hand back a parsed
+    // object instead of the bytes — an artifact of the test client, not of
+    // what Depot actually serves.
+    const dl = await request(app).get(`/files/${res.body.data.id}`).responseType('blob');
+    expect(dl.status).toBe(200);
+    expect(dl.headers['content-type']).toBe('model/gltf-binary');
+    expect(Buffer.compare(dl.body as Buffer, bytes)).toBe(0);
   });
 
   it('rejects an unsupported mime type', async () => {

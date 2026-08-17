@@ -2,7 +2,48 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-08-15, SESSION CLOSE) — Content-quality session: 8 PRs shipped, the repair itself blocked on an unpaid provider
+## Current State (2026-08-15, SESSION CLOSE) — Tutor 3D stage BUILT; handed off for a Blender pass
+
+Session goal: build the Tutor's 3D scenario. It is built, rendering for every
+user on `/tutor`, and green on every gate (542 tests, type-check, lint, build,
+i18n ×3, docs-sync, secrets, paths). Full spec + handoff: **`/TUTOR_3D.md`**.
+
+**Stack added with owner sign-off (§1.2):** `three` + `@react-three/fiber` v8.
+R3F v9 / drei v10 require React ≥19 and we are on 18.3.1, so the v8 line is
+forced; drei is deliberately absent. `three` is isolated in a lazy chunk
+(~287 kB gzip) and appears **zero** times in the entry bundle — verified per
+build.
+
+**Assets:** 156 MB → 5.19 MB (−96.7%) with all four rigs intact. Scene runs at
+**7 draw calls / ~51k triangles**. Depot now accepts `model/gltf-binary`
+(bucket `tutor-scenes`).
+
+**The cast, as measured — not as assumed:** rho (adult human, 1.70 m), zara
+(1.61 m), liruf (bipedal cartoon dinosaur, 1.647 m) share ONE 24-joint biped
+skeleton; dina is a QUADRUPED on her own 27-joint rig and was the sole unit
+outlier (Unreal scale, 0.028 m → normalised to 0.70 m at the shoulder).
+
+**Every export ships exactly one clip, and all of them are locomotion cycles**,
+so the full 12-action / 7-emotion vocabulary is driven PROCEDURALLY against the
+same closed vocabulary the 2D rig and the existing lesson catalog already use —
+authored `emotion`/`action` fields drive the 3D cast unchanged. Placement and
+ground height are SOLVED from geometry, never authored, so a new diorama needs
+no coordinates.
+
+**⛔ Why this is handed off:** there is **no facial rig on any export** — not
+one jaw, mouth, brow or eye bone. Lip-sync is impossible in code; the geometry
+does not exist. The next session needs Blender. `/TUTOR_3D.md` §7 lists exactly
+what to author (UV mouth atlas recommended over blendshapes) and §8 explains
+how to resume, including regenerating the gitignored optimized assets.
+
+**Still open:** KTX2 (needs `brew install ktx`; textures ship as WebP and decode
+to full RGBA in VRAM), uploading optimized assets to Depot (**the deploy
+blocker** — needs production credentials), gesture amplitude tuning (art
+direction, not code), and the entire conversational layer (`/ORACLE.md`).
+
+---
+
+## Previous session (2026-08-15) — Content-quality session: 8 PRs shipped, the repair itself blocked on an unpaid provider
 
 Session goal: the published financial-education catalog showed the same
 lemonade stand over almost every exercise, and some lessons asked questions the
@@ -1273,6 +1314,17 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-17 | **Liruf and Dina keep their painted mouths — closed after exhausting every approach, not abandoned.** | Five fits on Liruf (planar, cylindrical, ribbon, ribbon widened 4 cm a side after re-measuring his grin at −0.191..0.237, and two grid densities) and six on Dina (ribbon, curve raised 0.0008, four gaps, three densities). The card ends up split into disconnected pieces with the face poking through between them: the snout curves more across the patch than a bilinear surface can hug, and raising density past 21×13 makes Liruf WORSE (bulge 0.0347 → 0.1019) because more samples land on his teeth. The one remaining fix is painting the mouth out of the albedo so the card ADDS one, as Rho's does — rejected because a UV sweep shows these models' layouts are fragmented into islands spanning the whole atlas (u 0.024–0.994), so a masked repaint would recolour large disjoint areas of a shaded curved face. High risk of visibly damaging two characters that look good today, for two companions who do not carry the speech. |
+| 2026-08-16 | **Small deltas survive a rest-pose mismatch; large ones do not.** The seven emotion clips were audited across all three bipeds and need NO per-character overrides, unlike the arm gestures. | The first metric said otherwise: head DISPLACEMENT at each emotion's peak put Rho at roughly twice Zara on every one, and Liruf's `surprised` at a seventeenth. That measure is confounded by head size — Rho's head is large and far from the pivot, so the same tilt travels further. The ANGLE, which is what a viewer actually reads, is identical to a tenth of a degree on all three (happy 10°, excited 15°, surprised 13°, proud 19°). Rotations very nearly commute at 6–19°, so an emotion arrives intact on a skeleton whose rest differs, while a 150° arm swing does not. Recording the negative result because "the actions needed per-character values, so the emotions must too" is the obvious wrong inference. |
+| 2026-08-16 | **Judge a gesture from the side the gesture is on.** `point` on Rho was declared unimprovable after five rounds of candidates; three of those rounds were rendered from his LEFT, where his own body occludes the pointing arm. | Every candidate looked like nothing was happening, because nothing could be seen. Re-rendered from his right, the shipped pose measures better than all five alternatives (9.86 forward against 1.38–5.64) and the real limitation is anatomical: shoulder-to-hand is barely wider than his head. Hours went into tuning a pose against an image that could not show it. |
+| 2026-08-16 | **Same bone NAMES is not the same skeleton, and an animation clip may never be shared absolutely between rigs.** Every clip in `clips-biped.glb` is now stripped to rotation (plus `Hips.position`) and converted to deltas against an exported rest pose before it plays. | `clipLibrary.ts` asserted in a comment that rho, zara and liruf "share ONE 24-joint skeleton". They share the names; **23 of the 24 bones differ in rest orientation**, by up to 74° at the hip. Because glTF stores a bone's rest offset in its `translation` channel, a force-sampled clip ships the authoring character's PROPORTIONS as if they were motion: Rho's feet collapsed 60.6% and Liruf's 79.4%, both to exactly Zara's 0.09214. What made it survive review is that **Zara — the rig it was authored on — looked perfect throughout**, so the other two read as bad animation rather than as a broken assumption. Verified after: 0.0% drift on all three. |
+| 2026-08-16 | **A retarget is not a substitute for per-character art direction.** An armature-space retarget was implemented, proven correct (identity on the authoring rig: 2e-6) and then NOT adopted. | It helps Liruf and hurts Rho. The rests differ in incompatible ways, so no single linear transform serves both — and the deeper finding is that some gestures are anatomically impossible to share at all: Rho's arm reach is 15.99 from a shoulder at ~3.2, topping out at 19.2 against a crown at 25.94, so he *cannot* raise his arms overhead. `celebrate` for him has to be a different pose, not a transformed one. Measuring the limb rather than tuning the number is what turned "the animation looks wrong" into a decidable question. |
+| 2026-08-15 | **Rotate bones in PARENT space (`premultiply`), never in local space (`multiply`).** All procedural gestures in `characterActions.ts` premultiply, and a test asserts each action actually moves the bone it targets. | Post-multiplying rotates a bone about its OWN axes, and on these rigs a bone's local +Y runs along its length (measured: `LeftArm`'s child sits at `[0, 28.03, 0]`). So an arm "swing" of 2.0 rad came out as a twist around the limb: a real rotation, mathematically, and completely invisible on screen. Type-check, lint, the bound-slot log, and even a quaternion diff all passed — the quaternion genuinely changed every frame. Only a screenshot showed nothing moving. A structural assertion ("the value changed") is not a behavioural one ("the character moved"). |
+| 2026-08-15 | **A debug probe that fights the render loop proves nothing.** | Two hours of the above went into invalid experiments: pinning `bone.rotation` from the browser console at 8 ms intervals showed no movement — because `resetRig()` runs inside `useFrame`, immediately before render, and overwrote the pin every frame. A second probe walked `parent` to the GLOBAL scene root and "discovered" two skinned meshes, which were simply the two characters. When instrumenting a frame-driven system, write the probe INSIDE the same frame callback that owns the value. |
+| 2026-08-15 | **A build pass that can silently destroy a rig must fail the build, not report a size win.** `optimize-glb` refuses to write when skins, animations or skinning attributes decrease. | `prune({keepLeaves: false})` deleted Liruf's skeleton: joints ARE leaf nodes, so pruning leaves invalidated the skin, which prune then removed too. The output was a smaller, structurally valid .glb whose character could no longer deform — and the animation entry still survived, so nothing looked wrong until a character was on screen frozen in bind pose. Corruption that shrinks a file looks exactly like success. |
+| 2026-08-15 | **A React state updater must be pure; anything with side effects becomes a pure reducer outside React.** Tier stepping moved to `tutor-scene/governor.ts` as `(state, fps) => state`. | The first version mutated a demotion counter and called `setLocked` INSIDE a `setTier` updater. StrictMode invokes updaters twice to surface exactly that, and it did: one bad measurement window counted as two demotions and latched the tier immediately, permanently barring a device that merely hiccuped from climbing back. Caught by reading the tier in a screenshot — `medium` and "locked" cannot both be true after one demotion. |
+| 2026-08-15 | **Scene placement is SOLVED from the geometry, never authored as coordinates.** Characters are positioned by `findStandingSpots` (raycast grid + flatness + openness scoring) and grounded by a downward ray, not by hand-tuned x/z/y. | Three separate placement bugs in one session, each invisible to type-checking: resting the island's bounding-box TOP on y=0 put characters standing in mid-air above the back wall; hand-picked coordinates put Liruf on top of the stone table; and facing the island's centre showed the cast's backs, because "inward" and "toward the viewer" are opposites when the camera is outside the scene. Coordinates tuned by eye against one diorama do not survive the second one. |
+| 2026-08-15 | **Measure the asset, do not trust the export.** `npm run assets:inspect` reports bind-pose bounds, rig, clips and texture inventory before anything is decided. | The four characters disagreed by 59× in unit scale (Dina came from Unreal at 0.028 m) and by 76× in triangle count (3,080 vs 235,014) — while all looking equally fine in a viewer. Heights, decimation targets and scales are recorded in `tutor-scene/assets.ts` FROM those measurements. The measurement itself needed correcting twice: a skinned mesh's node transform must be ignored per the glTF spec, and a meshopt-quantized mesh cannot be measured this way at all (it reports ~65,000 and the tool now says so instead of printing it). |
 | 2026-08-15 | **A prompt template that reaches every generation describes STYLE and never a SUBJECT, and the prohibition is stated positively.** `LF_VISUAL_IDENTITY` now carries a `SUBJECT DISCIPLINE` clause instead of an example scene. | It used to end with "Cheerful lemonade-stand world…". Injected into every prompt, that sentence became the subject whenever the label supplied none — a lemonade stand over exercises about markets, budgets and fraud. Silence is not a prohibition: a model asked for a scene with no subject always invents one, so the rule has to be written down. |
 | 2026-08-15 | **A checker that validates the FORM of generated output must also validate its SUBJECT.** The pixel verifier gained `depicts_subject`, biased toward accepting, with a missing answer never blocking. | `has_text` and `has_person` both pass on a beautiful, on-style illustration of entirely the wrong thing. Form was verified from day one; content never was. The asymmetry is deliberate — a false negative costs a paid redraw, and treating silence as failure would loop forever. |
 | 2026-08-15 | **A coverage metric counts DISTINCTNESS, not presence.** `verify:course` fails if any scene image serves more than one lesson; object tiles are exempt and reported informationally. | The broken catalog reported 100% visual coverage. Every planned image was present and they were the same file. Presence-counting is what made a total failure look like success, and the distinctness check costs nothing — no API calls, no vision model. |

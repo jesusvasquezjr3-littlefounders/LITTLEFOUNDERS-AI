@@ -58,6 +58,7 @@ On conflict: **fix the lower-priority document, never the higher one.**
 | Image generation | Qwen `qwen-image` (DashScope) via `picturegen/` — the only image path; Gemini discarded 2026-07-23 (quota-0) |
 | TTS | Qwen3-TTS (DashScope) in `audiogen/` — resolved; ElevenLabs is SOUND-EFFECTS-ONLY (one-off generated assets committed in `frontend/public/sfx/`, never called at runtime) |
 | Avatars | DiceBear, `avataaars` style |
+| 3D (Tutor scene) | three.js + React Three Fiber **v8** (drei deliberately NOT used). Assets are single-file `.glb`, meshopt geometry + KTX2 textures, served by Depot from bucket `tutor-scenes`. Owner sign-off 2026-08-15 — see ROADMAP.md |
 | Email engine | Haraka (self-hosted SMTP) → Amazon SES relay — see `email-server/AGENTS.md` |
 | Analytics & system health | **Pulse** self-hosted on Railway: Plausible CE (web analytics, ClickHouse+Postgres) + Umami v3 (behavioral) + Uptime Kuma (health). Pins live in Dockerfile `FROM` lines; Dependabot auto-bumps (patch automerge) — see `pulse/AGENTS.md` |
 | i18n locales | `en-US`, `es-MX`, `pt-BR` (en-US is the key source of truth) |
@@ -106,7 +107,7 @@ Role upgrade paths: `universal → parent` (identity verification via Guardian),
 
 Product sections (frontend routes): `learn/`, `tutor/` (AI tutor — codename Oracle), `tasks/`, `profile/`.
 
-Internal services (everything except `backend/` and `frontend/`) are called **service-to-service** with an `INTERNAL_API_KEY` header — never directly from the browser. Exception (by design): Depot's public file route serves world-readable, PII-free media (lesson audio/images) directly to the browser; every WRITE stays internal-key-only. Pulse exception (by design): only its two tracker scripts and Plausible's GA OAuth callback are browser-facing — all analytics/health DATA reads go through Core (`/api/v1/admin/*`), which holds the Pulse API tokens server-side. Realtime exception (by design): the browser subscribes directly to Supabase Realtime for **one** table, `generation_runs_live` — the admin Generation Live Monitor. It qualifies on three constraints that must all hold before any table is added to this exception: the table carries **zero PII** (run metadata, slot counts, cost totals), the subscription is authenticated with the user's Supabase JWT, and RLS restricts SELECT to `admin`/`superadmin` (migration `0019`). A table is only actually live once it is a member of the `supabase_realtime` publication (migration `0022`) — the RLS policy alone authorizes a subscription that then receives nothing. Engine specs: `/LESSON_ENGINE.md` (lesson runtime contract) and `/COURSE_ENGINE.md` (content hierarchy + generation pipeline).
+Internal services (everything except `backend/` and `frontend/`) are called **service-to-service** with an `INTERNAL_API_KEY` header — never directly from the browser. Exception (by design): Depot's public file route serves world-readable, PII-free media (lesson audio/images) directly to the browser; every WRITE stays internal-key-only. Pulse exception (by design): only its two tracker scripts and Plausible's GA OAuth callback are browser-facing — all analytics/health DATA reads go through Core (`/api/v1/admin/*`), which holds the Pulse API tokens server-side. Realtime exception (by design): the browser subscribes directly to Supabase Realtime for **one** table, `generation_runs_live` — the admin Generation Live Monitor. It qualifies on three constraints that must all hold before any table is added to this exception: the table carries **zero PII** (run metadata, slot counts, cost totals), the subscription is authenticated with the user's Supabase JWT, and RLS restricts SELECT to `admin`/`superadmin` (migration `0019`). A table is only actually live once it is a member of the `supabase_realtime` publication (migration `0022`) — the RLS policy alone authorizes a subscription that then receives nothing. Engine specs: `/LESSON_ENGINE.md` (lesson runtime contract), `/COURSE_ENGINE.md` (content hierarchy + generation pipeline) and `/TUTOR_3D.md` (the Tutor's 3D stage: assets, rigs, procedural action vocabulary, placement solver, performance contract).
 
 ### §1.6 API conventions
 
@@ -254,6 +255,7 @@ All of these must pass, in every service you touched:
 - [ ] `npm run secrets:check` (root) — no credential patterns in tracked files
 - [ ] Frontend changes: `npm run i18n:check` (root) — 3-locale key parity + hardcoded-string scan
 - [ ] `npm run paths:check` (root) — the acquisition surface agrees across `frontend/` and `backend/`
+- [ ] Tutor 3D clip/rig changes: `npm run verify:rig` (frontend) — every clip keeps every character in its own stance and proportions
 - [ ] Files added/moved/deleted: `npm run repo:map` (root) — regenerate the map
 - [ ] Docs updated per the stewardship table (§8)
 - [ ] No `any` without a written justification in the PR/commit body

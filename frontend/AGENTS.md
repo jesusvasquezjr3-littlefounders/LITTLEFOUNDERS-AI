@@ -39,3 +39,95 @@ The SPA: the four product sections (learn, tutor, tasks, profile). Talks ONLY to
 - `/DESIGN.md` — current rules + what's locked (modes, characters, a11y floor).
 - `agent/prompts/templates/new-component.md` — the component protocol.
 - Skills: `impeccable`, `agave`, `emil-design-eng` apply to all UI work here.
+
+## Tutor 3D scene (`src/tutor-scene/`)
+
+The Tutor's stage is 3D for EVERY user (owner decision 2026-08-15, recorded in
+ROADMAP.md) — it is never gated by role or device class. Stack: `three` +
+`@react-three/fiber` **v8**; drei is deliberately absent (its React-18 line is
+frozen and would pin `three` backwards, and it weighs more than the ~150 lines
+it would save). R3F v9 / drei v10 require React ≥19 and are unusable here.
+
+Rules that bite:
+
+- **`three` must only ever be reached through a lazy route.** `TutorPage` and
+  the scene lab are `lazy()` imports; a static import anywhere in the eager
+  graph would put ~285 kB gzipped into the entry bundle of every marketing
+  page. Verified after each build: `WebGLRenderer` must appear in the
+  `TutorScene-*` chunk and NOT in `index-*`.
+- **Quality is measured, never assumed.** `quality.ts` picks a starting tier
+  from a device probe; `governor.ts` — a PURE reducer, deliberately outside
+  React — steps it from real frame times. Never move tier transitions back
+  into a `setState` updater: StrictMode double-invokes those, and the side
+  effects latched the tier after one demotion instead of two.
+- **A device that reports nothing is not a weak device.** `deviceMemory` is
+  Chromium-only; treating absent as zero would push every Safari and Firefox
+  user onto the degraded tier (§1.14).
+- **Placement is solved from geometry, never authored.** Ground height comes
+  from a downward raycast (`ground.tsx`) and standing positions from
+  `standingSpots.ts`. Hand-tuned coordinates do not survive the second
+  diorama — they put a character on top of the stone table on the first one.
+- **Lighting lives in code, never baked into the .glb.** DESIGN.md mandates
+  light AND dark mode, so an asset lit at export time is wrong in one of them
+  by construction. Baked ambient occlusion in textures is fine; baked
+  lightmaps are not.
+- **Assets are budgeted in code** (`budget.ts`), measured against real exports
+  by `/dev/scene-lab` and `npm run assets:3d`, and served from Depot's public
+  `tutor-scenes` bucket in deployed environments (`VITE_SCENE_ASSET_BASE`).
+  Source exports live outside the repo; only optimized output is published.
+
+- **The mouth is a CARD, and it has to be.** No facial bone exists on any
+  export AND the mouths are painted into the texture, so there is nothing to
+  deform — blendshapes would stretch a decal. Sliding the mouth region's UVs is
+  equally impossible: the exports carry a per-facet shattered UV atlas (two
+  points 4 cm apart on Zara's face resolve to (0.096, 0.153) and
+  (0.447, 0.300)), so there is no mouth island to slide. `MouthCard.tsx`
+  parents a fitted grid to the `Head` joint and swaps an 8-frame atlas by
+  texture offset. Details and the per-character status: `/TUTOR_3D.md` §7.1.
+- **A card's skin colour comes from the ALBEDO, never from a render.** Blender's
+  view transform darkens and desaturates, so a card matched to a rendered pixel
+  is wrong under the app's own lighting. Resolve the UV under the face and
+  sample the source texture.
+- **The card geometry is baked, and it is not flat.** The face bulges ~1.6 cm
+  forward across the mouth's 8.6 cm width, so a flat quad stands off the cheek
+  at its corners — fine head-on, obvious once the camera orbits, and this
+  camera orbits continuously. Refit with `scripts/fit-mouth-card.py` rather
+  than hand-editing `mouthCards.generated.json`.
+- **The atlas texture must not mipmap.** Eight frames sit edge to edge, and
+  minification blends a frame into its neighbour — the mouth smears into the
+  next viseme as the character gets smaller.
+- **A WebGL canvas has an intrinsic size, so its container needs `min-w-0`.**
+  R3F writes width/height ATTRIBUTES onto the `<canvas>`, which gives a grid or
+  flex item a min-content width it refuses to shrink below. The scene therefore
+  GREW with the viewport but never shrank: going from a 1540 px viewport to
+  659 px left a 760 px canvas and a 780 px document, i.e. a horizontally
+  scrolling page, which §1.11 forbids. A phone rotating to portrait is the same
+  event. `SceneCanvas` now carries `min-w-0 [&_canvas]:max-w-full`; any grid
+  item wrapping it needs `min-w-0` too.
+- **Check responsive behaviour by SHRINKING, not only by loading narrow.** A
+  reload at the target width hid this bug completely — the layout was correct
+  every time it was built from scratch and wrong only when it had to give width
+  back.
+- **The mouth card is UNLIT, and that is a known compromise.** Every lit
+  material renders it solid black over the mouth while the same material with a
+  flat colour and no map lights up correctly — the lights reach it, its normals
+  point outward, it is excluded from shadow mapping and it is front-side only.
+  The failure is isolated to "lit shader + this map" and the root cause is not
+  found. Unlit is shippable because the atlas is painted with the character's
+  own albedo, but it will not darken with the face in dark mode.
+- **An authored clip and the procedural driver must never run in the same
+  frame.** An `AnimationMixer` writes ABSOLUTE bone orientations, so `resetRig`
+  erases the clip and the procedural action fights it per bone — which reads as
+  jitter, not as a bug. Emotion still composes over a clip because it is a
+  RELATIVE offset (`applyEmotionPosture`).
+- **Decide "biped or quadruped" from STATE, not from a ref read during render.**
+  `rig.current` is a ref: mutating it does not re-render, so a memo that picks a
+  clip keeps whatever it computed on the first pass — when the rig is still
+  null and everything looks like a biped. Dina would be handed clips authored
+  for a skeleton she does not have.
+
+Asset pipeline: `npm run assets:inspect -- <file.glb>` (read-only report) →
+`npm run assets:3d -- <in.glb> <out.glb> [--max-triangles=N]` (meshopt +
+texture compression + optional decimation, with a hard rig-integrity gate) →
+`npm run assets:mouth` (viseme atlases). All outputs land in the gitignored
+`public/scenes/`.
