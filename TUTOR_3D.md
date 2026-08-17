@@ -232,12 +232,51 @@ direction **measured** from its own `headfront` bone rather than assumed:
   Liruf and *hurts* Rho — the rests differ in incompatible ways and no single
   linear rule serves both.
 
-**Still open:** `point@rho` reaches 0.176 against Zara's 0.213. It reads as a
-gesture but not clearly as *pointing*, and no candidate tried so far improved it
-— his arms are short enough that extension does not register. Not broken, just
-weak. An automated search is the wrong tool here: it optimises the hand's
-position against geometry it cannot see, and every run returned poses with the
-arm inside the torso.
+### §4.3 The seven emotions need NO per-character overrides — audited
+
+The obvious follow-up to §4.2 is "if the actions needed per-character values, the
+emotions must too". They do not, and the reason is worth keeping.
+
+Head displacement at each emotion's peak looked damning — Rho moves roughly
+twice as far as Zara on every one of them, and Liruf's `surprised` barely
+registers. But displacement is confounded by head size: Rho's head is large and
+sits far from the pivot, so the same tilt travels further. The measure that
+matters is the ANGLE, which is what a viewer reads:
+
+| head swing at peak | zara | rho | liruf |
+|---|---|---|---|
+| `happy` | 10° | 10° | 10° |
+| `excited` | 15° | 15° | 15° |
+| `surprised` | 13° | 13° | 13° |
+| `proud` | 19° | 19° | 19° |
+| `encouraging` | 6° | 6° | 6° |
+| `thinking` | 10.7° | 11° | 9.8° |
+
+Identical. Rendered on all three afterwards, each emotion reads as itself and
+stays distinct from its neighbours.
+
+**The principle, which is what makes this predictive rather than lucky:** small
+deltas are robust to rest-pose differences, large ones are not. Rotations very
+nearly commute at these magnitudes, so a 6–19° emotion arrives intact on a
+skeleton whose rest orientation differs, while a 150° arm swing does not. That
+is the dividing line between §4.1 (which was enough for emotions) and §4.2
+(which was not enough for arms).
+
+**Still open:** `point@rho` reaches 0.176 against Zara's 0.213. Five rounds of
+candidates — straight-arm, up-and-out, and the constrained solver's own
+optimum — all measured WORSE than the shipped pose once the camera was finally
+put on his right side, where his own body stops occluding the arm. Three of
+those rounds were judged from his left and were therefore judged on nothing.
+
+The reason is anatomy again: shoulder-to-hand is barely wider than his head, so
+no arm angle clears his silhouette enough to read as indicating something. The
+shipped pose has the best forward reach of anything tried (9.86 against 1.38 to
+5.64) and its weakness is that the hand crosses to his left of centre. Fixing
+that costs forward reach — the two trade directly.
+
+An automated search is the wrong tool here: it optimises the hand's position
+against geometry it cannot see, and every run returned high-scoring poses with
+the arm inside the torso.
 
 ### Rules that will bite whoever touches this next
 
