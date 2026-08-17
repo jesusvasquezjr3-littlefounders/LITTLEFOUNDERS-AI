@@ -26,10 +26,36 @@
  * (/AGENTS.md §1.14).
  */
 import { readdir, readFile, writeFile, stat } from 'node:fs/promises';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
+
+/*
+ * Credentials come from `frontend/.env.publish`, which `.gitignore` covers via
+ * `.env*`. Reading them from a file rather than the command line keeps
+ * INTERNAL_API_KEY out of shell history and out of any transcript — Depot's
+ * management API key is a production credential, and /AGENTS.md §1.10 exists
+ * because a sibling project committed one in plaintext.
+ *
+ * Values already in the environment WIN, so CI can supply them without a file.
+ * Nothing here ever prints a value.
+ */
+function loadPublishEnv() {
+  const file = resolve(HERE, '..', '.env.publish');
+  if (!existsSync(file)) return;
+  for (const line of readFileSync(file, 'utf8').split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eq = trimmed.indexOf('=');
+    if (eq < 1) continue;
+    const name = trimmed.slice(0, eq).trim();
+    const value = trimmed.slice(eq + 1).trim().replace(/^["']|["']$/g, '');
+    if (value && process.env[name] === undefined) process.env[name] = value;
+  }
+}
+loadPublishEnv();
 const SCENES = resolve(HERE, '..', 'public', 'scenes');
 const MANIFEST = resolve(HERE, '..', 'src', 'tutor-scene', 'sceneManifest.generated.json');
 const BUCKET = 'tutor-scenes';
