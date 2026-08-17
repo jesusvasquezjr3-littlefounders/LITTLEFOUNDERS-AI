@@ -109,6 +109,35 @@ Dina is a **quadruped on her own 27-joint rig**: Hips, chest, head, ear ends, a
 > mouth at all under his moustache. So the answer was never to move geometry.
 > §7.1 has what shipped.
 
+### §3.1 CLOSED: liruf and dina keep their painted mouths
+
+Exhausted rather than abandoned. Every approach was tried and measured:
+
+| attempt | liruf | dina |
+|---|---|---|
+| planar projection | muzzle sides compressed to nothing | — |
+| cylindrical | fixed-height band does not follow the mouth | — |
+| ribbon (traced curve) | painted grin leaks past both ends | patch folded, invisible under the body |
+| ribbon, re-measured | widened 4 cm a side — grin runs −0.191 to 0.237 against a card reaching −0.149 to 0.209. Red fragments still show on `closed` | curve raised 0.0008; depth spread fell from 0.01899 to 0.00594 |
+| gap sweep | — | 0.00014 → 0.0015: card still fragments |
+| grid density | 21×13 helps slightly, **31×19 is WORSE** (bulge 0.0347 → 0.1019) — more samples land on teeth and mouth interior | 11×7 → 31×19 improves 0.00083 → 0.00066, still 4.7× the gap |
+
+The card ends up **split into disconnected pieces with the face poking through
+between them**, because the snout curves more across the patch than a bilinear
+surface can hug at any density that does not start sampling the mouth interior.
+
+**The only remaining fix is texture surgery** — painting the mouth out of the
+albedo so the card ADDS one, which is exactly why Rho's worked first time (he
+has no painted mouth under his moustache). That was investigated and rejected:
+a UV sweep over the mouth region returns points spanning `u` 0.024–0.994 and
+`v` 0.028–0.983 on Liruf. **These models' UV layouts are fragmented into islands
+scattered across the whole atlas**, so a masked repaint would be painting large
+disjoint areas of face, on a shaded curved surface, with a colour that varies
+across it. High risk of visibly damaging two characters that currently look
+good, for two COMPANIONS who do not carry the speech.
+
+rho and zara — the two human characters — lip-sync. That is the decision.
+
 ## §4 Animation — procedural by necessity
 
 Every export ships **exactly one clip**, and all of them are locomotion cycles

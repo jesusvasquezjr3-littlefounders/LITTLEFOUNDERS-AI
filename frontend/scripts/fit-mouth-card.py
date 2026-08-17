@@ -80,9 +80,20 @@ MOUTHS = {
     # the right tool here. Her numbers look wrong until you remember she was
     # exported in Unreal scale: everything is ~25x smaller than the others and
     # is blown back up at runtime.
+    # The curve sits 0.0008 HIGHER than first measured, and that one number is
+    # the difference between a card and a crumpled blob. Her mouth is a thin
+    # line just above a chin that falls away steeply: with the band centred on
+    # the first estimate, its bottom row cleared the chin entirely and landed on
+    # her throat 1.9 cm behind — five times the band's own height — so the patch
+    # folded back on itself and vanished inside her head.
+    #
+    # Measured by firing the ribbon's own rays and reporting the spread of first
+    # -surface depths. Raising the curve takes that spread from 0.01899 to
+    # 0.00594. Every ray hits, and none hits a back face, so this was never a
+    # cavity problem — the band was simply below the mouth.
     "Dina": {
         "projection": "ribbon",
-        "curve": ((-0.0038, 0.0142), (0.0, 0.01217), (0.0038, 0.0142)),
+        "curve": ((-0.0038, 0.0150), (0.0, 0.01297), (0.0038, 0.0150)),
         "band": 0.0038,
         "depth": 0.0025,
         "gap": 0.00014,
