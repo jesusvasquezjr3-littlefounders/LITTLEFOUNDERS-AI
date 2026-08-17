@@ -278,6 +278,33 @@ An automated search is the wrong tool here: it optimises the hand's position
 against geometry it cannot see, and every run returned high-scoring poses with
 the arm inside the torso.
 
+### §4.4 `npm run verify:rig` — the gate that can actually catch this
+
+Four of the defects in §3–§4.3 passed type-check, lint, the whole test suite and
+review, because each looked correct on Zara and wrong only on the others. Unit
+tests cannot see them: they are properties of the geometry inside the `.glb`
+files, not of the code.
+
+`frontend/scripts/verify-rig.mjs` plays every clip on every character by forward
+kinematics and asserts:
+
+| check | invariant |
+|---|---|
+| `proportions` | no clip changes how far a bone sits from its parent. Only a translation can, so this is EXACT — no tolerance |
+| `stance` | every clip opens on the character's own foot separation |
+| `vocabulary` | every clip name is canonical, or a `<name>@<id>` override of one |
+| `overrides` | every override names a character that exists |
+| `emotions` | the seven emotions tilt every head by the same ANGLE (spread ≤ 2°) |
+| `travel` | reports translation tracks, which `sanitizeClip` strips |
+
+It is a LOCAL gate: `/glb/` lives outside the repo, so it prints a loud SKIP
+rather than passing quietly when the source exports are absent.
+
+**Its first version cried wolf**, and that is worth knowing before trusting the
+next one. It measured foot separation across every frame and flagged `jump` at
+27% on Zara herself — a landing compression bends the knees and legitimately
+brings the feet together. It was measuring the animation, not the defect.
+
 ### Rules that will bite whoever touches this next
 
 1. **Rotate bones with `premultiply` (parent space), never `multiply` (local
