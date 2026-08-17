@@ -47,6 +47,35 @@ function streamFile(path: string, res: Response, opts?: { start: number; end: nu
   rs.pipe(res);
 }
 
+/**
+ * CORS for PUBLIC objects only.
+ *
+ * WHY THIS WAS MISSING FOR SO LONG: every existing consumer of this route loads
+ * media through an `<audio>` or `<img>` tag, and those are no-cors requests —
+ * the browser fetches and renders them without ever needing a CORS header. The
+ * Tutor's 3D scene is the first consumer that reads the bytes in script, via
+ * three.js `GLTFLoader`, which uses fetch/XHR. Those ARE subject to CORS, so
+ * the scene failed with "Failed to fetch" while `curl` reported a perfect 200
+ * and the right byte count. A shell client cannot see this class of bug.
+ *
+ * `*` and not an allowlist, deliberately:
+ *   - these objects are `visibility: public` — world-readable by design,
+ *     PII-free, content-addressed. Anyone can already fetch them with curl, so
+ *     restricting the ORIGIN buys no confidentiality, it only breaks callers.
+ *   - the frontend is served from littlefounders.ai, en.littlefounders.ai,
+ *     es.littlefounders.ai AND every Vercel preview deployment, whose hostnames
+ *     contain a random hash. No allowlist can cover previews.
+ *
+ * INTERNAL objects get NO CORS headers at all, so a browser can never read one
+ * cross-origin even if a key leaked into client code.
+ */
+function allowPublicCors(res: Response): void {
+  res.set('Access-Control-Allow-Origin', '*');
+  // Without this the loader can see the body but not the length, and a ranged
+  // read cannot tell where it landed.
+  res.set('Access-Control-Expose-Headers', 'Content-Length, Content-Range, Accept-Ranges, ETag');
+}
+
 function badRequest(res: Response, message: string): void {
   res.status(400).json({ data: null, error: { code: 'VALIDATION_ERROR', message } });
 }
@@ -77,6 +106,8 @@ async function serve(req: Request, res: Response, sendBody: boolean): Promise<vo
     if (!crypto.timingSafeEqual(crypto.createHash('sha256').update(provided).digest(), crypto.createHash('sha256').update(expected).digest())) {
       return unauthorized(res);
     }
+  } else {
+    allowPublicCors(res);
   }
 
   const path = objectPath(bucket, parts.hash, parts.ext);
@@ -97,7 +128,15 @@ async function serve(req: Request, res: Response, sendBody: boolean): Promise<vo
   const etag = `"${meta.hash}"`;
   res.set('ETag', etag);
   res.set('Accept-Ranges', 'bytes');
-  res.set('Cache-Control', 'public, max-age=31536000, immutable');
+  // `private` for internal objects: these responses required a key, and
+  // `public` would invite a shared cache to serve one to a client that has
+  // none. Content-addressed, so `immutable` is honest either way.
+  res.set(
+    'Cache-Control',
+    meta.visibility === 'internal'
+      ? 'private, max-age=31536000, immutable'
+      : 'public, max-age=31536000, immutable',
+  );
 
   if (req.get('if-none-match') === etag) {
     res.status(304).end();
@@ -162,6 +201,23 @@ export function downloadRouter(): Router {
   });
   router.head('/:bucket/:file', (req, res, next) => {
     serve(req, res, false).catch(next);
+  });
+  /*
+   * Preflight. A plain cross-origin GET is not preflighted, but `Range` is NOT
+   * a CORS-safelisted request header, so any ranged read from script is — and
+   * this route advertises `Accept-Ranges: bytes`, so callers will try.
+   *
+   * Answered without touching storage on purpose: a preflight carries no
+   * credentials, so it cannot be told whether the object is internal, and
+   * looking would leak existence. It grants only what a public object would
+   * allow; the actual GET is still authorised on its own.
+   */
+  router.options('/:bucket/:file', (_req, res) => {
+    allowPublicCors(res);
+    res.set('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+    res.set('Access-Control-Allow-Headers', 'Range, If-None-Match');
+    res.set('Access-Control-Max-Age', '86400');
+    res.status(204).end();
   });
   return router;
 }

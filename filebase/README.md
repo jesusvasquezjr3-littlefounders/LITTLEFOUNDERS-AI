@@ -39,6 +39,26 @@ All JSON routes use the standard envelope (`/AGENTS.md` §1.6): `{ "data": <payl
 
 `GET/HEAD /files/:bucket/:hash.:ext` is the one route in this service (and, per `/AGENTS.md` §1.6, the one documented exception platform-wide) whose **success** response is not the `{data,error}` envelope — it streams raw bytes so it can be used directly as the `src` of an `<audio>` or `<img>` tag. Every *error* status on this route (400 invalid id, 401 unauthorized for an internal object, 404 not found, 416 range not satisfiable, 500 unexpected fault) still returns the standard JSON envelope.
 
+**CORS.** `public` objects answer with `Access-Control-Allow-Origin: *` plus
+`Access-Control-Expose-Headers: Content-Length, Content-Range, Accept-Ranges,
+ETag`, and `OPTIONS` is answered for the preflight a ranged read triggers
+(`Range` is not a CORS-safelisted request header). `internal` objects get **no
+CORS headers at all**, so a browser can never read one cross-origin even if a
+key leaked into client code, and their `Cache-Control` is `private` so a shared
+cache cannot hand an authenticated response to a client without the key.
+
+Wildcard rather than an allowlist, deliberately: these objects are world-readable
+by design, so restricting the origin buys no confidentiality — and the frontend
+is served from three hostnames plus every Vercel preview deployment, whose names
+carry a random hash.
+
+This was missing until 2026-08-17 and nobody noticed, because every consumer
+until then loaded media through `<audio>`/`<img>` — no-cors requests that need no
+header. The Tutor's 3D scene is the first to read the bytes IN SCRIPT (three.js
+`GLTFLoader`, via fetch/XHR), and it failed in the browser with "Failed to fetch"
+while `curl` reported 200 with the exact byte count. **A shell client cannot see
+this class of bug.**
+
 Behavior on success:
 - `Content-Type` set from the stored mime type.
 - `ETag` is the object hash (`"<sha256>"`) — immutable, so `Cache-Control: public, max-age=31536000, immutable`.
