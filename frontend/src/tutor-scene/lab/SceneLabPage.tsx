@@ -144,6 +144,13 @@ export default function SceneLabPage() {
    * able to put the thing being verified on screen.
    */
   const [lead, setLead] = useState<CharacterId>('rho');
+  /*
+   * Same reason the lead is switchable: the composed scene was pinned to
+   * `diorama-a`, so the harness could not show the other island with anyone
+   * standing on it — and whether a cast FITS an island is a question only the
+   * composed view can answer. Dina alone covers 2.83 m of a 6.5 m island.
+   */
+  const [stage, setStage] = useState<keyof typeof SCENE_ASSETS>('diorama-a');
   const [viseme, setViseme] = useState(0);
   const [framing, setFraming] = useState<TutorFraming>('vignette');
   const [emotion, setEmotion] = useState<CharacterEmotion>('neutral');
@@ -214,6 +221,7 @@ export default function SceneLabPage() {
               <TutorScene
                 className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-surface-sunken lg:aspect-video"
                 onStats={setStats}
+                scene={stage}
                 action={action}
                 actionKey={actionKey}
                 character={lead}
@@ -310,6 +318,23 @@ export default function SceneLabPage() {
                       }
                     >
                       lead: {id}
+                    </button>
+                  ))
+                : null}
+              {composed
+                ? (Object.keys(SCENE_ASSETS) as Array<keyof typeof SCENE_ASSETS>).map((id) => (
+                    <button
+                      key={`stage-${id}`}
+                      type="button"
+                      data-stage={id}
+                      onClick={() => setStage(id)}
+                      className={
+                        id === stage
+                          ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                          : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                      }
+                    >
+                      stage: {id}
                     </button>
                   ))
                 : null}

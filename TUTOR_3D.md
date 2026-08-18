@@ -466,6 +466,31 @@ on top of the stone table on the first one.
 A new diorama therefore needs **no coordinates and no manifest tuning** beyond
 its target diameter.
 
+### Known placement defects — photographed 2026-08-17
+
+Three limits found by driving `/dev/scene-lab` in a real browser and looking at
+the frames, none of which the numbers alone showed. All three are the same root
+cause: the solver scores a surface, and has no idea what the surface IS.
+
+1. **Water outscores ground.** On `diorama-b` the whole cast stands INSIDE the
+   pond. Flatness carries 55% of the score and a water plane is the flattest,
+   most open surface on that island, so it wins every time. Reproduced with both
+   `rho` and `dina` leading, companion in the water too. **`diorama-b` is not
+   usable until this is fixed** — and that invalidates the obvious workaround for
+   defect 3, since it is the larger island.
+2. **A broad flat-topped rock passes as floor.** The openness probe reaches
+   ±0.35 m, so any boulder wider than ~0.7 m returns four neighbours at the same
+   height and is accepted. Visible on `diorama-a` when `dina` leads: her 2.61 m
+   separation requirement pushes `liruf` off the sand and onto a rock. Does not
+   occur at the 1.61 m separation of the all-biped pairings.
+3. **No edge clearance.** Separation is checked between characters but never
+   against the island rim. `dina` on the outer ring of `diorama-a` reaches
+   3.69 m against a 3.25 m radius — she overhangs by 44 cm.
+
+Safe today: `diorama-a` with `rho`, `zara` or `liruf` leading. The fixes are
+independent of each other and none is large: a non-walkable surface mask, a
+probe radius above the scenery's own scale, and a rim-clearance term.
+
 ## §6 Performance contract
 
 The stage ships to every user on every device, so quality is MEASURED, not
@@ -744,8 +769,14 @@ whole pipeline had run — minutes of diorama simplification discarded at the
 finish line.
 
 Then `npm run dev` and open **`/dev/scene-lab`** — the composed scene with a
-live perf HUD, buttons for all 12 actions, and per-asset inspection. That is
-the fastest way back into context.
+live perf HUD, buttons for all 12 actions, 7 emotions, 8 visemes, both framings,
+each of the 4 leads, **both islands**, and per-asset inspection. That is the
+fastest way back into context.
+
+The island switch exists for the same reason the lead switch does: whether a
+cast FITS a diorama is a question only the composed view answers, and while the
+harness was pinned to `diorama-a` nobody could see that `diorama-b` stands its
+entire cast in the pond (§5).
 
 `/tutor` renders the same stage inside the product shell.
 
