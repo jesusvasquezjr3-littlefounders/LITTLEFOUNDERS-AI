@@ -95,6 +95,46 @@ the pattern was caught and truncate-and-reingest became the standard recovery.
 
 ---
 
+## Current State (2026-08-17, SESSION CLOSE) — Tutor 3D stage LIVE in production; placement fixed
+
+The stage is deployed and reachable. Depot serves the scene assets to the
+browser, `/tutor` renders the island with rho + liruf, and the placement solver
+no longer stands the cast in water. Green on every gate: 627 frontend tests
+across 58 files, type-check, lint, build, verify:rig, verify:placement, i18n ×3,
+docs-sync, secrets, paths.
+
+**Three things shipped, each one found by looking rather than by a test.**
+
+1. **Depot sent no CORS headers at all** (PR #59). Every prior consumer loads
+   media through `<audio>`/`<img>`, which are no-cors requests; the 3D scene is
+   the first that reads bytes in script, via `GLTFLoader`, and those ARE subject
+   to CORS. `curl` reported a perfect 200 with exact byte counts nine times
+   while production was broken — a shell client cannot see this class of bug.
+   Public objects now carry `Access-Control-Allow-Origin: *` plus an
+   `Expose-Headers` list and a preflight route (`Range` is not CORS-safelisted);
+   internal objects get no CORS headers at all and moved from `Cache-Control:
+   public` to `private`.
+
+2. **A full inventory of the stage, photographed.** 87 captures driven through
+   `/dev/scene-lab` by a Playwright harness: 12 actions × 4 characters, 7
+   emotions, 8 visemes on both characters that have a mouth card, both framings
+   at 1280 px and 375 px, both themes, both islands. Every gesture is diffed
+   against its own character's idle, because a gesture photographed at the wrong
+   instant looks exactly like a successful photograph of someone standing still.
+
+3. **`diorama-b` stood its entire cast in the pond**, and had for as long as the
+   island existed. Fixed with a baked walkability mask; see the Decision Log.
+
+**Also:** the scene lab gained island and stage switches — it could not show the
+second island with anyone on it, which is why nobody had seen the pond.
+
+### Open, needing the owner
+
+- **Vercel account is in arrears** — the project reports `"live": false` in the
+  API. Same class as the DashScope and Railway billing items below.
+- **Branch `chore/scene-lab-island-toggle` is committed but NOT pushed** (owner
+  asked to hold): 2 commits on top of `main`, both green.
+
 ## Previous session (2026-08-15, SESSION CLOSE) — Tutor 3D stage BUILT; handed off for a Blender pass
 
 Session goal: build the Tutor's 3D scenario. It is built, rendering for every
@@ -1584,6 +1624,13 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 ## Known Issues
 
+- **Tutor scene assets are readable from production (RESOLVED 2026-08-17)** — Depot public objects now send CORS headers, so `GLTFLoader` can read them. Verified from the `https://littlefounders.ai` origin in script, not with curl: curl does not enforce CORS and passed nine times while the page was broken.
+- **`diorama-b` stood its whole cast in the pond (RESOLVED 2026-08-17)** — walkability is now a baked per-island mask (`npm run assets:walkmask`) applied as a hard gate in `findStandingSpots`, with `npm run verify:placement` as the regression gate. A new diorama must have its mask baked and committed before it ships; `assets:walkmask` is NOT part of `assets:3d`.
+- **Two reported placement defects did not exist (RETRACTED 2026-08-17)** — "the companion stands on a boulder" was a low-resolution crop in which the boulders sit between him and the camera, and "Dina overhangs the rim by 44 cm" assumed a sampling ring she is not placed on (measured: 4 cm of clearance, now 49 cm). Both had reached a committed doc and a published report before the headless harness existed to check them. Kept here because the failure mode — trusting a reading of an image as if it were a measurement — is the same one that produced the real find.
+- **The vignette framing wastes almost half the frame at 375 px (open, 2026-08-17)** — measured on the capture, the island covers 61% of the width and 48% of the height. The distance calculation adds half the island's depth to a requirement that already accounts for the camera angle. Cosmetic, cheap to fix, not attempted this session.
+- **Rho's moustache hides most of his lip-sync (open, 2026-08-17)** — the mouth card works and `closed` vs `A` are distinct, but they have to be looked for. Zara reads clearly at a glance. If speech becomes the centre of the product, the lead character is a product decision worth revisiting; today the lead is Rho.
+- **`think` behaves differently per animation layer (open, 2026-08-17)** — a biped's authored clip clamps and freezes after 2.2 s while Dina's procedural driver keeps drifting in a loop. The loop sets genuinely disagree between `clipLibrary.ts` and `characterActions.ts`, and the test only asserts one of them. Harmless today; decide which is correct.
+- **`celebrate`, `dance` and `bow` lose their vertical bounce on the clip path (open, 2026-08-17)** — `CLIP_LIFT` lists only `jump` and `hop`, so Dina rebounds when celebrating and the bipeds do not.
 - **🔴 The DashScope / Alibaba Model Studio account is IN ARREARS (owner action, 2026-08-15)** — every image call returns `{"code":"Arrearage","message":"Access denied, please make sure your account is in good standing."}`. No image can be generated and nothing is billed until it is settled. It also blocks the art-director judge and the subject verifier, which default to the same key (`JUDGE_API_KEY ?? IMAGE_API_KEY`). This blocks the financial-education scene repair (3,397 redraws, ~$255) and any new course generation. Same class as the standing Vercel/Railway billing items below. RUNBOOK: "Every image fails with `DashScope responded 400`".
 - **Financial-education scene art is still the WRONG art (2026-08-15)** — the pipeline is fixed and deployed, but the 1,208 published lessons keep the images generated under the old style, i.e. a lemonade stand over almost every exercise. The repair is built, measured and ready (`images:backfill --restyle-scenes`); it is waiting only on the arrears above.
 - **Published lesson TEXT still predates the sequencing fix (2026-08-15)** — #44 changes future generation only, and plan `fixes` were never persisted, so the affected lessons cannot be identified retrospectively. Deciding whether to regenerate (and under which `--on-existing-published` policy) is open.
