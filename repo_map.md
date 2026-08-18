@@ -120,6 +120,7 @@ frontend/
       edu/
       ui/
   scripts/
+    lib/
   src/
     __tests__/
     auth/
@@ -1070,14 +1071,14 @@ untracked by default; a skill the team wants versioned gets a scoped
 > conversational layer is `/ORACLE.md` — **this document covers the STAGE
 > only**, not the tutoring.
 >
-> **Status (2026-08-16):** stage BUILT, rendering, and READY AS AN INTEGRATION
-> TARGET — §7b is the contract RAG/TTS plug into. **zara and rho** have working
-> mouths driven by real audio through `useLipSync`; liruf and dina do not (§7.1).
-> All twelve actions AND all seven emotions are authored clips, composed
-> additively over each character's bind pose (§4.0–§4.2). Conversational layer
-> NOT started (/ORACLE.md). Assets are local-only — publishing them to Depot is
-> the one blocker before deploy.
-
+> **Status (2026-08-17):** stage BUILT, rendering, DEPLOYED and READY AS AN
+> INTEGRATION TARGET — §7b is the contract RAG/TTS plug into. **zara and rho**
+> have working mouths driven by real audio through `useLipSync`; liruf and dina
+> do not (§7.1). All twelve actions AND all seven emotions are authored clips,
+> composed additively over each character's bind pose (§4.0–§4.2). Assets are
+> published to Depot and readable from the production origin (§3.2–§3.3).
+> Placement now knows water from ground (§5) — before that, `diorama-b` stood
+> its entire cast in the pond. Conversational layer NOT started (/ORACLE.md).
 ```
 
 ### WALKTHROUGH.md
@@ -11026,6 +11027,66 @@ Photos from [Pexels](https://www.pexels.com), used under the Pexels license (fre
 | `atlas/3985081.jpg` | https://www.pexels.com/photo/family-grocery-shopping-3985081/ |
 ```
 
+### frontend/scripts/generate-walkmask.ts
+
+```
+/*
+ * generate-walkmask — bakes, per island, which ground a character may stand on.
+ *
+ * Fires a downward ray through every cell of a grid laid over the island,
+ * reads the base-colour texel the ray lands on, and marks the cell walkable or
+ * not. The output is committed as `src/tutor-scene/walkMasks.generated.json`.
+ *
+ * WHY A COLOUR RULE, STATED PLAINLY. There is no geometric signal to use: the
+ * diorama is one mesh with one material, the pond is not a separate node, the
+ * mesh is quantized so the water is not even exactly planar, and there are no
+ * vertex colours. Measured on the real assets, nothing about the SHAPE
+ * distinguishes the pond from the sand. The only place the meaning lives is the
+ * texture, so that is where the rule reads it.
+ *
+ * "Cyan means water" is true of these two dioramas and is not a fact about the
+```
+
+### frontend/scripts/lib/island.ts
+
+```
+/*
+ * Loads a diorama exactly as the product places it, with no browser.
+ *
+ * Shared by `generate-walkmask.ts` (which bakes the mask) and
+ * `verify-placement.ts` (which checks the mask is doing its job). They MUST
+ * agree about scale and origin down to the centimetre or the mask lands offset
+ * from the ground it describes — so there is one loader, not two.
+ *
+ * The positioning mirrors `Diorama.tsx`: scale by `sceneScale`, centre on the
+ * origin in XZ, rest the underside on y=0. An earlier draft scaled by the
+ * MEASURED span instead of the stored `sourceWidthM`; those differ by 5% on
+ * diorama-b because the span includes the palm fronds, and the result was a
+ * harness that confidently certified a slightly different island.
+ */
+import {
+```
+
+### frontend/scripts/verify-placement.ts
+
+```
+/*
+ * verify-placement — where does the solver actually put the cast, on every
+ * island, for every pairing? Headless, in seconds, with no browser.
+ *
+ * WHY THIS EXISTS. The placement solver was verified by looking at the product,
+ * and looking is exactly what nobody does often enough: `diorama-b` put its
+ * ENTIRE CAST inside the pond, and the only reason it was caught is that
+ * somebody finally photographed the second island with people standing on it.
+ * Numbers had been consulted and had said the opposite — that diorama-b was the
+ * roomy one and therefore the answer to Dina's size. She fits, and she stands
+ * in the water.
+ *
+ * So this runs the REAL `findStandingSpots` (imported, never reimplemented — a
+ * copy would drift from the thing it certifies) against the REAL island meshes,
+ * and reports what a character standing on each chosen spot would be standing
+```
+
 ### frontend/src/App.tsx
 
 ```
@@ -20668,10 +20729,10 @@ import { QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
 import { findStandingSpots, type StandingSpot } from './standingSpots';
 import { CHARACTER_ASSETS, characterFootprintM, type SCENE_ASSETS } from './assets';
+import { walkabilityFor } from './walkability';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
 
 /*
- * The Tutor's 3D stage.
 ```
 
 ### frontend/src/tutor-scene/TutorStage.tsx
@@ -20739,19 +20800,19 @@ describe('the published scene manifest', () => {
 ```
 import type { CharacterId } from '@/components/characters/control/types';
 import manifest from './sceneManifest.generated.json';
+import {
+  CHARACTER_MEASUREMENTS,
+  SCENE_MEASUREMENTS,
+  type CharacterMeasurement,
+  type SceneMeasurement,
+} from './measurements';
 
 /*
- * The Tutor's 3D asset manifest.
+ * The Tutor's 3D asset manifest — WHERE the models are served from.
  *
- * `sourceHeightM` is MEASURED, not guessed — `npm run assets:inspect` reports
- * the bind-pose bounds of each source export and those numbers are recorded
- * here. They matter because the four characters did not come from one pipeline:
- * three measure 1.6–1.7 m, while Dina's export is in Unreal's unit scale and
- * measures 0.028. Normalising at runtime (a scale on the wrapping group) rather
- * than rewriting vertex data keeps the .glb byte-identical to what the artist
- * approved, and a skinned mesh scaled by an ancestor group deforms correctly
- * because the joints are scaled with it.
- */
+ * WHAT they are (heights, footprints, island diameters) lives in
+ * `measurements.ts`, which imports nothing and can therefore be read by a
+ * headless script. This module adds URLs on top, and reading a URL requires
 ```
 
 ### frontend/src/tutor-scene/budget.test.ts
@@ -21014,6 +21075,26 @@ import { VISEMES } from './mouthAtlas';
  * atlas rather than a rig — upgrading later means indexing the SAME eight
 ```
 
+### frontend/src/tutor-scene/measurements.ts
+
+```
+import type { CharacterId } from '@/components/characters/control/types';
+
+/*
+ * What the models ARE, measured. Nothing about where their bytes come from.
+ *
+ * This is split out of `assets.ts` for one concrete reason: that module reads
+ * `import.meta.env` to resolve URLs, which only exists under Vite, so anything
+ * importing it is confined to a bundler or a test runner. The numbers below are
+ * facts about geometry — they are what a placement check, a footprint
+ * calculation or a headless verification script actually needs, and none of
+ * those has any business needing a build tool to read them.
+ *
+ * `scripts/verify-placement.ts` is the case that forced the issue: it runs the
+ * real solver against the real islands with no browser, and it could not import
+ * a single measured number without dragging in asset URL resolution.
+```
+
 ### frontend/src/tutor-scene/mouthAtlas.test.ts
 
 ```
@@ -21154,6 +21235,26 @@ import { Quaternion, type Bone, type Object3D } from 'three';
   }
 ```
 
+### frontend/src/tutor-scene/standingSpots.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { BoxGeometry, Mesh, MeshBasicMaterial, Vector3 } from 'three';
+import { findStandingSpots } from './standingSpots';
+
+/*
+ * A flat 10 x 10 slab standing in for an island: featureless on purpose, so
+ * every difference in the results comes from the option under test and not
+ * from scenery.
+ */
+function slab(): Mesh {
+  const mesh = new Mesh(new BoxGeometry(10, 0.4, 10), new MeshBasicMaterial());
+  mesh.updateMatrixWorld(true);
+  return mesh;
+}
+
+```
+
 ### frontend/src/tutor-scene/standingSpots.ts
 
 ```
@@ -21170,8 +21271,8 @@ import { Box3, Raycaster, Vector3, type Object3D } from 'three';
  * So the spots are SOLVED, not authored. Candidates are sampled on rings over
  * the island, a ray finds the surface under each, and a spot is only accepted
  * if the ground there is flat (the surface normal points up), open (its
- * neighbours sit at a similar height, so it is not the top of a rock or the
- * lip of a ledge) and actually on the island. Whatever island ships next needs
+ * neighbours sit at a similar height, so it is not the top of a rock) and
+ * actually on the island.
 ```
 
 ### frontend/src/tutor-scene/useAdaptiveQuality.ts
@@ -21252,6 +21353,66 @@ import type { QualitySettings } from './quality';
  * Loads an optimized .glb produced by `npm run assets:3d`.
  *
  * Two compression schemes are in play and they solve different problems:
+```
+
+### frontend/src/tutor-scene/walkMasks.generated.json
+
+```
+{
+  "_comment": "GENERATED by scripts/generate-walkmask.ts. One bit per grid cell, 1 = a character may stand there. Bounds are in METRES in the island frame Diorama.tsx places it in, so changing an island targetWidthM invalidates this file — rerun `npm run assets:walkmask`. Commit it: it is build input and holds no secrets.",
+  "resolution": 96,
+  "islands": {
+    "diorama-a": {
+      "minX": -3.4593,
+      "maxX": 3.4593,
+      "minZ": -3.2726,
+      "maxZ": 3.2726,
+      "walkable": "AAAAAAD8HwAAAAAAAAAAAMD//wMAAAAAAAAAAPj//x8AAAAAAAAAAP////8AAAAAAAAAwP////8DAAAAAAAA8P////8PAAAAAAAA+P////8fAAAAAAAA/v////9/AAAAAAAA////////AQAAAADA////////AwAAAADg////////BwAAAADw////////HwAAAAD8////////PwAAAAD+////////fwAAAAD//////////wAAAID//////////xEAAMD//////////xMgAOD//////////x8GAOD//////////48TAPD//////////58PAPj//////////98fAPj///////////8fAPz///////////8PAPz///////////8PAP7///////////8/gP////////////8f0P////////////8/AP////////////8/wP////////////8/wP////////////9/wP////////////8/8P////////////8//P////////////8v8P////////////8v4P////////////8H4P////////////8f4P////////////8n4P////////////8P8P////////////8P8P////////////8P8P////////////8P8P////////////8P8P////////////8P8P////////////8f/P////////////8f//////////////8f/v////////////8f+P////////////8f8P////////////8f8P////////////8f8P////////////8f8P////////////8f8P////////////8P8P////////////8P8P////////////8P8P////////////8P8P////////////8P8P////////////8P8P////////////8P4P////////////8P4P////////////8H4P////////////8H4P////////////8HwP////////////8HwP////////////8DwP////////////8DgP////////////8DgP////////////8BgP////////////8BAP////////////8BAP////////////8AAP7///////////8AAP7//////////38AAPz//////////38AAPz//////////z8AAPj//////////z8AAPj//////////x8AAPD//////////w8AAOD//////////w8AAOD//////////wcAAMD//////////wMAAID//////////wEAAAD//////////wAAAAD+////////fwAAAAD8////////PwAAAAD4////////HwAAAADw////////DwAAAADA////////BwAAAACA////////AQAAAAAA/v//////AAAAAAAA/P////8/AAAAAAAA8P////8PAAAAAAAAgP////8DAAAAAAAAAP7//38AAAAAAAAAAOD//w8AAAAAAAAAAAD8fwAAAAAA"
+    },
+    "diorama-b": {
+      "minX": -5.0087,
+      "maxX": 5.0087,
+      "minZ": -5.0105,
+```
+
+### frontend/src/tutor-scene/walkability.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { isCellWalkable, maskFor, walkabilityFor, type WalkMask } from './walkability';
+
+/*
+ * The shipped masks are asserted, not just the bit arithmetic.
+ *
+ * A unit test over a synthetic grid would have passed on the day the whole cast
+ * was standing in a pond, because nothing was wrong with the arithmetic — there
+ * was no mask at all. So the coordinates below are real: (1.06, 1.04) is the
+ * measured centroid of diorama-b's pond in the island's placed frame.
+ */
+
+/** Little helper mirroring the generator's bit layout. */
+function synthetic(resolution: number, walkable: (gx: number, gz: number) => boolean): WalkMask {
+  const cells = new Uint8Array(Math.ceil((resolution * resolution) / 8));
+```
+
+### frontend/src/tutor-scene/walkability.ts
+
+```
+import masks from './walkMasks.generated.json';
+
+/*
+ * Which parts of an island a character may stand on.
+ *
+ * WHY THIS HAD TO EXIST. The placement solver scores a surface by how flat and
+ * open it is, and a body of water is the flattest, most open surface on a
+ * diorama — so on `diorama-b` it beat every patch of grass and the entire cast
+ * stood in the pond. Every pairing, both characters, for as long as the island
+ * had shipped. Geometry alone cannot see the difference: the island is ONE mesh
+ * with ONE material, the water is not a separate node, the mesh is quantized so
+ * the water is not even exactly planar, and there are no vertex colours. There
+ * is no measurement of the shape that says "you would drown here".
+ *
+ * So the semantics come from the only place that has them — the island's own
 ```
 
 ### frontend/src/vite-env.d.ts
