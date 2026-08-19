@@ -164,20 +164,21 @@ function passesJudgeGate(rubric: ReviewRubric, document: LessonDocumentParsed, s
   return failingDimensions(rubric, document, standalone).length === 0;
 }
 
-async function judgeDocument(
-  document: LessonDocumentParsed,
-  judge: typeof completeQwen,
-  ledger: UsageLedger | undefined,
-  priorMicroObjective?: string | null,
-  competency?: CompetencyPromptContext,
-): Promise<ReviewRubric> {
-  // PREFIX-CACHE DISCIPLINE (AGENTS.md "Mass generation" #12): the judge's
-  // rubric/calibrations are ~66% of the prompt and byte-identical across the
-  // 345 judge calls of a full run — they live in the SYSTEM message so the
-  // provider's implicit context cache serves them as one stable prefix.
-  // Everything per-lesson (priorLine, the document, retry notes) stays in the
-  // user message, AFTER the prefix.
-  const system = [
+/**
+ * The judge's rubric and calibrations.
+ *
+ * PREFIX-CACHE DISCIPLINE (AGENTS.md "Mass generation" #12): this is ~66% of
+ * the prompt and byte-identical across the 345 judge calls of a full run — it
+ * lives in the SYSTEM message so the provider's implicit context cache serves
+ * it as one stable prefix. Everything per-lesson (priorLine, the document,
+ * retry notes) stays in the user message, AFTER the prefix.
+ *
+ * Hoisted out of `judgeDocument` (pure move — same bytes) so the subagent
+ * authoring harness judges against the SAME rubric instead of a paraphrase
+ * that would quietly become a different bar.
+ */
+export function judgeSystemPrompt(): string {
+  return [
     'You are an INDEPENDENT quality judge for a children\'s financial-literacy lesson platform (LittleFounders). ' +
       'You did not write this lesson — review it critically. Output ONLY strict JSON, no prose outside the JSON.',
     '',
@@ -210,19 +211,33 @@ async function judgeDocument(
     '`notes` must be actionable — if any score is low, say exactly what to fix.',
     'EAVESDROP CALIBRATION: eavesdrop is an overheard conversation whose ==highlighted== money terms carry tap-to-explain notes. Judge it as a story beat AND check: every highlighted term is a REAL expression in this locale (never invented slang), and each note explains its term in kid words without introducing new unexplained jargon.',
   ].join('\n');
+}
 
-  // Ground the "connect to prior lesson" half of concreteness in FACT instead
-  // of the judge's guess: undefined = caller didn't say (legacy behavior),
-  // null = this IS the course's first lesson (exempt), string = the actual
-  // prior micro-objective the opening should connect to. On the first real
-  // QA run the judge repeatedly wrote "assuming this isn't the first lesson"
-  // and failed lessons on that assumption.
-  const priorLine =
-    priorMicroObjective === undefined
-      ? null
-      : priorMicroObjective === null
-        ? 'PRIOR-LESSON FACT: this IS the very first lesson of the course — do NOT penalize concreteness for not referencing a previous lesson.'
-        : `PRIOR-LESSON FACT: the previous lesson's micro-objective was: "${priorMicroObjective}". Judge the connect-to-prior half of concreteness against THIS, not a guess.`;
+/**
+ * Ground the "connect to prior lesson" half of concreteness in FACT instead of
+ * the judge's guess: undefined = caller didn't say (legacy behavior), null =
+ * this IS the course's first lesson (exempt), string = the actual prior
+ * micro-objective the opening should connect to. On the first real QA run the
+ * judge repeatedly wrote "assuming this isn't the first lesson" and failed
+ * lessons on that assumption.
+ */
+export function judgePriorLine(priorMicroObjective?: string | null): string | null {
+  if (priorMicroObjective === undefined) return null;
+  if (priorMicroObjective === null) {
+    return 'PRIOR-LESSON FACT: this IS the very first lesson of the course — do NOT penalize concreteness for not referencing a previous lesson.';
+  }
+  return `PRIOR-LESSON FACT: the previous lesson's micro-objective was: "${priorMicroObjective}". Judge the connect-to-prior half of concreteness against THIS, not a guess.`;
+}
+
+async function judgeDocument(
+  document: LessonDocumentParsed,
+  judge: typeof completeQwen,
+  ledger: UsageLedger | undefined,
+  priorMicroObjective?: string | null,
+  competency?: CompetencyPromptContext,
+): Promise<ReviewRubric> {
+  const system = judgeSystemPrompt();
+  const priorLine = judgePriorLine(priorMicroObjective);
 
   const user = [
     ...(priorLine ? [priorLine, ''] : []),

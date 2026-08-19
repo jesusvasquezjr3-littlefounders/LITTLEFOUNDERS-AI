@@ -90,6 +90,76 @@ function remapCurrency(node: unknown, target: 'en-US' | 'pt-BR'): void {
   walk(node);
 }
 
+/**
+ * The string-freeze, exposed as three primitives so an out-of-pipeline
+ * translator (a Claude subagent) gets EXACTLY the guarantee `localizeLesson`
+ * gives: structure, ids, numbers and answer keys are never seen by the
+ * translator, so they cannot drift. `localizeLesson` below is built from these
+ * same three — there is deliberately no second implementation to keep in sync.
+ */
+export interface VisibleStringIndex {
+  /** The clone the extracted paths point into; translations re-inject here. */
+  target: unknown;
+  extracted: ExtractedString[];
+  /** What the translator is given: a flat index → source-string map. */
+  indexMap: Record<string, string>;
+}
+
+export function indexVisibleStrings(sourceDocument: LessonDocumentParsed): VisibleStringIndex {
+  const target = structuredClone(sourceDocument) as unknown;
+  const extracted: ExtractedString[] = [];
+  extractStrings(target, [], extracted);
+  const indexMap: Record<string, string> = {};
+  extracted.forEach((entry, i) => {
+    indexMap[String(i)] = entry.value;
+  });
+  return { target, extracted, indexMap };
+}
+
+/**
+ * Re-inject at the exact recorded paths, remap the play currency (which lives
+ * in NON_VISIBLE_KEYS and is therefore never translated), stamp the locale, and
+ * re-validate. An index entry the translator omitted falls back to its source
+ * string rather than becoming undefined.
+ */
+export function applyTranslatedStrings(
+  index: VisibleStringIndex,
+  targetLocale: 'en-US' | 'pt-BR',
+  translatedMap: Record<string, string>,
+): ReturnType<typeof lessonDocumentSchema.safeParse> {
+  index.extracted.forEach((entry, i) => {
+    setAtPath(index.target, entry.path, translatedMap[String(i)] ?? entry.value);
+  });
+  remapCurrency(index.target, targetLocale);
+  (index.target as { meta: { locale: string } }).meta.locale = targetLocale;
+  return lessonDocumentSchema.safeParse(index.target);
+}
+
+/**
+ * Turn a post-re-injection schema failure into per-string feedback the
+ * translator can act on ("index 41 is too long: 78 characters, must be at most
+ * 60"). Paths that were never translated are omitted: those are a different
+ * bug and must surface as a hard failure, not as a re-translate request.
+ */
+export function describeReinjectionIssues(
+  index: VisibleStringIndex,
+  issues: readonly { path: PropertyKey[]; code: string; message: string; maximum?: unknown }[],
+  currentValue: (stringIndex: number) => string,
+): Map<number, string> {
+  const feedback = new Map<number, string>();
+  for (const issue of issues) {
+    const i = index.extracted.findIndex((e) => pathsEqual(e.path, issue.path));
+    if (i === -1) continue;
+    const current = currentValue(i);
+    const detail =
+      issue.code === 'too_big' && typeof issue.maximum === 'number'
+        ? `is too long: ${current.length} characters, must be at most ${issue.maximum}`
+        : issue.message;
+    feedback.set(i, detail);
+  }
+  return feedback;
+}
+
 export class LocalizeVocabError extends Error {
   readonly locale: LessonLocale;
   readonly problems: GateProblem[];
@@ -134,12 +204,15 @@ function splitTranslationBatches(indexMap: Record<string, string>): Array<Record
   return batches;
 }
 
-function buildTranslateMessages(
-  indexMap: Record<string, string>,
-  targetLocale: LessonLocale,
-  issues: string | undefined,
-  toneDirectiveEs?: string,
-) {
+/**
+ * The translator's rulebook. Exported so an out-of-pipeline translator (a
+ * Claude subagent) is handed the SAME words — currency conversion, colloquial
+ * dosage, the hard length cap, markup/emoji preservation. A paraphrased second
+ * copy of these rules would drift, and the drift would be invisible: the
+ * output would still be valid JSON, just wrong about pesos or 40% longer than
+ * the button it has to fit in.
+ */
+export function translationSystemPrompt(targetLocale: 'en-US' | 'pt-BR', toneDirectiveEs?: string): string {
   const localeName = targetLocale === 'en-US' ? 'English (US)' : 'Brazilian Portuguese (pt-BR)';
   const audienceLine = toneDirectiveEs
     ? `This content targets ADULT learners, not children — preserve that register when translating. Source-language (es-MX) tone directive: ${toneDirectiveEs}`
@@ -152,13 +225,23 @@ function buildTranslateMessages(
     targetLocale === 'en-US'
       ? 'COLLOQUIAL TOUCHES: the source may carry an occasional light Mexican colloquialism ("¡órale!", "¡qué padre!", "¡ándale!"). NEVER translate these literally — render each as a natural, G-rated, everyday American English equivalent of the same weight ("awesome!", "no way!", "come on!", "sweet!"), and keep the dosage identical: if a sentence is neutral in the source, keep it neutral — never ADD slang the source does not have. Nothing rude, nothing with a double meaning.'
       : 'COLLOQUIAL TOUCHES: the source may carry an occasional light Mexican colloquialism ("¡órale!", "¡qué padre!", "¡ándale!"). NEVER translate these literally — render each as a natural, G-rated, everyday Brazilian Portuguese equivalent of the same weight ("que legal!", "demais!", "beleza!", "caramba!"), and keep the dosage identical: if a sentence is neutral in the source, keep it neutral — never ADD slang the source does not have. Nothing rude, nothing with a double meaning.';
-  const system =
+  return (
     `You translate financial-literacy content from Mexican Spanish (es-MX) into ${localeName} for LittleFounders. ${audienceLine} ` +
     'Preserve MarkdownLite markup exactly (**bold**, *italic*, `code`, "- " lists, line breaks) and any {{n}} gap markers verbatim. ' +
     'Preserve any EMOJI exactly as-is (same emoji, same position in the sentence) — never drop, add, or swap them. ' +
     'LENGTH: on-screen instructions are hard-capped — a translation must NEVER be meaningfully LONGER than its source string; when your language runs long, compress (drop filler words, use the shorter synonym) rather than exceed the source length. ' +
     `${currencyLine} ${colloquialLine} ` +
-    'Output ONLY a strict flat JSON object mapping each input key to its translation — same keys, translated values, nothing else.';
+    'Output ONLY a strict flat JSON object mapping each input key to its translation — same keys, translated values, nothing else.'
+  );
+}
+
+function buildTranslateMessages(
+  indexMap: Record<string, string>,
+  targetLocale: 'en-US' | 'pt-BR',
+  issues: string | undefined,
+  toneDirectiveEs?: string,
+) {
+  const system = translationSystemPrompt(targetLocale, toneDirectiveEs);
   const user = [
     'Translate every value in this JSON object. Return an object with EXACTLY the same keys.',
     JSON.stringify(indexMap),
@@ -231,14 +314,8 @@ export async function localizeLesson(
 ): Promise<LocalizeResult> {
   const translate = deps.translate ?? completeDeepSeek;
 
-  const cloned = structuredClone(sourceDocument) as unknown;
-  const extracted: ExtractedString[] = [];
-  extractStrings(cloned, [], extracted);
-
-  const indexMap: Record<string, string> = {};
-  extracted.forEach((entry, i) => {
-    indexMap[String(i)] = entry.value;
-  });
+  const index = indexVisibleStrings(sourceDocument);
+  const { target: cloned, extracted, indexMap } = index;
 
   const translatedMap: Record<string, string> = {};
   for (const batch of splitTranslationBatches(indexMap)) {
@@ -272,13 +349,7 @@ export async function localizeLesson(
     Object.assign(translatedMap, data);
   }
 
-  extracted.forEach((entry, i) => {
-    setAtPath(cloned, entry.path, translatedMap[String(i)] ?? entry.value);
-  });
-  remapCurrency(cloned, targetLocale);
-  (cloned as { meta: { locale: string } }).meta.locale = targetLocale;
-
-  let parsed = lessonDocumentSchema.safeParse(cloned);
+  let parsed = applyTranslatedStrings(index, targetLocale, translatedMap);
   /*
    * Re-injection can break the document schema even when the translation
    * response itself was valid JSON (the corrective loop above only checks
@@ -292,21 +363,16 @@ export async function localizeLesson(
    * that actually broke, by index, same corrective-feedback shape as write.ts.
    */
   for (let attempt = 1; !parsed.success && attempt <= MAX_REINJECT_ATTEMPTS; attempt++) {
-    const feedback = new Map<number, string>();
-    for (const issue of parsed.error.issues) {
-      const index = extracted.findIndex((e) => pathsEqual(e.path, issue.path));
-      if (index === -1) continue; // a path we never translated is a different bug — surface it below, not here.
-      const current = translatedMap[String(index)] ?? '';
-      const detail =
-        issue.code === 'too_big' && 'maximum' in issue && typeof issue.maximum === 'number'
-          ? `is too long: ${current.length} characters, must be at most ${issue.maximum}`
-          : issue.message;
-      feedback.set(index, detail);
-    }
+    // A path we never translated is a different bug — surfaced below, not here.
+    const feedback = describeReinjectionIssues(
+      index,
+      parsed.error.issues as unknown as { path: PropertyKey[]; code: string; message: string; maximum?: unknown }[],
+      (i) => translatedMap[String(i)] ?? '',
+    );
     if (feedback.size === 0) break; // nothing here a re-translate can fix.
 
     const sourceMap: Record<string, string> = {};
-    for (const index of feedback.keys()) sourceMap[String(index)] = extracted[index]!.value;
+    for (const stringIndex of feedback.keys()) sourceMap[String(stringIndex)] = extracted[stringIndex]!.value;
     const messages = buildShortenMessages(sourceMap, feedback, targetLocale, deps.registerToneEs);
     const result = await translate(
       { messages, temperature: 0.3, jsonMode: true, maxTokens: getConfig().FORGE_DOCUMENT_MAX_TOKENS },
@@ -315,11 +381,11 @@ export async function localizeLesson(
     const json = safeJsonParse(result.content);
     if (json.ok && typeof json.value === 'object' && json.value !== null && !Array.isArray(json.value)) {
       const record = json.value as Record<string, unknown>;
-      for (const index of feedback.keys()) {
-        const value = record[String(index)];
+      for (const stringIndex of feedback.keys()) {
+        const value = record[String(stringIndex)];
         if (typeof value === 'string') {
-          translatedMap[String(index)] = value;
-          setAtPath(cloned, extracted[index]!.path, value);
+          translatedMap[String(stringIndex)] = value;
+          setAtPath(cloned, extracted[stringIndex]!.path, value);
         }
       }
     }
@@ -336,9 +402,9 @@ export async function localizeLesson(
      * paid from-scratch regen over a length overflow.
      */
     for (const issue of parsed.error.issues) {
-      const index = extracted.findIndex((e) => pathsEqual(e.path, issue.path));
-      if (index === -1) continue;
-      setAtPath(cloned, extracted[index]!.path, extracted[index]!.value);
+      const stringIndex = extracted.findIndex((e) => pathsEqual(e.path, issue.path));
+      if (stringIndex === -1) continue;
+      setAtPath(cloned, extracted[stringIndex]!.path, extracted[stringIndex]!.value);
     }
     remapCurrency(cloned, targetLocale);
     parsed = lessonDocumentSchema.safeParse(cloned);

@@ -2,7 +2,50 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-08-15, SESSION CLOSE) — Tutor 3D stage BUILT; handed off for a Blender pass
+## Current State (2026-08-18, SESSION CLOSE) — Emprendimiento course COMPLETE: 544/544 lessons, all 8 adventures, in production `review`
+
+Session goal: generate the entire `entrepreneurship` course end-to-end using
+Claude Sonnet subagents driven by hand (the cloud generation path had been
+unreliable), building on the 64-lesson pilot from the prior session. Delivered
+in full: confirmed by direct production query, **544/544 lessons across all 8
+adventures, ×3 locales (1,632 `lesson_documents`), `status='review'`**. Every
+document cleared the contract, all 9 gates, and the independent judge's pass
+floors; two adventures (06, 08) cleared the judge at 68/68 with zero lessons
+below floor. Learner visibility is a human `published` flip, not run this
+session (COURSE_ENGINE.md §6). Audio and images are explicitly out of scope
+(owner decision); images additionally stay blocked by the DashScope arrears
+(2026-08-15).
+
+**The judge caught real defects no gate can see, at every stage.** An
+irresolvable typed fill-blank asking for a weekday the lesson never states; a
+lesson that TEACHES reviewing at a midpoint and GRADES reviewing at the
+deadline; a prerequisite (taking a percentage of an amount) graded before it
+is ever taught; nine uses of "dólares" in an es-MX course; a lesson
+contradicting itself on a character's established gender. All nine gates
+passed every one of these.
+
+**Revisions need re-judging, measured again this session: 3 of every 13
+introduce a NEW defect.** One lesson needed four full passes — leak, then
+unsolvable, then trivial transcription, then correct — each intermediate state
+passing every gate. A revision report is a claim, not evidence; only a fresh
+adversarial read confirms it.
+
+**The costliest mistake this session was mine, not a subagent's:** an
+authoring-world file I wrote pinned the wrong product for one adventure, and
+two authoring batches obeyed my file over their own catalog-authored briefs —
+the catalog is human-reviewed content design and outranks anything an agent
+improvises. Cost 23 lessons of re-homing. Fix now standard: pin the world
+BEFORE writing, and state explicitly that the brief outranks the world file
+(`coursegen/AGENTS.md` "Proven at full scale").
+
+**Tooling gotcha found and worked around, not yet fixed:** `author-judge`'s
+`notes` field silently discards an entire valid verdict past 2000 characters —
+11 genuinely-clean verdicts were dropped this way across two adventures before
+the pattern was caught and truncate-and-reingest became the standard recovery.
+
+---
+
+## Previous session (2026-08-15, SESSION CLOSE) — Tutor 3D stage BUILT; handed off for a Blender pass
 
 Session goal: build the Tutor's 3D scenario. It is built, rendering for every
 user on `/tutor`, and green on every gate (542 tests, type-check, lint, build,
@@ -1314,6 +1357,8 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-18 | **A subagent authoring world file (`WORLD.md`) must state it is subordinate to the brief, never the reverse.** Pinning a world before dispatch is now standard for any multi-batch subagent authoring run. | An adventure's world file wrongly pinned the wrong product; two authoring batches obeyed it over their own catalog-authored briefs, discarding a brief's explicit narrative beat. The catalog is human-reviewed content design — no file an agent writes on the fly outranks it. Cost 23 lessons of re-homing to fix. |
+| 2026-08-18 | **`author-judge ingest` reports an oversized `notes` field as a schema `problems` entry, and an operator must treat that shape as "verdict lost", never as "lesson failed".** | `reviewRubricSchema` caps `notes` at 2000 characters and fails the whole verdict object past it — correct fail-closed behavior, but it silently discarded 11 verdicts for lessons that were actually clean, making them read as unjudged. Recovery: truncate the oversized `notes` in place and re-run `ingest`. |
 | 2026-08-17 | **Liruf and Dina keep their painted mouths — closed after exhausting every approach, not abandoned.** | Five fits on Liruf (planar, cylindrical, ribbon, ribbon widened 4 cm a side after re-measuring his grin at −0.191..0.237, and two grid densities) and six on Dina (ribbon, curve raised 0.0008, four gaps, three densities). The card ends up split into disconnected pieces with the face poking through between them: the snout curves more across the patch than a bilinear surface can hug, and raising density past 21×13 makes Liruf WORSE (bulge 0.0347 → 0.1019) because more samples land on his teeth. The one remaining fix is painting the mouth out of the albedo so the card ADDS one, as Rho's does — rejected because a UV sweep shows these models' layouts are fragmented into islands spanning the whole atlas (u 0.024–0.994), so a masked repaint would recolour large disjoint areas of a shaded curved face. High risk of visibly damaging two characters that look good today, for two companions who do not carry the speech. |
 | 2026-08-16 | **Small deltas survive a rest-pose mismatch; large ones do not.** The seven emotion clips were audited across all three bipeds and need NO per-character overrides, unlike the arm gestures. | The first metric said otherwise: head DISPLACEMENT at each emotion's peak put Rho at roughly twice Zara on every one, and Liruf's `surprised` at a seventeenth. That measure is confounded by head size — Rho's head is large and far from the pivot, so the same tilt travels further. The ANGLE, which is what a viewer actually reads, is identical to a tenth of a degree on all three (happy 10°, excited 15°, surprised 13°, proud 19°). Rotations very nearly commute at 6–19°, so an emotion arrives intact on a skeleton whose rest differs, while a 150° arm swing does not. Recording the negative result because "the actions needed per-character values, so the emotions must too" is the obvious wrong inference. |
 | 2026-08-16 | **Judge a gesture from the side the gesture is on.** `point` on Rho was declared unimprovable after five rounds of candidates; three of those rounds were rendered from his LEFT, where his own body occludes the pointing arm. | Every candidate looked like nothing was happening, because nothing could be seen. Re-rendered from his right, the shipped pose measures better than all five alternatives (9.86 forward against 1.38–5.64) and the real limitation is anatomical: shoulder-to-hand is barely wider than his head. Hours went into tuning a pose against an image that could not show it. |

@@ -100,7 +100,7 @@ export interface WriteDeps {
   complete?: typeof completeDeepSeek;
 }
 
-function renderFactsBlock(facts: FactsFile, refs: readonly string[]): string {
+export function renderFactsBlock(facts: FactsFile, refs: readonly string[]): string {
   if (refs.length === 0) return '(no fact refs for this topic — use only round numbers consistent with the blueprint)';
   return refs
     .map((ref) => {
@@ -112,7 +112,13 @@ function renderFactsBlock(facts: FactsFile, refs: readonly string[]): string {
     .join('\n');
 }
 
-const BASE_HARD_RULES = [
+/**
+ * Exported so an out-of-pipeline authoring harness can render the SAME rules
+ * instead of paraphrasing them into a second copy that silently drifts (the
+ * contract-copy lesson in AGENTS.md, applied to prompts). Read-only: never
+ * mutate this array — it is the byte-stable head of the cached prompt prefix.
+ */
+export const BASE_HARD_RULES = [
   'Output STRICT JSON only: {"schema_version":1,"meta":{...},"scoring":{...},"segments":[...]}. No markdown fences, no prose outside the JSON.',
   'Produce EXACTLY one segment per skeleton entry, IN THE SAME ORDER, with the SAME `type` as the skeleton.',
   'Every segment.id must be unique within the document (short kebab-case, e.g. "s1-intro").',
@@ -195,12 +201,12 @@ const BASE_HARD_RULES = [
  * used to renumber nothing here (they went last) but the same splice pattern
  * in plan.ts broke its prefix a few hundred tokens in — keep the shape.
  */
-function renderBaseHardRules(): string {
+export function renderBaseHardRules(): string {
   return BASE_HARD_RULES.map((line, i) => `${i + 1}. ${line}`).join('\n');
 }
 
 /** Per-lesson directives — the conditional rules, now OUTSIDE the cached prefix. */
-function buildLessonDirectives(ctx: PlanContext): string {
+export function buildLessonDirectives(ctx: PlanContext): string {
   const directives: string[] = [];
   if (ctx.review) {
     directives.push(CONSOLIDATION_INSTRUCTION);

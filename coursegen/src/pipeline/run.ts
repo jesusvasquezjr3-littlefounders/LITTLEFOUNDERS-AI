@@ -159,7 +159,7 @@ function courseTitleText(catalog: CatalogFile, locale: LessonLocale): string {
   return catalog.course.title[locale];
 }
 
-function buildPlanContext(
+export function buildPlanContext(
   slot: Slot,
   course: CourseCatalog,
   catalog: CatalogFile,

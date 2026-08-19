@@ -172,6 +172,10 @@ paid run is authorized.
 finishing Financial Education (~6-10) now has no course until 12 — the
 10-12 band Inversiones' old tier3 used to cover is currently unserved.
 
+**Emprendimiento GENERATED end-to-end via a subagent authoring harness, not runGeneration (2026-08-18):** the DeepSeek/Forge estimate above ($714) does not apply to this run — Claude Sonnet subagents wrote every document instead, driven by an operator session (`coursegen/AGENTS.md` "Subagent authoring harness"), because the cloud generation path had been unreliable. Confirmed by direct production query: **544/544 lessons across all 8 adventures, ×3 locales (1,632 documents), `status='review'`** — every document cleared the contract, all 9 gates, and the independent judge's pass floors. Audio and images are explicitly out of scope for this run (owner decision) and remain a separate future phase; the DashScope arrears blocker (2026-08-15) still applies to images specifically. Learner visibility is a human `published` flip, not run yet.
+
+**New failure mode found only at 8-adventure scale, not the earlier single-adventure pilot: parallel authoring batches that cannot see each other's work invent DIFFERENT businesses for the same adventure.** One adventure reached four incompatible worlds (a bracelet workshop, an embroidery stall, a notebook stand, an invented finale-only business) before repair. Fix, now standard practice: pin the adventure's world in a `WORLD.md` BEFORE dispatching any authoring batch — and **the world file must state it is subordinate to the brief**, not the reverse. An early `WORLD.md` that omitted that line got obeyed over the catalog's own authored briefs by two batches, which then had to be re-homed (`coursegen/AGENTS.md` documents the pattern and the fix).
+
 **Pipeline QA-ready, not yet executed (2026-07-13):** Forge gained
 `forced_types` (COURSE_ENGINE §4 addendum — pins a lesson's exact segment
 skeleton, skipping the plan-stage LLM call) and Echo gained the real

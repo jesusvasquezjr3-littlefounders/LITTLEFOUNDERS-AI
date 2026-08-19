@@ -269,6 +269,157 @@ The 62-lesson Testing course was regenerated after a 1x1 Fable-judge review scor
 8. **Remaining known-hard spots** (fail-prone even after the above, acceptable losses on a big run, revisit if they spike): `equation_builder` (models struggle with id-sequence arithmetic), `story_branch` (graph coherence across 8+ nodes), and judge rejections of content whose *framing* is meta/test-like — real courses with real narrative beats don't trigger that last one.
 16. **Voice garnishes are scoped and gated (2026-07-26): light colloquialisms + sparse emojis.** The playbook (#9) allows an OCCASIONAL G-rated regional colloquial touch in character dialogue/narration only — dosage ramps with tier (tier1 ≈ none → tier3 slightly relaxed, set in `tierReasoningGuidance`), never in instructions/options/answer text, never anything with a double meaning (albures = kid_safety fail); localize renders locale-authentic equivalents at the SAME dosage, never literal translations, never adding slang to neutral sentences. Emojis are allowed ONLY in story-family narration text + `explanation_md`. The PROMPT asks for ≤1 per segment; gate 7's `emojiDisciplineCheck` hard-fails at >2 visible emojis per segment (deliberate slack — the gate counts GRAPHEME clusters, so a ZWJ family or a flag is ONE emoji) and always fails any emoji in prompt_md/hints/meta/answer/graded-payload; keycap sequences (FE0F/20E3) count as emojis in both layers. audiogen's `normalizeForSpeech` strips every emoji before TTS (math pictographs ➕➖✖➗ are EXPANDED to spoken words first, never deleted; speechGuard blocks any residue). `recapDialogue` deterministically budgets its whole dialogue to ≤1 emoji before gating. An emoji must never carry meaning a listener needs.
 
+## Subagent authoring harness (`src/scripts/author-*.ts`) — 2026-08-17
+
+An alternative AUTHOR for the same pipeline: Claude subagents write the lesson
+documents instead of DeepSeek, driven from an operator session rather than from
+`runGeneration`. Built because the cloud generation path had been unreliable and
+the owner wanted the documents written directly. It is operator-triggered only,
+exactly like `generate` (BOUNDARIES #8).
+
+```
+author:briefs → [subagents author es-MX] → author:validate
+   → author:judge emit → [subagent judges] → author:judge ingest → [revise → RE-judge]
+   → author:localize extract → [subagents translate] → author:localize inject
+   → author:publish
+```
+
+**What it replaces, and what it deliberately does NOT.** The subagents replace
+`plan` + `write` + `localize`'s translation call. Everything that decides
+whether a document is CORRECT is untouched and still runs: the contract
+(`lessonDocumentSchema`), all 9 gates via `runAllGates`, `stripNullValues` +
+`repairDocument`, the per-locale vocabulary re-gate, and `publishLessonSlot`
+with its identity/answer-key/audio-reset rules. An agent's own report that it
+finished is never evidence — `author-validate.ts` is the only authority, it
+writes the canonical parsed document back over the agent's file, and it exits
+non-zero so a partial course cannot be published by accident.
+
+**Every prompt block is IMPORTED, never paraphrased.** `author-briefs.ts`
+renders `CONTENT_PLAYBOOK`, `MIX_RULES`, `BASE_HARD_RULES`, the tier palette,
+the icon whitelist and the per-type shape examples from the modules that own
+them; `author-localize.ts` renders `translationSystemPrompt()`. This is the
+contract-copy rule applied to prompts: a second hand-maintained copy of a rule
+does not fail loudly when it drifts, it just quietly stops being the rule.
+`MIX_RULES`, `BASE_HARD_RULES`, `renderBaseHardRules`, `renderFactsBlock`,
+`buildLessonDirectives`, `buildPlanContext` and the localize primitives were
+exported for this — all pure moves, so the rendered prompt bytes (and therefore
+the DeepSeek prefix cache) are unchanged.
+
+**Translation is a STRING FREEZE, never a re-authoring.** A subagent asked to
+"translate this lesson" re-emits the document and quietly renumbers an id or
+rounds a number, and the three locales stop being the same lesson. So the
+translator never sees a document: `indexVisibleStrings` hands it a flat
+index → string map (ids, numbers, enums, answer keys and every
+`NON_VISIBLE_KEYS` entry excluded), and `applyTranslatedStrings` re-injects at
+the recorded paths, remaps the play currency and re-validates. Structural
+parity across locales is mechanical, not hoped for. `localizeLesson` is built
+from those same three primitives — there is deliberately no second
+implementation. A string that still breaks the schema after translation falls
+back to its es-MX source (same last resort as the pipeline) and is COUNTED in
+the report, because "shipped in the wrong language" is exactly what hides
+behind a green run.
+
+**The judge is not optional, and it pays for itself.** `author-judge` runs
+`review.ts`'s own rubric (`judgeSystemPrompt`), schema (`reviewRubricSchema`)
+and PASS FLOORS (`failingDimensions`) — the verdict is decided in code, never by
+the reviewing agent. Measured over the 64-lesson `radar-de-oportunidades` run:
+the 9 gates caught 12 defects, all MECHANICAL; the judge caught 8 more that had
+cleared every gate, all SEMANTIC — lessons contradicting their own thesis, and
+two whose answer key marked correct reasoning WRONG. It also does not print a
+mean: run-over-run judge scores have a ±0.4 noise floor (2026-07-24) and gating
+on one is meaningless.
+
+**ALWAYS RE-JUDGE A REVISION.** Of 8 lessons revised after a judge failure, 3
+had a NEW defect introduced by the fix (a fresh answer leak, residual
+foreshadowing, and a dangling reference to material the revision had removed).
+A fix is a change, and a change needs the same scrutiny as the original — tell
+the re-judge explicitly not to rubber-stamp, and to report problems the
+revision introduced.
+
+**Placement probes are `null`.** `resolvePlacementProbe` is a generation stage
+of its own; the harness publishes without it, alongside audio and images.
+
+### The three defect classes that dominate subagent authoring
+
+Measured over 64 lessons. None is visible to a deterministic gate; the first two
+are what a contract rule should prevent, the third is now code.
+
+1. **Answer leaked from an earlier segment (~15% of lessons).** The author
+   writes a worked example and then grades THE SAME CASE, so the learner
+   recognises instead of deriving. Fix by giving the graded segment a fresh
+   case — keep the teaching. Only strip the earlier give-away when the case is
+   load-bearing for the narrative.
+2. **`compare_table` (7 of 12 gate failures).** It must ground every source
+   cell's row label AND value in `prompt_md` *and* fit `MAX_PROMPT_CHARS` (160,
+   3 sentences) — the cap is NOT waived for it. That only fits a 2×2 table with
+   one-to-three-word values; if it does not fit, SHRINK the table. The
+   "decision" column (the one exempt from grounding) is detected by a REGEX on
+   the column id/label — `/elig|eleg|escoj|escog|choos|pick|best|mejor|winner|ganad/i`
+   — so a conceptually-derived column named `conviene` false-fails; renaming it
+   `mejor` is the fix, not restructuring.
+3. **A translated `build_sentence` that is no longer a sentence.** Its answer is
+   an ORDER, and the string freeze hands the translator the tiles with no order
+   and no sentence. Ten good words can reassemble into nonsense. Nothing else
+   sees it: the gates see valid structure, the judge reads es-MX.
+   `author-localize inject` now reassembles every one and PRINTS it per locale
+   (`assembleOrderedProse`). It cannot gate — grammaticality is not decidable —
+   so the report is the control. Read it.
+
+**What a mechanical check can never catch:** compressing a translation to fit
+the length cap produces MEANING INVERSIONS (a "False:" distractor rewritten into
+a true statement). Key parity, JSON validity and length checks all pass. Only a
+semantic re-read finds it.
+
+**`publishLessonSlot` does not write `badge_asset` or `requires`** — found
+while building this. It upserts only slug/subject/title/description/position,
+so a course it creates from scratch has `badge_asset = NULL`, and Vault's
+`courses_published_badge_required_check` (`status <> 'published' OR badge_asset
+IS NOT NULL`) then makes that course IMPOSSIBLE to release — surfacing much
+later, as a constraint violation with no obvious cause, to whoever tries to
+flip the switch. Dropping `requires` also silently deletes the course-to-course
+prerequisite edge (§3.1b). `author-publish.ts` projects both from
+`catalog.yaml` after publishing; the pipeline's own publish stage still does
+not, and should.
+
+**`position` is an operator decision.** `publishLessonSlot` hardcodes course
+position 0, which was unambiguous while Vault held one course. A second course
+at 0 leaves learner-facing order undefined, so `author-publish.ts` takes
+`--course-position` instead of guessing.
+
+### Proven at full scale (2026-08-18): all 8 adventures, 544 lessons, ×3 locales
+
+The pilot above was 64 lessons, one adventure. The full `entrepreneurship` catalog
+now ships the same way — every adventure through `author:validate`, `author:judge`,
+`author:localize` and `author:publish`, confirmed by direct production query
+(544 lessons, `status='review'`, 1,632 documents). Two more defect classes only
+showed up at this scale; the first cost real re-authoring, the second is a pure
+tooling trap.
+
+**4. Parallel batches invent DIFFERENT worlds for the same adventure.** Nothing
+in the pipeline shares state between concurrent authoring agents, so each one
+that opens cold invents its own business, product and cast context. One
+adventure reached FOUR incompatible worlds (two different product lines plus a
+finale written before any of its own earlier lessons existed) before repair —
+harmless per-lesson, catastrophic read start-to-finish. Fix: write a `WORLD.md`
+BEFORE dispatching any batch, pinning the business, its numbers, the cast and
+the canon callback names, and put it first in every agent's reading order.
+**The world file must say it is subordinate to the brief, not the reverse** — an
+earlier version omitted that line and got obeyed over the catalog's own
+authored briefs by two batches (one substituted a completely different product;
+the other overwrote a brief's explicit narrative beat to match the file's
+wrong default), both requiring a second pass to re-home. The catalog is
+human-reviewed content design; no world file an agent writes outranks it.
+
+**5. `author-judge`'s `notes` field silently drops a valid verdict past 2000
+characters.** `reviewRubricSchema` caps `notes` and the schema fails closed
+correctly — but a judge that writes a thorough finding into a long paragraph
+loses the WHOLE verdict, not just the tail, and the lesson then reads as
+unjudged rather than as passing. Measured: 11 verdicts across two adventures
+were silently discarded this way, and every one turned out to be a lesson that
+was actually clean. `ingest` reports these as a schema `problems` entry, not a
+failing dimension — check for that shape specifically, don't assume a missing
+verdict means the run crashed.
+
 ## Read before touching
 
 - `/COURSE_ENGINE.md` — the pipeline spec (hierarchy, catalog format, stages, gates, providers, safety).

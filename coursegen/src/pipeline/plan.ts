@@ -470,37 +470,42 @@ export function planRepair(
   return { skeleton: { segments }, fixes };
 }
 
+/*
+ * PREFIX-CACHE DISCIPLINE (AGENTS.md "Mass generation" #12): the rules used
+ * to splice per-lesson conditionals MID-LIST and renumber everything, so
+ * even the always-true rules changed bytes between a money and a non-money
+ * lesson — the shared prefix died a few hundred tokens in, and the ~10KB
+ * palette sat at the very END where it could never be cached. Now the
+ * numbered list is FROZEN (always-true rules only, fixed numbering), the
+ * palette leads the user message (stable per tier within a run), and every
+ * conditional lives in an unnumbered LESSON DIRECTIVES block beside the
+ * per-lesson context.
+ *
+ * Hoisted to module scope (was inline in buildPlanMessages) so an
+ * out-of-pipeline authoring harness renders the SAME rules rather than
+ * keeping a paraphrased second copy that drifts. Pure move — the rendered
+ * bytes are unchanged, which the prefix cache depends on.
+ */
+export const MIX_RULES: readonly string[] = [
+  `Produce ${MIN_SEGMENTS}-${MAX_SEGMENTS} segments as {"segments":[{"type":"...","brief":"..."}]}.`,
+  'The FIRST segment must be a `story` family type (story_dialogue, story_scene, key_ideas, concept_reveal or checkpoint).',
+  'Teach before you test: introduce a concept with a story/content segment before any graded segment that exercises it.',
+  'PREMISE QUALITY STARTS HERE: each `brief` must name a CONCRETE, kid-real micro-situation with a decision and a stake — a named character (dina/liruf/rho/zara), a real thing with a price, a choice to make ("Zara debe decidir si sube el precio de la limonada con más clientela"). NEVER a generic "practica la suma" / "pregunta sobre el ahorro". A boring brief produces a boring exercise.',
+  `Use at least ${MIN_DISTINCT_TYPES} DISTINCT segment types across the lesson.`,
+  `At most ${MAX_STORYPLAY_FLOWS} segment(s) from the storyplay family (flows are long — do not overload a single lesson).`,
+  '`type_answer` is NUMERIC applied practice only: use it only for a one-step calculation whose brief names the exact number the child will type. Never plan it for an open-ended sentence, opinion, vocabulary definition, or reflection; use a choice/input type that matches that task instead.',
+  '`speed_tap` briefs MUST explicitly call for 6-14 short items and a concrete matching rule; never use it for a two-to-five-example recap.',
+  'Ramp difficulty roughly low→high across the lesson (the WRITE stage assigns exact difficulty 1-5 per segment).',
+  'Use ONLY the type ids listed in the PALETTE — nothing else.',
+];
+
 function buildPlanMessages(ctx: PlanContext, paletteText: string, issues: string | undefined) {
   const system =
     'You are Forge, the lesson-planning stage of a financial-literacy platform for children (LittleFounders). ' +
     'You output ONLY strict JSON matching the requested shape — no prose, no markdown fences. ' +
     'Never invent numeric facts; the writer stage will ground numbers, you only plan segment TYPES and one-sentence BRIEFS.';
 
-  /*
-   * PREFIX-CACHE DISCIPLINE (AGENTS.md "Mass generation" #12): the rules used
-   * to splice per-lesson conditionals MID-LIST and renumber everything, so
-   * even the always-true rules changed bytes between a money and a non-money
-   * lesson — the shared prefix died a few hundred tokens in, and the ~10KB
-   * palette sat at the very END where it could never be cached. Now the
-   * numbered list is FROZEN (always-true rules only, fixed numbering), the
-   * palette leads the user message (stable per tier within a run), and every
-   * conditional lives in an unnumbered LESSON DIRECTIVES block beside the
-   * per-lesson context.
-   */
-  const rules = [
-    `Produce ${MIN_SEGMENTS}-${MAX_SEGMENTS} segments as {"segments":[{"type":"...","brief":"..."}]}.`,
-    'The FIRST segment must be a `story` family type (story_dialogue, story_scene, key_ideas, concept_reveal or checkpoint).',
-    'Teach before you test: introduce a concept with a story/content segment before any graded segment that exercises it.',
-    'PREMISE QUALITY STARTS HERE: each `brief` must name a CONCRETE, kid-real micro-situation with a decision and a stake — a named character (dina/liruf/rho/zara), a real thing with a price, a choice to make ("Zara debe decidir si sube el precio de la limonada con más clientela"). NEVER a generic "practica la suma" / "pregunta sobre el ahorro". A boring brief produces a boring exercise.',
-    `Use at least ${MIN_DISTINCT_TYPES} DISTINCT segment types across the lesson.`,
-    `At most ${MAX_STORYPLAY_FLOWS} segment(s) from the storyplay family (flows are long — do not overload a single lesson).`,
-    '`type_answer` is NUMERIC applied practice only: use it only for a one-step calculation whose brief names the exact number the child will type. Never plan it for an open-ended sentence, opinion, vocabulary definition, or reflection; use a choice/input type that matches that task instead.',
-    '`speed_tap` briefs MUST explicitly call for 6-14 short items and a concrete matching rule; never use it for a two-to-five-example recap.',
-    'Ramp difficulty roughly low→high across the lesson (the WRITE stage assigns exact difficulty 1-5 per segment).',
-    'Use ONLY the type ids listed in the PALETTE — nothing else.',
-  ]
-    .map((line, i) => `${i + 1}. ${line}`)
-    .join('\n');
+  const rules = MIX_RULES.map((line, i) => `${i + 1}. ${line}`).join('\n');
 
   const directives = [
     isMoneyRequired(ctx)
