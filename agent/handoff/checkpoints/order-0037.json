@@ -1,0 +1,13 @@
+{
+  "order": 37,
+  "lesson_id": "7b92c78f-c78c-4fa1-8a88-f9b5fb51cfcd",
+  "slug": "tres-razones-para-monedas",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/c492c4a63d4cbadbbfec24609b8ba5f609517db35c034519b1a7914e8cc78377.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/401cb5ada42e73cfe3499b3d6702bc2e0541389b7c39508e80330644e427c584.webp","slots":["s8-clasificar-objetos.payload.items[1].image_url"],"subject":"grupo de conchas","format":"image/webp","bytes":42280},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/a61277b69c27a9974b1d319a4ace3c867c502f0f1ef5bb694864be602a55970b.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/29a87e89c79360e6edeaeb84b1913cac871deb89cbd7975fd2b4baf895defcbb.webp","slots":["s8-clasificar-objetos.payload.items[2].image_url"],"subject":"grupo de semillas","format":"image/webp","bytes":30444},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/47d89b5d26953fe191a2fda3c0922700f8ccded66642d0dae6cd4f0aaf25e613.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/dfbcd7817de8eb8597e9d5432e2691ff7b6a68e12fbb9acd696ca9a0d018a696.webp","slots":["s8-clasificar-objetos.payload.items[3].image_url"],"subject":"grupo de piedras","format":"image/webp","bytes":25122}
+  ],
+  "locales_written":["es-MX","en-US","pt-BR"]
+}

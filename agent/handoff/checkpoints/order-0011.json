@@ -1,0 +1,47 @@
+{
+  "order": 11,
+  "lesson_id": "c9462daa-1165-4cf3-9029-347973e7fd72",
+  "slug": "te-doy-esto-por-eso",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/c194a73d1b4f07ab4aeaec273530940187446beee0547fabcc8bbc3c8b7df9ae.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/23eedf616e0c0e6bd9ea6e97172201ef3eb4f3edd86fbde8a8702e8d95a0609f.webp",
+      "slots": [
+        "s3-key-ideas.payload.ideas[1].image_url"
+      ],
+      "subject": "trueque: pluma y fruta",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/845264c08345c3783ba35b3500ed2b5cd17ecd13e2305f85ed56482e528dedc4.png",
+      "format": "image/webp",
+      "bytes": 16204
+    },
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/2fb79b7a4794bbe5961a79612e3976660e8c14fd797285ad3bc98f5ef00c58a0.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/30e5abe8f4670281d05bfb9263d57919c4239f06a0e768d8a88efc348bf119dd.webp",
+      "slots": [
+        "s7-odd-one-out.payload.items[2].image_url"
+      ],
+      "subject": "piedra lisa",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/ade0e66fdd829cd05eec181202fd3c733e7b5a845844aa37e9471bbb1fe652f9.png",
+      "format": "image/webp",
+      "bytes": 23774
+    },
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/09ddb8c4b43a925922410d33b42cfe96751cdf4f1f924102b066122274264bf5.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/f1706a274ebcb6837e256103d3aefad5d89d917ea1b9413af4fbd56090b6b09a.webp",
+      "slots": [
+        "s3-key-ideas.payload.ideas[3].image_url"
+      ],
+      "subject": "recibir: canasta y fruta",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/250f27a55ee44f39cb477c91b04b91fa18872b093a29923458680db869b1e680.png",
+      "format": "image/webp",
+      "bytes": 17700
+    }
+  ],
+  "locales_written": [
+    "es-MX",
+    "en-US",
+    "pt-BR"
+  ]
+}

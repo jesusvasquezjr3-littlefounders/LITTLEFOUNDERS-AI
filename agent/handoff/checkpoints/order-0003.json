@@ -1,0 +1,69 @@
+{
+  "order": 3,
+  "lesson_id": "cbaaa13f-9308-4069-a8cf-4a05b2006e3a",
+  "slug": "mi-lista-de-deseos",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/aa9f9fe8e6056321d5c34a084bfcdf3d026de47c42cf548ecb001c195db7f4a2.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/abffbe2bd405bf76e5e1172961367efcb52fe6f05f67902c2e5f5862c7e3ead8.webp",
+      "slots": [
+        "s2-key-ideas.payload.ideas[0].image_url"
+      ],
+      "subject": "bicicleta",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/9c68d3718db8856c31b4b385375df863e8a8393e647c18d5f05dcbd1f6a15b03.png",
+      "format": "image/webp",
+      "bytes": 77398
+    },
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/4da87953bbea024b0ff376cc027f4ab1113e4eb38bcd56a1b346d49b28c8aa60.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/f362bb8fbdc92d5c6eee10a11762447e6ae486fdbb26141dd64dc774791f9d96.webp",
+      "slots": [
+        "s2-key-ideas.payload.ideas[1].image_url"
+      ],
+      "subject": "helado",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/dd14f0cd5a9e7abd46810c8f5f844392b3d61df0272fbb41a5a0d64b9e8c2c96.png",
+      "format": "image/webp",
+      "bytes": 20628
+    },
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/77e9797fac9195fae03b8a343fad548450fb0a9ef8e27252cbd52d78954500ee.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/aa6d6048007f16d5c2f89d8b4b3d987723b6c7183df9b1f68f648d31d37d74e8.webp",
+      "slots": [
+        "s2-key-ideas.payload.ideas[2].image_url"
+      ],
+      "subject": "libro",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/89508584eb0e827685846f93332f16d62fd68935d811c0aaf59bb0d548076e67.png",
+      "format": "image/webp",
+      "bytes": 14230
+    }
+  ],
+  "locales_written": [
+    "es-MX",
+    "en-US",
+    "pt-BR"
+  ],
+  "restored_segment": {
+    "segment_id": "s10-order-2",
+    "source": "original-lesson-documents-1208.tar.gz",
+    "images": [
+      {
+        "slot": "s10-order-2.payload.items[0].image_url",
+        "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/272b6553d40abfae2184e93440031d6d34fbef1a8449be1565ec235893b418f4.webp",
+        "subject": "libro"
+      },
+      {
+        "slot": "s10-order-2.payload.items[1].image_url",
+        "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/df14f241dbc3d3b2fa6447af0a0b88f16f2c58815b3f1804920438bbfc42fb8a.webp",
+        "subject": "helado"
+      },
+      {
+        "slot": "s10-order-2.payload.items[2].image_url",
+        "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/27729fe7a104b792641c59e35ee22ed10f0b7dbe71e007d5172fe8a478ad86b6.webp",
+        "subject": "bicicleta"
+      }
+    ],
+    "restored_at": "2026-08-17"
+  }
+}

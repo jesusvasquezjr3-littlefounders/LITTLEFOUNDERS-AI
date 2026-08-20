@@ -1,0 +1,722 @@
+{
+  "status": "complete",
+  "operation": "PNG to WebP transcode only; no image regeneration",
+  "quality": 82,
+  "converted_assets": 47,
+  "affected_lessons": 18,
+  "total_before_bytes": 39440292,
+  "total_after_bytes": 1201458,
+  "lessons": [
+    {
+      "order": 1,
+      "lesson_id": "5d7711fa-2c40-4984-9d96-3086c72f205b",
+      "slug": "mi-primer-deseo",
+      "images": [
+        {
+          "order": 1,
+          "lesson_id": "5d7711fa-2c40-4984-9d96-3086c72f205b",
+          "slug": "mi-primer-deseo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/53d4e1775401a32fab05849534f6dad5e5edd8af84ce12b49adbe5205f2cb4ef.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/94ce7eaa0e6af318bd0b3f802d59d0975f2a04b5320f1d582cf7cebd452a23ca.webp",
+          "bytes": 47182,
+          "slots": [
+            "s3-sort-buckets.payload.items[0].image_url",
+            "s5-yes-no-cases.payload.cases[0].image_url"
+          ],
+          "subject": "concha brillante"
+        },
+        {
+          "order": 1,
+          "lesson_id": "5d7711fa-2c40-4984-9d96-3086c72f205b",
+          "slug": "mi-primer-deseo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/1d8cc4e4c67bbc9560389bf4f9fd4dbc04070a28510ac7e3235babd4038e8fdd.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/eebc32190431baff7224eb4792a7cfd400a0c06e01d6564531b02e236ef4d0a3.webp",
+          "bytes": 18146,
+          "slots": [
+            "s5-yes-no-cases.payload.cases[4].image_url"
+          ],
+          "subject": "juguete"
+        },
+        {
+          "order": 1,
+          "lesson_id": "5d7711fa-2c40-4984-9d96-3086c72f205b",
+          "slug": "mi-primer-deseo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/15522dc96f02d9fa9f8727fc813a75781b70ab2ba11aae9483fba2d05cd64f31.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/61cdbfa8624de693f95e6aaf255aeb72df593bb8ae35c15130292a53f3c1e1e4.webp",
+          "bytes": 44828,
+          "slots": [
+            "s3-sort-buckets.payload.items[1].image_url",
+            "s5-yes-no-cases.payload.cases[2].image_url"
+          ],
+          "subject": "pluma de colores"
+        },
+        {
+          "order": 1,
+          "lesson_id": "5d7711fa-2c40-4984-9d96-3086c72f205b",
+          "slug": "mi-primer-deseo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/377336d36e79c33e5a76ec3f7f1267201a36cd36a4c3d9024d84609a8608ad29.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/4d6698140c638584caab913ce0bda0972dc5f48191f9383f76679a0365c7f2d7.webp",
+          "bytes": 43956,
+          "slots": [
+            "s3-sort-buckets.payload.items[3].image_url"
+          ],
+          "subject": "piedra lisa"
+        },
+        {
+          "order": 1,
+          "lesson_id": "5d7711fa-2c40-4984-9d96-3086c72f205b",
+          "slug": "mi-primer-deseo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/377336d36e79c33e5a76ec3f7f1267201a36cd36a4c3d9024d84609a8608ad29.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/4d6698140c638584caab913ce0bda0972dc5f48191f9383f76679a0365c7f2d7.webp",
+          "bytes": 43956,
+          "slots": [
+            "s6-pic-choice.payload.options[1].image_url"
+          ],
+          "subject": "piedra"
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "lesson_id": "cbaaa13f-9308-4069-a8cf-4a05b2006e3a",
+      "slug": "mi-lista-de-deseos",
+      "images": [
+        {
+          "order": 3,
+          "lesson_id": "cbaaa13f-9308-4069-a8cf-4a05b2006e3a",
+          "slug": "mi-lista-de-deseos",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/9c68d3718db8856c31b4b385375df863e8a8393e647c18d5f05dcbd1f6a15b03.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/abffbe2bd405bf76e5e1172961367efcb52fe6f05f67902c2e5f5862c7e3ead8.webp",
+          "bytes": 77398,
+          "slots": [
+            "s2-key-ideas.payload.ideas[0].image_url"
+          ],
+          "subject": "bicicleta"
+        },
+        {
+          "order": 3,
+          "lesson_id": "cbaaa13f-9308-4069-a8cf-4a05b2006e3a",
+          "slug": "mi-lista-de-deseos",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/dd14f0cd5a9e7abd46810c8f5f844392b3d61df0272fbb41a5a0d64b9e8c2c96.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/f362bb8fbdc92d5c6eee10a11762447e6ae486fdbb26141dd64dc774791f9d96.webp",
+          "bytes": 20628,
+          "slots": [
+            "s2-key-ideas.payload.ideas[1].image_url"
+          ],
+          "subject": "helado"
+        },
+        {
+          "order": 3,
+          "lesson_id": "cbaaa13f-9308-4069-a8cf-4a05b2006e3a",
+          "slug": "mi-lista-de-deseos",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/89508584eb0e827685846f93332f16d62fd68935d811c0aaf59bb0d548076e67.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/aa6d6048007f16d5c2f89d8b4b3d987723b6c7183df9b1f68f648d31d37d74e8.webp",
+          "bytes": 14230,
+          "slots": [
+            "s2-key-ideas.payload.ideas[2].image_url"
+          ],
+          "subject": "libro"
+        }
+      ]
+    },
+    {
+      "order": 4,
+      "lesson_id": "68ca2aa8-01b3-46d1-9b64-a3d7a585b5df",
+      "slug": "dos-islenos-dos-deseos",
+      "images": [
+        {
+          "order": 4,
+          "lesson_id": "68ca2aa8-01b3-46d1-9b64-a3d7a585b5df",
+          "slug": "dos-islenos-dos-deseos",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/53030d9df885a275073df980cb7b9fa20660ad07c9527a01e37e1b44537eb516.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/1a92623f4f928414838681069920a9aadef04b0e6b837046fb39ee53859e0981.webp",
+          "bytes": 27614,
+          "slots": [
+            "s2-order.payload.items[0].image_url",
+            "s5-picture.payload.options[0].image_url"
+          ],
+          "subject": "mango"
+        },
+        {
+          "order": 4,
+          "lesson_id": "68ca2aa8-01b3-46d1-9b64-a3d7a585b5df",
+          "slug": "dos-islenos-dos-deseos",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/809be1413c07fc964909e035189f0f259b42c10471b966b10b9a2206075a3071.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/189d64590b7efa734b4248502c43d8fe3ea15256358a52e2ccba788034a86481.webp",
+          "bytes": 35262,
+          "slots": [
+            "s2-order.payload.items[1].image_url",
+            "s5-picture.payload.options[1].image_url"
+          ],
+          "subject": "concha marina"
+        },
+        {
+          "order": 4,
+          "lesson_id": "68ca2aa8-01b3-46d1-9b64-a3d7a585b5df",
+          "slug": "dos-islenos-dos-deseos",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/5ce0de6b6c5c12e7fa3bd408f7411b1a9d6cb39ab7a90f8a6f8ce8ac2dcfb30d.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/3595ae07d82000cb8cc17ed4735bd2398447c55e0681c3cf14130f05f47a80de.webp",
+          "bytes": 33992,
+          "slots": [
+            "s2-order.payload.items[2].image_url",
+            "s5-picture.payload.options[2].image_url"
+          ],
+          "subject": "piedra redondeada"
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "lesson_id": "ebc5b69b-08ca-41a5-a2d2-8ccc8a24ff52",
+      "slug": "a-cada-quien-lo-suyo",
+      "images": [
+        {
+          "order": 5,
+          "lesson_id": "ebc5b69b-08ca-41a5-a2d2-8ccc8a24ff52",
+          "slug": "a-cada-quien-lo-suyo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/a63b5c340f9ab9cfc7a49f6484c021a6aa089856aca0d1301d22c2af19c76324.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/b8dd5ee2462e8d6d4ac3bdcbe5da1cda446e632d716919c8f6e5e62b7589eaed.webp",
+          "bytes": 35586,
+          "slots": [
+            "s8-would.payload.b.image_url"
+          ],
+          "subject": "semillas"
+        },
+        {
+          "order": 5,
+          "lesson_id": "ebc5b69b-08ca-41a5-a2d2-8ccc8a24ff52",
+          "slug": "a-cada-quien-lo-suyo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/9f77bb8f337ec4d05852ee94d6e9de9c3742ec274e8ad9ae6802897d81ea546d.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/e386ae99be9e4171814823bf7dd169ed8a62d5ec6dc0756ad96fc4f46d9ef0a6.webp",
+          "bytes": 72036,
+          "slots": [
+            "s7-odd.payload.items[0].image_url"
+          ],
+          "subject": "red de pesca"
+        }
+      ]
+    },
+    {
+      "order": 6,
+      "lesson_id": "af55925c-c918-42fd-bc5d-c481e4a9ab59",
+      "slug": "mismo-deseo-distinta-razon",
+      "images": [
+        {
+          "order": 6,
+          "lesson_id": "af55925c-c918-42fd-bc5d-c481e4a9ab59",
+          "slug": "mismo-deseo-distinta-razon",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/d9df1156aff02c9a3380d97c1976ff9ccf647d840722f1e0c3fd9516710925b4.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/9e5a2cbdf4e097208cde31b9784eeaf06f05a2500d6bdced7841297b4ee8ea0f.webp",
+          "bytes": 22944,
+          "slots": [
+            "s0-historia.payload.items[0].image_url"
+          ],
+          "subject": "concha marina"
+        }
+      ]
+    },
+    {
+      "order": 9,
+      "lesson_id": "093391d4-356e-4032-80cf-b67d4b137ef7",
+      "slug": "lo-que-dejo-para-despues",
+      "images": [
+        {
+          "order": 9,
+          "lesson_id": "093391d4-356e-4032-80cf-b67d4b137ef7",
+          "slug": "lo-que-dejo-para-despues",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/3bd3bd9d1b612b140429d834bd1f9d6ae5ea26ed1b944ebb24d1868377da5c13.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/f1e9d3ef1cae34429aaa644590307488cf1b532b1b85b407bd9c7a3abb7715f1.webp",
+          "bytes": 18970,
+          "slots": [
+            "s3-key-ideas.payload.ideas[1].image_url"
+          ],
+          "subject": "reloj de arena"
+        }
+      ]
+    },
+    {
+      "order": 11,
+      "lesson_id": "c9462daa-1165-4cf3-9029-347973e7fd72",
+      "slug": "te-doy-esto-por-eso",
+      "images": [
+        {
+          "order": 11,
+          "lesson_id": "c9462daa-1165-4cf3-9029-347973e7fd72",
+          "slug": "te-doy-esto-por-eso",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/845264c08345c3783ba35b3500ed2b5cd17ecd13e2305f85ed56482e528dedc4.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/23eedf616e0c0e6bd9ea6e97172201ef3eb4f3edd86fbde8a8702e8d95a0609f.webp",
+          "bytes": 16204,
+          "slots": [
+            "s3-key-ideas.payload.ideas[1].image_url"
+          ],
+          "subject": "trueque: pluma y fruta"
+        },
+        {
+          "order": 11,
+          "lesson_id": "c9462daa-1165-4cf3-9029-347973e7fd72",
+          "slug": "te-doy-esto-por-eso",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/ade0e66fdd829cd05eec181202fd3c733e7b5a845844aa37e9471bbb1fe652f9.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/30e5abe8f4670281d05bfb9263d57919c4239f06a0e768d8a88efc348bf119dd.webp",
+          "bytes": 23774,
+          "slots": [
+            "s7-odd-one-out.payload.items[2].image_url"
+          ],
+          "subject": "piedra lisa"
+        },
+        {
+          "order": 11,
+          "lesson_id": "c9462daa-1165-4cf3-9029-347973e7fd72",
+          "slug": "te-doy-esto-por-eso",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/250f27a55ee44f39cb477c91b04b91fa18872b093a29923458680db869b1e680.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/f1706a274ebcb6837e256103d3aefad5d89d917ea1b9413af4fbd56090b6b09a.webp",
+          "bytes": 17700,
+          "slots": [
+            "s3-key-ideas.payload.ideas[3].image_url"
+          ],
+          "subject": "recibir: canasta y fruta"
+        }
+      ]
+    },
+    {
+      "order": 19,
+      "lesson_id": "b21cbfb7-bf66-4b39-b376-04127299479c",
+      "slug": "busco-a-alguien-mas",
+      "images": [
+        {
+          "order": 19,
+          "lesson_id": "b21cbfb7-bf66-4b39-b376-04127299479c",
+          "slug": "busco-a-alguien-mas",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/d34e90fb545ee0e6e7218a88a85f3b5bc956327bd2d6189e2b30b62bc6abf164.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/b6d623267ddfc86a28942e9931257dc7f0e38faf4751ec5263491b66ca64acf5.webp",
+          "bytes": 24968,
+          "slots": [
+            "s4-picture-choice.payload.options[2].image_url"
+          ],
+          "subject": "tres piedras lisas"
+        }
+      ]
+    },
+    {
+      "order": 22,
+      "lesson_id": "6d0f49d4-4007-42ba-a999-c71dfc7aaa9b",
+      "slug": "abro-el-cofre-de-deseos",
+      "images": [
+        {
+          "order": 22,
+          "lesson_id": "6d0f49d4-4007-42ba-a999-c71dfc7aaa9b",
+          "slug": "abro-el-cofre-de-deseos",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/3ec7a65fd0a6316f17ffd5f3561fd8f17279e8f431e53fe8165f20accc136c5f.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/2e235cd11250840c75609ef2846450211ccd0a71337c817717d1615cbad39a38.webp",
+          "bytes": 21914,
+          "slots": [
+            "s3-zara-desire.payload.options[1].image_url"
+          ],
+          "subject": "caracol brillante"
+        },
+        {
+          "order": 22,
+          "lesson_id": "6d0f49d4-4007-42ba-a999-c71dfc7aaa9b",
+          "slug": "abro-el-cofre-de-deseos",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/54ef1675b2885992403f209ad939f5b2d501fa9daa5ea3ebf17d5266be482468.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/bc9872f3a2f01cfbe034eca630a1c1938be3331a039cbeb3dd5dc2d7a990a104.webp",
+          "bytes": 23750,
+          "slots": [
+            "s3-zara-desire.payload.options[3].image_url"
+          ],
+          "subject": "collar de conchas"
+        }
+      ]
+    },
+    {
+      "order": 23,
+      "lesson_id": "42a8f4f2-62ba-4c67-a8fa-f30c1f941252",
+      "slug": "recuerdo-mi-trueque-favorito",
+      "images": [
+        {
+          "order": 23,
+          "lesson_id": "42a8f4f2-62ba-4c67-a8fa-f30c1f941252",
+          "slug": "recuerdo-mi-trueque-favorito",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/0e3e43aa7eda2c9030e9512ee50a68769e57a40ea29be14debb01e599bcd2304.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/7410393957be893461eb79d8c45de796d70192dae146218ed13b829271554fc7.webp",
+          "bytes": 15042,
+          "slots": [
+            "s2-repaso-palabras.payload.ideas[2].image_url"
+          ],
+          "subject": "trueque: concha y piedra"
+        }
+      ]
+    },
+    {
+      "order": 25,
+      "lesson_id": "f74ace08-c385-41c6-a426-2b12ec27fbdf",
+      "slug": "cierro-el-cofre-listo-para-seguir",
+      "images": [
+        {
+          "order": 25,
+          "lesson_id": "f74ace08-c385-41c6-a426-2b12ec27fbdf",
+          "slug": "cierro-el-cofre-listo-para-seguir",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/6cbaa6e2d72da4b9793593005e9ff7a064ae7e82080797c7a93fdd15acee5286.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/dee14a0b5637f730badc865c2010c6b4324c882d4ad7c5fca6011f28e45e95d1.webp",
+          "bytes": 23362,
+          "slots": [
+            "s7-clasifica-deseeos-tiene.payload.items[1].image_url"
+          ],
+          "subject": "pluma de colores"
+        },
+        {
+          "order": 25,
+          "lesson_id": "f74ace08-c385-41c6-a426-2b12ec27fbdf",
+          "slug": "cierro-el-cofre-listo-para-seguir",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/f39daa9569c1816250edcdb9c4b585b3838d93c331d2213303c509f17378e710.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/3384c1149c2ef37201b06dd6d1d9fd0ed049e9587b6ad04d7d14fa2a82186335.webp",
+          "bytes": 17658,
+          "slots": [
+            "s7-clasifica-deseeos-tiene.payload.items[3].image_url"
+          ],
+          "subject": "fruta jugosa"
+        }
+      ]
+    },
+    {
+      "order": 27,
+      "lesson_id": "918560a5-d010-4102-bb1f-f1107b920d38",
+      "slug": "dos-islenos-dos-trueques-distintos",
+      "images": [
+        {
+          "order": 27,
+          "lesson_id": "918560a5-d010-4102-bb1f-f1107b920d38",
+          "slug": "dos-islenos-dos-trueques-distintos",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/4dadbc564da0377830ac20cc08a8e7144cee7679207d9f68625c2ea35bb02dc5.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/8bf6d6b7809e1548079d85e72fd8eef2cce74b73cc41ed07c4ffc46d9da889d5.webp",
+          "bytes": 23320,
+          "slots": [
+            "s5-deseos-vs-posesiones.payload.items[0].image_url"
+          ],
+          "subject": "collar de caracoles"
+        },
+        {
+          "order": 27,
+          "lesson_id": "918560a5-d010-4102-bb1f-f1107b920d38",
+          "slug": "dos-islenos-dos-trueques-distintos",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/8ae2a26b84071489e297e1fc2bd2abf8d0c4d1638f08ae5475a30d8c425c6da0.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/732420418b81b9cc9b7f0379b71972085ac48ab3b88694e5fa6c88432fe93676.webp",
+          "bytes": 24724,
+          "slots": [
+            "s5-deseos-vs-posesiones.payload.items[3].image_url"
+          ],
+          "subject": "pluma de loro"
+        }
+      ]
+    },
+    {
+      "order": 28,
+      "lesson_id": "55388034-3e3f-4d51-ab17-8710abb72cd1",
+      "slug": "armo-un-trueque-justo-para-mi-deseo",
+      "images": [
+        {
+          "order": 28,
+          "lesson_id": "55388034-3e3f-4d51-ab17-8710abb72cd1",
+          "slug": "armo-un-trueque-justo-para-mi-deseo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/7888899dd839cf7fc3b4cdfec13ef5da3f13961060495833505577efcb9e2e2d.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/55ea549324576f377c73ae6a5ac8f790f2f53d6514611a2a3a06d3119e0bd435.webp",
+          "bytes": 15100,
+          "slots": [
+            "s4-repaso-ideas.payload.ideas[1].image_url"
+          ],
+          "subject": "trueque: concha y pluma"
+        },
+        {
+          "order": 28,
+          "lesson_id": "55388034-3e3f-4d51-ab17-8710abb72cd1",
+          "slug": "armo-un-trueque-justo-para-mi-deseo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/b5069461504c0d2199e63408d58bf6b6f381ed56cd2e3b016de9c72b127deeaf.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/42d9861c47a38751b9e80dd6e34f8e8c7b5d63c939a96d6d00633618b0f56a9a.webp",
+          "bytes": 22814,
+          "slots": [
+            "s5-deseo-vs-tengo.payload.items[2].image_url"
+          ],
+          "subject": "pluma de loro"
+        },
+        {
+          "order": 28,
+          "lesson_id": "55388034-3e3f-4d51-ab17-8710abb72cd1",
+          "slug": "armo-un-trueque-justo-para-mi-deseo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/fee7c7dc7ee9fed9d83d215f145e6b8282f840354ec5133f835a0e1af0eecb1b.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/87e40eecf25c20afe179c53bdc288b5ae1ab916de983203607af39a2e98fa171.webp",
+          "bytes": 24384,
+          "slots": [
+            "s5-deseo-vs-tengo.payload.items[3].image_url"
+          ],
+          "subject": "piedra brillante"
+        }
+      ]
+    },
+    {
+      "order": 29,
+      "lesson_id": "05843b9e-abd5-4a94-8268-e4e19bca0044",
+      "slug": "y-si-todos-aceptaran-lo-mismo",
+      "images": [
+        {
+          "order": 29,
+          "lesson_id": "05843b9e-abd5-4a94-8268-e4e19bca0044",
+          "slug": "y-si-todos-aceptaran-lo-mismo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/1933951fb90b42d994f89a6d88358eee75e41fd4bc24f818c29bba94ff2c8552.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/f27dd52e1723f8df6fe1826d456e6bd3cfeb985dfa01063ddac63d78508b0338.webp",
+          "bytes": 24024,
+          "slots": [
+            "s6-elige-concha.payload.options[0].image_url"
+          ],
+          "subject": "concha"
+        },
+        {
+          "order": 29,
+          "lesson_id": "05843b9e-abd5-4a94-8268-e4e19bca0044",
+          "slug": "y-si-todos-aceptaran-lo-mismo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/c19bea28e7a2f41a3d6babd56083219d78bb6b28b17af1c30f930f6e0a7a5d5b.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/c1374041219efc23e1aab51bc33038f5d7fbbcf4ca3f953d735e52f339b44753.webp",
+          "bytes": 14710,
+          "slots": [
+            "s6-elige-concha.payload.options[3].image_url"
+          ],
+          "subject": "hoja"
+        }
+      ]
+    },
+    {
+      "order": 33,
+      "lesson_id": "1c8139ae-cf1d-49be-9eab-057f2e7ee9bf",
+      "slug": "las-conchas-especiales",
+      "images": [
+        {
+          "order": 33,
+          "lesson_id": "1c8139ae-cf1d-49be-9eab-057f2e7ee9bf",
+          "slug": "las-conchas-especiales",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/ac4ae372fb2670d20c1ab2ef10fd91e2d585e0bbf1f7556b5f3b6fc5b16212db.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/e8af420964eebe987b8db47d7fadd87439bc14ad04e2396b23a516b7faf1deab.webp",
+          "bytes": 19812,
+          "slots": [
+            "s5-isleno-curioso.payload.options[0].image_url",
+            "s8-limpieza-cofre.payload.items[0].image_url"
+          ],
+          "subject": "concha brillante"
+        },
+        {
+          "order": 33,
+          "lesson_id": "1c8139ae-cf1d-49be-9eab-057f2e7ee9bf",
+          "slug": "las-conchas-especiales",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/97709df8a72b43171b109b70b41cce7fe56fdf01be0c21c824b69a75643b42d3.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/985a5cb5cea954773eb217a7d7b8b6c9d06a760b4cdd58b55476915f3465d1bd.webp",
+          "bytes": 23052,
+          "slots": [
+            "s5-isleno-curioso.payload.options[1].image_url"
+          ],
+          "subject": "moneda de metal"
+        },
+        {
+          "order": 33,
+          "lesson_id": "1c8139ae-cf1d-49be-9eab-057f2e7ee9bf",
+          "slug": "las-conchas-especiales",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/1c04b7dc0c738162c21613b6998c74c645bd238fe7c395cf37e8168ea64d562b.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/866b66ac1a9fcd285edfcf20705d71d5c69a8cfbe0eed96a9bee39b7bb86d6c1.webp",
+          "bytes": 30112,
+          "slots": [
+            "s9-origenes.payload.left[0].image_url"
+          ],
+          "subject": "tres conchas"
+        },
+        {
+          "order": 33,
+          "lesson_id": "1c8139ae-cf1d-49be-9eab-057f2e7ee9bf",
+          "slug": "las-conchas-especiales",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/09b088f306bf771d7bf11c8925a89b84433032d9a10e5d36388c2c5903f14b01.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/b5b109314aa7fca026dbba5793ffe1d228c9b479218cddff06b35b8f940057a5.webp",
+          "bytes": 29372,
+          "slots": [
+            "s9-origenes.payload.left[1].image_url"
+          ],
+          "subject": "tres semillas"
+        }
+      ]
+    },
+    {
+      "order": 34,
+      "lesson_id": "0156eca8-550d-4c47-8f6e-5c8da82c04b4",
+      "slug": "de-lo-antiguo-a-lo-nuevo",
+      "images": [
+        {
+          "order": 34,
+          "lesson_id": "0156eca8-550d-4c47-8f6e-5c8da82c04b4",
+          "slug": "de-lo-antiguo-a-lo-nuevo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/71b4e7a6012a826715e23b8026893b4c512e3aa5e90bee0d6f1c3200f0c7effd.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/af878df69e05bee449820d3591875b7e800723c2b3addf7946722535f3b363a6.webp",
+          "bytes": 16130,
+          "slots": [
+            "s5-pick.payload.options[0].image_url",
+            "s8-odd.payload.items[0].image_url"
+          ],
+          "subject": "concha"
+        },
+        {
+          "order": 34,
+          "lesson_id": "0156eca8-550d-4c47-8f6e-5c8da82c04b4",
+          "slug": "de-lo-antiguo-a-lo-nuevo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/1da608ddd625202f03a6f554ce676cc9a01511c2e0b7b3e4df52b133cec89ca2.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/84ab857da263fdbe36ffcda220763725a1738fad36a4d2d67e5c4c3fb4f4c214.webp",
+          "bytes": 34632,
+          "slots": [
+            "s3-timeline.payload.events[0].image_url"
+          ],
+          "subject": "cuatro conchas"
+        },
+        {
+          "order": 34,
+          "lesson_id": "0156eca8-550d-4c47-8f6e-5c8da82c04b4",
+          "slug": "de-lo-antiguo-a-lo-nuevo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/606f8b99016562441a099730f5446efc920272d61b3e2c3498b9d3b9cc55edca.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/3913f551554fb13af670526e0ed389ef923af14f5ca09513b008a3d45eed7edf.webp",
+          "bytes": 37476,
+          "slots": [
+            "s3-timeline.payload.events[1].image_url"
+          ],
+          "subject": "cinco semillas"
+        },
+        {
+          "order": 34,
+          "lesson_id": "0156eca8-550d-4c47-8f6e-5c8da82c04b4",
+          "slug": "de-lo-antiguo-a-lo-nuevo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/eb7ddf5a78b24f2aa289c10382a496d55c635403f90b46004e8a189e65672223.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/7b40d4ee7dbd23c0e00b0a0ef4c43d613ec0ce9584367fe92d540540a2a1aef3.webp",
+          "bytes": 16176,
+          "slots": [
+            "s8-odd.payload.items[1].image_url"
+          ],
+          "subject": "semilla individual"
+        },
+        {
+          "order": 34,
+          "lesson_id": "0156eca8-550d-4c47-8f6e-5c8da82c04b4",
+          "slug": "de-lo-antiguo-a-lo-nuevo",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/b4be7c410be8b31f20a0e443908edb0f102034fa3150a7596782d0a1330854d0.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/dcb22940aaf3258c3fbb516ca3126cc38636a2df5de30658e56d9bba8a179b2c.webp",
+          "bytes": 16534,
+          "slots": [
+            "s5-pick.payload.options[2].image_url"
+          ],
+          "subject": "hoja"
+        }
+      ]
+    },
+    {
+      "order": 35,
+      "lesson_id": "2046dbb0-01b4-4942-bc96-040fb0740b0a",
+      "slug": "cuento-mi-descubrimiento",
+      "images": [
+        {
+          "order": 35,
+          "lesson_id": "2046dbb0-01b4-4942-bc96-040fb0740b0a",
+          "slug": "cuento-mi-descubrimiento",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/974566f04268b894838142a68fde4c4de54bdcaadafeb1aa98fb2837ef14e5e2.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/b289bf894de716bbe4676ce835e4e737af534c8adfd1a27779c093e7b1d182a7.webp",
+          "bytes": 20958,
+          "slots": [
+            "s5-picture.payload.options[0].image_url",
+            "s7-match.payload.left[0].image_url"
+          ],
+          "subject": "caracol"
+        },
+        {
+          "order": 35,
+          "lesson_id": "2046dbb0-01b4-4942-bc96-040fb0740b0a",
+          "slug": "cuento-mi-descubrimiento",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/15bee160ef4c5dd1c4e4a5d52a92bff1ffc56e5644afc053db5354da21024964.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/b877212514c5c8eb3a25d5b4f83adecee6512db7de5454c9c886378dc4fa7a1f.webp",
+          "bytes": 19410,
+          "slots": [
+            "s7-match.payload.left[2].image_url"
+          ],
+          "subject": "moneda"
+        },
+        {
+          "order": 35,
+          "lesson_id": "2046dbb0-01b4-4942-bc96-040fb0740b0a",
+          "slug": "cuento-mi-descubrimiento",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/ad793faafb795063434c341023e992a5ff8e78bf6d7b75199c30eff726a68218.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/56cfc7b7c4c9d2366daf30e11d203cf111ca7bba128ecf19dbc86c261df4bf0b.webp",
+          "bytes": 13166,
+          "slots": [
+            "s5-picture.payload.options[3].image_url",
+            "s7-match.payload.left[1].image_url"
+          ],
+          "subject": "semilla"
+        },
+        {
+          "order": 35,
+          "lesson_id": "2046dbb0-01b4-4942-bc96-040fb0740b0a",
+          "slug": "cuento-mi-descubrimiento",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/7875c0f327a5259974a610261451a2cef6db1d1754552013d8306fb46778c66e.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/57c459eebb1fe9053cbc2ded90b39d0da17884aa3db194f767117a393b824e2d.webp",
+          "bytes": 17212,
+          "slots": [
+            "s5-picture.payload.options[2].image_url"
+          ],
+          "subject": "juguete de estrella"
+        }
+      ]
+    },
+    {
+      "order": 36,
+      "lesson_id": "e8e3d73e-693b-467a-b8e2-5e9ebc5aaded",
+      "slug": "la-moneda-no-se-rompe",
+      "images": [
+        {
+          "order": 36,
+          "lesson_id": "e8e3d73e-693b-467a-b8e2-5e9ebc5aaded",
+          "slug": "la-moneda-no-se-rompe",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/f5e44683cdc33f8cf9d18ad27fb8e02c8f560931ac55b1fc16732b36934ce2b4.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/4f53fc3780ddf9713a7a13a8ec700dbc800f077399ec484665eef05631406c42.webp",
+          "bytes": 20386,
+          "slots": [
+            "s5-tesoro-duradero.payload.options[0].image_url",
+            "s9-rapido-monedas.payload.items[1].image_url",
+            "s9-rapido-monedas.payload.items[4].image_url",
+            "s9-rapido-monedas.payload.items[7].image_url",
+            "s9-rapido-monedas.payload.items[10].image_url"
+          ],
+          "subject": "concha resistente"
+        },
+        {
+          "order": 36,
+          "lesson_id": "e8e3d73e-693b-467a-b8e2-5e9ebc5aaded",
+          "slug": "la-moneda-no-se-rompe",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/9c01cec094aefecad41c5d6e2d09e73fb01bbdf7c00e931acdd98049620d809f.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/306e0f1536e4b1934ff04d04418158721436c01f3089ced8e9175ca147a3e867.webp",
+          "bytes": 19230,
+          "slots": [
+            "s5-tesoro-duradero.payload.options[1].image_url",
+            "s9-rapido-monedas.payload.items[0].image_url",
+            "s9-rapido-monedas.payload.items[3].image_url",
+            "s9-rapido-monedas.payload.items[6].image_url",
+            "s9-rapido-monedas.payload.items[8].image_url",
+            "s9-rapido-monedas.payload.items[11].image_url"
+          ],
+          "subject": "moneda simple"
+        },
+        {
+          "order": 36,
+          "lesson_id": "e8e3d73e-693b-467a-b8e2-5e9ebc5aaded",
+          "slug": "la-moneda-no-se-rompe",
+          "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/36c9381f321a8a0dd3d22e0ffebf5beacc6ed0b7b45914d813f2c1c27a411d27.png",
+          "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/49e2b70564dca45d28c228bbf4bdc8ca6e85aaa654d63278187b168861a609de.webp",
+          "bytes": 21580,
+          "slots": [
+            "s9-rapido-monedas.payload.items[2].image_url",
+            "s9-rapido-monedas.payload.items[5].image_url",
+            "s9-rapido-monedas.payload.items[9].image_url"
+          ],
+          "subject": "semilla"
+        }
+      ]
+    }
+  ],
+  "flow": "generate -> normalize to 1328x1328 -> transcodeToWebp(..., 82) -> uploadFile(..., image/webp) -> set_field -> gate"
+}

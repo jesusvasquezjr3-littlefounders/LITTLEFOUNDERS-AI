@@ -1,0 +1,20 @@
+{
+  "order": 77,
+  "lesson_id": "a04eabc1-ba25-460b-9424-edba8d7fde36",
+  "slug": "compro-algo-barato",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/10777b19501b61c99afbaf3af4bfbba3c641d2304283ff2deddd7008e5814f82.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/06002bbb510f9680575b0a548fca4da2a6e717c8ac5fd2ac34b1aa88ff3bb3c4.webp",
+      "slots": ["s1-dialogue.image_url"],
+      "subject": "mesa de mercado con fruta y monedas",
+      "format": "image/webp",
+      "bytes": 31656,
+      "dimensions": "1328x1328"
+    }
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}

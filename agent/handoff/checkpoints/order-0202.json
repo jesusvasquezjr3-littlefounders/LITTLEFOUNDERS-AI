@@ -1,0 +1,17 @@
+{
+  "order": 202,
+  "lesson_id": "79f548c7-5bfe-45b6-8952-1aba6d1d1367",
+  "slug": "recuerdo-a-quien-ayude",
+  "status": "completed",
+  "generated_images": 4,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"359463a79903f582d130843805211594e5a37a1e683ce616298319fce63a116a.webp","slot":"s6-sort-buckets.payload.items[0].image_url","new":"57273b97656571175efa5034978db6ff2669547a67d191ccc0dcd5bd1e416543.webp"},
+    {"old":"9c489b7b0eb190019a9d47a0942aec9fb347e05b443513d8480b248cc6344d26.webp","slot":"s6-sort-buckets.payload.items[1].image_url","new":"ebc4aeaf97c2b30e4686e28839ecd24664bafe2228f73c9c5214479bc071a6c1.webp"},
+    {"old":"1338681b24acc88afe0a7247533eb7916af26a0e0c87f6a5737570e379df4ef0.webp","slot":"s6-sort-buckets.payload.items[2].image_url","new":"b0f26eedf91a1193760ff95e1c22a7bd284cc4d4b803b4ec1eb3a84b83030dce.webp"},
+    {"old":"c8b7d10dcd9f82557a5b6df868c925900937020e81d79f18882f81ce0383944a.webp","slot":"s6-sort-buckets.payload.items[3].image_url","new":"00c2742cfed51ff9ad78b895b870a64102af07abb1120f6d6a1a38f63ca5e6c4.webp"}
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "order": 1,
+  "lesson_id": "5d7711fa-2c40-4984-9d96-3086c72f205b",
+  "slug": "mi-primer-deseo",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/a73941102433289c247c4e86840002c445ead0fb5b236b0bbba5ee465894d760.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/94ce7eaa0e6af318bd0b3f802d59d0975f2a04b5320f1d582cf7cebd452a23ca.webp",
+      "slots": [
+        "s3-sort-buckets.payload.items[0].image_url",
+        "s5-yes-no-cases.payload.cases[0].image_url"
+      ],
+      "subject": "concha brillante",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/53d4e1775401a32fab05849534f6dad5e5edd8af84ce12b49adbe5205f2cb4ef.png",
+      "format": "image/webp",
+      "bytes": 47182
+    },
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/c62745e9db768627064ac0488c7d5f9bf26ddd0565bc31bfb16604a51be9ca64.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/eebc32190431baff7224eb4792a7cfd400a0c06e01d6564531b02e236ef4d0a3.webp",
+      "slots": [
+        "s5-yes-no-cases.payload.cases[4].image_url"
+      ],
+      "subject": "juguete",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/1d8cc4e4c67bbc9560389bf4f9fd4dbc04070a28510ac7e3235babd4038e8fdd.png",
+      "format": "image/webp",
+      "bytes": 18146
+    },
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/f8ba41f32ed8eb61df4ab935ee20d25b12b488bfbc1200e6eabf2941657eff29.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/61cdbfa8624de693f95e6aaf255aeb72df593bb8ae35c15130292a53f3c1e1e4.webp",
+      "slots": [
+        "s3-sort-buckets.payload.items[1].image_url",
+        "s5-yes-no-cases.payload.cases[2].image_url"
+      ],
+      "subject": "pluma de colores",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/15522dc96f02d9fa9f8727fc813a75781b70ab2ba11aae9483fba2d05cd64f31.png",
+      "format": "image/webp",
+      "bytes": 44828
+    },
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/98b4db7b72b82d36f3e5f93e0dca4fcd657a1c3bb864b6506034d4a4ff677c46.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/4d6698140c638584caab913ce0bda0972dc5f48191f9383f76679a0365c7f2d7.webp",
+      "slots": [
+        "s3-sort-buckets.payload.items[3].image_url"
+      ],
+      "subject": "piedra lisa",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/377336d36e79c33e5a76ec3f7f1267201a36cd36a4c3d9024d84609a8608ad29.png",
+      "format": "image/webp",
+      "bytes": 43956
+    },
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/2fb79b7a4794bbe5961a79612e3976660e8c14fd797285ad3bc98f5ef00c58a0.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/4d6698140c638584caab913ce0bda0972dc5f48191f9383f76679a0365c7f2d7.webp",
+      "slots": [
+        "s6-pic-choice.payload.options[1].image_url"
+      ],
+      "subject": "piedra",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/377336d36e79c33e5a76ec3f7f1267201a36cd36a4c3d9024d84609a8608ad29.png",
+      "format": "image/webp",
+      "bytes": 43956
+    }
+  ],
+  "locales_written": [
+    "es-MX",
+    "en-US",
+    "pt-BR"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "order": 196,
+  "lesson_id": "3372df5a-7598-4184-bd87-15f211269716",
+  "slug": "imagino-mi-dia-de-trabajo",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"1338681b24acc88afe0a7247533eb7916af26a0e0c87f6a5737570e379df4ef0.webp","slot":"s6-picture-choice.payload.options[1].image_url","new":"564b736f3b100218e77e5c6385fe5cee6ad0d6bec01f1d8d9e05bcd18e6c646f.webp"},
+    {"old":"9c489b7b0eb190019a9d47a0942aec9fb347e05b443513d8480b248cc6344d26.webp","slot":"s6-picture-choice.payload.options[2].image_url","new":"175fac4e4b038a1a4e03a0d8c093195a044d0b76163f7d3b387e6ae53190c786.webp"}
+  ]
+}

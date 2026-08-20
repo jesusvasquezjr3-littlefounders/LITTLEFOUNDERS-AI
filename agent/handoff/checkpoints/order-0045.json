@@ -1,0 +1,15 @@
+{
+  "order":45,
+  "lesson_id":"5f2e1a2a-bee6-4cf8-8cd9-846a2472d85a",
+  "slug":"elijo-la-mejor-razon-para-usar-monedas",
+  "status":"complete",
+  "generation":"Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images":[
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/cf8a3d532bcf0826d8b76f7183a85ed4d45924fc2ba09307a6155ca333682305.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/43d7181821de4613ac10eff39bfb580912afae5f77bda5c485139a787d5f5626.webp","slots":["s4-picture.payload.options[2].image_url","s5-sort.payload.items[2].image_url"],"subject":"moneda simple","format":"image/webp","bytes":18618},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/82445c8e0cdb5938540a3e928c73bac8b1a932b07f47578f2543dd83dfd2cedd.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/729a32fcdd06b8dbac80a050d7c726e860bda4b80f5df149d5c5d582a74dfe3b.webp","slots":["s5-sort.payload.items[0].image_url"],"subject":"manzana","format":"image/webp","bytes":21790},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/db70c091f173e60c7333da0dcd876541d145e146fab3d1d7b3318aa4df5d41d5.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/499d54ac3b77f20ab8b617d8f501f89824562d814edffb9cfd7475fec08cbb9b.webp","slots":["s5-sort.payload.items[1].image_url"],"subject":"pelota","format":"image/webp","bytes":29174},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/bc229bd51c697197b67941c5e2b1d91ef9fd05b667cb7b55fdcd410969e91ac0.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/e28b3e4c36e675ef6275426ba2ef4c1287170b987e72e23f61a47db77db6c6c8.webp","slots":["s5-sort.payload.items[3].image_url"],"subject":"concha rota","format":"image/webp","bytes":22424},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/72a65634a5be4a3d34ca02980c5530b664b627cbe91b1c327cc14d074bbdbb45.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/43d7181821de4613ac10eff39bfb580912afae5f77bda5c485139a787d5f5626.webp","slots":["s5-sort.payload.items[2].image_url"],"subject":"moneda simple","format":"image/webp","bytes":18618}
+  ],
+  "locales_written":["es-MX","en-US","pt-BR"]
+}

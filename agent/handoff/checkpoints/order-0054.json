@@ -1,0 +1,20 @@
+{
+  "order": 54,
+  "lesson_id": "8218e921-8088-4477-818d-a21d6fc346fa",
+  "slug": "el-billete-de-cincuenta",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/446feb941dc739d67ba722201db2b3de0a4d8e653ae62dba2c565a2b5ef36196.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/3ba8d065c94208408fd24a09f9d87fdcf83ee88f67b96f7510435b8623854035.webp",
+      "slots": ["s2-picture-choice-20.payload.options[3].image_url"],
+      "subject": "concha brillante",
+      "format": "image/webp",
+      "bytes": 52698,
+      "dimensions": "1328x1328"
+    }
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}

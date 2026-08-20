@@ -1,0 +1,16 @@
+{
+  "order": 144,
+  "lesson_id": "3d06d215-6736-415f-b031-8851aa875aeb",
+  "slug": "chambita-grande-recompensa-grande",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp","slot":"s2-story.image_url","new":"88a079db4c39b9794c13cd37172b55246acf7af7a14a1b532207249c528ce38e.webp"},
+    {"old":"7a645bff23abf0eac3936c4c92b7795d02a5f67fe8c96e7d51445819abfa0c03.webp","slot":"s4-picture-choice.payload.options[0].image_url","new":"2d0285c237a7b7a5b93f12e0c9a7758084832e34b64ea7cce01a39ce4f1b13c6.webp"},
+    {"old":"9b6d8b5ff6d822a9b6ca5eaa1abf2fdbf1f2ab98fcf1bd5dc1afde56ba13c2ec.webp","slot":"s4-picture-choice.payload.options[1].image_url","new":"853759625ee34e3a6d06040acf98f033a11e654ba6cdc12b82f6391477415023.webp"}
+  ]
+}

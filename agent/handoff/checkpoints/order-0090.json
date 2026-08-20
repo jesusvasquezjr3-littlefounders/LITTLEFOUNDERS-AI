@@ -1,0 +1,16 @@
+{
+  "order": 90,
+  "lesson_id": "b3e209ea-cda1-41cf-af56-8cb6b4dbd3c5",
+  "slug": "zarpo-hacia-el-bosque",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/048c03e65f6d6965af62bd87ad95559975fdd21263284bcf89d5181697553119.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/ea19b42c7f04f5a71607550c02cab969b9251723b41e253363a1cdec440121aa.webp","slots":["s3-necesidades-deseos.payload.items[0].image_url"],"subject":"botella de agua azul con gotas","format":"image/webp","bytes":25788,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/8509debd8cf1c1326766d33e5c6c1c77fa111bb013d86194c9c46d4ecbce6c10.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/7c0fcd0649125da5c212e6722ab934df9c7c495af376fc03578705365dc2d52b.webp","slots":["s3-necesidades-deseos.payload.items[1].image_url"],"subject":"pelota de paneles azul, amarillo, verde y coral","format":"image/webp","bytes":30720,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/4933a9f4d6c7a253afb6446761b3548ce53c3159c8311fb0e838e014b397faf6.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/b59235ffdb4f373c2f8f1583224bed84fe7e7e0c3d0fa3bf661b18d2938a1b00.webp","slots":["s3-necesidades-deseos.payload.items[2].image_url"],"subject":"frasco azul de medicina con etiqueta blanca sin marcas","format":"image/webp","bytes":17706,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/9044ce8a73770c4115e0ee0b196b55f7c5307043e43bef281e456410ebc6eaad.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/5d3d534e264e657410d84ab1a5157c146b3865e30becbf9cbbb59973a87b9c63.webp","slots":["s3-necesidades-deseos.payload.items[3].image_url"],"subject":"caramelo envuelto coral con banda amarilla y azul","format":"image/webp","bytes":31170,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"],
+  "production_verified": {"published_lessons":988,"document_rows":2964,"urls_verified_as_webp":4,"png_urls":0,"images_serving_more_than_one_lesson":298}
+}

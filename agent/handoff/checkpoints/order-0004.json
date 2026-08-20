@@ -1,0 +1,50 @@
+{
+  "order": 4,
+  "lesson_id": "68ca2aa8-01b3-46d1-9b64-a3d7a585b5df",
+  "slug": "dos-islenos-dos-deseos",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/31c17922888c32ccc5fd2a9d76d5fbe6bb66bb1ba35f04d62b5125447de7f7d3.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/1a92623f4f928414838681069920a9aadef04b0e6b837046fb39ee53859e0981.webp",
+      "slots": [
+        "s2-order.payload.items[0].image_url",
+        "s5-picture.payload.options[0].image_url"
+      ],
+      "subject": "mango",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/53030d9df885a275073df980cb7b9fa20660ad07c9527a01e37e1b44537eb516.png",
+      "format": "image/webp",
+      "bytes": 27614
+    },
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/a73941102433289c247c4e86840002c445ead0fb5b236b0bbba5ee465894d760.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/189d64590b7efa734b4248502c43d8fe3ea15256358a52e2ccba788034a86481.webp",
+      "slots": [
+        "s2-order.payload.items[1].image_url",
+        "s5-picture.payload.options[1].image_url"
+      ],
+      "subject": "concha marina",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/809be1413c07fc964909e035189f0f259b42c10471b966b10b9a2206075a3071.png",
+      "format": "image/webp",
+      "bytes": 35262
+    },
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/98b4db7b72b82d36f3e5f93e0dca4fcd657a1c3bb864b6506034d4a4ff677c46.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/3595ae07d82000cb8cc17ed4735bd2398447c55e0681c3cf14130f05f47a80de.webp",
+      "slots": [
+        "s2-order.payload.items[2].image_url",
+        "s5-picture.payload.options[2].image_url"
+      ],
+      "subject": "piedra redondeada",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/5ce0de6b6c5c12e7fa3bd408f7411b1a9d6cb39ab7a90f8a6f8ce8ac2dcfb30d.png",
+      "format": "image/webp",
+      "bytes": 33992
+    }
+  ],
+  "locales_written": [
+    "es-MX",
+    "en-US",
+    "pt-BR"
+  ]
+}

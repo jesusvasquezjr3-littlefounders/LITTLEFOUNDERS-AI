@@ -1,0 +1,20 @@
+{
+  "order": 74,
+  "lesson_id": "99226604-76b6-4283-9de2-9af11ce179ef",
+  "slug": "la-fruta-suelta",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/d80a1e684164edfbaca74a6510ca9141b9273af4bc918c1c1a6245f8720064c5.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/0074f160a8b27df2d0019d1d01029bc6daa7f3561c515ae78db7009107854382.webp",
+      "slots": ["s1-recupera.image_url"],
+      "subject": "playa con fruta pequeña y piedra grande",
+      "format": "image/webp",
+      "bytes": 309890,
+      "dimensions": "1328x1328"
+    }
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}

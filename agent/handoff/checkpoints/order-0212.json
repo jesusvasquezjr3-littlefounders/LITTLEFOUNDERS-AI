@@ -1,0 +1,12 @@
+{
+  "order": 212,
+  "lesson_id": "1f262e74-e701-47b7-abb3-57984e002573",
+  "slug": "elijo-mi-chambita-del-festival",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [{"old":"c7b26df58622eb429bb5f0983f5054d4e4a8eb3a6e0dd10f2904e816c0fe20c9.webp","slot":"s8-dialogo.image_url","new":"ef159e863f5bdcff4c28f211ff9ab9b08163a04f42a28a3432bf5d42a27d3634.webp"}]
+}

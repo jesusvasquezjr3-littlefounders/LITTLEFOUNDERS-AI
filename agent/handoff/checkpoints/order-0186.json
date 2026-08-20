@@ -1,0 +1,20 @@
+{
+  "order": 186,
+  "lesson_id": "2f71570b-5e23-4216-83f0-82e5ac2dd57a",
+  "slug": "mi-semana-completa-de-cosecha",
+  "status": "completed",
+  "generated_images": 7,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"fb0e00359c7d7f2ff602bd35065c6e8a0f02d93f1bf5225e4acf17eba37fe5b3.webp","slot":"s1-dialogue-recap.image_url","new":"b784b5c4165a159ccf2ce263e263dafb0d6402dcddfe9b4afd0e5cef89c4c890.webp"},
+    {"old":"8329c76bd53391b5c10bfa73bc0a9b16b8343a9314015baefbd3325663dba4de.webp","slot":"s3-coin-count.image_url","new":"7dffd551e31161c9adc4780de07d868db728495ec0ccd5bb5ca135e01df50ca2.webp"},
+    {"old":"f61077ab5d040fe22a96f30c666ba4e1c17dea4c69df66c0c97e95a52666ad0e.webp","slot":"s5-best-decision.image_url","new":"081bbb7c74bbc3b0f2f7fb6b7528685ebd1ba03db1760f70ce98470373d4495c.webp"},
+    {"old":"b22d060bb458790e5012dc6623786ec2e660b6407dcc09513b00701b0073ce50.webp","slot":"s6-number-input.image_url","new":"99352447a0c2d40586e6e12784e87f5be1583de0d6237f4c9fb04c66e4910830.webp"},
+    {"old":"a0341d88112f38128bdb8837d6469a29a08b1f0efd2bec5065382f6765547a15.webp","slot":"s7-needs-wants.payload.items[1].image_url","new":"8a91b1992ab50be4188c24ab0ee71c12a0f49e71a8a022c41fc2b9e4b4886e73.webp"},
+    {"old":"25c98eff090c3580a538dd919f2706ad0eb29ecd1bda4098748e71c1fb52fbd6.webp","slot":"s7-needs-wants.payload.items[3].image_url","new":"b7f85c99e7479145573fe167f654f976804ed445f5d62a08f2d633253bc73b8b.webp"},
+    {"old":"f701dcb728d1103107ed3be9f7eb29558970a872641019532cd92b9cb4105639.webp","slot":"s8-piggy-split.payload.jars[1].image_url","new":"2b512a0b49e0957e6918636e80dd0aed6a9f9dfdda10ffb3c1b395dddbcfe979.webp"}
+  ]
+}

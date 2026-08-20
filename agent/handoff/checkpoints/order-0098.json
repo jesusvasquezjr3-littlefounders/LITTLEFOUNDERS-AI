@@ -1,0 +1,13 @@
+{
+  "order": 98,
+  "lesson_id": "62d34d4f-ee98-45c1-8377-dab4eca4777b",
+  "slug": "reconocemos-los-billetes-del-capitan",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, flattened to white, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/057f84a6c08be2a059912df69aa6ba3e5abf78bc74d995fe8888a92516cfea87.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/7cc2aa57809ad2d478ab62d686b8960b89577587371d94c09210dbf1d1922c7d.webp","slots":["s1-dina-recuerda.image_url"],"subject":"abanico de cuatro billetes de colores sin marcas","format":"image/webp","bytes":46376,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/d03275c4a7be582a4527e7c8cc62f1d256916bf9b823055a7af5ae4da77edfe4.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/0637e4533080eaae035991a50c593a076fa3f56e9ff0c207db3ba1b2cf04adb3.webp","slots":["s3-zara-billetes.payload.art.image_url"],"subject":"cofre abierto con monedas de colores","format":"image/webp","bytes":47834,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}

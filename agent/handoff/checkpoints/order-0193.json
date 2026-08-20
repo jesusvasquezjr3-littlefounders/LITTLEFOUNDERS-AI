@@ -1,0 +1,14 @@
+{
+  "order": 193,
+  "lesson_id": "f6698a8b-e4ac-4a13-9f51-eac69d6b56f4",
+  "slug": "agradezco-y-cobro",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"3a34810ffec5d911f40f132498a95836719b115bf414efd7774eb406256a4232.webp","slot":"s2-picture-choice.payload.options[1].image_url","new":"b73ed3e04fd8933e356041d8d4e591c9c04de69d5c7d4b458a65c51b4b220fb5.webp"}
+  ]
+}

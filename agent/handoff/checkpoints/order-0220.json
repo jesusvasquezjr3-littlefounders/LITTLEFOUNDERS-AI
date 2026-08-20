@@ -1,0 +1,17 @@
+{
+  "order": 220,
+  "lesson_id": "15d955b3-52c5-47f7-87eb-f625a9be3f73",
+  "slug": "el-equipo-arma-el-escenario",
+  "status": "completed",
+  "generated_images": 4,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"9c1ff665179535b9d88bf53d36e7cf8b360c5c6db019f2ca8a0358fb1345ccdb.webp","slot":"s7-budget-fit.payload.items[0].image_url","new":"a14c1460ac975229bb6b3fc44909e7538ad6186d50b3e0ca5522e6c874ab60b5.webp"},
+    {"old":"f1c0ef1de4c5ab9b77447d7483e6d66aa049d519bc7b5751b1cc08af0daaa79.webp","slot":"s7-budget-fit.payload.items[1].image_url","new":"fb91a2ea1ad9e456ef9ef10253ff5ae249839247707c9293903d3f83c0b7408d.webp"},
+    {"old":"316a15b9ad796b295529f48eb6e761a8d17ee8a243864bd0980afaf0949c593b.webp","slot":"s7-budget-fit.payload.items[2].image_url","new":"8f5a59330293a346e723cbf96ad91a0a1513547c6fe5cc191d7f1c0349783e5b.webp"},
+    {"old":"898dc7edecd61c4ace2195840a14c0a914d1e51742d18b621241b9b77f1d5790.webp","slot":"s7-budget-fit.payload.items[4].image_url","new":"b82536156b47226034f49b6268c768070152ba36fa73b6d649b97ffc885d394e.webp"}
+  ]
+}

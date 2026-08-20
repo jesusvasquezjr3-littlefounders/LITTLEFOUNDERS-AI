@@ -1,0 +1,12 @@
+{
+  "order": 200,
+  "lesson_id": "5f71ee04-1ac7-491c-bb37-d81d8508c802",
+  "slug": "elijo-mi-oficio-final",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [{"old":"daa76fad94b930e698184d68fb358618600fafe2240cbe719aea5a2e2fa79d1e.webp","slot":"s1-story.image_url","new":"3aeacece2534a5ce367504ccb017f7b185017a106cc418f1885990a52c1e737c.webp"}]
+}

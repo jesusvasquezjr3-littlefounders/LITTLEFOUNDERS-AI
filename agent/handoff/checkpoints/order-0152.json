@@ -1,0 +1,15 @@
+{
+  "order": 152,
+  "lesson_id": "1fd9384d-6fb9-49ee-a485-def55ed0a3c6",
+  "slug": "recuerdo-mi-primera-chambita-del-bosque",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old": "bc551d6fe23be96aaa5e11dae8759667e1bf367f9d5700c5d669f37cf3d275e6.webp", "slot": "s3-no-es-chambita.payload.items[0].image_url", "new": "ec78c811ada2e511582a857b5cdefdba309127ef6ea5c75d6ec4e39c722e8885.webp"},
+    {"old": "7a645bff23abf0eac3936c4c92b7795d02a5f67fe8c96e7d51445819abfa0c03.webp", "slot": "s6-mayor-recompensa.payload.options[0].image_url", "new": "83570dd61f1a90b17bfd158b066d8298b1f43324c54dab36780ca3abd49b0526.webp"}
+  ]
+}
