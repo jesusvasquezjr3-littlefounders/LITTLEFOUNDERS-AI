@@ -2,6 +2,56 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-20, SESSION CLOSE) — Inversiones course COMPLETE: 544/544 lessons, all 8 adventures, in production `review`
+
+Session goal: generate the entire `investing` course end-to-end, same harness
+as Emprendimiento, but with real urgency — the owner asked to finish as fast
+as possible. Delivered in full: confirmed by direct production query,
+**544/544 lessons across all 8 adventures, ×3 locales (1,632
+`lesson_documents`), `status='review'`**; course row correct (`position=2`,
+`requires=["financial-education","entrepreneurship"]`, `badge_asset` set).
+Every document cleared the contract, all 9 gates, and the independent judge's
+pass floors. Audio and images explicitly out of scope this session (owner
+decision, same as Emprendimiento); images stay blocked by the DashScope
+arrears.
+
+**The interactive `Agent` tool's session-wide subagent cap was already
+exhausted before this session started — Emprendimiento used all 200 spawns
+with zero live agents left to resume.** The unblock was the `Workflow` tool,
+whose `agent()` calls run on a wholly separate budget: the same session that
+could not launch one more `Agent` call launched 8 concurrent workflows (up to
+16 agents each) without issue. This is the reason the whole course finished
+in one sitting instead of the adventure-by-adventure pace of the prior
+session — see `coursegen/AGENTS.md` "A second full-scale run, at real
+parallelism" for the full mechanism and five more defect classes found only
+at this scale (seeded display order is a pure function of item+segment ids,
+never the authored array order; `compare_table` structurally cannot support
+a "derive the value" objective; `equation_builder` silently breaks on Unicode
+×/÷ instead of ASCII */÷; sunk cost kept getting authored as opportunity
+cost; topic titles need a separate `--titles` translation file the per-lesson
+pipeline never touches).
+
+**The judge caught 12 real semantic defects no gate could see, all fixed and
+re-verified before publish:** three instances (two lessons) of sunk-cost
+reasoning taught as opportunity cost, including one hard-coded as a graded
+MCQ's correct answer; four segments unsolvable because their one needed fact
+appeared only in post-answer `explanation_md`; two answer leaks via design
+(a sort_buckets icon perfectly correlated with the correct bucket; a
+compare_table whose prompt handed over the exact counts it should have
+required the child to derive); one graded number-input widget whose
+`prompt_md` never actually asked a question; two lesson openings that
+retrieved a generic prior fact instead of the specific one the graph
+required. All 544 lessons cleared the judge on the re-judge pass with zero
+regressions from the fixes themselves.
+
+**Mid-session, the platform's own usage limit — not the subagent cap — failed
+every in-flight judge agent across all 8 workflows at once**, with the error
+text clearly distinct (`You've hit your session limit`, not a spawn-cap
+message). Recovery was mechanical once diagnosed: diff which verdict files
+were actually missing on disk against the manifest, and relaunch workflows
+with an explicit list of only those slot ranges, repeated per adventure until
+every verdict existed — not a blind full-course retry.
+
 ## Current State (2026-08-18, SESSION CLOSE) — Emprendimiento course COMPLETE: 544/544 lessons, all 8 adventures, in production `review`
 
 Session goal: generate the entire `entrepreneurship` course end-to-end using
@@ -1357,6 +1407,11 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-20 | **When the interactive `Agent` tool's subagent cap is exhausted, use the `Workflow` tool instead of falling back to unassisted hand-authoring — its `agent()` calls run on a separate budget.** Standard fallback now for any large authoring run that hits the cap mid-session. | Emprendimiento's 200-spawn budget was gone with no live agents to resume, blocking further `Agent` calls outright. `Workflow` launched successfully in the same session and let all 8 Inversiones adventures author/judge/translate concurrently instead of sequentially — the whole course finished in one sitting instead of one adventure at a time. |
+| 2026-08-20 | **`order_steps`/`rank_choices`/`build_sentence`/`timeline_order`/`code_order` seeded display order must be reseeded by renaming `segment.id`, never by reordering the authored `items`/`tokens` array — and the fix may need retrying.** | `seededSortMiddlingIds` derives the render purely from `(item ids, segment.id)`, so reordering the JSON array has zero effect. A 3-item sequence has only 6 possible renders, 2 of them "bad" (matches the key or its reverse), so a single reseed can still land on a bad render — confirmed empirically requiring up to 4 attempts on the same segment. |
+| 2026-08-20 | **`compare_table` is not a valid choice for any exercise whose objective is "derive/count the value" — only for "read the given value."** Documented as a hard exclusion in `coursegen/AGENTS.md`, not just a sizing caution. | Its own hard gate requires every source cell's value to be stated together with its row in `prompt_md` for solvability — which is exactly what makes "count the signals yourself" impossible to test with this type: the prompt handing over the count *is* the leak. |
+| 2026-08-20 | **Sunk cost repeatedly gets authored as opportunity cost, and this is a content-accuracy defect for a financial-literacy course, not a style note.** Fix pattern documented: winning rationales must cite only forward-looking reasons ("doesn't repeat" / "can be taken later"), never "already invested." | Three segments across two sibling lessons scored "the tournament already had 3 weeks invested" as the textbook opportunity-cost argument — backward-looking honoring of sunk cost is the opposite of the forward-looking concept the course teaches. One instance hard-coded the confusion as a graded MCQ's correct answer. All 9 gates passed every instance; only the judge's holistic pedagogy read caught it. |
+| 2026-08-20 | **Topic-level titles (en-US/pt-BR) must be generated as a single `--titles` file covering every unique topic slug before the first publish attempt, not per adventure.** | The catalog authors `title_es` only; `author-publish` fails closed per-lesson (`no en-US/pt-BR title for topic "…"`) if any of the course's unique topic slugs (272 for this course) is missing from the file. This is a separate translation surface from the per-lesson `author-localize` pipeline, easy to discover only at the moment of publish. |
 | 2026-08-18 | **A subagent authoring world file (`WORLD.md`) must state it is subordinate to the brief, never the reverse.** Pinning a world before dispatch is now standard for any multi-batch subagent authoring run. | An adventure's world file wrongly pinned the wrong product; two authoring batches obeyed it over their own catalog-authored briefs, discarding a brief's explicit narrative beat. The catalog is human-reviewed content design — no file an agent writes on the fly outranks it. Cost 23 lessons of re-homing to fix. |
 | 2026-08-18 | **`author-judge ingest` reports an oversized `notes` field as a schema `problems` entry, and an operator must treat that shape as "verdict lost", never as "lesson failed".** | `reviewRubricSchema` caps `notes` at 2000 characters and fails the whole verdict object past it — correct fail-closed behavior, but it silently discarded 11 verdicts for lessons that were actually clean, making them read as unjudged. Recovery: truncate the oversized `notes` in place and re-run `ingest`. |
 | 2026-08-17 | **Liruf and Dina keep their painted mouths — closed after exhausting every approach, not abandoned.** | Five fits on Liruf (planar, cylindrical, ribbon, ribbon widened 4 cm a side after re-measuring his grin at −0.191..0.237, and two grid densities) and six on Dina (ribbon, curve raised 0.0008, four gaps, three densities). The card ends up split into disconnected pieces with the face poking through between them: the snout curves more across the patch than a bilinear surface can hug, and raising density past 21×13 makes Liruf WORSE (bulge 0.0347 → 0.1019) because more samples land on his teeth. The one remaining fix is painting the mouth out of the albedo so the card ADDS one, as Rho's does — rejected because a UV sweep shows these models' layouts are fragmented into islands spanning the whole atlas (u 0.024–0.994), so a masked repaint would recolour large disjoint areas of a shaded curved face. High risk of visibly damaging two characters that look good today, for two companions who do not carry the speech. |

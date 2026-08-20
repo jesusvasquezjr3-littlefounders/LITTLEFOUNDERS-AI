@@ -420,6 +420,102 @@ was actually clean. `ingest` reports these as a schema `problems` entry, not a
 failing dimension — check for that shape specifically, don't assume a missing
 verdict means the run crashed.
 
+### A second full-scale run, at real parallelism (2026-08-19/20): `investing`, 544 lessons via `Workflow`
+
+The `entrepreneurship` run above dispatched every subagent by hand through the
+interactive `Agent` tool. For `investing` that tool's session-wide spawn cap
+(200) was already exhausted by the prior course, with zero live agents to
+resume — the fix was the `Workflow` tool: its `agent()` calls run on a
+**completely separate budget** from the interactive cap, so a workflow launched
+from the same session when `Agent` refuses outright still succeeds. This let
+all 8 adventures author, judge and translate **concurrently** (8 workflows ×
+up to 16 agents each) instead of one adventure at a time — the whole course
+went from authored-but-unverified to published in one sitting. Confirmed by
+direct production query: 544 lessons, `status='review'`, 1,632 documents
+(544 × 3 locales exactly), course row correct (`position=2`,
+`requires=["financial-education","entrepreneurship"]`, `badge_asset` set).
+
+**6. The platform's own per-session usage limit can fail a `Workflow` batch
+independently of the subagent-spawn cap.** Mid-run, every in-flight judge
+agent across all 8 workflows failed at once with `You've hit your session
+limit`, not a spawn-cap error — a different resource entirely, and it resets
+on its own schedule. `Workflow` still reports `batchCount`/`completed`
+accurately per run, so the recovery is mechanical, not a guess: diff which
+`judge/<stem>.verdict.json` files are actually missing on disk against the
+manifest, and relaunch a workflow with an **explicit list of only those
+slot ranges** (not a symmetric retry of the whole course) — repeated across
+all affected adventures until every verdict file exists. Caching does not
+dedupe this automatically; a workflow only remembers its own prior run.
+
+**7. `order_steps` / `rank_choices` / `build_sentence` / `timeline_order` /
+`code_order` display order is a PURE FUNCTION of `(item ids, segment.id)` —
+never the authored JSON array order.** `seededSortMiddlingIds` (gates.ts)
+re-derives what the frontend will actually show from those two inputs and
+checks it against `answer.order` (and its reverse, since a reversed rail
+reads just as naturally). **Reordering the `items`/`tokens` array in the
+document does nothing** — the fix that actually works is renaming
+`segment.id` (append a suffix) to reseed the hash, and it can take more than
+one attempt: a 3-item sequence has only 6 possible renders and 2 of them are
+"bad" (the key or its reverse), so a single reseed lands on another bad
+render close to a third of the time. Retry with a fresh suffix until
+`author-validate` confirms it cleared.
+
+**8. `compare_table` cannot be used for an objective that requires the child
+to DERIVE or COUNT the answer.** Its own hard gate demands every source
+cell's value be stated together with its row in `prompt_md` — that
+requirement is what makes the type solvable, but it also means the type can
+only ever test "read this value off the prompt," never "count/identify this
+value from a description." An exercise built to test "count how many fraud
+signals this case has" degenerates to copying two numbers the prompt already
+handed over. There is no compliant middle ground here: if the skill is
+derivation, use a different type (`quiz_mcq`/`best_decision` comparing two
+*described* cases) — don't reach for `compare_table` at all.
+
+**9. `equation_builder` tokens must use ASCII `*` and `/`, never the Unicode
+math glyphs `×`/`÷`.** `evaluateInfixTokens`'s `PRECEDENCE` map only
+recognizes `+ - * /` literally; an unrecognized token makes the whole
+expression evaluate to `null`, which gate 4 reports as *"no accepted sequence
+evaluates to target_result N"* — a message that reads like a wrong answer
+key, not an unparseable operator symbol. The contract's own age-tier register
+text lists `×`/`÷` among symbols that are "auto-spoken," which is true for
+prose but not for these token payloads; grep authored `equation_builder`
+segments for the Unicode glyphs specifically, `grep 'PRECEDENCE'` won't find
+this on its own.
+
+**10. Sunk cost keeps getting authored as if it were opportunity cost, and a
+mechanical gate cannot catch it.** Three related segments across two sibling
+lessons scored a "the torneo already had 3 weeks of practice invested in it"
+argument as the textbook example of opportunity cost — backward-looking
+honoring of past investment is the *opposite* concept from forward-looking
+cost of the foregone option, and one of the three instances hard-coded it as
+a graded MCQ's correct answer with feedback that reinforced the confusion.
+This is a content-accuracy defect specific to a financial-literacy course,
+not a style note; it survived all 9 gates and was only caught by the judge's
+holistic pedagogy read. Fix pattern: rewrite the winning rationale to name
+only forward-looking reasons ("the event doesn't repeat" / "the other option
+can be taken later"), never "already invested."
+
+**11. Gate 8's arithmetic-consistency check can misattribute numbers across
+sibling items in the same segment.** It scans the whole segment's text for a
+"total"-shaped claim and the numbers near it; if an unrelated item elsewhere
+in the same `sort_buckets`/`evidence_hunt` payload happens to contain bare
+numbers of its own (a duration, a count), the check can flag a mismatch that
+was never actually claimed. Confirmed false-positive pattern: a line
+containing the word "total" with zero numbers in it got checked against
+numbers pulled from a completely different item's text. When this fires and
+the arithmetic in the flagged segment is genuinely internally consistent,
+the reliable fix is removing the trigger word ("total"/"suma") from the
+unrelated line rather than hunting for a math error that isn't there.
+
+**12. Topic titles are es-MX-only in the catalog (`title_es`) and are NOT
+part of the per-lesson translation pipeline.** `author-publish` needs a
+separate `--titles <file>` — a flat JSON map of `topic-slug → {"en-US":...,
+"pt-BR":...}` — covering every unique topic across the whole course (272 for
+this one, fewer than the 544 lesson count because most topics hold 2
+lessons); the publish step fails closed per-lesson with `no en-US/pt-BR title
+for topic "…" — supply it via --titles` if any slug is missing. Generate this
+file once per course, before the first publish attempt, not per adventure.
+
 ## Read before touching
 
 - `/COURSE_ENGINE.md` — the pipeline spec (hierarchy, catalog format, stages, gates, providers, safety).
