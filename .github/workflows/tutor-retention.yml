@@ -15,6 +15,16 @@ name: Tutor retention
 # nothing would remain to tell anyone the files existed. Core does both, so
 # Core is what runs.
 #
+# WHY IT CALLS CORE FROM INSIDE CORE. The purge endpoint is internal-key-only,
+# and the obvious shape — put Core's INTERNAL_API_KEY in a repository secret
+# and POST to the public domain — copies a live credential into a second place
+# that then has to be rotated in step with the first. Standing inside the
+# container over `railway ssh` and calling 127.0.0.1 needs no copy at all: the
+# key is already in that process's environment, it never crosses a network, and
+# there is nothing extra to leak or forget. RAILWAY_TOKEN and
+# RAILWAY_SSH_PRIVATE_KEY are the same two secrets every other ops workflow in
+# this repo already uses.
+#
 # IT IS BATCHED AND RE-RUNNABLE. Each call clears up to `limit` sessions; the
 # loop below keeps going while a batch comes back full. A partial sweep is a
 # normal outcome, never a failure.
@@ -38,34 +48,91 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
+          chmod 600 ~/.ssh/railway_key
+          # Railway's SSH proxy host is ephemeral per session, not a fixed
+          # host worth pinning — a fresh runner has no cached host key, so
+          # LogLevel ERROR keeps ssh's "Permanently added ..." warning out of
+          # the output we then parse as a response body.
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            LogLevel ERROR
+          CONFIG
+          chmod 600 ~/.ssh/config
+
       - name: Purge expired sessions and their audio
         env:
-          CORE_URL: ${{ secrets.CORE_URL }}
-          INTERNAL_API_KEY: ${{ secrets.INTERNAL_API_KEY }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           BATCH: ${{ github.event.inputs.limit || '500' }}
         run: |
           set -euo pipefail
 
-          if [ -z "${CORE_URL:-}" ] || [ -z "${INTERNAL_API_KEY:-}" ]; then
-            echo "CORE_URL and INTERNAL_API_KEY must both be set" >&2
-            exit 1
-          fi
+          case "$BATCH" in
+            ''|*[!0-9]*) echo "limit must be a positive integer, got '$BATCH'" >&2; exit 1 ;;
+          esac
+
+          # The request travels base64-encoded as a SINGLE argument: `railway
+          # ssh` space-joins its args and the remote shell re-parses them, so a
+          # command containing spaces would be word-split into garbage. Same
+          # lesson, same shape, as insights-maintenance.yml and vault-backup.yml.
+          #
+          # Single quotes on the way out are deliberate: $INTERNAL_API_KEY and
+          # $PORT must expand THERE, inside the container that already has them,
+          # not here on a runner that must never see either.
+          remote_purge() {
+            local script b64
+            script='curl -sS -X POST'
+            script="$script"' -H "Content-Type: application/json"'
+            script="$script"' -H "x-internal-api-key: $INTERNAL_API_KEY"'
+            script="$script"" -d '{\"limit\": ${BATCH}}'"
+            script="$script"' "http://127.0.0.1:${PORT:-4000}/api/v1/tutor/internal/retention/purge"'
+            b64=$(printf '%s' "$script" | base64 | tr -d '\n')
+            railway ssh --service littlefounders-backend -i ~/.ssh/railway_key -- \
+              sh -c "'echo $b64 | base64 -d | sh'" 2>&1
+          }
 
           total=0
           # Ten batches is a ceiling, not a target: an unbounded loop against a
           # runaway backlog would hold the runner all night, and tomorrow's run
           # picks up whatever is left.
           for round in $(seq 1 10); do
-            body=$(curl -sS --fail-with-body -X POST \
-              -H 'Content-Type: application/json' \
-              -H "x-internal-api-key: ${INTERNAL_API_KEY}" \
-              -d "{\"limit\": ${BATCH}}" \
-              "${CORE_URL%/}/api/v1/tutor/internal/retention/purge")
+            body=''
+            # Railway's SSH key-verification service has transient account-wide
+            # outages; every other workflow here retries around it.
+            for attempt in 1 2 3; do
+              if body=$(remote_purge); then break; fi
+              echo "round ${round}: attempt ${attempt} failed, retrying in 20s" >&2
+              body=''
+              sleep 20
+            done
+            if [ -z "$body" ]; then
+              echo "::error::could not reach Core after 3 attempts — no sessions were purged this round"
+              exit 1
+            fi
 
             deleted=$(printf '%s' "$body" | grep -o '"sessionsDeleted":[0-9]*' | head -1 | cut -d: -f2)
             failed=$(printf '%s' "$body" | grep -o '"audioFailed":[0-9]*' | head -1 | cut -d: -f2)
-            deleted=${deleted:-0}
+
+            # An absent count is NOT zero. Core answering something this does
+            # not understand — an error envelope, an HTML error page from a
+            # proxy — would otherwise read as "nothing left to delete" and end
+            # the sweep looking successful, which is the one outcome a
+            # retention job must never fake (/AGENTS.md §1.14).
+            if [ -z "${deleted:-}" ]; then
+              echo "::error::Core's reply carried no sessionsDeleted count; refusing to report a sweep that may not have happened"
+              printf '%s\n' "$body" | head -5 >&2
+              exit 1
+            fi
             failed=${failed:-0}
+
             total=$((total + deleted))
             echo "round ${round}: ${deleted} session(s) deleted, ${failed} audio file(s) failed"
 
@@ -75,7 +142,13 @@ jobs:
               echo "::warning::${failed} tutor audio file(s) outlived their session — see Core logs for the paths"
             fi
 
-            [ "$deleted" -lt "$BATCH" ] && break
+            # A plain `[ … ] && break` is a trap under `set -e`: on the final
+            # round a FULL batch makes the test false, the loop's exit status
+            # becomes 1, and the job fails having worked perfectly. The busiest
+            # possible sweep would be the one that looked broken.
+            if [ "$deleted" -lt "$BATCH" ]; then
+              break
+            fi
           done
 
           echo "tutor-retention: ${total} session(s) purged"
