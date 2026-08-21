@@ -44,6 +44,79 @@ import { moderateTutorOutput } from '../src/safety/moderation.js';
 
 let failures = 0;
 
+/**
+ * What `complete()` deliberately does not tell you.
+ *
+ * The client throws a short reason and drops the body, which is right for a
+ * live turn and useless for a diagnosis — "model returned an empty completion"
+ * has at least four causes that need different fixes, and they are all visible
+ * in the response it just discarded. So on failure only, this repeats the
+ * request and prints the fields that separate them:
+ *
+ *   finish_reason: 'length'          the budget ran out before any content
+ *   reasoning_content present        a REASONING model spent the budget
+ *                                    thinking; `content` is genuinely empty
+ *   content: ''  with usage > 0      we were billed for nothing
+ *   an error envelope in the body    the provider explained itself and the
+ *                                    status code did not
+ *
+ * It mirrors the request in `src/model/provider.ts` rather than importing it,
+ * because the whole point is to see the RAW response that function throws
+ * away. Keep the body in step with it; a diagnosis of a different request is
+ * worse than no diagnosis.
+ */
+async function diagnose(context: unknown): Promise<void> {
+  const config = getConfig();
+  console.log('');
+  console.log('  -- raw response, for diagnosis --');
+  try {
+    const response = await fetch(`${config.MODEL_API_BASE}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${config.MODEL_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: config.MODEL_NAME,
+        messages: [
+          { role: 'system', content: TUTOR_SYSTEM_PROMPT },
+          { role: 'user', content: buildContextMessage(context as never) },
+        ],
+        temperature: 0.6,
+        max_tokens: 400,
+        response_format: { type: 'json_object' },
+      }),
+    });
+    const raw = await response.text();
+    console.log(`  HTTP ${response.status}`);
+    let body: {
+      choices?: { message?: Record<string, unknown>; finish_reason?: string }[];
+      usage?: Record<string, unknown>;
+      error?: unknown;
+    };
+    try {
+      body = JSON.parse(raw) as typeof body;
+    } catch {
+      console.log(`  body is not JSON: ${raw.slice(0, 400)}`);
+      return;
+    }
+    if (body.error !== undefined) {
+      console.log(`  error: ${JSON.stringify(body.error).slice(0, 400)}`);
+    }
+    const choice = body.choices?.[0];
+    console.log(`  finish_reason: ${choice?.finish_reason ?? '(none)'}`);
+    console.log(`  usage: ${JSON.stringify(body.usage ?? {})}`);
+    const message = choice?.message ?? {};
+    for (const [key, value] of Object.entries(message)) {
+      const shown = typeof value === 'string' ? `${value.length} chars: ${value.slice(0, 200)}` : JSON.stringify(value);
+      console.log(`  message.${key} = ${shown}`);
+    }
+    if (Object.keys(message).length === 0) console.log('  message: (absent)');
+  } catch (error) {
+    console.log(`  the diagnostic call itself failed: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
 function ok(label: string, detail = ''): void {
   console.log(`  ok    ${label}${detail ? ` — ${detail}` : ''}`);
 }
@@ -105,10 +178,11 @@ async function main(): Promise<void> {
       `${Date.now() - started} ms, ${completion.promptTokens} in / ${completion.completionTokens} out`,
     );
   } catch (error) {
-    // The message carries the status code, which is the whole diagnosis:
+    // The message carries the status code, which is most of the diagnosis:
     // 404 wrong URL · 401 wrong key · 400 retired model · 402 no credit.
     const detail = error instanceof ModelUnavailableError ? error.message : String(error);
     bad('the model did not answer', detail);
+    await diagnose(context);
     console.log('');
     console.log('  Every learner would get the scripted MODEL_DOWN line instead of a lesson.');
     process.exit(1);
