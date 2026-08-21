@@ -40,6 +40,18 @@ on:
           - provision
           - domain
           - verify
+      voice_provider:
+        description: >-
+          provision only. Changing whether the tutor can SPEAK. `keep` never
+          touches it — an explicit choice is never overwritten by a routine
+          deploy. Choose inworld or none to change it on purpose.
+        required: false
+        default: keep
+        type: choice
+        options:
+          - keep
+          - inworld
+          - none
 
 permissions:
   contents: read
@@ -364,11 +376,19 @@ jobs:
           #
           # Now: read what is there and leave a deliberate choice alone. Only an
           # UNSET provider is defaulted, and defaulted to the product's intent.
+          # `keep` is the default and does exactly nothing to an existing
+          # choice. Turning the tutor's voice on or off is a decision, so it
+          # takes a decision: dispatch with voice_provider=inworld or =none.
           ORACLE_VOICE="$(read_var oracle VOICE_PROVIDER)"
-          if [ -n "$ORACLE_VOICE" ]; then
+          WANT_VOICE='${{ inputs.voice_provider }}'
+          if [ "$WANT_VOICE" != "keep" ] && [ -n "$WANT_VOICE" ]; then
+            set_var oracle VOICE_PROVIDER "$WANT_VOICE"
+            echo "   voice provider: deliberately set to '$WANT_VOICE' (was '${ORACLE_VOICE:-unset}')"
+          elif [ -n "$ORACLE_VOICE" ]; then
             echo "   voice provider: '$ORACLE_VOICE' already chosen, left alone"
           else
             set_var oracle VOICE_PROVIDER "inworld"
+            echo "   voice provider: was unset, defaulted to 'inworld'"
           fi
 
           # The minor gate stays exactly as strict, and stays SEPARATE. It is
@@ -484,12 +504,15 @@ jobs:
           echo "NEXT: merge the tutor PR so oracle CI -> oracle CD gives the"
           echo "service its first deployment, then dispatch step=domain."
           echo ""
-          echo "STILL NEEDED BY HAND — this workflow cannot invent them, and"
-          echo "each is an owner decision rather than a missing value:"
-          echo "  oracle/INWORLD_API_KEY        the production Inworld credential"
-          echo "  oracle/VOICE_PROVIDER=inworld flip only once the DPA is signed"
-          echo "  the twelve INWORLD_VOICE_<CHARACTER>_<LOCALE> ids, from"
-          echo "  'npm run voices:clone' against audiogen/src/samples (owner-held)"
+          echo "REMEMBER: variables are staged with --skip-deploys, so the"
+          echo "RUNNING container still holds the old ones. Oracle caches its"
+          echo "config AND its voice provider at module scope, so nothing above"
+          echo "takes effect until the service restarts."
+          echo ""
+          echo "STILL AN OWNER DECISION, never a deploy side effect:"
+          echo "  oracle/TUTOR_VOICE_FOR_MINORS  false until a data-processing"
+          echo "  agreement covering children's audio exists"
+          echo "  (/LEGAL/AI_TUTOR_LEGAL_REVIEW.md §6, recorded in /ORACLE.md §16)"
 
       # ── DOMAIN — the browser opens a websocket straight to Oracle ────────
       - name: Give oracle a public domain
