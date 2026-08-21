@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { TutorScene, type TutorFraming } from './TutorScene';
+import { TutorScene, type TutorFraming, type TutorSceneProps } from './TutorScene';
 import { useLipSync } from './useLipSync';
 import { VISEME_CLOSED } from './lipSync';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
@@ -27,6 +27,12 @@ import type { CharacterAction, CharacterEmotion, CharacterId } from '@/component
 
 export interface TutorStageProps {
   className?: string;
+  /**
+   * Which island. Forwarded straight to `TutorScene`, which has always
+   * accepted it — the prop was simply missing here, so the product could not
+   * offer a diorama the scene lab had been switching between for weeks.
+   */
+  scene?: TutorSceneProps['scene'];
   character?: CharacterId;
   companion?: CharacterId | null;
   emotion?: CharacterEmotion;
@@ -44,10 +50,23 @@ export interface TutorStageProps {
   /** Fires when a clip finishes on its own. Not called on interruption. */
   onSpeechEnd?: () => void;
   /**
-   * Framing while NOT speaking. Speaking always closes in, because the mouth is
-   * 2.4 px tall at the island framing and no viseme is distinguishable there.
+   * Framing while NOT speaking. Speaking closes in by default, because the
+   * mouth is 2.4 px tall at the island framing and no viseme is
+   * distinguishable there.
    */
   idleFraming?: TutorFraming;
+  /**
+   * Framing WHILE speaking. Defaults to `conversation`, which is right for the
+   * two characters that have a mouth card.
+   *
+   * It is a prop rather than a constant because `liruf` and `dina` do not have
+   * one (/TUTOR_3D.md §3.1) and are still selectable as the speaking tutor
+   * (/ORACLE.md §0 decision 4). Closing the camera on a painted, motionless
+   * mouth frames the one thing that is not working; keeping them at the island
+   * shot frames posture and gesture instead, which for them IS the
+   * performance.
+   */
+  speakingFraming?: TutorFraming;
   /**
    * Fires ONCE, when the cast is actually on screen. Wait for it before the
    * first line: speech handed over while the assets are still resolving plays
@@ -58,6 +77,7 @@ export interface TutorStageProps {
 
 export function TutorStage({
   className,
+  scene,
   character = 'rho',
   companion = 'liruf',
   emotion = 'neutral',
@@ -66,6 +86,7 @@ export function TutorStage({
   speechUrl = null,
   onSpeechEnd,
   idleFraming = 'vignette',
+  speakingFraming = 'conversation',
   onReady,
 }: TutorStageProps) {
   const audio = useRef<HTMLAudioElement | null>(null);
@@ -113,13 +134,14 @@ export function TutorStage({
       />
       <TutorScene
         className={className}
+        scene={scene}
         character={character}
         companion={companion}
         emotion={emotion}
         action={action}
         actionKey={actionKey}
         viseme={speaking ? viseme : VISEME_CLOSED}
-        framing={speaking ? 'conversation' : idleFraming}
+        framing={speaking ? speakingFraming : idleFraming}
         onReady={onReady}
       />
     </>

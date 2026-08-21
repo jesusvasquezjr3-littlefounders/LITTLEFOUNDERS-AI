@@ -35,6 +35,157 @@
   },
   "page": {
     "title": "Tutor",
-    "subtitle": "Your learning place, with Dr. Rho and Liruf."
+    "subtitle": "Your learning place, with a tutor who knows what you're working on.",
+    "loading": "Getting your island ready…",
+    "unavailable": "We can't open the tutor right now. Try again in a little while.",
+    "tutorUnavailable": "The tutor is resting right now. Everything else still works — try again soon.",
+    "changeStage": "Change my island",
+    "seeYouSoon": "See you soon!",
+    "sessionSaved": "This conversation is saved. You can listen to it again whenever you like.",
+    "startAnother": "Start another session"
+  },
+  "personalize": {
+    "whoTitle": "Who would you like to talk to?",
+    "whoHelp": "Pick the character who will be your tutor. You can change this whenever you want.",
+    "bodyTalker": "Talks with their whole body",
+    "companionTitle": "Anyone joining you?",
+    "companionHelp": "A companion stands on the island with you. They don't teach — they keep you company.",
+    "noCompanion": "Just us",
+    "whereTitle": "Where would you like to be?",
+    "whereHelp": "Choose your island and the light.",
+    "nicknameTitle": "What should we call you?",
+    "nicknameLabel": "Nickname",
+    "nicknameHint": "Pick any name you like — a nickname, not your real name. It's the only name your tutor is ever told.",
+    "nicknameInvalid": "Use letters, numbers, spaces, apostrophes or hyphens.",
+    "adaptTitle": "How do you like things explained?",
+    "adaptHelp": "Turn on anything that helps. You can change it any time, and your tutor will follow it.",
+    "skip": "Skip for now",
+    "save": "Save and continue",
+    "saving": "Saving…"
+  },
+  "character": {
+    "dina": { "name": "Dina", "blurb": "Calm and patient" },
+    "liruf": { "name": "Liruf", "blurb": "Playful and full of energy" },
+    "rho": { "name": "Dr. Rho", "blurb": "Warm and precise" },
+    "zara": { "name": "Zara Vex", "blurb": "Curious and quick" }
+  },
+  "diorama": {
+    "diorama-a": "Stone circle",
+    "diorama-b": "Oasis"
+  },
+  "backdrop": {
+    "auto": "Match my theme",
+    "dawn": "Dawn",
+    "day": "Day",
+    "dusk": "Dusk",
+    "night": "Night"
+  },
+  "adaptation": {
+    "slower_pacing": "Go a bit slower",
+    "more_examples": "Give me more examples",
+    "less_text": "Use fewer words",
+    "more_visual": "Show me pictures instead of words",
+    "repeat_before_advancing": "Go over the last thing before a new one"
+  },
+  "adaptationOffer": {
+    "slower_pacing": "Would you like me to slow down a little?",
+    "more_examples": "Would another example help?",
+    "less_text": "Shall I keep it shorter from now on?",
+    "more_visual": "Would you rather see this as a picture?",
+    "repeat_before_advancing": "Shall we go over that once more before moving on?"
+  },
+  "intent": {
+    "course_topic": "A topic from my courses",
+    "weak_skill": "Something to practise",
+    "faq": "A question",
+    "open": "A chat",
+    "diagnostic": "Getting to know each other"
+  },
+  "faq": {
+    "what_is_saving": "What does saving really mean?",
+    "why_prices_change": "Why do prices change?",
+    "what_is_a_budget": "What is a budget?",
+    "how_does_a_loan_work": "How does borrowing work?"
+  },
+  "offers": {
+    "intelDegraded": "We can't see your progress right now, so your tutor will get to know you as you go.",
+    "useVoice": "I want to talk out loud",
+    "voiceNeedsConsent": "To talk out loud, a grown-up in your family needs to turn the microphone on for you. You can still type — everything works the same.",
+    "voiceUnavailable": "Talking out loud isn't available right now. You can type to your tutor instead.",
+    "courseTopic": {
+      "title": "Work on a course topic",
+      "body": "Pick up something from a course you're already taking."
+    },
+    "weakSkill": {
+      "title": "Practise together",
+      "body": "Shall we look at {{topic}} together? It's completely up to you."
+    },
+    "diagnostic": {
+      "title": "Start somewhere",
+      "body": "Your tutor will ask a couple of quick questions to find a good place to begin."
+    },
+    "faq": { "body": "A short answer, then we can go deeper if you want." },
+    "open": {
+      "title": "Ask me anything",
+      "body": "Tell your tutor what's on your mind and they'll find a way in."
+    }
+  },
+  "conversation": {
+    "listening": "Your tutor is thinking of something for you to try.",
+    "ended": "That's the end of this session.",
+    "typePlaceholder": "Type a message…",
+    "send": "Send",
+    "holdToTalk": "Hold to talk",
+    "micDenied": "The microphone is blocked in your browser settings. You can still type.",
+    "finish": "Finish",
+    "wrappingUp": "Wrapping up",
+    "minutesLeft": "{{count}} min left",
+    "gettingToKnowYou": "Still getting to know you",
+    "yesPlease": "Yes please",
+    "noThanks": "No thanks"
+  },
+  "segment": {
+    "activity": "Try this",
+    "practiceOnly": "practice only",
+    "check": "Check",
+    "checking": "Checking…",
+    "unsupported": "This activity needs a newer version of the app.",
+    "gradeFailed": "We couldn't check that just now. Give it another go.",
+    "xpEarned": "+{{count}} XP",
+    "noXpExplained": "Nice work! This one is practice, so it doesn't add XP.",
+    "tier": {
+      "perfect": "Exactly right!",
+      "great": "Nice work!",
+      "almost": "So close — look again.",
+      "tryAgain": "Let's try that one together."
+    }
+  },
+  "history": {
+    "title": "Your past conversations",
+    "loading": "Loading…",
+    "empty": "No conversations yet. Your first one will show up here.",
+    "loadFailed": "We couldn't load that conversation.",
+    "replay": "Play it again",
+    "hide": "Hide",
+    "playLine": "Play this line",
+    "activities": "What you tried",
+    "xp": "{{count}} XP"
+  },
+  "startError": {
+    "INTERNAL": "Something went wrong starting the session. Try again.",
+    "SESSION_LIMIT": "You've used all of today's tutor time. Come back tomorrow!",
+    "MODEL_UNAVAILABLE": "Your tutor is resting right now. Try again in a little while.",
+    "MODERATION_UNAVAILABLE": "We can't start a session safely right now. Try again in a little while.",
+    "ORACLE_UNAVAILABLE": "Your tutor is resting right now. Try again in a little while."
+  },
+  "consent": {
+    "title": "Microphone for the AI tutor",
+    "body": "Your child can talk out loud with the AI tutor instead of typing. Their voice is sent to our speech provider so it can be turned into text, and it is never stored by us. The tutor's replies and the written conversation are saved for 90 days so you and your child can read or replay them. You can turn this off at any time.",
+    "grant": "Allow the microphone",
+    "revoke": "Turn the microphone off",
+    "activeSince": "Microphone allowed since {{date}}",
+    "inactive": "The microphone is off. Your child can still use the tutor by typing.",
+    "granting": "Saving…",
+    "failed": "We couldn't save that. Try again."
   }
 }

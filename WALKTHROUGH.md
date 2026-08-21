@@ -2,6 +2,72 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-21b) — AI Tutor BUILT end to end: `oracle/` service, migration 0047, Core API, the `/tutor` experience
+
+Same session as the design entry below, continued on the owner's instruction to
+build the product to a production bar rather than an MVP. Delivered: a new
+service, a migration, a Core surface, a frontend experience, three locales, a
+legal brief, and the documentation sweep.
+
+**Gates, all run in this session:** oracle 119 tests + type-check + lint +
+build + `verify:tutor`; backend 424 tests + type-check + lint; frontend 639
+tests + type-check + lint + build; database migration gates 47/47; root
+`docs:check`, `secrets:check`, `i18n:check`, `paths:check`. Verified in a real
+browser at 375 px and 1280 px, light and dark, with no horizontal overflow at
+either width.
+
+**Three tests caught defects that review did not, and all three were the
+"fails safe, silently, forever" shape:**
+
+1. **Key re-execution used the wrong shape.** An answer KEY is not a
+   SUBMISSION — `quiz_mcq`'s key is `{correct_option_id}` and its submission is
+   `{option_id}`; `fill_blank`'s key is an array of gap descriptors and its
+   submission is an object keyed by gap number. Every live-generated exercise
+   would have been reported unverifiable and unable to pay XP, with nothing
+   going red.
+2. **Tier-3 generation was a second, unsealed door to the model.** The
+   architectural invariant test flagged it. The fix was not to relax the test:
+   generation got its own `.strict()` brief, which deliberately omits the
+   nickname because a generated exercise has no reason to address a learner by
+   name and would outlive the session it was written in.
+3. **A vacuity guard saved a boundary test from passing on nothing.** The
+   `expect(senders.length).toBeGreaterThan(0)` line caught that a regex
+   contained a literal backspace character and therefore matched no files —
+   the test was green and checking nothing.
+
+**One design defect the tests exposed rather than a code bug:** scripted lines
+were being sent through the model moderation pass. They are human-written and
+already reviewed, so a judge outage would have replaced one safe line with
+another while doubling upstream calls per turn. Only GENERATED turns are
+moderated now.
+
+**Forge could not be used for tier-3 generation, and finding out changed the
+architecture.** The design said Oracle would call it; Forge has no HTTP
+generation surface at all — it is a CLI-driven batch pipeline built for
+40-segment documents with a narrative arc, which is a different job from
+authoring one adaptive exercise mid-sentence. What shipped splits along the
+line that already existed: **Oracle authors and judges, Core verifies**,
+because verification means re-running the real graders and those live with the
+database. `/ORACLE.md` §3.1 and §7.3 were corrected to match the code.
+
+**Two pre-existing cross-platform gate bugs were fixed** because they made
+verification impossible on Windows: `check-migrations.mjs` and
+`ciPathFilters.test.ts` both produced `/C:/...` or backslash paths from
+`URL.pathname` / `path.relative`. Confirmed pre-existing by stashing.
+`railway-migrate.test.mjs` still fails identically before and after these
+changes and was left alone.
+
+**What is deliberately NOT done.** The feature is not enabled for minors, and
+`/ORACLE.md` §16 is the gate. Its first item is a data-processing agreement
+with the voice provider that does not exist, and its second is counsel's answer
+on the Terms and Privacy Notice — the consent wording currently shipping in
+`tutor.consent.body` is a PLACEHOLDER and is labelled as one.
+`/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` is the brief: what data goes where, what is
+never stored, what a child can be shown that no human approved first, and
+thirteen open questions that belong to counsel rather than to engineering.
+Inworld's concrete API surface is still unverified and is marked as such in the
+adapter itself; `VOICE_PROVIDER=none` is the default and a fully tested mode.
+
 ## Current State (2026-08-21) — AI Tutor (Oracle): full design approved, eight owner decisions recorded, no code written yet
 
 Session goal: design the final AI Tutor before building it. The owner asked for

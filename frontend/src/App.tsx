@@ -64,6 +64,11 @@ const LessonViewPage = lazy(() => import('@/lesson-engine/lab/LessonViewPage'));
  * never be pulled into a production entry bundle by a stray import. */
 const SceneLabPage = lazy(() => import('@/tutor-scene/lab/SceneLabPage'));
 
+/* Dev-only visual QA for the Tutor's product surfaces (personalize, offer,
+ * conversation) against fixtures — the §1.11 both-breakpoints check without
+ * needing a live session, a model key or a websocket. */
+const TutorLabPage = lazy(() => import('@/tutor/lab/TutorLabPage'));
+
 /* The Tutor's 3D stage. Lazy is MANDATORY, not an optimisation: `three` plus the
  * scene code is a large chunk, and a static import would put it in the entry
  * bundle of every route — including the marketing pages of users who never open
@@ -125,6 +130,16 @@ export function App() {
               element={
                 <Suspense fallback={null}>
                   <SceneLabPage />
+                </Suspense>
+              }
+            />
+          ) : null}
+          {import.meta.env.DEV ? (
+            <Route
+              path="dev/tutor-lab"
+              element={
+                <Suspense fallback={null}>
+                  <TutorLabPage />
                 </Suspense>
               }
             />

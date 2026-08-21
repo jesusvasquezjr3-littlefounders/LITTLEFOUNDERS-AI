@@ -23,6 +23,7 @@
 | [`picturegen/`](picturegen/) | Prism | Image generation — art-director judge + Qwen `qwen-image-max`, cache-first (assets in Depot, index in Vault) | 4007 | Railway | — |
 | [`dataintel/`](dataintel/) | Data Intel | DuckDB analytics warehouse — retention, lesson quality, segmentation, forecasting, anomalies and experiments | 4008 | Railway | — (internal-only, no public domain) |
 | [`pulse/`](pulse/) | Pulse | Observability — analytics (Plausible CE + Umami) & health (Uptime Kuma), pinned stack | — | Railway (5 services) | trackers + Kuma only |
+| [`oracle/`](oracle/) | Oracle | The AI Tutor runtime — live sessions, injection defence, moderation before speech, the only reach to a real-time voice provider | 4009 | Railway | one websocket (`/ws/tutor`), §1.5 exception |
 
 All Railway services live in one project (`littlefounders-b2c`). Internal services have no public domain by design (AGENTS.md §1.5) — only Core, Vault's Kong gateway, Depot, and Pulse's browser-facing surfaces (the two tracker scripts, Plausible's GA OAuth callback, Kuma's own-auth UI) are reachable from outside Railway's private network; all analytics/health DATA is read through Core.
 

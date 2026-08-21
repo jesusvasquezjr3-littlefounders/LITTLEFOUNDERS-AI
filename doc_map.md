@@ -35,7 +35,9 @@
 | Lesson Engine (taxonomy, document contract, grading, session, Character Control) | LESSON_ENGINE.md | all |
 | Course Engine (hierarchy, curriculum catalog, generation pipeline, gates, providers) | COURSE_ENGINE.md | all |
 | Forge production-readiness audit and research synthesis | COURSEGEN_AUDIT_2026-08-01.md | all |
-| AI tutor (Oracle) — approved design, NOT implemented | ORACLE.md | all |
+| AI tutor (Oracle) — product flow, privacy contract, injection defences, content ladder | ORACLE.md | all; §0 = owner decision record |
+| AI tutor runtime code (prompts, moderation, voice, session) | oracle/AGENTS.md · oracle/README.md | all |
+| AI tutor legal exposure (minors' voice, ungated generated content, retention) | /LEGAL/AI_TUTOR_LEGAL_REVIEW.md | all; §7 = open questions for counsel |
 | Tutor 3D stage (assets, rigs, procedural actions, placement, perf, Blender handoff) | TUTOR_3D.md | all |
 | Analytics warehouse (DuckDB, segmentation, forecasting, experiments) | /DATAINTEL.md · dataintel/AGENTS.md | all |
 | Data intelligence console (/admin/intel) | /DATAINTEL.md | §7 |
@@ -58,3 +60,4 @@
 | filebase (Depot) | filebase/AGENTS.md |
 | dataintel (Data Intel) | dataintel/AGENTS.md · engine spec: /DATAINTEL.md |
 | pulse (Pulse) | pulse/AGENTS.md · pulse/README.md |
+| oracle (Oracle) | oracle/AGENTS.md · product spec: /ORACLE.md |

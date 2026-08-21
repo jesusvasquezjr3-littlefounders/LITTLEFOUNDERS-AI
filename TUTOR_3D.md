@@ -12,7 +12,7 @@
 > composed additively over each character's bind pose (§4.0–§4.2). Assets are
 > published to Depot and readable from the production origin (§3.2–§3.3).
 > Placement now knows water from ground (§5) — before that, `diorama-b` stood
-> its entire cast in the pond. Conversational layer NOT started (/ORACLE.md).
+> its entire cast in the pond. Conversational layer BUILT 2026-08-21 and plugged in through §7b (/ORACLE.md).
 
 ---
 
@@ -703,7 +703,7 @@ The runtime normalises her, so this is hygiene, not a bug.
 | KTX2 texture compression | `brew install ktx` | Textures ship as WebP and decode to full RGBA in VRAM. Matters most on 2 GB phones. `npm run assets:3d` warns loudly on every run. |
 | Publish assets to Depot | **Depot must ship first** (see §3.3) | `npm run publish:scenes` uploads 9 files / 5.90 MB to bucket `tutor-scenes`, then writes `sceneManifest.generated.json`. Commit it, then set `VITE_SCENE_ASSET_BASE` to `<depot>/files/tutor-scenes`. |
 | Gesture amplitude tuning | Nothing — just art direction | Numbers in `characterActions.ts` + a screenshot pass. |
-| Conversational layer | Product decisions in `/ORACLE.md` §3 | Voice/live tutoring. §1.9 applies in full. |
+| Conversational layer | **DONE 2026-08-21** | Built as `oracle/` + Core `/api/v1/tutor/*` + `frontend/src/tutor/`. See §7b's integration note. Not enabled for minors until `/ORACLE.md` §16 clears. |
 
 ## §7b The integration contract — what the next layer plugs into
 
@@ -764,6 +764,31 @@ Amplitude, not phonemes, because Qwen3-TTS returns no phoneme track. The
 upgrade path costs nothing structurally: a phoneme track would index the SAME
 eight atlas frames, so no model, card or component changes when it arrives.
 That is what the atlas bought.
+
+> ### ✅ The conversational layer PLUGGED IN — 2026-08-21
+>
+> `/ORACLE.md` is built, and this contract held: wiring it was passing props,
+> not reaching into the scene. Two props were added because they were genuinely
+> missing rather than because the design changed:
+>
+> - **`scene`** — `TutorScene` had always accepted it; `TutorStage` never
+>   forwarded it, so the product could not offer an island the scene lab had
+>   been switching between for weeks.
+> - **`speakingFraming`** — the owner made all four characters selectable as
+>   the speaking tutor (`/ORACLE.md` §0 decision 4), so `conversation` framing
+>   could no longer be a constant. `rho` and `zara` close in; `liruf` and
+>   `dina` stay at the island shot, because closing the camera on a painted,
+>   motionless mouth frames the one thing that is not working. For them the 2D
+>   bubble carries the articulation — `CharacterActor`'s `speaking` prop
+>   animates the SVG mouths that §3.1 could not give them in 3D.
+>
+> Captions render as an HTML overlay ON the canvas
+> (`frontend/src/tutor/SpeechCaption.tsx`), never as scene geometry: text in
+> WebGL is a font-atlas problem across three locales that buys nothing when the
+> caption always faces the viewer anyway.
+>
+> `onReady` earned its keep exactly as predicted — the product gates its first
+> speech URL on it, so audio never plays at an unresolved canvas.
 
 **`framing` is not decoration.** At `vignette` a character is 104 px tall and
 their mouth 2.4 px, so no viseme is distinguishable from any other. Lip-sync

@@ -42,8 +42,9 @@
 | `filebase/` | **Depot** | Media storage — lesson audio & generated images (content-addressed; public reads for PII-free media, internal-key writes) |
 | `picturegen/` | **Prism** | The only image-generation service — art-director judge (LF illustration identity) + Qwen `qwen-image`, assets in Depot, request-cache in Vault (`picture_assets`) |
 | `pulse/` | **Pulse** | Observability — self-hosted analytics (Plausible CE + Umami v3) & system health (Uptime Kuma); pinned third-party stack, data read only through Core |
+| `oracle/` | **Oracle** | The AI Tutor runtime — live sessions, turn orchestration, injection defence, moderation before speech; the only service reaching a real-time voice provider. Holds no database credentials |
 
-The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed **Oracle**.
+The AI tutor **feature** spans `oracle/` (runtime), `backend/` (`/api/v1/tutor/*`, the content ladder, grading) and `frontend/src/tutor/` (the experience). Spec: `/ORACLE.md`.
 
 ## Course hierarchy terms (spec: /COURSE_ENGINE.md)
 
@@ -105,3 +106,20 @@ The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed
 | **lesson-lab** | Dev-only harness at `/dev/lesson-lab`: plays every fixture and the full showcase through the real player with the local grader. |
 
 **Territory map** — the whole-course skill map at `/learn/:courseSlug/territory`: a pure projection of Core's course tree where every topic carries a DATA-DERIVED state (`not-started` / `in-progress` / `completed` / `review-due`). `review-due` comes from the spaced-review layer (`topics.review_of`, migration 0016): a completed topic flips while a review topic citing it has unpassed lessons. Locked adventures render as fog-of-war silhouettes. Never a second source of truth — it renders the same `/learn/courses/:slug/tree` payload as the caminito.
+
+## AI Tutor terms (spec: /ORACLE.md)
+
+| Term | Meaning |
+|---|---|
+| **turn** | One exchange. A TUTOR turn is a closed JSON object — one moderated sentence plus an emotion, an action and a control decision — and never free-form prose. Invalid JSON is a DISCARDED turn, not a displayed one. |
+| **sealed context** | The `.strict()`-validated object holding everything permitted to reach a third-party model about a learner (`oracle/src/context/schema.ts`). An unlisted field is a rejection, never a silent drop. `sealGenerationBrief` is its narrower sibling for authoring an exercise. |
+| **tier band** | `1 \| 2 \| 3` (roughly ≤7, ≤9, older), derived from `birth_date` INSIDE our systems. The band travels; the date never does. Unknown → 2, the middle band, never the adult one. |
+| **nickname** | The learner-chosen name, validated to reject full-name shapes. The ONLY name-shaped value that ever reaches a model. Never derived from `display_name`. |
+| **content ladder** | The three rungs a tutor activity can come from: `catalog` (a published lesson segment), `bank` (a human-published pack), `live` (generated in the session). Tried in that order; the first that can serve, serves. |
+| **key re-execution** | Core independently re-deriving a generated segment's answer with the REAL graders. It is the gate on XP: a segment whose key cannot be re-derived still teaches and pays nothing. |
+| **canary corpus** | The fixed set of injection and safety attempts checked in CI, in BOTH directions (`oracle/src/safety/canary.ts`). A ratchet: every real miss found in the wild is added after it is fixed. |
+| **the fence** | The per-turn nonce delimiter wrapping a learner's words as labelled DATA before they reach a model. Unguessable per turn, and stripped from the content it wraps. |
+| **scripted line** | A human-written tutor line, in all three locales, used wherever a generated one must not be — model down, moderation refused, or a safety disclosure. Never moderated (it was already reviewed) and always used verbatim. |
+| **soft close / hard stop** | The session budget's two edges: at the soft close the tutor is told to begin wrapping up IN CHARACTER; at the hard stop it ends. A session that hits the hard stop still gets a real farewell, never a cut to a modal. |
+| **voice consent** | The blocking, separately-granted, guardian-only permission for a minor's microphone. A ROW, never a flag: it stores the exact wording shown, and revocation closes the row rather than deleting it. |
+| **tutor-lab** | Dev-only harness at `/dev/tutor-lab`: every Tutor surface against fixtures, for the both-breakpoints check without a live session. |

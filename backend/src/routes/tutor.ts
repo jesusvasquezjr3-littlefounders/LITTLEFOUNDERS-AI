@@ -573,6 +573,20 @@ export function tutorRouter(): Router {
     const profile = await profileOf(user.accessToken, user.id);
     const locale = normalizeLocale(profile?.locale);
 
+    const roles = await getRolesForGate(user.id);
+    if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve roles');
+    const isMinor = roles.includes('kid');
+
+    /*
+     * Voice availability is resolved HERE, before the session starts, because
+     * the offer screen carries the "talk out loud" checkbox. Discovering that
+     * the microphone is unavailable only after the session opens means the
+     * learner ticked a box that did nothing, which is worse than a checkbox
+     * that was honestly absent.
+     */
+    const consent = isMinor ? await getActiveVoiceConsent(user.id) : null;
+    const runtime = await preflight(isMinor, true);
+
     const states = await getOwnLearnerIntelligence(user.id);
 
     // Cold start is the NORMAL case right now, not an edge case: the courses
@@ -587,6 +601,12 @@ export function tutorRouter(): Router {
     return ok(res, {
       locale,
       intelDegraded: states === null,
+      /** Whether Oracle can serve at all right now — the button is honest about it. */
+      canStart: runtime.canStart,
+      startBlockedBy: runtime.canStart ? null : runtime.blockedBy,
+      voiceAvailable: runtime.voiceAvailable,
+      /** Distinct reasons deserve distinct copy: no consent vs no provider. */
+      microphoneBlockedBy: isMinor && consent === null ? 'CONSENT_REQUIRED' : !runtime.voiceAvailable ? 'VOICE_UNAVAILABLE' : null,
       // The tutor offers, never diagnoses. The client renders these as
       // invitations, and declining is not recorded as a fact about anyone.
       weakSkills: weak.map((s) => ({

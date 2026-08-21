@@ -1,22 +1,22 @@
 {
   "scene": {
-    "webglUnavailable": "Este dispositivo no puede mostrar gráficos 3D. Tu navegador no es compatible con WebGL, o está desactivado en la configuración.",
-    "contextLost": "La vista 3D se interrumpió. Va a regresar sola en un momento.",
+    "webglUnavailable": "Este dispositivo no puede mostrar gráficos 3D. Tu navegador no soporta WebGL o está desactivado en la configuración.",
+    "contextLost": "La vista 3D se interrumpió. Volverá sola en un momento.",
     "loadFailed": "No se pudo cargar la escena 3D. Revisa tu conexión e inténtalo de nuevo."
   },
   "lab": {
     "title": "Laboratorio de escena",
     "subtitle": "Mide un .glb contra el presupuesto de assets del Tutor",
     "loadModel": "Cargar un .glb",
-    "noModel": "No hay modelo cargado. Elige un .glb para medirlo, o explora la escena de prueba.",
+    "noModel": "No hay modelo cargado. Elige un .glb para medirlo o explora la escena de ejemplo.",
     "runtime": "Ejecución",
     "tier": "Nivel de calidad",
     "fps": "FPS",
-    "drawCalls": "Llamadas de dibujo (por cuadro)",
+    "drawCalls": "Draw calls (por cuadro)",
     "triangles": "Triángulos (por cuadro)",
-    "pixelRatio": "Densidad de píxeles",
+    "pixelRatio": "Relación de píxeles",
     "fileSize": "Tamaño del archivo",
-    "locked": "Nivel fijado — este dispositivo no pudo sostener uno más alto",
+    "locked": "Nivel bloqueado — este dispositivo no pudo sostener uno mayor",
     "budget": "Presupuesto",
     "budgetOk": "Dentro del presupuesto",
     "budgetOver": "Fuera del presupuesto",
@@ -27,7 +27,7 @@
     "webgl": "WebGL",
     "pointer": "Puntero",
     "pointerCoarse": "táctil",
-    "pointerFine": "ratón",
+    "pointerFine": "mouse",
     "reducedMotion": "Movimiento reducido",
     "unknown": "sin reportar",
     "yes": "sí",
@@ -35,6 +35,157 @@
   },
   "page": {
     "title": "Tutor",
-    "subtitle": "Tu lugar de aprendizaje, con el Dr. Rho y Liruf."
+    "subtitle": "Tu lugar para aprender, con un tutor que sabe en qué estás trabajando.",
+    "loading": "Preparando tu isla…",
+    "unavailable": "No podemos abrir al tutor ahora mismo. Inténtalo en un rato.",
+    "tutorUnavailable": "Tu tutor está descansando. Todo lo demás sigue funcionando; vuelve pronto.",
+    "changeStage": "Cambiar mi isla",
+    "seeYouSoon": "¡Nos vemos pronto!",
+    "sessionSaved": "Esta conversación quedó guardada. Puedes volver a escucharla cuando quieras.",
+    "startAnother": "Empezar otra sesión"
+  },
+  "personalize": {
+    "whoTitle": "¿Con quién te gustaría platicar?",
+    "whoHelp": "Elige al personaje que será tu tutor. Puedes cambiarlo cuando quieras.",
+    "bodyTalker": "Habla con todo el cuerpo",
+    "companionTitle": "¿Alguien te acompaña?",
+    "companionHelp": "Un acompañante se queda contigo en la isla. No enseña: te hace compañía.",
+    "noCompanion": "Solos tú y yo",
+    "whereTitle": "¿Dónde te gustaría estar?",
+    "whereHelp": "Elige tu isla y la luz.",
+    "nicknameTitle": "¿Cómo te decimos?",
+    "nicknameLabel": "Apodo",
+    "nicknameHint": "Elige el nombre que quieras: un apodo, no tu nombre real. Es el único nombre que tu tutor llega a saber.",
+    "nicknameInvalid": "Usa letras, números, espacios, apóstrofos o guiones.",
+    "adaptTitle": "¿Cómo te gusta que te expliquen?",
+    "adaptHelp": "Activa lo que te ayude. Puedes cambiarlo cuando quieras y tu tutor lo va a seguir.",
+    "skip": "Ahorita no",
+    "save": "Guardar y continuar",
+    "saving": "Guardando…"
+  },
+  "character": {
+    "dina": { "name": "Dina", "blurb": "Tranquila y paciente" },
+    "liruf": { "name": "Liruf", "blurb": "Juguetón y lleno de energía" },
+    "rho": { "name": "Dr. Rho", "blurb": "Cálido y preciso" },
+    "zara": { "name": "Zara Vex", "blurb": "Curiosa y rápida" }
+  },
+  "diorama": {
+    "diorama-a": "Círculo de piedra",
+    "diorama-b": "Oasis"
+  },
+  "backdrop": {
+    "auto": "Como mi tema",
+    "dawn": "Amanecer",
+    "day": "Día",
+    "dusk": "Atardecer",
+    "night": "Noche"
+  },
+  "adaptation": {
+    "slower_pacing": "Ve un poco más despacio",
+    "more_examples": "Dame más ejemplos",
+    "less_text": "Usa menos palabras",
+    "more_visual": "Muéstrame dibujos en vez de texto",
+    "repeat_before_advancing": "Repasa lo anterior antes de seguir"
+  },
+  "adaptationOffer": {
+    "slower_pacing": "¿Quieres que vaya un poquito más despacio?",
+    "more_examples": "¿Te ayudaría otro ejemplo?",
+    "less_text": "¿Lo dejo más cortito de aquí en adelante?",
+    "more_visual": "¿Prefieres verlo como dibujo?",
+    "repeat_before_advancing": "¿Lo repasamos una vez más antes de seguir?"
+  },
+  "intent": {
+    "course_topic": "Un tema de mis cursos",
+    "weak_skill": "Algo para practicar",
+    "faq": "Una pregunta",
+    "open": "Una plática",
+    "diagnostic": "Conocernos"
+  },
+  "faq": {
+    "what_is_saving": "¿Qué significa de verdad ahorrar?",
+    "why_prices_change": "¿Por qué cambian los precios?",
+    "what_is_a_budget": "¿Qué es un presupuesto?",
+    "how_does_a_loan_work": "¿Cómo funciona pedir prestado?"
+  },
+  "offers": {
+    "intelDegraded": "Ahorita no podemos ver tu avance, así que tu tutor te irá conociendo sobre la marcha.",
+    "useVoice": "Quiero hablar en voz alta",
+    "voiceNeedsConsent": "Para hablar en voz alta, una persona adulta de tu familia tiene que activarte el micrófono. Puedes escribir mientras tanto: todo funciona igual.",
+    "voiceUnavailable": "Hablar en voz alta no está disponible ahorita. Puedes escribirle a tu tutor.",
+    "courseTopic": {
+      "title": "Trabajar un tema del curso",
+      "body": "Retoma algo de un curso que ya estás llevando."
+    },
+    "weakSkill": {
+      "title": "Practicar juntos",
+      "body": "¿Le echamos un ojo juntos a {{topic}}? Tú decides."
+    },
+    "diagnostic": {
+      "title": "Empezar por algún lado",
+      "body": "Tu tutor te hará un par de preguntas rápidas para encontrar un buen punto de partida."
+    },
+    "faq": { "body": "Una respuesta corta y, si quieres, le entramos más a fondo." },
+    "open": {
+      "title": "Pregúntame lo que sea",
+      "body": "Cuéntale a tu tutor qué traes en la cabeza y él encontrará por dónde empezar."
+    }
+  },
+  "conversation": {
+    "listening": "Tu tutor está pensando en algo para que pruebes.",
+    "ended": "Aquí termina esta sesión.",
+    "typePlaceholder": "Escribe un mensaje…",
+    "send": "Enviar",
+    "holdToTalk": "Mantén para hablar",
+    "micDenied": "El micrófono está bloqueado en la configuración de tu navegador. Puedes escribir.",
+    "finish": "Terminar",
+    "wrappingUp": "Cerrando",
+    "minutesLeft": "Quedan {{count}} min",
+    "gettingToKnowYou": "Todavía te estoy conociendo",
+    "yesPlease": "Sí, por favor",
+    "noThanks": "No, gracias"
+  },
+  "segment": {
+    "activity": "Prueba esto",
+    "practiceOnly": "solo práctica",
+    "check": "Revisar",
+    "checking": "Revisando…",
+    "unsupported": "Esta actividad necesita una versión más nueva de la app.",
+    "gradeFailed": "No pudimos revisarlo ahorita. Inténtalo otra vez.",
+    "xpEarned": "+{{count}} XP",
+    "noXpExplained": "¡Muy bien! Esta es de práctica, así que no suma XP.",
+    "tier": {
+      "perfect": "¡Exacto!",
+      "great": "¡Muy bien!",
+      "almost": "Casi casi — vuelve a mirar.",
+      "tryAgain": "Vamos a verlo juntos."
+    }
+  },
+  "history": {
+    "title": "Tus conversaciones anteriores",
+    "loading": "Cargando…",
+    "empty": "Todavía no hay conversaciones. La primera aparecerá aquí.",
+    "loadFailed": "No pudimos cargar esa conversación.",
+    "replay": "Volver a reproducir",
+    "hide": "Ocultar",
+    "playLine": "Reproducir esta línea",
+    "activities": "Lo que practicaste",
+    "xp": "{{count}} XP"
+  },
+  "startError": {
+    "INTERNAL": "Algo salió mal al empezar la sesión. Inténtalo de nuevo.",
+    "SESSION_LIMIT": "Ya usaste el tiempo de tutor de hoy. ¡Te esperamos mañana!",
+    "MODEL_UNAVAILABLE": "Tu tutor está descansando. Inténtalo en un rato.",
+    "MODERATION_UNAVAILABLE": "Ahorita no podemos empezar una sesión de forma segura. Inténtalo en un rato.",
+    "ORACLE_UNAVAILABLE": "Tu tutor está descansando. Inténtalo en un rato."
+  },
+  "consent": {
+    "title": "Micrófono para el tutor con IA",
+    "body": "Tu hijo o hija puede hablar en voz alta con el tutor con IA en lugar de escribir. Su voz se envía a nuestro proveedor de reconocimiento de voz para convertirla en texto, y nosotros nunca la guardamos. Las respuestas del tutor y la conversación escrita se guardan 90 días para que ustedes puedan leerlas o volver a escucharlas. Puedes desactivarlo cuando quieras.",
+    "grant": "Permitir el micrófono",
+    "revoke": "Apagar el micrófono",
+    "activeSince": "Micrófono permitido desde el {{date}}",
+    "inactive": "El micrófono está apagado. Tu hijo o hija puede seguir usando el tutor escribiendo.",
+    "granting": "Guardando…",
+    "failed": "No pudimos guardarlo. Inténtalo de nuevo."
   }
 }

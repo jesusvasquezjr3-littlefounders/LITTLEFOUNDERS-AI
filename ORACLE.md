@@ -7,11 +7,16 @@
 > is `/COURSE_ENGINE.md`. On conflict with /AGENTS.md or DESIGN.md, those win and
 > this file gets fixed.
 >
-> **Status (2026-08-21):** DESIGN APPROVED, IMPLEMENTATION NOT STARTED. The
-> stage is built and deployed; `/tutor` renders it with no conversational layer
-> (`frontend/src/routes/app/TutorPage.tsx`). The Data Intel → Core personalization
-> boundary is live (`GET /api/v1/learn/personalization`). Everything from §3
-> onward is specification, not code.
+> **Status (2026-08-21):** BUILT. `oracle/` (the runtime), migration `0047`,
+> Core's `/api/v1/tutor/*` surface and the `/tutor` product experience all
+> exist and pass their gates. **NOT ENABLED FOR MINORS** — §16's checklist
+> gates that, and its first item is a data-processing agreement that does not
+> yet exist. Legal review in progress:
+> `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md`.
+>
+> Where this document and the code disagree, the code is right and this
+> document is the bug — §3.1 and §7.3 were corrected once already for exactly
+> that reason (see the note in §7.3).
 >
 > **Last updated:** 2026-08-21 · Language: English (project rule).
 
@@ -92,14 +97,14 @@ the audio, drives the mouth from that audio, and closes the camera in for as
 long as the character is talking. Wiring Oracle is passing props, not reaching
 into the scene.
 
-### §2.1 The four gaps between "stage" and "tutor"
+### §2.1 The four gaps between "stage" and "tutor" — ALL CLOSED
 
-| Gap | What is missing | Where it belongs |
-|---|---|---|
-| **Diorama choice** | `TutorScene` accepts `scene`; `TutorStage` does not forward it. | One prop on `TutorStage`. |
-| **Captions over the head** | Nothing renders dialogue in the 3D view. | A billboarded HTML overlay ON the canvas, not inside the scene graph — text in WebGL is a font-atlas problem nobody needs to have. |
-| **Streamed speech** | `speechUrl` is a finished file; live TTS arrives as a stream. | Either Oracle writes each turn to Depot and hands over a URL (simplest, costs a round trip), or `TutorStage` gains a `speechStream` variant. Decide by MEASURING the round trip, not by guessing. |
-| **Per-character framing** | `conversation` framing is one setting for everyone. | Decision 4 needs `liruf`/`dina` framed wider than `rho`/`zara`. |
+| Gap | What shipped |
+|---|---|
+| **Diorama choice** | `TutorStage` now forwards `scene` to `TutorScene`, which had always accepted it. The prop was simply missing, so the product could not offer an island the scene lab had been switching between for weeks. |
+| **Captions over the head** | `frontend/src/tutor/SpeechCaption.tsx` — a billboarded HTML overlay ON the canvas, never scene geometry. Text in WebGL is a font-atlas problem (glyph coverage for three locales, hinting, subpixel rendering) that buys nothing here, because the caption always faces the viewer anyway. A div gets real text rendering, real selection, real screen-reader output and real i18n for free. It reveals with a typewriter for sighted readers while `aria-live` announces the COMPLETE sentence — announcing the animating slice would stutter it two characters at a time. |
+| **Streamed speech** | Oracle writes each turn's audio to Depot and hands over a URL, which is the simpler of the two options the design left open. Revisit only if the round trip is MEASURED to hurt. |
+| **Per-character framing** | `TutorStage` gained `speakingFraming`. `rho` and `zara` close in; `liruf` and `dina` stay at the island shot (§2.2). |
 
 ### §2.2 The static-mouth mitigation (decision 4)
 
@@ -145,10 +150,21 @@ browser ──HTTPS──> Core          (auth, profile, personalization, gradin
    │
    └──WSS──────────> Oracle       (audio in/out, turns, segment proposals)
                        │
-                       ├──internal──> DeepSeek / Qwen   (the pedagogical model)
+                       ├──internal──> DeepSeek          (the tutor's words,
+                       │                                 and tier-3 drafts)
+                       ├──internal──> Qwen              (independent moderation
+                       │                                 + exercise review)
                        ├──internal──> Inworld           (STT + TTS only)
-                       ├──internal──> Forge             (live segment generation)
                        └──internal──> Depot             (tutor audio storage)
+
+**Forge is deliberately NOT on that list.** The design first said tier 3 would
+call it; Forge turned out to have no HTTP generation surface at all — it is a
+CLI-driven batch pipeline with a paid ledger, built to author 40-segment
+documents with a narrative arc, which is a different job from authoring one
+adaptive exercise mid-sentence. What shipped instead splits the work along the
+line that already existed: **Oracle authors and judges, Core verifies**, because
+verification means re-running the real graders and the real graders live with
+the database.
 ```
 
 ### §3.2 The one open sign-off: §1.5 and the browser's websocket
@@ -176,7 +192,12 @@ doubles the latency budget of the one feature where latency IS the product, and
 it puts a streaming workload inside the service whose health endpoint must never
 depend on anything optional.
 
-**This needs owner sign-off before implementation**, because it edits §1.5.
+**Owner sign-off given 2026-08-21.** The exception is written into
+`/AGENTS.md` §1.5 with its four constraints, and Oracle enforces them: it
+rejects a Supabase JWT BY NAME (so a miswired client reads "this socket takes a
+session token" rather than "malformed"), burns the token's nonce on first use,
+checks the token's user against the session's, and refuses the socket outright
+for a minor with no active guardian consent.
 
 ### §3.3 Inworld sits behind an interface, from day one
 
@@ -360,6 +381,31 @@ when we have written one" is not a tutoring product.
 | Moderation | §6, same as speech. |
 | Provenance | Every live segment is stored with `origin='live'`, its full generation record, and the session it was born in. A defect found later must be traceable to every learner who saw it. |
 | Post-hoc sampling | A fraction of live segments lands in `/admin/content` for human review after the fact. This does not protect the first learner; it is what catches a systematic defect before it reaches the thousandth. |
+
+**Where generation and verification actually live.** Oracle authors the
+candidate and runs the independent judge; **Core verifies it and only then
+persists it**. The design first said Oracle would call Forge — Forge has no
+HTTP generation surface at all, and its pipeline is built for 40-segment
+documents with a narrative arc rather than one adaptive exercise mid-sentence.
+The split that shipped follows the line that already existed: the service that
+INVENTED a segment is never the service that certifies it, and certification
+means re-running the real graders, which live with the database.
+
+> **Two defects worth keeping, both caught by tests rather than by review.**
+>
+> The key re-execution first used the answer-KEY shape rather than the
+> learner-SUBMISSION shape — `quiz_mcq`'s key is `{correct_option_id}` and its
+> submission is `{option_id}`; `fill_blank`'s key is an ARRAY of gap
+> descriptors and its submission is an OBJECT keyed by gap number. Every
+> generated segment would have been reported unverifiable and unable to pay
+> XP: failing safe, silently, forever, with nothing going red.
+>
+> And tier-3 generation was a SECOND door to the model that bypassed the sealed
+> context. The invariant test caught it. The fix was not to weaken the test —
+> generation now has its own `.strict()` brief (`sealGenerationBrief`), which
+> deliberately omits the nickname: a generated exercise has no reason to
+> address the learner by name, and a nickname inside authored content would
+> outlive the session it was written in.
 
 **A generation that fails any guard produces nothing.** §1.14 applies directly:
 emit NOTHING rather than something generic, because a confident wrong
@@ -545,25 +591,33 @@ images, DeepSeek balance). So:
 
 ## §16 Acceptance checklist — before any minor uses this
 
-Every one of these must be proven, not assumed:
+Every one of these must be proven, not assumed. Ticked items were verified in
+the build session of 2026-08-21; unticked ones block enabling this for minors.
 
-- [ ] A data-processing agreement with the voice provider covering minors' audio
-      exists. **Owner action; blocks kid rollout.**
+- [ ] A data-processing agreement with the voice provider covering minors'
+      audio exists. **OWNER ACTION — blocks kid rollout.** See
+      `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` §6.
 - [ ] All three `/LEGAL/` documents updated and `npm run legal:sync` run.
-- [ ] The consent gate blocks the microphone with no consent, and revocation
-      takes effect on the next turn — both tested.
-- [ ] The model context object rejects every unlisted field (`.strict()`), tested.
-- [ ] The injection canary corpus passes in CI.
-- [ ] Moderation fails closed, tested.
-- [ ] Live generation's guards each tested, including the "emit nothing" path.
-- [ ] XP is never awarded for an unverifiable key, tested.
-- [ ] A failed personalization read produces a degraded response, never zeros.
-- [ ] Parent visibility and retention deletion tested end to end.
-- [ ] `npm run verify:rig` and `npm run verify:placement` pass.
-- [ ] Verified in-browser at 375 px and 1280 px, screenshots taken (§1.11).
-- [ ] Owner sign-off recorded for the §1.5 exception (§3.2).
-
----
+      **Blocked on counsel** — the brief is written, the answers are not.
+      The consent wording currently in `tutor.consent.body` is a PLACEHOLDER.
+- [x] The consent gate blocks the microphone with no consent, and revocation
+      takes effect on the next turn — both tested (`backend` tutor suite,
+      `oracle` socket guard).
+- [x] The model context object rejects every unlisted field (`.strict()`),
+      tested — eighteen forbidden fields asserted in `verify:tutor`.
+- [x] The injection canary corpus passes in CI, in BOTH directions.
+- [x] Moderation fails closed, tested.
+- [x] Live generation's guards each tested, including the "emit nothing" path.
+- [x] XP is never awarded for an unverifiable key, tested.
+- [x] A failed personalization read produces a degraded response, never zeros.
+- [x] Parent visibility tested. Retention deletion is implemented as
+      `purge_expired_tutor_sessions`; **the nightly job that calls it is not
+      scheduled yet.**
+- [ ] `npm run verify:rig` and `npm run verify:placement` — LOCAL gates needing
+      `/glb/` source exports, which are outside the repository.
+- [x] Verified in-browser at 375 px and 1280 px, light and dark, screenshots
+      taken, no horizontal overflow at either width (§1.11).
+- [x] Owner sign-off recorded for the §1.5 exception (§3.2).
 
 ## §17 Documentation stewardship for this feature
 
@@ -573,6 +627,7 @@ Every one of these must be proven, not assumed:
 | Inworld added to the stack | `/AGENTS.md` §1.2 + mirror, `ROADMAP.md`, `WALKTHROUGH.md` |
 | §1.5 browser-exception #4 | `/AGENTS.md` §1.5 + mirror, with the constraints from §3.2 |
 | Voice / consent / retention | all three `/LEGAL/*.md` + `npm run legal:sync` |
+| ANY new field reaching a model | `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` §2.2 — it is a processing change, not a refactor |
 | New migrations | `database/AGENTS.md`, regenerate `database/types/` |
 | New endpoints | service `README.md` route tables |
 | New terms (Oracle, session, turn, pack) | `GLOSSARY.md` |
