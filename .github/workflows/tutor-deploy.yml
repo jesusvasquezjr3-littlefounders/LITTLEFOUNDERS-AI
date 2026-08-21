@@ -72,10 +72,16 @@ jobs:
           chmod 600 ~/.ssh/railway_key
           # Railway's SSH proxy host is ephemeral per session, not a fixed host
           # worth pinning — a fresh runner has no cached host key.
+          # LogLevel ERROR because the host key is deliberately not cached:
+          # ssh would otherwise print "Warning: Permanently added ..." on
+          # stderr, which the migration script merges into psql's stdout and
+          # reads as a query result. The script filters that line too — this is
+          # the other half, silencing it at the source rather than after.
           cat <<'CONFIG' >> ~/.ssh/config
           Host *
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
+            LogLevel ERROR
           CONFIG
           chmod 600 ~/.ssh/config
 
@@ -175,6 +181,14 @@ jobs:
           DEPOT_KEY="$(read_var filebase INTERNAL_API_KEY)"
           REDIS="$(read_var littlefounders-backend REDIS_URL)"
 
+          # The provider keys are NOT a manual step. `step=inspect` confirmed on
+          # 2026-08-21 that coursegen already holds a real DEEPSEEK_API_KEY and a
+          # real QWEN_API_KEY, and Oracle wants the same two accounts Forge uses
+          # — same vendor, same billing, same rotation. Copying them is what an
+          # operator would do by hand, minus the trip through a clipboard.
+          MODEL_KEY="$(read_var coursegen DEEPSEEK_API_KEY)"
+          JUDGE_KEY="$(read_var coursegen QWEN_API_KEY)"
+
           if [ -z "$CORE_KEY" ]; then
             echo "::error::could not read Core's INTERNAL_API_KEY — Oracle cannot call Core without it"
             exit 1
@@ -204,6 +218,19 @@ jobs:
           set_var oracle VOICE_PROVIDER "none"
           set_var oracle TUTOR_VOICE_FOR_MINORS "false"
 
+          # Each of these has a distinct, stated consequence if absent, so each
+          # gets its own error rather than a shared "some keys missing".
+          if [ -n "$MODEL_KEY" ]; then
+            set_var oracle MODEL_API_KEY "$MODEL_KEY"
+          else
+            echo "::error::coursegen has no DEEPSEEK_API_KEY to copy — Oracle would come up live and unable to teach"
+          fi
+          if [ -n "$JUDGE_KEY" ]; then
+            set_var oracle JUDGE_API_KEY "$JUDGE_KEY"
+          else
+            echo "::error::coursegen has no QWEN_API_KEY to copy — no minor's session can start without the moderation judge"
+          fi
+
           echo "-- littlefounders-backend"
           set_var littlefounders-backend ORACLE_URL "http://oracle.railway.internal:4009"
           set_var littlefounders-backend ORACLE_INTERNAL_KEY "$SERVICE_KEY"
@@ -212,10 +239,14 @@ jobs:
           [ -n "$DEPOT_KEY" ] && set_var littlefounders-backend FILEBASE_INTERNAL_KEY "$DEPOT_KEY"
 
           echo ""
-          echo "STILL NEEDED BY HAND — this workflow cannot invent them:"
-          echo "  oracle/MODEL_API_KEY   DeepSeek. Without it the tutor cannot teach."
-          echo "  oracle/JUDGE_API_KEY   Qwen. Without it no minor's session starts."
-          echo "  then dispatch this workflow with step=domain"
+          echo "NEXT: dispatch this workflow with step=domain."
+          echo ""
+          echo "STILL NEEDED BY HAND — this workflow cannot invent them, and"
+          echo "each is an owner decision rather than a missing value:"
+          echo "  oracle/INWORLD_API_KEY        the production Inworld credential"
+          echo "  oracle/VOICE_PROVIDER=inworld flip only once the DPA is signed"
+          echo "  the twelve INWORLD_VOICE_<CHARACTER>_<LOCALE> ids, from"
+          echo "  'npm run voices:clone' against audiogen/src/samples (owner-held)"
 
       # ── DOMAIN — the browser opens a websocket straight to Oracle ────────
       - name: Give oracle a public domain
