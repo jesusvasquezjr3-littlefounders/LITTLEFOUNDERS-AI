@@ -638,3 +638,47 @@ jobs:
             exit 1
           fi
           echo "providers OK — both answered a real request"
+
+      - name: Teach one turn, from inside Oracle
+        if: inputs.step == 'verify'
+        run: |
+          set -uo pipefail
+          set +e
+
+          # The probe above proves the PROVIDER answers. This proves ORACLE can
+          # teach, which is a different question with four failure modes between
+          # them: the privacy seal, our own request shape (including
+          # response_format: json_object, which a model-name change can silently
+          # drop), the closed turn schema, and the independent judge.
+          #
+          # `oracle/scripts/verify-model.ts` drives the real code — sealContext,
+          # the real system prompt, the real client, parseTurn, moderation — so
+          # what passes here is what a learner would get. It starts no session,
+          # writes no row, and needs no learner: the context is synthetic and
+          # carries exactly what the schema allows.
+          #
+          # It runs INSIDE the container because that is where the keys are, and
+          # they are never going anywhere else.
+          SCRIPT='cd /app && npx --no-install tsx scripts/verify-model.ts'
+          b64=$(printf '%s' "$SCRIPT" | base64 | tr -d '\n')
+          out="$(railway ssh --service oracle -i ~/.ssh/railway_key -- \
+                  sh -c "echo $b64 | base64 -d | sh" 2>&1)"
+          status=$?
+          printf '%s\n' "$out" | sed 's/^/   /'
+
+          if printf '%s' "$out" | grep -q 'model:verify OK'; then
+            echo ""
+            echo "OK: Oracle can teach — sealed, answered, parsed, judged"
+            exit 0
+          fi
+
+          echo ""
+          if printf '%s' "$out" | grep -qiE 'tsx: not found|could not determine executable|npm ERR'; then
+            # A pruned production image has no tsx. That is a tooling gap, not a
+            # broken tutor, and saying so beats an alarming red X — the provider
+            # probe above already covered the part that matters most.
+            echo "::warning::tsx is not available in the container, so the teaching path could not be exercised here. Run 'npm run model:verify' against a machine with oracle/.env, or build the script into dist/."
+            exit 0
+          fi
+          echo "::error::Oracle could not produce a valid turn (exit $status) — read the stages above; the first FAIL is the cause"
+          exit 1

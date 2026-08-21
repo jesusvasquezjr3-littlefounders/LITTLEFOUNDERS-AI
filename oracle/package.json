@@ -16,6 +16,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "verify:tutor": "tsx scripts/verify-tutor.ts",
+    "model:verify": "tsx scripts/verify-model.ts",
     "voices:clone": "tsx scripts/clone-character-voices.ts",
     "voices:verify": "tsx scripts/verify-inworld.ts"
   },
