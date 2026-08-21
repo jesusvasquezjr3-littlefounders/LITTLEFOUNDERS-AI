@@ -107,6 +107,67 @@ that happens to be logged into Railway would have reached the real production
 project instead of the fixture. 10/10 now. The gate was green where it was
 watched and red where it was run.
 
+### Then I typed a question into it, and it could not answer
+
+Everything above was green — `/health`, the preflight's thirty checks, private
+networking, the 401 on the internal API, 142 tests, `verify:tutor`. So I opened
+the tutor in production, picked Dr. Rho, and asked it about compound interest.
+It said:
+
+> Se me enredaron las ideas un momento. ¿Me lo preguntas otra vez?
+
+That is `MODEL_DOWN` — the line a learner gets when the model provider throws.
+Every turn, for every learner, since the moment it went live. Nothing else
+could have found it: no test, no healthcheck, no preflight ever made a real
+call to the provider.
+
+**Two real defects, then a third thing that is not a defect at all.**
+
+First: `MODEL_API_BASE` was `https://api.deepseek.com` while coursegen has
+always used `https://api.deepseek.com/v1`. Neither service goes through an SDK
+that appends the version — both build `${BASE}/chat/completions` by hand — so
+Oracle was asking for a URL that does not exist. Provision had copied
+coursegen's KEY and left Oracle on its own defaults, which is exactly how the
+two came apart.
+
+Second, and quieter: `MODEL_NAME` was `deepseek-chat`, retired 2026-07-24 and
+now an alias for a v4-flash mode, while Forge writes every course with
+`deepseek-v4-pro`. That failure has no error. Had only the URL been fixed, the
+tutor would have worked — explaining topics with a weaker model than the lesson
+that taught them, indefinitely, with nothing anywhere to suggest it.
+
+Both are fixed in three places, because one would not have been enough: the
+defaults in `oracle/src/env.ts`, the provision step (the endpoint and model now
+travel WITH the key), and a new root gate `npm run provider:check` that fails
+on exactly the shapes that shipped — verified by reverting them and watching it
+go red. A deliberate difference goes in its `ALLOWED_DIVERGENCE` table with a
+reason, so the next divergence is a decision someone wrote down.
+
+**And then the probe found the thing underneath.** `step=verify` now calls both
+providers from inside the container and reports the status code, which is what
+distinguishes failures that look identical from outside:
+
+```
+== The pedagogical model (DeepSeek) ==   HTTP 402  out of credit
+== The moderation judge (Qwen) ==        HTTP 200  OK
+```
+
+**The DeepSeek account has no balance.** So the tutor still cannot teach, and
+now we know why in one line instead of a day. Everything around the model is
+verified working; the model has nothing to answer with. That is a payment, not
+a fix.
+
+Worth watching while it is open: `coursegen` holds the same key and has
+`FORGE_DEEPSEEK_FALLBACK_TO_QWEN`, so course generation may have been quietly
+running on the fallback for some time with no symptom. Oracle must NOT copy
+that fallback — its judge is already Qwen, and `/ORACLE.md` requires the judge
+to be INDEPENDENT of the author. Falling back would collapse a §1.9
+compensating control into a model grading its own work.
+
+The deeper lesson is about `/health`. It reported `model: up` on the strength
+of a key being CONFIGURED. Configured is not reachable, and every layer above
+it inherited that confusion.
+
 ### Open, needing the owner
 
 - **Custom domain** — currently the Railway-provided

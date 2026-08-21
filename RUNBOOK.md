@@ -130,6 +130,39 @@ It terminates a learner's live socket; a cold start would happen in front of a
 child who just pressed the button. The preflight treats a sleeping oracle as a
 failure, not an expected state.
 
+### BLOCKED ON BILLING: the DeepSeek account is out of credit
+
+`step=verify` calls both providers from inside the Oracle container and
+reports the HTTP status. As of 2026-08-21:
+
+```
+== The pedagogical model (DeepSeek) ==
+   HTTP 402   the provider account is out of credit
+== The moderation judge (Qwen) ==
+   HTTP 200   OK
+```
+
+**Until DeepSeek is topped up, the tutor connects, greets, captions, saves and
+replays — and answers every actual question with "se me enredaron las ideas un
+momento".** That is `MODEL_DOWN` in `oracle/src/tutor/scripted.ts`, the honest
+degraded line, working exactly as designed. Everything around the model is
+verified working; the model itself has no balance to answer with.
+
+This is an owner action (a payment), not an engineering one.
+
+Two things worth knowing while it is open:
+
+- **Forge probably is not showing symptoms**, because `coursegen` has
+  `FORGE_DEEPSEEK_FALLBACK_TO_QWEN` and silently falls back. Same key, same
+  402 — course generation may have quietly been running on the fallback model
+  for a while. Worth checking against generation telemetry rather than assumed.
+- **Oracle must NOT copy that fallback.** Its judge is already Qwen, and
+  `/ORACLE.md` requires the judge to be INDEPENDENT of the author — "an author
+  that grades its own work grades it generously". Falling back to Qwen for
+  authoring would silently collapse a §1.9 compensating control into a model
+  grading itself. A fallback needs a THIRD provider, or an owner decision
+  recorded in `/ORACLE.md` §16.
+
 ### Still open
 
 - **Custom domain.** Currently the Railway-provided
