@@ -198,20 +198,54 @@ jobs:
           bash database/scripts/railway-migrate.sh --confirm-production
 
       # ── PROVISION — creates the service and sets variables ───────────────
+      #
+      # IDEMPOTENT IN THE STRONG SENSE: running it twice must not change
+      # anything that is already correct. That matters most for the two shared
+      # secrets. Regenerating them on every run would rotate a live pairing,
+      # and because variables are staged with --skip-deploys, Core and Oracle
+      # would pick up the new value at whatever moment each next redeploys —
+      # so every tutor session between those two moments fails on a signature
+      # that does not verify. They are therefore generated ONLY when absent.
       - name: Provision the oracle service
         if: inputs.step == 'provision'
         run: |
           set -uo pipefail
+          # GitHub runs `bash -e` whatever the script says, so an expected
+          # non-zero — `railway add` on a service that already exists, or a
+          # `[ -n "$X" ] && …` guard that is simply false — would abandon the
+          # step halfway through, leaving the service configured in part. That
+          # is exactly how the first attempt at this step created `oracle` and
+          # then set none of its variables. Failures are collected explicitly
+          # below instead.
+          set +e
 
-          railway status --environment "$ENVIRONMENT" --json > status.json 2>/dev/null || echo '{}' > status.json
-          if jq -e --arg env "$ENVIRONMENT" '
-              [.environments.edges[]? | select(.node.name == $env)
-               | .node.serviceInstances.edges[]?.node
-               | select(.serviceName == "oracle")] | length > 0' status.json >/dev/null 2>&1; then
+          FAILED=0
+
+          service_exists() {
+            railway status --environment "$ENVIRONMENT" --json 2>/dev/null \
+              | jq -e --arg env "$ENVIRONMENT" '
+                  [.environments.edges[]? | select(.node.name == $env)
+                   | .node.serviceInstances.edges[]?.node.serviceName]
+                  | index("oracle") != null' >/dev/null 2>&1
+          }
+
+          if service_exists; then
             echo "oracle already exists — updating variables only"
           else
             echo "Creating the oracle service"
-            railway add --service oracle
+            # </dev/null: `railway add` falls back to an interactive picker and
+            # would otherwise read the job's own arguments as answers to it.
+            railway add --service oracle </dev/null 2>&1 | sed 's/^/   /'
+            # Trust the project, not the exit code. `railway add` reports
+            # failure for reasons that include "it worked, and then something
+            # else did not" — which is how the service came to exist at all,
+            # created by a run that ended in error.
+            if service_exists; then
+              echo "   oracle exists now"
+            else
+              echo "::error::could not create the oracle service"
+              exit 1
+            fi
           fi
 
           read_var() {
@@ -219,11 +253,15 @@ jobs:
               | jq -r --arg k "$2" '.[$k] // ""'
           }
 
-          # GENERATED HERE, ON PURPOSE: straight from /dev/urandom into Railway,
-          # never touching a machine, a log or a file. `tr -d` strips the base64
-          # padding and newline so the value is safe in a KEY=VALUE argument.
-          SESSION_SECRET="$(openssl rand -base64 48 | tr -d '\n=+/' )"
-          SERVICE_KEY="$(openssl rand -base64 32 | tr -d '\n=+/' )"
+          set_var() {
+            if railway variable set --service "$1" --environment "$ENVIRONMENT" --skip-deploys "$2=$3" >/dev/null 2>&1; then
+              echo "   set $1/$2"
+            else
+              echo "::error::failed to set $1/$2"
+              FAILED=$((FAILED + 1))
+            fi
+          }
+
           CORE_KEY="$(read_var littlefounders-backend INTERNAL_API_KEY)"
           DEPOT_KEY="$(read_var filebase INTERNAL_API_KEY)"
           REDIS="$(read_var littlefounders-backend REDIS_URL)"
@@ -241,13 +279,41 @@ jobs:
             exit 1
           fi
 
-          set_var() {
-            if railway variable set --service "$1" --environment "$ENVIRONMENT" --skip-deploys "$2=$3" >/dev/null 2>&1; then
-              echo "   set $1/$2"
-            else
-              echo "::warning::failed to set $1/$2"
+          # ── the two shared secrets ────────────────────────────────────────
+          # Each is ONE value that must be identical on both services. Reuse
+          # whatever is already there, generate only what is missing, and if
+          # the two sides disagree regenerate both — a mismatched pair is not
+          # a state worth preserving.
+          #
+          # GENERATED HERE, ON PURPOSE: straight from /dev/urandom into
+          # Railway, never touching a machine, a log or a file. `tr -d` strips
+          # base64 padding and the newline so the value is safe as a KEY=VALUE
+          # argument and needs no quoting downstream.
+          ORACLE_SVC_KEY="$(read_var oracle INTERNAL_API_KEY)"
+          CORE_SVC_KEY="$(read_var littlefounders-backend ORACLE_INTERNAL_KEY)"
+          if [ -n "$ORACLE_SVC_KEY" ] && [ "$ORACLE_SVC_KEY" = "$CORE_SVC_KEY" ]; then
+            SERVICE_KEY="$ORACLE_SVC_KEY"
+            echo "service key: already paired, left alone"
+          else
+            SERVICE_KEY="$(openssl rand -base64 32 | tr -d '\n=+/')"
+            if [ -n "$ORACLE_SVC_KEY$CORE_SVC_KEY" ]; then
+              echo "::warning::the Core and Oracle service keys did not match — regenerating both"
             fi
-          }
+            echo "service key: generated"
+          fi
+
+          ORACLE_SESSION="$(read_var oracle TUTOR_SESSION_SECRET)"
+          CORE_SESSION="$(read_var littlefounders-backend TUTOR_SESSION_SECRET)"
+          if [ -n "$ORACLE_SESSION" ] && [ "$ORACLE_SESSION" = "$CORE_SESSION" ]; then
+            SESSION_SECRET="$ORACLE_SESSION"
+            echo "session secret: already paired, left alone"
+          else
+            SESSION_SECRET="$(openssl rand -base64 48 | tr -d '\n=+/')"
+            if [ -n "$ORACLE_SESSION$CORE_SESSION" ]; then
+              echo "::warning::the Core and Oracle session secrets did not match — regenerating both"
+            fi
+            echo "session secret: generated"
+          fi
 
           echo "-- oracle"
           set_var oracle INTERNAL_API_KEY "$SERVICE_KEY"
@@ -255,8 +321,6 @@ jobs:
           set_var oracle CORE_URL "http://littlefounders-backend.railway.internal:4000"
           set_var oracle CORE_INTERNAL_KEY "$CORE_KEY"
           set_var oracle DEPOT_URL "http://filebase.railway.internal:4006"
-          [ -n "$DEPOT_KEY" ] && set_var oracle DEPOT_INTERNAL_KEY "$DEPOT_KEY"
-          [ -n "$REDIS" ] && set_var oracle REDIS_URL "$REDIS"
           set_var oracle NODE_ENV "production"
           set_var oracle PORT "4009"
           # Voice stays OFF until the data-processing agreement exists
@@ -265,17 +329,30 @@ jobs:
           set_var oracle VOICE_PROVIDER "none"
           set_var oracle TUTOR_VOICE_FOR_MINORS "false"
 
+          if [ -n "$DEPOT_KEY" ]; then
+            set_var oracle DEPOT_INTERNAL_KEY "$DEPOT_KEY"
+          else
+            echo "::warning::filebase has no INTERNAL_API_KEY to copy — Oracle cannot store session audio"
+          fi
+          if [ -n "$REDIS" ]; then
+            set_var oracle REDIS_URL "$REDIS"
+          else
+            echo "::warning::no REDIS_URL to copy — Oracle falls back to its in-memory rate limiter"
+          fi
+
           # Each of these has a distinct, stated consequence if absent, so each
-          # gets its own error rather than a shared "some keys missing".
+          # gets its own error rather than a shared "some keys are missing".
           if [ -n "$MODEL_KEY" ]; then
             set_var oracle MODEL_API_KEY "$MODEL_KEY"
           else
             echo "::error::coursegen has no DEEPSEEK_API_KEY to copy — Oracle would come up live and unable to teach"
+            FAILED=$((FAILED + 1))
           fi
           if [ -n "$JUDGE_KEY" ]; then
             set_var oracle JUDGE_API_KEY "$JUDGE_KEY"
           else
             echo "::error::coursegen has no QWEN_API_KEY to copy — no minor's session can start without the moderation judge"
+            FAILED=$((FAILED + 1))
           fi
 
           echo "-- littlefounders-backend"
@@ -283,10 +360,19 @@ jobs:
           set_var littlefounders-backend ORACLE_INTERNAL_KEY "$SERVICE_KEY"
           set_var littlefounders-backend TUTOR_SESSION_SECRET "$SESSION_SECRET"
           set_var littlefounders-backend FILEBASE_URL "http://filebase.railway.internal:4006"
-          [ -n "$DEPOT_KEY" ] && set_var littlefounders-backend FILEBASE_INTERNAL_KEY "$DEPOT_KEY"
+          if [ -n "$DEPOT_KEY" ]; then
+            set_var littlefounders-backend FILEBASE_INTERNAL_KEY "$DEPOT_KEY"
+          fi
 
           echo ""
-          echo "NEXT: dispatch this workflow with step=domain."
+          if [ "$FAILED" -gt 0 ]; then
+            echo "::error::$FAILED variable(s) could not be set — re-dispatch step=provision once the cause is fixed"
+            exit 1
+          fi
+          echo "provision OK"
+          echo ""
+          echo "NEXT: merge the tutor PR so oracle CI -> oracle CD gives the"
+          echo "service its first deployment, then dispatch step=domain."
           echo ""
           echo "STILL NEEDED BY HAND — this workflow cannot invent them, and"
           echo "each is an owner decision rather than a missing value:"
