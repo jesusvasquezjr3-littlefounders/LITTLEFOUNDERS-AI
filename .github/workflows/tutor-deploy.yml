@@ -1,0 +1,246 @@
+name: Tutor deploy (operator)
+
+# One-shot operator steps for bringing the AI Tutor (Oracle) online.
+# RUNBOOK.md "Deploying the AI Tutor (Oracle)" is the narrative; this is the
+# hands.
+#
+# WHY A WORKFLOW AND NOT A LAPTOP. The Railway credentials for this project
+# live as repository secrets and nowhere else, which is correct — but it means
+# every production step has to run on a runner. Same mechanism
+# insights-maintenance.yml and vault-backup.yml already use.
+#
+# READ-ONLY UNLESS ASKED. `inspect` is the default and mutates nothing. Each
+# mutating step is separate and idempotent, so a half-finished run is resumed
+# by re-dispatching the step that failed rather than by starting over.
+#
+# NO SECRET VALUE IS EVER PRINTED. The two shared secrets are generated ON THE
+# RUNNER and written straight into Railway, so they never exist on anyone's
+# machine, in any log, or in any file. Every command that touches one is
+# silenced.
+#
+# CLI SURFACE, verified against railway 5.41.2 rather than assumed:
+#   railway variable list --service S --environment E --json
+#   railway variable set  --service S --environment E  KEY=VALUE
+#   railway status --environment E --json
+#   railway add --service NAME
+#   railway domain --service NAME
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: 'Which step to run'
+        required: true
+        default: inspect
+        type: choice
+        options:
+          - inspect
+          - migrate
+          - provision
+          - domain
+          - verify
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    name: 'Tutor deploy — ${{ inputs.step }}'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      ENVIRONMENT: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install the Railway CLI
+        run: |
+          npm i -g @railway/cli
+          railway --version
+          jq --version
+
+      - name: Write the Railway SSH key
+        if: inputs.step == 'inspect' || inputs.step == 'migrate'
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
+          chmod 600 ~/.ssh/railway_key
+          # Railway's SSH proxy host is ephemeral per session, not a fixed host
+          # worth pinning — a fresh runner has no cached host key.
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+          CONFIG
+          chmod 600 ~/.ssh/config
+
+      # ── INSPECT — mutates nothing ────────────────────────────────────────
+      - name: Inspect production
+        if: inputs.step == 'inspect'
+        run: |
+          set -uo pipefail
+
+          echo "== Which project does this token reach? =="
+          railway status --environment "$ENVIRONMENT" --json > status.json 2>status.err \
+            && jq -r '{project: .name} | .project' status.json \
+            || { echo "status failed:"; cat status.err; }
+
+          echo ""
+          echo "== Production services and instance states =="
+          jq -r --arg env "$ENVIRONMENT" '
+            .environments.edges[]? | select(.node.name == $env)
+            | .node.serviceInstances.edges[]?.node
+            | .serviceName + "  " + ((.activeDeployments // [])
+                | map((.instances // []) | map(.status) | join(","))
+                | join(",") | if . == "" then "no-active-deployment" else . end)
+          ' status.json | sort || echo "could not enumerate services"
+
+          echo ""
+          echo "== Does the oracle service already exist? =="
+          if jq -e --arg env "$ENVIRONMENT" '
+              [.environments.edges[]? | select(.node.name == $env)
+               | .node.serviceInstances.edges[]?.node
+               | select(.serviceName == "oracle")] | length > 0' status.json >/dev/null 2>&1; then
+            echo "YES — provision will only update variables"
+          else
+            echo "NO — provision must create it"
+          fi
+
+          echo ""
+          echo "== Migration ledger (read-only dry run) =="
+          bash database/scripts/railway-migrate.sh --dry-run || echo "(dry run reported a problem — read it above)"
+
+          echo ""
+          echo "== Provider keys: presence and shape only, never a value =="
+          # Without DeepSeek the tutor is live and cannot teach; without Qwen no
+          # minor's session starts at all (/ORACLE.md §16).
+          for svc in coursegen littlefounders-backend; do
+            echo "-- $svc"
+            railway variable list --service "$svc" --environment "$ENVIRONMENT" --json 2>/dev/null \
+              | jq -r 'to_entries
+                       | map(select(.key | test("DEEPSEEK_API_KEY|QWEN_API_KEY|INTERNAL_API_KEY|REDIS_URL|ORACLE_|TUTOR_|FILEBASE_")))
+                       | sort_by(.key)
+                       | map("   \(.key): " + (
+                           if ((.value // "") | length) == 0 then "EMPTY"
+                           elif (.value | test("replace|placeholder|example|fake";"i")) then "PLACEHOLDER"
+                           else "configured" end))
+                       | .[]' \
+              || echo "   could not read variables"
+          done
+
+      # ── MIGRATE — mutates the production database ────────────────────────
+      - name: Apply pending migrations
+        if: inputs.step == 'migrate'
+        run: |
+          set -euo pipefail
+          echo "== Dry run first: the pending list must be exactly what is expected =="
+          bash database/scripts/railway-migrate.sh --dry-run
+          echo ""
+          echo "== Applying =="
+          bash database/scripts/railway-migrate.sh --confirm-production
+
+      # ── PROVISION — creates the service and sets variables ───────────────
+      - name: Provision the oracle service
+        if: inputs.step == 'provision'
+        run: |
+          set -uo pipefail
+
+          railway status --environment "$ENVIRONMENT" --json > status.json 2>/dev/null || echo '{}' > status.json
+          if jq -e --arg env "$ENVIRONMENT" '
+              [.environments.edges[]? | select(.node.name == $env)
+               | .node.serviceInstances.edges[]?.node
+               | select(.serviceName == "oracle")] | length > 0' status.json >/dev/null 2>&1; then
+            echo "oracle already exists — updating variables only"
+          else
+            echo "Creating the oracle service"
+            railway add --service oracle
+          fi
+
+          read_var() {
+            railway variable list --service "$1" --environment "$ENVIRONMENT" --json 2>/dev/null \
+              | jq -r --arg k "$2" '.[$k] // ""'
+          }
+
+          # GENERATED HERE, ON PURPOSE: straight from /dev/urandom into Railway,
+          # never touching a machine, a log or a file. `tr -d` strips the base64
+          # padding and newline so the value is safe in a KEY=VALUE argument.
+          SESSION_SECRET="$(openssl rand -base64 48 | tr -d '\n=+/' )"
+          SERVICE_KEY="$(openssl rand -base64 32 | tr -d '\n=+/' )"
+          CORE_KEY="$(read_var littlefounders-backend INTERNAL_API_KEY)"
+          DEPOT_KEY="$(read_var filebase INTERNAL_API_KEY)"
+          REDIS="$(read_var littlefounders-backend REDIS_URL)"
+
+          if [ -z "$CORE_KEY" ]; then
+            echo "::error::could not read Core's INTERNAL_API_KEY — Oracle cannot call Core without it"
+            exit 1
+          fi
+
+          set_var() {
+            if railway variable set --service "$1" --environment "$ENVIRONMENT" --skip-deploys "$2=$3" >/dev/null 2>&1; then
+              echo "   set $1/$2"
+            else
+              echo "::warning::failed to set $1/$2"
+            fi
+          }
+
+          echo "-- oracle"
+          set_var oracle INTERNAL_API_KEY "$SERVICE_KEY"
+          set_var oracle TUTOR_SESSION_SECRET "$SESSION_SECRET"
+          set_var oracle CORE_URL "http://littlefounders-backend.railway.internal:4000"
+          set_var oracle CORE_INTERNAL_KEY "$CORE_KEY"
+          set_var oracle DEPOT_URL "http://filebase.railway.internal:4006"
+          [ -n "$DEPOT_KEY" ] && set_var oracle DEPOT_INTERNAL_KEY "$DEPOT_KEY"
+          [ -n "$REDIS" ] && set_var oracle REDIS_URL "$REDIS"
+          set_var oracle NODE_ENV "production"
+          set_var oracle PORT "4009"
+          # Voice stays OFF until the data-processing agreement exists
+          # (/LEGAL/AI_TUTOR_LEGAL_REVIEW.md §6). The tutor is complete without
+          # it: captioned, typed, graded, replayable.
+          set_var oracle VOICE_PROVIDER "none"
+          set_var oracle TUTOR_VOICE_FOR_MINORS "false"
+
+          echo "-- littlefounders-backend"
+          set_var littlefounders-backend ORACLE_URL "http://oracle.railway.internal:4009"
+          set_var littlefounders-backend ORACLE_INTERNAL_KEY "$SERVICE_KEY"
+          set_var littlefounders-backend TUTOR_SESSION_SECRET "$SESSION_SECRET"
+          set_var littlefounders-backend FILEBASE_URL "http://filebase.railway.internal:4006"
+          [ -n "$DEPOT_KEY" ] && set_var littlefounders-backend FILEBASE_INTERNAL_KEY "$DEPOT_KEY"
+
+          echo ""
+          echo "STILL NEEDED BY HAND — this workflow cannot invent them:"
+          echo "  oracle/MODEL_API_KEY   DeepSeek. Without it the tutor cannot teach."
+          echo "  oracle/JUDGE_API_KEY   Qwen. Without it no minor's session starts."
+          echo "  then dispatch this workflow with step=domain"
+
+      # ── DOMAIN — the browser opens a websocket straight to Oracle ────────
+      - name: Give oracle a public domain
+        if: inputs.step == 'domain'
+        run: |
+          set -uo pipefail
+          echo "== Existing domains =="
+          railway domain list --service oracle 2>&1 | head -20 || true
+          echo ""
+          echo "== Ensuring a Railway-provided domain =="
+          railway domain --service oracle 2>&1 | tee domain.txt || true
+          HOST="$(grep -oE '[a-z0-9-]+\.up\.railway\.app' domain.txt | head -1)"
+          if [ -n "$HOST" ]; then
+            echo "Public host: $HOST"
+            railway variable set --service littlefounders-backend --environment "$ENVIRONMENT" \
+              --skip-deploys "ORACLE_PUBLIC_URL=https://$HOST" >/dev/null 2>&1 \
+              && echo "   set littlefounders-backend/ORACLE_PUBLIC_URL"
+          else
+            echo "::warning::no domain host parsed — set ORACLE_PUBLIC_URL by hand"
+          fi
+          echo ""
+          echo "The convention for a custom domain is tutor-b2c.littlefounders.ai;"
+          echo "add it in the dashboard and update ORACLE_PUBLIC_URL to match."
+
+      # ── VERIFY — read-only ───────────────────────────────────────────────
+      - name: Preflight
+        if: inputs.step == 'verify'
+        run: bash agent/tools/railway-preflight.sh "$ENVIRONMENT"
