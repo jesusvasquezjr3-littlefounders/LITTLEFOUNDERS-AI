@@ -392,6 +392,41 @@ jobs:
             echo "::warning::no INWORLD_API_KEY secret — every character will be captioned and SILENT"
           fi
 
+          # THE CAST'S OWN VOICES, from tracked config rather than from memory.
+          #
+          # oracle/voices.enrolled.json maps character x locale to the voice id
+          # produced by `npm run voices:clone`, which clones from the SAME
+          # reference recordings Echo narrates lessons with. That is the whole
+          # point: a child who knows Dr. Rho from a lesson must meet the same
+          # Dr. Rho in the tutor, not a stranger wearing his name.
+          #
+          # Ids, not secrets — useless without the key above — so they are
+          # tracked, and a re-enrolment is a reviewable diff instead of twelve
+          # values pasted into a dashboard by hand. A MISSING entry means that
+          # character is SILENT in that locale, deliberately and by design.
+          echo "-- character voices"
+          if [ -f oracle/voices.enrolled.json ]; then
+            enrolled=0
+            while IFS='=' read -r vkey vid; do
+              [ -z "$vkey" ] && continue
+              set_var oracle "$vkey" "$vid"
+              enrolled=$((enrolled + 1))
+            done <<< "$(jq -r '
+              .voices | to_entries[] as $c
+              | $c.value | to_entries[]
+              | "INWORLD_VOICE_" + ($c.key | ascii_upcase)
+                + "_" + (.key | ascii_upcase | gsub("-"; "_"))
+                + "=" + .value
+            ' oracle/voices.enrolled.json)"
+            echo "   $enrolled character voice(s) mapped"
+            # Twelve is four canonical characters across three locales. Fewer is
+            # not an error — it is a cast with silent members, and worth saying
+            # out loud rather than discovering when a child picks one.
+            [ "$enrolled" -eq 12 ] || echo "::warning::only $enrolled/12 character voices are enrolled; the rest stay silent"
+          else
+            echo "::warning::oracle/voices.enrolled.json is missing — every character will be captioned and SILENT"
+          fi
+
           # NOT A WARNING. Without both DEPOT_URL and DEPOT_INTERNAL_KEY,
           # `storeTurnAudio` returns null immediately and every `audioUrl` is
           # null — a fully successful, fully PAID-FOR text-to-speech call whose

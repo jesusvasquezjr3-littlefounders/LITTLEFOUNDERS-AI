@@ -1,0 +1,44 @@
+{
+  "_comment": [
+    "The enrolled Inworld voice for each canonical character, per locale.",
+    "",
+    "THESE ARE IDS, NOT SECRETS. They name a voice inside our own Inworld workspace and are",
+    "useless without the API key, so they are tracked on purpose: the deploy becomes reproducible,",
+    "a re-enrolment becomes a reviewable diff, and nobody has to paste twelve values by hand into a",
+    "dashboard at the exact moment they are tired.",
+    "",
+    "Produced by 'npm run voices:clone -- --confirm', which reads the owner-held reference recordings in",
+    "audiogen/src/samples/trimmed/ (gitignored, ~211 MB) — the SAME recordings Echo clones from, which",
+    "is what makes the tutor voice and the lesson narration the same person rather than two actors.",
+    "",
+    "A MISSING ENTRY MEANS SILENCE, never a substitute. resolveCharacterVoice returns null and the",
+    "adapter throws VoiceUnavailableError before any network call: a stranger speaking as Dr. Rho to a",
+    "child who knows him from a lesson is worse than Dr. Rho saying nothing.",
+    "",
+    "To re-enrol: run the script, replace this file, open a PR. Do not hand-edit an id."
+  ],
+  "workspace": "sparkly-mole-6065",
+  "enrolled": "2026-08-21",
+  "voices": {
+    "dina": {
+      "en-US": "sparkly-mole-6065__lf-dina-en-us",
+      "es-MX": "sparkly-mole-6065__lf-dina-es-mx",
+      "pt-BR": "sparkly-mole-6065__lf-dina-pt-br"
+    },
+    "liruf": {
+      "en-US": "sparkly-mole-6065__lf-liruf-en-us",
+      "es-MX": "sparkly-mole-6065__lf-liruf-es-mx",
+      "pt-BR": "sparkly-mole-6065__lf-liruf-pt-br"
+    },
+    "rho": {
+      "en-US": "sparkly-mole-6065__lf-rho-en-us",
+      "es-MX": "sparkly-mole-6065__lf-rho-es-mx",
+      "pt-BR": "sparkly-mole-6065__lf-rho-pt-br"
+    },
+    "zara": {
+      "en-US": "sparkly-mole-6065__lf-zara-en-us",
+      "es-MX": "sparkly-mole-6065__lf-zara-es-mx",
+      "pt-BR": "sparkly-mole-6065__lf-zara-pt-br"
+    }
+  }
+}
