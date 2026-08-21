@@ -38,7 +38,7 @@ import process from 'node:process';
 import { getConfig } from '../src/env.js';
 import { sealContext } from '../src/context/schema.js';
 import { TUTOR_SYSTEM_PROMPT, buildContextMessage } from '../src/tutor/prompt.js';
-import { complete, ModelUnavailableError } from '../src/model/provider.js';
+import { complete, DEFAULT_MAX_TOKENS, ModelUnavailableError } from '../src/model/provider.js';
 import { parseTurn } from '../src/tutor/turnSchema.js';
 import { moderateTutorOutput } from '../src/safety/moderation.js';
 
@@ -83,7 +83,10 @@ async function diagnose(context: unknown): Promise<void> {
           { role: 'user', content: buildContextMessage(context as never) },
         ],
         temperature: 0.6,
-        max_tokens: 400,
+        // The SAME budget the client uses. Hardcoding a number here is how the
+        // first version of this diagnostic reported 400 while the client had
+        // moved to 800, and sent the reader after the wrong cause.
+        max_tokens: DEFAULT_MAX_TOKENS,
         response_format: { type: 'json_object' },
       }),
     });

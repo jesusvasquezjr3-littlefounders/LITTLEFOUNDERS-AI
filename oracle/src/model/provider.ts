@@ -25,6 +25,16 @@ export interface CompletionResult {
   completionTokens: number;
 }
 
+/**
+ * The completion budget for one turn, exported so the diagnostic in
+ * `scripts/verify-model.ts` asks the SAME question this function asks.
+ *
+ * It already drifted once: the diagnostic hardcoded 400 while this had moved to
+ * 800, so a failing turn reported a budget nobody was using and pointed at the
+ * wrong cause. A diagnosis of a different request is worse than no diagnosis.
+ */
+export const DEFAULT_MAX_TOKENS = 2000;
+
 export class ModelUnavailableError extends Error {
   constructor(message: string) {
     super(message);
@@ -69,18 +79,34 @@ export async function complete(
           messages,
           temperature: opts.temperature ?? 0.6,
           /*
-           * 800, not 400, and the arithmetic matters. A turn is JSON, and the
-           * schema's own worst case is roughly 1,650 characters: `say` up to
-           * 700, plus a segmentRequest carrying skillKey 128, framing 240 and
-           * rationale 400, plus keys and punctuation. In Spanish that is around
-           * 550 tokens before any margin.
+           * 2000, and almost none of it is for the answer.
            *
-           * At 400 the model does not fail loudly — it stops mid-object, the
-           * JSON does not close, `parseTurn` discards it, and the learner gets
-           * a scripted line. And it would only happen on the turns that offer
-           * an activity, which are the valuable ones.
+           * EVERY MODEL THIS ACCOUNT OFFERS REASONS. `/models` lists exactly
+           * deepseek-v4-flash, deepseek-v4-flash-vision-exp and
+           * deepseek-v4-pro, and all of them spend the completion budget
+           * THINKING before a single character of content appears. Measured
+           * here in production on this exact prompt: 400 tokens of budget, 400
+           * tokens of `reasoning_content`, `content` of length ZERO, and
+           * `finish_reason: 'length'`. Not an error — a 200, billed, empty.
+           *
+           * Forge already paid for this lesson and wrote it down. Translating a
+           * THREE-WORD title cost it 477 reasoning tokens, budgets of 60 and
+           * 300 both came back empty, and that empty string is what shipped
+           * nine of ten topics with a blank name in two locales
+           * (coursegen/src/pipeline/localize.ts:490). Its structured-JSON call
+           * — the same shape as a turn — uses 2000, so this does too.
+           *
+           * The answer itself needs about 550: the schema's worst case is ~1,650
+           * characters (`say` up to 700, plus a segmentRequest carrying skillKey
+           * 128, framing 240 and rationale 400, plus keys and punctuation). The
+           * other ~1,450 is headroom for thinking, which varies with the
+           * question and cannot be predicted per turn.
+           *
+           * The failure this prevents is silent by construction: the model stops
+           * mid-object, the JSON never closes, `parseTurn` discards the turn,
+           * and the learner is told the tutor's thoughts got tangled.
            */
-          max_tokens: opts.maxTokens ?? 800,
+          max_tokens: opts.maxTokens ?? DEFAULT_MAX_TOKENS,
           // The turn schema is the contract; asking for JSON at the transport
           // level as well means a malformed turn is rarer, not that parsing
           // can be trusted. parseTurn() still validates.
