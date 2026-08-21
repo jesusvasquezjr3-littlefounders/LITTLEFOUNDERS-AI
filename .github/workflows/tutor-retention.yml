@@ -79,14 +79,25 @@ jobs:
             ''|*[!0-9]*) echo "limit must be a positive integer, got '$BATCH'" >&2; exit 1 ;;
           esac
 
-          # The request travels base64-encoded as a SINGLE argument: `railway
-          # ssh` space-joins its args and the remote shell re-parses them, so a
-          # command containing spaces would be word-split into garbage. Same
-          # lesson, same shape, as insights-maintenance.yml and vault-backup.yml.
+          # The request travels base64-encoded as a SINGLE argument, because a
+          # command containing spaces would otherwise be word-split on the way
+          # over.
           #
-          # Single quotes on the way out are deliberate: $INTERNAL_API_KEY and
-          # $PORT must expand THERE, inside the container that already has them,
-          # not here on a runner that must never see either.
+          # NO INNER QUOTES around the -c string, unlike insights-maintenance.yml
+          # and vault-backup.yml. Measured, not assumed: with them, the
+          # container answered
+          #
+          #   sh: 1: echo <b64> | base64 -d | sh: File name too long
+          #
+          # which is dash reporting it was handed the entire pipeline as one
+          # command NAME. So `railway ssh` passes argv straight to exec on this
+          # path rather than re-joining and re-parsing through a shell, and
+          # quotes added for the other behaviour arrive literal and swallow the
+          # pipes.
+          #
+          # Single quotes on the way OUT are still deliberate: $INTERNAL_API_KEY
+          # and $PORT must expand THERE, inside the container that already has
+          # them, and never here on a runner that must never see either.
           remote_purge() {
             local script b64
             script='curl -sS -X POST'
@@ -96,7 +107,7 @@ jobs:
             script="$script"' "http://127.0.0.1:${PORT:-4000}/api/v1/tutor/internal/retention/purge"'
             b64=$(printf '%s' "$script" | base64 | tr -d '\n')
             railway ssh --service littlefounders-backend -i ~/.ssh/railway_key -- \
-              sh -c "'echo $b64 | base64 -d | sh'" 2>&1
+              sh -c "echo $b64 | base64 -d | sh" 2>&1
           }
 
           total=0
