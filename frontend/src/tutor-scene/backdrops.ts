@@ -1,0 +1,188 @@
+/*
+ * What time of day the island is standing in.
+ *
+ * THIS CLOSES A SHIPPED BUG, and the shape of the bug is worth stating plainly
+ * because it is the kind that passes every test. `backdrop` is offered in the
+ * personalization panel, validated by Zod, persisted, and returned by two
+ * endpoints. A learner can pick "Night", see it saved, come back tomorrow and
+ * see it still selected. It reaches no renderer. Neither `TutorSceneProps` nor
+ * `TutorStageProps` had ever had such a field, so the value travelled the entire
+ * length of the system and stopped one prop short of the lights.
+ *
+ * The palettes below are PHYSICAL LIGHT, not surface colour, which is why they
+ * are literal values rather than DESIGN.md tokens. A token like `--lf-surface`
+ * answers "what colour is this panel"; nothing in the design system answers
+ * "what colour is the sun at dusk", and borrowing a UI token for it would tie
+ * the sky to a palette that exists to keep text legible. `SceneLighting` has
+ * always carried literal light values for the same reason.
+ *
+ * Pure — no `three`, no React — so the palette can be asserted without a GPU.
+ */
+
+/** The closed set the personalization axis offers. */
+export type SceneBackdropId = 'auto' | 'dawn' | 'day' | 'dusk' | 'night';
+
+export const SCENE_BACKDROP_IDS = [
+  'auto',
+  'dawn',
+  'day',
+  'dusk',
+  'night',
+] as const satisfies readonly SceneBackdropId[];
+
+export function isSceneBackdropId(value: string): value is SceneBackdropId {
+  return (SCENE_BACKDROP_IDS as readonly string[]).includes(value);
+}
+
+export interface BackdropLighting {
+  /** Hemisphere light's sky colour. */
+  sky: string;
+  /** Hemisphere light's ground bounce colour. */
+  ground: string;
+  hemisphereIntensity: number;
+  /** The single shadow-casting light. */
+  sun: string;
+  sunIntensity: number;
+  /** Where the sun sits. Moving it moves the shadows, which is most of the read. */
+  sunPosition: readonly [number, number, number];
+}
+
+/*
+ * `auto` is the theme-driven lighting the stage already shipped, byte for byte.
+ *
+ * It stays the DEFAULT so that adding this feature changes nothing for anyone
+ * who has not chosen a backdrop — a lighting change is the most visible possible
+ * regression, and "the island looks different today" is not a change anyone
+ * asked for when they only wanted the picker to work.
+ */
+const AUTO_LIGHT: BackdropLighting = {
+  sky: '#eaf2ff',
+  ground: '#d8c7a8',
+  hemisphereIntensity: 1.6,
+  sun: '#fff6e5',
+  sunIntensity: 1.8,
+  sunPosition: [4, 8, 5],
+};
+
+const AUTO_DARK: BackdropLighting = {
+  sky: '#2a3550',
+  ground: '#0b0f1a',
+  hemisphereIntensity: 1.1,
+  sun: '#93b4ff',
+  sunIntensity: 1.0,
+  sunPosition: [4, 8, 5],
+};
+
+/*
+ * The four chosen times of day.
+ *
+ * Each differs from its neighbours in THREE ways at once — hue, intensity and
+ * sun ANGLE — because a backdrop that only changed colour temperature reads as a
+ * filter over the same picture rather than as a different hour. The low, raking
+ * sun is what makes dawn and dusk legible at a glance on a 375 px screen, where
+ * a subtle warm tint is not.
+ *
+ * Night keeps a real key light rather than going to ambient-only. A flat ambient
+ * term makes stylized characters read as cardboard cutouts, and an unlit
+ * character at night is not atmospheric, it is a silhouette of a bug.
+ */
+const BACKDROPS: Readonly<Record<Exclude<SceneBackdropId, 'auto'>, BackdropLighting>> = Object.freeze({
+  dawn: {
+    sky: '#ffd9c2',
+    ground: '#6b5a7a',
+    hemisphereIntensity: 1.25,
+    sun: '#ffb27a',
+    sunIntensity: 1.5,
+    sunPosition: [-7, 2.6, 6],
+  },
+  day: {
+    sky: '#eaf2ff',
+    ground: '#d8c7a8',
+    hemisphereIntensity: 1.65,
+    sun: '#fff6e5',
+    sunIntensity: 1.85,
+    sunPosition: [4, 9, 5],
+  },
+  dusk: {
+    sky: '#ffc09f',
+    ground: '#3a3350',
+    hemisphereIntensity: 1.1,
+    sun: '#ff8f6b',
+    sunIntensity: 1.35,
+    sunPosition: [7, 2.2, -5],
+  },
+  night: {
+    sky: '#2f3a5c',
+    ground: '#080c16',
+    hemisphereIntensity: 0.85,
+    sun: '#9fc0ff',
+    sunIntensity: 0.75,
+    sunPosition: [-5, 7, -4],
+  },
+});
+
+/**
+ * The lighting a backdrop resolves to.
+ *
+ * `auto` is the only value that consults the theme. The other four are a
+ * DELIBERATE CHOICE by the learner and are honoured identically in light and
+ * dark mode: someone who picked Night and then switched the app to light mode
+ * asked for two different things, and silently overriding the one they chose
+ * inside the scene would make the picker feel broken in exactly the way it
+ * already was.
+ */
+export function resolveBackdrop(backdrop: SceneBackdropId, isDark: boolean): BackdropLighting {
+  if (backdrop === 'auto') return isDark ? AUTO_DARK : AUTO_LIGHT;
+  return BACKDROPS[backdrop];
+}
+
+/** Parses `#rrggbb` into 0..1 channels. Returns null for anything else. */
+function channels(hex: string): [number, number, number] | null {
+  const match = /^#([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!match?.[1]) return null;
+  const value = Number.parseInt(match[1], 16);
+  return [((value >> 16) & 255) / 255, ((value >> 8) & 255) / 255, (value & 255) / 255];
+}
+
+function toHex(r: number, g: number, b: number): string {
+  const byte = (channel: number) =>
+    Math.round(Math.min(1, Math.max(0, channel)) * 255)
+      .toString(16)
+      .padStart(2, '0');
+  return `#${byte(r)}${byte(g)}${byte(b)}`;
+}
+
+/**
+ * Warms a palette by `amount` (0..1), for the close performance.
+ *
+ * The session's ending lerps one notch warmer over the pull-back regardless of
+ * which backdrop the learner chose, so the warmth has to be a TRANSFORM of
+ * whatever palette is live rather than a sixth palette. A fixed "sunset" ending
+ * would silently discard a choice the learner made, at the one moment of the
+ * session they are most likely to remember.
+ */
+export function warmBy(lighting: BackdropLighting, amount: number): BackdropLighting {
+  const t = Math.min(1, Math.max(0, amount));
+  if (t === 0) return lighting;
+
+  const warm = (hex: string, toward: [number, number, number]): string => {
+    const rgb = channels(hex);
+    // An unparseable colour means someone hand-edited a palette into a form this
+    // does not understand. Returning it untouched keeps the scene lit; guessing
+    // a replacement would repaint the sky over a typo.
+    if (!rgb) return hex;
+    return toHex(
+      rgb[0] + (toward[0] - rgb[0]) * t,
+      rgb[1] + (toward[1] - rgb[1]) * t,
+      rgb[2] + (toward[2] - rgb[2]) * t,
+    );
+  };
+
+  return {
+    ...lighting,
+    sky: warm(lighting.sky, [1, 0.86, 0.72]),
+    ground: warm(lighting.ground, [0.55, 0.42, 0.34]),
+    sun: warm(lighting.sun, [1, 0.78, 0.55]),
+    sunIntensity: lighting.sunIntensity * (1 + t * 0.12),
+  };
+}

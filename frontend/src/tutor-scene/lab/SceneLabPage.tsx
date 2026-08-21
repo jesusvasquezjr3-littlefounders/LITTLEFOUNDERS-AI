@@ -8,7 +8,11 @@ import { useSceneModel } from '../useSceneModel';
 import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from '../quality';
 import { readBudget, TUTOR_ASSET_BUDGET } from '../budget';
 import { fitObject } from '../fitCamera';
-import { TutorScene, type TutorFraming } from '../TutorScene';
+import { TutorScene } from '../TutorScene';
+import { SHOT_IDS, type ShotId } from '../shots';
+import { SCENE_BACKDROP_IDS, type SceneBackdropId } from '../backdrops';
+import { AnchorProvider, useAnchorSlot } from '../ScreenAnchor';
+import { ANCHOR_IDS, type AnchorId } from '../anchors';
 import {
   CHARACTER_ACTIONS,
   CHARACTER_EMOTIONS,
@@ -107,6 +111,30 @@ function LoadedModel({ url, settings, onFit }: { url: string; settings: QualityS
   return <primitive object={scene} />;
 }
 
+/**
+ * One labelled dot pinned to a named place in the scene.
+ *
+ * The only way to see whether an anchor is WHERE IT CLAIMS TO BE. A HUD control
+ * that is ten centimetres off looks like a styling mistake, and the projection
+ * that placed it is the last thing anyone suspects. Rendering the raw slot name
+ * at the raw slot position makes the question answerable by looking.
+ *
+ * `bg-surface` and not a glass recipe: this carries text, and the opaque token
+ * is the only floor a contrast ratio can be computed against.
+ */
+function AnchorDot({ slot }: { slot: AnchorId }) {
+  const ref = useAnchorSlot(slot);
+  return (
+    <div
+      ref={ref}
+      data-anchor={slot}
+      className="lf-caption pointer-events-none z-50 whitespace-nowrap rounded-sm border border-primary bg-surface px-1.5 py-0.5 font-semibold text-content"
+    >
+      {slot}
+    </div>
+  );
+}
+
 function Row({ label, value, tone }: { label: string; value: string; tone?: 'ok' | 'over' }) {
   return (
     <div className="flex items-baseline justify-between gap-4 border-b border-outline py-1.5">
@@ -152,7 +180,22 @@ export default function SceneLabPage() {
    */
   const [stage, setStage] = useState<keyof typeof SCENE_ASSETS>('diorama-a');
   const [viseme, setViseme] = useState(0);
-  const [framing, setFraming] = useState<TutorFraming>('vignette');
+  /*
+   * Every shot, every backdrop and every anchor has to be reachable from here,
+   * because this harness is the only place the rebuilt camera can be verified
+   * at all today: the tutor's own model is answering HTTP 402 and the voice
+   * provider is off, so there is no live session to look at. A framing nobody
+   * can put on screen on demand is a framing nobody checks.
+   */
+  const [shot, setShot] = useState<ShotId>('establishing');
+  const [backdrop, setBackdrop] = useState<SceneBackdropId>('auto');
+  const [showAnchors, setShowAnchors] = useState(false);
+  /*
+   * A solo cast is not a cosmetic option. `two-shot` and `over-shoulder` both
+   * have to degrade gracefully to one character, and the only way to see that
+   * they do is to take the companion away.
+   */
+  const [solo, setSolo] = useState(false);
   const [emotion, setEmotion] = useState<CharacterEmotion>('neutral');
   /*
    * A real <audio> element driving the mouth, so the TTS path is exercised end
@@ -193,6 +236,13 @@ export default function SceneLabPage() {
   const unknown = t('tutor.lab.unknown');
 
   return (
+    /*
+     * The provider wraps the WHOLE page, not just the canvas. The anchored nodes
+     * are DOM siblings of the stage rather than children of it — that is the
+     * entire point of the ref channel — so a registry mounted inside the scene
+     * would be invisible to them.
+     */
+    <AnchorProvider>
     <div className="min-h-screen bg-base py-6 md:py-10">
       <div className="mx-auto max-w-container px-5 md:px-8">
         <header className="mb-6">
@@ -225,9 +275,10 @@ export default function SceneLabPage() {
                 action={action}
                 actionKey={actionKey}
                 character={lead}
-                companion={lead === 'liruf' ? 'rho' : 'liruf'}
+                companion={solo ? null : lead === 'liruf' ? 'rho' : 'liruf'}
                 viseme={speaking ? spokenViseme : viseme}
-                framing={framing}
+                shot={shot}
+                backdrop={backdrop}
                 emotion={emotion}
               />
             ) : (
@@ -294,14 +345,66 @@ export default function SceneLabPage() {
                   {speaking ? 'stop' : 'speak'}
                 </button>
               ) : null}
+              {composed
+                ? SHOT_IDS.map((id) => (
+                    <button
+                      key={`shot-${id}`}
+                      type="button"
+                      data-shot={id}
+                      onClick={() => setShot(id)}
+                      className={
+                        id === shot
+                          ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                          : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                      }
+                    >
+                      {id}
+                    </button>
+                  ))
+                : null}
+              {composed
+                ? SCENE_BACKDROP_IDS.map((id) => (
+                    <button
+                      key={`backdrop-${id}`}
+                      type="button"
+                      data-backdrop={id}
+                      onClick={() => setBackdrop(id)}
+                      className={
+                        id === backdrop
+                          ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                          : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                      }
+                    >
+                      {t(`tutor.backdrop.${id}`, { defaultValue: id })}
+                    </button>
+                  ))
+                : null}
               {composed ? (
                 <button
                   type="button"
-                  data-framing={framing}
-                  onClick={() => setFraming((v) => (v === 'vignette' ? 'conversation' : 'vignette'))}
-                  className="lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content"
+                  data-anchors={showAnchors ? 'on' : 'off'}
+                  onClick={() => setShowAnchors((v) => !v)}
+                  className={
+                    showAnchors
+                      ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                      : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                  }
                 >
-                  {framing}
+                  anchors
+                </button>
+              ) : null}
+              {composed ? (
+                <button
+                  type="button"
+                  data-solo={solo ? 'yes' : 'no'}
+                  onClick={() => setSolo((v) => !v)}
+                  className={
+                    solo
+                      ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                      : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                  }
+                >
+                  {solo ? 'cast: 1' : 'cast: 2'}
                 </button>
               ) : null}
               {composed
@@ -457,6 +560,15 @@ export default function SceneLabPage() {
           </aside>
         </div>
       </div>
+
+      {/*
+       * Rendered last so the dots sit above the inspector. They position
+       * themselves in viewport coordinates, so where they live in the document
+       * affects only stacking, never placement — and a slot the scene has not
+       * published is hidden and inert rather than parked in a corner.
+       */}
+      {composed && showAnchors ? ANCHOR_IDS.map((slot) => <AnchorDot key={slot} slot={slot} />) : null}
     </div>
+    </AnchorProvider>
   );
 }

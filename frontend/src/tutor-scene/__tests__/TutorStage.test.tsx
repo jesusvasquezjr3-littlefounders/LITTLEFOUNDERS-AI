@@ -12,7 +12,8 @@ vi.mock('../TutorScene', () => ({
   TutorScene: (props: Record<string, unknown>) => (
     <div
       data-testid="scene"
-      data-framing={String(props.framing)}
+      data-shot={String(props.shot)}
+      data-backdrop={String(props.backdrop)}
       data-viseme={String(props.viseme)}
       data-emotion={String(props.emotion)}
       data-action={String(props.action)}
@@ -44,7 +45,7 @@ describe('TutorStage', () => {
   it('stays on the establishing shot with a shut mouth when silent', () => {
     render(<TutorStage />);
     const scene = screen.getByTestId('scene');
-    expect(scene.dataset.framing).toBe('vignette');
+    expect(scene.dataset.shot).toBe('establishing');
     expect(scene.dataset.viseme).toBe('0');
     expect(played).toBe(0);
   });
@@ -54,7 +55,7 @@ describe('TutorStage', () => {
     const scene = screen.getByTestId('scene');
     // Lip-sync is meaningless at the island framing — the mouth is 2.4 px
     // there — so speaking has to move the camera, not just the mouth.
-    expect(scene.dataset.framing).toBe('conversation');
+    expect(scene.dataset.shot).toBe('closeup');
     expect(scene.dataset.viseme).toBe('3');
     expect(played).toBe(1);
   });
@@ -67,7 +68,7 @@ describe('TutorStage', () => {
       audio.dispatchEvent(new Event('ended'));
     });
     expect(onSpeechEnd).toHaveBeenCalledTimes(1);
-    expect(screen.getByTestId('scene').dataset.framing).toBe('vignette');
+    expect(screen.getByTestId('scene').dataset.shot).toBe('establishing');
     expect(screen.getByTestId('scene').dataset.viseme).toBe('0');
   });
 
@@ -83,7 +84,7 @@ describe('TutorStage', () => {
     const { rerender } = render(<TutorStage speechUrl="/speech/one.mp3" />);
     rerender(<TutorStage speechUrl={null} />);
     expect(paused).toBeGreaterThan(0);
-    expect(screen.getByTestId('scene').dataset.framing).toBe('vignette');
+    expect(screen.getByTestId('scene').dataset.shot).toBe('establishing');
   });
 
   it('shuts the mouth when playback is blocked instead of miming over silence', async () => {
@@ -112,5 +113,35 @@ describe('TutorStage', () => {
     const scene = screen.getByTestId('scene');
     expect(scene.dataset.emotion).toBe('proud');
     expect(scene.dataset.action).toBe('wave');
+  });
+
+  it('carries the chosen backdrop to the scene', () => {
+    /*
+     * The reason this assertion exists at all: `backdrop` was offered in the
+     * personalization panel, validated, persisted and returned by two endpoints
+     * while reaching no renderer. Every layer had a test except the last prop.
+     */
+    render(<TutorStage backdrop="dusk" />);
+    expect(screen.getByTestId('scene').dataset.backdrop).toBe('dusk');
+    // And the default is the shipped theme-driven lighting, unchanged.
+    render(<TutorStage />);
+    expect(screen.getAllByTestId('scene')[1]?.dataset.backdrop).toBe('auto');
+  });
+
+  it('lets an explicit shot override the legacy speaking framing', () => {
+    render(<TutorStage speechUrl="/speech/hello.mp3" shot="two-shot" speakingFraming="conversation" />);
+    expect(screen.getByTestId('scene').dataset.shot).toBe('two-shot');
+  });
+
+  it('replays the same clip when the audio key moves', () => {
+    /*
+     * The same audioUrl twice in a row used to play once: the caption and the
+     * bubble both updated while the element sat at the end of a clip it had
+     * already finished, which reads as the tutor mouthing nothing.
+     */
+    const { rerender } = render(<TutorStage speechUrl="/speech/same.mp3" audioKey={1} />);
+    expect(played).toBe(1);
+    rerender(<TutorStage speechUrl="/speech/same.mp3" audioKey={2} />);
+    expect(played).toBe(2);
   });
 });

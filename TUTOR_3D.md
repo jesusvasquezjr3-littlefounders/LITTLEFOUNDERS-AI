@@ -13,6 +13,17 @@
 > published to Depot and readable from the production origin (§3.2–§3.3).
 > Placement now knows water from ground (§5) — before that, `diorama-b` stood
 > its entire cast in the pond. Conversational layer BUILT 2026-08-21 and plugged in through §7b (/ORACLE.md).
+>
+> **Update 2026-08-21 — the stage is being promoted from a panel to the page.**
+> The first `/tutor` experience rendered this scene inside a card on a
+> dashboard and the owner rejected it: the Tutor is meant to be immersive, with
+> the controls INSIDE the scene. Nothing in §1–§7b changes. What is new is
+> **§9**, the in-scene composition contract: a shot vocabulary with one damper,
+> a projection channel that positions DOM chrome over the render without
+> touching React state, safe-area composition, and the picking rules that make
+> the scene itself interactive. `/ORACLE.md` §9–§10 is the product side of the
+> same rebuild; `DESIGN.md` → §Screen Recipes → **Tutor** is the authoritative
+> layout recipe and outranks both.
 
 ---
 
@@ -777,10 +788,22 @@ That is what the atlas bought.
 > - **`speakingFraming`** — the owner made all four characters selectable as
 >   the speaking tutor (`/ORACLE.md` §0 decision 4), so `conversation` framing
 >   could no longer be a constant. `rho` and `zara` close in; `liruf` and
->   `dina` stay at the island shot, because closing the camera on a painted,
+>   `dina` stayed at the island shot, because closing the camera on a painted,
 >   motionless mouth frames the one thing that is not working. For them the 2D
 >   bubble carries the articulation — `CharacterActor`'s `speaking` prop
 >   animates the SVG mouths that §3.1 could not give them in 3D.
+>
+>   **CORRECTED 2026-08-21 — that second half was `/ORACLE.md` §2.2's FALLBACK,
+>   not its decision.** §2.2's primary mitigation reads "They frame wider.
+>   Their `conversation` framing keeps more of the body in shot"; never closing
+>   the camera on them was the alternative, gated on "if this reads as broken
+>   in the first real screenshot pass". No such pass ran, so the gated branch
+>   shipped ungated and two of the four selectable tutors never came near the
+>   camera. The fix is a third shot rather than a boolean: `closeup-wide`
+>   (§9.1) brings them to the foreground 22° off-axis at 1.35× distance,
+>   framing head and hands, so the still mouth is never the subject and the
+>   character is still genuinely present. Two framings could not express that;
+>   a vocabulary can.
 >
 > Captions render as an HTML overlay ON the canvas
 > (`frontend/src/tutor/SpeechCaption.tsx`), never as scene geometry: text in
@@ -869,3 +892,224 @@ entire cast in the pond (§5).
 - Lighting lives in code, never baked — DESIGN.md mandates light AND dark mode,
   so an asset lit at export time is wrong in one of them by construction. Baked
   ambient occlusion in textures is fine; baked lightmaps are not.
+
+## §9 In-scene composition — the stage as the page
+
+Added 2026-08-21. §1–§7b describe a scene that renders. This section describes
+a scene that is the whole screen and that the learner touches: what the camera
+can be told to do, how DOM chrome is positioned over a moving render, how the
+camera composes around that chrome, and what is actually pickable.
+
+The layout these rules serve is `DESIGN.md` → §Screen Recipes → **Tutor**,
+which is authoritative (/AGENTS.md §1.1 rank 4). This section is the STAGE
+side of it; the product side is `/ORACLE.md` §9–§10.
+
+### §9.1 The shot vocabulary and the damper contract
+
+**Six shots, closed, pure.** `src/tutor-scene/shots.ts` holds one function per
+shot, `(ctx: ShotContext) => CameraPose`, importing neither `three` nor React:
+
+```
+establishing · approach · closeup · closeup-wide · two-shot · over-shoulder
+```
+
+`closeup-wide` is the shot that did not exist and should have (§7b's
+correction): 22° off the subject's own facing axis at 1.35× the `closeup`
+distance, framing head AND hands. It is what `/ORACLE.md` §2.2 always meant by
+"they frame wider", expressed as something a picker can put on screen and a
+test can assert.
+
+**Why a module and not two branches in `useFrame`.** The camera rig shipped
+with `vignette` and `conversation` decided inline, each computing an ABSOLUTE
+position and writing it every frame, then returning. That is why every framing
+change SNAPPED — there was no state between "here" and "there" for anything to
+travel through. Splitting the DESTINATION (a pure pose) from the TRAVEL (one
+damper) makes a transition a property of the system rather than a feature
+somebody has to remember to add to the next shot.
+
+**The damper is one line and it is framerate-independent:**
+
+```
+x += (target - x) * (1 - Math.exp(-lambda * dt))
+```
+
+Never a duration-based tween. A shot change routinely arrives while the
+previous one is still moving, and a tween restarted from a moving start
+produces exactly the snap the rewrite exists to remove. Still **exactly one
+camera write per frame**, unchanged from §1's cost.
+
+Four rules on top of it, each preventing a failure this scene has already had
+or would have had:
+
+1. **`ambientMotion: false` gates the ambient layers ONLY** — the idle orbit,
+   the handheld noise, the bob, the breathing. It must NOT gate the shot
+   damper. `quality.ts` sets `ambientMotion: false` on the `low` tier and
+   `governor.ts` LATCHES after two demotions, so a device that hiccuped twice
+   would otherwise be locked forever into a stage whose camera can never move
+   between shots — the whole design reduced to a static island, on exactly the
+   hardware the quality system exists to protect. The damper costs the same
+   single write either way, so gating it buys no frames.
+2. **Reduced motion is a `still` MODIFIER on this system, never a second
+   camera.** Zero orbit, zero handheld, zero anticipation, and travel collapsed
+   to a cut covered by a 120 ms scrim dip. One vocabulary with a modifier means
+   the accessible path is exercised by every shot test; two camera systems
+   means the accessible one is the one nobody looks at.
+3. **`two-shot` and `over-shoulder` must NEVER feed back into placement.** They
+   orbit off the cast's facing axis, and the solver faces characters outward
+   from the island centre (§5). If placement re-solves in response to the
+   camera, the two chase each other and the cast ends up facing a shot that has
+   already moved on. **The camera reads placement; placement never reads the
+   camera.**
+4. **Re-base the orbit clock on arrival.** The shipped rig accrued
+   `clock.elapsedTime` continuously while a close-up was held, so returning to
+   the establishing shot jumped to wherever the orbit would have been. Arrival
+   resets the phase.
+
+The framing cache must invalidate on **scene and cast**, not only on viewport
+resize. The two islands are 6.5 m and 9.5 m across (`measurements.ts`) and the
+characters differ in height by 2.4× — a fit computed for one and reused for the
+other is visibly wrong, and the shipped cache invalidated on `size` alone.
+
+### §9.2 The anchor ref channel — DOM chrome over a moving render
+
+Every in-scene control that carries text is a DOM node (§2.1 of `/ORACLE.md`
+generalizes the caption doctrine to the whole HUD). A DOM node over a moving
+camera needs a new screen position every frame, and the obvious implementation
+is the expensive one.
+
+**The channel:**
+
+```tsx
+// INSIDE the Canvas — publishes a world point under a named slot.
+<WorldAnchor slot="lead.head" point={[x, y, z]} />
+
+// OUTSIDE the Canvas — a ref CALLBACK for the node to be positioned.
+const ref = useAnchorSlot('lead.head');
+```
+
+Inside `useFrame`: `point.project(camera)`, convert to CSS px against the
+canvas size, lerp ~90 ms to absorb handheld noise, and write
+`el.style.transform = translate3d(...)` **straight onto the ref'd node**.
+
+**It NEVER calls setState, and that is the load-bearing rule.** `SceneCanvas`
+already carries the measured version of this lesson in its own comment: it
+throttles its stats report to ~1 s because "reporting per frame would push a
+React state update 60×/second into the parent and cost more than the scene it
+is measuring". A HUD of a dozen anchored nodes re-rendering the whole tutor
+route sixty times a second would be the same mistake at twelve times the size,
+and it would be paid on the low tier that can least afford it.
+
+**The slot vocabulary is a CLOSED union**, `AnchorId` in
+`src/tutor-scene/anchors.ts` — lead/companion head and chest, three island
+places, five stage marks and five sky marks. Two properties matter more than
+the list:
+
+- **A DOM component asks for a named PLACE, never a coordinate.** A component
+  holding `[1.4, 1.9, -0.2]` must be rewritten when an island changes size, and
+  — since a coordinate here is a `Vector3` — it also imports `three`, which
+  would drag the renderer out of the lazy route §6 confines it to and into the
+  main bundle. The two halves share nothing heavier than a string.
+- **An unknown slot is a compile error, not a silent no-op.** A string-keyed
+  registry fails invisibly: an unpositioned node still renders, at 0,0, looking
+  like a layout bug rather than a typo. `anchors.ts` also pins the union in
+  both directions, so adding a member without listing it fails the build.
+
+**CULLING IS MANDATORY, and it is two properties, not one.** When the projected
+point is behind the near plane (`v.z > 1`) or falls outside the viewport plus a
+margin, the node is set `hidden = true` **AND** `inert = true`, imperatively on
+the DOM node — React 18.3 has no `inert` prop, so this is an assignment and not
+JSX. Hidden alone leaves a focusable control that a keyboard user can still
+reach: focus vanishes to somewhere off-screen behind the camera, with no visible
+focus ring anywhere, which is indistinguishable from the page having broken.
+
+**A hard floor on effective font size** sits beneath any depth scaling. "Scales
+with depth" is a pleasant effect right up to the frame where it becomes "too
+small to read", and the stage already has a measured precedent for exactly this
+class of mistake: §7.1's mouth is 2.4 CSS px at the island framing, correct and
+invisible.
+
+### §9.3 Safe-area composition — a full-bleed canvas with a HUD on top
+
+The canvas runs edge to edge and controls float over it, so the geometric
+centre of the canvas is not the centre of the space the character can actually
+be SEEN in. With a lesson plate inset from the bottom-right at 1280 px, the
+free rectangle is up and to the left; a character framed dead centre is a
+character half behind a panel.
+
+**Shrinking the canvas to the free rectangle is the wrong fix** — it reinstates
+the rejected letterboxed panel with extra steps, because the visible edge of
+the render is what makes a stage read as a stage. The canvas stays full-bleed
+and the CAMERA moves: `src/tutor-scene/composition.ts` turns measured HUD
+rectangles into per-edge insets, then into a camera-space aim shift in metres
+plus a fit padding.
+
+Three details worth keeping:
+
+- **A rect is charged to the edge it is cheapest to clear.** A 420 px plate
+  inset 24 px from the bottom-right of a 1280×800 stage intrudes 444 px from
+  the right and 524 px from the bottom, and the right answer is to move the
+  subject LEFT. A full-width bottom sheet on a 375 px phone intrudes from both
+  and the right answer flips to lifting. One rule produces both, which is why
+  it is one rule rather than a per-component "which edge am I on" prop that
+  would eventually disagree with where the component actually rendered.
+- **The intrusion is CLAMPED.** A sheet dragged to FULL covers 88% of a phone;
+  honouring that literally pushes the camera back until the island is a speck.
+  An extreme, temporary gesture must not redefine the shot.
+- **`camera.setViewOffset()` was considered and is the documented alternative**
+  if the aim offset ever reads as a tilted horizon at extreme insets. It was
+  not chosen because every fit in `shots.ts` derives its horizontal FOV from the
+  full viewport aspect, and a view offset changes the effective projection
+  without changing that aspect — so six fits would have to be rewritten to agree
+  about a sub-rectangle none of them can see.
+
+The rects are held in a **ref**, written by a `ResizeObserver`, for §9.2's
+reason: a sheet being dragged must not re-render the tree on every frame of the
+drag.
+
+### §9.4 Picking — the scene is the menu, and it is pick-proxies
+
+React Three Fiber v8 ships its own raycasting, so `onClick` / `onPointerOver`
+on a mesh works with no additional dependency. **drei is deliberately not a
+dependency** (/AGENTS.md §1.2) and nothing here needs it.
+
+What DOES need care is the cost and the target size:
+
+- **Heavy meshes get `raycast = () => null` at mount** — the diorama group and
+  every skinned character mesh. Otherwise every pointer move tests 45–67k
+  island triangles plus up to 50k per character, per event, on the tier the
+  budget exists to protect.
+- **Picking happens on invisible padded PROXY boxes**, roughly seven of them,
+  sized from `CHARACTER_MEASUREMENTS` (§2). This is what makes a 44 px minimum
+  tap target at 375 px true **by construction** rather than by hoping a
+  character's silhouette is large enough at whatever distance the current shot
+  put the camera. A tap target that depends on the camera is a tap target that
+  fails on one shot and passes on the others.
+- **A pickable mesh always has a DOM twin dispatching the same handler**
+  (`DESIGN.md` §Components → WorldChip). The mesh is the delightful path, the
+  twin is the guaranteed path, and both are always mounted. This is the rule
+  that keeps the cinematic route and the keyboard route from becoming two
+  implementations that drift apart at the second feature.
+
+### §9.5 Suspense boundaries and preload
+
+The scene mounts once and stays mounted for the whole `/tutor` route
+(`/ORACLE.md` §9.1), which changes what a Suspense boundary costs.
+
+- **Split the single boundary.** `TutorScene` wraps the diorama and the whole
+  cast in ONE `<Suspense fallback={null}>`, so swapping a character blanks the
+  island too. That was invisible while personalization was a form; it is
+  unacceptable when tapping a character IS the picker. One boundary for the
+  diorama, one per character, with a veil fallback rather than nothing.
+- **`SceneLighting` renders OUTSIDE the boundary** and must stay there — that
+  is what lets a backdrop change apply instantly without ever blanking the
+  stage (`/ORACLE.md` §2.1's reopened gap).
+- **Preload the alternatives on entering personalize** (`useLoader.preload`):
+  the other island and the characters not currently on stage. Paired with the
+  split boundaries, that is what makes the island genuinely usable as a menu —
+  a swap that hits a fallback is a swap that reads as a page load.
+- **`useSceneModel` deliberately does not clone the loaded scene**, so the same
+  character must never be mounted twice. Before committing to any multi-character
+  arrangement, price it: `maxTrianglesPerCharacter` is 50,000 against a 100,000
+  single-asset ceiling, and four characters plus an island will not fit.
+  Measure with `npm run assets:inspect` first; the alternative is mounting two
+  at a time and rotating.

@@ -64,6 +64,23 @@ decisions. There is no field for a link, a script or an exfiltrated context.
 **Never add a free-form field to that schema.** If a new capability needs one,
 it needs a design conversation, not a property.
 
+**Two of its fields are learner-facing prose, and BOTH are now on screen.**
+`say` always was. `segmentRequest.framing` is the second — its own schema
+comment defines it as *"a short, learner-facing framing for the activity,
+moderated like `say`"*, `z.string().min(1).max(240)` — and until the 2026-08-21
+Tutor rebuild it was generated, moderated, sent over the wire, stored by the
+client and **rendered nowhere**. The tutor wrote a sentence introducing every
+single activity and no learner ever saw one. It is now the lead-in line above
+the segment prompt (`/ORACLE.md` §9.3).
+
+The consequence for this service: **`framing` is a rendered contract, so
+changing what it means is a breaking change, not a refactor.** It may not be
+quietly repurposed into a layout hint, a difficulty label, an enum, or
+telemetry. Its sibling `rationale` is the field for anything not meant for the
+learner — that is why the two exist separately, and the distinction is now
+load-bearing rather than documentary. Both remain subject to §2.4: the whole
+turn is moderated before any part of it is spoken or shown.
+
 ### §2.4 Moderation is per-turn and fails closed
 
 Whole turn generated, whole turn moderated, then spoken (`src/safety/
@@ -88,6 +105,16 @@ explicitly interim; that migration is cheap only while this holds.
 `VOICE_PROVIDER=none` is the **default** and a fully supported posture, not a
 stub. Sessions run captioned and silent. Speech is an enhancement; the lesson
 is the product.
+
+**That last sentence is about the LESSON, not about the control.** It was read
+as permission to hide the microphone button whenever voice was off, which is
+how the first build shipped with no visible microphone in any environment where
+`VOICE_PROVIDER=none` — including every developer's and the owner's. The
+affordance is always present and states its own unavailability in place
+(`/ORACLE.md` §14.1). Nothing about that is Oracle's code, but Oracle's default
+is what makes it the common case, so it is worth knowing here: **the honest
+default posture of this service is exactly the state the UI must handle
+best.**
 
 ---
 
@@ -158,6 +185,22 @@ everything passes the blocked half perfectly and destroys the product.
    Safety flags record a category and a severity and never the words — a flag
    is a signal to a human, not a second unregulated copy of what a distressed
    child said.
+7. **A field this service emits is not a field anybody renders.** Assume
+   nothing either way, in either direction. `segmentRequest.framing` was
+   moderated learner-facing prose that reached no screen for the whole life of
+   the first build; meanwhile `ready.microphone` was rendered as the CONDITION
+   for showing the microphone at all, so the control vanished whenever the
+   answer was no. Both are the same mistake — a wire field and a UI decision
+   drifting apart with nothing asserting the join. When you add or change a
+   field on the wire, say in `/ORACLE.md` what is supposed to happen to it on
+   screen, and when you change what one MEANS, treat it as breaking (§2.3).
+8. **`ready.microphone` is a capability, not a visibility flag.** Oracle
+   reports whether the microphone can open. It does not report whether a
+   microphone control should exist — that control is always present, and
+   `/ORACLE.md` §14.1 is the rule. The three blocked reasons are Core's
+   (`microphoneBlockedBy()` returns `POLICY_BLOCKED`, `CONSENT_REQUIRED`,
+   `VOICE_UNAVAILABLE`, policy first on purpose); Oracle supplies the facts
+   behind them and nothing about their presentation.
 
 ---
 

@@ -159,6 +159,14 @@
     "yesPlease": "Yes please",
     "noThanks": "No thanks"
   },
+  "mic": {
+    "listening": "Listening…",
+    "thinking": "Thinking…",
+    "speaking": "Talking — hold to interrupt",
+    "unavailableLabel": "Microphone unavailable",
+    "releaseToSend": "Let go to send",
+    "keyboardHint": "Or hold Space"
+  },
   "segment": {
     "activity": "Try this",
     "practiceOnly": "practice only",

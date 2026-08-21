@@ -111,6 +111,14 @@ layout:
     mobile: "<768px"              # single column, 20px margins (px-5)
     tablet: "768–1023px"          # interpolation only, never a separate design
     desktop: ">=1024px"           # multi-column, deliberate use of width
+  immersive:                      # CLOSED — the full-bleed layer only (Lesson Player, Tutor stage)
+    stage: "fixed inset-0"        # own layer over everything; NEVER inside container-max
+    hud-inset: 24px               # desktop gap from a floating plate to the viewport edge
+    hud-inset-mobile: 16px        # matches margin-mobile; a thumb needs the same room
+    plate-max: 420px              # widest a floating HUD plate may be
+    plate-max-height: 62vh        # it FLOATS: scene stays visible above AND below it
+    sheet-detents: {peek: 88px, half: 45vh, full: 88vh}   # mobile bottom sheet
+    orb: {mobile: 96px, desktop: 112px}   # the primary in-scene control
 
 motion:                           # CLOSED 5-recipe system
   ease: cubic-bezier(0.22, 1, 0.36, 1)
@@ -122,7 +130,7 @@ motion:                           # CLOSED 5-recipe system
 > **AUTHORITATIVE** for all frontend visual work (root AGENTS.md §1.1 rank 4).
 > The tokens above are CLOSED sets — implemented 1:1 in
 > `frontend/tailwind.config.js` + `frontend/src/index.css`. Never invent values
-> those files don't define. **Last updated:** 2026-08-09.
+> those files don't define. **Last updated:** 2026-08-21 (Tutor screen recipe).
 
 ## §0 Composition Fidelity — PRIME RULE
 
@@ -163,6 +171,21 @@ on meaning (actions, states, celebration), never decoration.
   (`on-accent`/`on-delight`/`on-warning`), never white. Every component styles
   its dark behavior at write time — semantic tokens give it free; anything
   hardcoded against a band must be eyeballed in both modes.
+- **The OPAQUE FLOOR rule — text over a live render (added 2026-08-21).**
+  Wherever body text sits over a moving 3D canvas (the Tutor stage), the
+  surface carrying it uses the **opaque `bg-surface` token** as its floor.
+  `.lf-glass` / `.lf-glass-deep` are for FRAMES, edges and non-text chrome
+  only. **No ad-hoc alpha** — `bg-surface/88` is not a token, and the two
+  glass recipes in the front matter are the closed set; a component that needs
+  a third one needs a design decision, not a slash.
+  The reason is arithmetic, not taste: the contrast floor above is a ratio
+  against a KNOWN background, and a translucent plate over an orbiting camera
+  has no known background. The same caption measures comfortably over the
+  island's shadow side and then fails a second later when the lit rim drifts
+  behind it — and it fails while nobody is looking, because the failing frame
+  is one the reviewer's screenshot did not catch. An opaque floor makes the
+  ratio computable, which is the only way the floor above can be enforced at
+  all on that surface.
 
 ## Typography
 
@@ -188,6 +211,17 @@ text.
   reflows (`%`, flex, grid, `clamp()`).
 - Hover-only affordances prohibited without a tap equivalent.
 - **No UI change is done until verified at ~375px AND ~1280px — screenshots.**
+- **The immersive exception (added 2026-08-21).** Exactly two surfaces sit
+  OUTSIDE `mx-auto max-w-container` and outside the app shell: the **Lesson
+  Player** and the **Tutor stage**. They take the whole viewport
+  (`layout.immersive.stage` = `fixed inset-0`) because their subject IS the
+  viewport — a 3D stage rendered inside a 1200 px reading column is a picture
+  of a stage, and that is precisely what the first Tutor shipped as. Adding a
+  third surface to this list is an owner decision, not a layout preference.
+  Everything else in this section still binds them: no dead space at 375 px,
+  the freed width used deliberately at 1280 px, no horizontal body scroll, and
+  both breakpoints screenshotted before the task closes. What the exception
+  changes is where the room comes from, never whether it is used on purpose.
 
 ### Grid Systems — every repeating pattern has a DEFINED grid (NON-NEGOTIABLE)
 
@@ -217,6 +251,25 @@ still uses these exact column tracks (the last row is intentionally
 incomplete, never re-flowed to "fill nicely") — a designed grid with a
 short last row beats an ad hoc one that's always full.
 
+**The one exemption: the in-scene HUD cluster** (Tutor route only, added
+2026-08-21, owner-driven rebuild). Controls anchored to points inside a 3D
+scene are placed by the WORLD, not by a column track: an offer chip sits at
+the tutor's chest, a rim pad sits on the island's rim, a recap chip sits where
+the thing it recaps happened. Declaring "3 columns at `lg:`" for those would
+be declaring a grid the next camera move contradicts. The exemption is narrow
+and it carries the obligation the grid rule exists to serve in the first
+place — that somebody DECIDED how many of these there are:
+
+- The set is closed and small (≤ 5 offers, ≤ 2 adaptation choices, 3 recap
+  chips), stated in `/ORACLE.md`, never "whatever the model returned".
+- Every anchored control has a guaranteed DOM twin (§Components → WorldChip),
+  so keyboard order is a real, ordered list even when the visual arrangement
+  is a semicircle.
+- The **fallback** arrangement — no WebGL, an off-screen anchor, or the
+  reduced-motion still modifier — is the ordinary **Card grid** category
+  (1 / 2 / 3). In-scene placement is a PRESENTATION of a list, never an
+  excuse for not having decided what the list is.
+
 ## Elevation & Depth — Liquid Glass
 
 Depth comes from layered light, not heavy drop shadows. Every glass surface uses
@@ -232,7 +285,17 @@ hairline edge replace traditional borders.
    caustic highlight + mesh + rim light + 5-layer depth.
 4. **Buttons:** `.lf-gaming-btn` — inner glow (inset top highlight + inset
    bottom shadow) + button shadow + hover sheen sweep.
-5. Never stack glass on glass; `@supports` fallback to near-opaque surface.
+5. **Over a live canvas** (the Tutor stage, added 2026-08-21): the plate is a
+   `.lf-glass` FRAME with an OPAQUE `surface` floor under any body text
+   (§Colors → the opaque floor rule). Depth comes from `shadow-pop` plus a
+   24 px gradient scrim beneath the plate that fades into the render, so the
+   plate reads as detached without a hard border competing with the scene
+   behind it. **Exactly two z-bands, and no third:** world-anchored chrome
+   (chips, caption, runes) below, viewport-anchored chrome (the mic orb, the
+   lesson plate) above. A third band is how a control ends up rendered
+   underneath the thing it controls — and on a stage where everything moves,
+   nobody can tell that from a bug in the projection.
+6. Never stack glass on glass; `@supports` fallback to near-opaque surface.
 
 ## Motion — closed system
 
@@ -256,10 +319,43 @@ System recipes, tokens only (`--lf-ease`, `--lf-dur-*` with deliberate exception
 8. **Lottie Animations** — strict usage and state conditions (Activated vs Not Activated)
    for streak, coins, time, etc., are governed exclusively by `frontend/public/lottie/README.md`.
    No new animations or visual states can be introduced without updating that document.
+9. **Camera motion** (Tutor stage, `/TUTOR_3D.md` §9) — the camera is the
+   largest moving element in the product, so it gets a recipe rather than a
+   drawer of one-off tweens. ONE framerate-independent critical damper toward
+   the active shot's pose (`x += (target - x) * (1 - exp(-lambda * dt))`),
+   never a duration-based tween: a shot change routinely arrives mid-transition
+   and a tween restarted from a moving start SNAPS, which is exactly how the
+   first version behaved. Travel reads at roughly the `page` duration, with a
+   120 ms anticipation pre-roll and a 180 ms settle drift bracketing it.
+   Under `prefers-reduced-motion` the travel collapses to a CUT covered by a
+   120 ms scrim dip — a cut is honest motion-free feedback, whereas silently
+   teleporting the viewpoint mid-sentence is disorienting for everyone. The
+   reduced-motion path is a MODIFIER on this recipe, never a second camera
+   system: two camera systems means the accessible one is the one nobody looks
+   at.
+10. **HUD motion** (Tutor stage) — in-scene chrome enters on the existing
+    `Reveal` cadence (≤ 3 × 80 ms stagger, recipe 2) and **never animates its
+    own position**. An anchored plate's position belongs to the camera, so a
+    CSS transition on `transform` fights the per-frame projection and reads as
+    lag rather than as easing. The only per-element motion permitted is opacity
+    and the orb's own state: recipe 4's press physics, plus a 4 s 3% breathing
+    loop that is bounded by the IDLE state and stops with it.
 
 `.lf-float` (hero illustration) is the only UNCONDITIONALLY infinite animation
 in CHROME (lesson celebration loops are bounded by their overlay, per recipe 7).
 Everything is reduced-motion safe (wired in index.css / rig.css).
+
+**The Tutor stage's ambient camera drift is a second carve-out from "no new
+infinite animations", and it is deliberately not chrome.** A slow shallow orbit
+is what turns a static mesh into a place; stop it and the island becomes a
+photograph of an island. It earns the carve-out by having three independent off
+switches that must all keep working: `prefers-reduced-motion`, the quality
+governor's `ambientMotion` setting, and the duration of any live lesson segment
+(reading a maths problem while the frame breathes is nausea, not atmosphere).
+What the governor may NOT switch off is the shot damper in recipe 9. A locked
+`low` tier that cannot transition between shots turns this whole design into a
+permanently static island, and the damper costs the same single camera write
+per frame either way — so gating it buys no frames and loses the product.
 
 ## Shapes
 
@@ -311,6 +407,39 @@ for containers. Sharp corners prohibited.
   when the brush provides direct range control.
 - **Characters** — Dina, Liruf, Dr. Rho, Zara Vex (canonical; no new mascots
   without sign-off).
+
+The three below live in `frontend/src/tutor/hud/` rather than
+`components/ui/`, because they are meaningless off the immersive layer. They
+are listed HERE anyway: without them, "components/ui is the only building
+blocks list" would be violated by every single control on the Tutor route, and
+a rule violated everywhere stops being a rule.
+
+- **HudPlate** (Tutor route only) — the one glass primitive every in-scene
+  control composes from: chip, plate, orb, sheet, rune. It is where the
+  §Colors opaque-floor rule is enforced ONCE rather than remembered fourteen
+  times — `.lf-glass` frame, opaque `bg-surface` floor under any body text. It
+  sizes in `ch`/`clamp()` and **wraps, never truncates**: the label
+  `personalize.noCompanion` measures 7 / 13 / 10 characters across
+  en-US / es-MX / pt-BR, a 1.86× swing on one short string, so a fixed-width
+  plate is a layout that passes review in English and breaks in the third
+  locale nobody screenshotted.
+- **WorldChip** (Tutor route only) — a HudPlate positioned by a named scene
+  anchor, mirroring a pickable mesh and dispatching **the same handler**. The
+  mesh is the delightful path, the chip is the guaranteed path, and both are
+  always mounted, so the cinematic route and the keyboard route are one code
+  path rather than two that drift apart at the second feature. When its anchor
+  goes behind the camera or off-screen the chip is hidden **and inert** — a
+  focusable control nobody can see is worse than no control, because the
+  keyboard user's focus simply vanishes.
+- **MicOrb** (Tutor route only) — the Tutor's primary control and the largest
+  element on screen (`layout.immersive.orb`: 96 px mobile, 112 px desktop),
+  viewport-anchored over the bottom safe area because a thumb does not move
+  with the camera. It is **always rendered**, in all five states —
+  UNAVAILABLE, IDLE, LISTENING, THINKING, SPEAKING. Unavailable is a dashed
+  ring, `aria-disabled`, and one honest translated line saying why; it is never
+  an absent control. Hiding it is what produced the owner's report that the
+  microphone was nowhere to be found, which was true and was not a bug in the
+  microphone. See `/ORACLE.md` §14.
 
 ## Screen Recipes
 
@@ -392,6 +521,76 @@ ONLY from `lesson-engine/core/primitives.tsx` (OptionCard, TokenChip,
 SunkenWell, BigIconTile, NumberPad, KidSlider, GentleTimerBar) so all 50+
 types stay uniform; interactions are tap-first, ≥44px, no drag-and-drop.
 
+**Tutor (`/tutor`)** — added 2026-08-21, and the ABSENCE of this entry is why
+it exists. §0 makes building outside a recipe a design bug. There was no Tutor
+recipe, so the Tutor was assembled out of the nearest thing that had one —
+Dashboard cards — and shipped as a dashboard of flat panels with the 3D stage
+shrunk into a box in one corner of it. The owner rejected it in the strongest
+terms. What follows is the recipe it should have been built from. Product
+spec: `/ORACLE.md`. The stage itself: `/TUTOR_3D.md`.
+
+**The stage IS the page.** Same own-layer precedent as the Lesson Player
+(`layout.immersive.stage` = `fixed inset-0 bg-base`, no app chrome, no
+`mx-auto max-w-container`, no page `<h1>`) and one step further: the canvas is
+the background of EVERY phase — arrive, personalize, introduce, converse,
+adapt, close, replay — mounted once and never unmounted between them. A phase
+change is a camera move plus a change in what is anchored over the render. It
+is never a route change and never a remount, because a remount reloads the
+island and the learner watches their own world blink.
+
+**Anatomy**, from the render outward:
+
+- **The canvas** — full-bleed, `bg-base` behind it for the first frame and for
+  the no-WebGL fallback. It carries `role="img"` with a localized description
+  of what is actually on screen, built from the same catalog values the picker
+  uses, so the scene is described rather than simply absent for a blind
+  learner.
+- **World-anchored chrome** — the caption above the speaker's crown over a
+  24 px gradient scrim, offer chips at the tutor's chest, rim pads on the
+  island, recap chips at the places they recap, and two small runes over the
+  sky for minutes-left and exit. All WorldChip over HudPlate, each mirroring a
+  pickable mesh, each hidden and inert when its anchor leaves the frame.
+- **The lesson plate** — the ONE surface carrying a live exercise. **Desktop:
+  a FLOATING plate**, `plate-max` 420 px wide, height fitted to content up to
+  `plate-max-height` 62vh, inset `hud-inset` 24 px from the bottom-right, with
+  scene visible above, below, left and right of it. It is explicitly **not** a
+  full-height edge-to-edge column, and shrinking such a column to 400 px does
+  not satisfy this: the rejected version's fault was the SILHOUETTE — a
+  near-opaque slab down a third of the screen — and a silhouette is a
+  perceptual fact that a `getBoundingClientRect()` measurement cannot argue
+  with. **Mobile: a bottom sheet** with the three `sheet-detents` — PEEK
+  (88 px: the latest line and a verdict chip, with the orb riding above it),
+  HALF (45vh, the default while a segment is live), FULL (88vh, transcript
+  opened). The plate publishes its rect so the camera composes AROUND it: the
+  character's on-screen height must be identical with and without a segment,
+  or the lesson appears to shove the tutor out of the way to make room for
+  itself.
+- **The mic orb** — MicOrb, centred on the bottom safe area. With the lesson
+  plate it is one of exactly **two** viewport-anchored elements on the route;
+  everything else is anchored to the world. Both are viewport-anchored for the
+  same reason: a thumb does not move with the camera.
+
+**Colour and contrast.** Every plate carrying body text uses the opaque
+`bg-surface` floor; glass is the frame (§Colors → the opaque floor rule). One
+indigo action per phase still holds, and during a conversation the mic orb IS
+that action — so an offer chip is a secondary, not a second CTA.
+
+**Responsive.** At 375 px: the sheet detents above, the orb at 96 px, and
+anchored controls that clear the 44 px minimum tap target BY CONSTRUCTION —
+invisible padded pick proxies sized from the character measurements, never by
+hoping the mesh happens to be big enough at that camera distance. At 1280 px
+the freed width is spent on the SCENE: a wider establishing shot and real
+island around the floating plate. That is a deliberate use of the width; an
+empty margin either side of a centred column is not, and neither is a second
+panel invented to fill it.
+
+**What this recipe forbids by name**, because each one is a mistake that has
+already shipped on this route: no `Card` from `components/ui` during a live
+session; no two-panel `lg:grid-cols-[1fr_1fr]` split with the stage in one
+half; no 2D thumbnail grid for choosing a character, an island or a backdrop
+when tapping the thing itself is available; and no control that disappears
+when it is unavailable instead of saying why (§Components → MicOrb).
+
 **Staff sections (admin console, `/admin/*`)** — added 2026-07-20, rebuilt
 2026-07-21 (owner sign-off). **INTEGRATED into the app shell, NOT a separate
 back-office**: the admin surfaces render inside the normal Dashboard chrome
@@ -432,5 +631,14 @@ IconChips; a profile hero may use a inverse band with a glass-deep identity card
 - ❌ No raw hex, no ad-hoc font sizes, no sharp corners, no native pickers.
 - ❌ No inset-shadow stacks, no 3D bottom-border buttons, no scale-on-hover
   buttons (lift is for cards only).
+- ✅ On the immersive layer, every control is IN the frame and every plate
+  carrying text stands on an opaque floor.
 - ❌ No emojis as icons (country flags in the language switcher are the one
-  exception). No new infinite animations.
+  exception). No new infinite animations — with ONE carve-out, the Tutor
+  stage's ambient camera drift (§Motion), which is bounded by reduced-motion,
+  by the quality governor and by the duration of any live segment. A carve-out
+  with three off switches is a rule; a carve-out with none is how the next one
+  gets argued for.
+- ❌ Never assemble a screen out of another screen's recipe because it is the
+  nearest one that exists. That is what turned the Tutor into a dashboard.
+  Write the recipe first (§0), in the commit that builds the screen.

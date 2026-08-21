@@ -159,6 +159,14 @@
     "yesPlease": "Sí, por favor",
     "noThanks": "No, gracias"
   },
+  "mic": {
+    "listening": "Te escucho…",
+    "thinking": "Pensando…",
+    "speaking": "Hablando — mantén para interrumpir",
+    "unavailableLabel": "Micrófono no disponible",
+    "releaseToSend": "Suelta para enviar",
+    "keyboardHint": "O mantén Espacio"
+  },
   "segment": {
     "activity": "Prueba esto",
     "practiceOnly": "solo práctica",

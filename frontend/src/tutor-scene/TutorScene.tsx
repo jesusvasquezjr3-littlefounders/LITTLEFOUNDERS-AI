@@ -1,15 +1,20 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
-import { Box3, Group, Vector3, type PerspectiveCamera } from 'three';
+import { useFrame } from '@react-three/fiber';
+import { Box3, Group, Vector3 } from 'three';
 import { SceneCanvas, type SceneStats } from './SceneCanvas';
 import { SceneLighting } from './SceneLighting';
 import { Diorama } from './Diorama';
 import { Character3D } from './Character3D';
-import { QUALITY_SETTINGS, type QualitySettings } from './quality';
+import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
 import { findStandingSpots, type StandingSpot } from './standingSpots';
 import { CHARACTER_ASSETS, characterFootprintM, type SCENE_ASSETS } from './assets';
 import { walkabilityFor } from './walkability';
+import { CameraDirector } from './CameraDirector';
+import { shotForLegacyFraming, STAGE_BEARING, type LegacyFraming, type ShotId, type ShotSubject } from './shots';
+import { AnchorProjector, AnchorProvider, useAnchorRegistry, WorldAnchor } from './ScreenAnchor';
+import { SKY_MARK_IDS, STAGE_MARK_IDS } from './anchors';
+import type { SceneBackdropId } from './backdrops';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
 
 /*
@@ -28,30 +33,40 @@ import type { CharacterAction, CharacterEmotion, CharacterId } from '@/component
  * hard-coded camera would frame exactly one of those combinations and crop the
  * rest; measuring costs one bounding-box computation, once.
  *
- * CAMERA MOTION — a slow, shallow orbit. It is what turns a static mesh into a
- * place, and it is nearly free: no re-render, no extra draw call, one sine per
- * frame. It stops completely under prefers-reduced-motion or on the low tier,
- * since a drifting camera is precisely what motion sensitivity is about.
+ * CAMERA MOTION — owned by `CameraDirector`, which damps toward whatever pose
+ * `shots.ts` names for the active shot. The rig this replaced computed an
+ * absolute position inside every frame and wrote it, which is why every framing
+ * change SNAPPED: there was no state between one framing and the next for
+ * anything to move through. The idle orbit still stops completely under
+ * prefers-reduced-motion or on the low tier; the TRAVEL between shots does not,
+ * because it costs the same single camera write either way and a stage that can
+ * only cut is a worse experience than the one the demotion was protecting.
  */
-
-/** How the stage frames itself. */
-export type TutorFraming = 'vignette' | 'conversation';
 
 /**
- * Where the speaking character's head is, and which way they face.
+ * The stage's two shipped framings.
+ *
+ * Superseded by `ShotId`, and kept only because `ConversationView` still speaks
+ * it. Mapping rather than deleting is what lets the camera rebuild land without
+ * a flag day across the conversational layer, which a later increment owns.
+ *
+ * @deprecated Pass `shot` instead.
+ */
+export type TutorFraming = LegacyFraming;
+
+/**
+ * Where a character's head is, and which way they face.
  *
  * Solved by the placement pass rather than authored — the same reason a new
- * diorama needs no coordinates (§5).
+ * diorama needs no coordinates (§5). Structurally identical to the shot
+ * vocabulary's `ShotSubject`, and deliberately the same type: the placement
+ * solver's output IS the camera's input, and two shapes that must agree are
+ * better as one.
  */
-export interface SpeakerFocus {
-  x: number;
-  y: number;
-  z: number;
-  /** Yaw the character faces, in radians. */
-  facing: number;
-  /** The character's own height in metres, so framing scales to them. */
-  height: number;
-}
+export type SpeakerFocus = ShotSubject;
+
+/** Which member of the cast a focus point belongs to. */
+type CastRole = 'lead' | 'companion';
 
 export interface TutorSceneProps {
   scene?: keyof typeof SCENE_ASSETS;
@@ -70,10 +85,21 @@ export interface TutorSceneProps {
    */
   viseme?: number;
   /**
-   * `vignette` is the island establishing shot; `conversation` closes in on the
-   * speaking character so a mouth is more than 2.4 px tall. See CameraRig.
+   * How the camera frames the scene. The full vocabulary lives in `shots.ts`;
+   * the director travels between them rather than cutting.
+   */
+  shot?: ShotId;
+  /**
+   * @deprecated Use `shot`. Honoured only when `shot` is absent, so a caller
+   * that has not migrated keeps exactly the framing it had.
    */
   framing?: TutorFraming;
+  /**
+   * Time of day. Reaches `SceneLighting`, which is the whole point: this axis
+   * was offered, validated, persisted and returned by two endpoints while
+   * reaching no renderer at all.
+   */
+  backdrop?: SceneBackdropId;
   /**
    * Fires ONCE, when the island and cast are actually on screen.
    *
@@ -86,147 +112,6 @@ export interface TutorSceneProps {
   onReady?: () => void;
 }
 
-interface Framing {
-  radius: number;
-  height: number;
-  target: Vector3;
-}
-
-/**
- * Frames the composed scene, then orbits it.
- *
- * Runs its fit once the content group has children with geometry, and re-fits
- * on viewport changes — a phone rotated to landscape is a different framing
- * problem, not the same one.
- */
-function CameraRig({
-  content,
-  enabled,
-  mode,
-  focus,
-}: {
-  content: React.RefObject<Group>;
-  enabled: boolean;
-  mode: TutorFraming;
-  focus: SpeakerFocus | null;
-}) {
-  const camera = useThree((state) => state.camera) as PerspectiveCamera;
-  const size = useThree((state) => state.size);
-  const framing = useRef<Framing | null>(null);
-  const settled = useRef(0);
-
-  useFrame((state) => {
-    const group = content.current;
-    if (!group) return;
-
-    /*
-     * CONVERSATION framing — the camera comes to the speaker.
-     *
-     * The island vignette is the right first impression and the wrong way to
-     * hold a conversation. Measured at the vignette's own framing, a character
-     * stands 104 px tall and their MOUTH is 2.4 px: every viseme is identical
-     * at that size, so lip-sync and any authored facial work are invisible on
-     * arrival. No amount of asset quality fixes a distance problem.
-     *
-     * So talking gets its own shot: head-and-shoulders, placed in FRONT of the
-     * character using the facing angle the placement solver already computed,
-     * with a slow drift instead of an orbit — an orbit during dialogue reads as
-     * the room moving rather than the person speaking.
-     */
-    if (mode === 'conversation' && focus) {
-      const elapsed = state.clock.elapsedTime;
-      /*
-       * Frame a FRACTION OF THE CHARACTER, never a fixed number of metres.
-       *
-       * A metre-based framing was measured and looked far too tight, and the
-       * reason is anatomy: these are cartoon proportions and rho's head alone
-       * is 0.81 m — 47% of his height. A 0.70 m tall frame that would be a
-       * comfortable head-and-shoulders on a human cropped his skull and chin.
-       * Dina, at 0.70 m to the shoulder, has the opposite problem. Scaling to
-       * the character's own height is the only version that serves a 1.70 m
-       * human and a large-dog-sized quadruped from one number.
-       */
-      const vFov = (camera.fov * Math.PI) / 180;
-      const aspect = size.width / Math.max(size.height, 1);
-      const framedHeight = focus.height * 0.70;
-      // Portrait viewports lose horizontal room, so they need a little more
-      // distance for the same subject — the same correction the vignette makes.
-      const distance = (framedHeight / 2 / Math.tan(vFov / 2)) * (aspect < 1 ? 1.18 : 1.0) + 0.15;
-      const drift = enabled ? Math.sin(elapsed * 0.19) * 0.05 : 0;
-      const rise = enabled ? Math.sin(elapsed * 0.27) * 0.012 : 0;
-      // The character faces `focus.facing`; standing on that vector puts the
-      // camera in front of them rather than behind, which is the single mistake
-      // this scene has already made once (§5).
-      const yaw = focus.facing + drift;
-      camera.position.set(
-        focus.x + Math.sin(yaw) * distance,
-        focus.y + focus.height * 0.04 + rise,
-        focus.z + Math.cos(yaw) * distance,
-      );
-      camera.near = 0.01;
-      camera.far = 100;
-      camera.updateProjectionMatrix();
-      camera.lookAt(focus.x, focus.y, focus.z);
-      return;
-    }
-
-    if (!framing.current) {
-      const box = new Box3().setFromObject(group);
-      if (box.isEmpty()) return;
-      const extent = box.getSize(new Vector3());
-      const center = box.getCenter(new Vector3());
-
-      /*
-       * Fit to the BOX, not to the bounding sphere.
-       *
-       * A sphere around a wide flat island is dominated by its width, so
-       * fitting one pushed the camera ~65% further back than necessary and
-       * left the subject as a small object in a sea of margin. Fitting the
-       * box's half-extents separately against the vertical and horizontal FOV
-       * uses the frame the viewport actually has.
-       */
-      const aspect = size.width / Math.max(size.height, 1);
-      const vFov = (camera.fov * Math.PI) / 180;
-      const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect);
-      // Depth matters: the far edge of the island needs clearing too, so half
-      // the depth is added to each requirement.
-      const halfDepth = Math.max(extent.x, extent.z) / 2;
-      const forHeight = extent.y / 2 / Math.tan(vFov / 2) + halfDepth;
-      const forWidth = Math.max(extent.x, extent.z) / 2 / Math.tan(hFov / 2) + halfDepth;
-      const distance = Math.max(forHeight, forWidth) * (aspect < 1 ? 1.1 : 1.03);
-
-      framing.current = {
-        radius: distance,
-        // ~22° above the horizon: high enough to show the island's surface and
-        // read it as a place, low enough that the characters stay the subject
-        // rather than being looked down on like pieces on a board.
-        height: center.y + distance * 0.38,
-        target: center.clone(),
-      };
-      settled.current = state.clock.elapsedTime;
-    }
-
-    const { radius, height, target } = framing.current;
-    const elapsed = state.clock.elapsedTime - settled.current;
-    const angle = Math.PI * 0.13 + (enabled ? elapsed * 0.04 : 0);
-    const bob = enabled ? Math.sin(elapsed * 0.28) * radius * 0.012 : 0;
-
-    camera.position.set(target.x + Math.sin(angle) * radius, height + bob, target.z + Math.cos(angle) * radius);
-    camera.near = Math.max(radius / 200, 0.01);
-    camera.far = radius * 20;
-    camera.updateProjectionMatrix();
-    camera.lookAt(target);
-  });
-
-  // Re-fit when the viewport changes shape — a phone turned to landscape is a
-  // different framing problem, not the same one at a different size.
-  useEffect(() => {
-    framing.current = null;
-  }, [size.width, size.height]);
-
-  return null;
-}
-
 /** Flips visibility on once the first real frame has been drawn, so nothing pops. */
 function Reveal({ onReady }: { onReady: () => void }) {
   const done = useRef(false);
@@ -236,6 +121,150 @@ function Reveal({ onReady }: { onReady: () => void }) {
     onReady();
   });
   return null;
+}
+
+/**
+ * Publishes the stage's named places so DOM controls can be pinned to them.
+ *
+ * The island's own anchors are measured from the registered ground rather than
+ * authored, for the same reason placement is: `diorama-a` is 6.5 m across and
+ * `diorama-b` is 9.5 m, so a rim anchor written as a coordinate is correct on
+ * exactly one island.
+ */
+function StageAnchors({
+  scene,
+  lead,
+  companion,
+}: {
+  scene: keyof typeof SCENE_ASSETS;
+  lead: SpeakerFocus | null;
+  companion: SpeakerFocus | null;
+}) {
+  const { groundRef } = useGround();
+  const [island, setIsland] = useState<{ x: number; z: number; top: number; radius: number; height: number } | null>(
+    null,
+  );
+
+  /*
+   * Measured by WATCHING for the island rather than by measuring once on mount.
+   *
+   * A one-shot effect would depend on this component's effect running after the
+   * island's, which is true today only because of where both sit in the tree —
+   * and the failure if that ever stops being true is silent: the island's
+   * anchors are simply never published, and every chip pinned to one is hidden
+   * forever, which looks like a styling bug rather than a missing measurement.
+   * An island also arrives LATE by design, after a .glb fetch inside a Suspense
+   * boundary this component deliberately sits outside of, so that a character
+   * swap cannot take the island's anchors down with it.
+   *
+   * The watch costs a ref read and an identity comparison three times a second.
+   * The bounding box is only walked when the island object actually changed.
+   */
+  useEffect(() => {
+    let seen: object | null = null;
+
+    const check = () => {
+      const ground = groundRef.current;
+      if (ground === seen) return;
+      seen = ground;
+
+      if (!ground) {
+        // Mid-swap: the old island has unregistered and the new one has not
+        // arrived. Publishing nothing culls the chips instead of leaving them
+        // hovering at the previous island's rim.
+        setIsland(null);
+        return;
+      }
+
+      const box = new Box3().setFromObject(ground);
+      if (box.isEmpty()) {
+        seen = null;
+        return;
+      }
+      const centre = box.getCenter(new Vector3());
+      const extent = box.getSize(new Vector3());
+      setIsland({
+        x: centre.x,
+        z: centre.z,
+        top: box.max.y,
+        radius: Math.max(extent.x, extent.z) / 2,
+        height: extent.y,
+      });
+    };
+
+    check();
+    const timer = window.setInterval(check, 300);
+    return () => window.clearInterval(timer);
+  }, [groundRef, scene]);
+
+  /*
+   * The free marks fan across the arc the camera opens onto, so a chip pinned to
+   * one is in front of the island rather than behind it. Spread over ±58° of the
+   * stage bearing: wide enough that five chips do not stack, narrow enough that
+   * none of them is round the back.
+   */
+  const marks = useMemo(() => {
+    if (!island) return null;
+    const spread = (58 * Math.PI) / 180;
+    return STAGE_MARK_IDS.map((_, index) => {
+      const t = STAGE_MARK_IDS.length > 1 ? index / (STAGE_MARK_IDS.length - 1) : 0.5;
+      const angle = STAGE_BEARING - spread + t * spread * 2;
+      return { sin: Math.sin(angle), cos: Math.cos(angle) };
+    });
+  }, [island]);
+
+  if (!island || !marks) return null;
+
+  const rightX = Math.cos(STAGE_BEARING);
+  const rightZ = -Math.sin(STAGE_BEARING);
+  const rim = island.radius * 0.88;
+  const skyHeight = island.top + Math.max(island.height * 0.9, 2.4);
+
+  return (
+    <>
+      {lead ? <WorldAnchor slot="lead.head" point={[lead.x, lead.y, lead.z]} /> : null}
+      {lead ? <WorldAnchor slot="lead.chest" point={[lead.x, lead.y - lead.height * 0.28, lead.z]} /> : null}
+      {companion ? (
+        <WorldAnchor slot="companion.head" point={[companion.x, companion.y, companion.z]} />
+      ) : null}
+
+      <WorldAnchor slot="island.centre" point={[island.x, island.top, island.z]} />
+      <WorldAnchor
+        slot="island.rim.left"
+        point={[island.x - rightX * rim, island.top, island.z - rightZ * rim]}
+      />
+      <WorldAnchor
+        slot="island.rim.right"
+        point={[island.x + rightX * rim, island.top, island.z + rightZ * rim]}
+      />
+
+      {STAGE_MARK_IDS.map((slot, index) => {
+        const mark = marks[index];
+        if (!mark) return null;
+        const radius = island.radius * 0.68;
+        return (
+          <WorldAnchor
+            key={slot}
+            slot={slot}
+            point={[island.x + mark.sin * radius, island.top + 1.1, island.z + mark.cos * radius]}
+          />
+        );
+      })}
+
+      {SKY_MARK_IDS.map((slot, index) => {
+        const mark = marks[index];
+        if (!mark) return null;
+        const radius = island.radius * 0.78;
+        return (
+          <WorldAnchor
+            key={slot}
+            slot={slot}
+            point={[island.x + mark.sin * radius, skyHeight, island.z + mark.cos * radius]}
+          />
+        );
+      })}
+    </>
+  );
 }
 
 /**
@@ -262,7 +291,7 @@ function Cast({
   action: CharacterAction;
   actionKey: number;
   viseme: number;
-  onFocus: (focus: SpeakerFocus) => void;
+  onFocus: (role: CastRole, focus: SpeakerFocus | null) => void;
 }) {
   const { groundRef } = useGround();
   const [spots, setSpots] = useState<StandingSpot[] | null>(null);
@@ -318,6 +347,16 @@ function Cast({
     return Math.max(lead, second);
   }, [character, companion]);
 
+  /*
+   * THE SOLVE DOES NOT DEPEND ON THE CAMERA, and it must never start to.
+   *
+   * `two-shot` and `over-shoulder` deliberately orbit off the cast's facing
+   * axis. If the shot fed back into placement, the cast would re-solve to face a
+   * camera that is itself still moving, and the two would chase each other — the
+   * characters ending up aimed at a framing that has already been left behind.
+   * The dependency array below is the enforcement: no shot, no framing, no
+   * camera state appears in it.
+   */
   useEffect(() => {
     const ground = groundRef.current;
     if (!ground) return;
@@ -335,11 +374,15 @@ function Cast({
   }, [groundRef, companion, minSeparation, isWalkable, clearance]);
 
   /*
-   * Report where the LEAD's head is, so the conversation camera has something
-   * to frame. Derived from the solved spot and the character's own measured
-   * height rather than a constant: rho is 1.70 m and Dina 1.90 m at the
-   * shoulder, and one hard-coded eye level would frame a human's chin and a
-   * quadruped's sky.
+   * Report where each character's head is, so the camera has something to frame.
+   * Derived from the solved spot and the character's own measured height rather
+   * than a constant: rho is 1.70 m and Dina 1.90 m at the shoulder, and one
+   * hard-coded eye level would frame a human's chin and a quadruped's sky.
+   *
+   * BOTH members are reported now, not just the lead. `two-shot` and
+   * `over-shoulder` need the second subject, and a shot that silently degrades
+   * because the data was never published is indistinguishable from one that is
+   * framed wrong.
    *
    * This hook sits ABOVE the early return on purpose. Placing it after the
    * `spots` guard changed the hook COUNT between the render before spots
@@ -349,25 +392,39 @@ function Cast({
   const leadSpot = spots?.[0] ?? null;
   const secondSpot = spots?.[1] ?? null;
   useEffect(() => {
-    if (!leadSpot) return;
-    const outward = Math.atan2(leadSpot.x, leadSpot.z);
-    const toward = secondSpot
-      ? Math.atan2(secondSpot.x - leadSpot.x, secondSpot.z - leadSpot.z)
-      : outward;
-    const delta = Math.atan2(Math.sin(toward - outward), Math.cos(toward - outward));
-    const height = CHARACTER_ASSETS[character].targetHeightM;
-    onFocus({
-      x: leadSpot.x,
-      // Eye level, as a fraction of the character's own height. Dina is a
-      // quadruped at 0.70 m to the shoulder; a fixed 1.6 m would aim at sky.
-      // Mid-head, not the crown: aiming at the top of the skull put the whole
-      // face in the bottom half of the frame.
-      y: leadSpot.y + height * 0.75,
-      z: leadSpot.z,
-      facing: outward + delta * 0.25,
-      height,
-    });
-  }, [leadSpot, secondSpot, character, onFocus]);
+    if (!leadSpot) {
+      onFocus('lead', null);
+      onFocus('companion', null);
+      return;
+    }
+
+    const focusFor = (spot: StandingSpot, other: StandingSpot | null, height: number): SpeakerFocus => {
+      const outward = Math.atan2(spot.x, spot.z);
+      const toward = other ? Math.atan2(other.x - spot.x, other.z - spot.z) : outward;
+      // Shortest-arc blend: naive averaging of angles flips a character around
+      // when the two are on opposite sides of ±π.
+      const delta = Math.atan2(Math.sin(toward - outward), Math.cos(toward - outward));
+      return {
+        x: spot.x,
+        // Eye level, as a fraction of the character's own height. Dina is a
+        // quadruped at 0.70 m to the shoulder; a fixed 1.6 m would aim at sky.
+        // Mid-head, not the crown: aiming at the top of the skull put the whole
+        // face in the bottom half of the frame.
+        y: spot.y + height * 0.75,
+        z: spot.z,
+        facing: outward + delta * 0.25,
+        height,
+      };
+    };
+
+    onFocus('lead', focusFor(leadSpot, secondSpot, CHARACTER_ASSETS[character].targetHeightM));
+    onFocus(
+      'companion',
+      companion && secondSpot
+        ? focusFor(secondSpot, leadSpot, CHARACTER_ASSETS[companion].targetHeightM)
+        : null,
+    );
+  }, [leadSpot, secondSpot, character, companion, onFocus]);
 
   if (!spots || spots.length === 0) return null;
 
@@ -391,8 +448,6 @@ function Cast({
         const outward = Math.atan2(spot.x, spot.z);
         const other = cast.find((entry) => entry.id !== id)?.spot;
         const toward = other ? Math.atan2(other.x - spot.x, other.z - spot.z) : outward;
-        // Shortest-arc blend: naive averaging of angles flips a character
-        // around when the two are on opposite sides of ±π.
         const delta = Math.atan2(Math.sin(toward - outward), Math.cos(toward - outward));
         return (
           <Character3D
@@ -412,6 +467,13 @@ function Cast({
   );
 }
 
+/** Two focus points are the same when every number is. */
+function sameFocus(a: SpeakerFocus | null, b: SpeakerFocus | null): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  return a.x === b.x && a.y === b.y && a.z === b.z && a.facing === b.facing && a.height === b.height;
+}
+
 export function TutorScene({
   scene = 'diorama-a',
   character = 'rho',
@@ -422,7 +484,9 @@ export function TutorScene({
   action = 'idle',
   actionKey = 0,
   viseme = 0,
-  framing = 'vignette',
+  shot,
+  framing,
+  backdrop = 'auto',
   onReady,
 }: TutorSceneProps) {
   const [settings, setSettings] = useState<QualitySettings>(QUALITY_SETTINGS.medium);
@@ -440,33 +504,106 @@ export function TutorScene({
     announced.current = true;
     onReady?.();
   }, [ready, onReady]);
-  const content = useRef<Group>(null);
-  const [focus, setFocus] = useState<SpeakerFocus | null>(null);
-  const onFocus = useCallback((next: SpeakerFocus) => setFocus(next), []);
 
-  return (
+  const content = useRef<Group>(null);
+  const [focus, setFocus] = useState<{ lead: SpeakerFocus | null; companion: SpeakerFocus | null }>({
+    lead: null,
+    companion: null,
+  });
+
+  /*
+   * The equality guard is not defensive tidiness. The reporting effect builds a
+   * fresh object every time it runs, and this state feeds a prop that feeds
+   * another effect; without it, a value that has not actually changed still
+   * produces a new identity, which is precisely the render-loop generator
+   * frontend/AGENTS.md records.
+   */
+  const onFocus = useCallback((role: CastRole, next: SpeakerFocus | null) => {
+    setFocus((previous) => (sameFocus(previous[role], next) ? previous : { ...previous, [role]: next }));
+  }, []);
+
+  /*
+   * `ambientMotion` is already false under reduced motion, so it cannot tell the
+   * two apart — and the director must, because a low tier still gets camera
+   * TRAVEL while a reduced-motion request gets a cut. The probe carries the
+   * accessibility instruction on its own.
+   */
+  const prefersReducedMotion = useMemo(() => getDeviceProbe().prefersReducedMotion, []);
+
+  /*
+   * The stage provides its own anchor registry only when nothing above it
+   * already has. Once `StageShell` hoists the provider so HUD siblings can share
+   * it, this reads non-null and the local wrapper stops being rendered — which
+   * is what lets the two layers land in separate commits with no broken step in
+   * between.
+   */
+  const inheritedAnchors = useAnchorRegistry();
+
+  const activeShot: ShotId = shot ?? (framing ? shotForLegacyFraming(framing) : 'establishing');
+
+  /*
+   * Everything a change of island or cast invalidates about the measured fit.
+   * It used to invalidate on viewport resize alone, which is wrong by a whole
+   * island: 6.5 m and 9.5 m are different framing problems, and a stale fit
+   * frames one of them with a third of the screen empty.
+   */
+  const fitKey = `${scene}|${character}|${companion ?? 'solo'}`;
+
+  const stage = (
     <SceneCanvas className={className} onStats={onStats} onSettings={setSettings} camera={{ fov: 36 }}>
-      <SceneLighting settings={settings} />
+      {/* Outside the Suspense boundary on purpose: a backdrop change updates
+          instantly and can never blank the stage while an asset resolves. */}
+      <SceneLighting settings={settings} backdrop={backdrop} />
       <GroundProvider>
+        {/*
+         * TWO boundaries, not one. A single boundary around the island and the
+         * cast meant swapping a character unmounted the island with them — the
+         * whole stage went blank for the length of a .glb fetch, at exactly the
+         * moment the learner was choosing who to talk to.
+         */}
         <Suspense fallback={null}>
           <group ref={content} visible={ready}>
             <Diorama id={scene} settings={settings} />
-            <Cast
-              scene={scene}
-              character={character}
-              companion={companion}
-              settings={settings}
-              emotion={emotion}
-              action={action}
-              actionKey={actionKey}
-              viseme={viseme}
-              onFocus={onFocus}
-            />
+            <Suspense fallback={null}>
+              <Cast
+                scene={scene}
+                character={character}
+                companion={companion}
+                settings={settings}
+                emotion={emotion}
+                action={action}
+                actionKey={actionKey}
+                viseme={viseme}
+                onFocus={onFocus}
+              />
+              {/*
+               * INSIDE the cast's boundary, not beside it. `onReady` promises the
+               * island AND the cast are on screen, and the conversational layer
+               * gates the tutor's first line on it — a signal that arrived while
+               * a character .glb was still in flight would play audio at an empty
+               * island, which is the exact failure the callback exists to
+               * prevent. `ready` never resets afterwards, so the split boundary
+               * still does its job: swapping a character no longer takes the
+               * island down with it.
+               */}
+              <Reveal onReady={reveal} />
+            </Suspense>
           </group>
-          <Reveal onReady={reveal} />
         </Suspense>
-        <CameraRig content={content} enabled={settings.ambientMotion} mode={framing} focus={focus} />
+        <StageAnchors scene={scene} lead={focus.lead} companion={focus.companion} />
+        <CameraDirector
+          content={content}
+          shot={activeShot}
+          lead={focus.lead}
+          companion={focus.companion}
+          ambientMotion={settings.ambientMotion}
+          reducedMotion={prefersReducedMotion}
+          fitKey={fitKey}
+        />
+        <AnchorProjector />
       </GroundProvider>
     </SceneCanvas>
   );
+
+  return inheritedAnchors ? stage : <AnchorProvider>{stage}</AnchorProvider>;
 }

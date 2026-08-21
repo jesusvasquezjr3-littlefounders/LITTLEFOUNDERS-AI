@@ -7,16 +7,22 @@
 > is `/COURSE_ENGINE.md`. On conflict with /AGENTS.md or DESIGN.md, those win and
 > this file gets fixed.
 >
-> **Status (2026-08-21):** BUILT. `oracle/` (the runtime), migration `0047`,
-> Core's `/api/v1/tutor/*` surface and the `/tutor` product experience all
-> exist and pass their gates. **NOT ENABLED FOR MINORS** — §16's checklist
-> gates that, and its first item is a data-processing agreement that does not
-> yet exist. Legal review in progress:
-> `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md`.
+> **Status (2026-08-21):** RUNTIME BUILT, EXPERIENCE BEING REBUILT. `oracle/`
+> (the runtime), migration `0047` and Core's `/api/v1/tutor/*` surface exist
+> and pass their gates. The `/tutor` **experience** shipped as a dashboard of
+> flat cards with the 3D stage shrunk into a panel, and the owner rejected it:
+> it has to be an immersive 3D experience with the controls inside the scene.
+> That rebuild is in progress and §9, §10, §14.1 and §16.1 are its contract.
+> **NOT ENABLED FOR MINORS** — §16's checklist gates that, and its first item
+> is a data-processing agreement that does not yet exist. Legal review in
+> progress: `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md`.
 >
 > Where this document and the code disagree, the code is right and this
 > document is the bug — §3.1 and §7.3 were corrected once already for exactly
-> that reason (see the note in §7.3).
+> that reason (see the note in §7.3), and §2.1, §2.2, §9 and §10 were corrected
+> on 2026-08-21 for the opposite reason: the code was following a document that
+> was wrong, or that had recorded a fallback as a decision. Both directions
+> happen. Every correction says what it used to say.
 >
 > **Last updated:** 2026-08-21 · Language: English (project rule).
 
@@ -72,12 +78,15 @@ The flow, in the order the learner experiences it:
    topic from a course they are taking; a skill Data Intel says is weak; a
    frequent question; or "something else", which opens a conversation rather
    than a free-text form.
-4. **Converse and teach** (§9.3) — the Synthesis-style split: the character
-   speaks on the left with their dialogue rendered **above their head** (a
-   deaf-accessibility requirement, not a nicety) and mirrored in a 2D chat
-   bubble where the character's own head articulates; on the right, the Lesson
-   Engine runs **live**, one segment at a time, chosen or generated for this
-   learner.
+4. **Converse and teach** (§9.3) — the camera stays on the character, their
+   dialogue rendered **above their head** (a deaf-accessibility requirement,
+   not a nicety) and mirrored in a 2D chat bubble where the character's own
+   head articulates; the Lesson Engine runs **live** on a plate floating over
+   the same island, one segment at a time, chosen or generated for this
+   learner. *(Corrected 2026-08-21: this step used to say "the Synthesis-style
+   split — the character on the left, the Lesson Engine on the right". That
+   sentence is where a two-panel dashboard came from. There is one scene and
+   things float over it.)*
 5. **Close kindly** (§9.5) — a session ends on a budget, warmly, with a recap
    and a reason to come back. Never a hard cut.
 6. **Replay** (§12) — the session is saved and can be replayed later.
@@ -88,7 +97,7 @@ that produced only talk produced nothing.
 
 ---
 
-## §2 The stage — what exists, and the four gaps
+## §2 The stage — what exists, and the five gaps
 
 `/TUTOR_3D.md` §7b is the integration contract and it is DONE. `TutorStage`
 takes `character`, `companion`, `emotion`, `action`, `actionKey`, `speechUrl`,
@@ -97,14 +106,20 @@ the audio, drives the mouth from that audio, and closes the camera in for as
 long as the character is talking. Wiring Oracle is passing props, not reaching
 into the scene.
 
-### §2.1 The four gaps between "stage" and "tutor" — ALL CLOSED
+### §2.1 The gaps between "stage" and "tutor" — FOUR CLOSED, ONE REOPENED
 
-| Gap | What shipped |
+> **This table said "ALL CLOSED" and it was wrong on two rows.** Corrected
+> 2026-08-21 during the immersive rebuild. Both corrections are recorded here
+> rather than edited away quietly, because a document that silently repairs
+> itself teaches nobody which of its remaining claims to check.
+
+| Gap | State |
 |---|---|
-| **Diorama choice** | `TutorStage` now forwards `scene` to `TutorScene`, which had always accepted it. The prop was simply missing, so the product could not offer an island the scene lab had been switching between for weeks. |
-| **Captions over the head** | `frontend/src/tutor/SpeechCaption.tsx` — a billboarded HTML overlay ON the canvas, never scene geometry. Text in WebGL is a font-atlas problem (glyph coverage for three locales, hinting, subpixel rendering) that buys nothing here, because the caption always faces the viewer anyway. A div gets real text rendering, real selection, real screen-reader output and real i18n for free. It reveals with a typewriter for sighted readers while `aria-live` announces the COMPLETE sentence — announcing the animating slice would stutter it two characters at a time. |
-| **Streamed speech** | Oracle writes each turn's audio to Depot and hands over a URL, which is the simpler of the two options the design left open. Revisit only if the round trip is MEASURED to hurt. |
-| **Per-character framing** | `TutorStage` gained `speakingFraming`. `rho` and `zara` close in; `liruf` and `dina` stay at the island shot (§2.2). |
+| **Diorama choice** | **CLOSED.** `TutorStage` now forwards `scene` to `TutorScene`, which had always accepted it. The prop was simply missing, so the product could not offer an island the scene lab had been switching between for weeks. |
+| **On-canvas overlays** | **CLOSED, and the doctrine generalizes past captions.** `frontend/src/tutor/SpeechCaption.tsx` is a billboarded HTML overlay ON the canvas, never scene geometry. Text in WebGL is a font-atlas problem (glyph coverage for three locales, hinting, subpixel rendering) that buys nothing here, because an overlay always faces the viewer anyway. A div gets real text rendering, real selection, real screen-reader output and real i18n for free. The caption reveals with a typewriter for sighted readers while `aria-live` announces the COMPLETE sentence — announcing the animating slice would stutter it two characters at a time. **The same reasoning covers the ENTIRE HUD**, not just captions: every offer chip, recap chip, minutes rune and lesson plate is a DOM node projected to a world point, for the same four reasons. Text in the scene is a rendering choice; text in the DOM is an accessibility guarantee. See `/TUTOR_3D.md` §9.2 for the projection channel. |
+| **Streamed speech** | **CLOSED.** Oracle writes each turn's audio to Depot and hands over a URL, which is the simpler of the two options the design left open. Revisit only if the round trip is MEASURED to hurt. |
+| **Per-character framing** | **CORRECTED — this row recorded the FALLBACK as the decision.** It said `liruf` and `dina` "stay at the island shot". §2.2's own primary mitigation says the opposite: *"They frame wider. Their `conversation` framing keeps more of the body in shot."* Never closing the camera on them is §2.2's stated FALLBACK, to be used only "if this reads as broken in the first real screenshot pass" — and no such pass ever ran. What shipped (`speakingFraming={ARTICULATES.includes(...) ? 'conversation' : 'vignette'}`, `ConversationView.tsx`) applied the fallback without its trigger, so two of the four selectable tutors never came to the foreground at all. The rebuild returns to the primary decision as a named shot, `closeup-wide` (§2.2). This is a correction to a document, not a new owner decision. |
+| **Backdrop** | **OPEN. Reopened 2026-08-21 — it was never closed, and nothing said so.** The `auto \| dawn \| day \| dusk \| night` axis is offered in the picker (`PersonalizePanel.tsx`), Zod-validated and persisted (migration `0047`, `tutor_preferences.backdrop` with a CHECK constraint), and returned by TWO Core endpoints (`backend/src/routes/tutor.ts`). It then **reaches no renderer**: neither `TutorSceneProps` nor `TutorStageProps` has a `backdrop` field, and `SceneLighting` takes only `settings`. A learner picks "night", the choice is saved forever, and the island is lit exactly as it was. This is §1.14's "failure must be distinguishable" in its quietest form — a control that does nothing looks identical to a control that works, from every side except the one nobody looked at. Closing it is `SceneLighting` gaining the prop and lerping its colours and intensities, which the immersive rebuild's scene work does; this row moves to CLOSED when §16.1's "every persisted preference axis provably reaches the scene" gate passes, and not before — a prop that exists is not a light that changed, and believing otherwise is what produced this row. |
 
 ### §2.2 The static-mouth mitigation (decision 4)
 
@@ -114,17 +129,35 @@ atlas, rejected as likely to visibly damage two characters that currently look
 good. The owner has chosen to ship them as speaking tutors anyway. Three things
 make that acceptable rather than broken:
 
-- **They frame wider.** Their `conversation` framing keeps more of the body in
-  shot, so the eye reads posture and gesture rather than a still mouth.
+- **They frame wider — the `closeup-wide` shot.** Restated 2026-08-21 as a
+  named shot rather than a description, because the description was what let
+  the fallback get implemented in its place. `closeup-wide` is 22° off-axis at
+  1.35× the `closeup` distance, framing head AND hands, so the eye reads
+  posture and gesture rather than a still mouth. It is still a foreground shot:
+  the character comes to the front of the frame, which is the whole point of
+  choosing them as your tutor.
 - **The 2D bubble carries the articulation.** `CharacterActor` already takes
   `speaking`, and the 2D SVG characters animate their own mouths from it. The
   bubble is where a learner's eye goes while reading anyway.
 - **Gesture load increases.** They get an action on more turns than `rho` and
   `zara` do, because posture is the only speech channel they have.
 
-If this reads as broken in the first real screenshot pass, the fallback is
-decision 4's alternative — keep them selectable but never close the camera on
-them — and that is a props change, not a rebuild.
+The fallback — decision 4's alternative, keep them selectable but never close
+the camera on them — is a props change, not a rebuild.
+
+> **What actually happened, recorded so the shape of the mistake is reusable.**
+> The fallback shipped instead of the primary decision, without its stated
+> trigger. Its trigger was "if this reads as broken in the first real
+> screenshot pass"; there was no first real screenshot pass, and the fallback
+> was applied at the keyboard because it was the safer-sounding of two options
+> written on the same page. The cost was that half the selectable cast never
+> came near the camera, which reads to a learner as picking Liruf and being
+> given a distant figurine.
+>
+> The general rule: **a mitigation with a stated trigger may not be applied
+> before its trigger fires.** Conditions written into a design are load-bearing
+> even when they gate the cautious branch, because the cautious branch is still
+> a different product.
 
 ---
 
@@ -506,13 +539,44 @@ refuses to write rather than writing a default.
 
 ## §9 Session lifecycle
 
+> **§9.1–§9.5 were rewritten 2026-08-21 for in-scene composition.** They
+> previously described a page of panels arranged around a small stage, which is
+> what got built and what the owner rejected. The lifecycle itself did not
+> change; where it happens did. The screen recipe these sections must agree
+> with is `DESIGN.md` → §Screen Recipes → **Tutor**, and on conflict that
+> recipe wins.
+
 ### §9.1 Open
-Personalization loads (or the picker runs, first time only). The stage mounts and
-**`onReady` must fire before the first line** — speech handed over while assets
-are still resolving plays audio at a blank canvas.
+**The scene mounts FIRST and stays mounted for the whole route.** It is the
+background of every phase — loading, personalize, introduce, converse, adapt,
+close, replay — and it is never unmounted between them. This is a hard rule
+rather than an optimisation: remounting reloads the island through a Suspense
+fallback, so a learner watching their own world blink at every phase boundary
+learns that the place is not real. It also means the very first frame must
+already be the returning learner's remembered island, character AND backdrop,
+because preferences arrive with the token bootstrap; watching a default island
+turn into yours is worse than never seeing the default.
+
+Personalization loads (or the picker runs, first time only — and it runs IN
+the scene, §10). **`onReady` must fire before the first line** — speech handed
+over while assets are still resolving plays audio at a blank canvas.
+
+The pre-session state is the live island with **one** control on it. Nothing
+before the first press requires reading beyond one line (§1 step 2).
 
 ### §9.2 Introduce and offer
-Camera to `conversation`. The tutor greets by nickname and offers a closed set:
+The camera moves to `closeup` (or `closeup-wide`, §2.2) on the tutor. The
+greeting is spoken and captioned above their head, and **the offers appear in
+the scene, after the greeting, as chips at the tutor's chest** — staggered on
+the standard reveal cadence, spoken by the tutor as they arrive.
+
+They are not a grid of cards with a title, a body paragraph and a button whose
+label repeats its own title. §1 step 2 already says "Begin — one button;
+nothing before it requires reading"; a five-card reading exercise placed
+immediately after that button contradicts it. A chip carries one short line and
+is pickable both as a mesh and as its guaranteed DOM twin.
+
+The tutor greets by nickname and offers a closed set:
 
 1. **A topic from my courses** — drawn from what the learner is actually enrolled
    in, never a free-text box.
@@ -531,19 +595,60 @@ instead of a recommendation, and says plainly that it is still getting to know
 the learner. Inventing a profile from no evidence is the failure mode to avoid.
 
 ### §9.3 Converse and teach
-Left: the character, speaking, captioned above their head, mirrored in the 2D
-bubble. Right: the Lesson Engine, one segment at a time, from the §7 ladder. The
-tutor reacts to the actual result of each segment — that is what makes it a
+One scene. The camera holds the character; their speech is captioned above
+their head and mirrored in the 2D bubble, which for `liruf` and `dina` is the
+only working articulation channel (§2.2). The Lesson Engine runs on a **plate
+floating over the same island** — 420 px wide with scene visible on all four
+sides at 1280 px, a three-detent bottom sheet at 375 px — never a panel beside
+the stage and never a full-height column. The camera composes around the
+plate's published rect, so the character's on-screen height is the same with a
+segment and without one; a lesson that visibly shoves the tutor aside to make
+room for itself reads as two products sharing a screen.
+
+The tutor reacts to the actual result of each segment — that is what makes it a
 lesson rather than a playlist.
+
+Three things this section previously left unsaid, each of which turned out to
+matter:
+
+- **THINKING is a state and needs a performance.** Between the learner
+  releasing the microphone and the tutor speaking there is a generate, a
+  moderate and a synthesize (§6) — most of the latency budget, and the design
+  described no behaviour for it at all, so the stage simply sat still. The
+  tutor plays `think` with the `thinking` emotion, the camera eases very
+  slightly wider, and the control shows work in progress. Silence with no
+  posture reads as a broken product, not as thought.
+- **`segmentRequest.framing` is shown to the learner.** It is defined as *"a
+  short, learner-facing framing for the activity, moderated like `say`"*
+  (`oracle/src/tutor/turnSchema.ts`) — up to 240 characters of moderated prose,
+  and it is the tutor's own sentence introducing every activity. It was carried
+  over the wire, stored by the client, and rendered nowhere. It is the lead-in
+  line above the segment prompt.
+- **A live segment suppresses ambient camera drift** on every quality tier.
+  Reading a maths problem while the frame breathes is nausea, not atmosphere
+  (DESIGN.md §Motion).
 
 ### §9.4 Adapt
 Per §11. The tutor may notice friction and **offer** a different explanation.
+The offer is two chips floating in the scene between tutor and companion under
+a `two-shot`, not a card that pushes the conversation down the page — because
+the moment is a question being asked by a character, and it should look like
+one.
 
 ### §9.5 Close kindly
-Soft close at ~15 minutes: the tutor begins wrapping up in character, finishes
-the current segment, recaps what was learned, awards, and invites the learner
-back. Hard stop at 25. A session that hits the hard stop still gets a real
-ending — never a cut to a modal.
+**The close is a camera move and a performance, not a screen.** Soft close at
+~15 minutes: the tutor begins wrapping up in character, finishes the current
+segment, then waves and bows on the island while the camera pulls back to the
+establishing shot over ~2.4 s and the lighting lerps one notch warmer,
+whichever backdrop is set. Three recap chips anchor to three points on the
+island — minutes, XP, what we practised — and the invitation to come back is
+spoken. Hard stop at 25 minutes gets the IDENTICAL performance, because it is
+already a first-class `next: 'close'` turn rather than a timeout.
+
+**Nothing here is modal, and nothing here is a centred card on an empty page.**
+A session that ends by replacing the world with a summary box takes away the
+place the learner was just in, at the exact moment the product is trying to
+give them a reason to return.
 
 Ending is a first-class turn (`next: 'close'`), not a timeout that kills a
 socket.
@@ -552,24 +657,62 @@ socket.
 
 ## §10 Personalization
 
-| Choice | Options today | Notes |
-|---|---|---|
-| Speaking tutor | `rho`, `zara`, `liruf`, `dina` | Decision 4; framing differs (§2.2). |
-| Companion | any other character, or none | The stage already supports one companion. |
-| Diorama | `diorama-a`, `diorama-b` | Catalog-driven; grows without code. |
-| Backdrop | the themed backdrops the stage already renders | Light AND dark must both work. |
-| Nickname | learner-chosen, validated, moderated | The **only** name-shaped value that reaches the model (§4.1). |
-| Adaptation | §11 | |
+**Personalization is not a settings screen. It is the learner making the place
+theirs, in the place itself** — every axis below is picked by touching the
+thing it changes, and the change is visible on the live island under your
+finger. That is the whole reason this section exists near the top of the flow
+instead of inside a profile page.
 
-Persisted per user in Vault (new migration, RLS, kid rows readable by verified
-guardians). A returning learner never re-picks. Defaults must be good enough
-that skipping the picker entirely still produces a good session —
-personalization is an invitation, not a toll gate.
+| Choice | Options today | Picked by | Notes |
+|---|---|---|---|
+| Speaking tutor | `rho`, `zara`, `liruf`, `dina` | tapping the character on the island | Decision 4; framing differs (§2.2). |
+| Companion | any other character, or none | tapping a character again to send them to the companion slot | The stage already supports one companion. |
+| Diorama | `diorama-a`, `diorama-b` | tapping an island rim pad — the island actually becomes the other island | Catalog-driven; grows without code. |
+| Backdrop | `auto`, `dawn`, `day`, `dusk`, `night` | dragging a sun marker along a fixed overhead arc with five stops | **Renders nothing today — §2.1's reopened gap.** Light AND dark must both work. |
+| Nickname | learner-chosen, validated, moderated | a text field on a glass plate | The **only** name-shaped value that reaches the model (§4.1). A text input cannot be in-world; this and the two adaptation toggles are the only exceptions. |
+| Adaptation | §11 | toggles on the same plate | |
 
-**Responsive (§1.11, non-negotiable):** the picker is a single column at 375 px
-and a deliberate multi-column layout at 1280 px; the conversation view's
-left/right split stacks on mobile with the stage above and the lesson below.
-Verified in-browser at both widths, with screenshots, before this is done.
+**Every axis previews live, and that is the acceptance test for this section.**
+A picker whose result you cannot see is indistinguishable from a picker whose
+result does not exist — which is not a hypothetical: it is exactly what
+happened to the backdrop (§2.1), where the control, the validation, the column
+and two endpoints all worked and the light never changed. A 2D thumbnail grid
+of islands has the same failure mode with better graphics, because the
+thumbnail is a promise rather than the thing.
+
+Persisted per user in Vault (migration `0047`, RLS, kid rows readable by
+verified guardians). A returning learner never re-picks, and their remembered
+choices light the FIRST frame (§9.1). Defaults must be good enough that
+skipping the picker entirely still produces a good session — personalization is
+an invitation, not a toll gate.
+
+**Responsive (§1.11, non-negotiable).** Rewritten wholesale 2026-08-21. This
+paragraph previously read: *"the picker is a single column at 375 px and a
+deliberate multi-column layout at 1280 px; the conversation view's left/right
+split stacks on mobile with the stage above and the lesson below."* That single
+sentence is where "personalization is KEY" became a responsive FORM and where
+the conversation became two panels — it specified the rejected layout in this
+document, in advance, and whoever built it was following the spec.
+
+What replaces it: **the stage is the page at every width** (`fixed inset-0`,
+DESIGN.md → §Screen Recipes → Tutor). There is no picker column and no
+left/right split to stack, because there are no panels to lay out. What changes
+between breakpoints is the composition inside one frame:
+
+- **375 px** — the mic orb at 96 px on the bottom safe area, the lesson plate
+  as a bottom sheet at PEEK / HALF / FULL, the camera composing the character
+  into the free band above the sheet, and every in-scene control clearing a
+  44 px tap target by construction rather than by luck.
+- **1280 px** — a wider establishing shot with real island around a floating
+  420 px lesson plate, scene visible on all four sides of it. The extra width
+  is spent on the SCENE. It is not spent on a second panel, and it is not left
+  as margin.
+
+Both widths, both themes, verified in-browser with screenshots before any of
+this is done — and per the standing instruction on this project, the 1280 px
+frame with a live segment is looked at by a human before the rest is built,
+because that is the frame that decides whether the plate reads as floating or
+as the panel that was rejected.
 
 ---
 
@@ -605,6 +748,20 @@ Decision 8.
 
 - **Replay** reconstructs the session: the characters re-act it, the tutor's
   audio plays, the segments are shown alongside what the learner answered.
+
+  > **Honesty correction, 2026-08-21: that describes the intent, not the
+  > build.** What ships today is a TRANSCRIPT — a list of lines with a native
+  > `<audio controls>` per tutor turn (`SessionHistory.tsx`), which hardcodes
+  > `emotion="neutral"` for every line in a component whose own comment
+  > documents the re-enactment intent. Nothing re-acts anything.
+  >
+  > The data for the real thing is already there and was verified: a stored
+  > turn carries `emotion`, `action` and `audio_path`, and Core's PostgREST
+  > select explicitly asks for all three. So 3D re-enactment is **frontend
+  > work with no contract change** — a director that rebuilds the session's own
+  > island and cast and re-runs a shot script, with the flat list surviving as
+  > the no-WebGL fallback. It is scheduled as the last increment of the
+  > immersive rebuild, and until it lands this bullet describes a plan.
 - **Parent visibility is an invariant**, and it is a page: `/family/:kidId/tutor`.
   A verified guardian reads their child's full transcripts — not a summary, not
   a redaction — with the safety flags surfaced FIRST, because a child
@@ -634,12 +791,51 @@ record, not a model's interpretation of what the learner said.
 | Failure | Behavior |
 |---|---|
 | Data Intel unavailable | Explicit degraded mode + generic tutor. **Never** treated as zero mastery (§1.14). |
-| Voice provider unavailable | Session continues in text mode with captions. Speech is an enhancement; the lesson is the product. |
+| Voice provider unavailable | Session continues in text mode with captions. **The microphone affordance is still present, at full size, and states its own unavailability in place.** |
 | Model unavailable | Scripted safe response; session closes kindly. |
 | Moderation unavailable | **Fail closed** — the turn is not spoken. |
 | Live generation fails any guard | Emit nothing; fall back to tier 1 and say so honestly. |
 | Stage assets fail to load | The existing `SceneBoundary` fallback. The conversation must still run without 3D. |
 | Consent revoked mid-session | The microphone stops on the next turn. |
+
+### §14.1 The affordance is always present — corrected 2026-08-21
+
+This section used to say **"Speech is an enhancement; the lesson is the
+product."** That sentence is true about the LESSON and it was read as
+permission to hide the CONTROL, which is how the shipped conversation view came
+to render the microphone inside `{socket.microphone && (…)}` — present only
+when it already worked. Everywhere else, the answer was an empty strip of
+composer where a microphone should be. The owner's report of the shipped build
+was that the microphone was nowhere to be found. That was accurate, and it was
+not a fault in the microphone.
+
+The rule that replaces it:
+
+**The microphone affordance is ALWAYS rendered, at full size, in all five
+states — UNAVAILABLE, IDLE, LISTENING, THINKING, SPEAKING — and when the answer
+is no, the control says why, in place.** Unavailable is a dashed ring plus
+`aria-disabled` plus one honest translated line. It is never an absent control.
+
+Three reasons this is a rule and not a preference:
+
+1. **An absent control is unfalsifiable.** A missing button and a broken button
+   look the same to the person in front of it, and they look the same to the
+   reviewer taking the screenshot. A stated reason is checkable by both.
+2. **The reasons already exist, end to end, and are already translated.**
+   `microphoneBlockedBy()` in Core returns exactly `POLICY_BLOCKED`,
+   `CONSENT_REQUIRED` or `VOICE_UNAVAILABLE`, ordered so policy is reported
+   first (§16's decision note: telling a family "ask a grown-up" when the
+   answer would still be no wastes their time). All three already have copy in
+   all three locales under `tutor.offers.*`. Hiding the control threw away work
+   that was finished.
+3. **`CONSENT_REQUIRED` is a product surface, not an error.** It is the one
+   place a child learns that their guardian can turn this on. Hidden, the
+   feature is invisible to the only person who can ask for it.
+
+The corollary for whoever ships this: **a beautiful disabled orb is still a
+disabled orb.** Making the affordance visible and making voice actually live in
+the environment being reviewed have to land together, or the next review
+repeats the last one with better typography.
 
 ---
 
@@ -727,6 +923,47 @@ the build session of 2026-08-21; unticked ones block enabling this for minors.
       change.
 - [x] Owner sign-off recorded for the §1.5 exception (§3.2).
 
+### §16.1 The immersion gates — added 2026-08-21
+
+Separate from the safety checklist above and NOT a substitute for it. These
+gate the rebuilt experience rather than a minor's use of it, and they exist
+because every one of them names something the shipped version got wrong while
+every automated gate was green.
+
+- [ ] **The stage is the page.** The canvas covers ≥ 95% of the viewport in
+      every phase, at 375 px and 1280 px, in both themes. No app shell, no
+      `mx-auto max-w-container`, no page `<h1>` on the route.
+- [ ] **Every control is in the frame.** Zero `Card` from `components/ui`
+      renders during a live session; every focusable control on the route sits
+      over the canvas.
+- [ ] **The microphone is present in all five states**, with an accessible
+      name in each and a visible reason in each blocked one (§14.1).
+- [ ] **Voice is actually live in the reviewed environment** — `/health`
+      reporting voice up, the casting check naming zero missing enrolments,
+      and one spoken turn recorded end to end. This and the item above must
+      ship together.
+- [ ] **Every persisted preference axis provably reaches the scene**, backdrop
+      included (§2.1, §10). A test, not an inspection — this is the gap that
+      let a control ship that changed nothing.
+- [ ] **All four characters come to the foreground**, `rho`/`zara` at
+      `closeup` and `liruf`/`dina` at `closeup-wide` (§2.2), one greeting
+      screenshot each.
+- [ ] **The lesson plate floats.** At 1280 px, scene visible above, below,
+      left and right of it; the character's measured on-screen height
+      unchanged with and without a live segment. **This frame is shown to the
+      owner before the remaining increments are built** — a hard gate, because
+      it is the frame the last rejection was about.
+- [ ] **Keyboard focus never lands on something invisible.** Tab through every
+      phase; anchored controls behind the camera or off-screen are hidden AND
+      inert.
+- [ ] **Motion survives the quality governor.** A locked `low` tier still
+      transitions between shots (DESIGN.md §Motion recipe 9). Measured frame
+      times and live triangle count at fullscreen against the documented
+      per-frame ceiling.
+- [ ] **Text over the render is measurable.** Every plate carrying body text
+      stands on the opaque `bg-surface` floor, no ad-hoc alpha, and axe-core
+      reports zero violations across all Tutor surfaces in both themes.
+
 ## §17 Documentation stewardship for this feature
 
 | Change | Docs updated in the same commit |
@@ -739,6 +976,8 @@ the build session of 2026-08-21; unticked ones block enabling this for minors.
 | New migrations | `database/AGENTS.md`, regenerate `database/types/` |
 | New endpoints | service `README.md` route tables |
 | New terms (Oracle, session, turn, pack) | `GLOSSARY.md` |
+| **ANY change to the Tutor's layout, composition or in-scene chrome** | `DESIGN.md` → §Screen Recipes → **Tutor**, in the SAME commit — it is the authoritative recipe (/AGENTS.md §1.1 rank 4) and this file's §9/§10 must agree with it. Added 2026-08-21 because the absence of that recipe is the root cause of the rejected build: §0 of DESIGN.md makes building outside a recipe a design bug, there was no Tutor recipe, and the screen got assembled from the nearest one that existed. |
+| A new shot, anchor slot or HUD primitive | `/TUTOR_3D.md` §9 (the stage-side contract) + `DESIGN.md` §Components |
 
 ---
 

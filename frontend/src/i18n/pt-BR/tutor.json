@@ -159,6 +159,14 @@
     "yesPlease": "Sim, por favor",
     "noThanks": "Não, obrigado"
   },
+  "mic": {
+    "listening": "Estou ouvindo…",
+    "thinking": "Pensando…",
+    "speaking": "Falando — segure para interromper",
+    "unavailableLabel": "Microfone indisponível",
+    "releaseToSend": "Solte para enviar",
+    "keyboardHint": "Ou segure Espaço"
+  },
   "segment": {
     "activity": "Tente isto",
     "practiceOnly": "só prática",
