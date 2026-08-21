@@ -274,6 +274,22 @@ jobs:
           MODEL_KEY="$(read_var coursegen DEEPSEEK_API_KEY)"
           JUDGE_KEY="$(read_var coursegen QWEN_API_KEY)"
 
+          # THE ENDPOINT AND THE MODEL TRAVEL WITH THE KEY. Copying only the
+          # credential and leaving Oracle on its own defaults is how the tutor
+          # shipped calling https://api.deepseek.com/chat/completions — no /v1,
+          # because neither service uses an SDK that appends it — and 404'd on
+          # every turn while /health said `model: up` and every test passed.
+          # Fall back to Forge's own defaults when the variable is unset there,
+          # since an unset variable means Forge is running on those defaults too.
+          MODEL_BASE="$(read_var coursegen DEEPSEEK_BASE_URL)"
+          MODEL_NAME_V="$(read_var coursegen DEEPSEEK_MODEL)"
+          JUDGE_BASE="$(read_var coursegen QWEN_BASE_URL)"
+          JUDGE_MODEL_V="$(read_var coursegen QWEN_JUDGE_MODEL)"
+          [ -n "$MODEL_BASE" ]    || MODEL_BASE='https://api.deepseek.com/v1'
+          [ -n "$MODEL_NAME_V" ]  || MODEL_NAME_V='deepseek-v4-pro'
+          [ -n "$JUDGE_BASE" ]    || JUDGE_BASE='https://dashscope-intl.aliyuncs.com/compatible-mode/v1'
+          [ -n "$JUDGE_MODEL_V" ] || JUDGE_MODEL_V='qwen3-max'
+
           if [ -z "$CORE_KEY" ]; then
             echo "::error::could not read Core's INTERNAL_API_KEY — Oracle cannot call Core without it"
             exit 1
@@ -342,6 +358,11 @@ jobs:
 
           # Each of these has a distinct, stated consequence if absent, so each
           # gets its own error rather than a shared "some keys are missing".
+          set_var oracle MODEL_API_BASE "$MODEL_BASE"
+          set_var oracle MODEL_NAME "$MODEL_NAME_V"
+          set_var oracle JUDGE_API_BASE "$JUDGE_BASE"
+          set_var oracle JUDGE_MODEL_NAME "$JUDGE_MODEL_V"
+
           if [ -n "$MODEL_KEY" ]; then
             set_var oracle MODEL_API_KEY "$MODEL_KEY"
           else

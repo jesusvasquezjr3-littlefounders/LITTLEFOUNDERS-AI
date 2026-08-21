@@ -260,6 +260,7 @@ All of these must pass, in every service you touched:
 - [ ] `npm run secrets:check` (root) — no credential patterns in tracked files
 - [ ] Frontend changes: `npm run i18n:check` (root) — 3-locale key parity + hardcoded-string scan
 - [ ] `npm run paths:check` (root) — the acquisition surface agrees across `frontend/` and `backend/`
+- [ ] `npm run provider:check` (root) — Forge and Oracle agree on the DeepSeek/Qwen base URLs and model names
 - [ ] Tutor 3D clip/rig changes: `npm run verify:rig` (frontend) — every clip keeps every character in its own stance and proportions
 - [ ] Tutor 3D placement/island changes: `npm run verify:placement` (frontend) — every character stands on walkable ground, inside the rim
 - [ ] Tutor runtime changes: `npm run verify:tutor` (oracle) — the model context rejects every unlisted field, and the injection canary corpus still fails to escape

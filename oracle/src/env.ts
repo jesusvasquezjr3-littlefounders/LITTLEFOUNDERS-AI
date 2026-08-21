@@ -43,12 +43,33 @@ const Env = z.object({
    * Qwen as the independent judge — the same split Forge uses, for the same
    * reason: an author that grades its own work grades it generously.
    */
-  MODEL_API_BASE: z.url().default('https://api.deepseek.com'),
+  /*
+   * THE DEFAULTS ARE FORGE'S, and both halves of that matter.
+   *
+   * The base URL MUST carry /v1. We build the endpoint by hand —
+   * `${MODEL_API_BASE}/chat/completions` — rather than through an SDK that
+   * appends the version for us, so a base of https://api.deepseek.com yields
+   * https://api.deepseek.com/chat/completions and 404s on every single turn.
+   * That shipped: the tutor came up healthy in production, `/health` reported
+   * `model: up`, and every learner got "my thoughts got tangled" instead of a
+   * lesson. `coursegen/src/env.ts` has always had the /v1 here.
+   *
+   * And `deepseek-chat` is a DEPRECATED alias — retired 2026-07-24, now
+   * pointing at a v4-flash mode rather than the model Forge actually writes
+   * courses with. Two services on one account should not quietly be talking to
+   * two different models; a tutor explaining a topic worse than the lesson
+   * that taught it is the kind of difference nobody would think to look for.
+   *
+   * Keep these in step with coursegen/src/env.ts. `step=provision` copies the
+   * live values across rather than trusting either file, so these are the
+   * floor, not the contract.
+   */
+  MODEL_API_BASE: z.url().default('https://api.deepseek.com/v1'),
   MODEL_API_KEY: z.string().min(8).optional(),
-  MODEL_NAME: z.string().min(1).default('deepseek-chat'),
+  MODEL_NAME: z.string().min(1).default('deepseek-v4-pro'),
   JUDGE_API_BASE: z.url().default('https://dashscope-intl.aliyuncs.com/compatible-mode/v1'),
   JUDGE_API_KEY: z.string().min(8).optional(),
-  JUDGE_MODEL_NAME: z.string().min(1).default('qwen-plus'),
+  JUDGE_MODEL_NAME: z.string().min(1).default('qwen3-max'),
 
   /**
    * Real-time voice. `provider: none` is a first-class, tested mode — it is

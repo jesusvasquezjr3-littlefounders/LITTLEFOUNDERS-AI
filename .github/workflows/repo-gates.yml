@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   gates:
-    name: docs sync + secrets + i18n parity + marketing paths
+    name: docs sync + secrets + i18n parity + marketing paths + provider parity
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -45,6 +45,16 @@ jobs:
       # is why this belongs in the unfiltered job rather than either CI.
       - name: Marketing paths agree across packages
         run: node agent/tools/check-marketing-paths.mjs
+
+      # Forge and Oracle call the SAME two provider accounts, and each declares
+      # how in its own env schema — no workspaces, so no shared import, so
+      # either can drift alone. Oracle shipped with a base URL missing the /v1
+      # that coursegen has always had, which 404'd every tutor turn while the
+      # service stayed healthy and every test stayed green. Unfiltered for the
+      # same reason as marketing paths: the drift lives in the GAP between two
+      # packages, so no per-package filter can see it.
+      - name: Forge and Oracle agree on their provider settings
+        run: node agent/tools/check-provider-parity.mjs
 
       # The agent/tools/*.test.mjs suite existed but ran in NO workflow, so it
       # rotted unnoticed: on 2026-08-14 it was failing because ROADMAP.md still
