@@ -208,6 +208,9 @@ jobs:
       # that does not verify. They are therefore generated ONLY when absent.
       - name: Provision the oracle service
         if: inputs.step == 'provision'
+        env:
+          # Masked by GitHub in every log line, and never written to a file.
+          INWORLD_KEY: ${{ secrets.INWORLD_API_KEY }}
         run: |
           set -uo pipefail
           # GitHub runs `bash -e` whatever the script says, so an expected
@@ -348,16 +351,58 @@ jobs:
           set_var oracle DEPOT_URL "http://filebase.railway.internal:4006"
           set_var oracle NODE_ENV "production"
           set_var oracle PORT "4009"
-          # Voice stays OFF until the data-processing agreement exists
-          # (/LEGAL/AI_TUTOR_LEGAL_REVIEW.md §6). The tutor is complete without
-          # it: captioned, typed, graded, replayable.
-          set_var oracle VOICE_PROVIDER "none"
-          set_var oracle TUTOR_VOICE_FOR_MINORS "false"
+          # VOICE IS THE PRODUCT, and this step used to pin it OFF.
+          #
+          # `set_var oracle VOICE_PROVIDER "none"` ran on every provision, so it
+          # would have silently reverted the owner's own change on the next
+          # deploy — the worst kind of configuration bug, because the symptom
+          # (the tutor went quiet again) appears hours later and points at
+          # nothing. The DPA gate it was enforcing is about MINORS, and there is
+          # already a separate, explicit flag for exactly that. Conflating the
+          # two silenced adults who were never in question, which is how the
+          # microphone came to be missing from the product entirely.
+          #
+          # Now: read what is there and leave a deliberate choice alone. Only an
+          # UNSET provider is defaulted, and defaulted to the product's intent.
+          ORACLE_VOICE="$(read_var oracle VOICE_PROVIDER)"
+          if [ -n "$ORACLE_VOICE" ]; then
+            echo "   voice provider: '$ORACLE_VOICE' already chosen, left alone"
+          else
+            set_var oracle VOICE_PROVIDER "inworld"
+          fi
 
+          # The minor gate stays exactly as strict, and stays SEPARATE. It is
+          # false until a data-processing agreement covering children's audio
+          # exists (/LEGAL/AI_TUTOR_LEGAL_REVIEW.md §6); flipping it is an owner
+          # decision to record in /ORACLE.md §16, never a side effect of a
+          # deploy. Same rule: an explicit choice is never overwritten.
+          MINOR_VOICE="$(read_var oracle TUTOR_VOICE_FOR_MINORS)"
+          if [ -n "$MINOR_VOICE" ]; then
+            echo "   minors' microphone: '$MINOR_VOICE' already chosen, left alone"
+          else
+            set_var oracle TUTOR_VOICE_FOR_MINORS "false"
+          fi
+
+          # The Inworld credential travels from a repository secret, so it is
+          # masked in every log and never lives in a file. Absent, the tutor is
+          # captioned and silent rather than broken.
+          if [ -n "${INWORLD_KEY:-}" ]; then
+            set_var oracle INWORLD_API_KEY "$INWORLD_KEY"
+          else
+            echo "::warning::no INWORLD_API_KEY secret — every character will be captioned and SILENT"
+          fi
+
+          # NOT A WARNING. Without both DEPOT_URL and DEPOT_INTERNAL_KEY,
+          # `storeTurnAudio` returns null immediately and every `audioUrl` is
+          # null — a fully successful, fully PAID-FOR text-to-speech call whose
+          # audio never reaches the browser. From the outside that is
+          # indistinguishable from an unenrolled character, so nobody would look
+          # at Depot. Voice can no longer be on and unstorable at the same time.
           if [ -n "$DEPOT_KEY" ]; then
             set_var oracle DEPOT_INTERNAL_KEY "$DEPOT_KEY"
           else
-            echo "::warning::filebase has no INTERNAL_API_KEY to copy — Oracle cannot store session audio"
+            echo "::error::filebase has no INTERNAL_API_KEY to copy — every spoken turn would be synthesised, billed, and silently discarded"
+            FAILED=$((FAILED + 1))
           fi
           if [ -n "$REDIS" ]; then
             set_var oracle REDIS_URL "$REDIS"

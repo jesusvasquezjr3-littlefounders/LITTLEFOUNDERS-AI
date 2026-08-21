@@ -16,9 +16,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "verify:tutor": "tsx scripts/verify-tutor.ts",
-    "model:verify": "tsx scripts/verify-model.ts",
-    "voices:clone": "tsx scripts/clone-character-voices.ts",
-    "voices:verify": "tsx scripts/verify-inworld.ts"
+    "model:verify": "tsx --env-file-if-exists=.env scripts/verify-model.ts",
+    "voices:clone": "tsx --env-file-if-exists=.env scripts/clone-character-voices.ts",
+    "voices:verify": "tsx --env-file-if-exists=.env scripts/verify-inworld.ts"
   },
   "dependencies": {
     "express": "^5.1.0",
