@@ -160,9 +160,26 @@ remote_sql() {
     # The captured query result is what remains after dropping the sentinel
     # and psql's stderr chatter (NOTICE/WARNING and their attachment lines),
     # which the channel merge can interleave anywhere relative to real rows.
+    #
+    # SSH's OWN chatter has to go too, and it is spelled differently. On any
+    # host whose key is not already cached — every fresh runner, every new
+    # laptop — ssh prints "Warning: Permanently added ..." on stderr, and the
+    # 2>&1 merge drops it into the result. It survives the psql filter because
+    # that matches WARNING: (uppercase, colon) while this is "Warning: "
+    # (mixed case, space). A single-row probe then reads the warning as its own
+    # answer, and the caller reports an impossible database state while the
+    # database is perfectly fine. Observed exactly that way on 2026-08-21:
+    #
+    #   FAIL: unexpected remote ledger state: Warning: Permanently added
+    #   'ssh.railway.com' (ED25519) to the list of known hosts.
+    #   present|46|present
+    #
+    # — with the real answer sitting right there in the failure message.
+    # Matched in FULL rather than by prefix, so it can never eat a real row.
     printf '%s\n' "$output" \
       | grep -Fvx "$SENTINEL" \
       | grep -Ev '^(psql:[^ ]* )?(NOTICE|WARNING|DETAIL|HINT|CONTEXT):' \
+      | grep -Ev '^Warning: Permanently added .* to the list of known hosts\.$' \
       || true
     return 0
   done
