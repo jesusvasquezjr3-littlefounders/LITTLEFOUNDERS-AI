@@ -2,6 +2,70 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-21) — AI Tutor (Oracle): full design approved, eight owner decisions recorded, no code written yet
+
+Session goal: design the final AI Tutor before building it. The owner asked for
+doubts and key suggestions **before** any other work, and that is what this
+session produced — `/ORACLE.md` was rewritten from the superseded v1 "Money
+Moments" design into the approved specification, and `ROADMAP.md` carries the
+decision record. **Zero implementation.** No service, no migration, no route.
+
+**Three conflicts with standing invariants were surfaced before designing
+anything, per §1.0.1.** Each was decided by the owner, and each override is now
+written down rather than living in a chat log:
+
+1. **A minor's voice reaching a third party.** §1.9 caps third-party context at
+   "age band + first name"; a microphone stream is far beyond that, and v1
+   ORACLE.md had classified live chat as v3+ pending a separate §1.9 review.
+   Owner decision: **kids get the microphone in v1**, behind a blocking
+   parental-consent gate, with a data-processing agreement covering minors'
+   voice as an owner action that blocks rollout.
+2. **v1's non-negotiable #1 — never a free-text box for a child.** Open
+   conversation contradicts it head-on. Overridden deliberately; the reason
+   `/ORACLE.md` §4–§6 are as detailed as they are is that they now carry the
+   weight that closed taxonomy used to carry for free.
+3. **§1.2 is LOCKED.** Inworld is a new provider and needed the owner's sign-off,
+   which was given and is now recorded in ROADMAP's Open decisions table rather
+   than assumed from a prompt.
+
+**The decision that matters most for content safety.** The owner chose a
+three-tier ladder — published-catalog composition, then a human-published
+pre-generated bank, then **live generation** — and the argument for the third
+tier is the one worth preserving: a child who did not understand the canonical
+explanation needs a *different* one now, and a finite bank structurally cannot
+hold it. "Come back when we have written one" is not a tutoring product. That
+makes live generation the largest §1.9 exception in the project, so it is fenced
+by a deterministic-grading type allowlist, the Forge gates, the independent
+judge (which this project's own record shows catching twelve real semantic
+defects that all nine gates passed), answer-key re-execution before any XP,
+moderation, full provenance, and post-hoc sampled human review — and a
+generation that fails any guard emits NOTHING rather than something generic.
+
+**Design work that came out of reading the code rather than assuming it.**
+`TutorStage` is genuinely ready — the seam in TUTOR_3D.md §7b is real — and the
+gap between "stage" and "tutor" is four specific items, not a rebuild: the
+diorama prop is not forwarded from `TutorScene` to `TutorStage`; nothing renders
+captions over a character's head; `speechUrl` is a finished file while live TTS
+is a stream; and `conversation` framing is one setting for four characters whose
+mouths do not all work. The owner chose all four characters as selectable
+speaking tutors despite TUTOR_3D.md §3.1 having closed mouth cards for `liruf`
+and `dina`, so the mitigation is wider framing for those two plus leaning on the
+2D bubble, where `CharacterActor`'s `speaking` prop already articulates the head.
+
+**Cold start is the normal case, not an edge case.** Data Intel is deployed and
+syncing, and `GET /api/v1/learn/personalization` exists in Core — but the
+courses sit in `review`, so there is almost no learning evidence per user. The
+"I see you are struggling with X" opening will have nothing to say at launch.
+Designed for from the start: low `evidenceCount` or high `uncertainty` opens a
+short diagnostic and says plainly that the tutor is still getting to know the
+learner, rather than inventing a profile from no evidence.
+
+**Still open and blocking implementation:** the §1.5 browser-exception #4 for
+Oracle's websocket (recommended shape written up, needs owner sign-off), the
+Inworld DPA, and verification of Inworld's actual API surface — which was
+deliberately NOT assumed anywhere in the specification, and is flagged as
+unverified inside `/ORACLE.md` §3.3 rather than written as if known.
+
 ## Current State (2026-08-20, SESSION CLOSE) — Inversiones course COMPLETE: 544/544 lessons, all 8 adventures, in production `review`
 
 Session goal: generate the entire `investing` course end-to-end, same harness
