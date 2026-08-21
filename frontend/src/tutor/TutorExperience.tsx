@@ -7,6 +7,7 @@ import { PersonalizePanel } from './PersonalizePanel';
 import { OfferPanel } from './OfferPanel';
 import { ConversationView } from './ConversationView';
 import { SessionHistory } from './SessionHistory';
+import { TutorStage } from '@/tutor-scene/TutorStage';
 import { useTutorSocket } from './useTutorSocket';
 import type { StartedSession, TutorCatalog, TutorOffers, TutorPreferences } from './types';
 
@@ -128,10 +129,26 @@ export function TutorExperience() {
   }
 
   if (phase === 'unavailable') {
+    /*
+     * DEGRADE TO THE ISLAND, not to an error card.
+     *
+     * `/tutor` has shown the 3D stage in production since August; if the Tutor
+     * API is unreachable — a bad deploy order, a Core outage, a migration not
+     * yet applied — replacing a working scene with a grey apology is strictly
+     * worse than what was already there. The learner still gets their
+     * characters, and the message says plainly that the talking part is
+     * resting rather than pretending the page is broken.
+     *
+     * It also removes a deploy-order hazard: Core can ship the tutor routes
+     * before its schema and variables land without the page regressing.
+     */
     return (
-      <Card className="p-6">
-        <p className="lf-body text-content-muted">{t('tutor.page.unavailable')}</p>
-      </Card>
+      <div className="space-y-4">
+        <TutorStage className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-surface-sunken lg:aspect-video" />
+        <Card className="p-6 text-center">
+          <p className="lf-body text-content-muted">{t('tutor.page.unavailable')}</p>
+        </Card>
+      </div>
     );
   }
 
