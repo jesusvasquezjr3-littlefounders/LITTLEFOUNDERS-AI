@@ -35,6 +35,7 @@ on:
         type: choice
         options:
           - inspect
+          - probe
           - migrate
           - provision
           - domain
@@ -138,6 +139,52 @@ jobs:
                        | .[]' \
               || echo "   could not read variables"
           done
+
+      # ── PROBE — what this token is actually allowed to do ────────────────
+      # `railway add` failed with "Project not found" while `railway status`
+      # and `railway variable list` worked in the same job, which means the
+      # question is not connectivity but AUTHORITY: a Railway project token
+      # carries a project context for reading and deploying, and creating a
+      # service may simply not be within it. Guessing costs a dispatch each
+      # time, so this step asks the CLI directly and prints nothing secret.
+      - name: Probe the CLI's authority
+        if: inputs.step == 'probe'
+        run: |
+          set -uo pipefail
+
+          echo "== whoami =="
+          railway whoami 2>&1 | head -5 || true
+
+          echo ""
+          echo "== project identity (ids are not secrets; tokens are) =="
+          railway status --environment "$ENVIRONMENT" --json > status.json 2>status.err || cat status.err
+          jq -r '{id, name} | "project \(.name)  id=\(.id)"' status.json 2>/dev/null || echo "no id in payload"
+          jq -r '.environments.edges[]?.node | "environment \(.name)  id=\(.id)"' status.json 2>/dev/null || true
+
+          echo ""
+          echo '== what does railway add actually accept in this version? =='
+          railway add --help 2>&1 | head -40 || true
+
+          echo ""
+          echo '== and railway link? =='
+          railway link --help 2>&1 | head -30 || true
+
+          echo ""
+          echo "== may the token create a service? =="
+          # Probed with the REAL name on purpose. If the answer is yes, the
+          # probe IS the provision and nothing is left behind to clean up; if
+          # it is no, we learn exactly that. </dev/null so the CLI cannot fall
+          # back to its prompt and hang the job waiting for a human.
+          railway add --service oracle </dev/null 2>&1 | head -20 || true
+
+          echo ""
+          echo "== did it appear? =="
+          railway status --environment "$ENVIRONMENT" --json 2>/dev/null \
+            | jq -r --arg env "$ENVIRONMENT" '
+                [.environments.edges[]? | select(.node.name == $env)
+                 | .node.serviceInstances.edges[]?.node.serviceName]
+                | if index("oracle") then "YES — oracle exists now" else "NO — oracle still absent" end' \
+            || echo "could not re-read status"
 
       # ── MIGRATE — mutates the production database ────────────────────────
       - name: Apply pending migrations
