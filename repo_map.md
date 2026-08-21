@@ -781,6 +781,26 @@ on:
   push:
 ```
 
+### .github/workflows/tutor-deploy.yml
+
+```
+name: Tutor deploy (operator)
+
+# One-shot operator steps for bringing the AI Tutor (Oracle) online.
+# RUNBOOK.md "Deploying the AI Tutor (Oracle)" is the narrative; this is the
+# hands.
+#
+# WHY A WORKFLOW AND NOT A LAPTOP. The Railway credentials for this project
+# live as repository secrets and nowhere else, which is correct — but it means
+# every production step has to run on a runner. Same mechanism
+# insights-maintenance.yml and vault-backup.yml already use.
+#
+# READ-ONLY UNLESS ASKED. `inspect` is the default and mutates nothing. Each
+# mutating step is separate and idempotent, so a half-finished run is resumed
+# by re-dispatching the step that failed rather than by starting over.
+#
+```
+
 ### .github/workflows/tutor-retention.yml
 
 ```
@@ -1106,18 +1126,18 @@ Forge rejects incomplete metadata, Vault blocks publication without a badge,
 ```
 # RUNBOOK.md — Incident Response
 
-## Rollback to v1 (historical — v2 is in production as of 2026-07-17)
+## Deploying the AI Tutor (Oracle) — DONE 2026-08-21, and what it actually took
 
-v1 is no longer live and no longer on `main` (superseded by the `feat: total v2 rewrite` squash commit, 2026-07-17). To inspect or resurrect it: `git log main --diff-filter=D` finds the squash commit; v1's actual last state is the parent of that commit. There is no automatic rollback — reverting to v1 in production would mean redeploying its old Render/Railway/Vercel config from that commit by hand, which no longer matches the current Railway project (`littlefounders-b2c`) or Vercel project settings (Root Directory now `frontend`). Treat this as "possible but non-trivial," not a one-command undo.
+**Oracle is live.** `https://oracle-production-e82a.up.railway.app/health`
+answers `200` with `model: up`, `moderation: up`, `voice: down` (voice is off
+on purpose — see *What stays off* below). Migration `0047` is applied, the
+ledger is at 47, and `railway-preflight` reports nine services RUNNING with
+both shared secrets matching across Core and Oracle.
 
-For a v2 production incident, prefer **rolling forward** (fix + redeploy via CD, or `railway redeploy`/`vercel deploy --prebuilt --prod` to the last known-good build) over reaching for v1.
+This section is written for the NEXT service, not for this one. Everything
+below was learned by running it against production; none of it is theory.
 
-## Secrets leak (a credential landed in git)
-
-1. **ROTATE the credential immediately** — at the provider (Supabase, Railway, DeepSeek, Qwen…). Rotation is the containment; history rewriting is not.
-2. Purge from history (`git filter-repo`) only after rotation, coordinate force-push with the team (BOUNDARIES action).
-3. Verify `npm run secrets:check` catches the pattern; if it didn't, add the pattern to `agent/tools/check-secrets.sh`.
-4. Record the incident + fix here.
+### It runs on a runner, not on a laptop
 
 ```
 
@@ -1168,17 +1188,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-08-21d) — Inworld VERIFIED against the live API, and the cast keeps its own voices
+## Current State (2026-08-21e) — Oracle IS IN PRODUCTION: migration applied, service live, Core reaching it, PR #60 merged
 
-The owner supplied a non-production Inworld key and asked for verification.
-Everything below was measured against the live service, not read off a page.
+The AI Tutor is deployed. Verified against the live stack, not inferred:
 
-**The adapter's guesses were all wrong, which is exactly why it carried an
-UNVERIFIED banner.** It assumed `/v1/speech:synthesize` and
-`/v1/speech:recognize` and expected raw audio bytes. Reality:
-`POST /tts/v1/voice` returning base64 in `audioContent` (814 ms), and
-`POST /stt/v1/transcribe` with a nested `transcribeConfig` (715 ms). Round trip
-1.53 s and the transcript was faithful — it even normalises "veinticinco" to
+```
+https://oracle-production-e82a.up.railway.app/health  ->  200
+{"service":"oracle","version":"0.1.0","status":"ok",
+ "components":{"model":"up","voice":"down","moderation":"up"},"liveSessions":0}
+```
+
+- migration `0047_tutor_oracle.sql` applied — production ledger 46 → **47**
 ```
 
 ### agent/README.md
@@ -21851,12 +21871,12 @@ import { PersonalizePanel } from './PersonalizePanel';
 import { OfferPanel } from './OfferPanel';
 import { ConversationView } from './ConversationView';
 import { SessionHistory } from './SessionHistory';
+import { TutorStage } from '@/tutor-scene/TutorStage';
 import { useTutorSocket } from './useTutorSocket';
 import type { StartedSession, TutorCatalog, TutorOffers, TutorPreferences } from './types';
 
 /*
  * The Tutor, as the learner meets it (/ORACLE.md §1).
- *
 ```
 
 ### frontend/src/tutor/VoiceConsentControl.tsx
