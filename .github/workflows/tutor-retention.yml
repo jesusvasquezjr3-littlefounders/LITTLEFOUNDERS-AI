@@ -109,7 +109,11 @@ jobs:
             # outages; every other workflow here retries around it.
             for attempt in 1 2 3; do
               if body=$(remote_purge); then break; fi
-              echo "round ${round}: attempt ${attempt} failed, retrying in 20s" >&2
+              # PRINT WHAT FAILED. A retry loop that swallows its reason turns
+              # three different faults — no shell in the image, Railway's key
+              # service down, Core refusing the key — into one identical line.
+              echo "round ${round}: attempt ${attempt} failed:" >&2
+              printf '%s\n' "$body" | head -5 >&2
               body=''
               sleep 20
             done
