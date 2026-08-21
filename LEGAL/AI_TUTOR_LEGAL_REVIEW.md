@@ -263,8 +263,9 @@ Provided so counsel's technical reviewer can verify any statement above.
 | The automated gate proving it | `oracle/scripts/verify-tutor.ts` |
 | Consent gate, storage and revocation | `database/migrations/0047_tutor_oracle.sql`, `backend/src/routes/tutor.ts` |
 | Absence of any storage for the learner's audio | `database/migrations/0047_tutor_oracle.sql` |
-| Retention job | `purge_expired_tutor_sessions` in the same migration |
+| Retention job | `purge_expired_tutor_sessions` in the same migration; scheduled by `.github/workflows/tutor-retention.yml`, which deletes the stored audio too |
 | Generated-content controls | `backend/src/services/tutorLadder.ts`, `oracle/src/content/generate.ts` |
 | Moderation before display and speech | `oracle/src/safety/moderation.ts` |
 | Speech-provider isolation | `oracle/src/voice/`, and the test in `oracle/src/__tests__/boundaries.test.ts` |
-| Guardian visibility | `backend/src/routes/tutor.ts` (`/tutor/kids/:id/sessions`) |
+| Guardian visibility | `backend/src/routes/tutor.ts` (`/tutor/kids/:id/sessions`); the surface is `frontend/src/routes/app/family/KidTutorPage.tsx` |
+| The consent flow a guardian actually sees | `frontend/src/tutor/VoiceConsentControl.tsx` — shows the wording before it is agreed to, and sends that rendered string |

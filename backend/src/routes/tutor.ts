@@ -48,6 +48,7 @@ import {
   verifyGeneratedSegment,
   type LadderCandidate,
 } from '../services/tutorLadder.js';
+import { purgeExpiredTutorSessions } from '../services/tutorRetention.js';
 import { GRADERS, KEYLESS_GRADERS } from '../lesson-contract/registry.js';
 import type { SegmentBase } from '../lesson-contract/core/types.js';
 import { verdictFrom } from '../lesson-contract/core/types.js';
@@ -285,6 +286,35 @@ function internalRouter(): Router {
     if (!userId.success) return fail(res, 400, VALIDATION, 'Invalid user id');
     const consent = await getActiveVoiceConsent(userId.data);
     return ok(res, { active: consent !== null });
+  });
+
+  /**
+   * The nightly 90-day sweep (/ORACLE.md §12), called by
+   * `.github/workflows/tutor-retention.yml`.
+   *
+   * It reports what it deleted rather than answering 204, because a retention
+   * job that cannot prove it ran is indistinguishable from one that did not —
+   * and this is the promise the legal brief makes on our behalf.
+   */
+  const PurgeBody = z.object({ limit: z.number().int().min(1).max(2000).default(500) }).strict();
+
+  router.post('/retention/purge', async (req, res) => {
+    const parsed = PurgeBody.safeParse(req.body ?? {});
+    if (!parsed.success) return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid body');
+
+    const result = await purgeExpiredTutorSessions(parsed.data.limit);
+    if (result === null) {
+      // NOT "nothing to delete". An unreachable database is how a 90-day
+      // promise quietly becomes forever (§1.14).
+      return fail(res, 502, 'DATA_UNAVAILABLE', 'The retention sweep could not run');
+    }
+    if (result.audioFailed > 0) {
+      console.error(
+        `[tutor-retention] ${result.audioFailed} audio file(s) survived their session:`,
+        result.orphanedPaths,
+      );
+    }
+    return ok(res, result);
   });
 
   const SegmentRequestBody = z.object({

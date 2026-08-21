@@ -275,6 +275,15 @@ tutor", not a checkbox buried inside a general terms acceptance. Consent is:
 - **Reflected in the legal documents** — all three `/LEGAL/` files in the same
   commit, then `npm run legal:sync` (§1.8, non-negotiable).
 
+The guardian grants it on `/family`, through `VoiceConsentControl`, and it is
+deliberately NOT shaped like the analytics toggle beside it: granting opens the
+wording and takes a second, deliberate press, while revoking takes ONE.
+**Revocation must always be easier than granting** — a parent having second
+thoughts should not have to read anything first. The component sends the
+RENDERED string rather than a translation key, so the stored record keeps
+saying what this guardian actually read; a test pins that. The wording in
+`tutor.consent.body` is a PLACEHOLDER until counsel supplies the final text.
+
 ---
 
 ## §5 Prompt injection — the defense, layer by layer
@@ -537,10 +546,12 @@ Decision 8.
 
 - **Replay** reconstructs the session: the characters re-act it, the tutor's
   audio plays, the segments are shown alongside what the learner answered.
-- **Parent visibility is an invariant.** A verified guardian reads their child's
-  full transcripts. Not a summary, not a redaction — parent visibility into kid
-  activity is a product invariant, and a voice tutor is the last place to start
-  making exceptions to it.
+- **Parent visibility is an invariant**, and it is a page: `/family/:kidId/tutor`.
+  A verified guardian reads their child's full transcripts — not a summary, not
+  a redaction — with the safety flags surfaced FIRST, because a child
+  disclosing distress to a tutor is precisely the case where a parent must find
+  out, and burying it under a list of chat logs would be a product failure
+  dressed up as tidiness.
 - **Retention 90 days**, then automatic deletion, enforced by a scheduled job
   with its own test. A retention policy nobody runs is not a retention policy.
 - RLS from the first migration. Kid rows readable by verified guardians only.
@@ -610,9 +621,14 @@ the build session of 2026-08-21; unticked ones block enabling this for minors.
 - [x] Live generation's guards each tested, including the "emit nothing" path.
 - [x] XP is never awarded for an unverifiable key, tested.
 - [x] A failed personalization read produces a degraded response, never zeros.
-- [x] Parent visibility tested. Retention deletion is implemented as
-      `purge_expired_tutor_sessions`; **the nightly job that calls it is not
-      scheduled yet.**
+- [x] Parent visibility tested end to end, and it is a real surface:
+      `/family/:kidId/tutor` shows the FULL transcript plus the safety flags,
+      behind the same verified-guardian check Core enforces per request.
+- [x] Retention runs nightly (`.github/workflows/tutor-retention.yml` →
+      `POST /api/v1/tutor/internal/retention/purge`). It deletes the rows AND
+      the tutor's audio in Depot: a cascade reaches the rows and nothing
+      reaches the blobs, so a rows-only sweep would leave a child's
+      conversation audible at a public URL with every record of it gone.
 - [ ] `npm run verify:rig` and `npm run verify:placement` — LOCAL gates needing
       `/glb/` source exports, which are outside the repository.
 - [x] Verified in-browser at 375 px and 1280 px, light and dark, screenshots

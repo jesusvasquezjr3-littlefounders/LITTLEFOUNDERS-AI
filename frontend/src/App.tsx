@@ -27,6 +27,7 @@ import { TerritoryPage } from '@/routes/app/learn/TerritoryPage';
 import { PlacementPage } from '@/routes/app/learn/PlacementPage';
 import { FamilyPage } from '@/routes/app/family/FamilyPage';
 import { KidTerritoryPage } from '@/routes/app/family/KidTerritoryPage';
+import { KidTutorPage } from '@/routes/app/family/KidTutorPage';
 import { LessonRoute } from '@/routes/app/learn/LessonRoute';
 import { SectionComingSoon } from '@/routes/app/SectionComingSoon';
 import { ProfilePage } from '@/routes/app/profile/ProfilePage';
@@ -276,6 +277,17 @@ export function App() {
               element={
                 <RequireRole role="parent">
                   <KidTerritoryPage />
+                </RequireRole>
+              }
+            />
+            {/* Parent visibility into a child's tutor conversations is a
+                product invariant (§1.9), not a feature — same parent gate,
+                and Core re-checks the verified guardian link per request. */}
+            <Route
+              path="family/:kidId/tutor"
+              element={
+                <RequireRole role="parent">
+                  <KidTutorPage />
                 </RequireRole>
               }
             />

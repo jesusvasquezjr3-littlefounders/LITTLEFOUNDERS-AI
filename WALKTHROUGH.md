@@ -2,6 +2,55 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-21c) — Tutor finished and PROVEN: the three unreachable gaps closed, and a real websocket session driven end to end
+
+Continuation of the build entry below, on the owner's "finish it and test it".
+
+**Three gaps made parts of the feature literally unreachable, and none of them
+would have failed a test.** The consent API had no UI at all, so the microphone
+gate could never be satisfied through the product and the whole voice path was
+dead. Parent visibility had an endpoint and no page, so a product invariant
+existed only in a route table. And the retention function had no caller, so a
+90-day promise the legal brief makes on our behalf would have been kept by
+nobody. All three are now real surfaces: `VoiceConsentControl` on `/family`,
+`/family/:kidId/tutor`, and `.github/workflows/tutor-retention.yml`.
+
+The retention sweep deletes the AUDIO as well as the rows, and that half is the
+one worth remembering: the cascade reaches turns, segments and flags, and
+nothing reaches a blob in Depot. A rows-only sweep would have left a child's
+conversation audible at a public URL with every database record of it
+destroyed — the worst possible combination, because nothing would remain to
+tell anyone the files existed.
+
+**The strongest new test is `oracle/src/__tests__/live-session.test.ts`.** It
+stands up Oracle's real HTTP+websocket server, a real HTTP server standing in
+for Core and another for the model, then drives an actual socket through
+handshake, token burn, greeting, a learner turn, a served activity, a graded
+result and a farewell. Nothing is mocked at a module boundary. It is the only
+thing here that would catch a socket that never upgrades, a token format the
+two sides disagree about, or a pipeline that deadlocks between the model and
+moderation — all of which pass a unit suite and fail a learner.
+
+**Two defects surfaced, one in the harness and one only visible by looking.**
+
+The harness one is worth writing down because it was passing: `closed()`
+attached a `close` listener AFTER the event could already have fired, so a test
+that asserted on the transcript first hung forever waiting for something that
+had happened. One test passed by luck and the identical pattern beside it
+timed out. The socket now records its close code at construction.
+
+The other was found in the browser and by nothing else. At 375 px the consent
+row collapsed to one word per line: the button carries a full sentence
+("Allow the microphone" / "Permitir el micrófono"), `shrink-0` gave it its
+full intrinsic width, and the label was left about eighty pixels. It now stacks
+on mobile and goes side by side from `sm`. This is the third time on this
+project that looking has found what every test missed.
+
+**Gates:** oracle 131, backend 440, frontend 644 — 1,215 tests, all green,
+plus `verify:tutor`, every build, and all root gates. Verified in a real
+browser at 375 px, 720 px and 1280 px in both themes. Still not enabled for
+minors: `/ORACLE.md` §16's first two items belong to the owner and to counsel.
+
 ## Current State (2026-08-21b) — AI Tutor BUILT end to end: `oracle/` service, migration 0047, Core API, the `/tutor` experience
 
 Same session as the design entry below, continued on the owner's instruction to

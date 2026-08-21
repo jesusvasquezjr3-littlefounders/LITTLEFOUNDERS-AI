@@ -64,10 +64,22 @@
     "saving": "Salvando…"
   },
   "character": {
-    "dina": { "name": "Dina", "blurb": "Calma e paciente" },
-    "liruf": { "name": "Liruf", "blurb": "Brincalhão e cheio de energia" },
-    "rho": { "name": "Dr. Rho", "blurb": "Caloroso e preciso" },
-    "zara": { "name": "Zara Vex", "blurb": "Curiosa e rápida" }
+    "dina": {
+      "name": "Dina",
+      "blurb": "Calma e paciente"
+    },
+    "liruf": {
+      "name": "Liruf",
+      "blurb": "Brincalhão e cheio de energia"
+    },
+    "rho": {
+      "name": "Dr. Rho",
+      "blurb": "Caloroso e preciso"
+    },
+    "zara": {
+      "name": "Zara Vex",
+      "blurb": "Curiosa e rápida"
+    }
   },
   "diorama": {
     "diorama-a": "Círculo de pedra",
@@ -124,7 +136,9 @@
       "title": "Começar por algum lugar",
       "body": "Seu tutor vai fazer duas perguntinhas rápidas para achar um bom ponto de partida."
     },
-    "faq": { "body": "Uma resposta curta e, se quiser, a gente se aprofunda." },
+    "faq": {
+      "body": "Uma resposta curta e, se quiser, a gente se aprofunda."
+    },
     "open": {
       "title": "Me pergunte o que quiser",
       "body": "Conte para o seu tutor o que está na sua cabeça e ele acha por onde começar."
@@ -186,6 +200,33 @@
     "activeSince": "Microfone permitido desde {{date}}",
     "inactive": "O microfone está desligado. Seu filho ou filha ainda pode usar o tutor escrevendo.",
     "granting": "Salvando…",
-    "failed": "Não conseguimos salvar. Tente de novo."
+    "failed": "Não conseguimos salvar. Tente de novo.",
+    "forChild": "Para {{name}}",
+    "confirm": "Sim, eu permito",
+    "cancel": "Agora não"
+  },
+  "guardian": {
+    "title": "Conversas com o tutor",
+    "subtitle": "Tudo o que seu filho ou filha e o tutor disseram, na íntegra.",
+    "backToFamily": "← Voltar para sua família",
+    "linkFromFamily": "Ler as conversas com o tutor",
+    "loading": "Carregando…",
+    "loadFailed": "Não conseguimos carregar essa conversa.",
+    "empty": "Ainda não há conversas com o tutor.",
+    "read": "Ler",
+    "hide": "Esconder",
+    "turns": "{{count}} mensagens",
+    "flagsTitle": "Vale a sua atenção",
+    "flagsHelp": "Nestes momentos o tutor parou ou redirecionou a conversa. As palavras completas estão na transcrição abaixo.",
+    "flagCategory": {
+      "self_harm": "Seu filho ou filha disse algo sobre se machucar",
+      "abuse_disclosure": "Seu filho ou filha contou que alguém o machuca",
+      "adult_content": "A conversa chegou a um assunto adulto",
+      "grooming_pattern": "Falou-se em guardar segredo da família",
+      "personal_data": "Seu filho ou filha começou a compartilhar dados pessoais",
+      "injection_attempt": "Seu filho ou filha tentou mudar as regras do tutor",
+      "model_output_blocked": "A resposta do tutor foi bloqueada antes de ser dita"
+    },
+    "retentionNote": "As conversas ficam guardadas por 90 dias e depois são apagadas automaticamente."
   }
 }

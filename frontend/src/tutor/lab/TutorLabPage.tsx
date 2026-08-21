@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui';
 import { PersonalizePanel } from '../PersonalizePanel';
@@ -6,6 +6,7 @@ import { OfferPanel } from '../OfferPanel';
 import { SpeechCaption } from '../SpeechCaption';
 import { TutorBubble } from '../TutorBubble';
 import { LiveSegmentPanel } from '../LiveSegmentPanel';
+import { VoiceConsentControl } from '../VoiceConsentControl';
 import type { TutorCatalog, TutorOffers, TutorPreferences } from '../types';
 import type { LiveSegmentState } from '../useTutorSocket';
 
@@ -95,12 +96,55 @@ const HISTORY = [
   },
 ];
 
-type Surface = 'personalize' | 'offer' | 'conversation';
+type Surface = 'personalize' | 'offer' | 'conversation' | 'consent';
+
+/*
+ * A scoped `fetch` shim, so the consent control can be LOOKED at.
+ *
+ * `VoiceConsentControl` reads its own state from Core, which means it renders
+ * nothing without a backend — and the one surface in this feature whose exact
+ * wording is legally significant would be the one nobody ever eyeballs.
+ *
+ * The shim is installed only while this dev-only page is mounted, restores the
+ * real `fetch` on unmount, and passes anything it does not recognise straight
+ * through. The alternative was a test-only prop on the component itself, and a
+ * production component should not carry a door that exists for a harness.
+ */
+function useStubbedTutorConsent(active: boolean) {
+  // A REF, and installed ONCE. Keying the effect on `active` reinstalled the
+  // shim, and React runs child effects before parent ones — so a remounting
+  // control fetched against the real API in the gap and rendered an error.
+  const current = useRef(active);
+  current.current = active;
+
+  useEffect(() => {
+    const real = window.fetch;
+    window.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url);
+      if (url.includes('/tutor/consent/')) {
+        const granted = current.current;
+        return new Response(
+          JSON.stringify({
+            data: { active: granted, grantedAt: granted ? '2026-08-01T10:00:00Z' : null, locale: 'es-MX' },
+            error: null,
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        );
+      }
+      return real(input, init);
+    }) as typeof window.fetch;
+    return () => {
+      window.fetch = real;
+    };
+  }, []);
+}
 
 export default function TutorLabPage() {
   const { t } = useTranslation();
   const [surface, setSurface] = useState<Surface>('personalize');
   const [preferences, setPreferences] = useState(PREFERENCES);
+  const [consentActive, setConsentActive] = useState(false);
+  useStubbedTutorConsent(consentActive);
 
   return (
     <div className="min-h-screen bg-surface-sunken">
@@ -113,7 +157,7 @@ export default function TutorLabPage() {
         </header>
 
         <div className="mb-6 flex flex-wrap gap-2">
-          {(['personalize', 'offer', 'conversation'] as const).map((id) => (
+          {(['personalize', 'offer', 'conversation', 'consent'] as const).map((id) => (
             <Button
               key={id}
               variant={surface === id ? 'primary' : 'secondary'}
@@ -142,6 +186,37 @@ export default function TutorLabPage() {
             starting={false}
             onStart={() => setSurface('conversation')}
           />
+        )}
+
+        {surface === 'consent' && (
+          <div className="space-y-4">
+            <p className="lf-body text-content-muted">
+              The guardian&rsquo;s microphone gate, as it appears on /family. Toggle the fixture to
+              see both states; the wording below is what Core stores verbatim.
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant={consentActive ? 'secondary' : 'primary'}
+                onClick={() => setConsentActive(false)}
+              >
+                not granted
+              </Button>
+              <Button
+                variant={consentActive ? 'primary' : 'secondary'}
+                onClick={() => setConsentActive(true)}
+              >
+                granted
+              </Button>
+            </div>
+            <div className="rounded-lg border border-outline bg-surface">
+              <VoiceConsentControl
+                key={String(consentActive)}
+                kidUserId="11111111-1111-4111-8111-111111111111"
+                token="lab"
+                kidName="Ana"
+              />
+            </div>
+          </div>
         )}
 
         {surface === 'conversation' && (

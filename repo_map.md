@@ -781,6 +781,26 @@ on:
   push:
 ```
 
+### .github/workflows/tutor-retention.yml
+
+```
+name: Tutor retention
+
+# The 90-day sweep the AI Tutor's retention promise depends on
+# (/ORACLE.md §12, /LEGAL/AI_TUTOR_LEGAL_REVIEW.md §3).
+#
+# "A retention policy nobody runs is not a retention policy" is written into
+# migration 0047 beside the function this calls. This workflow is the half that
+# makes it true.
+#
+# WHY IT CALLS CORE RATHER THAN psql. Unlike insights-maintenance.yml, this
+# sweep is not finished when the rows are gone: the tutor's synthesized audio
+# lives in Depot, outside Postgres, and no cascade reaches it. Deleting rows
+# alone would leave a child's conversation audible at a public URL forever with
+# every database record of it destroyed — the worst combination, because
+# nothing would remain to tell anyone the files existed. Core does both, so
+```
+
 ### .github/workflows/vault-backup.yml
 
 ```
@@ -1138,7 +1158,7 @@ untracked by default; a skill the team wants versioned gets a scoped
 > composed additively over each character's bind pose (§4.0–§4.2). Assets are
 > published to Depot and readable from the production origin (§3.2–§3.3).
 > Placement now knows water from ground (§5) — before that, `diorama-b` stood
-> its entire cast in the pond. Conversational layer NOT started (/ORACLE.md).
+> its entire cast in the pond. Conversational layer BUILT 2026-08-21 and plugged in through §7b (/ORACLE.md).
 ```
 
 ### WALKTHROUGH.md
@@ -1148,17 +1168,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-08-21) — AI Tutor (Oracle): full design approved, eight owner decisions recorded, no code written yet
+## Current State (2026-08-21c) — Tutor finished and PROVEN: the three unreachable gaps closed, and a real websocket session driven end to end
 
-Session goal: design the final AI Tutor before building it. The owner asked for
-doubts and key suggestions **before** any other work, and that is what this
-session produced — `/ORACLE.md` was rewritten from the superseded v1 "Money
-Moments" design into the approved specification, and `ROADMAP.md` carries the
-decision record. **Zero implementation.** No service, no migration, no route.
+Continuation of the build entry below, on the owner's "finish it and test it".
 
-**Three conflicts with standing invariants were surfaced before designing
-anything, per §1.0.1.** Each was decided by the owner, and each override is now
-written down rather than living in a chat log:
+**Three gaps made parts of the feature literally unreachable, and none of them
+would have failed a test.** The consent API had no UI at all, so the microphone
+gate could never be satisfied through the product and the whole voice path was
+dead. Parent visibility had an endpoint and no page, so a product invariant
+existed only in a route table. And the retention function had no caller, so a
+90-day promise the legal brief makes on our behalf would have been kept by
+nobody. All three are now real surfaces: `VoiceConsentControl` on `/family`,
 ```
 
 ### agent/README.md
@@ -1609,7 +1629,7 @@ SCRIPT="${1:?usage: run-all.sh <npm-script>}"
 # script intentionally skips services that do not define a requested npm
 # script, but it must still visit every service that can define one. Omitting
 # Prism/Depot/Data Intel made a green root gate weaker than their CI gates.
-SERVICES=(database backend frontend coursegen audiogen picturegen parent-id-check email-server filebase dataintel)
+SERVICES=(database backend frontend coursegen audiogen picturegen parent-id-check email-server filebase dataintel oracle)
 
 FAILED=()
 for s in "${SERVICES[@]}"; do
@@ -3461,6 +3481,26 @@ import { getKidLessonProgress, getLessonProgressForLessons, getLessonsByTopicIds
  * batch are combined, and a failure on any batch propagates instead of
 ```
 
+### backend/src/__tests__/tutor-retention.test.ts
+
+```
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { jsonResponse } from './helpers.js';
+import { extractBucketAndFile, purgeExpiredTutorSessions } from '../services/tutorRetention.js';
+
+/*
+ * The 90-day sweep (/ORACLE.md §12).
+ *
+ * The test that matters most here is the one asserting the AUDIO is deleted
+ * too. Dropping the session row cascades to turns and segments, but nothing
+ * cascades to a file in Depot — and a sweep that deleted only rows would leave
+ * a child's conversation audible at a public URL with every record of it gone,
+ * so nothing would remain to tell anyone the files existed.
+ */
+```
+
 ### backend/src/__tests__/tutor-token.test.ts
 
 ```
@@ -4455,6 +4495,26 @@ import { findPublishedPack } from './tutorData.js';
  *                      PUBLISHED BY A HUMAN. Personalization happens at
  *                      selection time, not at generation time.
  *   tier 3  live     — generated in the moment. Oracle authors and judges it;
+```
+
+### backend/src/services/tutorRetention.ts
+
+```
+import { getConfig } from '../config.js';
+import { serviceRest } from './supabaseRest.js';
+
+/*
+ * The 90-day retention sweep (/ORACLE.md §12, migration 0047).
+ *
+ * "A retention policy nobody runs is not a retention policy" is written in the
+ * migration, and this is the half that makes it true. It is called nightly by
+ * `.github/workflows/tutor-retention.yml`.
+ *
+ * TWO DELETIONS, NOT ONE, and the second is the one that is easy to forget.
+ * Dropping the session row cascades to turns, segments and safety flags — but
+ * the tutor's synthesized audio lives in Depot, outside Postgres, and nothing
+ * cascades to it. `purge_expired_tutor_sessions` returns those paths precisely
+ * so a caller can finish the job; a sweep that only deleted rows would leave a
 ```
 
 ### backend/src/services/tutorToken.ts
@@ -19502,6 +19562,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { Card, Icon, LoadingOverlay } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { VoiceConsentControl } from '@/tutor/VoiceConsentControl';
 
 /*
  * /family — the parent dashboard's front door (parent-role gated in App.tsx;
@@ -19509,7 +19570,6 @@ import { ErrorBanner } from '@/routes/auth/ErrorBanner';
  * kids (Core re-checks guardian_links on every request) and opens each kid's
  * territory. Parent visibility is a product invariant (§1.9) — this is that
  * invariant becoming a surface.
- *
 ```
 
 ### frontend/src/routes/app/family/KidTerritoryPage.tsx
@@ -19530,6 +19590,26 @@ import { type CourseTree } from '@/routes/app/learn/types';
  * the SAME TerritoryView the kid sees (one renderer, zero drift), fed by
  * Core's guardian-guarded family endpoint, plus a stats strip. Wording
  * discipline: territory still to explore, never deficiency; kids are never
+```
+
+### frontend/src/routes/app/family/KidTutorPage.tsx
+
+```
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link, useParams } from 'react-router-dom';
+import { useAuth } from '@/auth/AuthContext';
+import { Button, Card, Icon, LoadingOverlay } from '@/components/ui';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { getKidTutorHistory, getTranscript, type KidTutorHistory } from '@/tutor/tutorApi';
+import type { SessionTranscript } from '@/tutor/types';
+
+/*
+ * `/family/:kidId/tutor` — a child's tutor conversations, through the parent's
+ * eyes.
+ *
+ * PARENT VISIBILITY IS A PRODUCT INVARIANT (/AGENTS.md §1.9), and this page is
+ * that invariant becoming a surface. It shows the FULL transcript — not a
 ```
 
 ### frontend/src/routes/app/learn/AdventureBanner.tsx
@@ -21779,6 +21859,46 @@ import type { StartedSession, TutorCatalog, TutorOffers, TutorPreferences } from
  *
 ```
 
+### frontend/src/tutor/VoiceConsentControl.tsx
+
+```
+import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, Icon } from '@/components/ui';
+import { getVoiceConsent, grantVoiceConsent, revokeVoiceConsent } from './tutorApi';
+
+/*
+ * The microphone gate, as a guardian meets it (/ORACLE.md §4.3).
+ *
+ * DELIBERATELY NOT A BARE SWITCH, unlike the analytics toggle beside it. This
+ * consent sends a child's voice to a third party, and the server stores the
+ * EXACT WORDING the guardian was shown so a later dispute is resolved against
+ * what was on the screen. A switch that flips without showing that wording
+ * would make the stored record a lie by omission.
+ *
+ * So: turning it ON opens the text and requires a second, deliberate press.
+```
+
+### frontend/src/tutor/__tests__/consent.test.tsx
+
+```
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { VoiceConsentControl } from '../VoiceConsentControl';
+
+/*
+ * The microphone gate as a guardian meets it (/ORACLE.md §4.3).
+ *
+ * Two properties are asserted here and neither is cosmetic:
+ *
+ * 1. Granting sends the RENDERED wording, not a translation key. Core stores
+ *    it verbatim so a later dispute is resolved against what was on the
+ *    screen, and a key would make that record meaningless.
+ * 2. Revoking takes ONE press while granting takes two. If a parent has second
+ *    thoughts the product must not make them read anything first.
+ */
+```
+
 ### frontend/src/tutor/__tests__/tutor.test.tsx
 
 ```
@@ -21802,7 +21922,7 @@ import type { ServerMessage } from '../types';
 ### frontend/src/tutor/lab/TutorLabPage.tsx
 
 ```
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui';
 import { PersonalizePanel } from '../PersonalizePanel';
@@ -21810,13 +21930,13 @@ import { OfferPanel } from '../OfferPanel';
 import { SpeechCaption } from '../SpeechCaption';
 import { TutorBubble } from '../TutorBubble';
 import { LiveSegmentPanel } from '../LiveSegmentPanel';
+import { VoiceConsentControl } from '../VoiceConsentControl';
 import type { TutorCatalog, TutorOffers, TutorPreferences } from '../types';
 import type { LiveSegmentState } from '../useTutorSocket';
 
 /*
  * `/dev/tutor-lab` — the Tutor's visual QA surface, dev-gated out of
  * production exactly like `/dev/lesson-lab` and `/dev/scene-lab`.
- *
 ```
 
 ### frontend/src/tutor/tutorApi.ts
@@ -22130,6 +22250,26 @@ import {
  * /ORACLE.md §4.1 is a table in a document, and a table in a document does not
  * stop anybody. These tests are what actually stop them, and the most
  * important one is `rejects an unlisted field` — it is the difference between
+```
+
+### oracle/src/__tests__/live-session.test.ts
+
+```
+import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
+import { AddressInfo } from 'node:net';
+import { WebSocket } from 'ws';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
+
+/*
+ * A REAL session, end to end.
+ *
+ * This is the test that answers "does it actually work", as opposed to "does
+ * each piece behave". It stands up:
+ *
+ *   - Oracle's real HTTP + websocket server, on an ephemeral port
+ *   - a real HTTP server standing in for Core
+ *   - a real HTTP server standing in for the model provider
+ *
 ```
 
 ### oracle/src/__tests__/orchestrator.test.ts

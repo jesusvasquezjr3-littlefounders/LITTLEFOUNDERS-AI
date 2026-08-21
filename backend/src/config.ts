@@ -25,6 +25,12 @@ const Env = z.object({
   DATAINTEL_INTERNAL_KEY: z.string().min(16).default('replace-me-0123456789'),
   DATAINTEL_TIMEOUT_MS: z.coerce.number().int().positive().default(30_000),
 
+  // Depot (filebase). Core only needs it for the Tutor retention sweep, which
+  // must delete the tutor's stored audio as well as the database rows — a
+  // cascade reaches the rows and nothing reaches the blobs.
+  FILEBASE_URL: z.string().url().default('http://localhost:4006'),
+  FILEBASE_INTERNAL_KEY: z.string().min(16).default('replace-me-0123456789'),
+
   // Oracle — the AI Tutor runtime (/ORACLE.md).
   //
   // Two URLs, not one, and the distinction matters. ORACLE_URL is the private

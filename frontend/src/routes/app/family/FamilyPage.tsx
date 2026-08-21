@@ -5,6 +5,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { Card, Icon, LoadingOverlay } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { VoiceConsentControl } from '@/tutor/VoiceConsentControl';
 
 /*
  * /family — the parent dashboard's front door (parent-role gated in App.tsx;
@@ -33,12 +34,14 @@ export function FamilyPage() {
   const { getToken } = useAuth();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [busyKid, setBusyKid] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     void (async () => {
       const token = await getToken();
       if (!token || cancelled) return;
+      setToken(token);
       const { data, error } = await api<{ kids: Kid[] }>('/family/kids', { token });
       if (cancelled) return;
       setState(error ? { status: 'error', code: error.code } : { status: 'ready', kids: data.kids });
@@ -125,6 +128,21 @@ export function FamilyPage() {
                   />
                 </button>
               </div>
+              {/* The microphone gate (/ORACLE.md §4.3). Deliberately below the
+                  analytics switch and deliberately not shaped like it: this
+                  one shows the exact wording before it is agreed to. */}
+              <VoiceConsentControl
+                kidUserId={kid.userId}
+                token={token}
+                kidName={kid.displayName ?? kid.username ?? ''}
+              />
+              <Link
+                to={`/family/${kid.userId}/tutor`}
+                className="lf-caption flex min-h-11 items-center gap-2 border-t border-outline/50 px-4 py-2.5 font-bold text-primary transition-[background-color] duration-150 hover:bg-surface-sunken/50"
+              >
+                <Icon name="forum" className="text-[18px]" aria-hidden />
+                {t('tutor.guardian.linkFromFamily')}
+              </Link>
             </li>
           ))}
         </ul>

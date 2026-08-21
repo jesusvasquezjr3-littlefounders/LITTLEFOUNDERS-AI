@@ -64,10 +64,22 @@
     "saving": "Saving…"
   },
   "character": {
-    "dina": { "name": "Dina", "blurb": "Calm and patient" },
-    "liruf": { "name": "Liruf", "blurb": "Playful and full of energy" },
-    "rho": { "name": "Dr. Rho", "blurb": "Warm and precise" },
-    "zara": { "name": "Zara Vex", "blurb": "Curious and quick" }
+    "dina": {
+      "name": "Dina",
+      "blurb": "Calm and patient"
+    },
+    "liruf": {
+      "name": "Liruf",
+      "blurb": "Playful and full of energy"
+    },
+    "rho": {
+      "name": "Dr. Rho",
+      "blurb": "Warm and precise"
+    },
+    "zara": {
+      "name": "Zara Vex",
+      "blurb": "Curious and quick"
+    }
   },
   "diorama": {
     "diorama-a": "Stone circle",
@@ -124,7 +136,9 @@
       "title": "Start somewhere",
       "body": "Your tutor will ask a couple of quick questions to find a good place to begin."
     },
-    "faq": { "body": "A short answer, then we can go deeper if you want." },
+    "faq": {
+      "body": "A short answer, then we can go deeper if you want."
+    },
     "open": {
       "title": "Ask me anything",
       "body": "Tell your tutor what's on your mind and they'll find a way in."
@@ -186,6 +200,33 @@
     "activeSince": "Microphone allowed since {{date}}",
     "inactive": "The microphone is off. Your child can still use the tutor by typing.",
     "granting": "Saving…",
-    "failed": "We couldn't save that. Try again."
+    "failed": "We couldn't save that. Try again.",
+    "forChild": "For {{name}}",
+    "confirm": "I allow it",
+    "cancel": "Not now"
+  },
+  "guardian": {
+    "title": "Tutor conversations",
+    "subtitle": "Everything your child and their tutor said, in full.",
+    "backToFamily": "← Back to your family",
+    "linkFromFamily": "Read tutor conversations",
+    "loading": "Loading…",
+    "loadFailed": "We couldn’t load that conversation.",
+    "empty": "No tutor conversations yet.",
+    "read": "Read it",
+    "hide": "Hide",
+    "turns": "{{count}} messages",
+    "flagsTitle": "Worth your attention",
+    "flagsHelp": "The tutor stopped or redirected the conversation at these moments. The full wording is in the transcript below.",
+    "flagCategory": {
+      "self_harm": "Your child said something about hurting themselves",
+      "abuse_disclosure": "Your child described being hurt by someone",
+      "adult_content": "The conversation turned to an adult topic",
+      "grooming_pattern": "Something was said about keeping a secret from family",
+      "personal_data": "Your child started sharing personal details",
+      "injection_attempt": "Your child tried to change the tutor’s rules",
+      "model_output_blocked": "The tutor’s reply was blocked before it was said"
+    },
+    "retentionNote": "Conversations are kept for 90 days and then deleted automatically."
   }
 }
