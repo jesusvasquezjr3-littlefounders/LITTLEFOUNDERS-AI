@@ -18,7 +18,8 @@
     "verify:tutor": "tsx scripts/verify-tutor.ts",
     "model:verify": "tsx --env-file-if-exists=.env scripts/verify-model.ts",
     "voices:clone": "tsx --env-file-if-exists=.env scripts/clone-character-voices.ts",
-    "voices:verify": "tsx --env-file-if-exists=.env scripts/verify-inworld.ts"
+    "voices:verify": "tsx --env-file-if-exists=.env scripts/verify-inworld.ts",
+    "speaks:verify": "tsx --env-file-if-exists=.env scripts/verify-speaks.ts"
   },
   "dependencies": {
     "express": "^5.1.0",

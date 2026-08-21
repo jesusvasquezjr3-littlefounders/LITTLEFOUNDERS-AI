@@ -806,3 +806,45 @@ jobs:
           fi
           echo "::error::Oracle could not produce a valid turn (exit $status) — read the stages above; the first FAIL is the cause"
           exit 1
+
+      - name: Be heard, from inside Oracle
+        if: inputs.step == 'verify'
+        run: |
+          set -uo pipefail
+          set +e
+
+          # `voices:verify` proves TRANSPORT and enrolment. Both can be green
+          # while every learner sits in silence, because between "Inworld
+          # returned audio" and "a child hears it" sits storeTurnAudio(), which
+          # returns null the instant DEPOT_URL or DEPOT_INTERNAL_KEY is missing.
+          # The turn is then emitted captioned and silent, exactly as designed,
+          # after a text-to-speech call that succeeded and was BILLED — and from
+          # outside that is indistinguishable from an unenrolled character, so
+          # nobody thinks to look at Depot.
+          #
+          # This walks the whole chain for a real character: enrolled, spoken in
+          # their OWN cloned voice, stored, and then fetched back over plain
+          # HTTP with no credentials at all, the way a browser will ask.
+          SCRIPT='cd /app && npx --no-install tsx scripts/verify-speaks.ts'
+          b64=$(printf '%s' "$SCRIPT" | base64 | tr -d '\n')
+          out="$(railway ssh --service oracle -i ~/.ssh/railway_key -- \
+                  sh -c "echo $b64 | base64 -d | sh" 2>&1)"
+          printf '%s\n' "$out" | sed 's/^/   /'
+
+          if printf '%s' "$out" | grep -q 'speaks:verify OK'; then
+            echo ""
+            echo "OK: the cast can be heard — enrolled, synthesized, stored, fetchable"
+            exit 0
+          fi
+
+          echo ""
+          if printf '%s' "$out" | grep -qiE 'tsx: not found|could not determine executable|npm ERR'; then
+            echo "::warning::tsx is not available in the container, so the audio chain could not be walked here."
+            exit 0
+          fi
+          if printf '%s' "$out" | grep -q 'provider reports unavailable'; then
+            echo "::warning::VOICE_PROVIDER is none — every character is captioned and silent BY DESIGN, so there is nothing here to hear."
+            exit 0
+          fi
+          echo "::error::a character could not be heard — read the stages above; the first FAIL is the cause"
+          exit 1
