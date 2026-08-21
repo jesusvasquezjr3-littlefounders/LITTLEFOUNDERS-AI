@@ -10,8 +10,12 @@
 //    `status <> 'published'` UPDATE could publish unverified late content.
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const dir = new URL('../migrations', import.meta.url).pathname;
+// fileURLToPath, never URL.pathname: on Windows the latter yields '/C:/...',
+// which readdirSync resolves against the current drive as 'C:\C:\...' and the
+// gate dies with ENOENT before checking a single migration.
+const dir = fileURLToPath(new URL('../migrations', import.meta.url));
 const files = readdirSync(dir).filter((f) => f.endsWith('.sql')).sort();
 let failed = false;
 const fail = (msg) => { console.error(`FAIL: ${msg}`); failed = true; };

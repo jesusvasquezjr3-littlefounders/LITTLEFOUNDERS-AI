@@ -1,0 +1,11 @@
+# Deployment isolation for `railway up oracle --path-as-root`.
+# Nixpacks reinstalls dependencies and rebuilds the service; only source and
+# manifests belong in the upload.
+node_modules/
+dist/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store

@@ -56,7 +56,8 @@ On conflict: **fix the lower-priority document, never the higher one.**
 | Deploy — everything else | Railway |
 | Course/lesson generation LLMs | DeepSeek + Qwen |
 | Image generation | Qwen `qwen-image` (DashScope) via `picturegen/` — the only image path; Gemini discarded 2026-07-23 (quota-0) |
-| TTS | Qwen3-TTS (DashScope) in `audiogen/` — resolved; ElevenLabs is SOUND-EFFECTS-ONLY (one-off generated assets committed in `frontend/public/sfx/`, never called at runtime) |
+| TTS (lesson narration, batch) | Qwen3-TTS (DashScope) in `audiogen/` — resolved; ElevenLabs is SOUND-EFFECTS-ONLY (one-off generated assets committed in `frontend/public/sfx/`, never called at runtime) |
+| Real-time voice (Tutor STT + TTS) | **Inworld**, reached ONLY from `oracle/` — owner sign-off 2026-08-21, see ROADMAP.md. **VOICE ONLY**: the pedagogical model stays DeepSeek/Qwen on our own infrastructure. Explicitly interim — to be replaced by self-hosted STT/TTS once there are recurring users, which is why it sits behind `oracle/src/voice/provider.ts` and nothing outside that directory may import a provider SDK. Echo keeps batch lesson narration; two TTS paths is deliberate (one batch and cached, one live and disposable), not duplication |
 | Avatars | DiceBear, `avataaars` style |
 | 3D (Tutor scene) | three.js + React Three Fiber **v8** (drei deliberately NOT used). Assets are single-file `.glb`, meshopt geometry + KTX2 textures, served by Depot from bucket `tutor-scenes`. Owner sign-off 2026-08-15 — see ROADMAP.md |
 | Email engine | Haraka (self-hosted SMTP) → Amazon SES relay — see `email-server/AGENTS.md` |
@@ -103,11 +104,12 @@ Role upgrade paths: `universal → parent` (identity verification via Guardian),
 | `filebase/` | Depot | Media storage: lesson audio & generated images (content-addressed, Railway volume) | 4006 | Railway |
 | `picturegen/` | Prism | The ONLY image-generation service: art-director judge (LF visual identity) + Qwen `qwen-image` + Depot storage + Vault cache (an identical request never hits the paid API twice) | 4007 | Railway |
 | `dataintel/` | Data Intel | Analytics warehouse: DuckDB OLAP, segmentation, forecasting, anomaly detection, experiments | 4008 | Railway |
+| `oracle/` | Oracle | The AI Tutor runtime: live spoken sessions, turn orchestration, prompt-injection defence, moderation-before-speech, the three-tier content ladder, and the ONLY service that reaches the real-time voice provider | 4009 | Railway |
 | `pulse/` | Pulse | Observability: self-hosted analytics (Plausible CE + Umami) + system health (Uptime Kuma) — pinned third-party stack, not a TS service | — | Railway (5 services) |
 
-Product sections (frontend routes): `learn/`, `tutor/` (AI tutor — codename Oracle), `tasks/`, `profile/`.
+Product sections (frontend routes): `learn/`, `tutor/` (AI tutor — codename Oracle), `tasks/`, `profile/`. The Tutor's product design, privacy contract, injection defences and content ladder are `/ORACLE.md`; its 3D stage is `/TUTOR_3D.md`. **`/ORACLE.md` §0 records eight owner decisions that override defaults stated elsewhere in this file** — most importantly that a `kid` may use the microphone (§1.9), and that live-generated content may reach a minor validated by deterministic gates plus an automatic judge rather than human publication. Read §0 before applying §1.9 to anything in the Tutor.
 
-Internal services (everything except `backend/` and `frontend/`) are called **service-to-service** with an `INTERNAL_API_KEY` header — never directly from the browser. Exception (by design): Depot's public file route serves world-readable, PII-free media (lesson audio/images) directly to the browser; every WRITE stays internal-key-only. Pulse exception (by design): only its two tracker scripts and Plausible's GA OAuth callback are browser-facing — all analytics/health DATA reads go through Core (`/api/v1/admin/*`), which holds the Pulse API tokens server-side. Realtime exception (by design): the browser subscribes directly to Supabase Realtime for **one** table, `generation_runs_live` — the admin Generation Live Monitor. It qualifies on three constraints that must all hold before any table is added to this exception: the table carries **zero PII** (run metadata, slot counts, cost totals), the subscription is authenticated with the user's Supabase JWT, and RLS restricts SELECT to `admin`/`superadmin` (migration `0019`). A table is only actually live once it is a member of the `supabase_realtime` publication (migration `0022`) — the RLS policy alone authorizes a subscription that then receives nothing. Engine specs: `/LESSON_ENGINE.md` (lesson runtime contract), `/COURSE_ENGINE.md` (content hierarchy + generation pipeline) and `/TUTOR_3D.md` (the Tutor's 3D stage: assets, rigs, procedural action vocabulary, placement solver, performance contract).
+Internal services (everything except `backend/` and `frontend/`) are called **service-to-service** with an `INTERNAL_API_KEY` header — never directly from the browser. Exception (by design): Depot's public file route serves world-readable, PII-free media (lesson audio/images) directly to the browser; every WRITE stays internal-key-only. Pulse exception (by design): only its two tracker scripts and Plausible's GA OAuth callback are browser-facing — all analytics/health DATA reads go through Core (`/api/v1/admin/*`), which holds the Pulse API tokens server-side. Realtime exception (by design): the browser subscribes directly to Supabase Realtime for **one** table, `generation_runs_live` — the admin Generation Live Monitor. It qualifies on three constraints that must all hold before any table is added to this exception: the table carries **zero PII** (run metadata, slot counts, cost totals), the subscription is authenticated with the user's Supabase JWT, and RLS restricts SELECT to `admin`/`superadmin` (migration `0019`). A table is only actually live once it is a member of the `supabase_realtime` publication (migration `0022`) — the RLS policy alone authorizes a subscription that then receives nothing. **Oracle exception (by design, owner sign-off 2026-08-21):** the browser opens ONE websocket directly to `oracle/` for a live Tutor session. It qualifies on four constraints that must all hold, and relaying audio through Core was considered and rejected because two internal hops double the latency budget of the one feature where latency IS the product, and because a streaming workload inside Core recouples `GET /health` to optional infrastructure (§1.14). The constraints: the socket is authenticated with a **Core-minted, single-use, session-scoped token** and never a raw Supabase JWT (a Supabase JWT on that socket is a bug, and `oracle/` rejects one); the channel carries only a session id, audio, and the closed turn vocabulary — **no PII beyond what /ORACLE.md §4.1 already permits into the model**; every frame is authorized against the session the token names, so a token for session A can never reach session B; and the socket is refused outright for a `kid` without an active guardian voice consent. Engine specs: `/LESSON_ENGINE.md` (lesson runtime contract), `/COURSE_ENGINE.md` (content hierarchy + generation pipeline) and `/TUTOR_3D.md` (the Tutor's 3D stage: assets, rigs, procedural action vocabulary, placement solver, performance contract).
 
 ### §1.6 API conventions
 
@@ -151,6 +153,8 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 - AI tutor output for kids passes **content moderation — non-optional**, before display.
 - Parent visibility into kid activity is a **product invariant**, not a feature flag.
 - Default to COPPA-minded behavior: minimal data collection, parental consent gates, no dark patterns aimed at kids.
+
+**The Tutor (Oracle) carve-out — owner decision 2026-08-21, `/ORACLE.md` §0.** Two of the rules above are deliberately overridden for the Tutor and NOWHERE else. (1) A `kid`'s **voice** reaches a third-party STT provider, which exceeds "age band + first name" — permitted only behind a blocking guardian consent gate, with the audio never persisted by us, and with a data-processing agreement in place (`/ORACLE.md` §16 blocks rollout until it exists). (2) Live-generated lesson content may reach a minor validated by deterministic gates + an automatic independent judge **instead of** human publication (`/ORACLE.md` §7.3). Both overrides are narrow, written down, and carry compensating controls that are themselves invariants: `.strict()` context validation (§4.1), closed structured model output, moderation before screen AND before speech, and post-hoc sampled human review. **Do not generalize either override to another surface**, and do not weaken a compensating control on the grounds that the override already exists — the controls are the only reason the override is acceptable. Legal implications tracked for review in `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md`.
 
 ### §1.10 Secrets policy
 
@@ -209,6 +213,7 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 | `parent-id-check/AGENTS.md` | identity verification, PII handling |
 | `email-server/AGENTS.md` | email sending contract |
 | `pulse/AGENTS.md` | analytics & health stack (pins, upgrade protocol, §1.9 tracking boundary) |
+| `oracle/AGENTS.md` + `/ORACLE.md` | ANY Tutor work — runtime, prompts, voice, moderation, the content ladder |
 | `TEAM_PROTOCOL.md` | invoking team-mode skills; session-end ritual |
 | `RUNBOOK.md` | incidents, rollback, secrets leak |
 | `agent/README.md` | how templates/workflows/tools compose |
@@ -257,6 +262,7 @@ All of these must pass, in every service you touched:
 - [ ] `npm run paths:check` (root) — the acquisition surface agrees across `frontend/` and `backend/`
 - [ ] Tutor 3D clip/rig changes: `npm run verify:rig` (frontend) — every clip keeps every character in its own stance and proportions
 - [ ] Tutor 3D placement/island changes: `npm run verify:placement` (frontend) — every character stands on walkable ground, inside the rim
+- [ ] Tutor runtime changes: `npm run verify:tutor` (oracle) — the model context rejects every unlisted field, and the injection canary corpus still fails to escape
 - [ ] Files added/moved/deleted: `npm run repo:map` (root) — regenerate the map
 - [ ] Docs updated per the stewardship table (§8)
 - [ ] No `any` without a written justification in the PR/commit body
@@ -304,6 +310,7 @@ All of these must pass, in every service you touched:
 | Any edit to this file | Mirror to `CLAUDE.md` byte-identically |
 | Incident / recovery procedure learned | `RUNBOOK.md` |
 | New public marketing route | `frontend/src/lib/analytics.tsx` (`MARKETING_PREFIXES`) **and** `backend/src/services/pulse.ts` (`MARKETING_ROOTS`) — the tracker records it, the read-time scope reports it; `npm run paths:check` enforces the pair |
+| New/changed Tutor behaviour, prompt, context field or content-ladder rule | `/ORACLE.md` (authoritative) + `oracle/AGENTS.md`; a new field reaching the model ALSO needs `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` |
 | Change to legal document (any locale) | Mirror to ALL three `/LEGAL/*.md` files + sync `frontend/src/i18n/*/marketing.json` in same commit (§1.8) |
 
 **Golden rule:** every substantial change is documented in the same commit that makes it. Undocumented architecture is a regression.

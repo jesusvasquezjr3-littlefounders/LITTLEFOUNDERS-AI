@@ -25,6 +25,29 @@ const Env = z.object({
   DATAINTEL_INTERNAL_KEY: z.string().min(16).default('replace-me-0123456789'),
   DATAINTEL_TIMEOUT_MS: z.coerce.number().int().positive().default(30_000),
 
+  // Oracle — the AI Tutor runtime (/ORACLE.md).
+  //
+  // Two URLs, not one, and the distinction matters. ORACLE_URL is the private
+  // address Core uses for preflight and is never seen by a browser.
+  // ORACLE_PUBLIC_URL is what the BROWSER opens a websocket against — the
+  // fourth documented §1.5 exception — and in production those are different
+  // hosts (Railway private networking vs a public domain). Defaulting the
+  // public one to localhost keeps local development working with one service.
+  ORACLE_URL: z.string().url().default('http://localhost:4009'),
+  ORACLE_PUBLIC_URL: z.string().url().default('http://localhost:4009'),
+  ORACLE_INTERNAL_KEY: z.string().min(16).default('replace-me-0123456789'),
+  ORACLE_TIMEOUT_MS: z.coerce.number().int().positive().default(8_000),
+
+  // Signs the single-use, session-scoped token the browser carries to Oracle
+  // (/ORACLE.md §3.2). MUST differ from INTERNAL_API_KEY: one authenticates a
+  // SERVICE, this one authenticates one browser socket, and sharing them would
+  // let a leaked session token call the internal API.
+  TUTOR_SESSION_SECRET: z.string().min(32).default('replace-me-with-a-64-char-random-string-0000'),
+
+  // Fraction of live-generated tutor segments queued for post-hoc human
+  // review (/ORACLE.md §7.3). Zero is a valid deployment choice and a bad one.
+  TUTOR_LIVE_REVIEW_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(0.15),
+
   // Redis para Rate Limiting distribuido
   REDIS_URL: z.string().url().default('redis://localhost:6379'),
 });
