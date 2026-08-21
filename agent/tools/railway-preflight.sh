@@ -103,6 +103,7 @@ required_services=(
   email-server
   filebase
   dataintel
+  oracle
 )
 # DEPLOYMENT.md §6: these app services sleep after ~10-15 min idle and wake on
 # request, so a present service with NO active instances at all is an expected
@@ -115,6 +116,9 @@ scale_to_zero_services=(
   picturegen
   dataintel
 )
+# Oracle is deliberately NOT on that list: it terminates the browser's
+# websocket, so a cold start happens in front of a learner who has just pressed
+# the button — the one place sleeping costs the product more than it saves.
 is_scale_to_zero() {
   local service="$1" candidate
   for candidate in "${scale_to_zero_services[@]}"; do

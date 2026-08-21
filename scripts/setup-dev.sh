@@ -23,6 +23,7 @@ SERVICES=(
   "parent-id-check"
   "email-server"
   "dataintel"
+  "oracle"
 )
 
 # 1. Install dependencies and setup .env files

@@ -2,9 +2,13 @@ import assert from 'node:assert/strict';
 import { chmod, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
-const root = path.resolve(new URL('../..', import.meta.url).pathname);
+// fileURLToPath, never URL.pathname: on Windows the latter yields
+// '/C:/...', which path.resolve turns into 'C:\C:\...' and every read
+// dies with ENOENT before a single assertion runs.
+const root = fileURLToPath(new URL('../..', import.meta.url));
 const script = path.join(root, 'agent/tools/railway-preflight.sh');
 const temp = await mkdtemp(path.join(os.tmpdir(), 'littlefounders-railway-preflight-'));
 const fakeBin = path.join(temp, 'bin');

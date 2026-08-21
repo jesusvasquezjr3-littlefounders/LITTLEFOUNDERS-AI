@@ -28,7 +28,7 @@ case "$DEV_PROFILE" in
     SERVICES=("backend" "frontend")
     ;;
   all)
-    SERVICES=("backend" "frontend" "coursegen" "audiogen" "parent-id-check" "email-server" "filebase" "picturegen" "dataintel")
+    SERVICES=("backend" "frontend" "coursegen" "audiogen" "parent-id-check" "email-server" "filebase" "picturegen" "dataintel" "oracle")
     ;;
   *)
     echo "Unknown DEV_PROFILE '$DEV_PROFILE'. Use frontend, core, or all." >&2
@@ -76,6 +76,7 @@ for service in "${SERVICES[@]}"; do
     filebase) start_service "$service" "$C8" "DEPOT" ;;
     picturegen) start_service "$service" "$C9" "PRISM" ;;
     dataintel) start_service "$service" "$C10" "DATAINTEL" ;;
+    oracle) start_service "$service" "$C5" "ORACLE" ;;
   esac
 done
 

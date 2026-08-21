@@ -64,7 +64,7 @@ On conflict: **fix the lower-priority document, never the higher one.**
 | Analytics & system health | **Pulse** self-hosted on Railway: Plausible CE (web analytics, ClickHouse+Postgres) + Umami v3 (behavioral) + Uptime Kuma (health). Pins live in Dockerfile `FROM` lines; Dependabot auto-bumps (patch automerge) — see `pulse/AGENTS.md` |
 | i18n locales | `en-US`, `es-MX`, `pt-BR` (en-US is the key source of truth) |
 | Theming | Light + dark mode, Tailwind `darkMode: 'class'` |
-| Package layout | 9 independent npm packages — **no workspaces** |
+| Package layout | 11 independent npm packages — **no workspaces** |
 
 ### §1.3 Schema invariants
 
