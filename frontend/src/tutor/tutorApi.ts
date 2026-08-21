@@ -1,0 +1,148 @@
+import { api, type ApiResult } from '@/lib/api';
+import type {
+  Adaptation,
+  SessionSummary,
+  SessionTranscript,
+  StartedSession,
+  TutorCatalog,
+  TutorIntent,
+  TutorOffers,
+  TutorPreferences,
+} from './types';
+
+/*
+ * Core is the only service the browser calls for Tutor DATA (/AGENTS.md §1.5).
+ *
+ * The one exception is the websocket, which goes straight to Oracle carrying a
+ * token Core minted — the fourth documented §1.5 exception. Even there, the
+ * URL comes from THIS file's `startSession`: the client never builds it, never
+ * sees the raw token as a separate value, and cannot point it somewhere else.
+ */
+
+export interface PreferencesResponse extends TutorPreferences {
+  catalog: TutorCatalog;
+}
+
+export function getPreferences(token: string): Promise<ApiResult<PreferencesResponse>> {
+  return api<PreferencesResponse>('/tutor/preferences', { token });
+}
+
+export function savePreferences(
+  token: string,
+  patch: Partial<TutorPreferences>,
+): Promise<ApiResult<TutorPreferences>> {
+  return api<TutorPreferences>('/tutor/preferences', { method: 'PUT', body: patch, token });
+}
+
+export function getOffers(token: string): Promise<ApiResult<TutorOffers>> {
+  return api<TutorOffers>('/tutor/offers', { token });
+}
+
+export interface StartSessionInput {
+  intent: TutorIntent;
+  courseId?: string | null;
+  topicId?: string | null;
+  skillKey?: string | null;
+  wantsVoice: boolean;
+}
+
+export function startSession(token: string, input: StartSessionInput): Promise<ApiResult<StartedSession>> {
+  return api<StartedSession>('/tutor/sessions', { method: 'POST', body: input, token });
+}
+
+export function listSessions(token: string): Promise<ApiResult<{ sessions: SessionSummary[] }>> {
+  return api<{ sessions: SessionSummary[] }>('/tutor/sessions', { token });
+}
+
+export function getTranscript(token: string, sessionId: string): Promise<ApiResult<SessionTranscript>> {
+  return api<SessionTranscript>(`/tutor/sessions/${sessionId}`, { token });
+}
+
+export interface GradeResponse {
+  verdict: {
+    correct: boolean;
+    score: number;
+    tier: 'perfect' | 'great' | 'almost' | 'tryAgain';
+    feedback_md?: string;
+    reveal?: unknown;
+    allowRetry: boolean;
+  };
+  xpAwarded: number;
+  /** False when the server could not re-derive the key — it teaches, it does not pay. */
+  scoresXp: boolean;
+  dailyXpCap: number;
+}
+
+export function gradeSegment(
+  token: string,
+  segmentId: string,
+  answer: unknown,
+  attemptNumber: number,
+  hintsUsed = 0,
+): Promise<ApiResult<GradeResponse>> {
+  return api<GradeResponse>(`/tutor/segments/${segmentId}/grade`, {
+    method: 'POST',
+    body: { answer, attemptNumber, hintsUsed },
+    token,
+  });
+}
+
+// ── Consent (/ORACLE.md §4.3) ───────────────────────────────────────────────
+
+export interface ConsentState {
+  active: boolean;
+  grantedAt: string | null;
+  locale: string | null;
+}
+
+export function getVoiceConsent(token: string, userId: string): Promise<ApiResult<ConsentState>> {
+  return api<ConsentState>(`/tutor/consent/${userId}`, { token });
+}
+
+/**
+ * Grants microphone consent for a dependant.
+ *
+ * `consentText` is the EXACT wording the guardian was shown, and the caller
+ * must pass the rendered string rather than a key: a dispute is resolved
+ * against what was on the screen, not against whatever the current build's
+ * translation file says today.
+ */
+export function grantVoiceConsent(
+  token: string,
+  input: { kidUserId: string; consentText: string; locale: string },
+): Promise<ApiResult<{ granted: boolean; grantedAt: string }>> {
+  return api<{ granted: boolean; grantedAt: string }>('/tutor/consent', {
+    method: 'POST',
+    body: input,
+    token,
+  });
+}
+
+export function revokeVoiceConsent(token: string, userId: string): Promise<ApiResult<{ revoked: boolean }>> {
+  return api<{ revoked: boolean }>(`/tutor/consent/${userId}`, { method: 'DELETE', token });
+}
+
+export interface KidTutorHistory {
+  sessions: SessionSummary[];
+  safetyFlags: {
+    id: string;
+    session_id: string;
+    turn_seq: number | null;
+    category: string;
+    severity: string;
+    handled: string;
+    created_at: string;
+  }[];
+}
+
+export function getKidTutorHistory(token: string, kidUserId: string): Promise<ApiResult<KidTutorHistory>> {
+  return api<KidTutorHistory>(`/tutor/kids/${kidUserId}/sessions`, { token });
+}
+
+export const ADAPTATION_KEYS: readonly Adaptation[] = [
+  'slower_pacing',
+  'more_examples',
+  'less_text',
+  'more_visual',
+  'repeat_before_advancing',
+];

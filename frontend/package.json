@@ -24,6 +24,8 @@
     "assets:inspect": "node scripts/inspect-glb.mjs",
     "assets:clips": "blender --background --python scripts/author-clips.py",
     "verify:rig": "node scripts/verify-rig.mjs",
+    "verify:placement": "tsx scripts/verify-placement.ts",
+    "assets:walkmask": "tsx scripts/generate-walkmask.ts",
     "publish:scenes": "node scripts/publish-scenes.mjs"
   },
   "dependencies": {

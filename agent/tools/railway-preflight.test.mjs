@@ -2,10 +2,13 @@ import assert from 'node:assert/strict';
 import { chmod, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
 
-const root = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
+// fileURLToPath, never URL.pathname: on Windows the latter yields
+// '/C:/...', which path.resolve turns into 'C:\C:\...' and every read
+// dies with ENOENT before a single assertion runs.
+const root = fileURLToPath(new URL('../..', import.meta.url));
 const script = path.join(root, 'agent/tools/railway-preflight.sh');
 const temp = await mkdtemp(path.join(os.tmpdir(), 'littlefounders-railway-preflight-'));
 const fakeBin = path.join(temp, 'bin');
@@ -21,6 +24,11 @@ const fakeRailway = path.join(fakeBin, 'railway');
 // variables handler is environment-sensitive — staging is missing
 // coursegen/QWEN_API_KEY — so the -e threading in read_variables is pinned:
 // dropping it either errors (no --environment) or reads the wrong payload.
+//
+// `oracle` is RUNNING in the production fixtures and deliberately NOT on the
+// scale-to-zero allowlist: it terminates the browser's tutor websocket, so a
+// cold start would happen in front of a learner who just pressed the button.
+// A sleeping oracle is a real failure, not an expected state.
 await mkdir(fakeBin, { recursive: true });
 await writeFile(
   fakeRailway,
@@ -29,14 +37,14 @@ set -euo pipefail
 fixture="\${PREFLIGHT_FIXTURE:-good}"
 if [[ "\${1:-}" == "status" ]]; then
   case "$fixture" in
-    good)
+    good|mismatched)
       cat <<'JSON'
-{"environments":{"edges":[{"node":{"name":"production","serviceInstances":{"edges":[{"node":{"serviceName":"littlefounders-backend","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"coursegen","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"audiogen","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"picturegen","activeDeployments":[]}},{"node":{"serviceName":"parent-id-check","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"email-server","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"filebase","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"dataintel","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}}]}}},{"node":{"name":"staging","serviceInstances":{"edges":[{"node":{"serviceName":"gamegen","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"littlefounders-backend","activeDeployments":[]}}]}}}]}}
+{"environments":{"edges":[{"node":{"name":"production","serviceInstances":{"edges":[{"node":{"serviceName":"littlefounders-backend","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"coursegen","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"audiogen","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"picturegen","activeDeployments":[]}},{"node":{"serviceName":"parent-id-check","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"email-server","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"filebase","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"dataintel","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"oracle","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}}]}}},{"node":{"name":"staging","serviceInstances":{"edges":[{"node":{"serviceName":"gamegen","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"littlefounders-backend","activeDeployments":[]}}]}}}]}}
 JSON
       ;;
     crashed)
       cat <<'JSON'
-{"environments":{"edges":[{"node":{"name":"production","serviceInstances":{"edges":[{"node":{"serviceName":"littlefounders-backend","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"coursegen","activeDeployments":[{"instances":[{"status":"CRASHED"}]}]}},{"node":{"serviceName":"audiogen","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"picturegen","activeDeployments":[]}},{"node":{"serviceName":"parent-id-check","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"email-server","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"filebase","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"dataintel","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}}]}}},{"node":{"name":"staging","serviceInstances":{"edges":[]}}}]}}
+{"environments":{"edges":[{"node":{"name":"production","serviceInstances":{"edges":[{"node":{"serviceName":"littlefounders-backend","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"coursegen","activeDeployments":[{"instances":[{"status":"CRASHED"}]}]}},{"node":{"serviceName":"audiogen","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"picturegen","activeDeployments":[]}},{"node":{"serviceName":"parent-id-check","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"email-server","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"filebase","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"dataintel","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}},{"node":{"serviceName":"oracle","activeDeployments":[{"instances":[{"status":"RUNNING"}]}]}}]}}},{"node":{"name":"staging","serviceInstances":{"edges":[]}}}]}}
 JSON
       ;;
     *)
@@ -64,6 +72,19 @@ if [[ "\${1:-}" == "variable" && "\${2:-}" == "list" ]]; then
     printf '%s' '{}'
     exit 0
   fi
+  if [[ "$fixture" == "mismatched" ]]; then
+    # Everything present and correct EXCEPT the shared session secret: the
+    # failure mode that no presence check can see.
+    case "$service" in
+      coursegen) printf '%s' '{"DEEPSEEK_API_KEY":"configured-value","QWEN_API_KEY":"configured-value","PICTUREGEN_URL":"https://picturegen.internal","PICTUREGEN_INTERNAL_KEY":"configured-value"}' ;;
+      audiogen) printf '%s' '{"TTS_API_KEY":"configured-value"}' ;;
+      picturegen) printf '%s' '{"IMAGE_API_KEY":"configured-value"}' ;;
+      oracle) printf '%s' '{"INTERNAL_API_KEY":"oracle-service-key","TUTOR_SESSION_SECRET":"a-different-secret","CORE_URL":"http://littlefounders-backend.internal:4000","CORE_INTERNAL_KEY":"configured-value","MODEL_API_KEY":"configured-value","JUDGE_API_KEY":"configured-value"}' ;;
+      littlefounders-backend) printf '%s' '{"DATAINTEL_URL":"http://dataintel.internal:4008","DATAINTEL_INTERNAL_KEY":"configured-value","ORACLE_URL":"http://oracle.internal:4009","ORACLE_PUBLIC_URL":"https://tutor-b2c.littlefounders.ai","ORACLE_INTERNAL_KEY":"oracle-service-key","TUTOR_SESSION_SECRET":"shared-session-secret","FILEBASE_URL":"http://filebase.internal:4006","FILEBASE_INTERNAL_KEY":"configured-value"}' ;;
+      *) printf '%s' '{}' ;;
+    esac
+    exit 0
+  fi
   if [[ "$environment" == "staging" ]]; then
     case "$service" in
       coursegen) printf '%s' '{"DEEPSEEK_API_KEY":"configured-value","PICTUREGEN_URL":"https://picturegen.internal","PICTUREGEN_INTERNAL_KEY":"configured-value"}' ;;
@@ -78,7 +99,8 @@ if [[ "\${1:-}" == "variable" && "\${2:-}" == "list" ]]; then
     coursegen) printf '%s' '{"DEEPSEEK_API_KEY":"configured-value","QWEN_API_KEY":"configured-value","PICTUREGEN_URL":"https://picturegen.internal","PICTUREGEN_INTERNAL_KEY":"configured-value"}' ;;
     audiogen) printf '%s' '{"TTS_API_KEY":"configured-value"}' ;;
     picturegen) printf '%s' '{"IMAGE_API_KEY":"configured-value"}' ;;
-    littlefounders-backend) printf '%s' '{"DATAINTEL_URL":"http://dataintel.internal:4008","DATAINTEL_INTERNAL_KEY":"configured-value"}' ;;
+    oracle) printf '%s' '{"INTERNAL_API_KEY":"oracle-service-key","TUTOR_SESSION_SECRET":"shared-session-secret","CORE_URL":"http://littlefounders-backend.internal:4000","CORE_INTERNAL_KEY":"configured-value","MODEL_API_KEY":"configured-value","JUDGE_API_KEY":"configured-value"}' ;;
+    littlefounders-backend) printf '%s' '{"DATAINTEL_URL":"http://dataintel.internal:4008","DATAINTEL_INTERNAL_KEY":"configured-value","ORACLE_URL":"http://oracle.internal:4009","ORACLE_PUBLIC_URL":"https://tutor-b2c.littlefounders.ai","ORACLE_INTERNAL_KEY":"oracle-service-key","TUTOR_SESSION_SECRET":"shared-session-secret","FILEBASE_URL":"http://filebase.internal:4006","FILEBASE_INTERNAL_KEY":"configured-value"}' ;;
     *) printf '%s' '{}' ;;
   esac
   exit 0
@@ -166,6 +188,16 @@ try {
   // failure — the exit code is attributable to it alone.
   assert.match(crashed.stdout, /railway-preflight FAILED — 1 failure\(s\)/);
   assert.doesNotMatch(crashed.stdout, /configured-value/);
+
+  // A shared secret that DIFFERS across the pair: everything is present, every
+  // health check would be green, and every tutor socket would close "bad
+  // signature". Presence checks cannot see this; equality can.
+  const mismatched = run('mismatched');
+  assert.equal(mismatched.status, 1, mismatched.stdout);
+  assert.match(mismatched.stdout, /TUTOR_SESSION_SECRET DIFFERS/);
+  assert.match(mismatched.stdout, /every tutor websocket will be refused/);
+  // And it still never prints a value.
+  assert.doesNotMatch(mismatched.stdout, /a-different-secret|shared-session-secret/);
 
   const bad = run('bad');
   assert.equal(bad.status, 1, bad.stderr);

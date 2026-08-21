@@ -2,6 +2,255 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-21d) — Inworld VERIFIED against the live API, and the cast keeps its own voices
+
+The owner supplied a non-production Inworld key and asked for verification.
+Everything below was measured against the live service, not read off a page.
+
+**The adapter's guesses were all wrong, which is exactly why it carried an
+UNVERIFIED banner.** It assumed `/v1/speech:synthesize` and
+`/v1/speech:recognize` and expected raw audio bytes. Reality:
+`POST /tts/v1/voice` returning base64 in `audioContent` (814 ms), and
+`POST /stt/v1/transcribe` with a nested `transcribeConfig` (715 ms). Round trip
+1.53 s and the transcript was faithful — it even normalises "veinticinco" to
+"25", which for a maths tutor is an improvement. Auth is `Basic <key>` with the
+key **already base64-encoded**; re-encoding yields a 401 that reads like a bad
+credential rather than a bad header. `npm run voices:verify` now re-runs that
+round trip through the adapter, so a drift in Inworld's shapes fails a command
+instead of a child's session.
+
+**The owner caught a real product defect mid-build: the cast already has
+voices.** Echo clones Dina, Liruf, Dr. Rho and Zara per locale from the owner's
+reference recordings and narrates every lesson with them. A Tutor speaking in a
+stock catalogue voice would have handed a child who knows Dr. Rho from a lesson
+a stranger wearing his face — quietly breaking the one thing the 3D cast exists
+to build. Inworld does instant cloning (`POST /voices/v1/voices:clone`, 5–15 s
+of reference, no training step, **rate limited to 2 requests per minute** —
+measured, so `npm run voices:clone` paces itself rather than hitting a wall of
+429s at slot seven). Oracle now resolves a voice per character × locale from
+`INWORLD_VOICE_<CHAR>_<LOCALE>`, named to mirror Echo's, enrolled from the SAME
+trimmed samples so the two castings cannot drift apart by neglect.
+
+**There is no fallback voice, deliberately.** An unenrolled character is SILENT
+in that locale. Substituting a stock voice would be §1.14 in its purest form —
+a confident wrong answer where an absent one merely omits.
+
+**A privacy finding that only testing would have surfaced.** Inworld's STT can
+return a voice profile alongside the transcript: emotion, vocal style, accent,
+**age** and pitch. Measured, it is absent unless requested — but off by default
+is not off, because a default is something a provider can change and we would
+never notice. Oracle disables it explicitly on every request and logs an error
+if one arrives anyway. Recorded for counsel, along with a second finding
+neither of us had considered: cloning the characters means uploading the
+owner's reference recordings to a third party, which creates a derived voice
+model held by them and turns on whatever rights exist for those performances.
+Three new questions went to counsel.
+
+**The DPA decision, left to my judgement with "the product must stay
+accessible".** `TUTOR_VOICE_FOR_MINORS` is now an explicit flag, default off:
+no minor's microphone opens until the agreement exists, regardless of guardian
+consent, which stays separate and also required. It is a flag rather than
+"leave the key unconfigured" because those are DIFFERENT facts, and conflating
+them is how a policy becomes an accident — a key configured so adults could use
+voice would silently have opened children's microphones too. Adults are
+unaffected and every learner keeps the whole tutor. The UI checks policy FIRST,
+because telling a family to ask a grown-up when the answer would still be no
+wastes their time.
+
+**Accessibility audited with axe-core rather than by opinion**: WCAG 2.0/2.1 A
+and AA across all four Tutor surfaces in both themes — zero violations, every
+interactive element tabbable and named, both live regions announcing. One real
+failure was found and fixed: the consent status line used `content-faint` at
+2.56:1 against a 4.5:1 requirement, on the exact sentence that tells a parent
+whether their child's microphone is on. **That token fails wherever it carries
+text elsewhere in the app — about 124 places.** Pre-existing, platform-wide,
+and spun out as its own task rather than rewritten inside a Tutor change;
+changing the token itself would edit an authoritative DESIGN.md value and needs
+sign-off.
+
+**Gates:** oracle 142, backend 443, frontend 644 — 1,229 tests. The oracle
+suite was run three consecutive times to confirm the live-socket file is
+deterministic rather than flaky.
+
+## Current State (2026-08-21c) — Tutor finished and PROVEN: the three unreachable gaps closed, and a real websocket session driven end to end
+
+Continuation of the build entry below, on the owner's "finish it and test it".
+
+**Three gaps made parts of the feature literally unreachable, and none of them
+would have failed a test.** The consent API had no UI at all, so the microphone
+gate could never be satisfied through the product and the whole voice path was
+dead. Parent visibility had an endpoint and no page, so a product invariant
+existed only in a route table. And the retention function had no caller, so a
+90-day promise the legal brief makes on our behalf would have been kept by
+nobody. All three are now real surfaces: `VoiceConsentControl` on `/family`,
+`/family/:kidId/tutor`, and `.github/workflows/tutor-retention.yml`.
+
+The retention sweep deletes the AUDIO as well as the rows, and that half is the
+one worth remembering: the cascade reaches turns, segments and flags, and
+nothing reaches a blob in Depot. A rows-only sweep would have left a child's
+conversation audible at a public URL with every database record of it
+destroyed — the worst possible combination, because nothing would remain to
+tell anyone the files existed.
+
+**The strongest new test is `oracle/src/__tests__/live-session.test.ts`.** It
+stands up Oracle's real HTTP+websocket server, a real HTTP server standing in
+for Core and another for the model, then drives an actual socket through
+handshake, token burn, greeting, a learner turn, a served activity, a graded
+result and a farewell. Nothing is mocked at a module boundary. It is the only
+thing here that would catch a socket that never upgrades, a token format the
+two sides disagree about, or a pipeline that deadlocks between the model and
+moderation — all of which pass a unit suite and fail a learner.
+
+**Two defects surfaced, one in the harness and one only visible by looking.**
+
+The harness one is worth writing down because it was passing: `closed()`
+attached a `close` listener AFTER the event could already have fired, so a test
+that asserted on the transcript first hung forever waiting for something that
+had happened. One test passed by luck and the identical pattern beside it
+timed out. The socket now records its close code at construction.
+
+The other was found in the browser and by nothing else. At 375 px the consent
+row collapsed to one word per line: the button carries a full sentence
+("Allow the microphone" / "Permitir el micrófono"), `shrink-0` gave it its
+full intrinsic width, and the label was left about eighty pixels. It now stacks
+on mobile and goes side by side from `sm`. This is the third time on this
+project that looking has found what every test missed.
+
+**Gates:** oracle 131, backend 440, frontend 644 — 1,215 tests, all green,
+plus `verify:tutor`, every build, and all root gates. Verified in a real
+browser at 375 px, 720 px and 1280 px in both themes. Still not enabled for
+minors: `/ORACLE.md` §16's first two items belong to the owner and to counsel.
+
+## Current State (2026-08-21b) — AI Tutor BUILT end to end: `oracle/` service, migration 0047, Core API, the `/tutor` experience
+
+Same session as the design entry below, continued on the owner's instruction to
+build the product to a production bar rather than an MVP. Delivered: a new
+service, a migration, a Core surface, a frontend experience, three locales, a
+legal brief, and the documentation sweep.
+
+**Gates, all run in this session:** oracle 119 tests + type-check + lint +
+build + `verify:tutor`; backend 424 tests + type-check + lint; frontend 639
+tests + type-check + lint + build; database migration gates 47/47; root
+`docs:check`, `secrets:check`, `i18n:check`, `paths:check`. Verified in a real
+browser at 375 px and 1280 px, light and dark, with no horizontal overflow at
+either width.
+
+**Three tests caught defects that review did not, and all three were the
+"fails safe, silently, forever" shape:**
+
+1. **Key re-execution used the wrong shape.** An answer KEY is not a
+   SUBMISSION — `quiz_mcq`'s key is `{correct_option_id}` and its submission is
+   `{option_id}`; `fill_blank`'s key is an array of gap descriptors and its
+   submission is an object keyed by gap number. Every live-generated exercise
+   would have been reported unverifiable and unable to pay XP, with nothing
+   going red.
+2. **Tier-3 generation was a second, unsealed door to the model.** The
+   architectural invariant test flagged it. The fix was not to relax the test:
+   generation got its own `.strict()` brief, which deliberately omits the
+   nickname because a generated exercise has no reason to address a learner by
+   name and would outlive the session it was written in.
+3. **A vacuity guard saved a boundary test from passing on nothing.** The
+   `expect(senders.length).toBeGreaterThan(0)` line caught that a regex
+   contained a literal backspace character and therefore matched no files —
+   the test was green and checking nothing.
+
+**One design defect the tests exposed rather than a code bug:** scripted lines
+were being sent through the model moderation pass. They are human-written and
+already reviewed, so a judge outage would have replaced one safe line with
+another while doubling upstream calls per turn. Only GENERATED turns are
+moderated now.
+
+**Forge could not be used for tier-3 generation, and finding out changed the
+architecture.** The design said Oracle would call it; Forge has no HTTP
+generation surface at all — it is a CLI-driven batch pipeline built for
+40-segment documents with a narrative arc, which is a different job from
+authoring one adaptive exercise mid-sentence. What shipped splits along the
+line that already existed: **Oracle authors and judges, Core verifies**,
+because verification means re-running the real graders and those live with the
+database. `/ORACLE.md` §3.1 and §7.3 were corrected to match the code.
+
+**Two pre-existing cross-platform gate bugs were fixed** because they made
+verification impossible on Windows: `check-migrations.mjs` and
+`ciPathFilters.test.ts` both produced `/C:/...` or backslash paths from
+`URL.pathname` / `path.relative`. Confirmed pre-existing by stashing.
+`railway-migrate.test.mjs` still fails identically before and after these
+changes and was left alone.
+
+**What is deliberately NOT done.** The feature is not enabled for minors, and
+`/ORACLE.md` §16 is the gate. Its first item is a data-processing agreement
+with the voice provider that does not exist, and its second is counsel's answer
+on the Terms and Privacy Notice — the consent wording currently shipping in
+`tutor.consent.body` is a PLACEHOLDER and is labelled as one.
+`/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` is the brief: what data goes where, what is
+never stored, what a child can be shown that no human approved first, and
+thirteen open questions that belong to counsel rather than to engineering.
+Inworld's concrete API surface is still unverified and is marked as such in the
+adapter itself; `VOICE_PROVIDER=none` is the default and a fully tested mode.
+
+## Current State (2026-08-21) — AI Tutor (Oracle): full design approved, eight owner decisions recorded, no code written yet
+
+Session goal: design the final AI Tutor before building it. The owner asked for
+doubts and key suggestions **before** any other work, and that is what this
+session produced — `/ORACLE.md` was rewritten from the superseded v1 "Money
+Moments" design into the approved specification, and `ROADMAP.md` carries the
+decision record. **Zero implementation.** No service, no migration, no route.
+
+**Three conflicts with standing invariants were surfaced before designing
+anything, per §1.0.1.** Each was decided by the owner, and each override is now
+written down rather than living in a chat log:
+
+1. **A minor's voice reaching a third party.** §1.9 caps third-party context at
+   "age band + first name"; a microphone stream is far beyond that, and v1
+   ORACLE.md had classified live chat as v3+ pending a separate §1.9 review.
+   Owner decision: **kids get the microphone in v1**, behind a blocking
+   parental-consent gate, with a data-processing agreement covering minors'
+   voice as an owner action that blocks rollout.
+2. **v1's non-negotiable #1 — never a free-text box for a child.** Open
+   conversation contradicts it head-on. Overridden deliberately; the reason
+   `/ORACLE.md` §4–§6 are as detailed as they are is that they now carry the
+   weight that closed taxonomy used to carry for free.
+3. **§1.2 is LOCKED.** Inworld is a new provider and needed the owner's sign-off,
+   which was given and is now recorded in ROADMAP's Open decisions table rather
+   than assumed from a prompt.
+
+**The decision that matters most for content safety.** The owner chose a
+three-tier ladder — published-catalog composition, then a human-published
+pre-generated bank, then **live generation** — and the argument for the third
+tier is the one worth preserving: a child who did not understand the canonical
+explanation needs a *different* one now, and a finite bank structurally cannot
+hold it. "Come back when we have written one" is not a tutoring product. That
+makes live generation the largest §1.9 exception in the project, so it is fenced
+by a deterministic-grading type allowlist, the Forge gates, the independent
+judge (which this project's own record shows catching twelve real semantic
+defects that all nine gates passed), answer-key re-execution before any XP,
+moderation, full provenance, and post-hoc sampled human review — and a
+generation that fails any guard emits NOTHING rather than something generic.
+
+**Design work that came out of reading the code rather than assuming it.**
+`TutorStage` is genuinely ready — the seam in TUTOR_3D.md §7b is real — and the
+gap between "stage" and "tutor" is four specific items, not a rebuild: the
+diorama prop is not forwarded from `TutorScene` to `TutorStage`; nothing renders
+captions over a character's head; `speechUrl` is a finished file while live TTS
+is a stream; and `conversation` framing is one setting for four characters whose
+mouths do not all work. The owner chose all four characters as selectable
+speaking tutors despite TUTOR_3D.md §3.1 having closed mouth cards for `liruf`
+and `dina`, so the mitigation is wider framing for those two plus leaning on the
+2D bubble, where `CharacterActor`'s `speaking` prop already articulates the head.
+
+**Cold start is the normal case, not an edge case.** Data Intel is deployed and
+syncing, and `GET /api/v1/learn/personalization` exists in Core — but the
+courses sit in `review`, so there is almost no learning evidence per user. The
+"I see you are struggling with X" opening will have nothing to say at launch.
+Designed for from the start: low `evidenceCount` or high `uncertainty` opens a
+short diagnostic and says plainly that the tutor is still getting to know the
+learner, rather than inventing a profile from no evidence.
+
+**Still open and blocking implementation:** the §1.5 browser-exception #4 for
+Oracle's websocket (recommended shape written up, needs owner sign-off), the
+Inworld DPA, and verification of Inworld's actual API surface — which was
+deliberately NOT assumed anywhere in the specification, and is flagged as
+unverified inside `/ORACLE.md` §3.3 rather than written as if known.
+
 ## Current State (2026-08-20, SESSION CLOSE) — Inversiones course COMPLETE: 544/544 lessons, all 8 adventures, in production `review`
 
 Session goal: generate the entire `investing` course end-to-end, same harness
@@ -94,6 +343,46 @@ BEFORE writing, and state explicitly that the brief outranks the world file
 the pattern was caught and truncate-and-reingest became the standard recovery.
 
 ---
+
+## Current State (2026-08-17, SESSION CLOSE) — Tutor 3D stage LIVE in production; placement fixed
+
+The stage is deployed and reachable. Depot serves the scene assets to the
+browser, `/tutor` renders the island with rho + liruf, and the placement solver
+no longer stands the cast in water. Green on every gate: 627 frontend tests
+across 58 files, type-check, lint, build, verify:rig, verify:placement, i18n ×3,
+docs-sync, secrets, paths.
+
+**Three things shipped, each one found by looking rather than by a test.**
+
+1. **Depot sent no CORS headers at all** (PR #59). Every prior consumer loads
+   media through `<audio>`/`<img>`, which are no-cors requests; the 3D scene is
+   the first that reads bytes in script, via `GLTFLoader`, and those ARE subject
+   to CORS. `curl` reported a perfect 200 with exact byte counts nine times
+   while production was broken — a shell client cannot see this class of bug.
+   Public objects now carry `Access-Control-Allow-Origin: *` plus an
+   `Expose-Headers` list and a preflight route (`Range` is not CORS-safelisted);
+   internal objects get no CORS headers at all and moved from `Cache-Control:
+   public` to `private`.
+
+2. **A full inventory of the stage, photographed.** 87 captures driven through
+   `/dev/scene-lab` by a Playwright harness: 12 actions × 4 characters, 7
+   emotions, 8 visemes on both characters that have a mouth card, both framings
+   at 1280 px and 375 px, both themes, both islands. Every gesture is diffed
+   against its own character's idle, because a gesture photographed at the wrong
+   instant looks exactly like a successful photograph of someone standing still.
+
+3. **`diorama-b` stood its entire cast in the pond**, and had for as long as the
+   island existed. Fixed with a baked walkability mask; see the Decision Log.
+
+**Also:** the scene lab gained island and stage switches — it could not show the
+second island with anyone on it, which is why nobody had seen the pond.
+
+### Open, needing the owner
+
+- **Vercel account is in arrears** — the project reports `"live": false` in the
+  API. Same class as the DashScope and Railway billing items below.
+- **Branch `chore/scene-lab-island-toggle` is committed but NOT pushed** (owner
+  asked to hold): 2 commits on top of `main`, both green.
 
 ## Previous session (2026-08-15, SESSION CLOSE) — Tutor 3D stage BUILT; handed off for a Blender pass
 
@@ -1414,6 +1703,10 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 | 2026-08-20 | **Topic-level titles (en-US/pt-BR) must be generated as a single `--titles` file covering every unique topic slug before the first publish attempt, not per adventure.** | The catalog authors `title_es` only; `author-publish` fails closed per-lesson (`no en-US/pt-BR title for topic "…"`) if any of the course's unique topic slugs (272 for this course) is missing from the file. This is a separate translation surface from the per-lesson `author-localize` pipeline, easy to discover only at the moment of publish. |
 | 2026-08-18 | **A subagent authoring world file (`WORLD.md`) must state it is subordinate to the brief, never the reverse.** Pinning a world before dispatch is now standard for any multi-batch subagent authoring run. | An adventure's world file wrongly pinned the wrong product; two authoring batches obeyed it over their own catalog-authored briefs, discarding a brief's explicit narrative beat. The catalog is human-reviewed content design — no file an agent writes on the fly outranks it. Cost 23 lessons of re-homing to fix. |
 | 2026-08-18 | **`author-judge ingest` reports an oversized `notes` field as a schema `problems` entry, and an operator must treat that shape as "verdict lost", never as "lesson failed".** | `reviewRubricSchema` caps `notes` at 2000 characters and fails the whole verdict object past it — correct fail-closed behavior, but it silently discarded 11 verdicts for lessons that were actually clean, making them read as unjudged. Recovery: truncate the oversized `notes` in place and re-run `ingest`. |
+| 2026-08-17 | **Geometry says how a surface BEHAVES, never what it IS — placement needs a semantic input.** A walkability mask is baked per island from its own texture (`npm run assets:walkmask`) and applied as a hard gate in `findStandingSpots`. | `diorama-b` stood its ENTIRE CAST in the pond — every pairing, both characters, for as long as the island had shipped. Water is the flattest, most open surface a diorama has, so it beat every patch of grass on the two terms carrying most of the score. No threshold fixes this: the pond is not badly shaped, it is beautifully shaped and wet. There is also no geometric signal to recover — one mesh, one material, quantized so the water is not even exactly planar, no vertex colours. The meaning only exists in the texture, so the rule reads it there and does so at BUILD time, where a wrong classification is a visibly wrong mask in a diff (`--preview` paints blocked cells magenta) rather than a mystery in production. A missing mask returns `null`, never a permissive default. |
+| 2026-08-17 | **Looking finds what measuring cannot; measuring disproves what looking only suggests. Neither substitutes for the other.** Added `npm run verify:placement`, a headless harness that runs the REAL solver against the REAL islands. | The pond was found by finally photographing the second island with people on it — no test, type-check or number had ever complained. But two of the three "defects" that same screenshot appeared to show did not survive measurement: the companion "standing on a boulder" was a low-resolution crop in which the boulders sit BETWEEN him and the camera (a tight re-render shows both feet flat on sand), and Dina "overhanging the rim by 44 cm" assumed she would be placed on the outer sampling ring — measured, she stood 2.01 m out with 4 cm to spare. Both had already been written into a committed doc and a published report before the harness existed to check them. |
+| 2026-08-17 | **Fixing a placement rule can create a composition bug, so the fix is not done until the scene is looked at again.** Added a togetherness preference: after the lead is placed, later spots are pulled toward it. | With the pond off-limits, the two highest-scoring patches of grass on diorama-b sat on OPPOSITE SHORES and the solver dutifully chose both — 5.39 m apart against 1.82 m on diorama-a. Nobody was standing anywhere wrong; they were ignoring each other across a lake, and the quarter-turn each character takes toward the other means nothing at six metres. Now 2.28 m. Kept a preference rather than a rule because rejecting on it can return NO spot, and `Cast` renders nothing without one: a cramped character beats an empty island. |
+| 2026-08-17 | **Measured facts about a model must not live behind a bundler global.** `measurements.ts` split out of `assets.ts`; the latter now only adds URLs. | `assets.ts` reads `import.meta.env` to resolve Depot's content-addressed URLs, which made every height and footprint unreadable outside Vite — so a headless placement check could not import a single number without dragging in asset URL resolution. Shimming `import.meta` does not work either: it is per-module. The alternative was to soften the product for the harness, which is the wrong direction. |
 | 2026-08-17 | **Liruf and Dina keep their painted mouths — closed after exhausting every approach, not abandoned.** | Five fits on Liruf (planar, cylindrical, ribbon, ribbon widened 4 cm a side after re-measuring his grin at −0.191..0.237, and two grid densities) and six on Dina (ribbon, curve raised 0.0008, four gaps, three densities). The card ends up split into disconnected pieces with the face poking through between them: the snout curves more across the patch than a bilinear surface can hug, and raising density past 21×13 makes Liruf WORSE (bulge 0.0347 → 0.1019) because more samples land on his teeth. The one remaining fix is painting the mouth out of the albedo so the card ADDS one, as Rho's does — rejected because a UV sweep shows these models' layouts are fragmented into islands spanning the whole atlas (u 0.024–0.994), so a masked repaint would recolour large disjoint areas of a shaded curved face. High risk of visibly damaging two characters that look good today, for two companions who do not carry the speech. |
 | 2026-08-16 | **Small deltas survive a rest-pose mismatch; large ones do not.** The seven emotion clips were audited across all three bipeds and need NO per-character overrides, unlike the arm gestures. | The first metric said otherwise: head DISPLACEMENT at each emotion's peak put Rho at roughly twice Zara on every one, and Liruf's `surprised` at a seventeenth. That measure is confounded by head size — Rho's head is large and far from the pivot, so the same tilt travels further. The ANGLE, which is what a viewer actually reads, is identical to a tenth of a degree on all three (happy 10°, excited 15°, surprised 13°, proud 19°). Rotations very nearly commute at 6–19°, so an emotion arrives intact on a skeleton whose rest differs, while a 150° arm swing does not. Recording the negative result because "the actions needed per-character values, so the emotions must too" is the obvious wrong inference. |
 | 2026-08-16 | **Judge a gesture from the side the gesture is on.** `point` on Rho was declared unimprovable after five rounds of candidates; three of those rounds were rendered from his LEFT, where his own body occludes the pointing arm. | Every candidate looked like nothing was happening, because nothing could be seen. Re-rendered from his right, the shipped pose measures better than all five alternatives (9.86 forward against 1.38–5.64) and the real limitation is anatomical: shoulder-to-hand is barely wider than his head. Hours went into tuning a pose against an image that could not show it. |
@@ -1580,6 +1873,13 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 ## Known Issues
 
+- **Tutor scene assets are readable from production (RESOLVED 2026-08-17)** — Depot public objects now send CORS headers, so `GLTFLoader` can read them. Verified from the `https://littlefounders.ai` origin in script, not with curl: curl does not enforce CORS and passed nine times while the page was broken.
+- **`diorama-b` stood its whole cast in the pond (RESOLVED 2026-08-17)** — walkability is now a baked per-island mask (`npm run assets:walkmask`) applied as a hard gate in `findStandingSpots`, with `npm run verify:placement` as the regression gate. A new diorama must have its mask baked and committed before it ships; `assets:walkmask` is NOT part of `assets:3d`.
+- **Two reported placement defects did not exist (RETRACTED 2026-08-17)** — "the companion stands on a boulder" was a low-resolution crop in which the boulders sit between him and the camera, and "Dina overhangs the rim by 44 cm" assumed a sampling ring she is not placed on (measured: 4 cm of clearance, now 49 cm). Both had reached a committed doc and a published report before the headless harness existed to check them. Kept here because the failure mode — trusting a reading of an image as if it were a measurement — is the same one that produced the real find.
+- **The vignette framing wastes almost half the frame at 375 px (open, 2026-08-17)** — measured on the capture, the island covers 61% of the width and 48% of the height. The distance calculation adds half the island's depth to a requirement that already accounts for the camera angle. Cosmetic, cheap to fix, not attempted this session.
+- **Rho's moustache hides most of his lip-sync (open, 2026-08-17)** — the mouth card works and `closed` vs `A` are distinct, but they have to be looked for. Zara reads clearly at a glance. If speech becomes the centre of the product, the lead character is a product decision worth revisiting; today the lead is Rho.
+- **`think` behaves differently per animation layer (open, 2026-08-17)** — a biped's authored clip clamps and freezes after 2.2 s while Dina's procedural driver keeps drifting in a loop. The loop sets genuinely disagree between `clipLibrary.ts` and `characterActions.ts`, and the test only asserts one of them. Harmless today; decide which is correct.
+- **`celebrate`, `dance` and `bow` lose their vertical bounce on the clip path (open, 2026-08-17)** — `CLIP_LIFT` lists only `jump` and `hop`, so Dina rebounds when celebrating and the bipeds do not.
 - **🔴 The DashScope / Alibaba Model Studio account is IN ARREARS (owner action, 2026-08-15)** — every image call returns `{"code":"Arrearage","message":"Access denied, please make sure your account is in good standing."}`. No image can be generated and nothing is billed until it is settled. It also blocks the art-director judge and the subject verifier, which default to the same key (`JUDGE_API_KEY ?? IMAGE_API_KEY`). This blocks the financial-education scene repair (3,397 redraws, ~$255) and any new course generation. Same class as the standing Vercel/Railway billing items below. RUNBOOK: "Every image fails with `DashScope responded 400`".
 - **Financial-education scene art is still the WRONG art (2026-08-15)** — the pipeline is fixed and deployed, but the 1,208 published lessons keep the images generated under the old style, i.e. a lemonade stand over almost every exercise. The repair is built, measured and ready (`images:backfill --restyle-scenes`); it is waiting only on the arrears above.
 - **Published lesson TEXT still predates the sequencing fix (2026-08-15)** — #44 changes future generation only, and plan `fixes` were never persisted, so the affected lessons cannot be identified retrospectively. Deciding whether to regenerate (and under which `--on-existing-published` policy) is open.

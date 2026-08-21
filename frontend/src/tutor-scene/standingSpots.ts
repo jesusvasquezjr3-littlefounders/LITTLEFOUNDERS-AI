@@ -11,9 +11,20 @@ import { Box3, Raycaster, Vector3, type Object3D } from 'three';
  * So the spots are SOLVED, not authored. Candidates are sampled on rings over
  * the island, a ray finds the surface under each, and a spot is only accepted
  * if the ground there is flat (the surface normal points up), open (its
- * neighbours sit at a similar height, so it is not the top of a rock or the
- * lip of a ledge) and actually on the island. Whatever island ships next needs
- * no coordinates and no re-tuning.
+ * neighbours sit at a similar height, so it is not the top of a rock) and
+ * actually on the island.
+ *
+ * WHAT THAT WAS MISSING, and it took a screenshot to notice: geometry says how
+ * a surface BEHAVES, never what it IS. Water is the flattest, most open surface
+ * a diorama has, so on `diorama-b` it outscored every patch of grass and the
+ * entire cast stood in the pond — every pairing, both characters, for as long as
+ * the island had shipped. No amount of tuning the flatness threshold fixes that,
+ * because the pond is not badly shaped; it is beautifully shaped and wet.
+ *
+ * Hence `isWalkable`: the semantic half of the question, answered by the mask
+ * `scripts/generate-walkmask.ts` bakes from each island's own texture and
+ * resolved in `walkability.ts`. Shape is still scored here; meaning arrives
+ * from there.
  */
 
 export interface StandingSpot {
@@ -21,7 +32,7 @@ export interface StandingSpot {
   z: number;
   /** Surface height at this spot. */
   y: number;
-  /** How flat and open it is, 0..1. Higher is better. */
+  /** How flat, open and roomy it is, 0..1. Higher is better. */
   score: number;
 }
 
@@ -38,12 +49,44 @@ export interface FindSpotsOptions {
    * than behind the scenery.
    */
   preferDirection?: Vector3;
+  /**
+   * May a character stand at (x, z)? Baked per island; see `walkability.ts`.
+   *
+   * Omitting it means NOBODY HAS CHECKED this island, not that everything is
+   * walkable — the caller has to make that choice explicitly, which is the
+   * whole reason `walkabilityFor` returns null instead of a permissive default.
+   */
+  isWalkable?: (x: number, z: number) => boolean;
+  /**
+   * Half the widest character's footprint, in metres. Used to PREFER spots with
+   * room around them, never to reject.
+   *
+   * Deliberately a preference: rejecting on it can leave a large character with
+   * no spot at all, and a scene with nobody in it is a far worse failure than a
+   * character standing a little close to the rim. Dina covers 2.83 m on a 6.5 m
+   * island — there is not always a roomy answer, and the solver still has to
+   * return the best one there is.
+   */
+  clearance?: number;
 }
 
 const DOWN = new Vector3(0, -1, 0);
 
+/** The eight compass directions, for probing the room around a candidate. */
+const AROUND = Array.from({ length: 8 }, (_, i) => {
+  const angle = (i / 8) * Math.PI * 2;
+  return { dx: Math.cos(angle), dz: Math.sin(angle) };
+});
+
 export function findStandingSpots(ground: Object3D, options: FindSpotsOptions): StandingSpot[] {
-  const { count, minSeparation = 1.2, probe = 0.35, preferDirection = new Vector3(0, 0, 1) } = options;
+  const {
+    count,
+    minSeparation = 1.2,
+    probe = 0.35,
+    preferDirection = new Vector3(0, 0, 1),
+    isWalkable,
+    clearance = 0,
+  } = options;
 
   const box = new Box3().setFromObject(ground);
   if (box.isEmpty()) return [];
@@ -62,6 +105,9 @@ export function findStandingSpots(ground: Object3D, options: FindSpotsOptions): 
     return hit ? hit.point.y : null;
   };
 
+  /** No mask means no evidence; the caller decided what that means. */
+  const walkable = isWalkable ?? (() => true);
+
   const candidates: StandingSpot[] = [];
 
   // Rings from just outside the centre (usually occupied by a feature) to
@@ -76,6 +122,22 @@ export function findStandingSpots(ground: Object3D, options: FindSpotsOptions): 
 
       const y = surfaceAt(x, z);
       if (y === null) continue;
+
+      /*
+       * The hard gate, and the only one that is not a matter of degree: you
+       * cannot stand on this at all. Checked at the spot AND at the flatness
+       * probes, because a character whose centre clears the shoreline by a
+       * hair still has both feet in the lake.
+       */
+      if (!walkable(x, z)) continue;
+      if (
+        !walkable(x + probe, z) ||
+        !walkable(x - probe, z) ||
+        !walkable(x, z + probe) ||
+        !walkable(x, z - probe)
+      ) {
+        continue;
+      }
 
       // Flatness/openness: four neighbours must agree about the height here.
       // A rock top passes the surface test but fails this one, which is the
@@ -97,21 +159,84 @@ export function findStandingSpots(ground: Object3D, options: FindSpotsOptions): 
       // ground, and low hits are the surrounding rim or the underside.
       const relativeHeight = (y - box.min.y) / Math.max(size.y, 1e-6);
 
-      candidates.push({ x, z, y, score: flatness * 0.55 + facing * 0.3 + relativeHeight * 0.15 });
+      /*
+       * Room: how much of this character's own footprint lands on ground they
+       * could also have stood on. Since the mask marks everything off the
+       * island as unwalkable, this scores rim clearance and pond clearance with
+       * one measurement instead of two rules that could disagree.
+       */
+      let room = 1;
+      if (clearance > 0) {
+        let clear = 0;
+        for (const { dx, dz } of AROUND) {
+          if (walkable(x + dx * clearance, z + dz * clearance)) clear += 1;
+        }
+        room = clear / AROUND.length;
+      }
+
+      candidates.push({
+        x,
+        z,
+        y,
+        score: flatness * 0.44 + facing * 0.24 + relativeHeight * 0.12 + room * 0.2,
+      });
     }
   }
 
   candidates.sort((a, b) => b.score - a.score);
 
-  // Greedy selection with a separation constraint, so two characters never end
-  // up standing inside one another.
+  /*
+   * Greedy selection, with a floor AND a preference for a ceiling.
+   *
+   * The floor stops two characters standing inside one another. The preference
+   * stops the opposite failure, which only became visible once the walkability
+   * mask opened up `diorama-b`: with the pond off-limits, the two
+   * highest-scoring patches of grass sat on OPPOSITE SHORES, and the solver
+   * dutifully chose both. Measured 5.39 m apart on a 9.5 m island, against
+   * 1.82 m on diorama-a. Nobody was standing anywhere wrong; they were simply
+   * ignoring each other across a lake.
+   *
+   * `TutorScene` then turns each character a quarter of the way toward the
+   * other, which is what makes a pair read as two figures sharing a place —
+   * and that gesture means nothing at six metres.
+   *
+   * A preference and not a rule: on a crowded island the only spots that clear
+   * the floor may all be far apart, and returning one character is worse than
+   * returning two who stand further apart than ideal.
+   */
   const chosen: StandingSpot[] = [];
-  for (const candidate of candidates) {
-    if (chosen.length >= count) break;
-    const clashes = chosen.some(
-      (spot) => Math.hypot(spot.x - candidate.x, spot.z - candidate.z) < minSeparation,
-    );
-    if (!clashes) chosen.push(candidate);
+  const remaining = [...candidates];
+  while (chosen.length < count && remaining.length > 0) {
+    let bestIndex = -1;
+    let bestValue = -Infinity;
+
+    for (let i = 0; i < remaining.length; i += 1) {
+      const candidate = remaining[i]!;
+      let nearest = Infinity;
+      let clashes = false;
+      for (const spot of chosen) {
+        const distance = Math.hypot(spot.x - candidate.x, spot.z - candidate.z);
+        if (distance < minSeparation) { clashes = true; break; }
+        nearest = Math.min(nearest, distance);
+      }
+      if (clashes) continue;
+
+      // 1 while comfortably close, decaying to 0 by 3.5x the floor.
+      const comfortable = minSeparation * 1.6;
+      const far = minSeparation * 3.5;
+      const together = !Number.isFinite(nearest)
+        ? 0
+        : nearest <= comfortable
+          ? 1
+          : Math.max(0, 1 - (nearest - comfortable) / (far - comfortable));
+
+      const value = candidate.score + (chosen.length > 0 ? together * 0.25 : 0);
+      if (value > bestValue) { bestValue = value; bestIndex = i; }
+    }
+
+    if (bestIndex === -1) break;
+    chosen.push(remaining[bestIndex]!);
+    remaining.splice(bestIndex, 1);
   }
   return chosen;
 }

@@ -27,6 +27,7 @@ import { TerritoryPage } from '@/routes/app/learn/TerritoryPage';
 import { PlacementPage } from '@/routes/app/learn/PlacementPage';
 import { FamilyPage } from '@/routes/app/family/FamilyPage';
 import { KidTerritoryPage } from '@/routes/app/family/KidTerritoryPage';
+import { KidTutorPage } from '@/routes/app/family/KidTutorPage';
 import { LessonRoute } from '@/routes/app/learn/LessonRoute';
 import { SectionComingSoon } from '@/routes/app/SectionComingSoon';
 import { ProfilePage } from '@/routes/app/profile/ProfilePage';
@@ -63,6 +64,11 @@ const LessonViewPage = lazy(() => import('@/lesson-engine/lab/LessonViewPage'));
  * the lesson lab, and additionally because `three` is a large chunk that must
  * never be pulled into a production entry bundle by a stray import. */
 const SceneLabPage = lazy(() => import('@/tutor-scene/lab/SceneLabPage'));
+
+/* Dev-only visual QA for the Tutor's product surfaces (personalize, offer,
+ * conversation) against fixtures — the §1.11 both-breakpoints check without
+ * needing a live session, a model key or a websocket. */
+const TutorLabPage = lazy(() => import('@/tutor/lab/TutorLabPage'));
 
 /* The Tutor's 3D stage. Lazy is MANDATORY, not an optimisation: `three` plus the
  * scene code is a large chunk, and a static import would put it in the entry
@@ -125,6 +131,16 @@ export function App() {
               element={
                 <Suspense fallback={null}>
                   <SceneLabPage />
+                </Suspense>
+              }
+            />
+          ) : null}
+          {import.meta.env.DEV ? (
+            <Route
+              path="dev/tutor-lab"
+              element={
+                <Suspense fallback={null}>
+                  <TutorLabPage />
                 </Suspense>
               }
             />
@@ -261,6 +277,17 @@ export function App() {
               element={
                 <RequireRole role="parent">
                   <KidTerritoryPage />
+                </RequireRole>
+              }
+            />
+            {/* Parent visibility into a child's tutor conversations is a
+                product invariant (§1.9), not a feature — same parent gate,
+                and Core re-checks the verified guardian link per request. */}
+            <Route
+              path="family/:kidId/tutor"
+              element={
+                <RequireRole role="parent">
+                  <KidTutorPage />
                 </RequireRole>
               }
             />

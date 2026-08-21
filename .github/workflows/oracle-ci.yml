@@ -1,0 +1,47 @@
+name: oracle CI
+
+# Oracle is the AI Tutor runtime (/ORACLE.md). Its filters are narrow on
+# purpose: Oracle has NO database access and imports nothing from database/
+# types — every fact about a learner arrives from Core over HTTP — so no file
+# outside oracle/ takes part in its type-check, lint or tests.
+#
+# `verify:tutor` runs as its own step rather than inside `npm test`, because it
+# is the gate a human reads (/AGENTS.md §5): it prints, check by check, that the
+# model context still rejects every unlisted field and that the injection canary
+# corpus still fails to escape. A green 119-assertion test run does not tell a
+# reviewer that the privacy boundary held; that step does.
+
+on:
+  push:
+    branches: [main, littlefounders_v2]
+    paths:
+      - 'oracle/**'
+      - '.github/workflows/oracle-ci.yml'
+  pull_request:
+    paths:
+      - 'oracle/**'
+      - '.github/workflows/oracle-ci.yml'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: oracle
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: oracle/package-lock.json
+      - run: npm ci
+      - run: npm run type-check
+      - run: npm run lint
+      # Self-contained: src/test-setup.ts supplies every env var, the voice
+      # provider defaults to `none`, and no model key is set — so nothing here
+      # reaches a network.
+      - run: npm test
+      - run: npm run verify:tutor
+      - run: npm run build

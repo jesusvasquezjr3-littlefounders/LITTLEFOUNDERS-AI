@@ -67,6 +67,18 @@ Rules that bite:
   from a downward raycast (`ground.tsx`) and standing positions from
   `standingSpots.ts`. Hand-tuned coordinates do not survive the second
   diorama — they put a character on top of the stone table on the first one.
+- **But geometry says how a surface BEHAVES, never what it IS — and that gap
+  stood the whole cast in a pond.** Water is the flattest, most open surface a
+  diorama has, so on `diorama-b` it outscored every patch of grass. Meaning
+  comes from `walkability.ts`, a mask baked per island by
+  `npm run assets:walkmask` and applied as a HARD gate. A missing mask returns
+  `null`, never a permissive default: "nobody checked this island" is exactly
+  the state diorama-b was in. Run `npm run verify:placement` after touching
+  placement, an island, or a character's measurements — it runs the real solver
+  against the real meshes and reports what each character would stand on.
+- **A new island needs its mask baked before it can ship.** `assets:walkmask`
+  is not part of `assets:3d`; adding a diorama means running it and committing
+  `walkMasks.generated.json` in the same commit.
 - **Lighting lives in code, never baked into the .glb.** DESIGN.md mandates
   light AND dark mode, so an asset lit at export time is wrong in one of them
   by construction. Baked ambient occlusion in textures is fine; baked

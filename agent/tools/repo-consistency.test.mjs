@@ -9,7 +9,10 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
+// fileURLToPath, never URL.pathname: on Windows the latter yields
+// '/C:/...', which path.resolve turns into 'C:\C:\...' and every read
+// dies with ENOENT before a single assertion runs.
+const root = fileURLToPath(new URL('../..', import.meta.url));
 
 function packageDirs() {
   return readdirSync(root)
@@ -62,11 +65,23 @@ function packageDirs() {
  * range", and forcing a dated audit snapshot to carry today's numbers would
  * falsify a historical record to satisfy a test.
  *
- * So the coupling is split. ROADMAP.md tracks the LIVE state and must name a
- * high-water mark equal to the highest migration the repo ships — the check
- * that actually prevents someone under-applying. The audit keeps its own
- * 2026-08-02 range, asserted only to be present and well-formed, because a
- * snapshot's job is to stay true to its date.
+ * So the coupling is split. ROADMAP.md tracks the LIVE state; the audit keeps
+ * its own 2026-08-02 range, asserted only to be present and well-formed,
+ * because a snapshot's job is to stay true to its date.
+ *
+ * REVISED 2026-08-21. The live check used to demand that the verified
+ * high-water mark equal the highest migration the repo ships. That silently
+ * assumed the repo never HOLDS an unapplied migration — which stopped being
+ * true the moment a feature landed with its schema ahead of the deploy
+ * (`0047`, the AI Tutor). Under the old rule the only way to go green was to
+ * write `production at **47/47**` while production sat at 46, which is exactly
+ * the falsification the paragraph above refuses to make for the audit.
+ *
+ * The invariant that actually matters is ARITHMETIC, not equality: whatever
+ * ROADMAP claims is verified, plus whatever it declares pending, must account
+ * for every migration in the repo. That still catches someone under-applying —
+ * an unapplied delta nobody wrote down fails — while letting the document tell
+ * the truth about a schema that has shipped in git and not in production.
  */
 {
   const migrations = readdirSync(path.join(root, 'database/migrations'))
@@ -85,16 +100,21 @@ function packageDirs() {
     highest,
     'ROADMAP.md delta upper bound must match the highest shipped migration',
   );
+  const pendingCount = Number(delta[2]) - Number(delta[1]) + 1;
 
   // The verified production high-water mark, stated as `NN/NN`, must also
   // agree with the repo — this is the number an operator acts on.
   const highWater = /production at \*\*(\d+)\/(\d+)\*\*/.exec(roadmap);
   assert.ok(highWater, 'ROADMAP.md must state the verified production high-water mark as **NN/NN**');
   assert.equal(highWater[1], highWater[2], 'a partially applied ledger must not be recorded as verified');
-  assert.equal(
-    Number(highWater[2]),
-    migrations.length,
-    'ROADMAP.md production high-water mark must match the migration count the repo ships',
+  // Either everything is applied, or the shortfall is EXACTLY the delta range
+  // ROADMAP declares pending. Anything else means a migration exists in the
+  // repo that no document accounts for.
+  const applied = Number(highWater[2]);
+  assert.ok(
+    applied === migrations.length || applied + pendingCount === migrations.length,
+    `ROADMAP.md must account for every migration: ${migrations.length} in the repo, ` +
+      `${applied} recorded as applied, ${pendingCount} declared pending`,
   );
 
   const audit = readFileSync(path.join(root, 'COURSEGEN_AUDIT_2026-08-01.md'), 'utf8');

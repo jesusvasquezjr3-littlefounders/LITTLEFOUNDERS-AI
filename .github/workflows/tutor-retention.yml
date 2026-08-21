@@ -1,0 +1,81 @@
+name: Tutor retention
+
+# The 90-day sweep the AI Tutor's retention promise depends on
+# (/ORACLE.md §12, /LEGAL/AI_TUTOR_LEGAL_REVIEW.md §3).
+#
+# "A retention policy nobody runs is not a retention policy" is written into
+# migration 0047 beside the function this calls. This workflow is the half that
+# makes it true.
+#
+# WHY IT CALLS CORE RATHER THAN psql. Unlike insights-maintenance.yml, this
+# sweep is not finished when the rows are gone: the tutor's synthesized audio
+# lives in Depot, outside Postgres, and no cascade reaches it. Deleting rows
+# alone would leave a child's conversation audible at a public URL forever with
+# every database record of it destroyed — the worst combination, because
+# nothing would remain to tell anyone the files existed. Core does both, so
+# Core is what runs.
+#
+# IT IS BATCHED AND RE-RUNNABLE. Each call clears up to `limit` sessions; the
+# loop below keeps going while a batch comes back full. A partial sweep is a
+# normal outcome, never a failure.
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # 03:00 UTC daily, well clear of the 07:30 insights job
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Sessions per batch'
+        required: false
+        default: '500'
+
+permissions:
+  contents: read
+
+jobs:
+  purge:
+    name: Delete tutor sessions past their retention window
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Purge expired sessions and their audio
+        env:
+          CORE_URL: ${{ secrets.CORE_URL }}
+          INTERNAL_API_KEY: ${{ secrets.INTERNAL_API_KEY }}
+          BATCH: ${{ github.event.inputs.limit || '500' }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${CORE_URL:-}" ] || [ -z "${INTERNAL_API_KEY:-}" ]; then
+            echo "CORE_URL and INTERNAL_API_KEY must both be set" >&2
+            exit 1
+          fi
+
+          total=0
+          # Ten batches is a ceiling, not a target: an unbounded loop against a
+          # runaway backlog would hold the runner all night, and tomorrow's run
+          # picks up whatever is left.
+          for round in $(seq 1 10); do
+            body=$(curl -sS --fail-with-body -X POST \
+              -H 'Content-Type: application/json' \
+              -H "x-internal-api-key: ${INTERNAL_API_KEY}" \
+              -d "{\"limit\": ${BATCH}}" \
+              "${CORE_URL%/}/api/v1/tutor/internal/retention/purge")
+
+            deleted=$(printf '%s' "$body" | grep -o '"sessionsDeleted":[0-9]*' | head -1 | cut -d: -f2)
+            failed=$(printf '%s' "$body" | grep -o '"audioFailed":[0-9]*' | head -1 | cut -d: -f2)
+            deleted=${deleted:-0}
+            failed=${failed:-0}
+            total=$((total + deleted))
+            echo "round ${round}: ${deleted} session(s) deleted, ${failed} audio file(s) failed"
+
+            # An audio delete that failed is reported, never swallowed: the row
+            # is already gone, so nothing else will ever mention that file.
+            if [ "$failed" -gt 0 ]; then
+              echo "::warning::${failed} tutor audio file(s) outlived their session — see Core logs for the paths"
+            fi
+
+            [ "$deleted" -lt "$BATCH" ] && break
+          done
+
+          echo "tutor-retention: ${total} session(s) purged"

@@ -103,6 +103,7 @@ required_services=(
   email-server
   filebase
   dataintel
+  oracle
 )
 # DEPLOYMENT.md §6: these app services sleep after ~10-15 min idle and wake on
 # request, so a present service with NO active instances at all is an expected
@@ -115,6 +116,9 @@ scale_to_zero_services=(
   picturegen
   dataintel
 )
+# Oracle is deliberately NOT on that list: it terminates the browser's
+# websocket, so a cold start happens in front of a learner who has just pressed
+# the button — the one place sleeping costs the product more than it saves.
 is_scale_to_zero() {
   local service="$1" candidate
   for candidate in "${scale_to_zero_services[@]}"; do
@@ -191,10 +195,57 @@ check_variables() {
   done
 }
 
+# Compares one variable across two services WITHOUT printing either value.
+#
+# A shared secret that differs between the two ends is the worst class of
+# configuration bug: nothing errors at boot, every health check is green, and
+# every tutor websocket closes with "bad signature" — which reads like a client
+# problem. Presence checks cannot see it; equality can, and equality needs no
+# value to leave this function.
+# check_shared_secret <serviceA> <keyA> <serviceB> <keyB> [consequence]
+#
+# The two variables need not share a NAME — Core's ORACLE_INTERNAL_KEY has to
+# equal Oracle's INTERNAL_API_KEY — so both ends are named explicitly.
+check_shared_secret() {
+  local a="$1" ka="$2" b="$3" kb="$4" consequence="${5:-the pairing will not authenticate}"
+  local va vb
+  va="$(read_variables "$a" | jq -r --arg k "$ka" '.[$k] // ""')" || {
+    fail_check "unable to read $a/$ka"; return
+  }
+  vb="$(read_variables "$b" | jq -r --arg k "$kb" '.[$k] // ""')" || {
+    fail_check "unable to read $b/$kb"; return
+  }
+  if [[ -z "$va" || -z "$vb" ]]; then
+    fail_check "$a/$ka and $b/$kb are not both set"
+  elif [[ "$va" == "$vb" ]]; then
+    pass_check "$a/$ka matches $b/$kb"
+  else
+    fail_check "$a/$ka DIFFERS from $b/$kb — $consequence"
+  fi
+}
+
 check_variables coursegen DEEPSEEK_API_KEY QWEN_API_KEY PICTUREGEN_URL PICTUREGEN_INTERNAL_KEY
 check_variables audiogen TTS_API_KEY
 check_variables picturegen IMAGE_API_KEY
 check_variables littlefounders-backend DATAINTEL_URL DATAINTEL_INTERNAL_KEY
+
+# ── Oracle, the AI Tutor runtime (/ORACLE.md) ────────────────────────────────
+#
+# INWORLD_API_KEY is deliberately NOT required: voice is an enhancement and
+# `VOICE_PROVIDER=none` is a supported posture in which the tutor runs
+# captioned and silent (/ORACLE.md §14). The model keys ARE required, because
+# without them every session falls back to scripted lines — the tutor is live
+# and cannot teach.
+check_variables oracle INTERNAL_API_KEY TUTOR_SESSION_SECRET CORE_URL CORE_INTERNAL_KEY MODEL_API_KEY JUDGE_API_KEY
+check_variables littlefounders-backend ORACLE_URL ORACLE_PUBLIC_URL ORACLE_INTERNAL_KEY TUTOR_SESSION_SECRET FILEBASE_URL FILEBASE_INTERNAL_KEY
+
+# Core MINTS the browser's session token and Oracle VERIFIES it. Different
+# secrets means every socket closes "bad signature", which reads like a client
+# bug and is not one.
+check_shared_secret   littlefounders-backend TUTOR_SESSION_SECRET   oracle TUTOR_SESSION_SECRET   "every tutor websocket will be refused"
+
+# Core calls Oracle's internal API with Oracle's own service key.
+check_shared_secret   littlefounders-backend ORACLE_INTERNAL_KEY   oracle INTERNAL_API_KEY   "Core cannot preflight or resolve a session, so no session can start"
 
 echo ""
 echo "Variables were classified by presence/state only; secret values were not printed."

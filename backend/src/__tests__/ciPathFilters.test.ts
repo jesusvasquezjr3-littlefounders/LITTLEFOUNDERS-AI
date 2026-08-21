@@ -38,7 +38,11 @@ function resolvedRoots(): string[] {
       const literal = match[1];
       if (literal === undefined) continue;
       const absolute = path.resolve(SCRIPTS_DIR, literal);
-      roots.add(path.relative(REPO_ROOT, absolute));
+      // Normalise to forward slashes: GitHub Actions path globs always use
+      // them, while path.relative yields backslashes on Windows — so without
+      // this the gate reports every root as uncovered on a Windows checkout
+      // and cannot be run locally at all.
+      roots.add(path.relative(REPO_ROOT, absolute).split(path.sep).join('/'));
     }
   }
   return [...roots].sort();

@@ -11,6 +11,7 @@ import { learnRouter } from './routes/learn.js';
 import { onboardingRouter } from './routes/onboarding.js';
 import { placementRouter } from './routes/placement.js';
 import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
+import { tutorRouter } from './routes/tutor.js';
 import { verificationRouter } from './routes/verification.js';
 
 export const SERVICE = 'backend';
@@ -63,6 +64,7 @@ export function createApp(): express.Express {
   app.use('/api/v1/learn', learnRouter());
   app.use('/api/v1/onboarding', onboardingRouter());
   app.use('/api/v1/placement', placementRouter());
+  app.use('/api/v1/tutor', tutorRouter());
   app.use('/api/v1/family', familyRouter());
   app.use('/api/v1/profile', ownProfileRouter());
   app.use('/api/v1/profiles', publicProfilesRouter());

@@ -9,6 +9,7 @@ import { QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
 import { findStandingSpots, type StandingSpot } from './standingSpots';
 import { CHARACTER_ASSETS, characterFootprintM, type SCENE_ASSETS } from './assets';
+import { walkabilityFor } from './walkability';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
 
 /*
@@ -243,6 +244,7 @@ function Reveal({ onReady }: { onReady: () => void }) {
  * being placed at a guessed default and snapping afterwards.
  */
 function Cast({
+  scene,
   character,
   companion,
   settings,
@@ -252,6 +254,7 @@ function Cast({
   viseme,
   onFocus,
 }: {
+  scene: keyof typeof SCENE_ASSETS;
   character: CharacterId;
   companion: CharacterId | null;
   settings: QualitySettings;
@@ -282,6 +285,39 @@ function Cast({
     return Math.max(1.3, (lead + second) / 2 + 0.35);
   }, [character, companion]);
 
+  /*
+   * WHERE A CHARACTER MAY STAND AT ALL, as opposed to where the ground happens
+   * to be flat. Baked per island by `npm run assets:walkmask` — the solver has
+   * no way to tell water from sand on its own, and on `diorama-b` water wins on
+   * flatness, which put the whole cast in the pond.
+   *
+   * A missing mask means the island was never checked. It is NOT read as
+   * permission: the console says so, once, because the alternative is that a
+   * new diorama silently inherits the exact bug this replaced.
+   */
+  const isWalkable = useMemo(() => {
+    const mask = walkabilityFor(scene);
+    if (!mask) {
+      console.warn(
+        `[tutor-scene] no walkability mask for "${scene}" — placement can only judge shape, ` +
+          'not what a surface is. Run `npm run assets:walkmask`.',
+      );
+    }
+    return mask ?? undefined;
+  }, [scene]);
+
+  /*
+   * The widest half-footprint on stage, used to PREFER roomy spots. Not to
+   * reject them: Dina covers 2.83 m of a 6.5 m island, so a hard requirement
+   * could leave her with nowhere to stand, and an empty island is a worse
+   * failure than a character standing near the rim.
+   */
+  const clearance = useMemo(() => {
+    const lead = characterFootprintM(CHARACTER_ASSETS[character]) / 2;
+    const second = companion ? characterFootprintM(CHARACTER_ASSETS[companion]) / 2 : 0;
+    return Math.max(lead, second);
+  }, [character, companion]);
+
   useEffect(() => {
     const ground = groundRef.current;
     if (!ground) return;
@@ -292,9 +328,11 @@ function Cast({
         // The camera opens on +Z, so the cast gathers on that side of the
         // island instead of behind the back wall.
         preferDirection: new Vector3(0.35, 0, 1),
+        isWalkable,
+        clearance,
       }),
     );
-  }, [groundRef, companion, minSeparation]);
+  }, [groundRef, companion, minSeparation, isWalkable, clearance]);
 
   /*
    * Report where the LEAD's head is, so the conversation camera has something
@@ -414,6 +452,7 @@ export function TutorScene({
           <group ref={content} visible={ready}>
             <Diorama id={scene} settings={settings} />
             <Cast
+              scene={scene}
               character={character}
               companion={companion}
               settings={settings}

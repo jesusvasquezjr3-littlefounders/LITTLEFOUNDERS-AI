@@ -5,13 +5,14 @@
 > conversational layer is `/ORACLE.md` — **this document covers the STAGE
 > only**, not the tutoring.
 >
-> **Status (2026-08-16):** stage BUILT, rendering, and READY AS AN INTEGRATION
-> TARGET — §7b is the contract RAG/TTS plug into. **zara and rho** have working
-> mouths driven by real audio through `useLipSync`; liruf and dina do not (§7.1).
-> All twelve actions AND all seven emotions are authored clips, composed
-> additively over each character's bind pose (§4.0–§4.2). Conversational layer
-> NOT started (/ORACLE.md). Assets are local-only — publishing them to Depot is
-> the one blocker before deploy.
+> **Status (2026-08-17):** stage BUILT, rendering, DEPLOYED and READY AS AN
+> INTEGRATION TARGET — §7b is the contract RAG/TTS plug into. **zara and rho**
+> have working mouths driven by real audio through `useLipSync`; liruf and dina
+> do not (§7.1). All twelve actions AND all seven emotions are authored clips,
+> composed additively over each character's bind pose (§4.0–§4.2). Assets are
+> published to Depot and readable from the production origin (§3.2–§3.3).
+> Placement now knows water from ground (§5) — before that, `diorama-b` stood
+> its entire cast in the pond. Conversational layer BUILT 2026-08-21 and plugged in through §7b (/ORACLE.md).
 
 ---
 
@@ -466,6 +467,82 @@ on top of the stone table on the first one.
 A new diorama therefore needs **no coordinates and no manifest tuning** beyond
 its target diameter.
 
+### Walkability — shape is not meaning
+
+The rules above score how a surface BEHAVES. Nothing in them can say what it
+IS, and that gap had a cost: on `diorama-b` the whole cast stood in the pond.
+Every pairing, both characters, for as long as the island had shipped. Water is
+the flattest, most open surface a diorama has, so it beat every patch of grass
+on the two terms that carry most of the score. The pond is not badly shaped —
+it is beautifully shaped and wet.
+
+There is no geometric signal to recover. Measured on the real assets: the
+diorama is ONE mesh with ONE material, the water is not a separate node, the
+mesh is quantized so the water is not even exactly planar, and there are no
+vertex colours. The only place the meaning lives is the texture.
+
+- `scripts/generate-walkmask.ts` (`npm run assets:walkmask`) rays down through a
+  96-cell grid per island, reads the base-colour texel each ray lands on, and
+  bakes a bitmask into `src/tutor-scene/walkMasks.generated.json` — committed,
+  in metres, in the frame `Diorama.tsx` places the island in.
+- `walkability.ts` resolves it at runtime to one array index per query.
+- `findStandingSpots` takes it as `isWalkable` and applies it as a HARD gate, at
+  the candidate and at all four flatness probes — a character whose centre
+  clears the shoreline by a hair still has both feet in the lake.
+
+**Why a colour rule, and why at build time.** "Cyan means water" is true of
+these two dioramas and is not a fact about the world. Baking it means a wrong
+classification is a visibly wrong mask in a diff — `--preview` writes a PNG with
+blocked cells in magenta — reviewable before it can put a child's tutor
+waist-deep in a lake, and correctable without touching placement code. It also
+costs nothing per frame, which matters on the tier the whole quality system
+exists to protect.
+
+**A missing mask is not permission.** `walkabilityFor` returns `null` rather
+than a permissive predicate, and `TutorScene` warns. An island nobody has
+checked is exactly the state diorama-b was in (§1.14).
+
+### Room and togetherness
+
+Two preferences, neither a rule, both added with the mask:
+
+- **Room** — the fraction of a character's own footprint radius that lands on
+  ground they could also have stood on. Because the mask marks everything past
+  the rim unwalkable, this scores edge clearance and pond clearance with one
+  measurement. It moved Dina from 4 cm of rim clearance to 49 cm on diorama-a.
+- **Togetherness** — after the lead is placed, later spots are pulled toward it.
+  This only became visible once the mask opened up diorama-b: with the pond
+  off-limits, the two best patches of grass sat on OPPOSITE SHORES and the
+  solver dutifully chose both, 5.39 m apart against 1.82 m on diorama-a. The
+  quarter-turn each character takes toward the other means nothing at six
+  metres. Now 2.28 m.
+
+Both are preferences because rejecting on them can return NO spot, and `Cast`
+renders nothing without one. A cramped character beats an empty island.
+
+### `npm run verify:placement`
+
+Runs the real solver against the real islands, headless, in seconds, and reports
+what each character would be standing on — surface colour at the hit UV, height,
+rim clearance, and whether the ground under them is a pedestal. It imports
+`findStandingSpots` rather than reimplementing it; a copy would drift from the
+thing it certifies.
+
+It exists because this defect was found by a screenshot and nothing else could
+have found it. Two of the three "defects" that first screenshot seemed to show
+did not survive measurement:
+
+- **Retracted — "the companion stands on a boulder".** Read from a
+  low-resolution crop where the boulders sit BETWEEN Liruf and the camera. A
+  tight re-render shows both feet flat on the sand, and the harness reports no
+  pedestal at that spot. There was no defect.
+- **Corrected — "Dina overhangs the rim by 44 cm".** That assumed she would be
+  placed on the outer sampling ring. She is not: measured, she stood 2.01 m out
+  with 4 cm to spare. Real but latent, and the room term now gives her 49 cm.
+
+Looking is how the pond was caught; measuring is how the other two were
+disproved. Neither substitutes for the other.
+
 ## §6 Performance contract
 
 The stage ships to every user on every device, so quality is MEASURED, not
@@ -626,7 +703,7 @@ The runtime normalises her, so this is hygiene, not a bug.
 | KTX2 texture compression | `brew install ktx` | Textures ship as WebP and decode to full RGBA in VRAM. Matters most on 2 GB phones. `npm run assets:3d` warns loudly on every run. |
 | Publish assets to Depot | **Depot must ship first** (see §3.3) | `npm run publish:scenes` uploads 9 files / 5.90 MB to bucket `tutor-scenes`, then writes `sceneManifest.generated.json`. Commit it, then set `VITE_SCENE_ASSET_BASE` to `<depot>/files/tutor-scenes`. |
 | Gesture amplitude tuning | Nothing — just art direction | Numbers in `characterActions.ts` + a screenshot pass. |
-| Conversational layer | Product decisions in `/ORACLE.md` §3 | Voice/live tutoring. §1.9 applies in full. |
+| Conversational layer | **DONE 2026-08-21** | Built as `oracle/` + Core `/api/v1/tutor/*` + `frontend/src/tutor/`. See §7b's integration note. Not enabled for minors until `/ORACLE.md` §16 clears. |
 
 ## §7b The integration contract — what the next layer plugs into
 
@@ -688,6 +765,31 @@ upgrade path costs nothing structurally: a phoneme track would index the SAME
 eight atlas frames, so no model, card or component changes when it arrives.
 That is what the atlas bought.
 
+> ### ✅ The conversational layer PLUGGED IN — 2026-08-21
+>
+> `/ORACLE.md` is built, and this contract held: wiring it was passing props,
+> not reaching into the scene. Two props were added because they were genuinely
+> missing rather than because the design changed:
+>
+> - **`scene`** — `TutorScene` had always accepted it; `TutorStage` never
+>   forwarded it, so the product could not offer an island the scene lab had
+>   been switching between for weeks.
+> - **`speakingFraming`** — the owner made all four characters selectable as
+>   the speaking tutor (`/ORACLE.md` §0 decision 4), so `conversation` framing
+>   could no longer be a constant. `rho` and `zara` close in; `liruf` and
+>   `dina` stay at the island shot, because closing the camera on a painted,
+>   motionless mouth frames the one thing that is not working. For them the 2D
+>   bubble carries the articulation — `CharacterActor`'s `speaking` prop
+>   animates the SVG mouths that §3.1 could not give them in 3D.
+>
+> Captions render as an HTML overlay ON the canvas
+> (`frontend/src/tutor/SpeechCaption.tsx`), never as scene geometry: text in
+> WebGL is a font-atlas problem across three locales that buys nothing when the
+> caption always faces the viewer anyway.
+>
+> `onReady` earned its keep exactly as predicted — the product gates its first
+> speech URL on it, so audio never plays at an unresolved canvas.
+
 **`framing` is not decoration.** At `vignette` a character is 104 px tall and
 their mouth 2.4 px, so no viseme is distinguishable from any other. Lip-sync
 only means something in `conversation`, which frames head-and-shoulders by a
@@ -744,8 +846,14 @@ whole pipeline had run — minutes of diorama simplification discarded at the
 finish line.
 
 Then `npm run dev` and open **`/dev/scene-lab`** — the composed scene with a
-live perf HUD, buttons for all 12 actions, and per-asset inspection. That is
-the fastest way back into context.
+live perf HUD, buttons for all 12 actions, 7 emotions, 8 visemes, both framings,
+each of the 4 leads, **both islands**, and per-asset inspection. That is the
+fastest way back into context.
+
+The island switch exists for the same reason the lead switch does: whether a
+cast FITS a diorama is a question only the composed view answers, and while the
+harness was pinned to `diorama-a` nobody could see that `diorama-b` stands its
+entire cast in the pond (§5).
 
 `/tutor` renders the same stage inside the product shell.
 

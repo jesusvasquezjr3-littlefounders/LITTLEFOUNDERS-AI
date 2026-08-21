@@ -2,10 +2,13 @@ import assert from 'node:assert/strict';
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
 
-const root = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
+// fileURLToPath, never URL.pathname: on Windows the latter yields
+// '/C:/...', which path.resolve turns into 'C:\C:\...' and every read
+// dies with ENOENT before a single assertion runs.
+const root = fileURLToPath(new URL('../..', import.meta.url));
 const script = path.join(root, 'agent/tools/check-clean-tree.sh');
 const temp = await mkdtemp(path.join(os.tmpdir(), 'littlefounders-clean-tree-'));
 
