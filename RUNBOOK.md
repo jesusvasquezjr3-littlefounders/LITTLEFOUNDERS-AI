@@ -1,115 +1,153 @@
 # RUNBOOK.md — Incident Response
 
-## Deploying the AI Tutor (Oracle) — the order matters (2026-08-21)
+## Deploying the AI Tutor (Oracle) — DONE 2026-08-21, and what it actually took
 
-Four steps, and **three of them must land before the merge**. The pattern is
-the one `/TUTOR_3D.md` §3.3 already recorded for Depot: the code was ready and
-the deploy still failed, because the thing it depended on had not shipped yet.
+**Oracle is live.** `https://oracle-production-e82a.up.railway.app/health`
+answers `200` with `model: up`, `moderation: up`, `voice: down` (voice is off
+on purpose — see *What stays off* below). Migration `0047` is applied, the
+ledger is at 47, and `railway-preflight` reports nine services RUNNING with
+both shared secrets matching across Core and Oracle.
 
-Merging first is *safe but inert* — `/tutor` degrades to the 3D island with an
-honest "resting" message rather than to an error — but nothing works until the
-infrastructure exists.
+This section is written for the NEXT service, not for this one. Everything
+below was learned by running it against production; none of it is theory.
 
-### 1. Apply migration `0047` to the production Vault
+### It runs on a runner, not on a laptop
 
-```bash
-npm --prefix database run db:railway:migrate
-```
-
-`database/scripts/railway-migrate.sh` is the ONLY approved remote path. It
-supports a no-write dry run, records immutable checksums, and applies one
-migration per transaction. Production was verified at 46/46 on 2026-08-14, so
-`0047_tutor_oracle.sql` is the single pending delta.
-
-**Core's tutor routes read these tables. Without this step every
-`/api/v1/tutor/*` call returns `DATA_UNAVAILABLE` and the page shows the
-island.**
-
-### 2. Create the `oracle` Railway service
-
-It needs a **public domain** — the browser opens a websocket straight to it
-(`/AGENTS.md` §1.5, Oracle exception). Convention: `tutor-b2c.littlefounders.ai`.
+`.github/workflows/tutor-deploy.yml`, dispatched by step:
 
 ```bash
-railway add --service oracle
-railway domain --service oracle          # then map tutor-b2c.littlefounders.ai
+gh workflow run tutor-deploy.yml --ref main -f step=inspect
 ```
 
-**`oracle` is NOT scale-to-zero.** It terminates a learner's live socket; a
-cold start would happen in front of a child who just pressed the button. The
-preflight treats a sleeping oracle as a failure, not an expected state.
+`inspect | probe | migrate | provision | domain | verify`. Only `inspect` and
+`probe` are read-only in intent; each mutating step is separate and idempotent,
+so a half-finished run is resumed by re-dispatching the step that failed rather
+than by starting over.
 
-### 3. Set the variables
+**Why not from a laptop.** The Railway credentials for this project live as
+repository secrets and nowhere else, which is correct and means every
+production step has to run on a runner. The `npm --prefix database run
+db:railway:migrate` invocation this section used to recommend only works on a
+machine that already holds a Railway token.
 
-Generate two secrets and use each in both places:
+### The order that worked
 
-```bash
-# One shared session secret, IDENTICAL on both services
-openssl rand -base64 48
-# One service key: oracle's INTERNAL_API_KEY == Core's ORACLE_INTERNAL_KEY
-openssl rand -base64 32
-```
+1. **`step=migrate`, dispatched from the FEATURE BRANCH.** The migration lives
+   on the branch; `main` does not have it yet. Dispatching from `main` reports
+   "ledger is current" and applies nothing, truthfully and uselessly. The
+   branch must therefore carry the ops workflow too — merge `main` into it
+   first.
+2. **`step=provision`** — creates the service and sets every variable, before
+   any code that needs them is deployed.
+3. **Merge the PR.** `oracle CI` → `oracle CD` gives the empty service its
+   first deployment.
+4. **`step=domain`** — a Railway-provided domain, and `ORACLE_PUBLIC_URL` on
+   Core to match.
+5. **Redeploy Core.** See the trap below.
+6. **`step=verify`** — preflight, then the reachability checks.
 
-On **oracle**:
+### The trap: `--skip-deploys` means nothing has picked the variables up yet
 
-| Variable | Value |
-|---|---|
-| `INTERNAL_API_KEY` | the service key |
-| `TUTOR_SESSION_SECRET` | the shared session secret |
-| `CORE_URL` | `http://littlefounders-backend.railway.internal:4000` |
-| `CORE_INTERNAL_KEY` | Core's existing `INTERNAL_API_KEY` |
-| `DEPOT_URL` / `DEPOT_INTERNAL_KEY` | Depot's internal address and key |
-| `MODEL_API_KEY` | DeepSeek — **without it the tutor cannot teach** |
-| `JUDGE_API_KEY` | Qwen — **without it no minor's session can start at all** |
-| `VOICE_PROVIDER` | `none` until the Inworld agreement exists |
-| `TUTOR_VOICE_FOR_MINORS` | `false` — leave it |
-| `REDIS_URL` | the existing managed Redis |
+Every variable is set with `--skip-deploys`, which is right — you do not want
+five rolling restarts while a service is being configured. But it means the
+RUNNING container still holds the old environment. `backend CD` fired on the
+merge at 15:30 and `ORACLE_PUBLIC_URL` was set at 15:32, so Core was live for
+two minutes holding the localhost default for the address it hands the browser
+— which is not an error, not a warning, and not visible on any healthcheck. It
+is simply the wrong address, and every learner would have received it.
 
-On **littlefounders-backend**:
+Re-run the service's CD workflow (`gh run rerun <backend CD run id>`) after the
+last variable lands. `railway redeploy --service <name> --yes` does the same
+thing from a machine that has a token.
 
-| Variable | Value |
-|---|---|
-| `ORACLE_URL` | `http://oracle.railway.internal:4009` |
-| `ORACLE_PUBLIC_URL` | `https://tutor-b2c.littlefounders.ai` |
-| `ORACLE_INTERNAL_KEY` | the service key (same value as oracle's `INTERNAL_API_KEY`) |
-| `TUTOR_SESSION_SECRET` | the shared session secret (same value) |
-| `FILEBASE_URL` / `FILEBASE_INTERNAL_KEY` | Depot, for the retention sweep |
+### Four things the tooling got wrong, all now fixed
 
-> **The two shared values are the trap.** Core MINTS the browser's session
-> token and Oracle VERIFIES it. If they differ, nothing errors at boot, every
-> healthcheck is green, and every tutor websocket closes "bad signature" —
-> which reads like a client bug and is not one. `npm run production:preflight`
-> now compares both pairs across services and prints match/differ, never a
-> value.
+- **GitHub runs `bash -e` no matter what the step says.** A step opening with
+  `set -uo pipefail`, deliberately without `-e`, does not get its wish. The
+  first `provision` dispatch created the `oracle` service, hit a non-zero exit
+  on the very next line, and set none of its variables — leaving a service in
+  production with no configuration. Write `set +e` explicitly, and never rely
+  on `[ -n "$X" ] && cmd` as a guard.
+- **`railway add` is interactive and lies about failing.** It falls back to a
+  picker, reads the job's own arguments as answers to prompts, and then reported
+  "Project not found" *after having created the service*. Redirect `</dev/null`
+  so it cannot hang the runner, and check `railway status` for the result rather
+  than trusting the exit code.
+- **ssh's warning was being read as a query result.** `remote_sql` in
+  `database/scripts/railway-migrate.sh` merges stderr into stdout on purpose and
+  strips psql's `NOTICE|WARNING|…:` chatter. ssh writes `Warning: Permanently
+  added …` — mixed case, space, no colon — which sailed through and became the
+  answer to a single-row probe. The dry run reported `unexpected remote ledger
+  state` with the real answer, `present|46|present`, on the next line of the
+  same message. Fixed at both ends: the script filters that line, and the
+  workflow sets `LogLevel ERROR`, since the host key is deliberately uncached
+  and the warning therefore fires on every fresh runner forever.
+- **Secrets were regenerated on every provision run.** The two shared values
+  must be IDENTICAL on both services; generating fresh ones each run rotates a
+  live pairing, and with `--skip-deploys` each side adopts the new value
+  whenever it next redeploys. Between those two moments every session fails on
+  a signature that does not verify, with both services healthy. They are now
+  read first and generated only when absent or mismatched.
 
-Also add repository secrets `CORE_URL` and `INTERNAL_API_KEY` for the nightly
-`tutor-retention.yml` workflow.
+### The provider keys were already there
 
-### 4. Verify, then merge
+`step=inspect` found real `DEEPSEEK_API_KEY` and `QWEN_API_KEY` on `coursegen`.
+Oracle wants the same two accounts Forge uses — same vendor, same billing, same
+rotation — so `provision` copies them rather than asking an operator to paste
+anything. What genuinely needs a human is listed at the end of that step's
+output.
 
-```bash
-npm run production:preflight        # read-only; must be green BEFORE merging
-```
+### What `verify` actually proves
 
-Merge to `main`; `oracle CD`, `backend CD` and `frontend CD` fire on their
-CI going green. Then, against the live stack:
+`railway-preflight` proves the two services are CONFIGURED to find each other.
+It cannot prove they can: `ORACLE_URL` points into Railway private networking,
+reachable from no runner and no laptop. So `step=verify` also stands inside
+Core (`railway ssh --service littlefounders-backend`) and calls
+`http://oracle.railway.internal:4009/health`, reads `ORACLE_PUBLIC_URL` back
+from Core rather than trusting what the workflow believes it set, rejects a
+localhost value explicitly (it is the DEFAULT, so an unset variable does not
+look unset — it looks like an address that resolves to the container itself),
+and POSTs to the internal REST surface with no key expecting `401`.
 
-```bash
-curl -s https://tutor-b2c.littlefounders.ai/health | jq
-```
+That last check is the important one. Oracle carries a public domain as the
+fourth `/AGENTS.md` §1.5 exception, granted for the learner's websocket and
+nothing else. If the REST API behind that domain answered strangers, the
+exception would have become an open door to a service holding children's
+tutoring sessions — and every other check would still be green.
 
-`components.model` and `components.moderation` must both read `up`. If either
-is `down`, the tutor is live and inert — the offer screen will say "your tutor
-is resting", honestly, and no session will start.
+### The two shared values remain the trap
+
+Core MINTS the browser's session token and Oracle VERIFIES it. If
+`TUTOR_SESSION_SECRET` differs between them, nothing errors at boot, every
+healthcheck is green, and every tutor websocket closes "bad signature" — which
+reads like a client bug and is not one. Same for the service key
+(`oracle/INTERNAL_API_KEY` == `littlefounders-backend/ORACLE_INTERNAL_KEY`).
+The preflight compares both pairs and prints match/differ, never a value.
+
+### `oracle` is NOT scale-to-zero
+
+It terminates a learner's live socket; a cold start would happen in front of a
+child who just pressed the button. The preflight treats a sleeping oracle as a
+failure, not an expected state.
+
+### Still open
+
+- **Custom domain.** Currently the Railway-provided
+  `oracle-production-e82a.up.railway.app`. The convention is
+  `tutor-b2c.littlefounders.ai` — add it in the dashboard, then update
+  `ORACLE_PUBLIC_URL` and redeploy Core.
+- **Repository secrets `CORE_URL` and `INTERNAL_API_KEY`** for the nightly
+  `tutor-retention.yml` workflow.
 
 ### What stays off, and why
 
-`TUTOR_VOICE_FOR_MINORS=false` and `VOICE_PROVIDER=none` until a
-data-processing agreement covering minors' audio exists
-(`/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` §6). The tutor is complete without them:
-captioned, typed, graded, replayable. The agreement gates one input method, not
-the product. Flipping either is an owner decision to record in
-`/ORACLE.md` §16.
+`TUTOR_VOICE_FOR_MINORS=false` and `VOICE_PROVIDER=none` until a data-processing
+agreement covering minors' audio exists (`/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` §6).
+The tutor is complete without them: captioned, typed, graded, replayable. The
+agreement gates one input method, not the product. Flipping either is an owner
+decision to record in `/ORACLE.md` §16. Enrolling the cast's cloned voices
+(`npm run voices:clone`) additionally needs `audiogen/src/samples/`, which is
+gitignored and owner-held.
 
 ---
 

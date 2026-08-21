@@ -2,6 +2,133 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-21e) — Oracle IS IN PRODUCTION: migration applied, service live, Core reaching it, PR #60 merged
+
+The AI Tutor is deployed. Verified against the live stack, not inferred:
+
+```
+https://oracle-production-e82a.up.railway.app/health  ->  200
+{"service":"oracle","version":"0.1.0","status":"ok",
+ "components":{"model":"up","voice":"down","moderation":"up"},"liveSessions":0}
+```
+
+- migration `0047_tutor_oracle.sql` applied — production ledger 46 → **47**
+- the `oracle` Railway service exists, holds 13 variables, and is RUNNING
+- Core holds its five and shares exactly two secrets with Oracle; the preflight
+  confirms **both pairs MATCH**, printing match/differ and never a value
+- Core reaches Oracle over private networking — checked from *inside* Core over
+  `railway ssh`, because `ORACLE_URL` is on a network no runner can see
+- the internal REST surface behind Oracle's public domain refuses an
+  unauthenticated caller with `401`
+- PR #60 merged; `oracle CD`, `backend CD` and `frontend CD` all green; the
+  live bundle contains the Tutor strings, and `/tutor` sends a signed-out
+  visitor to `/login`
+- `railway-preflight`: nine services RUNNING, **0 warnings**
+
+`voice: down` is the intended state, not a fault — see *What stays off* below.
+
+### The deploy tooling was wrong in four ways, and only running it found them
+
+Every one of these was green in review and false in production.
+
+**GitHub runs `bash -e` whatever the step says.** The `provision` step opened
+with `set -uo pipefail`, deliberately without `-e`, because half its commands
+are allowed to fail. That intent never took effect. The first dispatch created
+the `oracle` service, hit a non-zero exit on the very next line, and set none of
+its variables — a service existing in production with no configuration and no
+record of how it got there.
+
+**`railway add` is interactive, and it reported failure after succeeding.** It
+fell back to a picker, read the job's own arguments as answers to prompts, and
+then printed "Project not found" — having already created the service. The
+lesson generalises: trust the project, not the exit code.
+
+**ssh's warning was being read as a query result.** The production dry run
+reported `unexpected remote ledger state: Warning: Permanently added
+'ssh.railway.com' …` — with the real answer, `present|46|present`, on the next
+line of the same message. `remote_sql` merges stderr into stdout on purpose and
+strips psql's `NOTICE|WARNING|…:` chatter; ssh writes `Warning: ` in mixed case
+with a space, which sails straight through. An operator reads "unexpected remote
+ledger state" at the exact moment they are about to migrate production, and
+concludes the database is in an unknown condition. It was fine, and said so.
+
+**Provision would have rotated a live pairing every time it ran.** The two
+shared secrets were generated fresh on each dispatch. Both must be IDENTICAL on
+Core and Oracle, and variables are staged with `--skip-deploys`, so each service
+would adopt the new value whenever it happened to redeploy next. Between those
+two moments every tutor session fails on a signature that does not verify —
+both services healthy, both `/health` green, nothing in either log naming the
+cause. The workflow's own header promised each step was idempotent; this one was
+the opposite, so re-running it to fix a problem would have caused a larger one.
+
+### And one trap that is nobody's bug
+
+`--skip-deploys` is the right flag — you do not want five rolling restarts while
+a service is being configured — but it means the RUNNING container still holds
+the old environment. `backend CD` fired on the merge at 15:30; `ORACLE_PUBLIC_URL`
+landed at 15:32. For two minutes Core was live holding the localhost DEFAULT for
+the address it hands the browser. Not an error, not a warning, invisible on every
+healthcheck, and simply the wrong address for every learner who asked. Core was
+re-deployed and now serves the real one.
+
+That default is why `verify` rejects a localhost `ORACLE_PUBLIC_URL` explicitly:
+an unset variable does not look unset — it looks like an address that resolves
+to the container itself.
+
+### What verification is worth
+
+`railway-preflight` proves the services are CONFIGURED to find each other. It
+cannot prove they can, and the difference is a failure with no symptoms. So
+`verify` now stands inside Core and calls Oracle's private address, reads
+`ORACLE_PUBLIC_URL` back from Core rather than trusting what the workflow
+believes it set, and POSTs to the internal REST API with no key expecting a
+refusal. That last check is the point: Oracle carries a public domain as the
+fourth `/AGENTS.md` §1.5 exception, granted for the learner's websocket and
+nothing else. If the REST surface behind that domain answered strangers, the
+exception would have quietly become an open door to a service holding
+children's tutoring sessions — with every other check still green.
+
+### The provider keys were already in the project
+
+`step=inspect` found real `DEEPSEEK_API_KEY` and `QWEN_API_KEY` on `coursegen`.
+Oracle wants the same two accounts Forge uses — same vendor, same billing, same
+rotation — so provision copies them instead of asking anyone to paste a
+credential into anything.
+
+### Also fixed along the way
+
+`npm run tools:test` had been reporting 6 pass / 4 fail on Windows long enough
+that the number had stopped being read. None of the four were about the tools
+under test: three died on `C:\C:\Users\…` from `URL.pathname`, and the fourth —
+`railway-preflight.test.mjs` — joined PATH with `:` and set `PATH` onto a spread
+of `process.env` that on Windows already carries `Path`. Its fake `railway`
+binary was therefore never found, which means a preflight test run on a laptop
+that happens to be logged into Railway would have reached the real production
+project instead of the fixture. 10/10 now. The gate was green where it was
+watched and red where it was run.
+
+### Open, needing the owner
+
+- **Custom domain** — currently the Railway-provided
+  `oracle-production-e82a.up.railway.app`; the convention is
+  `tutor-b2c.littlefounders.ai`.
+- **Repository secrets `CORE_URL` and `INTERNAL_API_KEY`** for the nightly
+  `tutor-retention.yml` sweep.
+- **A signed-in smoke test.** Everything above is verifiable from outside a
+  session. Driving a real tutoring conversation in production needs a login,
+  which is the owner's to perform.
+- **Inworld DPA, the production Inworld key, and the final consent copy** — the
+  three gates on voice. The wording in the UI today is a labelled placeholder.
+- **Voice enrolment** (`npm run voices:clone`) needs `audiogen/src/samples/`,
+  which is gitignored and owner-held.
+
+### What stays off, and why
+
+`VOICE_PROVIDER=none` and `TUTOR_VOICE_FOR_MINORS=false` until a data-processing
+agreement covering minors' audio exists (`/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` §6).
+The tutor is complete without them: captioned, typed, graded, replayable. The
+agreement gates one input method, not the product.
+
 ## Current State (2026-08-21d) — Inworld VERIFIED against the live API, and the cast keeps its own voices
 
 The owner supplied a non-production Inworld key and asked for verification.
