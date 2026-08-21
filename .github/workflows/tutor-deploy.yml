@@ -40,6 +40,16 @@ on:
           - provision
           - domain
           - verify
+      model_name:
+        description: >-
+          provision only. The pedagogical model Oracle calls. `keep` never
+          touches it. Oracle needs a NON-reasoning model: deepseek-v4-pro spends
+          the whole completion budget on reasoning_content and returns empty
+          content, which reaches a learner as the scripted "my thoughts got
+          tangled" line on every single turn.
+        required: false
+        default: keep
+        type: string
       voice_provider:
         description: >-
           provision only. Changing whether the tutor can SPEAK. `keep` never
@@ -311,8 +321,22 @@ jobs:
           # time someone re-ran provision — the worst kind of regression,
           # because re-running provision is what you do when something is wrong.
           # agent/tools/check-provider-parity.mjs records the divergence.
+          # Same shape as voice_provider, and for the same reason: the guard
+          # below correctly preserves an explicit choice, and the choice it is
+          # preserving was written by the earlier run that copied Forge's
+          # reasoning model. A guard cannot tell a decision from a mistake, so
+          # correcting one takes a dispatch input rather than a silent default.
+          WANT_MODEL='${{ inputs.model_name }}'
           MODEL_NAME_V="$(read_var oracle MODEL_NAME)"
-          [ -n "$MODEL_NAME_V" ] || MODEL_NAME_V='deepseek-v4-flash'
+          if [ "$WANT_MODEL" != "keep" ] && [ -n "$WANT_MODEL" ]; then
+            echo "   model: deliberately set to '$WANT_MODEL' (was '${MODEL_NAME_V:-unset}')"
+            MODEL_NAME_V="$WANT_MODEL"
+          elif [ -z "$MODEL_NAME_V" ]; then
+            MODEL_NAME_V='deepseek-v4-flash'
+            echo "   model: was unset, defaulted to '$MODEL_NAME_V'"
+          else
+            echo "   model: '$MODEL_NAME_V' already chosen, left alone"
+          fi
 
           if [ -z "$CORE_KEY" ]; then
             echo "::error::could not read Core's INTERNAL_API_KEY — Oracle cannot call Core without it"
@@ -605,11 +629,11 @@ jobs:
 
       # ── VERIFY — read-only ───────────────────────────────────────────────
       - name: Preflight
-        if: inputs.step == 'verify'
+        if: ${{ !cancelled() && inputs.step == 'verify' }}
         run: bash agent/tools/railway-preflight.sh "$ENVIRONMENT"
 
       - name: Reach Oracle the way Core reaches it
-        if: inputs.step == 'verify'
+        if: ${{ !cancelled() && inputs.step == 'verify' }}
         run: |
           set -uo pipefail
           set +e
@@ -676,7 +700,7 @@ jobs:
           echo "verify OK"
 
       - name: Ask the providers, from inside Oracle
-        if: inputs.step == 'verify'
+        if: ${{ !cancelled() && inputs.step == 'verify' }}
         run: |
           set -uo pipefail
           set +e
@@ -764,7 +788,7 @@ jobs:
           echo "providers OK — both answered a real request"
 
       - name: Teach one turn, from inside Oracle
-        if: inputs.step == 'verify'
+        if: ${{ !cancelled() && inputs.step == 'verify' }}
         run: |
           set -uo pipefail
           set +e
@@ -808,7 +832,7 @@ jobs:
           exit 1
 
       - name: Be heard, from inside Oracle
-        if: inputs.step == 'verify'
+        if: ${{ !cancelled() && inputs.step == 'verify' }}
         run: |
           set -uo pipefail
           set +e
