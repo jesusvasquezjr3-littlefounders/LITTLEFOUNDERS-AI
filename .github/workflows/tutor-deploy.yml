@@ -562,3 +562,79 @@ jobs:
 
           echo ""
           echo "verify OK"
+
+      - name: Ask the providers, from inside Oracle
+        if: inputs.step == 'verify'
+        run: |
+          set -uo pipefail
+          set +e
+
+          # `/health` reports `model: up` when a KEY IS PRESENT. That is not the
+          # same fact as "the provider answers", and the difference cost a day:
+          # Oracle went live with a base URL missing the /v1 that coursegen has
+          # always had, so every single turn 404'd while `/health` stayed green,
+          # the preflight passed all thirty of its checks, and the only symptom
+          # was that every learner was told "my thoughts got tangled" instead of
+          # being taught. Nothing in the deploy pipeline could see it, because
+          # nothing in the deploy pipeline had ever made a real call.
+          #
+          # So this makes one. From INSIDE the container, using the endpoint,
+          # key and model name that container actually holds — not the ones this
+          # workflow believes it set — and it reports the HTTP status, which is
+          # the number that distinguishes "wrong URL" (404) from "wrong key"
+          # (401) from "working" (200). Two tokens of output; the cost is
+          # rounding error against a day of a silently broken tutor.
+          probe() {
+            local svc="$1" script="$2" b64
+            b64=$(printf '%s' "$script" | base64 | tr -d '\n')
+            railway ssh --service "$svc" -i ~/.ssh/railway_key -- \
+              sh -c "echo $b64 | base64 -d | sh" 2>&1
+          }
+
+          FAILED=0
+          check() {
+            local label="$1" code="$2" advice="$3"
+            case "$code" in
+              200) echo "OK: $label answered 200" ;;
+              404) echo "::error::$label returned 404 — the base URL is wrong. $advice"; FAILED=$((FAILED + 1)) ;;
+              401|403) echo "::error::$label returned $code — the key is wrong or the account is suspended"; FAILED=$((FAILED + 1)) ;;
+              400) echo "::error::$label returned 400 — endpoint reachable, request rejected (usually a retired model name)"; FAILED=$((FAILED + 1)) ;;
+              402) echo "::error::$label returned 402 — the provider account is out of credit"; FAILED=$((FAILED + 1)) ;;
+              *)   echo "::error::$label returned '$code' — no answer at all"; FAILED=$((FAILED + 1)) ;;
+            esac
+          }
+
+          # Single-quoted on the way out so every $VAR expands THERE, against
+          # the container's own environment, and nothing secret is ever built,
+          # printed or held on this runner. Only the status code comes back.
+          MODEL_PROBE='curl -sS -o /dev/null -w "%{http_code}" --max-time 30 -X POST'
+          MODEL_PROBE="$MODEL_PROBE"' -H "Content-Type: application/json"'
+          MODEL_PROBE="$MODEL_PROBE"' -H "Authorization: Bearer $MODEL_API_KEY"'
+          MODEL_PROBE="$MODEL_PROBE"' -d "{\"model\":\"$MODEL_NAME\",\"messages\":[{\"role\":\"user\",\"content\":\"ping\"}],\"max_tokens\":1}"'
+          MODEL_PROBE="$MODEL_PROBE"' "$MODEL_API_BASE/chat/completions"'
+
+          JUDGE_PROBE='curl -sS -o /dev/null -w "%{http_code}" --max-time 30 -X POST'
+          JUDGE_PROBE="$JUDGE_PROBE"' -H "Content-Type: application/json"'
+          JUDGE_PROBE="$JUDGE_PROBE"' -H "Authorization: Bearer $JUDGE_API_KEY"'
+          JUDGE_PROBE="$JUDGE_PROBE"' -d "{\"model\":\"$JUDGE_MODEL_NAME\",\"messages\":[{\"role\":\"user\",\"content\":\"ping\"}],\"max_tokens\":1}"'
+          JUDGE_PROBE="$JUDGE_PROBE"' "$JUDGE_API_BASE/chat/completions"'
+
+          echo "== The pedagogical model (DeepSeek) =="
+          echo "   without it the tutor is live and cannot teach"
+          code="$(probe oracle "$MODEL_PROBE" | tail -1 | tr -dc '0-9')"
+          echo "   HTTP $code"
+          check 'the pedagogical model' "$code" 'It must end in /v1 — we build ${BASE}/chat/completions by hand.'
+
+          echo ""
+          echo "== The moderation judge (Qwen) =="
+          echo "   without it no minor's session starts at all"
+          code="$(probe oracle "$JUDGE_PROBE" | tail -1 | tr -dc '0-9')"
+          echo "   HTTP $code"
+          check 'the moderation judge' "$code" 'Check JUDGE_API_BASE.'
+
+          echo ""
+          if [ "$FAILED" -gt 0 ]; then
+            echo "::error::$FAILED provider(s) unreachable — the tutor would answer every learner with its degraded line"
+            exit 1
+          fi
+          echo "providers OK — both answered a real request"
