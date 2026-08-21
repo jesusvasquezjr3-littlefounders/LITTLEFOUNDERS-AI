@@ -13,17 +13,17 @@
  * told "my thoughts got tangled for a moment" instead of being taught.
  *
  * The model NAMES matter for a quieter reason. Oracle defaulted to
- * `deepseek-chat`, retired 2026-07-24 and now an alias for a v4-flash mode,
- * while Forge writes every course with `deepseek-v4-pro`. That failure has no
- * error at all — the tutor simply explains a topic with a weaker model than
- * the lesson that taught it, and nobody would think to look.
+ * `deepseek-chat`, retired 2026-07-24, while Forge writes every course with
+ * `deepseek-v4-pro`. That failure has no error at all — the tutor simply
+ * explains a topic with a different model than the lesson that taught it, and
+ * nobody would think to look.
  *
  * WHAT THIS IS NOT. It does not compare API KEYS (they are not in the repo)
- * and it does not force the two services to stay identical forever. If Oracle
- * genuinely needs a different model — a cheaper one for per-turn moderation,
- * say — record it in the ALLOWED_DIVERGENCE table below with the reason. The
- * point is that a difference must be a decision someone wrote down, not a
- * default nobody compared.
+ * and it does not force the two services to stay identical forever. The model
+ * name is now a RECORDED divergence: Forge reasons, Oracle answers a waiting
+ * learner, and those want different models on the same account. That is what
+ * ALLOWED_DIVERGENCE is for — a difference has to be a decision someone wrote
+ * down, not a default nobody compared.
  */
 
 import { readFileSync } from 'node:fs';
@@ -57,12 +57,24 @@ const PAIRS = [
 ];
 
 /**
- * Divergences that are deliberate. Empty on purpose: today the two agree, and
- * the next person to disagree with that should have to say why here.
+ * Divergences that are deliberate, each with the evidence that made it one.
  *
- * Shape: { what: 'DeepSeek model', reason: '…' }
+ * A difference belongs here only when someone has decided it; the point of the
+ * table is that the next person reads a reason instead of finding a default
+ * nobody compared.
  */
-const ALLOWED_DIVERGENCE = [];
+const ALLOWED_DIVERGENCE = [
+  {
+    what: 'DeepSeek model',
+    reason:
+      'deepseek-v4-pro is a REASONING model. Asked for a tutor turn it spent all 400 ' +
+      'completion tokens on reasoning_content and returned empty content with ' +
+      'finish_reason: length — measured in production 2026-08-21. Right for Forge, ' +
+      'which authors a course offline and would rather think than hurry; wrong for ' +
+      'Oracle, where a learner is waiting. Oracle uses deepseek-v4-flash, the ' +
+      'non-reasoning sibling on the same account.',
+  },
+];
 
 /** The `.default('…')` argument of a Zod field, or null if there is no default. */
 export function defaultFor(source, key) {
@@ -90,6 +102,8 @@ function main() {
   };
 
   const problems = [];
+  let agreed = 0;
+  let allowed = 0;
   for (const pair of PAIRS) {
     const excused = ALLOWED_DIVERGENCE.find((e) => e.what === pair.what);
     const forge = defaultFor(read(pair.forge.file), pair.forge.key);
@@ -104,9 +118,12 @@ function main() {
     }
 
     if (forge === oracle) {
+      agreed += 1;
       console.log(`OK    ${pair.what}: both '${forge}'`);
     } else if (excused) {
-      console.log(`ALLOWED ${pair.what}: forge '${forge}' vs oracle '${oracle}' — ${excused.reason}`);
+      allowed += 1;
+      console.log(`ALLOWED ${pair.what}: forge '${forge}' vs oracle '${oracle}'`);
+      console.log(`        ${excused.reason}`);
     } else {
       problems.push(
         `${pair.what}: ${pair.forge.key}='${forge}' but ${pair.oracle.key}='${oracle}'\n` +
@@ -122,7 +139,10 @@ function main() {
     console.error('');
     process.exit(1);
   }
-  console.log(`provider:check OK — Forge and Oracle agree on all ${PAIRS.length} provider settings`);
+  // Say what was actually found. "agree on all 4" while one of them differs by
+  // design is the same species of untruth this whole file exists to catch.
+  const tail = allowed > 0 ? `, ${allowed} recorded divergence(s)` : '';
+  console.log(`provider:check OK — ${agreed}/${PAIRS.length} settings agree${tail}`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))) {

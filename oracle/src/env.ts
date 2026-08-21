@@ -54,19 +54,27 @@ const Env = z.object({
    * `model: up`, and every learner got "my thoughts got tangled" instead of a
    * lesson. `coursegen/src/env.ts` has always had the /v1 here.
    *
-   * And `deepseek-chat` is a DEPRECATED alias — retired 2026-07-24, now
-   * pointing at a v4-flash mode rather than the model Forge actually writes
-   * courses with. Two services on one account should not quietly be talking to
-   * two different models; a tutor explaining a topic worse than the lesson
-   * that taught it is the kind of difference nobody would think to look for.
+   * THE MODEL NAME IS DELIBERATELY NOT FORGE'S, and this is the one place the
+   * two services should differ. `deepseek-v4-pro` is a REASONING model: asked
+   * for a tutor turn it spent all 400 completion tokens on `reasoning_content`
+   * ("We need answer in JSON. Need teach in Spanish es-MX…"), returned `content`
+   * of length ZERO and `finish_reason: length`, and every learner got the
+   * scripted MODEL_DOWN line. Measured in production 2026-08-21, not inferred.
    *
-   * Keep these in step with coursegen/src/env.ts. `step=provision` copies the
-   * live values across rather than trusting either file, so these are the
-   * floor, not the contract.
+   * That model is right for Forge, which authors a whole course offline and
+   * would rather think than hurry. It is wrong here, where a learner is waiting
+   * and latency IS the product. `deepseek-v4-flash` is the non-reasoning
+   * sibling on the same account — confirmed against /models, which lists
+   * exactly deepseek-v4-flash, deepseek-v4-flash-vision-exp and
+   * deepseek-v4-pro.
+   *
+   * The divergence is recorded in agent/tools/check-provider-parity.mjs so the
+   * gate allows it knowingly. `deepseek-chat` is not an option either way: it
+   * was retired 2026-07-24.
    */
   MODEL_API_BASE: z.url().default('https://api.deepseek.com/v1'),
   MODEL_API_KEY: z.string().min(8).optional(),
-  MODEL_NAME: z.string().min(1).default('deepseek-v4-pro'),
+  MODEL_NAME: z.string().min(1).default('deepseek-v4-flash'),
   JUDGE_API_BASE: z.url().default('https://dashscope-intl.aliyuncs.com/compatible-mode/v1'),
   JUDGE_API_KEY: z.string().min(8).optional(),
   JUDGE_MODEL_NAME: z.string().min(1).default('qwen3-max'),

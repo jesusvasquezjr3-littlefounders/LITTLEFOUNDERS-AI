@@ -68,7 +68,19 @@ export async function complete(
           model: config.MODEL_NAME,
           messages,
           temperature: opts.temperature ?? 0.6,
-          max_tokens: opts.maxTokens ?? 400,
+          /*
+           * 800, not 400, and the arithmetic matters. A turn is JSON, and the
+           * schema's own worst case is roughly 1,650 characters: `say` up to
+           * 700, plus a segmentRequest carrying skillKey 128, framing 240 and
+           * rationale 400, plus keys and punctuation. In Spanish that is around
+           * 550 tokens before any margin.
+           *
+           * At 400 the model does not fail loudly — it stops mid-object, the
+           * JSON does not close, `parseTurn` discards it, and the learner gets
+           * a scripted line. And it would only happen on the turns that offer
+           * an activity, which are the valuable ones.
+           */
+          max_tokens: opts.maxTokens ?? 800,
           // The turn schema is the contract; asking for JSON at the transport
           // level as well means a malformed turn is rarer, not that parsing
           // can be trusted. parseTurn() still validates.

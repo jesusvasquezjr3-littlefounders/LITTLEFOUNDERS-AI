@@ -282,13 +282,22 @@ jobs:
           # Fall back to Forge's own defaults when the variable is unset there,
           # since an unset variable means Forge is running on those defaults too.
           MODEL_BASE="$(read_var coursegen DEEPSEEK_BASE_URL)"
-          MODEL_NAME_V="$(read_var coursegen DEEPSEEK_MODEL)"
           JUDGE_BASE="$(read_var coursegen QWEN_BASE_URL)"
           JUDGE_MODEL_V="$(read_var coursegen QWEN_JUDGE_MODEL)"
           [ -n "$MODEL_BASE" ]    || MODEL_BASE='https://api.deepseek.com/v1'
-          [ -n "$MODEL_NAME_V" ]  || MODEL_NAME_V='deepseek-v4-pro'
           [ -n "$JUDGE_BASE" ]    || JUDGE_BASE='https://dashscope-intl.aliyuncs.com/compatible-mode/v1'
           [ -n "$JUDGE_MODEL_V" ] || JUDGE_MODEL_V='qwen3-max'
+
+          # THE MODEL NAME IS THE ONE THING NOT COPIED. Forge's DEEPSEEK_MODEL
+          # is deepseek-v4-pro, a REASONING model: asked for a tutor turn it
+          # spends the whole completion budget on reasoning_content and returns
+          # empty content. Right for authoring a course offline, wrong with a
+          # learner waiting. Copying it here would silently undo the fix every
+          # time someone re-ran provision — the worst kind of regression,
+          # because re-running provision is what you do when something is wrong.
+          # agent/tools/check-provider-parity.mjs records the divergence.
+          MODEL_NAME_V="$(read_var oracle MODEL_NAME)"
+          [ -n "$MODEL_NAME_V" ] || MODEL_NAME_V='deepseek-v4-flash'
 
           if [ -z "$CORE_KEY" ]; then
             echo "::error::could not read Core's INTERNAL_API_KEY — Oracle cannot call Core without it"

@@ -48,13 +48,25 @@ const live = spawnSync('node', [script], { cwd: root, encoding: 'utf8' });
 assert.equal(live.status, 0, `the live repository should agree:\n${live.stdout}${live.stderr}`);
 assert.match(live.stdout, /provider:check OK/);
 
-// The two failures this file exists for, asserted as facts about the repo
-// rather than as fixtures — a fixture that drifts from reality proves nothing.
+// The failures this file exists for, asserted as facts about the repo rather
+// than as fixtures — a fixture that drifts from reality proves nothing.
 assert.match(live.stdout, /DeepSeek base URL: both 'https:\/\/api\.deepseek\.com\/v1'/);
 assert.doesNotMatch(
   live.stdout,
   /deepseek-chat/,
   'deepseek-chat was retired 2026-07-24 and must not be a default anywhere',
+);
+
+// The model name is a RECORDED divergence, and the recording is the point: a
+// green run that said nothing about it would be indistinguishable from the
+// silent drift this gate exists to catch.
+assert.match(live.stdout, /ALLOWED DeepSeek model: forge 'deepseek-v4-pro' vs oracle 'deepseek-v4-flash'/);
+assert.match(live.stdout, /REASONING model/, 'the divergence must carry its reason, not just a pass');
+assert.match(live.stdout, /recorded divergence/, 'the summary must not claim agreement it did not find');
+assert.doesNotMatch(
+  live.stdout,
+  /agree on all/,
+  'the old summary claimed total agreement even when a pair differed by design',
 );
 
 console.log('check-provider-parity OK — parser handles missing/non-string/colliding keys, live repo agrees');
