@@ -3,8 +3,9 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
-const root = path.resolve(new URL('../..', import.meta.url).pathname);
+const root = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const script = path.join(root, 'agent/tools/check-clean-tree.sh');
 const temp = await mkdtemp(path.join(os.tmpdir(), 'littlefounders-clean-tree-'));
 

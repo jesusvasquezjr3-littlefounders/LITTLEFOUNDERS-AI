@@ -9,8 +9,9 @@ import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
-const root = path.resolve(new URL('../..', import.meta.url).pathname);
+const root = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const generator = path.join(root, 'scripts/update-repo-map.sh');
 const temp = await mkdtemp(path.join(os.tmpdir(), 'littlefounders-repo-map-'));
 const mapPath = path.join(temp, 'repo_map.md');

@@ -3,8 +3,9 @@ import { chmod, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
-const root = path.resolve(new URL('../..', import.meta.url).pathname);
+const root = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const script = path.join(root, 'agent/tools/railway-preflight.sh');
 const temp = await mkdtemp(path.join(os.tmpdir(), 'littlefounders-railway-preflight-'));
 const fakeBin = path.join(temp, 'bin');
@@ -89,14 +90,32 @@ exit 2
 );
 await chmod(fakeRailway, 0o755);
 
+/**
+ * The fake `railway` has to WIN over any real one, on every platform.
+ *
+ * Two things make that harder than prepending a directory. The separator is
+ * `;` on Windows and `:` elsewhere — hardcoding either sends the whole search
+ * path into one meaningless entry. And Windows spells the variable `Path`, so
+ * spreading `process.env` and then setting `PATH` leaves the child holding
+ * BOTH keys, with no promise about which one wins. Either way the test stops
+ * exercising the fixture and starts exercising whatever `railway` the machine
+ * happens to have — which, on a developer laptop that is logged in, would mean
+ * a test reaching production.
+ */
+function childEnv(fixture) {
+  const env = {};
+  for (const [key, value] of Object.entries(process.env)) {
+    if (key.toUpperCase() !== 'PATH') env[key] = value;
+  }
+  env['PATH'] = `${fakeBin}${path.delimiter}${process.env['PATH'] ?? ''}`;
+  env['PREFLIGHT_FIXTURE'] = fixture;
+  return env;
+}
+
 function run(fixture, { trace = false, environment } = {}) {
   const args = trace ? ['-x', script] : [script];
   if (environment !== undefined) args.push(environment);
-  return spawnSync('bash', args, {
-    cwd: root,
-    env: { ...process.env, PATH: `${fakeBin}:${process.env.PATH}`, PREFLIGHT_FIXTURE: fixture },
-    encoding: 'utf8',
-  });
+  return spawnSync('bash', args, { cwd: root, env: childEnv(fixture), encoding: 'utf8' });
 }
 
 try {
