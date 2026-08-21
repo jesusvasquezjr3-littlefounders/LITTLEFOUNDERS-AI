@@ -1,5 +1,118 @@
 # RUNBOOK.md — Incident Response
 
+## Deploying the AI Tutor (Oracle) — the order matters (2026-08-21)
+
+Four steps, and **three of them must land before the merge**. The pattern is
+the one `/TUTOR_3D.md` §3.3 already recorded for Depot: the code was ready and
+the deploy still failed, because the thing it depended on had not shipped yet.
+
+Merging first is *safe but inert* — `/tutor` degrades to the 3D island with an
+honest "resting" message rather than to an error — but nothing works until the
+infrastructure exists.
+
+### 1. Apply migration `0047` to the production Vault
+
+```bash
+npm --prefix database run db:railway:migrate
+```
+
+`database/scripts/railway-migrate.sh` is the ONLY approved remote path. It
+supports a no-write dry run, records immutable checksums, and applies one
+migration per transaction. Production was verified at 46/46 on 2026-08-14, so
+`0047_tutor_oracle.sql` is the single pending delta.
+
+**Core's tutor routes read these tables. Without this step every
+`/api/v1/tutor/*` call returns `DATA_UNAVAILABLE` and the page shows the
+island.**
+
+### 2. Create the `oracle` Railway service
+
+It needs a **public domain** — the browser opens a websocket straight to it
+(`/AGENTS.md` §1.5, Oracle exception). Convention: `tutor-b2c.littlefounders.ai`.
+
+```bash
+railway add --service oracle
+railway domain --service oracle          # then map tutor-b2c.littlefounders.ai
+```
+
+**`oracle` is NOT scale-to-zero.** It terminates a learner's live socket; a
+cold start would happen in front of a child who just pressed the button. The
+preflight treats a sleeping oracle as a failure, not an expected state.
+
+### 3. Set the variables
+
+Generate two secrets and use each in both places:
+
+```bash
+# One shared session secret, IDENTICAL on both services
+openssl rand -base64 48
+# One service key: oracle's INTERNAL_API_KEY == Core's ORACLE_INTERNAL_KEY
+openssl rand -base64 32
+```
+
+On **oracle**:
+
+| Variable | Value |
+|---|---|
+| `INTERNAL_API_KEY` | the service key |
+| `TUTOR_SESSION_SECRET` | the shared session secret |
+| `CORE_URL` | `http://littlefounders-backend.railway.internal:4000` |
+| `CORE_INTERNAL_KEY` | Core's existing `INTERNAL_API_KEY` |
+| `DEPOT_URL` / `DEPOT_INTERNAL_KEY` | Depot's internal address and key |
+| `MODEL_API_KEY` | DeepSeek — **without it the tutor cannot teach** |
+| `JUDGE_API_KEY` | Qwen — **without it no minor's session can start at all** |
+| `VOICE_PROVIDER` | `none` until the Inworld agreement exists |
+| `TUTOR_VOICE_FOR_MINORS` | `false` — leave it |
+| `REDIS_URL` | the existing managed Redis |
+
+On **littlefounders-backend**:
+
+| Variable | Value |
+|---|---|
+| `ORACLE_URL` | `http://oracle.railway.internal:4009` |
+| `ORACLE_PUBLIC_URL` | `https://tutor-b2c.littlefounders.ai` |
+| `ORACLE_INTERNAL_KEY` | the service key (same value as oracle's `INTERNAL_API_KEY`) |
+| `TUTOR_SESSION_SECRET` | the shared session secret (same value) |
+| `FILEBASE_URL` / `FILEBASE_INTERNAL_KEY` | Depot, for the retention sweep |
+
+> **The two shared values are the trap.** Core MINTS the browser's session
+> token and Oracle VERIFIES it. If they differ, nothing errors at boot, every
+> healthcheck is green, and every tutor websocket closes "bad signature" —
+> which reads like a client bug and is not one. `npm run production:preflight`
+> now compares both pairs across services and prints match/differ, never a
+> value.
+
+Also add repository secrets `CORE_URL` and `INTERNAL_API_KEY` for the nightly
+`tutor-retention.yml` workflow.
+
+### 4. Verify, then merge
+
+```bash
+npm run production:preflight        # read-only; must be green BEFORE merging
+```
+
+Merge to `main`; `oracle CD`, `backend CD` and `frontend CD` fire on their
+CI going green. Then, against the live stack:
+
+```bash
+curl -s https://tutor-b2c.littlefounders.ai/health | jq
+```
+
+`components.model` and `components.moderation` must both read `up`. If either
+is `down`, the tutor is live and inert — the offer screen will say "your tutor
+is resting", honestly, and no session will start.
+
+### What stays off, and why
+
+`TUTOR_VOICE_FOR_MINORS=false` and `VOICE_PROVIDER=none` until a
+data-processing agreement covering minors' audio exists
+(`/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` §6). The tutor is complete without them:
+captioned, typed, graded, replayable. The agreement gates one input method, not
+the product. Flipping either is an owner decision to record in
+`/ORACLE.md` §16.
+
+---
+
 ## Rollback to v1 (historical — v2 is in production as of 2026-07-17)
 
 v1 is no longer live and no longer on `main` (superseded by the `feat: total v2 rewrite` squash commit, 2026-07-17). To inspect or resurrect it: `git log main --diff-filter=D` finds the squash commit; v1's actual last state is the parent of that commit. There is no automatic rollback — reverting to v1 in production would mean redeploying its old Render/Railway/Vercel config from that commit by hand, which no longer matches the current Railway project (`littlefounders-b2c`) or Vercel project settings (Root Directory now `frontend`). Treat this as "possible but non-trivial," not a one-command undo.
