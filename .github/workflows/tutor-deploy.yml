@@ -386,20 +386,53 @@ jobs:
         if: inputs.step == 'domain'
         run: |
           set -uo pipefail
+          # Same reason as the provision step: GitHub runs `bash -e` whatever
+          # this says, and half of what follows is allowed to fail. A `grep`
+          # that finds nothing is the ordinary "no domain yet" answer, not a
+          # reason to abandon the job before it can report that.
+          set +e
+
           echo "== Existing domains =="
-          railway domain list --service oracle 2>&1 | head -20 || true
+          railway domain list --service oracle </dev/null 2>&1 | head -20
+
           echo ""
           echo "== Ensuring a Railway-provided domain =="
-          railway domain --service oracle 2>&1 | tee domain.txt || true
-          HOST="$(grep -oE '[a-z0-9-]+\.up\.railway\.app' domain.txt | head -1)"
+          # </dev/null so the CLI cannot drop into its prompt and hold the job
+          # open until the 25-minute timeout.
+          railway domain --service oracle </dev/null 2>&1 | tee domain.txt
+
+          # `|| true` INSIDE the substitution: without it a grep that matches
+          # nothing makes the assignment itself non-zero, and the step dies on
+          # the one branch it exists to report.
+          HOST="$(grep -oE '[a-z0-9-]+\.up\.railway\.app' domain.txt | head -1 || true)"
           if [ -n "$HOST" ]; then
+            echo ""
             echo "Public host: $HOST"
-            railway variable set --service littlefounders-backend --environment "$ENVIRONMENT" \
-              --skip-deploys "ORACLE_PUBLIC_URL=https://$HOST" >/dev/null 2>&1 \
-              && echo "   set littlefounders-backend/ORACLE_PUBLIC_URL"
+            if railway variable set --service littlefounders-backend --environment "$ENVIRONMENT" \
+                 --skip-deploys "ORACLE_PUBLIC_URL=https://$HOST" >/dev/null 2>&1; then
+              echo "   set littlefounders-backend/ORACLE_PUBLIC_URL"
+            else
+              echo "::error::could not set ORACLE_PUBLIC_URL — the browser would be told to open a websocket to localhost"
+              exit 1
+            fi
+
+            echo ""
+            echo "== Is it answering? =="
+            # The first deploy can still be starting; this is a report, not a
+            # gate, so it never fails the step. `step=verify` is the gate.
+            for attempt in 1 2 3 4 5 6; do
+              code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "https://$HOST/health" || true)"
+              echo "   attempt $attempt: HTTP $code"
+              [ "$code" = "200" ] && break
+              sleep 10
+            done
+            curl -s --max-time 10 "https://$HOST/health" || true
+            echo ""
           else
-            echo "::warning::no domain host parsed — set ORACLE_PUBLIC_URL by hand"
+            echo "::error::no domain host parsed — Oracle has no public address and the tutor cannot open a socket"
+            exit 1
           fi
+
           echo ""
           echo "The convention for a custom domain is tutor-b2c.littlefounders.ai;"
           echo "add it in the dashboard and update ORACLE_PUBLIC_URL to match."
