@@ -233,10 +233,10 @@ The `agent/` directory exists so that **context lives exactly once** and session
 
 ## §4 Skills
 
-Skills live in `.claude/skills/` (local) and `.github/skills/` (mirror, untracked via `.github/.gitignore`). Tiers:
+Skills live in `.claude/skills/` (local) and `.github/skills/` (mirror). Both are untracked by default — a specific skill can be tracked via a scoped `.gitignore` exception when it's small and permissively licensed; see `TEAM_PROTOCOL.md` "Rules" before flipping the blanket rule. Tiers:
 
 - **Always-on (design)** — invoke automatically on any UI work: `impeccable`, `agave`, `emil-design-eng`, `make-interfaces-feel-better`, `react-bits`, `design-md`; `review-animations` only when reviewing motion code.
-- **Opt-in (propose first, human decides)** — `ponytail` (minimal-diff lens; recommended for most coding tasks), `graphify` (codebase mapping).
+- **Opt-in (propose first, human decides)** — `ponytail` (minimal-diff lens; recommended for most coding tasks), `graphify` (codebase mapping), `caveman` (terse-reply mode; tracked in git as the first exception to the untracked default).
 - **Reference shelf** — `ecc`, `claude-for-legal`, `claude-for-legal-mexico` (legal drafts only, never legal advice).
 
 Full catalog, ritual, and attribution rules: `TEAM_PROTOCOL.md`. Design skills refine execution; `DESIGN.md` defines the tokens — skills never override it.

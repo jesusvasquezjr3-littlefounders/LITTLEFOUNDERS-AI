@@ -29,7 +29,10 @@ npm-debug.log*
 .DS_Store
 
 # ── AI-agent local config (never commit — may hold tokens) ──
-.claude/
+# .claude/ itself is handled below, under "AI agent workspaces" — a directory-
+# level ignore here would shadow that block's scoped !-negations (a parent
+# dir excluded at one rule can never be re-included by a later, more specific
+# rule; git won't even descend to evaluate it).
 .mcp.json
 .opencode/
 
@@ -64,8 +67,17 @@ audiogen/src/samples/
 
 # AI agent workspaces
 .agents/
-.claude/
 .codex/
+
+# .claude/ is local AI-agent config (settings, most skills) — untracked by
+# default. Exception: skills the team has explicitly opted to version (see
+# TEAM_PROTOCOL.md "Rules"). Each tracked skill needs its own !-negation
+# below, one directory level at a time — gitignore won't re-include a file
+# whose parent dir is still excluded.
+.claude/*
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/caveman/
 
 # Production database dumps (PII + credential hashes — never commit)
 /database/backups/

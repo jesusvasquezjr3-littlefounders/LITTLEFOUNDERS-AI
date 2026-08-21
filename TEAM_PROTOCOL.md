@@ -10,7 +10,9 @@
 
 ## Skill catalog & tiers
 
-Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`).
+Skills live in `.claude/skills/` (and mirrored in `.github/skills/`). Both are
+untracked by default; a skill the team wants versioned gets a scoped
+`!`-negation in `.gitignore` / `.github/.gitignore` instead (see Rules).
 
 ### Always-on — design (auto-invoke on any UI task)
 
@@ -30,6 +32,7 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 |---|---|
 | `ponytail` | Minimal-diff / YAGNI lens. Recommended default for most coding tasks. |
 | `graphify` | Codebase knowledge-graph questions/mapping. |
+| `caveman` | Ultra-terse "caveman-speak" replies (`/caveman lite\|full\|ultra\|off`) when the human wants fewer output tokens. Exempts code/commits/docs/PR text — stays normal prose there. **Tracked** (see Rules). |
 
 ### Reference shelf
 
@@ -42,6 +45,15 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 ## Rules
 
 - **Attribution:** every borrowed skill keeps a `_SOURCE.md` (author, license, adaptation note). Unlicensed upstreams get reimplemented, never vendored.
-- **Double install:** a skill added to `.claude/skills/` is copied to `.github/skills/` (both untracked; `.claude/archive/github-skills/` holds the backup).
+- **Double install:** a skill added to `.claude/skills/` is copied to `.github/skills/` (both untracked by default; `.claude/archive/github-skills/` holds the backup).
+- **Untracked by default, on purpose.** Two of the reference-shelf skills (`claude-for-legal`, `claude-for-legal-mexico`) vendor entire third-party repos with their own licenses/CLAs — committing those into a private company repo without a deliberate redistribution review is the wrong default. Blanket-tracking `.claude/skills/` was considered and rejected for this reason (2026-08-20).
+- **Tracking one skill anyway:** when a specific skill is small, permissively licensed (MIT or equivalent), and the team wants it versioned, carve out a scoped exception instead of flipping the blanket rule — in both `.gitignore` and `.github/.gitignore`:
+  ```
+  .claude/*
+  !.claude/skills/
+  .claude/skills/*
+  !.claude/skills/<name>/
+  ```
+  Gitignore won't re-include a file whose parent directory is itself excluded, so each level needs its own `!`-negation — verify with `git check-ignore -v` on both the intended path and a sibling skill before trusting it (a single blanket `.claude/` rule elsewhere in the file will silently shadow this and re-hide everything; `caveman`'s install found and removed exactly that duplicate). `caveman` (MIT) is the first skill tracked this way.
 - **Design skills refine, DESIGN.md defines.** Skills never override tokens/rules in DESIGN.md.
 - **New skill installed** → add it to this catalog in the same commit (stewardship §8).
