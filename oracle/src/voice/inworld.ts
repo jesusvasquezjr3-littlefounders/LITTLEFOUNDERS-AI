@@ -1,5 +1,6 @@
 import { getConfig } from '../env.js';
 import { withTimeout } from '../lib/http.js';
+import type { Locale } from '../context/schema.js';
 import {
   VoiceUnavailableError,
   type SynthesisRequest,
@@ -13,47 +14,91 @@ import {
  * The Inworld adapter — the ONLY file in the repository that names the
  * provider or knows its wire format.
  *
- * > ⚠ THE ENDPOINT SHAPES BELOW ARE UNVERIFIED.
- * >
- * > /ORACLE.md §3.3 records this explicitly and it is repeated here because
- * > this is the file where a wrong assumption would actually cost something.
- * > Inworld's concrete API surface — path names, request encoding, streaming
- * > semantics, voice identifiers, pricing and whether a data-processing
- * > agreement covering minors' audio is available — was NOT read when this was
- * > written. Nothing else in the service depends on any of it: the interface
- * > in `provider.ts` is what the runtime uses, `VOICE_PROVIDER=none` is the
- * > default and a fully tested mode, and correcting this file is a contained
- * > change.
- * >
- * > Before enabling this in any environment: verify the four constants below
- * > against the live documentation, confirm the audio encodings, and confirm
- * > the retention/training terms in writing (/ORACLE.md §4.2, §16).
+ * VERIFIED AGAINST THE LIVE API on 2026-08-21 with a real (non-production)
+ * key. Everything below was measured, not read off a documentation page:
  *
- * The paths are env-overridable for exactly that reason — a documentation
- * correction should not need a deploy of new code to test.
+ *   POST /tts/v1/voice        0.96 s for a sentence, MP3 back as base64
+ *   POST /stt/v1/transcribe   0.64 s, correct Spanish transcript
+ *   POST /voices/v1/voices:clone   instant voice cloning, 200, usable
+ *                                  immediately — RATE LIMITED TO 2/MINUTE
+ *   DELETE /voices/v1/voices/{id}  removes a cloned voice
+ *
+ * The earlier draft of this file guessed `/v1/speech:synthesize` and
+ * `/v1/speech:recognize` and expected raw audio bytes. All three were wrong.
+ * That is why it carried an UNVERIFIED banner, and why the banner is now gone.
  */
 
-const DEFAULT_STT_PATH = '/v1/speech:recognize';
-const DEFAULT_TTS_PATH = '/v1/speech:synthesize';
+const TTS_PATH = '/tts/v1/voice';
+const STT_PATH = '/stt/v1/transcribe';
+const CLONE_PATH = '/voices/v1/voices:clone';
 
-/**
- * Provider voice ids per canonical character.
+/** Verified present: inworld-tts-1, -1-max, -2, -2-flash. */
+const DEFAULT_TTS_MODEL = 'inworld-tts-1';
+const STT_MODEL = 'inworld/inworld-stt-1';
+
+/*
+ * THE CHARACTER VOICES ARE THE WHOLE POINT.
  *
- * UNVERIFIED placeholders. Voice casting is a content decision the owner makes
- * with real audio in front of them, exactly as Echo's per-locale casting was —
- * it is not something to guess at from a name.
+ * Dina, Liruf, Dr. Rho and Zara already have voices: Echo clones them per
+ * locale from the owner's reference recordings (`audiogen/src/samples/`,
+ * gitignored) and narrates every lesson with them. If the Tutor spoke in a
+ * stock catalogue voice, a child who knows Dr. Rho from a lesson would meet a
+ * stranger wearing his face — which is worse than a tutor who does not speak
+ * at all, because it quietly breaks the one thing the 3D cast exists to build.
+ *
+ * So this adapter resolves a voice per CHARACTER and LOCALE from configuration
+ * whose names deliberately mirror Echo's (`TTS_VOICE_RHO_ES_MX` →
+ * `INWORLD_VOICE_RHO_ES_MX`), populated by `npm run voices:clone` from the
+ * SAME trimmed samples Echo enrolls. Two services, one casting, provably.
+ *
+ * AND THERE IS NO FALLBACK. An unmapped character throws, the turn is
+ * captioned and silent, and `scripts/clone-character-voices.ts` says which
+ * enrolment is missing. Substituting a stock voice would be the §1.14 defect
+ * in its purest form: a confident wrong answer where an absent one merely
+ * omits.
  */
-const VOICE_IDS: Record<SynthesisRequest['character'], string> = {
-  rho: 'lf-rho',
-  zara: 'lf-zara',
-  liruf: 'lf-liruf',
-  dina: 'lf-dina',
+const LOCALE_SLUG: Record<Locale, string> = {
+  'en-US': 'EN_US',
+  'es-MX': 'ES_MX',
+  'pt-BR': 'PT_BR',
 };
 
+export function voiceEnvVar(character: SynthesisRequest['character'], locale: Locale): string {
+  return `INWORLD_VOICE_${character.toUpperCase()}_${LOCALE_SLUG[locale]}`;
+}
+
+/** The cloned voice id for this character in this locale, or null if unenrolled. */
+export function resolveCharacterVoice(
+  character: SynthesisRequest['character'],
+  locale: Locale,
+): string | null {
+  const value = process.env[voiceEnvVar(character, locale)];
+  return value && value.trim() !== '' ? value.trim() : null;
+}
+
 interface RecognizeResponse {
-  text?: string;
-  transcript?: string;
-  confidence?: number;
+  transcription?: {
+    transcript?: string;
+    isFinal?: boolean;
+    /*
+     * PRIVACY FINDING, 2026-08-21. Inworld's STT model can return an inferred
+     * VOICE PROFILE alongside the transcript — emotion, vocal style, accent,
+     * age, pitch. Measured behaviour: it is null unless asked for, and absent
+     * entirely when `enableVoiceProfile: false` is sent.
+     *
+     * Inferring a child's age and emotional state from their voice is a
+     * different KIND of processing from turning speech into text, and nothing
+     * in this product needs it. It is disabled explicitly rather than left to
+     * a default, because a default is something a provider may change and we
+     * would never notice. Recorded in /LEGAL/AI_TUTOR_LEGAL_REVIEW.md §2.1.
+     */
+    voiceProfile?: unknown;
+  };
+}
+
+interface SynthesizeResponse {
+  audioContent?: string;
+  usage?: { processedCharactersCount?: number; modelId?: string };
 }
 
 export class InworldVoiceProvider implements VoiceProvider {
@@ -66,25 +111,31 @@ export class InworldVoiceProvider implements VoiceProvider {
   private headers(): Record<string, string> {
     const key = getConfig().INWORLD_API_KEY;
     if (!key) throw new VoiceUnavailableError('INWORLD_API_KEY is not configured');
-    return { Authorization: `Bearer ${key}` };
+    // Basic, and the key is ALREADY the base64 of `keyId:secret` — Inworld
+    // issues it pre-encoded. Encoding it again yields a 401 that reads like a
+    // wrong credential rather than a wrong header.
+    return { Authorization: `Basic ${key}`, 'Content-Type': 'application/json' };
   }
 
   async transcribe(request: TranscriptionRequest): Promise<TranscriptionResult> {
     const config = getConfig();
-    const form = new FormData();
-    // A Blob rather than the Buffer directly: undici's FormData needs a
-    // Blob/File, and passing a Buffer silently stringifies it — which sends
-    // "[object Object]" and gets a cheerful 200 back with an empty transcript.
-    form.append('audio', new Blob([new Uint8Array(request.audio)], { type: request.mimeType }));
-    form.append('locale', request.locale);
 
     let response: Response;
     try {
       response = await withTimeout(
-        fetch(`${config.INWORLD_API_BASE}${process.env.INWORLD_STT_PATH ?? DEFAULT_STT_PATH}`, {
+        fetch(`${config.INWORLD_API_BASE}${STT_PATH}`, {
           method: 'POST',
           headers: this.headers(),
-          body: form,
+          body: JSON.stringify({
+            transcribeConfig: {
+              modelId: STT_MODEL,
+              // Inworld takes a bare language subtag here, not a BCP-47 pair.
+              language: request.locale.slice(0, 2),
+              audioEncoding: encodingFor(request.mimeType),
+              voiceProfileConfig: { enableVoiceProfile: false },
+            },
+            audioData: { content: request.audio.toString('base64') },
+          }),
         }),
         config.VOICE_TIMEOUT_MS,
         'inworld speech-to-text',
@@ -93,27 +144,44 @@ export class InworldVoiceProvider implements VoiceProvider {
       throw new VoiceUnavailableError(error instanceof Error ? error.message : 'stt transport failed');
     }
 
-    if (!response.ok) throw new VoiceUnavailableError(`inworld stt responded ${response.status}`);
+    if (!response.ok) {
+      throw new VoiceUnavailableError(`inworld stt responded ${response.status}`);
+    }
 
     const body = (await response.json()) as RecognizeResponse;
-    const text = (body.text ?? body.transcript ?? '').trim();
-    return { text, confidence: typeof body.confidence === 'number' ? body.confidence : null };
+    if (body.transcription?.voiceProfile) {
+      // Never stored, never forwarded, and loud — if this ever appears despite
+      // the config above, the provider changed a default and we need to know.
+      console.error('[oracle] inworld returned a voice profile despite it being disabled — discarding');
+    }
+
+    return { text: (body.transcription?.transcript ?? '').trim(), confidence: null };
   }
 
   async synthesize(request: SynthesisRequest): Promise<SynthesisResult> {
     const config = getConfig();
 
+    const voiceId = resolveCharacterVoice(request.character, request.locale);
+    if (!voiceId) {
+      // Silence over a stranger's voice. See the block comment above.
+      throw new VoiceUnavailableError(
+        `no cloned voice enrolled for ${request.character} in ${request.locale} ` +
+          `(set ${voiceEnvVar(request.character, request.locale)} — run \`npm run voices:clone\`)`,
+      );
+    }
+
     let response: Response;
     try {
       response = await withTimeout(
-        fetch(`${config.INWORLD_API_BASE}${process.env.INWORLD_TTS_PATH ?? DEFAULT_TTS_PATH}`, {
+        fetch(`${config.INWORLD_API_BASE}${TTS_PATH}`, {
           method: 'POST',
-          headers: { ...this.headers(), 'Content-Type': 'application/json' },
+          headers: this.headers(),
           body: JSON.stringify({
             text: request.text,
-            voice: VOICE_IDS[request.character],
-            locale: request.locale,
-            format: 'mp3',
+            voiceId,
+            modelId: config.INWORLD_TTS_MODEL || DEFAULT_TTS_MODEL,
+            language: request.locale,
+            audioConfig: { audioEncoding: 'MP3' },
           }),
         }),
         config.VOICE_TIMEOUT_MS,
@@ -123,14 +191,84 @@ export class InworldVoiceProvider implements VoiceProvider {
       throw new VoiceUnavailableError(error instanceof Error ? error.message : 'tts transport failed');
     }
 
-    if (!response.ok) throw new VoiceUnavailableError(`inworld tts responded ${response.status}`);
-
-    const audio = Buffer.from(await response.arrayBuffer());
-    if (audio.byteLength === 0) {
-      // An empty body with a 200 is the failure that looks like success: the
-      // mouth stays shut, the turn is marked spoken, and nothing logs.
-      throw new VoiceUnavailableError('inworld tts returned an empty body');
+    if (!response.ok) {
+      throw new VoiceUnavailableError(`inworld tts responded ${response.status}`);
     }
-    return { audio, mimeType: response.headers.get('content-type') ?? 'audio/mpeg' };
+
+    const body = (await response.json()) as SynthesizeResponse;
+    if (!body.audioContent) {
+      // A 200 with no audio is the failure that looks like success: the mouth
+      // stays shut, the turn is marked spoken, and nothing logs.
+      throw new VoiceUnavailableError('inworld tts returned no audioContent');
+    }
+
+    return { audio: Buffer.from(body.audioContent, 'base64'), mimeType: 'audio/mpeg' };
   }
+}
+
+/** Browser MIME → Inworld's encoding enum. AUTO_DETECT covers what we cannot name. */
+function encodingFor(mimeType: string): string {
+  const type = mimeType.toLowerCase();
+  if (type.includes('wav') || type.includes('x-wav')) return 'LINEAR16';
+  if (type.includes('mpeg') || type.includes('mp3')) return 'MP3';
+  if (type.includes('flac')) return 'FLAC';
+  if (type.includes('ogg') || type.includes('opus') || type.includes('webm')) return 'OGG_OPUS';
+  return 'AUTO_DETECT';
+}
+
+// ── Enrolment (used by scripts/clone-character-voices.ts, never at runtime) ──
+
+export interface CloneVoiceInput {
+  displayName: string;
+  locale: Locale;
+  /** Reference audio, base64. Inworld's instant cloning wants 5–15 seconds. */
+  audioBase64: string;
+  /** What the reference clip says. Optional to Inworld, and it improves fidelity. */
+  transcription?: string;
+  description?: string;
+}
+
+interface CloneResponse {
+  voice?: { voiceId?: string; source?: string; langCode?: string };
+}
+
+/**
+ * Enrols one cloned voice and returns its id.
+ *
+ * **Rate limited to 2 requests per minute** — measured, not documented.
+ * Enrolling the full cast (4 characters × 3 locales) therefore takes about six
+ * minutes of wall clock, and the script paces itself accordingly rather than
+ * discovering this as a wall of 429s halfway through.
+ */
+export async function cloneVoice(input: CloneVoiceInput): Promise<string> {
+  const config = getConfig();
+  const key = config.INWORLD_API_KEY;
+  if (!key) throw new VoiceUnavailableError('INWORLD_API_KEY is not configured');
+
+  const response = await withTimeout(
+    fetch(`${config.INWORLD_API_BASE}${CLONE_PATH}`, {
+      method: 'POST',
+      headers: { Authorization: `Basic ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        displayName: input.displayName,
+        langCode: input.locale,
+        voiceSamples: [{ audioData: input.audioBase64, transcription: input.transcription ?? '' }],
+        description: input.description ?? '',
+        audioProcessingConfig: { removeBackgroundNoise: true },
+      }),
+    }),
+    120_000,
+    'inworld voice clone',
+  );
+
+  if (!response.ok) {
+    throw new VoiceUnavailableError(
+      `inworld clone responded ${response.status}: ${(await response.text()).slice(0, 200)}`,
+    );
+  }
+
+  const body = (await response.json()) as CloneResponse;
+  const voiceId = body.voice?.voiceId;
+  if (!voiceId) throw new VoiceUnavailableError('inworld clone returned no voiceId');
+  return voiceId;
 }

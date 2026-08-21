@@ -2,6 +2,76 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-21d) — Inworld VERIFIED against the live API, and the cast keeps its own voices
+
+The owner supplied a non-production Inworld key and asked for verification.
+Everything below was measured against the live service, not read off a page.
+
+**The adapter's guesses were all wrong, which is exactly why it carried an
+UNVERIFIED banner.** It assumed `/v1/speech:synthesize` and
+`/v1/speech:recognize` and expected raw audio bytes. Reality:
+`POST /tts/v1/voice` returning base64 in `audioContent` (814 ms), and
+`POST /stt/v1/transcribe` with a nested `transcribeConfig` (715 ms). Round trip
+1.53 s and the transcript was faithful — it even normalises "veinticinco" to
+"25", which for a maths tutor is an improvement. Auth is `Basic <key>` with the
+key **already base64-encoded**; re-encoding yields a 401 that reads like a bad
+credential rather than a bad header. `npm run voices:verify` now re-runs that
+round trip through the adapter, so a drift in Inworld's shapes fails a command
+instead of a child's session.
+
+**The owner caught a real product defect mid-build: the cast already has
+voices.** Echo clones Dina, Liruf, Dr. Rho and Zara per locale from the owner's
+reference recordings and narrates every lesson with them. A Tutor speaking in a
+stock catalogue voice would have handed a child who knows Dr. Rho from a lesson
+a stranger wearing his face — quietly breaking the one thing the 3D cast exists
+to build. Inworld does instant cloning (`POST /voices/v1/voices:clone`, 5–15 s
+of reference, no training step, **rate limited to 2 requests per minute** —
+measured, so `npm run voices:clone` paces itself rather than hitting a wall of
+429s at slot seven). Oracle now resolves a voice per character × locale from
+`INWORLD_VOICE_<CHAR>_<LOCALE>`, named to mirror Echo's, enrolled from the SAME
+trimmed samples so the two castings cannot drift apart by neglect.
+
+**There is no fallback voice, deliberately.** An unenrolled character is SILENT
+in that locale. Substituting a stock voice would be §1.14 in its purest form —
+a confident wrong answer where an absent one merely omits.
+
+**A privacy finding that only testing would have surfaced.** Inworld's STT can
+return a voice profile alongside the transcript: emotion, vocal style, accent,
+**age** and pitch. Measured, it is absent unless requested — but off by default
+is not off, because a default is something a provider can change and we would
+never notice. Oracle disables it explicitly on every request and logs an error
+if one arrives anyway. Recorded for counsel, along with a second finding
+neither of us had considered: cloning the characters means uploading the
+owner's reference recordings to a third party, which creates a derived voice
+model held by them and turns on whatever rights exist for those performances.
+Three new questions went to counsel.
+
+**The DPA decision, left to my judgement with "the product must stay
+accessible".** `TUTOR_VOICE_FOR_MINORS` is now an explicit flag, default off:
+no minor's microphone opens until the agreement exists, regardless of guardian
+consent, which stays separate and also required. It is a flag rather than
+"leave the key unconfigured" because those are DIFFERENT facts, and conflating
+them is how a policy becomes an accident — a key configured so adults could use
+voice would silently have opened children's microphones too. Adults are
+unaffected and every learner keeps the whole tutor. The UI checks policy FIRST,
+because telling a family to ask a grown-up when the answer would still be no
+wastes their time.
+
+**Accessibility audited with axe-core rather than by opinion**: WCAG 2.0/2.1 A
+and AA across all four Tutor surfaces in both themes — zero violations, every
+interactive element tabbable and named, both live regions announcing. One real
+failure was found and fixed: the consent status line used `content-faint` at
+2.56:1 against a 4.5:1 requirement, on the exact sentence that tells a parent
+whether their child's microphone is on. **That token fails wherever it carries
+text elsewhere in the app — about 124 places.** Pre-existing, platform-wide,
+and spun out as its own task rather than rewritten inside a Tutor change;
+changing the token itself would edit an authoritative DESIGN.md value and needs
+sign-off.
+
+**Gates:** oracle 142, backend 443, frontend 644 — 1,229 tests. The oracle
+suite was run three consecutive times to confirm the live-socket file is
+deterministic rather than flaky.
+
 ## Current State (2026-08-21c) — Tutor finished and PROVEN: the three unreachable gaps closed, and a real websocket session driven end to end
 
 Continuation of the build entry below, on the owner's "finish it and test it".

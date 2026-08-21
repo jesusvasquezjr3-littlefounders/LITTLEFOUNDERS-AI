@@ -142,7 +142,8 @@
     "open": {
       "title": "Pregúntame lo que sea",
       "body": "Cuéntale a tu tutor qué traes en la cabeza y él encontrará por dónde empezar."
-    }
+    },
+    "voicePolicyBlocked": "Hablar en voz alta todavía no está disponible: estamos terminando el papeleo que protege la voz de los niños. Todo lo demás funciona igual escribiendo."
   },
   "conversation": {
     "listening": "Tu tutor está pensando en algo para que pruebes.",

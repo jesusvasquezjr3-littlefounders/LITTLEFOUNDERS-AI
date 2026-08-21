@@ -131,15 +131,19 @@ export function OfferPanel({
           </label>
         ) : (
           /*
-           * Explaining a silent session beats letting it look broken. The
-           * three reasons are genuinely different and the learner deserves to
-           * know which one applies: no consent yet, no provider configured, or
-           * a device that cannot record.
+           * Explaining a silent session beats letting it look broken, and the
+           * reasons are genuinely different: POLICY (the agreement protecting
+           * children's voices is not signed yet), no guardian consent yet, or
+           * no provider configured. Policy is checked FIRST — telling a family
+           * to ask a grown-up when the answer would still be no wastes their
+           * time and reads as a permission that does not work.
            */
           <p className="lf-body text-content-muted">
-            {microphoneBlockedBy === 'CONSENT_REQUIRED'
-              ? t('tutor.offers.voiceNeedsConsent')
-              : t('tutor.offers.voiceUnavailable')}
+            {microphoneBlockedBy === 'POLICY_BLOCKED'
+              ? t('tutor.offers.voicePolicyBlocked')
+              : microphoneBlockedBy === 'CONSENT_REQUIRED'
+                ? t('tutor.offers.voiceNeedsConsent')
+                : t('tutor.offers.voiceUnavailable')}
           </p>
         )}
       </Card>

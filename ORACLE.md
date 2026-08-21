@@ -216,11 +216,70 @@ Nothing outside `oracle/src/voice/` imports the provider SDK. Echo (Qwen3-TTS)
 keeps lesson narration; Oracle keeps live speech. Two TTS paths is not
 duplication — one is batch and cached, the other is live and disposable.
 
-> **Unverified at the time of writing:** Inworld's concrete API surface —
-> whether STT and TTS are separately addressable, streaming semantics, latency,
-> pricing, and whether a data-processing agreement covering minors' voice is
-> available. None of that was read in the design session and none of it is
-> assumed here. **Verify before implementing §3.3.**
+**VERIFIED against the live API, 2026-08-21**, with a real non-production key.
+Everything here was measured rather than read off a page — an earlier draft of
+the adapter guessed `/v1/speech:synthesize` and `/v1/speech:recognize` and
+expected raw audio bytes, and all three guesses were wrong.
+
+| Call | Shape | Measured |
+|---|---|---|
+| `POST /tts/v1/voice` | `{text, voiceId, modelId, language, audioConfig}` → `{audioContent}` base64 MP3 | **814 ms** a sentence |
+| `POST /stt/v1/transcribe` | `{transcribeConfig:{modelId, language, audioEncoding, voiceProfileConfig}, audioData:{content}}` → `{transcription:{transcript,…}}` | **715 ms** |
+| `POST /voices/v1/voices:clone` | `{displayName, langCode, voiceSamples:[{audioData, transcription}], audioProcessingConfig}` → `{voice:{voiceId}}` | instant, usable at once, **2 requests/minute** |
+| `DELETE /voices/v1/voices/{id}` | — | removes a cloned voice |
+
+Full round trip **1.53 s**, transcript faithful (it normalises "veinticinco" to
+"25", which for a maths tutor is an improvement). Auth is `Basic <key>` and the
+key arrives **already base64-encoded** — encoding it again yields a 401 that
+reads like a bad credential rather than a bad header. Models present:
+`inworld-tts-1`, `-1-max`, `-2`, `-2-flash`. Catalogue: 282 voices including
+34 Spanish and 14 Portuguese.
+
+`npm run voices:verify` re-runs that round trip **through the adapter**, so a
+drift in Inworld's shapes fails a command rather than a child's session.
+
+> ### ⚠ THE CAST ALREADY HAS VOICES — use them or stay silent
+>
+> Owner correction, 2026-08-21, and it was right: Dina, Liruf, Dr. Rho and
+> Zara are already voiced. Echo clones them per locale from the owner's
+> reference recordings (`audiogen/src/samples/trimmed/`, gitignored) and
+> narrates **every lesson** with them. A Tutor speaking in a stock catalogue
+> voice would hand a child who knows Dr. Rho from a lesson a stranger wearing
+> his face — which quietly breaks the one thing the 3D cast exists to build.
+>
+> So Oracle resolves a voice per CHARACTER × LOCALE from
+> `INWORLD_VOICE_<CHAR>_<LOCALE>`, named to mirror Echo's
+> `TTS_VOICE_<CHAR>_<LOCALE>`, and `npm run voices:clone` enrols them from the
+> **same trimmed samples Echo uses** — one source, so the two castings cannot
+> drift apart by neglect.
+>
+> **There is no fallback voice, deliberately.** An unenrolled character is
+> SILENT in that locale: the turn is captioned, the lesson continues, and the
+> verify script names the missing enrolment. Substituting a stock voice would
+> be §1.14 in its purest form — a confident wrong answer where an absent one
+> merely omits.
+>
+> Inworld's cloning is *instant* (5–15 s of reference, no training step) and a
+> cloned voice runs at the same realtime latency, which is what makes this
+> affordable at all. Their **professional** cloning (30+ min of audio) is
+> recommended for children's voices and unusual timbres — relevant to Liruf,
+> and an owner decision rather than an engineering one.
+
+> ### ⚠ PRIVACY FINDING — Inworld's STT can profile the speaker
+>
+> Found by verifying, not by reading. `inworld/inworld-stt-1` can return a
+> **voice profile** alongside the transcript: inferred emotion, vocal style,
+> accent, **age** and pitch.
+>
+> Measured: it is null unless requested, and absent entirely when
+> `enableVoiceProfile: false` is sent. Oracle sends that explicitly and logs an
+> error if a profile arrives anyway — off by default is not the same as off,
+> because a default is something a provider can change and we would never
+> notice.
+>
+> Inferring a child's age and emotional state from their voice is a different
+> KIND of processing from turning speech into text, and nothing in this product
+> needs it. Recorded for counsel in `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md`.
 
 ---
 
@@ -606,8 +665,31 @@ Every one of these must be proven, not assumed. Ticked items were verified in
 the build session of 2026-08-21; unticked ones block enabling this for minors.
 
 - [ ] A data-processing agreement with the voice provider covering minors'
-      audio exists. **OWNER ACTION — blocks kid rollout.** See
-      `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` §6.
+      audio exists. **OWNER ACTION.** See `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` §6.
+      It now blocks exactly one thing rather than the feature — see the
+      decision below.
+
+> ### The DPA gates the MICROPHONE, not the product (decision, 2026-08-21)
+>
+> Left to the implementer's judgement, with the owner's instruction that the
+> product must stay accessible. The decision:
+>
+> **`TUTOR_VOICE_FOR_MINORS` is an explicit configuration flag, default OFF.**
+> While it is off, no minor's microphone opens — regardless of guardian
+> consent, which is a separate and also-required condition. Adults are
+> unaffected, and **every learner keeps the whole tutor**: captions above the
+> character, the transcript rail, typed input, the live lesson, grading, XP,
+> replay. The contract gates one input method.
+>
+> **Why a flag and not simply "leave the key unconfigured".** Those are
+> different facts and conflating them is how a policy decision becomes an
+> accident: a key configured so adults could use voice would silently have
+> opened children's microphones too. Now the policy is a line in a config file
+> with a name, a default, and a sign-off to record when it flips.
+>
+> The UI reports the reason honestly and checks POLICY FIRST — telling a family
+> "ask a grown-up to allow it" when the answer would still be no wastes their
+> time and reads as a permission that does not work.
 - [ ] All three `/LEGAL/` documents updated and `npm run legal:sync` run.
       **Blocked on counsel** — the brief is written, the answers are not.
       The consent wording currently in `tutor.consent.body` is a PLACEHOLDER.
@@ -631,8 +713,18 @@ the build session of 2026-08-21; unticked ones block enabling this for minors.
       conversation audible at a public URL with every record of it gone.
 - [ ] `npm run verify:rig` and `npm run verify:placement` — LOCAL gates needing
       `/glb/` source exports, which are outside the repository.
-- [x] Verified in-browser at 375 px and 1280 px, light and dark, screenshots
-      taken, no horizontal overflow at either width (§1.11).
+- [x] Verified in-browser at 375 px, 720 px and 1280 px, light and dark,
+      screenshots taken, no horizontal overflow at any width (§1.11).
+- [x] **Accessibility audited with axe-core** (WCAG 2.0/2.1 A and AA) across
+      all four Tutor surfaces in both themes: zero violations. Every
+      interactive element is tabbable, carries an accessible name and can take
+      focus; the caption and transcript both announce politely. One real
+      failure was found and fixed — the consent status line used a faint colour
+      at 2.56:1 against a 4.5:1 requirement, on the exact sentence that tells a
+      parent whether their child's microphone is on. The same token fails
+      wherever it carries text elsewhere in the app (~124 places); that is
+      pre-existing and tracked separately rather than rewritten inside a Tutor
+      change.
 - [x] Owner sign-off recorded for the §1.5 exception (§3.2).
 
 ## §17 Documentation stewardship for this feature

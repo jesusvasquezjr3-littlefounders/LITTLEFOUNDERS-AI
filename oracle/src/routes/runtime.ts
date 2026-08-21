@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { ok, fail } from '../lib/http.js';
+import { getConfig } from '../env.js';
 import { moderationReadiness } from '../safety/moderation.js';
 import { modelConfigured } from '../model/provider.js';
 import { getVoiceProvider } from '../voice/index.js';
@@ -47,7 +48,15 @@ export function runtimeRouter(liveSessions: () => number): Router {
       voiceAvailable: voice,
       // Honest about what the learner will actually get, so the UI can say
       // "you can type to the tutor today" instead of promising a microphone.
-      microphoneAvailable: voice && parsed.data.wantsVoice,
+      microphoneAvailable:
+        voice && parsed.data.wantsVoice && (!parsed.data.isMinor || getConfig().TUTOR_VOICE_FOR_MINORS),
+      /*
+       * Reported separately from `microphoneAvailable` because the REASON
+       * differs and the copy differs with it: "a grown-up needs to allow it"
+       * is a different message from "we are not offering this yet", and
+       * telling a family the wrong one wastes their time.
+       */
+      minorVoicePolicy: getConfig().TUTOR_VOICE_FOR_MINORS ? 'allowed' : 'blocked',
     });
   });
 

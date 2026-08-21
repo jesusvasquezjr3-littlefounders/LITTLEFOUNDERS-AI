@@ -166,7 +166,17 @@ describe('tierForBirthDate', () => {
 
 describe('POST /api/v1/tutor/sessions — the microphone gate', () => {
   it('refuses the microphone for a kid with NO guardian consent', async () => {
-    const calls = stub({ roles: [{ role: 'kid' }], consent: [] });
+    const calls = stub({
+      roles: [{ role: 'kid' }],
+      consent: [],
+      preflight: {
+        canStart: true,
+        blockedBy: null,
+        voiceAvailable: true,
+        microphoneAvailable: true,
+        minorVoicePolicy: 'allowed',
+      },
+    });
 
     const response = await request(createApp())
       .post('/api/v1/tutor/sessions')
@@ -183,10 +193,17 @@ describe('POST /api/v1/tutor/sessions — the microphone gate', () => {
     expect(JSON.parse(insert?.body ?? '{}').voice_used).toBe(false);
   });
 
-  it('allows the microphone for a kid WITH active consent', async () => {
+  it('allows the microphone for a kid WITH active consent, once policy permits', async () => {
     stub({
       roles: [{ role: 'kid' }],
       consent: [{ id: '55555555-5555-4555-8555-555555555555', user_id: KID, granted_at: 'x', revoked_at: null }],
+      preflight: {
+        canStart: true,
+        blockedBy: null,
+        voiceAvailable: true,
+        microphoneAvailable: true,
+        minorVoicePolicy: 'allowed',
+      },
     });
 
     const response = await request(createApp())
@@ -206,6 +223,75 @@ describe('POST /api/v1/tutor/sessions — the microphone gate', () => {
       .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
       .send({ intent: 'open', wantsVoice: true });
 
+    expect(response.body.data.microphoneAvailable).toBe(true);
+    expect(response.body.data.microphoneBlockedBy).toBeNull();
+  });
+
+  it('refuses a kid the microphone while the DPA policy is BLOCKED, even with consent', async () => {
+    stub({
+      roles: [{ role: 'kid' }],
+      consent: [{ id: '55555555-5555-4555-8555-555555555555', user_id: KID, granted_at: 'x', revoked_at: null }],
+      preflight: {
+        canStart: true,
+        blockedBy: null,
+        voiceAvailable: true,
+        microphoneAvailable: false,
+        minorVoicePolicy: 'blocked',
+      },
+    });
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/sessions')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ intent: 'course_topic', wantsVoice: true });
+
+    expect(response.status).toBe(201);
+    expect(response.body.data.microphoneAvailable).toBe(false);
+    // POLICY, not CONSENT: consent IS granted here, and saying "ask a grown-up"
+    // would send a family to fix something that is already fixed.
+    expect(response.body.data.microphoneBlockedBy).toBe('POLICY_BLOCKED');
+  });
+
+  it('reports POLICY before CONSENT when neither is satisfied', async () => {
+    stub({
+      roles: [{ role: 'kid' }],
+      consent: [],
+      preflight: {
+        canStart: true,
+        blockedBy: null,
+        voiceAvailable: true,
+        microphoneAvailable: false,
+        minorVoicePolicy: 'blocked',
+      },
+    });
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/sessions')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ intent: 'course_topic', wantsVoice: true });
+
+    expect(response.body.data.microphoneBlockedBy).toBe('POLICY_BLOCKED');
+  });
+
+  it('does not apply the minor policy to an adult', async () => {
+    stub({
+      roles: [{ role: 'universal' }],
+      preflight: {
+        canStart: true,
+        blockedBy: null,
+        voiceAvailable: true,
+        microphoneAvailable: true,
+        minorVoicePolicy: 'blocked',
+      },
+    });
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/sessions')
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+      .send({ intent: 'open', wantsVoice: true });
+
+    // The DPA gates a CHILD's voice reaching a third party. It says nothing
+    // about an adult's, and gating both would be a policy nobody chose.
     expect(response.body.data.microphoneAvailable).toBe(true);
     expect(response.body.data.microphoneBlockedBy).toBeNull();
   });

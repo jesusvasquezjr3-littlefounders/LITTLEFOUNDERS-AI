@@ -120,6 +120,33 @@ interface PreflightResult {
   blockedBy: string | null;
   voiceAvailable: boolean;
   microphoneAvailable: boolean;
+  /** Whether policy currently permits a minor's microphone at all (the DPA gate). */
+  minorVoicePolicy?: 'allowed' | 'blocked';
+}
+
+const PREFLIGHT_DOWN: PreflightResult = {
+  canStart: false,
+  blockedBy: 'ORACLE_UNAVAILABLE',
+  voiceAvailable: false,
+  microphoneAvailable: false,
+  minorVoicePolicy: 'blocked',
+};
+
+/**
+ * Why a microphone is off, in the order that decides the copy.
+ *
+ * POLICY first: telling a family "ask a grown-up to allow it" when the answer
+ * would still be no wastes their time and reads as a broken permission.
+ */
+function microphoneBlockedBy(
+  isMinor: boolean,
+  hasConsent: boolean,
+  runtime: PreflightResult,
+): string | null {
+  if (isMinor && runtime.minorVoicePolicy === 'blocked') return 'POLICY_BLOCKED';
+  if (isMinor && !hasConsent) return 'CONSENT_REQUIRED';
+  if (!runtime.voiceAvailable) return 'VOICE_UNAVAILABLE';
+  return null;
 }
 
 /**
@@ -138,11 +165,11 @@ async function preflight(isMinor: boolean, wantsVoice: boolean): Promise<Preflig
       body: JSON.stringify({ isMinor, wantsVoice }),
       signal: AbortSignal.timeout(ORACLE_TIMEOUT_MS),
     });
-    if (!response.ok) return { canStart: false, blockedBy: 'ORACLE_UNAVAILABLE', voiceAvailable: false, microphoneAvailable: false };
+    if (!response.ok) return PREFLIGHT_DOWN;
     const body = (await response.json()) as { data?: PreflightResult | null };
-    return body.data ?? { canStart: false, blockedBy: 'ORACLE_UNAVAILABLE', voiceAvailable: false, microphoneAvailable: false };
+    return body.data ?? PREFLIGHT_DOWN;
   } catch {
-    return { canStart: false, blockedBy: 'ORACLE_UNAVAILABLE', voiceAvailable: false, microphoneAvailable: false };
+    return PREFLIGHT_DOWN;
   }
 }
 
@@ -636,7 +663,7 @@ export function tutorRouter(): Router {
       startBlockedBy: runtime.canStart ? null : runtime.blockedBy,
       voiceAvailable: runtime.voiceAvailable,
       /** Distinct reasons deserve distinct copy: no consent vs no provider. */
-      microphoneBlockedBy: isMinor && consent === null ? 'CONSENT_REQUIRED' : !runtime.voiceAvailable ? 'VOICE_UNAVAILABLE' : null,
+      microphoneBlockedBy: microphoneBlockedBy(isMinor, consent !== null, runtime),
       // The tutor offers, never diagnoses. The client renders these as
       // invitations, and declining is not recorded as a fact about anyone.
       weakSkills: weak.map((s) => ({
@@ -686,8 +713,7 @@ export function tutorRouter(): Router {
     // no active guardian consent gets a working, silent session — never a
     // session that quietly opens a microphone.
     const consent = isMinor ? await getActiveVoiceConsent(user.id) : null;
-    const consentSatisfied = !isMinor || consent !== null;
-    const wantsVoice = parsed.data.wantsVoice && consentSatisfied;
+    const wantsVoice = parsed.data.wantsVoice && (!isMinor || consent !== null);
 
     const runtime = await preflight(isMinor, wantsVoice);
     if (!runtime.canStart) {
@@ -728,7 +754,7 @@ export function tutorRouter(): Router {
         voiceAvailable: runtime.voiceAvailable,
         microphoneAvailable: wantsVoice && runtime.microphoneAvailable,
         // So the UI can explain a silent session rather than looking broken.
-        microphoneBlockedBy: isMinor && consent === null ? 'CONSENT_REQUIRED' : null,
+        microphoneBlockedBy: microphoneBlockedBy(isMinor, consent !== null, runtime),
       },
       201,
     );

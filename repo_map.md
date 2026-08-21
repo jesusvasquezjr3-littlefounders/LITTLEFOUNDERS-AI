@@ -1168,17 +1168,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-08-21c) — Tutor finished and PROVEN: the three unreachable gaps closed, and a real websocket session driven end to end
+## Current State (2026-08-21d) — Inworld VERIFIED against the live API, and the cast keeps its own voices
 
-Continuation of the build entry below, on the owner's "finish it and test it".
+The owner supplied a non-production Inworld key and asked for verification.
+Everything below was measured against the live service, not read off a page.
 
-**Three gaps made parts of the feature literally unreachable, and none of them
-would have failed a test.** The consent API had no UI at all, so the microphone
-gate could never be satisfied through the product and the whole voice path was
-dead. Parent visibility had an endpoint and no page, so a product invariant
-existed only in a route table. And the retention function had no caller, so a
-90-day promise the legal brief makes on our behalf would have been kept by
-nobody. All three are now real surfaces: `VoiceConsentControl` on `/family`,
+**The adapter's guesses were all wrong, which is exactly why it carried an
+UNVERIFIED banner.** It assumed `/v1/speech:synthesize` and
+`/v1/speech:recognize` and expected raw audio bytes. Reality:
+`POST /tts/v1/voice` returning base64 in `audioContent` (814 ms), and
+`POST /stt/v1/transcribe` with a nested `transcribeConfig` (715 ms). Round trip
+1.53 s and the transcript was faithful — it even normalises "veinticinco" to
 ```
 
 ### agent/README.md
@@ -22192,6 +22192,46 @@ export default tseslint.config(
 }
 ```
 
+### oracle/scripts/clone-character-voices.ts
+
+```
+/*
+ * `npm run voices:clone -- --confirm` — enrols the four canonical characters
+ * into Inworld, one cloned voice per character per locale.
+ *
+ * OPERATOR-OPT-IN, like Echo's `voices:register`: it makes ZERO network calls
+ * without `--confirm`, and it never writes to a `.env` — it prints the lines
+ * for a human to review and paste.
+ *
+ * WHY THIS EXISTS AT ALL. The cast already has voices. Echo clones them from
+ * `audiogen/src/samples/trimmed/{locale}/{character}.wav` and narrates every
+ * lesson with them. If the Tutor spoke in a stock catalogue voice, a child who
+ * knows Dr. Rho from a lesson would meet a stranger wearing his face. Reading
+ * the SAME trimmed samples is what makes the two castings identical by
+ * construction rather than by intention — nobody has to remember to keep them
+ * in sync, because there is only one source.
+```
+
+### oracle/scripts/verify-inworld.ts
+
+```
+/*
+ * `npm run voices:verify` — proves the voice path against the LIVE Inworld
+ * API, through the real adapter rather than through curl.
+ *
+ * Two questions, and they are genuinely different:
+ *
+ *   1. TRANSPORT — do our endpoints, headers, request shapes and response
+ *      parsing match the API as it exists today? A round trip answers it
+ *      completely: synthesize a sentence, transcribe the audio back, compare.
+ *      If our TTS body is wrong we get no audio; if our STT parsing is wrong
+ *      we get no text; if either shape drifted we find out here rather than
+ *      in front of a child.
+ *
+ *   2. CASTING — is each canonical character enrolled in each locale? This is
+ *      not a transport question and a green transport says nothing about it.
+```
+
 ### oracle/scripts/verify-tutor.ts
 
 ```
@@ -22330,6 +22370,26 @@ const SECRET = process.env.TUTOR_SESSION_SECRET as string;
 const SID = '11111111-1111-4111-8111-111111111111';
 const UID = '22222222-2222-4222-8222-222222222222';
 
+```
+
+### oracle/src/__tests__/voice.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { InworldVoiceProvider, resolveCharacterVoice, voiceEnvVar } from '../voice/inworld.js';
+import { getVoiceProvider, resetVoiceProvider, VoiceUnavailableError } from '../voice/index.js';
+import { resetConfigCache } from '../env.js';
+
+/*
+ * The voice layer, without a network.
+ *
+ * The property that matters most here is the one the owner named: the cast
+ * ALREADY has voices, cloned per locale from the owner's reference recordings
+ * and used in every lesson. If the Tutor spoke in a stock catalogue voice, a
+ * child who knows Dr. Rho from a lesson would meet a stranger wearing his
+ * face. So an unenrolled character must be SILENT, and these tests are what
+ * stop a well-meaning fallback from being added later.
+ *
 ```
 
 ### oracle/src/app.ts
@@ -22538,6 +22598,7 @@ import { withTimeout } from '../lib/http.js';
 import { Router } from 'express';
 import { z } from 'zod';
 import { ok, fail } from '../lib/http.js';
+import { getConfig } from '../env.js';
 import { moderationReadiness } from '../safety/moderation.js';
 import { modelConfigured } from '../model/provider.js';
 import { getVoiceProvider } from '../voice/index.js';
@@ -22549,7 +22610,6 @@ import { getVoiceProvider } from '../voice/index.js';
 
 export function runtimeRouter(liveSessions: () => number): Router {
   const router = Router();
-
 ```
 
 ### oracle/src/safety/canary.ts
@@ -22795,6 +22855,7 @@ import {
 ```
 import { getConfig } from '../env.js';
 import { withTimeout } from '../lib/http.js';
+import type { Locale } from '../context/schema.js';
 import {
   VoiceUnavailableError,
   type SynthesisRequest,
@@ -22807,7 +22868,6 @@ import {
 /*
  * The Inworld adapter — the ONLY file in the repository that names the
  * provider or knows its wire format.
- *
 ```
 
 ### oracle/src/voice/provider.ts
@@ -22854,6 +22914,7 @@ import { ACTIONS, EMOTIONS } from '../tutor/turnSchema.js';
 
 ```
 import type { IncomingMessage, Server } from 'http';
+import { getConfig } from '../env.js';
 import { WebSocketServer, type WebSocket } from 'ws';
 import { looksLikeSupabaseJwt, verifySessionToken } from '../session/token.js';
 import {
@@ -22867,7 +22928,6 @@ import {
   type SessionContext,
 } from '../core/client.js';
 import { storeTurnAudio } from '../depot/client.js';
-import { getVoiceProvider } from '../voice/index.js';
 ```
 
 ### oracle/tsconfig.json

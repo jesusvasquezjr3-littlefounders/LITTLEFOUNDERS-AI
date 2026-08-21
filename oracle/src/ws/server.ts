@@ -1,4 +1,5 @@
 import type { IncomingMessage, Server } from 'http';
+import { getConfig } from '../env.js';
 import { WebSocketServer, type WebSocket } from 'ws';
 import { looksLikeSupabaseJwt, verifySessionToken } from '../session/token.js';
 import {
@@ -125,8 +126,15 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
     return;
   }
 
+  /*
+   * THREE conditions for a minor's microphone, and all must hold: a working
+   * provider, an active guardian consent, and the DPA policy flag. An adult
+   * needs only the provider. See `TUTOR_VOICE_FOR_MINORS` in env.ts for why
+   * the policy is a flag rather than an absent key.
+   */
   const voice = getVoiceProvider().available;
-  const microphone = voice && (!session.isMinor || session.voiceConsent);
+  const minorVoiceAllowed = getConfig().TUTOR_VOICE_FOR_MINORS;
+  const microphone = voice && (!session.isMinor || (session.voiceConsent && minorVoiceAllowed));
 
   const live: Live = {
     socket,

@@ -142,7 +142,8 @@
     "open": {
       "title": "Ask me anything",
       "body": "Tell your tutor what's on your mind and they'll find a way in."
-    }
+    },
+    "voicePolicyBlocked": "Talking out loud isn't available yet — we're finishing the paperwork that keeps children's voices safe. Everything else works exactly the same by typing."
   },
   "conversation": {
     "listening": "Your tutor is thinking of something for you to try.",

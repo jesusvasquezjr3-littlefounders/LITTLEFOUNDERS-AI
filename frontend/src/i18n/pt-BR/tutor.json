@@ -142,7 +142,8 @@
     "open": {
       "title": "Me pergunte o que quiser",
       "body": "Conte para o seu tutor o que está na sua cabeça e ele acha por onde começar."
-    }
+    },
+    "voicePolicyBlocked": "Falar em voz alta ainda não está disponível: estamos terminando a papelada que protege a voz das crianças. Todo o resto funciona igual, escrevendo."
   },
   "conversation": {
     "listening": "Seu tutor está pensando em algo para você tentar.",

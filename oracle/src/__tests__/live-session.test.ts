@@ -51,7 +51,7 @@ let journal: CoreJournal;
 let modelJournal: ModelJournal;
 /** Flipped per test to shape what the fake Core reports about the learner. */
 let sessionIsMinor = false;
-let sessionConsent = true;
+const sessionConsent = true;
 
 function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve) => {
@@ -340,7 +340,7 @@ describe('a real live session over a real websocket', () => {
 
   it('sends the model NOTHING that identifies the learner', async () => {
     freshJournal();
-    const { socket, closed } = open(await socketUrl());
+    const { socket } = open(await socketUrl());
     await collect(socket, (m) => m.some((x) => x.type === 'turn'));
 
     const sent = modelJournal.bodies.join('\n');
@@ -354,7 +354,7 @@ describe('a real live session over a real websocket', () => {
 
   it('serves an activity when the tutor asks for one, and reacts to the result', async () => {
     freshJournal();
-    const { socket, closed } = open(await socketUrl());
+    const { socket } = open(await socketUrl());
     await collect(socket, (m) => m.some((x) => x.type === 'turn'));
 
     // The client reports a graded result; the tutor reacts to the actual score.
@@ -396,7 +396,7 @@ describe('a real live session over a real websocket', () => {
 
   it('answers an unparseable frame with an error and keeps the session alive', async () => {
     freshJournal();
-    const { socket, closed } = open(await socketUrl());
+    const { socket } = open(await socketUrl());
     await collect(socket, (m) => m.some((x) => x.type === 'turn'));
 
     const errored = collect(socket, (m) => m.some((x) => x.type === 'error'));
@@ -409,7 +409,7 @@ describe('a real live session over a real websocket', () => {
 
   it('rejects an audio frame when the microphone is not enabled', async () => {
     freshJournal();
-    const { socket, closed } = open(await socketUrl());
+    const { socket } = open(await socketUrl());
     await collect(socket, (m) => m.some((x) => x.type === 'turn'));
 
     const errored = collect(socket, (m) => m.some((x) => x.type === 'error'));
@@ -459,7 +459,7 @@ describe('the socket refuses what it must', () => {
     resetConfigCache();
 
     try {
-      const { socket, closed } = open(await socketUrl());
+      const { closed } = open(await socketUrl());
       // Refused AT THE DOOR, not turn by turn: a child sitting with a
       // character who apologises forever is worse than an honest "not
       // available right now" (/ORACLE.md §6).

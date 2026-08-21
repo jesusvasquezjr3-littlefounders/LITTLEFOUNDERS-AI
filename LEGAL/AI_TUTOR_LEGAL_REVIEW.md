@@ -9,10 +9,12 @@
 > engineering side to state what the system actually does. Every question in
 > §7 is open and belongs to counsel.
 >
-> **Status:** the feature is BUILT and NOT ENABLED for minors. `/ORACLE.md`
-> §16 lists the gates, and the first of them is a data-processing agreement
-> that does not yet exist. Nothing in this document should be read as a claim
-> that the platform is currently compliant with anything.
+> **Status:** the feature is BUILT, and a **minor's microphone is switched off
+> by an explicit policy flag** (`TUTOR_VOICE_FOR_MINORS`, default off) which
+> stays off until the agreement in §6 exists. Everything else in the tutor is
+> live and usable by every learner — the gate is one input method, not the
+> product. Nothing in this document should be read as a claim that the
+> platform is currently compliant with anything.
 >
 > **Prepared:** 2026-08-21 · **Owner decisions recorded in:** `/ORACLE.md` §0
 
@@ -39,6 +41,7 @@ This is the section that matters most. Two external processors are involved.
 | Recipient | What they receive | Why | Retention by us |
 |---|---|---|---|
 | **Speech provider** (Inworld, interim — see §6) | The learner's **raw audio**, including a minor's voice. The tutor's already-generated text, for synthesis. A random session identifier. | Speech-to-text and text-to-speech | The learner's audio is **never stored by us**. There is no column for it in the database. |
+| **Speech provider** (same) — SEPARATE PURPOSE | The **characters' reference voice recordings**, uploaded once to create cloned voices. See §2.4. | Voice cloning, so the tutor sounds like the character the child already knows from lessons | The recordings are the owner's own assets, not learner data |
 | **Language model providers** (DeepSeek as author, Qwen as safety reviewer) | A strictly enumerated context object (§2.2) plus the learner's transcribed words for the current session only. | Generating the tutor's replies, moderating them, and authoring exercises | Transcript stored 90 days (§3) |
 
 ### §2.2 The complete set of learner data sent to a language model
@@ -75,6 +78,45 @@ transcript from a previous session.
 A developer who adds any of these to the context object causes a build failure,
 not a silent success. **Adding a field to §2.2 requires an update to this
 document** (`/AGENTS.md` §8 stewardship table).
+
+### §2.4 Voice cloning — a separate processing relationship
+
+**Verified 2026-08-21.** The four characters (Dina, Liruf, Dr. Rho, Zara) are
+already voiced: reference recordings held by the owner are cloned per language
+and used to narrate every lesson. For the tutor to sound like the same
+character, those same recordings are uploaded once to the speech provider,
+which returns a cloned voice identifier used thereafter.
+
+**What counsel should know:**
+
+- The recordings are **not learner data**. They are the owner's assets,
+  performed by whoever recorded them.
+- Uploading them creates a **derived voice model held by a third party**. That
+  is a different question from processing a child's speech, and it turns on
+  whatever rights and consents exist for the original performances.
+- Twelve voices in total (four characters × three languages). Enrolment is a
+  one-off operator action, never automatic.
+- Cloned voices can be deleted through the provider's API; we verified that
+  the deletion call works.
+
+### §2.5 A finding: the speech provider can profile the speaker
+
+Discovered by testing the API rather than by reading its documentation.
+
+The speech-to-text model can return, alongside the transcript, an inferred
+**voice profile**: emotion, vocal style, accent, **age** and pitch, with
+confidence scores.
+
+- Measured behaviour: it is absent unless requested, and absent when we
+  explicitly disable it.
+- **We disable it explicitly on every request** and log an error if a profile
+  arrives anyway — "off by default" is not the same as "off", because a
+  default is something a provider can change without telling us.
+- No profile is ever stored, forwarded, or shown to anyone.
+
+It is recorded here because inferring a child's age and emotional state from
+their voice is a different KIND of processing from transcription, and counsel
+may wish to address it in the disclosures even though we do not use it.
 
 ---
 
@@ -169,7 +211,7 @@ traceable; they do not make it impossible.
 
 | Processor | Role | Data | Contract status |
 |---|---|---|---|
-| **Inworld** | Speech-to-text and text-to-speech | Minors' raw voice audio | **NO AGREEMENT IN PLACE.** Required before any minor uses the microphone. Must cover non-retention, non-use for training, sub-processing, deletion, and jurisdiction. |
+| **Inworld** | Speech-to-text, text-to-speech, and voice cloning (§2.4) | Minors' raw voice audio; the characters' reference recordings | **NO AGREEMENT IN PLACE.** Required before any minor uses the microphone. Must cover non-retention, non-use for training, sub-processing, deletion, jurisdiction — and now also the **cloned voice models** derived from our recordings. |
 | **DeepSeek** | Generates the tutor's replies and draft exercises | The §2.2 context; a minor's transcribed words | Existing usage across the platform; **the child-facing conversational use is new** and should be re-examined. |
 | **Alibaba Cloud / Qwen** | Independently reviews the tutor's words and generated exercises for safety | One sentence or one exercise at a time, with no learner context attached | Existing usage; same note as above. |
 
@@ -221,6 +263,18 @@ Engineering has no position on any of these.
    read it, which prevails?
 9. Do the transcripts constitute an educational record under any applicable
    framework?
+
+**On the character voices (§2.4)**
+10a. Uploading the characters' reference recordings to the speech provider
+     creates a cloned voice model held by a third party. What rights or
+     releases are required from whoever performed those voices, and does the
+     provider's contract need to cover the derived model as well as the audio?
+10b. Does a synthetic voice that a child forms a relationship with require any
+     disclosure of its own — that the character is not a person?
+
+**On voice profiling (§2.5)**
+10c. We disable the provider's speaker-profiling feature. Does the mere
+     capability require disclosure, or is disabling it sufficient?
 
 **On the parties**
 10. The guardian consents; the child speaks. Where a family has two guardians

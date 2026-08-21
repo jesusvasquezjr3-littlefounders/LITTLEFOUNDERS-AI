@@ -55,9 +55,60 @@ const Env = z.object({
    * what a deployment without an Inworld contract runs, and what every test
    * runs (/ORACLE.md §14: speech is an enhancement, the lesson is the product).
    */
+  /*
+   * THE DPA GATE, made explicit (owner decision, 2026-08-21).
+   *
+   * A minor's voice reaching a third party needs a data-processing agreement
+   * that does not exist yet (/LEGAL/AI_TUTOR_LEGAL_REVIEW.md §6). Until it
+   * does, this stays FALSE and no minor's microphone opens — regardless of
+   * guardian consent, which is a separate and also-required condition.
+   *
+   * It is a flag rather than "just don't configure a key" because those are
+   * DIFFERENT facts and conflating them is how a policy decision turns into an
+   * accident: a key configured for adult sessions would silently have opened
+   * children's microphones too. Adults are unaffected either way, and every
+   * learner keeps the full tutor — captioned, typed, and complete — so the
+   * contract gates the microphone, never the product.
+   *
+   * Flipping it is a deployment change with an owner sign-off to record.
+   */
+  TUTOR_VOICE_FOR_MINORS: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((v) => v === 'true'),
+
   VOICE_PROVIDER: z.enum(['inworld', 'none']).default('none'),
   INWORLD_API_BASE: z.url().default('https://api.inworld.ai'),
+  /** Inworld issues this ALREADY base64-encoded (`keyId:secret`). Do not re-encode. */
   INWORLD_API_KEY: z.string().min(8).optional(),
+  /** Verified present: inworld-tts-1, -1-max, -2, -2-flash. */
+  INWORLD_TTS_MODEL: z.string().min(1).default('inworld-tts-1'),
+
+  /*
+   * THE CHARACTER VOICES (owner note, 2026-08-21).
+   *
+   * The cast already has voices: Echo clones them per locale from the owner's
+   * reference recordings and narrates every lesson with them. The Tutor must
+   * use the SAME ones, or a child who knows Dr. Rho from a lesson meets a
+   * stranger. These names deliberately mirror Echo's `TTS_VOICE_<CHAR>_<LOC>`
+   * so the two castings can be compared at a glance.
+   *
+   * All optional, and an UNSET one means that character is silent in that
+   * locale — never a stock substitute (see src/voice/inworld.ts).
+   * Populated by `npm run voices:clone`.
+   */
+  INWORLD_VOICE_DINA_EN_US: z.string().min(1).optional(),
+  INWORLD_VOICE_DINA_ES_MX: z.string().min(1).optional(),
+  INWORLD_VOICE_DINA_PT_BR: z.string().min(1).optional(),
+  INWORLD_VOICE_LIRUF_EN_US: z.string().min(1).optional(),
+  INWORLD_VOICE_LIRUF_ES_MX: z.string().min(1).optional(),
+  INWORLD_VOICE_LIRUF_PT_BR: z.string().min(1).optional(),
+  INWORLD_VOICE_RHO_EN_US: z.string().min(1).optional(),
+  INWORLD_VOICE_RHO_ES_MX: z.string().min(1).optional(),
+  INWORLD_VOICE_RHO_PT_BR: z.string().min(1).optional(),
+  INWORLD_VOICE_ZARA_EN_US: z.string().min(1).optional(),
+  INWORLD_VOICE_ZARA_ES_MX: z.string().min(1).optional(),
+  INWORLD_VOICE_ZARA_PT_BR: z.string().min(1).optional(),
 
   REDIS_URL: z.string().url().default('redis://localhost:6379'),
 

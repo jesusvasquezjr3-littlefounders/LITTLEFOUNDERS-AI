@@ -110,7 +110,13 @@ export function VoiceConsentControl({ kidUserId, token, kidName }: VoiceConsentC
           <Icon name="mic" className="mt-0.5 shrink-0 text-[18px] text-content-faint" aria-hidden />
           <span className="min-w-0">
             <span className="lf-caption block text-content">{t('tutor.consent.title')}</span>
-            <span className="lf-caption block text-content-faint">
+            {/*
+              `content-muted` (7.6:1), never `content-faint` (2.56:1 — a WCAG
+              AA failure caught by axe). This sentence tells a parent whether
+              their child's microphone is on; it is status, not decoration, and
+              the one line here that must never be hard to read.
+            */}
+            <span className="lf-caption block text-content-muted">
               {active && state.status === 'ready' && state.grantedAt
                 ? t('tutor.consent.activeSince', { date: formatter.format(new Date(state.grantedAt)) })
                 : t('tutor.consent.inactive')}

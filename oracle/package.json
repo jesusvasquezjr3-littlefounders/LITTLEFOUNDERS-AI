@@ -15,7 +15,9 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "verify:tutor": "tsx scripts/verify-tutor.ts"
+    "verify:tutor": "tsx scripts/verify-tutor.ts",
+    "voices:clone": "tsx scripts/clone-character-voices.ts",
+    "voices:verify": "tsx scripts/verify-inworld.ts"
   },
   "dependencies": {
     "express": "^5.1.0",
