@@ -66,7 +66,7 @@ jobs:
           jq --version
 
       - name: Write the Railway SSH key
-        if: inputs.step == 'inspect' || inputs.step == 'migrate'
+        if: inputs.step == 'inspect' || inputs.step == 'migrate' || inputs.step == 'verify'
         run: |
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
@@ -441,3 +441,70 @@ jobs:
       - name: Preflight
         if: inputs.step == 'verify'
         run: bash agent/tools/railway-preflight.sh "$ENVIRONMENT"
+
+      - name: Reach Oracle the way Core reaches it
+        if: inputs.step == 'verify'
+        run: |
+          set -uo pipefail
+          set +e
+
+          # The preflight above proves the two services are CONFIGURED to find
+          # each other. It cannot prove they can. ORACLE_URL points at Railway
+          # private networking, which is a different network from the public
+          # domain the browser uses and is reachable from nowhere else — so the
+          # only honest test is to stand inside Core and call.
+          #
+          # This matters because the failure is invisible from outside: both
+          # services stay healthy on their own /health, the learner presses the
+          # button, and Core reports that the tutor is unavailable with nothing
+          # anywhere naming a network as the reason.
+          echo "== From inside Core: GET http://oracle.railway.internal:4009/health =="
+          out="$(railway ssh --service littlefounders-backend -i ~/.ssh/railway_key -- \
+                  curl -s --max-time 10 http://oracle.railway.internal:4009/health 2>&1)"
+          echo "$out" | sed 's/^/   /'
+
+          if printf '%s' "$out" | grep -q '"service":"oracle"'; then
+            echo "OK: Core can reach Oracle over private networking"
+          else
+            echo "::error::Core cannot reach Oracle at ORACLE_URL — every tutor session would fail at the door"
+            exit 1
+          fi
+
+          echo ""
+          echo "== And the public address the BROWSER is handed =="
+          # Read back what Core will actually send to the client, rather than
+          # what this workflow believes it set.
+          PUBLIC="$(railway variable list --service littlefounders-backend --environment "$ENVIRONMENT" --json 2>/dev/null \
+                    | jq -r '.ORACLE_PUBLIC_URL // ""')"
+          if [ -z "$PUBLIC" ]; then
+            echo "::error::ORACLE_PUBLIC_URL is unset — the browser would be told to open a websocket to localhost"
+            exit 1
+          fi
+          case "$PUBLIC" in
+            *localhost*|*127.0.0.1*)
+              echo "::error::ORACLE_PUBLIC_URL is $PUBLIC — that is this container, not the tutor"
+              exit 1
+              ;;
+          esac
+          echo "   $PUBLIC"
+          code="$(curl -s -o body.txt -w '%{http_code}' --max-time 15 "$PUBLIC/health" || true)"
+          echo "   HTTP $code"
+          sed 's/^/   /' body.txt
+          echo ""
+          [ "$code" = "200" ] || { echo "::error::the public tutor address does not answer"; exit 1; }
+
+          echo ""
+          echo "== The internal API must refuse an unauthenticated caller =="
+          # A public domain on an internal-key service is the fourth §1.5
+          # exception, granted for the learner's websocket ONLY. If the REST
+          # surface behind that same domain answered without a key, the
+          # exception would have quietly become an open door.
+          code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 -X POST "$PUBLIC/api/v1/tutor/sessions" || true)"
+          echo "   POST /api/v1/tutor/sessions with no key -> HTTP $code"
+          case "$code" in
+            401|403) echo "OK: refused" ;;
+            *) echo "::error::expected 401/403, got $code — the internal API is answering strangers"; exit 1 ;;
+          esac
+
+          echo ""
+          echo "verify OK"
