@@ -101,13 +101,25 @@ export function ConversationView({
 
   const [typed, setTyped] = useState('');
   /*
-   * HALF is the resting detent, not PEEK, and that is a deaf-accessibility
-   * decision rather than a default. The 2D head is the only mouth `liruf` and
-   * `dina` have, and at PEEK the plate is 88 px tall and shows the top of it at
-   * best. PEEK exists so a learner can deliberately get the plate out of the
-   * way; it is not somewhere to leave them.
+   * PEEK IS WHERE THE SHEET RESTS, and this is the reversal the phone forced.
+   *
+   * It used to open at HALF, argued for as a deaf-accessibility decision: the
+   * 2D head is the only mouth `liruf` and `dina` have, and at PEEK the sheet
+   * showed the top of it at best. The argument was right about the mouth and
+   * wrong about the arithmetic. HALF is 45% of the viewport, which at 375x812
+   * left 227 px of island — so on the phone the answer to "where is the tutor
+   * teaching me" was a strip above a panel, on a route whose entire premise is
+   * that the stage IS the page. Burying the speaker to show a small picture of
+   * the speaker is not an accessibility win.
+   *
+   * What actually pays the debt is that PEEK is no longer a clipped panel. It
+   * is a row that says what is waiting and opens on one tap (`LessonPlate`),
+   * the caption over the speaker's crown carries every line in every phase, and
+   * the 3D character is on screen at full height rather than behind the sheet.
+   * A learner who wants the bubble, the exercise or the transcript raises the
+   * sheet deliberately and it stays where they put it.
    */
-  const [detent, setDetent] = useState<LessonPlateDetent>('half');
+  const [detent, setDetent] = useState<LessonPlateDetent>('peek');
 
   /*
    * Where the plate is, readable from a subscription callback.
@@ -166,21 +178,24 @@ export function ConversationView({
     onAwaitReply();
   };
 
-  // A new activity is worth looking at. It raises a minimised sheet to the
-  // working detent and never lowers one the learner opened themselves.
+  /*
+   * AN ARRIVING ACTIVITY ANNOUNCES ITSELF; IT DOES NOT TAKE THE SCREEN.
+   *
+   * This effect used to raise a resting sheet to HALF the instant a segment
+   * arrived, which is how 45% of a phone came to be spent on a panel without
+   * anyone choosing it. An exercise is worth looking at and it is still the
+   * learner's call: the sheet says an activity is waiting, in words and to a
+   * screen reader (`peekLabel`/`peekStatus` below), and one tap on that row
+   * opens it. The tutor teaching it stays on screen either way.
+   *
+   * What remains here is the keyboard's debt. A segment arriving while the
+   * plate is at PEEK because the SOFT KEYBOARD borrowed it must cancel the
+   * loan, or the restore fires later and raises a sheet the learner never
+   * asked for, minutes after the keyboard closed.
+   */
   useEffect(() => {
     if (segmentId === null) return;
-    if (detentRef.current !== 'peek') return;
-    /*
-     * Raising it also settles the keyboard's debt: an arriving exercise is a
-     * better reason to be at HALF than the keyboard was to be at PEEK, so the
-     * restore must not fire later and undo it. Both the read and the clear
-     * happen HERE rather than inside a state updater, because StrictMode
-     * invokes an updater twice and a side effect written into one runs twice
-     * with it.
-     */
     borrowedDetentRef.current = null;
-    setDetent('half');
   }, [segmentId]);
 
   /*
@@ -276,6 +291,26 @@ export function ConversationView({
 
   const adaptation = socket.adaptationOffer;
   const adaptationQuestion = adaptation ? t(`tutor.adaptationOffer.${adaptation}`) : '';
+
+  /*
+   * WHAT THE RESTING SHEET SAYS ABOUT ITSELF.
+   *
+   * Two strings for two jobs. The label names a CONTROL, so it is imperative
+   * and stays short enough to sit on one row beside the finish button in all
+   * three locales. The status is a SENTENCE about what changed, announced only
+   * while the sheet is resting, because that is the state in which the panel's
+   * own live regions are not mounted.
+   *
+   * Only an activity earns the louder wording. "Your tutor is thinking" is
+   * already on the microphone's status line and over the character's head; a
+   * third copy of it on the sheet would train a learner to ignore the one row
+   * that tells them something they cannot read anywhere else.
+   */
+  const activityWaiting = socket.segment !== null;
+  const peekLabel = activityWaiting
+    ? t('tutor.conversation.peekOpenActivity')
+    : t('tutor.conversation.peekOpen');
+  const peekStatus = activityWaiting ? t('tutor.conversation.peekActivityWaiting') : undefined;
 
   /*
    * THE TWO ANSWERS, DESCRIBED ONCE AND MOUNTED IN BOTH PLACES.
@@ -397,6 +432,8 @@ export function ConversationView({
         detent={detent}
         onDetentChange={changeDetent}
         onFootprint={publishFootprint}
+        peekLabel={peekLabel}
+        peekStatus={peekStatus}
         header={
           // Finishing is a first-class turn, so it lives on the one surface
           // that is never culled and never scrolls away. The shell's way out

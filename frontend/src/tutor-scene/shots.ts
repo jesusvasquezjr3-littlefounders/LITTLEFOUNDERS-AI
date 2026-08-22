@@ -106,6 +106,19 @@ export interface CameraPose {
   fov: number;
   near: number;
   far: number;
+  /**
+   * Metres about the target that must stay inside the frame, whatever the HUD
+   * asks for.
+   *
+   * The composition solver moves the aim so the subject lands in the part of the
+   * screen a panel is not covering, and on a phone the free rectangle can ask
+   * for a shift big enough to push the top of a character's head off the top of
+   * the viewport. Only the shot knows what it is actually framing, so the shot
+   * states the radius it may not lose and `composition.composeFor` clamps
+   * against it. Zero is correct for the shots that answer an inset by retreating
+   * rather than by shifting — they have already made the room.
+   */
+  keepInFrame: number;
 }
 
 /**
@@ -133,6 +146,117 @@ export const CLOSEUP_WIDE_OFF_AXIS = (22 * Math.PI) / 180;
 
 /** How much further back `closeup-wide` sits than `closeup`. */
 export const CLOSEUP_WIDE_DISTANCE = 1.35;
+
+/**
+ * How much of the character a close-up frames, as a fraction of their height.
+ *
+ * IT WAS 0.70, AND THAT IS WHY THE OFFER CHIPS SIT ON DR RHO'S MOUSTACHE. At
+ * 0.70 the frame is 1.19 m tall for a 1.70 m character and his head alone is
+ * 0.81 m of it — 68% of the viewport is face, and the published `lead.chest`
+ * anchor lands at about 90% of the screen, underneath the microphone. /DESIGN.md
+ * → Screen Recipes → Tutor puts the offer chips AT THE TUTOR'S CHEST as
+ * world-anchored chrome and closes the count of viewport-anchored elements at
+ * three, so there is nowhere else for them to go: if the chest is not on screen
+ * above the microphone dock, the openings are either culled or laid across the
+ * face. The stage has exactly one lever for that, and it is this number.
+ *
+ * 0.90 puts the crown, the face and the chest all in frame with the head still
+ * 53% of the frame height — measured against the 2.4x height spread of the cast,
+ * a mouth is still tens of pixels tall at 375 px, which is the measurement the
+ * whole rebuild started from (a 2.4 px mouth at the island shot). Anything
+ * larger than this and the chest leaves the screen again; anything much smaller
+ * and this stops being a close-up.
+ *
+ * THE FACE IS THE THING THE 3D CAST EXISTS FOR. Between opening the shot and
+ * covering the face, opening the shot is the cheap option — it costs on-screen
+ * head height, which is still ample, where the other costs the one asset the
+ * character rig, the mouth atlas, the viseme pipeline and the lip-sync analyser
+ * were all built to show.
+ */
+export const CLOSEUP_FRAME_FRACTION = 0.9;
+
+/**
+ * The distance multipliers that pay for the aspect ratio, landscape then
+ * portrait.
+ *
+ * Portrait loses horizontal room, so the same subject needs more distance for
+ * the same composure — and it loses it twice over here, because the offer chips
+ * that fit in one row across a desktop chest wrap to TWO rows on a 375 px one
+ * while the microphone dock underneath grows from 96 px of orb to a fifth of the
+ * screen. These are the numbers that put the chest above that dock at both
+ * breakpoints with the cluster's measured height in between; the arithmetic is
+ * written out as a test in `shots.test.ts` → "the introducing phase, composed".
+ *
+ * They also decide the conversing phase, and for the better: at 375 px with the
+ * sheet at HALF the pair puts the whole character, crown to chest, in the band
+ * ABOVE the sheet instead of half behind it. That is the owner's original
+ * complaint about this route, in portrait.
+ */
+export const CLOSEUP_ASPECT_PAD = { landscape: 1.18, portrait: 1.45 } as const;
+
+/**
+ * How far below the mid-head point the chest anchor sits, as a fraction of the
+ * character's height. Published by `StageAnchors`; named here because the close
+ * shots have to promise to keep it in frame.
+ *
+ * A close shot's `keepInFrame` is what stops the composition solver from lifting
+ * the subject out of the top of the frame when a bottom sheet claims most of a
+ * phone, and this is the lower half of what it protects.
+ */
+export const CLOSEUP_KEEP_IN_FRAME = 0.28;
+
+/**
+ * How far above the middle of the frame the subject's head rides, as a fraction
+ * of the frame's own height.
+ *
+ * HEADROOM, which a head dead-centre does not have. It is the ordinary framing
+ * rule — a portrait with the eyes on the centre line puts half the picture under
+ * the chin and cuts the top of the skull to the edge — and here it is also load
+ * bearing, because the space it opens under the chin is where the offer chips
+ * live. MEASURED at 375x812 in a browser: the openings are 156 px as a
+ * two-column grid, the microphone cluster with its secondary row is 188 px, and
+ * the chest has to land above the one with room for the other. A head on the
+ * centre line leaves 124 px for a 156 px cluster; this is the 40 px that closes
+ * that gap, rounded up so a longer locale still fits.
+ *
+ * Portrait needs more than landscape because it has less to spare in every
+ * direction, and because the same four chips are two rows there and one row at
+ * 1280 px.
+ *
+ * It is NOT a substitute for the composition solver and does not overlap with
+ * it: this is a property of the SHOT, computed from the aspect alone, so it
+ * cannot feed back on a measured HUD rect the way a surface-driven offset would.
+ * The solver's clamp accounts for it through `keepInFrame`.
+ */
+export const CLOSEUP_HEADROOM = { landscape: 0.03, portrait: 0.07 } as const;
+
+/**
+ * The band above the crown that a close shot promises not to lift off the top of
+ * the screen, as a fraction of the frame's height.
+ *
+ * THE CAPTION LIVES THERE. It rides `lead.crown` and hangs above it, it is what
+ * a deaf learner reads and what everyone reads on a bus with no headphones, and
+ * /ORACLE.md does not treat it as optional. It also cannot register with the
+ * safe area — it is world-anchored, and the rule against that is on
+ * `SafeAreaSlot` — so the only place its room can be reserved is here, by the
+ * shot that decides where the crown lands.
+ *
+ * 0.08 is 65 px on a 812 px phone. MEASURED at 375 px: a long Spanish line wraps
+ * to 75 px of text in the 22rem caption, so this is a couple of lines rather
+ * than every line, chosen because the alternative — reserving for the longest
+ * possible sentence — pushes the character down the screen on every short one.
+ * Without any reserve at all the composed crown lands at 22 px with the sheet at
+ * HALF, and the tutor speaks in a caption that is off the top of the screen.
+ */
+export const CLOSEUP_CAPTION_BAND = 0.08;
+
+/**
+ * How far into the half-frame the lead's shoulder may sit on `over-shoulder`.
+ *
+ * A shoulder at 1.0 is exactly on the frame edge, which crops it; at 0.72 it is
+ * in the corner of the frame, which is where an over-the-shoulder puts it.
+ */
+export const SHOULDER_FRAME_FRACTION = 0.72;
 
 /**
  * Which shots FIT a measured object, and therefore must give ground when the HUD
@@ -264,6 +388,9 @@ function establishing(ctx: ShotContext): CameraPose {
     fov: ctx.fov,
     near: Math.max(distance / 200, 0.01),
     far: distance * 20,
+    // A fitting shot answers a HUD inset by retreating, so by the time the aim
+    // moves it has already bought the room the shift spends. Nothing to protect.
+    keepInFrame: 0,
   };
 }
 
@@ -285,23 +412,28 @@ function approach(ctx: ShotContext): CameraPose {
     fov: ctx.fov,
     near: Math.max(distance / 200, 0.01),
     far: full * 20,
+    keepInFrame: 0,
   };
 }
 
 /**
- * How far a head-and-shoulders shot of THIS subject sits.
+ * How far a head-and-chest shot of THIS subject sits.
  *
  * A fraction of the character, never a fixed number of metres. A metre-based
  * framing was measured and looked far too tight, and the reason is anatomy:
  * these are cartoon proportions and Rho's head alone is 0.81 m, 47% of his
  * height. A 0.70 m tall frame that would be a comfortable head-and-shoulders on
  * a human cropped his skull and his chin at once.
+ *
+ * The fraction it frames is `CLOSEUP_FRAME_FRACTION`, and the note on that
+ * constant is where the reason it is no longer 0.70 is written down.
  */
 function closeupDistance(subject: ShotSubject, ctx: ShotContext): number {
   const vFov = safeFovRadians(ctx.fov);
   const aspect = safeAspect(ctx.aspect);
-  const framedHeight = subject.height * 0.7;
-  return (framedHeight / 2 / Math.tan(vFov / 2)) * (aspect < 1 ? 1.18 : 1.0) + 0.15;
+  const framedHeight = subject.height * CLOSEUP_FRAME_FRACTION;
+  const pad = aspect < 1 ? CLOSEUP_ASPECT_PAD.portrait : CLOSEUP_ASPECT_PAD.landscape;
+  return (framedHeight / 2 / Math.tan(vFov / 2)) * pad + 0.15;
 }
 
 function closeup(ctx: ShotContext): CameraPose {
@@ -312,20 +444,40 @@ function closeup(ctx: ShotContext): CameraPose {
   if (!lead) return establishing(ctx);
 
   const distance = closeupDistance(lead, ctx);
-  const target = vec(lead.x, lead.y, lead.z);
+
+  /*
+   * The aim sits BELOW the mid-head by the headroom, which is what puts the head
+   * above the centre line. Derived from the frame this shot actually has rather
+   * than from the character's height: the point of it is a share of the PICTURE,
+   * and a fraction of the subject would mean a taller character got more
+   * headroom than a shorter one at the same framing, which is backwards.
+   */
+  const frameHeight = 2 * distance * Math.tan(safeFovRadians(ctx.fov) / 2);
+  const headroom =
+    frameHeight * (safeAspect(ctx.aspect) < 1 ? CLOSEUP_HEADROOM.portrait : CLOSEUP_HEADROOM.landscape);
+  const aimY = lead.y - headroom;
+  const target = vec(lead.x, aimY, lead.z);
   return {
     // Standing ON the facing vector puts the camera in FRONT of the character.
     // This is the single mistake this scene has already made once: "inward" and
     // "toward the viewer" are opposites when the camera is outside the island.
     position: vec(
       lead.x + Math.sin(lead.facing) * distance,
-      lead.y + lead.height * 0.04,
+      aimY + lead.height * 0.04,
       lead.z + Math.cos(lead.facing) * distance,
     ),
     target,
     fov: ctx.fov,
     near: 0.01,
     far: 100,
+    /*
+     * The crown, which the headroom has just moved further from the aim, and
+     * with it the chest — the chest is not decoration here: it is the anchor the
+     * offer chips ride, and a chest pushed off the bottom of the frame culls the
+     * openings entirely rather than merely cropping a shoulder. The crown is the
+     * larger of the two once headroom is counted, so it is the one that binds.
+     */
+    keepInFrame: lead.height * 0.25 + headroom + frameHeight * CLOSEUP_CAPTION_BAND,
   };
 }
 
@@ -347,6 +499,7 @@ function closeupWide(ctx: ShotContext): CameraPose {
   if (!lead) return establishing(ctx);
 
   const distance = closeupDistance(lead, ctx) * CLOSEUP_WIDE_DISTANCE;
+  const frameHeight = 2 * distance * Math.tan(safeFovRadians(ctx.fov) / 2);
   const yaw = lead.facing + CLOSEUP_WIDE_OFF_AXIS;
   // Drop the aim from mid-head toward the chest so both the face and the hands
   // are inside the frame rather than the face alone at the bottom of it.
@@ -358,6 +511,10 @@ function closeupWide(ctx: ShotContext): CameraPose {
     fov: ctx.fov,
     near: 0.01,
     far: 100,
+    // The aim has already dropped 0.13 toward the chest, so the crown is that
+    // much further above it than on the straight close-up — and the caption
+    // still rides above the crown, on this shot as on every other.
+    keepInFrame: lead.height * (CLOSEUP_KEEP_IN_FRAME + 0.13) + frameHeight * CLOSEUP_CAPTION_BAND,
   };
 }
 
@@ -403,6 +560,7 @@ function twoShot(ctx: ShotContext): CameraPose {
     fov: ctx.fov,
     near: 0.01,
     far: Math.max(distance * 20, 100),
+    keepInFrame: 0,
   };
 }
 
@@ -441,7 +599,38 @@ function overShoulder(ctx: ShotContext): CameraPose {
   const pz = -ux;
 
   const behind = lead.height * 0.72;
-  const lateral = lead.height * 0.34;
+
+  /*
+   * HOW FAR OFF THE LINE THE CAMERA STANDS — SOLVED AGAINST THE FRAME, NOT
+   * AUTHORED.
+   *
+   * This was a flat 0.34 of the lead's height, and it was the only shot in the
+   * vocabulary with no portrait correction. The arithmetic of that omission: at
+   * 375x812 the aspect is 0.46, so a 36-degree vertical field of view is 17.1
+   * degrees WIDE and half of it is 8.53 degrees — while a lateral of 0.578 m
+   * behind 1.224 m puts the lead 14.4 degrees off the view axis. The shoulder is
+   * outside the frame. An over-the-shoulder shot with no shoulder in it is not a
+   * tighter version of the shot; it is a different shot that happens to be
+   * standing in an odd place, and the learner reads it as the camera having lost
+   * the tutor.
+   *
+   * So the offset is capped by the frame it has to fit inside. The angle the
+   * lead subtends off the view axis is `atan(l/behind) - atan(l/(forward +
+   * behind))`, which for small angles is `l * (1/behind - 1/(forward + behind))`
+   * — invert that for the largest `l` whose shoulder lands at
+   * `SHOULDER_FRAME_FRACTION` of the half-frame. The approximation errs on the
+   * safe side (it over-states the angle, so the solved offset is slightly
+   * inside the target rather than outside it), and at desktop aspects the cap
+   * lands well above the authored 0.34 — so the shot that already reads
+   * correctly is not touched at all, and only portrait moves.
+   */
+  const authoredLateral = lead.height * 0.34;
+  const forward = length > 1e-3 ? length : 0;
+  const spread = forward > 1e-3 ? 1 / behind - 1 / (forward + behind) : 0;
+  const halfHFov = horizontalFov(safeFovRadians(ctx.fov), safeAspect(ctx.aspect)) / 2;
+  const maxLateral = spread > 1e-6 ? (SHOULDER_FRAME_FRACTION * halfHFov) / spread : authoredLateral;
+  const lateral = Math.min(authoredLateral, maxLateral);
+
   return {
     position: vec(
       lead.x - ux * behind + px * lateral,
@@ -452,6 +641,9 @@ function overShoulder(ctx: ShotContext): CameraPose {
     fov: ctx.fov,
     near: 0.01,
     far: 100,
+    // What is being looked AT is what must survive a composition shift; the
+    // shoulder is already at the edge by construction above.
+    keepInFrame: (ctx.companion?.height ?? lead.height) * 0.35,
   };
 }
 

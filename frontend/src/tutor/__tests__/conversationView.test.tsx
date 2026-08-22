@@ -98,9 +98,22 @@ function plateHeight(): string {
   return screen.getByLabelText('Your tutor and your activity').style.height;
 }
 
-/** The one control that moves the sheet by hand. */
+/**
+ * The one control that moves the sheet by hand.
+ *
+ * Matched on a fragment, because at PEEK the handle also carries what the sheet
+ * is holding: its accessible name is the visible label followed by the resize
+ * sentence, so that a learner who cannot see the row still hears both what is
+ * waiting and that pressing this opens it.
+ */
 function resizeHandle(): HTMLElement {
-  return screen.getByRole('button', { name: 'Make this panel bigger or smaller' });
+  return screen.getByRole('button', { name: /Make this panel bigger or smaller/ });
+}
+
+/** The sheet's body is not mounted at PEEK, so this is how a test asks. */
+function plateBodyShown(): boolean {
+  const bubble = screen.queryByLabelText('What your tutor is saying');
+  return bubble !== null && bubble.closest('[hidden]') === null;
 }
 
 /** An anchored node is positioned by the projector; nothing else carries this. */
@@ -347,7 +360,13 @@ describe('answering the adaptation offer', () => {
 
   it('takes a FULL lesson plate down to HALF so the question is not clipped', () => {
     const { rerender } = render(conversation(makeSocket(), false));
+    // The sheet rests at PEEK now, so the learner has to raise it twice to
+    // reach the detent this test is about.
+    expect(plateHeight()).toBe('88px');
+
+    fireEvent.click(resizeHandle());
     const half = plateHeight();
+    expect(half).not.toBe('88px');
 
     // Open the transcript all the way. Measured in a real browser at 375x812,
     // this is the one detent where the dock overflows the top of the screen
@@ -406,6 +425,135 @@ describe('a conversation on a device that cannot draw the island', () => {
   });
 });
 
+// ── Where the sheet rests on a phone ────────────────────────────────────────
+
+/**
+ * One live activity on the plate, shaped like the real thing.
+ *
+ * The renderer itself is exercised in the Lesson Engine's own suite; what
+ * matters here is only that `socket.segment` is non-null, because that is what
+ * the resting sheet has to tell the learner about.
+ */
+const SEGMENT = {
+  segmentId: '44444444-4444-4444-8444-444444444444',
+  seq: 3,
+  origin: 'live' as const,
+  scoresXp: true,
+  framing: 'Try this one with me.',
+  segment: {
+    id: '44444444-4444-4444-8444-444444444444',
+    type: 'quiz_mcq',
+    prompt_md: 'If you save 25 a week, how much is that in 4 weeks?',
+    difficulty: 2,
+    xp: 20,
+    payload: { options: [{ id: 'a', text_md: '100' }, { id: 'b', text_md: '75' }] },
+  },
+};
+
+/*
+ * THE SHEET RESTS AT PEEK, AND PEEK HAS TO EARN IT.
+ *
+ * The sheet used to open at HALF — 45% of the viewport — and to raise itself
+ * there again the moment an activity arrived. Measured at 375x812 that left
+ * 227 px of island on a route whose whole premise is that the island IS the
+ * page, and it did it without anybody choosing it. Resting at PEEK is only
+ * defensible if PEEK still tells the learner what is waiting and opens on one
+ * press, which is what these assert. The alternative — a sheet that rests at
+ * 88 px of CLIPPED panel — is how the auto-raise came to be written.
+ */
+describe('the resting lesson sheet', () => {
+  it('rests at PEEK rather than taking half the phone the moment it mounts', () => {
+    renderConversation(makeSocket(), { ready: true });
+    expect(plateHeight()).toBe('88px');
+    expect(plateBodyShown()).toBe(false);
+  });
+
+  it('says what is waiting instead of opening itself over the tutor', () => {
+    renderConversation(makeSocket({ segment: SEGMENT }), { ready: true });
+
+    // Still resting: an arriving activity is news, not a reason to bury the
+    // character who is teaching it.
+    expect(plateHeight()).toBe('88px');
+    // In words, on the row itself...
+    expect(resizeHandle().textContent).toContain('Open the activity');
+    // ...and to a learner who is not looking at it. The transcript's own live
+    // region is not mounted at PEEK, so this is the only channel left.
+    expect(screen.getByRole('status', { name: '' }).textContent).toBe(
+      'An activity is waiting for you',
+    );
+  });
+
+  it('names the panel plainly when nothing has arrived', () => {
+    renderConversation(makeSocket(), { ready: true });
+    expect(resizeHandle().textContent).toContain('Open your panel');
+    // No news, no announcement. A row that says something on every turn is a
+    // row a learner learns to ignore on the turn that matters.
+    expect(screen.queryByText('An activity is waiting for you')).toBeNull();
+  });
+
+  it('carries the visible words into the accessible name of the row', () => {
+    renderConversation(makeSocket({ segment: SEGMENT }), { ready: true });
+    const name = resizeHandle().getAttribute('aria-label') ?? '';
+    // Visible label first: leading with the resize sentence drops the words a
+    // learner would say out loud out of the front of the name.
+    expect(name.startsWith('Open the activity')).toBe(true);
+    expect(name).toContain('Make this panel bigger or smaller');
+  });
+
+  it('opens on one press, and the activity is there when it does', () => {
+    renderConversation(makeSocket({ segment: SEGMENT }), { ready: true });
+    fireEvent.click(resizeHandle());
+
+    expect(plateHeight()).not.toBe('88px');
+    expect(plateBodyShown()).toBe(true);
+  });
+
+  it('keeps the body out of the tab order while it is resting', () => {
+    renderConversation(makeSocket({ segment: SEGMENT }), { ready: true });
+
+    /*
+     * `hidden`, not merely clipped by an 88 px window. Clipped content is
+     * still focusable and still described, so a keyboard user tabs into an
+     * exercise that is not on screen and the focus ring goes somewhere nobody
+     * can see — the same defect the projector's cull exists to prevent.
+     */
+    const bubble = screen.getByLabelText('What your tutor is saying');
+    expect(bubble.closest('[hidden]')).not.toBeNull();
+  });
+});
+
+describe('the bottom edge the sheet and the microphone share', () => {
+  it('lifts the dock over the resting sheet, and hands the edge back when the sheet goes', () => {
+    /*
+     * The second half is a defect found by measuring `/dev/tutor-lab` at
+     * 375x812, not by reading the code. Leaving a conversation unmounts the
+     * sheet, and nothing published a zero footprint on the way out — so the
+     * dock kept the inline `bottom: 393px` it had been given, and on the
+     * introduce and goodbye phases the microphone floated a third of the way up
+     * the screen with nothing underneath it. The shell cannot infer the absence
+     * of a surface it was never told about, so the surface has to say so.
+     */
+    const view = renderInShell(makeSocket(), true);
+    const dock = screen.getByRole('group', { name: 'Talk to your tutor' });
+    // PEEK (88) + the sheet's own 16 px inset + the 12 px the dock keeps.
+    expect(dock.style.bottom).toBe('116px');
+
+    view.rerender(
+      <MemoryRouter>
+        <StageShell phase="introducing" mic={STAGE_MIC} character="rho" companion="liruf" scene="diorama-a" backdrop="day">
+          <StageLayer label="offers" placement="world">
+            <p>no sheet on the bottom edge now</p>
+          </StageLayer>
+        </StageShell>
+      </MemoryRouter>,
+    );
+
+    // Empty, not `0px`: a zero would override the class that owns the resting
+    // inset and weld the microphone to the bottom of the screen.
+    expect(dock.style.bottom).toBe('');
+  });
+});
+
 // ── The soft keyboard ───────────────────────────────────────────────────────
 
 /**
@@ -448,6 +596,9 @@ describe('the soft keyboard and the lesson plate', () => {
   it('gives the plate its height back when the keyboard closes', () => {
     renderConversation(makeSocket(), { wrapper: withSafeArea });
 
+    // The sheet rests at PEEK, so there is nothing to borrow until a learner
+    // has raised it. Raising it is the whole precondition of this test.
+    fireEvent.click(resizeHandle());
     const resting = plateHeight();
     expect(resting).not.toBe('88px');
 
@@ -469,6 +620,8 @@ describe('the soft keyboard and the lesson plate', () => {
   it('leaves a plate the learner moved while typing exactly where they left it', () => {
     renderConversation(makeSocket(), { wrapper: withSafeArea });
 
+    // Raised once, so the keyboard has a height to borrow.
+    fireEvent.click(resizeHandle());
     const resting = plateHeight();
     act(() => viewport.resizeTo(Math.round(window.innerHeight / 2)));
     expect(plateHeight()).toBe('88px');
@@ -486,21 +639,18 @@ describe('the soft keyboard and the lesson plate', () => {
     expect(plateHeight()).toBe(chosen);
   });
 
-  it('borrows nothing from a plate the learner had already minimised', () => {
+  it('borrows nothing from a plate that is already resting', () => {
     renderConversation(makeSocket(), { wrapper: withSafeArea });
 
-    // Down to PEEK by hand: HALF steps up to FULL, and FULL wraps round.
-    const handle = resizeHandle();
-    fireEvent.click(handle);
-    expect(plateHeight()).not.toBe('88px');
-    fireEvent.click(handle);
+    // No clicks: PEEK is where the sheet starts on a phone now.
     expect(plateHeight()).toBe('88px');
 
     act(() => viewport.resizeTo(Math.round(window.innerHeight / 2)));
     act(() => viewport.resizeTo(window.innerHeight));
 
-    // Nothing was borrowed, so nothing is handed back: the plate stays where
-    // the learner deliberately put it.
+    // Nothing was borrowed, so nothing is handed back. Recording PEEK as the
+    // borrowed height would later "restore" the sheet to where it already is
+    // while claiming a debt had been settled.
     expect(plateHeight()).toBe('88px');
   });
 });

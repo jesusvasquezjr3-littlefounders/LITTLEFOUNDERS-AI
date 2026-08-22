@@ -25,8 +25,17 @@ const MOBILE = { width: 375, height: 812 };
 
 /** The floating lesson plate: 420 wide, ~460 tall, inset 24 from bottom-right. */
 const LESSON_PLATE: HudRect = { left: 1280 - 24 - 420, top: 800 - 24 - 460, width: 420, height: 460 };
-/** The bottom sheet at HALF: full width, 45vh. */
-const SHEET: HudRect = { left: 0, top: 812 - 365, width: 375, height: 365 };
+/**
+ * The bottom sheet at HALF, AS IT ACTUALLY RENDERS.
+ *
+ * `LessonPlate` is `inset-x-0 bottom-4 mx-auto` at `calc(100vw - 2rem)`, so it
+ * is inset 16 px on the left, the right and the bottom — `hud-inset-mobile`,
+ * because a slab welded to the edge of the screen is the silhouette this route
+ * exists to remove. The fixture used to be a full-bleed sheet flush to the
+ * bottom, which is the one geometry where the old raw-pixel edge rule happened
+ * to give the right answer, and it is why the portrait bug shipped green.
+ */
+const SHEET: HudRect = { left: 16, top: 812 - 16 - 365, width: 375 - 32, height: 365 };
 
 const LENS = { aspect: DESKTOP.width / DESKTOP.height, fov: 36 };
 
@@ -50,9 +59,72 @@ describe('insetsFromRects', () => {
   });
 
   it('charges the mobile sheet to the BOTTOM edge', () => {
+    /*
+     * THE PORTRAIT REGRESSION, and the whole reason the rule compares fractions
+     * of an axis rather than pixels. The real sheet is 359 px from the right and
+     * 381 px from the bottom, so raw pixels called the RIGHT edge cheaper by 22
+     * px and charged 96% of a phone's width to a surface that is not on the
+     * right at all. Downstream that is a third-of-a-screen sideways truck plus
+     * the full 1.9x pull-back on any fitting shot: the reported "the island is a
+     * sliver in portrait", produced by the camera rather than by the layout.
+     */
     const insets = insetsFromRects([SHEET], MOBILE);
-    expect(insets.bottom).toBe(365);
+    expect(insets.bottom).toBe(365 + 16);
     expect(insets.right).toBe(0);
+    expect(insets.left).toBe(0);
+    expect(insets.top).toBe(0);
+  });
+
+  it('charges a full-bleed sheet to the BOTTOM edge as well', () => {
+    // The same surface with no inset. Both geometries have to reach the same
+    // answer, or the rule is a description of one fixture.
+    const flush: HudRect = { left: 0, top: 812 - 365, width: 375, height: 365 };
+    expect(insetsFromRects([flush], MOBILE).bottom).toBe(365);
+    expect(insetsFromRects([flush], MOBILE).right).toBe(0);
+  });
+
+  it('charges the mic dock to the BOTTOM edge at both breakpoints', () => {
+    /*
+     * `StageShell`'s dock is `inset-x-0 mx-auto max-w-[min(30rem,92vw)]`, so it
+     * is centred and near-full-width on a phone — the same shape that fooled the
+     * old rule.
+     */
+    const phoneDock: HudRect = { left: 15, top: 812 - 12 - 180, width: 345, height: 180 };
+    expect(insetsFromRects([phoneDock], MOBILE).bottom).toBe(192);
+    expect(insetsFromRects([phoneDock], MOBILE).right).toBe(0);
+
+    const deskDock: HudRect = { left: 400, top: 800 - 24 - 164, width: 480, height: 164 };
+    expect(insetsFromRects([deskDock], DESKTOP).bottom).toBe(188);
+    expect(insetsFromRects([deskDock], DESKTOP).right).toBe(0);
+  });
+
+  it('treats the sheet and the dock riding above it as one bottom mass', () => {
+    /*
+     * The ordinary conversing phase at 375 px. On its own the dock is a
+     * full-width band floating in the middle of the screen with MORE room below
+     * it than above, so charged separately it is cheapest to clear from the top
+     * — and the camera would push the character down into the sheet to clear the
+     * microphone. Two surfaces 12 px apart are one surface.
+     */
+    const dockAboveSheet: HudRect = { left: 15, top: 812 - 381 - 12 - 200, width: 345, height: 200 };
+    const insets = insetsFromRects([SHEET, dockAboveSheet], MOBILE);
+    expect(insets.bottom).toBe(812 - (812 - 381 - 12 - 200));
+    expect(insets.top).toBe(0);
+    expect(insets.right).toBe(0);
+  });
+
+  it('keeps the desktop corner plate and the dock beside it apart', () => {
+    /*
+     * The same phase at 1280 px, where the dock moves into the free width to the
+     * LEFT of the plate. They are 196 px apart, so merging them would invent one
+     * surface spanning the whole width and answer with a lift where the design
+     * is a corner plate and a shift.
+     */
+    const dockBeside: HudRect = { left: 160, top: 800 - 24 - 164, width: 480, height: 164 };
+    const insets = insetsFromRects([LESSON_PLATE, dockBeside], DESKTOP);
+    expect(insets.right).toBe(444);
+    expect(insets.bottom).toBe(188);
+    expect(insets.top).toBe(0);
   });
 
   it('ignores a mounted-but-unlaid-out rect', () => {
@@ -141,6 +213,51 @@ describe('composeFor', () => {
   it('caps how far back a fit may be pushed', () => {
     const composition = composeFor({ ...NO_INSETS, bottom: MOBILE.height * 0.95 }, MOBILE, 12, LENS);
     expect(composition.padding).toBeLessThanOrEqual(1.9);
+  });
+
+  it('never shifts so far that the protected radius leaves the frame', () => {
+    /*
+     * The decapitation guard. At 375x812 with the sheet at HALF and the dock
+     * riding above it the HUD claims about 73% of the height, and the clamped
+     * free rectangle asks for a 235 px lift — more than the 200 px from a
+     * close-up's aim to the top of Rho's head. Composition exists to get the
+     * character out from behind the panel; a composition that lifts the crown
+     * off the top of the screen has failed at its own job.
+     */
+    const lens = { aspect: MOBILE.width / MOBILE.height, fov: 36 };
+    const insets = { ...NO_INSETS, bottom: 593 };
+    // A close-up of a 1.70 m character in portrait: the frame is 1.958 m tall.
+    const distance = 1.958 / 2 / Math.tan((36 * Math.PI) / 180 / 2);
+    const keep = 1.7 * 0.28;
+
+    const free = composeFor(insets, MOBILE, distance, lens);
+    const clamped = composeFor(insets, MOBILE, distance, lens, keep);
+
+    expect(Math.abs(clamped.up)).toBeLessThan(Math.abs(free.up));
+    // The crown stays inside the viewport with room to spare, which is the
+    // assertion that actually matters.
+    expect(Math.abs(clamped.up) + keep).toBeLessThan(1.958 / 2);
+  });
+
+  it('leaves a shift alone when the subject already fits with room around it', () => {
+    // The introducing phase: only the dock is mounted, so the lift is small and
+    // the clamp must not quietly become a second tuning knob.
+    const lens = { aspect: MOBILE.width / MOBILE.height, fov: 36 };
+    const insets = { ...NO_INSETS, bottom: 192 };
+    const distance = 1.958 / 2 / Math.tan((36 * Math.PI) / 180 / 2);
+    const free = composeFor(insets, MOBILE, distance, lens);
+    const clamped = composeFor(insets, MOBILE, distance, lens, 1.7 * 0.28);
+    expect(clamped.up).toBeCloseTo(free.up, 9);
+  });
+
+  it('refuses every shift when the subject is bigger than the frame', () => {
+    // A tighter close-up than the frame can hold. Picking a side to crop is not
+    // a composition, so nothing moves.
+    // Compared numerically: a negated zero is still zero, and `toBe`
+    // distinguishes them where the arithmetic cannot.
+    const composition = composeFor({ ...NO_INSETS, bottom: 500 }, MOBILE, 4, LENS, 99);
+    expect(composition.up).toBeCloseTo(0, 12);
+    expect(composition.right).toBeCloseTo(0, 12);
   });
 
   it('refuses to compose against a viewport or a distance it does not have', () => {

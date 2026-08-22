@@ -742,10 +742,14 @@ DESIGN.md → §Screen Recipes → Tutor). There is no picker column and no
 left/right split to stack, because there are no panels to lay out. What changes
 between breakpoints is the composition inside one frame:
 
-- **375 px** — the mic orb at 96 px on the bottom safe area, the lesson plate
-  as a bottom sheet at PEEK / HALF / FULL, the camera composing the character
-  into the free band above the sheet, and every in-scene control clearing a
-  44 px tap target by construction rather than by luck.
+- **375 px** — the mic orb at 96 px on the bottom safe area with the composer
+  beside it rather than under it, the lesson plate as a bottom sheet **resting
+  at PEEK** and raised to HALF / FULL only by the learner, the camera composing
+  the character into the free band above the sheet, and every in-scene control
+  clearing a 44 px tap target by construction rather than by luck. An arriving
+  activity is announced on the sheet's own row and never raises it: measured at
+  375x812, a sheet that opened itself to HALF left 227 px of island, which is
+  the "minimizaste el escenario" complaint in portrait.
 - **1280 px** — a wider establishing shot with real island around a floating
   420 px lesson plate, scene visible on all four sides of it. The extra width
   is spent on the SCENE. It is not spent on a second panel, and it is not left

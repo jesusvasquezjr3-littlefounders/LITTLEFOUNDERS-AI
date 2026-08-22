@@ -39,10 +39,26 @@ import type { HudRect } from './composition';
  * Closed because each one has a different reason to exist and a different
  * behaviour when the keyboard opens; an open-ended registry would let anything
  * silently start pushing the camera around.
+ *
+ * ONLY VIEWPORT-ANCHORED SURFACES MAY BE IN THIS LIST, and that is a hard rule
+ * rather than a convention. The camera answers a registered rect by moving the
+ * subject away from it — so a WORLD-anchored surface, which is positioned by
+ * projecting a point the camera is currently moving, would be pushed by its own
+ * measurement: the aim lifts, the anchor it rides lifts with it, the published
+ * rect lifts, the inset grows, and the aim lifts again. It converges on the
+ * `MIN_FREE_FRACTION` clamp instead of diverging, which is worse than a runaway
+ * because it looks like a slow deliberate drift rather than a bug. The three
+ * slots below are exactly /DESIGN.md → Screen Recipes → Tutor's three
+ * viewport-anchored elements' surfaces; the offer chips, the speech caption and
+ * every rim pad ride the world and must never appear here.
+ *
+ * `caption` was in this union and is now gone for that reason: the caption rides
+ * `lead.crown`, so registering it would have been the loop above, and having the
+ * slot sitting there unused was an invitation to build it.
  */
-export type SafeAreaSlot = 'lesson' | 'sheet' | 'mic' | 'caption';
+export type SafeAreaSlot = 'lesson' | 'sheet' | 'mic';
 
-export const SAFE_AREA_SLOTS = ['lesson', 'sheet', 'mic', 'caption'] as const satisfies readonly SafeAreaSlot[];
+export const SAFE_AREA_SLOTS = ['lesson', 'sheet', 'mic'] as const satisfies readonly SafeAreaSlot[];
 
 export interface SafeAreaValue {
   /**

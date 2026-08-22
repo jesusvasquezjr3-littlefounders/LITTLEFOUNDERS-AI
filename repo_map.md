@@ -21768,9 +21768,12 @@ import { Quaternion, type Bone, type Object3D } from 'three';
 ```
 import { describe, expect, it } from 'vitest';
 import {
+  CLOSEUP_FRAME_FRACTION,
+  CLOSEUP_HEADROOM,
   CLOSEUP_WIDE_DISTANCE,
   CLOSEUP_WIDE_OFF_AXIS,
   horizontalFov,
+  SHOULDER_FRAME_FRACTION,
   poseFor,
   SHOT_AMBIENT,
   SHOT_FITS_SCENE,
@@ -21778,9 +21781,6 @@ import {
   shotForLegacyFraming,
   STAGE_BEARING,
   type CameraPose,
-  type ShotContext,
-  type ShotSubject,
-  type Vec3,
 ```
 
 ### frontend/src/tutor-scene/shots.ts
@@ -22027,6 +22027,7 @@ import type { LiveSegmentState } from './useTutorSocket';
 
 ```
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Icon, Reveal } from '@/components/ui';
 import type { CharacterId } from '@/components/characters/control/types';
@@ -22037,10 +22038,9 @@ import { HudPlate } from './hud/HudPlate';
 import { micBlockedReason } from './mic';
 import { SessionHistory } from './SessionHistory';
 import { SpeechCaption } from './SpeechCaption';
-import type { OfferLayerProps } from './stage/StageShell';
+import { useStageDock, type OfferLayerProps } from './stage/StageShell';
 import type { StartSessionInput } from './tutorApi';
 
-/*
 ```
 
 ### frontend/src/tutor/PersonalizeInWorld.tsx
@@ -22188,8 +22188,11 @@ import { VoiceConsentControl } from '../VoiceConsentControl';
 ```
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SafeAreaProvider } from '@/tutor-scene/SafeAreaContext';
+import { StageLayer, StageShell, type StageMicProps } from '../stage/StageShell';
+import type { Microphone } from '../useMicrophone';
 import { ConversationView } from '../ConversationView';
 import type { TutorSocket } from '../useTutorSocket';
 import type { StartedSession } from '../types';
@@ -22198,9 +22201,6 @@ import type { StartedSession } from '../types';
  * The live conversation, tested at the three places a mistake here is a CHILD's
  * problem rather than a developer's.
  *
- * 1. The tutor asks "shall I explain that differently?" and the learner must be
- *    able to answer it. The offer used to exist only as chips anchored to three
- *    separate world points, and an anchored node is hidden AND inert the moment
 ```
 
 ### frontend/src/tutor/__tests__/mic.test.ts
@@ -22328,6 +22328,7 @@ import { cn } from '@/lib/utils';
 ```
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent, ReactNode } from 'react';
+import { Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from './HudPlate';
@@ -22340,7 +22341,6 @@ import { HudPlate } from './HudPlate';
  * split and the lesson in the other, and the complaint was about the
  * SILHOUETTE: a near-opaque slab down a third of the screen reads as a
  * dashboard whatever is drawn beside it. Narrowing that slab to 400 px does not
- * answer the complaint, because a full-height column is still a full-height
 ```
 
 ### frontend/src/tutor/hud/MicOrb.tsx
@@ -22366,10 +22366,13 @@ import type { Microphone } from '../useMicrophone';
 ### frontend/src/tutor/hud/WorldChip.tsx
 
 ```
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import type { AnchorId } from '@/tutor-scene/anchors';
 import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
+import { useSafeArea, type SafeAreaSlot, type SafeAreaValue } from '@/tutor-scene/SafeAreaContext';
+import type { HudRect } from '@/tutor-scene/composition';
 import { HudPlate } from './HudPlate';
 import type { HudPlateFloor, HudPlateShape } from './HudPlate';
 
@@ -22378,9 +22381,6 @@ import type { HudPlateFloor, HudPlateShape } from './HudPlate';
  *
  * The chip is the GUARANTEED path and the mesh beside it is the delightful one.
  * A pickable mesh is a lovely thing to tap and a terrible thing to reach with a
- * keyboard, a screen reader or a shaking hand; a DOM button is the reverse.
- * Both are always mounted and both dispatch the SAME handler, so there is one
- * code path with two ways in rather than an accessible fallback that quietly
 ```
 
 ### frontend/src/tutor/hud/__tests__/HudPlate.test.tsx
@@ -22426,10 +22426,11 @@ import type { MicLevelListener, Microphone } from '../../useMicrophone';
 ### frontend/src/tutor/hud/__tests__/WorldChip.test.tsx
 
 ```
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { act, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AnchorProvider } from '@/tutor-scene/ScreenAnchor';
-import { WorldChip } from '../WorldChip';
+import { SafeAreaProvider, useSafeArea } from '@/tutor-scene/SafeAreaContext';
+import { isBehindHud, WorldChip } from '../WorldChip';
 
 /*
  * The chip is the guaranteed half of a pair: a mesh in the scene is the lovely
@@ -22440,27 +22441,46 @@ import { WorldChip } from '../WorldChip';
  * The rest is about the seam with the projector, which writes this node's whole
  * `transform` every frame. Anything the chip contributes to that property is
  * either erased or applied twice, and "applied twice" is a chip sitting half its
- * own width away from the thing it names — visible only once the scene is
 ```
 
 ### frontend/src/tutor/lab/TutorLabPage.tsx
 
 ```
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui';
-import { AnchorProvider } from '@/tutor-scene/ScreenAnchor';
-import { SafeAreaProvider } from '@/tutor-scene/SafeAreaContext';
+import { cn } from '@/lib/utils';
+import { SCENE_ASSETS } from '@/tutor-scene/assets';
+import { isSceneBackdropId } from '@/tutor-scene/backdrops';
+import { HudPlate } from '../hud/HudPlate';
+import { ConversationView } from '../ConversationView';
 import { OfferChips } from '../OfferChips';
 import { PersonalizeInWorld } from '../PersonalizeInWorld';
-import { TutorBubble, TutorTranscript } from '../TutorBubble';
-import { LiveSegmentPanel } from '../LiveSegmentPanel';
+import { SessionHistory } from '../SessionHistory';
 import { VoiceConsentControl } from '../VoiceConsentControl';
-import type { TutorCatalog, TutorOffers, TutorPreferences } from '../types';
-import type { LiveSegmentState } from '../useTutorSocket';
+import { micBlockedForOffers, narrowBlockedReason } from '../mic';
+import { auditionFor } from '../stage/phases';
+import { micForPhase } from '../stage/micForPhase';
+```
+
+### frontend/src/tutor/lab/labFixtures.ts
+
+```
+import { useEffect, useRef, useState } from 'react';
+import type { Adaptation, StartedSession, TutorCatalog, TutorOffers, TutorPreferences } from '../types';
+import type { LiveSegmentState, TutorSocket, TutorTurnState } from '../useTutorSocket';
+import type { StagePhase } from '../stage/phases';
 
 /*
- * `/dev/tutor-lab` — the Tutor's visual QA surface, dev-gated out of
+ * ════════════════════════════════════════════════════════════════════════════
+ *  EVERY FAKE THING IN `/dev/tutor-lab` IS IN THIS FILE, AND NOTHING ELSE IS.
+ * ════════════════════════════════════════════════════════════════════════════
+ *
+ * The lab mounts the REAL `StageShell`, the REAL `TutorScene`, the REAL
+ * `OfferChips`, `PersonalizeInWorld` and `ConversationView`. A lab that renders
+ * a copy of a screen is a lab that lies: it agrees with itself forever while the
+ * product drifts away underneath it, and the one bug it would have caught — the
+ * HUD sitting on top of the character at 375 px — is a bug about how the real
 ```
 
 ### frontend/src/tutor/mic.ts

@@ -76,6 +76,32 @@ Rules that bite:
   every phase boundary. Layers receive `PersonalizeLayerProps`,
   `OfferLayerProps` and `ConversationLayerProps` from `stage/StageShell.tsx` and
   drive nothing but their own chrome.
+- **Only VIEWPORT-anchored surfaces may register with `SafeAreaContext`.** The
+  camera composes around every registered rect (`tutor-scene/composition.ts`,
+  read each frame by `CameraDirector`), so a WORLD-anchored surface — one
+  positioned by projecting a point the camera is currently moving — would be
+  pushed by its own measurement: the aim lifts, the anchor it rides lifts with
+  it, the rect it publishes lifts, the inset grows, the aim lifts again. The
+  slot union is closed at `lesson | sheet | mic` for that reason and `caption`
+  was removed from it. What the world-anchored chrome gets instead is a promise
+  from the SHOT: `CameraPose.keepInFrame` is the radius about the aim the solver
+  may not shift out of view, and for the close shots it covers the crown, the
+  caption band above it and the chest the offer chips hang from. If a new piece
+  of chrome needs room, it is bought there — in arithmetic the shot owns — and
+  never by registering a rect that moves when the camera answers it.
+- **Look at the stage at 375 px before closing any Tutor task, at
+  `/dev/tutor-lab`.** The route is DEV-only, outside `RequireAuth`, and it
+  mounts the REAL `StageShell` — real island, real camera, real anchored HUD,
+  real dock, real lesson sheet — driven through every phase by a switcher, with
+  a live viewport readout. Only the two NETWORK edges are stubbed, both in
+  `src/tutor/lab/labFixtures.ts`: the Oracle socket (no Core-minted token exists
+  in a lab) and `/api/v1/tutor/*` (a scoped `fetch` shim that passes everything
+  else, including the `.glb`, straight through). Do NOT let it drift into a copy
+  of the screens: the whole reason it exists is that the previous lab rendered
+  stand-ins on an ordinary scrolling page and said the anchored chrome was
+  "looked at on /tutor itself" — a route that needs a token, a running Oracle
+  and a live socket, so in practice nobody ever looked. The owner found the
+  phone layout first, which is the only outcome that arrangement could produce.
 - **`three` must only ever be reached through a lazy route.** `TutorPage` and
   the scene lab are `lazy()` imports; a static import anywhere in the eager
   graph would put ~285 kB gzipped into the entry bundle of every marketing

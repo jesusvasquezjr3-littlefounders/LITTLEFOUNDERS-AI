@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent, ReactNode } from 'react';
+import { Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from './HudPlate';
@@ -20,9 +21,24 @@ import { HudPlate } from './HudPlate';
  *
  * ON A PHONE IT IS A BOTTOM SHEET, because 420 px of floating plate on a 375 px
  * screen is the whole screen. Three detents from /DESIGN.md's `sheet-detents`:
- * PEEK deliberately minimised, HALF the working default, FULL for reading back
- * a long conversation. The learner drags it, and the camera composes around
- * wherever they left it.
+ * PEEK where it rests, HALF for working, FULL for reading back a long
+ * conversation. The learner drags it, and the camera composes around wherever
+ * they left it.
+ *
+ * PEEK IS A SUMMARY ROW, NOT A CLIPPED PANEL, and that correction is what makes
+ * resting there honest. An 88 px sheet used to be the top 88 px of the same
+ * column — half a character's head and the first line of an exercise, sliced —
+ * so the only way to find out what had arrived was to open it, and the sheet
+ * therefore opened itself to 45% of the screen the moment anything did. Measured
+ * on a 375x812 phone that left 227 px of island under a HUD on a route whose
+ * entire premise is that the island IS the page. So at PEEK the body is not
+ * shown at all: the sheet is one row that SAYS what is waiting and opens on a
+ * tap, and the same phone keeps 560 px of island — everything above the sheet's
+ * 88 px, its 16 px inset and the microphone dock riding over it. What the
+ * learner loses at PEEK is the transcript log, which is a live region; the
+ * caption over the speaker's crown is mounted in every phase and carries the
+ * announcement, and the row itself announces an arrival politely, so nothing
+ * that speaks goes silent.
  *
  * IT PUBLISHES ITS OWN RECTANGLE, and that is what keeps the tutor's head the
  * same size on screen whether or not an exercise is up. The camera reads the
@@ -69,15 +85,23 @@ const DRAG_SLOP_PX = 4;
  * What the sheet must always leave above itself, in CSS pixels.
  *
  * FOUND BY MEASURING, not by reasoning. The microphone cluster rides above the
- * sheet, and the cluster is about 240 px tall once the orb, its status line and
- * the composer are stacked. At the FULL detent on a 375x812 phone the raw
- * fractions put the sheet at 715 px, which pushed the cluster to y = -155: the
- * microphone, the status line and the only way to type were all off the top of
- * the screen at once. Every gate was green through it.
+ * sheet. At the FULL detent on a 375x812 phone the raw fractions put the sheet
+ * at 715 px, which pushed the cluster to y = -155: the microphone, its status
+ * line and the only way to type were all off the top of the screen at once.
+ * Every gate was green through it.
  *
  * So the fractions are a target and this is the ceiling. FULL becomes about
  * 63vh on that phone rather than 88vh, which is still most of the screen for
  * reading a transcript, and the hero control is still on it.
+ *
+ * The number is deliberately NOT re-tightened now that the composer shares the
+ * orb's row and the cluster measures 136 px rather than 192 px (measured on
+ * `/dev/tutor-lab` at 375x812). The reserve has to hold for the WORST dock, not
+ * the resting one: an adaptation question wrapping to three lines in pt-BR
+ * stacks a plate and two answers on top of that row, and the FULL detent is
+ * where a learner is least able to see what they pushed off the screen. What
+ * the shorter cluster buys is spent on the scene at PEEK and HALF, where the
+ * learner actually sits, rather than on 56 px more transcript.
  */
 const STAGE_RESERVE_PX = 300;
 
@@ -174,6 +198,26 @@ export interface LessonPlateProps {
   onFootprint?: (px: number) => void;
   /** Sits in the non-scrolling row beside the handle, so it survives any detent. */
   header?: ReactNode;
+  /**
+   * What the sheet SAYS about itself while it is resting at PEEK.
+   *
+   * It is the visible label of the row that opens the sheet, so it is written
+   * as something a learner can act on rather than as a heading. Without it the
+   * row falls back to a bare drag bar, which is what a sheet resting at 88 px
+   * of clipped content used to be: a panel with no name that has to be opened
+   * to find out whether opening it was worth it.
+   */
+  peekLabel?: string;
+  /**
+   * The same news, announced politely, while the sheet is at PEEK.
+   *
+   * Separate from `peekLabel` because the two have different jobs: the label is
+   * a control's name and stays imperative, this is a sentence about what
+   * changed. It exists because the body — and with it the transcript's live
+   * region — is not mounted at PEEK, so an activity arriving would otherwise be
+   * a purely visual event for a learner who is not looking at the sheet.
+   */
+  peekStatus?: string;
   children: ReactNode;
   className?: string;
 }
@@ -185,6 +229,8 @@ export function LessonPlate({
   onDetentChange,
   onFootprint,
   header,
+  peekLabel,
+  peekStatus,
   children,
   className,
 }: LessonPlateProps) {
@@ -225,6 +271,29 @@ export function LessonPlate({
     (node: HTMLElement | null) => {
       nodeRef.current = node;
       measure?.(node);
+
+      /*
+       * AND THE DOCK'S EDGE IS RELEASED HERE, IN THE REF, NOT IN AN UNMOUNT
+       * EFFECT — which is where it was written first, and which measured wrong
+       * on `/dev/tutor-lab` at 375x812.
+       *
+       * The bug it fixes is real: leaving a conversation left the dock's inline
+       * `bottom` at the sheet's last footprint with no sheet under it, so the
+       * microphone floated a third of the way up the screen over empty island
+       * on the introduce and goodbye phases. Nothing published zero, because
+       * the only publisher had just unmounted.
+       *
+       * The reason it cannot be an unmount effect is the phase order. React
+       * detaches a removed tree's refs during the MUTATION phase and runs its
+       * passive cleanups AFTER the next tree's refs have already attached — and
+       * the personalization plate claims the same edge from a ref callback. A
+       * release in a cleanup therefore ran last and wiped a claim that was
+       * already correct: measured on the lab, moving from a conversation to the
+       * picker put the microphone back on top of the picker's own plate. Here
+       * the release lands in the same phase as the claim, and deletions are
+       * processed before insertions, so whoever arrives next has the last word.
+       */
+      if (!node) onFootprintRef.current?.(0);
     },
     [measure],
   );
@@ -311,6 +380,15 @@ export function LessonPlate({
     if (next !== detent) onDetentChange(next);
   };
 
+  /**
+   * The sheet is a summary row rather than a panel right now.
+   *
+   * Only ever true on a phone: the desktop plate has no detents at all, and a
+   * corner plate that collapsed itself to one line would be hiding the lesson
+   * on the breakpoint where there is room for everything.
+   */
+  const resting = !desktop && detent === 'peek';
+
   const onHandleClick = () => {
     if (desktop) return;
     if (suppressClickRef.current) {
@@ -360,11 +438,26 @@ export function LessonPlate({
       )}
     >
       <div className="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-lg bg-surface text-content">
-        <div className="flex shrink-0 items-center gap-2 px-2 pt-2 lg:px-3 lg:pt-3">
+        <div
+          className={cn(
+            'flex shrink-0 items-center gap-2 px-2 pt-2 lg:px-3 lg:pt-3',
+            // At PEEK the row IS the sheet, so it takes the whole height and
+            // centres itself in it rather than sitting at the top of 88 px of
+            // empty surface.
+            resting && 'h-full pb-2',
+          )}
+        >
           {!desktop && (
             <button
               type="button"
-              aria-label={resizeLabel}
+              /*
+               * The visible words come FIRST and the resize sentence after
+               * them. A control whose spoken name omits its printed label
+               * breaks voice control, and a control announced only as "make
+               * this panel bigger" never mentions that an activity is waiting
+               * inside it.
+               */
+              aria-label={resting && peekLabel ? `${peekLabel} ${resizeLabel}` : resizeLabel}
               onPointerDown={onHandlePointerDown}
               onPointerMove={onHandlePointerMove}
               onPointerUp={onHandlePointerUp}
@@ -373,15 +466,55 @@ export function LessonPlate({
               onClick={onHandleClick}
               // `touch-none` or the browser scrolls the page instead of giving
               // us the pointermove stream, and the sheet simply will not move.
-              className="flex min-h-11 flex-1 cursor-grab touch-none items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className={cn(
+                'flex min-h-11 flex-1 cursor-grab touch-none items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                resting && peekLabel ? 'gap-2 px-2 text-left' : 'justify-center',
+              )}
             >
-              <span aria-hidden="true" className="h-1.5 w-12 rounded-full bg-outline" />
+              {resting && peekLabel ? (
+                <>
+                  {/* The chevron is the affordance a thumb reads before any
+                      word: it says this row opens upward. The grab bar keeps
+                      its place above it so the sheet still looks draggable. */}
+                  <span aria-hidden="true" className="flex shrink-0 flex-col items-center gap-1">
+                    <span className="h-1.5 w-8 rounded-full bg-outline" />
+                    <Icon name="keyboard_arrow_up" className="!text-[20px] text-content-muted" />
+                  </span>
+                  {/* Wraps to a second line rather than truncating: this label
+                      swings by more than 1.8x across our three locales. */}
+                  <span className="lf-label min-w-0 text-content">{peekLabel}</span>
+                </>
+              ) : (
+                <span aria-hidden="true" className="h-1.5 w-12 rounded-full bg-outline" />
+              )}
             </button>
           )}
           <div className={cn('flex items-center gap-2', desktop ? 'ml-auto' : 'shrink-0')}>{header}</div>
         </div>
 
-        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 pb-4 pt-2 lg:px-5 lg:pb-5">
+        {/*
+          Announced, not merely drawn. The body below is not mounted at PEEK, so
+          its transcript log cannot carry this, and an activity arriving on a
+          sheet nobody is looking at has to reach a learner who is listening.
+        */}
+        {resting && peekStatus && (
+          <span role="status" className="sr-only">
+            {peekStatus}
+          </span>
+        )}
+
+        {/*
+          `hidden` at PEEK, not merely clipped, and the two are different
+          promises. Clipped content is still focusable and still announced from
+          behind an 88 px window — a keyboard user tabs into an exercise nobody
+          can see. Hidden content is neither, and React keeps its state, so a
+          half-answered activity is exactly where the learner left it when they
+          open the sheet again.
+        */}
+        <div
+          hidden={resting}
+          className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 pb-4 pt-2 lg:px-5 lg:pb-5"
+        >
           {children}
         </div>
       </div>

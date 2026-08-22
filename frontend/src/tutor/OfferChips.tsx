@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Icon, Reveal } from '@/components/ui';
 import type { CharacterId } from '@/components/characters/control/types';
@@ -9,7 +10,7 @@ import { HudPlate } from './hud/HudPlate';
 import { micBlockedReason } from './mic';
 import { SessionHistory } from './SessionHistory';
 import { SpeechCaption } from './SpeechCaption';
-import type { OfferLayerProps } from './stage/StageShell';
+import { useStageDock, type OfferLayerProps } from './stage/StageShell';
 import type { StartSessionInput } from './tutorApi';
 
 /*
@@ -115,13 +116,14 @@ export function OfferChips({
   nickname,
 }: OfferChipsProps) {
   const { t } = useTranslation();
+  const dock = useStageDock();
 
   /*
    * ONE anchored node for the whole cluster, rather than one `WorldChip` per
    * opening, and the reason is the shot rather than convenience.
    *
    * A `WorldChip` needs a slot of its own, and the only slots a CLOSE-UP frames
-   * are the lead's own two: at this distance the five `stage.mark.*` places the
+   * are the lead's own: at this distance the five `stage.mark.*` places the
    * picker uses are off to the sides or behind the camera, where the projector
    * correctly hides AND inerts anything pinned to them. Five chips on the one
    * slot that is in frame would stack on a single point. So the cluster rides
@@ -129,14 +131,23 @@ export function OfferChips({
    * one ordered list and keeps the whole group culled together when the camera
    * turns away.
    *
-   * It rides the HEAD and hangs below it, rather than riding `lead.chest`, and
-   * that is measured rather than preferred: a close-up frames roughly 0.7 of the
-   * character's height about the mid-head, which puts the published chest point
-   * at about 90% of the viewport, underneath the mic orb. Hanging below the head
-   * anchor is what puts the chips ON the chest ON SCREEN, which is what
-   * /ORACLE.md §9.2 is describing.
+   * IT RIDES THE CHEST, WHICH IS WHERE /DESIGN.md PUTS IT, and it used to ride
+   * the HEAD hanging 10vh below — a workaround for a shot that framed 0.70 of
+   * the character, which put the published chest point at about 90% of the
+   * viewport, under the microphone. The measurement was right and the conclusion
+   * was backwards: 10vh below the mid-head at that framing is the MOUTH, and a
+   * screenshot of production showed four chips laid across Dr Rho's moustache.
+   * Nothing may sit on the face — it is the one thing the character rig, the
+   * mouth atlas and the whole lip-sync path exist to show. The shot opened
+   * instead (`shots.ts` → `CLOSEUP_FRAME_FRACTION`), so the chest is on screen
+   * above the microphone and the chips can be where the recipe says they are.
+   *
+   * THE CLUSTER MUST NEVER REGISTER WITH `SafeAreaContext`, however tempting:
+   * it is positioned by projecting a point the camera is composing against, so
+   * publishing its rect would make the camera push a surface that then reports a
+   * new rect, forever. The rule and its reasoning live on `SafeAreaSlot`.
    */
-  const clusterRef = useAnchorSlot('lead.head');
+  const clusterRef = useAnchorSlot('lead.chest');
 
   const [chipsIn, setChipsIn] = useState(false);
   const [replaysOpen, setReplaysOpen] = useState(false);
@@ -293,14 +304,14 @@ export function OfferChips({
   const status = (
     <>
       {cannotServe && (
-        <HudPlate shape="plate" floor="sunken" className="pointer-events-none">
+        <HudPlate shape="plate" floor="sunken" className="pointer-events-none self-center">
           <span className="lf-caption" role="status">
             {t('tutor.page.tutorUnavailable')}
           </span>
         </HudPlate>
       )}
       {startError && (
-        <HudPlate shape="plate" floor="sunken" className="pointer-events-none">
+        <HudPlate shape="plate" floor="sunken" className="pointer-events-none self-center">
           <span className="lf-caption" role="status">
             {/* An error CODE, never a wire message: an untranslated server
                 string on a child's screen is both an i18n violation and a leak
@@ -313,78 +324,139 @@ export function OfferChips({
   );
 
   const chips = (
-    <>
-      <div
-        role="group"
-        aria-label={t('tutor.introduce.offersLabel')}
-        className="flex flex-wrap items-center justify-center gap-2"
-      >
-        {openings.map((opening, index) => (
-          <Reveal key={opening.id} delay={Math.min(index, MAX_STAGGER_STEPS) * STAGGER_MS}>
-            <HudPlate
-              as="button"
-              shape="chip"
-              floor="surface"
-              disabled={disabled}
-              data-opening={opening.id}
-              /*
-               * The visible label FIRST, then the tutor's own sentence. Leading
-               * with the sentence would drop the visible words out of the
-               * accessible name, which breaks voice control for the one control
-               * a learner is most likely to ask for out loud.
-               */
-              aria-label={`${opening.label} ${opening.spoken}`}
-              onClick={() => choose(opening.input)}
-              className={cn('pointer-events-auto', disabled && 'opacity-60')}
-            >
-              <Icon name={opening.icon} className="text-primary" />
-              <span className="flex flex-col items-start text-left">
-                <span className="lf-label">{opening.label}</span>
-                {opening.detail && <span className="lf-caption text-content-muted">{opening.detail}</span>}
-              </span>
-            </HudPlate>
-          </Reveal>
-        ))}
-      </div>
-
-      {/*
-        The two things a learner may want that are not an opening. They are
-        quieter on purpose: during this phase the microphone is the one action
-        (/DESIGN.md → Screen Recipes → Tutor), so these are secondary and an
-        opening chip is not a second CTA either.
-      */}
-      <div
-        role="group"
-        aria-label={t('tutor.introduce.moreLabel')}
-        className="flex flex-wrap items-center justify-center gap-2"
-      >
-        <HudPlate
-          as="button"
-          shape="chip"
-          floor="sunken"
-          onClick={onPersonalize}
-          className="pointer-events-auto"
-        >
-          <Icon name="landscape" className="text-content-muted" />
-          <span className="lf-caption">{t('tutor.page.changeStage')}</span>
-        </HudPlate>
-
-        <HudPlate
-          as="button"
-          shape="chip"
-          floor="sunken"
-          aria-expanded={replaysOpen}
-          onClick={() => setReplaysOpen((open) => !open)}
-          className="pointer-events-auto"
-        >
-          <Icon name="history" className="text-content-muted" />
-          <span className="lf-caption">
-            {replaysOpen ? t('tutor.introduce.hideReplays') : t('tutor.introduce.replays')}
-          </span>
-        </HudPlate>
-      </div>
-    </>
+    <div
+      role="group"
+      aria-label={t('tutor.introduce.offersLabel')}
+      /*
+       * TWO COLUMNS ON A PHONE, one wrapped row from `md:` up, and the
+       * difference is 52 px of island. MEASURED in a browser at 375 px: the four
+       * openings are 209, 170, 265 and 167 px wide, so `flex-wrap` inside the
+       * 22rem cluster gives every one of them a row of its own and the block is
+       * 208 px tall — a quarter of a phone, hanging off the tutor's chest, above
+       * a 188 px microphone dock. Forced into two columns the same four chips
+       * are 156 px (140 px in es-MX and pt-BR, whose labels break differently),
+       * and that is what fits between the chest and the dock.
+       *
+       * `items-stretch` is implied by the grid and is wanted: two chips in a row
+       * whose labels wrap to different line counts should be the same height, or
+       * the row reads as two unrelated controls.
+       */
+      className="grid grid-cols-2 gap-2 md:flex md:flex-wrap md:items-center md:justify-center"
+    >
+      {openings.map((opening, index) => (
+        <Reveal key={opening.id} delay={Math.min(index, MAX_STAGGER_STEPS) * STAGGER_MS}>
+          <HudPlate
+            as="button"
+            shape="chip"
+            floor="surface"
+            disabled={disabled}
+            data-opening={opening.id}
+            /*
+             * The visible label FIRST, then the tutor's own sentence. Leading
+             * with the sentence would drop the visible words out of the
+             * accessible name, which breaks voice control for the one control
+             * a learner is most likely to ask for out loud.
+             */
+            aria-label={`${opening.label} ${opening.spoken}`}
+            onClick={() => choose(opening.input)}
+            className={cn('pointer-events-auto', disabled && 'opacity-60')}
+            /*
+             * THE CLUSTER IS THE MEASURE HERE, NOT THE CHIP'S OWN 22ch, and
+             * that is the locale swing rather than a preference.
+             *
+             * `HudPlate` caps a chip at `min(22ch, 72vw)` — about 167 px of
+             * Inter at `lf-label` — which is a reading measure for a label of
+             * two or three words. These labels are not that: they run 15
+             * characters ("Ask me anything") to 33 ("¿Qué significa de verdad
+             * ahorrar?"), a 2.2x swing across en-US / es-MX / pt-BR, and every
+             * one of the four wraps to two lines in Spanish and Portuguese
+             * while fitting on one in English. That is 80 px of extra chrome
+             * hanging over the character, in the locale this product actually
+             * ships in, decided by nothing but the length of a translation.
+             * Released to the cluster's own width the same four sit on one line
+             * each in all three from `md:` up, so the arrangement is the same
+             * shape everywhere and only the wrap points move. Below `md:` the
+             * cluster is two columns and the cell IS the measure — 156 px of
+             * two-line chips in en-US against 208 px of one-per-row, measured,
+             * and that 52 px is what fits between the chest and the microphone.
+             *
+             * INLINE, because `cn` is a plain string join with no conflict
+             * resolution (`lib/utils.ts`): a `max-w-*` class passed through
+             * `className` lands beside the primitive's own and which one wins
+             * is decided by Tailwind's output order rather than by this file.
+             */
+            style={{ maxWidth: '100%' }}
+          >
+            <Icon name={opening.icon} className="text-primary" />
+            <span className="flex flex-col items-start text-left">
+              <span className="lf-label">{opening.label}</span>
+              {opening.detail && <span className="lf-caption text-content-muted">{opening.detail}</span>}
+            </span>
+          </HudPlate>
+        </Reveal>
+      ))}
+    </div>
   );
+
+  /*
+   * The two things a learner may want that are not an opening. They are quieter
+   * on purpose: during this phase the microphone is the one action (/DESIGN.md →
+   * Screen Recipes → Tutor), so these are secondary and an opening chip is not a
+   * second CTA either.
+   *
+   * THEY RIDE THE MICROPHONE DOCK RATHER THAN THE TUTOR'S CHEST, and the reason
+   * is measured. /DESIGN.md's world-anchored list says "offer chips at the
+   * tutor's chest" — these two are not offers, they are the way to the picker
+   * and the way to a replay. Keeping them in the chest cluster cost 44 px of the
+   * band between the chest and the microphone, and at 375 px the four openings
+   * already wrap to two rows there: the pair was the difference between the
+   * cluster fitting above the dock and disappearing behind it, since the dock is
+   * `z-30` and world chrome is `z-20`. The dock's `above` slot exists for
+   * exactly this (`StageDockValue`), it is measured into the safe area with the
+   * rest of the dock so the camera composes around it, and it does not add a
+   * fourth viewport-anchored element — it is part of the one that is already
+   * there.
+   */
+  const secondary = (
+    <div
+      role="group"
+      aria-label={t('tutor.introduce.moreLabel')}
+      className="flex flex-wrap items-center justify-center gap-2"
+    >
+      <HudPlate
+        as="button"
+        shape="chip"
+        floor="sunken"
+        onClick={onPersonalize}
+        className="pointer-events-auto"
+      >
+        <Icon name="landscape" className="text-content-muted" />
+        <span className="lf-caption">{t('tutor.page.changeStage')}</span>
+      </HudPlate>
+
+      <HudPlate
+        as="button"
+        shape="chip"
+        floor="sunken"
+        aria-expanded={replaysOpen}
+        onClick={() => setReplaysOpen((open) => !open)}
+        className="pointer-events-auto"
+      >
+        <Icon name="history" className="text-content-muted" />
+        <span className="lf-caption">
+          {replaysOpen ? t('tutor.introduce.hideReplays') : t('tutor.introduce.replays')}
+        </span>
+      </HudPlate>
+    </div>
+  );
+
+  /*
+   * The dock is absent on the scene lab and in a unit test, and a control that
+   * exists only where a shell is mounted is a control two of the three places
+   * this component runs cannot reach. Where there is no dock the pair falls back
+   * into the cluster it came from, which is exactly where it used to live.
+   */
+  const dockAbove = dock?.above ?? null;
 
   return (
     <>
@@ -427,23 +499,41 @@ export function OfferChips({
           >
             <div
               /*
-               * Hanging below the head, and WIDER on desktop so the openings
-               * sit in one row across the character's chest instead of in a
-               * column down its face. At 375 px the same cluster is narrow
-               * enough to wrap to two rows, which is the composition changing
-               * rather than the product changing.
+               * Hanging FROM the chest point rather than centred on it, and
+               * WIDER on desktop so the openings sit in one row across the
+               * character's chest instead of in a column down its front. At
+               * 375 px the same cluster is two columns, which is the composition
+               * changing rather than the product changing.
                *
-               * It hangs BELOW rather than sitting on the anchor because a
-               * close-up frames about 0.7 of the character's height about the
-               * mid-head: at that distance the published chest point is around
-               * 90% of the viewport, underneath the mic orb.
+               * 54rem and not 44rem: the four openings measure 209, 170, 265 and
+               * 167 px, which is 835 px with the gaps — so at 44rem the row that
+               * was supposed to be one row was two, and the second one hung 52 px
+               * lower down the character for no reason anybody chose. 54rem is
+               * the first width where the sentence above is true.
+               *
+               * `top-2` and not a `vh` offset: the anchor is already the chest,
+               * measured in metres from the character's own proportions by the
+               * scene, so all this needs is the gap between the chip and the
+               * body. A viewport-relative nudge was what put the last version on
+               * the mouth — 10vh is a different part of a character at every
+               * camera distance, and the one distance nobody checked was the one
+               * the owner screenshotted.
                */
-              className="absolute left-1/2 top-[10vh] flex w-[min(88vw,22rem)] -translate-x-1/2 flex-col items-center gap-2 md:w-[min(80vw,44rem)]"
+              className="absolute left-1/2 top-2 flex w-[min(88vw,22rem)] -translate-x-1/2 flex-col items-stretch gap-2 md:w-[min(90vw,54rem)] md:items-center"
             >
               {status}
               {chipsIn && chips}
+              {chipsIn && !dockAbove && secondary}
             </div>
           </div>
+
+          {/*
+            The two quieter chips, in the microphone's own column. See the note
+            on `secondary`: they are not offers, and the 44 px they used to cost
+            the chest cluster is the 44 px that decided whether the openings fit
+            above the dock at 375 px.
+          */}
+          {chipsIn && dockAbove ? createPortal(secondary, dockAbove) : null}
         </>
       ) : (
         /*
@@ -470,6 +560,12 @@ export function OfferChips({
           </HudPlate>
           {status}
           {chips}
+          {/*
+            Inline here whatever the shell is doing. This branch is the no-stage
+            arrangement — the dock is a control over a render, and on a device
+            with no WebGL there is no render to put controls over.
+          */}
+          {secondary}
         </div>
       )}
 

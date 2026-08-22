@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { act, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AnchorProvider } from '@/tutor-scene/ScreenAnchor';
-import { WorldChip } from '../WorldChip';
+import { SafeAreaProvider, useSafeArea } from '@/tutor-scene/SafeAreaContext';
+import { isBehindHud, WorldChip } from '../WorldChip';
 
 /*
  * The chip is the guaranteed half of a pair: a mesh in the scene is the lovely
@@ -15,6 +16,44 @@ import { WorldChip } from '../WorldChip';
  * own width away from the thing it names — visible only once the scene is
  * running, which is the worst time to find it.
  */
+
+interface Rect {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
+/** jsdom lays nothing out, so a node that has to have a box states its own. */
+function stubRect(node: HTMLElement, rect: Rect): void {
+  node.getBoundingClientRect = () =>
+    ({
+      ...rect,
+      right: rect.left + rect.width,
+      bottom: rect.top + rect.height,
+      x: rect.left,
+      y: rect.top,
+      toJSON: () => ({}),
+    }) as DOMRect;
+}
+
+/** Stands in for the lesson sheet: one measured, opaque, bottom-edge plate. */
+function SheetProbe({ rect }: { rect: Rect }) {
+  const safeArea = useSafeArea();
+  const measure = safeArea?.measure('sheet');
+  return (
+    <div
+      ref={(node) => {
+        if (node) stubRect(node, rect);
+        measure?.(node);
+      }}
+    />
+  );
+}
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe('WorldChip as a control', () => {
   it('is a real button that dispatches the same handler as its mesh', () => {
@@ -116,6 +155,78 @@ describe('WorldChip and the projector', () => {
     expect(screen.getByRole('button').className).toContain('pointer-events-auto');
   });
 
+  /*
+   * THE OTHER WAY A CHIP DISAPPEARS, AND IT IS THE ONE THE OWNER FOUND.
+   *
+   * /DESIGN.md fixes two z-bands on this route: world-anchored chrome below,
+   * viewport-anchored chrome above. The projector culls a chip that leaves the
+   * FRAME, and nothing culled a chip that was still perfectly inside the frame
+   * and simply painted over by the lesson sheet or the microphone dock. On a
+   * phone, where those two own the bottom third of the screen, that is a
+   * control which is invisible, focusable, tappable and reported to a screen
+   * reader as being on screen — the worst of both, and impossible to tell from
+   * a projection bug by looking at it.
+   */
+  it('hides AND inerts a chip that the HUD is painted over, then brings it back', () => {
+    // `requestAnimationFrame` explicitly: the shared ticker runs on frames, not
+    // on timeouts, and vitest does not fake it by default.
+    vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'Date', 'performance'] });
+    const { container } = render(
+      <SafeAreaProvider>
+        <SheetProbe rect={{ left: 0, top: 600, width: 375, height: 212 }} />
+        <WorldChip slot="stage.mark.0" onSelect={vi.fn()}>
+          Practise together
+        </WorldChip>
+      </SafeAreaProvider>,
+    );
+
+    const frame = container.querySelector<HTMLElement>('.will-change-transform');
+    const plate = screen.getByRole('button', { name: 'Practise together' });
+    expect(frame).not.toBeNull();
+
+    // Squarely behind the sheet. The projector would place it here quite
+    // happily: it is inside the frame, and the frame is all the projector knows.
+    stubRect(frame as HTMLElement, { left: 100, top: 660, width: 160, height: 44 });
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+    expect(plate.hasAttribute('hidden')).toBe(true);
+    // `inert` as a PROPERTY: jsdom does not reflect it to an attribute, so the
+    // attribute check would read false on a node that is correctly inert.
+    expect(plate.inert).toBe(true);
+
+    // The camera moves it back into open sky. A chip released while hidden
+    // would stay hidden forever, which looks exactly like a render that failed.
+    stubRect(frame as HTMLElement, { left: 100, top: 200, width: 160, height: 44 });
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+    expect(plate.hasAttribute('hidden')).toBe(false);
+    expect(plate.inert).toBe(false);
+  });
+
+  it('leaves a chip alone when there is no HUD measured at all', () => {
+    // The scene lab mounts the stage with no HUD, and every unit test in this
+    // file renders without a provider. A guard that hid chips there would be
+    // hiding them against rectangles nobody published.
+    vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'Date', 'performance'] });
+    const { container } = render(
+      <WorldChip slot="stage.mark.0" onSelect={vi.fn()}>
+        Practise together
+      </WorldChip>,
+    );
+    stubRect(container.querySelector('.will-change-transform') as HTMLElement, {
+      left: 100,
+      top: 660,
+      width: 160,
+      height: 44,
+    });
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+    expect(screen.getByRole('button', { name: 'Practise together' }).hasAttribute('hidden')).toBe(false);
+  });
+
   it('registers with the projector and starts hidden AND inert', () => {
     const { container } = render(
       <AnchorProvider>
@@ -132,5 +243,45 @@ describe('WorldChip and the projector', () => {
     // focusable would let a keyboard reach it there.
     expect(anchored?.hidden).toBe(true);
     expect(anchored?.inert).toBe(true);
+  });
+});
+
+/*
+ * The arithmetic behind the guard above, tested where a test can actually reach
+ * it: the mechanism itself lives in an animation frame, and the rule it applies
+ * is the same one `culling.ts` settled on for the frame edge — a control the
+ * learner can only HALF read must not be under their thumb or in their tab
+ * order.
+ */
+describe('isBehindHud', () => {
+  const SHEET = { left: 0, top: 600, width: 375, height: 212 };
+  const DOCK = { left: 15, top: 500, width: 345, height: 136 };
+
+  it('says no when the chip is in open sky', () => {
+    expect(isBehindHud({ left: 100, top: 200, right: 260, bottom: 244 }, [SHEET, DOCK])).toBe(false);
+  });
+
+  it('says yes when the chip is squarely behind a plate', () => {
+    expect(isBehindHud({ left: 100, top: 660, right: 260, bottom: 704 }, [SHEET])).toBe(true);
+  });
+
+  it('says yes for a chip only PARTLY behind one', () => {
+    // Half a glass pill peeking out from under the lesson sheet is exactly the
+    // half-read control this rule exists to remove.
+    expect(isBehindHud({ left: 100, top: 580, right: 260, bottom: 624 }, [SHEET])).toBe(true);
+  });
+
+  it('ignores a chip that merely touches an edge', () => {
+    // Rounding, not occlusion. Without the tolerance a chip resting on the
+    // boundary flips hidden and visible on alternate ticks.
+    expect(isBehindHud({ left: 100, top: 556, right: 260, bottom: 600.5 }, [SHEET])).toBe(false);
+  });
+
+  it('tests every plate, not only the first', () => {
+    expect(isBehindHud({ left: 100, top: 540, right: 260, bottom: 584 }, [SHEET, DOCK])).toBe(true);
+  });
+
+  it('says no when nothing has been measured', () => {
+    expect(isBehindHud({ left: 100, top: 660, right: 260, bottom: 704 }, [])).toBe(false);
   });
 });

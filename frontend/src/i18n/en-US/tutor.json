@@ -182,7 +182,10 @@
     "plateLabel": "Your tutor and your activity",
     "bubbleLabel": "What your tutor is saying",
     "transcriptLabel": "Everything said so far",
-    "resizePanel": "Make this panel bigger or smaller"
+    "resizePanel": "Make this panel bigger or smaller",
+    "peekOpen": "Open your panel",
+    "peekOpenActivity": "Open the activity",
+    "peekActivityWaiting": "An activity is waiting for you"
   },
   "mic": {
     "listening": "Listening…",

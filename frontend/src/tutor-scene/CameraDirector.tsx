@@ -249,7 +249,7 @@ export function CameraDirector({
      */
     let distance = straightDistance;
     if (SHOT_FITS_SCENE[shot]) {
-      const fit = composeFor(insets.current, viewport, distance, ctx);
+      const fit = composeFor(insets.current, viewport, distance, ctx, pose.keepInFrame);
       position = padDistance(pose.position, pose.target, fit.padding);
       distance = Math.hypot(
         position.x - pose.target.x,
@@ -258,7 +258,15 @@ export function CameraDirector({
       );
     }
 
-    const composition = composeFor(insets.current, viewport, distance, ctx);
+    /*
+     * `pose.keepInFrame` is what stops the shift from becoming a crop. The
+     * solver otherwise obeys the free rectangle literally, and at 375x812 with
+     * the lesson sheet at HALF that asks for a 235 px lift on a frame whose
+     * subject is only 200 px from crown to aim — the character comes out from
+     * behind the sheet with the top of their head off the screen. The shot
+     * states the radius it may not lose; the solver clamps against it.
+     */
+    const composition = composeFor(insets.current, viewport, distance, ctx, pose.keepInFrame);
     const composed = applyComposition(position, pose.target, composition);
 
     /* ---- Ambient motion, which the quality tier may switch off ---------- */

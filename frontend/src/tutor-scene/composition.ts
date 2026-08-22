@@ -89,46 +89,149 @@ const MIN_FREE_FRACTION = 0.42;
 /** And the matching ceiling on how far back a fit may be pushed. */
 const MAX_PADDING = 1.9;
 
+/**
+ * How much of the half-frame is kept as breathing room when the aim is clamped
+ * to keep a subject on screen.
+ *
+ * A crown exactly on the top edge of the viewport is cropped as far as a learner
+ * is concerned — the silhouette touches the bezel and reads as cut off. Six per
+ * cent of the half-frame is about 24 px on a 812 px phone at a close shot, which
+ * is the smallest gap that still reads as headroom.
+ */
+const FRAME_MARGIN = 0.06;
+
+/**
+ * How close two HUD surfaces have to be before they are treated as one.
+ *
+ * `hud-inset`, the widest gap the design ever leaves between a plate and what it
+ * sits against. See `mergeRects` for why touching surfaces must be reduced
+ * together.
+ */
+const MERGE_GAP_PX = 24;
+
 function clamp(value: number, low: number, high: number): number {
   return Math.min(high, Math.max(low, value));
 }
 
 /**
+ * Unions HUD rectangles that touch, before any of them is charged to an edge.
+ *
+ * TWO SURFACES THAT TOUCH ARE ONE SURFACE, as far as a camera is concerned, and
+ * reducing them separately produces an answer that is wrong about both. The case
+ * that forced this is the ordinary conversing phase at 375 px: the sheet sits at
+ * the bottom and the microphone dock rides 12 px above it, so the dock alone is
+ * a full-width band FLOATING in the middle of the screen with more room below it
+ * than above. Charged on its own it is cheapest to clear from the TOP — which is
+ * arithmetically true and physically absurd, because the room it points at is
+ * the room the sheet is standing in. The camera would have pushed the character
+ * DOWN, into the sheet, to clear the microphone.
+ *
+ * Merged first, the dock and the sheet are one 577 px mass anchored to the
+ * bottom edge, and the answer is the obvious one. Nothing here is quadratic in
+ * anything that matters: `SafeAreaSlot` is closed at three.
+ */
+function mergeRects(rects: readonly HudRect[]): HudRect[] {
+  const merged: HudRect[] = [];
+
+  for (const rect of rects) {
+    let candidate = rect;
+    // Restart after every union: absorbing one rect can bring the group within
+    // touching distance of another it did not previously reach.
+    let absorbed = true;
+    while (absorbed) {
+      absorbed = false;
+      for (let i = merged.length - 1; i >= 0; i -= 1) {
+        const other = merged[i];
+        if (!other || !touches(candidate, other)) continue;
+        merged.splice(i, 1);
+        candidate = union(candidate, other);
+        absorbed = true;
+      }
+    }
+    merged.push(candidate);
+  }
+
+  return merged;
+}
+
+/** True when the two rectangles overlap or sit within `MERGE_GAP_PX` of each other. */
+function touches(a: HudRect, b: HudRect): boolean {
+  return (
+    a.left <= b.left + b.width + MERGE_GAP_PX &&
+    b.left <= a.left + a.width + MERGE_GAP_PX &&
+    a.top <= b.top + b.height + MERGE_GAP_PX &&
+    b.top <= a.top + a.height + MERGE_GAP_PX
+  );
+}
+
+function union(a: HudRect, b: HudRect): HudRect {
+  const left = Math.min(a.left, b.left);
+  const top = Math.min(a.top, b.top);
+  return {
+    left,
+    top,
+    width: Math.max(a.left + a.width, b.left + b.width) - left,
+    height: Math.max(a.top + a.height, b.top + b.height) - top,
+  };
+}
+
+/**
  * Reduces measured HUD rectangles to per-edge insets.
  *
- * A rect is charged to the edge it is CHEAPEST to clear — the edge whose
- * intrusion depth is smallest. That rule is not arbitrary: a lesson plate inset
- * 24 px from the bottom-right of a 1280x800 stage intrudes 444 px from the right
- * and 524 px from the bottom, and the correct composition is to move the subject
- * LEFT, not to lift it 524 px. A full-width bottom sheet on a phone intrudes 375
- * px from the right and 365 px from the bottom, and the correct answer flips to
- * lifting. One rule produces both, which is why it is one rule and not a
- * per-component "which edge am I on" prop that would eventually disagree with
- * where the component actually rendered.
+ * A rect is charged to the edge it is CHEAPEST to clear, and "cheapest" is the
+ * intrusion measured as a FRACTION OF THE AXIS IT EATS INTO — never as a raw
+ * pixel count. A lesson plate inset 24 px from the bottom-right of a 1280x800
+ * stage takes 35% of the width from the right and 65% of the height from the
+ * bottom, so it is charged to the right and the subject moves LEFT. A bottom
+ * sheet on a 375x812 phone takes 96% of the width and 47% of the height, so it
+ * is charged to the bottom and the subject rides ABOVE it. One rule, both
+ * answers, and no per-component "which edge am I on" prop that would eventually
+ * disagree with where the component actually rendered.
+ *
+ * COMPARING RAW PIXELS IS THE BUG THIS REPLACED, and it only showed itself in
+ * portrait, which is exactly the view the owner rejected. The real mobile sheet
+ * is inset 16 px on all three sides (`hud-inset-mobile`), so it measures 343x365
+ * at left 16, top 431: 359 px from the right, 381 px from the bottom. Raw pixels
+ * make the RIGHT edge cheaper by 22 px, so the solver charged 96% of a phone's
+ * width to a surface that is not on the right at all — it then trucked the
+ * camera a third of a screen sideways AND, on a fitting shot, pulled it back by
+ * the full 1.9x padding ceiling. That is the "island became a sliver" report,
+ * produced by the composition solver rather than by the layout. The unit test
+ * missed it because its fixture was a sheet flush to the bottom edge with no
+ * inset, which is the one geometry where raw pixels happen to give the right
+ * answer.
  */
 export function insetsFromRects(rects: readonly HudRect[], viewport: ViewportPx): SafeAreaInsets {
   const insets = { top: 0, right: 0, bottom: 0, left: 0 };
   if (!Number.isFinite(viewport.width) || !Number.isFinite(viewport.height)) return insets;
   if (viewport.width <= 0 || viewport.height <= 0) return insets;
 
-  for (const rect of rects) {
-    if (!Number.isFinite(rect.width) || !Number.isFinite(rect.height)) continue;
+  const usable = rects.filter((rect) => {
+    if (!Number.isFinite(rect.left) || !Number.isFinite(rect.top)) return false;
+    if (!Number.isFinite(rect.width) || !Number.isFinite(rect.height)) return false;
     // A zero-sized rect is a component that is mounted but not laid out yet.
     // Charging it to an edge would publish an inset for something occupying no
     // space, and the camera would compose around a panel nobody can see.
-    if (rect.width <= 0 || rect.height <= 0) continue;
+    return rect.width > 0 && rect.height > 0;
+  });
 
+  for (const rect of mergeRects(usable)) {
     const fromLeft = clamp(rect.left + rect.width, 0, viewport.width);
     const fromRight = clamp(viewport.width - rect.left, 0, viewport.width);
     const fromTop = clamp(rect.top + rect.height, 0, viewport.height);
     const fromBottom = clamp(viewport.height - rect.top, 0, viewport.height);
 
-    const cheapest = Math.min(fromLeft, fromRight, fromTop, fromBottom);
-    if (cheapest <= 0) continue;
+    const costLeft = fromLeft / viewport.width;
+    const costRight = fromRight / viewport.width;
+    const costTop = fromTop / viewport.height;
+    const costBottom = fromBottom / viewport.height;
 
-    if (cheapest === fromRight) insets.right = Math.max(insets.right, fromRight);
-    else if (cheapest === fromBottom) insets.bottom = Math.max(insets.bottom, fromBottom);
-    else if (cheapest === fromLeft) insets.left = Math.max(insets.left, fromLeft);
+    const cheapest = Math.min(costLeft, costRight, costTop, costBottom);
+    if (!(cheapest > 0)) continue;
+
+    if (cheapest === costRight) insets.right = Math.max(insets.right, fromRight);
+    else if (cheapest === costBottom) insets.bottom = Math.max(insets.bottom, fromBottom);
+    else if (cheapest === costLeft) insets.left = Math.max(insets.left, fromLeft);
     else insets.top = Math.max(insets.top, fromTop);
   }
 
@@ -178,13 +281,32 @@ export function composeFor(
   viewport: ViewportPx,
   distance: number,
   ctx: Pick<ShotContext, 'aspect' | 'fov'>,
+  /**
+   * Metres about the target that MUST stay inside the frame — the pose's own
+   * `keepInFrame`.
+   *
+   * Without it the solver is free to shift the aim as far as the free rectangle
+   * asks, and on a phone that is far enough to push the top of a character's
+   * head off the top of the screen: at 375x812 with the lesson sheet at HALF the
+   * HUD claims 73% of the height, the clamped free rectangle recentres 235 px
+   * up, and a close-up crops the crown. Composition exists to get the character
+   * OUT from behind the panel, so a composition that decapitates them has failed
+   * at its own job rather than traded one problem for another.
+   *
+   * Zero means "nothing to protect" and is the right answer for the fitting
+   * shots, which answer an inset by RETREATING (`padding`) instead of by
+   * shifting, and so cannot crop what they have already made room for.
+   */
+  keepInFrame = 0,
 ): Composition {
   if (!Number.isFinite(viewport.width) || !Number.isFinite(viewport.height)) return { ...NO_COMPOSITION };
   if (viewport.width <= 0 || viewport.height <= 0) return { ...NO_COMPOSITION };
   if (!Number.isFinite(distance) || distance <= 0) return { ...NO_COMPOSITION };
 
   const vFov = ((Number.isFinite(ctx.fov) && ctx.fov > 1 && ctx.fov < 179 ? ctx.fov : 36) * Math.PI) / 180;
+  const aspect = Number.isFinite(ctx.aspect) && ctx.aspect > 0 ? ctx.aspect : 1;
   const worldHeight = 2 * distance * Math.tan(vFov / 2);
+  const worldWidth = worldHeight * aspect;
   const metresPerPx = worldHeight / viewport.height;
 
   const offset = freeCentreOffsetPx(insets, viewport);
@@ -197,9 +319,19 @@ export function composeFor(
     MAX_PADDING,
   );
 
+  /*
+   * The most the aim may travel on each axis before the protected radius
+   * touches an edge. Negative room means the subject already overflows the
+   * frame — a very tight close-up — and the honest answer there is to shift by
+   * nothing at all rather than to pick which side to crop.
+   */
+  const keep = Number.isFinite(keepInFrame) && keepInFrame > 0 ? keepInFrame : 0;
+  const roomUp = Math.max((worldHeight / 2) * (1 - FRAME_MARGIN) - keep, 0);
+  const roomRight = Math.max((worldWidth / 2) * (1 - FRAME_MARGIN) - keep, 0);
+
   return {
-    right: -offset.x * metresPerPx,
-    up: offset.y * metresPerPx,
+    right: clamp(-offset.x * metresPerPx, -roomRight, roomRight),
+    up: clamp(offset.y * metresPerPx, -roomUp, roomUp),
     padding,
   };
 }

@@ -407,12 +407,29 @@ function StageShellInner({ children, phase, mic, onReady, ...stage }: StageShell
 
           Viewport-anchored for a physical reason: a thumb does not move with
           the camera. The two slots either side of it are portal targets, so a
-          layer can put a question above the orb and a composer under it while
+          layer can put a question above the orb and a composer beside it while
           the shell keeps owning the one bottom edge all three share.
 
           `empty:hidden` on both, because an empty flex row still spends the
           column's `gap-2`: without it the orb drifts 8 px up the screen on
           every phase that contributes no rows, which is most of them.
+
+          ON A PHONE THE ORB AND THE COMPOSER SHARE ONE ROW, and that is a
+          measurement rather than a rearrangement for its own sake. Stacked, the
+          cluster measured 192 px on a 375x812 phone (`/dev/tutor-lab`): 96 for
+          the orb, 32 for its status line, 48 for the composer and 16 of gaps —
+          a quarter of the screen of chrome above a sheet that had already taken
+          45% of it. The orb is the hero and keeps every pixel of its 96;
+          what stops claiming a row of its own is the text field beside it,
+          which needs 48 px of a row the orb has already paid 96 for. The
+          cluster measures 136 px that way, and the 56 px go back to the island.
+
+          It stays a COLUMN from `lg:` up, where height is not the scarce
+          dimension and the recipe's centred orb over the bottom safe area is
+          simply the better arrangement (/DESIGN.md → Screen Recipes → Tutor).
+          The DOM order is the same at both: orb, then composer. A row that
+          reversed them visually would put the tab order and the reading order
+          in disagreement over which control comes first.
         */}
         <div
           ref={attachDock}
@@ -436,18 +453,28 @@ function StageShellInner({ children, phase, mic, onReady, ...stage }: StageShell
             </HudPlate>
           )}
 
-          <MicOrb
-            state={mic.state}
-            microphone={mic.microphone}
-            blockedReason={mic.blockedReason ?? null}
-            blockedCopy={mic.blockedCopy ?? null}
-            idleCopy={mic.idleCopy}
-            onClip={mic.onClip}
-            onInterrupt={mic.onInterrupt}
-            className="self-center"
-          />
+          <div className="flex w-full items-center justify-center gap-3 lg:flex-col lg:gap-2">
+            <MicOrb
+              state={mic.state}
+              microphone={mic.microphone}
+              blockedReason={mic.blockedReason ?? null}
+              blockedCopy={mic.blockedCopy ?? null}
+              idleCopy={mic.idleCopy}
+              onClip={mic.onClip}
+              onInterrupt={mic.onInterrupt}
+              className="shrink-0"
+            />
 
-          <div ref={attachBelow} className="flex w-full flex-col gap-2 empty:hidden" />
+            {/*
+              `min-w-0` so a long placeholder cannot push the orb off centre,
+              and `flex-none` from `lg:` up where the slot goes back to being a
+              full-width row under the orb rather than the space beside it.
+            */}
+            <div
+              ref={attachBelow}
+              className="flex min-w-0 flex-1 flex-col gap-2 empty:hidden lg:w-full lg:flex-none"
+            />
+          </div>
         </div>
 
         {/*

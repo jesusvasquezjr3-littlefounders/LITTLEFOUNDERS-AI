@@ -569,17 +569,28 @@ island and the learner watches their own world blink.
   near-opaque slab down a third of the screen — and a silhouette is a
   perceptual fact that a `getBoundingClientRect()` measurement cannot argue
   with. **Mobile: a bottom sheet** with the three `sheet-detents` — PEEK
-  (88 px: the latest line and a verdict chip, with the orb riding above it),
-  HALF (45vh, the default while a segment is live), FULL (88vh, transcript
-  opened). The plate publishes its rect so the camera composes AROUND it: the
-  character's on-screen height must be identical with and without a segment,
-  or the lesson appears to shove the tutor out of the way to make room for
-  itself.
-- **The mic orb** — MicOrb, centred on the bottom safe area. With the lesson
-  plate and the way out it is one of exactly **three** viewport-anchored
-  elements on the route; everything else is anchored to the world. All three
-  are viewport-anchored for the same reason: a thumb does not move with the
-  camera.
+  (88 px, **where the sheet rests**), HALF (45vh, working), FULL (88vh,
+  transcript opened), with the orb riding above whichever it is at. **PEEK is a
+  SUMMARY ROW, not the top 88 px of the panel** (corrected 2026-08-21, after the
+  owner tested a phone): one line saying what is waiting, a chevron, and the
+  finish control, with the body not mounted at all. The distinction is what
+  makes resting there honest — a clipped panel tells the learner nothing, so the
+  sheet has to open itself to find out, which is precisely how HALF became the
+  default and 45% of a 375x812 phone became chrome. **Nothing may raise the
+  sheet except the learner**: an arriving activity says so on the row, in words
+  and to a screen reader, and waits. The plate publishes its rect so the camera
+  composes AROUND it: the character's on-screen height must be identical with
+  and without a segment, or the lesson appears to shove the tutor out of the way
+  to make room for itself.
+- **The mic orb** — MicOrb, on the bottom safe area: centred from `lg:` up, and
+  below that **sharing its row with the composer**, orb first. Height is the
+  scarce dimension on a phone and the orb is the hero that keeps all 96 px of
+  it, so what gives up a row of its own is the text field, which needs 48 px of
+  a row the orb has already paid for (192 px stacked → 136 px measured at
+  375x812). With the lesson plate and the way out it is one of exactly **three**
+  viewport-anchored elements on the route; everything else is anchored to the
+  world. All three are viewport-anchored for the same reason: a thumb does not
+  move with the camera.
 - **The way out** — a HudPlate chip at the top-left safe area (`hud-inset`,
   16 px mobile / 24 px desktop), back arrow plus one translated line, first in
   the tab order, above the loading veil, and **never culled**. It went from two
@@ -601,11 +612,50 @@ that action — so an offer chip is a secondary, not a second CTA.
 **Responsive.** At 375 px: the sheet detents above, the orb at 96 px, and
 anchored controls that clear the 44 px minimum tap target BY CONSTRUCTION —
 invisible padded pick proxies sized from the character measurements, never by
-hoping the mesh happens to be big enough at that camera distance. At 1280 px
+hoping the mesh happens to be big enough at that camera distance. **The scene
+keeps the majority of the viewport in every phase the learner did not ask to
+change**, and that is a number somebody has to measure rather than a feeling.
+Measured on `/dev/tutor-lab` at 375x812, from the top of the viewport to the
+first pixel of HUD: 560 px resting in a live conversation, 452 px with an
+adaptation question up, 612 px while the tutor is offering openings. A change
+that drops any of them below half the viewport is a regression in the one
+property this route exists for. The two numbers below half are both states the
+learner chose by raising the sheet — 283 px at HALF, 136 px at FULL — and that
+is the difference between a composition and an accident. At 1280 px
 the freed width is spent on the SCENE: a wider establishing shot and real
 island around the floating plate. That is a deliberate use of the width; an
 empty margin either side of a centred column is not, and neither is a second
 panel invented to fill it.
+
+**THAT METRIC IS NOT THE PROPERTY IT WAS CHOSEN TO PROVE**, corrected
+2026-08-21 the first time the stage was measured in a browser that was actually
+compositing frames. Two things went wrong at once, and they are the same two
+things /AGENTS.md §1.14 already records under "verified for subject, not only
+for form".
+
+The FIGURE was wrong: the openings phase reads 612 px, not 664 px. 664 was
+taken in a tab that never reported a first frame, so `ready` stayed false, the
+offer chips never mounted, and the two secondary chips that portal into the
+dock's upper slot were missing from the dock being measured. A number measured
+in the fallback arrangement is not a number about the real one.
+
+The METRIC was worse. "Distance to the first pixel of HUD" counts EMPTY
+BACKGROUND as scene, and the canvas is `alpha: true`, so the pixels the scene
+actually paints can be counted exactly instead of inferred. Counted that way at
+375x812: introducing 70.8%, conversing 100%, personalizing 13.8%, adapting
+12.0%, arriving 6.5%, closing 6.3%, unavailable 6.2%. At 1280x800: conversing
+58.7%, personalizing 55.9%, introducing 49.7%, adapting 34.9%, and the three
+`establishing` phases 14.5%. So the claim above — the scene keeps the majority
+of the viewport in every phase the learner did not ask to change — is TRUE for
+the two phases that hold a character close and FALSE for the other five, by an
+order of magnitude, and the metric that was supposed to defend it reported
+88% clear on the very phase that paints 6.5% of the screen. `establishing`
+fits the island's bounding box to the WIDTH, so on a 375 px portrait phone a
+9.5 m island lands 241x122 px in the middle of an 812 px screen. That is the
+owner's original "minimizaste el escenario", still present, in the phases
+nobody had ever looked at. Scene coverage is the metric; distance-to-HUD is at
+best a lower bound on how much room the HUD left, and a change is measured
+against BOTH.
 
 **What this recipe forbids by name**, because each one is a mistake that has
 already shipped on this route: no `Card` from `components/ui` during a live
