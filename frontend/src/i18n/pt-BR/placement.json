@@ -19,7 +19,7 @@
   "education": {
     "title": "Qual é o seu nível escolar atual?",
     "subtitle": "Isso nos ajuda a escolher o ritmo e os exemplos certos para você.",
-    "characterBubble": "Aqui é a Dra. Rho — isso me ajuda a mapear o ritmo certo para você.",
+    "characterBubble": "Aqui é o Dr. Rho — isso me ajuda a mapear o ritmo certo para você.",
     "options": {
       "preschool": "Pré-escola",
       "elementary": "Ensino fundamental",

@@ -60,16 +60,61 @@ export type SafeAreaSlot = 'lesson' | 'sheet' | 'mic';
 
 export const SAFE_AREA_SLOTS = ['lesson', 'sheet', 'mic'] as const satisfies readonly SafeAreaSlot[];
 
+/**
+ * Every VIEWPORT-anchored surface the HUD paints, whether or not the camera
+ * composes around it.
+ *
+ * The camera's list and the HUD's list are not the same list, and conflating
+ * them is what left a whole class of collision unowned. `exit` — the way out at
+ * the top-left — is chrome a world-anchored node absolutely must not land under,
+ * and it is chrome the CAMERA must ignore: a 52x44 corner chip charged as a
+ * 60 px top inset would push the subject down the frame in every phase to make
+ * room for a back arrow, which is a framing change nobody asked for in exchange
+ * for a collision the HUD can settle by itself for 22 px.
+ *
+ * So one registry, two readers. `rectsRef` carries the three the camera obeys
+ * (`SAFE_AREA_SLOTS`); `chromeRef` carries all four, and is what the anchor
+ * projector avoids and what `WorldChip` hides behind.
+ *
+ * Closed, and closed for the same reason the camera's list is: each entry has a
+ * different reason to exist and a different behaviour when the keyboard opens.
+ * /DESIGN.md → Screen Recipes → Tutor fixes the count of viewport-anchored
+ * elements at three; a fourth is an owner decision, and `exit` is one of the
+ * three, not a fourth.
+ */
+export type HudChromeSlot = SafeAreaSlot | 'exit';
+
+export const HUD_CHROME_SLOTS = [
+  'lesson',
+  'sheet',
+  'mic',
+  'exit',
+] as const satisfies readonly HudChromeSlot[];
+
+/** The subset of the chrome the CAMERA composes around. */
+const CAMERA_SLOTS: ReadonlySet<HudChromeSlot> = new Set<HudChromeSlot>(SAFE_AREA_SLOTS);
+
 export interface SafeAreaValue {
   /**
-   * Every measured rect, in VIEWPORT coordinates (`getBoundingClientRect`).
-   * Consumers convert into whatever space they compose in.
+   * The rects the CAMERA composes around, in VIEWPORT coordinates
+   * (`getBoundingClientRect`). Consumers convert into whatever space they
+   * compose in.
    */
   rectsRef: MutableRefObject<ReadonlyMap<SafeAreaSlot, HudRect>>;
   /** Bumped whenever any rect changed. The cheap "do I need to recompute" signal. */
   versionRef: MutableRefObject<number>;
+  /**
+   * EVERY viewport-anchored surface, including the ones the camera ignores.
+   *
+   * This is the "what space is taken" the world-anchored half of the HUD reads:
+   * the projector moves an anchored node out of these rects, and `WorldChip`
+   * hides a chip that has been painted over by one.
+   */
+  chromeRef: MutableRefObject<ReadonlyMap<HudChromeSlot, HudRect>>;
+  /** Bumped whenever any chrome rect changed, camera slot or not. */
+  chromeVersionRef: MutableRefObject<number>;
   /** A stable ref callback for a slot. Put it on the node you want measured. */
-  measure: (slot: SafeAreaSlot) => (node: HTMLElement | null) => void;
+  measure: (slot: HudChromeSlot) => (node: HTMLElement | null) => void;
   /** True while the soft keyboard is covering part of the viewport. */
   keyboardOpenRef: MutableRefObject<boolean>;
   /**
@@ -96,6 +141,8 @@ const KEYBOARD_THRESHOLD_PX = 160;
 export function SafeAreaProvider({ children }: { children: ReactNode }) {
   const rects = useRef<ReadonlyMap<SafeAreaSlot, HudRect>>(new Map());
   const version = useRef(0);
+  const chrome = useRef<ReadonlyMap<HudChromeSlot, HudRect>>(new Map());
+  const chromeVersion = useRef(0);
   const keyboardOpen = useRef(false);
   const keyboardListeners = useRef(new Set<(open: boolean) => void>());
 
@@ -107,17 +154,15 @@ export function SafeAreaProvider({ children }: { children: ReactNode }) {
    * four chances to leak one when a slot unmounts mid-drag.
    */
   const observer = useRef<ResizeObserver | null>(null);
-  const observed = useRef(new Map<HTMLElement, SafeAreaSlot>());
-  const callbacks = useRef(new Map<SafeAreaSlot, (node: HTMLElement | null) => void>());
+  const observed = useRef(new Map<HTMLElement, HudChromeSlot>());
+  const callbacks = useRef(new Map<HudChromeSlot, (node: HTMLElement | null) => void>());
 
-  const publish = useCallback((slot: SafeAreaSlot, node: HTMLElement | null) => {
-    const next = new Map(rects.current);
-    if (!node) {
-      if (!next.has(slot)) return;
-      next.delete(slot);
-    } else {
+  const publish = useCallback((slot: HudChromeSlot, node: HTMLElement | null) => {
+    const previous = chrome.current.get(slot);
+    let measured: HudRect | null = null;
+
+    if (node) {
       const box = node.getBoundingClientRect();
-      const previous = next.get(slot);
       /*
        * Skip identical measurements. ResizeObserver fires on observe() and
        * again on every layout pass, and a version bump the camera acts on is a
@@ -133,14 +178,49 @@ export function SafeAreaProvider({ children }: { children: ReactNode }) {
       ) {
         return;
       }
-      next.set(slot, { left: box.left, top: box.top, width: box.width, height: box.height });
+      measured = { left: box.left, top: box.top, width: box.width, height: box.height };
+    } else if (!previous) {
+      return;
     }
-    rects.current = next;
+
+    const nextChrome = new Map(chrome.current);
+    if (measured) nextChrome.set(slot, measured);
+    else nextChrome.delete(slot);
+    chrome.current = nextChrome;
+    chromeVersion.current += 1;
+
+    // The camera's view of the HUD is a SUBSET, and stays one: a chip the camera
+    // must ignore is published here and nowhere the composition solver reads.
+    if (!CAMERA_SLOTS.has(slot)) return;
+    const nextRects = new Map(rects.current);
+    if (measured) nextRects.set(slot as SafeAreaSlot, measured);
+    else nextRects.delete(slot as SafeAreaSlot);
+    rects.current = nextRects;
     version.current += 1;
   }, []);
 
+  /**
+   * The one observer, created on demand.
+   *
+   * A function rather than inline code in the ref callback, because the effect
+   * below has to be able to build it too: after a StrictMode remount the ref
+   * callbacks do not run again, and whoever re-attaches the observer has to be
+   * able to create one first.
+   */
+  const ensureObserver = useCallback(() => {
+    if (observer.current || typeof ResizeObserver === 'undefined') return;
+    observer.current = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const target = entry.target;
+        if (!(target instanceof HTMLElement)) continue;
+        const owner = observed.current.get(target);
+        if (owner) publish(owner, target);
+      }
+    });
+  }, [publish]);
+
   const measure = useCallback(
-    (slot: SafeAreaSlot) => {
+    (slot: HudChromeSlot) => {
       const existing = callbacks.current.get(slot);
       /*
        * The SAME function identity for the life of the provider. React calls a
@@ -151,16 +231,7 @@ export function SafeAreaProvider({ children }: { children: ReactNode }) {
       if (existing) return existing;
 
       const callback = (node: HTMLElement | null) => {
-        if (!observer.current && typeof ResizeObserver !== 'undefined') {
-          observer.current = new ResizeObserver((entries) => {
-            for (const entry of entries) {
-              const target = entry.target;
-              if (!(target instanceof HTMLElement)) continue;
-              const owner = observed.current.get(target);
-              if (owner) publish(owner, target);
-            }
-          });
-        }
+        ensureObserver();
 
         for (const [element, owner] of observed.current) {
           if (owner !== slot) continue;
@@ -184,18 +255,41 @@ export function SafeAreaProvider({ children }: { children: ReactNode }) {
       callbacks.current.set(slot, callback);
       return callback;
     },
-    [publish],
+    [publish, ensureObserver],
   );
 
+  /*
+   * THE OBSERVER HAS TO SURVIVE A STRICTMODE REMOUNT, and the version that did
+   * not was silently disabling this whole registry in development.
+   *
+   * React 18 StrictMode mounts, unmounts and remounts every effect. The teardown
+   * here used to `disconnect()` the observer AND clear the map of observed
+   * nodes — and the ref callbacks that filled that map do not run a second time,
+   * so after the remount there was no observer, nothing observed, and
+   * `remeasure` below iterated an empty map. Every rect stayed frozen at its
+   * very first measurement for the life of the page: measured live in a headless
+   * browser at 375 px and then resized to 430 px, the dock kept reporting the
+   * 345 px width it had had at mount. The camera composed around a HUD that was
+   * no longer there, and the anchored HUD avoided chrome that had moved.
+   *
+   * It never showed up in production, where StrictMode does not double-invoke —
+   * which is exactly why it survived: the one build where anybody LOOKS at this
+   * route is the one build where it was broken.
+   *
+   * So the setup re-attaches whatever is already registered, and the teardown
+   * drops the observer without forgetting the nodes.
+   */
   useEffect(() => {
-    const currentObserver = observer;
-    const currentObserved = observed;
+    ensureObserver();
+    for (const [element, slot] of observed.current) {
+      observer.current?.observe(element);
+      publish(slot, element);
+    }
     return () => {
-      currentObserver.current?.disconnect();
-      currentObserver.current = null;
-      currentObserved.current.clear();
+      observer.current?.disconnect();
+      observer.current = null;
     };
-  }, []);
+  }, [ensureObserver, publish]);
 
   /*
    * A rect measured in viewport coordinates goes stale when the viewport itself
@@ -252,6 +346,8 @@ export function SafeAreaProvider({ children }: { children: ReactNode }) {
     () => ({
       rectsRef: rects,
       versionRef: version,
+      chromeRef: chrome,
+      chromeVersionRef: chromeVersion,
       measure,
       keyboardOpenRef: keyboardOpen,
       subscribeKeyboard,

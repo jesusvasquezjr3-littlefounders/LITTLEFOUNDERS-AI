@@ -366,10 +366,11 @@ export function TutorExperience() {
   );
 
   const articulates = catalog?.articulates.includes(character) ?? false;
+  // A live segment is deliberately NOT an input here: the plate is composed
+  // around, never cut away from (/ORACLE.md §9.3, and the note in `phases.ts`).
   const shot = shotForPhase({
     phase,
     articulates,
-    segmentLive: socket.segment !== null,
     adaptationOffered: socket.adaptationOffer !== null,
   });
 
@@ -482,6 +483,7 @@ export function TutorExperience() {
   };
 
   const mic: StageMicProps = {
+    present: micPlan.present,
     state: micPlan.state,
     // The introduction's orb cannot record, so it holds the stand-in above; every
     // other phase holds the real hook, whose `enabled` gate already says no.
@@ -531,24 +533,20 @@ export function TutorExperience() {
         the first frame is drawn.
       */}
 
-      {phase === 'unavailable' && (
-        <StageLayer label={t('tutor.stage.unavailableLayer')} placement="bottom">
-          {/*
-            DEGRADE TO THE ISLAND, not to an error card. `/tutor` has shown the
-            3D stage in production since August; if the Tutor API is
-            unreachable — a bad deploy order, a Core outage, a migration not yet
-            applied — replacing a working scene with a grey apology is strictly
-            worse than what was already there. The learner still gets their
-            characters, and the line says plainly that the talking part is
-            resting rather than pretending the page is broken.
-          */}
-          <HudPlate shape="plate" className="mx-auto">
-            <span className="lf-body text-content" role="status">
-              {t('tutor.page.unavailable')}
-            </span>
-          </HudPlate>
-        </StageLayer>
-      )}
+      {/*
+        `unavailable` HAS NO LAYER, and the absence is the fix.
+
+        DEGRADE TO THE ISLAND, not to an error card — that part was right and has
+        not changed. `/tutor` has shown the 3D stage in production since August;
+        if the Tutor API is unreachable, replacing a working scene with a grey
+        apology is strictly worse than what was already there. What was wrong was
+        saying so TWICE: this layer's plate measured (26, 714, 322, 82) and the
+        orb's own blocked line (26, 736, 322, 64), at both widths, one on top of
+        the other. Two explanations for one situation is a bug even when they
+        clear each other, and the one to keep is the one attached to the control
+        it is about. `micForPhase` hands the orb `tutor.page.unavailable` — the
+        same sentence, in the only place a learner is already looking.
+      */}
 
       {phase === 'personalizing' && personalizeLayer && (
         /*

@@ -6,17 +6,27 @@ import { micForPhase } from '../micForPhase';
 import type { Microphone } from '@/tutor/useMicrophone';
 
 /*
- * THE ONE MICROPHONE, PRESENT IN EVERY PHASE.
+ * THE ONE MICROPHONE, IN EVERY PHASE THAT HAS ONE — AND IN NO OTHER.
  *
- * This is the assertion the last two builds could not have passed. The orb was
- * mounted inside `OfferChips` and inside `ConversationView`, so `arriving`,
- * `personalizing`, `closing` and `unavailable` had no microphone in the DOM at
- * all — and `personalizing` is the FIRST screen a new learner sees. Every gate
- * was green through it, because nothing enumerated the phases and looked.
+ * The first half is the assertion the last two builds could not have passed.
+ * The orb was mounted inside `OfferChips` and inside `ConversationView`, so
+ * `arriving`, `personalizing`, `closing` and `unavailable` had no microphone in
+ * the DOM at all — and `personalizing` is the FIRST screen a new learner sees.
+ * Every gate was green through it, because nothing enumerated the phases and
+ * looked.
  *
- * So this walks STAGE_PHASES and asserts REACHABILITY: exactly one orb, with an
- * accessible name, not hidden, not inert, and carrying a visible reason
- * whenever it is disabled (/ORACLE.md §14.1).
+ * The second half is what the owner's phone then found, and it is the reason
+ * this file no longer says "every phase" flatly. Mounting the orb in `closing`
+ * too put a 96 px DISABLED microphone at (139, 632) on top of the "See you
+ * soon!" plate, on top of the indigo "Start another session" button — the one
+ * action of the phase — and on top of its own explanation. "Present in every
+ * phase" and "present in a phase where speaking is over" are different claims;
+ * `micForPhase` decides which phases are which, and this walks STAGE_PHASES and
+ * holds it to that decision in the DOM.
+ *
+ * Where the orb IS present the assertions are unchanged: exactly one, with an
+ * accessible name, not hidden, not inert, and carrying a visible reason whenever
+ * it is disabled (/ORACLE.md §14.1).
  */
 
 beforeAll(() => {
@@ -58,6 +68,7 @@ function micFor(phase: (typeof STAGE_PHASES)[number]): StageMicProps {
     starting: false,
   });
   return {
+    present: plan.present,
     state: plan.state,
     microphone: silentMicrophone(),
     blockedReason: plan.blockedReason,
@@ -95,9 +106,12 @@ function orbs(): HTMLElement[] {
     .filter((node) => node.className.includes('rounded-full') && node.className.includes('h-24'));
 }
 
+/** The phases whose plan says the orb is on screen. */
+const PHASES_WITH_ORB = STAGE_PHASES.filter((phase) => micFor(phase).present);
+
 describe('the microphone is a property of the stage', () => {
-  it('is mounted in every phase, exactly once', () => {
-    for (const phase of STAGE_PHASES) {
+  it('is mounted exactly once in every phase whose plan says it is present', () => {
+    for (const phase of PHASES_WITH_ORB) {
       const { unmount } = renderPhase(phase);
       const found = orbs();
       // ONE. Two owners is what left four phases with none, and two orbs would
@@ -107,8 +121,27 @@ describe('the microphone is a property of the stage', () => {
     }
   });
 
-  it('is never hidden, inert or nameless, in any phase', () => {
-    for (const phase of STAGE_PHASES) {
+  /*
+   * The absence is asserted as tightly as the presence, and the list is spelled
+   * out rather than derived, so that removing the orb from a SECOND phase is a
+   * deliberate edit to this line and not a quiet consequence of a plan change.
+   * Going missing by accident is the original bug; going missing on purpose is
+   * a product decision, and only one has been made.
+   */
+  it('is absent from exactly one phase, and it is the one where speaking is over', () => {
+    const absent = STAGE_PHASES.filter((phase) => !micFor(phase).present);
+    expect(absent).toEqual(['closing']);
+
+    const { unmount } = renderPhase('closing');
+    // Not merely disabled — not in the DOM. A disabled 96 px orb here landed on
+    // the goodbye plate, on the indigo "start another session" button and on
+    // its own reason line, all at 375 px.
+    expect(orbs()).toHaveLength(0);
+    unmount();
+  });
+
+  it('is never hidden, inert or nameless, in any phase that has one', () => {
+    for (const phase of PHASES_WITH_ORB) {
       const { unmount } = renderPhase(phase);
       const orb = orbs()[0] as HTMLElement;
       expect(orb.getAttribute('aria-label')?.trim(), phase).toBeTruthy();
@@ -122,7 +155,7 @@ describe('the microphone is a property of the stage', () => {
   });
 
   it('says why, in place, in every phase where it cannot be used', () => {
-    for (const phase of STAGE_PHASES) {
+    for (const phase of PHASES_WITH_ORB) {
       const { container, unmount } = renderPhase(phase);
       const orb = orbs()[0] as HTMLElement;
       if (orb.getAttribute('aria-disabled') === 'true') {
@@ -139,8 +172,8 @@ describe('the microphone is a property of the stage', () => {
     }
   });
 
-  it('is disabled on the phases where nothing could be recorded', () => {
-    for (const phase of ['arriving', 'personalizing', 'closing', 'unavailable'] as const) {
+  it('is disabled on the phases where it is on screen and nothing could be recorded', () => {
+    for (const phase of ['arriving', 'personalizing', 'unavailable'] as const) {
       const { unmount } = renderPhase(phase);
       // Present and honest, not absent. There is no socket in any of these, so
       // a live-looking orb would be a promise the screen cannot keep.

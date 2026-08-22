@@ -630,10 +630,26 @@ matter:
 
 ### §9.4 Adapt
 Per §11. The tutor may notice friction and **offer** a different explanation.
-The offer is two chips floating in the scene between tutor and companion under
-a `two-shot`, not a card that pushes the conversation down the page — because
-the moment is a question being asked by a character, and it should look like
-one.
+It is not a card that pushes the conversation down the page — because the moment
+is a question being asked by a character, and it should look like one. What says
+so is the **camera**: the shot swings to a `two-shot` while an offer is pending,
+so both characters are in frame while the question is up.
+
+**The offer is mounted EXACTLY ONCE, on the viewport-anchored control cluster**
+(corrected 2026-08-21, the second time this was measured in a browser). This
+paragraph used to say the offer was *two chips floating in the scene between
+tutor and companion*, in addition to the guaranteed twin below — the WorldChip
+grammar, applied to a question. That grammar does not transfer, and the
+difference is the whole reason this correction exists: a WorldChip pairs a DOM
+control with a **pickable mesh**, so the learner meets ONE offer reachable two
+ways. Two DOM copies are two offers. Driven on the real stage, the anchored copy
+read "Would another example h" — clipped, at (-42, 105, 263, 57) on a 375x812
+phone — with its own live "Yes please" at (-2, 170); at 1280x800 the same pair
+escaped off the TOP instead, "Yes" landing at (40, -13). A half-read question
+with a working Yes button beside a whole one is worse than either arrangement
+alone, because a child can press the half-read one. **The rule this settles: an
+offer the learner must be able to answer is mounted once, and it is mounted in
+the band that cannot be culled.**
 
 **The offer is answerable on every device, in every configuration, whether or
 not a world point is on screen** (added 2026-08-21, after review). The floating
@@ -646,17 +662,17 @@ bearing decided whether the learner saw the whole question, a lone "Yes please"
 with nothing to say yes to, or nothing at all. The tutor was asking a question
 the child could not answer. Two rules follow, and both are invariants:
 
-- **The in-scene arrangement is ONE anchored node**, so the question and both
-  answers are culled together. A "Yes" whose "No" has been culled is worse than
+- **The question and both answers are one group**, never three controls that can
+  be culled or clipped independently. A "Yes" whose "No" has gone is worse than
   neither, because it is a control a child can press without knowing what it
   agrees to.
-- **A guaranteed twin rides the viewport-anchored control cluster**, beside the
-  microphone, always, and dispatches the same handler. It is not a fallback that
-  appears when something fails: nothing on the client can tell whether an anchor
-  projects, and a guarantee conditioned on a camera is not a guarantee. The
-  announcement (`role="status"`) belongs to this copy, since it is the one that
-  always exists; the in-scene plate stays silent so a screen reader does not say
-  the question twice.
+- **That group rides the viewport-anchored control cluster**, beside the
+  microphone, always, and there is no second copy of it anywhere. It is not a
+  fallback that appears when something fails: nothing on the client can tell
+  whether an anchor projects, and a guarantee conditioned on a camera is not a
+  guarantee. The announcement (`role="status"`) belongs to it, and with only one
+  copy on screen there is nothing left that could make a screen reader say the
+  question twice.
 
 ### §9.5 Close kindly
 **The close is a camera move and a performance, not a screen.** Soft close at
@@ -884,6 +900,34 @@ disabled orb.** Making the affordance visible and making voice actually live in
 the environment being reviewed have to land together, or the next review
 repeats the last one with better typography.
 
+**One narrowing, added 2026-08-21 after the owner tested a phone.** "Always
+rendered" is about the STATES of the control, and it stands: wherever the orb is
+on screen it is on screen at full size in whichever of the five states it is in,
+saying why when the answer is no. It is not a claim about every PHASE of the
+route, and reading it as one produced the opposite bug. Mounted in `closing`, a
+96 px disabled orb measured at (139, 632, 96, 96) on a 375x812 phone, sitting on
+the "See you soon!" plate, on the indigo "Start another session" — the one action
+the phase exists to offer — and on its own reason line. The control that was
+added so a learner could always find the microphone was taking away the button
+they actually needed, in the one phase where speaking is over by construction.
+
+So the orb is present wherever speaking is possible, about to be possible, or is
+itself the thing being explained, and `closing` is the single phase it is absent
+from. `unavailable` keeps it for exactly that third reason — the microphone IS
+what is unavailable — and carries the phase's own sentence rather than one of
+Core's three policy answers, because "no voice provider is configured" is a
+confident wrong sentence when what happened is that the Tutor API could not be
+reached at all. That also removed a second copy of the same message: the phase
+used to print it twice, in two plates that overlapped at both widths.
+
+The decision lives in one enumerable place (`frontend/src/tutor/stage/
+micForPhase.ts` → `StageMicPlan.present`), so a new phase cannot be added
+without deciding, and the absence is asserted as tightly as the presence — the
+list of phases without an orb is spelled out in `stageMic.test.tsx`, not derived,
+so a second removal is an edit somebody made on purpose rather than a silent
+consequence. Going missing by accident is the original bug; going missing on
+purpose is a product decision, and only one has been made.
+
 ---
 
 ## §15 Cost and rate limits
@@ -984,7 +1028,14 @@ every automated gate was green.
       renders during a live session; every focusable control on the route sits
       over the canvas.
 - [ ] **The microphone is present in all five states**, with an accessible
-      name in each and a visible reason in each blocked one (§14.1).
+      name in each and a visible reason in each blocked one (§14.1) — and in
+      every phase except `closing`, which is the one narrowing §14.1 records.
+- [ ] **No two HUD surfaces overlap at rest**, in any phase, at 375 px and at
+      1280 px. Three shipped at once — the greeting under the way out, the
+      disabled orb on the goodbye's button, and `unavailable` printing itself
+      twice — and none of them was visible to any automated gate, because jsdom
+      lays nothing out. `/dev/tutor-lab` prints the live count; the measured
+      arrangement is pinned in `tutor-scene/__tests__/hudSpace.test.ts`.
 - [ ] **Voice is actually live in the reviewed environment** — `/health`
       reporting voice up, the casting check naming zero missing enrolments,
       and one spoken turn recorded end to end. This and the item above must

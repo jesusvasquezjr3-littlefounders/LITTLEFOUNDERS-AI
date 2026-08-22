@@ -191,9 +191,9 @@ export default function SceneLabPage() {
   const [backdrop, setBackdrop] = useState<SceneBackdropId>('auto');
   const [showAnchors, setShowAnchors] = useState(false);
   /*
-   * A solo cast is not a cosmetic option. `two-shot` and `over-shoulder` both
-   * have to degrade gracefully to one character, and the only way to see that
-   * they do is to take the companion away.
+   * A solo cast is not a cosmetic option. `two-shot` has to degrade gracefully
+   * to one character, and the only way to see that it does is to take the
+   * companion away.
    */
   const [solo, setSolo] = useState(false);
   const [emotion, setEmotion] = useState<CharacterEmotion>('neutral');

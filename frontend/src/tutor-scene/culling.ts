@@ -53,6 +53,73 @@ export function isAnchorNodeVisible(
 }
 
 /**
+ * How far UP a node must move to stop sitting on any node already placed.
+ *
+ * WHY THIS EXISTS. Anchored labels have a readability floor and the world does
+ * not: a plate stops shrinking at `MIN_READABLE_PX` while the characters it
+ * names keep receding, so at any distance past a close-up four name plates are
+ * wider than the four heads they belong to. Measured on the real stage at
+ * 375x812 during personalization, the four candidates' crowns projected into a
+ * band roughly 150 px wide while their plates measured 108 to 197 px each: 7
+ * mutual overlaps, and the learner could not tell which name went with which
+ * character. At 1280x800 the same arrangement still produced 2.
+ *
+ * WHY UP, AND ONLY UP. The node is attached to a point in the world, so every
+ * pixel sideways is a pixel of "this label belongs to THAT character" spent —
+ * and with the heads 50 px apart, a sideways escape lands the name on the
+ * neighbour, which is worse than an overlap because it is confidently wrong.
+ * Straight up keeps the plate over its own head and spends the one thing the
+ * shot is not using: the sky. `hudSpace.escapeReserved` is the four-direction
+ * version and is right for what it does — a caption dodging a fixed corner chip
+ * has no owner to point at.
+ *
+ * WHY IT IS COMPUTED PER FRAME RATHER THAN AUTHORED AS A LADDER. A fixed
+ * per-candidate offset was written first, and it was correct in the screenshot
+ * that justified it and wrong a few seconds later: `SHOT_AMBIENT` orbits the
+ * `approach` shot, so the crowns' screen positions travel continuously. An
+ * authored ladder also spends sky it does not need — at 1280 px the cast is
+ * already far enough apart — and the sky is where the sun's arc lives.
+ *
+ * Returns 0 when nothing is in the way, which is the common case and costs one
+ * pass. `placed` is expected to be short (the candidates on stage), and the
+ * loop is bounded by its length: clearing one box can push a node onto the next,
+ * and this runs sixty times a second behind a 3D render.
+ */
+export function stackClearance(
+  box: ViewportBox,
+  placed: readonly ViewportBox[],
+  gap: number,
+): number {
+  if (placed.length === 0 || !(box.width > 0) || !(box.height > 0)) return 0;
+
+  let lift = 0;
+  for (let pass = 0; pass <= placed.length; pass += 1) {
+    const top = box.top - lift;
+    const blocker = placed.find((other) => boxesOverlap(box.left, top, box.width, box.height, other));
+    if (!blocker) return lift;
+    // Clear its TOP edge by the gap. Written as an absolute requirement rather
+    // than an increment so two blockers cannot each be satisfied in turn while
+    // the node oscillates between them.
+    lift = Math.max(lift, box.top + box.height - blocker.top + gap);
+  }
+  return lift;
+}
+
+/** Rectangle intersection, in the same tolerance-free form the frame loop needs. */
+function boxesOverlap(
+  left: number,
+  top: number,
+  width: number,
+  height: number,
+  other: ViewportBox,
+): boolean {
+  return (
+    Math.min(left + width, other.left + other.width) - Math.max(left, other.left) > 0 &&
+    Math.min(top + height, other.top + other.height) - Math.max(top, other.top) > 0
+  );
+}
+
+/**
  * One axis of the test.
  *
  * A node BIGGER than the view on this axis can never satisfy "wholly inside",

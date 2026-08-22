@@ -3,7 +3,12 @@ import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import type { AnchorId } from '@/tutor-scene/anchors';
 import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
-import { useSafeArea, type SafeAreaSlot, type SafeAreaValue } from '@/tutor-scene/SafeAreaContext';
+import {
+  HUD_CHROME_SLOTS,
+  useSafeArea,
+  type HudChromeSlot,
+  type SafeAreaValue,
+} from '@/tutor-scene/SafeAreaContext';
 import type { HudRect } from '@/tutor-scene/composition';
 import { HudPlate } from './HudPlate';
 import type { HudPlateFloor, HudPlateShape } from './HudPlate';
@@ -47,9 +52,17 @@ import type { HudPlateFloor, HudPlateShape } from './HudPlate';
  *
  * `caption` is deliberately NOT in this list. It is world-anchored itself, so
  * it lives in the same band and settles with a chip by DOM order rather than by
- * painting over it from the band above.
+ * painting over it from the band above — and its own answer to landing under
+ * fixed chrome is to MOVE (`ScreenAnchor`'s `avoid`), because a caption that
+ * hides has taken the lesson away from a deaf learner.
+ *
+ * It is the whole chrome list rather than the camera's three, and `exit` is the
+ * difference. The way out is a viewport-anchored, opaque plate painted from the
+ * band above, exactly like the other three; the only reason it was not here is
+ * that the only registry available was the camera's, and the camera must not
+ * compose around a corner chip. `HUD_CHROME_SLOTS` is that registry now.
  */
-const OCCLUDING_SLOTS: readonly SafeAreaSlot[] = ['lesson', 'sheet', 'mic'];
+const OCCLUDING_SLOTS: readonly HudChromeSlot[] = HUD_CHROME_SLOTS;
 
 /**
  * How often a chip re-tests itself against the HUD, in milliseconds.
@@ -145,7 +158,7 @@ function watch(watcher: Watcher): () => void {
 function occludingPlates(safeArea: SafeAreaValue): HudRect[] {
   const plates: HudRect[] = [];
   for (const slot of OCCLUDING_SLOTS) {
-    const rect = safeArea.rectsRef.current.get(slot);
+    const rect = safeArea.chromeRef.current.get(slot);
     if (rect && rect.width > 0 && rect.height > 0) plates.push(rect);
   }
   return plates;
@@ -267,6 +280,19 @@ export interface WorldChipProps {
    * work out what pressing it would turn on.
    */
   selected?: boolean;
+  /**
+   * Rise clear of the other stacking chips instead of landing on them.
+   *
+   * OPT-IN, and it belongs to a SET OF PEERS rather than to a chip on its own
+   * (`ScreenAnchor` → `stack`). The personalization sun arc is the case it was
+   * added for: its four stops ride marks fanned across one bearing, so at some
+   * bearings the arc turns edge-on and the stops project on top of each other.
+   * Measured on the real stage at 375x812 while the camera orbited, "Dawn" and
+   * "Day" overlapped in four samples out of six, growing from 5 px to 25 px as
+   * the shot came round. A chip that reports something on its own — the minutes
+   * rune, a rim pad — has no peers to be pushed by and leaves this alone.
+   */
+  stack?: boolean;
   className?: string;
 }
 
@@ -278,9 +304,10 @@ export function WorldChip({
   shape = 'chip',
   floor = 'surface',
   selected,
+  stack = false,
   className,
 }: WorldChipProps) {
-  const anchorRef = useAnchorSlot(slot);
+  const anchorRef = useAnchorSlot(slot, { stack });
   const occlusion = useHudOcclusion();
 
   /*

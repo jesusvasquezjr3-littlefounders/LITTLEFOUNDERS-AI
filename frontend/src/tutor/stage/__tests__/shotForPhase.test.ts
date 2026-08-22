@@ -42,13 +42,33 @@ describe('shotForPhase', () => {
     expect(shotForPhase({ phase: 'introducing', articulates: false })).toBe('closeup-wide');
   });
 
-  it('gives a live segment and an adaptation offer their own framings', () => {
+  it('gives the adaptation offer its own framing, and nothing else during a conversation', () => {
     const base = { phase: 'conversing' as StagePhase, articulates: true };
     expect(shotForPhase(base)).toBe('closeup');
-    expect(shotForPhase({ ...base, segmentLive: true })).toBe('over-shoulder');
-    // An adaptation is a question one character asks in front of another, so it
-    // outranks the segment framing even while a segment is up.
-    expect(shotForPhase({ ...base, segmentLive: true, adaptationOffered: true })).toBe('two-shot');
+    // An adaptation is a question one character asks in front of another
+    // (/ORACLE.md §9.4), so it is the one thing that moves the camera here.
+    expect(shotForPhase({ ...base, adaptationOffered: true })).toBe('two-shot');
+    expect(shotForPhase({ ...base, articulates: false })).toBe('closeup-wide');
+  });
+
+  it('cannot be told that a segment is live, because a segment may not move the camera', () => {
+    /*
+     * THE DEFECT, AS A TYPE. `segmentLive: true` used to return `over-shoulder`,
+     * which at 375x812 filled the phone with the back of Dr Rho's head and one
+     * ear. Three authoritative documents forbid the framing change that caused
+     * it — /ORACLE.md §9.3, /ORACLE.md §16's shipping gate, and /DESIGN.md →
+     * Screen Recipes → Tutor all say the character's on-screen height is
+     * IDENTICAL with and without a live segment — and every shot in the
+     * vocabulary sits at its own distance, so any shot change breaks that.
+     *
+     * The guard is therefore the input shape itself rather than an assertion
+     * about a return value: `StageShotInput` has no `segmentLive` field, so a
+     * call site that reintroduces the coupling fails `npm run type-check`
+     * instead of failing a screenshot six weeks later. `@ts-expect-error` is the
+     * assertion — it FAILS if the property ever becomes assignable again.
+     */
+    // @ts-expect-error — a live segment must never reach the shot mapping.
+    expect(shotForPhase({ phase: 'conversing', articulates: true, segmentLive: true })).toBe('closeup');
   });
 
   it('never leaves a phase without a shot', () => {

@@ -10,7 +10,6 @@
     "introduceLayer": "Start a conversation",
     "conversationLayer": "Your conversation",
     "closeLayer": "End of the session",
-    "unavailableLayer": "Tutor status",
     "controlsLabel": "Talk to your tutor"
   },
   "lab": {

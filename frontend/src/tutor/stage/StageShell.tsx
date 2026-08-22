@@ -72,6 +72,19 @@ export type { StagePhase, StageShotInput } from './phases';
  * once, for the whole route; `stage/micForPhase.ts` decides what it is doing.
  */
 export interface StageMicProps {
+  /**
+   * Whether the orb is mounted in this phase at all.
+   *
+   * REQUIRED, and required on purpose: the whole reason the orb moved here was
+   * that four phases had silently forgotten to mount one, and an optional flag
+   * defaulting to `true` would let the next phase forget just as silently in the
+   * other direction. `stage/micForPhase.ts` decides it, per phase, in one place.
+   *
+   * It is `false` in exactly one phase today — `closing`, where the microphone
+   * was sitting on top of the button the learner needs. The reasoning, and the
+   * measurements, are on `StageMicPlan.present`.
+   */
+  present: boolean;
   state: MicOrbState;
   microphone: Microphone;
   /** Core's reason, when Core is the one refusing. */
@@ -389,15 +402,48 @@ function StageShellInner({ children, phase, mic, onReady, ...stage }: StageShell
          * `z-50` puts it over the loading veil as well. A stage that never
          * reports a first frame is the state a learner most needs to leave.
          */}
+        {/*
+         * IT PUBLISHES ITS RECTANGLE, and that is the second half of the fix.
+         * Fixed chrome is laid out by CSS against the window and anchored chrome
+         * is laid out by the camera, so neither could see the other and both
+         * claimed this corner: at 375 px the greeting caption measured
+         * (54, 31, 266, 68) against this chip's (16, 16, 155, 44). The chip goes
+         * into the shared chrome registry (`SafeAreaContext`), the caption
+         * escapes it (`ScreenAnchor`'s `avoid`), and neither of them has to know
+         * the other exists.
+         *
+         * `exit` is deliberately NOT one of the camera's slots. A 52x44 corner
+         * chip charged as a 60 px top inset would push the subject down the
+         * frame in every phase of every session to make room for a back arrow.
+         */}
         <HudPlate
+          ref={safeArea?.measure('exit')}
           as="button"
           shape="chip"
           floor="surface"
+          /*
+           * The name is on the button rather than only in the span, because the
+           * span is not always rendered — see below — and the accessible name of
+           * the only navigation on the route may not depend on a breakpoint.
+           */
+          aria-label={t('tutor.stage.leave')}
           onClick={() => navigate(APP_HOME)}
           className="fixed left-4 top-4 z-50 md:left-6 md:top-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
           <Icon name="arrow_back" />
-          <span className="lf-label">{t('tutor.stage.leave')}</span>
+          {/*
+            THE LINE IS DESKTOP-ONLY, and this is a measurement rather than a
+            tidy-up. At 375 px the labelled chip is 155 px wide, which spans the
+            caption's only horizontal escape route: a 266 px caption pushed clear
+            of it to the right runs off a 375 px screen, so the solver's only
+            remaining move is 37 px straight DOWN — the greeting laid across
+            Dr. Rho's forehead. Without the line the chip is ~52 px, the escape
+            is 22 px sideways, and nobody ever notices it happened. A back arrow
+            in the top-left corner is the one icon that needs no gloss, the tap
+            target is unchanged (`min-h-11 min-w-11`), and the name above is what
+            a screen reader reads at every width.
+          */}
+          <span className="lf-label hidden md:inline">{t('tutor.stage.leave')}</span>
         </HudPlate>
 
         <div className="pointer-events-none absolute inset-0 z-30">{children}</div>
@@ -447,23 +493,36 @@ function StageShellInner({ children, phase, mic, onReady, ...stage }: StageShell
         >
           <div ref={attachAbove} className="flex w-full flex-col items-center gap-2 empty:hidden" />
 
-          {mic.denied && (
+          {/*
+            THE ORB, IN EVERY PHASE THAT HAS ONE — and `closing` does not.
+            `mic.present` is decided per phase by `stage/micForPhase.ts`, never
+            here; the browser's own refusal line goes with it, because a "the
+            microphone was blocked" plate floating over a goodbye with no
+            microphone beside it is chrome about a control that is not there.
+
+            The two portal slots stay mounted either way. A layer renders into
+            them, so a target that disappeared with the orb would silently drop
+            whatever a future phase contributed to the dock.
+          */}
+          {mic.present && mic.denied && (
             <HudPlate shape="plate" floor="sunken" role="status" className="pointer-events-none self-center">
               <span className="lf-caption">{t('tutor.conversation.micDenied')}</span>
             </HudPlate>
           )}
 
           <div className="flex w-full items-center justify-center gap-3 lg:flex-col lg:gap-2">
-            <MicOrb
-              state={mic.state}
-              microphone={mic.microphone}
-              blockedReason={mic.blockedReason ?? null}
-              blockedCopy={mic.blockedCopy ?? null}
-              idleCopy={mic.idleCopy}
-              onClip={mic.onClip}
-              onInterrupt={mic.onInterrupt}
-              className="shrink-0"
-            />
+            {mic.present && (
+              <MicOrb
+                state={mic.state}
+                microphone={mic.microphone}
+                blockedReason={mic.blockedReason ?? null}
+                blockedCopy={mic.blockedCopy ?? null}
+                idleCopy={mic.idleCopy}
+                onClip={mic.onClip}
+                onInterrupt={mic.onInterrupt}
+                className="shrink-0"
+              />
+            )}
 
             {/*
               `min-w-0` so a long placeholder cannot push the orb off centre,
@@ -491,6 +550,13 @@ function StageShellInner({ children, phase, mic, onReady, ...stage }: StageShell
          */}
         <div
           aria-hidden={ready}
+          /*
+           * Named so a measurement can subtract it. The veil is a deliberate
+           * full-screen cover, so while it is up it overlaps every surface on
+           * the stage by design — counting that as a collision would bury the
+           * real ones under seven false positives per phase.
+           */
+          data-tutor-veil=""
           className={cn(
             'absolute inset-0 z-40 flex items-center justify-center bg-base motion-safe:transition-opacity motion-safe:duration-300',
             ready ? 'pointer-events-none opacity-0' : 'opacity-100',
@@ -533,6 +599,35 @@ export interface StageLayerProps {
 }
 
 export function StageLayer({ label, placement = 'world', children, className }: StageLayerProps) {
+  const dock = useStageDock();
+  const keepClearOf = dock?.keepClearOf;
+
+  /*
+   * A `bottom` LAYER AND THE DOCK CANNOT BOTH OWN THE BOTTOM EDGE.
+   *
+   * This is the fixed-versus-fixed half of the same bug the anchored HUD has
+   * against the way out, and it is what turned the goodbye into a four-way
+   * pileup: the `closing` layer stacks its plate, its indigo button and its
+   * replays chip against the bottom of the viewport, and the dock is `fixed
+   * bottom-3` in the very same place. Nothing arbitrated, so at 375 px a
+   * disabled microphone landed on all three.
+   *
+   * The dock already knows how to ride above a surface — the lesson sheet
+   * publishes a footprint on every frame of a drag — so a bottom layer simply
+   * uses the same channel. It is registered here rather than by each layer so
+   * the NEXT bottom layer inherits it without having to know the dock exists.
+   *
+   * Only for `bottom`: `world` occupies nothing and `fill` is the no-WebGL
+   * fallback, where a scrolling column owns the screen and there is no
+   * composition left to protect.
+   */
+  const attachBottom = useCallback(
+    (node: HTMLDivElement | null) => {
+      keepClearOf?.(node);
+    },
+    [keepClearOf],
+  );
+
   if (placement === 'world') {
     /*
      * A full-size box that catches nothing. The island underneath is a control
@@ -569,6 +664,7 @@ export function StageLayer({ label, placement = 'world', children, className }: 
       )}
     >
       <div
+        ref={placement === 'bottom' ? attachBottom : undefined}
         className={cn(
           'pointer-events-auto mx-auto flex w-full max-w-[min(48rem,100%)] flex-col gap-4',
           placement === 'fill' && 'min-h-full',

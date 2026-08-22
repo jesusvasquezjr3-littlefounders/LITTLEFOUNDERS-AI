@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, Icon } from '@/components/ui';
-import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from './hud/HudPlate';
 import { LessonPlate, type LessonPlateDetent } from './hud/LessonPlate';
@@ -43,23 +42,35 @@ import { useStageDock, type ConversationLayerProps, type StageDockValue } from '
  *   wording; the CODE maps to a sentence we wrote, in their language.
  * - The global space-bar listener. See below.
  *
- * EVERY QUESTION THE TUTOR ASKS IS ANSWERABLE WITHOUT THE SCENE. This is the
- * rule the first version of this file broke, and it broke it in the one place
- * that matters most. The adaptation offer existed ONLY as three chips anchored
- * to `stage.mark.2`, `.1` and `.3`, and an anchored chip is hidden AND inert
- * whenever its world point leaves the frame (`ScreenAnchor.tsx`). Three marks
- * are three independent cull decisions, so on a phone, in the default
- * single-character configuration, whichever mark the placement solver happened
- * to leave in frame was what the learner got: nothing at all, or a bare "Yes
- * please" with no question beside it and no way to decline. The tutor was
- * asking a question the child could not answer. So the offer now lives in two
- * places at once, exactly the way a WorldChip and its mesh do (/DESIGN.md →
- * Components → WorldChip): the in-world pair is the delightful path and it is
- * ONE anchored node, so it is whole or absent and never a fragment; the pair
- * beside the microphone rides the shell's dock, is viewport-anchored, is never
- * culled by any camera move, and is the path the product actually promises.
- * Both dispatch the same handler, so there is one code path with two ways in
- * rather than a fallback that quietly diverges from the real feature.
+ * EVERY QUESTION THE TUTOR ASKS IS ANSWERABLE WITHOUT THE SCENE, AND IS ASKED
+ * EXACTLY ONCE. Both halves of that sentence were learned the hard way.
+ *
+ * The first version broke the first half: the adaptation offer existed ONLY as
+ * three chips anchored to `stage.mark.2`, `.1` and `.3`, and an anchored chip is
+ * hidden AND inert whenever its world point leaves the frame
+ * (`ScreenAnchor.tsx`). Three marks are three independent cull decisions, so on
+ * a phone whichever mark the placement solver happened to leave in frame was
+ * what the learner got: nothing at all, or a bare "Yes please" with no question
+ * beside it and no way to decline.
+ *
+ * The fix for that broke the second half. It mounted the offer TWICE — an
+ * anchored copy over `stage.mark.2` and a guaranteed copy on the shell's dock —
+ * on the model of a WorldChip and the mesh it mirrors. That model does not
+ * apply here, and the difference is the whole point: a WorldChip pairs a DOM
+ * control with a PICKABLE MESH, so the learner sees ONE offer that can be
+ * reached two ways. Two DOM copies are two offers. Driven at 375x812 the
+ * anchored copy read "Would another example h" — clipped at (-42, 105, 263, 57)
+ * — over its own "Yes please" at (-2, 170); at 1280x800 the same pair escaped
+ * off the TOP instead, "Yes" landing at (40, -13). A half-read question with its
+ * own live Yes button beside a whole one is worse than either alone, because a
+ * child can press the half-read one.
+ *
+ * SO THE RULE IS: an offer the learner MUST be able to answer is mounted once,
+ * and it is mounted in the band that cannot be culled. The dock copy stays; the
+ * anchored copy is gone. What is lost is the offer floating between the two
+ * characters, and it is not lost silently — `shotForPhase` still swings to the
+ * two-shot while an offer is pending, so the question still arrives as a thing
+ * one character asks another. What is gained is that there is exactly one of it.
  *
  * AND THE WHOLE LAYER HAS A NO-SCENE ARRANGEMENT, for the same reason its two
  * sibling layers do. `ready` is false on a device with no usable WebGL and
@@ -313,18 +324,14 @@ export function ConversationView({
   const peekStatus = activityWaiting ? t('tutor.conversation.peekActivityWaiting') : undefined;
 
   /*
-   * THE TWO ANSWERS, DESCRIBED ONCE AND MOUNTED IN BOTH PLACES.
+   * THE TWO ANSWERS, AND THERE IS ONE PAIR OF THEM.
    *
-   * One element, one handler, two ways in. Writing the in-world pair and the
-   * docked pair as separate JSX is how an accessible twin starts diverging
-   * from the real feature at the second change to either.
-   *
-   * Each answer carries the WHOLE question in its accessible name, because a
-   * learner can meet either pair on its own and "Yes please" with nothing to
-   * say yes to is not a control. The visible word comes FIRST: leading with the
-   * sentence drops the visible label out of the front of the accessible name,
-   * which breaks voice control for the one control a child is most likely to
-   * ask for out loud.
+   * Each answer carries the WHOLE question in its accessible name, because the
+   * question sits on a plate of its own above them and "Yes please" with
+   * nothing to say yes to is not a control. The visible word comes FIRST:
+   * leading with the sentence drops the visible label out of the front of the
+   * accessible name, which breaks voice control for the one control a child is
+   * most likely to ask for out loud.
    */
   const adaptationAnswers = adaptation && (
     <div className="flex flex-wrap items-center justify-center gap-2">
@@ -412,19 +419,12 @@ export function ConversationView({
       )}
 
       {/*
-        THE ADAPTATION OFFER IS A QUESTION A CHARACTER ASKS, so it looks like
-        one: the question and both answers float between the tutor and their
-        companion, under the two-shot the phase mapping already swings to
-        whenever an offer is pending. The card that used to push the
-        conversation down the page said the same words and meant something else
-        (/ORACLE.md §9.4).
-
-        This is the DELIGHTFUL path, and it is allowed to disappear. The pair
-        that may never disappear rides the dock beside the microphone.
+        THE ADAPTATION OFFER IS A QUESTION A CHARACTER ASKS, and the CAMERA is
+        what says so now: `shotForPhase` swings to the two-shot while an offer
+        is pending, so the tutor and their companion are both in frame while the
+        question is up (/ORACLE.md §9.4). The question itself is rendered once,
+        into the dock below, where nothing the camera does can clip it.
       */}
-      {ready && adaptation && (
-        <AdaptationInWorld question={adaptationQuestion}>{adaptationAnswers}</AdaptationInWorld>
-      )}
 
       <LessonPlate
         label={t('tutor.conversation.plateLabel')}
@@ -514,8 +514,8 @@ export function ConversationView({
       */}
       <DockSlot dock={dock} target={dock?.above ?? null}>
         {/*
-          THE GUARANTEED WAY TO ANSWER THE TUTOR, and the whole reason this
-          block exists twice.
+          THE ONE WAY TO ANSWER THE TUTOR, and it is the one that cannot be
+          taken away.
 
           It is FIRST in the dock's upper slot, not last, and that is a
           measurement rather than a preference. The dock grows upward from a
@@ -528,10 +528,8 @@ export function ConversationView({
           whose two answers stay fully on screen and fully pressable underneath
           it.
 
-          It is announced HERE and not in the world, because this copy is the
-          one that always exists: two live regions carrying one sentence make a
-          screen reader say everything twice, so the in-world plate above stays
-          silent and this one carries the announcement.
+          It carries the `role="status"`, and it is the ONLY copy, so there is
+          nothing left that could make a screen reader say the question twice.
         */}
         {adaptation && (
           <div data-offer="guaranteed" className="flex w-full flex-col items-center gap-2">
@@ -620,65 +618,4 @@ function DockSlot({
   if (!dock) return <>{children}</>;
   if (!target) return null;
   return createPortal(children, target);
-}
-
-/**
- * The offer, floating between the tutor and their companion (/ORACLE.md §9.4).
- *
- * ONE anchored node for the question AND both answers, where there used to be
- * three chips on three separate marks. Three nodes are three independent cull
- * decisions: `stage.mark.1`, `.2` and `.3` sit at different bearings around the
- * island, so which of them the camera happened to frame decided which THIRD of
- * a yes-or-no question the learner was shown. A bare "Yes please" with no
- * question beside it and no way to decline is worse than showing nothing at
- * all, because it is a control a child can press without knowing what it
- * agrees to. One node is one decision, so this arrangement is whole or absent.
- *
- * It is deliberately NOT built from `WorldChip`, for the same reason
- * `PersonalizeInWorld` has its own `WorldSlot`: `WorldChip` renders exactly one
- * plate, and holding a question and two answers together on one point needs
- * three. The contract with the projector is copied rather than adapted, and
- * every clause of it is load-bearing.
- */
-function AdaptationInWorld({ question, children }: { question: string; children: ReactNode }) {
-  const anchorRef = useAnchorSlot('stage.mark.2');
-
-  return (
-    <div
-      ref={anchorRef}
-      data-offer="world"
-      /*
-       * ZERO-SIZED, `fixed` at the origin, and carrying NO TRANSFORM OF ITS
-       * OWN. The projector writes this node's whole transform every frame and
-       * ends it with `translate(-50%, -50%)`, so a box with no size centres
-       * exactly on the published point and anything Tailwind added here would
-       * be erased or applied twice.
-       *
-       * `lf-caption` sits on THIS element because the projector reads its
-       * computed font size once, at registration, to work out how far the node
-       * may shrink before its text stops being readable. The smallest type
-       * inside is the answers' caption, so the floor is computed against the
-       * text that becomes illegible first rather than against the question.
-       */
-      className="lf-caption pointer-events-none fixed left-0 top-0 z-20 h-0 w-0 will-change-transform"
-    >
-      {/*
-        Standing clear of the mark, since the marks are at standing height and
-        a plate centred on one would sit across the island floor. The column
-        keeps the question directly above its own answers: they are one thought
-        and they are read in that order.
-      */}
-      <div className="absolute bottom-4 left-1/2 flex w-[min(80vw,24rem)] -translate-x-1/2 flex-col items-center gap-2">
-        <HudPlate shape="plate" floor="sunken" className="pointer-events-none">
-          {/*
-            No live region. The copy beside the microphone is the one that is
-            always mounted, so the announcement belongs to it; two live regions
-            carrying one sentence make a screen reader say everything twice.
-          */}
-          <span className="lf-body">{question}</span>
-        </HudPlate>
-        {children}
-      </div>
-    </div>
-  );
 }

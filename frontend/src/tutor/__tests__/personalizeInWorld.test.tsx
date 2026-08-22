@@ -123,23 +123,108 @@ describe('choosing by looking', () => {
     expect(onSave).toHaveBeenCalledWith({ character: 'dina', companion: null });
   });
 
-  it('invites a companion to stay', () => {
+  it('invites a companion to stay, from the row the candidate is already on', () => {
+    /*
+     * THE INVITE IS NOT IN THE WORLD ANY MORE, and that is a width measurement.
+     *
+     * Every non-tutor candidate used to carry an add orb beside their plate,
+     * which made each row 42 px wider than the name it names. Three of the seven
+     * overlaps measured at 375x812 involved one of those orbs, and the last one
+     * left at 1280x800 was Dina's invite orb sitting 27x35 px across Dr. Rho's
+     * plate, with the two crowns only 48 px apart at that camera distance. What
+     * stays out in the world is the gesture /ORACLE.md §10 actually describes —
+     * tap somebody who is already standing with you and they leave.
+     */
     const { onSave } = renderLayer();
-    fireEvent.click(worldButton('Ask Liruf to stay'));
+    // Not out in the world at all — ABSENT, so nothing about the row's width
+    // depends on a stylesheet.
+    expect(screen.queryByRole('button', { name: 'Ask Liruf to stay', hidden: true })).toBeNull();
+    openPanel();
+    const plate = screen.getByRole('complementary', { name: 'About you' });
+    fireEvent.click(within(plate).getByRole('button', { name: 'Ask Liruf to stay' }));
     expect(onSave).toHaveBeenCalledWith({ companion: 'liruf' });
   });
 
-  it('sends the companion off from the chip over their head or from the ring', () => {
+  it('sends the companion off from the one control that rides their own crown', () => {
     const { onSave } = renderLayer({ preferences: { ...PREFERENCES, companion: 'liruf' } });
-    // Two ways in, one handler: the chip riding their head is the closest thing
-    // to tapping the character, and the ring toggle is the one that survives the
-    // camera turning away.
+    /*
+     * ONE, not two. There used to be a second chip on `companion.head` saying
+     * the same name and dismissing them, while this control already rode the
+     * same character's crown a quarter of their height higher — measured at
+     * 1280x800 as two "Liruf" plates 63 px apart. "Tap them again and they
+     * leave" survives; the copy of it does not.
+     */
     const paths = worldButtons('Ask Liruf to head off');
-    expect(paths).toHaveLength(2);
-    for (const path of paths) {
-      fireEvent.click(path);
-      expect(onSave).toHaveBeenLastCalledWith({ companion: null });
+    expect(paths).toHaveLength(1);
+    fireEvent.click(paths[0] as HTMLElement);
+    expect(onSave).toHaveBeenLastCalledWith({ companion: null });
+  });
+
+  it('names each candidate exactly once out in the world', () => {
+    /*
+     * THE PILE-UP, ASSERTED AWAY AT ITS SOURCE.
+     *
+     * Six anchored labels for four characters is how the picker measured: a
+     * plate on each candidate's crown, plus `lead.head` repeating the tutor's
+     * name and `companion.head` repeating the companion's. At 1280x800 that put
+     * "Dr. Rho" on screen twice, 67 px apart, and at 375x812 it added two more
+     * plates to a band already 55 px tall. One person, one label.
+     */
+    renderLayer({ preferences: { ...PREFERENCES, companion: 'liruf' } });
+    for (const name of ['Dina', 'Liruf', 'Dr. Rho', 'Zara Vex']) {
+      expect(worldButtons(`Talk with ${name}`)).toHaveLength(1);
     }
+    // The role is a line ON the candidate's own plate rather than a plate of
+    // its own, so it is still said, and said in one place.
+    expect(worldButton('Talk with Dr. Rho')).toHaveTextContent('Your tutor');
+    expect(worldButton('Talk with Liruf')).toHaveTextContent('Here with you');
+  });
+
+  it('asks the projector to keep the candidates off each other, rather than authoring a ladder', () => {
+    /*
+     * THE ONE SEPARATION THIS LAYER CAN GIVE, and it delegates it.
+     *
+     * Horizontal room belongs to the camera, and at 375x812 it gave the four
+     * crowns about 150 px between them for plates 108-197 px wide. Vertical room
+     * is available, but HOW MUCH is needed changes every frame: `SHOT_AMBIENT`
+     * orbits this phase's shot, so a fixed per-candidate step is right at one
+     * bearing and wrong at the next — which is exactly what a 64 px CSS ladder
+     * did when it was measured a second time. `stack` asks for the per-frame
+     * answer instead; the arithmetic is `culling.ts` → `stackClearance`, where a
+     * test can reach it.
+     *
+     * Asserted through the ROW's classes because there is no projector in jsdom:
+     * what this file can prove is that the rows are anchored and carry no
+     * hand-rolled offset of their own.
+     */
+    const { container } = renderLayer();
+    const rows = [...container.querySelectorAll<HTMLElement>('.will-change-transform')].filter(
+      (node) => node.querySelector('[aria-label^="Talk with"]') !== null,
+    );
+    expect(rows).toHaveLength(4);
+    for (const row of rows) {
+      expect(row.style.paddingBottom).toBe('');
+      expect(row.style.transform).toBe('');
+    }
+  });
+
+  it('leaves a candidate the projector never placed off the screen entirely', () => {
+    /*
+     * `hidden` ALONE DOES NOTHING TO THIS NODE, and that is a measured defect
+     * rather than a theory. `[hidden] { display: none }` is a user-agent rule,
+     * so the `flex` this row needs beats it outright: on `/dev/tutor-lab` at
+     * 375x812 the plate for a candidate the placement solver had not seated sat
+     * at (0, 0, 197, 70) — on top of the way out, fully painted, and `inert`,
+     * which is a control a child can see, aim at and press to no effect.
+     * `ScreenAnchor` now writes `display` from the same origin as the class.
+     */
+    const { container } = renderLayer();
+    const row = container.querySelector<HTMLElement>('.will-change-transform');
+    expect(row).not.toBeNull();
+    // The class that defeated `hidden` is still there — that is the point.
+    expect(row?.className).toContain('flex');
+    expect(row?.hidden).toBe(true);
+    expect(row?.style.display).toBe('none');
   });
 
   it('offers the walk to the other island rather than a picture of it', () => {
@@ -160,14 +245,28 @@ describe('choosing by looking', () => {
 
   it('gives back the way to follow the theme, because the arc has no stop for it', () => {
     // There are four times of day, so the sun has four places and "match my
-    // theme" is not one of them. Choosing the lit stop again is the route back,
-    // and the lit chip says so in its own words.
+    // theme" is not one of them. Choosing the lit stop again is the route back.
     const { onSave } = renderLayer({ preferences: { ...PREFERENCES, backdrop: 'dusk' } });
     const dusk = worldButton(/Dusk/);
     expect(dusk).toHaveAttribute('aria-pressed', 'true');
-    expect(dusk).toHaveTextContent('Choose again to match my theme');
     fireEvent.click(dusk);
     expect(onSave).toHaveBeenCalledWith({ backdrop: 'auto' });
+  });
+
+  it('keeps the sky chips one word wide and says the rest in the panel', () => {
+    /*
+     * The sentence used to hang under the LIT chip, which made it 165 px on a
+     * 375 px screen — three chips wide, measured, covering the stops either
+     * side of it while the other three sat 45 px wide and 50 px apart. It is
+     * still said, on the row for the same light in the panel's list, which is a
+     * column and has the width for a second line.
+     */
+    renderLayer({ preferences: { ...PREFERENCES, backdrop: 'dusk' } });
+    expect(worldButton(/Dusk/)).not.toHaveTextContent('Choose again to match my theme');
+
+    openPanel();
+    const plate = screen.getByRole('complementary', { name: 'About you' });
+    expect(within(plate).getByText('Choose again to match my theme')).toBeInTheDocument();
   });
 });
 

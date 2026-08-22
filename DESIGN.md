@@ -581,7 +581,12 @@ island and the learner watches their own world blink.
   and to a screen reader, and waits. The plate publishes its rect so the camera
   composes AROUND it: the character's on-screen height must be identical with
   and without a segment, or the lesson appears to shove the tutor out of the way
-  to make room for itself.
+  to make room for itself. **Composing around it means the AIM moves and the
+  SHOT does not** (clarified 2026-08-21): every shot in `/TUTOR_3D.md` §9.1 sits
+  at its own distance, so switching shot when an activity arrives changes that
+  height by construction. An earlier build read this bullet as permission to cut
+  to a different framing and put the back of the tutor's head across a whole
+  phone; the shot mapping can no longer be told a segment exists.
 - **The mic orb** — MicOrb, on the bottom safe area: centred from `lg:` up, and
   below that **sharing its row with the composer**, orb first. Height is the
   scarce dimension on a phone and the orb is the hero that keeps all 96 px of
@@ -590,10 +595,27 @@ island and the learner watches their own world blink.
   375x812). With the lesson plate and the way out it is one of exactly **three**
   viewport-anchored elements on the route; everything else is anchored to the
   world. All three are viewport-anchored for the same reason: a thumb does not
-  move with the camera.
+  move with the camera. **It is present in every phase where speaking is
+  possible, about to be possible, or is itself the thing being explained — and
+  in no other** (added 2026-08-21, after the owner tested a phone). "Always
+  mounted" was the fix for four phases having no microphone at all, and it was
+  right for three of the four; applied to the goodbye it put a 96 px DISABLED
+  orb at (139, 632) on top of the "See you soon!" plate, on top of the indigo
+  "Start another session" — the one action of the phase — and on top of its own
+  reason line. `closing` is the single phase it is absent from, and the decision
+  is a field on the plan (`stage/micForPhase.ts` → `present`) rather than an
+  `&&` at a call site, so a new phase cannot be added without making it.
 - **The way out** — a HudPlate chip at the top-left safe area (`hud-inset`,
-  16 px mobile / 24 px desktop), back arrow plus one translated line, first in
-  the tab order, above the loading veil, and **never culled**. It went from two
+  16 px mobile / 24 px desktop), back arrow, first in the tab order, above the
+  loading veil, and **never culled**. **The translated line rides with the arrow
+  from `md:` up and is dropped below it** (added 2026-08-21), which is a
+  measurement rather than a tidy-up: labelled, the chip is 155 px wide and spans
+  the speech caption's only horizontal escape route, so a 266 px caption pushed
+  clear of it would run off a 375 px screen and the solver's only remaining move
+  is 37 px straight DOWN — the greeting laid across the tutor's forehead.
+  Unlabelled it is 44 px, the escape is 22 px sideways, and nobody notices it
+  happened. The tap target is unchanged (`min-h-11 min-w-11`) and `aria-label`
+  carries the same sentence at every width. It went from two
   to three here, on 2026-08-21, in the commit that fixed the reason: the way
   out had been a world rune on a sky mark plus an `sr-only` button revealed by
   focus, and neither is reachable by a pointer user in a close-up — the rune is
@@ -603,6 +625,27 @@ island and the learner watches their own world blink.
   floating PANEL is what the count of two was protecting against, not the
   navigation the immersive exception took away. **The count is closed again at
   three**; a fourth is an owner decision.
+
+**No two HUD surfaces may claim the same pixels at rest** (added 2026-08-21).
+The route lays chrome out two incompatible ways — CSS against the viewport for
+the three fixed elements, and the CAMERA for everything anchored to the world —
+so neither system could see the other and three separate collisions shipped: the
+greeting caption under the way out at 375 px, the disabled orb on the goodbye's
+button, and `unavailable` printing the same sentence twice on top of itself. The
+arbitration is one shared registry, not a set of tuned constants. Every
+viewport-anchored surface publishes its measured rect
+(`tutor-scene/SafeAreaContext.tsx` → `chromeRef`, which is a SUPERSET of the
+three the camera composes around: the way out is keep-out for the HUD and
+invisible to the camera, because charging a 44 px corner chip as a 60 px top
+inset would push the subject down the frame in every phase). World-anchored
+chrome then answers being covered in one of exactly two ways: a WorldChip
+**hides** (it mirrors a pickable mesh that is still there), and the speech
+caption **moves**, by the shortest displacement that clears and stays in frame
+(`tutor-scene/hudSpace.ts`), because it is the deaf learner's whole channel and
+may never hide. A caption that cannot clear within a quarter of the viewport's
+short side stays put rather than half-escaping. `/dev/tutor-lab` prints the live
+collision count beside the phase switcher; a phase that overlaps at rest is a
+bug, and one that overlaps for a frame while a sheet animates is not.
 
 **Colour and contrast.** Every plate carrying body text uses the opaque
 `bg-surface` floor; glass is the frame (§Colors → the opaque floor rule). One

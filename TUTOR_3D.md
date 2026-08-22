@@ -926,11 +926,11 @@ side of it; the product side is `/ORACLE.md` §9–§10.
 
 ### §9.1 The shot vocabulary and the damper contract
 
-**Six shots, closed, pure.** `src/tutor-scene/shots.ts` holds one function per
+**Five shots, closed, pure.** `src/tutor-scene/shots.ts` holds one function per
 shot, `(ctx: ShotContext) => CameraPose`, importing neither `three` nor React:
 
 ```
-establishing · approach · closeup · closeup-wide · two-shot · over-shoulder
+establishing · approach · closeup · closeup-wide · two-shot
 ```
 
 `closeup-wide` is the shot that did not exist and should have (§7b's
@@ -938,6 +938,47 @@ correction): 22° off the subject's own facing axis at 1.35× the `closeup`
 distance, framing head AND hands. It is what `/ORACLE.md` §2.2 always meant by
 "they frame wider", expressed as something a picker can put on screen and a
 test can assert.
+
+**`over-shoulder` was the sixth and was REMOVED on 2026-08-21**, after the
+stage was driven at 375×812 and photographed. It was the framing `conversing`
+took the moment a live segment reached the plate, and what it put on a phone
+was hair and one ear — no island, no face, no companion; at 1280×800 the back
+of Dr Rho's head filled the left two-thirds in profile. Every gate in the repo
+was green throughout, because a character's own body counts as painted scene
+and the shot tests asked only for sign and finiteness.
+
+Two independent reasons, either of which is sufficient:
+
+- **Its one caller was itself a violation.** `/ORACLE.md` §9.3, `/ORACLE.md`
+  §16's shipping gate and `DESIGN.md` → Screen Recipes → **Tutor** all say the
+  character's on-screen height is IDENTICAL with and without a live segment.
+  Every shot sits at its own distance, so ANY shot change breaks that. Getting
+  the tutor out from behind the plate is `composition.ts`'s job and it does it
+  by shifting the AIM, never the distance. `StageShotInput` therefore no longer
+  has a `segmentLive` field at all — the coupling now fails `type-check`
+  instead of failing a screenshot.
+- **It is geometrically impossible in portrait**, which §1.11 makes
+  non-negotiable. A cartoon head is ~47% of body height, so making the near
+  figure a foreground EDGE rather than the subject needs a stand-off of about
+  2.1× height (~3.5 m for Rho). The cast stands ~1.4 m apart, so from there the
+  lead subtends 5.97° off axis and the companion 4.27° — 1.7° apart, the
+  "shoulder" landing on top of the subject. Widening the offset cannot fix it:
+  at 375×812 half the horizontal field of view is 8.53°, capping the offset at
+  0.53 m and the separation at 2.4°. An over-the-shoulder needs the stand-off
+  SMALL relative to the separation; here it is the reverse.
+
+There is also nothing in the WORLD to look over a shoulder at during a segment:
+the activity is DOM chrome on a plate, and a world camera cannot frame a
+screen-space rectangle. The pair moment that IS expressible — one character
+putting a question to another — is `two-shot`, which `/ORACLE.md` §9.4 assigns.
+
+**Every shot is asserted to hold its own subject, at BOTH breakpoints.**
+`shots.test.ts` projects each shot's promised points — heads with a 12% margin
+inside the frame edge, crown/chest/rim anchors merely inside it — at 1280×800
+and 375×812, paired and solo. That suite exists because the previous one could
+not tell a shot pointed at a face from a shot pointed at the inside of a skull.
+It still cannot see that a head is BACKWARDS, which is why the screenshot pass
+is not optional.
 
 **Why a module and not two branches in `useFrame`.** The camera rig shipped
 with `vignette` and `conversation` decided inline, each computing an ABSOLUTE
@@ -974,12 +1015,12 @@ or would have had:
    to a cut covered by a 120 ms scrim dip. One vocabulary with a modifier means
    the accessible path is exercised by every shot test; two camera systems
    means the accessible one is the one nobody looks at.
-3. **`two-shot` and `over-shoulder` must NEVER feed back into placement.** They
-   orbit off the cast's facing axis, and the solver faces characters outward
-   from the island centre (§5). If placement re-solves in response to the
-   camera, the two chase each other and the cast ends up facing a shot that has
-   already moved on. **The camera reads placement; placement never reads the
-   camera.**
+3. **No shot may EVER feed back into placement.** Every one of them is built
+   off the cast's own facing axis — `two-shot` blends two of them — and the
+   solver faces characters outward from the island centre (§5). If placement
+   re-solves in response to the camera, the two chase each other and the cast
+   ends up facing a shot that has already moved on. **The camera reads
+   placement; placement never reads the camera.**
 4. **Re-base the orbit clock on arrival.** The shipped rig accrued
    `clock.elapsedTime` continuously while a close-up was held, so returning to
    the establishing shot jumped to wherever the orbit would have been. Arrival

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { SCENE_ASSETS } from '@/tutor-scene/assets';
 import { isSceneBackdropId } from '@/tutor-scene/backdrops';
+import { overlappingPairs, type NamedRect } from '@/tutor-scene/hudSpace';
 import { HudPlate } from '../hud/HudPlate';
 import { ConversationView } from '../ConversationView';
 import { OfferChips } from '../OfferChips';
@@ -115,6 +116,82 @@ function useViewport(): { width: number; height: number; band: string } {
   }, []);
 
   return size;
+}
+
+/**
+ * EVERY HUD SURFACE ON THE STAGE, MEASURED, RIGHT NOW.
+ *
+ * The generic query is the point. Naming the surfaces would mean maintaining a
+ * list, and a list is exactly what was missing when the caption and the way out
+ * both took the top-left corner — nobody had written either of them down
+ * anywhere the other could see. `.lf-glass` is every HudPlate by construction
+ * (chip, plate, orb, sheet) and `button` catches the design system's own
+ * controls, such as the goodbye's indigo action, which is not a HudPlate.
+ *
+ * A surface nested inside another is dropped: an orb's icon inside its frame
+ * overlaps its frame by definition, and reporting that would bury the one
+ * collision that matters under a dozen that never did.
+ */
+function surveyHudSurfaces(): NamedRect[] {
+  const stage = document.querySelector('[data-tutor-stage]');
+  if (!stage) return [];
+
+  const found: Array<{ node: HTMLElement; surface: NamedRect }> = [];
+  for (const node of stage.querySelectorAll<HTMLElement>('.lf-glass, button')) {
+    // The instrument is never part of the thing under measurement.
+    if (node.closest('[data-lab-chrome]')) continue;
+    // The projector's two culled properties: a hidden node paints nothing.
+    if (node.hidden || node.hasAttribute('inert')) continue;
+    // The loading veil covers everything ON PURPOSE — it is a state, not a
+    // surface competing for space. Counting it would report seven collisions
+    // per phase and bury the ones that are actually bugs.
+    if (node.closest('[data-tutor-veil]')) continue;
+    const box = node.getBoundingClientRect();
+    if (box.width <= 0 || box.height <= 0) continue;
+    // Document order, so any container is already in the list when its own
+    // contents come round.
+    if (found.some((entry) => entry.node.contains(node))) continue;
+
+    const name =
+      node.getAttribute('aria-label')?.trim() ||
+      node.textContent?.trim().slice(0, 32) ||
+      'unnamed surface';
+    found.push({
+      node,
+      surface: { name, rect: { left: box.left, top: box.top, width: box.width, height: box.height } },
+    });
+  }
+
+  return found.map((entry) => entry.surface);
+}
+
+/**
+ * The readout, in its OWN component and with its own state.
+ *
+ * Deliberately not a `useState` on the page: it re-measures a few times a
+ * second, and a page-level state update would re-render `StageShell` — and
+ * therefore the canvas subtree — at the same cadence. An instrument that
+ * disturbs the thing it measures reports the wrong answer, which is the mistake
+ * the collapsed panel above is already there to avoid.
+ */
+function HudOverlapReadout() {
+  const [collisions, setCollisions] = useState<Array<readonly [string, string]>>([]);
+
+  useEffect(() => {
+    const tick = window.setInterval(() => setCollisions(overlappingPairs(surveyHudSurfaces())), 400);
+    return () => window.clearInterval(tick);
+  }, []);
+
+  if (collisions.length === 0) {
+    return <span className="lf-caption whitespace-nowrap px-1 text-content-muted">no overlaps</span>;
+  }
+
+  return (
+    <span className="lf-caption max-w-full px-1 text-error" role="status">
+      {collisions.length} overlap{collisions.length === 1 ? '' : 's'}:{' '}
+      {collisions.map(([a, b]) => `${a} × ${b}`).join(' · ')}
+    </span>
+  );
 }
 
 /**
@@ -246,7 +323,6 @@ export default function TutorLabPage() {
   const shot = shotForPhase({
     phase,
     articulates,
-    segmentLive: socket.segment !== null,
     adaptationOffered: socket.adaptationOffer !== null,
   });
 
@@ -268,6 +344,7 @@ export default function TutorLabPage() {
   });
 
   const mic: StageMicProps = {
+    present: micPlan.present,
     state: micPlan.state,
     microphone,
     blockedReason: micPlan.blockedReason,
@@ -360,6 +437,17 @@ export default function TutorLabPage() {
               {stageReady ? 'stage ready' : 'no first frame'}
             </span>
           </div>
+
+          {/*
+            THE COLLISION READOUT. The owner found three surfaces sitting on
+            each other by testing on a phone; nothing in the repo could have
+            told anyone before they did. It is a line on the instrument rather
+            than a gate because the fix is usually a judgement about which
+            surface should move, and because a HUD that overlaps for one frame
+            while a sheet animates is not a bug — a HUD that overlaps at rest
+            is.
+          */}
+          <HudOverlapReadout />
         </div>
       ) : (
         <LabSwitch on onClick={() => setPanelOpen(true)}>
@@ -421,15 +509,11 @@ export default function TutorLabPage() {
         onReady={() => setStageReady(true)}
         onSpeechEnd={() => setSpeaking(false)}
       >
-        {phase === 'unavailable' && (
-          <StageLayer label={t('tutor.stage.unavailableLayer')} placement="bottom">
-            <HudPlate shape="plate" className="mx-auto">
-              <span className="lf-body text-content" role="status">
-                {t('tutor.page.unavailable')}
-              </span>
-            </HudPlate>
-          </StageLayer>
-        )}
+        {/*
+          No layer on `unavailable`, exactly as upstream. The sentence lives on
+          the microphone now (`micForPhase`), because two surfaces saying the
+          same thing landed on each other at both widths.
+        */}
 
         {phase === 'personalizing' && (
           <StageLayer label={t('tutor.stage.personalizeLayer')} placement="world">

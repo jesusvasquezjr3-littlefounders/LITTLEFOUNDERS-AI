@@ -462,8 +462,8 @@ function Cast({
   /*
    * THE SOLVE DOES NOT DEPEND ON THE CAMERA, and it must never start to.
    *
-   * `two-shot` and `over-shoulder` deliberately orbit off the cast's facing
-   * axis. If the shot fed back into placement, the cast would re-solve to face a
+   * Every shot is built off the cast's own facing axis, and `two-shot` blends
+   * two of them. If the shot fed back into placement, the cast would re-solve to face a
    * camera that is itself still moving, and the two would chase each other — the
    * characters ending up aimed at a framing that has already been left behind.
    * The dependency array below is the enforcement: no shot, no framing, no

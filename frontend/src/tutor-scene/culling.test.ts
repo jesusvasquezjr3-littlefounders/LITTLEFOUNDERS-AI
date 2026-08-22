@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isAnchorNodeVisible, type ViewportBox } from './culling';
+import { isAnchorNodeVisible, stackClearance, type ViewportBox } from './culling';
 
 /*
  * The rule this file defends: a node the learner cannot fully read is not on
@@ -86,5 +86,70 @@ describe('isAnchorNodeVisible', () => {
     // edge is over the line. The projector multiplies before it asks.
     expect(isAnchorNodeVisible(1200, 400, 70, 18, DESKTOP)).toBe(true);
     expect(isAnchorNodeVisible(1200, 400, 140, 36, DESKTOP)).toBe(false);
+  });
+});
+
+
+/*
+ * The second rule this file defends: two labels that name two different people
+ * may not be drawn on top of each other.
+ *
+ * Measured on the real stage during personalization, before this existed: 7
+ * mutual overlaps between the picker's own controls at 375x812 and 2 at
+ * 1280x800, with the four candidates' crowns projecting into a band roughly
+ * 150 px wide and the plates naming them 108 to 197 px each. A HUD label has a
+ * readability floor and the character it names does not, so past a close-up the
+ * labels are always wider than the heads.
+ */
+describe('keeping anchored peers off each other', () => {
+  /** A 90x40 plate whose centre has just been projected onto (x, y). */
+  const plate = (x: number, y: number, width = 90, height = 40): ViewportBox => ({
+    left: x - width / 2,
+    top: y - height / 2,
+    width,
+    height,
+  });
+
+  it('leaves a node alone when nothing is in the way', () => {
+    expect(stackClearance(plate(200, 300), [], 8)).toBe(0);
+    expect(stackClearance(plate(200, 300), [plate(500, 300)], 8)).toBe(0);
+    // Vertically clear by more than the gap: two rows already stacked.
+    expect(stackClearance(plate(200, 300), [plate(200, 200)], 8)).toBe(0);
+  });
+
+  it('lifts a node just clear of the one it landed on, gap included', () => {
+    // Both centred on y=300, so they coincide exactly. The lower one has to
+    // rise its own height plus the gap to sit above the other.
+    expect(stackClearance(plate(200, 300), [plate(200, 300)], 8)).toBe(48);
+  });
+
+  it('clears every blocker, not merely the first one it met', () => {
+    /*
+     * The case a single pass gets wrong: rising off the first plate lands the
+     * node on the second. Two candidates 30 px apart on screen is an ordinary
+     * bearing for the picker's orbit, not a pathological one.
+     */
+    const lift = stackClearance(plate(200, 300), [plate(200, 300), plate(210, 270)], 8);
+    expect(lift).toBe(78);
+    // And the result really is clear: the lifted box sits above both.
+    expect(300 - lift + 20).toBeLessThanOrEqual(270 - 20 - 8);
+  });
+
+  it('only ever moves a label UP', () => {
+    /*
+     * Sideways is cheaper by the ruler and wrong by the product: the plate is
+     * attached to one character's head, and at 375 px the heads are about 50 px
+     * apart, so a lateral escape hands the name to the neighbour. A confidently
+     * wrong label is worse than an overlapping one.
+     */
+    for (const blocker of [plate(200, 300), plate(160, 300), plate(240, 310)]) {
+      expect(stackClearance(plate(200, 300), [blocker], 8)).toBeGreaterThan(0);
+    }
+  });
+
+  it('asks for nothing when it has not been measured yet', () => {
+    // Half-extents are zero until a node has been laid out, and a zero box
+    // overlaps nothing. Pushing it would be pushing a point.
+    expect(stackClearance({ left: 200, top: 300, width: 0, height: 0 }, [plate(200, 300)], 8)).toBe(0);
   });
 });

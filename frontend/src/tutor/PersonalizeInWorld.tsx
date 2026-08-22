@@ -104,6 +104,22 @@ const NICKNAME_PATTERN = /^[\p{L}\p{N}][\p{L}\p{N} '_-]*$/u;
  */
 const STAGE_GRACE_MS = 8000;
 
+/*
+ * THE CANDIDATES' PLATES DO NOT PILE UP ANY MORE, and the mechanism is in the
+ * projector rather than here (`ScreenAnchor` → `stack`, `culling.ts` →
+ * `stackClearance`). Each plate rises until it is clear of the plates already
+ * placed this frame, so it stays over its own character's head and never sits
+ * on a neighbour's label.
+ *
+ * WHY NOT A LADDER IN CSS. That was written first — a fixed 64 px step per
+ * candidate — and it was correct in the screenshot that justified it and wrong a
+ * few seconds later. `SHOT_AMBIENT` orbits this phase's shot, so the crowns
+ * travel continuously across the frame: at one bearing four rungs are needed and
+ * at the next the cast is spread and every rung is sky spent for nothing — sky
+ * the sun's own arc is using. A per-frame answer costs nothing when nobody is
+ * overlapping, which at 1280x800 is most of the time.
+ */
+
 export function PersonalizeInWorld({
   preferences,
   catalog,
@@ -333,11 +349,36 @@ export function PersonalizeInWorld({
         {castRing.map(({ slot, id }) => {
           const isLead = id === lead;
           const isCompanion = id === companion;
+          /*
+           * ONE PERSON, ONE LABEL. The role used to live on a SECOND anchored
+           * chip over the same character's mid-head — `lead.head` for the tutor
+           * and `companion.head` for the companion — while this plate rode their
+           * crown a quarter of their height higher. Measured at 1280x800 that
+           * was "Dr. Rho / Warm and precise" at (479, 168) with "Dr. Rho / Your
+           * tutor" at (489, 235): the same name, twice, 67 px apart, reading as
+           * a rendering glitch rather than as two facts. The role is a fact
+           * ABOUT this candidate, so it belongs on this candidate's own plate.
+           */
+          const role = isLead
+            ? t('tutor.personalize.tutorBadge')
+            : isCompanion
+              ? t('tutor.personalize.companionBadge')
+              : null;
           return (
             <WorldSlot key={id} slot={slot}>
               <HudPlate
                 as="button"
-                shape="plate"
+                /*
+                 * A CHIP, NOT A PLATE, AND THE NOTE HAS MOVED TO THE PANEL.
+                 * `noteFor` is one short sentence about how a character
+                 * performs, and it was what made these 108-197 px wide — wide
+                 * enough that at 375 px each plate covered its neighbours'
+                 * characters as well as their plates. It is not lost: it reads
+                 * better in the panel's list, where the rows are a column and
+                 * have the width for a second line, and that list is the path
+                 * every candidate is reachable through anyway.
+                 */
+                shape="chip"
                 onClick={() => chooseTutor(id)}
                 aria-label={t('tutor.personalize.chooseTutor', { name: nameOf(id) })}
                 aria-pressed={isLead}
@@ -353,30 +394,42 @@ export function PersonalizeInWorld({
                 floorClassName="flex-col !gap-0.5"
               >
                 <span className="lf-label text-content">{nameOf(id)}</span>
-                <span className="lf-caption text-content-muted">{noteFor(id)}</span>
+                {role && <span className="lf-caption text-content-muted">{role}</span>}
               </HudPlate>
 
               {/*
-                A SIBLING, not a child. The tutor pick and the companion toggle
+                ONE ORB IN THE WORLD, AND IT BELONGS TO WHOEVER IS ALREADY
+                STANDING WITH YOU.
+
+                A SIBLING, not a child: the tutor pick and the companion toggle
                 are two different answers about one character, and a button
                 inside a button is invalid HTML that browsers resolve by
                 dropping one of the two handlers.
+
+                It used to be mounted for all three non-tutors, which put a
+                second control on every candidate's row and made each row 42 px
+                wider than the name it carries. Three of the seven overlaps
+                measured at 375x812 involved one of those orbs, and the last one
+                left at 1280x800 was Dina's INVITE orb sitting across Dr. Rho's
+                plate — 27x35 px, with the two crowns only 48 px apart at that
+                camera distance. The invite is not lost: it is in the panel's
+                list, on the same row as the candidate, dispatching this same
+                handler. What stays out here is "tap them again and they leave",
+                which is the gesture the owner asked for and the one
+                /ORACLE.md §10 describes, and it can only apply to somebody who
+                is already here.
               */}
-              {!isLead && (
+              {isCompanion && (
                 <HudPlate
                   as="button"
                   shape="orb"
                   onClick={() => toggleCompanion(id)}
-                  aria-label={
-                    isCompanion
-                      ? t('tutor.personalize.dismissCompanion', { name: nameOf(id) })
-                      : t('tutor.personalize.inviteCompanion', { name: nameOf(id) })
-                  }
-                  aria-pressed={isCompanion}
-                  className={cn('pointer-events-auto', isCompanion && 'ring-2 ring-primary')}
+                  aria-label={t('tutor.personalize.dismissCompanion', { name: nameOf(id) })}
+                  aria-pressed
+                  className="pointer-events-auto ring-2 ring-primary"
                   floorClassName="h-11 w-11"
                 >
-                  <Icon name={isCompanion ? 'person_remove' : 'person_add'} />
+                  <Icon name="person_remove" />
                 </HudPlate>
               )}
             </WorldSlot>
@@ -385,46 +438,20 @@ export function PersonalizeInWorld({
       </div>
 
       {/*
-        WHO IS STANDING WHERE, said over their heads.
-        `aria-hidden`, because the ring above is already a real, ordered,
-        labelled control for each character and its pressed state carries the
-        same fact. A second announcement of the same thing makes a screen-reader
-        user stop and work out whether they are two controls or one. This chip
-        is the SIGHTED confirmation that the pick landed on the island, which is
-        the entire point of choosing in the world.
-      */}
-      <div aria-hidden="true">
-        <WorldChip slot="lead.head" shape="chip">
-          <span className="flex flex-col items-center">
-            <span className="lf-label text-content">{nameOf(lead)}</span>
-            <span className="lf-caption text-content-muted">{t('tutor.personalize.tutorBadge')}</span>
-          </span>
-        </WorldChip>
-      </div>
+        THE TWO CHIPS THAT USED TO BE HERE ARE GONE, and their absence is the fix
+        rather than a deletion.
 
-      {/*
-        The companion's own chip IS interactive, and that is the one place the
-        duplication is worth it: "tap them again and they leave" is the gesture
-        the owner asked for, and with no pick proxy on the mesh yet this chip
-        over their head is the closest thing to tapping the character. It
-        dispatches the same handler as the ring toggle, so the two are one code
-        path rather than two that drift.
+        One rode `lead.head` saying the tutor's name and "Your tutor"; the other
+        rode `companion.head` saying the companion's name and "Here with you",
+        and dismissed them when tapped. Both named a character who ALREADY had a
+        plate over their crown, four fifths of a head higher up — measured at
+        1280x800 as two "Dr. Rho" plates 67 px apart and two "Liruf" plates 63 px
+        apart, which is four labels for two people on a screen whose whole
+        problem was too many labels. Both facts moved onto the candidate's own
+        plate above: the role is a line on it, and "tap them again and they
+        leave" is the add/remove control standing beside it, which rides the same
+        crown and dispatches the same handler it always did.
       */}
-      {companion && (
-        <WorldChip
-          slot="companion.head"
-          shape="chip"
-          onSelect={() => toggleCompanion(companion)}
-          label={t('tutor.personalize.dismissCompanion', { name: nameOf(companion) })}
-        >
-          <span className="flex flex-col items-center">
-            <span className="lf-label text-content">{nameOf(companion)}</span>
-            <span className="lf-caption text-content-muted">
-              {t('tutor.personalize.companionBadge')}
-            </span>
-          </span>
-        </WorldChip>
-      )}
 
       {/*
         THE ISLAND, changed by going to it. The pad names where it leads rather
@@ -456,27 +483,38 @@ export function PersonalizeInWorld({
       )}
 
       {/*
-        THE LIGHT, moved along the sun's own arc. The lit stop carries the way
-        back to "match my theme" in its own words, because an affordance nobody
-        can see is an affordance only the person who wrote it can use.
+        THE LIGHT, moved along the sun's own arc. EACH STOP IS ONE WORD, and the
+        sentence that used to hang under the lit one has moved to the panel.
+
+        The four sky marks land close together for the same reason the crowns do
+        — measured at 375x812 they were 45 px wide at x 97, 90, 230 and 310, in a
+        one-pixel vertical band. Three of them fit at that spacing; the LIT one
+        did not, because "Choose again to match my theme" made it 165 px, three
+        chips wide, and it covered the two stops either side of it. The way back
+        to following the theme is still stated in words, on the row for the same
+        light in the panel's list, which has a column's width for a second line
+        and is where the guaranteed copy of every choice already lives.
       */}
       {sunArc.length > 0 && (
         <div role="group" aria-label={t('tutor.personalize.lightTitle')}>
-          {sunArc.map(({ slot, id }) => {
-            const lit = preferences.backdrop === id;
-            return (
-              <WorldChip key={id} slot={slot} selected={lit} onSelect={() => setLight(id)}>
-                <span className="flex flex-col items-center">
-                  <span className="lf-caption text-content">{lightName(id)}</span>
-                  {lit && (
-                    <span className="lf-caption text-content-muted">
-                      {t('tutor.personalize.lightClear')}
-                    </span>
-                  )}
-                </span>
-              </WorldChip>
-            );
-          })}
+          {sunArc.map(({ slot, id }) => (
+            <WorldChip
+              key={id}
+              slot={slot}
+              selected={preferences.backdrop === id}
+              onSelect={() => setLight(id)}
+              /*
+               * The four stops are peers on one arc, and an arc seen edge-on is
+               * a point. Measured while the camera orbited at 375x812, "Dawn"
+               * and "Day" overlapped in four samples out of six, by 5 px rising
+               * to 25 px as the shot came round. They rise clear of each other,
+               * and of the candidates' plates, on the same per-frame rule.
+               */
+              stack
+            >
+              <span className="lf-caption text-content">{lightName(id)}</span>
+            </WorldChip>
+          ))}
         </div>
       )}
 
@@ -609,7 +647,18 @@ export function PersonalizeInWorld({
                           label={t('tutor.personalize.chooseTutor', { name: nameOf(id) })}
                           className="flex-1"
                         >
-                          {nameOf(id)}
+                          {/*
+                            The note the world plate gave up, and this is where
+                            it belongs. A learner who picks Liruf and then
+                            wonders why his mouth never moves has been misled;
+                            these rows are a column, so the sentence costs a
+                            second line here instead of 90 px of width over a
+                            character's face.
+                          */}
+                          <span className="flex flex-col items-center">
+                            <span>{nameOf(id)}</span>
+                            <span className="lf-caption text-content-muted">{noteFor(id)}</span>
+                          </span>
                         </PlateChip>
                         {id !== lead && (
                           <PlateChip
@@ -657,7 +706,22 @@ export function PersonalizeInWorld({
                         selected={preferences.backdrop === id}
                         onSelect={() => setLight(id)}
                       >
-                        {lightName(id)}
+                        {/*
+                          The lit row says how to go back to following the app's
+                          theme, because there is no fifth stop in the sky for
+                          it and an affordance nobody can see is one only the
+                          person who wrote it can use. It is HERE rather than on
+                          the sky chip because at 375 px that sentence made the
+                          chip three chips wide and covered its neighbours.
+                        */}
+                        <span className="flex flex-col items-center">
+                          <span>{lightName(id)}</span>
+                          {preferences.backdrop === id && (
+                            <span className="lf-caption text-content-muted">
+                              {t('tutor.personalize.lightClear')}
+                            </span>
+                          )}
+                        </span>
                       </PlateChip>
                     ))}
                   </div>
@@ -723,7 +787,7 @@ export function PersonalizeInWorld({
 }
 
 /**
- * Two controls riding one named place in the world.
+ * Two controls riding one named place in the world, at a height of their own.
  *
  * `WorldChip` is the primitive for the ordinary case and is used everywhere
  * else in this file. It cannot serve here because it renders exactly one
@@ -734,9 +798,18 @@ export function PersonalizeInWorld({
  * projector writes the whole `transform` string every frame and ends it with
  * its own centering translate), and pointer events off on the positioned layer
  * so the box never punches an invisible hole in the island.
+ *
+ * `place: 'above'` rather than the default centring, because the mark this
+ * rides is the top of the candidate's SKULL: a row centred on it wears the
+ * character's head as a hat.
+ *
+ * `stack: true` is what stops four of these landing on each other. The
+ * projector lifts each one clear of the rows already placed that frame, so a
+ * plate is always over its own character and never over a neighbour's name —
+ * see `culling.ts` → `stackClearance` for the measurements that forced it.
  */
 function WorldSlot({ slot, children }: { slot: AnchorId; children: ReactNode }) {
-  const anchorRef = useAnchorSlot(slot);
+  const anchorRef = useAnchorSlot(slot, { place: 'above', stack: true });
   return (
     <div
       ref={anchorRef}

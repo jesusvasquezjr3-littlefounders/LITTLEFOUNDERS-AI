@@ -87,7 +87,30 @@ The AI tutor **feature** spans `oracle/` (runtime), `backend/` (`/api/v1/tutor/*
 | **Star schema** | The DuckDB data model — `fact_events` (event stream) joined to dimension tables (`dim_users`, `dim_sessions`, `dim_lessons`, `dim_time`). Enables fast multi-dimensional aggregation across any combination of role, locale, device, and time. |
 | **relayed** | The `email_logs.status` written by delivery capture — Haraka accepted the message and handed it to the SES relay. Distinct from `queued`, which means Courier accepted it on `POST /api/v1/send` and passed it to the adapter. Neither is an SES *delivery* confirmation; correlate `message_id` with SES logs for that. |
 | **team-mode skill** | An opt-in agent skill that must be proposed to the human before use (TEAM_PROTOCOL.md). |
-| **characters** | The four canonical mascots: **Dina, Liruf, Dr. Rho, Zara Vex**. |
+| **characters** | The four canonical mascots: **Dina, Liruf, Dr. Rho, Zara Vex**. Their genders are CANONICAL and listed below — get one wrong and the copy misgenders a character a child has known for months. |
+
+### The cast, and their genders
+
+Canonical. This table is the source of truth; the copy follows it, never the
+other way round. It exists because the genders had never been written down
+anywhere, and `es-MX` and `pt-BR` consequently shipped "la Dra. Rho" in four
+strings — a character a learner meets at onboarding, at placement, and then
+again in the Tutor under a different gender.
+
+Two of the four are creatures rather than people, and they still have a gender:
+"gender-neutral because it is a dinosaur" is a decision nobody made, and left
+unmade it gets decided differently by each translator.
+
+| Character | Gender | es-MX | pt-BR | Notes |
+|---|---|---|---|---|
+| **Dina** | female | *la* Dina | *a* Dina | Calm and patient. Speaks with her whole body — no mouth card (/TUTOR_3D.md §3.1). |
+| **Liruf** | male | *el* Liruf | *o* Liruf | Playful and full of energy. Speaks with his whole body — no mouth card. |
+| **Dr. Rho** | male | *el* **Dr.** Rho | *o* **Dr.** Rho | Warm and precise. NEVER "Dra." — owner correction, 2026-08-21. |
+| **Zara Vex** | female | *la* Zara Vex | *a* Zara Vex | Curious and quick. |
+
+English needs no article and hides the problem, which is exactly why it has to
+be written here rather than inferred per string: a translator working from
+en-US has nothing to go on. When adding copy in any locale, read this table.
 
 ## Lesson Engine terms (spec: /LESSON_ENGINE.md)
 

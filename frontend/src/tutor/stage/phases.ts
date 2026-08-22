@@ -86,17 +86,37 @@ export interface StageShotInput {
    * was legible either.
    */
   articulates: boolean;
-  /** True while a live lesson segment is on the plate. */
-  segmentLive?: boolean;
   /** True while the tutor is waiting on an answer to an adaptation offer. */
   adaptationOffered?: boolean;
+  /*
+   * THERE IS DELIBERATELY NO `segmentLive` HERE ANY MORE. Removed 2026-08-21.
+   *
+   * It used to swing the camera to `over-shoulder` the moment an activity
+   * reached the plate, and what that put on a 375 px phone was the back of the
+   * tutor's head, filling the screen, with one ear in the middle of it. The
+   * geometry is dissected in `shots.ts` beside the shot's own removal.
+   *
+   * The mapping was wrong before the geometry was: three authoritative
+   * documents say a live segment must not change the framing at all.
+   * /ORACLE.md §9.3 — "the character's on-screen height is the same with a
+   * segment and without one; a lesson that visibly shoves the tutor aside to
+   * make room for itself reads as two products sharing a screen". /ORACLE.md
+   * §16 makes it a shipping gate — "the character's measured on-screen height
+   * unchanged with and without a live segment". /DESIGN.md → Screen Recipes →
+   * Tutor repeats it as "identical". Every shot in the vocabulary sits at its
+   * own distance, so ANY shot change changes that height; the flag therefore
+   * cannot legally reach this function.
+   *
+   * Getting the tutor out from behind the plate is `composition.ts`'s job, and
+   * it does it by shifting the AIM and never the distance, which is exactly the
+   * property those three sentences are asking for.
+   */
 }
 
 /** Which shot a phase is. */
 export function shotForPhase({
   phase,
   articulates,
-  segmentLive = false,
   adaptationOffered = false,
 }: StageShotInput): ShotId {
   const speaking: ShotId = articulates ? 'closeup' : 'closeup-wide';
@@ -113,14 +133,14 @@ export function shotForPhase({
       return speaking;
     case 'conversing':
       /*
-       * Order matters. An adaptation is a question one character asks in front
-       * of another, so it wants both of them in frame even while a segment is
-       * up; a live segment wants the tutor beside the work rather than filling
-       * the shot. A close-up is the resting state of a conversation, not its
-       * only state.
+       * An adaptation is a question one character asks in front of another, so
+       * it wants both of them in frame (/ORACLE.md §9.4). It is the ONLY thing
+       * that moves the camera during a conversation: an arriving activity does
+       * not, because the plate is chrome laid over the same shot rather than a
+       * new scene, and the learner should not feel the room change because a
+       * question appeared.
        */
       if (adaptationOffered) return 'two-shot';
-      if (segmentLive) return 'over-shoulder';
       return speaking;
     case 'closing':
       // The pull back IS the goodbye (/ORACLE.md §9.5). The director damps

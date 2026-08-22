@@ -5,7 +5,6 @@ import {
   CLOSEUP_WIDE_DISTANCE,
   CLOSEUP_WIDE_OFF_AXIS,
   horizontalFov,
-  SHOULDER_FRAME_FRACTION,
   poseFor,
   SHOT_AMBIENT,
   SHOT_FITS_SCENE,
@@ -544,161 +543,188 @@ describe('the introducing phase, composed', () => {
   });
 });
 
-describe('over-shoulder', () => {
-  it('puts the camera behind the lead and aims at the companion', () => {
-    const pose = poseFor('over-shoulder', context());
-    expect(pose.target).toEqual({ x: DINA.x, y: DINA.y, z: DINA.z });
-
-    // Behind: the camera is on the far side of the lead from the companion.
-    const leadToCompanion = { x: DINA.x - RHO.x, z: DINA.z - RHO.z };
-    const leadToCamera = { x: pose.position.x - RHO.x, z: pose.position.z - RHO.z };
-    expect(leadToCompanion.x * leadToCamera.x + leadToCompanion.z * leadToCamera.z).toBeLessThan(0);
-  });
-
-  it('stands clear of the lead rather than inside their head', () => {
-    const pose = poseFor('over-shoulder', context());
-    expect(Math.hypot(pose.position.x - RHO.x, pose.position.z - RHO.z)).toBeGreaterThan(0.6);
-  });
-
-  it('looks at the space in front of the lead when there is no companion', () => {
-    // Which is where a live segment happens: during an exercise the learner's
-    // attention belongs on the work, not on the tutor's face.
-    const pose = poseFor('over-shoulder', context({ companion: null }));
-    const forward = { x: Math.sin(RHO.facing), z: Math.cos(RHO.facing) };
-    const toTarget = { x: pose.target.x - RHO.x, z: pose.target.z - RHO.z };
-    expect(toTarget.x * forward.x + toTarget.z * forward.z).toBeGreaterThan(0);
-  });
-
-  it('survives both characters solving onto nearly the same spot', () => {
-    // A degenerate separation would divide by zero and put the camera at NaN.
-    const pose = poseFor('over-shoulder', context({ companion: { ...RHO, x: RHO.x + 1e-9, z: RHO.z } }));
-    expect(isFinitePose(pose)).toBe(true);
-  });
-
-  it('keeps the shoulder it is named after INSIDE the frame in portrait', () => {
-    /*
-     * THE BUG THIS SHOT SHIPPED WITH, in one number. It was the only shot in the
-     * vocabulary with no portrait correction: a flat 0.34-of-height lateral
-     * offset behind a 0.72-of-height stand-off puts the lead 14.4 degrees off
-     * the view axis, and at 375x812 a 36-degree vertical field of view is 17.1
-     * degrees WIDE — half of it is 8.53. The shoulder was outside the frame, so
-     * the over-the-shoulder shot had no shoulder in it, which reads to a learner
-     * as the camera having lost the tutor rather than as a framing choice.
-     */
-    const ctx = context({ aspect: 375 / 812 });
-    const shoulder = project(poseFor('over-shoulder', ctx), RHO, ctx.aspect);
-    expect(shoulder).not.toBeNull();
-    expect(Math.abs(shoulder?.x ?? 9)).toBeLessThanOrEqual(SHOULDER_FRAME_FRACTION + 0.02);
-  });
-
-  it('still stands where it was authored to at desktop aspects', () => {
-    /*
-     * The cap is a portrait correction and must not quietly retune the shot that
-     * already reads correctly. At 1280x800 the frame is wide enough for the
-     * authored 0.34, so the solved offset is the authored offset.
-     */
-    const ctx = context();
-    const pose = poseFor('over-shoulder', ctx);
-    // Perpendicular distance from the lead→companion line to the camera.
-    const dx = DINA.x - RHO.x;
-    const dz = DINA.z - RHO.z;
-    const len = Math.hypot(dx, dz);
-    const lateral = Math.abs(
-      ((pose.position.x - RHO.x) * (dz / len) - (pose.position.z - RHO.z) * (dx / len)),
-    );
-    expect(lateral).toBeCloseTo(RHO.height * 0.34, 6);
-  });
-});
-
-describe('every shot at 375x812', () => {
+describe('the subject is actually in the picture, at BOTH breakpoints', () => {
   /*
-   * §1.11 makes the portrait breakpoint non-negotiable, and portrait is where
-   * framing arithmetic fails silently: an aspect of 0.46 turns a 36-degree
-   * vertical field of view into a 17-degree horizontal one, so anything placed
-   * off-axis by an angle that is comfortable at 1280 px is off the side of the
-   * screen at 375 px. Every shot is asked the same question here — is the thing
-   * this shot is FOR actually in the picture — because the answer used to be no
-   * for one of them and nothing in the suite could tell.
+   * THE SUITE THAT WOULD HAVE CAUGHT THE EAR.
+   *
+   * `over-shoulder` shipped, ran in `conversing` for every learner with an
+   * activity on the plate, and filled a 375 px phone with the back of Dr Rho's
+   * head — hair and one ear, no island, no face, no companion. Nothing here went
+   * red, because the shot suites asked their subjects the wrong question:
+   * `establishing` was measured for distance, `closeup` and `closeup-wide` for
+   * on-screen SIZE, and the rest for the sign of a dot product and for
+   * finiteness. A pose can be finite, correctly signed, and pointed at the
+   * inside of a skull.
+   *
+   * So this asks the one question a learner asks, of every shot, at both
+   * mandatory breakpoints (§1.11): is the thing this shot is FOR in the picture,
+   * and not jammed against an edge. Portrait is the hard half — an aspect of
+   * 0.46 turns a 36-degree vertical field of view into a 17-degree horizontal
+   * one, so a lateral offset that is comfortable at 1280 px is off the side of
+   * the screen at 375 px.
+   *
+   * It is still not a screenshot and does not pretend to be. It cannot see that
+   * a head is BACKWARDS — an ear projects inside the frame perfectly well. What
+   * it can do is fail the day a shot stops holding what it promises, which is
+   * the failure that reached a learner undetected.
    */
-  const PORTRAIT = 375 / 812;
-  const ctx = context({ aspect: PORTRAIT });
+  const BREAKPOINTS: ReadonlyArray<readonly [string, number]> = [
+    ['1280x800', 1280 / 800],
+    ['375x812', 375 / 812],
+  ];
 
-  /** A point is in the picture when both axes are inside the frame edges. */
-  function inFrame(pose: CameraPose, point: Vec3): boolean {
-    const at = project(pose, point, PORTRAIT);
-    return at !== null && Math.abs(at.x) <= 1 && Math.abs(at.y) <= 1;
+  /**
+   * How far inside the frame edge a HEAD has to land, as a fraction of the
+   * half-frame.
+   *
+   * A face touching the edge of a phone reads as cropped whether or not the
+   * arithmetic says it fits, and it is also the state one composition shift away
+   * from actually being cropped. Twelve per cent is about 49 px on an 812 px
+   * viewport.
+   */
+  const HEAD_MARGIN = 0.12;
+
+  function head(subject: ShotSubject): Vec3 {
+    return { x: subject.x, y: subject.y, z: subject.z };
   }
 
-  function bodyPoints(subject: ShotSubject): Vec3[] {
-    return [
-      // Crown, mid-head, chest — the three points the anchors publish, which is
-      // what the HUD actually hangs off.
-      { x: subject.x, y: subject.y + subject.height * 0.25, z: subject.z },
-      { x: subject.x, y: subject.y, z: subject.z },
-      { x: subject.x, y: subject.y - subject.height * 0.28, z: subject.z },
-    ];
+  function crown(subject: ShotSubject): Vec3 {
+    return { x: subject.x, y: subject.y + subject.height * 0.25, z: subject.z };
   }
 
-  it('establishing holds the island and the rim anchors the HUD hangs off', () => {
+  function chest(subject: ShotSubject): Vec3 {
+    return { x: subject.x, y: subject.y - subject.height * 0.28, z: subject.z };
+  }
+
+  /**
+   * What each shot PROMISES to hold, as world points.
+   *
+   * `heads` must clear the margin; `body` need only be inside the frame. The
+   * split is not decoration: the crown and the chest are where `StageAnchors`
+   * publishes `lead.crown` and `lead.chest`, so a body point off the frame is a
+   * culled caption or a culled row of offer chips, while a HEAD near the edge is
+   * the shot itself having gone wrong.
+   */
+  function promises(shot: ShotId, ctx: ShotContext): { heads: Vec3[]; body: Vec3[] } {
+    const lead = ctx.lead;
+    if (!lead) throw new Error('every promise in this suite is about a placed cast');
+    const cast = ctx.companion ? [lead, ctx.companion] : [lead];
+
+    switch (shot) {
+      case 'establishing': {
+        /*
+         * The island AND the cast standing on it. The rim points are the two
+         * `StageAnchors` publishes at 0.88 of the radius — the ones a chip can
+         * actually be pinned to — rather than the bounding box's corners,
+         * because `fitDistance` fits the BOX and not a sphere around it.
+         */
+        const rim = (ctx.scene.size.x / 2) * 0.88;
+        const rightX = Math.cos(STAGE_BEARING);
+        const rightZ = -Math.sin(STAGE_BEARING);
+        return {
+          heads: cast.map(head),
+          body: [
+            ctx.scene.centre,
+            { x: rightX * rim, y: ctx.scene.centre.y, z: rightZ * rim },
+            { x: -rightX * rim, y: ctx.scene.centre.y, z: -rightZ * rim },
+            { x: 0, y: ctx.scene.centre.y + ctx.scene.size.y / 2, z: 0 },
+            ...cast.map(crown),
+          ],
+        };
+      }
+      case 'approach':
+        // The shot that walks toward the lead has to be holding the lead.
+        return { heads: [head(lead)], body: [crown(lead), chest(lead)] };
+      case 'closeup':
+      case 'closeup-wide':
+        /*
+         * Crown AND chest, because both carry chrome: the caption rides
+         * `lead.crown` and the offer chips ride `lead.chest` (/DESIGN.md →
+         * Screen Recipes → Tutor). A chest below the bottom of the frame culls
+         * the openings entirely, which is how they came to be hung across the
+         * mouth instead.
+         */
+        return { heads: [head(lead)], body: [crown(lead), chest(lead)] };
+      case 'two-shot':
+        // Both of them, or the frame is not a two-shot.
+        return { heads: cast.map(head), body: [...cast.map(crown), ...cast.map(chest)] };
+    }
+  }
+
+  /** Every shot, at every breakpoint, paired and solo. */
+  const CASES: ReadonlyArray<readonly [string, ShotId, number, ShotSubject | null]> = BREAKPOINTS.flatMap(
+    ([label, aspect]) =>
+      SHOT_IDS.flatMap((shot) =>
+        ([
+          ['paired', DINA],
+          ['solo', null],
+        ] as ReadonlyArray<readonly [string, ShotSubject | null]>).map(
+          ([cast, companion]) => [`${shot} · ${label} · ${cast}`, shot, aspect, companion] as const,
+        ),
+      ),
+  );
+
+  it.each(CASES)('%s holds what it promises', (_label, shot, aspect, companion) => {
     /*
-     * The rim points rather than the bounding box's corners, because
-     * `fitDistance` fits the BOX and not a sphere around it, deliberately — a
-     * sphere pushes the camera 65% further back and leaves the island a small
-     * object in a sea of margin. The promise is therefore the island and the two
-     * rim anchors `StageAnchors` publishes at 0.88 of its radius, which are what
-     * a chip can actually be pinned to.
+     * SOLO IS NOT A COSMETIC VARIANT. A learner with no companion chosen is an
+     * ordinary configuration, and it is the one every degradation path runs
+     * through: `two-shot` falls back to `closeup-wide` there, and the removed
+     * `over-shoulder` used to aim at a point 1.8 m in front of the lead — empty
+     * air — with the camera 1.22 m behind their head.
      */
-    const pose = poseFor('establishing', ctx);
-    const rim = (ISLAND_A.size.x / 2) * 0.88;
-    const rightX = Math.cos(STAGE_BEARING);
-    const rightZ = -Math.sin(STAGE_BEARING);
-    for (const point of [
-      ISLAND_A.centre,
-      { x: rightX * rim, y: ISLAND_A.centre.y, z: rightZ * rim },
-      { x: -rightX * rim, y: ISLAND_A.centre.y, z: -rightZ * rim },
-      { x: 0, y: ISLAND_A.centre.y + ISLAND_A.size.y / 2, z: 0 },
-    ]) {
-      expect(inFrame(pose, point)).toBe(true);
+    const ctx = context({ aspect, companion });
+    const pose = poseFor(shot, ctx);
+    const { heads, body } = promises(shot, ctx);
+
+    for (const point of heads) {
+      const at = project(pose, point, aspect);
+      // Null means BEHIND the camera, which is the failure a magnitude check
+      // hides: a shot that has swung past its own subject still reports a
+      // plausible-looking offset.
+      expect(at, 'a head is behind the camera').not.toBeNull();
+      expect(Math.abs(at?.x ?? 9)).toBeLessThanOrEqual(1 - HEAD_MARGIN);
+      expect(Math.abs(at?.y ?? 9)).toBeLessThanOrEqual(1 - HEAD_MARGIN);
+    }
+
+    for (const point of body) {
+      const at = project(pose, point, aspect);
+      expect(at, 'an anchor point is behind the camera').not.toBeNull();
+      expect(Math.abs(at?.x ?? 9)).toBeLessThanOrEqual(1);
+      expect(Math.abs(at?.y ?? 9)).toBeLessThanOrEqual(1);
     }
   });
 
-  it('approach still holds the lead it is walking toward', () => {
-    const pose = poseFor('approach', ctx);
-    for (const point of bodyPoints(RHO)) expect(inFrame(pose, point)).toBe(true);
-  });
-
-  it('closeup holds the crown AND the chest, which is where the offer chips ride', () => {
+  it.each(BREAKPOINTS)('no shot at %s stands inside the character it is framing', (_label, aspect) => {
     /*
-     * The reason `CLOSEUP_FRAME_FRACTION` is no longer 0.70. /DESIGN.md → Screen
-     * Recipes → Tutor puts the offer chips at the tutor's chest, and a chest
-     * below the bottom of the frame means the openings are culled — which is why
-     * the shipped version hung them 10vh under the mid-head instead, i.e. across
-     * the mouth.
+     * THE EAR, AS ONE NUMBER. `over-shoulder` put the camera 0.72 x height
+     * behind the lead's mid-head — 1.22 m for Rho, whose head alone is 0.81 m
+     * tall against a 0.795 m frame at that distance. The head was larger than
+     * the picture, so the picture was an ear.
+     *
+     * Stated as a ratio it is checkable for every shot without knowing which one
+     * is which: the frame a camera has at its distance from a character must be
+     * taller than that character's head.
      */
-    const pose = poseFor('closeup', ctx);
-    for (const point of bodyPoints(RHO)) expect(inFrame(pose, point)).toBe(true);
+    const ctx = context({ aspect });
+    for (const shot of SHOT_IDS) {
+      const pose = poseFor(shot, ctx);
+      for (const subject of [RHO, DINA]) {
+        const gap = Math.hypot(
+          pose.position.x - subject.x,
+          pose.position.y - subject.y,
+          pose.position.z - subject.z,
+        );
+        const frameHeight = 2 * gap * Math.tan(((pose.fov * Math.PI) / 180) / 2);
+        // A cartoon head is ~47% of body height (Rho's is 0.81 m of 1.70 m).
+        expect(frameHeight, `${shot} is standing inside a character`).toBeGreaterThan(subject.height * 0.47);
+      }
+    }
   });
+});
 
-  it('closeup-wide holds the whole of the character it exists to show', () => {
-    const pose = poseFor('closeup-wide', ctx);
-    for (const point of bodyPoints(RHO)) expect(inFrame(pose, point)).toBe(true);
-  });
-
-  it('two-shot holds both of them', () => {
-    const pose = poseFor('two-shot', ctx);
-    for (const subject of [RHO, DINA]) expect(inFrame(pose, { x: subject.x, y: subject.y, z: subject.z })).toBe(true);
-  });
-
-  it('over-shoulder holds the subject and the shoulder both', () => {
-    const pose = poseFor('over-shoulder', ctx);
-    expect(inFrame(pose, { x: DINA.x, y: DINA.y, z: DINA.z })).toBe(true);
-    expect(inFrame(pose, { x: RHO.x, y: RHO.y, z: RHO.z })).toBe(true);
-  });
-
-  it('over-shoulder holds the shoulder with no companion to look at either', () => {
-    const pose = poseFor('over-shoulder', context({ aspect: PORTRAIT, companion: null }));
-    expect(inFrame(pose, { x: RHO.x, y: RHO.y, z: RHO.z })).toBe(true);
-  });
+describe('composed against a real HUD at 375x812', () => {
+  const PORTRAIT = 375 / 812;
+  const ctx = context({ aspect: PORTRAIT });
 
   it('composes the conversing close-up above a half-height sheet', () => {
     /*
@@ -707,6 +733,12 @@ describe('every shot at 375x812', () => {
      * answered that by charging the sheet to the RIGHT edge and trucking a third
      * of a screen sideways. Composed correctly the character stands in the band
      * above the sheet, crown on screen, with nothing of them behind it.
+     *
+     * IT IS ALSO THE FRAME A LIVE SEGMENT NOW GETS. `conversing` used to swing
+     * to `over-shoulder` the moment an activity reached this sheet; it stays on
+     * the close-up, because /ORACLE.md §9.3, /ORACLE.md §16's gate and
+     * /DESIGN.md → Screen Recipes → Tutor all require the character's on-screen
+     * height to be identical with and without a segment.
      *
      * WHAT THIS DELIBERATELY DOES NOT CLAIM: that the face also clears the
      * microphone. There are 219 px of free stage in this state and the head
@@ -724,6 +756,42 @@ describe('every shot at 375x812', () => {
     expect(seen.crown).toBeGreaterThan(0);
     expect(seen.chin).toBeLessThan(sheet.top);
     expect(seen.chest).toBeLessThan(sheet.top);
+  });
+
+  it('keeps the character exactly the same size with a segment and without one', () => {
+    /*
+     * /ORACLE.md §16 states this as a SHIPPING GATE: "the character's measured
+     * on-screen height unchanged with and without a live segment". It is the
+     * sentence the removed `over-shoulder` mapping broke, and the reason the
+     * shot mapping can no longer be told that a segment is live at all.
+     *
+     * Measured as crown-to-chest in CSS pixels, with the resting HUD (dock only,
+     * the sheet at PEEK) against the same dock plus a HALF sheet.
+     *
+     * HALF A PIXEL, NOT ZERO, and the residual is real rather than slack.
+     * `applyComposition` performs a TRUCK — position and target move together —
+     * so the camera's distance to the aim is arithmetically unchanged, which the
+     * second assertion states directly. The crown and the chest are not AT the
+     * aim, though: they are a few centimetres off it, so trucking changes their
+     * depth by a hair and perspective renders them a hair differently. Measured
+     * here that is 0.11 px on a 317 px character — a thousandth of the height,
+     * and invisible. Asserting exact equality would be asserting that the shot
+     * is orthographic.
+     */
+    const viewport = { width: 375, height: 812 };
+    const dockOnly: HudRect = { left: 15, top: 812 - 12 - 188, width: 345, height: 188 };
+    const sheet: HudRect = { left: 16, top: 812 - 16 - 365, width: 343, height: 365 };
+    const dockAboveSheet: HudRect = { left: 15, top: 812 - 381 - 12 - 188, width: 345, height: 188 };
+
+    const resting = composedFrame('closeup', ctx, viewport, [dockOnly]);
+    const withSegment = composedFrame('closeup', ctx, viewport, [sheet, dockAboveSheet]);
+
+    expect(Math.abs((withSegment.chest - withSegment.crown) - (resting.chest - resting.crown))).toBeLessThan(0.5);
+
+    // And the reason it holds: a close shot answers an inset by SHIFTING, so
+    // `SHOT_FITS_SCENE` keeps `padDistance` away from it entirely.
+    expect(SHOT_FITS_SCENE.closeup).toBe(false);
+    expect(SHOT_FITS_SCENE['closeup-wide']).toBe(false);
   });
 
   it('every shot keeps a protected radius that actually fits its own frame', () => {

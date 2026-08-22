@@ -20,12 +20,12 @@
  * because there was no way to ask "how far back does a 9.5 m island put the
  * camera on a portrait phone" without a browser and a GPU. Now there is.
  *
- * THE TRAP, recorded because it has already cost this scene once. `two-shot` and
- * `over-shoulder` orbit off the cast's facing axis. They must NEVER feed back
- * into the placement solver: if the cast re-solves to face the camera while the
- * camera is moving, the two chase each other and the characters end up facing a
- * shot that has already moved on. The camera reads placement; placement never
- * reads the camera.
+ * THE TRAP, recorded because it has already cost this scene once. Every shot
+ * here is built off the cast's own facing axis, and `two-shot` blends two of
+ * them. None of them may EVER feed back into the placement solver: if the cast
+ * re-solves to face the camera while the camera is moving, the two chase each
+ * other and the characters end up facing a shot that has already moved on. The
+ * camera reads placement; placement never reads the camera.
  */
 
 /** A point or a direction in scene space, in metres. */
@@ -41,14 +41,58 @@ export interface Vec3 {
  * Closed, and small enough to enumerate in a picker — which the scene lab does,
  * because a framing nobody can put on screen on demand is a framing nobody
  * verifies.
+ *
+ * ────────────────────────────────────────────────────────────────────────────
+ * `over-shoulder` WAS THE SIXTH ENTRY AND IS GONE. Removed 2026-08-21, after
+ * the stage was driven at 375x812 and 1280x800 and photographed.
+ *
+ * WHAT WAS ON THE SCREEN. It was the framing `conversing` took whenever a live
+ * segment was on the plate. At 375x812 the viewport was filled by HAIR AND ONE
+ * EAR — no island, no face, no companion. At 1280x800 the back of Dr Rho's head
+ * filled the left two-thirds in profile. Every metric in this repo read
+ * perfectly throughout, because a character's own body counts as painted scene
+ * and the shot tests asked only for sign and finiteness.
+ *
+ * WHY THE ARITHMETIC SAYS IT COULD NOT BE SAVED. The camera stood
+ * `0.72 x height` behind the lead's mid-head — 1.22 m for Rho — and Rho's head
+ * is 0.81 m tall while the frame at 1.22 m is 0.795 m tall. The head was
+ * literally larger than the picture. Standing back far enough to make the near
+ * figure a foreground EDGE (a third of frame height, which for a cartoon head
+ * at 47% of body height means about 2.1 x height, ~3.5 m) then collides with
+ * the other constraint: the cast stands ~1.4 m apart, so from 3.5 m behind, the
+ * lead subtends 5.97 degrees off axis and the companion 4.27 degrees. They are
+ * 1.7 degrees apart — the "foreground shoulder" lands ON TOP of the subject.
+ * Widening the lateral offset does not help, because at 375x812 half the
+ * horizontal field of view is only 8.53 degrees, which caps the offset at
+ * 0.53 m and the separation at 2.4 degrees. An over-the-shoulder needs the
+ * stand-off to be SMALL relative to the separation; here it is the reverse, and
+ * no tuning reverses it. §1.11 makes 375 px non-negotiable, so a framing that
+ * is geometrically impossible there cannot stay in the vocabulary.
+ *
+ * WHY NOTHING REPLACES IT. Its one caller was `conversing` with a live segment,
+ * and that caller was itself a violation of three authoritative documents:
+ * /ORACLE.md §9.3 ("the character's on-screen height is the same with a segment
+ * and without one"), /ORACLE.md §16's shipping gate ("the character's measured
+ * on-screen height unchanged with and without a live segment"), and /DESIGN.md
+ * → Screen Recipes → Tutor ("the character's on-screen height must be identical
+ * with and without a segment, or the lesson appears to shove the tutor out of
+ * the way to make room for itself"). A live segment must NOT change the shot at
+ * all. `composition.ts` is what moves the character out from behind the plate,
+ * and it does that without touching distance by design.
+ *
+ * And there was never anything in the WORLD to look over a shoulder at: the
+ * activity is DOM chrome on a plate, and a world camera cannot frame a
+ * screen-space rectangle. The pair moment that IS expressible — one character
+ * putting a question to another — is `two-shot`, which /ORACLE.md §9.4 already
+ * assigns.
+ * ────────────────────────────────────────────────────────────────────────────
  */
 export type ShotId =
   | 'establishing'
   | 'approach'
   | 'closeup'
   | 'closeup-wide'
-  | 'two-shot'
-  | 'over-shoulder';
+  | 'two-shot';
 
 export const SHOT_IDS = [
   'establishing',
@@ -56,7 +100,6 @@ export const SHOT_IDS = [
   'closeup',
   'closeup-wide',
   'two-shot',
-  'over-shoulder',
 ] as const satisfies readonly ShotId[];
 
 /**
@@ -251,14 +294,6 @@ export const CLOSEUP_HEADROOM = { landscape: 0.03, portrait: 0.07 } as const;
 export const CLOSEUP_CAPTION_BAND = 0.08;
 
 /**
- * How far into the half-frame the lead's shoulder may sit on `over-shoulder`.
- *
- * A shoulder at 1.0 is exactly on the frame edge, which crops it; at 0.72 it is
- * in the corner of the frame, which is where an over-the-shoulder puts it.
- */
-export const SHOULDER_FRAME_FRACTION = 0.72;
-
-/**
  * Which shots FIT a measured object, and therefore must give ground when the HUD
  * eats part of the viewport.
  *
@@ -275,7 +310,6 @@ export const SHOT_FITS_SCENE: Readonly<Record<ShotId, boolean>> = Object.freeze(
   closeup: false,
   'closeup-wide': false,
   'two-shot': true,
-  'over-shoulder': false,
 });
 
 /**
@@ -292,7 +326,6 @@ export const SHOT_AMBIENT: Readonly<Record<ShotId, 'orbit' | 'handheld'>> = Obje
   closeup: 'handheld',
   'closeup-wide': 'handheld',
   'two-shot': 'handheld',
-  'over-shoulder': 'handheld',
 });
 
 /* Small local vector helpers. Deliberately not `three`'s — see the header. */
@@ -564,96 +597,12 @@ function twoShot(ctx: ShotContext): CameraPose {
   };
 }
 
-/**
- * Over the lead's shoulder, onto whatever they are attending to.
- *
- * With a companion that is the companion. Without one it is the space in front
- * of the lead — which is where a live segment happens, and the reason this shot
- * exists at all: during an exercise the learner's attention belongs on the work,
- * not on the tutor's face, and an over-shoulder says so with the camera instead
- * of with a layout change.
- */
-function overShoulder(ctx: ShotContext): CameraPose {
-  const lead = ctx.lead;
-  if (!lead) return establishing(ctx);
-
-  const subject = ctx.companion
-    ? vec(ctx.companion.x, ctx.companion.y, ctx.companion.z)
-    : vec(
-        lead.x + Math.sin(lead.facing) * 1.8,
-        lead.y - lead.height * 0.08,
-        lead.z + Math.cos(lead.facing) * 1.8,
-      );
-
-  const dx = subject.x - lead.x;
-  const dz = subject.z - lead.z;
-  const length = Math.hypot(dx, dz);
-  // A degenerate separation (the two solved onto nearly the same spot) would
-  // divide by zero; the lead's own facing is the right answer there.
-  const ux = length > 1e-3 ? dx / length : Math.sin(lead.facing);
-  const uz = length > 1e-3 ? dz / length : Math.cos(lead.facing);
-
-  // Perpendicular in the XZ plane, so the lead's shoulder sits in a corner of
-  // the frame instead of dead centre blocking the subject.
-  const px = uz;
-  const pz = -ux;
-
-  const behind = lead.height * 0.72;
-
-  /*
-   * HOW FAR OFF THE LINE THE CAMERA STANDS — SOLVED AGAINST THE FRAME, NOT
-   * AUTHORED.
-   *
-   * This was a flat 0.34 of the lead's height, and it was the only shot in the
-   * vocabulary with no portrait correction. The arithmetic of that omission: at
-   * 375x812 the aspect is 0.46, so a 36-degree vertical field of view is 17.1
-   * degrees WIDE and half of it is 8.53 degrees — while a lateral of 0.578 m
-   * behind 1.224 m puts the lead 14.4 degrees off the view axis. The shoulder is
-   * outside the frame. An over-the-shoulder shot with no shoulder in it is not a
-   * tighter version of the shot; it is a different shot that happens to be
-   * standing in an odd place, and the learner reads it as the camera having lost
-   * the tutor.
-   *
-   * So the offset is capped by the frame it has to fit inside. The angle the
-   * lead subtends off the view axis is `atan(l/behind) - atan(l/(forward +
-   * behind))`, which for small angles is `l * (1/behind - 1/(forward + behind))`
-   * — invert that for the largest `l` whose shoulder lands at
-   * `SHOULDER_FRAME_FRACTION` of the half-frame. The approximation errs on the
-   * safe side (it over-states the angle, so the solved offset is slightly
-   * inside the target rather than outside it), and at desktop aspects the cap
-   * lands well above the authored 0.34 — so the shot that already reads
-   * correctly is not touched at all, and only portrait moves.
-   */
-  const authoredLateral = lead.height * 0.34;
-  const forward = length > 1e-3 ? length : 0;
-  const spread = forward > 1e-3 ? 1 / behind - 1 / (forward + behind) : 0;
-  const halfHFov = horizontalFov(safeFovRadians(ctx.fov), safeAspect(ctx.aspect)) / 2;
-  const maxLateral = spread > 1e-6 ? (SHOULDER_FRAME_FRACTION * halfHFov) / spread : authoredLateral;
-  const lateral = Math.min(authoredLateral, maxLateral);
-
-  return {
-    position: vec(
-      lead.x - ux * behind + px * lateral,
-      lead.y + lead.height * 0.12,
-      lead.z - uz * behind + pz * lateral,
-    ),
-    target: subject,
-    fov: ctx.fov,
-    near: 0.01,
-    far: 100,
-    // What is being looked AT is what must survive a composition shift; the
-    // shoulder is already at the edge by construction above.
-    keepInFrame: (ctx.companion?.height ?? lead.height) * 0.35,
-  };
-}
-
 const SHOTS: Readonly<Record<ShotId, (ctx: ShotContext) => CameraPose>> = Object.freeze({
   establishing,
   approach,
   closeup,
   'closeup-wide': closeupWide,
   'two-shot': twoShot,
-  'over-shoulder': overShoulder,
 });
 
 /** Resolves a shot to the pose the camera should be travelling toward. */

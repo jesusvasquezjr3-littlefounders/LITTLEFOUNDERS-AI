@@ -21090,7 +21090,10 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, typ
 import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import type { AnchorId } from './anchors';
-import { isAnchorNodeVisible, type ViewportBox } from './culling';
+import type { HudRect } from './composition';
+import { isAnchorNodeVisible, stackClearance, type ViewportBox } from './culling';
+import { escapeReserved, HUD_SURFACE_GAP_PX } from './hudSpace';
+import { useSafeArea } from './SafeAreaContext';
 
 /*
  * The projection ref channel: how a DOM node gets pinned to a place in the 3D
@@ -21098,9 +21101,6 @@ import { isAnchorNodeVisible, type ViewportBox } from './culling';
  *
  * WHY DOM AT ALL. Text has to be DOM. Rendering a caption or a control into the
  * WebGL scene means giving up the screen reader, the text selection, the focus
- * ring, the browser's own font rendering and every locale that needs a glyph the
- * atlas does not have — for a stage whose copy exists in three languages, that
- * is not a trade, it is a regression. `SpeechCaption` already proves the DOM
 ```
 
 ### frontend/src/tutor-scene/TutorScene.tsx
@@ -21161,6 +21161,26 @@ vi.mock('../TutorScene', () => ({
     <div
       data-testid="scene"
       data-shot={String(props.shot)}
+```
+
+### frontend/src/tutor-scene/__tests__/hudSpace.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import type { HudRect } from '../composition';
+import { escapeReserved, overlappingPairs, rectsOverlap, type NamedRect } from '../hudSpace';
+
+/*
+ * THE COLLISIONS THE OWNER FOUND ON A PHONE, AS ARITHMETIC.
+ *
+ * Every rectangle in this file is a real `getBoundingClientRect` from a live
+ * stage driven at 375x812 and at 1280x800 — the numbers the verification pass
+ * came back with, not numbers anybody reasoned to. That matters twice over. It
+ * is what stops the "before" cases from being a straw man, and it is what makes
+ * the "after" cases a regression test rather than a restatement of the
+ * implementation: the geometry below is what the DOM actually did.
+ *
+ * They are asserted here rather than in a render test because there is nowhere
 ```
 
 ### frontend/src/tutor-scene/anchors.test.ts
@@ -21427,7 +21447,7 @@ import {
 
 ```
 import { describe, expect, it } from 'vitest';
-import { isAnchorNodeVisible, type ViewportBox } from './culling';
+import { isAnchorNodeVisible, stackClearance, type ViewportBox } from './culling';
 
 /*
  * The rule this file defends: a node the learner cannot fully read is not on
@@ -21541,6 +21561,26 @@ import { Box3, Object3D, Raycaster, Vector3 } from 'three';
  *
  * So the ground is MEASURED where the character actually stands: a ray fired
  * straight down from above that (x, z) returns the first surface it meets.
+```
+
+### frontend/src/tutor-scene/hudSpace.ts
+
+```
+import type { HudRect, ViewportPx } from './composition';
+
+/*
+ * WHAT SPACE THE HUD HAS ALREADY TAKEN — the one idea the two halves of the
+ * Tutor's chrome did not share, and the reason they kept landing on each other.
+ *
+ * THE STRUCTURAL BUG. The route paints two kinds of surface over one canvas.
+ * VIEWPORT-anchored chrome is laid out by CSS against the window: the way out
+ * at the top-left, the microphone dock at the bottom, the lesson plate. WORLD-
+ * anchored chrome is laid out by the CAMERA: the speech caption rides the
+ * speaker's crown, the offer chips ride their chest. Neither layout system can
+ * see the other, so nothing anywhere decided who owned a given pixel — and at
+ * 375 px the greeting caption and the way-out chip both claimed the top-left
+ * corner. Measured on a live stage: caption (54, 31, 266, 68) against chip
+ * (16, 16, 155, 44), a 116x29 overlap, on three of three fresh mounts. The
 ```
 
 ### frontend/src/tutor-scene/lab/SceneLabPage.tsx
@@ -21773,7 +21813,6 @@ import {
   CLOSEUP_WIDE_DISTANCE,
   CLOSEUP_WIDE_OFF_AXIS,
   horizontalFov,
-  SHOULDER_FRAME_FRACTION,
   poseFor,
   SHOT_AMBIENT,
   SHOT_FITS_SCENE,
@@ -21781,6 +21820,7 @@ import {
   shotForLegacyFraming,
   STAGE_BEARING,
   type CameraPose,
+  type ShotContext,
 ```
 
 ### frontend/src/tutor-scene/shots.ts
@@ -21990,7 +22030,6 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, Icon } from '@/components/ui';
-import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from './hud/HudPlate';
 import { LessonPlate, type LessonPlateDetent } from './hud/LessonPlate';
@@ -22001,6 +22040,7 @@ import { LiveSegmentPanel } from './LiveSegmentPanel';
 import { useStageDock, type ConversationLayerProps, type StageDockValue } from './stage/StageShell';
 
 /*
+ * The session itself, composed IN the scene.
 ```
 
 ### frontend/src/tutor/LiveSegmentPanel.tsx
@@ -22371,16 +22411,16 @@ import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import type { AnchorId } from '@/tutor-scene/anchors';
 import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
-import { useSafeArea, type SafeAreaSlot, type SafeAreaValue } from '@/tutor-scene/SafeAreaContext';
+import {
+  HUD_CHROME_SLOTS,
+  useSafeArea,
+  type HudChromeSlot,
+  type SafeAreaValue,
+} from '@/tutor-scene/SafeAreaContext';
 import type { HudRect } from '@/tutor-scene/composition';
 import { HudPlate } from './HudPlate';
 import type { HudPlateFloor, HudPlateShape } from './HudPlate';
 
-/*
- * A HudPlate that lives at a named place in the world.
- *
- * The chip is the GUARANTEED path and the mesh beside it is the delightful one.
- * A pickable mesh is a lovely thing to tap and a terrible thing to reach with a
 ```
 
 ### frontend/src/tutor/hud/__tests__/HudPlate.test.tsx
@@ -22452,6 +22492,7 @@ import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { SCENE_ASSETS } from '@/tutor-scene/assets';
 import { isSceneBackdropId } from '@/tutor-scene/backdrops';
+import { overlappingPairs, type NamedRect } from '@/tutor-scene/hudSpace';
 import { HudPlate } from '../hud/HudPlate';
 import { ConversationView } from '../ConversationView';
 import { OfferChips } from '../OfferChips';
@@ -22460,7 +22501,6 @@ import { SessionHistory } from '../SessionHistory';
 import { VoiceConsentControl } from '../VoiceConsentControl';
 import { micBlockedForOffers, narrowBlockedReason } from '../mic';
 import { auditionFor } from '../stage/phases';
-import { micForPhase } from '../stage/micForPhase';
 ```
 
 ### frontend/src/tutor/lab/labFixtures.ts
@@ -22594,13 +22634,13 @@ import { micForPhase } from '../micForPhase';
 import type { Microphone } from '@/tutor/useMicrophone';
 
 /*
- * THE ONE MICROPHONE, PRESENT IN EVERY PHASE.
+ * THE ONE MICROPHONE, IN EVERY PHASE THAT HAS ONE — AND IN NO OTHER.
  *
- * This is the assertion the last two builds could not have passed. The orb was
- * mounted inside `OfferChips` and inside `ConversationView`, so `arriving`,
- * `personalizing`, `closing` and `unavailable` had no microphone in the DOM at
- * all — and `personalizing` is the FIRST screen a new learner sees. Every gate
- * was green through it, because nothing enumerated the phases and looked.
+ * The first half is the assertion the last two builds could not have passed.
+ * The orb was mounted inside `OfferChips` and inside `ConversationView`, so
+ * `arriving`, `personalizing`, `closing` and `unavailable` had no microphone in
+ * the DOM at all — and `personalizing` is the FIRST screen a new learner sees.
+ * Every gate was green through it, because nothing enumerated the phases and
 ```
 
 ### frontend/src/tutor/stage/micForPhase.ts

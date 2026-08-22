@@ -43,6 +43,45 @@ describe('micForPhase', () => {
     }
   });
 
+  /*
+   * WHICH PHASES HAVE A MICROPHONE AT ALL, enumerated, because both possible
+   * mistakes here have already shipped. Mounting it in two layers left four
+   * phases with none. Mounting it in every phase put a disabled 96 px orb on top
+   * of the goodbye's plate, its indigo button and its own reason line at 375 px.
+   * The list is written out rather than derived so that a change to it is an
+   * edit somebody made on purpose.
+   */
+  it('names exactly the phases the orb appears in', () => {
+    const present = STAGE_PHASES.filter((phase) => micForPhase(input({ phase })).present);
+    expect(present).toEqual(['arriving', 'personalizing', 'introducing', 'conversing', 'unavailable']);
+  });
+
+  it('still explains itself in the phase it is absent from', () => {
+    // `present: false` removes a CONTROL, not a decision: the state and the
+    // reason stay filled in, so a caller that ignores the flag renders exactly
+    // what it rendered before rather than a nameless orb.
+    expect(micForPhase(input({ phase: 'closing', live: false }))).toMatchObject({
+      present: false,
+      state: 'unavailable',
+      blockedKey: 'tutor.mic.afterConversation',
+    });
+  });
+
+  it('gives the unreachable-API phase ONE sentence, and it is the phase’s own', () => {
+    /*
+     * `unavailable` used to carry two: a layer plate reading
+     * "We can't open the tutor right now" and, under it, the orb saying "no
+     * voice provider is configured". They overlapped at both widths, and only
+     * one of them was even true — the Tutor API could not be reached at all.
+     */
+    expect(micForPhase(input({ phase: 'unavailable', live: false }))).toMatchObject({
+      present: true,
+      state: 'unavailable',
+      blockedReason: null,
+      blockedKey: 'tutor.page.unavailable',
+    });
+  });
+
   it('is honest before a session exists rather than blaming the voice provider', () => {
     // "No provider is configured" is a confident wrong sentence on a screen
     // where nothing has started. These two phases say what actually happened.

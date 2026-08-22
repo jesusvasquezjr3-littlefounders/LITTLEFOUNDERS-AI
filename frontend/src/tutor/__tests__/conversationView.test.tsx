@@ -14,12 +14,15 @@ import type { StartedSession } from '../types';
  * problem rather than a developer's.
  *
  * 1. The tutor asks "shall I explain that differently?" and the learner must be
- *    able to answer it. The offer used to exist only as chips anchored to three
- *    separate world points, and an anchored node is hidden AND inert the moment
- *    its point leaves the frame, so on a phone the answer was decided by which
- *    bearing the placement solver picked. That is the tutor asking a question
- *    nobody can answer, which is why these tests assert REACHABILITY and not
- *    merely rendering.
+ *    able to answer it, ONCE. The offer used to exist only as chips anchored to
+ *    three separate world points, and an anchored node is hidden AND inert the
+ *    moment its point leaves the frame, so on a phone the answer was decided by
+ *    which bearing the placement solver picked. That is the tutor asking a
+ *    question nobody can answer, which is why these tests assert REACHABILITY
+ *    and not merely rendering. The fix for it then mounted the offer twice and
+ *    let a camera move clip one of the copies mid-word, so they now assert
+ *    UNIQUENESS as well: a half-read question with its own live Yes button is
+ *    worse than either arrangement alone.
  * 2. A device with no usable WebGL never fires `ready`, and everything anchored
  *    stays hidden forever. What the tutor SAYS may not go with it.
  * 3. The soft keyboard borrows the lesson plate's height. It has to give it
@@ -156,6 +159,9 @@ function silentMicrophone(): Microphone {
 }
 
 const STAGE_MIC: StageMicProps = {
+  // Conversing is one of the phases the orb is present in, which is what these
+  // cases are about; `stageMic.test.tsx` owns the phases where it is not.
+  present: true,
   state: 'idle',
   microphone: silentMicrophone(),
   onClip: () => {},
@@ -192,9 +198,9 @@ describe('answering the adaptation offer', () => {
     const { container } = renderConversation(socket, { ready: true });
 
     /*
-     * The guaranteed pair, and the assertion is that it is NOT anchored. With
-     * `ready` true the in-world pair exists as well and would satisfy a naive
-     * "is there a yes button" check while still being culled on a real phone.
+     * The guaranteed pair, and the assertion is that it is NOT anchored. An
+     * anchored copy would satisfy a naive "is there a yes button" check while
+     * still being culled — or clipped — on a real phone.
      */
     const guaranteed = container.querySelector<HTMLElement>('[data-offer="guaranteed"]');
     expect(guaranteed).not.toBeNull();
@@ -267,27 +273,33 @@ describe('answering the adaptation offer', () => {
     }
   });
 
-  it('holds the in-world question and its answers on ONE anchored node', () => {
-    const socket = makeSocket({ adaptationOffer: OFFER });
-    const { container } = renderConversation(socket, { ready: true });
+  it('asks the question ONCE, whether or not there is a scene to ask it in', () => {
+    /*
+     * THE DUPLICATE, ASSERTED AWAY.
+     *
+     * There was a second copy — question and both answers on one node anchored
+     * to `stage.mark.2` — added on the model of a WorldChip and the mesh it
+     * mirrors. A WorldChip pairs a DOM control with a PICKABLE MESH, so the
+     * learner meets one offer reachable two ways; two DOM copies are two
+     * offers, and the anchored one is the copy a camera move can cut in half.
+     * Driven at 375x812 it read "Would another example h" at
+     * (-42, 105, 263, 57) with its own live "Yes please" at (-2, 170), and at
+     * 1280x800 the same pair escaped off the top with "Yes" at (40, -13).
+     *
+     * Both `ready` states, because the anchored copy only ever mounted in one
+     * of them and a test that checked the other would have passed throughout.
+     */
+    for (const ready of [false, true]) {
+      const socket = makeSocket({ adaptationOffer: OFFER });
+      const { container, unmount } = renderConversation(socket, { ready });
 
-    // One node is one cull decision. Three were three, which is how a bare
-    // "Yes please" reached a child's screen with no question beside it.
-    const world = container.querySelector<HTMLElement>('[data-offer="world"]');
-    expect(world).not.toBeNull();
-    expect(isAnchored(world?.querySelector('[data-answer="yes"]') ?? null)).toBe(true);
-    expect(isAnchored(world?.querySelector('[data-answer="no"]') ?? null)).toBe(true);
-    expect(world?.textContent).toContain(QUESTION);
-  });
-
-  it('keeps the in-world pair off a screen that has no scene to put it on', () => {
-    const socket = makeSocket({ adaptationOffer: OFFER });
-    const { container } = renderConversation(socket, { ready: false });
-
-    // Mounting it anyway would add a permanently hidden, permanently inert
-    // duplicate of the only controls on screen.
-    expect(container.querySelector('[data-offer="world"]')).toBeNull();
-    expect(container.querySelectorAll('[data-answer]')).toHaveLength(2);
+      expect(container.querySelectorAll('[data-offer]')).toHaveLength(1);
+      expect(container.querySelectorAll('[data-answer="yes"]')).toHaveLength(1);
+      expect(container.querySelectorAll('[data-answer="no"]')).toHaveLength(1);
+      // And the one that survived is the one no projection can move.
+      expect(isAnchored(container.querySelector('[data-answer="yes"]'))).toBe(false);
+      unmount();
+    }
   });
 
   it('renders nothing at all when the tutor has not asked', () => {

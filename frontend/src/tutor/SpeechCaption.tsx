@@ -78,7 +78,25 @@ export function SpeechCaption({
 }: SpeechCaptionProps) {
   const [shown, setShown] = useState('');
   const timerRef = useRef<number | null>(null);
-  const anchorRef = useAnchorSlot(slot);
+  /*
+   * ABOVE the crown, and OUT OF THE WAY of the fixed chrome.
+   *
+   * `place: 'above'` replaces the `w-0 h-0` wrapper this used to hang the plate
+   * out of. That trick positioned correctly and measured as a POINT, so the
+   * caption — the largest anchored surface on the route — had zero half-extents:
+   * it was culled on its centre rather than on its box, and it had no box to
+   * compare against anything else at all.
+   *
+   * `avoid` is the caption's alone on this route, and it is the answer to a
+   * measured collision: at 375 px in `introducing` the plate landed at
+   * (54, 31, 266, 68) and the way-out chip at (16, 16, 155, 44), so "Hi Robi!
+   * I'm Dr." sat underneath the word "Leave" on three of three fresh mounts. It
+   * may not be solved the way every other anchored surface solves being covered
+   * — hiding — because this is the whole lesson for a deaf or hard-of-hearing
+   * learner (/ORACLE.md §1 step 4). So it moves, by the smallest amount that
+   * clears.
+   */
+  const anchorRef = useAnchorSlot(slot, { place: 'above', avoid: true });
 
   useEffect(() => {
     if (timerRef.current !== null) window.clearInterval(timerRef.current);
@@ -120,12 +138,19 @@ export function SpeechCaption({
     <div
       ref={anchorRef}
       /*
-       * A ZERO-SIZED node, and that is what makes "above the head" work. The
-       * projector centres whatever it is given on the anchor point, so a plate
-       * placed here directly would straddle the crown. A 0x0 box centres on
-       * nothing; the plate inside it is then positioned upward from that point
-       * in CSS, where the arithmetic is readable and the scene knows nothing
-       * about it.
+       * THE ANCHORED NODE IS THE CAPTION, box and all. It used to be a 0x0
+       * wrapper with this column absolutely positioned up out of it — which put
+       * the plate in the right place and told the projector the caption was a
+       * point, so it was culled on its centre and could not be compared with
+       * anything. `place: 'above'` moves that arithmetic into the projector,
+       * where the node's measured height is already known, and leaves a real
+       * rectangle behind for the cull test and the HUD escape to work on.
+       *
+       * The eight-pixel gap over the crown is the projector's now
+       * (`HUD_SURFACE_GAP_PX`) and reads correctly whether the character fills
+       * the frame or is standing across the island. The width is capped so a
+       * long sentence wraps to a second line inside the plate instead of running
+       * off both edges at 375 px, which `w-max` alone allows.
        *
        * `lf-body` sits on THIS element rather than on the text inside, because
        * the projector reads this node's computed font size once at registration
@@ -135,48 +160,38 @@ export function SpeechCaption({
        * font nobody is reading.
        */
       className={cn(
-        'lf-body pointer-events-none fixed left-0 top-0 z-20 h-0 w-0 will-change-transform',
+        'lf-body pointer-events-none fixed left-0 top-0 z-20 flex w-max max-w-[min(88vw,32rem)] flex-col items-center will-change-transform',
         className,
       )}
     >
-      {/*
-        A SMALL gap, not a guessed clearance. The anchor is already the top of
-        the skull, so this is only the breathing room between the tail's tip and
-        the hair, and the same eight pixels read correctly whether the character
-        fills the frame or is standing across the island. The wrapper is capped
-        so a long sentence wraps to a second line inside the plate instead of
-        running off both edges at 375 px, which `w-max` alone allows.
-      */}
-      <div className="absolute bottom-2 left-1/2 flex w-max max-w-[min(88vw,32rem)] -translate-x-1/2 flex-col items-center">
-        <HudPlate
-          shape="plate"
-          floor="surface"
-          /*
-           * aria-live="polite" and the FULL text, not the typewriter slice: a
-           * screen reader must announce the sentence once, when it is complete,
-           * not stutter through it two characters at a time.
-           */
-          aria-live="polite"
-          aria-atomic="true"
-          className="pointer-events-none"
-        >
-          <span aria-hidden="true">{shown}</span>
-          <span className="sr-only">{text}</span>
-        </HudPlate>
+      <HudPlate
+        shape="plate"
+        floor="surface"
+        /*
+         * aria-live="polite" and the FULL text, not the typewriter slice: a
+         * screen reader must announce the sentence once, when it is complete,
+         * not stutter through it two characters at a time.
+         */
+        aria-live="polite"
+        aria-atomic="true"
+        className="pointer-events-none"
+      >
+        <span aria-hidden="true">{shown}</span>
+        <span className="sr-only">{text}</span>
+      </HudPlate>
 
-        {/*
-          A short gradient tail down onto the crown. It is NOT a contrast
-          scrim: the plate above already stands on the opaque `bg-surface` floor
-          (/DESIGN.md §Colors, the opaque floor rule), which is what makes the
-          contrast ratio computable over a moving render in the first place. The
-          tail's only job is attachment, so that at a two-shot the learner can
-          see at a glance WHICH character the words belong to.
-        */}
-        <span
-          aria-hidden="true"
-          className="h-6 w-0.5 rounded-full bg-gradient-to-b from-outline to-transparent"
-        />
-      </div>
+      {/*
+        A short gradient tail down onto the crown. It is NOT a contrast
+        scrim: the plate above already stands on the opaque `bg-surface` floor
+        (/DESIGN.md §Colors, the opaque floor rule), which is what makes the
+        contrast ratio computable over a moving render in the first place. The
+        tail's only job is attachment, so that at a two-shot the learner can
+        see at a glance WHICH character the words belong to.
+      */}
+      <span
+        aria-hidden="true"
+        className="h-6 w-0.5 rounded-full bg-gradient-to-b from-outline to-transparent"
+      />
     </div>
   );
 }

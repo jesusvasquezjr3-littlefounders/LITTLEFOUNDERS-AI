@@ -62,6 +62,7 @@ function silentMicrophone(): Microphone {
 }
 
 const MIC: StageMicProps = {
+  present: true,
   state: 'idle',
   microphone: silentMicrophone(),
   onClip: () => {},
