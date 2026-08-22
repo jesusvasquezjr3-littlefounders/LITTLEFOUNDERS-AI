@@ -26,8 +26,22 @@
  * moves — which is the failure mode of a string-keyed registry, and an
  * invisible one, since an unpositioned node still renders at 0,0.
  *
- *   lead / companion  — the cast. Head for anything that reads as speech,
- *                       chest for anything the character is offering or holding.
+ *   lead / companion  — the cast. CROWN for anything that must sit ABOVE the
+ *                       character, head for anything centred on them, chest for
+ *                       anything they are offering or holding.
+ *
+ *                       Crown and head are two places rather than one offset,
+ *                       and the reason is that a CSS offset cannot know how big
+ *                       the character is on screen. `lead.head` is the MID-head,
+ *                       chosen so the camera can aim at it; at a close-up that
+ *                       point is roughly 290 CSS px below the crown on a 1280
+ *                       viewport and roughly 40 px below it at the establishing
+ *                       shot. A caption nudged upward by a fixed number of
+ *                       pixels therefore lands on the forehead in exactly the
+ *                       shot a conversation spends most of its time in. Publish
+ *                       the crown from the scene, where the character's height
+ *                       is known in metres, and the same 8 px gap is correct at
+ *                       every distance by construction.
  *   island.*          — fixed places on the scenery, for chrome that belongs to
  *                       the PLACE rather than to a person: recap chips, session
  *                       stones, the rim pads a personalization tap lands on.
@@ -43,8 +57,10 @@
  * position can solve.
  */
 export type AnchorId =
+  | 'lead.crown'
   | 'lead.head'
   | 'lead.chest'
+  | 'companion.crown'
   | 'companion.head'
   | 'island.rim.left'
   | 'island.rim.right'
@@ -72,8 +88,10 @@ export const ANCHOR_MARK_COUNT = 5;
  * generated `stage.mark.${i}` would type as `string` and check nothing.
  */
 export const ANCHOR_IDS = [
+  'lead.crown',
   'lead.head',
   'lead.chest',
+  'companion.crown',
   'companion.head',
   'island.rim.left',
   'island.rim.right',
@@ -136,6 +154,30 @@ export const SKY_MARK_IDS = [
   'sky.mark.3',
   'sky.mark.4',
 ] as const satisfies readonly AnchorId[];
+
+/**
+ * Which marks the personalization candidates take, in candidate order.
+ *
+ * IT LIVES HERE BECAUSE BOTH SIDES OF THE CANVAS NEED THE SAME ANSWER. The HUD
+ * hangs candidate `i`'s name plate on `castMarks(n)[i]`; the scene republishes
+ * that same mark at candidate `i`'s crown, so the plate labels the person
+ * standing under it. Two copies of this table would drift the first time
+ * somebody added a fifth character, and the failure would be a name floating
+ * over the wrong face — which reads as a rendering glitch rather than as two
+ * lists disagreeing. `anchors.ts` imports nothing, so it is the one module both
+ * halves can hold.
+ *
+ * The middle of the arc is given up first, because that is where the placement
+ * solver puts a solo cast: a spare mark parked across the tutor's face is a
+ * worse composition than a ring with a gap in it.
+ */
+export function castMarks(count: number): readonly AnchorId[] {
+  const marks: AnchorId[] = [...STAGE_MARK_IDS];
+  while (marks.length > count && marks.length > 1) {
+    marks.splice(Math.floor(marks.length / 2), 1);
+  }
+  return marks.slice(0, count);
+}
 
 /**
  * Narrows an arbitrary string to an `AnchorId`.

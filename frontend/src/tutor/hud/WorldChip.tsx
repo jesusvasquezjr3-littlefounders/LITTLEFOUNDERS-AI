@@ -40,7 +40,22 @@ export interface WorldChipProps {
   label?: string;
   shape?: HudPlateShape;
   floor?: HudPlateFloor;
-  /** Marks the chip as the currently chosen option in its group. */
+  /**
+   * Toggle state, for a chip that is one option inside a group.
+   *
+   * THREE-VALUED, AND DELIBERATELY SO. `undefined` means "this is not a
+   * toggle", `false` means "it is a toggle and this is not the chosen one", and
+   * those two announce differently. Collapsing them — which is what defaulting
+   * to `false` and then only emitting `aria-pressed` when true did — made the
+   * four sun-arc light chips reach a screen reader as three ordinary buttons
+   * and one pressed button. The chosen light was announced; that the other
+   * three were choices at all was not, so the group had no group.
+   *
+   * It matters just as much in the other direction, which is why this is not
+   * simply defaulted to `false`: the way out of the route is a button, not a
+   * switch, and announcing it as an unpressed toggle invites the learner to
+   * work out what pressing it would turn on.
+   */
   selected?: boolean;
   className?: string;
 }
@@ -52,7 +67,7 @@ export function WorldChip({
   label,
   shape = 'chip',
   floor = 'surface',
-  selected = false,
+  selected,
   className,
 }: WorldChipProps) {
   const anchorRef = useAnchorSlot(slot);
@@ -75,7 +90,11 @@ export function WorldChip({
         shape={shape}
         floor={floor}
         aria-label={label}
-        aria-pressed={onSelect && selected ? true : undefined}
+        // Emitted for every chip in a toggle group, pressed or not, and for no
+        // other chip. `undefined` is the only value that removes the attribute;
+        // `false` renders as `aria-pressed="false"`, which is the announcement
+        // an unchosen option needs.
+        aria-pressed={onSelect && selected !== undefined ? selected : undefined}
         onClick={onSelect}
         className={cn(
           onSelect && 'pointer-events-auto',

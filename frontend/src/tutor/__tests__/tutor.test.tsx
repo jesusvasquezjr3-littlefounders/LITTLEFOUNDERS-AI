@@ -167,6 +167,65 @@ describe('useTutorSocket', () => {
     unmount();
     expect(socket?.closed).toBe(true);
   });
+
+  /*
+   * THE SECOND SESSION MUST NOT INHERIT THE FIRST ONE'S ENDING.
+   *
+   * This is the bug that made "start another session" impossible to demonstrate
+   * end to end. Only `connection` used to be reset when the URL changed, so the
+   * first session's `closedReason` was still set when the second socket opened.
+   * The watcher in `TutorExperience` reads exactly that value, so the new
+   * conversation was declared over before its greeting arrived, and the
+   * previous transcript came along with it.
+   *
+   * It is asserted on the HOOK rather than through the UI because the caller
+   * cannot fix it: a guard that ignores a stale reason cannot tell it apart
+   * from a genuine close.
+   */
+  it('starts a second session clean, with no trace of the first', () => {
+    const { result, rerender } = renderHook(({ url }: { url: string | null }) => useTutorSocket(url), {
+      initialProps: { url: 'ws://oracle.test/ws?token=first' } as { url: string | null },
+    });
+
+    const first = FakeSocket.last;
+    act(() => FakeSocket.last?.emit(READY));
+    act(() => FakeSocket.last?.emit(TURN));
+    act(() => FakeSocket.last?.emit({ type: 'closed', reason: 'budget_exhausted' }));
+
+    expect(result.current.closedReason).toBe('budget_exhausted');
+    expect(result.current.history).toHaveLength(1);
+
+    // The experience drops the URL on the way to the closing phase, then mints
+    // a new one. Both transitions have to clear the session, not just the
+    // second: a stale reason surviving the null is the same bug.
+    rerender({ url: null });
+    expect(result.current.closedReason).toBeNull();
+
+    rerender({ url: 'ws://oracle.test/ws?token=second' });
+
+    // A SECOND SOCKET IS ACTUALLY OPEN, on the new token. Clearing the state
+    // would be worth nothing if the second session never got a connection, and
+    // "the flow is reachable" is the claim this test is here to support.
+    expect(FakeSocket.last).not.toBe(first);
+    expect(FakeSocket.last?.url).toContain('token=second');
+    expect(first?.closed).toBe(true);
+
+    expect(result.current.closedReason).toBeNull();
+    expect(result.current.turn).toBeNull();
+    expect(result.current.history).toHaveLength(0);
+    expect(result.current.segment).toBeNull();
+    expect(result.current.adaptationOffer).toBeNull();
+    expect(result.current.error).toBeNull();
+    expect(result.current.microphone).toBe(false);
+    expect(result.current.connection).toBe('connecting');
+
+    // And the second conversation runs. The greeting lands on a transcript that
+    // starts empty, with no closing reason waiting to end it on arrival.
+    act(() => FakeSocket.last?.emit(READY));
+    act(() => FakeSocket.last?.emit(TURN));
+    expect(result.current.history).toHaveLength(1);
+    expect(result.current.closedReason).toBeNull();
+  });
 });
 
 describe('SpeechCaption', () => {

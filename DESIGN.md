@@ -292,9 +292,12 @@ hairline edge replace traditional borders.
    plate reads as detached without a hard border competing with the scene
    behind it. **Exactly two z-bands, and no third:** world-anchored chrome
    (chips, caption, runes) below, viewport-anchored chrome (the mic orb, the
-   lesson plate) above. A third band is how a control ends up rendered
-   underneath the thing it controls — and on a stage where everything moves,
-   nobody can tell that from a bug in the projection.
+   lesson plate, the way out) above. A third band is how a control ends up
+   rendered underneath the thing it controls — and on a stage where everything
+   moves, nobody can tell that from a bug in the projection. The loading veil
+   is not a band: it covers the whole stage and lifts, and the way out is the
+   one control that outranks it, because a stage that never reports a first
+   frame is the state a learner most needs to leave.
 6. Never stack glass on glass; `@supports` fallback to near-opaque surface.
 
 ## Motion — closed system
@@ -428,9 +431,14 @@ a rule violated everywhere stops being a rule.
   mesh is the delightful path, the chip is the guaranteed path, and both are
   always mounted, so the cinematic route and the keyboard route are one code
   path rather than two that drift apart at the second feature. When its anchor
-  goes behind the camera or off-screen the chip is hidden **and inert** — a
-  focusable control nobody can see is worse than no control, because the
-  keyboard user's focus simply vanishes.
+  goes behind the camera, or when the chip's own BOX no longer fits the frame,
+  it is hidden **and inert** — a focusable control nobody can see is worse than
+  no control, because the keyboard user's focus simply vanishes, and a chip
+  culled on its centre point instead of its box is half-visible and fully
+  focusable, which is the same failure wearing a sliver of glass. A chip that
+  is one option in a group carries `aria-pressed` whether or not it is the
+  chosen one; a chip that simply does something carries none, so a button is
+  never announced as a switch.
 - **MicOrb** (Tutor route only) — the Tutor's primary control and the largest
   element on screen (`layout.immersive.orb`: 96 px mobile, 112 px desktop),
   viewport-anchored over the bottom safe area because a thumb does not move
@@ -547,9 +555,11 @@ island and the learner watches their own world blink.
   learner.
 - **World-anchored chrome** — the caption above the speaker's crown over a
   24 px gradient scrim, offer chips at the tutor's chest, rim pads on the
-  island, recap chips at the places they recap, and two small runes over the
-  sky for minutes-left and exit. All WorldChip over HudPlate, each mirroring a
-  pickable mesh, each hidden and inert when its anchor leaves the frame.
+  island, recap chips at the places they recap, and one small rune over the
+  sky for minutes-left. All WorldChip over HudPlate, each mirroring a
+  pickable mesh, each hidden and inert when its anchor leaves the frame —
+  and each culled against its own BOX, not against its centre point, so a chip
+  is never left half off the frame and still focusable.
 - **The lesson plate** — the ONE surface carrying a live exercise. **Desktop:
   a FLOATING plate**, `plate-max` 420 px wide, height fitted to content up to
   `plate-max-height` 62vh, inset `hud-inset` 24 px from the bottom-right, with
@@ -566,9 +576,22 @@ island and the learner watches their own world blink.
   or the lesson appears to shove the tutor out of the way to make room for
   itself.
 - **The mic orb** — MicOrb, centred on the bottom safe area. With the lesson
-  plate it is one of exactly **two** viewport-anchored elements on the route;
-  everything else is anchored to the world. Both are viewport-anchored for the
-  same reason: a thumb does not move with the camera.
+  plate and the way out it is one of exactly **three** viewport-anchored
+  elements on the route; everything else is anchored to the world. All three
+  are viewport-anchored for the same reason: a thumb does not move with the
+  camera.
+- **The way out** — a HudPlate chip at the top-left safe area (`hud-inset`,
+  16 px mobile / 24 px desktop), back arrow plus one translated line, first in
+  the tab order, above the loading veil, and **never culled**. It went from two
+  to three here, on 2026-08-21, in the commit that fixed the reason: the way
+  out had been a world rune on a sky mark plus an `sr-only` button revealed by
+  focus, and neither is reachable by a pointer user in a close-up — the rune is
+  culled the moment the camera stops framing the sky, and a skip link is
+  revealed by a key nobody on a phone presses. This route removes the sidebar
+  and the tab bar, so navigation has to come back somewhere, and a third
+  floating PANEL is what the count of two was protecting against, not the
+  navigation the immersive exception took away. **The count is closed again at
+  three**; a fourth is an owner decision.
 
 **Colour and contrast.** Every plate carrying body text uses the opaque
 `bg-surface` floor; glass is the frame (§Colors → the opaque floor rule). One

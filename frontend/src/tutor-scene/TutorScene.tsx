@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Box3, Group, Vector3 } from 'three';
 import { SceneCanvas, type SceneStats } from './SceneCanvas';
@@ -7,13 +7,25 @@ import { Diorama } from './Diorama';
 import { Character3D } from './Character3D';
 import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
-import { findStandingSpots, type StandingSpot } from './standingSpots';
-import { CHARACTER_ASSETS, characterFootprintM, type SCENE_ASSETS } from './assets';
+import {
+  AUDITION_GROUPING,
+  AUDITION_SAMPLES_PER_METRE,
+  findStandingSpots,
+  type StandingSpot,
+} from './standingSpots';
+import {
+  castClearanceM,
+  castSeparationM,
+  CHARACTER_ASSETS,
+  characterFootprintM,
+  pairSeparationM,
+  type SCENE_ASSETS,
+} from './assets';
 import { walkabilityFor } from './walkability';
 import { CameraDirector } from './CameraDirector';
 import { shotForLegacyFraming, STAGE_BEARING, type LegacyFraming, type ShotId, type ShotSubject } from './shots';
 import { AnchorProjector, AnchorProvider, useAnchorRegistry, WorldAnchor } from './ScreenAnchor';
-import { SKY_MARK_IDS, STAGE_MARK_IDS } from './anchors';
+import { castMarks, SKY_MARK_IDS, STAGE_MARK_IDS, type AnchorId } from './anchors';
 import type { SceneBackdropId } from './backdrops';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
 
@@ -65,8 +77,25 @@ export type TutorFraming = LegacyFraming;
  */
 export type SpeakerFocus = ShotSubject;
 
-/** Which member of the cast a focus point belongs to. */
-type CastRole = 'lead' | 'companion';
+/**
+ * Somebody who is actually standing on the island, and where their head is.
+ *
+ * `index` is their position in the cast the caller asked for, and it is the
+ * whole reason this is an ordered list rather than a lead/companion pair: the
+ * personalization audition hangs candidate N's name plate on `castMarks(n)[N]`,
+ * so the scene has to be able to say WHICH candidate is standing where. A
+ * candidate the solver could not seat is simply absent from this list, and the
+ * plate that would have named them is then culled rather than left hovering
+ * over empty grass.
+ */
+export interface CastPlacement {
+  id: CharacterId;
+  index: number;
+  focus: SpeakerFocus;
+}
+
+/** Stable empty list, so "nobody is placed" is not a new array every render. */
+const NO_PLACEMENTS: readonly CastPlacement[] = Object.freeze([]);
 
 export interface TutorSceneProps {
   scene?: keyof typeof SCENE_ASSETS;
@@ -100,6 +129,23 @@ export interface TutorSceneProps {
    * reaching no renderer at all.
    */
   backdrop?: SceneBackdropId;
+  /**
+   * EVERYONE who should be standing on the island, in candidate order.
+   *
+   * Absent (the normal case) means the cast is the tutor and their companion.
+   * Present means the personalization audition: the whole catalog stands on the
+   * island at once, so that choosing a tutor is looking at people rather than
+   * reading name plates hung over empty ground, which is what the stage marks
+   * were before this existed (/ORACLE.md §10 — "tapping the character on the
+   * island").
+   *
+   * It is a BUDGET decision as well as a design one. Four characters measure
+   * 106,208 triangles against a 220,000 per-frame ceiling, which fits on either
+   * island — but only with the shadow pass off, since a shadow-casting light
+   * submits the whole scene twice. The scene turns shadows off for the duration
+   * rather than dropping a candidate; see `budget.ts`.
+   */
+  audition?: readonly CharacterId[] | null;
   /**
    * Fires ONCE, when the island and cast are actually on screen.
    *
@@ -135,10 +181,16 @@ function StageAnchors({
   scene,
   lead,
   companion,
+  cast,
+  markCount,
 }: {
   scene: keyof typeof SCENE_ASSETS;
   lead: SpeakerFocus | null;
   companion: SpeakerFocus | null;
+  /** Everyone standing, so a candidate's own mark can ride their crown. */
+  cast: readonly CastPlacement[];
+  /** How many candidates the HUD is hanging plates for. Zero outside an audition. */
+  markCount: number;
 }) {
   const { groundRef } = useGround();
   const [island, setIsland] = useState<{ x: number; z: number; top: number; radius: number; height: number } | null>(
@@ -213,6 +265,28 @@ function StageAnchors({
     });
   }, [island]);
 
+  /*
+   * WHICH MARKS THE AUDITION HAS TAKEN OVER.
+   *
+   * During personalization a stage mark stops being a free place on the ring
+   * and becomes a specific candidate's crown, so the plate that names them is
+   * over their head instead of over grass. `castMarks` is shared with the HUD
+   * (`anchors.ts`) precisely so both sides agree about which mark belongs to
+   * which candidate; two copies of that table would drift into a name floating
+   * over the wrong face.
+   *
+   * A reserved mark is NEVER published at its ring position, even when the
+   * solver could not seat that candidate. Falling back would put the plate back
+   * over empty ground, which is the exact bug this replaced — and a plate whose
+   * anchor is unpublished is hidden AND inert, so the learner loses nothing
+   * except a control that would have lied.
+   */
+  const reserved = useMemo(() => new Set<AnchorId>(markCount > 0 ? castMarks(markCount) : []), [markCount]);
+  const auditionMarks = useMemo(
+    () => (markCount > 0 ? castMarks(markCount) : ([] as readonly AnchorId[])),
+    [markCount],
+  );
+
   if (!island || !marks) return null;
 
   const rightX = Math.cos(STAGE_BEARING);
@@ -222,10 +296,28 @@ function StageAnchors({
 
   return (
     <>
+      {/*
+        The crown, in metres, because only the scene knows how tall this
+        character is. A focus point is the MID-head (`spot.y + height * 0.75`,
+        chosen so the camera has something to aim at), so the top of the skull
+        is a further quarter of the character's height up. Anything that must
+        sit ABOVE the head rides this rather than nudging itself off the head
+        point in CSS: at a close-up that nudge would need to be about 290 px on
+        a 1280 viewport and about 40 px at the establishing shot, so any single
+        number is wrong in one of the two — and being wrong at the close-up
+        means the caption sits across the speaker's face for most of a session.
+      */}
+      {lead ? <WorldAnchor slot="lead.crown" point={[lead.x, lead.y + lead.height * 0.25, lead.z]} /> : null}
       {lead ? <WorldAnchor slot="lead.head" point={[lead.x, lead.y, lead.z]} /> : null}
       {lead ? <WorldAnchor slot="lead.chest" point={[lead.x, lead.y - lead.height * 0.28, lead.z]} /> : null}
       {companion ? (
-        <WorldAnchor slot="companion.head" point={[companion.x, companion.y, companion.z]} />
+        <>
+          <WorldAnchor
+            slot="companion.crown"
+            point={[companion.x, companion.y + companion.height * 0.25, companion.z]}
+          />
+          <WorldAnchor slot="companion.head" point={[companion.x, companion.y, companion.z]} />
+        </>
       ) : null}
 
       <WorldAnchor slot="island.centre" point={[island.x, island.top, island.z]} />
@@ -238,7 +330,27 @@ function StageAnchors({
         point={[island.x + rightX * rim, island.top, island.z + rightZ * rim]}
       />
 
+      {/*
+        THE CANDIDATES' OWN MARKS, on their crowns rather than on the ring.
+        The crown is a quarter of the character's height above the mid-head
+        focus point, in METRES, because only the scene knows how tall this
+        candidate is — and a plate nudged up by a fixed number of CSS pixels
+        lands on the forehead at one camera distance and in the sky at another.
+      */}
+      {cast.map(({ id, index, focus }) => {
+        const slot = auditionMarks[index];
+        if (!slot) return null;
+        return (
+          <WorldAnchor
+            key={`cast:${id}`}
+            slot={slot}
+            point={[focus.x, focus.y + focus.height * 0.25, focus.z]}
+          />
+        );
+      })}
+
       {STAGE_MARK_IDS.map((slot, index) => {
+        if (reserved.has(slot)) return null;
         const mark = marks[index];
         if (!mark) return null;
         const radius = island.radius * 0.68;
@@ -268,36 +380,46 @@ function StageAnchors({
 }
 
 /**
- * Solves standing positions once the island is in the graph, then renders the
- * cast on them. Characters are held back until the solve completes rather than
- * being placed at a guessed default and snapping afterwards.
+ * Solves standing positions once the island is in the graph, then renders
+ * everybody on them. The cast is held back until the solve completes rather
+ * than being placed at a guessed default and snapping afterwards.
  */
 function Cast({
   scene,
-  character,
-  companion,
+  standing,
+  principals,
+  audition,
   settings,
   emotion,
   action,
   actionKey,
   viseme,
-  onFocus,
+  onPlaced,
 }: {
   scene: keyof typeof SCENE_ASSETS;
-  character: CharacterId;
-  companion: CharacterId | null;
+  /** Everyone to place, in the order their marks are assigned. */
+  standing: readonly CharacterId[];
+  /**
+   * The tutor and their companion. They resolve inside the SUSPENDING boundary
+   * so `onReady` still means "the people this session is about are on screen";
+   * an audition extra gets a boundary of its own and fades in when it arrives,
+   * rather than holding the tutor's first line behind three more .glb fetches.
+   */
+  principals: ReadonlySet<CharacterId>;
+  /** True while the whole catalog is on stage to be chosen from. */
+  audition: boolean;
   settings: QualitySettings;
   emotion: CharacterEmotion;
   action: CharacterAction;
   actionKey: number;
   viseme: number;
-  onFocus: (role: CastRole, focus: SpeakerFocus | null) => void;
+  onPlaced: (placements: readonly CastPlacement[]) => void;
 }) {
   const { groundRef } = useGround();
   const [spots, setSpots] = useState<StandingSpot[] | null>(null);
 
   /*
-   * Separation is derived from WHO IS STANDING THERE, not a constant.
+   * Separation is derived from WHO IS STANDING THERE, and PER PAIR.
    *
    * It was a flat 1.3 m, which quietly assumed every character is human-sized.
    * They are not, and the footprints are measured rather than proportional:
@@ -305,14 +427,16 @@ function Cast({
    * spots 1.3 m apart put Dina straight through Liruf however flat and open the
    * ground under each of them scored.
    *
-   * Centres must clear both half-footprints, plus a margin so they read as two
-   * characters sharing a place rather than two characters just barely missing.
+   * One number for the whole cast is the next mistake along, and it only shows
+   * up once four people have to fit: Dina and Liruf genuinely need 2.61 m, and
+   * applying that to Rho and Zara reserves three times the ground they occupy.
+   * Measured on the 6.5 m island, that left two of the four candidates with NO
+   * SPOT FOUND (`npm run verify:placement`).
    */
-  const minSeparation = useMemo(() => {
-    const lead = characterFootprintM(CHARACTER_ASSETS[character]);
-    const second = companion ? characterFootprintM(CHARACTER_ASSETS[companion]) : 0;
-    return Math.max(1.3, (lead + second) / 2 + 0.35);
-  }, [character, companion]);
+  const footprints = useMemo(
+    () => standing.map((id) => characterFootprintM(CHARACTER_ASSETS[id])),
+    [standing],
+  );
 
   /*
    * WHERE A CHARACTER MAY STAND AT ALL, as opposed to where the ground happens
@@ -336,18 +460,6 @@ function Cast({
   }, [scene]);
 
   /*
-   * The widest half-footprint on stage, used to PREFER roomy spots. Not to
-   * reject them: Dina covers 2.83 m of a 6.5 m island, so a hard requirement
-   * could leave her with nowhere to stand, and an empty island is a worse
-   * failure than a character standing near the rim.
-   */
-  const clearance = useMemo(() => {
-    const lead = characterFootprintM(CHARACTER_ASSETS[character]) / 2;
-    const second = companion ? characterFootprintM(CHARACTER_ASSETS[companion]) / 2 : 0;
-    return Math.max(lead, second);
-  }, [character, companion]);
-
-  /*
    * THE SOLVE DOES NOT DEPEND ON THE CAMERA, and it must never start to.
    *
    * `two-shot` and `over-shoulder` deliberately orbit off the cast's facing
@@ -362,49 +474,67 @@ function Cast({
     if (!ground) return;
     setSpots(
       findStandingSpots(ground, {
-        count: companion ? 2 : 1,
-        minSeparation,
+        count: standing.length,
+        minSeparation: castSeparationM(footprints),
+        separationFor: (index, other) => pairSeparationM(footprints[index] ?? 0, footprints[other] ?? 0),
+        // An audition is a ring you look along, not a huddle, and the coarse
+        // ring the shipped pair solves against has no sample in the gap the
+        // fourth candidate needs. Both are measured; both live in `standingSpots`.
+        grouping: audition ? AUDITION_GROUPING : undefined,
+        samplesPerMetre: audition ? AUDITION_SAMPLES_PER_METRE : undefined,
         // The camera opens on +Z, so the cast gathers on that side of the
         // island instead of behind the back wall.
         preferDirection: new Vector3(0.35, 0, 1),
         isWalkable,
-        clearance,
+        clearance: castClearanceM(footprints),
       }),
     );
-  }, [groundRef, companion, minSeparation, isWalkable, clearance]);
+  }, [groundRef, standing, footprints, audition, isWalkable]);
 
   /*
-   * Report where each character's head is, so the camera has something to frame.
-   * Derived from the solved spot and the character's own measured height rather
-   * than a constant: rho is 1.70 m and Dina 1.90 m at the shoulder, and one
-   * hard-coded eye level would frame a human's chin and a quadruped's sky.
+   * Who ended up where, and which way they are turned — computed ONCE and used
+   * both to render and to report.
    *
-   * BOTH members are reported now, not just the lead. `two-shot` and
-   * `over-shoulder` need the second subject, and a shot that silently degrades
-   * because the data was never published is indistinguishable from one that is
-   * framed wrong.
+   * These two used to be worked out separately, a few lines apart, from the
+   * same three quantities. That is the shape of a bug that only appears on the
+   * second change: the camera aims at the head one half computed while the
+   * character faces the way the other half computed.
    *
-   * This hook sits ABOVE the early return on purpose. Placing it after the
-   * `spots` guard changed the hook COUNT between the render before spots
-   * resolved and the one after, which React reports as "Rendered more hooks
-   * than during the previous render" and which took the whole page blank.
+   * Facing: the models' bind pose looks down +Z, so a yaw of `atan2(x, z)`
+   * turns a character to face directly AWAY from the island's centre — which is
+   * toward a camera orbiting outside it. Facing the centre instead (the first
+   * attempt) showed the cast's backs. Each is then turned a quarter of the way
+   * toward their NEAREST neighbour, so a group reads as people sharing a place
+   * rather than as props aimed at the lens. Nearest rather than "the other one"
+   * because an audition has three others, and aiming at the average of them
+   * points a candidate at nobody.
    */
-  const leadSpot = spots?.[0] ?? null;
-  const secondSpot = spots?.[1] ?? null;
-  useEffect(() => {
-    if (!leadSpot) {
-      onFocus('lead', null);
-      onFocus('companion', null);
-      return;
-    }
+  const posed = useMemo(() => {
+    if (!spots) return null;
+    const placed = standing.flatMap((id, index) => {
+      const spot = spots[index];
+      return spot ? [{ id, index, spot }] : [];
+    });
 
-    const focusFor = (spot: StandingSpot, other: StandingSpot | null, height: number): SpeakerFocus => {
+    return placed.map(({ id, index, spot }) => {
       const outward = Math.atan2(spot.x, spot.z);
-      const toward = other ? Math.atan2(other.x - spot.x, other.z - spot.z) : outward;
+      let nearest: StandingSpot | null = null;
+      let best = Infinity;
+      for (const other of placed) {
+        if (other.spot === spot) continue;
+        const distance = Math.hypot(other.spot.x - spot.x, other.spot.z - spot.z);
+        if (distance < best) {
+          best = distance;
+          nearest = other.spot;
+        }
+      }
+      const toward = nearest ? Math.atan2(nearest.x - spot.x, nearest.z - spot.z) : outward;
       // Shortest-arc blend: naive averaging of angles flips a character around
-      // when the two are on opposite sides of ±π.
+      // when the two are on opposite sides of the wrap point.
       const delta = Math.atan2(Math.sin(toward - outward), Math.cos(toward - outward));
-      return {
+      const facing = outward + delta * 0.25;
+      const height = CHARACTER_ASSETS[id].targetHeightM;
+      const focus: SpeakerFocus = {
         x: spot.x,
         // Eye level, as a fraction of the character's own height. Dina is a
         // quadruped at 0.70 m to the shoulder; a fixed 1.6 m would aim at sky.
@@ -412,55 +542,53 @@ function Cast({
         // face in the bottom half of the frame.
         y: spot.y + height * 0.75,
         z: spot.z,
-        facing: outward + delta * 0.25,
+        facing,
         height,
       };
-    };
-
-    onFocus('lead', focusFor(leadSpot, secondSpot, CHARACTER_ASSETS[character].targetHeightM));
-    onFocus(
-      'companion',
-      companion && secondSpot
-        ? focusFor(secondSpot, leadSpot, CHARACTER_ASSETS[companion].targetHeightM)
-        : null,
-    );
-  }, [leadSpot, secondSpot, character, companion, onFocus]);
-
-  if (!spots || spots.length === 0) return null;
-
-  const cast: Array<{ id: CharacterId; spot: StandingSpot }> = [];
-  if (spots[0]) cast.push({ id: character, spot: spots[0] });
-  if (companion && spots[1]) cast.push({ id: companion, spot: spots[1] });
+      return { id, index, spot, facing, focus };
+    });
+  }, [spots, standing]);
 
   /*
-   * Facing. The models' bind pose looks down +Z, so a yaw of `atan2(x, z)`
-   * turns a character to face directly AWAY from the island's centre — which
-   * is toward a camera orbiting outside it. Facing the centre instead (the
-   * first attempt) showed the cast's backs, because "inward" and "toward the
-   * viewer" are opposites when the camera is outside the scene.
-   *
-   * Each is then turned a quarter of the way toward the other, so a pair reads
-   * as two figures sharing a moment rather than two props aimed at the lens.
+   * Report upward. This effect sits ABOVE the early return on purpose: placing
+   * it after a `spots` guard changed the hook COUNT between the render before
+   * spots resolved and the one after, which React reports as "Rendered more
+   * hooks than during the previous render" and which took the whole page blank.
    */
+  useEffect(() => {
+    onPlaced(posed ? posed.map(({ id, index, focus }) => ({ id, index, focus })) : NO_PLACEMENTS);
+  }, [posed, onPlaced]);
+
+  if (!posed || posed.length === 0) return null;
+
   return (
     <>
-      {cast.map(({ id, spot }) => {
-        const outward = Math.atan2(spot.x, spot.z);
-        const other = cast.find((entry) => entry.id !== id)?.spot;
-        const toward = other ? Math.atan2(other.x - spot.x, other.z - spot.z) : outward;
-        const delta = Math.atan2(Math.sin(toward - outward), Math.cos(toward - outward));
-        return (
+      {posed.map(({ id, spot, facing }) => {
+        const figure = (
           <Character3D
-            key={id}
             id={id}
             settings={settings}
             position={[spot.x, 0, spot.z]}
-            rotation={outward + delta * 0.25}
+            rotation={facing}
             emotion={emotion}
             action={action}
             actionKey={actionKey}
             viseme={viseme}
           />
+        );
+        /*
+         * An audition extra suspends ON ITS OWN. Inside the shared boundary all
+         * four .glb fetches would have to land before ANY of them appeared —
+         * and `onReady`, which gates the tutor's first spoken line, sits in that
+         * same boundary. A candidate nobody has chosen must not be able to hold
+         * up the tutor talking.
+         */
+        return principals.has(id) ? (
+          <Fragment key={id}>{figure}</Fragment>
+        ) : (
+          <Suspense key={id} fallback={null}>
+            {figure}
+          </Suspense>
         );
       })}
     </>
@@ -472,6 +600,24 @@ function sameFocus(a: SpeakerFocus | null, b: SpeakerFocus | null): boolean {
   if (a === b) return true;
   if (!a || !b) return false;
   return a.x === b.x && a.y === b.y && a.z === b.z && a.facing === b.facing && a.height === b.height;
+}
+
+/**
+ * Two placement lists are the same when everyone is the same person in the same
+ * place.
+ *
+ * The guard is not defensive tidiness. `Cast` builds a fresh array every time
+ * its memo re-runs, and this state feeds props that feed other effects; without
+ * it, a value that has not actually changed still produces a new identity,
+ * which is precisely the render-loop generator frontend/AGENTS.md records.
+ */
+function samePlacements(a: readonly CastPlacement[], b: readonly CastPlacement[]): boolean {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+  return a.every((entry, i) => {
+    const other = b[i];
+    return other !== undefined && entry.id === other.id && entry.index === other.index && sameFocus(entry.focus, other.focus);
+  });
 }
 
 export function TutorScene({
@@ -487,6 +633,7 @@ export function TutorScene({
   shot,
   framing,
   backdrop = 'auto',
+  audition = null,
   onReady,
 }: TutorSceneProps) {
   const [settings, setSettings] = useState<QualitySettings>(QUALITY_SETTINGS.medium);
@@ -506,21 +653,57 @@ export function TutorScene({
   }, [ready, onReady]);
 
   const content = useRef<Group>(null);
-  const [focus, setFocus] = useState<{ lead: SpeakerFocus | null; companion: SpeakerFocus | null }>({
-    lead: null,
-    companion: null,
-  });
+  const [placements, setPlacements] = useState<readonly CastPlacement[]>(NO_PLACEMENTS);
+
+  const onPlaced = useCallback((next: readonly CastPlacement[]) => {
+    setPlacements((previous) => (samePlacements(previous, next) ? previous : next));
+  }, []);
 
   /*
-   * The equality guard is not defensive tidiness. The reporting effect builds a
-   * fresh object every time it runs, and this state feeds a prop that feeds
-   * another effect; without it, a value that has not actually changed still
-   * produces a new identity, which is precisely the render-loop generator
-   * frontend/AGENTS.md records.
+   * WHO IS ON THE ISLAND, in the order their marks are assigned.
+   *
+   * During an audition that is the whole catalog, in catalog order, so a name
+   * plate keeps the same mark whoever is currently chosen: a candidate who
+   * moved when you picked somebody else would make the next choice a hunt. The
+   * tutor is appended if the catalog somehow does not contain them, because a
+   * session with nobody to talk to is a worse failure than an unmarked extra.
    */
-  const onFocus = useCallback((role: CastRole, next: SpeakerFocus | null) => {
-    setFocus((previous) => (sameFocus(previous[role], next) ? previous : { ...previous, [role]: next }));
-  }, []);
+  const auditionIds = audition && audition.length > 0 ? audition : null;
+  const standing = useMemo<readonly CharacterId[]>(() => {
+    if (auditionIds) {
+      return auditionIds.includes(character) ? auditionIds : [...auditionIds, character];
+    }
+    return companion ? [character, companion] : [character];
+  }, [auditionIds, character, companion]);
+
+  /** Who this session is actually about; see `Cast`'s own note on boundaries. */
+  const principals = useMemo(
+    () => new Set<CharacterId>(companion ? [character, companion] : [character]),
+    [character, companion],
+  );
+
+  const leadFocus = placements.find((entry) => entry.id === character)?.focus ?? null;
+  const companionFocus = companion
+    ? (placements.find((entry) => entry.id === companion)?.focus ?? null)
+    : null;
+
+  /*
+   * THE AUDITION TURNS THE SHADOW PASS OFF, and the number is the argument.
+   *
+   * The four characters measure 106,208 triangles and the islands 44,996 and
+   * 66,868, so the composed scene is 151,204 or 173,076 against a 220,000
+   * per-frame ceiling: comfortable. The `high` tier is the only tier with a
+   * shadow-casting light, and a shadow map re-renders the whole scene, so those
+   * become 302,408 and 346,152 — 1.4x and 1.6x over. Dropping a candidate to
+   * pay for shadows would put a name plate back over empty ground, which is the
+   * bug the audition exists to fix; dropping the shadows costs one directional
+   * light's contact darkening on one tier, and every character keeps their
+   * `ContactShadow` blob on every tier regardless. See `budget.ts`.
+   */
+  const composed = useMemo<QualitySettings>(
+    () => (auditionIds ? { ...settings, shadows: false } : settings),
+    [auditionIds, settings],
+  );
 
   /*
    * `ambientMotion` is already false under reduced motion, so it cannot tell the
@@ -547,13 +730,13 @@ export function TutorScene({
    * island: 6.5 m and 9.5 m are different framing problems, and a stale fit
    * frames one of them with a third of the screen empty.
    */
-  const fitKey = `${scene}|${character}|${companion ?? 'solo'}`;
+  const fitKey = `${scene}|${standing.join('+')}`;
 
   const stage = (
     <SceneCanvas className={className} onStats={onStats} onSettings={setSettings} camera={{ fov: 36 }}>
       {/* Outside the Suspense boundary on purpose: a backdrop change updates
           instantly and can never blank the stage while an asset resolves. */}
-      <SceneLighting settings={settings} backdrop={backdrop} />
+      <SceneLighting settings={composed} backdrop={backdrop} />
       <GroundProvider>
         {/*
          * TWO boundaries, not one. A single boundary around the island and the
@@ -563,18 +746,19 @@ export function TutorScene({
          */}
         <Suspense fallback={null}>
           <group ref={content} visible={ready}>
-            <Diorama id={scene} settings={settings} />
+            <Diorama id={scene} settings={composed} />
             <Suspense fallback={null}>
               <Cast
                 scene={scene}
-                character={character}
-                companion={companion}
-                settings={settings}
+                standing={standing}
+                principals={principals}
+                audition={auditionIds !== null}
+                settings={composed}
                 emotion={emotion}
                 action={action}
                 actionKey={actionKey}
                 viseme={viseme}
-                onFocus={onFocus}
+                onPlaced={onPlaced}
               />
               {/*
                * INSIDE the cast's boundary, not beside it. `onReady` promises the
@@ -590,12 +774,18 @@ export function TutorScene({
             </Suspense>
           </group>
         </Suspense>
-        <StageAnchors scene={scene} lead={focus.lead} companion={focus.companion} />
+        <StageAnchors
+          scene={scene}
+          lead={leadFocus}
+          companion={companionFocus}
+          cast={placements}
+          markCount={auditionIds ? auditionIds.length : 0}
+        />
         <CameraDirector
           content={content}
           shot={activeShot}
-          lead={focus.lead}
-          companion={focus.companion}
+          lead={leadFocus}
+          companion={companionFocus}
           ambientMotion={settings.ambientMotion}
           reducedMotion={prefersReducedMotion}
           fitKey={fitKey}

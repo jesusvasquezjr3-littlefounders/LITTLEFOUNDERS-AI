@@ -50,6 +50,44 @@ describe('WorldChip as a control', () => {
     // changing rather than as a choice being made.
     expect(chip.className).toContain('ring-primary');
   });
+
+  /*
+   * A GROUP OF OPTIONS HAS TO SOUND LIKE ONE.
+   *
+   * `aria-pressed` used to be emitted only when a chip was chosen, so the four
+   * sun-arc light chips reached a screen reader as three ordinary buttons and
+   * one pressed button. The chosen light was announced; that the other three
+   * were the alternatives was not, and the plate fallback for the same choice
+   * got it right, so the two paths disagreed about what the control even was.
+   */
+  it('announces an UNCHOSEN option as an unpressed toggle, not as a plain button', () => {
+    render(
+      <>
+        <WorldChip slot="sky.mark.0" onSelect={vi.fn()} selected={false}>
+          Morning
+        </WorldChip>
+        <WorldChip slot="sky.mark.1" onSelect={vi.fn()} selected={true}>
+          Sunset
+        </WorldChip>
+      </>,
+    );
+
+    expect(screen.getByRole('button', { name: 'Morning' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: 'Sunset' })).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('leaves aria-pressed OFF a chip that is an action rather than an option', () => {
+    // The way out of the route, an offer, a rim pad: pressing one does
+    // something rather than turning something on. Announcing it as an unpressed
+    // toggle asks the learner to work out what it would switch.
+    render(
+      <WorldChip slot="stage.mark.0" onSelect={vi.fn()}>
+        Practise together
+      </WorldChip>,
+    );
+
+    expect(screen.getByRole('button', { name: 'Practise together' })).not.toHaveAttribute('aria-pressed');
+  });
 });
 
 describe('WorldChip and the projector', () => {

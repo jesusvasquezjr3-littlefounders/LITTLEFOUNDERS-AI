@@ -19,8 +19,11 @@ import {
  */
 
 export {
+  castClearanceM,
+  castSeparationM,
   characterFootprintM,
   characterScale,
+  pairSeparationM,
   sceneScale,
   type CharacterMeasurement,
   type SceneMeasurement,

@@ -249,14 +249,6 @@ export function App() {
             <Route path="learn/:courseSlug" element={<CoursePage />} />
             <Route path="learn/:courseSlug/territory" element={<TerritoryPage />} />
             <Route
-              path="tutor"
-              element={
-                <Suspense fallback={null}>
-                  <TutorPage />
-                </Suspense>
-              }
-            />
-            <Route
               path="tasks"
               element={
                 <RequireRole role="parent">
@@ -328,6 +320,27 @@ export function App() {
             element={
               <RequireAuth>
                 <LessonRoute />
+              </RequireAuth>
+            }
+          />
+
+          {/* Tutor — the SECOND fullscreen layer, and the list is closed at two
+              (DESIGN.md → Layout → the immersive exception; adding a third is an
+              owner decision). It sits outside AppLayout for a reason the
+              `fixed inset-0` stage cannot achieve on its own: the sidebar and
+              the mobile tab bar would still be in the DOM underneath it, so a
+              keyboard user would tab into navigation they cannot see. The
+              onboarding gate is kept, because an un-onboarded learner has no
+              nickname and no preferences for the island to be built from. */}
+          <Route
+            path="tutor"
+            element={
+              <RequireAuth>
+                <RequireOnboarded>
+                  <Suspense fallback={null}>
+                    <TutorPage />
+                  </Suspense>
+                </RequireOnboarded>
               </RequireAuth>
             }
           />

@@ -4,6 +4,15 @@
     "contextLost": "A visualização 3D foi interrompida. Ela volta sozinha em um instante.",
     "loadFailed": "Não foi possível carregar a cena 3D. Verifique sua conexão e tente de novo."
   },
+  "stage": {
+    "leave": "Sair do tutor",
+    "personalizeLayer": "Deixe este lugar do seu jeito",
+    "introduceLayer": "Começar uma conversa",
+    "conversationLayer": "Sua conversa",
+    "closeLayer": "Fim da sessão",
+    "unavailableLayer": "Status do tutor",
+    "controlsLabel": "Fale com seu tutor"
+  },
   "lab": {
     "title": "Laboratório de cena",
     "subtitle": "Meça um .glb contra o orçamento de assets do Tutor",
@@ -16,7 +25,7 @@
     "triangles": "Triângulos (por quadro)",
     "pixelRatio": "Proporção de pixels",
     "fileSize": "Tamanho do arquivo",
-    "locked": "Nível travado — este dispositivo não sustentou um maior",
+    "locked": "Nível travado: este dispositivo não sustentou um maior",
     "budget": "Orçamento",
     "budgetOk": "Dentro do orçamento",
     "budgetOver": "Acima do orçamento",
@@ -34,8 +43,6 @@
     "no": "não"
   },
   "page": {
-    "title": "Tutor",
-    "subtitle": "Seu lugar de aprender, com um tutor que sabe no que você está trabalhando.",
     "loading": "Preparando sua ilha…",
     "unavailable": "Não conseguimos abrir o tutor agora. Tente daqui a pouco.",
     "tutorUnavailable": "Seu tutor está descansando. Todo o resto continua funcionando; volte em breve.",
@@ -44,24 +51,40 @@
     "sessionSaved": "Esta conversa ficou salva. Você pode ouvir de novo quando quiser.",
     "startAnother": "Começar outra sessão"
   },
+  "introduce": {
+    "greeting": "Oi, {{name}}! Eu sou {{tutor}}.",
+    "greetingNoName": "Oi! Eu sou {{tutor}}.",
+    "ask": "O que você quer ver comigo hoje?",
+    "startTalking": "Comece a conversar com seu tutor",
+    "stillLearningYou": "A gente ainda está se conhecendo, então podemos começar por onde você quiser.",
+    "cannotSeeProgress": "Agora não consigo ver como estão seus cursos, então vou te conhecendo enquanto a gente conversa.",
+    "offersLabel": "Coisas que podemos fazer",
+    "moreLabel": "Outras coisas que você pode fazer",
+    "replays": "Conversas anteriores",
+    "hideReplays": "Esconder as conversas anteriores"
+  },
   "personalize": {
     "whoTitle": "Com quem você quer conversar?",
-    "whoHelp": "Escolha o personagem que vai ser seu tutor. Dá para trocar quando quiser.",
     "bodyTalker": "Fala com o corpo todo",
-    "companionTitle": "Alguém te acompanha?",
-    "companionHelp": "Um companheiro fica com você na ilha. Ele não ensina — faz companhia.",
-    "noCompanion": "Só a gente",
     "whereTitle": "Onde você quer ficar?",
-    "whereHelp": "Escolha sua ilha e a luz.",
-    "nicknameTitle": "Como a gente te chama?",
     "nicknameLabel": "Apelido",
     "nicknameHint": "Escolha o nome que quiser: um apelido, não seu nome de verdade. É o único nome que seu tutor fica sabendo.",
     "nicknameInvalid": "Use letras, números, espaços, apóstrofos ou hífens.",
     "adaptTitle": "Como você gosta que expliquem?",
     "adaptHelp": "Ligue o que te ajudar. Dá para mudar quando quiser, e seu tutor vai seguir.",
-    "skip": "Agora não",
-    "save": "Salvar e continuar",
-    "saving": "Salvando…"
+    "saving": "Salvando…",
+    "aboutYou": "Sobre você",
+    "chooseTutor": "Conversar com {{name}}",
+    "tutorBadge": "Seu tutor",
+    "companionBadge": "Aqui com você",
+    "inviteCompanion": "Pedir para {{name}} ficar",
+    "dismissCompanion": "Pedir para {{name}} ir embora",
+    "goToIsland": "Ir para {{name}}",
+    "lightTitle": "A luz",
+    "lightClear": "Escolha de novo para usar meu tema",
+    "done": "Pronto, vamos",
+    "more": "Mais sobre mim",
+    "hideMore": "Pronto"
   },
   "character": {
     "dina": {
@@ -120,8 +143,6 @@
     "how_does_a_loan_work": "Como funciona pegar emprestado?"
   },
   "offers": {
-    "intelDegraded": "Agora não conseguimos ver seu progresso, então seu tutor vai te conhecendo pelo caminho.",
-    "useVoice": "Quero falar em voz alta",
     "voiceNeedsConsent": "Para falar em voz alta, uma pessoa adulta da sua família precisa ligar o microfone para você. Você pode escrever enquanto isso: tudo funciona igual.",
     "voiceUnavailable": "Falar em voz alta não está disponível agora. Você pode escrever para o seu tutor.",
     "courseTopic": {
@@ -157,15 +178,22 @@
     "minutesLeft": "Faltam {{count}} min",
     "gettingToKnowYou": "Ainda estou te conhecendo",
     "yesPlease": "Sim, por favor",
-    "noThanks": "Não, obrigado"
+    "noThanks": "Não, obrigado",
+    "plateLabel": "Seu tutor e sua atividade",
+    "bubbleLabel": "O que seu tutor está dizendo",
+    "transcriptLabel": "Tudo o que foi dito até agora",
+    "resizePanel": "Deixe este painel maior ou menor"
   },
   "mic": {
     "listening": "Estou ouvindo…",
     "thinking": "Pensando…",
-    "speaking": "Falando — segure para interromper",
+    "speaking": "Falando, segure para interromper",
     "unavailableLabel": "Microfone indisponível",
     "releaseToSend": "Solte para enviar",
-    "keyboardHint": "Ou segure Espaço"
+    "keyboardHint": "Ou segure Espaço",
+    "stageArriving": "Sua ilha ainda está chegando. O microfone acorda junto com ela.",
+    "beforeConversation": "Você vai poder falar em voz alta assim que a conversa começar.",
+    "afterConversation": "Esta conversa terminou. Comece outra e dá para falar de novo."
   },
   "segment": {
     "activity": "Tente isto",
@@ -179,7 +207,7 @@
     "tier": {
       "perfect": "Exatamente!",
       "great": "Muito bem!",
-      "almost": "Quase — olhe mais uma vez.",
+      "almost": "Quase. Olhe mais uma vez.",
       "tryAgain": "Vamos ver isso juntos."
     }
   },

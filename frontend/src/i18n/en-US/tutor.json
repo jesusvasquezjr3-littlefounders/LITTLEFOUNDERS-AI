@@ -4,6 +4,15 @@
     "contextLost": "The 3D view was interrupted. It will come back on its own in a moment.",
     "loadFailed": "The 3D scene couldn't load. Check your connection and try again."
   },
+  "stage": {
+    "leave": "Leave the tutor",
+    "personalizeLayer": "Make this place yours",
+    "introduceLayer": "Start a conversation",
+    "conversationLayer": "Your conversation",
+    "closeLayer": "End of the session",
+    "unavailableLayer": "Tutor status",
+    "controlsLabel": "Talk to your tutor"
+  },
   "lab": {
     "title": "Scene Lab",
     "subtitle": "Measure a .glb against the Tutor asset budget",
@@ -16,7 +25,7 @@
     "triangles": "Triangles (per frame)",
     "pixelRatio": "Pixel ratio",
     "fileSize": "File size",
-    "locked": "Tier locked — this device could not hold a higher one",
+    "locked": "Tier locked: this device could not hold a higher one",
     "budget": "Budget",
     "budgetOk": "Within budget",
     "budgetOver": "Over budget",
@@ -34,34 +43,48 @@
     "no": "no"
   },
   "page": {
-    "title": "Tutor",
-    "subtitle": "Your learning place, with a tutor who knows what you're working on.",
     "loading": "Getting your island ready…",
     "unavailable": "We can't open the tutor right now. Try again in a little while.",
-    "tutorUnavailable": "The tutor is resting right now. Everything else still works — try again soon.",
+    "tutorUnavailable": "The tutor is resting right now. Everything else still works. Try again soon.",
     "changeStage": "Change my island",
     "seeYouSoon": "See you soon!",
     "sessionSaved": "This conversation is saved. You can listen to it again whenever you like.",
     "startAnother": "Start another session"
   },
+  "introduce": {
+    "greeting": "Hi {{name}}! I'm {{tutor}}.",
+    "greetingNoName": "Hi! I'm {{tutor}}.",
+    "ask": "What would you like to look at together today?",
+    "startTalking": "Start talking with your tutor",
+    "stillLearningYou": "We're still getting to know each other, so we can start anywhere you like.",
+    "cannotSeeProgress": "I can't see how your courses are going right now, so I'll get to know you as we talk.",
+    "offersLabel": "Things we could do",
+    "moreLabel": "Other things you can do",
+    "replays": "Past conversations",
+    "hideReplays": "Hide past conversations"
+  },
   "personalize": {
     "whoTitle": "Who would you like to talk to?",
-    "whoHelp": "Pick the character who will be your tutor. You can change this whenever you want.",
     "bodyTalker": "Talks with their whole body",
-    "companionTitle": "Anyone joining you?",
-    "companionHelp": "A companion stands on the island with you. They don't teach — they keep you company.",
-    "noCompanion": "Just us",
     "whereTitle": "Where would you like to be?",
-    "whereHelp": "Choose your island and the light.",
-    "nicknameTitle": "What should we call you?",
     "nicknameLabel": "Nickname",
-    "nicknameHint": "Pick any name you like — a nickname, not your real name. It's the only name your tutor is ever told.",
+    "nicknameHint": "Pick any name you like: a nickname, not your real name. It's the only name your tutor is ever told.",
     "nicknameInvalid": "Use letters, numbers, spaces, apostrophes or hyphens.",
     "adaptTitle": "How do you like things explained?",
     "adaptHelp": "Turn on anything that helps. You can change it any time, and your tutor will follow it.",
-    "skip": "Skip for now",
-    "save": "Save and continue",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "aboutYou": "About you",
+    "chooseTutor": "Talk with {{name}}",
+    "tutorBadge": "Your tutor",
+    "companionBadge": "Here with you",
+    "inviteCompanion": "Ask {{name}} to stay",
+    "dismissCompanion": "Ask {{name}} to head off",
+    "goToIsland": "Go to {{name}}",
+    "lightTitle": "The light",
+    "lightClear": "Choose again to match my theme",
+    "done": "I'm ready",
+    "more": "More about me",
+    "hideMore": "Done with this"
   },
   "character": {
     "dina": {
@@ -120,9 +143,7 @@
     "how_does_a_loan_work": "How does borrowing work?"
   },
   "offers": {
-    "intelDegraded": "We can't see your progress right now, so your tutor will get to know you as you go.",
-    "useVoice": "I want to talk out loud",
-    "voiceNeedsConsent": "To talk out loud, a grown-up in your family needs to turn the microphone on for you. You can still type — everything works the same.",
+    "voiceNeedsConsent": "To talk out loud, a grown-up in your family needs to turn the microphone on for you. You can still type, and everything works the same.",
     "voiceUnavailable": "Talking out loud isn't available right now. You can type to your tutor instead.",
     "courseTopic": {
       "title": "Work on a course topic",
@@ -143,7 +164,7 @@
       "title": "Ask me anything",
       "body": "Tell your tutor what's on your mind and they'll find a way in."
     },
-    "voicePolicyBlocked": "Talking out loud isn't available yet — we're finishing the paperwork that keeps children's voices safe. Everything else works exactly the same by typing."
+    "voicePolicyBlocked": "Talking out loud isn't available yet. We're finishing the paperwork that keeps children's voices safe. Everything else works exactly the same by typing."
   },
   "conversation": {
     "listening": "Your tutor is thinking of something for you to try.",
@@ -157,15 +178,22 @@
     "minutesLeft": "{{count}} min left",
     "gettingToKnowYou": "Still getting to know you",
     "yesPlease": "Yes please",
-    "noThanks": "No thanks"
+    "noThanks": "No thanks",
+    "plateLabel": "Your tutor and your activity",
+    "bubbleLabel": "What your tutor is saying",
+    "transcriptLabel": "Everything said so far",
+    "resizePanel": "Make this panel bigger or smaller"
   },
   "mic": {
     "listening": "Listening…",
     "thinking": "Thinking…",
-    "speaking": "Talking — hold to interrupt",
+    "speaking": "Talking, hold to interrupt",
     "unavailableLabel": "Microphone unavailable",
     "releaseToSend": "Let go to send",
-    "keyboardHint": "Or hold Space"
+    "keyboardHint": "Or hold Space",
+    "stageArriving": "Your island is still arriving. The microphone wakes up with it.",
+    "beforeConversation": "You can talk out loud once the conversation starts.",
+    "afterConversation": "This conversation is over. Start another one and you can talk again."
   },
   "segment": {
     "activity": "Try this",
@@ -179,7 +207,7 @@
     "tier": {
       "perfect": "Exactly right!",
       "great": "Nice work!",
-      "almost": "So close — look again.",
+      "almost": "So close. Look again.",
       "tryAgain": "Let's try that one together."
     }
   },

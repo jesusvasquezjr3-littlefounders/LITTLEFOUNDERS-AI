@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, typ
 import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import type { AnchorId } from './anchors';
+import { isAnchorNodeVisible, type ViewportBox } from './culling';
 
 /*
  * The projection ref channel: how a DOM node gets pinned to a place in the 3D
@@ -34,13 +35,26 @@ import type { AnchorId } from './anchors';
  * can tab straight to it. Behind-camera and off-screen nodes get `hidden` AND
  * `inert`, set imperatively — React 18.3 has no `inert` prop, so it is a DOM
  * assignment, not JSX.
+ *
+ * AND IT IS CULLED AS A BOX, NOT AS A POINT. The projected position is the
+ * node's CENTRE, so a test on that point alone lets a node hang half off the
+ * frame while still counting as on screen. `culling.ts` carries the geometry
+ * and the story of what that cost.
  */
 
 /** How long the smoothing takes to close most of a gap, in seconds. */
 const FOLLOW_TAU = 0.09;
 
-/** Off-screen margin before a node is culled, in CSS pixels. */
-const CULL_MARGIN_PX = 96;
+/**
+ * How often the canvas rect and every visible node's box are re-read, in
+ * seconds.
+ *
+ * Both are forced layouts, so they share one slow tick rather than happening
+ * per node per frame. A quarter second is imperceptible for what actually
+ * changes at this cadence: the page scrolling under the scene lab, and a plate
+ * growing a line because the caption got longer.
+ */
+const MEASURE_INTERVAL_S = 0.25;
 
 /**
  * Distance at which an anchored node renders at its authored size, in metres.
@@ -76,6 +90,14 @@ interface AnchoredNode {
   placed: boolean;
   /** Smallest scale that keeps this node's own text at MIN_READABLE_PX. */
   minScale: number;
+  /**
+   * Half the node's own UNSCALED layout box, in CSS pixels.
+   *
+   * Zero until the node has been measured at a size, which reduces the cull
+   * test to the old centre test for that node rather than guessing at a size.
+   */
+  halfWidth: number;
+  halfHeight: number;
   culled: boolean;
 }
 
@@ -140,8 +162,11 @@ export function WorldAnchor({
  * Returns a ref CALLBACK to put on the DOM node you want anchored.
  *
  * The node is positioned every frame by the projector. It never re-renders. When
- * the anchor is behind the camera or off-screen the node is hidden AND inert, so
- * it cannot be seen, clicked or tabbed to.
+ * the anchor is behind the camera, or when the node's own box no longer fits the
+ * frame, it is hidden AND inert, so it cannot be seen, clicked or tabbed to. The
+ * node is measured for that test, so give it a real box: a wrapper sized to its
+ * content is measured correctly, a `w-0 h-0` wrapper with absolutely positioned
+ * content is measured as a point and culls only when the POINT leaves.
  *
  * The node is positioned with `position: fixed` in VIEWPORT coordinates, which
  * makes it independent of whatever it happens to be nested inside. The one thing
@@ -175,6 +200,15 @@ export function useAnchorSlot(slot: AnchorId): (node: HTMLElement | null) => voi
       const fontSize = Number.parseFloat(window.getComputedStyle(node).fontSize);
       const minScale = Number.isFinite(fontSize) && fontSize > 0 ? Math.min(1, MIN_READABLE_PX / fontSize) : 1;
 
+      /*
+       * The node's box, read in the same forced layout the font size already
+       * costs. It has to happen BEFORE the node is hidden below: a hidden node
+       * is `display: none` and measures zero, and a first cull decision taken
+       * against a zero box is a decision taken against a point.
+       */
+      const width = node.offsetWidth;
+      const height = node.offsetHeight;
+
       node.style.position = 'fixed';
       node.style.left = '0';
       node.style.top = '0';
@@ -193,6 +227,8 @@ export function useAnchorSlot(slot: AnchorId): (node: HTMLElement | null) => voi
         scale: 1,
         placed: false,
         minScale,
+        halfWidth: width > 0 ? width / 2 : 0,
+        halfHeight: height > 0 ? height / 2 : 0,
         culled: true,
       };
 
@@ -224,8 +260,11 @@ export function AnchorProjector() {
 
   const projected = useMemo(() => new Vector3(), []);
   const cameraPosition = useMemo(() => new Vector3(), []);
-  const origin = useRef({ left: 0, top: 0 });
-  const rectAge = useRef(Infinity);
+  // Mutated in place rather than rebuilt per slot: this runs sixty times a
+  // second across every anchored node, and a fresh object per slot per frame is
+  // garbage the GC collects in the middle of a camera move.
+  const view = useRef<ViewportBox>({ left: 0, top: 0, width: 0, height: 0 });
+  const measureAge = useRef(Infinity);
 
   useFrame((_, delta) => {
     if (!registry || registry.nodes.size === 0) return;
@@ -235,12 +274,16 @@ export function AnchorProjector() {
     // The canvas's own position on the page, re-read a few times a second. On
     // the real stage it is `fixed inset-0` and never moves; on the scene lab it
     // moves when the page scrolls.
-    rectAge.current += dt;
-    if (rectAge.current >= 0.25) {
-      rectAge.current = 0;
+    measureAge.current += dt;
+    const remeasure = measureAge.current >= MEASURE_INTERVAL_S;
+    if (remeasure) {
+      measureAge.current = 0;
       const box = gl.domElement.getBoundingClientRect();
-      origin.current = { left: box.left, top: box.top };
+      view.current.left = box.left;
+      view.current.top = box.top;
     }
+    view.current.width = size.width;
+    view.current.height = size.height;
 
     camera.getWorldPosition(cameraPosition);
     const follow = 1 - Math.exp(-dt / FOLLOW_TAU);
@@ -265,22 +308,37 @@ export function AnchorProjector() {
       // plausible x/y, mirrored through the origin, so this test is the only
       // thing separating "off screen" from "convincingly in the wrong place".
       const behind = projected.z > 1;
-      const x = origin.current.left + (projected.x * 0.5 + 0.5) * size.width;
-      const y = origin.current.top + (-projected.y * 0.5 + 0.5) * size.height;
-      const outside =
-        x < origin.current.left - CULL_MARGIN_PX ||
-        x > origin.current.left + size.width + CULL_MARGIN_PX ||
-        y < origin.current.top - CULL_MARGIN_PX ||
-        y > origin.current.top + size.height + CULL_MARGIN_PX;
+      const x = view.current.left + (projected.x * 0.5 + 0.5) * size.width;
+      const y = view.current.top + (-projected.y * 0.5 + 0.5) * size.height;
 
       for (const entry of nodes) {
-        if (behind || outside) {
+        if (behind) {
           cull(entry);
           continue;
         }
 
+        /*
+         * Only nodes that are currently on screen are re-measured. A culled
+         * node is `display: none` and reports zero, and a zero box reads as a
+         * point — which un-culls it, which makes it measurable, which culls it
+         * again, four times a second for as long as the camera is looking away.
+         */
+        if (remeasure && !entry.culled) measureBox(entry);
+
         const depthScale = distance > 1e-3 ? REFERENCE_DISTANCE_M / distance : MAX_SCALE;
         const scale = Math.min(MAX_SCALE, Math.max(entry.minScale, depthScale));
+
+        /*
+         * The BOX, at the size it is about to be drawn at. Each node in a slot
+         * is tested on its own because they are different sizes: a two-line
+         * plate and a one-word chip riding the same world point leave the frame
+         * at different moments, and the plate is the one a learner would have
+         * caught half-cut.
+         */
+        if (!isAnchorNodeVisible(x, y, entry.halfWidth * scale, entry.halfHeight * scale, view.current)) {
+          cull(entry);
+          continue;
+        }
 
         if (!entry.placed) {
           entry.x = x;
@@ -324,4 +382,24 @@ function cull(entry: AnchoredNode): void {
   entry.placed = false;
   entry.element.hidden = true;
   entry.element.inert = true;
+}
+
+/**
+ * Re-reads a visible node's own box.
+ *
+ * `offsetWidth`/`offsetHeight` rather than `getBoundingClientRect`, because the
+ * rect would fold in the scale the projector wrote last frame and the cull test
+ * applies that scale itself — measuring it twice shrinks the node's apparent
+ * box at the establishing shot, which is where a plate is already closest to
+ * the frame edge.
+ *
+ * A zero reading is ignored rather than stored: it means the node is hidden,
+ * not that it has no size, and forgetting the real size is what would make the
+ * cull oscillate.
+ */
+function measureBox(entry: AnchoredNode): void {
+  const width = entry.element.offsetWidth;
+  const height = entry.element.offsetHeight;
+  if (width > 0) entry.halfWidth = width / 2;
+  if (height > 0) entry.halfHeight = height / 2;
 }

@@ -93,6 +93,12 @@ export interface TutorStageProps {
    */
   speakingFraming?: TutorFraming;
   /**
+   * Everyone who should be standing on the island, for the personalization
+   * audition. Absent means the tutor and their companion. Forwarded verbatim to
+   * `TutorScene`, which owns what it costs and what it turns off to afford it.
+   */
+  audition?: readonly CharacterId[] | null;
+  /**
    * Fires ONCE, when the cast is actually on screen. Wait for it before the
    * first line: speech handed over while the assets are still resolving plays
    * to a blank canvas.
@@ -115,6 +121,7 @@ export function TutorStage({
   backdrop = 'auto',
   idleFraming = 'vignette',
   speakingFraming = 'conversation',
+  audition = null,
   onReady,
 }: TutorStageProps) {
   const audio = useRef<HTMLAudioElement | null>(null);
@@ -173,6 +180,7 @@ export function TutorStage({
         viseme={speaking ? viseme : VISEME_CLOSED}
         shot={activeShot}
         backdrop={backdrop}
+        audition={audition}
         onReady={onReady}
       />
     </>

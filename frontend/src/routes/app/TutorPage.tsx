@@ -1,14 +1,26 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { TutorExperience } from '@/tutor/TutorExperience';
+import { APP_HOME } from '@/routes/app/navConfig';
 
 /*
  * The Tutor product surface.
  *
- * This route is deliberately thin: a heading, an error boundary, and the
- * experience. Everything else lives in `@/tutor/` — the phases, the socket,
- * the personalization — because the route is also what App.tsx lazy-loads,
- * and `three` must only ever be reached through a lazy route (/TUTOR_3D.md §6).
+ * This route is deliberately thin: an error boundary and the experience.
+ * Everything else lives in `@/tutor/` — the phases, the socket, the
+ * personalization — because the route is also what App.tsx lazy-loads, and
+ * `three` must only ever be reached through a lazy route (/TUTOR_3D.md §6).
+ * Any 3D preview added anywhere in the product has to live inside THIS chunk
+ * for that to keep holding.
+ *
+ * THERE IS NO HEADING AND NO READING COLUMN HERE, and that is the point. The
+ * stage is the page (/DESIGN.md → Screen Recipes → Tutor): `StageShell` takes
+ * the whole viewport as its own layer, so the route renders a boundary and gets
+ * out of the way. The `mx-auto max-w-container px-5 py-6` wrapper and the `<h1>`
+ * that used to be here are what turned a 3D place into a picture of one inside
+ * a dashboard, and the route sits OUTSIDE the app shell in App.tsx for the same
+ * reason the Lesson Player does.
  *
  * The 3D stage is shown to EVERY user (owner decision, 2026-08-15) — never
  * gated by role or device class. Device capability is handled by the adaptive
@@ -45,25 +57,37 @@ class TutorBoundary extends Component<{ fallback: ReactNode; children: ReactNode
   }
 }
 
-export default function TutorPage() {
+/**
+ * What is left when the scene itself threw.
+ *
+ * It keeps the shell's own layer rather than dropping back into the app's
+ * reading column, because the route no longer HAS a reading column to drop back
+ * into — a grey card here would render at the top-left of an empty viewport.
+ * The island cannot be drawn (drawing it is what failed), so this is the honest
+ * floor: the stage's own ground colour, one sentence, and a way out. The way out
+ * matters more here than anywhere else in the product: the app chrome is gone,
+ * so without it the only exit is the browser's back button.
+ */
+function StageFailure() {
   const { t } = useTranslation();
 
   return (
-    <div className="mx-auto max-w-container px-5 py-6 md:px-8 md:py-10">
-      <header className="mb-5">
-        <h1 className="lf-display-lg text-content">{t('tutor.page.title')}</h1>
-        <p className="lf-body text-content-muted">{t('tutor.page.subtitle')}</p>
-      </header>
-
-      <TutorBoundary
-        fallback={
-          <div className="flex aspect-[4/3] w-full items-center justify-center rounded-lg bg-surface-sunken p-6 text-center lg:aspect-video">
-            <p className="lf-body text-content-muted">{t('tutor.scene.loadFailed')}</p>
-          </div>
-        }
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-base px-5 text-center">
+      <p className="lf-body max-w-[46ch] text-content-muted">{t('tutor.scene.loadFailed')}</p>
+      <Link
+        to={APP_HOME}
+        className="lf-glass lf-label flex min-h-11 items-center rounded-full px-5 text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
-        <TutorExperience />
-      </TutorBoundary>
+        {t('tutor.stage.leave')}
+      </Link>
     </div>
+  );
+}
+
+export default function TutorPage() {
+  return (
+    <TutorBoundary fallback={<StageFailure />}>
+      <TutorExperience />
+    </TutorBoundary>
   );
 }

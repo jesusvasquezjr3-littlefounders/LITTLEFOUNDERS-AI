@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui';
-import { PersonalizePanel } from '../PersonalizePanel';
-import { OfferPanel } from '../OfferPanel';
-import { SpeechCaption } from '../SpeechCaption';
-import { TutorBubble } from '../TutorBubble';
+import { AnchorProvider } from '@/tutor-scene/ScreenAnchor';
+import { SafeAreaProvider } from '@/tutor-scene/SafeAreaContext';
+import { OfferChips } from '../OfferChips';
+import { PersonalizeInWorld } from '../PersonalizeInWorld';
+import { TutorBubble, TutorTranscript } from '../TutorBubble';
 import { LiveSegmentPanel } from '../LiveSegmentPanel';
 import { VoiceConsentControl } from '../VoiceConsentControl';
 import type { TutorCatalog, TutorOffers, TutorPreferences } from '../types';
@@ -27,14 +28,6 @@ import type { LiveSegmentState } from '../useTutorSocket';
  * layout, spacing, contrast and reflow.
  */
 
-const CATALOG: TutorCatalog = {
-  characters: ['dina', 'liruf', 'rho', 'zara'],
-  dioramas: ['diorama-a', 'diorama-b'],
-  backdrops: ['auto', 'dawn', 'day', 'dusk', 'night'],
-  adaptations: ['slower_pacing', 'more_examples', 'less_text', 'more_visual', 'repeat_before_advancing'],
-  articulates: ['rho', 'zara'],
-};
-
 const PREFERENCES: TutorPreferences = {
   character: 'rho',
   companion: 'liruf',
@@ -42,6 +35,14 @@ const PREFERENCES: TutorPreferences = {
   backdrop: 'auto',
   nickname: 'Robi',
   adaptations: ['more_examples'],
+};
+
+const CATALOG: TutorCatalog = {
+  characters: ['dina', 'liruf', 'rho', 'zara'],
+  dioramas: ['diorama-a', 'diorama-b'],
+  backdrops: ['auto', 'dawn', 'day', 'dusk', 'night'],
+  adaptations: ['slower_pacing', 'more_examples', 'less_text', 'more_visual', 'repeat_before_advancing'],
+  articulates: ['rho', 'zara'],
 };
 
 const OFFERS: TutorOffers = {
@@ -96,7 +97,24 @@ const HISTORY = [
   },
 ];
 
-type Surface = 'personalize' | 'offer' | 'conversation' | 'consent';
+/*
+ * `personalize` is here for ONE thing: the plate's silhouette.
+ *
+ * It used to be deliberately absent, on the grounds that the picker is now
+ * controls anchored to points inside the live scene and there was no 2D layout
+ * left to look at. That was true of the CHIPS and false of the plate, which is
+ * the one surface on the route that is anchored to the viewport — and the plate
+ * is what the owner rejected, twice, for being a form. A silhouette is a
+ * perceptual fact that no test can argue with, and `/tutor` needs a session, a
+ * token and a running Oracle before anybody can see one.
+ *
+ * What renders here is therefore the plate ALONE. Every world chip registers
+ * with the anchor provider and is `hidden` until a projector places it, and
+ * there is no projector on this page — correctly, since there is no island for
+ * a chip to point at. That is not half a picture: it is exactly the surface
+ * under review, at both breakpoints, in both themes.
+ */
+type Surface = 'offer' | 'personalize' | 'conversation' | 'consent';
 
 /*
  * A scoped `fetch` shim, so the consent control can be LOOKED at.
@@ -141,8 +159,8 @@ function useStubbedTutorConsent(active: boolean) {
 
 export default function TutorLabPage() {
   const { t } = useTranslation();
-  const [surface, setSurface] = useState<Surface>('personalize');
-  const [preferences, setPreferences] = useState(PREFERENCES);
+  const [surface, setSurface] = useState<Surface>('offer');
+  const [preferences] = useState(PREFERENCES);
   const [consentActive, setConsentActive] = useState(false);
   useStubbedTutorConsent(consentActive);
 
@@ -157,7 +175,7 @@ export default function TutorLabPage() {
         </header>
 
         <div className="mb-6 flex flex-wrap gap-2">
-          {(['personalize', 'offer', 'conversation', 'consent'] as const).map((id) => (
+          {(['offer', 'personalize', 'conversation', 'consent'] as const).map((id) => (
             <Button
               key={id}
               variant={surface === id ? 'primary' : 'secondary'}
@@ -168,24 +186,61 @@ export default function TutorLabPage() {
           ))}
         </div>
 
-        {surface === 'personalize' && (
-          <PersonalizePanel
-            preferences={preferences}
-            catalog={CATALOG}
-            saving={false}
-            onSave={(patch) => setPreferences((prev) => ({ ...prev, ...patch }))}
-            onDone={() => setSurface('offer')}
-          />
+        {surface === 'offer' && (
+          /*
+            What is on show here is the GUARANTEED arrangement, not the in-scene
+            one. With `ready` false the openings render as the centred column a
+            device with no WebGL gets, which is a real surface with real reflow
+            to check; the anchored version needs a camera to hang off and is
+            looked at on `/tutor` itself. The box is `relative` because the
+            layer positions itself against its nearest positioned ancestor, and
+            on a page with none it would escape to the whole viewport.
+          */
+          <div className="relative min-h-[34rem] overflow-hidden rounded-lg bg-surface-sunken">
+            <OfferChips
+              phase="introducing"
+              ready={false}
+              offers={OFFERS}
+              starting={false}
+              startError={null}
+              onStart={() => setSurface('conversation')}
+              onPersonalize={() => undefined}
+              // Empty on purpose: the lab never calls Core, and a real token in
+              // a fixture is a credential in a fixture.
+              token=""
+              character={preferences.character}
+              nickname={preferences.nickname}
+            />
+          </div>
         )}
 
-        {surface === 'offer' && (
-          <OfferPanel
-            offers={OFFERS}
-            voiceAvailable
-            microphoneBlockedBy={null}
-            starting={false}
-            onStart={() => setSurface('conversation')}
-          />
+        {surface === 'personalize' && (
+          /*
+            The plate is `position: fixed`, so it lands against the WINDOW and
+            not against this box — which is how it behaves on the stage and is
+            the point of looking at it. The note below is what the rest of the
+            screen would be: an island, with the candidates standing on it.
+          */
+          <SafeAreaProvider>
+            <AnchorProvider>
+              <div className="relative min-h-[34rem] overflow-hidden rounded-lg bg-surface-sunken p-6">
+                <p className="lf-body text-content-muted">
+                  On /tutor this space is the island, with all four candidates standing on it and a
+                  name plate over each head. What is pinned to the viewport is the plate below:
+                  check its resting shape first, then open it.
+                </p>
+              </div>
+              <PersonalizeInWorld
+                phase="personalizing"
+                ready
+                preferences={preferences}
+                catalog={CATALOG}
+                saving={false}
+                onSave={() => undefined}
+                onDone={() => undefined}
+              />
+            </AnchorProvider>
+          </SafeAreaProvider>
         )}
 
         {surface === 'consent' && (
@@ -220,46 +275,43 @@ export default function TutorLabPage() {
         )}
 
         {surface === 'conversation' && (
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
-            <div className="flex flex-col gap-4">
-              {/* A stand-in for the canvas: this lab is about LAYOUT, and
-                  loading three.js here would make it slow for no benefit.
-                  /dev/scene-lab is where the real stage is exercised. */}
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-surface sm:aspect-video">
-                <SpeechCaption text={HISTORY[2]?.text ?? ''} turnSeq={2} instant />
-                <p className="lf-caption absolute inset-0 flex items-center justify-center text-content-muted">
-                  (3D stage — see /dev/scene-lab)
-                </p>
-              </div>
+          /*
+           * WHAT THIS SURFACE CAN AND CANNOT SHOW, now that the conversation is
+           * composed in the scene.
+           *
+           * The caption, the adaptation chips and the microphone cluster are
+           * positioned by projecting a point in the 3D scene, or against the
+           * viewport, so they only mean anything over a live stage. Rendering
+           * them here would float them across this page's own chrome and prove
+           * nothing about how they sit over the island. They are looked at on
+           * `/tutor` and on `/dev/scene-lab`.
+           *
+           * What IS worth checking without a socket is the content of the
+           * lesson plate at both breakpoints: the bubble's wrapping, the
+           * exercise renderer inside 420 px, and the transcript. The box below
+           * is the plate's inner width and opaque floor, and nothing else.
+           */
+          <div className="mx-auto flex w-full max-w-[26rem] flex-col gap-3 rounded-xl bg-surface p-4">
+            <TutorBubble
+              character={preferences.character}
+              emotion="happy"
+              action="nod"
+              actionKey={2}
+              speaking
+              history={HISTORY}
+              line={HISTORY[2]?.text ?? null}
+              label={t('tutor.conversation.bubbleLabel')}
+              transcript={false}
+            />
 
-              <TutorBubble
-                character={preferences.character}
-                emotion="happy"
-                action="nod"
-                actionKey={2}
-                speaking
-                history={HISTORY}
-                className="max-h-64 lg:max-h-80"
-              />
-            </div>
+            {/* An empty token: the lab never grades, and a real one here
+                would be a credential in a fixture. */}
+            <LiveSegmentPanel live={SEGMENT} token="" onGraded={() => undefined} />
 
-            <div className="flex min-h-[12rem] flex-col gap-4">
-              {/* An empty token: the lab never grades, and a real one here
-                  would be a credential in a fixture. */}
-              <LiveSegmentPanel live={SEGMENT} token="" onGraded={() => undefined} />
-
-              <div className="rounded-lg border border-primary bg-accent-soft p-4">
-                <p className="lf-body mb-3 text-content">{t('tutor.adaptationOffer.more_examples')}</p>
-                <div className="flex gap-2">
-                  <Button className="flex-1">{t('tutor.conversation.yesPlease')}</Button>
-                  <Button variant="secondary" className="flex-1">
-                    {t('tutor.conversation.noThanks')}
-                  </Button>
-                </div>
-              </div>
-            </div>
+            <TutorTranscript history={HISTORY} label={t('tutor.conversation.transcriptLabel')} />
           </div>
         )}
+
       </div>
     </div>
   );

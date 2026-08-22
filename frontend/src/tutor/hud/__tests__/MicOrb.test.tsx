@@ -124,6 +124,36 @@ describe('MicOrb presence', () => {
     fireEvent.pointerDown(orb, { pointerId: 1 });
     expect(microphone.start).toHaveBeenCalled();
   });
+
+  /*
+   * `idleCopy` exists for exactly one screen: the introduction, where no socket
+   * has been opened yet, so the press cannot record and instead CREATES the
+   * conversation. "Hold to talk" there asks a child to hold a button with
+   * nothing behind it.
+   *
+   * The name and the printed line are asserted TOGETHER on purpose. They are
+   * one string precisely so they cannot drift, and a control whose spoken name
+   * disagrees with its visible label is worse than either wording alone.
+   */
+  it('lets one screen override the resting wording, name and line together', () => {
+    render(
+      <MicOrb
+        state="idle"
+        microphone={makeMicrophone()}
+        onClip={vi.fn()}
+        idleCopy="Start talking with your tutor"
+      />,
+    );
+
+    expect(screen.getByRole('button')).toHaveAttribute('aria-label', 'Start talking with your tutor');
+    expect(screen.getByText('Start talking with your tutor')).toBeInTheDocument();
+    expect(screen.queryByText(/hold to talk/i)).not.toBeInTheDocument();
+  });
+
+  it('says "hold to talk" everywhere else, because everywhere else that is true', () => {
+    render(<MicOrb state="idle" microphone={makeMicrophone()} onClip={vi.fn()} />);
+    expect(screen.getByRole('button').getAttribute('aria-label')).toMatch(/hold to talk/i);
+  });
 });
 
 // ── Honesty ─────────────────────────────────────────────────────────────────
@@ -148,6 +178,45 @@ describe('MicOrb when the microphone is blocked', () => {
     const line = screen.getByRole('status').textContent?.trim() ?? '';
     expect(line.length).toBeGreaterThan(0);
     // A translated sentence, not a raw i18n key leaking to a child.
+    expect(line).not.toContain('tutor.offers.');
+  });
+
+  /*
+   * A PHASE IS A NARROWER TRUTH THAN A POLICY, so it wins.
+   *
+   * The orb belongs to the stage now and is therefore on screen during arrival,
+   * personalization and the goodbye — phases where there is no socket, so
+   * nothing could be recorded even with every permission granted. Falling back
+   * to `VOICE_UNAVAILABLE` there would tell a child that no voice provider is
+   * configured, which is not what happened and is exactly the kind of confident
+   * wrong sentence they have no way to check.
+   */
+  it('prefers a phase’s own reason over one of Core’s three', () => {
+    render(
+      <MicOrb
+        state="unavailable"
+        microphone={makeMicrophone()}
+        blockedReason="VOICE_UNAVAILABLE"
+        blockedCopy="We can talk once the conversation starts."
+        onClip={vi.fn()}
+      />,
+    );
+    const line = screen.getByRole('status').textContent?.trim() ?? '';
+    expect(line).toBe('We can talk once the conversation starts.');
+  });
+
+  it('still falls back to Core’s reason when the phase has nothing to add', () => {
+    render(
+      <MicOrb
+        state="unavailable"
+        microphone={makeMicrophone()}
+        blockedReason="CONSENT_REQUIRED"
+        blockedCopy={null}
+        onClip={vi.fn()}
+      />,
+    );
+    const line = screen.getByRole('status').textContent?.trim() ?? '';
+    expect(line.length).toBeGreaterThan(0);
     expect(line).not.toContain('tutor.offers.');
   });
 

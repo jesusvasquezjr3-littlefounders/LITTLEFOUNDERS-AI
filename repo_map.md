@@ -173,7 +173,11 @@ frontend/
       lab/
     tutor/
       __tests__/
+      hud/
+        __tests__/
       lab/
+      stage/
+        __tests__/
 oracle/
   scripts/
   src/
@@ -1053,12 +1057,12 @@ Knowing learner behavior — patterns, drop-off, rhythm, family dynamics — is
 > is `/COURSE_ENGINE.md`. On conflict with /AGENTS.md or DESIGN.md, those win and
 > this file gets fixed.
 >
-> **Status (2026-08-21):** BUILT. `oracle/` (the runtime), migration `0047`,
-> Core's `/api/v1/tutor/*` surface and the `/tutor` product experience all
-> exist and pass their gates. **NOT ENABLED FOR MINORS** — §16's checklist
-> gates that, and its first item is a data-processing agreement that does not
-> yet exist. Legal review in progress:
-> `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md`.
+> **Status (2026-08-21):** RUNTIME BUILT, EXPERIENCE BEING REBUILT. `oracle/`
+> (the runtime), migration `0047` and Core's `/api/v1/tutor/*` surface exist
+> and pass their gates. The `/tutor` **experience** shipped as a dashboard of
+> flat cards with the 3D stage shrunk into a panel, and the owner rejected it:
+> it has to be an immersive 3D experience with the controls inside the scene.
+> That rebuild is in progress and §9, §10, §14.1 and §16.1 are its contract.
 ```
 
 ### PRODUCT.md
@@ -12438,15 +12442,15 @@ export { StatCard } from './StatCard';
     "contextLost": "The 3D view was interrupted. It will come back on its own in a moment.",
     "loadFailed": "The 3D scene couldn't load. Check your connection and try again."
   },
-  "lab": {
-    "title": "Scene Lab",
-    "subtitle": "Measure a .glb against the Tutor asset budget",
-    "loadModel": "Load a .glb",
-    "noModel": "No model loaded. Pick a .glb to measure it, or explore the placeholder scene.",
-    "runtime": "Runtime",
-    "tier": "Quality tier",
-    "fps": "FPS",
-    "drawCalls": "Draw calls (per frame)",
+  "stage": {
+    "leave": "Leave the tutor",
+    "personalizeLayer": "Make this place yours",
+    "introduceLayer": "Start a conversation",
+    "conversationLayer": "Your conversation",
+    "closeLayer": "End of the session",
+    "unavailableLayer": "Tutor status",
+    "controlsLabel": "Talk to your tutor"
+  },
 ```
 
 ### frontend/src/i18n/es-MX/admin.json
@@ -12678,15 +12682,15 @@ export { StatCard } from './StatCard';
     "contextLost": "La vista 3D se interrumpió. Volverá sola en un momento.",
     "loadFailed": "No se pudo cargar la escena 3D. Revisa tu conexión e inténtalo de nuevo."
   },
-  "lab": {
-    "title": "Laboratorio de escena",
-    "subtitle": "Mide un .glb contra el presupuesto de assets del Tutor",
-    "loadModel": "Cargar un .glb",
-    "noModel": "No hay modelo cargado. Elige un .glb para medirlo o explora la escena de ejemplo.",
-    "runtime": "Ejecución",
-    "tier": "Nivel de calidad",
-    "fps": "FPS",
-    "drawCalls": "Draw calls (por cuadro)",
+  "stage": {
+    "leave": "Salir del tutor",
+    "personalizeLayer": "Haz tuyo este lugar",
+    "introduceLayer": "Empezar una conversación",
+    "conversationLayer": "Tu conversación",
+    "closeLayer": "Fin de la sesión",
+    "unavailableLayer": "Estado del tutor",
+    "controlsLabel": "Habla con tu tutor"
+  },
 ```
 
 ### frontend/src/i18n/index.ts
@@ -12938,15 +12942,15 @@ import enErrors from './en-US/errors.json';
     "contextLost": "A visualização 3D foi interrompida. Ela volta sozinha em um instante.",
     "loadFailed": "Não foi possível carregar a cena 3D. Verifique sua conexão e tente de novo."
   },
-  "lab": {
-    "title": "Laboratório de cena",
-    "subtitle": "Meça um .glb contra o orçamento de assets do Tutor",
-    "loadModel": "Carregar um .glb",
-    "noModel": "Nenhum modelo carregado. Escolha um .glb para medi-lo ou explore a cena de exemplo.",
-    "runtime": "Execução",
-    "tier": "Nível de qualidade",
-    "fps": "FPS",
-    "drawCalls": "Draw calls (por quadro)",
+  "stage": {
+    "leave": "Sair do tutor",
+    "personalizeLayer": "Deixe este lugar do seu jeito",
+    "introduceLayer": "Começar uma conversa",
+    "conversationLayer": "Sua conversa",
+    "closeLayer": "Fim da sessão",
+    "unavailableLayer": "Status do tutor",
+    "controlsLabel": "Fale com seu tutor"
+  },
 ```
 
 ### frontend/src/index.css
@@ -14622,6 +14626,26 @@ import {
  *
 ```
 
+### frontend/src/lib/sound.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  PLATFORM_SOUND_SRC,
+  PLATFORM_SOUND_VOLUME,
+  TUTOR_AMBIENT_DUCKED_VOLUME,
+  TUTOR_AMBIENT_SRC,
+  TUTOR_AMBIENT_VOLUME,
+  TUTOR_SOUND_VOLUME,
+  duckTutorAmbient,
+  isSoundMuted,
+  playPlatformSound,
+  setSoundMuted,
+  startTutorAmbient,
+  stopTutorAmbient,
+} from './sound'
+```
+
 ### frontend/src/lib/sound.ts
 
 ```
@@ -14635,11 +14659,11 @@ import {
 // contract as the lesson player's sfx.ts: autoplay rejections and missing
 // assets are swallowed — sound is enhancement, never a requirement.
 
-export type PlatformSoundName = 'auth_success' | 'auth_error' | 'auth_bye' | 'nav_tap'
-
-/** v1 one-shot audible level: instance 0.15 × Howler master 0.5. */
-export const PLATFORM_SOUND_VOLUME = 0.075
-
+export type PlatformSoundName =
+  | 'auth_success'
+  | 'auth_error'
+  | 'auth_bye'
+  | 'nav_tap'
 ```
 
 ### frontend/src/lib/supabaseRealtime.ts
@@ -19537,19 +19561,19 @@ export function SectionComingSoon({ section, icon }: { section: 'tutor' | 'tasks
 ```
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { TutorExperience } from '@/tutor/TutorExperience';
+import { APP_HOME } from '@/routes/app/navConfig';
 
 /*
  * The Tutor product surface.
  *
- * This route is deliberately thin: a heading, an error boundary, and the
- * experience. Everything else lives in `@/tutor/` — the phases, the socket,
- * the personalization — because the route is also what App.tsx lazy-loads,
- * and `three` must only ever be reached through a lazy route (/TUTOR_3D.md §6).
- *
- * The 3D stage is shown to EVERY user (owner decision, 2026-08-15) — never
- * gated by role or device class. Device capability is handled by the adaptive
- * quality tiers inside the scene, not by withholding the feature.
+ * This route is deliberately thin: an error boundary and the experience.
+ * Everything else lives in `@/tutor/` — the phases, the socket, the
+ * personalization — because the route is also what App.tsx lazy-loads, and
+ * `three` must only ever be reached through a lazy route (/TUTOR_3D.md §6).
+ * Any 3D preview added anywhere in the product has to live inside THIS chunk
+ * for that to keep holding.
 ```
 
 ### frontend/src/routes/app/__tests__/LearnPage.test.tsx
@@ -20899,6 +20923,26 @@ function systemPrefersDark(): boolean {
   // matchMedia is absent in some test environments (jsdom) — default to light there.
 ```
 
+### frontend/src/tutor-scene/CameraDirector.tsx
+
+```
+import { useEffect, useRef } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
+import { Box3, Vector3, type Group, type PerspectiveCamera } from 'three';
+import {
+  poseFor,
+  SHOT_AMBIENT,
+  SHOT_FITS_SCENE,
+  type ShotContext,
+  type ShotId,
+  type ShotScene,
+  type ShotSubject,
+} from './shots';
+import {
+  applyComposition,
+  composeFor,
+```
+
 ### frontend/src/tutor-scene/Character3D.tsx
 
 ```
@@ -20979,6 +21023,26 @@ import type { CharacterId } from '@/components/characters/control/types';
 import {
 ```
 
+### frontend/src/tutor-scene/SafeAreaContext.tsx
+
+```
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  type MutableRefObject,
+  type ReactNode,
+} from 'react';
+import type { HudRect } from './composition';
+
+/*
+ * Where the HUD actually is, measured, in a REF.
+ *
+```
+
 ### frontend/src/tutor-scene/SceneCanvas.tsx
 
 ```
@@ -21002,7 +21066,11 @@ export interface SceneStats {
 ### frontend/src/tutor-scene/SceneLighting.tsx
 
 ```
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
+import { Color, type DirectionalLight, type HemisphereLight } from 'three';
 import { useTheme } from '@/theme/useTheme';
+import { resolveBackdrop, warmBy, type SceneBackdropId } from './backdrops';
 import type { QualitySettings } from './quality';
 
 /*
@@ -21013,30 +21081,46 @@ import type { QualitySettings } from './quality';
  * shadow, valid in both themes) and nothing else.
  *
  * The light count is also a budget line: every shadow-casting light is an
- * extra render pass over the whole scene. There is exactly one, and it only
- * casts on the high tier.
- */
+```
 
+### frontend/src/tutor-scene/ScreenAnchor.tsx
+
+```
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
+import { Vector3 } from 'three';
+import type { AnchorId } from './anchors';
+import { isAnchorNodeVisible, type ViewportBox } from './culling';
+
+/*
+ * The projection ref channel: how a DOM node gets pinned to a place in the 3D
+ * scene without React ever hearing about it.
+ *
+ * WHY DOM AT ALL. Text has to be DOM. Rendering a caption or a control into the
+ * WebGL scene means giving up the screen reader, the text selection, the focus
+ * ring, the browser's own font rendering and every locale that needs a glyph the
+ * atlas does not have — for a stage whose copy exists in three languages, that
+ * is not a trade, it is a regression. `SpeechCaption` already proves the DOM
 ```
 
 ### frontend/src/tutor-scene/TutorScene.tsx
 
 ```
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
-import { Box3, Group, Vector3, type PerspectiveCamera } from 'three';
+import { Fragment, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useFrame } from '@react-three/fiber';
+import { Box3, Group, Vector3 } from 'three';
 import { SceneCanvas, type SceneStats } from './SceneCanvas';
 import { SceneLighting } from './SceneLighting';
 import { Diorama } from './Diorama';
 import { Character3D } from './Character3D';
-import { QUALITY_SETTINGS, type QualitySettings } from './quality';
+import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
-import { findStandingSpots, type StandingSpot } from './standingSpots';
-import { CHARACTER_ASSETS, characterFootprintM, type SCENE_ASSETS } from './assets';
-import { walkabilityFor } from './walkability';
-import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
-
-/*
+import {
+  AUDITION_GROUPING,
+  AUDITION_SAMPLES_PER_METRE,
+  findStandingSpots,
+  type StandingSpot,
+} from './standingSpots';
 ```
 
 ### frontend/src/tutor-scene/TutorStage.tsx
@@ -21046,17 +21130,17 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { TutorScene, type TutorFraming, type TutorSceneProps } from './TutorScene';
 import { useLipSync } from './useLipSync';
 import { VISEME_CLOSED } from './lipSync';
+import { shotForLegacyFraming, type ShotId } from './shots';
+import type { SceneBackdropId } from './backdrops';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
 
 /*
  * The Tutor's stage, as the PRODUCT uses it.
  *
  * `TutorScene` is the renderer and takes low-level props — a viseme index, a
- * framing mode. This is the surface the conversational layer talks to, and it
- * exists so that wiring RAG and TTS is passing props rather than reaching into
- * the scene: hand it a speech URL and it plays the audio, drives the mouth from
- * that audio, and moves the camera in close for as long as the character is
- * talking.
+ * shot. This is the surface the conversational layer talks to, and it exists so
+ * that wiring RAG and TTS is passing props rather than reaching into the scene:
+ * hand it a speech URL and it plays the audio, drives the mouth from that audio,
 ```
 
 ### frontend/src/tutor-scene/__tests__/TutorStage.test.tsx
@@ -21076,7 +21160,47 @@ vi.mock('../TutorScene', () => ({
   TutorScene: (props: Record<string, unknown>) => (
     <div
       data-testid="scene"
-      data-framing={String(props.framing)}
+      data-shot={String(props.shot)}
+```
+
+### frontend/src/tutor-scene/anchors.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import {
+  ANCHOR_IDS,
+  ANCHOR_MARK_COUNT,
+  castMarks,
+  isAnchorId,
+  SKY_MARK_IDS,
+  STAGE_MARK_IDS,
+  type AnchorId,
+} from './anchors';
+
+/*
+ * The anchor vocabulary is the one thing both sides of the canvas boundary hold,
+ * and a slot that exists on one side and not the other fails SILENTLY: the DOM
+ * node simply never moves, which looks like a styling problem rather than a
+```
+
+### frontend/src/tutor-scene/anchors.ts
+
+```
+/*
+ * The closed vocabulary of NAMED PLACES on the Tutor's stage.
+ *
+ * Every in-scene control that carries text is a DOM node positioned over the
+ * canvas, and it has to know WHERE. Handing those components a coordinate would
+ * have two costs, and the second one is the expensive one: a component holding
+ * `[1.4, 1.9, -0.2]` is a component that must be rewritten when an island
+ * changes size, and — because a coordinate in this system is a `Vector3` — it is
+ * also a component that imports `three`. That would drag the whole renderer into
+ * the product layer and out of the lazy route it is deliberately confined to
+ * (frontend/AGENTS.md: `three` must only ever be reached through a lazy route).
+ *
+ * So a DOM component asks for `'lead.head'`. The scene publishes what that means
+ * this frame, on this island, for this cast. The two halves never share a type
+ * heavier than a string.
 ```
 
 ### frontend/src/tutor-scene/assets.test.ts
@@ -21119,11 +21243,32 @@ import {
  * headless script. This module adds URLs on top, and reading a URL requires
 ```
 
+### frontend/src/tutor-scene/backdrops.ts
+
+```
+/*
+ * What time of day the island is standing in.
+ *
+ * THIS CLOSES A SHIPPED BUG, and the shape of the bug is worth stating plainly
+ * because it is the kind that passes every test. `backdrop` is offered in the
+ * personalization panel, validated by Zod, persisted, and returned by two
+ * endpoints. A learner can pick "Night", see it saved, come back tomorrow and
+ * see it still selected. It reaches no renderer. Neither `TutorSceneProps` nor
+ * `TutorStageProps` had ever had such a field, so the value travelled the entire
+ * length of the system and stopped one prop short of the lights.
+ *
+ * The palettes below are PHYSICAL LIGHT, not surface colour, which is why they
+ * are literal values rather than DESIGN.md tokens. A token like `--lf-surface`
+ * answers "what colour is this panel"; nothing in the design system answers
+ * "what colour is the sun at dusk", and borrowing a UI token for it would tie
+```
+
 ### frontend/src/tutor-scene/budget.test.ts
 
 ```
 import { describe, expect, it } from 'vitest';
-import { readBudget, TUTOR_ASSET_BUDGET } from './budget';
+import { castDrawCalls, fitsFrameBudget, readBudget, trianglesPerFrame, TUTOR_ASSET_BUDGET } from './budget';
+import { CHARACTER_MEASUREMENTS, SCENE_MEASUREMENTS } from './measurements';
 
 describe('readBudget', () => {
   it('measures a live scene against the PER-FRAME ceiling', () => {
@@ -21136,7 +21281,6 @@ describe('readBudget', () => {
     const [triangles] = readBudget({ triangles: 102_424, drawCalls: 10, perFrame: true });
     expect(triangles!.over).toBe(false);
   });
-
 ```
 
 ### frontend/src/tutor-scene/budget.ts
@@ -21239,6 +21383,86 @@ import { sceneAssetUrl } from './assets';
  *              LeftUpLeg   Hips   Spine02   RightForeArm   foot separation
 ```
 
+### frontend/src/tutor-scene/composition.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import {
+  applyComposition,
+  composeFor,
+  freeCentreOffsetPx,
+  insetsFromRects,
+  NO_INSETS,
+  padDistance,
+  type HudRect,
+} from './composition';
+
+/*
+ * This is the arithmetic that decides whether a character is behind a panel.
+ *
+ * The two viewports below are the ones §1.11 makes non-negotiable, and the HUD
+```
+
+### frontend/src/tutor-scene/composition.ts
+
+```
+/*
+ * Composing a full-bleed canvas around a HUD that covers part of it.
+ *
+ * THE PROBLEM. The stage is the page: the canvas runs edge to edge, and the
+ * controls float on top of it. That is the whole design. But it means the
+ * geometric centre of the canvas is NOT the centre of the space the learner can
+ * actually see the character in — with a lesson plate inset from the
+ * bottom-right at 1280 px, or a bottom sheet at 375 px, the free rectangle is
+ * somewhere up and to the left of centre, and a character framed dead centre is
+ * a character half behind a panel.
+ *
+ * The obvious fix is the wrong one. Shrinking the canvas to the free rectangle
+ * reinstates exactly the letterboxed panel the owner rejected — it is the
+ * rejected layout with extra steps, because the visible edge of the render is
+ * what makes a stage read as a stage. So the canvas stays full-bleed and the
+```
+
+### frontend/src/tutor-scene/culling.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { isAnchorNodeVisible, type ViewportBox } from './culling';
+
+/*
+ * The rule this file defends: a node the learner cannot fully read is not on
+ * screen, and therefore is not focusable.
+ *
+ * The projector cannot be stepped through by a test — it lives in `useFrame`,
+ * with a camera and a WebGL context neither of which jsdom has. So the geometry
+ * lives here, on its own, and this is the only place the rule is actually
+ * checked. Every case below is written as a position the camera really produces
+ * during a shot change, because that is when a chip crosses the frame edge.
+ */
+
+/** A 1280x800 desktop stage, `fixed inset-0`, so the canvas IS the viewport. */
+```
+
+### frontend/src/tutor-scene/culling.ts
+
+```
+/*
+ * Is an anchored node actually READABLE where the projector just put it?
+ *
+ * This module imports NOTHING on purpose, exactly like `anchors.ts`: the answer
+ * is arithmetic, and arithmetic can be unit-tested. The projector that calls it
+ * runs inside `useFrame`, which no test in this repo can step through, so the
+ * only way this rule gets checked is by living outside the frame loop.
+ *
+ * WHY THE BOX AND NOT THE CENTRE POINT. The projector positions a node by its
+ * CENTRE — its transform ends in `translate(-50%, -50%)` — so a test on the
+ * centre alone knows nothing about where the node's edges are. The first version
+ * culled on the centre plus a flat 96 px margin, which kept a node un-hidden and
+ * un-inert while its centre was up to 96 px OUTSIDE the frame. A chip in that
+ * state straddles the screen edge as a sliver, or is off screen entirely if it
+ * is small, and it stays fully focusable either way: a keyboard user tabbing
+```
+
 ### frontend/src/tutor-scene/fitCamera.ts
 
 ```
@@ -21332,11 +21556,11 @@ import { useSceneModel } from '../useSceneModel';
 import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from '../quality';
 import { readBudget, TUTOR_ASSET_BUDGET } from '../budget';
 import { fitObject } from '../fitCamera';
-import { TutorScene, type TutorFraming } from '../TutorScene';
-import {
-  CHARACTER_ACTIONS,
-  CHARACTER_EMOTIONS,
-  type CharacterAction,
+import { TutorScene } from '../TutorScene';
+import { SHOT_IDS, type ShotId } from '../shots';
+import { SCENE_BACKDROP_IDS, type SceneBackdropId } from '../backdrops';
+import { AnchorProvider, useAnchorSlot } from '../ScreenAnchor';
+import { ANCHOR_IDS, type AnchorId } from '../anchors';
 ```
 
 ### frontend/src/tutor-scene/lipSync.test.ts
@@ -21539,6 +21763,46 @@ import { Quaternion, type Bone, type Object3D } from 'three';
   }
 ```
 
+### frontend/src/tutor-scene/shots.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import {
+  CLOSEUP_WIDE_DISTANCE,
+  CLOSEUP_WIDE_OFF_AXIS,
+  horizontalFov,
+  poseFor,
+  SHOT_AMBIENT,
+  SHOT_FITS_SCENE,
+  SHOT_IDS,
+  shotForLegacyFraming,
+  STAGE_BEARING,
+  type CameraPose,
+  type ShotContext,
+  type ShotSubject,
+  type Vec3,
+```
+
+### frontend/src/tutor-scene/shots.ts
+
+```
+/*
+ * The Tutor's shot vocabulary.
+ *
+ * WHY THIS IS A MODULE AND NOT A BRANCH IN THE CAMERA RIG. The stage shipped
+ * with two framings decided inside `useFrame`, each of which computed an
+ * ABSOLUTE camera position and wrote it every frame. That works, and it is also
+ * the reason every framing change SNAPPED: there was no state between "here" and
+ * "there" for anything to move through. A camera that teleports is not a
+ * cheaper camera move, it is the absence of one.
+ *
+ * Splitting the DESTINATION from the TRAVEL fixes that in one step. Every
+ * function here answers a single question — given the island, the cast and the
+ * viewport, where should the camera BE for this shot — and answers it with pure
+ * arithmetic. `CameraDirector` then owns the travel, and owns it once, for every
+ * shot, instead of each shot reinventing it.
+```
+
 ### frontend/src/tutor-scene/standingSpots.test.ts
 
 ```
@@ -21722,19 +21986,19 @@ import masks from './walkMasks.generated.json';
 ### frontend/src/tutor/ConversationView.tsx
 
 ```
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, Icon } from '@/components/ui';
-import { TutorStage } from '@/tutor-scene/TutorStage';
-import { SCENE_ASSETS } from '@/tutor-scene/assets';
-import type { CharacterId } from '@/components/characters/control/types';
-import { cn } from '@/lib/utils';
+import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
+import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
+import { HudPlate } from './hud/HudPlate';
+import { LessonPlate, type LessonPlateDetent } from './hud/LessonPlate';
+import { WorldChip } from './hud/WorldChip';
 import { SpeechCaption } from './SpeechCaption';
-import { TutorBubble } from './TutorBubble';
+import { TutorBubble, TutorTranscript } from './TutorBubble';
 import { LiveSegmentPanel } from './LiveSegmentPanel';
-import { useMicrophone } from './useMicrophone';
-import type { TutorSocket } from './useTutorSocket';
-import type { StartedSession } from './types';
+import { useStageDock, type ConversationLayerProps, type StageDockValue } from './stage/StageShell';
 
 /*
 ```
@@ -21752,51 +22016,51 @@ import { gradeSegment } from './tutorApi';
 import type { LiveSegmentState } from './useTutorSocket';
 
 /*
- * The right-hand panel: the Lesson Engine, running live.
+ * The Lesson Engine, running live, on the floating plate.
  *
  * IT REUSES THE REAL REGISTRY. Every one of the 57 renderers, the shared
  * primitives, the tap-first interaction rules and the accessibility work all
  * come along for free, and a lesson type improved for courses improves here on
 ```
 
-### frontend/src/tutor/OfferPanel.tsx
+### frontend/src/tutor/OfferChips.tsx
 
 ```
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, Icon } from '@/components/ui';
-import { cn } from '@/lib/utils';
-import type { StartSessionInput } from './tutorApi';
-import type { TutorOffers } from './types';
-
-/*
- * How a session starts (/ORACLE.md §9.2).
- *
- * A CLOSED SET, ALWAYS. Four ways in — a course topic, a skill the system
- * flagged, a curated question, or open conversation — and the first three are
- * ids, never text. Only the fourth is free-form, and it is the one every
- * defence in /ORACLE.md §5 exists for.
- *
-```
-
-### frontend/src/tutor/PersonalizePanel.tsx
-
-```
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Button, Card, Field } from '@/components/ui';
-import { CharacterActor } from '@/components/characters/control/CharacterActor';
+import { Icon, Reveal } from '@/components/ui';
 import type { CharacterId } from '@/components/characters/control/types';
 import { cn } from '@/lib/utils';
-import type { Adaptation, TutorCatalog, TutorPreferences } from './types';
+import { playPlatformSound } from '@/lib/sound';
+import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
+import { HudPlate } from './hud/HudPlate';
+import { micBlockedReason } from './mic';
+import { SessionHistory } from './SessionHistory';
+import { SpeechCaption } from './SpeechCaption';
+import type { OfferLayerProps } from './stage/StageShell';
+import type { StartSessionInput } from './tutorApi';
 
 /*
- * "Where are we, and who am I talking to?"
- *
- * THE CATALOG COMES FROM THE SERVER. There is no hard-coded list of characters
- * or dioramas in this file — Core serves them with the preferences, so
- * commissioning a third island is content work and not a frontend release
- * (/ORACLE.md §0 assumption 1).
+```
+
+### frontend/src/tutor/PersonalizeInWorld.tsx
+
+```
+import { useCallback, useEffect, useId, useMemo, useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, Field, Icon } from '@/components/ui';
+import type { CharacterId } from '@/components/characters/control/types';
+import { playPlatformSound } from '@/lib/sound';
+import { cn } from '@/lib/utils';
+import { castMarks, type AnchorId } from '@/tutor-scene/anchors';
+import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
+import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
+import { HudPlate } from '@/tutor/hud/HudPlate';
+import { useDesktopPlate } from '@/tutor/hud/LessonPlate';
+import { WorldChip } from '@/tutor/hud/WorldChip';
+import { useStageDock, type PersonalizeLayerProps } from './stage/StageShell';
+import type { Adaptation } from './types';
+
 ```
 
 ### frontend/src/tutor/SessionHistory.tsx
@@ -21824,6 +22088,9 @@ import type { SessionSummary, SessionTranscript } from './types';
 ```
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
+import type { AnchorId } from '@/tutor-scene/anchors';
+import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
+import { HudPlate } from './hud/HudPlate';
 
 /*
  * The tutor's words, ABOVE the character's head.
@@ -21834,9 +22101,6 @@ import { cn } from '@/lib/utils';
  * and reading what it said. Above the head, they are the same glance.
  *
  * IT IS AN HTML OVERLAY, NOT SCENE GEOMETRY. Text inside WebGL is a font-atlas
- * problem — glyph coverage for three locales, hinting, subpixel rendering,
- * scaling with the camera — and none of it buys anything here, because the
- * caption is always facing the viewer anyway. An absolutely-positioned div
 ```
 
 ### frontend/src/tutor/TutorBubble.tsx
@@ -21848,35 +22112,35 @@ import type { CharacterAction, CharacterEmotion, CharacterId } from '@/component
 import { cn } from '@/lib/utils';
 
 /*
- * The 2D chat rail: the character's head, articulating, beside a running
- * transcript of the conversation.
+ * The 2D chat bubble: the character's head, articulating, beside the line it is
+ * saying right now, and the running transcript of everything before it.
  *
  * WHY THIS EXISTS ALONGSIDE THE 3D STAGE, rather than instead of it. Two
  * reasons, and the second is the one that decided it:
  *
- * 1. A transcript is the accessible spine of the whole feature. Captions above
- *    the head give the CURRENT line; this gives everything that was said, in
- *    order, scrollable and selectable.
+ * 1. A transcript is the accessible spine of the whole feature. The caption
+ *    above the head gives the CURRENT line; this gives everything that was
+ *    said, in order, scrollable and selectable.
 ```
 
 ### frontend/src/tutor/TutorExperience.tsx
 
 ```
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
-import { Button, Card } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { duckTutorAmbient, playPlatformSound } from '@/lib/sound';
+import { SCENE_ASSETS } from '@/tutor-scene/assets';
+import { isSceneBackdropId, type SceneBackdropId } from '@/tutor-scene/backdrops';
+import { HudPlate } from '@/tutor/hud/HudPlate';
 import { getOffers, getPreferences, savePreferences, startSession, type StartSessionInput } from './tutorApi';
-import { PersonalizePanel } from './PersonalizePanel';
-import { OfferPanel } from './OfferPanel';
+import { micBlockedForOffers, micBlockedReason, narrowBlockedReason, primaryOpening } from './mic';
+import { PersonalizeInWorld } from './PersonalizeInWorld';
+import { OfferChips } from './OfferChips';
 import { ConversationView } from './ConversationView';
 import { SessionHistory } from './SessionHistory';
-import { TutorStage } from '@/tutor-scene/TutorStage';
-import { useTutorSocket } from './useTutorSocket';
-import type { StartedSession, TutorCatalog, TutorOffers, TutorPreferences } from './types';
-
-/*
- * The Tutor, as the learner meets it (/ORACLE.md §1).
+import { auditionFor } from './stage/phases';
 ```
 
 ### frontend/src/tutor/VoiceConsentControl.tsx
@@ -21919,6 +22183,86 @@ import { VoiceConsentControl } from '../VoiceConsentControl';
  */
 ```
 
+### frontend/src/tutor/__tests__/conversationView.test.tsx
+
+```
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import type { ReactNode } from 'react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { SafeAreaProvider } from '@/tutor-scene/SafeAreaContext';
+import { ConversationView } from '../ConversationView';
+import type { TutorSocket } from '../useTutorSocket';
+import type { StartedSession } from '../types';
+
+/*
+ * The live conversation, tested at the three places a mistake here is a CHILD's
+ * problem rather than a developer's.
+ *
+ * 1. The tutor asks "shall I explain that differently?" and the learner must be
+ *    able to answer it. The offer used to exist only as chips anchored to three
+ *    separate world points, and an anchored node is hidden AND inert the moment
+```
+
+### frontend/src/tutor/__tests__/mic.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { micBlockedForOffers, micBlockedReason, narrowBlockedReason, primaryOpening } from '../mic';
+import type { TutorOffers } from '../types';
+
+/*
+ * The two answers the shell needs about the microphone, now that the orb has
+ * one owner instead of two.
+ *
+ * Both of these used to live inside `OfferChips`, beside one of the two orbs.
+ * Moving the orb to the stage moved the questions with it, and a second copy of
+ * either is the kind of duplication that drifts in one direction only: the copy
+ * nobody is looking at keeps saying yes after the original has started saying
+ * no.
+ */
+
+```
+
+### frontend/src/tutor/__tests__/offerChips.test.tsx
+
+```
+import { act, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { OfferChips } from '../OfferChips';
+import type { TutorOffers } from '../types';
+
+/*
+ * The arrival screen, which the owner has rejected twice.
+ *
+ * These tests are about the three things a mistake here is visible to a LEARNER
+ * rather than to a developer: the openings are a small closed set of controls
+ * and not a reading exercise, the flagged-skill opening asks rather than tells,
+ * and the microphone is present and honest instead of being a checkbox that
+ * disappears when the answer is no.
+ *
+ * The in-scene arrangement needs a camera to hang off, so what runs here is the
+```
+
+### frontend/src/tutor/__tests__/personalizeInWorld.test.tsx
+
+```
+import { useEffect } from 'react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { castMarks } from '@/tutor-scene/anchors';
+import { AnchorProvider } from '@/tutor-scene/ScreenAnchor';
+import { SafeAreaProvider, useSafeArea } from '@/tutor-scene/SafeAreaContext';
+import { PersonalizeInWorld } from '../PersonalizeInWorld';
+import type { PersonalizeLayerProps } from '../stage/StageShell';
+import type { TutorCatalog, TutorPreferences } from '../types';
+
+/*
+ * What is worth asserting here, and what is not.
+ *
+ * NOT worth asserting: where a chip lands on screen. That is the projector's
+ * job, it happens inside a `useFrame` against a real camera, and jsdom has
+```
+
 ### frontend/src/tutor/__tests__/tutor.test.tsx
 
 ```
@@ -21939,16 +22283,177 @@ import type { ServerMessage } from '../types';
 
 ```
 
+### frontend/src/tutor/__tests__/useMicrophone.test.tsx
+
+```
+import { Profiler } from 'react';
+import { act, render, renderHook } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  HOLD_MAX_BYTES,
+  HOLD_MAX_MS,
+  MAX_AUDIO_B64_CHARS,
+  useMicrophone,
+} from '../useMicrophone';
+
+/*
+ * The two things that were actually wrong with the microphone, tested at the
+ * level where they were wrong.
+ *
+ * (1) The level meter used to be React state written from a requestAnimationFrame
+```
+
+### frontend/src/tutor/hud/HudPlate.tsx
+
+```
+import { createElement, forwardRef } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
+import { cn } from '@/lib/utils';
+
+/*
+ * The one glass primitive every in-scene control is built from: chip, plate,
+ * orb, sheet. Having exactly one keeps the HUD reading as a single material
+ * rather than as a pile of differently-frosted rectangles, and it is the only
+ * way the contrast rule below can be guaranteed rather than remembered.
+ *
+ * THE GLASS IS THE FRAME. THE TEXT SITS ON AN OPAQUE FLOOR.
+ *
+ * `.lf-glass` is `surface/78%` plus a blur — a translucent fill whose effective
+ * colour is 22% whatever is behind it. Behind a HUD control is a moving,
+ * rotating, relit 3D island, so the same caption is over pale sand in one frame
+```
+
+### frontend/src/tutor/hud/LessonPlate.tsx
+
+```
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent, ReactNode } from 'react';
+import { cn } from '@/lib/utils';
+import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
+import { HudPlate } from './HudPlate';
+
+/*
+ * The surface a live lesson runs on, floating over the island.
+ *
+ * THIS IS NOT A RAIL, AND THE DISTINCTION IS THE WHOLE POINT. The version the
+ * owner rejected put the 3D stage in one half of a `lg:grid-cols-[1fr_1fr]`
+ * split and the lesson in the other, and the complaint was about the
+ * SILHOUETTE: a near-opaque slab down a third of the screen reads as a
+ * dashboard whatever is drawn beside it. Narrowing that slab to 400 px does not
+ * answer the complaint, because a full-height column is still a full-height
+```
+
+### frontend/src/tutor/hud/MicOrb.tsx
+
+```
+import { useCallback, useEffect, useId, useRef } from 'react';
+import type { PointerEvent as ReactPointerEvent, KeyboardEvent as ReactKeyboardEvent } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import { duckTutorAmbient, playPlatformSound } from '@/lib/sound';
+import { HudPlate } from './HudPlate';
+import type { Microphone } from '../useMicrophone';
+
+/*
+ * The hero control, and the answer to the sentence that got the last version
+ * rejected: "en ningun momento se ve el acceso a microfono".
+ *
+ * IT IS IN THE DOM IN ALL FIVE STATES, INCLUDING THE ONES WHERE IT CANNOT BE
+ * USED. The previous build rendered it behind `{socket.microphone && (...)}`,
+```
+
+### frontend/src/tutor/hud/WorldChip.tsx
+
+```
+import type { ReactNode } from 'react';
+import { cn } from '@/lib/utils';
+import type { AnchorId } from '@/tutor-scene/anchors';
+import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
+import { HudPlate } from './HudPlate';
+import type { HudPlateFloor, HudPlateShape } from './HudPlate';
+
+/*
+ * A HudPlate that lives at a named place in the world.
+ *
+ * The chip is the GUARANTEED path and the mesh beside it is the delightful one.
+ * A pickable mesh is a lovely thing to tap and a terrible thing to reach with a
+ * keyboard, a screen reader or a shaking hand; a DOM button is the reverse.
+ * Both are always mounted and both dispatch the SAME handler, so there is one
+ * code path with two ways in rather than an accessible fallback that quietly
+```
+
+### frontend/src/tutor/hud/__tests__/HudPlate.test.tsx
+
+```
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
+import { HudPlate } from '../HudPlate';
+
+/*
+ * HudPlate carries two rules that cannot be left to memory, because both fail
+ * silently and both fail only for someone other than the person who built it.
+ *
+ * The contrast rule: text on `.lf-glass` over a moving 3D island has no second
+ * colour to compute a ratio against, so every word must sit on an opaque token.
+ * The measure rule: `personalize.lightTitle` is 9 / 6 / 5 characters across
+ * en-US / es-MX / pt-BR, so any plate sized to one locale's string clips
+ * another's, and a truncated two-word control has no name at all.
+ */
+
+```
+
+### frontend/src/tutor/hud/__tests__/MicOrb.test.tsx
+
+```
+import { Profiler } from 'react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MicOrb } from '../MicOrb';
+import type { MicOrbState } from '../MicOrb';
+import type { MicLevelListener, Microphone } from '../../useMicrophone';
+
+/*
+ * The orb exists because of one sentence in the rejection: the microphone was
+ * nowhere to be seen. It was rendered behind `{socket.microphone && (...)}`,
+ * so it vanished in exactly the configuration everyone has actually run.
+ *
+ * So the tests here are about PRESENCE and HONESTY first — it is in the DOM in
+ * all five states, and when it cannot be used it says why in a translated line
+ * — and about the level meter costing nothing second.
+```
+
+### frontend/src/tutor/hud/__tests__/WorldChip.test.tsx
+
+```
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+import { AnchorProvider } from '@/tutor-scene/ScreenAnchor';
+import { WorldChip } from '../WorldChip';
+
+/*
+ * The chip is the guaranteed half of a pair: a mesh in the scene is the lovely
+ * way to choose something and a DOM button is the only way that survives a
+ * keyboard, a screen reader or a shaking hand. Both dispatch the same handler,
+ * so what is tested here is that the guaranteed half is a real control.
+ *
+ * The rest is about the seam with the projector, which writes this node's whole
+ * `transform` every frame. Anything the chip contributes to that property is
+ * either erased or applied twice, and "applied twice" is a chip sitting half its
+ * own width away from the thing it names — visible only once the scene is
+```
+
 ### frontend/src/tutor/lab/TutorLabPage.tsx
 
 ```
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui';
-import { PersonalizePanel } from '../PersonalizePanel';
-import { OfferPanel } from '../OfferPanel';
-import { SpeechCaption } from '../SpeechCaption';
-import { TutorBubble } from '../TutorBubble';
+import { AnchorProvider } from '@/tutor-scene/ScreenAnchor';
+import { SafeAreaProvider } from '@/tutor-scene/SafeAreaContext';
+import { OfferChips } from '../OfferChips';
+import { PersonalizeInWorld } from '../PersonalizeInWorld';
+import { TutorBubble, TutorTranscript } from '../TutorBubble';
 import { LiveSegmentPanel } from '../LiveSegmentPanel';
 import { VoiceConsentControl } from '../VoiceConsentControl';
 import type { TutorCatalog, TutorOffers, TutorPreferences } from '../types';
@@ -21956,7 +22461,166 @@ import type { LiveSegmentState } from '../useTutorSocket';
 
 /*
  * `/dev/tutor-lab` — the Tutor's visual QA surface, dev-gated out of
- * production exactly like `/dev/lesson-lab` and `/dev/scene-lab`.
+```
+
+### frontend/src/tutor/mic.ts
+
+```
+import type { MicBlockedReason } from './hud/MicOrb';
+import type { StartSessionInput } from './tutorApi';
+import type { TutorOffers } from './types';
+
+/*
+ * The three answers Core gives about the microphone, and the one opening the
+ * microphone press starts.
+ *
+ * BOTH OF THESE USED TO LIVE INSIDE `OfferChips`, which is where the orb used
+ * to live. The orb belongs to the stage now (`stage/StageShell.tsx`), so the
+ * shell needs the same two answers, and a second copy of either is the kind of
+ * duplication that drifts in one direction only: the copy nobody is looking at
+ * keeps saying yes after the original has started saying no.
+ */
+
+```
+
+### frontend/src/tutor/stage/StageShell.tsx
+
+```
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { Icon } from '@/components/ui';
+import { APP_HOME } from '@/routes/app/navConfig';
+```
+
+### frontend/src/tutor/stage/__tests__/StageShell.test.tsx
+
+```
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
+import {
+  StageLayer,
+  StageShell,
+  STAGE_PHASES,
+  type StageMicProps,
+  type StagePhase,
+} from '../StageShell';
+import type { Microphone } from '@/tutor/useMicrophone';
+
+beforeAll(() => {
+  // jsdom ships no media pipeline, and the stage's audio element pauses itself
+  // on mount. Left alone it prints a not-implemented stack on every render in
+```
+
+### frontend/src/tutor/stage/__tests__/micForPhase.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { auditionFor, STAGE_PHASES, type StagePhase } from '../phases';
+import { micForPhase, type StageMicInput } from '../micForPhase';
+
+/*
+ * THE MICROPHONE EXISTS IN EVERY PHASE, AND SAYS WHY WHEN IT CANNOT BE USED.
+ *
+ * The orb used to be mounted in exactly two layers, so `arriving`,
+ * `personalizing`, `closing` and `unavailable` had no microphone on screen at
+ * all — including the first screen a new learner ever sees. The owner's report
+ * was, verbatim, "en ningun momento se ve el acceso a microfono".
+ *
+ * The reason a test can catch that now is that "which state is the orb in" is a
+ * TOTAL function over the phase vocabulary rather than an `&&` at two call
+ * sites. These tests walk STAGE_PHASES, so a seventh phase added without a
+```
+
+### frontend/src/tutor/stage/__tests__/shotForPhase.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { shotForPhase, STAGE_PHASES, type StagePhase } from '../phases';
+import { SHOT_IDS } from '@/tutor-scene/shots';
+
+/*
+ * The phase-to-shot mapping, tested headless.
+ *
+ * It is pure arithmetic over two closed unions, so it can be checked without a
+ * GPU, a socket or a browser — which matters more here than it sounds: framing
+ * mistakes on this stage have historically only ever been found by looking at
+ * them, and looking requires a running Oracle and a DeepSeek balance. A shot
+ * that silently degrades to the island view is indistinguishable from one that
+ * is framed correctly, until somebody screenshots it.
+ */
+
+```
+
+### frontend/src/tutor/stage/__tests__/stageMic.test.tsx
+
+```
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { StageLayer, StageShell, STAGE_PHASES, useStageDock, type StageMicProps } from '../StageShell';
+import { micForPhase } from '../micForPhase';
+import type { Microphone } from '@/tutor/useMicrophone';
+
+/*
+ * THE ONE MICROPHONE, PRESENT IN EVERY PHASE.
+ *
+ * This is the assertion the last two builds could not have passed. The orb was
+ * mounted inside `OfferChips` and inside `ConversationView`, so `arriving`,
+ * `personalizing`, `closing` and `unavailable` had no microphone in the DOM at
+ * all — and `personalizing` is the FIRST screen a new learner sees. Every gate
+ * was green through it, because nothing enumerated the phases and looked.
+```
+
+### frontend/src/tutor/stage/micForPhase.ts
+
+```
+import type { MicBlockedReason, MicOrbState } from '@/tutor/hud/MicOrb';
+import type { StagePhase } from './phases';
+
+/*
+ * What the microphone IS, in every phase of the route.
+ *
+ * WHY THIS IS A FUNCTION AND NOT AN `&&`. The orb used to be mounted in exactly
+ * two layers — the introduction and the conversation — so `arriving`,
+ * `personalizing`, `closing` and `unavailable` had no microphone on screen at
+ * all. That includes the FIRST screen a new learner ever sees. The owner's
+ * report of the shipped build was, verbatim, "en ningun momento se ve el acceso
+ * a microfono", and it was accurate twice over: the control was hidden when it
+ * did not work, and it was absent wherever nobody had thought to mount it.
+ *
+ * /ORACLE.md §14.1 answers the first half: always rendered, in all five states,
+```
+
+### frontend/src/tutor/stage/phases.ts
+
+```
+import type { CharacterId } from '@/components/characters/control/types';
+import type { ShotId } from '@/tutor-scene/shots';
+
+/*
+ * The phase vocabulary, and the one function that turns a phase into a camera
+ * shot.
+ *
+ * SPLIT OUT OF `StageShell` ON PURPOSE, for the same reason `shots.ts` imports
+ * nothing: this file is pure, so the mapping can be unit-tested without a GPU, a
+ * socket or a WebGL context. `StageShell` pulls in `three` through the renderer,
+ * and a test that has to boot the renderer to check an arithmetic table is a
+ * test nobody runs. `StageShell` re-exports everything here, so product code
+ * still has one place to import from.
+ */
+
 ```
 
 ### frontend/src/tutor/tutorApi.ts
@@ -22003,6 +22667,7 @@ export type Adaptation =
 
 ```
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { MutableRefObject } from 'react';
 
 /*
  * Push-to-talk, deliberately.
@@ -22016,7 +22681,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  *
  * The stream is acquired on FIRST USE rather than on mount. Asking a child for
  * their microphone the instant a page loads is the pattern that teaches people
- * to click "block", and a session that never uses voice never asks at all.
 ```
 
 ### frontend/src/tutor/useTutorSocket.ts
@@ -22250,6 +22914,46 @@ export default tseslint.config(
  *
  *   2. CASTING — is each canonical character enrolled in each locale? This is
  *      not a transport question and a green transport says nothing about it.
+```
+
+### oracle/scripts/verify-model.ts
+
+```
+/*
+ * `npm run model:verify` — proves the TEACHING path against the LIVE providers,
+ * through the real code rather than through curl.
+ *
+ * WHY IT EXISTS. Oracle shipped able to connect, greet, caption, save and
+ * replay — and unable to answer a single question, because MODEL_API_BASE was
+ * missing a path segment. Every layer above said it was fine: `/health`
+ * reported `model: up` (it means "a key is configured"), the deploy preflight
+ * passed all thirty checks, 142 tests passed against a local fake. The only
+ * thing that found it was typing a question into production, and that is not a
+ * check anyone can run on a schedule.
+ *
+ * A curl to /chat/completions is a better check and still not enough. It
+ * proves the endpoint, key and model NAME answer. It does not prove the four
+ * things between that answer and a learner being taught:
+```
+
+### oracle/scripts/verify-speaks.ts
+
+```
+/*
+ * `npm run speaks:verify` — proves a character can actually be HEARD, all the
+ * way from a cloned voice to a URL a browser can fetch.
+ *
+ * WHY THIS IS SEPARATE FROM voices:verify. That script proves TRANSPORT: our
+ * endpoints, headers and parsing match Inworld as it exists today, and each
+ * character is enrolled. Both can be perfectly green while every learner sits
+ * in silence, because between "Inworld returned audio" and "a child hears it"
+ * there is a step that fails without saying anything:
+ *
+ *   storeTurnAudio() returns null the instant DEPOT_URL or DEPOT_INTERNAL_KEY
+ *   is missing (depot/client.ts). The turn is emitted with audioUrl: null and
+ *   the session continues, captioned, exactly as designed — after a text-to-
+ *   speech call that succeeded and was BILLED. From the outside that is
+ *   indistinguishable from an unenrolled character, so nobody looks at Depot.
 ```
 
 ### oracle/scripts/verify-tutor.ts
@@ -22982,6 +23686,26 @@ export default defineConfig({
     setupFiles: ['src/test-setup.ts'],
   },
 });
+```
+
+### oracle/voices.enrolled.json
+
+```
+{
+  "_comment": [
+    "The enrolled Inworld voice for each canonical character, per locale.",
+    "",
+    "THESE ARE IDS, NOT SECRETS. They name a voice inside our own Inworld workspace and are",
+    "useless without the API key, so they are tracked on purpose: the deploy becomes reproducible,",
+    "a re-enrolment becomes a reviewable diff, and nobody has to paste twelve values by hand into a",
+    "dashboard at the exact moment they are tired.",
+    "",
+    "Produced by 'npm run voices:clone -- --confirm', which reads the owner-held reference recordings in",
+    "audiogen/src/samples/trimmed/ (gitignored, ~211 MB) — the SAME recordings Echo clones from, which",
+    "is what makes the tutor voice and the lesson narration the same person rather than two actors.",
+    "",
+    "A MISSING ENTRY MEANS SILENCE, never a substitute. resolveCharacterVoice returns null and the",
+    "adapter throws VoiceUnavailableError before any network call: a stranger speaking as Dr. Rho to a",
 ```
 
 ### package.json

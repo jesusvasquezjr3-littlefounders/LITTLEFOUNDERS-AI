@@ -39,8 +39,25 @@ export interface StandingSpot {
 export interface FindSpotsOptions {
   /** How many spots to return. */
   count: number;
-  /** Minimum separation between chosen spots, in metres. */
+  /**
+   * Minimum separation between chosen spots, in metres.
+   *
+   * With `separationFor` supplied this is only the SCALE for the grouping
+   * preference below; the hard gate is then per pair.
+   */
   minSeparation?: number;
+  /**
+   * The hard floor between the spot being chosen for member `index` and the
+   * one already chosen for member `other`, in metres.
+   *
+   * A single number cannot express this cast: Dina and Liruf need 2.61 m
+   * between them, while Rho and Zara need 1.18 m, and applying the first figure
+   * to all four leaves two of them with nowhere to stand on `diorama-a`
+   * (measured by `npm run verify:placement`). Indices are positions in the
+   * caller's cast, and the k-th spot returned belongs to the k-th member, so
+   * the caller can state the rule for any pair.
+   */
+  separationFor?: (index: number, other: number) => number;
   /** Half-width of the flatness probe, in metres. */
   probe?: number;
   /**
@@ -58,6 +75,29 @@ export interface FindSpotsOptions {
    */
   isWalkable?: (x: number, z: number) => boolean;
   /**
+   * How strongly the solver pulls the cast TOGETHER, as a score weight.
+   *
+   * Positive is the shipped default and is what makes a pair read as two
+   * figures sharing a place rather than ignoring each other across a lake.
+   * NEGATIVE spreads them, which is what a personalization audition wants: four
+   * candidates are a ring you look along, not a huddle, and packing the first
+   * three into the highest-scoring arc leaves the fourth with nowhere to stand
+   * at all on a 6.5 m island (measured by `npm run verify:placement`).
+   */
+  grouping?: number;
+  /**
+   * How finely each ring is sampled, in candidate points per metre of radius.
+   *
+   * The default is what two characters need and no more: a coarse ring is a
+   * cheap ring, and every sample costs five raycasts against a 45k-triangle
+   * island. A LARGER cast needs a finer one, and not for aesthetic reasons —
+   * measured on `diorama-a`, the usable band is two rings wide, and at the
+   * default density the surviving samples are 40 degrees apart while the gap
+   * left for the fourth candidate is 27 degrees. The spot exists; nothing was
+   * ever sampled in it.
+   */
+  samplesPerMetre?: number;
+  /**
    * Half the widest character's footprint, in metres. Used to PREFER spots with
    * room around them, never to reject.
    *
@@ -69,6 +109,28 @@ export interface FindSpotsOptions {
    */
   clearance?: number;
 }
+
+/**
+ * The grouping weight a personalization audition solves with.
+ *
+ * Negative on purpose, and the sign is the whole content: with the shipped
+ * +0.25 the solver packs the first three candidates into the best arc of a
+ * 6.5 m island and then reports NO SPOT FOUND for the fourth, whose name plate
+ * is then culled and who cannot be chosen by looking at them at all. Spreading
+ * is also the composition the phase wants: a ring of candidates the camera can
+ * pan along, rather than a huddle.
+ */
+export const AUDITION_GROUPING = -0.25;
+
+/**
+ * How finely an audition samples each ring.
+ *
+ * Twice the default, because four candidates have to fit where two used to and
+ * the answer is a 27-degree window the coarse ring never sampled. It costs one
+ * extra solve's worth of raycasts, once, on the way into a phase that is
+ * already waiting on four .glb files.
+ */
+export const AUDITION_SAMPLES_PER_METRE = 12;
 
 const DOWN = new Vector3(0, -1, 0);
 
@@ -82,6 +144,9 @@ export function findStandingSpots(ground: Object3D, options: FindSpotsOptions): 
   const {
     count,
     minSeparation = 1.2,
+    separationFor,
+    grouping = 0.25,
+    samplesPerMetre = 6,
     probe = 0.35,
     preferDirection = new Vector3(0, 0, 1),
     isWalkable,
@@ -114,7 +179,7 @@ export function findStandingSpots(ground: Object3D, options: FindSpotsOptions): 
   // inside the rim (which is usually sloped or fenced).
   for (const radiusFactor of [0.32, 0.45, 0.58, 0.7]) {
     const radius = islandRadius * radiusFactor;
-    const steps = Math.max(8, Math.round(radius * 6));
+    const steps = Math.max(8, Math.round(radius * samplesPerMetre));
     for (let step = 0; step < steps; step++) {
       const theta = (step / steps) * Math.PI * 2;
       const x = center.x + Math.cos(theta) * radius;
@@ -214,9 +279,13 @@ export function findStandingSpots(ground: Object3D, options: FindSpotsOptions): 
       const candidate = remaining[i]!;
       let nearest = Infinity;
       let clashes = false;
-      for (const spot of chosen) {
+      for (let j = 0; j < chosen.length; j += 1) {
+        const spot = chosen[j]!;
         const distance = Math.hypot(spot.x - candidate.x, spot.z - candidate.z);
-        if (distance < minSeparation) { clashes = true; break; }
+        // The floor for THIS pair. Without `separationFor` every pair shares
+        // one number, which is the shipped behaviour byte for byte.
+        const floor = separationFor ? separationFor(chosen.length, j) : minSeparation;
+        if (distance < floor) { clashes = true; break; }
         nearest = Math.min(nearest, distance);
       }
       if (clashes) continue;
@@ -230,7 +299,7 @@ export function findStandingSpots(ground: Object3D, options: FindSpotsOptions): 
           ? 1
           : Math.max(0, 1 - (nearest - comfortable) / (far - comfortable));
 
-      const value = candidate.score + (chosen.length > 0 ? together * 0.25 : 0);
+      const value = candidate.score + (chosen.length > 0 ? together * grouping : 0);
       if (value > bestValue) { bestValue = value; bestIndex = i; }
     }
 

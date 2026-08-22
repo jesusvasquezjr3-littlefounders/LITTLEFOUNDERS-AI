@@ -635,6 +635,29 @@ a `two-shot`, not a card that pushes the conversation down the page — because
 the moment is a question being asked by a character, and it should look like
 one.
 
+**The offer is answerable on every device, in every configuration, whether or
+not a world point is on screen** (added 2026-08-21, after review). The floating
+chips are the delightful path and they are allowed to disappear: an anchored
+node is hidden AND inert the moment its point leaves the frame, which is
+correct. What was not correct was that they were the ONLY path. The question and
+the two answers sat on three SEPARATE marks, culled independently, so on a phone
+in the default single-character configuration the placement solver's chosen
+bearing decided whether the learner saw the whole question, a lone "Yes please"
+with nothing to say yes to, or nothing at all. The tutor was asking a question
+the child could not answer. Two rules follow, and both are invariants:
+
+- **The in-scene arrangement is ONE anchored node**, so the question and both
+  answers are culled together. A "Yes" whose "No" has been culled is worse than
+  neither, because it is a control a child can press without knowing what it
+  agrees to.
+- **A guaranteed twin rides the viewport-anchored control cluster**, beside the
+  microphone, always, and dispatches the same handler. It is not a fallback that
+  appears when something fails: nothing on the client can tell whether an anchor
+  projects, and a guarantee conditioned on a camera is not a guarantee. The
+  announcement (`role="status"`) belongs to this copy, since it is the one that
+  always exists; the in-scene plate stays silent so a screen reader does not say
+  the question twice.
+
 ### §9.5 Close kindly
 **The close is a camera move and a performance, not a screen.** Soft close at
 ~15 minutes: the tutor begins wrapping up in character, finishes the current
@@ -671,6 +694,26 @@ instead of inside a profile page.
 | Backdrop | `auto`, `dawn`, `day`, `dusk`, `night` | dragging a sun marker along a fixed overhead arc with five stops | **Renders nothing today — §2.1's reopened gap.** Light AND dark must both work. |
 | Nickname | learner-chosen, validated, moderated | a text field on a glass plate | The **only** name-shaped value that reaches the model (§4.1). A text input cannot be in-world; this and the two adaptation toggles are the only exceptions. |
 | Adaptation | §11 | toggles on the same plate | |
+
+**The candidates have to BE THERE, and that is what "tapping the character"
+means** (added 2026-08-21, after a review). The first build of the in-world
+picker hung a name plate at each of the stage marks and left the scene rendering
+only the tutor and their companion, so two of the four plates named empty
+ground: a menu laid out in world coordinates, which is the same failure as a
+thumbnail grid with better lighting. The whole cast now stands on the island for
+the duration of this phase, each plate rides the crown of the person it names,
+and a candidate the placement solver cannot seat publishes no anchor at all — so
+their plate is hidden AND inert rather than pointing at nobody, and the list on
+the plate is where they stay reachable. What it costs and what the scene turns
+off to afford it: `/TUTOR_3D.md` §9.5.
+
+**Everything except "start" is revealed on demand.** The one plate is the §10
+exception because a text field cannot be in-world; it is not a licence for a
+form. Its resting state is a single row — one quiet way in, and the one press
+that leaves — and the nickname, the adaptations and the guaranteed list of every
+choice open behind it. They open by themselves whenever the island cannot be
+shown, because a learner on a device with no WebGL would otherwise have a start
+button and an empty screen.
 
 **Every axis previews live, and that is the acceptance test for this section.**
 A picker whose result you cannot see is indistinguishable from a picker whose

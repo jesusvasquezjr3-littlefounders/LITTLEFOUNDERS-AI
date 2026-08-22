@@ -47,8 +47,22 @@ export interface MicOrbProps {
    * released.
    */
   microphone: Microphone;
-  /** Why the microphone is off. Required whenever `state` is `unavailable`. */
+  /** Why the microphone is off, when the answer came from Core. */
   blockedReason?: MicBlockedReason | null;
+  /**
+   * Why the microphone is off, when the answer is a PHASE of the product rather
+   * than one of Core's three policy answers.
+   *
+   * The orb is now mounted by the stage and is therefore on screen during
+   * arrival, personalization and the goodbye — phases where there is no socket,
+   * so nothing could be recorded even with every permission granted. Reusing
+   * `VOICE_UNAVAILABLE` there would say "no voice provider is configured",
+   * which is not what happened and is the kind of confident wrong sentence a
+   * child cannot check. One of `blockedReason` and this must be supplied
+   * whenever `state` is `unavailable`; this one wins, because a phase is a
+   * narrower and more useful truth than a policy.
+   */
+  blockedCopy?: string | null;
   /** Receives the recording when a hold ends. Null means it was a mis-tap. */
   onClip: (clip: Blob | null) => void;
   /**
@@ -58,6 +72,20 @@ export interface MicOrbProps {
    * arrives as a stored URL and never as a stream.
    */
   onInterrupt?: () => void;
+  /**
+   * What the orb says at rest, when "Hold to talk" would be a lie.
+   *
+   * There is exactly one screen where it is: the introduction, where no socket
+   * exists yet, so the press cannot record anything and instead OPENS the
+   * conversation in which recording becomes possible. Describing that as "hold
+   * to talk" tells a learner to hold a button that has nothing to hold onto.
+   *
+   * Deliberately one string covering both the accessible name and the status
+   * line, because those two are already the same sentence in every state the
+   * orb has. Two props would let them drift, and a control whose spoken name
+   * disagrees with its printed label is worse than either wording alone.
+   */
+  idleCopy?: string;
   className?: string;
 }
 
@@ -82,8 +110,10 @@ export function MicOrb({
   state,
   microphone,
   blockedReason = null,
+  blockedCopy = null,
   onClip,
   onInterrupt,
+  idleCopy,
   className,
 }: MicOrbProps) {
   const { t } = useTranslation();
@@ -228,38 +258,44 @@ export function MicOrb({
     // Otherwise it was a tap: the hold LATCHES and the next press ends it.
   };
 
+  /** What "at rest" says here. Every other state means the same everywhere. */
+  const idle = idleCopy ?? t('tutor.conversation.holdToTalk');
+
   const label = available
-    ? t(
-        state === 'listening'
-          ? 'tutor.mic.listening'
-          : state === 'thinking'
-            ? 'tutor.mic.thinking'
-            : state === 'speaking'
-              ? 'tutor.mic.speaking'
-              : 'tutor.conversation.holdToTalk',
-      )
+    ? state === 'listening'
+      ? t('tutor.mic.listening')
+      : state === 'thinking'
+        ? t('tutor.mic.thinking')
+        : state === 'speaking'
+          ? t('tutor.mic.speaking')
+          : idle
     : t('tutor.mic.unavailableLabel');
 
   /*
-   * One line, always. When the orb is blocked this is the honest reason, and
-   * the three cases are genuinely different answers: the agreement protecting
+   * One line, always. When the orb is blocked this is the honest reason.
+   *
+   * A caller-supplied line wins, because it can say something narrower: "the
+   * conversation has not started yet" is true and checkable, where any of
+   * Core's three would be a confident wrong sentence. Failing that, the three
+   * policy answers are genuinely different — the agreement protecting
    * children's voices is not signed, no guardian has said yes yet, or no
    * provider is configured. Policy is checked first upstream, and this mirrors
    * that order rather than re-deciding it.
    */
   const status = !available
-    ? blockedReason === 'POLICY_BLOCKED'
-      ? t('tutor.offers.voicePolicyBlocked')
-      : blockedReason === 'CONSENT_REQUIRED'
-        ? t('tutor.offers.voiceNeedsConsent')
-        : t('tutor.offers.voiceUnavailable')
+    ? (blockedCopy ??
+      (blockedReason === 'POLICY_BLOCKED'
+        ? t('tutor.offers.voicePolicyBlocked')
+        : blockedReason === 'CONSENT_REQUIRED'
+          ? t('tutor.offers.voiceNeedsConsent')
+          : t('tutor.offers.voiceUnavailable')))
     : state === 'listening'
       ? t('tutor.mic.releaseToSend')
       : state === 'thinking'
         ? t('tutor.mic.thinking')
         : state === 'speaking'
           ? t('tutor.mic.speaking')
-          : t('tutor.conversation.holdToTalk');
+          : idle;
 
   return (
     <div className={cn('flex flex-col items-center gap-2', className)}>

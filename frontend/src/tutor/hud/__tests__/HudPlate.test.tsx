@@ -8,9 +8,9 @@ import { HudPlate } from '../HudPlate';
  *
  * The contrast rule: text on `.lf-glass` over a moving 3D island has no second
  * colour to compute a ratio against, so every word must sit on an opaque token.
- * The measure rule: `personalize.noCompanion` is 7 / 13 / 10 characters across
- * en-US / es-MX / pt-BR, so any plate sized to the English string clips the
- * Spanish one — and a truncated two-word control has no name at all.
+ * The measure rule: `personalize.lightTitle` is 9 / 6 / 5 characters across
+ * en-US / es-MX / pt-BR, so any plate sized to one locale's string clips
+ * another's, and a truncated two-word control has no name at all.
  */
 
 describe('HudPlate contrast floor', () => {

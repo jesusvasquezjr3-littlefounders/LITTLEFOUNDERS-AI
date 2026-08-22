@@ -91,11 +91,39 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
   const [error, setError] = useState<TutorSocket['error']>(null);
 
   useEffect(() => {
+    /*
+     * EVERY ONE OF THESE BELONGS TO ONE SESSION, so every one of them is
+     * cleared when the session changes — including when it changes to nothing.
+     *
+     * Only `connection` used to be reset here, and that single omission broke
+     * "start another session" outright. The first session ends, `closedReason`
+     * is set, the experience moves to the closing phase. The learner presses
+     * start again, a second socket opens, and the watcher upstream reads a
+     * `closedReason` that is STILL the first session's: the brand new
+     * conversation is declared over before its greeting arrives. The stale
+     * transcript came with it, so the second session also inherited the first
+     * one's history.
+     *
+     * It cannot be worked around from the caller either, because a guard that
+     * ignores a stale reason cannot tell it apart from a genuine close. The
+     * reset has to be here, where the identity of the session is known.
+     */
+    setTurn(null);
+    setHistory([]);
+    setSegment(null);
+    setBudget('running');
+    setRemainingMs(0);
+    setMicrophone(false);
+    setIntelDegraded(false);
+    setAdaptationOffer(null);
+    setClosedReason(null);
+    setError(null);
+    setConnection('connecting');
+
     if (!socketUrl) return;
 
     const socket = new WebSocket(socketUrl);
     socketRef.current = socket;
-    setConnection('connecting');
 
     socket.onopen = () => setConnection('open');
 

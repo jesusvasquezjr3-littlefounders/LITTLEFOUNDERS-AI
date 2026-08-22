@@ -50,11 +50,38 @@ it would save). R3F v9 / drei v10 require React ≥19 and are unusable here.
 
 Rules that bite:
 
+- **The tutor route is EXEMPT from the app shell, and that exemption is
+  structural.** `/tutor` is declared OUTSIDE the `AppLayout` route group in
+  `App.tsx`, beside the Lesson Player, and `StageShell`
+  (`src/tutor/stage/StageShell.tsx`) renders `fixed inset-0` with no
+  `mx-auto max-w-container`, no page padding and no `<h1>`. Those are the only
+  two full-bleed surfaces in the product and the list is closed at two
+  (/DESIGN.md → Layout → the immersive exception); a third is an owner
+  decision. `fixed inset-0` alone is NOT the exemption: inside `AppLayout` the
+  sidebar and the mobile tab bar stay in the DOM under the stage, so a keyboard
+  user tabs into navigation they cannot see. Because the chrome is gone, the
+  shell owes the learner a way out on every phase, and it carries one —
+  VIEWPORT-anchored, visible without focus, and above the loading veil. It was
+  none of those things first: a world rune on `sky.mark.4` plus an `sr-only`
+  button. Both are real controls and neither is reachable, because the rune is
+  culled whenever the camera stops framing the sky (most of a session) and a
+  skip link is revealed by a key a thumb never presses. That left a pointer
+  user in a close-up with the browser back button. It is the third
+  viewport-anchored element on the route and /DESIGN.md now names all three.
+- **The stage is mounted ONCE for the whole route.** `StageShell` holds the
+  single `TutorStage`; a phase changes the camera SHOT and which HUD layer is
+  on top, never the tree under the canvas. A surface that mounts its own
+  `<TutorStage>` reintroduces the bug this replaced: the island refetches
+  through a Suspense fallback and the learner watches their own world blink at
+  every phase boundary. Layers receive `PersonalizeLayerProps`,
+  `OfferLayerProps` and `ConversationLayerProps` from `stage/StageShell.tsx` and
+  drive nothing but their own chrome.
 - **`three` must only ever be reached through a lazy route.** `TutorPage` and
   the scene lab are `lazy()` imports; a static import anywhere in the eager
   graph would put ~285 kB gzipped into the entry bundle of every marketing
   page. Verified after each build: `WebGLRenderer` must appear in the
-  `TutorScene-*` chunk and NOT in `index-*`.
+  `TutorScene-*` chunk and NOT in `index-*`. Any 3D preview added ANYWHERE in
+  the product has to live inside that lazy chunk for this to keep holding.
 - **Quality is measured, never assumed.** `quality.ts` picks a starting tier
   from a device probe; `governor.ts` — a PURE reducer, deliberately outside
   React — steps it from real frame times. Never move tier transitions back
@@ -76,9 +103,40 @@ Rules that bite:
   the state diorama-b was in. Run `npm run verify:placement` after touching
   placement, an island, or a character's measurements — it runs the real solver
   against the real meshes and reports what each character would stand on.
+- **A separation floor is per PAIR, and a sampling ring is per CAST SIZE.** One
+  number for everybody only survives two characters: Dina and Liruf need 2.61 m
+  between them, Rho and Zara need 1.18 m, and charging the small pair the big
+  pair's rent left two of the four personalization candidates with NO SPOT FOUND
+  on the 6.5 m island. The coarse ring is the other half — its surviving samples
+  sit 40° apart while the gap the fourth candidate needs is 27° wide, so the spot
+  existed and nothing was ever sampled in it. `verify:placement` now runs the
+  whole-cast audition against both islands, which is how both were found.
+- **The whole cast stands on the island during personalization, and it turns the
+  shadow pass off to afford it.** Four characters measure 106,208 triangles;
+  with either island that is 151,204 or 173,076 per frame against a 220,000
+  ceiling, and 302,408 or 346,152 with shadows, because `high` submits the scene
+  twice. Dropping a candidate instead would put a name plate back over empty
+  ground, which is the bug the audition exists to fix. Both halves are asserted
+  in `budget.test.ts`, against triangle counts recorded in `measurements.ts`.
+- **The microphone is a property of the STAGE, not of a layer.** `StageShell`
+  mounts exactly one `MicOrb` for the whole route and `stage/micForPhase.ts`
+  decides, as a total function over the phase vocabulary, what it is doing.
+  Mounting it inside a layer is what left `arriving`, `personalizing`, `closing`
+  and `unavailable` with no microphone at all — including the first screen a new
+  learner sees — while two layers each had one. A layer contributes rows above
+  and below the orb through `useStageDock`, never a second orb.
 - **A new island needs its mask baked before it can ship.** `assets:walkmask`
   is not part of `assets:3d`; adding a diorama means running it and committing
   `walkMasks.generated.json` in the same commit.
+- **An anchored HUD node is culled against its BOX, never against its centre.**
+  The projector positions a node by its centre (`translate(-50%, -50%)`), so a
+  centre test knows nothing about where the node's edges are. Culling on the
+  centre plus a 96 px margin kept chips un-hidden and un-inert while they hung
+  half off the frame: visible as a sliver, fully focusable, and the focus ring
+  went somewhere the learner could not read. The geometry is `culling.ts`
+  (imports nothing, so it can be unit-tested); the node's own box is measured on
+  the same quarter-second tick as the canvas rect, and a zero reading from a
+  hidden node is discarded rather than stored, or the cull oscillates.
 - **Lighting lives in code, never baked into the .glb.** DESIGN.md mandates
   light AND dark mode, so an asset lit at export time is wrong in one of them
   by construction. Baked ambient occlusion in textures is fine; baked

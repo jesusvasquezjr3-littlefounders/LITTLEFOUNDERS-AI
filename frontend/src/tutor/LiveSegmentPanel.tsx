@@ -8,7 +8,7 @@ import { gradeSegment } from './tutorApi';
 import type { LiveSegmentState } from './useTutorSocket';
 
 /*
- * The right-hand panel: the Lesson Engine, running live.
+ * The Lesson Engine, running live, on the floating plate.
  *
  * IT REUSES THE REAL REGISTRY. Every one of the 57 renderers, the shared
  * primitives, the tap-first interaction rules and the accessibility work all
@@ -27,6 +27,14 @@ import type { LiveSegmentState } from './useTutorSocket';
  * paid only when the key was verifiable. `scoresXp: false` is shown honestly
  * rather than hidden — a learner who is told they earned nothing and why is
  * better served than one who quietly earns nothing.
+ *
+ * ONLY THE CHROME CHANGED in the in-scene rebuild, and deliberately so. This
+ * used to draw its own bordered, padded, opaque card because it lived in the
+ * right-hand half of a two-column page. It now sits INSIDE `LessonPlate`,
+ * whose glass frame and opaque floor are already the surface, so a second box
+ * here would render a card inside a card and reinstate the panel look one layer
+ * down. Everything about the DATA flow is untouched: the same attempts, the
+ * same server round trip, the same assertive verdict.
  */
 
 export interface LiveSegmentPanelProps {
@@ -96,11 +104,11 @@ export function LiveSegmentPanel({ live, token, onGraded }: LiveSegmentPanelProp
 
   if (!entry) {
     // Forward compatibility, same rule as the player (LESSON_ENGINE.md §6): an
-    // unknown type renders an honest card and never a crash.
+    // unknown type renders an honest line and never a crash.
     return (
-      <div className="rounded-lg border border-outline bg-surface p-5">
-        <p className="lf-body text-content-muted">{t('tutor.segment.unsupported')}</p>
-      </div>
+      <p className="lf-body text-content-muted" role="status">
+        {t('tutor.segment.unsupported')}
+      </p>
     );
   }
 
@@ -108,16 +116,30 @@ export function LiveSegmentPanel({ live, token, onGraded }: LiveSegmentPanelProp
   const locked = checking || verdict?.correct === true || attempt > MAX_ATTEMPTS;
 
   return (
-    <section className="flex min-h-0 flex-col gap-4 rounded-lg border border-outline bg-surface p-4 sm:p-5">
+    <section className="flex min-h-0 flex-col gap-3">
       <header className="space-y-1">
         <p className="lf-caption uppercase tracking-wide text-content-muted">
           {t('tutor.segment.activity')}
           {!live.scoresXp && ` · ${t('tutor.segment.practiceOnly')}`}
         </p>
+
+        {/*
+          THE TUTOR'S OWN SENTENCE INTRODUCING THE ACTIVITY, on screen at last.
+          `framing` is defined in `oracle/src/tutor/turnSchema.ts` as up to 240
+          characters of learner-facing prose, moderated exactly like `say`. It
+          was generated, moderated, sent over the wire and stored by the client
+          for every activity ever served, and rendered nowhere: the learner got
+          a bare prompt with no lead-in, as if the exercise had appeared by
+          itself rather than been offered by the character talking to them.
+        */}
+        {live.framing.trim() !== '' && (
+          <p className="lf-body text-content-muted">{live.framing}</p>
+        )}
+
         <MarkdownLite text={segment.prompt_md} className="lf-body text-content" />
       </header>
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="min-h-0">
         <Component
           segment={segment}
           value={draft}
@@ -158,11 +180,10 @@ export function LiveSegmentPanel({ live, token, onGraded }: LiveSegmentPanelProp
       )}
 
       {entry.kind === 'input' && (
-        <Button
-          onClick={() => void submit(entry.buildAnswer ? entry.buildAnswer(draft, segment) : draft)}
-          disabled={!canSubmit || locked}
-          className="w-full sm:w-auto sm:self-end"
-        >
+        // Full width at every size now. The plate is at most 420 px wide, so a
+        // right-aligned auto-width button leaves a stub of a target beside a
+        // stripe of empty glass rather than reading as the end of the exercise.
+        <Button onClick={() => void submit(entry.buildAnswer ? entry.buildAnswer(draft, segment) : draft)} disabled={!canSubmit || locked} className="w-full">
           {checking ? t('tutor.segment.checking') : t('tutor.segment.check')}
         </Button>
       )}

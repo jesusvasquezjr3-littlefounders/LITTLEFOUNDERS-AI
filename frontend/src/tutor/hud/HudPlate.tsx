@@ -23,12 +23,13 @@ import { cn } from '@/lib/utils';
  *
  * IT WRAPS. IT NEVER TRUNCATES.
  *
- * `personalize.noCompanion` is 7 characters in en-US, 13 in es-MX and 10 in
- * pt-BR — a 1.86x swing on one of the shortest labels in the whole product. Any
- * plate sized to fit the English string clips the Spanish one, and an ellipsis
- * in the middle of a two-word control is not a smaller label, it is a control
- * with no name. Widths are therefore expressed in `ch` against a viewport
- * clamp, and the content wraps to a second line rather than losing a word.
+ * `personalize.lightTitle` is 9 characters in en-US ("The light"), 6 in es-MX
+ * and 5 in pt-BR: a 1.8x swing on one of the shortest labels in the whole
+ * product, and it runs the other way just as often. Any plate sized to fit one
+ * locale's string clips another's, and an ellipsis in the middle of a two-word
+ * control is not a smaller label, it is a control with no name. Widths are
+ * therefore expressed in `ch` against a viewport clamp, and the content wraps
+ * to a second line rather than losing a word.
  */
 
 /** Frame density. The shape decides radius and padding, never colour. */

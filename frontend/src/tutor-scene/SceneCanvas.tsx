@@ -187,7 +187,27 @@ export function SceneCanvas({ children, className, onStats, onSettings, camera }
         dpr={[1, settings.maxPixelRatio]}
         shadows={settings.shadows}
         frameloop={active ? 'always' : 'never'}
-        gl={{ antialias: settings.antialias, powerPreference: 'high-performance', alpha: true }}
+        /*
+         * `preserveDrawingBuffer` IN DEV ONLY, so the stage can be screenshotted.
+         *
+         * /AGENTS.md §1.11 requires every UI change to be verified in-browser at
+         * 375 px and 1280 px WITH SCREENSHOTS, and on this project looking has
+         * repeatedly found what the tests missed. Without this flag WebGL clears
+         * the drawing buffer on composite, so `canvas.toDataURL()` returns a
+         * blank white image and there is no way to capture the one surface that
+         * most needs looking at — which is exactly what happened: four engineers
+         * in a row reported "I could not see it".
+         *
+         * It stays out of production because it forces the renderer to keep a
+         * second copy of the frame, which costs memory and fill rate on the
+         * low-end devices the quality tiers exist to protect.
+         */
+        gl={{
+          antialias: settings.antialias,
+          powerPreference: 'high-performance',
+          alpha: true,
+          preserveDrawingBuffer: import.meta.env.DEV,
+        }}
         onCreated={handleCreated}
       >
         <Governor onFrame={onFrame} fps={fps} tier={settings.tier} locked={locked} onStats={onStats} />

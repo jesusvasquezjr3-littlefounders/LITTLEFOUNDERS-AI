@@ -108,3 +108,73 @@ export function readBudget(
 function line(name: BudgetLine, actual: number, limit: number): BudgetReading {
   return { line: name, actual, limit, ratio: actual / limit, over: actual > limit };
 }
+
+// ── What a composed scene costs, before it is ever rendered ─────────────────
+
+/*
+ * The personalization audition stands the WHOLE cast on the island so that a
+ * name plate labels somebody who is visibly there rather than a patch of empty
+ * grass. Four characters is a budget question before it is a design one, and
+ * the two halves of the answer are both measured:
+ *
+ *   diorama-a 44,996 + the four characters 106,208 = 151,204 triangles
+ *   diorama-b 66,868 + the four characters 106,208 = 173,076 triangles
+ *
+ * Both sit under the 220,000 per-frame ceiling — but only while nothing casts a
+ * shadow. The `high` tier is the one tier with a shadow-casting light, and a
+ * shadow map re-renders the whole scene, so it submits every one of those
+ * triangles twice: 302,408 and 346,152, which is 1.4x and 1.6x over. That is
+ * why the audition turns the shadow pass off for as long as it is on stage
+ * (`ContactShadow` keeps every character grounded regardless, on every tier).
+ *
+ * Stated as functions rather than as a paragraph so the arithmetic is asserted
+ * against the real measurements in `budget.test.ts`: the last time a scene cost
+ * was reasoned about in prose instead of measured, the readout painted "Over
+ * budget" in red for a scene that was comfortably inside its documented cost.
+ */
+export interface SceneCostInput {
+  /** Triangles in the island's export. */
+  scene: number;
+  /** Triangles in each character standing on it. */
+  cast: readonly number[];
+  /** True on the one tier that casts shadows, where geometry is submitted twice. */
+  shadows: boolean;
+}
+
+/** Triangles the GPU is asked to process per frame for this composition. */
+export function trianglesPerFrame({ scene, cast, shadows }: SceneCostInput): number {
+  const once = cast.reduce((total, triangles) => total + triangles, scene);
+  return shadows ? once * 2 : once;
+}
+
+/** Whether this composition fits the per-frame triangle ceiling. */
+export function fitsFrameBudget(input: SceneCostInput, budget: AssetBudget = TUTOR_ASSET_BUDGET): boolean {
+  return trianglesPerFrame(input) <= budget.maxTrianglesPerFrame;
+}
+
+/**
+ * Draw calls for a cast standing on an island.
+ *
+ * Every export is a SINGLE primitive (measured: 1 for each character and each
+ * island), so the count is not about mesh complexity — it is about the extra
+ * objects the runtime adds per character: one contact-shadow quad each, and one
+ * mouth card for the characters that have a fitted one. On a tile renderer this
+ * predicts cost far better than the triangle count does.
+ */
+export function castDrawCalls({
+  cast,
+  mouthCards,
+  shadows,
+}: {
+  /** How many characters are standing. */
+  cast: number;
+  /** How many of them carry a mouth card. */
+  mouthCards: number;
+  shadows: boolean;
+}): number {
+  // The island, each character's single primitive, each contact shadow, each card.
+  const objects = 1 + cast * 2 + mouthCards;
+  // A shadow-casting light re-submits the opaque geometry; the transparent
+  // contact blobs and the unlit mouth cards do not cast.
+  return shadows ? objects + 1 + cast : objects;
+}

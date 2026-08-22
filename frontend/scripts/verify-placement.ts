@@ -39,7 +39,7 @@ import {
   Raycaster,
   Vector3,
 } from 'three';
-import { findStandingSpots } from '../src/tutor-scene/standingSpots.js';
+import { AUDITION_GROUPING, AUDITION_SAMPLES_PER_METRE, findStandingSpots } from '../src/tutor-scene/standingSpots.js';
 import type { CharacterId } from '../src/components/characters/control/types.js';
 
 /*
@@ -49,6 +49,9 @@ import type { CharacterId } from '../src/components/characters/control/types.js'
  * needs a URL, only heights and footprints.
  */
 import {
+  castClearanceM,
+  castSeparationM,
+  pairSeparationM,
   CHARACTER_MEASUREMENTS,
   characterFootprintM,
   SCENE_MEASUREMENTS,
@@ -202,6 +205,19 @@ const PAIRINGS: Array<[CharacterId, CharacterId | null]> = [
   ['dina', null],
 ];
 
+/**
+ * The personalization audition: the WHOLE cast on the island at once.
+ *
+ * This is the case with no margin in it. A name plate hanging at a stage mark
+ * used to label empty ground, because the scene only ever rendered the tutor
+ * and their companion — so "choose by looking at them" was a menu with a 3D
+ * background. Standing all four is what makes it true, and four characters
+ * including a 2.83 m quadruped on a 6.5 m island is the placement problem this
+ * whole solver exists for. If it cannot seat everybody, the plate for whoever
+ * is left out is culled, and the learner is back to choosing from a list.
+ */
+const AUDITION: CharacterId[] = ['dina', 'liruf', 'rho', 'zara'];
+
 let failures = 0;
 
 for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
@@ -214,30 +230,33 @@ for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
 
   console.log(`\n=== ${id} — ${asset.targetWidthM} m across (radius ${radius.toFixed(2)} m) ===`);
 
-  for (const [lead, companion] of PAIRINGS) {
-    const leadFoot = characterFootprintM(CHARACTER_MEASUREMENTS[lead]);
-    const secondFoot = companion ? characterFootprintM(CHARACTER_MEASUREMENTS[companion]) : 0;
-    const minSeparation = Math.max(1.3, (leadFoot + secondFoot) / 2 + 0.35);
+  const runCast = (cast: CharacterId[], label: string, audition = false) => {
+    const footprints = cast.map((who) => characterFootprintM(CHARACTER_MEASUREMENTS[who]));
+    const minSeparation = castSeparationM(footprints);
 
     const spots = findStandingSpots(island.mesh, {
-      count: companion ? 2 : 1,
+      count: cast.length,
       minSeparation,
+      separationFor: (index, other) =>
+        pairSeparationM(footprints[index] ?? 0, footprints[other] ?? 0),
+      grouping: audition ? AUDITION_GROUPING : undefined,
+      samplesPerMetre: audition ? AUDITION_SAMPLES_PER_METRE : undefined,
       preferDirection: new Vector3(0.35, 0, 1),
       // The SAME wiring the product uses. A gate that exercises a different
       // configuration certifies a different product.
       isWalkable: walkabilityFor(id) ?? undefined,
-      clearance: Math.max(
-        characterFootprintM(CHARACTER_MEASUREMENTS[lead]) / 2,
-        companion ? characterFootprintM(CHARACTER_MEASUREMENTS[companion]) / 2 : 0,
-      ),
+      clearance: castClearanceM(footprints),
     });
 
-    const cast: CharacterId[] = companion ? [lead, companion] : [lead];
-    const apart =
-      spots.length > 1 ? Math.hypot(spots[0]!.x - spots[1]!.x, spots[0]!.z - spots[1]!.z) : 0;
+    let closest = Infinity;
+    for (let a = 0; a < spots.length; a += 1) {
+      for (let b = a + 1; b < spots.length; b += 1) {
+        closest = Math.min(closest, Math.hypot(spots[a]!.x - spots[b]!.x, spots[a]!.z - spots[b]!.z));
+      }
+    }
     console.log(
-      `  ${lead} + ${companion ?? '—'}  (min separation ${minSeparation.toFixed(2)} m` +
-        `${apart ? `, actually ${apart.toFixed(2)} m apart` : ''})`,
+      `  ${label}  (min separation ${minSeparation.toFixed(2)} m` +
+        `${Number.isFinite(closest) ? `, closest pair ${closest.toFixed(2)} m` : ''})`,
     );
 
     for (let i = 0; i < cast.length; i += 1) {
@@ -290,7 +309,13 @@ for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
           `on ${surface}${rgb ? ` rgb(${rgb.join(',')})` : ''}`,
       );
     }
+  };
+
+  for (const [lead, companion] of PAIRINGS) {
+    runCast(companion ? [lead, companion] : [lead], `${lead} + ${companion ?? '—'}`);
   }
+
+  runCast(AUDITION, 'AUDITION: the whole cast, as personalization stands them', true);
 }
 
 console.log(

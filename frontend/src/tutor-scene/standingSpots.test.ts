@@ -103,6 +103,65 @@ describe('findStandingSpots', () => {
     expect(spots[0]!.z).toBeGreaterThan(0);
   });
 
+  /*
+   * THE PER-PAIR FLOOR, and why one number was not enough.
+   *
+   * Dina covers 2.83 m and Liruf 1.70 m, so those two genuinely need 2.61 m
+   * between them. Applying that same figure to Rho and Zara, who cover 0.82 m
+   * each, reserves three times the ground they occupy — and on the 6.5 m island
+   * that left two of the four personalization candidates with NO SPOT FOUND
+   * (`npm run verify:placement`), whose name plates were then culled and who
+   * could not be chosen by looking at them at all.
+   */
+  it('applies a floor per PAIR, so a small character is not charged a big one’s rent', () => {
+    // Member 0 is huge and needs 4 m from anyone; members 1 and 2 are small and
+    // need 1 m from each other. One global 4 m floor cannot seat all three on a
+    // 10 m slab; a per-pair floor can.
+    const spots = findStandingSpots(slab(), {
+      count: 3,
+      minSeparation: 4,
+      separationFor: (index, other) => (index === 0 || other === 0 ? 4 : 1),
+    });
+
+    expect(spots).toHaveLength(3);
+    const apart = (a: number, b: number) =>
+      Math.hypot(spots[a]!.x - spots[b]!.x, spots[a]!.z - spots[b]!.z);
+    expect(apart(0, 1)).toBeGreaterThanOrEqual(4);
+    expect(apart(0, 2)).toBeGreaterThanOrEqual(4);
+    expect(apart(1, 2)).toBeGreaterThanOrEqual(1);
+  });
+
+  it('samples finely enough to seat a large cast when asked to', () => {
+    /*
+     * Density is the other half of the same failure. The default ring is what
+     * two characters need and no more: measured on `diorama-a`, the surviving
+     * samples sit 40 degrees apart while the gap left for the fourth candidate
+     * is 27 degrees wide. The spot exists; nothing was ever sampled in it.
+     */
+    const coarse = findStandingSpots(slab(), { count: 6, minSeparation: 3.2 });
+    const fine = findStandingSpots(slab(), { count: 6, minSeparation: 3.2, samplesPerMetre: 12 });
+    expect(fine.length).toBeGreaterThanOrEqual(coarse.length);
+  });
+
+  it('can be asked to spread a cast rather than gather it', () => {
+    // A pair reads as two figures sharing a place; four candidates on an
+    // audition ring read as a huddle, and the huddle is what leaves the last
+    // one with nowhere to stand.
+    const spread = (grouping: number) => {
+      const spots = findStandingSpots(slab(), { count: 3, minSeparation: 1, grouping, samplesPerMetre: 12 });
+      let total = 0;
+      let pairs = 0;
+      for (let a = 0; a < spots.length; a += 1) {
+        for (let b = a + 1; b < spots.length; b += 1) {
+          total += Math.hypot(spots[a]!.x - spots[b]!.x, spots[a]!.z - spots[b]!.z);
+          pairs += 1;
+        }
+      }
+      return pairs > 0 ? total / pairs : 0;
+    };
+    expect(spread(-0.25)).toBeGreaterThan(spread(0.25));
+  });
+
   it('returns nothing for an empty object rather than guessing an origin', () => {
     expect(findStandingSpots(new Mesh(), { count: 2 })).toEqual([]);
   });

@@ -34,6 +34,17 @@ export interface CharacterMeasurement {
   sourceFootprintM: number;
   /** Height this character should occupy in the scene, in metres. */
   targetHeightM: number;
+  /**
+   * Triangles in the OPTIMIZED export, from `npm run assets:inspect`.
+   *
+   * Recorded here, beside the other measured facts, because it is the number
+   * that decides how many characters may stand on the island at once. The
+   * personalization audition puts the whole cast on stage, and "the whole cast"
+   * is a budget question before it is a design one: an answer computed from
+   * these figures can be asserted in a unit test, whereas an answer reasoned
+   * about in a review is how a scene ships at three times its frame ceiling.
+   */
+  triangles: number;
 }
 
 /*
@@ -59,12 +70,20 @@ export interface CharacterMeasurement {
  *           at 2.80 m long she already occupies 43% of it with a second
  *           character standing beside her.
  */
+/*
+ * The triangle counts below are wildly uneven and that is a measured fact, not
+ * an oversight: `rho` and `liruf` came back from decimation at ~3.1k, while
+ * `zara` and `dina` sit right on the 50k per-character ceiling. Two of the four
+ * therefore cost sixteen times what the other two do, which is exactly why the
+ * audition's budget has to be computed from real numbers rather than from "four
+ * characters, that should be fine".
+ */
 export const CHARACTER_MEASUREMENTS: Readonly<Record<CharacterId, CharacterMeasurement>> =
   Object.freeze({
-    dina: { id: 'dina', sourceHeightM: 0.028, sourceFootprintM: 0.04167, targetHeightM: 1.9 },
-    liruf: { id: 'liruf', sourceHeightM: 1.647, sourceFootprintM: 1.7, targetHeightM: 1.647 },
-    rho: { id: 'rho', sourceHeightM: 1.7, sourceFootprintM: 0.82109, targetHeightM: 1.7 },
-    zara: { id: 'zara', sourceHeightM: 1.61, sourceFootprintM: 0.82841, targetHeightM: 1.61 },
+    dina: { id: 'dina', sourceHeightM: 0.028, sourceFootprintM: 0.04167, targetHeightM: 1.9, triangles: 49_997 },
+    liruf: { id: 'liruf', sourceHeightM: 1.647, sourceFootprintM: 1.7, targetHeightM: 1.647, triangles: 3_132 },
+    rho: { id: 'rho', sourceHeightM: 1.7, sourceFootprintM: 0.82109, targetHeightM: 1.7, triangles: 3_080 },
+    zara: { id: 'zara', sourceHeightM: 1.61, sourceFootprintM: 0.82841, targetHeightM: 1.61, triangles: 49_999 },
   });
 
 export interface SceneMeasurement {
@@ -73,6 +92,8 @@ export interface SceneMeasurement {
   sourceWidthM: number;
   /** Diameter this island should occupy in the scene, in metres. */
   targetWidthM: number;
+  /** Triangles in the optimized export, from `npm run assets:inspect`. */
+  triangles: number;
 }
 
 /*
@@ -83,8 +104,8 @@ export interface SceneMeasurement {
  * headroom to look like palms.
  */
 export const SCENE_MEASUREMENTS = Object.freeze({
-  'diorama-a': { id: 'diorama-a', sourceWidthM: 1.879, targetWidthM: 6.5 },
-  'diorama-b': { id: 'diorama-b', sourceWidthM: 1.896, targetWidthM: 9.5 },
+  'diorama-a': { id: 'diorama-a', sourceWidthM: 1.879, targetWidthM: 6.5, triangles: 44_996 },
+  'diorama-b': { id: 'diorama-b', sourceWidthM: 1.896, targetWidthM: 9.5, triangles: 66_868 },
 }) satisfies Record<string, SceneMeasurement>;
 
 export type SceneId = keyof typeof SCENE_MEASUREMENTS;
@@ -102,4 +123,44 @@ export function characterFootprintM(asset: CharacterMeasurement): number {
 /** Uniform scale that brings an island to its target diameter. */
 export function sceneScale(asset: SceneMeasurement): number {
   return asset.targetWidthM / asset.sourceWidthM;
+}
+
+/**
+ * The floor on centre-to-centre distance between TWO specific characters.
+ *
+ * Per pair, not per cast, and that distinction is what lets the whole cast
+ * stand on the small island. Dina covers 2.83 m and Liruf 1.70 m, so those two
+ * genuinely need 2.61 m between them — but applying that same 2.61 m to Rho and
+ * Zara, who cover 0.82 m each, reserves three times the ground they occupy.
+ * Measured on `diorama-a` (6.5 m across): one global floor seated two of the
+ * four candidates and reported NO SPOT FOUND for the other two, which is
+ * precisely the empty-ground-under-a-name-plate bug in a different disguise.
+ */
+export function pairSeparationM(a: number, b: number): number {
+  return Math.max(1.3, (a + b) / 2 + 0.35);
+}
+
+/**
+ * The widest floor any pair in this cast needs.
+ *
+ * Used as the SCALE for "are these two standing together", not as the hard
+ * gate — the gate is per pair (above). It lives here, beside the measurements
+ * it is computed from, because `scripts/verify-placement.ts` has to solve with
+ * the SAME rule the product solves with: it used to hold its own copy of this
+ * arithmetic, and a gate that exercises a different configuration certifies a
+ * different product.
+ */
+export function castSeparationM(footprints: readonly number[]): number {
+  const widest = [...footprints].sort((a, b) => b - a);
+  return pairSeparationM(widest[0] ?? 0, widest[1] ?? 0);
+}
+
+/**
+ * Half the widest footprint on stage, used to PREFER roomy spots, never to
+ * reject them: Dina covers 2.83 m of a 6.5 m island, so a hard requirement
+ * could leave her with nowhere at all, and an empty island is a worse failure
+ * than a character standing near the rim.
+ */
+export function castClearanceM(footprints: readonly number[]): number {
+  return Math.max(0, ...footprints) / 2;
 }

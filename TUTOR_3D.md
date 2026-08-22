@@ -554,6 +554,26 @@ did not survive measurement:
 Looking is how the pond was caught; measuring is how the other two were
 disproved. Neither substitutes for the other.
 
+**The separation floor is PER PAIR, not per cast** (added 2026-08-21, found by
+extending the harness rather than by looking). Dina covers 2.83 m and Liruf
+1.70 m, so those two genuinely need 2.61 m between them — and applying that same
+figure to Rho and Zara, who cover 0.82 m each, reserves three times the ground
+they occupy. On `diorama-a` that seated two of the four audition candidates and
+reported NO SPOT FOUND for the other two. `pairSeparationM` states the rule and
+`findStandingSpots` takes it as `separationFor`, so the k-th spot is chosen
+under the k-th member's own constraints.
+
+**Sampling density is a cast-size decision too.** The default ring is what two
+characters need and no more, because every sample costs five raycasts against a
+45k-triangle island. Measured on `diorama-a`, the usable band is two rings wide
+and the surviving samples sit 40 degrees apart, while the gap left for the
+fourth candidate is 27 degrees: the spot existed and nothing was ever sampled in
+it. An audition samples at `AUDITION_SAMPLES_PER_METRE` and solves with a
+NEGATIVE grouping weight, because four candidates are a ring you look along
+rather than a huddle — and the huddle is what leaves the last one nowhere to
+stand. `npm run verify:placement` runs the audition against both real islands
+alongside every shipped pairing.
+
 ## §6 Performance contract
 
 The stage ships to every user on every device, so quality is MEASURED, not
@@ -1000,9 +1020,9 @@ route sixty times a second would be the same mistake at twelve times the size,
 and it would be paid on the low tier that can least afford it.
 
 **The slot vocabulary is a CLOSED union**, `AnchorId` in
-`src/tutor-scene/anchors.ts` — lead/companion head and chest, three island
-places, five stage marks and five sky marks. Two properties matter more than
-the list:
+`src/tutor-scene/anchors.ts` — lead/companion crown and head, lead chest, three
+island places, five stage marks and five sky marks. Three properties matter more
+than the list:
 
 - **A DOM component asks for a named PLACE, never a coordinate.** A component
   holding `[1.4, 1.9, -0.2]` must be rewritten when an island changes size, and
@@ -1013,6 +1033,17 @@ the list:
   registry fails invisibly: an unpositioned node still renders, at 0,0, looking
   like a layout bug rather than a typo. `anchors.ts` also pins the union in
   both directions, so adding a member without listing it fails the build.
+- **The CROWN is a published place, not a CSS offset from the head.** `.head` is
+  the MID-head, because that is what the camera aims at (a crown aim put the
+  whole face in the bottom half of frame, §9.1). Anything that must sit ABOVE
+  the character — the caption first of all — rides `.crown`, published by the
+  scene at `focus.y + height * 0.25`, where the character's height is known in
+  metres. Nudging upward off `.head` in CSS cannot work and was measured: the
+  gap between the two is about 290 CSS px at a close-up on a 1280 viewport and
+  about 40 px at the establishing shot, so any single pixel value is wrong in
+  one of them, and being wrong at the close-up parks the caption across the
+  speaker's face for most of a session. The general rule: **when a HUD offset
+  depends on how big something is on screen, it is an anchor, not a margin.**
 
 **CULLING IS MANDATORY, and it is two properties, not one.** When the projected
 point is behind the near plane (`v.z > 1`) or falls outside the viewport plus a
@@ -1108,8 +1139,41 @@ The scene mounts once and stays mounted for the whole `/tutor` route
   split boundaries, that is what makes the island genuinely usable as a menu —
   a swap that hits a fallback is a swap that reads as a page load.
 - **`useSceneModel` deliberately does not clone the loaded scene**, so the same
-  character must never be mounted twice. Before committing to any multi-character
-  arrangement, price it: `maxTrianglesPerCharacter` is 50,000 against a 100,000
-  single-asset ceiling, and four characters plus an island will not fit.
-  Measure with `npm run assets:inspect` first; the alternative is mounting two
-  at a time and rotating.
+  character must never be mounted twice. `TutorScene` therefore takes ONE cast
+  list (`standing`) and de-duplicates the tutor into it, rather than rendering a
+  lead and a companion that could be the same person.
+- **THE AUDITION: all four characters, for one phase, priced.** Added
+  2026-08-21. During personalization the whole catalog stands on the island so
+  that a name plate labels somebody who is visibly there; before it, the picker
+  hung a plate at each stage mark while the scene rendered two characters, so
+  two of the four plates floated over empty grass. This section previously said
+  "four characters plus an island will not fit", which was measured against the
+  wrong ceiling — the 100,000 SINGLE-ASSET one. Against the ceiling that governs
+  a live scene it fits, and here are the numbers (`npm run assets:inspect`, now
+  recorded in `measurements.ts`):
+
+  | | triangles |
+  |---|---|
+  | rho | 3,080 |
+  | liruf | 3,132 |
+  | zara | 49,999 |
+  | dina | 49,997 |
+  | diorama-a | 44,996 |
+  | diorama-b | 66,868 |
+
+  Four characters are 106,208. With either island that is **151,204** or
+  **173,076** per frame against the 220,000 ceiling — comfortable. With the
+  shadow pass on it is **302,408** or **346,152**, 1.4x and 1.6x over, because
+  `high` is the only tier with a shadow-casting light and a shadow map
+  re-renders the whole scene. So the audition turns shadows OFF for its
+  duration rather than dropping a candidate: a missing candidate puts a name
+  plate back over empty ground, while a missing shadow costs one directional
+  light's contact darkening on one tier, and `ContactShadow` still grounds every
+  character on every tier. Asserted in `budget.test.ts` — both halves, including
+  that it does NOT fit with shadows on, so the override cannot quietly become
+  unnecessary and stay.
+- **Each audition extra gets its own Suspense boundary.** The tutor and their
+  companion stay inside the boundary that gates `onReady`, so "the cast is on
+  screen" still means the people the session is about. A candidate nobody has
+  chosen must not be able to hold the tutor's first spoken line behind three
+  more .glb fetches.
