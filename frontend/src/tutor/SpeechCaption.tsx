@@ -69,6 +69,26 @@ export interface SpeechCaptionProps {
 const CHARS_PER_TICK = 2;
 const TICK_MS = 24;
 
+/*
+ * The smallest the tutor's own voice may RENDER at, once the depth scale has
+ * had its say, in CSS pixels.
+ *
+ * `lf-action` (/DESIGN.md §Lumen -> Type) — the size a CONTROL is set at on
+ * this layer, and therefore the floor under anything a learner is meant to
+ * read over a moving render. `ScreenAnchor`'s own default is 12, which is
+ * right for a two-word chip and wrong here twice over: the same section calls
+ * 12 px on this layer "not a size, an apology" and has the stylesheet
+ * neutralise `lf-caption` to stop it, and it calls this node "the largest type
+ * on the stage after the character".
+ *
+ * A chip never reaches 12 anyway, because the 44 px tap floor stops it first.
+ * Nobody presses a caption, so nothing stopped this one: measured on
+ * `/dev/tutor-lab` at 375x812 with an adaptation question up, the two-shot's
+ * stand-off clamped it to exactly 12.0 px — below a world chip's 13.7 — while
+ * the same tutor's question, one plate below it in the dock, was 19 px.
+ */
+const MIN_SPEECH_PX = 15;
+
 export function SpeechCaption({
   text,
   turnSeq,
@@ -106,7 +126,12 @@ export function SpeechCaption({
    * existed only inside the lesson plate, and the plate rests CLOSED on a phone.
    * It now slides down to the edge and stays.
    */
-  const anchorRef = useAnchorSlot(slot, { place: 'above', avoid: true, keepInFrame: true });
+  const anchorRef = useAnchorSlot(slot, {
+    place: 'above',
+    avoid: true,
+    keepInFrame: true,
+    minTextPx: MIN_SPEECH_PX,
+  });
 
   useEffect(() => {
     if (timerRef.current !== null) window.clearInterval(timerRef.current);
@@ -162,21 +187,28 @@ export function SpeechCaption({
        * long sentence wraps to a second line inside the plate instead of running
        * off both edges at 375 px, which `w-max` alone allows.
        *
-       * `lf-body` sits on THIS element rather than on the text inside, because
-       * the projector reads this node's computed font size once at registration
-       * to work out how far it may shrink the node before the caption stops
-       * being readable. Put the type class deeper and it measures the wrapper's
-       * inherited size instead, and the readability floor is computed against a
-       * font nobody is reading.
+       * `lf-speech` sits on THIS element rather than on the text inside,
+       * because the projector reads this node's computed font size once at
+       * registration to work out how far it may shrink the node before the
+       * caption stops being readable. Put the type class deeper and it measures
+       * the wrapper's inherited size instead, and the readability floor is
+       * computed against a font nobody is reading.
+       *
+       * IT IS `lf-speech` AND NOT `lf-body` (/DESIGN.md §Lumen → Type). This is
+       * the tutor talking, and until the token existed the tutor's own voice
+       * was being set in the same 16/400 the product uses for a paragraph in a
+       * settings page — which is why the largest thing said on a cinematic
+       * stage read as chat copy. 19 px at 500, 21 from `sm:`, and it is the
+       * biggest type on the stage after the character, which is the order the
+       * two should be in.
        */
       className={cn(
-        'lf-body pointer-events-none fixed left-0 top-0 z-20 flex w-max max-w-[min(88vw,32rem)] flex-col items-center will-change-transform',
+        'lf-speech pointer-events-none fixed left-0 top-0 z-20 flex w-max max-w-[min(88vw,32rem)] flex-col items-center will-change-transform',
         className,
       )}
     >
       <HudPlate
         shape="plate"
-        floor="surface"
         /*
          * aria-live="polite" and the FULL text, not the typewriter slice: a
          * screen reader must announce the sentence once, when it is complete,
@@ -191,17 +223,16 @@ export function SpeechCaption({
       </HudPlate>
 
       {/*
-        A short gradient tail down onto the crown. It is NOT a contrast
-        scrim: the plate above already stands on the opaque `bg-surface` floor
-        (/DESIGN.md §Colors, the opaque floor rule), which is what makes the
-        contrast ratio computable over a moving render in the first place. The
-        tail's only job is attachment, so that at a two-shot the learner can
-        see at a glance WHICH character the words belong to.
+        A short gradient tail down onto the crown. It is NOT a contrast scrim:
+        the plate above is made of Lumen, whose alpha puts a FLOOR under the
+        composite, so the ratio a moving render cannot give as a measurement it
+        still gives as a bound (/DESIGN.md §Lumen). The tail's only job is
+        attachment, so that at a two-shot the learner can see at a glance WHICH
+        character the words belong to — and it is made of the scene's own shade
+        rather than of `outline`, because it is the one part of the caption that
+        actually touches the island.
       */}
-      <span
-        aria-hidden="true"
-        className="h-6 w-0.5 rounded-full bg-gradient-to-b from-outline to-transparent"
-      />
+      <span aria-hidden="true" className="lf-caption-tail h-6 w-0.5 rounded-full" />
     </div>
   );
 }

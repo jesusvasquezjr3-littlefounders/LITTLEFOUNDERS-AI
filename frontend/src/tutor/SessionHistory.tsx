@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, Icon } from '@/components/ui';
+import { Icon } from '@/components/ui';
 import { CharacterActor } from '@/components/characters/control/CharacterActor';
+import { HudPlate } from './hud/HudPlate';
 import { getTranscript, listSessions } from './tutorApi';
 import type { SessionSummary, SessionTranscript } from './types';
 
@@ -17,6 +18,14 @@ import type { SessionSummary, SessionTranscript } from './types';
  *
  * The list is deliberately plain. A learner looking for "the one about
  * saving" needs a date, a character and a topic — not a dashboard.
+ *
+ * AND IT IS PLAIN IN THE MATERIAL'S SENSE NOW. Every row used to be a `Card` —
+ * Liquid Glass, `blur(20px)`, a five-layer atmospheric shadow — mounted inside a
+ * Lumen sheet, which is glass stacked on glass and is forbidden outright
+ * (/DESIGN.md §Elevation, rule 6). Over a moving island the two blurs stop
+ * reading as one material and start reading as a bug in the blur. The rows are
+ * rows now: a hairline between them, nothing painted, the sheet underneath
+ * doing the only work a surface has to do here.
  */
 
 export interface SessionHistoryProps {
@@ -49,11 +58,11 @@ export function SessionHistory({ token }: SessionHistoryProps) {
   const formatter = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'medium', timeStyle: 'short' });
 
   return (
-    <div className="space-y-3">
+    <ul className="divide-y divide-content/10">
       {sessions.map((session) => (
-        <Card key={session.id} className="p-4">
+        <li key={session.id} className="py-3 first:pt-0 last:pb-0">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 items-center gap-3">
               <span className="h-10 w-10 shrink-0">
                 <CharacterActor
                   character={session.character}
@@ -62,7 +71,7 @@ export function SessionHistory({ token }: SessionHistoryProps) {
                   enableMouseTracking={false}
                 />
               </span>
-              <div>
+              <div className="min-w-0">
                 <p className="lf-title text-content">
                   {t(`tutor.intent.${session.intent}`, { defaultValue: session.intent })}
                 </p>
@@ -73,18 +82,22 @@ export function SessionHistory({ token }: SessionHistoryProps) {
               </div>
             </div>
 
-            <Button
-              variant="secondary"
+            <HudPlate
+              as="button"
+              shape="chip"
               onClick={() => setOpenId(openId === session.id ? null : session.id)}
+              className="shrink-0"
             >
-              {openId === session.id ? t('tutor.history.hide') : t('tutor.history.replay')}
-            </Button>
+              <span className="lf-action">
+                {openId === session.id ? t('tutor.history.hide') : t('tutor.history.replay')}
+              </span>
+            </HudPlate>
           </div>
 
           {openId === session.id && <Replay token={token} sessionId={session.id} />}
-        </Card>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }
 
@@ -109,7 +122,7 @@ function Replay({ token, sessionId }: { token: string; sessionId: string }) {
   if (!transcript) return <p className="lf-body mt-4 text-content-muted">{t('tutor.history.loading')}</p>;
 
   return (
-    <div className="mt-4 space-y-2 border-t border-outline pt-4">
+    <div className="mt-3 space-y-2 border-t border-content/10 pt-3">
       {transcript.turns.map((turn) => (
         <div key={turn.id} className="flex items-start gap-2">
           <p

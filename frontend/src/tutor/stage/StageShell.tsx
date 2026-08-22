@@ -16,6 +16,7 @@ import { APP_HOME } from '@/routes/app/navConfig';
 import { TutorStage, type TutorStageProps } from '@/tutor-scene/TutorStage';
 import { AnchorProvider } from '@/tutor-scene/ScreenAnchor';
 import { SafeAreaProvider, useSafeArea } from '@/tutor-scene/SafeAreaContext';
+import { atmosphereFor } from '@/tutor-scene/atmosphere';
 import { HudPlate } from '@/tutor/hud/HudPlate';
 import { MicOrb, type MicBlockedReason, type MicOrbState } from '@/tutor/hud/MicOrb';
 import type { Microphone } from '@/tutor/useMicrophone';
@@ -128,6 +129,27 @@ export interface StageDockValue {
    * above it. Pass null to release it.
    */
   keepClearOf: (node: HTMLElement | null) => void;
+  /**
+   * Whether a large plate is holding the bottom-RIGHT corner at this instant,
+   * so the dock centres itself in the width that is LEFT rather than under a
+   * plate.
+   *
+   * PUBLISHED BY THE PLATE, NEVER GUESSED FROM THE PHASE. It used to be
+   * `phase === 'conversing' || phase === 'personalizing'`, and that constant
+   * went stale the moment the lesson plate learned to stand down for an
+   * adaptation question: an offer is still the `conversing` phase, the plate is
+   * `display: none` with a footprint of zero, and the dock went on clearing
+   * 480 px of empty island. Measured on `/dev/tutor-lab` at 1280x800 — the
+   * question, its two answers and the microphone were all centred on x = 400
+   * against a viewport centre of 640, on the one screen /DESIGN.md describes as
+   * "one character putting a question to another in front of the learner".
+   *
+   * It is a low-frequency boolean — at most one change per phase or breakpoint
+   * — so unlike `setFootprint` it is allowed to be state and to re-render the
+   * shell. Pass `false` on unmount; the last publisher wins, exactly as with
+   * the footprint.
+   */
+  setCornerPlate: (occupied: boolean) => void;
 }
 
 const StageDockContext = createContext<StageDockValue | null>(null);
@@ -142,15 +164,20 @@ const DOCK_GAP_PX = 12;
 
 // ── The shell ───────────────────────────────────────────────────────────────
 
+/*
+ * THE SHELL NO LONGER TAKES A PHASE, and its absence is the point.
+ *
+ * It used to, "for exactly one thing: whether the dock sits centred or beside
+ * the corner plate" — and that one thing was the wrong owner for the fact. A
+ * phase cannot see whether the plate is in its desktop form, and it cannot see
+ * whether the plate has stood down for an adaptation question, which is a state
+ * inside the `conversing` phase. Both facts belong to the plate, and the plate
+ * publishes them now (`StageDockValue.setCornerPlate`). The shot was never
+ * computed here either, so with the corner claim published the shell has no use
+ * for the phase at all: a prop nothing reads is a second source of truth
+ * waiting for somebody to trust it.
+ */
 export interface StageShellProps extends Omit<TutorStageProps, 'className'> {
-  /**
-   * Which phase the route is in.
-   *
-   * The shell needs it for exactly one thing: whether the dock sits centred or
-   * beside the corner plate. It is not a second source of truth for the shot,
-   * which is still computed upstream and passed in.
-   */
-  phase: StagePhase;
   /** The one microphone. Never optional: absence is the bug this closed. */
   mic: StageMicProps;
   /**
@@ -195,10 +222,21 @@ export function StageShell(props: StageShellProps) {
   );
 }
 
-function StageShellInner({ children, phase, mic, onReady, ...stage }: StageShellProps) {
+function StageShellInner({ children, mic, onReady, ...stage }: StageShellProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const safeArea = useSafeArea();
+
+  /*
+   * Memoised on the one thing that can change it. Without this the style object
+   * is a new identity on every re-render of the shell, React writes the four
+   * properties again, and the browser invalidates style on the whole HUD for a
+   * value that did not move.
+   *
+   * `auto` publishes nothing and lets the stylesheet's own light/dark defaults
+   * stand, which is also why the stage needs no ThemeProvider to render.
+   */
+  const atmosphere = useMemo(() => atmosphereFor(stage.backdrop ?? 'auto'), [stage.backdrop]);
 
   /*
    * The veil is state and the projection is a ref, and the difference is not
@@ -244,11 +282,40 @@ function StageShellInner({ children, phase, mic, onReady, ...stage }: StageShell
   const [above, setAbove] = useState<HTMLElement | null>(null);
   const [below, setBelow] = useState<HTMLElement | null>(null);
 
+  /*
+   * AND THE DOCK RE-PUBLISHES ITS OWN RECTANGLE AS IT MOVES, which is the half
+   * that was missing and the reason a whole screen came apart.
+   *
+   * The dock is measured through `SafeAreaContext`, and the only thing watching
+   * it is a `ResizeObserver`. Riding above a bottom surface changes the dock's
+   * POSITION and not its size, so the observer never fires and the published
+   * rectangle stays wherever the dock was when it last changed shape — at the
+   * bottom of the screen, which is exactly where it no longer is.
+   *
+   * Two things read that rectangle and both were reading a lie. `WorldChip`
+   * hides a chip painted over by fixed chrome, so the candidates' name plates
+   * did not hide; and the CAMERA composes around the same slot, so it framed
+   * the cast into a band the microphone was no longer standing in. Measured on
+   * `/dev/tutor-lab` at 375x812 with the personalization list open: the dock had
+   * risen to the middle of the island and five world plates — Dina, Dr. Rho,
+   * Zara Vex, the island chip and the sun — were sitting under it, clipped and
+   * still in the tab order, while the island was squeezed into a strip of palm
+   * tops at the top of the frame.
+   *
+   * Re-published from here rather than from a second observer because this is
+   * the one place the move happens. `publish` skips an identical measurement, so
+   * the steady state costs one `getBoundingClientRect`; a sheet drag pays one
+   * per frame, on one fixed-position element, which is the same order as the
+   * measurement the sheet's own observer is already taking beside it.
+   */
+  const measureMicRef = useRef<((node: HTMLElement | null) => void) | null>(null);
+
   const setFootprint = useCallback((px: number) => {
     footprintRef.current = px;
     const node = dockRef.current;
     if (!node) return;
     node.style.bottom = px > 0 ? `${px + DOCK_GAP_PX}px` : '';
+    measureMicRef.current?.(node);
   }, []);
 
   /*
@@ -304,6 +371,7 @@ function StageShellInner({ children, phase, mic, onReady, ...stage }: StageShell
   }, []);
 
   const measureMic = safeArea?.measure('mic');
+  measureMicRef.current = measureMic ?? null;
   const attachDock = useCallback(
     (node: HTMLDivElement | null) => {
       dockRef.current = node;
@@ -324,20 +392,25 @@ function StageShellInner({ children, phase, mic, onReady, ...stage }: StageShell
   const attachAbove = useCallback((node: HTMLDivElement | null) => setAbove(node), []);
   const attachBelow = useCallback((node: HTMLDivElement | null) => setBelow(node), []);
 
-  const dock = useMemo<StageDockValue>(
-    () => ({ above, below, setFootprint, keepClearOf }),
-    [above, below, setFootprint, keepClearOf],
-  );
-
   /*
-   * Whether a large opaque plate is in the bottom-right corner right now.
+   * Whether a large plate is holding the bottom-right corner right now.
    *
    * Both the lesson plate and the personalization plate take that corner from
-   * `lg:` up, and on those two phases the dock moves into the free width to the
-   * LEFT of it, so the orb is centred in the space the learner can actually see
-   * rather than centred under a plate.
+   * `lg:` up, and while one of them is there the dock moves into the free width
+   * to the LEFT of it, so the orb is centred in the space the learner can
+   * actually see rather than centred under a plate.
+   *
+   * THE PLATE SAYS SO; THE SHELL DOES NOT GUESS (see `setCornerPlate`). Both
+   * publishers already know the two facts the phase could never see — whether
+   * they are in their desktop form at all, and whether they have stood down.
    */
-  const besidePlate = phase === 'conversing' || phase === 'personalizing';
+  const [cornerPlate, setCornerPlate] = useState(false);
+  const besidePlate = cornerPlate;
+
+  const dock = useMemo<StageDockValue>(
+    () => ({ above, below, setFootprint, keepClearOf, setCornerPlate }),
+    [above, below, setFootprint, keepClearOf],
+  );
 
   return (
     <StageDockContext.Provider value={dock}>
@@ -354,7 +427,26 @@ function StageShellInner({ children, phase, mic, onReady, ...stage }: StageShell
          * anchored chip is fixed — the whole HUD would silently drift by this
          * element's offset.
          */
-        className="fixed inset-0 z-50 overflow-hidden bg-base text-content"
+        /*
+         * THE ATMOSPHERE, PUBLISHED ONCE PER HOUR OF THE DAY.
+         *
+         * Four custom properties describing the light the island is standing
+         * in, read from the same palette `SceneLighting` points its lights
+         * with (`tutor-scene/atmosphere.ts`). Everything on this layer that is
+         * made of Lumen inherits them, so a plate's fill leans toward the sky,
+         * its lip is the key light's colour and its shadow lengthens as the sun
+         * drops — and `lf-stage-ground` turns the alpha the canvas does not
+         * paint into that same sky instead of one flat token, which is what
+         * used to make every screenshot of this route look like a cutout on a
+         * blank page.
+         *
+         * It is a STYLE ATTRIBUTE, not a frame-loop write. A custom-property
+         * write invalidates style on everything that inherits it; at 60 Hz that
+         * would cost more than drawing the island, and none of it needs to move
+         * faster than the light does.
+         */
+        style={atmosphere}
+        className="lf-stage-ground fixed inset-0 z-50 overflow-hidden bg-base text-content"
       >
         {/*
          * THE ONE MOUNT. Everything else in this file renders over it, and
@@ -420,7 +512,6 @@ function StageShellInner({ children, phase, mic, onReady, ...stage }: StageShell
           ref={safeArea?.measure('exit')}
           as="button"
           shape="chip"
-          floor="surface"
           /*
            * The name is on the button rather than only in the span, because the
            * span is not always rendered — see below — and the accessible name of
@@ -443,7 +534,7 @@ function StageShellInner({ children, phase, mic, onReady, ...stage }: StageShell
             target is unchanged (`min-h-11 min-w-11`), and the name above is what
             a screen reader reads at every width.
           */}
-          <span className="lf-label hidden md:inline">{t('tutor.stage.leave')}</span>
+          <span className="lf-action hidden md:inline">{t('tutor.stage.leave')}</span>
         </HudPlate>
 
         <div className="pointer-events-none absolute inset-0 z-30">{children}</div>
@@ -504,12 +595,6 @@ function StageShellInner({ children, phase, mic, onReady, ...stage }: StageShell
             them, so a target that disappeared with the orb would silently drop
             whatever a future phase contributed to the dock.
           */}
-          {mic.present && mic.denied && (
-            <HudPlate shape="plate" floor="sunken" role="status" className="pointer-events-none self-center">
-              <span className="lf-caption">{t('tutor.conversation.micDenied')}</span>
-            </HudPlate>
-          )}
-
           <div className="flex w-full items-center justify-center gap-3 lg:flex-col lg:gap-2">
             {mic.present && (
               <MicOrb
@@ -518,6 +603,16 @@ function StageShellInner({ children, phase, mic, onReady, ...stage }: StageShell
                 blockedReason={mic.blockedReason ?? null}
                 blockedCopy={mic.blockedCopy ?? null}
                 idleCopy={mic.idleCopy}
+                /*
+                 * THE BROWSER'S OWN REFUSAL, ON THE ORB RATHER THAN BESIDE IT.
+                 * It used to be a plate of its own in this column — a second
+                 * surface about a control that was standing right next to it,
+                 * and the worse half of that arrangement was that the orb kept
+                 * looking perfectly usable while a separate plate said it was
+                 * not. `MicOrb` prints it inside its own surface now, by the
+                 * same mechanism the blocked reason uses.
+                 */
+                notice={mic.denied ? t('tutor.conversation.micDenied') : null}
                 onClip={mic.onClip}
                 onInterrupt={mic.onInterrupt}
                 className="shrink-0"
@@ -562,8 +657,16 @@ function StageShellInner({ children, phase, mic, onReady, ...stage }: StageShell
             ready ? 'pointer-events-none opacity-0' : 'opacity-100',
           )}
         >
-          <HudPlate shape="plate" floor="surface">
-            <span className="lf-body text-content-muted" role="status">
+          {/*
+            One line, at full ink. `text-content-muted` was here and it was
+            doing nothing but expressing an intention: the material neutralises
+            muted ink inside chrome (/DESIGN.md §Lumen), because at 32%
+            transmission there is no legible quieter tone to demote a line into.
+            The class is gone rather than left to imply a hierarchy the
+            stylesheet refuses to draw.
+          */}
+          <HudPlate shape="plate">
+            <span className="lf-body" role="status">
               {t('tutor.page.loading')}
             </span>
           </HudPlate>

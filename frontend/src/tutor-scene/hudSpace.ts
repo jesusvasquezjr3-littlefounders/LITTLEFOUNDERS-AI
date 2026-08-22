@@ -1,4 +1,5 @@
 import type { HudRect, ViewportPx } from './composition';
+import { clampIntoView, type ViewportBox } from './culling';
 
 /*
  * WHAT SPACE THE HUD HAS ALREADY TAKEN — the one idea the two halves of the
@@ -230,3 +231,66 @@ function staysInFrame(box: HudRect, move: Displacement, viewport: ViewportPx): b
   }
   return true;
 }
+
+/**
+ * Park a node that has left the picture back against the frame, and then get it
+ * out from under the fixed chrome AGAIN.
+ *
+ * THE ORDER IS THE WHOLE FUNCTION, and it is here rather than inline in
+ * `ScreenAnchor` because the frame loop runs inside `useFrame`, which no test in
+ * this repo can step through — so an ordering rule written there is a rule
+ * nothing checks.
+ *
+ * The projector escapes the chrome first, on the position the camera asked for.
+ * For the speech caption at a CLOSE-UP that position is off the top of the frame
+ * entirely: the speaker's crown is above the viewport, the plate hangs at around
+ * y = -200, it overlaps nothing, and the escape correctly does nothing. The
+ * clamp then slides it back to a gap below the top edge — which is exactly where
+ * the way out is standing — and for as long as nothing looked again, that was a
+ * shipped collision.
+ *
+ * Measured on `/dev/tutor-lab` at 375x812 in `conversing`, with the ambient
+ * orbit stopped, which is what a reduced-motion learner sees permanently: the
+ * caption landed at (55, 8, 265, 112) against a way out at (16, 16, 48, 48).
+ * /DESIGN.md → Screen Recipes → Tutor forbids that outright and names this very
+ * pair among the three collisions it was written to close; a moving camera had
+ * been hiding it, because at most bearings the crown projects far enough right
+ * that the plate clears the chip on its own.
+ *
+ * Escaping SECOND cannot undo the clamp: `escapeReserved` refuses any candidate
+ * that leaves the frame, so all it can do is slide the node along the edge it
+ * was just parked against — 9 px to the right, in the case above.
+ *
+ * @param frame the box to clamp INTO, already inset by whatever gap the node
+ *   should keep off the edge.
+ * @param viewport the full viewport, which is what "still on screen" means to
+ *   the escape.
+ * @param reserved fixed chrome to clear; pass none for a node that does not
+ *   avoid chrome, and the clamp happens on its own.
+ */
+export function clampThenEscape(
+  x: number,
+  y: number,
+  halfWidth: number,
+  halfHeight: number,
+  frame: ViewportBox,
+  viewport: ViewportPx,
+  reserved: readonly HudRect[],
+  options: EscapeOptions = {},
+): { x: number; y: number } {
+  const clamped = clampIntoView(x, y, halfWidth, halfHeight, frame);
+  if (reserved.length === 0 || !(halfWidth > 0) || !(halfHeight > 0)) return clamped;
+  const move = escapeReserved(
+    {
+      left: clamped.x - halfWidth,
+      top: clamped.y - halfHeight,
+      width: halfWidth * 2,
+      height: halfHeight * 2,
+    },
+    reserved,
+    viewport,
+    options,
+  );
+  return { x: clamped.x + move.dx, y: clamped.y + move.dy };
+}
+

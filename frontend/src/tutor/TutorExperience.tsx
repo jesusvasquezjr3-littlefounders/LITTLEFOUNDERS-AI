@@ -1,17 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
-import { Button } from '@/components/ui';
 import { duckTutorAmbient, playPlatformSound } from '@/lib/sound';
 import { SCENE_ASSETS } from '@/tutor-scene/assets';
 import { isSceneBackdropId, type SceneBackdropId } from '@/tutor-scene/backdrops';
-import { HudPlate } from '@/tutor/hud/HudPlate';
 import { getOffers, getPreferences, savePreferences, startSession, type StartSessionInput } from './tutorApi';
 import { micBlockedForOffers, micBlockedReason, narrowBlockedReason, primaryOpening } from './mic';
 import { PersonalizeInWorld } from './PersonalizeInWorld';
 import { OfferChips } from './OfferChips';
 import { ConversationView } from './ConversationView';
-import { SessionHistory } from './SessionHistory';
+import { ClosingInWorld } from './ClosingInWorld';
 import { auditionFor } from './stage/phases';
 import { micForPhase } from './stage/micForPhase';
 import {
@@ -149,7 +147,6 @@ export function TutorExperience() {
   const [startError, setStartError] = useState<string | null>(null);
   const [stageReady, setStageReady] = useState(false);
   const [speaking, setSpeaking] = useState(false);
-  const [historyOpen, setHistoryOpen] = useState(false);
   /*
    * The wait between a learner's turn and the tutor's answer.
    *
@@ -510,7 +507,6 @@ export function TutorExperience() {
 
   return (
     <StageShell
-      phase={phase}
       mic={mic}
       audition={audition}
       scene={scene}
@@ -595,69 +591,32 @@ export function TutorExperience() {
 
       {phase === 'closing' && (
         /*
-          `bottom`, so the goodbye hangs low over an island the camera has
-          already pulled back to see whole. It used to be `fill`, which is a
-          `min-h-full` centred column: the plate landed in the middle of the
-          screen, over the character, and the saved-conversation list unrolled
-          under it as a page. A session that ends by replacing the world with a
-          summary box takes away the place the learner was just in, at the exact
-          moment the product is trying to give them a reason to come back
-          (/ORACLE.md §9.5). The full close performance — the wave, the bow, the
-          recap chips anchored to the island — is increment 3; this is the
-          silhouette it has to grow out of, not a page it has to replace.
+          `world`, and the goodbye itself rides the SHELL'S DOCK.
+
+          It used to be a `bottom` layer, which puts three surfaces against the
+          bottom of the viewport in a place the camera does not know about: the
+          only channel a bottom layer has is `keepClearOf`, and that moves the
+          microphone dock — which is deliberately absent here
+          (`stage/micForPhase.ts` → `present: false`). So nothing told the
+          composition solver the goodbye existed, and at 1280x800 the
+          establishing shot centred the island with the tutor in the middle of
+          it and "See you soon!" landed across their chin. The dock is measured
+          on the `mic` safe-area slot, so the same three surfaces portalled into
+          it are a rectangle the camera aims around
+          (`tutor/ClosingInWorld.tsx`).
+
+          The full close performance — the wave, the bow, the recap chips
+          anchored to the island — is increment 3; this is the silhouette it has
+          to grow out of, not a page it has to replace (/ORACLE.md §9.5).
         */
-        <StageLayer label={t('tutor.stage.closeLayer')} placement="bottom">
-          <HudPlate shape="plate" floor="surface" className="mx-auto">
-            <span className="flex flex-col gap-2 text-center">
-              <span className="lf-headline text-content">{t('tutor.page.seeYouSoon')}</span>
-              <span className="lf-body text-content-muted">{t('tutor.page.sessionSaved')}</span>
-            </span>
-          </HudPlate>
-
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {/*
-              The ONE indigo action of this phase (/DESIGN.md → Screen Recipes
-              → Tutor: one indigo action per phase). Starting again is what the
-              close is for; looking at the archive is a quieter second thought,
-              so it is a chip beside it rather than a rival button.
-            */}
-            <Button
-              onClick={() => {
-                setSession(null);
-                setPhase('introducing');
-              }}
-            >
-              {t('tutor.page.startAnother')}
-            </Button>
-
-            <HudPlate
-              as="button"
-              shape="chip"
-              floor="sunken"
-              aria-expanded={historyOpen}
-              onClick={() => setHistoryOpen((open) => !open)}
-            >
-              <span className="lf-caption">
-                {historyOpen ? t('tutor.introduce.hideReplays') : t('tutor.introduce.replays')}
-              </span>
-            </HudPlate>
-          </div>
-
-          {/*
-            Opened deliberately, closed again, exactly as it is on the
-            introduction. A list of past conversations is a list, and a list
-            over the island is the silhouette this rebuild removes; it is
-            acceptable only because a learner asked for it by name. It becomes
-            stones on the island's shore in increment 4 (/ORACLE.md §12).
-          */}
-          {historyOpen && token && (
-            <HudPlate shape="sheet" floor="surface" className="mx-auto">
-              <div className="flex w-full flex-col gap-3 text-left">
-                <span className="lf-title text-content">{t('tutor.history.title')}</span>
-                <SessionHistory token={token} />
-              </div>
-            </HudPlate>
-          )}
+        <StageLayer label={t('tutor.stage.closeLayer')} placement="world">
+          <ClosingInWorld
+            token={token}
+            onStartAnother={() => {
+              setSession(null);
+              setPhase('introducing');
+            }}
+          />
         </StageLayer>
       )}
     </StageShell>

@@ -101,7 +101,10 @@ export function TutorBubble({
           carrying one line make a screen reader say everything twice. This is
           the VISUAL mirror; the announcement belongs to the caption.
         */}
-        <p className="lf-body min-w-0 flex-1 rounded-lg rounded-tl-sm bg-surface-sunken px-3 py-2 text-content">
+        {/* `lf-speech`: this is the tutor's spoken line, the same sentence the
+            caption over its crown is carrying, and it had been set in the
+            product's paragraph voice inside a chat bubble. */}
+        <p className="lf-speech min-w-0 flex-1 rounded-md bg-surface-sunken px-3 py-2 text-content">
           {spoken}
           {speaking && (
             // A speaking indicator with no text of its own, so it cannot be
@@ -120,6 +123,22 @@ export function TutorBubble({
 
 export interface TutorTranscriptProps {
   history: TranscriptEntry[];
+  /**
+   * The `seq` of a tutor turn that is ALREADY on screen somewhere else.
+   *
+   * THE ONE DELETION THIS FILE OWES (/DESIGN.md §Lumen → What to delete). At
+   * 1280 px in `conversing` and `adapting` the same sentence printed three
+   * times at the same moment — the caption over the character's crown, the
+   * bubble above, and this log's last row — which measured 118 words on screen
+   * for the 30 being said.
+   *
+   * Two of the three are an accessibility decision and stay: the caption is the
+   * deaf learner's channel and the bubble is the only articulating mouth
+   * `liruf` and `dina` have (/TUTOR_3D.md §3.1). The third is a LOG catching up
+   * with the present, and a log's job is the past. It reappears the moment the
+   * tutor says anything else, which is exactly when it becomes history.
+   */
+  spokenSeq?: number | null;
   /** Accessible name for the log. */
   label?: string;
   className?: string;
@@ -133,8 +152,16 @@ export interface TutorTranscriptProps {
  * plate after a dozen turns, and the activity is the thing the learner is
  * actually working on.
  */
-export function TutorTranscript({ history, label, className }: TutorTranscriptProps) {
+export function TutorTranscript({ history, spokenSeq = null, label, className }: TutorTranscriptProps) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  // The line being said right now belongs to the caption and the bubble, not to
+  // the log. See `spokenSeq`. A learner's own turn always stays: nothing else
+  // on screen shows them what the microphone actually heard.
+  const past =
+    spokenSeq === null
+      ? history
+      : history.filter((entry) => !(entry.speaker === 'tutor' && entry.seq === spokenSeq));
 
   useEffect(() => {
     const node = scrollRef.current;
@@ -144,7 +171,7 @@ export function TutorTranscript({ history, label, className }: TutorTranscriptPr
     node.scrollTop = node.scrollHeight;
   }, [history.length]);
 
-  if (history.length === 0) return null;
+  if (past.length === 0) return null;
 
   return (
     <div
@@ -158,7 +185,7 @@ export function TutorTranscript({ history, label, className }: TutorTranscriptPr
       aria-live="polite"
       aria-relevant="additions"
     >
-      {history.map((entry, index) => (
+      {past.map((entry, index) => (
         <p
           key={`${entry.seq}-${index}`}
           className={cn(

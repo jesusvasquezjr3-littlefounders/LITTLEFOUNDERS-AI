@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui';
 import { MarkdownLite } from '@/lesson-engine/core/MarkdownLite';
 import { REGISTRY } from '@/lesson-engine/registry';
 import type { SegmentBase, Verdict } from '@/lesson-engine/core/types';
+import { HudPlate } from './hud/HudPlate';
 import { gradeSegment } from './tutorApi';
 import type { LiveSegmentState } from './useTutorSocket';
 
@@ -31,10 +31,20 @@ import type { LiveSegmentState } from './useTutorSocket';
  * ONLY THE CHROME CHANGED in the in-scene rebuild, and deliberately so. This
  * used to draw its own bordered, padded, opaque card because it lived in the
  * right-hand half of a two-column page. It now sits INSIDE `LessonPlate`,
- * whose glass frame and opaque floor are already the surface, so a second box
- * here would render a card inside a card and reinstate the panel look one layer
- * down. Everything about the DATA flow is untouched: the same attempts, the
- * same server round trip, the same assertive verdict.
+ * which is already the surface — Lumen at the reading density (/DESIGN.md
+ * §Lumen) — so a second box here would render a card inside a card and
+ * reinstate the panel look one layer down. Everything about the DATA flow is
+ * untouched: the same attempts, the same server round trip, the same assertive
+ * verdict.
+ *
+ * WHAT THIS FILE STILL DOES NOT OWN: the option cards themselves. They come
+ * from `lesson-engine/core/primitives.tsx`, which is shared with the Lesson
+ * Player and with all 57 renderers, and they are outlined `surface` boxes that
+ * read as form fields on this layer. Restyling them is a lesson-engine
+ * decision, not a Tutor one; it is recorded in /DESIGN.md §Lumen → What this
+ * layer still owes rather than done here, because a Tutor pass that quietly
+ * changed the look of every lesson in the product would be a much worse bug
+ * than the one it fixed.
  */
 
 export interface LiveSegmentPanelProps {
@@ -118,10 +128,20 @@ export function LiveSegmentPanel({ live, token, onGraded }: LiveSegmentPanelProp
   return (
     <section className="flex min-h-0 flex-col gap-3">
       <header className="space-y-1">
-        <p className="lf-caption uppercase tracking-wide text-content-muted">
-          {t('tutor.segment.activity')}
-          {!live.scoresXp && ` · ${t('tutor.segment.practiceOnly')}`}
-        </p>
+        {/*
+          "TRY THIS" IS GONE, AND IT WAS THE ONLY UPPERCASE LABEL ON THE ROUTE
+          (/DESIGN.md §Lumen → What to delete). The exercise IS the try: a
+          12 px all-caps eyebrow over the tutor's own lead-in was a heading for
+          something that had already introduced itself, in the one typographic
+          register this product does not use anywhere else.
+
+          `practice only` survived it, because that one is a FACT rather than a
+          heading — it tells a learner, before they answer, that this will not
+          pay XP — and it moved to where the answer is given, beside the check
+          control at the bottom of this panel. It is printed only when it is
+          true, which is the other half of why it does not need an eyebrow to
+          hang from.
+        */}
 
         {/*
           THE TUTOR'S OWN SENTENCE INTRODUCING THE ACTIVITY, on screen at last.
@@ -136,7 +156,16 @@ export function LiveSegmentPanel({ live, token, onGraded }: LiveSegmentPanelProp
           <p className="lf-body text-content-muted">{live.framing}</p>
         )}
 
-        <MarkdownLite text={segment.prompt_md} className="lf-body text-content" />
+        {/*
+          The prompt in the TUTOR'S voice, because that is whose question it is.
+          Both lines were `lf-body` and the plate had no hierarchy at all: a
+          lead-in and the question itself set identically, one above the other,
+          so the eye had to read both to find out which one it was answering.
+          `lf-speech` is the token for a character speaking (/DESIGN.md §Lumen →
+          Type) and this is the same character, in the same breath, as the
+          caption over its crown.
+        */}
+        <MarkdownLite text={segment.prompt_md} className="lf-speech text-content" />
       </header>
 
       <div className="min-h-0">
@@ -180,12 +209,42 @@ export function LiveSegmentPanel({ live, token, onGraded }: LiveSegmentPanelProp
       )}
 
       {entry.kind === 'input' && (
-        // Full width at every size now. The plate is at most 420 px wide, so a
-        // right-aligned auto-width button leaves a stub of a target beside a
-        // stripe of empty glass rather than reading as the end of the exercise.
-        <Button onClick={() => void submit(entry.buildAnswer ? entry.buildAnswer(draft, segment) : draft)} disabled={!canSubmit || locked} className="w-full">
-          {checking ? t('tutor.segment.checking') : t('tutor.segment.check')}
-        </Button>
+        <div className="flex flex-col gap-1.5">
+          {/*
+            The honest line about XP, where the answer is actually given. It
+            used to ride an uppercase eyebrow at the top of the panel, three
+            scroll-lengths above the control it is about.
+          */}
+          {!live.scoresXp && (
+            <p className="lf-caption text-center text-content-muted">{t('tutor.segment.practiceOnly')}</p>
+          )}
+          {/*
+            Full width at every size. The plate is at most 420 px wide, so a
+            right-aligned auto-width button leaves a stub of a target beside a
+            stripe of empty glass rather than reading as the end of the
+            exercise.
+
+            A HudPlate action rather than the design system's `Button`: on this
+            layer an indigo action is `.lf-lumen-solid` — a solid object at the
+            pane radius, keeping only the seated shadow — because a call to
+            action should not read as one more window onto the island, and a
+            capsule over a photographic frame reads as a sticker (/DESIGN.md
+            §Lumen). It is still the one indigo action of the phase.
+          */}
+          <HudPlate
+            as="button"
+            shape="plate"
+            floor="accent"
+            onClick={() => void submit(entry.buildAnswer ? entry.buildAnswer(draft, segment) : draft)}
+            disabled={!canSubmit || locked}
+            className="w-full !max-w-none disabled:opacity-50"
+            floorClassName="py-3"
+          >
+            <span className="lf-action">
+              {checking ? t('tutor.segment.checking') : t('tutor.segment.check')}
+            </span>
+          </HudPlate>
+        </div>
       )}
     </section>
   );

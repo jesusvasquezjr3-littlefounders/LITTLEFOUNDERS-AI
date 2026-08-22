@@ -2,6 +2,263 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Reconciling the two Lumen passes: five defects that lived in the seams (2026-08-22)
+
+The material pass and the applying pass were done in parallel by two engineers.
+This session drove the result together — all seven phases at 375x812 and
+1280x800 in both themes, and then the whole learner's journey as 24 real clicks
+— and found five defects. Every one of them lived in a SEAM: a rule enforced in
+one place and copied by hand into a second, or a signal published by one owner
+and read by another that had gone stale. None of them was visible to either
+author's own screenshots, and four of the five were being hidden by the ambient
+camera orbit, which is why every measurement below was taken with
+`prefers-reduced-motion: reduce` — the state a reduced-motion learner is in
+permanently.
+
+1. **The tutor's caption shrank to 12 px on the adaptation moment.** The
+   projector's readability floor is 12 for every node, which is right for a chip
+   — and no chip reaches it, because the 44 px tap floor stops it first. Nobody
+   presses a caption, so on the caption 12 was the operating point: measured at
+   375x812 with a question up, exactly 12.0 px, below the 13.7 a world chip's
+   label gets, while the same tutor's question one plate below was 19. On the
+   deaf learner's only channel, and against a document that calls that size "an
+   apology" in the same section that calls this node "the largest type on the
+   stage after the character". The floor is per-node now
+   (`AnchorOptions.minTextPx`) and the caption asks for `lf-action`'s 15.
+2. **The caption came back to rest on the way out.** The chrome escape runs on
+   the position the camera asks for; at a close-up that is off the top of the
+   frame, so it overlapped nothing and did nothing, and the frame clamp then
+   parked the plate exactly where the way out stands — (55, 8, 265, 112) against
+   (16, 16, 48, 48) at 375x812 in `conversing`. One of the three collisions
+   /DESIGN.md was written to close, back, hidden by the orbit. The clamp and the
+   escape are one function in one order now (`hudSpace.ts` → `clampThenEscape`).
+3. **The adaptation moment was 240 px off-centre at 1280.** The dock stepped out
+   of the bottom-right corner on `phase === 'conversing'`, and an offer is still
+   `conversing` with the lesson plate standing down. The corner claim is
+   published by whichever plate holds it (`StageDockValue.setCornerPlate`), which
+   is the only thing that can see the two facts a phase never could — desktop
+   form, and stood down. `StageShell` no longer takes a `phase` prop at all.
+4. **The microphone dock's measured rectangle went stale whenever it moved.** It
+   is watched by a `ResizeObserver`, and riding above a bottom surface changes
+   its position and not its size. So with the personalization list open at 375
+   the camera composed around a microphone that had left, and `WorldChip` could
+   not tell it was covering anything: the dock at (15, 223, 345, 156) with three
+   candidates' name plates underneath it, clipped, pressable and in the tab
+   order. It re-publishes from the one place the move happens.
+5. **And when the candidates were finally told to hide, they painted anyway.**
+   The cluster is not a `WorldChip` — a candidate needs two controls — so it
+   copies the projector contract by hand and had never been given the occlusion
+   guard. Handing it over was not enough: `[hidden] { display: none }` is a
+   0-1-0 attribute rule and the cluster's own `flex` class beats it, so the node
+   reported `hidden === true` to every script that asked while sitting on
+   screen. The guard writes `display` as well now — the same correction
+   `ScreenAnchor` had already made for the cull one layer up, in a comment that
+   was right there.
+
+A sixth, found while walking rather than while sweeping: the island rim pad did
+not opt into the clearance pass either, so "Go to Stone circle" landed across
+"Talk with Dina" by 51 x 18 px. That is the exact sibling of the sun's bug fixed
+the day before, one component away.
+
+**Where it stands.** All 28 cells and all 24 stops of the journey: 0 controls
+under 44 px, 0 overlaps at rest, 0 off-frame surfaces, 0 focusable-but-invisible
+elements. The ship measurement is in /DESIGN.md → Screen Recipes → Tutor. Two
+things are still owed and are named there rather than closed: the exercise
+option cards (a lesson-engine decision, shared with 57 renderers) and a real
+`backdrop-filter` profiling run on the target Intel UHD, which is still reasoned
+rather than measured.
+
+## Applying Lumen: every surface on the material, and nine deletions with their measurements (2026-08-22)
+
+The material, the type, the motion and the light landed the day before as
+primitives (`/DESIGN.md` §Lumen). This session put every remaining Tutor surface
+on them and worked through §Lumen's own deletion list, which is now closed.
+
+**What moved onto the material.** The lesson plate lost the opaque `bg-surface`
+core inside its frame — the last one on the route, written under the
+opaque-floor rule of 2026-08-21 and outliving it by a day, so the one surface a
+learner spends a whole conversation looking at was the one surface the island
+could not be seen through. The replay list stopped being `Card` rows (Liquid
+Glass inside a Lumen sheet is glass on glass, which §Elevation rule 6 forbids
+outright). Every remaining `Button` on the route became a HudPlate, so an indigo
+action is `.lf-lumen-solid` at the pane radius instead of a `rounded-full` pill
+wearing `lf-gaming-btn`. The tutor's spoken line is `lf-speech` in all three
+places it appears, and 21 `lf-caption` call sites on chrome plates became
+`lf-action` — with the stylesheet now neutralising the class inside chrome, the
+same way it already neutralised `content-muted`, because a rule that has to be
+remembered is a rule that is already broken somewhere.
+
+**Three defects the deletions exposed, none of them cosmetic.**
+
+1. **The microphone was two surfaces, and sometimes three.** A 96 px orb plus a
+   plate naming it, in five of the seven phases, plus a third plate the shell
+   published beside it when the browser refused — a surface saying the control
+   was unusable, next to a control that still looked usable. It is one surface
+   now in every state: nothing printed while it works, and where there IS a
+   reason, the ring is drawn ON the plate that carries the sentence.
+2. **The sun sat on Dina.** The four candidate plates opt into the projector's
+   per-frame clearance pass and the sun marker did not, so at some camera
+   bearings it landed on a candidate: measured at 375x812, the light chip at
+   (187, 290, 72, 44) across "Dina" at (208, 314, 59, 44) — 20 px over the name
+   of a character the learner is being asked to choose. Clearance belongs to a
+   SET of peers, and the sun is a peer of the cast whether or not it is one.
+3. **The goodbye was sitting on the tutor's face.** `closing` laid its three
+   surfaces against the bottom edge through a `bottom` StageLayer, whose only
+   channel is `keepClearOf` — which moves the microphone dock, the one thing
+   deliberately absent on that phase. Nothing told the camera the goodbye
+   existed, and at 1280x800 "See you soon!" landed at (480, 619) across Dr.
+   Rho's chin. It rides the dock now (`tutor/ClosingInWorld.tsx`), which is
+   measured on the `mic` safe-area slot and is therefore a rectangle the
+   composition solver already aims around. It is also ONE implementation now:
+   `/tutor` and `/dev/tutor-lab` held a copy each, kept in step by hand, which
+   is precisely the arrangement that lets a lab report on a screen nobody ships.
+
+**Two claims on the list did not reproduce, and saying so is the point.**
+`Finish` appears exactly once at 375x812 in both detents, and the lesson plate
+at 1280x800 measures (836, 280, 420, 496) — `plate-max` wide, `plate-max-height`
+tall, 24 px of island under it. Both are recorded in §Lumen as measured rather
+than quietly ticked. What remains genuinely owed is the exercise option cards,
+and the reason it is still owed is that `OptionCard` is a lesson-engine
+primitive shared with the Lesson Player and 57 renderers: a Tutor pass that
+quietly restyled every lesson in the product would be a worse bug than the one
+it fixed.
+
+**A measurement lesson worth more than the pass.** The first AFTER sweep
+photographed a decapitated tutor at 375x812 in two phases and it was not a
+regression — the camera is critically damped and had not arrived. 2.2 s of
+settle was enough while the dock was 44 px taller and not enough afterwards, so
+the sweep was silently photographing a camera in flight. Every number in
+§Lumen's coverage table is now taken at seven seconds.
+
+## Three screens that could not ship: the cast had its back turned, and it was not lit (2026-08-22)
+
+A reviewer drove every phase and refused three of them. All three had a cause
+underneath the layout, and two of the causes were invisible to every gate in the
+repo because no gate had ever been told to ask.
+
+**1. Three of the four candidates stood with their backs to the learner.** On
+the one screen whose whole job is choosing a tutor by looking at them. The rule
+was `atan2(spot.x, spot.z)` — face radially OUTWARD from the island's centre —
+written down in `/TUTOR_3D.md` §5 as a principle, with the justification
+"outward is toward a camera orbiting outside it". The camera does not orbit. It
+stands at ONE bearing, so outward faces the viewer along a single radius and
+points into the sea everywhere else, and the audition deliberately SPREADS the
+cast around the ring. Measured with `npm run verify:placement` on `diorama-a`:
+liruf 138 degrees off, rho 129, zara 127. It was not confined to the audition —
+on `diorama-b` an ordinary two-person session stood Dr. Rho 101 degrees off for
+the entire conversation. The fix is `tutor-scene/facing.ts`: face
+`STAGE_BEARING`, lean at most 20 degrees toward the nearest neighbour so a group
+still reads as people sharing a place. Worst case now, anywhere, in any shipped
+pairing: 20 degrees. The gate learned the question at the same time — a
+placement past 45 degrees off the viewer now FAILS `verify:placement`, because
+where somebody stands and which way they are turned are two facts and the gate
+only knew the first.
+
+**2. "Liruf renders SEMI-TRANSPARENT while Dina renders solid" — he does not,
+and neither of them was lit at all.** Chased with a frozen camera on
+`/dev/tutor-lab`, hiding one mesh at a time: 87.6% of Liruf's silhouette is
+pixel-identical to a solo render and 2.2% is honestly occluded, so there is no
+transparency anywhere. Read out of the `.glb` files instead, every character
+ships `metallicFactor: 1` with no metalness map AND its own base-colour texture
+in the emissive slot at full white. Together: no diffuse term, plus the albedo
+added back as emission. The cast was rendering UNLIT — flat texture with a rough
+metallic sheen, no form, no contact shading, and no relationship to the sun.
+Same bug, two symptoms: a saturated character survived it and read as solid, a
+pale low-contrast one washed out against orange sand and read as a ghost. It
+also silently cancelled half of the four times of day, which relit the island
+and never touched the people standing on it.
+`tutor-scene/characterMaterial.ts` normalises an unlit export back to clay at
+load — fingerprint of the export DEFAULT only, so both islands (which author
+metalness per-texel) and any genuinely glowing part are untouched. Fixed at LOAD
+rather than in the export because `public/scenes` is a build output and deployed
+builds fetch content-addressed bytes from Depot, so a corrected export needs a
+re-optimise, a re-publish and a manifest commit before it reaches a browser;
+`scripts/optimize-glb.mjs` should still learn this, and that is the slower half.
+
+**3. `adapting` was a form.** At 375 px the island was a strip across the middle
+and the bottom 45% was five stacked surfaces. The question is a MOMENT with
+exactly two answers, so for its duration the lesson sheet stands down (hidden,
+never unmounted, publishing a footprint of zero) and the composer is suppressed
+at its portal. The microphone stays. Measured: 375 px 35.0% → 39.3% island, 8 → 7
+surfaces; 1280 px 54.0% → 60.6% island, 8 → 6 surfaces, and 103 → 48 words,
+which is §Lumen's duplicated-tutor-line deletion finally landing.
+
+**And the light theme stopped fighting the hour.** Dusk and night lit the island
+beautifully and then sat inside a white page, because `.lf-stage-ground` pulled
+every stop most of the way back to the theme's base. The premise was the bug:
+the alpha the canvas does not paint is not page behind a picture, it is the same
+air the island is hanging in, and air does not have a theme. The ground commits
+now. The first attempt at committing went straight to `--lf-ground` and measured
+WORSE — dusk's ground is a cool purple, so a warm peach screen grew a dead grey
+band across its bottom third. There is no ground under a floating island; the
+bottom stop is sky that has picked up the ground, which keeps the hue related
+the whole way down.
+
+Everything above was found by looking and then confirmed by measuring, in that
+order. The facing bug had been in production and in the documentation as a
+stated principle; the material bug had been in every screenshot anyone ever took
+of this route.
+
+## Lumen — the Tutor stops being a picture with pills on it (2026-08-22)
+
+The owner asked for "un aspecto mas premium y futurista... una interfaz de ALTO
+NIVEL", for a product that must not feel childish to a sixteen-year-old and must
+not feel cold to a nine-year-old. Driven through all seven phases at 375x812 and
+1280x800 in both themes, the stage read as a warm claymation diorama with white
+rounded pills on top of it. This pass decided what the interface is MADE of and
+wrote it into `/DESIGN.md` §Lumen; applying it screen by screen is the next one.
+
+Four causes, all measured, and the answer to each:
+
+- **Every control was opaque.** `HudPlate` was a `.lf-glass` frame around an
+  opaque `bg-surface` core, so the only translucency on screen was the 2 px ring
+  around each plate — the silhouette of a sticker. The opaque floor existed
+  because "a translucent plate over an orbiting camera has no known background",
+  which is true and is not the end of the arithmetic: **alpha puts a floor under
+  the composite**, so the ratio exists as a BOUND. `.lf-lumen` is 0.68 for
+  chrome (7.2:1 in light, 5.4:1 in dark, worst case, one ink) and 0.86 for the
+  one paragraph surface per phase (4.96:1 for `content-muted`).
+  `HudPlate.test.tsx` re-derives both from `index.css` for all five backdrops in
+  both themes, so the bound is a gate rather than a comment.
+- **Every control was a pill.** A capsule over a photographic frame reads as
+  applied to the picture. Chip and plate are `md`, the orb stays a circle, the
+  sheet is `lg`. `rounded-lg` on a one-line plate turned out to BE a capsule,
+  which is how half the HUD kept reading as pills after the shape rule changed.
+- **The world had no atmosphere.** The canvas is `alpha: true` and everything it
+  did not paint was one flat `bg-base`. Four registered properties — sky, key,
+  ground, sun height — are published once per backdrop change from the palette
+  the lights already read (`tutor-scene/atmosphere.ts`), and `.lf-stage-ground`
+  paints the void with them. Nothing is written per frame; the transition is
+  600 ms because that is the settle time of `SceneLighting`'s own lerp.
+- **There was no type hierarchy.** 70 `lf-caption` and 30 `lf-body` against ONE
+  `lf-display-lg` across `tutor/` and `tutor-scene/`. Two tokens fenced to this
+  layer: `lf-speech` (the tutor's voice, 19/21 px) and `lf-action` (an in-world
+  control, 15/600 — bigger and lighter than `lf-label`'s dashboard 14/700).
+
+Two things fell out that were not the goal and are worth recording. The **44 px
+tap floor was being broken by the camera**: `min-h-11` is 44 px of layout and
+the depth scale multiplied it, so six controls measured 33-41 px at 375x812 on a
+rule /AGENTS.md §1.11 calls non-negotiable. `ScreenAnchor` now clamps the depth
+scale against the SMALLEST control inside an anchored node — the cluster's own
+box is useless, the four opening offers ride a wrapper whose `offsetHeight` is 0
+— and `HudPlate` authors at 48 px so the depth cue has room to exist. Count
+under the floor: 6 → 0, seven phases, both breakpoints, both themes. And
+`ring-2 ring-primary` was **erasing the material**: a Tailwind ring writes
+`box-shadow`, utilities outrank components, so a chosen chip lost its edge, its
+lip and its shadow at the moment it was meant to look more present. Selection is
+`.lf-lumen-selected` now.
+
+Scene coverage is unchanged by all of it (375 px: arriving 50.8, personalizing
+29.4, introducing 73.8, conversing 69.1, adapting 34.7, closing 50.3,
+unavailable 51.7), which is the point — this pass spent nothing the last one
+bought.
+
+Deleted so far: the quiet second line on a world plate ("Dr. Rho / Your tutor"
+is "Dr. Rho"; the role is carried by the selection ring and `aria-pressed`), and
+the lighter ring around every control. `/DESIGN.md` §Lumen → What to delete
+names the seven still standing, with the measurement for each, so the applying
+pass has a list rather than an opinion.
+
 ## The island now fills a phone (2026-08-22) — the fit strategy, not the arithmetic
 
 Scene coverage counted from the canvas alpha channel on `/dev/tutor-lab`, seven

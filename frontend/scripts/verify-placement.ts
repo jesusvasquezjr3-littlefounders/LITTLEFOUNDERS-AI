@@ -22,6 +22,14 @@
  * asset pipeline bakes; this script's job is to tell a human whether that mask
  * is doing its job, in terms a human can check against a screenshot.
  *
+ * IT ALSO CHECKS WHICH WAY THEY ARE TURNED, added 2026-08-22, and that half was
+ * missing for as long as the script existed. Every character stood on walkable
+ * ground, inside the rim, at a sensible separation — and three of the four
+ * personalization candidates stood with their BACKS to the learner, on the one
+ * screen whose whole job is choosing a tutor by looking at them. Being in the
+ * right PLACE and being turned the right WAY are two facts, and a gate that
+ * only knows the first will keep reporting OK through the second.
+ *
  * Usage:  npm run verify:placement
  */
 import { dirname, resolve } from 'node:path';
@@ -40,6 +48,8 @@ import {
   Vector3,
 } from 'three';
 import { AUDITION_GROUPING, AUDITION_SAMPLES_PER_METRE, findStandingSpots } from '../src/tutor-scene/standingSpots.js';
+import { MAX_OFF_VIEWER, offViewer, solveFacings } from '../src/tutor-scene/facing.js';
+import { STAGE_BEARING } from '../src/tutor-scene/shots.js';
 import type { CharacterId } from '../src/components/characters/control/types.js';
 
 /*
@@ -248,6 +258,15 @@ for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
       clearance: castClearanceM(footprints),
     });
 
+    /*
+     * Which way each of them ends up turned. The REAL rule, imported, for the
+     * same reason the solver is: a copy here would certify a different product.
+     */
+    const facings = solveFacings(
+      spots.map((spot) => ({ x: spot.x, z: spot.z })),
+      STAGE_BEARING,
+    );
+
     let closest = Infinity;
     for (let a = 0; a < spots.length; a += 1) {
       for (let b = a + 1; b < spots.length; b += 1) {
@@ -297,7 +316,18 @@ for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
       const half = characterFootprintM(CHARACTER_MEASUREMENTS[who]) / 2;
       const fromCentre = Math.hypot(spot.x - centre.x, spot.z - centre.z);
       const overhang = fromCentre + half - radius;
-      const bad = surface === 'WATER?' || overhang > 0;
+
+      /*
+       * How far this character is turned away from the person watching. The
+       * stage opens on ONE bearing, so this is a single number and not a range,
+       * and past 45 degrees the base yaw is wrong rather than a gesture having
+       * gone a little far (`facing.ts` → MAX_OFF_VIEWER).
+       */
+      const away = offViewer(facings[i] ?? STAGE_BEARING, STAGE_BEARING);
+      const awayDeg = (away * 180) / Math.PI;
+      const turnedAway = away > MAX_OFF_VIEWER;
+
+      const bad = surface === 'WATER?' || overhang > 0 || turnedAway;
       if (bad) failures += 1;
 
       console.log(
@@ -305,6 +335,7 @@ for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
           `y=${spot.y.toFixed(2).padStart(6)}  score=${spot.score.toFixed(3)}  ` +
           `${fromCentre.toFixed(2)} m out  ` +
           `${overhang > 0 ? `OVERHANGS ${overhang.toFixed(2)} m` : `${(-overhang).toFixed(2)} m clear`}  ` +
+          `${turnedAway ? `TURNED ${awayDeg.toFixed(0)} deg FROM THE LEARNER  ` : `facing ${awayDeg.toFixed(0)} deg off  `}` +
           `${below >= 5 ? `PEDESTAL(${below}/8 down to ${drop.toFixed(2)}m)  ` : ''}` +
           `on ${surface}${rgb ? ` rgb(${rgb.join(',')})` : ''}`,
       );
@@ -320,7 +351,7 @@ for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
 
 console.log(
   failures === 0
-    ? '\nverify-placement OK — every character stands on walkable ground, inside the rim'
+    ? '\nverify-placement OK — every character stands on walkable ground, inside the rim, facing the learner'
     : `\nverify-placement FAILED — ${failures} placement(s) are wrong`,
 );
 process.exit(failures === 0 ? 0 : 1);

@@ -71,16 +71,14 @@
     "saving": "Saving…",
     "aboutYou": "About you",
     "chooseTutor": "Talk with {{name}}",
-    "tutorBadge": "Your tutor",
-    "companionBadge": "With you",
     "inviteCompanion": "Ask {{name}} to stay",
     "dismissCompanion": "Ask {{name}} to head off",
     "goToIsland": "Go to {{name}}",
     "lightTitle": "The light",
     "done": "I'm ready",
-    "more": "More",
-    "hideMore": "Done",
-    "lightNext": "Move the sun to {{name}}"
+    "lightNext": "Move the sun to {{name}}",
+    "showList": "Show the list",
+    "hideList": "Hide the list"
   },
   "character": {
     "dina": {
@@ -146,7 +144,7 @@
       "body": "Something from a course you're taking."
     },
     "weakSkill": {
-      "title": "Practise",
+      "title": "Practise {{topic}}",
       "body": "Shall we look at {{topic}} together?"
     },
     "diagnostic": {
@@ -179,7 +177,6 @@
     "bubbleLabel": "What your tutor is saying",
     "transcriptLabel": "Everything said so far",
     "resizePanel": "Resize this panel",
-    "peekOpen": "Conversation",
     "peekOpenActivity": "Activity ready",
     "peekActivityWaiting": "An activity is ready."
   },
@@ -188,14 +185,12 @@
     "thinking": "Thinking…",
     "speaking": "Talking, hold to interrupt",
     "unavailableLabel": "Microphone unavailable",
-    "releaseToSend": "Let go to send",
     "keyboardHint": "Or hold Space",
     "stageArriving": "Waking up with your island.",
     "beforeConversation": "Ready when the conversation starts.",
     "afterConversation": "This conversation is over."
   },
   "segment": {
-    "activity": "Try this",
     "practiceOnly": "practice only",
     "check": "Check",
     "checking": "Checking…",

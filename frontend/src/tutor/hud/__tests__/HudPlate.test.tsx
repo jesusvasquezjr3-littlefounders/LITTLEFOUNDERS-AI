@@ -1,51 +1,227 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { HudPlate } from '../HudPlate';
+import { resolveBackdrop, SCENE_BACKDROP_IDS } from '@/tutor-scene/backdrops';
 
 /*
- * HudPlate carries two rules that cannot be left to memory, because both fail
- * silently and both fail only for someone other than the person who built it.
+ * HudPlate carries three rules that cannot be left to memory, because all three
+ * fail silently and all three fail only for someone other than the person who
+ * built it.
  *
- * The contrast rule: text on `.lf-glass` over a moving 3D island has no second
- * colour to compute a ratio against, so every word must sit on an opaque token.
- * The measure rule: `personalize.lightTitle` is 9 / 6 / 5 characters across
+ * The CONTRAST rule, which changed on 2026-08-22 and is now measured rather
+ * than asserted. Text used to be banned from the glass and put on an opaque
+ * floor, on the grounds that a translucent plate over an orbiting camera has no
+ * background to compute a ratio against. True, and not the end of the
+ * arithmetic: alpha puts a FLOOR under the composite, so the ratio is
+ * computable as a bound. `--lf-lumen-alpha` IS that bound, and the first
+ * describe below re-derives it from the shipped stylesheet for every backdrop
+ * in both themes rather than trusting the comment next to it.
+ *
+ * The MEASURE rule: `personalize.lightTitle` is 9 / 6 / 5 characters across
  * en-US / es-MX / pt-BR, so any plate sized to one locale's string clips
  * another's, and a truncated two-word control has no name at all.
+ *
+ * The TAP rule: 48 px authored, not 44. An anchored plate is scaled by its
+ * distance from the camera, so a control authored at exactly the design floor
+ * renders under it — which is what six of them were doing.
  */
 
-describe('HudPlate contrast floor', () => {
-  it('puts body text on an OPAQUE token, never on the glass itself', () => {
-    render(<HudPlate>Minutes left</HudPlate>);
-    const text = screen.getByText('Minutes left');
+// `process.cwd()` rather than `import.meta.url`: under jsdom the module URL is
+// an http one and `fileURLToPath` refuses it. Vitest runs from `frontend/`.
+const CSS = readFileSync(resolve(process.cwd(), 'src/index.css'), 'utf8');
 
-    expect(text.className).toContain('bg-surface');
-    // The glass is the frame. If the text node ever carries it directly, the
-    // effective background becomes 22% whatever the camera is pointing at.
-    expect(text.className).not.toContain('lf-glass');
+/** A `--lf-*: <number>` from the shipped stylesheet, so the test cannot drift from it. */
+function cssNumber(name: string): number {
+  const match = new RegExp(`--${name}:\\s*([0-9.]+)%?;`).exec(CSS);
+  if (!match?.[1]) throw new Error(`no --${name} in index.css`);
+  return Number.parseFloat(match[1]);
+}
+
+/** An `--lf-*: r g b;` triplet, from the `:root` block or the `.dark` block. */
+function cssTriplet(name: string, dark: boolean): [number, number, number] {
+  const block = dark ? CSS.slice(CSS.indexOf('.dark {')) : CSS;
+  const match = new RegExp(`--${name}:\\s*(\\d+) (\\d+) (\\d+);`).exec(block);
+  if (!match) throw new Error(`no --${name} in ${dark ? '.dark' : ':root'}`);
+  return [Number(match[1]), Number(match[2]), Number(match[3])];
+}
+
+function hexToRgb(hex: string): [number, number, number] {
+  const value = Number.parseInt(hex.replace('#', ''), 16);
+  return [(value >> 16) & 255, (value >> 8) & 255, value & 255];
+}
+
+/** WCAG relative luminance of an sRGB byte triplet. */
+function luminance([r, g, b]: [number, number, number]): number {
+  const channel = (byte: number) => {
+    const c = byte / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+}
+
+function contrast(a: number, b: number): number {
+  const [hi, lo] = a > b ? [a, b] : [b, a];
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+function mix(
+  a: [number, number, number],
+  b: [number, number, number],
+  amountOfB: number,
+): [number, number, number] {
+  return [0, 1, 2].map((i) => a[i]! * (1 - amountOfB) + b[i]! * amountOfB) as [
+    number,
+    number,
+    number,
+  ];
+}
+
+describe('the Lumen contrast bound, re-derived from the shipped stylesheet', () => {
+  const tint = cssNumber('lf-lumen-tint') / 100;
+
+  /*
+   * The two densities and the inks each one has to carry. `chrome` deliberately
+   * does NOT carry `content-muted`: at 32% transmission it reads 3.6:1, which
+   * is why /DESIGN.md prohibits a muted second line on in-world chrome rather
+   * than closing the plate to make one legible.
+   */
+  const DENSITIES = [
+    { name: 'chrome', alpha: cssNumber('lf-lumen-alpha'), inks: ['lf-content'] },
+    { name: 'reading', alpha: cssNumber('lf-lumen-alpha-reading'), inks: ['lf-content', 'lf-content-muted'] },
+  ] as const;
+
+  /*
+   * The worst case a moving render can produce. In light mode the plate is at
+   * its darkest over pure black; in dark mode at its lightest over pure white.
+   * Nothing in a 3D scene can be outside that, which is exactly why a bound
+   * works where a measurement does not.
+   */
+  const WORST: Record<'light' | 'dark', [number, number, number]> = {
+    light: [0, 0, 0],
+    dark: [255, 255, 255],
+  };
+
+  for (const density of DENSITIES) {
+    for (const theme of ['light', 'dark'] as const) {
+      const dark = theme === 'dark';
+      const surface = cssTriplet('lf-surface', dark);
+
+      for (const backdrop of SCENE_BACKDROP_IDS) {
+        const sky = hexToRgb(resolveBackdrop(backdrop, dark).sky);
+        const fill = mix(surface, sky, tint);
+        const background = luminance(mix(WORST[theme], fill, density.alpha));
+
+        for (const token of density.inks) {
+          it(`${density.name} carries ${token} at 4.5:1 in ${theme} under ${backdrop}`, () => {
+            expect(contrast(luminance(cssTriplet(token, dark)), background)).toBeGreaterThanOrEqual(4.5);
+          });
+        }
+      }
+    }
+  }
+
+  it('keeps chrome genuinely translucent rather than an opaque plate wearing a glass name', () => {
+    // The whole point of the bound is that it buys transmission. A "material"
+    // at 0.95 is the opaque floor with extra steps.
+    const chrome = DENSITIES[0].alpha;
+    expect(chrome).toBeGreaterThan(0);
+    expect(chrome).toBeLessThanOrEqual(0.7);
+    expect(DENSITIES[1].alpha).toBeGreaterThan(chrome);
   });
 
-  it('keeps the glass frame on the outer element', () => {
+  it('refuses muted ink on chrome, which is the rule the density exists to state', () => {
+    // Not an accident of the numbers: at the chrome alpha muted body text is
+    // BELOW the floor, and /DESIGN.md prohibits it there for exactly that
+    // reason. If this ever starts passing, the alpha was raised and the
+    // material lost the transmission it was chosen for.
+    const surface = cssTriplet('lf-surface', false);
+    const sky = hexToRgb(resolveBackdrop('night', false).sky);
+    const background = luminance(mix(WORST.light, mix(surface, sky, tint), DENSITIES[0].alpha));
+    expect(contrast(luminance(cssTriplet('lf-content-muted', false)), background)).toBeLessThan(4.5);
+  });
+});
+
+describe('HudPlate material', () => {
+  it('is ONE surface: the words sit on the glass, not on a second opaque plate inside it', () => {
     const { container } = render(<HudPlate>Minutes left</HudPlate>);
     const frame = container.firstElementChild;
-    expect(frame?.className).toContain('lf-glass');
+    const text = screen.getByText('Minutes left');
+
+    expect(frame?.className).toContain('lf-lumen');
+    // The inner box is layout only. An opaque fill there is the 2px lighter
+    // ring that made every control read as a sticker on a photograph.
+    expect(text.className).not.toContain('bg-surface');
+    expect(text.className).not.toContain('bg-surface-sunken');
   });
 
-  it('offers an accent floor that is still an opaque token', () => {
-    render(<HudPlate floor="accent">Begin</HudPlate>);
+  it('does not use the page material', () => {
+    const { container } = render(<HudPlate>Minutes left</HudPlate>);
+    // `.lf-glass` frosts a panel on a page that holds still. This one is over a
+    // world that is relit four times a day.
+    expect(container.firstElementChild?.className).not.toContain('lf-glass');
+  });
+
+  it('renders an action as a solid object rather than one more window onto the island', () => {
+    const { container } = render(<HudPlate floor="accent">Begin</HudPlate>);
+    expect(container.firstElementChild?.className).toContain('lf-lumen-solid');
     const text = screen.getByText('Begin');
     expect(text.className).toContain('bg-accent');
     expect(text.className).toContain('text-on-accent');
   });
 
-  it('skips the floor only for chrome that carries no words', () => {
+  it('draws selection through the material, never through a ring utility', () => {
+    const { container } = render(
+      <HudPlate as="button" selected>
+        Dusk
+      </HudPlate>,
+    );
+    const frame = container.firstElementChild;
+    expect(frame?.className).toContain('lf-lumen-selected');
+    /*
+     * `ring-2` writes `box-shadow`, and utilities outrank components — so a
+     * chosen plate used to lose its edge, its specular lip and the shadow that
+     * seats it in the scene at the exact moment it was meant to look more
+     * present.
+     */
+    expect(frame?.className).not.toContain('ring-2');
+  });
+
+  it('settles rather than popping, on the plate and never on the anchored wrapper', () => {
+    const { container } = render(<HudPlate>Minutes left</HudPlate>);
+    // `ScreenAnchor` rewrites the wrapper's whole transform every frame; an
+    // entrance declared there is erased sixty times a second.
+    expect(container.firstElementChild?.className).toContain('lf-settle');
+  });
+
+  it('keeps the material on the frame even when the plate composes its own interior', () => {
     const { container } = render(
       <HudPlate floor="none">
         <svg data-ring="true" />
       </HudPlate>,
     );
     expect(container.querySelector('[data-ring="true"]')?.parentElement?.className).toContain(
-      'lf-glass',
+      'lf-lumen',
     );
+  });
+});
+
+describe('HudPlate shape', () => {
+  it('is a pane, not a pill', () => {
+    const { container } = render(<HudPlate shape="chip">Dusk</HudPlate>);
+    /*
+     * /DESIGN.md makes `rounded-full` the shape of everything interactive and
+     * small, and it is right everywhere the product is a page. Over a
+     * photographic frame a capsule is the silhouette of a sticker.
+     */
+    expect(container.firstElementChild?.className).toContain('rounded-md');
+    expect(container.firstElementChild?.className).not.toContain('rounded-full');
+  });
+
+  it('keeps the orb a circle, because it is an object rather than a label', () => {
+    const { container } = render(<HudPlate shape="orb" floor="none" />);
+    expect(container.firstElementChild?.className).toContain('rounded-full');
   });
 });
 
@@ -81,13 +257,19 @@ describe('HudPlate measure', () => {
 });
 
 describe('HudPlate element', () => {
-  it('renders a real button when it is interactive, with a safe default type', () => {
+  it('renders a real button when it is interactive, authored above the tap floor', () => {
     render(<HudPlate as="button">Pick this</HudPlate>);
     const button = screen.getByRole('button', { name: 'Pick this' });
     expect(button).toHaveAttribute('type', 'button');
-    // The a11y floor: 44x44 minimum, on a control that is often over scenery.
-    expect(button.className).toContain('min-h-11');
-    expect(button.className).toContain('min-w-11');
+    /*
+     * 48, not 44. An anchored control is multiplied by its distance from the
+     * camera; `ScreenAnchor` clamps that scale so the RENDERED box never goes
+     * under 44, and authoring at 48 is what leaves the depth cue any room to
+     * exist at all. Authored at 44 the clamp pins every chip to scale 1 and the
+     * HUD loses its depth entirely.
+     */
+    expect(button.className).toContain('min-h-12');
+    expect(button.className).toContain('min-w-12');
   });
 
   it('never leaks form-control attributes onto a plain plate', () => {

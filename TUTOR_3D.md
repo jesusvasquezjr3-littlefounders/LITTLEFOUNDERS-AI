@@ -471,12 +471,53 @@ on top of the stone table on the first one.
   ground to be flat (surface normal up) and open (neighbours at a similar
   height, so not the top of a rock), scores by flatness + facing + relative
   height, and selects greedily with a minimum separation.
-- Characters face **outward** from the island centre (`atan2(x, z)`), turned a
-  quarter toward each other. Facing inward shows their backs — "inward" and
-  "toward the viewer" are opposites when the camera is outside the scene.
+- `facing.ts` — which way each of them is turned. Everybody faces the bearing
+  the stage opens on (`shots.ts` → `STAGE_BEARING`), then leans up to 20° toward
+  their nearest neighbour so a group reads as people sharing a place. It is a
+  module, and `npm run verify:placement` gates it.
 
 A new diorama therefore needs **no coordinates and no manifest tuning** beyond
 its target diameter.
+
+### Facing — outward from the centre is NOT toward the viewer
+
+Corrected 2026-08-22, and the sentence it replaces was in this document, stated
+as a principle, and wrong: *"characters face outward from the island centre
+(`atan2(x, z)`) — facing inward shows their backs, and 'inward' and 'toward the
+viewer' are opposites when the camera is outside the scene."*
+
+The first half is true and the second half does not follow. The camera does not
+surround the island; it stands at ONE bearing. Radially outward therefore points
+at the viewer only along the single radius that passes through them, and points
+into the sea everywhere else. The audition is where that bites hardest, because
+the audition deliberately SPREADS the cast around the ring — spreading their
+bodies is right, spreading their FACES is not.
+
+Measured with `npm run verify:placement` before the fix, on `diorama-a`, with
+the whole cast standing:
+
+| | turned off the viewer |
+|---|---|
+| dina | 39° |
+| liruf | **138° — back to the learner** |
+| rho | **129° — back to the learner** |
+| zara | **127° — back to the learner** |
+
+Three of the four candidates, on the one screen whose entire job is choosing a
+tutor by looking at them. And not only there: on `diorama-b` an ordinary
+two-person session stood Dr. Rho at **101° off** for the whole conversation.
+Every gate was green throughout, because no gate had ever been told that where
+somebody stands and which way they are turned are two different facts.
+
+The rule now: **face `STAGE_BEARING`, lean up to 20° toward the nearest
+neighbour.** After it, the worst case anywhere on either island in any shipped
+pairing is 20°. The lean is CLAMPED because a quarter of the arc to a neighbour
+standing behind you is 45°, which is the difference between glancing at a friend
+and presenting a shoulder to the learner.
+
+`STAGE_BEARING` is a constant of the stage, derived from the placement solver's
+own `preferDirection`, and **not** a live camera pose — so §9.1's trap is
+untouched: the camera reads placement, placement never reads the camera.
 
 ### Walkability — shape is not meaning
 
@@ -538,6 +579,14 @@ what each character would be standing on — surface colour at the hit UV, heigh
 rim clearance, and whether the ground under them is a pedestal. It imports
 `findStandingSpots` rather than reimplementing it; a copy would drift from the
 thing it certifies.
+
+**It reports FACING too** (added 2026-08-22, and the omission is the reason the
+cast stood with its back to the learner for as long as it did). Each line now
+carries how far that character is turned off the stage bearing, and a placement
+past 45° FAILS the run. The gate had certified "on walkable ground, inside the
+rim" and called that placement; being in the right place and being turned the
+right way are two facts, and a gate that only knows the first keeps saying OK
+through the second. See §5 → Facing for the numbers it would have caught.
 
 It exists because this defect was found by a screenshot and nothing else could
 have found it. Two of the three "defects" that first screenshot seemed to show

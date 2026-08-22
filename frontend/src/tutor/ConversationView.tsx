@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Button, Icon } from '@/components/ui';
+import { Icon } from '@/components/ui';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from './hud/HudPlate';
 import { LessonPlate, type LessonPlateDetent } from './hud/LessonPlate';
@@ -210,25 +210,33 @@ export function ConversationView({
   }, [segmentId]);
 
   /*
-   * AN ARRIVING OFFER TAKES THE PLATE OFF FULL, and this is a measurement
-   * rather than a courtesy.
+   * AN ARRIVING OFFER PUTS THE PLATE AWAY, and it is the whole reason the
+   * `adapting` screen stopped being a form.
    *
+   * It used to take the plate off FULL and no further, for a measured reason:
    * `LessonPlate` reserves a fixed 300 px above the sheet for the dock
-   * (`STAGE_RESERVE_PX`), a number measured before the dock carried a question
-   * and two answers. Measured again with them in a real browser, on a 375x812
-   * phone at the FULL detent, the dock runs from y = -28: the answers are still
-   * whole and pressable, but the top of the question is cut off, and a half
-   * read question is a poor thing to answer. A transcript opened for reading
-   * can wait the few seconds a yes-or-no takes; the question cannot. The
-   * learner may drag straight back to FULL, and nothing here fights them if
-   * they do.
+   * (`STAGE_RESERVE_PX`), and at FULL on a 375x812 phone the question's top
+   * was cut off. That fixed the clipping and left the composition, which the
+   * owner's reviewer then named exactly: at 375 px the island was a thin strip
+   * across the middle and the bottom 45% was five stacked panels — question,
+   * two answers, orb and composer, a label, and the sheet's own peek row.
+   *
+   * The tutor asking "shall I explain that differently?" is a MOMENT. It gets
+   * the camera (`shotForPhase` swings to the two-shot), it gets the character,
+   * and the two answers are the only other thing on the screen: the sheet
+   * stands down for the length of the question (`standDown`, below) and the
+   * composer is not rendered (see the dock's lower slot). Both come straight
+   * back, with their state, the instant the offer is answered — the exercise is
+   * hidden rather than unmounted, so a half-finished activity is exactly where
+   * it was left.
    */
   const adaptationOffer = socket.adaptationOffer;
   useEffect(() => {
     if (adaptationOffer === null) return;
-    if (detentRef.current !== 'full') return;
     borrowedDetentRef.current = null;
-    setDetent('half');
+    // Where it will be found when it comes back, and the only detent that is
+    // honest under a sheet nobody can see right now.
+    setDetent('peek');
   }, [adaptationOffer]);
 
   /*
@@ -306,21 +314,23 @@ export function ConversationView({
   /*
    * WHAT THE RESTING SHEET SAYS ABOUT ITSELF.
    *
-   * Two strings for two jobs. The label names a CONTROL, so it is imperative
-   * and stays short enough to sit on one row beside the finish button in all
-   * three locales. The status is a SENTENCE about what changed, announced only
-   * while the sheet is resting, because that is the state in which the panel's
-   * own live regions are not mounted.
+   * Two strings for two jobs, and BOTH ARE ABSENT UNLESS SOMETHING HAPPENED.
+   * The label names a CONTROL, so it is imperative and stays short enough to
+   * sit on one row beside the finish control in all three locales. The status
+   * is a SENTENCE about what changed, announced only while the sheet is
+   * resting, because that is the state in which the panel's own live regions
+   * are not mounted.
    *
-   * Only an activity earns the louder wording. "Your tutor is thinking" is
-   * already on the microphone's status line and over the character's head; a
-   * third copy of it on the sheet would train a learner to ignore the one row
-   * that tells them something they cannot read anywhere else.
+   * The resting label used to fall back to "Conversation", which is the name of
+   * the screen the learner is already on — deleted 2026-08-22 (/DESIGN.md
+   * §Lumen → What to delete). The row's chevron says that it opens; a word is
+   * only spent when there is news, and an arriving activity is the only news
+   * this row has ever had. "Your tutor is thinking" is already on the
+   * microphone and over the character's head; a third copy here would train a
+   * learner to ignore the one row that tells them something new.
    */
   const activityWaiting = socket.segment !== null;
-  const peekLabel = activityWaiting
-    ? t('tutor.conversation.peekOpenActivity')
-    : t('tutor.conversation.peekOpen');
+  const peekLabel = activityWaiting ? t('tutor.conversation.peekOpenActivity') : undefined;
   const peekStatus = activityWaiting ? t('tutor.conversation.peekActivityWaiting') : undefined;
 
   /*
@@ -338,25 +348,23 @@ export function ConversationView({
       <HudPlate
         as="button"
         shape="chip"
-        floor="surface"
         data-answer="yes"
         aria-label={`${t('tutor.conversation.yesPlease')} ${adaptationQuestion}`}
         onClick={() => socket.answerAdaptation(adaptation, true)}
-        className="pointer-events-auto"
+        className="pointer-events-auto lf-settle-2"
       >
-        <span className="lf-caption">{t('tutor.conversation.yesPlease')}</span>
+        <span className="lf-action">{t('tutor.conversation.yesPlease')}</span>
       </HudPlate>
 
       <HudPlate
         as="button"
         shape="chip"
-        floor="surface"
         data-answer="no"
         aria-label={`${t('tutor.conversation.noThanks')} ${adaptationQuestion}`}
         onClick={() => socket.answerAdaptation(adaptation, false)}
-        className="pointer-events-auto"
+        className="pointer-events-auto lf-settle-3"
       >
-        <span className="lf-caption">{t('tutor.conversation.noThanks')}</span>
+        <span className="lf-action">{t('tutor.conversation.noThanks')}</span>
       </HudPlate>
     </div>
   );
@@ -380,7 +388,7 @@ export function ConversationView({
           */}
           {budgetRune && (
             <WorldChip slot="sky.mark.3">
-              <span className="lf-caption">{budgetRune}</span>
+              <span className="lf-action">{budgetRune}</span>
             </WorldChip>
           )}
         </>
@@ -418,15 +426,15 @@ export function ConversationView({
           className="pointer-events-none fixed inset-x-0 top-20 z-30 mx-auto flex w-full max-w-[min(34rem,92vw)] flex-col items-center gap-2 px-4"
         >
           {turn?.text && (
-            <HudPlate shape="plate" floor="surface">
-              <span className="lf-body" aria-live="polite" aria-atomic="true">
+            <HudPlate shape="plate">
+              <span className="lf-speech" aria-live="polite" aria-atomic="true">
                 {turn.text}
               </span>
             </HudPlate>
           )}
           {budgetRune && (
-            <HudPlate shape="chip" floor="sunken">
-              <span className="lf-caption">{budgetRune}</span>
+            <HudPlate shape="chip">
+              <span className="lf-action">{budgetRune}</span>
             </HudPlate>
           )}
         </div>
@@ -443,19 +451,43 @@ export function ConversationView({
       <LessonPlate
         label={t('tutor.conversation.plateLabel')}
         resizeLabel={t('tutor.conversation.resizePanel')}
+        /*
+         * OUT OF THE WAY WHILE THE TUTOR IS WAITING ON A YES OR NO. Hidden,
+         * never unmounted: a half-answered exercise keeps its state, and the
+         * sheet comes back at PEEK the moment the question is answered. See the
+         * offer effect above for what the reviewer measured without it.
+         */
+        standDown={adaptation !== null}
         detent={detent}
         onDetentChange={changeDetent}
         onFootprint={publishFootprint}
+        /*
+         * And the OTHER axis: whether the corner is occupied, which is what
+         * decides where the microphone stands at 1280 px. It is the plate's
+         * fact and not the phase's — an adaptation question is still
+         * `conversing` with the plate standing down.
+         */
+        onCornerHeld={dock?.setCornerPlate}
         peekLabel={peekLabel}
         peekStatus={peekStatus}
         header={
-          // Finishing is a first-class turn, so it lives on the one surface
-          // that is never culled and never scrolls away. The shell's way out
-          // LEAVES the route; this ends the session, and the tutor gets to say
-          // goodbye (/ORACLE.md §9.5).
-          <Button variant="secondary" onClick={onExit}>
-            {t('tutor.conversation.finish')}
-          </Button>
+          /*
+           * Finishing is a first-class turn, so it lives on the one surface
+           * that is never culled and never scrolls away. The shell's way out
+           * LEAVES the route; this ends the session, and the tutor gets to say
+           * goodbye (/ORACLE.md §9.5).
+           *
+           * A HudPlate rather than the design system's `Button`, and that is
+           * the material rather than a preference. `Button` is a `rounded-full`
+           * pill wearing `lf-gaming-btn` — Liquid Glass grammar, correct on a
+           * page and a capsule over a photographic frame here, which §Lumen
+           * calls the silhouette of a sticker. On a 375 px sheet it also cost
+           * 99 px of a 343 px row for one word; at `lf-action` inside a chip it
+           * costs 76.
+           */
+          <HudPlate as="button" shape="chip" onClick={onExit} className="pointer-events-auto shrink-0">
+            <span className="lf-action">{t('tutor.conversation.finish')}</span>
+          </HudPlate>
         }
       >
         <TutorBubble
@@ -473,7 +505,7 @@ export function ConversationView({
         />
 
         {socket.budget === 'wrapping' && (
-          <p className="lf-caption rounded-md bg-warning-soft px-3 py-2 text-content" role="status">
+          <p className="lf-body rounded-md bg-warning-soft px-3 py-2 text-content" role="status">
             {t('tutor.conversation.wrappingUp')}
           </p>
         )}
@@ -507,7 +539,18 @@ export function ConversationView({
           )
         )}
 
-        <TutorTranscript history={socket.history} label={t('tutor.conversation.transcriptLabel')} />
+        {/*
+          `spokenSeq` is what stops the same sentence printing three times. The
+          caption carries it over the crown, the bubble carries it beside the
+          animating mouth, and the log carried it a third time at the bottom of
+          the same plate — measured at 1280x800 in `adapting` as 118 words on
+          screen for the 30 being said (/DESIGN.md §Lumen → What to delete).
+        */}
+        <TutorTranscript
+          history={socket.history}
+          spokenSeq={turn ? turnSeq : null}
+          label={t('tutor.conversation.transcriptLabel')}
+        />
       </LessonPlate>
 
       {/*
@@ -547,8 +590,11 @@ export function ConversationView({
         */}
         {adaptation && (
           <div data-offer="guaranteed" className="flex w-full flex-col items-center gap-2">
-            <HudPlate shape="plate" floor="sunken" className="pointer-events-none">
-              <span className="lf-caption" role="status">
+            {/* The question is the tutor ASKING, so it is set in the tutor's
+                own voice rather than in a control's — the same `lf-speech` the
+                caption over its head is using at the same moment. */}
+            <HudPlate shape="plate" className="pointer-events-none">
+              <span className="lf-speech" role="status">
                 {adaptationQuestion}
               </span>
             </HudPlate>
@@ -557,14 +603,14 @@ export function ConversationView({
         )}
 
         {errorLine && (
-          <HudPlate shape="plate" floor="sunken" role="status" className="pointer-events-none self-center">
-            <span className="lf-caption">{errorLine}</span>
+          <HudPlate shape="plate" role="status" className="pointer-events-none self-center">
+            <span className="lf-body">{errorLine}</span>
           </HudPlate>
         )}
 
       </DockSlot>
 
-      <DockSlot dock={dock} target={dock?.below ?? null}>
+      <DockSlot dock={dock} target={adaptation ? null : (dock?.below ?? null)}>
         {/*
           Typing is not the fallback. With no voice provider configured it is
           the ONLY channel, so it is a permanent, full-width control rather than
@@ -572,12 +618,26 @@ export function ConversationView({
           /ORACLE.md §5 injection defence exists for, which is why the single
           line and the 2000 character cap are unchanged.
 
-          Built from `.lf-glass` plus an explicit opaque floor rather than from
-          `HudPlate`, whose measures are reading widths for labels: a composer
-          capped at 22ch would be four words wide.
+          IT IS ABSENT FOR THE LENGTH OF A YES-OR-NO, and that is the only
+          state it is ever absent in. An adaptation offer has exactly two
+          answers and both are already on screen as chips; a text field under
+          them is a third way to answer a closed question, and it costs 56 px
+          of the one screen the reviewer refused to show the owner. The
+          microphone stays — a learner may say "yes please" out loud — and the
+          field returns, with whatever was typed in it, the moment the question
+          is answered. This is a suppression at the PORTAL rather than of the
+          element, so React keeps its state.
+
+          Built from the stage material directly rather than from `HudPlate`,
+          whose measures are reading widths for labels: a composer capped at
+          22ch would be four words wide. It takes the READING density, because
+          a surface you type into is one you are looking at, and because the
+          placeholder is the one piece of muted text on this layer that has to
+          stay muted — a placeholder at full ink reads as a field that is
+          already filled.
         */}
-        <div className="lf-glass pointer-events-auto flex items-center rounded-full p-0.5 shadow-glass-sm">
-          <div className="flex min-w-0 flex-1 items-center gap-1 rounded-full bg-surface pl-4 pr-0.5">
+        <div className="lf-lumen lf-lumen-reading pointer-events-auto flex items-center rounded-md">
+          <div className="flex min-w-0 flex-1 items-center gap-1 rounded-[inherit] pl-4 pr-0.5">
             <input
               value={typed}
               onChange={(event) => setTyped(event.target.value)}
@@ -593,7 +653,14 @@ export function ConversationView({
               onClick={submitTyped}
               disabled={typed.trim() === '' || ended}
               aria-label={t('tutor.conversation.send')}
-              className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-content-muted transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-40"
+              /*
+                Full ink, not muted. The placeholder beside it is the one piece
+                of muted text this layer is allowed (a placeholder at full ink
+                reads as a field that is already filled) — but the SEND control
+                is not text, it is the only way to answer the tutor by typing,
+                and it was reading as decoration at 3.6:1 over the island.
+              */
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-md text-content transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-40"
             >
               <Icon name="send" />
             </button>

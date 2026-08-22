@@ -131,11 +131,11 @@ describe('MicOrb presence', () => {
    * conversation. "Hold to talk" there asks a child to hold a button with
    * nothing behind it.
    *
-   * The name and the printed line are asserted TOGETHER on purpose. They are
-   * one string precisely so they cannot drift, and a control whose spoken name
-   * disagrees with its visible label is worse than either wording alone.
+   * It is the orb's NAME and nothing else, since 2026-08-22. It used to be the
+   * name AND a printed line on a second plate underneath — two surfaces for one
+   * control, in five of the seven phases (/DESIGN.md §Lumen → What to delete).
    */
-  it('lets one screen override the resting wording, name and line together', () => {
+  it('lets one screen override the resting wording, and spends no surface on it', () => {
     render(
       <MicOrb
         state="idle"
@@ -146,13 +146,56 @@ describe('MicOrb presence', () => {
     );
 
     expect(screen.getByRole('button')).toHaveAttribute('aria-label', 'Start talking with your tutor');
-    expect(screen.getByText('Start talking with your tutor')).toBeInTheDocument();
     expect(screen.queryByText(/hold to talk/i)).not.toBeInTheDocument();
+    // The name is spoken, never printed: a usable microphone needs no caption.
+    expect(screen.queryByText('Start talking with your tutor')).not.toBeInTheDocument();
   });
 
   it('says "hold to talk" everywhere else, because everywhere else that is true', () => {
     render(<MicOrb state="idle" microphone={makeMicrophone()} onClip={vi.fn()} />);
     expect(screen.getByRole('button').getAttribute('aria-label')).toMatch(/hold to talk/i);
+  });
+
+  /*
+   * THE COUNT OF SURFACES IS THE ASSERTION, because the defect this replaced
+   * was invisible to every other kind of check: two plates, both correct, both
+   * translated, both accessible, and one of them saying what the other one is.
+   */
+  it('is ONE surface while it can be used, and one while it cannot', () => {
+    const { container, rerender } = render(
+      <MicOrb state="idle" microphone={makeMicrophone()} onClip={vi.fn()} />,
+    );
+    expect(container.querySelectorAll('.lf-lumen')).toHaveLength(1);
+
+    rerender(
+      <MicOrb
+        state="unavailable"
+        microphone={makeMicrophone()}
+        blockedReason="VOICE_UNAVAILABLE"
+        onClip={vi.fn()}
+      />,
+    );
+    // The reason moved INSIDE the orb's own surface rather than onto a second
+    // plate beside it, so the count does not go up when the news does.
+    expect(container.querySelectorAll('.lf-lumen')).toHaveLength(1);
+    expect(screen.getByRole('status').textContent?.trim()).toBeTruthy();
+  });
+
+  /*
+   * The browser's own refusal used to be a third plate, published by the shell
+   * next to an orb that still looked perfectly usable.
+   */
+  it('carries a notice about a usable microphone on its own surface', () => {
+    const { container } = render(
+      <MicOrb
+        state="idle"
+        microphone={makeMicrophone()}
+        notice="Your browser blocked the microphone"
+        onClip={vi.fn()}
+      />,
+    );
+    expect(container.querySelectorAll('.lf-lumen')).toHaveLength(1);
+    expect(screen.getByRole('status')).toHaveTextContent('Your browser blocked the microphone');
   });
 });
 
@@ -439,6 +482,22 @@ describe('MicOrb keyboard', () => {
   it('describes how the keyboard works, for people who cannot use the pointer path', () => {
     render(<MicOrb state="idle" microphone={makeMicrophone()} onClip={vi.fn()} />);
     const described = screen.getByRole('button').getAttribute('aria-describedby');
-    expect(described?.split(' ').length).toBe(2);
+    // One description at rest — the keyboard hint. There is no status line to
+    // point at any more, because a usable microphone prints nothing.
+    expect(described?.split(' ')).toHaveLength(1);
+    expect(document.getElementById(described ?? '')?.textContent).toMatch(/space/i);
+  });
+
+  it('points at the reason as well, on the one screen where there is one', () => {
+    render(
+      <MicOrb
+        state="unavailable"
+        microphone={makeMicrophone()}
+        blockedReason="VOICE_UNAVAILABLE"
+        onClip={vi.fn()}
+      />,
+    );
+    const described = screen.getByRole('button').getAttribute('aria-describedby');
+    expect(described?.split(' ')).toHaveLength(2);
   });
 });

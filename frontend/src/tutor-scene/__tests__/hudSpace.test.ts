@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { HudRect } from '../composition';
-import { escapeReserved, overlappingPairs, rectsOverlap, type NamedRect } from '../hudSpace';
+import {
+  clampThenEscape,
+  escapeReserved,
+  overlappingPairs,
+  rectsOverlap,
+  type NamedRect,
+} from '../hudSpace';
 
 /*
  * THE COLLISIONS THE OWNER FOUND ON A PHONE, AS ARITHMETIC.
@@ -294,3 +300,76 @@ describe('the measured stage', () => {
     }
   });
 });
+
+/*
+ * THE SAME COLLISION, ARRIVING FROM THE OTHER SIDE — and this time the rule
+ * rather than a snapshot of it.
+ *
+ * The case above asserts a set of measured rectangles do not overlap, which is
+ * a photograph: it stays green while the code that produced those rectangles
+ * changes underneath it. It did. Re-measured on `/dev/tutor-lab` at 375x812 in
+ * `conversing` on 2026-08-22, with the ambient orbit STOPPED — which is what a
+ * reduced-motion learner sees permanently — the caption was back under the way
+ * out, at (55, 8, 265, 112) against (16, 16, 48, 48).
+ *
+ * The reason was an ORDER, not a geometry. At a close-up the speaker's crown is
+ * above the top of the frame, so the caption's target is off screen; the chrome
+ * escape looks at that target, finds it overlapping nothing, and correctly does
+ * nothing. The frame clamp then parks it a gap below the top edge, which is
+ * where the way out stands, and nothing looked again. A moving camera had been
+ * hiding it: at most bearings the crown projects far enough right that the
+ * plate clears the chip on its own.
+ *
+ * Every number below is that measurement.
+ */
+describe('a caption clamped back into the frame lands clear of the chrome, not on it', () => {
+  const VIEWPORT = { width: 375, height: 812 };
+  const GAP = 8;
+  /** The way out, unlabelled below `md:`, as measured. */
+  const WAY_OUT: HudRect = { left: 16, top: 16, width: 48, height: 48 };
+  /** The frame the clamp parks into: the viewport, inset by the crown gap. */
+  const FRAME = { left: GAP, top: GAP, width: 375 - GAP * 2, height: 812 - GAP * 2 };
+  /** The caption's measured plate: 265 x 112, so half-extents of 132.5 x 56. */
+  const HALF_W = 132.5;
+  const HALF_H = 56;
+  /** Where the projector puts it at a close-up: well above the top of the frame. */
+  const TARGET_X = 187.5;
+  const TARGET_Y = -200;
+
+  const boxAt = (c: { x: number; y: number }): HudRect => ({
+    left: c.x - HALF_W,
+    top: c.y - HALF_H,
+    width: HALF_W * 2,
+    height: HALF_H * 2,
+  });
+
+  it('reproduces the shipped collision when the clamp is the last word', () => {
+    // Clamping alone — no reserved chrome — is exactly the old behaviour.
+    const clampedOnly = clampThenEscape(TARGET_X, TARGET_Y, HALF_W, HALF_H, FRAME, VIEWPORT, []);
+    expect(boxAt(clampedOnly)).toEqual({ left: 55, top: 8, width: 265, height: 112 });
+    expect(rectsOverlap(boxAt(clampedOnly), WAY_OUT)).toBe(true);
+  });
+
+  it('clears it once the escape gets to run after the clamp', () => {
+    const settled = clampThenEscape(TARGET_X, TARGET_Y, HALF_W, HALF_H, FRAME, VIEWPORT, [WAY_OUT]);
+    expect(rectsOverlap(boxAt(settled), WAY_OUT)).toBe(false);
+  });
+
+  it('slides ALONG the edge rather than back off it — the clamp still wins on frame', () => {
+    const settled = clampThenEscape(TARGET_X, TARGET_Y, HALF_W, HALF_H, FRAME, VIEWPORT, [WAY_OUT]);
+    const box = boxAt(settled);
+    expect(box.left).toBeGreaterThanOrEqual(0);
+    expect(box.left + box.width).toBeLessThanOrEqual(VIEWPORT.width);
+    // It moved sideways, not down: the caption stays at the top of the frame
+    // where a learner is already looking for the tutor's words.
+    expect(box.top).toBe(8);
+  });
+
+  it('leaves a node that needs no escape exactly where the clamp put it', () => {
+    const far: HudRect = { left: 16, top: 700, width: 48, height: 48 };
+    const withBlocker = clampThenEscape(TARGET_X, TARGET_Y, HALF_W, HALF_H, FRAME, VIEWPORT, [far]);
+    const without = clampThenEscape(TARGET_X, TARGET_Y, HALF_W, HALF_H, FRAME, VIEWPORT, []);
+    expect(withBlocker).toEqual(without);
+  });
+});
+

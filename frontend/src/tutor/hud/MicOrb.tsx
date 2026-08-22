@@ -31,6 +31,21 @@ import type { Microphone } from '../useMicrophone';
  * drawing behind it. The outer ring fills on the BYTE fraction rather than on a
  * guessed duration, so the thing the learner watches fill is the thing that
  * actually ends the hold.
+ *
+ * IT IS ONE SURFACE, AND UNTIL 2026-08-22 IT WAS TWO (/DESIGN.md §Lumen → What
+ * to delete). A 96 px orb with a separate plate underneath spelling out its own
+ * name — "Start talking", "Hold to talk" — is two surfaces for one control, and
+ * it was on screen in five of the seven phases. The name belongs to the orb: it
+ * is the button's accessible name, and the glyph is what a learner reads.
+ *
+ * THE REASON, WHEN THERE IS ONE, STAYS — INSIDE THE ORB'S OWN SURFACE. A
+ * microphone that cannot be used has to say why (/ORACLE.md §14), and that is a
+ * sentence rather than a name, so it cannot live on the button. It is rendered
+ * on ONE plate that CONTAINS the orb rather than on a second plate beside it,
+ * which is the difference between a control that explains itself and a control
+ * with a caption stuck to its shoe. In that form the ring is a plain element,
+ * because /DESIGN.md forbids stacking glass on glass: the plate is the
+ * material, the ring is drawn on it.
  */
 
 export type MicOrbState = 'unavailable' | 'idle' | 'listening' | 'thinking' | 'speaking';
@@ -86,6 +101,17 @@ export interface MicOrbProps {
    * disagrees with its printed label is worse than either wording alone.
    */
   idleCopy?: string;
+  /**
+   * A line the orb must show even though it is usable.
+   *
+   * Exactly one thing needs this today: the browser itself refusing the
+   * microphone after the learner was asked. It used to be a plate of its own in
+   * the dock (`StageShell`), which is the same "two surfaces for one control"
+   * the resting label plate was deleted for — and worse, because it appeared
+   * BESIDE an orb that still looked perfectly usable. It is rendered here, in
+   * the orb's own surface, by the same mechanism the blocked reason uses.
+   */
+  notice?: string | null;
   className?: string;
 }
 
@@ -114,6 +140,7 @@ export function MicOrb({
   onClip,
   onInterrupt,
   idleCopy,
+  notice = null,
   className,
 }: MicOrbProps) {
   const { t } = useTranslation();
@@ -272,176 +299,200 @@ export function MicOrb({
     : t('tutor.mic.unavailableLabel');
 
   /*
-   * One line, always. When the orb is blocked this is the honest reason.
+   * THE ONE THING THE ORB PRINTS, AND USUALLY IT PRINTS NOTHING.
    *
-   * A caller-supplied line wins, because it can say something narrower: "the
+   * A usable microphone does not need a caption: `label` above is its
+   * accessible name, the glyph is what a learner reads, and the state is
+   * carried by colour, by the breathing, by the meter ring and by
+   * `aria-pressed`. Printing "Hold to talk" under it was a second surface
+   * saying what the first surface already is (/DESIGN.md §Lumen).
+   *
+   * A microphone that CANNOT be used is the opposite case and always was: an
+   * absent explanation teaches a child the feature does not exist. A
+   * caller-supplied line wins, because it can say something narrower — "the
    * conversation has not started yet" is true and checkable, where any of
    * Core's three would be a confident wrong sentence. Failing that, the three
-   * policy answers are genuinely different — the agreement protecting
-   * children's voices is not signed, no guardian has said yes yet, or no
-   * provider is configured. Policy is checked first upstream, and this mirrors
-   * that order rather than re-deciding it.
+   * policy answers are genuinely different: the agreement protecting children's
+   * voices is not signed, no guardian has said yes yet, or no provider is
+   * configured. Policy is checked first upstream, and this mirrors that order
+   * rather than re-deciding it.
+   *
+   * `notice` is the third case — usable, but the browser said no — and it is
+   * news rather than a name, so it prints too.
    */
-  const status = !available
+  const reason = !available
     ? (blockedCopy ??
       (blockedReason === 'POLICY_BLOCKED'
         ? t('tutor.offers.voicePolicyBlocked')
         : blockedReason === 'CONSENT_REQUIRED'
           ? t('tutor.offers.voiceNeedsConsent')
           : t('tutor.offers.voiceUnavailable')))
-    : state === 'listening'
-      ? t('tutor.mic.releaseToSend')
-      : state === 'thinking'
-        ? t('tutor.mic.thinking')
-        : state === 'speaking'
-          ? t('tutor.mic.speaking')
-          : idle;
+    : (notice ?? null);
 
-  return (
-    <div className={cn('flex flex-col items-center gap-2', className)}>
-      <style>{ORB_KEYFRAMES}</style>
-
-      <HudPlate
-        as="button"
-        shape="orb"
+  const orb = (
+    <button
+      type="button"
+      aria-label={label}
+      aria-disabled={!available || undefined}
+      aria-pressed={available ? recording : undefined}
+      aria-describedby={reason ? `${statusId} ${hintId}` : hintId}
+      onPointerDown={onPointerDown}
+      onPointerUp={endHold}
+      onPointerCancel={endHold}
+      // Losing focus mid-latch would leave the microphone open with no
+      // visible owner, which is the exact thing push-to-talk exists to avoid.
+      onBlur={endHold}
+      onKeyDown={onKeyDown}
+      onKeyUp={onKeyUp}
+      className={cn(
         /*
-         * `none` is legal here because the orb carries no text — the icon is
-         * aria-hidden and the words live in the plate below. The opaque floor
-         * the contrast rule demands is composed explicitly below instead, so
-         * the rings can sit outside it.
+         * IT IS THE MATERIAL ONLY WHEN IT STANDS ALONE. With a reason to print
+         * the orb sits INSIDE a plate, and /DESIGN.md forbids stacking glass on
+         * glass — two blurred layers over a moving island stop reading as one
+         * material and start reading as a bug in the blur. There the ring is
+         * simply drawn on the plate.
          */
-        floor="none"
-        aria-label={label}
-        aria-disabled={!available || undefined}
-        aria-pressed={available ? recording : undefined}
-        aria-describedby={`${statusId} ${hintId}`}
-        onPointerDown={onPointerDown}
-        onPointerUp={endHold}
-        onPointerCancel={endHold}
-        // Losing focus mid-latch would leave the microphone open with no
-        // visible owner, which is the exact thing push-to-talk exists to avoid.
-        onBlur={endHold}
-        onKeyDown={onKeyDown}
-        onKeyUp={onKeyUp}
+        !reason && 'lf-settle lf-lumen',
+        'pointer-events-auto relative grid h-24 w-24 place-items-center rounded-full lg:h-28 lg:w-28',
+        'active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+        !available && 'cursor-not-allowed',
+        state === 'speaking' && 'opacity-60',
+      )}
+    >
+      <span
+        /*
+         * The face is inset far enough to clear both rings.
+         *
+         * At `inset-1.5` the level meter fell INSIDE the fill, and the fill
+         * turns the same red as the meter the moment recording starts — a
+         * meter that disappears exactly when it becomes useful. The rings now
+         * ride the outer band, where their track is a known token in both
+         * themes instead of whatever the orb is currently coloured.
+         */
         className={cn(
-          'relative grid h-24 w-24 place-items-center lg:h-28 lg:w-28',
-          !available && 'cursor-not-allowed',
-          state === 'speaking' && 'opacity-60',
+          'absolute inset-4 grid place-items-center rounded-full transition-colors',
+          // Unavailable has NO disc. The dashed track alone says "not now", and
+          // a filled circle behind a struck-through microphone reads as a
+          // button that is merely a different colour today.
+          !available
+            ? 'text-content'
+            : recording
+              ? 'bg-error text-on-error'
+              : 'bg-accent text-on-accent',
+          state === 'idle' && available && 'lf-mic-breathe',
         )}
       >
-        <span
-          /*
-           * The face is inset far enough to clear both rings.
-           *
-           * At `inset-1.5` the level meter fell INSIDE the fill, and the fill
-           * turns the same red as the meter the moment recording starts — a
-           * meter that disappears exactly when it becomes useful. The rings now
-           * ride the glass band, where their track is a known token in both
-           * themes instead of whatever the orb is currently coloured.
-           */
-          className={cn(
-            'absolute inset-4 grid place-items-center rounded-full transition-colors',
-            // The dashed ring is the SVG track, not a second border here: two
-            // concentric dashed circles read as a rendering glitch rather than
-            // as one clear "not right now".
-            !available
-              ? 'bg-surface text-content-muted'
-              : recording
-                ? 'bg-error text-on-error'
-                : 'bg-accent text-on-accent',
-            state === 'idle' && 'lf-mic-breathe',
-          )}
-        >
-          {state === 'thinking' ? (
-            <span className="lf-mic-dot h-3 w-3 rounded-full bg-on-accent" />
-          ) : (
-            <Icon
-              name={!available ? 'mic_off' : recording ? 'graphic_eq' : 'mic'}
-              className="!text-[28px] lg:!text-[32px]"
-            />
-          )}
-        </span>
-
-        <svg
-          viewBox="0 0 100 100"
-          aria-hidden="true"
-          className={cn(
-            'pointer-events-none absolute inset-0 h-full w-full',
-            state === 'thinking' && 'lf-mic-spin',
-          )}
-        >
-          <g transform="rotate(-90 50 50)">
-            {/* The track. Dashed when the orb is unavailable: a broken ring
-                reads as "not now" at a glance, before any word is read. */}
-            <circle
-              cx="50"
-              cy="50"
-              r={CAP_RADIUS}
-              fill="none"
-              strokeWidth="2"
-              strokeDasharray={available ? undefined : '4 6'}
-              className="stroke-outline"
-            />
-            {/* Outer, thin: how much of the wire cap this hold has spent. */}
-            <circle
-              ref={capCircleRef}
-              cx="50"
-              cy="50"
-              r={CAP_RADIUS}
-              fill="none"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeDasharray={CAP_CIRCUMFERENCE}
-              strokeDashoffset={CAP_CIRCUMFERENCE}
-              className="stroke-warning"
-            />
-            {/* Inner, thick: the live level, so silence is visibly different
-                from a microphone that is not working. */}
-            <circle
-              ref={levelCircleRef}
-              cx="50"
-              cy="50"
-              r={LEVEL_RADIUS}
-              fill="none"
-              strokeWidth="5"
-              strokeLinecap="round"
-              strokeDasharray={LEVEL_CIRCUMFERENCE}
-              strokeDashoffset={LEVEL_CIRCUMFERENCE}
-              className="stroke-error"
-            />
-          </g>
-        </svg>
-      </HudPlate>
-
-      {/*
-        The status line is also the visual twin of every sound this control
-        makes. Sound is an accent here and never load-bearing: a muted device,
-        a blocked autoplay policy or a deaf learner must lose nothing.
-
-        It is a LIVE REGION ONLY WHEN THE ORB IS BLOCKED. Losing the microphone
-        mid-session — a guardian revoking consent, a provider going down — is
-        news, and it has to reach someone who is not looking at the orb. The
-        ordinary idle/listening/thinking cycle is not: `aria-pressed` and the
-        button's own name already carry it, and announcing it again on every
-        turn talks over the tutor.
-
-        A blocked reason is a sentence, not a label, so it gets the plate's
-        wider measure. Wrapping one at a chip's 22ch on a 375px screen builds a
-        seven-line tower under the largest control on the page.
-      */}
-      <HudPlate
-        id={statusId}
-        shape={available ? 'chip' : 'plate'}
-        role={available ? undefined : 'status'}
-        className="pointer-events-none"
-      >
-        <span className="lf-caption">{status}</span>
-      </HudPlate>
-
-      <span id={hintId} className="sr-only">
-        {t('tutor.mic.keyboardHint')}
+        {state === 'thinking' ? (
+          <span className="lf-mic-dot h-3 w-3 rounded-full bg-on-accent" />
+        ) : (
+          <Icon
+            name={!available ? 'mic_off' : recording ? 'graphic_eq' : 'mic'}
+            className="!text-[28px] lg:!text-[32px]"
+          />
+        )}
       </span>
-    </div>
+
+      <svg
+        viewBox="0 0 100 100"
+        aria-hidden="true"
+        className={cn(
+          'pointer-events-none absolute inset-0 h-full w-full',
+          state === 'thinking' && 'lf-mic-spin',
+        )}
+      >
+        <g transform="rotate(-90 50 50)">
+          {/* The track. Dashed when the orb is unavailable: a broken ring
+              reads as "not now" at a glance, before any word is read. */}
+          <circle
+            cx="50"
+            cy="50"
+            r={CAP_RADIUS}
+            fill="none"
+            strokeWidth="2"
+            strokeDasharray={available ? undefined : '4 6'}
+            className="stroke-outline"
+          />
+          {/* Outer, thin: how much of the wire cap this hold has spent. */}
+          <circle
+            ref={capCircleRef}
+            cx="50"
+            cy="50"
+            r={CAP_RADIUS}
+            fill="none"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeDasharray={CAP_CIRCUMFERENCE}
+            strokeDashoffset={CAP_CIRCUMFERENCE}
+            className="stroke-warning"
+          />
+          {/* Inner, thick: the live level, so silence is visibly different
+              from a microphone that is not working. */}
+          <circle
+            ref={levelCircleRef}
+            cx="50"
+            cy="50"
+            r={LEVEL_RADIUS}
+            fill="none"
+            strokeWidth="5"
+            strokeLinecap="round"
+            strokeDasharray={LEVEL_CIRCUMFERENCE}
+            strokeDashoffset={LEVEL_CIRCUMFERENCE}
+            className="stroke-error"
+          />
+        </g>
+      </svg>
+    </button>
+  );
+
+  const hint = (
+    <span id={hintId} className="sr-only">
+      {t('tutor.mic.keyboardHint')}
+    </span>
+  );
+
+  /*
+   * Nothing to explain: one circle, and it is the whole control.
+   *
+   * The wrapper is a bare box rather than a surface, so the only thing painted
+   * here is the orb itself — which is the state five of the seven phases are
+   * in, and 36 px of the dock's height back on every one of them.
+   */
+  if (!reason) {
+    return (
+      <div className={cn('flex flex-col items-center', className)}>
+        <style>{ORB_KEYFRAMES}</style>
+        {orb}
+        {hint}
+      </div>
+    );
+  }
+
+  /*
+   * There IS something to explain, so there is one plate and the orb is on it.
+   *
+   * `role="status"` on the line, always: losing the microphone mid-session — a
+   * guardian revoking consent, a provider going down, the browser refusing —
+   * is news, and it has to reach someone who is not looking at the orb. The
+   * ordinary idle/listening/thinking cycle is deliberately NOT announced;
+   * `aria-pressed` and the button's own name carry it, and repeating it every
+   * turn talks over the tutor.
+   */
+  return (
+    <HudPlate
+      shape="plate"
+      className={cn('pointer-events-none self-center', className)}
+      // Tighter than the plate's own `py-4`: the ring is already 96 px of air
+      // with a 28 px glyph in the middle of it, and the plate's job here is to
+      // hold the two together, not to frame them.
+      floorClassName="flex-col gap-2 py-3"
+    >
+      <style>{ORB_KEYFRAMES}</style>
+      {orb}
+      <span id={statusId} role="status" className="lf-action text-balance">
+        {reason}
+      </span>
+      {hint}
+    </HudPlate>
   );
 }
 

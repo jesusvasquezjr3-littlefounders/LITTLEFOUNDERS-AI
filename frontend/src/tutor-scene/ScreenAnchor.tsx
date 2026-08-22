@@ -3,8 +3,8 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import type { AnchorId } from './anchors';
 import type { HudRect } from './composition';
-import { clampIntoView, isAnchorNodeVisible, stackClearance, type ViewportBox } from './culling';
-import { escapeReserved, HUD_SURFACE_GAP_PX } from './hudSpace';
+import { isAnchorNodeVisible, stackClearance, type ViewportBox } from './culling';
+import { clampThenEscape, escapeReserved, HUD_SURFACE_GAP_PX } from './hudSpace';
 import { useSafeArea } from './SafeAreaContext';
 
 /*
@@ -94,6 +94,19 @@ const MAX_SCALE = 1.15;
 const MIN_READABLE_PX = 12;
 
 /**
+ * The floor under an INTERACTIVE anchored node's rendered short side, in CSS
+ * pixels.
+ *
+ * /DESIGN.md §Layout makes 44 px non-negotiable, and until this existed the
+ * rule was enforced in the stylesheet and broken on the glass: `min-h-11` is
+ * 44 px of layout, and the depth scale below then multiplied it by 0.75. The
+ * number is the design floor exactly; the room a control needs in order to
+ * still HAVE a depth cue comes from authoring it larger (HudPlate uses 48 px),
+ * not from softening this.
+ */
+const MIN_TAP_PX = 44;
+
+/**
  * Where an anchored node stands relative to the point it rides.
  *
  * `centre` is the original and still the default: the node's middle lands on the
@@ -118,8 +131,18 @@ interface AnchoredNode {
   scale: number;
   /** False until the first projection, which snaps rather than easing in. */
   placed: boolean;
-  /** Smallest scale that keeps this node's own text at MIN_READABLE_PX. */
+  /**
+   * Smallest scale this node may be drawn at.
+   *
+   * The larger of two independent floors: its own text staying at
+   * MIN_READABLE_PX, and — for a node a finger has to hit — its own box staying
+   * at MIN_TAP_PX. The second is re-derived whenever the box is re-measured,
+   * because a label that wraps to a second line in another locale is a
+   * different control from the one that was registered.
+   */
   minScale: number;
+  /** The text floor alone, cached: the font size cannot change without a remount. */
+  readableScale: number;
   placement: AnchorPlacement;
   /** True for a node that MOVES out of fixed HUD chrome instead of sitting under it. */
   avoid: boolean;
@@ -127,6 +150,8 @@ interface AnchoredNode {
   stack: boolean;
   /** True for a node that clamps back into the frame instead of being culled. */
   keepInFrame: boolean;
+  /** The same, EXCEPT behind the camera, where it culls. See `clampToFrame`. */
+  clampToFrame: boolean;
   /**
    * Half the node's own UNSCALED layout box, in CSS pixels.
    *
@@ -264,6 +289,56 @@ export interface AnchorOptions {
    * pressed to the frame edge points at nothing.
    */
   keepInFrame?: boolean;
+  /**
+   * Slide back into the frame rather than disappearing — but still disappear
+   * when the point goes behind the camera.
+   *
+   * THE WEAKER HALF OF `keepInFrame`, AND IT EXISTS FOR THE AUDITION. A
+   * candidate's name plate rides that candidate's crown, and it is the surface
+   * a learner taps to choose them (/ORACLE.md §10). Measured on
+   * `/dev/tutor-lab` at 375x812 with the camera held still: Liruf's cluster
+   * projected to x = 321 with a half-width of 55, so its right edge landed at
+   * 376 against a 375 px viewport and the ordinary box cull removed it. **One
+   * pixel**, and with it the candidate — hidden AND inert, on the one screen
+   * whose entire job is choosing a tutor by looking at them. His cluster is the
+   * widest because he is the current companion, so it carries the dismiss orb
+   * beside the plate; a longer name in another locale reaches the same edge
+   * without any orb at all.
+   *
+   * Clamping is right here for the reason it is wrong for a chip on a rim pad.
+   * /DESIGN.md's rule against it — "a chip pressed flat against the frame edge
+   * points at nothing" — is about a control naming a PLACE that has left the
+   * picture. This one names a PERSON who is still standing in it, two
+   * centimetres away, fully rendered. Sliding the plate 1 px inward keeps it
+   * over its own character; culling it takes a candidate out of the audition.
+   *
+   * It is NOT `keepInFrame`, and the difference is the `behind` case: a
+   * candidate the camera has turned past is genuinely not on screen, and
+   * parking their name at the top of the frame would be a label for somebody
+   * nobody can see. Behind the camera, this culls.
+   */
+  clampToFrame?: boolean;
+  /**
+   * The smallest this node's own text may RENDER at, in CSS pixels, once the
+   * depth scale has been applied. Defaults to `MIN_READABLE_PX`.
+   *
+   * THE DEFAULT IS THE FLOOR FOR A LABEL AND IS THE WRONG FLOOR FOR A SENTENCE.
+   * 12 px is where a two-word chip stops being readable, and every chip on this
+   * layer is held well above it by the 44 px TAP floor anyway. The speech
+   * caption has no tap floor — nobody presses it — so 12 was the only thing
+   * under it, and /DESIGN.md §Lumen → Type calls exactly that size "not a size,
+   * an apology" and has the stylesheet neutralise `lf-caption` on chrome to
+   * stop it happening. The depth scale then reintroduced it on the one node the
+   * same section calls "the largest type on the stage after the character".
+   *
+   * Measured on `/dev/tutor-lab` at 375x812 during an adaptation offer: the
+   * two-shot stands the camera back far enough that the caption clamped to
+   * exactly 12.0 px — smaller than the 13.7 px a world chip's label gets, and
+   * smaller than the 15 px `lf-action` the material guarantees any chrome
+   * caption — while the same tutor's question, one plate below it in the dock,
+   * was 19 px. One speaker, two voices, and the primary one was the whisper.
+   */
+  minTextPx?: number;
 }
 
 export function useAnchorSlot(
@@ -280,6 +355,8 @@ export function useAnchorSlot(
   const avoid = options.avoid ?? false;
   const stack = options.stack ?? false;
   const keepInFrame = options.keepInFrame ?? false;
+  const clampToFrame = options.clampToFrame ?? false;
+  const minTextPx = options.minTextPx ?? MIN_READABLE_PX;
 
   return useCallback(
     (node: HTMLElement | null) => {
@@ -301,7 +378,7 @@ export function useAnchorSlot(
        * which is why it happens here and never in the frame loop.
        */
       const fontSize = Number.parseFloat(window.getComputedStyle(node).fontSize);
-      const minScale = Number.isFinite(fontSize) && fontSize > 0 ? Math.min(1, MIN_READABLE_PX / fontSize) : 1;
+      const readableScale = Number.isFinite(fontSize) && fontSize > 0 ? Math.min(1, minTextPx / fontSize) : 1;
 
       /*
        * The node's box, read in the same forced layout the font size already
@@ -311,6 +388,26 @@ export function useAnchorSlot(
        */
       const width = node.offsetWidth;
       const height = node.offsetHeight;
+
+      /*
+       * THE DEPTH SCALE MAY NOT SHRINK A CONTROL BELOW THE TAP TARGET.
+       *
+       * The readability floor above protects TEXT and was quietly assumed to
+       * protect the control around it. It does not, and the gap is measurable:
+       * on `/dev/tutor-lab` at 375x812, `personalizing` rendered six buttons
+       * under 44 px — "Talk with Dina" at 44x33, "Ask Liruf to head off" at
+       * 36x36, "Move the sun to Dusk" at 56x33 — every one of them authored at
+       * the 44 px minimum and every one of them multiplied down by its distance
+       * from the camera. /DESIGN.md calls 44 px non-negotiable, and a control
+       * that meets it in the stylesheet and misses it on the glass has met
+       * nothing.
+       *
+       * The floor is applied to INTERACTIVE nodes only, and it is a floor on
+       * the scale rather than a ban on scaling: a plate authored at 48 px can
+       * still ride from 0.92 to 1.15 with the camera, which is the depth cue
+       * this scale exists for, while never rendering under the minimum.
+       */
+      const minScale = Math.max(readableScale, tapFloor(node));
 
       node.style.position = 'fixed';
       node.style.left = '0';
@@ -338,10 +435,12 @@ export function useAnchorSlot(
         scale: 1,
         placed: false,
         minScale,
+        readableScale,
         placement: place,
         avoid,
         stack,
         keepInFrame,
+        clampToFrame,
         halfWidth: width > 0 ? width / 2 : 0,
         halfHeight: height > 0 ? height / 2 : 0,
         culled: true,
@@ -355,7 +454,7 @@ export function useAnchorSlot(
       set.add(entry);
       attached.current = entry;
     },
-    [registry, slot, place, avoid, stack, keepInFrame],
+    [registry, slot, place, avoid, stack, keepInFrame, clampToFrame, minTextPx],
   );
 }
 
@@ -553,7 +652,7 @@ export function AnchorProjector() {
          * caught half-cut.
          */
         if (!isAnchorNodeVisible(targetX, targetY, halfWidth, halfHeight, view.current)) {
-          if (!entry.keepInFrame) {
+          if (!entry.keepInFrame && !entry.clampToFrame) {
             cull(entry);
             continue;
           }
@@ -562,18 +661,34 @@ export function AnchorProjector() {
            * /DESIGN.md states — the caption MOVES, it never hides — was only
            * half implemented, because `avoid` escapes fixed CHROME and nothing
            * escaped the frame EDGE.
+           *
+           * AND THEN IT ESCAPES THE CHROME AGAIN, which is a fix rather than
+           * belt-and-braces (`hudSpace.ts` → `clampThenEscape` carries the
+           * measurement). The escape above ran on the position the CAMERA asked
+           * for, and for the caption at a close-up that position is off the top
+           * of the frame entirely — so it overlapped nothing, correctly did
+           * nothing, and the clamp then parked the plate exactly where the way
+           * out stands.
            */
-          const clamped = clampIntoView(targetX, targetY, halfWidth, halfHeight, {
-            // Inset by the same gap the node keeps over a crown, so a clamped
-            // caption reads as resting against the edge rather than as cropped
-            // by it. Measured without it: the plate sat at top = 0, flush.
-            left: view.current.left + HUD_SURFACE_GAP_PX,
-            top: view.current.top + HUD_SURFACE_GAP_PX,
-            width: view.current.width - HUD_SURFACE_GAP_PX * 2,
-            height: view.current.height - HUD_SURFACE_GAP_PX * 2,
-          });
-          targetX = clamped.x;
-          targetY = clamped.y;
+          const settled = clampThenEscape(
+            targetX,
+            targetY,
+            halfWidth,
+            halfHeight,
+            {
+              // Inset by the same gap the node keeps over a crown, so a clamped
+              // caption reads as resting against the edge rather than as cropped
+              // by it. Measured without it: the plate sat at top = 0, flush.
+              left: view.current.left + HUD_SURFACE_GAP_PX,
+              top: view.current.top + HUD_SURFACE_GAP_PX,
+              width: view.current.width - HUD_SURFACE_GAP_PX * 2,
+              height: view.current.height - HUD_SURFACE_GAP_PX * 2,
+            },
+            { width: view.current.width, height: view.current.height },
+            entry.avoid ? reserved.current : [],
+          );
+          targetX = settled.x;
+          targetY = settled.y;
         }
 
         if (!entry.placed) {
@@ -684,4 +799,49 @@ function measureBox(entry: AnchoredNode): void {
   const height = entry.element.offsetHeight;
   if (width > 0) entry.halfWidth = width / 2;
   if (height > 0) entry.halfHeight = height / 2;
+  /*
+   * The tap floor is re-derived UNGATED, unlike the box above.
+   *
+   * A zero box means "this node is hidden" for the cull, but it does not mean
+   * the node has no controls: the opening offers ride a wrapper whose own
+   * `offsetHeight` is 0 because its four chips are laid out out of flow, so
+   * gating on the wrapper's box was the difference between a floor that applied
+   * and a floor measured once, at registration, while the node was still
+   * display:none — 40 px chips on a 375 px phone, which is the exact failure
+   * this floor exists to stop. `tapFloor` returns 0 for a node with no laid-out
+   * controls, which is the same answer as not applying it — and a zero is
+   * DISCARDED rather than stored, for the same reason the box above discards
+   * one: it means "not laid out right now", never "has no controls".
+   */
+  const floor = tapFloor(entry.element);
+  if (floor > 0) entry.minScale = Math.max(entry.readableScale, floor);
+}
+
+/** Everything a finger is expected to hit. */
+const TAP_TARGETS = 'button, a[href], input, select, textarea, [role="button"]';
+
+/**
+ * The smallest scale at which every control inside this node still renders at
+ * MIN_TAP_PX on its short side. Zero — no floor — for a node that is only read.
+ *
+ * IT MEASURES THE SMALLEST CONTROL, NOT THE NODE. An anchored node is often a
+ * CLUSTER: the four opening offers ride one anchor inside a wrapper 150 px
+ * tall, so a floor derived from the wrapper's own box is 44/150 and constrains
+ * nothing, while the 48 px buttons inside it render at 40. Taking the minimum
+ * over the controls themselves is what makes the floor mean what it says.
+ */
+function tapFloor(node: HTMLElement): number {
+  const targets: HTMLElement[] = node.matches(TAP_TARGETS)
+    ? [node]
+    : [...node.querySelectorAll<HTMLElement>(TAP_TARGETS)];
+  let shortest = Number.POSITIVE_INFINITY;
+  for (const target of targets) {
+    const side = Math.min(target.offsetWidth, target.offsetHeight);
+    if (side > 0 && side < shortest) shortest = side;
+  }
+  if (!Number.isFinite(shortest)) return 0;
+  // Capped at 1: the floor stops a control from SHRINKING below the target, it
+  // never enlarges one that was authored smaller than it. That would be a
+  // layout bug growing a second one.
+  return Math.min(1, MIN_TAP_PX / shortest);
 }

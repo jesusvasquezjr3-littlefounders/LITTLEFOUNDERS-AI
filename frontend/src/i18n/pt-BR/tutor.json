@@ -71,16 +71,14 @@
     "saving": "Salvando…",
     "aboutYou": "Sobre você",
     "chooseTutor": "Conversar com {{name}}",
-    "tutorBadge": "Seu tutor",
-    "companionBadge": "Com você",
     "inviteCompanion": "Pedir para {{name}} ficar",
     "dismissCompanion": "Pedir para {{name}} ir embora",
     "goToIsland": "Ir para {{name}}",
     "lightTitle": "A luz",
     "done": "Pronto, vamos",
-    "more": "Mais",
-    "hideMore": "Pronto",
-    "lightNext": "Mover o sol para {{name}}"
+    "lightNext": "Mover o sol para {{name}}",
+    "showList": "Ver a lista",
+    "hideList": "Esconder a lista"
   },
   "character": {
     "dina": {
@@ -146,7 +144,7 @@
       "body": "Algo de um curso que você já faz."
     },
     "weakSkill": {
-      "title": "Praticar",
+      "title": "Praticar {{topic}}",
       "body": "Vamos ver {{topic}} juntos?"
     },
     "diagnostic": {
@@ -179,7 +177,6 @@
     "bubbleLabel": "O que seu tutor está dizendo",
     "transcriptLabel": "Tudo o que foi dito até agora",
     "resizePanel": "Mudar o tamanho deste painel",
-    "peekOpen": "Conversa",
     "peekOpenActivity": "Atividade pronta",
     "peekActivityWaiting": "Já tem uma atividade."
   },
@@ -188,14 +185,12 @@
     "thinking": "Pensando…",
     "speaking": "Falando, segure para interromper",
     "unavailableLabel": "Microfone indisponível",
-    "releaseToSend": "Solte para enviar",
     "keyboardHint": "Ou segure Espaço",
     "stageArriving": "Acorda junto com sua ilha.",
     "beforeConversation": "Pronto quando a conversa começar.",
     "afterConversation": "Esta conversa terminou."
   },
   "segment": {
-    "activity": "Tente isto",
     "practiceOnly": "só prática",
     "check": "Conferir",
     "checking": "Conferindo…",

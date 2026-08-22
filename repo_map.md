@@ -1192,17 +1192,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## The island now fills a phone (2026-08-22) — the fit strategy, not the arithmetic
+## Reconciling the two Lumen passes: five defects that lived in the seams (2026-08-22)
 
-Scene coverage counted from the canvas alpha channel on `/dev/tutor-lab`, seven
-phases, both mandatory breakpoints. At 375x812: **arriving 6.5% → 50.7%, closing
-10.7% → 50.1%, unavailable 3.3% → 51.6%, adapting 6.9% → 34.6%, personalizing
-12.6% → 30.2%**; introducing (72.3% → 73.9%) and conversing (69.1% → 69.1%)
-unchanged, as /ORACLE.md §9.3 requires. At 1280x800: **arriving 13.6% → 53.1%,
-unavailable 6.6% → 53.3%, adapting 22.3% → 47.4%, personalizing 32.6% → 48.8%,
-closing 25.9% → 44.7%**.
-
-Four decisions behind those numbers, each written up where it belongs
+The material pass and the applying pass were done in parallel by two engineers.
+This session drove the result together — all seven phases at 375x812 and
+1280x800 in both themes, and then the whole learner's journey as 24 real clicks
+— and found five defects. Every one of them lived in a SEAM: a rule enforced in
+one place and copied by hand into a second, or a signal published by one owner
+and read by another that had gone stale. None of them was visible to either
+author's own screenshots, and four of the five were being hidden by the ambient
+camera orbit, which is why every measurement below was taken with
+`prefers-reduced-motion: reduce` — the state a reduced-motion learner is in
 ```
 
 ### agent/README.md
@@ -12961,16 +12961,16 @@ import enErrors from './en-US/errors.json';
 @tailwind utilities;
 
 /*
- * Token implementation of /DESIGN.md (LittleFounders Liquid Glass).
- * CSS variables are the single source; tailwind.config.js references them.
- * RGB triplets so Tailwind opacity modifiers work.
- */
-@layer base {
-  :root {
-    /* Neutrals — slate scale */
-    --lf-base: 248 250 252; /* slate-50 */
-    --lf-surface: 255 255 255;
-    --lf-surface-sunken: 241 245 249; /* slate-100 */
+ * THE ATMOSPHERE CHANNEL (/DESIGN.md §Lumen → Light).
+ *
+ * Four values describing the light the Tutor's island is standing in. They are
+ * REGISTERED rather than plain custom properties for one reason: a registered
+ * property has a type, and a typed property can be TRANSITIONED. The scene's
+ * lights lerp over ~600 ms when the learner changes the time of day
+ * (`tutor-scene/SceneLighting.tsx`), and an unregistered variable would snap the
+ * whole HUD to the new hour a third of a second before the island got there.
+ *
+ * They are written ONCE per backdrop change, by the stage root, from the same
 ```
 
 ### frontend/src/lesson-engine/core/MarkdownLite.tsx
@@ -21091,8 +21091,8 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import type { AnchorId } from './anchors';
 import type { HudRect } from './composition';
-import { clampIntoView, isAnchorNodeVisible, stackClearance, type ViewportBox } from './culling';
-import { escapeReserved, HUD_SURFACE_GAP_PX } from './hudSpace';
+import { isAnchorNodeVisible, stackClearance, type ViewportBox } from './culling';
+import { clampThenEscape, escapeReserved, HUD_SURFACE_GAP_PX } from './hudSpace';
 import { useSafeArea } from './SafeAreaContext';
 
 /*
@@ -21168,19 +21168,19 @@ vi.mock('../TutorScene', () => ({
 ```
 import { describe, expect, it } from 'vitest';
 import type { HudRect } from '../composition';
-import { escapeReserved, overlappingPairs, rectsOverlap, type NamedRect } from '../hudSpace';
+import {
+  clampThenEscape,
+  escapeReserved,
+  overlappingPairs,
+  rectsOverlap,
+  type NamedRect,
+} from '../hudSpace';
 
 /*
  * THE COLLISIONS THE OWNER FOUND ON A PHONE, AS ARITHMETIC.
  *
  * Every rectangle in this file is a real `getBoundingClientRect` from a live
  * stage driven at 375x812 and at 1280x800 — the numbers the verification pass
- * came back with, not numbers anybody reasoned to. That matters twice over. It
- * is what stops the "before" cases from being a straw man, and it is what makes
- * the "after" cases a regression test rather than a restatement of the
- * implementation: the geometry below is what the DOM actually did.
- *
- * They are asserted here rather than in a render test because there is nowhere
 ```
 
 ### frontend/src/tutor-scene/anchors.test.ts
@@ -21261,6 +21261,46 @@ import {
  * WHAT they are (heights, footprints, island diameters) lives in
  * `measurements.ts`, which imports nothing and can therefore be read by a
  * headless script. This module adds URLs on top, and reading a URL requires
+```
+
+### frontend/src/tutor-scene/atmosphere.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { atmosphereFor, atmosphereStyle, sunHeight } from './atmosphere';
+import { resolveBackdrop, SCENE_BACKDROP_IDS } from './backdrops';
+
+describe('the light the HUD is standing in', () => {
+  it('reads the same palette the lights read', () => {
+    const dusk = resolveBackdrop('dusk', false);
+    expect(atmosphereStyle(dusk)).toMatchObject({
+      '--lf-sky': dusk.sky,
+      '--lf-key': dusk.sun,
+      '--lf-ground': dusk.ground,
+    });
+  });
+
+  it('publishes every value the material needs, for every chosen hour', () => {
+```
+
+### frontend/src/tutor-scene/atmosphere.ts
+
+```
+import type { CSSProperties } from 'react';
+import { resolveBackdrop, type BackdropLighting, type SceneBackdropId } from './backdrops';
+
+/*
+ * THE BRIDGE FROM THE SCENE'S LIGHT TO THE HUD'S MATERIAL.
+ *
+ * `SceneLighting` reads a backdrop palette and points three-dimensional lights
+ * with it. This reads the SAME palette and points CSS at it, so a plate over
+ * the island is lit by the hour the island is standing in: its fill leans
+ * toward the sky, its specular lip is the key light's colour, and its shadow is
+ * made of the ground's bounce and lengthens as the sun drops.
+ *
+ * WHY IT IS FOUR VALUES AND NOT A STYLESHEET. Everything derived from them —
+ * the fill mix, the shade, the shadow ramps, the sky glow — is arithmetic that
+ * CSS does for free at use time (`index.css` → LUMEN). What CSS cannot do is
 ```
 
 ### frontend/src/tutor-scene/backdrops.ts
@@ -21361,6 +21401,46 @@ import type { CharacterAction, CharacterEmotion } from '@/components/characters/
  *
  * Rather than leave the 3D characters inert until someone opens Blender, the
  * same 19 states are synthesised from bone rotations. The result is not what a
+```
+
+### frontend/src/tutor-scene/characterMaterial.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import {
+  CLAY_EMISSIVE_FLOOR,
+  CLAY_ROUGHNESS,
+  CLAY_SPECULAR,
+  relightAsClay,
+  type ShadedMaterial,
+} from './characterMaterial';
+
+/** A stand-in for three's `Color` with only what the rule touches. */
+function color(hex: number) {
+  let value = hex;
+  return {
+    getHex: () => value,
+    setRGB: (r: number, g: number, b: number) => {
+```
+
+### frontend/src/tutor-scene/characterMaterial.ts
+
+```
+/*
+ * Making the cast take the light.
+ *
+ * WHAT WAS ON THE SCREEN, and it is the reason this file exists rather than a
+ * taste about shading. Driven on `/dev/tutor-lab` at 375x812 during the
+ * personalization audition, Liruf rendered as a pale mint GHOST while Dina
+ * beside him rendered solid — the same complaint the owner's reviewer filed as
+ * "Liruf renders SEMI-TRANSPARENT". He is not transparent: with the camera
+ * frozen and every other mesh hidden, 87.6% of his silhouette is pixel-for-pixel
+ * identical to a solo render, and 2.2% is honestly occluded. He is UNLIT.
+ *
+ * Every character .glb ships the same two export defaults, read straight out of
+ * the files with `@gltf-transform`:
+ *
+ *     metallicFactor: 1   with NO metallicRoughness texture
 ```
 
 ### frontend/src/tutor-scene/clipLibrary.test.ts
@@ -21483,6 +21563,46 @@ import { isAnchorNodeVisible, stackClearance, type ViewportBox } from './culling
  * is small, and it stays fully focusable either way: a keyboard user tabbing
 ```
 
+### frontend/src/tutor-scene/facing.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { STAGE_BEARING } from './shots';
+import {
+  MAX_SOCIAL_TURN,
+  offViewer,
+  shortestArc,
+  solveFacings,
+  type FacingSpot,
+} from './facing';
+
+/*
+ * The one property this module exists for: NOBODY HAS THEIR BACK TO THE
+ * LEARNER. Everything else here is a guard on the gesture that used to be
+ * allowed to break it.
+ */
+```
+
+### frontend/src/tutor-scene/facing.ts
+
+```
+/*
+ * Which way everyone standing on the island is turned.
+ *
+ * WHAT THIS REPLACED, AND WHY IT IS ITS OWN MODULE NOW.
+ *
+ * The rule used to be four lines inside `TutorScene`, and it said: yaw =
+ * `atan2(spot.x, spot.z)`, i.e. point each character radially OUTWARD from the
+ * island's centre, "which is toward a camera orbiting outside it". The comment
+ * is the bug. The camera does not orbit; it stands at ONE bearing
+ * (`shots.ts` → `STAGE_BEARING`, derived from the placement solver's own
+ * `preferDirection`), so radially outward aims at the viewer for exactly the
+ * arc of the island nearest them and points everybody else into the sea.
+ *
+ * It is measurable, and it was measured with `npm run verify:placement` before
+ * anything here was written. On `diorama-a`, with the whole cast standing for
+```
+
 ### frontend/src/tutor-scene/fitCamera.ts
 
 ```
@@ -21567,6 +21687,7 @@ import { Box3, Object3D, Raycaster, Vector3 } from 'three';
 
 ```
 import type { HudRect, ViewportPx } from './composition';
+import { clampIntoView, type ViewportBox } from './culling';
 
 /*
  * WHAT SPACE THE HUD HAS ALREADY TAKEN — the one idea the two halves of the
@@ -21580,7 +21701,6 @@ import type { HudRect, ViewportPx } from './composition';
  * see the other, so nothing anywhere decided who owned a given pixel — and at
  * 375 px the greeting caption and the way-out chip both claimed the top-left
  * corner. Measured on a live stage: caption (54, 31, 266, 68) against chip
- * (16, 16, 155, 44), a 116x29 overlap, on three of three fresh mounts. The
 ```
 
 ### frontend/src/tutor-scene/lab/SceneLabPage.tsx
@@ -21955,12 +22075,12 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import type { Mesh, Object3D } from 'three';
+import { relightAsClay, type ShadedMaterial } from './characterMaterial';
 import type { QualitySettings } from './quality';
 
 /*
  * Loads an optimized .glb produced by `npm run assets:3d`.
  *
- * Two compression schemes are in play and they solve different problems:
 ```
 
 ### frontend/src/tutor-scene/walkMasks.generated.json
@@ -22023,13 +22143,33 @@ import masks from './walkMasks.generated.json';
  * So the semantics come from the only place that has them — the island's own
 ```
 
+### frontend/src/tutor/ClosingInWorld.tsx
+
+```
+import { createPortal } from 'react-dom';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { HudPlate } from '@/tutor/hud/HudPlate';
+import { SessionHistory } from './SessionHistory';
+import { useStageDock } from './stage/StageShell';
+
+/*
+ * The goodbye (/ORACLE.md §9.5), and it stands where the microphone stands.
+ *
+ * WHY IT IS IN THE DOCK RATHER THAN IN A `bottom` LAYER. Both put the same three
+ * surfaces against the bottom of the same viewport; only one of them is a place
+ * the CAMERA knows about. A `bottom` layer registers with `keepClearOf`, which
+ * moves the microphone dock up — and the microphone is deliberately absent on
+ * this phase (`stage/micForPhase.ts` → `present: false`), so that channel pushed
+```
+
 ### frontend/src/tutor/ConversationView.tsx
 
 ```
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Button, Icon } from '@/components/ui';
+import { Icon } from '@/components/ui';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from './hud/HudPlate';
 import { LessonPlate, type LessonPlateDetent } from './hud/LessonPlate';
@@ -22048,10 +22188,10 @@ import { useStageDock, type ConversationLayerProps, type StageDockValue } from '
 ```
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui';
 import { MarkdownLite } from '@/lesson-engine/core/MarkdownLite';
 import { REGISTRY } from '@/lesson-engine/registry';
 import type { SegmentBase, Verdict } from '@/lesson-engine/core/types';
+import { HudPlate } from './hud/HudPlate';
 import { gradeSegment } from './tutorApi';
 import type { LiveSegmentState } from './useTutorSocket';
 
@@ -22069,7 +22209,7 @@ import type { LiveSegmentState } from './useTutorSocket';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Icon, Reveal } from '@/components/ui';
+import { Icon } from '@/components/ui';
 import type { CharacterId } from '@/components/characters/control/types';
 import { cn } from '@/lib/utils';
 import { playPlatformSound } from '@/lib/sound';
@@ -22088,7 +22228,7 @@ import type { StartSessionInput } from './tutorApi';
 ```
 import { useCallback, useEffect, useId, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Field, Icon } from '@/components/ui';
+import { Field, Icon } from '@/components/ui';
 import type { CharacterId } from '@/components/characters/control/types';
 import { playPlatformSound } from '@/lib/sound';
 import { cn } from '@/lib/utils';
@@ -22097,7 +22237,7 @@ import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from '@/tutor/hud/HudPlate';
 import { useDesktopPlate } from '@/tutor/hud/LessonPlate';
-import { WorldChip } from '@/tutor/hud/WorldChip';
+import { useHudOcclusion, WorldChip } from '@/tutor/hud/WorldChip';
 import { useStageDock, type PersonalizeLayerProps } from './stage/StageShell';
 import type { Adaptation } from './types';
 
@@ -22108,8 +22248,9 @@ import type { Adaptation } from './types';
 ```
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, Icon } from '@/components/ui';
+import { Icon } from '@/components/ui';
 import { CharacterActor } from '@/components/characters/control/CharacterActor';
+import { HudPlate } from './hud/HudPlate';
 import { getTranscript, listSessions } from './tutorApi';
 import type { SessionSummary, SessionTranscript } from './types';
 
@@ -22120,7 +22261,6 @@ import type { SessionSummary, SessionTranscript } from './types';
  * transcript: the character re-acts each line with the emotion and action it
  * originally carried, and the tutor's stored audio plays. It is NOT a
  * recording of the learner — there is no such thing in this product, because
- * there is nowhere in the schema to put one (owner decision 8, migration
 ```
 
 ### frontend/src/tutor/SpeechCaption.tsx
@@ -22169,18 +22309,18 @@ import { cn } from '@/lib/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
-import { Button } from '@/components/ui';
 import { duckTutorAmbient, playPlatformSound } from '@/lib/sound';
 import { SCENE_ASSETS } from '@/tutor-scene/assets';
 import { isSceneBackdropId, type SceneBackdropId } from '@/tutor-scene/backdrops';
-import { HudPlate } from '@/tutor/hud/HudPlate';
 import { getOffers, getPreferences, savePreferences, startSession, type StartSessionInput } from './tutorApi';
 import { micBlockedForOffers, micBlockedReason, narrowBlockedReason, primaryOpening } from './mic';
 import { PersonalizeInWorld } from './PersonalizeInWorld';
 import { OfferChips } from './OfferChips';
 import { ConversationView } from './ConversationView';
-import { SessionHistory } from './SessionHistory';
+import { ClosingInWorld } from './ClosingInWorld';
 import { auditionFor } from './stage/phases';
+import { micForPhase } from './stage/micForPhase';
+import {
 ```
 
 ### frontend/src/tutor/VoiceConsentControl.tsx
@@ -22303,6 +22443,26 @@ import type { TutorCatalog, TutorPreferences } from '../types';
  * job, it happens inside a `useFrame` against a real camera, and jsdom has
 ```
 
+### frontend/src/tutor/__tests__/speechCaptionFloor.test.tsx
+
+```
+import { render } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+
+/*
+ * THE ONE FLOOR THAT IS NOT THE PROJECTOR'S DEFAULT.
+ *
+ * An anchored node is multiplied by its distance from the camera, and the only
+ * thing under that multiplication is a per-node readability floor. The
+ * projector's default is 12 px, which is right for the two-word label on a chip
+ * — and every chip is held far above it by the 44 px tap floor anyway, because
+ * a finger has to hit it.
+ *
+ * Nobody presses a caption. So on the caption the 12 was not a backstop, it was
+ * the operating point: measured on `/dev/tutor-lab` at 375x812 with an
+ * adaptation question up, the two-shot's stand-off clamped the tutor's spoken
+```
+
 ### frontend/src/tutor/__tests__/tutor.test.tsx
 
 ```
@@ -22351,16 +22511,16 @@ import type { HTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 /*
- * The one glass primitive every in-scene control is built from: chip, plate,
- * orb, sheet. Having exactly one keeps the HUD reading as a single material
- * rather than as a pile of differently-frosted rectangles, and it is the only
- * way the contrast rule below can be guaranteed rather than remembered.
+ * The one surface every in-scene control is made of: chip, plate, orb, sheet.
+ * Having exactly one keeps the HUD reading as a single material rather than as
+ * a pile of differently-frosted rectangles, and it is the only way the rules
+ * below can be guaranteed rather than remembered fourteen times.
  *
- * THE GLASS IS THE FRAME. THE TEXT SITS ON AN OPAQUE FLOOR.
- *
- * `.lf-glass` is `surface/78%` plus a blur — a translucent fill whose effective
- * colour is 22% whatever is behind it. Behind a HUD control is a moving,
- * rotating, relit 3D island, so the same caption is over pale sand in one frame
+ * IT IS MADE OF LUMEN (/DESIGN.md §Lumen). Not `.lf-glass`, which frosts a
+ * panel sitting on a PAGE. This one sits on a WORLD: it lets a third of the
+ * island through, blurred past legibility and stripped of hue, leans its fill
+ * 6% toward the sky the island is standing under, wears the key light's colour
+ * on its top edge, and drops a shadow made of the ground's own colour that
 ```
 
 ### frontend/src/tutor/hud/LessonPlate.tsx
@@ -22426,21 +22586,21 @@ import type { HudPlateFloor, HudPlateShape } from './HudPlate';
 ### frontend/src/tutor/hud/__tests__/HudPlate.test.tsx
 
 ```
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { HudPlate } from '../HudPlate';
+import { resolveBackdrop, SCENE_BACKDROP_IDS } from '@/tutor-scene/backdrops';
 
 /*
- * HudPlate carries two rules that cannot be left to memory, because both fail
- * silently and both fail only for someone other than the person who built it.
+ * HudPlate carries three rules that cannot be left to memory, because all three
+ * fail silently and all three fail only for someone other than the person who
+ * built it.
  *
- * The contrast rule: text on `.lf-glass` over a moving 3D island has no second
- * colour to compute a ratio against, so every word must sit on an opaque token.
- * The measure rule: `personalize.lightTitle` is 9 / 6 / 5 characters across
- * en-US / es-MX / pt-BR, so any plate sized to one locale's string clips
- * another's, and a truncated two-word control has no name at all.
- */
-
+ * The CONTRAST rule, which changed on 2026-08-22 and is now measured rather
+ * than asserted. Text used to be banned from the glass and put on an opaque
+ * floor, on the grounds that a translucent plate over an orbiting camera has no
 ```
 
 ### frontend/src/tutor/hud/__tests__/MicOrb.test.tsx
@@ -22488,19 +22648,19 @@ import { isBehindHud, WorldChip } from '../WorldChip';
 ```
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { SCENE_ASSETS } from '@/tutor-scene/assets';
 import { isSceneBackdropId } from '@/tutor-scene/backdrops';
 import { overlappingPairs, type NamedRect } from '@/tutor-scene/hudSpace';
-import { HudPlate } from '../hud/HudPlate';
 import { ConversationView } from '../ConversationView';
+import { ClosingInWorld } from '../ClosingInWorld';
 import { OfferChips } from '../OfferChips';
 import { PersonalizeInWorld } from '../PersonalizeInWorld';
-import { SessionHistory } from '../SessionHistory';
 import { VoiceConsentControl } from '../VoiceConsentControl';
 import { micBlockedForOffers, narrowBlockedReason } from '../mic';
 import { auditionFor } from '../stage/phases';
+import { micForPhase } from '../stage/micForPhase';
+import {
 ```
 
 ### frontend/src/tutor/lab/labFixtures.ts
@@ -22566,12 +22726,14 @@ import { APP_HOME } from '@/routes/app/navConfig';
 ### frontend/src/tutor/stage/__tests__/StageShell.test.tsx
 
 ```
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
+import { useEffect } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import {
   StageLayer,
   StageShell,
+  useStageDock,
   STAGE_PHASES,
   type StageMicProps,
   type StagePhase,
@@ -22579,8 +22741,6 @@ import {
 import type { Microphone } from '@/tutor/useMicrophone';
 
 beforeAll(() => {
-  // jsdom ships no media pipeline, and the stage's audio element pauses itself
-  // on mount. Left alone it prints a not-implemented stack on every render in
 ```
 
 ### frontend/src/tutor/stage/__tests__/micForPhase.test.ts

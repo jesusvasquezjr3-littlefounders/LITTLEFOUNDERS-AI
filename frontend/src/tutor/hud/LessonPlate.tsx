@@ -196,16 +196,52 @@ export interface LessonPlateProps {
    * above the sheet while the sheet is moving under the learner's thumb.
    */
   onFootprint?: (px: number) => void;
+  /**
+   * Whether this plate is holding the bottom-RIGHT corner at this instant.
+   *
+   * The sibling of `onFootprint`, for the other axis: that one says how much of
+   * the bottom EDGE is taken and is called on every frame of a drag; this one
+   * says whether the corner is occupied at all and changes at most once per
+   * phase or breakpoint, so it is allowed to be state on the other side.
+   *
+   * It exists because the shell used to derive the same fact from the PHASE,
+   * and a phase cannot see either of the two things that actually decide it:
+   * whether this plate is in its desktop form, and whether it has stood down.
+   * An adaptation question is still the `conversing` phase with the plate
+   * `display: none`, and the dock went on clearing 480 px of empty island for
+   * it (`StageDockValue.setCornerPlate`).
+   */
+  onCornerHeld?: (held: boolean) => void;
+  /**
+   * Get out of the way completely, without forgetting anything.
+   *
+   * For the one moment on this route that is not a lesson: the tutor has asked
+   * a yes-or-no and is waiting (`ConversationView`). The sheet is the last
+   * surface between the question and the island, and at 375 px its resting row
+   * is 88 px plus a 16 px inset of a screen the whole point of which is that
+   * the island is the page.
+   *
+   * HIDDEN, NOT UNMOUNTED, and the difference is the learner's half-finished
+   * exercise. React keeps the state of a hidden subtree and throws away the
+   * state of an unmounted one, so standing down has to be a style and an
+   * `inert`, never a `&&` at the call site. It publishes a footprint of ZERO
+   * while it is down, so the microphone dock drops to its own resting inset
+   * instead of floating above a sheet that is not there — the same failure the
+   * ref-callback release below exists to prevent, arriving from the other
+   * direction.
+   */
+  standDown?: boolean;
   /** Sits in the non-scrolling row beside the handle, so it survives any detent. */
   header?: ReactNode;
   /**
-   * What the sheet SAYS about itself while it is resting at PEEK.
+   * The NEWS the resting sheet carries, when there is any.
    *
-   * It is the visible label of the row that opens the sheet, so it is written
-   * as something a learner can act on rather than as a heading. Without it the
-   * row falls back to a bare drag bar, which is what a sheet resting at 88 px
-   * of clipped content used to be: a panel with no name that has to be opened
-   * to find out whether opening it was worth it.
+   * Optional, and usually absent, which is the correction of 2026-08-22. It
+   * used to be supplied unconditionally and said "Conversation" when nothing
+   * had happened — naming the screen the learner is standing on. Without it the
+   * row is a grab bar and a chevron, which is a complete statement: this opens.
+   * With it the row says the one thing the learner cannot read anywhere else,
+   * which today is that an activity has arrived.
    */
   peekLabel?: string;
   /**
@@ -228,6 +264,8 @@ export function LessonPlate({
   detent,
   onDetentChange,
   onFootprint,
+  onCornerHeld,
+  standDown = false,
   header,
   peekLabel,
   peekStatus,
@@ -254,9 +292,12 @@ export function LessonPlate({
 
   const publishFootprint = useCallback(
     (heightPx: number) => {
-      onFootprintRef.current?.(desktop ? 0 : heightPx + SHEET_INSET_PX);
+      // A sheet that is standing down occupies nothing, so the dock drops back
+      // to its own resting inset rather than riding above a surface nobody can
+      // see. Same channel, same ref, no re-render.
+      onFootprintRef.current?.(desktop || standDown ? 0 : heightPx + SHEET_INSET_PX);
     },
-    [desktop],
+    [desktop, standDown],
   );
 
   /*
@@ -270,7 +311,12 @@ export function LessonPlate({
   const attach = useCallback(
     (node: HTMLElement | null) => {
       nodeRef.current = node;
-      measure?.(node);
+      // A sheet standing down publishes no rectangle either: the camera must
+      // compose into the room it has just given back, not around a box that is
+      // `display: none`. And it leaves the tab order with it — React 18.3 has
+      // no `inert` prop, so it is a DOM assignment, as in `ScreenAnchor`.
+      if (node) node.inert = standDown;
+      measure?.(standDown ? null : node);
 
       /*
        * AND THE DOCK'S EDGE IS RELEASED HERE, IN THE REF, NOT IN AN UNMOUNT
@@ -295,7 +341,7 @@ export function LessonPlate({
        */
       if (!node) onFootprintRef.current?.(0);
     },
-    [measure],
+    [measure, standDown],
   );
 
   useEffect(() => {
@@ -313,6 +359,29 @@ export function LessonPlate({
   useEffect(() => {
     publishFootprint(heights[detent]);
   }, [publishFootprint, heights, detent]);
+
+  /*
+   * The corner claim, and it is a PASSIVE EFFECT rather than the ref callback
+   * the footprint uses — deliberately, and for the reason the ref callback
+   * documents in reverse.
+   *
+   * The footprint has to be released in the mutation phase because two
+   * surfaces hand the same bottom EDGE to each other across a phase change, and
+   * a passive cleanup would land after the newcomer's ref had already claimed
+   * it. Passive effects have the opposite ordering guarantee: React runs every
+   * unmount cleanup in a commit before any mount effect in the same commit, so
+   * a plate leaving cannot wipe the claim of the plate arriving. And unlike the
+   * edge, the corner is not written during a drag, so it costs one render per
+   * change rather than sixty per second.
+   */
+  const onCornerHeldRef = useRef(onCornerHeld);
+  onCornerHeldRef.current = onCornerHeld;
+  const holdingCorner = desktop && !standDown;
+  useEffect(() => {
+    const publish = onCornerHeldRef.current;
+    publish?.(holdingCorner);
+    return () => publish?.(false);
+  }, [holdingCorner]);
 
   const onHandlePointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
     const node = nodeRef.current;
@@ -403,11 +472,20 @@ export function LessonPlate({
       as="aside"
       shape="sheet"
       /*
-       * `none`, and the opaque floor is composed explicitly below instead. The
-       * plate is a COLUMN with a pinned header and a scrolling body, and
-       * HudPlate's own content slot is a centred flex row sized for a label.
-       * The contrast rule the floor exists for is still satisfied, by the
-       * `bg-surface` element that every word inside here sits on.
+       * `none` because the plate is a COLUMN with a pinned header and a
+       * scrolling body, and HudPlate's own content slot is a centred flex row
+       * sized for a label. It is NOT a way out of the material: the frame is
+       * `.lf-lumen .lf-lumen-reading` (a `sheet` defaults to the reading
+       * density), which is where the contrast comes from.
+       *
+       * THE OPAQUE `bg-surface` CORE THAT USED TO BE IN HERE IS GONE, and it is
+       * the last one on the route. It was written under the opaque-floor rule
+       * of 2026-08-21 and outlived it by a day: with the material underneath it
+       * doing the work, all the core did was paint over the island — so the one
+       * surface a learner spends a whole conversation looking at was the one
+       * surface the island could not be seen through. At the reading alpha the
+       * ratio is 4.96:1 in light and 7.2:1 in dark for muted body text, which is
+       * the bound §Lumen states and `HudPlate.test.tsx` re-derives.
        */
       floor="none"
       aria-label={label}
@@ -422,10 +500,23 @@ export function LessonPlate({
        * arrived is not a token, and 420 px is a number /DESIGN.md states
        * outright.
        */
+      /*
+       * `display: none` INLINE while standing down, not a `hidden` class.
+       * `[hidden] { display: none }` is a user-agent rule and the frame carries
+       * `flex` from an author stylesheet, so the attribute alone paints the
+       * sheet anyway — the same trap `ScreenAnchor` documents for anchored
+       * nodes, arrived at independently by two different surfaces on this
+       * route. An inline style wins outright.
+       */
       style={{
         maxWidth: desktop ? 'min(420px, calc(100vw - 3rem))' : 'calc(100vw - 2rem)',
         height: desktop ? undefined : heights[detent],
+        ...(standDown ? { display: 'none' } : {}),
       }}
+      // Out of the accessibility tree, and out of the tab order with it (the
+      // `inert` half is set on the node itself in `attach` — React 18.3 has no
+      // `inert` prop, exactly as `ScreenAnchor` records).
+      aria-hidden={standDown ? true : undefined}
       className={cn(
         'pointer-events-auto fixed z-30 flex w-full flex-col overflow-hidden',
         desktop
@@ -437,7 +528,7 @@ export function LessonPlate({
         className,
       )}
     >
-      <div className="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-lg bg-surface text-content">
+      <div className="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[inherit] text-content">
         <div
           className={cn(
             'flex shrink-0 items-center gap-2 px-2 pt-2 lg:px-3 lg:pt-3',
@@ -457,7 +548,7 @@ export function LessonPlate({
                * this panel bigger" never mentions that an activity is waiting
                * inside it.
                */
-              aria-label={resting && peekLabel ? `${peekLabel} ${resizeLabel}` : resizeLabel}
+              aria-label={resting && peekLabel ? peekLabel + ' ' + resizeLabel : resizeLabel}
               onPointerDown={onHandlePointerDown}
               onPointerMove={onHandlePointerMove}
               onPointerUp={onHandlePointerUp}
@@ -467,25 +558,35 @@ export function LessonPlate({
               // `touch-none` or the browser scrolls the page instead of giving
               // us the pointermove stream, and the sheet simply will not move.
               className={cn(
-                'flex min-h-11 flex-1 cursor-grab touch-none items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-                resting && peekLabel ? 'gap-2 px-2 text-left' : 'justify-center',
+                'flex min-h-11 flex-1 cursor-grab touch-none items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                resting ? 'gap-2 px-2 text-left' : 'justify-center',
               )}
             >
-              {resting && peekLabel ? (
+              {/*
+                THE CHEVRON IS ALWAYS THERE WHILE THE SHEET RESTS, AND THE WORDS
+                ARE NOT.
+
+                It used to be the other way round: the row printed
+                "Conversation" whenever nothing was waiting — the name of the
+                screen the learner is already standing on, which is the one
+                thing a label may never be (/DESIGN.md §Lumen → What to delete).
+                What the row actually has to do is say that it OPENS, and a
+                chevron over a grab bar says that without a word in any locale.
+                When there IS something to say — an activity has arrived — the
+                row says that instead, which is the only news it ever carries.
+              */}
+              {resting ? (
                 <>
-                  {/* The chevron is the affordance a thumb reads before any
-                      word: it says this row opens upward. The grab bar keeps
-                      its place above it so the sheet still looks draggable. */}
                   <span aria-hidden="true" className="flex shrink-0 flex-col items-center gap-1">
-                    <span className="h-1.5 w-8 rounded-full bg-outline" />
-                    <Icon name="keyboard_arrow_up" className="!text-[20px] text-content-muted" />
+                    <span className="h-1 w-8 rounded-full bg-content/25" />
+                    <Icon name="keyboard_arrow_up" className="!text-[20px]" />
                   </span>
                   {/* Wraps to a second line rather than truncating: this label
                       swings by more than 1.8x across our three locales. */}
-                  <span className="lf-label min-w-0 text-content">{peekLabel}</span>
+                  {peekLabel && <span className="lf-action min-w-0 text-content">{peekLabel}</span>}
                 </>
               ) : (
-                <span aria-hidden="true" className="h-1.5 w-12 rounded-full bg-outline" />
+                <span aria-hidden="true" className="h-1 w-12 rounded-full bg-content/25" />
               )}
             </button>
           )}

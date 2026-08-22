@@ -84,7 +84,6 @@ function renderPhase(phase: (typeof STAGE_PHASES)[number]) {
   return render(
     <MemoryRouter>
       <StageShell
-        phase={phase}
         mic={micFor(phase)}
         character="rho"
         companion="liruf"
@@ -227,7 +226,6 @@ describe('the dock', () => {
     return render(
       <MemoryRouter>
         <StageShell
-          phase="personalizing"
           mic={micFor('personalizing')}
           character="rho"
           companion="liruf"
@@ -256,7 +254,6 @@ describe('the dock', () => {
     view.rerender(
       <MemoryRouter>
         <StageShell
-          phase="introducing"
           mic={micFor('introducing')}
           character="rho"
           companion="liruf"

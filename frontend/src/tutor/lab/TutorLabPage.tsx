@@ -1,15 +1,13 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { SCENE_ASSETS } from '@/tutor-scene/assets';
 import { isSceneBackdropId } from '@/tutor-scene/backdrops';
 import { overlappingPairs, type NamedRect } from '@/tutor-scene/hudSpace';
-import { HudPlate } from '../hud/HudPlate';
 import { ConversationView } from '../ConversationView';
+import { ClosingInWorld } from '../ClosingInWorld';
 import { OfferChips } from '../OfferChips';
 import { PersonalizeInWorld } from '../PersonalizeInWorld';
-import { SessionHistory } from '../SessionHistory';
 import { VoiceConsentControl } from '../VoiceConsentControl';
 import { micBlockedForOffers, narrowBlockedReason } from '../mic';
 import { auditionFor } from '../stage/phases';
@@ -124,9 +122,10 @@ function useViewport(): { width: number; height: number; band: string } {
  * The generic query is the point. Naming the surfaces would mean maintaining a
  * list, and a list is exactly what was missing when the caption and the way out
  * both took the top-left corner — nobody had written either of them down
- * anywhere the other could see. `.lf-glass` is every HudPlate by construction
- * (chip, plate, orb, sheet) and `button` catches the design system's own
- * controls, such as the goodbye's indigo action, which is not a HudPlate.
+ * anywhere the other could see. `.lf-lumen` is every HudPlate by construction
+ * (chip, plate, orb, sheet), `.lf-glass` catches anything on this route still
+ * built from the page material, and `button` catches the design system's own
+ * controls that are not HudPlates, wherever one is left.
  *
  * A surface nested inside another is dropped: an orb's icon inside its frame
  * overlaps its frame by definition, and reporting that would bury the one
@@ -137,7 +136,7 @@ function surveyHudSurfaces(): NamedRect[] {
   if (!stage) return [];
 
   const found: Array<{ node: HTMLElement; surface: NamedRect }> = [];
-  for (const node of stage.querySelectorAll<HTMLElement>('.lf-glass, button')) {
+  for (const node of stage.querySelectorAll<HTMLElement>('.lf-lumen, .lf-glass, button')) {
     // The instrument is never part of the thing under measurement.
     if (node.closest('[data-lab-chrome]')) continue;
     // The projector's two culled properties: a hidden node paints nothing.
@@ -245,7 +244,6 @@ export default function TutorLabPage() {
    */
   const [panelOpen, setPanelOpen] = useState(() => window.innerWidth >= 768);
   const [consentGranted, setConsentGranted] = useState(false);
-  const [historyOpen, setHistoryOpen] = useState(false);
 
   /*
    * The three flags `TutorExperience` DERIVES and the lab has to be TOLD.
@@ -279,7 +277,6 @@ export default function TutorLabPage() {
   useEffect(() => {
     setAwaitingReply(false);
     setSpeaking(false);
-    setHistoryOpen(false);
   }, [surface]);
 
   const handleClip = useCallback(
@@ -491,7 +488,6 @@ export default function TutorLabPage() {
   return (
     <>
       <StageShell
-        phase={phase}
         mic={mic}
         audition={audition}
         scene={diorama}
@@ -534,38 +530,12 @@ export default function TutorLabPage() {
         )}
 
         {phase === 'closing' && (
-          <StageLayer label={t('tutor.stage.closeLayer')} placement="bottom">
-            <HudPlate shape="plate" floor="surface" className="mx-auto">
-              <span className="flex flex-col gap-2 text-center">
-                <span className="lf-headline text-content">{t('tutor.page.seeYouSoon')}</span>
-                <span className="lf-body text-content-muted">{t('tutor.page.sessionSaved')}</span>
-              </span>
-            </HudPlate>
-
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <Button onClick={() => setSurface('introducing')}>{t('tutor.page.startAnother')}</Button>
-
-              <HudPlate
-                as="button"
-                shape="chip"
-                floor="sunken"
-                aria-expanded={historyOpen}
-                onClick={() => setHistoryOpen((open) => !open)}
-              >
-                <span className="lf-caption">
-                  {historyOpen ? t('tutor.introduce.hideReplays') : t('tutor.introduce.replays')}
-                </span>
-              </HudPlate>
-            </div>
-
-            {historyOpen && (
-              <HudPlate shape="sheet" floor="surface" className="mx-auto">
-                <div className="flex w-full flex-col gap-3 text-left">
-                  <span className="lf-title text-content">{t('tutor.history.title')}</span>
-                  <SessionHistory token={LAB_TOKEN} />
-                </div>
-              </HudPlate>
-            )}
+          /*
+            The same component `/tutor` mounts, not a copy of it. Two hand-kept
+            copies is how a lab comes to report on a screen nobody ships.
+          */
+          <StageLayer label={t('tutor.stage.closeLayer')} placement="world">
+            <ClosingInWorld token={LAB_TOKEN} onStartAnother={() => setSurface('introducing')} />
           </StageLayer>
         )}
       </StageShell>

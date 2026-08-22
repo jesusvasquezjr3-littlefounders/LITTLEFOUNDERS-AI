@@ -3,6 +3,48 @@
 @tailwind utilities;
 
 /*
+ * THE ATMOSPHERE CHANNEL (/DESIGN.md §Lumen → Light).
+ *
+ * Four values describing the light the Tutor's island is standing in. They are
+ * REGISTERED rather than plain custom properties for one reason: a registered
+ * property has a type, and a typed property can be TRANSITIONED. The scene's
+ * lights lerp over ~600 ms when the learner changes the time of day
+ * (`tutor-scene/SceneLighting.tsx`), and an unregistered variable would snap the
+ * whole HUD to the new hour a third of a second before the island got there.
+ *
+ * They are written ONCE per backdrop change, by the stage root, from the same
+ * palette the lights read (`tutor-scene/atmosphere.ts`). Nothing writes them per
+ * frame: a custom-property write invalidates style on the whole inheriting
+ * subtree, and doing that sixty times a second to tint a shadow would cost more
+ * than drawing the island.
+ *
+ * The defaults below are `AUTO_LIGHT` from `tutor-scene/backdrops.ts`, so a
+ * HudPlate rendered outside the stage entirely — the lab, a test — still has a
+ * complete material rather than an invalid one.
+ */
+@property --lf-sky {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #eaf2ff;
+}
+@property --lf-key {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #fff6e5;
+}
+@property --lf-ground {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #d8c7a8;
+}
+/* 0 = the sun is on the horizon, 1 = directly overhead. */
+@property --lf-sun-height {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.78;
+}
+
+/*
  * Token implementation of /DESIGN.md (LittleFounders Liquid Glass).
  * CSS variables are the single source; tailwind.config.js references them.
  * RGB triplets so Tailwind opacity modifiers work.
@@ -97,6 +139,71 @@
     --lf-btn-inner-glow: inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -1px 2px rgba(0,0,0,0.06);
     --lf-btn-inner-glow-hover: inset 0 2px 8px rgba(255,255,255,0.65), inset 0 -1px 2px rgba(0,0,0,0.08);
     --lf-btn-hover-sheen: linear-gradient(to bottom, rgba(255,255,255,0.18) 0%, transparent 50%);
+
+    /*
+     * LUMEN — the immersive layer's ONE material (/DESIGN.md §Lumen).
+     * Light and dark share every number here; only the tokens they mix with
+     * differ, which is what keeps one material rather than two that drift.
+     */
+
+    /*
+     * THE CONTRAST CONTRACT, AND IT IS WHY THERE ARE EXACTLY TWO DENSITIES.
+     *
+     * A fill alpha puts a FLOOR under the composite over ANY backdrop, so the
+     * ratio a moving render cannot give you as a measurement it still gives you
+     * as a bound. The bound depends on which ink has to survive it, and that is
+     * a design decision rather than an arithmetic one:
+     *
+     *   0.68 — CHROME. One ink (`content`), one line, short labels. Worst case
+     *   is 7.2:1 in light and 5.4:1 in dark, and 32% of the island comes
+     *   through. `content-muted` would read 3.6:1 here and is therefore
+     *   PROHIBITED on this density, which is the rule doing its second job: a
+     *   label that needs a quieter second line is a label with a second line to
+     *   delete.
+     *
+     *   0.86 — READING. The one surface per phase that carries paragraphs: the
+     *   lesson plate, the transcript sheet. It may use `content-muted` (4.96:1
+     *   worst case in light, 7.2:1 in dark) and it pays for that in opacity,
+     *   which is also correct — the densest surface on screen should be the one
+     *   the eye is meant to settle on.
+     *
+     * `HudPlate.test.tsx` re-derives both from this file, for every backdrop,
+     * in both themes. Lowering either is a contrast change, not a style change.
+     */
+    --lf-lumen-alpha: 0.68;
+    --lf-lumen-alpha-reading: 0.86;
+    /* Detail behind the plate is removed, not merely softened. */
+    --lf-lumen-blur: 24px;
+    /* Under 1: what shows through keeps its LUMINANCE and loses its hue, so the
+       plate never picks up a colour that competes with the words on it. */
+    --lf-lumen-chroma: 0.45;
+    /* How far the fill leans toward the sky the island is standing under. 6% is
+       the most the contrast arithmetic above will carry. */
+    --lf-lumen-tint: 6%;
+
+    /* Derived — the fill, and the colour every shadow on this layer is made of. */
+    --lf-lumen-fill: color-mix(in srgb, rgb(var(--lf-surface)) calc(100% - var(--lf-lumen-tint)), var(--lf-sky) var(--lf-lumen-tint));
+    --lf-lumen-shade: color-mix(in srgb, var(--lf-ground) 34%, #000 66%);
+
+    /*
+     * The shadow agrees with the sun. A low sun throws it long, soft and dark;
+     * a high sun tucks it under the plate. Direction stays straight down: the
+     * sun's SCREEN-space azimuth depends on the live camera, and tracking it
+     * would mean a style write per frame. Length and diffusion are what a
+     * viewer actually reads as an hour, and they cost nothing.
+     */
+    --lf-lumen-drop-y: calc(4px + (1 - var(--lf-sun-height)) * 12px);
+    --lf-lumen-drop-blur: calc(14px + (1 - var(--lf-sun-height)) * 28px);
+    --lf-lumen-drop-alpha: calc((0.12 + (1 - var(--lf-sun-height)) * 0.16) * 100%);
+    /* The specular lip, in the KEY light's own colour. Strong at noon, nearly
+       gone at dusk — which is what a horizontal edge does under a low sun. */
+    --lf-lumen-rim: calc((0.10 + var(--lf-sun-height) * 0.26) * 100%);
+
+    /* Where the sky's glow sits behind the island. Centred horizontally on
+       purpose: the sun's world azimuth is not its screen azimuth once the
+       camera orbits, and a glow on the wrong side is worse than a glow with no
+       side at all. */
+    --lf-stage-sun-y: calc(88% - var(--lf-sun-height) * 66%);
   }
 
   .dark {
@@ -163,6 +270,18 @@
     --lf-btn-inner-glow: inset 0 2px 4px rgba(255,255,255,0.12), inset 0 -1px 2px rgba(0,0,0,0.4);
     --lf-btn-inner-glow-hover: inset 0 2px 8px rgba(255,255,255,0.22), inset 0 -1px 2px rgba(0,0,0,0.5);
     --lf-btn-hover-sheen: linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 50%);
+
+    /*
+     * Atmosphere defaults for dark = `AUTO_DARK` in `tutor-scene/backdrops.ts`.
+     * Only these three move; every LUMEN number above is shared, because the
+     * material is one material and the theme only changes what it is mixed
+     * from. The four chosen times of day override all of them at the stage
+     * root and are deliberately IDENTICAL in both themes — someone who picked
+     * Dusk asked for dusk, not for dusk-unless-you-are-in-light-mode.
+     */
+    --lf-sky: #2a3550;
+    --lf-key: #93b4ff;
+    --lf-ground: #0b0f1a;
   }
 
   :root {
@@ -173,6 +292,13 @@
     --lf-dur-slow: 300ms;
     --lf-dur-page: 350ms;
     --lf-dur-reveal: 550ms;
+    /*
+     * The sixth duration, and it is not a design choice: it is the settle time
+     * of `SceneLighting`'s lerp (tau 0.2 s). The HUD's atmosphere has to take
+     * exactly as long to change hour as the island does, or the two disagree
+     * for half a second every time the light moves.
+     */
+    --lf-dur-atmosphere: 600ms;
   }
 
   /* Global theme transition (Non-negotiable rule) */
@@ -261,6 +387,41 @@
     font-variant-numeric: tabular-nums;
   }
 
+  /*
+   * The immersive layer's two voices (/DESIGN.md §Lumen → Type).
+   *
+   * The rest of the scale was written for a reading column at desk distance.
+   * A cinematic frame needs two things that scale does not have, and it had
+   * been faking both: a voice for the TUTOR'S SPOKEN LINE, which had to borrow
+   * `lf-body` and came out as chat copy; and a voice for an IN-WORLD CONTROL,
+   * which borrowed `lf-label` — 14 px at weight 700, the voice of a dashboard
+   * toolbar, and the reason 70 of the 71 type classes on this route were the
+   * two smallest in the system.
+   */
+
+  /* The tutor speaking. The largest type on the stage after the character. */
+  .lf-speech {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 26px;
+    letter-spacing: -0.006em;
+    text-wrap: balance;
+  }
+
+  /*
+   * A control in the world. Bigger and LIGHTER than `lf-label`, because
+   * confidence over a picture comes from size and air, and 700 in a small box
+   * reads as shouting.
+   */
+  .lf-action {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: -0.004em;
+  }
+
   /* Liquid glass — Apple-refined. Rim light + hairline edge + layered depth.
      .lf-glass = frosted panel on page surfaces (sticky header, dropdown,
      mobile menu, cards). .lf-glass-deep = frosted panel ON the inverse band. */
@@ -314,6 +475,241 @@
     }
     .lf-glass-deep {
       background-color: rgb(var(--lf-inverse-surface) / 0.96);
+    }
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────
+     LUMEN — the immersive layer's one material (/DESIGN.md §Lumen).
+
+     `.lf-glass` frosts a panel that sits on a PAGE. This one sits on a
+     WORLD, and the difference is not decoration: a page holds still and an
+     island is relit four times a day, orbited by a camera and walked around
+     by a dinosaur. So the plate takes its light from the scene instead of
+     from the stylesheet — its fill leans 6% toward the sky, its lip is the
+     key light's own colour, its shadow is made of the ground's colour and
+     lengthens as the sun drops — and it lets 14% of the world through,
+     blurred past legibility and stripped of hue.
+
+     14% is the whole argument. The rule this replaces put text on an OPAQUE
+     floor because "a translucent plate over an orbiting camera has no known
+     background", which is true and is not the end of the arithmetic: alpha
+     puts a FLOOR under the composite. At 0.86 the worst case a moving render
+     can produce still measures 4.96:1 for muted body text, so the ratio is
+     computable after all — as a bound rather than as a number. The plate gets
+     to be glass and the contrast floor still holds.
+     ────────────────────────────────────────────────────────────────────── */
+  .lf-lumen {
+    isolation: isolate;
+    /* Fallback first, for a browser without color-mix: a legible plate that
+       simply does not know what hour it is. */
+    background-color: rgb(var(--lf-surface) / 0.9);
+    background-color: color-mix(in srgb, var(--lf-lumen-fill) calc(var(--lf-lumen-alpha) * 100%), transparent);
+    -webkit-backdrop-filter: blur(var(--lf-lumen-blur)) saturate(var(--lf-lumen-chroma));
+    backdrop-filter: blur(var(--lf-lumen-blur)) saturate(var(--lf-lumen-chroma));
+    box-shadow: var(--lf-shadow-glass-sm);
+    box-shadow:
+      /* the specular lip, in the key light's colour */
+      inset 0 1px 0 color-mix(in srgb, var(--lf-key) var(--lf-lumen-rim), transparent),
+      /* the edge — the scene's own shade, never a white hairline. A white lip
+         on a warm island is the single loudest "sticker" cue there is. */
+      inset 0 0 0 1px color-mix(in srgb, var(--lf-lumen-shade) 9%, transparent),
+      /* one shadow, agreeing with the sun, instead of five atmospheric layers
+         that agree with nothing */
+      0 var(--lf-lumen-drop-y) var(--lf-lumen-drop-blur) calc(var(--lf-lumen-drop-y) * -0.4)
+        color-mix(in srgb, var(--lf-lumen-shade) var(--lf-lumen-drop-alpha), transparent);
+    transition:
+      box-shadow var(--lf-dur-slow) var(--lf-ease),
+      background-color var(--lf-dur-slow) var(--lf-ease);
+  }
+
+  /*
+   * ONE INK ON CHROME, AND THE MATERIAL ENFORCES IT.
+   *
+   * At the chrome alpha, `content-muted` measures 3.6:1 over the worst backdrop
+   * a render can produce and `content-faint` is worse — so the rule is not a
+   * preference, it is the other half of the contrast contract. Neutralising the
+   * utility here rather than trusting fourteen call sites is the same decision
+   * the opaque floor made and for the same reason: a contrast rule that has to
+   * be remembered is a contrast rule that is already broken somewhere.
+   *
+   * It has a second, deliberate effect. A quiet second line under a label stops
+   * looking quiet, which is exactly the pressure that gets it deleted — and a
+   * label that needed a second line to explain itself was a label with a second
+   * line to delete (/DESIGN.md → Tutor → fewer words is a count).
+   *
+   * `:where()` keeps the inner half at zero specificity, so the compound is
+   * 0-2-0 and beats the utility without an `!important` anywhere.
+   */
+  .lf-lumen:not(.lf-lumen-reading) :where(.text-content-muted, .text-content-faint) {
+    color: rgb(var(--lf-content));
+  }
+
+  /*
+   * ONE SIZE ON CHROME, AND THE MATERIAL ENFORCES THAT TOO.
+   *
+   * /DESIGN.md §Lumen → Type prohibits `lf-caption` on world-anchored chrome:
+   * 12 px over a moving render at arm's length is not a size, it is an apology.
+   * The prohibition was written as a rule and, like the ink rule before it, was
+   * being remembered rather than guaranteed — the applying pass found 21 live
+   * `lf-caption` call sites still on chrome plates, on controls a six-year-old
+   * is meant to hit while looking at a dinosaur.
+   *
+   * So a caption INSIDE chrome is rendered at `lf-action`'s metrics. The class
+   * still means "the quiet one" everywhere else in the product, and it still
+   * means it inside a `reading` surface, which is held at a fixed distance from
+   * the eye and is the one place a genuine secondary line belongs.
+   *
+   * Same `:where()` trick as the ink rule: 0-2-0, so it beats the utility
+   * without an `!important` and without touching specificity anywhere else.
+   */
+  .lf-lumen:not(.lf-lumen-reading) :where(.lf-caption) {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: -0.004em;
+  }
+
+  /*
+   * The caption's tail: a short line from the plate down onto the speaker's
+   * crown, so at a two-shot the learner can see at a glance WHICH character the
+   * words belong to.
+   *
+   * It is made of the scene's own shade rather than of `outline`, for the same
+   * reason the plate's edge is: a token hairline over a warm island is the
+   * loudest "sticker" cue there is, and this one is the only part of the
+   * caption that actually touches the character.
+   */
+  .lf-caption-tail {
+    background-image: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--lf-lumen-shade) 42%, transparent),
+      transparent
+    );
+  }
+
+  /*
+   * The one surface per phase that carries paragraphs rather than a label. It
+   * is DENSER, not differently coloured: same fill, same lip, same shadow, more
+   * of it. Hierarchy on this layer comes from how much world shows through,
+   * which is a property the scene itself supplies.
+   */
+  .lf-lumen-reading {
+    background-color: rgb(var(--lf-surface) / 0.94);
+    background-color: color-mix(in srgb, var(--lf-lumen-fill) calc(var(--lf-lumen-alpha-reading) * 100%), transparent);
+  }
+
+  /*
+   * An ACTION is an object, not a pane. It keeps the seated shadow so it
+   * belongs to the same light, and drops the glass so a CTA never reads as one
+   * more window onto the island.
+   */
+  .lf-lumen-solid {
+    background-color: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow:
+      0 var(--lf-lumen-drop-y) var(--lf-lumen-drop-blur) calc(var(--lf-lumen-drop-y) * -0.4)
+        color-mix(in srgb, var(--lf-lumen-shade) var(--lf-lumen-drop-alpha), transparent);
+  }
+
+  /*
+   * Chosen. It is part of the material rather than a Tailwind `ring-*`
+   * utility, and that is a bug fix: `ring-2` writes `box-shadow`, utilities
+   * outrank components, so a selected plate used to lose its lip, its edge and
+   * its shadow at the exact moment it was meant to look MORE present.
+   */
+  .lf-lumen-selected {
+    box-shadow:
+      inset 0 0 0 2px rgb(var(--lf-primary)),
+      0 var(--lf-lumen-drop-y) var(--lf-lumen-drop-blur) calc(var(--lf-lumen-drop-y) * -0.4)
+        color-mix(in srgb, var(--lf-lumen-shade) var(--lf-lumen-drop-alpha), transparent);
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    /* No blur means the island shows through SHARP, and detail behind text is
+       what the blur was removing. The plate closes instead. */
+    .lf-lumen {
+      background-color: rgb(var(--lf-surface) / 0.97);
+    }
+  }
+
+  /*
+   * THE GROUND THE ISLAND STANDS ON.
+   *
+   * The canvas is `alpha: true`, so everything the island does not paint is
+   * this element — and it used to be one flat token, which is why every
+   * screenshot of this route read as a clip-art cutout pasted on a blank page.
+   * It is the same sky and ground the lights are using, plus a single glow that
+   * rides up and down with the sun. One paint, no per-frame cost, and the
+   * island is standing IN something.
+   *
+   * IT COMMITS TO THE HOUR NOW. Corrected 2026-08-22, after driving the light
+   * theme with a non-day light. The mix used to pull each stop most of the way
+   * back to the theme's base — 18% / 66% / 58% — on the reasoning that a
+   * background should stay a background. In light mode at Dusk that produced a
+   * screen whose top half was warm dusk and whose bottom half was flat white,
+   * with the island floating on the seam between two different times of day.
+   * The reviewer's words for it were "half warm dusk and half flat white", and
+   * they were right; the hedge was the bug.
+   *
+   * The premise it rested on is what was wrong. This is not page behind a
+   * picture — it is the SAME AIR the island is hanging in, and air does not
+   * have a theme. /DESIGN.md §Lumen already says the four chosen hours are
+   * honoured identically in light and dark, because somebody who picked Dusk
+   * asked for dusk; the ground is now the last surface to obey that. What is
+   * left of the base mix is a tint, not a retreat: enough that `auto` — which
+   * publishes nothing and whose sky IS the theme's own — still reads as the
+   * theme, and little enough that a chosen hour reaches the bottom of the
+   * screen.
+   *
+   * THE BOTTOM STOP IS SKY THAT HAS PICKED UP THE GROUND, not the ground.
+   * Committing straight to `--lf-ground` was the first attempt and it measured
+   * worse than the hedge it replaced: at Dusk the ground is `#3a3350`, a cool
+   * purple, so the bottom third of a warm peach screen went dead grey and the
+   * island floated on a second seam instead of the first one. There is no
+   * ground below a floating island — what is down there is more air, deepened
+   * and tinted by the light bouncing off the underside. Mixing the two in that
+   * order keeps the hue related to the sky the whole way down, which is what
+   * makes the frame read as one place.
+   */
+  .lf-stage-ground {
+    background-color: rgb(var(--lf-base));
+    background-image:
+      radial-gradient(
+        130% 78% at 50% var(--lf-stage-sun-y),
+        color-mix(in srgb, var(--lf-key) 55%, transparent),
+        transparent 64%
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--lf-sky) 94%, rgb(var(--lf-base)) 6%) 0%,
+        color-mix(in srgb, var(--lf-sky) 78%, rgb(var(--lf-base)) 22%) 46%,
+        color-mix(
+            in srgb,
+            color-mix(in srgb, var(--lf-sky) 58%, var(--lf-ground) 42%) 78%,
+            rgb(var(--lf-base)) 22%
+          )
+          100%
+      );
+  }
+
+  /*
+   * The atmosphere LERPS with the lights it came from. `SceneLighting` eases a
+   * backdrop change over about 600 ms; without this the HUD would arrive at the
+   * new hour first and the island would catch up, which reads as two scenes.
+   * Registered properties (top of file) are what make a colour transitionable
+   * at all.
+   */
+  .lf-stage-ground {
+    transition:
+      --lf-sky var(--lf-dur-atmosphere) linear,
+      --lf-key var(--lf-dur-atmosphere) linear,
+      --lf-ground var(--lf-dur-atmosphere) linear,
+      --lf-sun-height var(--lf-dur-atmosphere) linear;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lf-stage-ground {
+      transition: none;
     }
   }
 
@@ -457,6 +853,63 @@
     }
   }
 
+  /*
+   * SETTLE — how anything on the immersive layer arrives (/DESIGN.md §Lumen →
+   * Motion).
+   *
+   * The camera on this route is critically damped: it never overshoots and it
+   * never cuts. Chrome that POPS in over a camera that settles reads as two
+   * different products sharing a screen, so the plate comes into focus the way
+   * the camera comes to rest — 300 ms, the same easing, no bounce.
+   *
+   * IT IS ON AN INNER NODE, ALWAYS. `ScreenAnchor` writes the anchored node's
+   * whole `transform` string every frame; a transition or animation on THAT
+   * node's transform is erased sixty times a second. The plate inside it is
+   * free, which is why the material owns the entrance and the anchor owns the
+   * position.
+   *
+   * `backwards` rather than `both`: with `both` the final keyframe wins
+   * forever, which would pin every plate to `opacity: 1` and quietly break the
+   * one control that dims itself (the orb while the tutor is speaking).
+   */
+  .lf-settle {
+    animation: lf-settle var(--lf-dur-slow) var(--lf-ease) backwards;
+  }
+  @keyframes lf-settle {
+    from {
+      opacity: 0;
+      transform: scale(0.965);
+      filter: blur(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+  }
+  /* The Reveal cadence (§Motion recipe 2): at most three, 80 ms apart. */
+  .lf-settle-2 {
+    animation-delay: 80ms;
+  }
+  .lf-settle-3 {
+    animation-delay: 160ms;
+  }
+  /*
+   * Leaving is faster than arriving — that is most of what "weight" means in
+   * motion. Only for a plate that is UNMOUNTING. A plate that leaves because
+   * the camera turned away is CULLED, and a cull is a cut: the thing left the
+   * picture, and fading out something that is already off-frame animates a lie.
+   */
+  .lf-settle-out {
+    animation: lf-settle-out var(--lf-dur-fast) var(--lf-ease) forwards;
+  }
+  @keyframes lf-settle-out {
+    to {
+      opacity: 0;
+      transform: scale(0.985);
+    }
+  }
+
   /* Attention pulse — explicitly requests #FF8F00 for the lesson button */
   .lf-pulse-attention {
     animation: lf-pulse-attention 2s infinite;
@@ -554,6 +1007,33 @@
       transform: none;
       transition: none;
     }
+    /*
+     * A MODIFIER on the settle, never a second entrance. Motion is removed;
+     * the ARRIVAL is not, because "a new thing is here" is information, and a
+     * learner who asked for less movement did not ask to stop being told.
+     */
+    .lf-settle {
+      animation-name: lf-settle-still;
+      animation-duration: 120ms;
+      animation-delay: 0ms;
+    }
+    .lf-settle-out {
+      animation-name: lf-settle-still-out;
+      animation-duration: 120ms;
+    }
+  }
+  @keyframes lf-settle-still {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes lf-settle-still-out {
+    to {
+      opacity: 0;
+    }
   }
 
   @media (min-width: 640px) {
@@ -562,6 +1042,10 @@
     }
     .lf-display-lg {
       font-size: 32px;
+    }
+    .lf-speech {
+      font-size: 21px;
+      line-height: 29px;
     }
   }
 

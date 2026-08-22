@@ -1,9 +1,11 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
+import { useEffect } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import {
   StageLayer,
   StageShell,
+  useStageDock,
   STAGE_PHASES,
   type StageMicProps,
   type StagePhase,
@@ -72,7 +74,6 @@ function renderShell(phase: StagePhase) {
   return render(
     <MemoryRouter>
       <StageShell
-        phase={phase}
         mic={MIC}
         character="rho"
         companion="liruf"
@@ -113,7 +114,6 @@ describe('StageShell', () => {
     const { container, rerender } = render(
       <MemoryRouter>
         <StageShell
-          phase="arriving"
           mic={MIC}
           character="rho"
           companion="liruf"
@@ -133,7 +133,6 @@ describe('StageShell', () => {
     rerender(
       <MemoryRouter>
         <StageShell
-          phase="conversing"
           mic={MIC}
           character="rho"
           companion="liruf"
@@ -208,17 +207,19 @@ describe('StageShell', () => {
       expect(focusable[0]?.textContent).toMatch(/leave the tutor/i);
     });
 
-    it('stands its text on an opaque floor, never on glass over the render', () => {
+    it('is made of the stage material, like everything else on this layer', () => {
       const exit = exitButton();
       /*
-       * `.lf-glass` is surface at 78%, so 22% of anything sitting directly on
-       * it is the moving, rotating, relit island. There is no contrast ratio to
-       * compute against a background that changes every frame, which is why
-       * /DESIGN.md requires body text on an opaque token here. `HudPlate` puts
-       * the floor on its inner element; text directly on the frame has none.
+       * It used to assert the opposite — a `.lf-glass` frame around an opaque
+       * `bg-surface` floor — because a translucent plate over an orbiting
+       * camera was held to have no computable contrast ratio. It has a
+       * computable BOUND, which is what `--lf-lumen-alpha` is
+       * (/DESIGN.md §Lumen, and `HudPlate.test.tsx` measures it), so the text
+       * sits on the glass and the lighter ring that used to circle every
+       * control is gone.
        */
-      expect(exit.className).toContain('lf-glass');
-      expect(exit.firstElementChild?.className).toContain('bg-surface');
+      expect(exit.className).toContain('lf-lumen');
+      expect(exit.className).not.toContain('lf-glass');
     });
   });
 });
@@ -254,5 +255,70 @@ describe('StageLayer placement', () => {
   it('does mount a tap-catching column under "fill", which is why it is the exception', () => {
     const section = layer('fill');
     expect(section.querySelector('.pointer-events-auto')).not.toBeNull();
+  });
+});
+
+/*
+ * WHERE THE MICROPHONE STANDS AT 1280 PX, AND WHO GETS TO DECIDE IT.
+ *
+ * The dock steps out of the bottom-right corner while a large plate is holding
+ * it, so the orb is centred in the width a learner can actually see. That fact
+ * used to be a constant in this file — `phase === 'conversing' ||
+ * phase === 'personalizing'` — and it went stale the day the lesson plate
+ * learned to stand down for an adaptation question: an offer is still the
+ * `conversing` phase with the plate `display: none`, and the dock went on
+ * clearing 480 px of empty island. Measured on `/dev/tutor-lab` at 1280x800,
+ * the question, its two answers and the microphone were all centred on x = 400
+ * against a viewport centre of 640.
+ *
+ * So the claim is PUBLISHED by whichever plate is actually there, and these are
+ * the three states that matter: nobody holding it, somebody holding it, and a
+ * holder that let go without unmounting.
+ */
+describe('the dock steps aside only for a plate that is really there', () => {
+  function Publisher({ held }: { held: boolean }) {
+    const dock = useStageDock();
+    useEffect(() => {
+      dock?.setCornerPlate(held);
+      return () => dock?.setCornerPlate(false);
+    }, [dock, held]);
+    return null;
+  }
+
+  function renderWith(held: boolean) {
+    return render(
+      <MemoryRouter>
+        <StageShell mic={MIC} character="rho" companion="liruf" scene="diorama-a" backdrop="day">
+          <Publisher held={held} />
+        </StageShell>
+      </MemoryRouter>,
+    );
+  }
+
+  const dockOf = () => screen.getByRole('group', { name: /.+/ });
+
+  it('stays centred while nothing claims the corner', () => {
+    renderWith(false);
+    expect(dockOf().className).not.toContain('lg:right-[30rem]');
+  });
+
+  it('steps aside when a plate says it is holding the corner', () => {
+    renderWith(true);
+    expect(dockOf().className).toContain('lg:right-[30rem]');
+  });
+
+  it('comes back to centre when the plate stands down without unmounting', () => {
+    const { rerender } = renderWith(true);
+    expect(dockOf().className).toContain('lg:right-[30rem]');
+    act(() => {
+      rerender(
+        <MemoryRouter>
+          <StageShell mic={MIC} character="rho" companion="liruf" scene="diorama-a" backdrop="day">
+            <Publisher held={false} />
+          </StageShell>
+        </MemoryRouter>,
+      );
+    });
+    expect(dockOf().className).not.toContain('lg:right-[30rem]');
   });
 });

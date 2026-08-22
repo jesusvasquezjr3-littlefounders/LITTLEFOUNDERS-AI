@@ -85,9 +85,18 @@ describe('WorldChip as a control', () => {
 
     const chip = screen.getByRole('button', { name: 'Oasis' });
     expect(chip).toHaveAttribute('aria-pressed', 'true');
-    // A ring, not a fill: over live scenery a colour swap reads as the light
-    // changing rather than as a choice being made.
-    expect(chip.className).toContain('ring-primary');
+    /*
+     * A ring, not a fill: over live scenery a colour swap reads as the light
+     * changing rather than as a choice being made.
+     *
+     * The ring is part of the MATERIAL rather than Tailwind's `ring-*`
+     * utility, and that is a bug fix. `ring-2` writes `box-shadow`, utilities
+     * outrank components, and the material's shadow IS its edge, its specular
+     * lip and the shadow that seats it in the scene — so a chosen chip used to
+     * lose all three at the exact moment it was meant to look more present.
+     */
+    expect(chip.className).toContain('lf-lumen-selected');
+    expect(chip.className).not.toContain('ring-primary');
   });
 
   /*
@@ -225,6 +234,50 @@ describe('WorldChip and the projector', () => {
       vi.advanceTimersByTime(300);
     });
     expect(screen.getByRole('button', { name: 'Practise together' }).hasAttribute('hidden')).toBe(false);
+  });
+
+  /*
+   * AND HIDING IT HAS TO SURVIVE THE NODE'S OWN STYLING, which is the way this
+   * guard failed silently for one caller.
+   *
+   * `hidden` hides through a base-layer `[hidden] { display: none }` rule, and
+   * that is a 0-1-0 attribute selector. Any `display` utility on the same node
+   * is a class — also 0-1-0, and later in the cascade — so it wins, and the
+   * node reports `hidden === true` to every script that asks while painting
+   * perfectly normally. The audition's candidate cluster is a `flex` row, so
+   * measured on `/dev/tutor-lab` at 375x812 with the personalization list open
+   * it satisfied the harness and left Dr. Rho's name plate clipped behind the
+   * microphone dock ON SCREEN.
+   */
+  it('hides a plate that carries a display utility of its own', () => {
+    vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'Date', 'performance'] });
+    const { container } = render(
+      <SafeAreaProvider>
+        <SheetProbe rect={{ left: 0, top: 600, width: 375, height: 212 }} />
+        <WorldChip slot="stage.mark.0" onSelect={vi.fn()} className="flex">
+          Practise together
+        </WorldChip>
+      </SafeAreaProvider>,
+    );
+
+    const frame = container.querySelector<HTMLElement>('.will-change-transform');
+    const plate = screen.getByRole('button', { name: 'Practise together' });
+    stubRect(frame as HTMLElement, { left: 100, top: 660, width: 160, height: 44 });
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+    // The attribute is the semantic half and is not enough on its own.
+    expect(plate.hasAttribute('hidden')).toBe(true);
+    // This is the half that actually removes the pixels.
+    expect(plate.style.display).toBe('none');
+
+    stubRect(frame as HTMLElement, { left: 100, top: 200, width: 160, height: 44 });
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+    // Cleared back to '' rather than to a guessed value, so the node returns to
+    // whatever its classes say — `flex`, here.
+    expect(plate.style.display).toBe('');
   });
 
   it('registers with the projector and starts hidden AND inert', () => {

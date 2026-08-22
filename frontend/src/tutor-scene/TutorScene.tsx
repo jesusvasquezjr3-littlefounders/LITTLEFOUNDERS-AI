@@ -23,6 +23,7 @@ import {
 } from './assets';
 import { walkabilityFor } from './walkability';
 import { CameraDirector } from './CameraDirector';
+import { solveFacings } from './facing';
 import { shotForLegacyFraming, STAGE_BEARING, type LegacyFraming, type ShotId, type ShotSubject } from './shots';
 import { AnchorProjector, AnchorProvider, useAnchorRegistry, WorldAnchor } from './ScreenAnchor';
 import { castMarks, SKY_MARK_IDS, STAGE_MARK_IDS, type AnchorId } from './anchors';
@@ -500,14 +501,21 @@ function Cast({
    * second change: the camera aims at the head one half computed while the
    * character faces the way the other half computed.
    *
-   * Facing: the models' bind pose looks down +Z, so a yaw of `atan2(x, z)`
-   * turns a character to face directly AWAY from the island's centre — which is
-   * toward a camera orbiting outside it. Facing the centre instead (the first
-   * attempt) showed the cast's backs. Each is then turned a quarter of the way
-   * toward their NEAREST neighbour, so a group reads as people sharing a place
-   * rather than as props aimed at the lens. Nearest rather than "the other one"
-   * because an audition has three others, and aiming at the average of them
-   * points a candidate at nobody.
+   * FACING IS `facing.ts` NOW, and it is a module rather than four lines here
+   * because the four lines were wrong and nothing could see it. They pointed
+   * each character radially OUTWARD from the island's centre, on the stated
+   * theory that outward is "toward a camera orbiting outside it". The camera
+   * does not orbit: it stands at ONE bearing, so outward faces the viewer only
+   * for the arc of the island nearest them. Measured with
+   * `npm run verify:placement`, three of the four personalization candidates
+   * stood with their BACKS to the learner on `diorama-a`, and an ordinary
+   * two-person session on `diorama-b` turned the tutor 101 degrees away for the
+   * whole conversation. Moving it out bought the gate that now fails on it.
+   *
+   * `STAGE_BEARING` is a constant of the stage — the direction it is composed
+   * to be seen from, derived from the placement solver's own `preferDirection`
+   * — and not a live camera pose, so the rule at the top of this component
+   * still holds: the camera reads placement, placement never reads the camera.
    */
   const posed = useMemo(() => {
     if (!spots) return null;
@@ -516,23 +524,10 @@ function Cast({
       return spot ? [{ id, index, spot }] : [];
     });
 
-    return placed.map(({ id, index, spot }) => {
-      const outward = Math.atan2(spot.x, spot.z);
-      let nearest: StandingSpot | null = null;
-      let best = Infinity;
-      for (const other of placed) {
-        if (other.spot === spot) continue;
-        const distance = Math.hypot(other.spot.x - spot.x, other.spot.z - spot.z);
-        if (distance < best) {
-          best = distance;
-          nearest = other.spot;
-        }
-      }
-      const toward = nearest ? Math.atan2(nearest.x - spot.x, nearest.z - spot.z) : outward;
-      // Shortest-arc blend: naive averaging of angles flips a character around
-      // when the two are on opposite sides of the wrap point.
-      const delta = Math.atan2(Math.sin(toward - outward), Math.cos(toward - outward));
-      const facing = outward + delta * 0.25;
+    const facings = solveFacings(placed.map(({ spot }) => spot), STAGE_BEARING);
+
+    return placed.map(({ id, index, spot }, order) => {
+      const facing = facings[order] ?? STAGE_BEARING;
       const height = CHARACTER_ASSETS[id].targetHeightM;
       const focus: SpeakerFocus = {
         x: spot.x,

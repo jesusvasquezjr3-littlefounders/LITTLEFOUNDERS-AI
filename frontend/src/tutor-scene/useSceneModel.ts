@@ -7,6 +7,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import type { Mesh, Object3D } from 'three';
+import { relightAsClay, type ShadedMaterial } from './characterMaterial';
 import type { QualitySettings } from './quality';
 
 /*
@@ -70,6 +71,23 @@ export function useSceneModel(url: string, settings: QualitySettings) {
       // follows the tier rather than being left at the driver default.
       const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
       for (const material of materials) {
+        /*
+         * THE CAST TAKES THE LIGHT. Every character export ships
+         * `metallicFactor: 1` with no metalness map and its own albedo in the
+         * emissive slot at full white — which is an exporter's "unlit"
+         * checkbox, and it is why one character read as solid and another as a
+         * ghost while the island's four times of day reached neither of them.
+         * The rule and its measurements are in `characterMaterial.ts`; it fires
+         * only on that fingerprint, so the islands, which author metalness
+         * per-texel, are untouched.
+         *
+         * It runs in this traverse rather than a second one because it is
+         * idempotent and cheap: after the first pass the fingerprint no longer
+         * matches, so a quality-tier change re-walks the graph and changes
+         * nothing.
+         */
+        relightAsClay(material as unknown as ShadedMaterial);
+
         const map = (material as { map?: { anisotropy: number; needsUpdate: boolean } }).map;
         if (map && map.anisotropy !== settings.anisotropy) {
           map.anisotropy = settings.anisotropy;

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Field, Icon } from '@/components/ui';
+import { Field, Icon } from '@/components/ui';
 import type { CharacterId } from '@/components/characters/control/types';
 import { playPlatformSound } from '@/lib/sound';
 import { cn } from '@/lib/utils';
@@ -9,7 +9,7 @@ import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from '@/tutor/hud/HudPlate';
 import { useDesktopPlate } from '@/tutor/hud/LessonPlate';
-import { WorldChip } from '@/tutor/hud/WorldChip';
+import { useHudOcclusion, WorldChip } from '@/tutor/hud/WorldChip';
 import { useStageDock, type PersonalizeLayerProps } from './stage/StageShell';
 import type { Adaptation } from './types';
 
@@ -211,6 +211,24 @@ export function PersonalizeInWorld({
     [measureLesson, keepClearOf, desktop],
   );
 
+  /*
+   * And the corner claim, the other half of the same fact.
+   *
+   * `keepClearOf` above says "the dock rides above me" and is only true below
+   * `lg:`; this says "the dock centres itself to my LEFT" and is only true
+   * above it. They are mutually exclusive by construction, which is the shape
+   * the shell used to encode as a phase constant and could not keep true once
+   * the lesson plate learned to stand down (`StageDockValue.setCornerPlate`).
+   * Unlike `LessonPlate` this plate has no stood-down state — its resting row
+   * is the way in to everything else on the phase and is always mounted — so
+   * the desktop breakpoint is the whole condition.
+   */
+  const setCornerPlate = dock?.setCornerPlate;
+  useEffect(() => {
+    setCornerPlate?.(desktop);
+    return () => setCornerPlate?.(false);
+  }, [setCornerPlate, desktop]);
+
   const characters = catalog.characters;
   const lead = preferences.character;
   const companion = preferences.companion;
@@ -365,20 +383,27 @@ export function PersonalizeInWorld({
           const isLead = id === lead;
           const isCompanion = id === companion;
           /*
-           * ONE PERSON, ONE LABEL. The role used to live on a SECOND anchored
-           * chip over the same character's mid-head — `lead.head` for the tutor
-           * and `companion.head` for the companion — while this plate rode their
-           * crown a quarter of their height higher. Measured at 1280x800 that
-           * was "Dr. Rho / Warm and precise" at (479, 168) with "Dr. Rho / Your
-           * tutor" at (489, 235): the same name, twice, 67 px apart, reading as
-           * a rendering glitch rather than as two facts. The role is a fact
-           * ABOUT this candidate, so it belongs on this candidate's own plate.
+           * ONE PERSON, ONE LABEL, AND THE LABEL IS THE NAME.
+           *
+           * The role used to live on a SECOND anchored chip over the same
+           * character's mid-head, then on a quiet second line of this plate.
+           * Both are gone, and the second one went on 2026-08-22 as the first
+           * application of the material's one-ink rule (/DESIGN.md §Lumen →
+           * Type): a line that has to be quieter than the line above it to
+           * earn its place is a line to delete.
+           *
+           * It is also a MEASUREMENT. A world plate is 48 px tall now and can
+           * no longer be shrunk under the tap floor, so the two-line version
+           * put Liruf's whole cluster past the right edge of a 375 px frame and
+           * the audition lost a candidate — the exact bug the audition exists
+           * to prevent. One line brings him back.
+           *
+           * Nothing is lost that a learner needs: the chosen tutor wears the
+           * material's selection ring and announces `aria-pressed`, the
+           * companion has the dismiss control standing beside them, and the
+           * panel's list carries every candidate's full description in a
+           * column that has room for one.
            */
-          const role = isLead
-            ? t('tutor.personalize.tutorBadge')
-            : isCompanion
-              ? t('tutor.personalize.companionBadge')
-              : null;
           return (
             <WorldSlot key={id} slot={slot}>
               <HudPlate
@@ -397,19 +422,14 @@ export function PersonalizeInWorld({
                 onClick={() => chooseTutor(id)}
                 aria-label={t('tutor.personalize.chooseTutor', { name: nameOf(id) })}
                 aria-pressed={isLead}
-                className={cn('pointer-events-auto', isLead && 'ring-2 ring-primary')}
-                /*
-                 * The bang is not decoration. `cn` is a plain string join with
-                 * no conflict resolution, so which of `gap-2` and `gap-0.5`
-                 * wins is decided by Tailwind's own emission order, which is an
-                 * implementation detail and not something this file should be
-                 * betting a layout on. Without it the name and the line under
-                 * it sit a chip's worth of air apart.
-                 */
-                floorClassName="flex-col !gap-0.5"
+                // Through the material, never `ring-2`: a Tailwind ring writes
+                // `box-shadow` and utilities outrank components, so it would
+                // erase the plate's edge, its specular lip and the shadow that
+                // seats it in the scene.
+                selected={isLead}
+                className="pointer-events-auto"
               >
-                <span className="lf-label text-content">{nameOf(id)}</span>
-                {role && <span className="lf-caption text-content-muted">{role}</span>}
+                <span className="lf-action">{nameOf(id)}</span>
               </HudPlate>
 
               {/*
@@ -441,8 +461,17 @@ export function PersonalizeInWorld({
                   onClick={() => toggleCompanion(id)}
                   aria-label={t('tutor.personalize.dismissCompanion', { name: nameOf(id) })}
                   aria-pressed
-                  className="pointer-events-auto ring-2 ring-primary"
-                  floorClassName="h-11 w-11"
+                  selected
+                  className="pointer-events-auto"
+                  /*
+                   * 48, matching HudPlate's own interactive floor. An anchored
+                   * control is multiplied by its distance from the camera, and
+                   * `ScreenAnchor` clamps that scale against 44 — so a control
+                   * authored at exactly 44 pins its whole cluster to full size,
+                   * which pushed Liruf's plate off a 375 px frame entirely. The
+                   * depth cue needs the 4 px of headroom to exist in.
+                   */
+                  floorClassName="h-12 w-12"
                 >
                   <Icon name="person_remove" />
                 </HudPlate>
@@ -481,8 +510,10 @@ export function PersonalizeInWorld({
               slot="island.rim.left"
               onSelect={() => goToIsland(previousIsland)}
               label={t('tutor.personalize.goToIsland', { name: islandName(previousIsland) })}
+              /* See the note on the sun below: same set, same clearance. */
+              stack
             >
-              <span className="lf-caption text-content">{islandName(previousIsland)}</span>
+              <span className="lf-action">{islandName(previousIsland)}</span>
             </WorldChip>
           )}
           {nextIsland && (
@@ -490,8 +521,22 @@ export function PersonalizeInWorld({
               slot="island.rim.right"
               onSelect={() => goToIsland(nextIsland)}
               label={t('tutor.personalize.goToIsland', { name: islandName(nextIsland) })}
+              /*
+               * AND THE RIM PAD STACKS TOO, which is the sibling of the sun's
+               * bug and was left behind when the sun's was fixed.
+               *
+               * Every anchored surface on this phase is a peer of every other:
+               * the pad sits on the island's rim and a candidate stands close
+               * to it, so at some bearings the pad's plate lands on a name.
+               * Measured on `/dev/tutor-lab` at 375x812 while walking the
+               * journey with the ambient orbit stopped — "Go to Stone circle"
+               * across "Talk with Dina" by 51 x 18 px, and across the dismiss
+               * orb beside her by 44 x 18. A clearance rule that half the set
+               * opts into is not a clearance rule.
+               */
+              stack
             >
-              <span className="lf-caption text-content">{islandName(nextIsland)}</span>
+              <span className="lf-action">{islandName(nextIsland)}</span>
             </WorldChip>
           )}
         </div>
@@ -518,12 +563,23 @@ export function PersonalizeInWorld({
           slot={SUN_MARK_ID}
           onSelect={() => setLight(nextLight)}
           label={t('tutor.personalize.lightNext', { name: lightName(nextLight) })}
+          /*
+           * IT STACKS, AND IT DID NOT, WHICH IS WHY IT LANDED ON DINA.
+           *
+           * `stack` opts a node into the projector's per-frame clearance pass,
+           * and it was set on the four candidate plates and not on this one — so
+           * the cast rose off each other and the sun sat wherever the arc put
+           * it, which at some bearings is on top of a candidate. Measured on
+           * `/dev/tutor-lab` at 375x812: this chip at (187, 290, 72, 44) across
+           * "Dina" at (208, 314, 59, 44), a 20 px overlap on the name of a
+           * character the learner is being asked to choose. Clearance is a
+           * property of a SET of peers, and the sun is a peer of the cast
+           * whether or not it is one of them.
+           */
+          stack
         >
-          <Icon
-            name={preferences.backdrop === 'night' ? 'bedtime' : 'wb_sunny'}
-            className="text-content-muted"
-          />
-          <span className="lf-caption text-content">{lightName(preferences.backdrop)}</span>
+          <Icon name={preferences.backdrop === 'night' ? 'bedtime' : 'wb_sunny'} />
+          <span className="lf-action">{lightName(preferences.backdrop)}</span>
         </WorldChip>
       )}
 
@@ -566,7 +622,6 @@ export function PersonalizeInWorld({
         {open && (
           <HudPlate
             shape="sheet"
-            floor="surface"
             id={panelId}
             /*
              * The measure override is deliberate and is the only one in the
@@ -613,7 +668,7 @@ export function PersonalizeInWorld({
                   stored as a fact about them, and the tutor may only ever ask
                   to add one.
                 */}
-                <p id={adaptHeadingId} className="lf-label mb-2 text-content">
+                <p id={adaptHeadingId} className="lf-title mb-2 text-content">
                   {t('tutor.personalize.adaptTitle')}
                 </p>
                 {/*
@@ -646,7 +701,7 @@ export function PersonalizeInWorld({
               */}
               {listedCharacters.length > 0 && (
                 <div role="group" aria-label={t('tutor.personalize.whoTitle')}>
-                  <p className="lf-label mb-2 text-content">{t('tutor.personalize.whoTitle')}</p>
+                  <p className="lf-title mb-2 text-content">{t('tutor.personalize.whoTitle')}</p>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {listedCharacters.map((id) => (
                       <div key={id} className="flex items-center gap-2">
@@ -690,7 +745,7 @@ export function PersonalizeInWorld({
 
               {listedIslands.length > 1 && (
                 <div role="group" aria-label={t('tutor.personalize.whereTitle')}>
-                  <p className="lf-label mb-2 text-content">{t('tutor.personalize.whereTitle')}</p>
+                  <p className="lf-title mb-2 text-content">{t('tutor.personalize.whereTitle')}</p>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {listedIslands.map((id) => (
                       <PlateChip
@@ -707,7 +762,7 @@ export function PersonalizeInWorld({
 
               {listedSun.length > 0 && (
                 <div role="group" aria-label={t('tutor.personalize.lightTitle')}>
-                  <p className="lf-label mb-2 text-content">{t('tutor.personalize.lightTitle')}</p>
+                  <p className="lf-title mb-2 text-content">{t('tutor.personalize.lightTitle')}</p>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {listedSun.map((id) => (
                       <PlateChip
@@ -751,16 +806,29 @@ export function PersonalizeInWorld({
 
           The press is last so it is the closest thing to the learner's thumb
           and the last thing in the tab order before the world, and it is the
-          only `primary` fill in the phase (/DESIGN.md → Screen Recipes → Tutor:
-          one indigo action per phase). The chip beside it is `sunken` glass,
-          which is the same "quieter second thought" grammar the replays chip
-          uses on the introduction.
+          only indigo action in the phase (/DESIGN.md → Screen Recipes → Tutor).
+          It is a HudPlate rather than the design system's `Button`, because on
+          this layer an indigo action is `.lf-lumen-solid` — a solid object at
+          the pane radius keeping only the seated shadow — and a `rounded-full`
+          capsule over a photographic frame is the sticker silhouette §Lumen
+          exists to remove.
+
+          THE CHIP BESIDE IT NO LONGER SAYS "MORE" (/DESIGN.md §Lumen → What to
+          delete: "`More` in the audition. An overflow menu on a phase with four
+          candidates.") The control itself cannot go: it opens the LIST, and the
+          list is the guaranteed twin of every world chip on this phase — a
+          candidate the placement solver cannot seat, a chip the camera has
+          culled and a device with no WebGL all take a choice away, and this is
+          the only path that survives all three (/DESIGN.md → Components →
+          WorldChip). Deleting it would delete reachability, which is the one
+          thing this phase may not trade for quiet. What went is the WORD: an
+          overflow menu is a place things are hidden, a list is a thing you can
+          ask for, and the chip now says which one this is.
         */}
         <div className="flex items-center gap-2">
           <HudPlate
             as="button"
             shape="chip"
-            floor="sunken"
             aria-expanded={open}
             aria-controls={panelId}
             onClick={() => {
@@ -769,20 +837,24 @@ export function PersonalizeInWorld({
             }}
             className="pointer-events-auto shrink-0"
           >
-            <Icon name={open ? 'expand_more' : 'tune'} className="text-content-muted" />
-            <span className="lf-caption">
-              {open ? t('tutor.personalize.hideMore') : t('tutor.personalize.more')}
+            <Icon name={open ? 'expand_more' : 'format_list_bulleted'} />
+            <span className="lf-action">
+              {open ? t('tutor.personalize.hideList') : t('tutor.personalize.showList')}
             </span>
           </HudPlate>
 
-          <Button
+          <HudPlate
+            as="button"
+            shape="chip"
+            floor="accent"
             onClick={() => {
               if (commitNickname()) onDone();
             }}
-            className="flex-1"
+            className="pointer-events-auto min-w-0 flex-1 !max-w-none"
+            floorClassName="py-3"
           >
-            {t('tutor.personalize.done')}
-          </Button>
+            <span className="lf-action">{t('tutor.personalize.done')}</span>
+          </HudPlate>
         </div>
       </aside>
     </>
@@ -812,13 +884,62 @@ export function PersonalizeInWorld({
  * see `culling.ts` → `stackClearance` for the measurements that forced it.
  */
 function WorldSlot({ slot, children }: { slot: AnchorId; children: ReactNode }) {
-  const anchorRef = useAnchorSlot(slot, { place: 'above', stack: true });
+  /*
+   * `clampToFrame` IS WHAT KEEPS THE FOURTH CANDIDATE IN THE AUDITION.
+   *
+   * Measured on `/dev/tutor-lab` at 375x812 with the camera held still: Liruf's
+   * cluster projected to x = 321 with a half-width of 55, so its right edge
+   * landed at 376 against a 375 px viewport, and the ordinary box cull hid it
+   * AND made it inert. One pixel, and the learner could no longer choose him by
+   * looking at him — which is the exact bug the audition exists to fix, and it
+   * had been quietly true at this bearing the whole time. His is the widest
+   * cluster because he is the current companion and therefore carries the
+   * dismiss orb; a longer name in another locale reaches the same edge with no
+   * orb at all, so trimming the cluster would only move the failure.
+   *
+   * Clamping is right here and wrong for a rim pad, and `ScreenAnchor` carries
+   * the distinction: this plate names a PERSON who is still fully on screen,
+   * not a PLACE that has left it. Behind the camera it still culls — a name
+   * parked at the top of the frame for somebody nobody can see is worse than
+   * nothing.
+   */
+  const anchorRef = useAnchorSlot(slot, { place: 'above', stack: true, clampToFrame: true });
+
+  /*
+   * AND IT HIDES UNDER FIXED CHROME, exactly as a `WorldChip` does.
+   *
+   * This was the part the hand-copied contract left out, and it is the half
+   * /DESIGN.md's arbitration rule is about: a world-anchored surface painted
+   * over by a viewport-anchored one HIDES, because a control a learner can only
+   * half read must not be under their thumb or in their tab order. Measured on
+   * `/dev/tutor-lab` at 375x812 with the personalization list open and the
+   * orbit stopped: the microphone dock had risen to (15, 223, 345, 156) to
+   * clear the panel, and Dina (101, 291), Zara Vex (215, 285) and Dr. Rho
+   * (8, 208) were sitting under it — while the island chip and the sun, which
+   * ARE `WorldChip`s, hid correctly beside them.
+   *
+   * Nothing is lost by hiding: the panel that covered them is the guaranteed
+   * twin of every world control on this phase, and every candidate is a row in
+   * it (§Components → WorldChip).
+   *
+   * The two refs go on two different nodes for the reason `useHudOcclusion`
+   * documents: the projector owns `hidden` on the FRAME, so the occlusion owns
+   * it on the box inside, and the frame stays measurable.
+   */
+  const occlusion = useHudOcclusion();
+  const attachFrame = useCallback(
+    (node: HTMLElement | null) => {
+      anchorRef(node);
+      occlusion.frame(node);
+    },
+    [anchorRef, occlusion],
+  );
+
   return (
-    <div
-      ref={anchorRef}
-      className="pointer-events-none fixed left-0 top-0 z-20 flex items-center gap-1.5 will-change-transform"
-    >
-      {children}
+    <div ref={attachFrame} className="pointer-events-none fixed left-0 top-0 z-20 will-change-transform">
+      <div ref={occlusion.plate} className="flex items-center gap-1.5">
+        {children}
+      </div>
     </div>
   );
 }
@@ -826,11 +947,18 @@ function WorldSlot({ slot, children }: { slot: AnchorId; children: ReactNode }) 
 /**
  * A choice that lives ON the plate rather than over the render.
  *
- * Deliberately NOT a `HudPlate`. The plate underneath is already a glass frame,
+ * Deliberately NOT a `HudPlate`. The plate underneath is already the material,
  * and /DESIGN.md forbids stacking glass on glass — two blurred layers over a
  * moving island stop reading as one material and start reading as a bug in the
- * blur. Over an opaque floor the ordinary token grammar is both correct and
- * legible, and the contrast is a fixed ratio against a known colour.
+ * blur. What it borrows from the material instead is the SHAPE and the
+ * SELECTION grammar: the pane radius rather than a capsule, and an inset ring
+ * in `primary` rather than an outline that is always there.
+ *
+ * It was a `rounded-full border` pill, and on a translucent reading surface a
+ * row of outlined capsules is the single loudest "this is a settings form" cue
+ * there is — the exact complaint that got this phase rejected twice. An
+ * unselected chip now has no border at all; it is a slightly recessed pane, and
+ * the only thing an outline means here is "this one is chosen".
  */
 function PlateChip({
   selected,
@@ -853,10 +981,12 @@ function PlateChip({
       aria-label={label}
       className={cn(
         // ≥44px, because this is used by six-year-olds on phones.
-        'lf-body flex min-h-11 items-center justify-center gap-2 rounded-full border px-4 py-2 text-center transition-colors',
+        'lf-action flex min-h-11 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-center',
+        'transition-[background-color,box-shadow] duration-200 active:translate-y-px',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
         selected
-          ? 'border-primary bg-accent-soft text-content'
-          : 'border-outline bg-surface-sunken text-content hover:border-primary',
+          ? 'bg-accent-soft text-content shadow-[inset_0_0_0_2px_rgb(var(--lf-primary))]'
+          : 'bg-content/[0.06] text-content hover:bg-content/[0.11]',
         className,
       )}
     >

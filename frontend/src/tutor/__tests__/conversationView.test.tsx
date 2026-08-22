@@ -180,7 +180,7 @@ const STAGE_MIC: StageMicProps = {
 function renderInShell(socket: TutorSocket, ready: boolean) {
   return render(
     <MemoryRouter>
-      <StageShell phase="conversing" mic={STAGE_MIC} character="rho" companion="liruf" scene="diorama-a" backdrop="day">
+      <StageShell mic={STAGE_MIC} character="rho" companion="liruf" scene="diorama-a" backdrop="day">
         <StageLayer label="conversation" placement="world">
           {conversation(socket, ready)}
         </StageLayer>
@@ -370,24 +370,38 @@ describe('answering the adaptation offer', () => {
     expect(guaranteed.compareDocumentPosition(orb as HTMLElement) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
-  it('takes a FULL lesson plate down to HALF so the question is not clipped', () => {
+  /*
+   * THE SHEET STANDS DOWN FOR THE LENGTH OF A YES-OR-NO.
+   *
+   * The tutor asking "shall I explain that differently?" is a moment: the
+   * camera swings to the two-shot, the question and its two answers are the
+   * only chrome that matters, and an open sheet is a panel across the character
+   * being asked. It used to drop only from FULL to HALF, which was measured
+   * against a dock that did not yet carry a question and two answers; the
+   * answer is the same wherever the sheet was standing, so it is the same rule.
+   */
+  it('stands a raised lesson sheet down while the question is up', () => {
     const { rerender } = render(conversation(makeSocket(), false));
-    // The sheet rests at PEEK now, so the learner has to raise it twice to
-    // reach the detent this test is about.
+    // The sheet rests at PEEK, so the learner has to raise it to reach the
+    // states this case is about.
     expect(plateHeight()).toBe('88px');
 
     fireEvent.click(resizeHandle());
     const half = plateHeight();
     expect(half).not.toBe('88px');
 
-    // Open the transcript all the way. Measured in a real browser at 375x812,
-    // this is the one detent where the dock overflows the top of the screen
-    // once it carries a question as well as the orb and the composer.
+    rerender(conversation(makeSocket({ adaptationOffer: OFFER }), false));
+    expect(plateHeight()).toBe('88px');
+
+    // Open the transcript all the way and ask again: the detent it was at makes
+    // no difference to the answer.
+    rerender(conversation(makeSocket(), false));
+    fireEvent.click(resizeHandle());
     fireEvent.click(resizeHandle());
     expect(plateHeight()).not.toBe(half);
 
     rerender(conversation(makeSocket({ adaptationOffer: OFFER }), false));
-    expect(plateHeight()).toBe(half);
+    expect(plateHeight()).toBe('88px');
   });
 });
 
@@ -495,9 +509,22 @@ describe('the resting lesson sheet', () => {
     );
   });
 
-  it('names the panel plainly when nothing has arrived', () => {
+  /*
+   * IT SAYS NOTHING WHEN THERE IS NOTHING TO SAY, corrected 2026-08-22.
+   *
+   * The row used to print "Conversation" whenever nothing had arrived, which is
+   * the name of the screen the learner is standing on (/DESIGN.md §Lumen → What
+   * to delete). What the row has to communicate is that it OPENS, and the
+   * chevron says that in every locale without a word. The resize sentence is
+   * still its accessible name, so nobody loses the control.
+   */
+  it('spends no words on the resting row when nothing has arrived', () => {
     renderConversation(makeSocket(), { ready: true });
-    expect(resizeHandle().textContent).toContain('Conversation');
+    const handle = resizeHandle();
+    expect(handle.textContent).not.toContain('Conversation');
+    // The chevron is the whole statement, and it is still there.
+    expect(handle.textContent).toContain('keyboard_arrow_up');
+    expect(handle.getAttribute('aria-label')).toBe('Resize this panel');
     // No news, no announcement. A row that says something on every turn is a
     // row a learner learns to ignore on the turn that matters.
     expect(screen.queryByText('An activity is ready.')).toBeNull();
@@ -552,7 +579,7 @@ describe('the bottom edge the sheet and the microphone share', () => {
 
     view.rerender(
       <MemoryRouter>
-        <StageShell phase="introducing" mic={STAGE_MIC} character="rho" companion="liruf" scene="diorama-a" backdrop="day">
+        <StageShell mic={STAGE_MIC} character="rho" companion="liruf" scene="diorama-a" backdrop="day">
           <StageLayer label="offers" placement="world">
             <p>no sheet on the bottom edge now</p>
           </StageLayer>

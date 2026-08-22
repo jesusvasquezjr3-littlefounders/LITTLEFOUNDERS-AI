@@ -388,6 +388,30 @@ export const ISLAND_AIM_LIFT = 0.18;
  * between them. A few degrees of tilt puts the island BEHIND them instead of
  * under them, which is what a two-shot's background is for.
  */
+export const TWO_SHOT_PAD = {
+  landscape: 1.06,
+  /*
+   * 1.18 UNTIL 2026-08-22, AND THE 12% IT SPENT WAS THE WHOLE COMPLAINT.
+   *
+   * A `two-shot` is already padded laterally: `halfWidth` adds 0.42 of the
+   * taller character's height OUTSIDE each of them before anything is fitted.
+   * The portrait pad was a second margin on top of that first one, added when a
+   * bottom sheet took 45% of a phone and the shot needed somewhere to go. It
+   * did not survive the sheet being fixed: measured on `/dev/tutor-lab` at
+   * 375x812 with an adaptation offer up, the island covered 39.3% of the frame
+   * and the pair sat in the middle of it with a dead band above and below —
+   * the reviewer's "the island is a thin strip across the middle".
+   *
+   * Standing 12% closer is safe rather than brave, because the shot no longer
+   * has to guess: it publishes `keepInFrame` (half the pair's separation plus a
+   * head and chest), and `composition.ts` retreats by exactly what the HUD
+   * actually takes and by nothing at all when the HUD takes nothing. A margin
+   * paid in advance against a surface that may not be there is the retreat
+   * `establishing` already stopped paying, for the same reason.
+   */
+  portrait: 1.06,
+} as const;
+
 export const TWO_SHOT_ELEVATION = {
   landscape: (12 * Math.PI) / 180,
   portrait: (30 * Math.PI) / 180,
@@ -977,7 +1001,9 @@ function twoShot(ctx: ShotContext): CameraPose {
    */
   const halfWidth = separation / 2 + tallest * 0.42;
   const halfHeight = tallest * 0.62;
-  const distance = fitDistance(halfWidth, halfHeight, tallest * 0.3, vFov, aspect) * (aspect < 1 ? 1.18 : 1.06);
+  const distance =
+    fitDistance(halfWidth, halfHeight, tallest * 0.3, vFov, aspect) *
+    (aspect < 1 ? TWO_SHOT_PAD.portrait : TWO_SHOT_PAD.landscape);
 
   // Stand where both are facing, so the camera is in front of the pair rather
   // than behind either of them. The solver already turns each a quarter of the

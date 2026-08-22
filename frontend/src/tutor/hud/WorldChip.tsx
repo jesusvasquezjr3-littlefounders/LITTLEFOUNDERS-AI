@@ -116,6 +116,34 @@ export function isBehindHud(box: ChipBox, plates: readonly HudRect[]): boolean {
   return false;
 }
 
+
+/**
+ * Hide a node so that it is gone to the eye, to the pointer AND to the tab
+ * order — and stay hidden however the node is styled.
+ *
+ * THE ATTRIBUTE ALONE IS NOT ENOUGH, and the way it fails is silent. `hidden`
+ * hides through a base-layer rule (`[hidden] { display: none }`), which is a
+ * 0-1-0 attribute selector; any `display` utility ON THE SAME NODE is a class,
+ * also 0-1-0, and later in the cascade — so it wins. The node then reports
+ * `hidden === true` to every script that asks while painting perfectly
+ * normally.
+ *
+ * Measured on `/dev/tutor-lab` at 375x812 with the personalization list open:
+ * the audition's candidate cluster is a `flex` row, so hiding it set the
+ * attribute, satisfied the measurement harness — which skips anything under
+ * `[hidden]` — and left Dr. Rho's name plate clipped behind the microphone dock
+ * on screen. A test that agrees with the bug is worse than no test.
+ *
+ * So the inline `display` goes with it. Clearing it back to `''` returns the
+ * node to whatever its classes say, which is the point: this owns "hidden",
+ * never "what this node looks like when it is not".
+ */
+function setHiddenReally(node: HTMLElement, hide: boolean): void {
+  node.hidden = hide;
+  node.inert = hide;
+  node.style.display = hide ? 'none' : '';
+}
+
 /* ── One ticker for every chip on the route ─────────────────────────────── */
 
 type Watcher = () => void;
@@ -176,8 +204,22 @@ function occludingPlates(safeArea: SafeAreaValue): HudRect[] {
  * zero-size box at its own centre, which is why the last non-zero half-extents
  * are remembered: the test has to keep working on the frames when the answer is
  * "still hidden".
+ *
+ * EXPORTED, because one anchored surface on this route is deliberately not a
+ * `WorldChip` and was therefore deliberately not getting this. The audition's
+ * candidate cluster carries TWO controls — choose this tutor, invite this
+ * companion — so it copies the projector contract by hand
+ * (`PersonalizeInWorld` → `WorldSlot`), and what the copy left out was the half
+ * that answers /DESIGN.md's arbitration rule: a world-anchored surface painted
+ * over by fixed chrome HIDES. Measured on `/dev/tutor-lab` at 375x812 with the
+ * personalization list open and the ambient orbit stopped: the dock had risen to
+ * (15, 223, 345, 156) and three name plates — Dina at (101, 291), Zara Vex at
+ * (215, 285), Dr. Rho at (8, 208) — were underneath it, clipped, still
+ * pressable and still in the tab order, while the island chip and the sun
+ * beside them (ordinary `WorldChip`s) hid correctly. A rule two surfaces obey
+ * and a third does not is a rule with a hole in it, not a rule.
  */
-function useHudOcclusion(): {
+export function useHudOcclusion(): {
   frame: (node: HTMLElement | null) => void;
   plate: (node: HTMLElement | null) => void;
 } {
@@ -219,8 +261,7 @@ function useHudOcclusion(): {
 
       if (behind === hidden.current) return;
       hidden.current = behind;
-      plate.hidden = behind;
-      plate.inert = behind;
+      setHiddenReally(plate, behind);
     });
 
     return () => {
@@ -229,10 +270,7 @@ function useHudOcclusion(): {
       // while hidden would stay hidden and inert forever, which looks exactly
       // like a component that failed to render.
       const plate = plateNode.current;
-      if (plate && hidden.current) {
-        plate.hidden = false;
-        plate.inert = false;
-      }
+      if (plate && hidden.current) setHiddenReally(plate, false);
       hidden.current = false;
     };
   }, [safeArea]);
@@ -302,7 +340,7 @@ export function WorldChip({
   onSelect,
   label,
   shape = 'chip',
-  floor = 'surface',
+  floor = 'lumen',
   selected,
   stack = false,
   className,
@@ -348,13 +386,20 @@ export function WorldChip({
         // an unchosen option needs.
         aria-pressed={onSelect && selected !== undefined ? selected : undefined}
         onClick={onSelect}
-        className={cn(
-          onSelect && 'pointer-events-auto',
-          // Selection is a ring rather than a fill: the chip is over live
-          // scenery, and a colour swap reads as a lighting change there.
-          selected && 'ring-2 ring-primary',
-          className,
-        )}
+        /*
+         * Selection is a ring rather than a fill: the chip is over live
+         * scenery, and a colour swap reads as a lighting change there.
+         *
+         * It goes through the MATERIAL rather than through Tailwind's
+         * `ring-2 ring-primary`, and that is a bug fix rather than a
+         * refactor. `ring-*` writes `box-shadow`, utilities outrank
+         * components, and `.lf-lumen`'s shadow IS its edge, its specular lip
+         * and the shadow that seats it in the scene — so a chosen chip used
+         * to lose all three at the exact moment it was meant to look more
+         * present, and read as the only flat rectangle on the island.
+         */
+        selected={selected}
+        className={cn(onSelect && 'pointer-events-auto', className)}
       >
         {children}
       </HudPlate>

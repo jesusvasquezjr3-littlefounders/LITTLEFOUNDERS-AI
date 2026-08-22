@@ -52,6 +52,33 @@ const PREFERENCES: TutorPreferences = {
   adaptations: [],
 };
 
+/** jsdom lays nothing out, so a node that has to have a box states its own. */
+function stubRect(node: HTMLElement, rect: { left: number; top: number; width: number; height: number }): void {
+  node.getBoundingClientRect = () =>
+    ({
+      ...rect,
+      right: rect.left + rect.width,
+      bottom: rect.top + rect.height,
+      x: rect.left,
+      y: rect.top,
+      toJSON: () => ({}),
+    }) as DOMRect;
+}
+
+/** Stands in for the microphone dock: one measured plate on the `mic` slot. */
+function DockProbe({ rect }: { rect: { left: number; top: number; width: number; height: number } }) {
+  const safeArea = useSafeArea();
+  const measure = safeArea?.measure('mic');
+  return (
+    <div
+      ref={(node) => {
+        if (node) stubRect(node, rect);
+        measure?.(node);
+      }}
+    />
+  );
+}
+
 function renderLayer(overrides: Partial<PersonalizeLayerProps> = {}) {
   const onSave = vi.fn();
   const onDone = vi.fn();
@@ -83,7 +110,7 @@ function renderLayer(overrides: Partial<PersonalizeLayerProps> = {}) {
  * silhouette the owner has turned down twice.
  */
 function openPanel() {
-  fireEvent.click(screen.getByRole('button', { name: 'More' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Show the list' }));
 }
 
 /*
@@ -174,10 +201,25 @@ describe('choosing by looking', () => {
     for (const name of ['Dina', 'Liruf', 'Dr. Rho', 'Zara Vex']) {
       expect(worldButtons(`Talk with ${name}`)).toHaveLength(1);
     }
-    // The role is a line ON the candidate's own plate rather than a plate of
-    // its own, so it is still said, and said in one place.
-    expect(worldButton('Talk with Dr. Rho')).toHaveTextContent('Your tutor');
-    expect(worldButton('Talk with Liruf')).toHaveTextContent('With you');
+    /*
+     * AND THE LABEL IS THE NAME, NOTHING ELSE (2026-08-22).
+     *
+     * The role used to be a quiet second line on this plate. It went with the
+     * material's one-ink rule (/DESIGN.md §Lumen → Type): at the chrome
+     * density there is no legible quieter ink to demote a line into, so a line
+     * that only works as a whisper is a line to delete. It was also costing a
+     * candidate — the two-line plate pushed Liruf's cluster off the right edge
+     * of a 375 px frame once the tap floor stopped it shrinking.
+     *
+     * The role is still SAID: the chosen tutor is `aria-pressed` and wears the
+     * selection ring, the companion has the dismiss control beside them, and
+     * the panel's list carries every candidate's description in a column that
+     * has room for one.
+     */
+    expect(worldButton('Talk with Dr. Rho')).toHaveTextContent('Dr. Rho');
+    expect(worldButton('Talk with Dr. Rho')).not.toHaveTextContent('Your tutor');
+    expect(worldButton('Talk with Dr. Rho')).toHaveAttribute('aria-pressed', 'true');
+    expect(worldButton('Talk with Liruf')).not.toHaveTextContent('With you');
   });
 
   it('asks the projector to keep the candidates off each other, rather than authoring a ladder', () => {
@@ -221,8 +263,11 @@ describe('choosing by looking', () => {
     const { container } = renderLayer();
     const row = container.querySelector<HTMLElement>('.will-change-transform');
     expect(row).not.toBeNull();
-    // The class that defeated `hidden` is still there — that is the point.
-    expect(row?.className).toContain('flex');
+    // The class that defeated `hidden` still exists on this cluster — it moved
+    // one node in, onto the box the HUD-occlusion guard owns, and the same trap
+    // is waiting there (see `WorldChip` → `setHiddenReally`). That is why BOTH
+    // owners write `display` and not only the attribute.
+    expect((row?.firstElementChild as HTMLElement | null)?.className).toContain('flex');
     expect(row?.hidden).toBe(true);
     expect(row?.style.display).toBe('none');
   });
@@ -300,7 +345,7 @@ describe('the one plate', () => {
     // Two controls, in this order: the way in, then the way on.
     const resting = within(plate).getAllByRole('button');
     expect(resting).toHaveLength(2);
-    expect(resting[0]).toHaveTextContent('More');
+    expect(resting[0]).toHaveTextContent('Show the list');
     expect(resting[1]).toHaveTextContent("I'm ready");
   });
 
@@ -312,12 +357,12 @@ describe('the one plate', () => {
 
   it('reveals the rest on demand, and says so to a screen reader', () => {
     const { container } = renderLayer();
-    const toggle = screen.getByRole('button', { name: 'More' });
+    const toggle = screen.getByRole('button', { name: 'Show the list' });
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
 
     openPanel();
 
-    expect(screen.getByRole('button', { name: 'Done' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: 'Hide the list' })).toHaveAttribute(
       'aria-expanded',
       'true',
     );
@@ -386,6 +431,78 @@ describe('the one plate', () => {
     );
     expect(measured).toContain('lesson');
     view.unmount();
+  });
+
+  /*
+   * AND A CANDIDATE'S NAME PLATE HIDES UNDER THE HUD, LIKE EVERY OTHER
+   * WORLD-ANCHORED SURFACE ON THE ROUTE.
+   *
+   * The cluster is deliberately not a `WorldChip` — a candidate needs two
+   * controls, choose and invite — so it copies the projector contract by hand.
+   * What the copy left out was the OTHER half of /DESIGN.md's arbitration rule:
+   * a world surface painted over by fixed chrome hides. Measured on
+   * `/dev/tutor-lab` at 375x812 with this panel OPEN and the ambient orbit
+   * stopped: the microphone dock rises to clear the panel and lands at
+   * (15, 223, 345, 156), and three name plates — Dina (101, 291), Zara Vex
+   * (215, 285), Dr. Rho (8, 208) — sat underneath it, clipped, still pressable
+   * and still in the tab order, while the island chip and the sun beside them
+   * hid correctly because those two ARE `WorldChip`s.
+   */
+  it('hides a candidate the risen microphone dock is painted over', () => {
+    vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'Date', 'performance'] });
+    try {
+      /*
+       * No `AnchorProvider` here, deliberately. With one, the projector
+       * registers every cluster CULLED — there is no camera in jsdom to place
+       * it — and the occlusion guard correctly declines to fight the projector
+       * over a node it has already hidden. What is under test is the other
+       * case: a cluster the projector has placed, that the HUD then covers.
+       */
+      const view = render(
+        <SafeAreaProvider>
+          <DockProbe rect={{ left: 15, top: 223, width: 345, height: 156 }} />
+          <PersonalizeInWorld
+            phase="personalizing"
+            ready
+            preferences={PREFERENCES}
+            catalog={CATALOG}
+            saving={false}
+            onSave={vi.fn()}
+            onDone={vi.fn()}
+          />
+        </SafeAreaProvider>,
+      );
+
+      // The candidate's cluster: the anchored frame, and the box inside it that
+      // the occlusion owns. Two nodes, two owners — the projector writes
+      // `hidden` on the frame and must not be fought over it.
+      const frames = [...view.container.querySelectorAll<HTMLElement>('.will-change-transform')];
+      const cluster = frames.find((node) => node.textContent?.includes('Dr. Rho'));
+      expect(cluster).toBeDefined();
+      const inner = cluster?.firstElementChild as HTMLElement;
+      expect(inner).toBeDefined();
+
+      // Squarely under the risen dock, exactly where the browser put it.
+      stubRect(cluster as HTMLElement, { left: 8, top: 208, width: 77, height: 44 });
+      act(() => {
+        vi.advanceTimersByTime(300);
+      });
+      expect(inner.hasAttribute('hidden')).toBe(true);
+      // The attribute alone loses to the cluster's own `flex` class, which is
+      // how this shipped looking fixed and painting anyway.
+      expect(inner.style.display).toBe('none');
+
+      // Back into open sky above the dock.
+      stubRect(cluster as HTMLElement, { left: 8, top: 100, width: 77, height: 44 });
+      act(() => {
+        vi.advanceTimersByTime(300);
+      });
+      expect(inner.hasAttribute('hidden')).toBe(false);
+      expect(inner.style.display).toBe('');
+      view.unmount();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   /*

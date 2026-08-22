@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Icon, Reveal } from '@/components/ui';
+import { Icon } from '@/components/ui';
 import type { CharacterId } from '@/components/characters/control/types';
 import { cn } from '@/lib/utils';
 import { playPlatformSound } from '@/lib/sound';
@@ -58,11 +58,21 @@ import type { StartSessionInput } from './tutorApi';
  */
 const OFFERS_AFTER_GREETING_MS = 900;
 
-/** One step of the reveal stagger (/DESIGN.md §Motion recipe 2). */
-const STAGGER_MS = 80;
+/**
+ * The settle stagger, as CLASSES rather than as a `Reveal` wrapper.
+ *
+ * `Reveal` animates a 20 px RISE, which §Motion recipe 10 forbids on this layer
+ * and for a concrete reason: everything here is either projected by the camera
+ * every frame or standing in a dock whose bottom edge a sheet is dragging, so a
+ * translate is a second thing moving the same node. `.lf-settle` is the layer's
+ * own arrival — opacity, a 0.965 scale and a 4 px blur, on the PLATE — and the
+ * two stagger classes are the same 80/160 ms cadence the Reveal used
+ * (/DESIGN.md §Lumen → Motion). Three steps, because the closed motion set caps
+ * a stagger at three and a fourth chip arriving on its own reads as a stutter.
+ */
+const SETTLE_STEPS = ['', 'lf-settle-2', 'lf-settle-3'] as const;
 
-/** The closed motion set caps a stagger at three steps. */
-const MAX_STAGGER_STEPS = 3;
+const settleStep = (index: number): string => SETTLE_STEPS[Math.min(index, SETTLE_STEPS.length - 1)] ?? '';
 
 /**
  * One opening the tutor can offer.
@@ -75,10 +85,22 @@ interface Opening {
   /** Stable key, and the hook a test uses to name one. */
   id: string;
   icon: string;
-  /** One short line. A chip carries a label, never a paragraph. */
+  /**
+   * ONE SHORT LINE, AND IT CARRIES ITS OWN SUBJECT.
+   *
+   * There used to be a `detail` beside it — "Practise / Ahorro con meta" — and
+   * it is deleted (/DESIGN.md §Lumen → What to delete). At the chrome density
+   * there is no legible quieter ink to demote a second line into, so a line
+   * that only works as a whisper is a line to delete.
+   *
+   * Deleting it may NOT delete the subject with it: "Practise" on its own is a
+   * chip that names an action and no topic, which is exactly the failure
+   * /AGENTS.md §1.14 records under "verified for subject, not only for form".
+   * So the topic moved INTO the label — `offers.weakSkill.title` interpolates
+   * it — and the one chip that had a second line now has one line that says
+   * more than the two of them did.
+   */
   label: string;
-  /** A quieter second line, where the label alone loses the actual subject. */
-  detail?: string;
   /**
    * The tutor's own sentence for this opening, used as part of the accessible
    * name. This is where the offer PHRASING lives, which for the flagged skill is
@@ -240,8 +262,7 @@ export function OfferChips({
       list.push({
         id: 'weak_skill',
         icon: 'lightbulb',
-        label: t('tutor.offers.weakSkill.title'),
-        detail: topic,
+        label: t('tutor.offers.weakSkill.title', { topic }),
         spoken: t('tutor.offers.weakSkill.body', { topic }),
         input: {
           intent: 'weak_skill',
@@ -314,15 +335,15 @@ export function OfferChips({
   const status = (
     <>
       {cannotServe && (
-        <HudPlate shape="plate" floor="sunken" className="pointer-events-none self-center">
-          <span className="lf-caption" role="status">
+        <HudPlate shape="plate" className="pointer-events-none self-center">
+          <span className="lf-body" role="status">
             {t('tutor.page.tutorUnavailable')}
           </span>
         </HudPlate>
       )}
       {startError && (
-        <HudPlate shape="plate" floor="sunken" className="pointer-events-none self-center">
-          <span className="lf-caption" role="status">
+        <HudPlate shape="plate" className="pointer-events-none self-center">
+          <span className="lf-body" role="status">
             {/* An error CODE, never a wire message: an untranslated server
                 string on a child's screen is both an i18n violation and a leak
                 of internal wording. */}
@@ -351,14 +372,21 @@ export function OfferChips({
        * whose labels wrap to different line counts should be the same height, or
        * the row reads as two unrelated controls.
        */
-      className="grid grid-cols-2 gap-2 md:flex md:flex-wrap md:items-center md:justify-center"
+      /*
+       * `auto-rows-fr` is what makes it a 2x2 BLOCK rather than two rows that
+       * happen to be stacked. A grid equalises heights within a row, so one
+       * three-line label — "Practise Ahorro con meta", which is the one chip
+       * carrying a topic — made the top row 67 px and left the bottom one at
+       * 50, measured at 375x812. Two mismatched rows of glass over a character
+       * read as an accident; one block reads as a decision, and it costs 17 px.
+       */
+      className="grid grid-cols-2 auto-rows-fr gap-2 md:flex md:flex-wrap md:items-center md:justify-center"
     >
       {openings.map((opening, index) => (
-        <Reveal key={opening.id} delay={Math.min(index, MAX_STAGGER_STEPS) * STAGGER_MS}>
           <HudPlate
+            key={opening.id}
             as="button"
             shape="chip"
-            floor="surface"
             disabled={disabled}
             data-opening={opening.id}
             /*
@@ -369,13 +397,13 @@ export function OfferChips({
              */
             aria-label={`${opening.label} ${opening.spoken}`}
             onClick={() => choose(opening.input)}
-            className={cn('pointer-events-auto', disabled && 'opacity-60')}
+            className={cn('pointer-events-auto', settleStep(index), disabled && 'opacity-60')}
             /*
              * THE CLUSTER IS THE MEASURE HERE, NOT THE CHIP'S OWN 22ch, and
              * that is the locale swing rather than a preference.
              *
              * `HudPlate` caps a chip at `min(22ch, 72vw)` — about 167 px of
-             * Inter at `lf-label` — which is a reading measure for a label of
+             * Inter at `lf-action` — which is a reading measure for a label of
              * two or three words. These labels are not that: they run 15
              * characters ("Ask me anything") to 33 ("¿Qué significa de verdad
              * ahorrar?"), a 2.2x swing across en-US / es-MX / pt-BR, and every
@@ -398,12 +426,8 @@ export function OfferChips({
             style={{ maxWidth: '100%' }}
           >
             <Icon name={opening.icon} className="text-primary" />
-            <span className="flex flex-col items-start text-left">
-              <span className="lf-label">{opening.label}</span>
-              {opening.detail && <span className="lf-caption text-content-muted">{opening.detail}</span>}
-            </span>
+            <span className="lf-action text-left">{opening.label}</span>
           </HudPlate>
-        </Reveal>
       ))}
     </div>
   );
@@ -433,27 +457,20 @@ export function OfferChips({
       aria-label={t('tutor.introduce.moreLabel')}
       className="flex flex-wrap items-center justify-center gap-2"
     >
-      <HudPlate
-        as="button"
-        shape="chip"
-        floor="sunken"
-        onClick={onPersonalize}
-        className="pointer-events-auto"
-      >
-        <Icon name="landscape" className="text-content-muted" />
-        <span className="lf-caption">{t('tutor.page.changeStage')}</span>
+      <HudPlate as="button" shape="chip" onClick={onPersonalize} className="pointer-events-auto">
+        <Icon name="landscape" />
+        <span className="lf-action">{t('tutor.page.changeStage')}</span>
       </HudPlate>
 
       <HudPlate
         as="button"
         shape="chip"
-        floor="sunken"
         aria-expanded={replaysOpen}
         onClick={() => setReplaysOpen((open) => !open)}
-        className="pointer-events-auto"
+        className="pointer-events-auto lf-settle-2"
       >
-        <Icon name="history" className="text-content-muted" />
-        <span className="lf-caption">
+        <Icon name="history" />
+        <span className="lf-action">
           {replaysOpen ? t('tutor.introduce.hideReplays') : t('tutor.introduce.replays')}
         </span>
       </HudPlate>
@@ -563,8 +580,11 @@ export function OfferChips({
             to keep up with, and a line that types itself out on a fallback
             screen is a delay rather than a character speaking.
           */}
-          <HudPlate shape="plate" floor="surface" className="pointer-events-none">
-            <span className="lf-body" aria-live="polite" aria-atomic="true">
+          <HudPlate shape="plate" className="pointer-events-none">
+            {/* `lf-speech`, exactly as the caption it stands in for: this is
+                still the tutor talking, and a device with no WebGL does not
+                make its voice smaller. */}
+            <span className="lf-speech" aria-live="polite" aria-atomic="true">
               {greeting}
             </span>
           </HudPlate>
@@ -591,18 +611,18 @@ export function OfferChips({
          * would take away conversations a child already has.
          */
         <div className="pointer-events-auto absolute inset-x-0 bottom-0 z-40 max-h-[70vh] overflow-y-auto overscroll-contain p-4">
-          <HudPlate shape="sheet" floor="surface" className="mx-auto">
+          <HudPlate shape="sheet" className="mx-auto">
             {/*
               The plate's own floor centres its content, which is right for a
               one-line chip and wrong for a list. The list sets its own
               alignment rather than the primitive growing a variant for it.
             */}
             <div className="flex w-full flex-col gap-3 text-left">
-              <span className="lf-title text-content">{t('tutor.history.title')}</span>
+              <span className="lf-headline text-content">{t('tutor.history.title')}</span>
               <SessionHistory token={token} />
               <div className="flex justify-center">
-                <HudPlate as="button" shape="chip" floor="sunken" onClick={() => setReplaysOpen(false)}>
-                  <span className="lf-caption">{t('tutor.introduce.hideReplays')}</span>
+                <HudPlate as="button" shape="chip" onClick={() => setReplaysOpen(false)}>
+                  <span className="lf-action">{t('tutor.introduce.hideReplays')}</span>
                 </HudPlate>
               </div>
             </div>
