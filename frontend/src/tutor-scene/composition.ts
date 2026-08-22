@@ -30,7 +30,7 @@
  * without a browser.
  */
 
-import type { ShotContext, Vec3 } from './shots';
+import { KEEP_NOTHING, type KeepInFrame, type ShotContext, type Vec3 } from './shots';
 
 /** A rectangle in CSS pixels, in the stage layer's own coordinate space. */
 export interface HudRect {
@@ -293,11 +293,16 @@ export function composeFor(
    * OUT from behind the panel, so a composition that decapitates them has failed
    * at its own job rather than traded one problem for another.
    *
-   * Zero means "nothing to protect" and is the right answer for the fitting
-   * shots, which answer an inset by RETREATING (`padding`) instead of by
-   * shifting, and so cannot crop what they have already made room for.
+   * IT NOW DECIDES `padding` AS WELL, so it is the single statement of what a
+   * shot is framing rather than a guard bolted onto one half of the answer. A
+   * radius that still fits the free rectangle asks for no retreat at all; one
+   * that does not asks for exactly the retreat that makes it fit. Zero means
+   * "nothing to protect", so the shot keeps its distance and its aim shifts as
+   * far as the free rectangle asks — which is right for a subject that is off
+   * the frame edge on purpose and wrong for anything else, so a fitting shot
+   * should state a real radius.
    */
-  keepInFrame = 0,
+  keepInFrame: Readonly<KeepInFrame> = KEEP_NOTHING,
 ): Composition {
   if (!Number.isFinite(viewport.width) || !Number.isFinite(viewport.height)) return { ...NO_COMPOSITION };
   if (viewport.width <= 0 || viewport.height <= 0) return { ...NO_COMPOSITION };
@@ -313,8 +318,41 @@ export function composeFor(
 
   const freeWidth = Math.max(viewport.width - insets.left - insets.right, viewport.width * MIN_FREE_FRACTION);
   const freeHeight = Math.max(viewport.height - insets.top - insets.bottom, viewport.height * MIN_FREE_FRACTION);
+
+  /*
+   * HOW FAR BACK A FITTING SHOT HAS TO GIVE, and it is measured against what
+   * the shot is actually holding rather than against the viewport.
+   *
+   * It used to be `max(viewport / free)` — the HUD ate 25% of the height, so
+   * every fitting shot retreated 33%, whatever it was framing. That is right
+   * only if the shot's subject exactly fills the frame, and it is the rule that
+   * quietly cancelled the island framing: `arriving` at 375x812 computed a
+   * perfectly good pose and was then pushed back by the microphone dock until
+   * the island covered a third of the pixels it had just been sized for. A
+   * retreat costs coverage as the SQUARE of the multiplier, so a 1.33 pad is a
+   * 44% loss, spent to make room for a subject that already had it.
+   *
+   * `keepInFrame` is the radius the shot says it must not lose, so the honest
+   * question is whether THAT diameter still fits the free rectangle. When it
+   * does — which is the ordinary case now the island shots deliberately bleed
+   * past the frame edges — the answer is 1, the shot keeps its framing, and the
+   * aim shift below does all the work. When it does not, the retreat is exactly
+   * as big as the overflow and no bigger.
+   *
+   * A shot that declares nothing to protect gets no retreat, which is the same
+   * answer the old rule gave for a shot with no HUD and the right one for a
+   * shot whose subject is off the edge on purpose.
+   */
+  const keepRight = Number.isFinite(keepInFrame.right) && keepInFrame.right > 0 ? keepInFrame.right : 0;
+  const keepUp = Number.isFinite(keepInFrame.up) && keepInFrame.up > 0 ? keepInFrame.up : 0;
+  const freeWorldWidth = worldWidth * (freeWidth / viewport.width);
+  const freeWorldHeight = worldHeight * (freeHeight / viewport.height);
   const padding = clamp(
-    Math.max(viewport.width / freeWidth, viewport.height / freeHeight),
+    Math.max(
+      1,
+      freeWorldWidth > 0 ? (2 * keepRight) / freeWorldWidth : 1,
+      freeWorldHeight > 0 ? (2 * keepUp) / freeWorldHeight : 1,
+    ),
     1,
     MAX_PADDING,
   );
@@ -325,9 +363,8 @@ export function composeFor(
    * frame — a very tight close-up — and the honest answer there is to shift by
    * nothing at all rather than to pick which side to crop.
    */
-  const keep = Number.isFinite(keepInFrame) && keepInFrame > 0 ? keepInFrame : 0;
-  const roomUp = Math.max((worldHeight / 2) * (1 - FRAME_MARGIN) - keep, 0);
-  const roomRight = Math.max((worldWidth / 2) * (1 - FRAME_MARGIN) - keep, 0);
+  const roomUp = Math.max((worldHeight / 2) * (1 - FRAME_MARGIN) - keepUp, 0);
+  const roomRight = Math.max((worldWidth / 2) * (1 - FRAME_MARGIN) - keepRight, 0);
 
   return {
     right: clamp(-offset.x * metresPerPx, -roomRight, roomRight),

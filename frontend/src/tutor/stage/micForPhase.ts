@@ -165,7 +165,12 @@ export function micForPhase(input: StageMicInput): StageMicPlan {
        * than one of Core's three policy answers: "no voice provider is
        * configured" is a confident wrong sentence when what actually happened is
        * that the Tutor API could not be reached at all.
+       *
+       * It is now the SAME key the introduction's refusal plate uses. There
+       * were two — `page.unavailable` and `page.tutorUnavailable` — two
+       * sentences about one situation, in three locales, with nothing keeping
+       * them in step. One situation, one sentence.
        */
-      return blocked('tutor.page.unavailable');
+      return blocked('tutor.page.tutorUnavailable');
   }
 }

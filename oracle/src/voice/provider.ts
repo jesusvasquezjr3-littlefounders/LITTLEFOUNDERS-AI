@@ -51,6 +51,18 @@ export interface VoiceProvider {
   readonly available: boolean;
   transcribe(request: TranscriptionRequest): Promise<TranscriptionResult>;
   synthesize(request: SynthesisRequest): Promise<SynthesisResult>;
+  /**
+   * An opaque string that changes whenever the audio this provider would
+   * return for this character and locale would change — provider, model and
+   * enrolled voice, at least. `null` when this character cannot be spoken here
+   * at all (unenrolled, no key), which is a silence, never a substitute.
+   *
+   * It exists so the speech cache can be keyed on the real inputs to the paid
+   * call WITHOUT anything above this interface knowing what those inputs are.
+   * A re-enrolled voice or a switched model therefore invalidates the cache by
+   * construction, instead of serving a child last month's actor.
+   */
+  voiceFingerprint(character: SynthesisRequest['character'], locale: Locale): string | null;
 }
 
 export class VoiceUnavailableError extends Error {

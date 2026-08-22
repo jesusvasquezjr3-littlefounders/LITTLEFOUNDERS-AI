@@ -78,7 +78,7 @@ describe('micForPhase', () => {
       present: true,
       state: 'unavailable',
       blockedReason: null,
-      blockedKey: 'tutor.page.unavailable',
+      blockedKey: 'tutor.page.tutorUnavailable',
     });
   });
 

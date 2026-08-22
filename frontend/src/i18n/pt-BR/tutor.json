@@ -1,8 +1,8 @@
 {
   "scene": {
-    "webglUnavailable": "Este dispositivo não consegue exibir gráficos 3D. Seu navegador não suporta WebGL ou ele está desativado nas configurações.",
-    "contextLost": "A visualização 3D foi interrompida. Ela volta sozinha em um instante.",
-    "loadFailed": "Não foi possível carregar a cena 3D. Verifique sua conexão e tente de novo."
+    "webglUnavailable": "Este dispositivo não mostra 3D. Seu navegador não suporta WebGL.",
+    "contextLost": "A vista 3D volta em um instante.",
+    "loadFailed": "A cena 3D não carregou. Confira sua conexão."
   },
   "stage": {
     "leave": "Sair do tutor",
@@ -42,48 +42,45 @@
     "no": "não"
   },
   "page": {
-    "loading": "Preparando sua ilha…",
-    "unavailable": "Não conseguimos abrir o tutor agora. Tente daqui a pouco.",
-    "tutorUnavailable": "Seu tutor está descansando. Todo o resto continua funcionando; volte em breve.",
-    "changeStage": "Mudar minha ilha",
+    "loading": "Sua ilha está chegando…",
+    "tutorUnavailable": "Seu tutor está descansando. Volte em breve.",
+    "changeStage": "Minha ilha",
     "seeYouSoon": "Até logo!",
-    "sessionSaved": "Esta conversa ficou salva. Você pode ouvir de novo quando quiser.",
-    "startAnother": "Começar outra sessão"
+    "sessionSaved": "Salva. Você pode ouvir quando quiser.",
+    "startAnother": "Começar outra"
   },
   "introduce": {
-    "greeting": "Oi, {{name}}! Eu sou {{tutor}}.",
-    "greetingNoName": "Oi! Eu sou {{tutor}}.",
-    "ask": "O que você quer ver comigo hoje?",
-    "startTalking": "Comece a conversar com seu tutor",
-    "stillLearningYou": "A gente ainda está se conhecendo, então podemos começar por onde você quiser.",
-    "cannotSeeProgress": "Agora não consigo ver como estão seus cursos, então vou te conhecendo enquanto a gente conversa.",
+    "greeting": "Oi, {{name}}. Eu sou {{tutor}}.",
+    "greetingNoName": "Oi. Eu sou {{tutor}}.",
+    "startTalking": "Comece a conversar",
+    "stillLearningYou": "A gente ainda está se conhecendo.",
+    "cannotSeeProgress": "Agora não vejo como estão seus cursos.",
     "offersLabel": "Coisas que podemos fazer",
     "moreLabel": "Outras coisas que você pode fazer",
     "replays": "Conversas anteriores",
-    "hideReplays": "Esconder as conversas anteriores"
+    "hideReplays": "Esconder"
   },
   "personalize": {
-    "whoTitle": "Com quem você quer conversar?",
+    "whoTitle": "Seu tutor",
     "bodyTalker": "Fala com o corpo todo",
-    "whereTitle": "Onde você quer ficar?",
+    "whereTitle": "Sua ilha",
     "nicknameLabel": "Apelido",
-    "nicknameHint": "Escolha o nome que quiser: um apelido, não seu nome de verdade. É o único nome que seu tutor fica sabendo.",
+    "nicknameHint": "Escolha um apelido, não seu nome de verdade. É o único nome que seu tutor fica sabendo.",
     "nicknameInvalid": "Use letras, números, espaços, apóstrofos ou hífens.",
-    "adaptTitle": "Como você gosta que expliquem?",
-    "adaptHelp": "Ligue o que te ajudar. Dá para mudar quando quiser, e seu tutor vai seguir.",
+    "adaptTitle": "Como eu explico",
     "saving": "Salvando…",
     "aboutYou": "Sobre você",
     "chooseTutor": "Conversar com {{name}}",
     "tutorBadge": "Seu tutor",
-    "companionBadge": "Aqui com você",
+    "companionBadge": "Com você",
     "inviteCompanion": "Pedir para {{name}} ficar",
     "dismissCompanion": "Pedir para {{name}} ir embora",
     "goToIsland": "Ir para {{name}}",
     "lightTitle": "A luz",
-    "lightClear": "Escolha de novo para usar meu tema",
     "done": "Pronto, vamos",
-    "more": "Mais sobre mim",
-    "hideMore": "Pronto"
+    "more": "Mais",
+    "hideMore": "Pronto",
+    "lightNext": "Mover o sol para {{name}}"
   },
   "character": {
     "dina": {
@@ -108,7 +105,7 @@
     "diorama-b": "Oásis"
   },
   "backdrop": {
-    "auto": "Igual ao meu tema",
+    "auto": "Meu tema",
     "dawn": "Amanhecer",
     "day": "Dia",
     "dusk": "Entardecer",
@@ -122,11 +119,11 @@
     "repeat_before_advancing": "Revise o anterior antes de seguir"
   },
   "adaptationOffer": {
-    "slower_pacing": "Quer que eu vá um pouquinho mais devagar?",
+    "slower_pacing": "Vou mais devagar?",
     "more_examples": "Outro exemplo ajudaria?",
-    "less_text": "Deixo mais curtinho daqui pra frente?",
-    "more_visual": "Prefere ver isso como desenho?",
-    "repeat_before_advancing": "Revisamos mais uma vez antes de seguir?"
+    "less_text": "Deixo mais curtinho?",
+    "more_visual": "Mostro com um desenho?",
+    "repeat_before_advancing": "Revisamos mais uma vez?"
   },
   "intent": {
     "course_topic": "Um tema dos meus cursos",
@@ -136,42 +133,42 @@
     "diagnostic": "Nos conhecer"
   },
   "faq": {
-    "what_is_saving": "O que significa mesmo economizar?",
+    "what_is_saving": "O que é economizar?",
     "why_prices_change": "Por que os preços mudam?",
     "what_is_a_budget": "O que é um orçamento?",
     "how_does_a_loan_work": "Como funciona pegar emprestado?"
   },
   "offers": {
-    "voiceNeedsConsent": "Para falar em voz alta, uma pessoa adulta da sua família precisa ligar o microfone para você. Você pode escrever enquanto isso: tudo funciona igual.",
-    "voiceUnavailable": "Falar em voz alta não está disponível agora. Você pode escrever para o seu tutor.",
+    "voiceNeedsConsent": "Uma pessoa adulta precisa ligar o microfone para você. Enquanto isso dá para escrever.",
+    "voiceUnavailable": "Falar em voz alta não está disponível. Dá para escrever.",
     "courseTopic": {
-      "title": "Trabalhar um tema do curso",
-      "body": "Retome algo de um curso que você já está fazendo."
+      "title": "Meus cursos",
+      "body": "Algo de um curso que você já faz."
     },
     "weakSkill": {
-      "title": "Praticar juntos",
-      "body": "Vamos dar uma olhada juntos em {{topic}}? Você decide."
+      "title": "Praticar",
+      "body": "Vamos ver {{topic}} juntos?"
     },
     "diagnostic": {
-      "title": "Começar por algum lugar",
-      "body": "Seu tutor vai fazer duas perguntinhas rápidas para achar um bom ponto de partida."
+      "title": "Por onde começar",
+      "body": "Duas perguntinhas rápidas para achar um bom começo."
     },
     "faq": {
-      "body": "Uma resposta curta e, se quiser, a gente se aprofunda."
+      "body": "Uma resposta curta e depois o quanto quiser."
     },
     "open": {
       "title": "Me pergunte o que quiser",
-      "body": "Conte para o seu tutor o que está na sua cabeça e ele acha por onde começar."
+      "body": "Conte para o seu tutor o que está na sua cabeça."
     },
-    "voicePolicyBlocked": "Falar em voz alta ainda não está disponível: estamos terminando a papelada que protege a voz das crianças. Todo o resto funciona igual, escrevendo."
+    "voicePolicyBlocked": "Falar em voz alta ainda não está pronto, enquanto terminamos a papelada de segurança. Dá para escrever."
   },
   "conversation": {
-    "listening": "Seu tutor está pensando em algo para você tentar.",
-    "ended": "Aqui termina esta sessão.",
+    "listening": "Preparando algo para você tentar.",
+    "ended": "Esta sessão terminou.",
     "typePlaceholder": "Escreva uma mensagem…",
     "send": "Enviar",
     "holdToTalk": "Segure para falar",
-    "micDenied": "O microfone está bloqueado nas configurações do seu navegador. Você ainda pode escrever.",
+    "micDenied": "O microfone está bloqueado no seu navegador. Dá para escrever.",
     "finish": "Terminar",
     "wrappingUp": "Encerrando",
     "minutesLeft": "Faltam {{count}} min",
@@ -181,10 +178,10 @@
     "plateLabel": "Seu tutor e sua atividade",
     "bubbleLabel": "O que seu tutor está dizendo",
     "transcriptLabel": "Tudo o que foi dito até agora",
-    "resizePanel": "Deixe este painel maior ou menor",
-    "peekOpen": "Abra seu painel",
-    "peekOpenActivity": "Abra a atividade",
-    "peekActivityWaiting": "Uma atividade está esperando por você"
+    "resizePanel": "Mudar o tamanho deste painel",
+    "peekOpen": "Conversa",
+    "peekOpenActivity": "Atividade pronta",
+    "peekActivityWaiting": "Já tem uma atividade."
   },
   "mic": {
     "listening": "Estou ouvindo…",
@@ -193,19 +190,19 @@
     "unavailableLabel": "Microfone indisponível",
     "releaseToSend": "Solte para enviar",
     "keyboardHint": "Ou segure Espaço",
-    "stageArriving": "Sua ilha ainda está chegando. O microfone acorda junto com ela.",
-    "beforeConversation": "Você vai poder falar em voz alta assim que a conversa começar.",
-    "afterConversation": "Esta conversa terminou. Comece outra e dá para falar de novo."
+    "stageArriving": "Acorda junto com sua ilha.",
+    "beforeConversation": "Pronto quando a conversa começar.",
+    "afterConversation": "Esta conversa terminou."
   },
   "segment": {
     "activity": "Tente isto",
     "practiceOnly": "só prática",
     "check": "Conferir",
     "checking": "Conferindo…",
-    "unsupported": "Esta atividade precisa de uma versão mais nova do app.",
-    "gradeFailed": "Não conseguimos conferir agora. Tente de novo.",
+    "unsupported": "Esta atividade precisa de um app mais novo.",
+    "gradeFailed": "Não conseguimos conferir. Tente de novo.",
     "xpEarned": "+{{count}} XP",
-    "noXpExplained": "Muito bem! Esta é de prática, então não soma XP.",
+    "noXpExplained": "É de prática, então não soma XP.",
     "tier": {
       "perfect": "Exatamente!",
       "great": "Muito bem!",
@@ -216,7 +213,7 @@
   "history": {
     "title": "Suas conversas anteriores",
     "loading": "Carregando…",
-    "empty": "Ainda não há conversas. A primeira vai aparecer aqui.",
+    "empty": "Ainda não há conversas.",
     "loadFailed": "Não conseguimos carregar essa conversa.",
     "replay": "Reproduzir de novo",
     "hide": "Esconder",
@@ -225,11 +222,11 @@
     "xp": "{{count}} XP"
   },
   "startError": {
-    "INTERNAL": "Algo deu errado ao começar a sessão. Tente de novo.",
-    "SESSION_LIMIT": "Você já usou o tempo de tutor de hoje. Te esperamos amanhã!",
-    "MODEL_UNAVAILABLE": "Seu tutor está descansando. Tente daqui a pouco.",
-    "MODERATION_UNAVAILABLE": "Agora não conseguimos começar uma sessão com segurança. Tente daqui a pouco.",
-    "ORACLE_UNAVAILABLE": "Seu tutor está descansando. Tente daqui a pouco."
+    "INTERNAL": "Algo deu errado. Tente de novo.",
+    "SESSION_LIMIT": "Você já usou o tempo de hoje. Volte amanhã!",
+    "MODEL_UNAVAILABLE": "Seu tutor está descansando. Volte em breve.",
+    "MODERATION_UNAVAILABLE": "Agora não dá para começar com segurança. Volte em breve.",
+    "ORACLE_UNAVAILABLE": "Seu tutor está descansando. Volte em breve."
   },
   "consent": {
     "title": "Microfone para o tutor com IA",

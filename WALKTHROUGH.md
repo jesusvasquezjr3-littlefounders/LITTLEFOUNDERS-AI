@@ -2,6 +2,93 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## The island now fills a phone (2026-08-22) — the fit strategy, not the arithmetic
+
+Scene coverage counted from the canvas alpha channel on `/dev/tutor-lab`, seven
+phases, both mandatory breakpoints. At 375x812: **arriving 6.5% → 50.7%, closing
+10.7% → 50.1%, unavailable 3.3% → 51.6%, adapting 6.9% → 34.6%, personalizing
+12.6% → 30.2%**; introducing (72.3% → 73.9%) and conversing (69.1% → 69.1%)
+unchanged, as /ORACLE.md §9.3 requires. At 1280x800: **arriving 13.6% → 53.1%,
+unavailable 6.6% → 53.3%, adapting 22.3% → 47.4%, personalizing 32.6% → 48.8%,
+closing 25.9% → 44.7%**.
+
+Four decisions behind those numbers, each written up where it belongs
+(`/TUTOR_3D.md` §9.1, `/DESIGN.md` → Screen Recipes → Tutor):
+
+- **A shot fits POINTS, not a bounding box.** `establishing` used to contain the
+  island's box on both axes, and on a portrait phone the width term alone put
+  the camera 29 m out. It now stands as close as the points it promises allow —
+  cast heads, crowns, chests, the top of the island, a stated ring — and lets
+  the rest run off the edges. `ISLAND_HOLD` is below 1 in portrait and above 1
+  in landscape, which is the whole composition decision in one constant.
+- **Elevation is what fills a portrait frame.** The island is a floating disc on
+  an alpha canvas, so a level camera sees it edge on with transparency above and
+  below. Projected height grows as `sin(elevation)`; width does not move. Every
+  island elevation is now per aspect.
+- **`approach` is WIDER than `establishing` on a phone.** Its one phase is the
+  personalization audition — the whole catalog on the island, a name plate on
+  each crown, and a plate off frame is hidden AND inert. Holding four of them
+  inside a 17-degree horizontal field costs about 19 m. Measured: at a 0.62 hold
+  the fourth plate is culled, at 0.68 all four are on screen. The old fixed
+  0.62-of-the-island-fit relationship would have framed a candidate out.
+- **The HUD retreat is measured against what the shot holds.** `viewport / free`
+  pushed every fitting shot back a third for a microphone dock, and coverage
+  falls as the square of that — it was cancelling the framing on its own (41.6%
+  → 15.7% at 1280x800). `keepInFrame` is now stated per screen axis, because one
+  scalar reported a 3.4 m lateral ring as 3.4 m of vertical protection and the
+  solver concluded the subject already overflowed.
+
+Also: the idle orbit is a bounded SWING now (`ORBIT_SWING`, 0.10 rad). Unbounded
+accumulation was survivable only while the shot stood far enough back that
+nothing could leave the frame; a shot that bleeds cannot promise to hold a
+subject it is going to orbit away from.
+
+The floor is a test now — `shots.test.ts` → "how much of the frame the island
+actually covers", one ray per sample against the island's ground disc, a
+measured floor per shot at both breakpoints. It is a deliberate lower bound on
+the alpha count and it does not replace looking.
+
+Still open: `personalizing` at 375 px is 30.2%, the one phase under half a
+phone, and it is bound by the audition rather than by the framing. Closing that
+means changing where the candidates stand, not where the camera does.
+
+## Tutor simplification pass (2026-08-22) — fewer words, fewer surfaces, and a caption that had been hiding
+
+The owner asked for "menos palabras, más claridad; menos elementos, más
+simplicidad, menos fricción", with a guardrail sent separately: "no olvides que
+Tutor IA es una experiencia 3D inmersiva". So the pass cut CHROME and never the
+scene, and every claim is a count taken on `/dev/tutor-lab` rather than an
+opinion. At 375x812, across the seven phases: **193 → 144 visible words** and
+**48 → 45 HUD surfaces**. The per-phase table is in `/DESIGN.md` → Screen
+Recipes → Tutor.
+
+Three decisions worth keeping:
+
+- **The greeting no longer says the learner's name out loud** (owner). The
+  spoken line is generic and pre-generated; the nickname is composed into the
+  CAPTION by the client. Two halves in two places — `/ORACLE.md` §9.2 and
+  `tutor/OfferChips.tsx` — and they only work together.
+- **`tutor.introduce.ask` is deleted.** "What would you like to look at together
+  today?" was asked immediately above the four chips that ARE that question. A
+  line of instructional text beside a control that already says the same thing
+  is the definition of the noise this pass was for.
+- **The sun is one marker, not four labels.** Four sky chips were four of the
+  twelve surfaces on the picker at 375 px, hanging in blank sky, and `auto` had
+  no place on the arc at all — it was reached by pressing the lit chip a second
+  time, a gesture that needed a sentence in three locales to be findable and
+  that did not exist at 1280 px, where every sky mark is above the frame.
+
+**And the bug the pass found by looking.** `/DESIGN.md` has said for a while
+that a WorldChip hides and the speech caption MOVES, "because it is the deaf
+learner's whole channel and may never hide". Only half of it was implemented:
+the caption escaped fixed CHROME and nothing escaped the FRAME EDGE, so it fell
+through to the ordinary box cull. Measured at 1280x800 in `conversing` and in
+`introducing`, the caption node was `hidden` and `inert` — on desktop the
+tutor's words existed only inside the lesson plate, and that plate rests CLOSED
+on a phone. It clamps back into frame now (`tutor-scene/culling.ts` →
+`clampIntoView`, opted into per node by `AnchorOptions.keepInFrame`, and the
+caption is the only node that asks).
+
 ## Current State (2026-08-21e) — Oracle IS IN PRODUCTION: migration applied, service live, Core reaching it, PR #60 merged
 
 The AI Tutor is deployed. Verified against the live stack, not inferred:

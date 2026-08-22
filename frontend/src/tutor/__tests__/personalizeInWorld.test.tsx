@@ -83,7 +83,7 @@ function renderLayer(overrides: Partial<PersonalizeLayerProps> = {}) {
  * silhouette the owner has turned down twice.
  */
 function openPanel() {
-  fireEvent.click(screen.getByRole('button', { name: 'More about me' }));
+  fireEvent.click(screen.getByRole('button', { name: 'More' }));
 }
 
 /*
@@ -177,7 +177,7 @@ describe('choosing by looking', () => {
     // The role is a line ON the candidate's own plate rather than a plate of
     // its own, so it is still said, and said in one place.
     expect(worldButton('Talk with Dr. Rho')).toHaveTextContent('Your tutor');
-    expect(worldButton('Talk with Liruf')).toHaveTextContent('Here with you');
+    expect(worldButton('Talk with Liruf')).toHaveTextContent('With you');
   });
 
   it('asks the projector to keep the candidates off each other, rather than authoring a ladder', () => {
@@ -237,36 +237,43 @@ describe('choosing by looking', () => {
     expect(onSave).toHaveBeenCalledWith({ diorama: 'diorama-b' });
   });
 
-  it('moves the sun along its arc', () => {
-    const { onSave } = renderLayer();
-    fireEvent.click(worldButton(/Night/));
+  it('puts ONE sun in the sky, not a menu of four', () => {
+    /*
+     * Four labelled stops used to hang across the sky, which on a 375x812 phone
+     * was four of the twelve surfaces on this phase, in empty sky, above an
+     * island painting 12% of the viewport. One marker says which light is on and
+     * moves the sun on when it is pressed.
+     */
+    renderLayer({ preferences: { ...PREFERENCES, backdrop: 'day' } });
+    const sun = worldButtons(/^Move the sun to /);
+    expect(sun).toHaveLength(1);
+    // It reads as the light that is ON; where it is going is on its own name,
+    // so a screen reader hears the outcome before the press.
+    expect(sun[0]).toHaveTextContent('Day');
+    expect(sun[0]).toHaveAccessibleName('Move the sun to Dusk');
+  });
+
+  it('moves the sun on one stop at a time', () => {
+    const { onSave } = renderLayer({ preferences: { ...PREFERENCES, backdrop: 'dusk' } });
+    fireEvent.click(worldButton(/^Move the sun to /));
     expect(onSave).toHaveBeenCalledWith({ backdrop: 'night' });
   });
 
-  it('gives back the way to follow the theme, because the arc has no stop for it', () => {
-    // There are four times of day, so the sun has four places and "match my
-    // theme" is not one of them. Choosing the lit stop again is the route back.
-    const { onSave } = renderLayer({ preferences: { ...PREFERENCES, backdrop: 'dusk' } });
-    const dusk = worldButton(/Dusk/);
-    expect(dusk).toHaveAttribute('aria-pressed', 'true');
-    fireEvent.click(dusk);
-    expect(onSave).toHaveBeenCalledWith({ backdrop: 'auto' });
-  });
-
-  it('keeps the sky chips one word wide and says the rest in the panel', () => {
+  it('carries "follow my theme" round the cycle rather than hiding it in a gesture', () => {
     /*
-     * The sentence used to hang under the LIT chip, which made it 165 px on a
-     * 375 px screen — three chips wide, measured, covering the stops either
-     * side of it while the other three sat 45 px wide and 50 px apart. It is
-     * still said, on the row for the same light in the panel's list, which is a
-     * column and has the width for a second line.
+     * It used to be reachable ONLY by pressing the lit sky chip a second time,
+     * explained by a sentence on the row for that same light. That gesture was
+     * invisible, needed copy in three locales to be findable at all, and did not
+     * exist at 1280 px, where every sky mark is above the frame. It is a stop on
+     * the arc now, and a row in the guaranteed list like every other light.
      */
-    renderLayer({ preferences: { ...PREFERENCES, backdrop: 'dusk' } });
-    expect(worldButton(/Dusk/)).not.toHaveTextContent('Choose again to match my theme');
+    const { onSave } = renderLayer({ preferences: { ...PREFERENCES, backdrop: 'night' } });
+    fireEvent.click(worldButton(/^Move the sun to /));
+    expect(onSave).toHaveBeenCalledWith({ backdrop: 'auto' });
 
     openPanel();
     const plate = screen.getByRole('complementary', { name: 'About you' });
-    expect(within(plate).getByText('Choose again to match my theme')).toBeInTheDocument();
+    expect(within(plate).getByRole('button', { name: /My theme/ })).toBeInTheDocument();
   });
 });
 
@@ -293,7 +300,7 @@ describe('the one plate', () => {
     // Two controls, in this order: the way in, then the way on.
     const resting = within(plate).getAllByRole('button');
     expect(resting).toHaveLength(2);
-    expect(resting[0]).toHaveTextContent('More about me');
+    expect(resting[0]).toHaveTextContent('More');
     expect(resting[1]).toHaveTextContent("I'm ready");
   });
 
@@ -305,12 +312,12 @@ describe('the one plate', () => {
 
   it('reveals the rest on demand, and says so to a screen reader', () => {
     const { container } = renderLayer();
-    const toggle = screen.getByRole('button', { name: 'More about me' });
+    const toggle = screen.getByRole('button', { name: 'More' });
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
 
     openPanel();
 
-    expect(screen.getByRole('button', { name: 'Done with this' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: 'Done' })).toHaveAttribute(
       'aria-expanded',
       'true',
     );

@@ -9,11 +9,12 @@ import { buildContextMessage, TUTOR_SYSTEM_PROMPT } from './prompt.js';
 import { parseTurn, type TutorTurn } from './turnSchema.js';
 import {
   closingResponse,
-  greetingFallback,
+  greetingResponse,
   moderationBlockedResponse,
   modelDownResponse,
   safetyResponse,
 } from './scripted.js';
+import type { SpeechResult } from '../voice/speech.js';
 import type { SessionContext } from '../core/client.js';
 
 /*
@@ -67,13 +68,16 @@ export interface TurnOutcome {
 }
 
 export interface Synthesizer {
-  (turn: TutorTurn, session: SessionContext): Promise<string | null>;
+  (turn: TutorTurn, session: SessionContext): Promise<SpeechResult>;
 }
 
 export class TutorOrchestrator {
   private readonly history: { speaker: 'learner' | 'tutor'; text: string }[] = [];
   private seq = 0;
-  private costUsd = 0;
+  private modelUsd = 0;
+  private voiceUsd = 0;
+  private paidSyntheses = 0;
+  private freeSyntheses = 0;
   private segmentCount = 0;
   private adaptations: TutorContext['adaptations'];
   private stopped = false;
@@ -91,8 +95,29 @@ export class TutorOrchestrator {
     return this.seq;
   }
 
+  /**
+   * What this session cost us, model AND voice (/ORACLE.md §15).
+   *
+   * Voice used to be missing from this number entirely, which meant the ledger
+   * confidently reported the cheap half of the most expensive surface in the
+   * product. It is one number because that is what Core stores; the split is
+   * available beside it for a log line and for anyone asking where it went.
+   */
   get totalCostUsd(): number {
-    return this.costUsd;
+    return this.modelUsd + this.voiceUsd;
+  }
+
+  get modelCostUsd(): number {
+    return this.modelUsd;
+  }
+
+  get voiceCostUsd(): number {
+    return this.voiceUsd;
+  }
+
+  /** Lines actually paid for, and lines served free from the manifest or cache. */
+  get speechCounts(): { paid: number; free: number } {
+    return { paid: this.paidSyntheses, free: this.freeSyntheses };
   }
 
   get servedSegments(): number {
@@ -117,12 +142,25 @@ export class TutorOrchestrator {
     if (!this.adaptations.includes(adaptation)) this.adaptations.push(adaptation);
   }
 
-  /** The session's opening line. */
+  /**
+   * The session's opening line — WRITTEN, not generated.
+   *
+   * This used to ask the model to invent an opening, which cost a reasoning
+   * round trip and a text-to-speech charge in every session that has ever run
+   * or ever will. Both are now zero: the line is one of twelve a person wrote
+   * in character (`scripted.ts`), and its audio is pre-generated
+   * (`voice/pregenerated.ts`), so the session opens as fast as the socket.
+   *
+   * It is a scripted outcome in the full sense — no model call, no moderation
+   * pass (a scripted line is already reviewed text, §2.4), and recorded in the
+   * transcript as `source: 'scripted'` like every other written line.
+   */
   async greet(nowMs: number): Promise<TurnOutcome> {
-    return this.produce(
-      'Greet the learner and open the session. One or two sentences, then a question.',
-      nowMs,
-      { isGreeting: true },
+    return this.scriptedOutcome(
+      greetingResponse(this.session.character, this.session.locale),
+      this.currentBudget(nowMs),
+      null,
+      null,
     );
   }
 
@@ -219,7 +257,7 @@ export class TutorOrchestrator {
   private async produce(
     userContent: string,
     nowMs: number,
-    opts: { nonce?: string; isGreeting?: boolean; isSystemPrompted?: boolean } = {},
+    opts: { nonce?: string; isSystemPrompted?: boolean } = {},
   ): Promise<TurnOutcome> {
     const budget = this.currentBudget(nowMs);
 
@@ -260,7 +298,7 @@ export class TutorOrchestrator {
         }
 
         const result = await complete(messages, { temperature: attempt === 0 ? 0.6 : 0.2 });
-        this.costUsd += estimateCostUsd(result.promptTokens, result.completionTokens);
+        this.modelUsd += estimateCostUsd(result.promptTokens, result.completionTokens);
 
         const parsed = parseTurn(result.text);
         if (parsed.ok) {
@@ -275,7 +313,7 @@ export class TutorOrchestrator {
     }
 
     if (turn === null) {
-      turn = opts.isGreeting ? greetingFallback(this.session.locale) : modelDownResponse(this.session.locale);
+      turn = modelDownResponse(this.session.locale);
       source = 'scripted';
     }
 
@@ -339,14 +377,31 @@ export class TutorOrchestrator {
     };
   }
 
-  /** Synthesis is best-effort and never throws upward. */
+  /**
+   * Synthesis is best-effort, never throws upward, and is BILLED INTO THE
+   * LEDGER when it was actually paid for (/ORACLE.md §15).
+   *
+   * The free paths — a pre-generated scripted line, a cache hit — add nothing,
+   * which is what makes the ledger able to show the cache working: two
+   * sessions with the same turn count and very different voice costs is the
+   * signal, and it was invisible while `speak()` recorded nothing at all.
+   */
   private async speak(turn: TutorTurn): Promise<string | null> {
+    let result: SpeechResult;
     try {
-      return await this.synthesize(turn, this.session);
+      result = await this.synthesize(turn, this.session);
     } catch (error) {
       console.warn('[oracle] synthesis failed:', error instanceof Error ? error.message : error);
       return null;
     }
+
+    if (result.billedChars > 0) {
+      this.voiceUsd += estimateVoiceCostUsd(result.billedChars);
+      this.paidSyntheses += 1;
+    } else if (result.url !== null) {
+      this.freeSyntheses += 1;
+    }
+    return result.url;
   }
 
   private async scriptedOutcome(
@@ -379,6 +434,27 @@ export class TutorOrchestrator {
 const USD_PER_1K_PROMPT = 0.00027;
 const USD_PER_1K_COMPLETION = 0.0011;
 
+/*
+ * And the same for VOICE, which was missing from this ledger entirely.
+ *
+ * §15 says cost is recorded per session "so the economics are measurable
+ * before they are a surprise", and the most expensive surface in the product
+ * contributed nothing to the number. A session could synthesise forty turns
+ * and report the price of its tokens.
+ *
+ * Speech is billed PER CHARACTER OF TEXT — the provider even returns
+ * `usage.processedCharactersCount` — so the rate lives here in the same shape
+ * and the same file as the model rates, for the same reason: one place to
+ * correct when a price changes, and no pretence of being an invoice. Only text
+ * we actually sent is counted; a line served from the manifest or the cache
+ * adds zero, which is the whole point of measuring it.
+ */
+const USD_PER_1K_TTS_CHARS = 0.005;
+
 export function estimateCostUsd(promptTokens: number, completionTokens: number): number {
   return (promptTokens / 1000) * USD_PER_1K_PROMPT + (completionTokens / 1000) * USD_PER_1K_COMPLETION;
+}
+
+export function estimateVoiceCostUsd(characters: number): number {
+  return (characters / 1000) * USD_PER_1K_TTS_CHARS;
 }

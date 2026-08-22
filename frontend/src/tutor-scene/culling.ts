@@ -53,6 +53,34 @@ export function isAnchorNodeVisible(
 }
 
 /**
+ * The nearest centre that keeps this node WHOLLY inside `view`.
+ *
+ * The answer for the ONE node that may never disappear (`ScreenAnchor` →
+ * `AnchorOptions.keepInFrame`): the speech caption. Everything else anchored to
+ * the world is right to be culled when it leaves the frame, because it mirrors a
+ * mesh the learner can still see. The caption mirrors nothing — it is the deaf
+ * learner's entire channel — and a closeup that fills the screen with a face
+ * routinely puts the speaker's crown above the top edge, which is how the tutor
+ * came to say nothing at all on a 1280x800 desktop for a whole conversation.
+ *
+ * A node LARGER than the view on an axis is centred on that axis rather than
+ * pinned to an edge, matching what the visibility test already does for the same
+ * case: when "all of it" is impossible, the middle is the most readable half.
+ */
+export function clampIntoView(
+  x: number,
+  y: number,
+  halfWidth: number,
+  halfHeight: number,
+  view: ViewportBox,
+): { x: number; y: number } {
+  return {
+    x: clampOnAxis(x, halfWidth, view.left, view.width),
+    y: clampOnAxis(y, halfHeight, view.top, view.height),
+  };
+}
+
+/**
  * How far UP a node must move to stop sitting on any node already placed.
  *
  * WHY THIS EXISTS. Anchored labels have a readability floor and the world does
@@ -137,3 +165,11 @@ function fitsOnAxis(centre: number, half: number, start: number, extent: number)
   if (half * 2 >= extent) return centre >= start && centre <= end;
   return centre - half >= start && centre + half <= end;
 }
+
+/** `fitsOnAxis`, solved for the centre instead of asked as a question. */
+function clampOnAxis(centre: number, half: number, start: number, extent: number): number {
+  const end = start + extent;
+  if (half * 2 >= extent) return start + extent / 2;
+  return Math.min(Math.max(centre, start + half), end - half);
+}
+

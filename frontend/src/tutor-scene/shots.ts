@@ -143,25 +143,44 @@ export interface ShotContext {
   fov: number;
 }
 
+/**
+ * Metres about the target that must stay inside the frame, whatever the HUD
+ * asks for — stated PER SCREEN AXIS.
+ *
+ * The composition solver moves the aim so the subject lands in the part of the
+ * screen a panel is not covering, and on a phone the free rectangle can ask for
+ * a shift big enough to push the top of a character's head off the top of the
+ * viewport. Only the shot knows what it is actually framing, so the shot states
+ * what it may not lose and `composition.composeFor` clamps against it — and
+ * sizes its retreat from it.
+ *
+ * IT WAS ONE NUMBER AND THAT WAS WRONG FOR EVERY WIDE SHOT. A single radius is
+ * compared against both the half-width and the half-height of the frame, so an
+ * island shot holding a 3.4 m ring reported 3.4 m of protection on the vertical
+ * axis too — against a half-frame of 2.7 m. The solver read that as "this
+ * subject already overflows", refused to shift at all, and asked for the full
+ * 1.9x retreat on every phase with a microphone dock on it. Measured at
+ * 1280x800: an `establishing` pose that covered 41.6% of the frame was pushed
+ * back until it covered 15.7%. The two axes are genuinely different sizes on a
+ * flat wide subject, and one scalar cannot say so.
+ */
+export interface KeepInFrame {
+  /** Half-width along the camera's own right axis. */
+  right: number;
+  /** Half-height along the camera's own up axis. */
+  up: number;
+}
+
+/** A shot with nothing to protect — its subject is off the frame edge on purpose. */
+export const KEEP_NOTHING: Readonly<KeepInFrame> = Object.freeze({ right: 0, up: 0 });
+
 export interface CameraPose {
   position: Vec3;
   target: Vec3;
   fov: number;
   near: number;
   far: number;
-  /**
-   * Metres about the target that must stay inside the frame, whatever the HUD
-   * asks for.
-   *
-   * The composition solver moves the aim so the subject lands in the part of the
-   * screen a panel is not covering, and on a phone the free rectangle can ask
-   * for a shift big enough to push the top of a character's head off the top of
-   * the viewport. Only the shot knows what it is actually framing, so the shot
-   * states the radius it may not lose and `composition.composeFor` clamps
-   * against it. Zero is correct for the shots that answer an inset by retreating
-   * rather than by shifting — they have already made the room.
-   */
-  keepInFrame: number;
+  keepInFrame: KeepInFrame;
 }
 
 /**
@@ -217,6 +236,162 @@ export const CLOSEUP_WIDE_DISTANCE = 1.35;
  * were all built to show.
  */
 export const CLOSEUP_FRAME_FRACTION = 0.9;
+
+/**
+ * How far above the horizon an island shot stands, in radians.
+ *
+ * THIS IS THE NUMBER THAT DECIDES WHETHER A PHONE IS FULL, and it is not
+ * obvious until it is measured. The island is a FLOATING disc in an alpha
+ * canvas: everything that is not island is transparent. A camera near the
+ * cast's own eye level therefore sees the disc EDGE ON — a thin bright band
+ * across the middle of the screen with void above it and void below it. At
+ * 375x812 that is literally what shipped: `arriving` painted 6.5% of the
+ * viewport, an island about 220x110 px floating dead centre in an 812 px page,
+ * and the phase read as a product photo of a diorama rather than as a place.
+ *
+ * Tilt the camera down and the same disc opens out toward a circle: its
+ * projected height grows as `sin(elevation)` while its width does not change at
+ * all. A portrait frame is 2.2x taller than it is wide, so the height is the
+ * dimension there is spare of, and elevation is the only lever that converts
+ * island into pixels on that axis.
+ *
+ * PORTRAIT LOOKS DOWN HARDER THAN LANDSCAPE, for that reason and no other. It
+ * is not a taste: at 1280x800 the frame is wider than the island and the extra
+ * tilt buys nothing but a view of the top of everybody's head, which is the one
+ * thing a cast of faces should not be showing.
+ */
+export const ISLAND_ELEVATION = {
+  landscape: (28 * Math.PI) / 180,
+  portrait: (40 * Math.PI) / 180,
+} as const;
+
+/**
+ * The share of the island's own radius an island shot promises to keep inside
+ * the frame's WIDTH.
+ *
+ * BELOW 1 THE ISLAND RUNS OFF THE LEFT AND RIGHT EDGES, and that is the point.
+ * A subject that bleeds past the frame reads as a place you are standing in; a
+ * subject with air on all four sides reads as an object on a table. The
+ * previous fit put the island's whole bounding box inside the frame on BOTH
+ * axes, so on a portrait phone — where half the horizontal field of view is
+ * 8.53 degrees — the width requirement pushed the camera to about 29 m and the
+ * island then used 27% of the frame's height. Four fifths of the phone was
+ * empty, and the metric that was supposed to defend the composition (distance
+ * from the top of the viewport to the first HUD pixel) reported 88% clear.
+ *
+ * Landscape stays above 1 deliberately. `/DESIGN.md` -> Screen Recipes ->
+ * Tutor spends the freed width at 1280 px on "a wider establishing shot and
+ * real island around the floating plate", so there the whole rim is in the
+ * picture with a margin — which is also what keeps the `island.rim.*` pads
+ * pickable at the breakpoint where they fit.
+ */
+export const ISLAND_HOLD = { landscape: 1.06, portrait: 0.44 } as const;
+
+/**
+ * The same promise for `approach`, which is a WIDER hold than `establishing`
+ * asks for because of what stands on the island during its one phase.
+ *
+ * `approach` is `personalizing`, and `personalizing` is an AUDITION: the whole
+ * catalog stands on the island at once, on rings out to 0.70 of its radius
+ * (`standingSpots.ts`), each with a name plate riding their crown. A plate
+ * whose anchor leaves the frame is hidden AND inert, so a candidate framed out
+ * is a candidate who cannot be chosen by looking at them — which is the exact
+ * bug the audition was built to fix.
+ *
+ * SO THE PORTRAIT FIGURE IS MEASURED, NOT REASONED. Driven at 375x812 on
+ * `/dev/tutor-lab` with the whole catalog on stage: at 0.62 the fourth plate
+ * (Liruf's) comes back `hidden`, at 0.68 all four are on screen and the island
+ * paints 30% of the viewport, and every step above that only spends coverage.
+ * The widest candidate the solver seats measures about 0.69 of the radius from
+ * the island's centre, which is why the number lands where it does.
+ *
+ * The landscape figure is set by the `island.rim.*` pads instead — they are the
+ * one world control this phase mounts that lives out at 0.88 of the radius, and
+ * at 1280 px there is width enough to keep them and their chip inside the
+ * frame.
+ *
+ * SO ON A PHONE THIS SHOT SITS FURTHER OUT THAN `establishing` DOES, and the
+ * inversion is deliberate rather than an oversight. It used to be a fixed 0.62
+ * of the island fit, which made it strictly nearer at every aspect; keeping
+ * that relationship while `establishing` came in close enough to fill a phone
+ * would have framed one candidate out of four. The two shots answer different
+ * questions — `establishing` frames the PLACE, `approach` frames the PEOPLE
+ * standing on it — and in portrait, four people spread across a 6.5 m island
+ * need more horizontal room than the island's middle does. In landscape, where
+ * there is width to spare, `approach` is nearer than `establishing` exactly as
+ * it always was.
+ */
+export const APPROACH_HOLD = { landscape: 0.94, portrait: 0.68 } as const;
+
+/**
+ * And its own elevation, steeper in portrait than `establishing`'s.
+ *
+ * Steeper BECAUSE it is further out. Elevation is the only thing that converts
+ * a floating island into pixels on a portrait phone's long axis, and this shot
+ * has to stand about 20 m back to keep four candidates and their name plates
+ * inside a 17-degree horizontal field. From there a character is roughly 105 px
+ * tall whatever the angle, so the tilt costs almost nothing in face legibility
+ * and buys the difference between an island band across the middle of the
+ * screen and an island the learner is standing over.
+ *
+ * Landscape is SHALLOWER than `establishing`'s, and for the mirror reason: at
+ * 1280 px this shot is the nearer of the two, the candidates are large, and
+ * looking down on them is exactly what the phase must not do — you choose a
+ * tutor by their face.
+ */
+export const APPROACH_ELEVATION = {
+  landscape: (24 * Math.PI) / 180,
+  portrait: (44 * Math.PI) / 180,
+} as const;
+
+/**
+ * How far `approach`'s aim leans off the island's centre toward the lead.
+ *
+ * It was 0.6, which is a portrait lean: it parks the frame on one character and
+ * charges the shot for the distance needed to keep the others from falling off
+ * the far edge. A quarter of the way still reads as "toward them" and costs the
+ * ring almost nothing.
+ */
+export const APPROACH_LEAN = 0.25;
+
+/**
+ * How far inside the frame edge a held point must land, as a fraction of the
+ * half-frame.
+ *
+ * A point exactly on the edge is cropped as far as a learner is concerned, and
+ * it is also one composition shift away from actually being cropped. This is
+ * tighter than the 12% the shot audit asks of a HEAD, so a shot that satisfies
+ * its own hold satisfies the audit with room left over.
+ */
+export const HOLD_MARGIN = 0.86;
+
+/**
+ * Where an island shot aims, as a fraction of the island's own height above the
+ * middle of its bounding box.
+ *
+ * Aiming at the box centre aims at rock: the box runs from the underside of the
+ * floating island to the top of its palms, and the ground the cast stands on is
+ * most of the way up it. Lifting the aim puts the standing surface near the
+ * centre line, which is where the near rim starts bleeding off the bottom of a
+ * portrait frame instead of leaving a band of void under it.
+ */
+export const ISLAND_AIM_LIFT = 0.18;
+
+/**
+ * How far above the pair's own eye line a `two-shot` stands, in radians.
+ *
+ * Smaller than an island shot's, because this one is framing FACES and a
+ * question one character puts to another. It is not zero — which is what
+ * shipped — because a level camera at 14 m puts the island edge on behind the
+ * pair and fills the rest of a portrait phone with nothing: `adapting` measured
+ * 7.0% of the viewport at 375x812, two toys about 45 px tall with a dead band
+ * between them. A few degrees of tilt puts the island BEHIND them instead of
+ * under them, which is what a two-shot's background is for.
+ */
+export const TWO_SHOT_ELEVATION = {
+  landscape: (12 * Math.PI) / 180,
+  portrait: (30 * Math.PI) / 180,
+} as const;
 
 /**
  * The distance multipliers that pay for the aspect ratio, landscape then
@@ -384,9 +559,93 @@ export function fitDistance(
   return Math.max(forHeight, forWidth);
 }
 
-/** Camera position on a bearing at a distance and elevation around a target. */
-function orbitPosition(target: Vec3, bearing: number, distance: number, height: number): Vec3 {
-  return vec(target.x + Math.sin(bearing) * distance, height, target.z + Math.cos(bearing) * distance);
+/**
+ * Camera position at a TRUE distance and an elevation angle around a target.
+ *
+ * The old signature took a HORIZONTAL distance and an absolute height, which is
+ * the same picture described in coordinates that no framing rule is written in.
+ * Every requirement a shot has — "this point must land inside the frame", "the
+ * frame must be taller than that character's head" — is about the distance
+ * along the view ray, so stating the pose that way removes a conversion that
+ * was silently making every island shot 7% further out than its own arithmetic
+ * asked for.
+ */
+function orbitPosition(target: Vec3, bearing: number, distance: number, elevation: number): Vec3 {
+  const flat = distance * Math.cos(elevation);
+  return vec(
+    target.x + Math.sin(bearing) * flat,
+    target.y + distance * Math.sin(elevation),
+    target.z + Math.cos(bearing) * flat,
+  );
+}
+
+/**
+ * The camera basis at a bearing and elevation. Right is horizontal by
+ * construction, which is what `applyComposition` also assumes.
+ */
+function cameraBasis(bearing: number, elevation: number) {
+  const cosE = Math.cos(elevation);
+  const sinE = Math.sin(elevation);
+  const sinB = Math.sin(bearing);
+  const cosB = Math.cos(bearing);
+  return {
+    forward: vec(-sinB * cosE, -sinE, -cosB * cosE),
+    right: vec(cosB, 0, -sinB),
+    up: vec(-sinB * sinE, cosE, -cosB * sinE),
+  };
+}
+
+function dot(a: Vec3, b: Vec3): number {
+  return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+/**
+ * The nearest a camera may stand to `aim` and still have `point` inside the
+ * frame, with `margin` of the half-frame left over on the binding axis.
+ *
+ * WHY THIS IS THE WHOLE FIT NOW. `fitDistance` answers "how far back must I be
+ * to contain this BOX", and a box is the wrong subject for a round island: it
+ * charges the camera for the far rim, the near rim and both sides at once, on
+ * both axes, and on a portrait phone the width term alone is three and a half
+ * times the height term. What a shot actually promises is a SET OF POINTS —
+ * these heads, that rim, the top of those palms — and everything else is free
+ * to run off the edge. Asking each promised point for the distance IT needs,
+ * and taking the largest, is the same question asked about the right subject.
+ *
+ * Exact rather than iterative: the point's depth is `distance + along`, so both
+ * requirements are linear in `distance` and solve in closed form. An iterative
+ * fit would converge to the same answer and would be one more thing that can
+ * fail to converge on a degenerate frame.
+ */
+function holdDistance(
+  point: Vec3,
+  aim: Vec3,
+  bearing: number,
+  elevation: number,
+  verticalFovRadians: number,
+  aspect: number,
+  margin: number,
+  /**
+   * Extra metres of the subject's own body to clear SIDEWAYS of `point`.
+   *
+   * Lateral only. A character's silhouette spreads either side of the anchor on
+   * their spine, which is the axis a bleeding frame crops; it does not spread
+   * above their crown, and charging the vertical for it cost 4 m of stand-off
+   * on a portrait phone to reserve room above nothing at all.
+   */
+  pad = 0,
+): number {
+  const basis = cameraBasis(bearing, elevation);
+  const offset = vec(point.x - aim.x, point.y - aim.y, point.z - aim.z);
+  const along = dot(offset, basis.forward);
+  const lateral = Math.abs(dot(offset, basis.right)) + pad;
+  const raise = Math.abs(dot(offset, basis.up));
+
+  const tanV = Math.tan(verticalFovRadians / 2);
+  const tanH = Math.tan(horizontalFov(verticalFovRadians, aspect) / 2);
+  const guard = Math.max(margin, 0.05);
+
+  return Math.max(lateral / (guard * tanH) - along, raise / (guard * tanV) - along);
 }
 
 /** Shortest-arc average of two yaws. Naive averaging flips across ±π. */
@@ -395,57 +654,190 @@ function blendYaw(a: number, b: number, t: number): number {
   return a + delta * t;
 }
 
-/** The distance an island fit needs, shared by `establishing` and `approach`. */
-function sceneFitDistance(ctx: ShotContext): number {
-  const vFov = safeFovRadians(ctx.fov);
-  const aspect = safeAspect(ctx.aspect);
-  const span = Math.max(ctx.scene.size.x, ctx.scene.size.z, 1e-3);
-  // Depth matters: the far edge of the island needs clearing too, so half the
-  // island's own footprint is added to each requirement.
-  const halfDepth = span / 2;
-  const distance = fitDistance(span / 2, Math.max(ctx.scene.size.y, 1e-3) / 2, halfDepth, vFov, aspect);
-  // Portrait viewports lose horizontal room, so they need a little more distance
-  // for the same subject.
-  return distance * (aspect < 1 ? 1.1 : 1.03);
+/** The island's radius and the height of the ground the cast stands on. */
+function islandShape(scene: ShotScene): { radius: number; height: number; top: number } {
+  const span = Math.max(scene.size.x, scene.size.z, 1e-3);
+  const height = Math.max(scene.size.y, 1e-3);
+  return { radius: span / 2, height, top: scene.centre.y + height / 2 };
 }
 
+/** Two points on the island's ground ring, at the extreme left and right of frame. */
+function ringPoints(scene: ShotScene, radius: number, y: number, bearing: number): HoldPoint[] {
+  const rightX = Math.cos(bearing);
+  const rightZ = -Math.sin(bearing);
+  return [
+    { point: vec(scene.centre.x + rightX * radius, y, scene.centre.z + rightZ * radius), pad: 0 },
+    { point: vec(scene.centre.x - rightX * radius, y, scene.centre.z - rightZ * radius), pad: 0 },
+  ];
+}
+
+/** A promised point plus the body around it that must clear the frame edge too. */
+interface HoldPoint {
+  point: Vec3;
+  pad: number;
+}
+
+/**
+ * Head, crown and chest of whoever is on stage — the points chrome hangs on —
+ * each carrying the character's own silhouette as a pad.
+ *
+ * THE PAD IS NOT DECORATION. A character's anchors sit on their spine, so a
+ * frame that holds the anchor holds a LINE and crops whatever is either side of
+ * it. Photographed at 375x812 with the new island framing that was Liruf's
+ * snout, sliced off by the right edge while his head point sat comfortably
+ * inside — a crop that reads as a mistake rather than as a composition, which
+ * is the opposite of what letting the ISLAND bleed is for.
+ *
+ * 0.22 of height, and it is a compromise stated rather than hidden. The measured
+ * footprints (`measurements.ts`) are the character's WIDEST horizontal extent,
+ * which for three of the four is their length and not their width: Liruf is
+ * 1.03x his height nose to tail and Dina 1.48x, while Rho and Zara are about
+ * 0.48x across. Reserving half of Dina's 2.83 m broadside on both sides of
+ * every anchor would cost about a third of the island's on-screen area in every
+ * phase, to protect a tail that is usually pointing away from the camera.
+ * 0.22 x height is a shoulder and a cheek — 0.37 m for Liruf — and on top of
+ * `HOLD_MARGIN`'s own reserve it is what stops a frame edge landing on a face.
+ */
+const CAST_SHOULDER = 0.22;
+
+function castPoints(ctx: ShotContext): HoldPoint[] {
+  const points: HoldPoint[] = [];
+  for (const subject of [ctx.lead, ctx.companion]) {
+    if (!subject) continue;
+    const pad = subject.height * CAST_SHOULDER;
+    points.push({ point: vec(subject.x, subject.y + subject.height * 0.25, subject.z), pad });
+    points.push({ point: vec(subject.x, subject.y, subject.z), pad });
+    points.push({ point: vec(subject.x, subject.y - subject.height * 0.28, subject.z), pad });
+  }
+  return points;
+}
+
+/**
+ * The one framing rule both island shots are built from.
+ *
+ * Stand as CLOSE as the promised points allow and let everything else bleed.
+ * That single sentence is the whole change: the fit it replaces asked how far
+ * back the camera must be to contain the island's bounding box, which is a
+ * question about an object, and answered it on the axis a portrait phone has
+ * least of.
+ */
+function islandFraming(
+  ctx: ShotContext,
+  hold: { landscape: number; portrait: number },
+  elevation: { landscape: number; portrait: number },
+  /** How far the aim leans off the island's centre toward the lead, 0..1. */
+  lean: number,
+): { distance: number; elevation: number; target: Vec3; keep: KeepInFrame } {
+  const vFov = safeFovRadians(ctx.fov);
+  const aspect = safeAspect(ctx.aspect);
+  const portrait = aspect < 1;
+  const angle = portrait ? elevation.portrait : elevation.landscape;
+  const shape = islandShape(ctx.scene);
+  const held = shape.radius * (portrait ? hold.portrait : hold.landscape);
+
+  const centred = vec(
+    ctx.scene.centre.x,
+    ctx.scene.centre.y + shape.height * ISLAND_AIM_LIFT,
+    ctx.scene.centre.z,
+  );
+  // Resolved BEFORE the hold distances, because every one of them is measured
+  // from the aim: leaning afterwards would move the frame off the points it was
+  // just sized to hold.
+  const target =
+    ctx.lead && lean > 0 ? mix(centred, vec(ctx.lead.x, ctx.lead.y, ctx.lead.z), lean) : centred;
+
+  const promised: HoldPoint[] = [
+    ...ringPoints(ctx.scene, held, shape.top, STAGE_BEARING),
+    // The top of the island's own bounding box — an arch, a palm, a mast. It is
+    // the silhouette that says "island" from any distance, and cropping it is
+    // how a place starts reading as a floor.
+    { point: vec(ctx.scene.centre.x, shape.top, ctx.scene.centre.z), pad: 0 },
+    ...castPoints(ctx),
+  ];
+
+  const basis = cameraBasis(STAGE_BEARING, angle);
+  let distance = 0;
+  const keep: KeepInFrame = { right: 0, up: 0 };
+  for (const { point, pad } of promised) {
+    distance = Math.max(
+      distance,
+      holdDistance(point, target, STAGE_BEARING, angle, vFov, aspect, HOLD_MARGIN, pad),
+    );
+    const offset = vec(point.x - target.x, point.y - target.y, point.z - target.z);
+    keep.right = Math.max(keep.right, Math.abs(dot(offset, basis.right)) + pad);
+    keep.up = Math.max(keep.up, Math.abs(dot(offset, basis.up)));
+  }
+
+  /*
+   * The floor, and it is the same one the shot audit states as a rule: the
+   * frame at the camera's distance must be taller than a cartoon head, which is
+   * about 47% of body height. Nothing in the arithmetic above can produce a
+   * pose inside somebody's skull, but a degenerate scene measurement (a single
+   * frame during load, an island that has not streamed in) can produce a very
+   * small one, and a camera that dives into the geometry for one frame is a
+   * flash of the inside of a rock.
+   */
+  const tallest = Math.max(ctx.lead?.height ?? 0, ctx.companion?.height ?? 0, 0);
+  const floor = tallest * 0.6 + shape.radius * 0.25;
+  return { distance: Math.max(distance, floor, 0.5), elevation: angle, target, keep };
+}
+
+/**
+ * The island, framed as a PLACE: close enough that it runs off the sides of a
+ * phone, tilted down far enough that its surface reads rather than its edge.
+ */
 function establishing(ctx: ShotContext): CameraPose {
-  const distance = sceneFitDistance(ctx);
-  const target = { ...ctx.scene.centre };
+  const framing = islandFraming(ctx, ISLAND_HOLD, ISLAND_ELEVATION, 0);
+  const { distance, target } = framing;
   return {
-    // About 22 degrees above the horizon: high enough to show the island's
-    // surface and read it as a place, low enough that the characters stay the
-    // subject rather than being looked down on like pieces on a board.
-    position: orbitPosition(target, STAGE_BEARING, distance, target.y + distance * 0.38),
+    position: orbitPosition(target, STAGE_BEARING, distance, framing.elevation),
     target,
     fov: ctx.fov,
     near: Math.max(distance / 200, 0.01),
-    far: distance * 20,
-    // A fitting shot answers a HUD inset by retreating, so by the time the aim
-    // moves it has already bought the room the shift spends. Nothing to protect.
-    keepInFrame: 0,
+    far: distance * 20 + Math.max(ctx.scene.size.x, ctx.scene.size.z) * 20,
+    /*
+     * WHAT THE HUD MAY NOT SHIFT OUT OF SIGHT, and it is no longer zero.
+     *
+     * Zero meant "this shot answers an inset by retreating", and retreating was
+     * the right answer while the shot's subject was the island's whole bounding
+     * box. It is not the right answer for a shot that is deliberately bleeding:
+     * there is nothing left to fit, so a retreat only undoes the framing. The
+     * shot now states the radius it is actually holding and `composition.ts`
+     * pays for the HUD by SHIFTING the aim first and retreating only if that
+     * radius genuinely will not fit the room left over.
+     */
+    keepInFrame: framing.keep,
   };
 }
 
 /**
- * A step toward the cast, on the same bearing the stage opened on.
+ * The cast, on the same bearing the stage opened on.
  *
- * Holding the bearing is the whole point: `approach` is the move that makes
- * arrival feel like walking up to a place rather than cutting to a different
- * one, and a bearing change during it would make it a different place.
+ * Holding the bearing is the whole point: this is the move that makes arrival
+ * feel like walking up to a place rather than cutting to a different one, and a
+ * bearing change during it would make it a different place.
+ *
+ * WHAT IT FRAMES IS THE PEOPLE, not the island — see `APPROACH_HOLD` for why
+ * that makes it the wider of the two shots on a phone and the nearer of the two
+ * on a desktop.
  */
 function approach(ctx: ShotContext): CameraPose {
-  const full = sceneFitDistance(ctx);
-  const distance = full * 0.62;
-  const leadPoint = ctx.lead ? vec(ctx.lead.x, ctx.lead.y, ctx.lead.z) : null;
-  const target = leadPoint ? mix(ctx.scene.centre, leadPoint, 0.6) : { ...ctx.scene.centre };
+  /*
+   * The aim leans off the island's centre toward whoever is speaking, which is
+   * what makes this a step toward them rather than a wider version of the same
+   * picture. It leans less than it used to (0.6), because the phase's subject
+   * is the whole ring of candidates and an aim parked on one of them pushes the
+   * others toward the edge they must not cross.
+   */
+  const framing = islandFraming(ctx, APPROACH_HOLD, APPROACH_ELEVATION, APPROACH_LEAN);
+  const { distance, target } = framing;
   return {
-    position: orbitPosition(target, STAGE_BEARING, distance, target.y + distance * 0.22),
+    position: orbitPosition(target, STAGE_BEARING, distance, framing.elevation),
     target,
     fov: ctx.fov,
     near: Math.max(distance / 200, 0.01),
-    far: full * 20,
-    keepInFrame: 0,
+    far: distance * 20 + Math.max(ctx.scene.size.x, ctx.scene.size.z) * 20,
+    keepInFrame: framing.keep,
   };
 }
 
@@ -510,7 +902,12 @@ function closeup(ctx: ShotContext): CameraPose {
      * openings entirely rather than merely cropping a shoulder. The crown is the
      * larger of the two once headroom is counted, so it is the one that binds.
      */
-    keepInFrame: lead.height * 0.25 + headroom + frameHeight * CLOSEUP_CAPTION_BAND,
+    keepInFrame: {
+      // Sideways, the character's own silhouette: a close-up may truck to clear
+      // a panel, never so far that it trucks past its subject.
+      right: lead.height * 0.25,
+      up: lead.height * 0.25 + headroom + frameHeight * CLOSEUP_CAPTION_BAND,
+    },
   };
 }
 
@@ -547,7 +944,10 @@ function closeupWide(ctx: ShotContext): CameraPose {
     // The aim has already dropped 0.13 toward the chest, so the crown is that
     // much further above it than on the straight close-up — and the caption
     // still rides above the crown, on this shot as on every other.
-    keepInFrame: lead.height * (CLOSEUP_KEEP_IN_FRAME + 0.13) + frameHeight * CLOSEUP_CAPTION_BAND,
+    keepInFrame: {
+      right: lead.height * 0.25,
+      up: lead.height * (CLOSEUP_KEEP_IN_FRAME + 0.13) + frameHeight * CLOSEUP_CAPTION_BAND,
+    },
   };
 }
 
@@ -583,17 +983,33 @@ function twoShot(ctx: ShotContext): CameraPose {
   // than behind either of them. The solver already turns each a quarter of the
   // way toward the other, so their average facing is the frame they compose.
   const yaw = blendYaw(lead.facing, companion.facing, 0.5);
+  /*
+   * AND STAND ABOVE THEIR EYE LINE, which the shipped version did not.
+   *
+   * The distance here is set by the pair's separation against a horizontal
+   * field of view that is 17 degrees on a portrait phone, so it is long — about
+   * 14 m — and there is nothing to be done about that: two characters 1.8 m
+   * apart cannot be in one frame from closer. What CAN be done is decide what
+   * is behind them at that distance. A level camera on a floating island looks
+   * straight out over the rim, so the answer was VOID: `adapting` painted 7.0%
+   * of a 375x812 phone, two figures about 45 px tall with transparent canvas
+   * above, below and between them. Tilting down puts the island's own surface
+   * behind the pair instead, and the same shot of the same two characters
+   * becomes a shot of two characters somewhere.
+   */
+  const elevation = aspect < 1 ? TWO_SHOT_ELEVATION.portrait : TWO_SHOT_ELEVATION.landscape;
   return {
-    position: vec(
-      mid.x + Math.sin(yaw) * distance,
-      mid.y + tallest * 0.06,
-      mid.z + Math.cos(yaw) * distance,
-    ),
+    position: orbitPosition(mid, yaw, distance, elevation),
     target: mid,
     fov: ctx.fov,
     near: 0.01,
     far: Math.max(distance * 20, 100),
-    keepInFrame: 0,
+    /*
+     * The pair, which the tilt must not lift off the top of the frame when a
+     * bottom sheet claims most of a phone. Half their separation plus a body's
+     * worth of head-and-chest is exactly what this shot exists to hold.
+     */
+    keepInFrame: { right: halfWidth, up: halfHeight },
   };
 }
 

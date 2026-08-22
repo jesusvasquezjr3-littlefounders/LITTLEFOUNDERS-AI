@@ -183,13 +183,23 @@ export function OfferChips({
   /*
    * What the tutor says while the openings arrive.
    *
+   * TWO SENTENCES AT MOST, AND USUALLY ONE. It used to be three: hello, a note
+   * about how little the tutor knows yet, and "What would you like to look at
+   * together today?" — asked immediately above four chips that ARE that
+   * question, answerable by tapping one. A line of instructional text beside a
+   * control that already says the same thing is the noise this pass exists to
+   * remove, so `introduce.ask` is gone and the chips are the ask.
+   *
+   * THE NAME IS IN THE TEXT AND NOT IN THE VOICE (owner, 2026-08-22). This
+   * caption is written here, not by the model, so the learner's nickname
+   * appears in the words on screen while the tutor's spoken greeting stays
+   * generic. The two halves land together: Oracle stops putting the nickname in
+   * the greeting it synthesizes, and this keeps showing it.
+   *
    * COLD START IS THE NORMAL CASE, not an edge case: the courses sit in review,
-   * so most learners have almost no evidence attached to them. The tutor says so
-   * plainly, in its own voice, and offers a short diagnostic instead of
-   * inventing a profile from nothing. That sentence used to be a `warning-soft`
-   * banner above a card grid, which is a system telling a child about its own
-   * data problem; said by the character it is simply somebody admitting they
-   * have not met you yet.
+   * so most learners have almost no evidence attached to them. The tutor still
+   * says so, in its own voice, but in six words rather than nineteen — a child
+   * does not need the mechanism explained, only the fact admitted.
    */
   const greeting = useMemo(() => {
     const hello = nickname
@@ -200,7 +210,7 @@ export function OfferChips({
       : offers.weakSkills.length === 0
         ? t('tutor.introduce.stillLearningYou')
         : null;
-    return [hello, note, t('tutor.introduce.ask')].filter(Boolean).join(' ');
+    return [hello, note].filter(Boolean).join(' ');
   }, [nickname, tutorName, offers.intelDegraded, offers.weakSkills.length, t]);
 
   const openings = useMemo<Opening[]>(() => {

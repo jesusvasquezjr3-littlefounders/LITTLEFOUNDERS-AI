@@ -24,7 +24,7 @@
 > was wrong, or that had recorded a fallback as a decision. Both directions
 > happen. Every correction says what it used to say.
 >
-> **Last updated:** 2026-08-21 · Language: English (project rule).
+> **Last updated:** 2026-08-22 · Language: English (project rule).
 
 ---
 
@@ -74,7 +74,8 @@ The flow, in the order the learner experiences it:
    like. Persisted; the second visit skips straight to step 2.
 2. **Begin** — one button. Nothing before it requires reading.
 3. **Introduce and offer** (§9.2) — the camera closes in, the tutor greets the
-   learner by their nickname and offers a small, closed set of ways to start: a
+   learner (the nickname is in the CAPTION, not in the audio — §15.1) and
+   offers a small, closed set of ways to start: a
    topic from a course they are taking; a skill Data Intel says is weak; a
    frequent question; or "something else", which opens a conversation rather
    than a free-text form.
@@ -576,7 +577,26 @@ nothing before it requires reading"; a five-card reading exercise placed
 immediately after that button contradicts it. A chip carries one short line and
 is pickable both as a mesh and as its guaranteed DOM twin.
 
-The tutor greets by nickname and offers a closed set:
+**The greeting is WRITTEN, and it does not say the name** (corrected
+2026-08-22; this used to read "the tutor greets by nickname"). It is one of
+twelve human-written per-character, per-locale lines whose audio is
+pre-generated once, which is what makes the opening free and instant — see
+§15.1. The learner's nickname is composed into the CAPTION by the client, so
+the greeting is still personal on screen while the audio stays shareable
+between every learner who hears it. A name baked into the clip would mean one
+paid synthesis per child per session, forever, which is exactly what §15.1
+removed.
+
+**And that caption is ONE sentence, not three** (2026-08-22, the simplification
+pass). It used to be hello, plus a note about how little the tutor knows yet,
+plus "What would you like to look at together today?" — asked immediately above
+four chips that ARE that question and are answered by tapping one. A line of
+instructional text beside a control that already says the same thing is noise,
+so `tutor.introduce.ask` is deleted and the chips are the ask. The cold-start
+admission below survives, in six words instead of nineteen: what a child needs
+is the fact that the tutor has not met them yet, not an account of why.
+
+The tutor then offers a closed set:
 
 1. **A topic from my courses** — drawn from what the learner is actually enrolled
    in, never a free-text box.
@@ -707,7 +727,7 @@ instead of inside a profile page.
 | Speaking tutor | `rho`, `zara`, `liruf`, `dina` | tapping the character on the island | Decision 4; framing differs (§2.2). |
 | Companion | any other character, or none | tapping a character again to send them to the companion slot | The stage already supports one companion. |
 | Diorama | `diorama-a`, `diorama-b` | tapping an island rim pad — the island actually becomes the other island | Catalog-driven; grows without code. |
-| Backdrop | `auto`, `dawn`, `day`, `dusk`, `night` | dragging a sun marker along a fixed overhead arc with five stops | **Renders nothing today — §2.1's reopened gap.** Light AND dark must both work. |
+| Backdrop | `auto`, `dawn`, `day`, `dusk`, `night` | tapping ONE sun marker on the overhead arc, which moves the sun on to the next light | Rewritten 2026-08-22 — see below. Light AND dark must both work. |
 | Nickname | learner-chosen, validated, moderated | a text field on a glass plate | The **only** name-shaped value that reaches the model (§4.1). A text input cannot be in-world; this and the two adaptation toggles are the only exceptions. |
 | Adaptation | §11 | toggles on the same plate | |
 
@@ -722,6 +742,23 @@ and a candidate the placement solver cannot seat publishes no anchor at all — 
 their plate is hidden AND inert rather than pointing at nobody, and the list on
 the plate is where they stay reachable. What it costs and what the scene turns
 off to afford it: `/TUTOR_3D.md` §9.5.
+
+**ONE SUN, NOT FOUR LABELS** (2026-08-22, replacing "dragging a sun marker along
+a fixed overhead arc with five stops"). Four labelled stops were built and
+measured, and they were four of the twelve surfaces on this phase at 375x812 —
+in blank sky, above an island painting 12% of the viewport, and mostly busy
+rising off one another, because every sky mark sits at the same height on one
+circle and an arc seen edge-on is a point. Worse, `auto` had no place on the
+arc, so "follow my theme" was reached by pressing the LIT stop a second time: an
+invisible gesture that needed a sentence in three locales to be findable, and
+that did not exist at all at 1280 px, where every sky mark is above the frame.
+
+So there is one marker. It shows the light that is on, its accessible name says
+which light pressing it will bring, and `auto` is an ordinary stop on the cycle.
+Choosing a specific light directly is what the plate's guaranteed list is for
+(it now lists all five), which is the same division of labour every other world
+control on this route already has: the world carries the GESTURE, the list
+carries the MENU.
 
 **Everything except "start" is revealed on demand.** The one plate is the §10
 exception because a text field cannot be in-world; it is not a licence for a
@@ -805,9 +842,20 @@ Decision 8.
 | Stored | Not stored |
 |---|---|
 | Transcript of both sides (text) | **The learner's audio** — transits for STT, never persisted |
-| The tutor's synthesized audio (Depot) | Any raw provider payload |
+| The tutor's synthesized audio (Depot, `tutor-speech`) | Any raw provider payload |
 | Which segments were served, and their results | |
 | Provenance of live-generated segments (§7.3) | |
+
+**One clarification added 2026-08-22, because retention and reuse turned out to
+be the same question.** The 90-day deletion below covers a child's SESSION
+audio, in Depot's `tutor-speech` bucket. It does not cover the closed set of
+human-written scripted lines — the greetings, the safety responses, the closes
+— which live in `tutor-speech-shared`, are identical for every learner, contain
+nothing about anybody, and are pre-generated once (§15.1). Depot is
+content-addressed, so a shared clip is a single object thousands of transcripts
+point at; deleting it when the first of those sessions expires would protect
+nobody and silence every session afterwards. Core's sweep therefore deletes
+from `tutor-speech` only, and that is asserted by a test rather than trusted.
 
 - **Replay** reconstructs the session: the characters re-act it, the tutor's
   audio plays, the segments are shown alongside what the learner answered.
@@ -943,6 +991,65 @@ images, DeepSeek balance). So:
   measurable before they are a surprise.
 - Rate limiting is an **availability** control and fails open on store error, per
   §1.14. Consent and moderation are authorization controls and fail closed.
+
+### §15.1 Speech — bought once, not once per child (2026-08-22)
+
+Three findings, all of them the same mistake in different places: **the most
+expensive thing in the product was the least measured.**
+
+1. **The greeting was generated.** `TutorOrchestrator.greet()` asked the model
+   to invent an opening line, which cost a reasoning round trip AND a
+   text-to-speech charge in every session, forever, to produce a sentence
+   nobody had reviewed. It is now **twelve written lines** — one per character
+   per locale, in `oracle/src/tutor/scripted.ts`, following GLOSSARY.md's
+   canonical cast table. **No nickname**: the learner's name goes in the
+   caption, because a name in the audio makes the clip unshareable, which is
+   the whole cost being removed. Measured against the previous build: **two
+   model round trips before the first spoken line, now zero.**
+2. **The fixed lines were re-synthesised on every play.** The scripted set is
+   closed — 12 texts × 4 characters × 3 locales = **144 clips** — and it does
+   not grow with usage, so it is bought once by
+   `npm run speech:pregenerate -- --confirm` and recorded as tracked config in
+   `oracle/speech.pregenerated.json` (the precedent is `voices.enrolled.json`).
+   Depot already deduplicated the STORAGE by content hash, so nothing but the
+   invoice was growing. One-off cost: 144 clips, ~16,900 characters.
+3. **A cache in front of the paid call**, keyed on a hash of the exact text
+   plus the provider's voice fingerprint, in the Redis already running for the
+   rate limiter. **A miss of any kind — no manifest, Redis down, Redis slow —
+   is a paid call, never a silence** (§14 unchanged). A write failure is
+   equally ignorable: the next session pays once.
+
+**Voice cost now reaches the ledger.** `costUsd` accumulated model tokens only
+and `speak()` recorded nothing, so a session could synthesise forty turns and
+report the price of its tokens. It is now model + voice, with the per-character
+text-to-speech rate as a named constant beside the model rates in
+`orchestrator.ts` — an estimate, in one place, for the same reason §15 already
+gives. Free paths add zero, which is what makes the saving visible: two
+sessions with the same turn count and very different voice costs is the signal.
+
+**Reuse and deletion are the same question, and the bucket name answers it.**
+A clip reused across sessions is ONE content-addressed Depot object that many
+transcripts point at, so it either outlives §12's 90-day promise or is deleted
+out from under everyone still pointing at it. So `tutor-speech` holds a child's
+session audio and is swept; `tutor-speech-shared` holds the scripted set —
+human-written, identical for every learner, saying nothing about anybody — and
+Core's sweep now refuses to delete from any bucket but the first. That guard
+also closes a hazard that predated the shared bucket: the sweep would delete
+whatever path the database handed it, including a lesson-narration URL written
+into `audio_path` by a bug.
+
+**Widening reuse to model-generated turns is an owner decision, not a tuning
+knob.** `SPEECH_CACHE_SCOPE=all` would share a tutor's generated sentences
+between learners and therefore keep them past the 90-day window — a change to a
+promise this document makes in §12 and that `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md`
+carries. It is a named flag, defaulted to `scripted`, with a sign-off to record
+if it flips, in the same shape and for the same reason as
+`TUTOR_VOICE_FOR_MINORS`.
+
+Every safety property is unchanged: moderation before speech, the sealed
+context, the consent gate, and scripted lines used verbatim and never
+moderated. A cached line is still the same reviewed line — the key is a hash of
+the text, so edited copy orphans its own audio instead of playing the old clip.
 
 ---
 

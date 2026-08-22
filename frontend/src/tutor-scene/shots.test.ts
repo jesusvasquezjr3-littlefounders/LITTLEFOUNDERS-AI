@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
+  APPROACH_HOLD,
   CLOSEUP_FRAME_FRACTION,
   CLOSEUP_HEADROOM,
   CLOSEUP_WIDE_DISTANCE,
   CLOSEUP_WIDE_OFF_AXIS,
   horizontalFov,
+  ISLAND_AIM_LIFT,
+  ISLAND_HOLD,
   poseFor,
   SHOT_AMBIENT,
   SHOT_FITS_SCENE,
@@ -228,10 +231,64 @@ describe('the shot vocabulary', () => {
 });
 
 describe('establishing', () => {
-  it('aims at the island centre from the opening bearing', () => {
+  it('aims OVER the island centre from the opening bearing', () => {
+    /*
+     * Over, not at. The bounding box runs from the underside of a floating
+     * island to the top of its palms, so its centre is inside rock and the
+     * ground the cast stands on is most of the way up it. `ISLAND_AIM_LIFT`
+     * puts that standing surface near the centre line, which is what lets the
+     * near rim bleed off the bottom of a portrait frame instead of leaving a
+     * band of void underneath it.
+     */
     const pose = poseFor('establishing', context());
-    expect(pose.target).toEqual(ISLAND_A.centre);
+    expect(pose.target.x).toBe(ISLAND_A.centre.x);
+    expect(pose.target.z).toBe(ISLAND_A.centre.z);
+    expect(pose.target.y).toBeCloseTo(ISLAND_A.centre.y + ISLAND_A.size.y * ISLAND_AIM_LIFT, 6);
     expect(bearingTo(pose.target, pose.position)).toBeCloseTo(STAGE_BEARING, 6);
+  });
+
+  it('lets the island run off the sides of a phone and holds it whole on a desktop', () => {
+    /*
+     * THE WHOLE POINT OF THE REWRITE, as one assertion.
+     *
+     * The fit this replaced put the island's bounding BOX inside the frame on
+     * both axes. On a portrait phone half the horizontal field of view is 8.53
+     * degrees, so the width requirement pushed the camera to 29 m and the island
+     * then used a quarter of the frame's height: about 220x110 px in an 812 px
+     * page, which is the owner's original "minimizaste el escenario" still true
+     * in the phases nobody had looked at. A subject with air on all four sides
+     * is an object on a table; one that runs past the edge is a place you are
+     * standing in.
+     *
+     * Landscape keeps the whole rim, because /DESIGN.md -> Screen Recipes ->
+     * Tutor spends the freed width at 1280 px on the SCENE, and because the
+     * `island.rim.*` pads are pickable at that breakpoint.
+     */
+    const rim = ISLAND_A.size.x / 2;
+    const rimAt = (pose: CameraPose, aspect: number, sign: number): number => {
+      const at = project(
+        pose,
+        {
+          x: Math.cos(STAGE_BEARING) * rim * sign,
+          y: pose.target.y,
+          z: -Math.sin(STAGE_BEARING) * rim * sign,
+        },
+        aspect,
+      );
+      return Math.abs(at?.x ?? 0);
+    };
+
+    const portraitAspect = 375 / 812;
+    const portrait = poseFor('establishing', context({ aspect: portraitAspect }));
+    expect(ISLAND_HOLD.portrait).toBeLessThan(1);
+    expect(rimAt(portrait, portraitAspect, 1)).toBeGreaterThan(1);
+    expect(rimAt(portrait, portraitAspect, -1)).toBeGreaterThan(1);
+
+    const landscapeAspect = 1280 / 800;
+    const landscape = poseFor('establishing', context({ aspect: landscapeAspect }));
+    expect(ISLAND_HOLD.landscape).toBeGreaterThan(1);
+    expect(rimAt(landscape, landscapeAspect, 1)).toBeLessThan(1);
+    expect(rimAt(landscape, landscapeAspect, -1)).toBeLessThan(1);
   });
 
   it('clears the island it is framing', () => {
@@ -255,6 +312,22 @@ describe('establishing', () => {
     expect(portrait).toBeGreaterThan(landscape);
   });
 
+  it('tilts down harder in portrait, because that is what fills a tall frame', () => {
+    /*
+     * The island is a floating disc on an alpha canvas, so a camera near eye
+     * level sees it EDGE ON and everything around it is transparent. Its
+     * projected height grows as sin(elevation) while its width does not move at
+     * all, and a portrait frame is 2.2x taller than it is wide — so elevation is
+     * the only lever that turns island into pixels on the axis there is spare
+     * of. At 375x812 this is the difference between 7% of the frame and 43%.
+     */
+    const elevation = (pose: CameraPose): number =>
+      Math.asin((pose.position.y - pose.target.y) / distance(pose));
+    expect(elevation(poseFor('establishing', context({ aspect: 375 / 812 })))).toBeGreaterThan(
+      elevation(poseFor('establishing', context({ aspect: 1280 / 800 }))) + 0.1,
+    );
+  });
+
   it('looks down at the island rather than up at it', () => {
     const pose = poseFor('establishing', context());
     expect(pose.position.y).toBeGreaterThan(pose.target.y);
@@ -273,14 +346,48 @@ describe('approach', () => {
     expect(bearingTo(pose.target, pose.position)).toBeCloseTo(STAGE_BEARING, 6);
   });
 
-  it('is closer than the establishing shot and leans toward the lead', () => {
-    const wide = poseFor('establishing', context());
-    const near = poseFor('approach', context());
-    expect(distance(near)).toBeLessThan(distance(wide));
-    // The aim has moved off the island's centre, toward whoever is speaking.
-    expect(Math.hypot(near.target.x - RHO.x, near.target.z - RHO.z)).toBeLessThan(
-      Math.hypot(wide.target.x - RHO.x, wide.target.z - RHO.z),
+  it('leans toward the lead at both breakpoints', () => {
+    for (const aspect of [1280 / 800, 375 / 812]) {
+      const wide = poseFor('establishing', context({ aspect }));
+      const near = poseFor('approach', context({ aspect }));
+      // The aim has moved off the island's centre, toward whoever is speaking.
+      expect(Math.hypot(near.target.x - RHO.x, near.target.z - RHO.z)).toBeLessThan(
+        Math.hypot(wide.target.x - RHO.x, wide.target.z - RHO.z),
+      );
+    }
+  });
+
+  it('is nearer than the establishing shot on a desktop and WIDER on a phone', () => {
+    /*
+     * THE ONE PLACE THIS SHOT STOPPED BEHAVING THE WAY ITS NAME SUGGESTS, and
+     * the inversion is deliberate rather than drift.
+     *
+     * `approach`'s only phase is `personalizing`, and `personalizing` is an
+     * AUDITION: the whole catalog stands on the island at once, out to 0.70 of
+     * its radius, each with a name plate riding their crown. A plate whose
+     * anchor leaves the frame is hidden AND inert, so a candidate framed out is
+     * a candidate who cannot be chosen by looking at them — the exact bug the
+     * audition exists to fix. On a portrait phone half the horizontal field of
+     * view is 8.53 degrees, so holding that ring costs about 19 m, while
+     * `establishing` — which frames the PLACE and is free to let it bleed off
+     * the sides — stands at about 14 m.
+     *
+     * It used to be a fixed 0.62 of the island fit, strictly nearer at every
+     * aspect. Keeping that once `establishing` came in close enough to fill a
+     * phone framed a candidate straight off the screen: driven at 375x812 with
+     * the hold at 0.62, Liruf's plate came back `hidden`.
+     */
+    const landscape = 1280 / 800;
+    expect(distance(poseFor('approach', context({ aspect: landscape })))).toBeLessThan(
+      distance(poseFor('establishing', context({ aspect: landscape }))),
     );
+
+    const portrait = 375 / 812;
+    expect(distance(poseFor('approach', context({ aspect: portrait })))).toBeGreaterThan(
+      distance(poseFor('establishing', context({ aspect: portrait }))),
+    );
+    // And it is wider because it holds MORE, not because it drifted.
+    expect(APPROACH_HOLD.portrait).toBeGreaterThan(ISLAND_HOLD.portrait);
   });
 });
 
@@ -332,7 +439,9 @@ describe('closeup', () => {
 
   it('falls back to the island when the placement solve has not landed', () => {
     const pose = poseFor('closeup', context({ lead: null }));
-    expect(pose.target).toEqual(ISLAND_A.centre);
+    expect(pose.target).toEqual(poseFor('establishing', context({ lead: null })).target);
+    expect(pose.target.x).toBe(ISLAND_A.centre.x);
+    expect(pose.target.z).toBe(ISLAND_A.centre.z);
   });
 });
 
@@ -611,30 +720,43 @@ describe('the subject is actually in the picture, at BOTH breakpoints', () => {
     const cast = ctx.companion ? [lead, ctx.companion] : [lead];
 
     switch (shot) {
-      case 'establishing': {
+      case 'establishing':
+      case 'approach': {
         /*
-         * The island AND the cast standing on it. The rim points are the two
-         * `StageAnchors` publishes at 0.88 of the radius — the ones a chip can
-         * actually be pinned to — rather than the bounding box's corners,
-         * because `fitDistance` fits the BOX and not a sphere around it.
+         * The cast, the island's top, and the RING EACH SHOT SAYS IT HOLDS.
+         *
+         * It used to be the ring at 0.88 of the radius — where `StageAnchors`
+         * publishes `island.rim.left/right` — for `establishing` and nothing at
+         * all for `approach`, which had it exactly backwards on both counts.
+         * The rim pads only ever mount during `personalizing`, which is
+         * `approach`; and `establishing` now frames the island close enough
+         * that on a phone the rim is deliberately off the sides of the screen,
+         * so asserting it is inside would be asserting the bug back.
+         *
+         * So each shot is asked to hold what it declares — `ISLAND_HOLD` and
+         * `APPROACH_HOLD` — which is a promise a reader can check against the
+         * constant rather than a number that happens to pass today. Measured at
+         * 375x812, `approach`'s hold is what keeps all four audition plates on
+         * screen; at 0.62 of the radius the fourth one is culled.
          */
-        const rim = (ctx.scene.size.x / 2) * 0.88;
+        const portrait = ctx.aspect < 1;
+        const hold = shot === 'establishing' ? ISLAND_HOLD : APPROACH_HOLD;
+        const held = (ctx.scene.size.x / 2) * (portrait ? hold.portrait : hold.landscape);
         const rightX = Math.cos(STAGE_BEARING);
         const rightZ = -Math.sin(STAGE_BEARING);
+        const top = ctx.scene.centre.y + ctx.scene.size.y / 2;
         return {
           heads: cast.map(head),
           body: [
             ctx.scene.centre,
-            { x: rightX * rim, y: ctx.scene.centre.y, z: rightZ * rim },
-            { x: -rightX * rim, y: ctx.scene.centre.y, z: -rightZ * rim },
-            { x: 0, y: ctx.scene.centre.y + ctx.scene.size.y / 2, z: 0 },
+            { x: rightX * held, y: top, z: rightZ * held },
+            { x: -rightX * held, y: top, z: -rightZ * held },
+            { x: 0, y: top, z: 0 },
             ...cast.map(crown),
+            ...cast.map(chest),
           ],
         };
       }
-      case 'approach':
-        // The shot that walks toward the lead has to be holding the lead.
-        return { heads: [head(lead)], body: [crown(lead), chest(lead)] };
       case 'closeup':
       case 'closeup-wide':
         /*
@@ -722,6 +844,176 @@ describe('the subject is actually in the picture, at BOTH breakpoints', () => {
   });
 });
 
+describe('how much of the frame the island actually covers', () => {
+  /*
+   * THE METRIC THE OWNER'S COMPLAINT IS ABOUT, and the one this repo did not
+   * have.
+   *
+   * The stage was defended by "distance from the top of the viewport to the
+   * first pixel of HUD", which counts EMPTY BACKGROUND as scene and therefore
+   * reported 88% clear on the very phase that painted 6.5% of the screen. The
+   * honest measurement is what the canvas paints — its alpha channel — and that
+   * needs a GPU. This is its headless twin: the share of the frame taken by the
+   * island's own ground disc, computed by casting one ray per sample through
+   * the pose and intersecting the horizontal plane at the island's mid-height.
+   *
+   * IT IS A LOWER BOUND, deliberately. It counts no rock underside, no palms,
+   * no arch and no characters, all of which paint pixels. Measured side by side
+   * on `/dev/tutor-lab` against the canvas alpha channel, with the real HUD
+   * mounted:
+   *
+   *      phase            disc here   alpha in a browser
+   *      arriving  375      42.7%          50.7%
+   *      arriving 1280      41.6%          53.1%
+   *      personalizing 375  31.1%          30.2%
+   *      adapting  375      29.4%          34.6%
+   *
+   * So a floor here is a slightly conservative floor on the real thing, which
+   * is the right direction for a gate to be wrong in.
+   *
+   * WHAT THE FLOORS ARE CHOSEN FROM. The same measurement on the framing this
+   * replaced, at the same fixtures:
+   *
+   *      shot            1280x800   375x812        now
+   *      establishing      18.1%      7.2%    ->  41.6% / 42.7%
+   *      approach          32.5%     11.1%    ->  44.9% / 31.1%
+   *      two-shot          30.9%      4.5%    ->  43.4% / 29.4%
+   *      closeup           32.2%     36.9%    ->  unchanged
+   *      closeup-wide      33.9%     26.1%    ->  unchanged
+   *
+   * The floors sit roughly a fifth below the tightest value each shot now
+   * reaches, which is loose enough that ordinary retuning does not trip them
+   * and tight enough that every one of the three regressions above goes red
+   * rather than shipping. They are per shot because the shots frame different
+   * things: `establishing` exists to show the PLACE and is held to the most,
+   * while a close shot's frame is mostly CHARACTER — its island share is
+   * incidental and its real guard is the on-screen height suite above.
+   *
+   * All seven phases are covered, through `shotForPhase`: arriving, closing and
+   * unavailable are `establishing`; personalizing is `approach`; adapting is
+   * `two-shot`; introducing and conversing are `closeup` or `closeup-wide`.
+   */
+  const COVERAGE_FLOOR: Readonly<Record<ShotId, number>> = Object.freeze({
+    establishing: 0.3,
+    approach: 0.24,
+    closeup: 0.2,
+    'closeup-wide': 0.2,
+    'two-shot': 0.24,
+  });
+
+  /** One ray per sample, against the island's ground plane. */
+  function islandCoverage(pose: CameraPose, scene: ShotContext['scene'], aspect: number): number {
+    const forward = {
+      x: pose.target.x - pose.position.x,
+      y: pose.target.y - pose.position.y,
+      z: pose.target.z - pose.position.z,
+    };
+    const length = Math.hypot(forward.x, forward.y, forward.z);
+    const f = { x: forward.x / length, y: forward.y / length, z: forward.z / length };
+    const rl = Math.hypot(-f.z, f.x);
+    const r = { x: -f.z / rl, y: 0, z: f.x / rl };
+    const u = {
+      x: r.y * f.z - r.z * f.y,
+      y: r.z * f.x - r.x * f.z,
+      z: r.x * f.y - r.y * f.x,
+    };
+
+    const vFov = (pose.fov * Math.PI) / 180;
+    const tanV = Math.tan(vFov / 2);
+    const tanH = Math.tan(horizontalFov(vFov, aspect) / 2);
+    const radius = Math.max(scene.size.x, scene.size.z) / 2;
+
+    // 120x120 is 14 400 rays, about a millisecond, and resolves the disc's edge
+    // to under one per cent of the frame — finer than any floor below.
+    const samples = 120;
+    let hits = 0;
+    for (let iy = 0; iy < samples; iy += 1) {
+      const ny = (2 * (iy + 0.5)) / samples - 1;
+      for (let ix = 0; ix < samples; ix += 1) {
+        const nx = (2 * (ix + 0.5)) / samples - 1;
+        const dir = {
+          x: f.x + r.x * nx * tanH + u.x * ny * tanV,
+          y: f.y + r.y * nx * tanH + u.y * ny * tanV,
+          z: f.z + r.z * nx * tanH + u.z * ny * tanV,
+        };
+        if (Math.abs(dir.y) < 1e-9) continue;
+        const t = (scene.centre.y - pose.position.y) / dir.y;
+        if (t <= 0) continue;
+        const dx = pose.position.x + dir.x * t - scene.centre.x;
+        const dz = pose.position.z + dir.z * t - scene.centre.z;
+        if (dx * dx + dz * dz <= radius * radius) hits += 1;
+      }
+    }
+    return hits / (samples * samples);
+  }
+
+  const AUDIT: ReadonlyArray<readonly [string, number]> = [
+    ['1280x800', 1280 / 800],
+    ['375x812', 375 / 812],
+  ];
+
+  const CASES = AUDIT.flatMap(([label, aspect]) =>
+    SHOT_IDS.map((shot) => [`${shot} · ${label}`, shot, aspect] as const),
+  );
+
+  it.each(CASES)('%s paints enough of the frame to be a place', (_label, shot, aspect) => {
+    const ctx = context({ aspect });
+    const covered = islandCoverage(poseFor(shot, ctx), ctx.scene, aspect);
+    expect(covered, `${shot} leaves the frame empty`).toBeGreaterThan(COVERAGE_FLOOR[shot]);
+  });
+
+  it.each(AUDIT)('the microphone dock does not undo the framing at %s', (label, aspect) => {
+    /*
+     * THE SECOND HALF OF THE SAME BUG, and it lived in `composition.ts`.
+     *
+     * A fitting shot answers a HUD inset by retreating, and the retreat used to
+     * be `viewport / free` — the dock ate a quarter of the height, so every
+     * island shot went back a third, whatever it was framing. Coverage falls as
+     * the SQUARE of that, so a shot sized to fill a phone was then pushed back
+     * until it filled a third of one. The retreat is now measured against the
+     * radius the shot says it is protecting, so a subject that already fits the
+     * free rectangle costs nothing.
+     */
+    const viewport = label === '375x812' ? { width: 375, height: 812 } : { width: 1280, height: 800 };
+    const dock: HudRect =
+      label === '375x812'
+        ? { left: 15, top: 812 - 12 - 188, width: 345, height: 188 }
+        : { left: 400, top: 800 - 24 - 204, width: 480, height: 204 };
+    const ctx = context({ aspect });
+
+    const insets = insetsFromRects([dock], viewport);
+    for (const shot of ['establishing', 'approach', 'two-shot'] as const) {
+      const pose = poseFor(shot, ctx);
+      const reach = distance(pose);
+      const fit = composeFor(insets, viewport, reach, ctx, pose.keepInFrame);
+      const pushed = padDistance(pose.position, pose.target, fit.padding);
+
+      /*
+       * The two island shots give up NOTHING. They bleed past the frame on
+       * purpose, so there is no size requirement left for a retreat to satisfy
+       * — the aim shift does all the composing and the framing survives intact.
+       *
+       * `two-shot` is the one that legitimately gives ground, and only a little:
+       * it holds two whole characters, they really are taller than the band the
+       * dock leaves at 1280x800, and buying that room is exactly what a retreat
+       * is for. 1.14x, against the 1.9x ceiling the old rule pinned itself to.
+       */
+      const given = Math.hypot(
+        pushed.x - pose.target.x,
+        pushed.y - pose.target.y,
+        pushed.z - pose.target.z,
+      ) / reach;
+      if (shot === 'two-shot') expect(given, 'the pair gave up too much').toBeLessThan(1.2);
+      else expect(given, `${shot} gave up its framing to the dock`).toBeCloseTo(1, 9);
+
+      expect(
+        islandCoverage({ ...pose, position: pushed }, ctx.scene, aspect),
+        `${shot} is empty once the dock has been paid for`,
+      ).toBeGreaterThan(COVERAGE_FLOOR[shot]);
+    }
+  });
+});
+
 describe('composed against a real HUD at 375x812', () => {
   const PORTRAIT = 375 / 812;
   const ctx = context({ aspect: PORTRAIT });
@@ -794,18 +1086,25 @@ describe('composed against a real HUD at 375x812', () => {
     expect(SHOT_FITS_SCENE['closeup-wide']).toBe(false);
   });
 
-  it('every shot keeps a protected radius that actually fits its own frame', () => {
+  it('every shot keeps a protected half-frame that actually fits its own frame', () => {
     /*
-     * `keepInFrame` is the radius the composition solver may not shift out of
-     * view. A radius bigger than the half-frame would disable composition
-     * entirely (nothing may move), which is a silent way to lose the whole
-     * feature on the breakpoint that needs it most.
+     * `keepInFrame` is what the composition solver may not shift out of view,
+     * and it now sizes the RETREAT as well as clamping the shift. Bigger than
+     * the half-frame on either axis and composition is disabled entirely
+     * (nothing may move) while the retreat pins itself at the 1.9x ceiling —
+     * which is a silent way to lose the whole feature on the breakpoint that
+     * needs it most. It is stated per axis for exactly this reason: an island
+     * shot holds a 3.4 m ring sideways and about 1.1 m vertically, and one
+     * scalar reported the 3.4 on both axes.
      */
     for (const shot of SHOT_IDS) {
       const pose = poseFor(shot, ctx);
-      const half = distance(pose) * Math.tan(((pose.fov * Math.PI) / 180) / 2);
-      expect(pose.keepInFrame).toBeGreaterThanOrEqual(0);
-      expect(pose.keepInFrame).toBeLessThan(half);
+      const halfUp = distance(pose) * Math.tan(((pose.fov * Math.PI) / 180) / 2);
+      const halfRight = distance(pose) * Math.tan(horizontalFov((pose.fov * Math.PI) / 180, PORTRAIT) / 2);
+      expect(pose.keepInFrame.up).toBeGreaterThanOrEqual(0);
+      expect(pose.keepInFrame.right).toBeGreaterThanOrEqual(0);
+      expect(pose.keepInFrame.up, `${shot} protects more height than it frames`).toBeLessThan(halfUp);
+      expect(pose.keepInFrame.right, `${shot} protects more width than it frames`).toBeLessThan(halfRight);
     }
   });
 });

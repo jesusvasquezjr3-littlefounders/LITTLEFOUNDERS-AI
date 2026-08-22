@@ -8,6 +8,21 @@ import { Box3, Sphere, Vector3, type Object3D, type PerspectiveCamera } from 'th
  * — so a hard-coded camera position frames one asset and misses every other.
  * Fitting from the measured bounding sphere means "look at this thing" works
  * before anyone has decided what its real-world size should be.
+ *
+ * THIS IS THE INSPECTOR'S FIT AND NOT THE STAGE'S — do not reach for it from
+ * `shots.ts`, and do not port its strategy there. Its job is to guarantee an
+ * unknown asset is entirely inside the frame, so it fits a bounding SPHERE and
+ * pads it: over-framing is the safe failure when you do not yet know what you
+ * are looking at, and cropping is not.
+ *
+ * The stage wants the opposite. An island framed so that all of it fits with
+ * air on every side reads as an object on a table; the Tutor's shots stand as
+ * CLOSE as the points they promise to hold allow and let the rest run off the
+ * edges, which is what makes the render read as a place the learner is standing
+ * in. Measured at 375x812 on the same island, the two strategies are 7% of the
+ * viewport and 43% of it. The arithmetic here — including the portrait
+ * horizontal-FOV correction below — was never wrong; applying its STRATEGY to
+ * the stage was.
  */
 
 export interface FitResult {

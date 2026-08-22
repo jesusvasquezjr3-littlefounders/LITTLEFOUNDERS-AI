@@ -59,22 +59,29 @@ import type { Adaptation } from './types';
  */
 
 /**
- * The sun's arc: FOUR stops, not five.
+ * The sun: ONE marker on the arc, not four labels in the sky.
  *
- * There are four times of day and `auto` is not one of them — it is the absence
- * of one — so "match my theme" is reached by choosing the lit stop again rather
- * than by taking a fifth place in the sky. The fifth mark stays free on purpose:
- * two nodes published on one anchor project to the same pixel with no way for
- * either to know, so the learner would see one control sitting on top of another
- * and neither would look broken. Leaving headroom on the ring is how that stays
- * impossible when the next phase wants a rune.
+ * It used to be four `WorldChip`s on `sky.mark.0..3`, each naming a time of day,
+ * plus a sentence on whichever was lit explaining that choosing it again went
+ * back to following the app theme. Measured on `/dev/tutor-lab` at 375x812 that
+ * is four of the twelve surfaces on the phase, hanging in blank sky above a
+ * 12%-of-the-viewport island — a menu drawn in world coordinates, which is the
+ * exact failure /ORACLE.md §10 already names for thumbnail grids.
+ *
+ * One marker, and tapping it moves the sun on to the next light. That is what a
+ * sun on an arc DOES, it costs one label instead of four, and it makes "follow
+ * my theme" an ordinary stop on the cycle rather than a hidden gesture that
+ * needed its own sentence to be discoverable at all. Choosing a specific light
+ * directly is what the panel's list is for, and that list is the guaranteed path
+ * every world control already has (/DESIGN.md → Components → WorldChip).
+ *
+ * `sky.mark.2` is the middle of the five, so the sun sits near the apex of the
+ * arc rather than off at one end of it. The other four marks stay free: two
+ * nodes published on one anchor project to the same pixel with no way for either
+ * to know, and headroom is how that stays impossible when the next phase wants a
+ * rune.
  */
-const SUN_MARK_IDS = [
-  'sky.mark.0',
-  'sky.mark.1',
-  'sky.mark.2',
-  'sky.mark.3',
-] as const satisfies readonly AnchorId[];
+const SUN_MARK_ID = 'sky.mark.2' as const satisfies AnchorId;
 
 /** The light that follows the app's own theme rather than naming an hour. */
 const THEME_LIGHT = 'auto';
@@ -217,24 +224,25 @@ export function PersonalizeInWorld({
   }, [characters]);
 
   /*
-   * The times of day, without `auto`. Filtering by NAME rather than by position
-   * matters: the catalog is server-driven and its order is not a contract, so
-   * slicing the first four would put "match my theme" in the sky and drop a real
-   * time of day off the end the day someone reorders the list.
+   * Every light the sun passes through, `auto` first.
+   *
+   * Ordered by NAME rather than by the catalog's own order for the one entry
+   * that is not a time of day: the catalog is server-driven and its order is not
+   * a contract, so a reorder must never drop "follow my theme" into the middle
+   * of dawn-day-dusk-night. Everything after it keeps the catalog's order, which
+   * IS the arc.
    */
-  const sunStops = useMemo(
-    () => catalog.backdrops.filter((id) => id !== THEME_LIGHT),
-    [catalog.backdrops],
-  );
+  const sunCycle = useMemo(() => {
+    const times = catalog.backdrops.filter((id) => id !== THEME_LIGHT);
+    return catalog.backdrops.includes(THEME_LIGHT) ? [THEME_LIGHT, ...times] : times;
+  }, [catalog.backdrops]);
 
-  const sunArc = useMemo(
-    () =>
-      SUN_MARK_IDS.flatMap((slot, index) => {
-        const id = sunStops[index];
-        return id ? [{ slot, id }] : [];
-      }),
-    [sunStops],
-  );
+  /** The light the sun moves to when it is tapped. */
+  const nextLight = useMemo(() => {
+    if (sunCycle.length === 0) return undefined;
+    const here = sunCycle.indexOf(preferences.backdrop);
+    return sunCycle[(here + 1) % sunCycle.length];
+  }, [sunCycle, preferences.backdrop]);
 
   /*
    * Where the rim pads lead. Cycling rather than "the other one" so a third
@@ -262,7 +270,7 @@ export function PersonalizeInWorld({
    * guaranteed one, and both dispatch the same handler.
    */
   const listedCharacters = characters;
-  const listedSun = sunStops;
+  const listedSun = sunCycle;
   const listedIslands = dioramas;
 
   const nameOf = (id: CharacterId) => t(`tutor.character.${id}.name`);
@@ -304,12 +312,19 @@ export function PersonalizeInWorld({
     onSave({ diorama: id });
   };
 
+  /*
+   * One light, chosen outright.
+   *
+   * "Press the lit one again to go back to following the app theme" is gone
+   * with the four sky chips it was invented for: `auto` is a stop on the sun's
+   * own cycle and a row in the list below, so it is picked the same way every
+   * other light is. That deleted a rule, a sentence in three locales, and the
+   * only affordance on this phase a learner could not see.
+   */
   const setLight = (id: string) => {
+    if (id === preferences.backdrop) return;
     playPlatformSound('tutor_chip');
-    // Choosing the lit stop again is how the learner gets back to following the
-    // app's theme. It is the same "press it again to undo it" grammar the
-    // companion toggle uses, so the screen has one rule rather than two.
-    onSave({ backdrop: preferences.backdrop === id ? THEME_LIGHT : id });
+    onSave({ backdrop: id });
   };
 
   const toggleAdaptation = (adaptation: Adaptation) => {
@@ -483,39 +498,33 @@ export function PersonalizeInWorld({
       )}
 
       {/*
-        THE LIGHT, moved along the sun's own arc. EACH STOP IS ONE WORD, and the
-        sentence that used to hang under the lit one has moved to the panel.
+        THE LIGHT: ONE SUN, AND TAPPING IT MOVES THE SUN ON.
 
-        The four sky marks land close together for the same reason the crowns do
-        — measured at 375x812 they were 45 px wide at x 97, 90, 230 and 310, in a
-        one-pixel vertical band. Three of them fit at that spacing; the LIT one
-        did not, because "Choose again to match my theme" made it 165 px, three
-        chips wide, and it covered the two stops either side of it. The way back
-        to following the theme is still stated in words, on the row for the same
-        light in the panel's list, which has a column's width for a second line
-        and is where the guaranteed copy of every choice already lives.
+        Four labelled stops used to hang across the sky here, and the measurement
+        that ended them is on `SUN_MARK_ID`: at 375x812 they were four of the
+        twelve surfaces on this phase, in blank sky, above an island painting 12%
+        of the viewport. An arc seen edge-on is also a point, so the four spent
+        most of the camera's orbit rising off each other on the stacking rule
+        rather than sitting where the sun would be.
+
+        The marker shows the light that is on NOW, because that is the fact a
+        learner needs from a label; where it is going is on the button's own
+        accessible name, so a screen-reader user is told the outcome before they
+        press. Every light remains directly pickable in the panel's list, which
+        is the guaranteed twin of every world control on this route.
       */}
-      {sunArc.length > 0 && (
-        <div role="group" aria-label={t('tutor.personalize.lightTitle')}>
-          {sunArc.map(({ slot, id }) => (
-            <WorldChip
-              key={id}
-              slot={slot}
-              selected={preferences.backdrop === id}
-              onSelect={() => setLight(id)}
-              /*
-               * The four stops are peers on one arc, and an arc seen edge-on is
-               * a point. Measured while the camera orbited at 375x812, "Dawn"
-               * and "Day" overlapped in four samples out of six, by 5 px rising
-               * to 25 px as the shot came round. They rise clear of each other,
-               * and of the candidates' plates, on the same per-frame rule.
-               */
-              stack
-            >
-              <span className="lf-caption text-content">{lightName(id)}</span>
-            </WorldChip>
-          ))}
-        </div>
+      {nextLight && (
+        <WorldChip
+          slot={SUN_MARK_ID}
+          onSelect={() => setLight(nextLight)}
+          label={t('tutor.personalize.lightNext', { name: lightName(nextLight) })}
+        >
+          <Icon
+            name={preferences.backdrop === 'night' ? 'bedtime' : 'wb_sunny'}
+            className="text-content-muted"
+          />
+          <span className="lf-caption text-content">{lightName(preferences.backdrop)}</span>
+        </WorldChip>
       )}
 
       {/*
@@ -707,21 +716,15 @@ export function PersonalizeInWorld({
                         onSelect={() => setLight(id)}
                       >
                         {/*
-                          The lit row says how to go back to following the app's
-                          theme, because there is no fifth stop in the sky for
-                          it and an affordance nobody can see is one only the
-                          person who wrote it can use. It is HERE rather than on
-                          the sky chip because at 375 px that sentence made the
-                          chip three chips wide and covered its neighbours.
+                          One word per row, "My theme" included. The sentence
+                          that used to hang on the lit row — "choose again to
+                          match my theme" — described a gesture that no longer
+                          exists: following the app's theme is a light like any
+                          other now, listed here and reachable on the sun's own
+                          cycle, so nothing has to be explained for it to be
+                          found.
                         */}
-                        <span className="flex flex-col items-center">
-                          <span>{lightName(id)}</span>
-                          {preferences.backdrop === id && (
-                            <span className="lf-caption text-content-muted">
-                              {t('tutor.personalize.lightClear')}
-                            </span>
-                          )}
-                        </span>
+                        {lightName(id)}
                       </PlateChip>
                     ))}
                   </div>

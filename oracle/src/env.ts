@@ -141,6 +141,38 @@ const Env = z.object({
 
   REDIS_URL: z.string().url().default('redis://localhost:6379'),
 
+  /*
+   * THE SPEECH CACHE (/ORACLE.md §15).
+   *
+   * Text-to-speech is the most expensive thing this service does, and most of
+   * what it says it has said before. The cache sits in front of the paid call
+   * and stores a content key → Depot URL in the Redis we already run.
+   *
+   * Disabling it is a debugging affordance, not a posture: with it off every
+   * line is synthesised and billed again, which is exactly what this work
+   * removed. The TTL is generous because the value is an immutable URL to an
+   * immutable clip; the only reason it expires at all is so a Depot file that
+   * really did go away eventually stops being referenced.
+   */
+  SPEECH_CACHE_ENABLED: z
+    .enum(['true', 'false'])
+    .default('true')
+    .transform((v) => v === 'true'),
+  SPEECH_CACHE_TTL_SECONDS: z.coerce.number().int().positive().default(180 * 24 * 60 * 60),
+
+  /*
+   * HOW FAR A CLIP MAY BE REUSED. `scripted` (the default) shares only the
+   * closed, human-written line set — audio that is identical for every learner
+   * and says nothing about anybody. `all` also shares model-generated turns
+   * between learners, which is more saving and a CHANGE TO A DOCUMENTED
+   * PRIVACY PROMISE: a shared clip cannot be deleted with one child's session,
+   * so their tutor's words would outlive the 90-day retention window
+   * (/ORACLE.md §12). That is an owner decision with counsel in it. It is a
+   * named flag with a default and a sign-off to record, for the same reason
+   * TUTOR_VOICE_FOR_MINORS is.
+   */
+  SPEECH_CACHE_SCOPE: z.enum(['scripted', 'all']).default('scripted'),
+
   /** Session budget (/ORACLE.md §0 assumption 5, §9.5). */
   SESSION_SOFT_BUDGET_MS: z.coerce.number().int().positive().default(15 * 60_000),
   SESSION_HARD_BUDGET_MS: z.coerce.number().int().positive().default(25 * 60_000),

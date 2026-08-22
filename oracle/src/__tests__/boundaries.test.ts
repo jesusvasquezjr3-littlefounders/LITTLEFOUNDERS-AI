@@ -128,6 +128,16 @@ describe('the internal API', () => {
     expect(response.body.data.liveSessions).toBe(3);
   });
 
+  it('reports how many fixed lines this instance can speak for free', async () => {
+    // A missing pre-generated manifest is otherwise invisible: every line is
+    // still spoken and every one of them is billed again (/ORACLE.md §15.1).
+    const response = await request(createApp())
+      .get('/api/v1/tutor/status')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+    expect(typeof response.body.data.pregeneratedLines).toBe('number');
+    expect(response.body.data.speechCacheScope).toBe('scripted');
+  });
+
   it('preflight refuses to start a session with no model configured', async () => {
     const response = await request(createApp())
       .post('/api/v1/tutor/preflight')

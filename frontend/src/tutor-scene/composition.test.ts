@@ -231,7 +231,7 @@ describe('composeFor', () => {
     const keep = 1.7 * 0.28;
 
     const free = composeFor(insets, MOBILE, distance, lens);
-    const clamped = composeFor(insets, MOBILE, distance, lens, keep);
+    const clamped = composeFor(insets, MOBILE, distance, lens, { right: keep, up: keep });
 
     expect(Math.abs(clamped.up)).toBeLessThan(Math.abs(free.up));
     // The crown stays inside the viewport with room to spare, which is the
@@ -246,7 +246,7 @@ describe('composeFor', () => {
     const insets = { ...NO_INSETS, bottom: 192 };
     const distance = 1.958 / 2 / Math.tan((36 * Math.PI) / 180 / 2);
     const free = composeFor(insets, MOBILE, distance, lens);
-    const clamped = composeFor(insets, MOBILE, distance, lens, 1.7 * 0.28);
+    const clamped = composeFor(insets, MOBILE, distance, lens, { right: 1.7 * 0.28, up: 1.7 * 0.28 });
     expect(clamped.up).toBeCloseTo(free.up, 9);
   });
 
@@ -255,7 +255,7 @@ describe('composeFor', () => {
     // a composition, so nothing moves.
     // Compared numerically: a negated zero is still zero, and `toBe`
     // distinguishes them where the arithmetic cannot.
-    const composition = composeFor({ ...NO_INSETS, bottom: 500 }, MOBILE, 4, LENS, 99);
+    const composition = composeFor({ ...NO_INSETS, bottom: 500 }, MOBILE, 4, LENS, { right: 99, up: 99 });
     expect(composition.up).toBeCloseTo(0, 12);
     expect(composition.right).toBeCloseTo(0, 12);
   });

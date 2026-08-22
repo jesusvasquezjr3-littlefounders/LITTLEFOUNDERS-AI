@@ -96,7 +96,17 @@ export function SpeechCaption({
    * learner (/ORACLE.md §1 step 4). So it moves, by the smallest amount that
    * clears.
    */
-  const anchorRef = useAnchorSlot(slot, { place: 'above', avoid: true });
+  /*
+   * `keepInFrame` is the other half of the same sentence, and it was missing.
+   * `avoid` gets the caption out from under the fixed chrome; nothing got it out
+   * from under the frame EDGE, so the ordinary cull ran instead. Measured on
+   * `/dev/tutor-lab` at 1280x800 during `conversing`: the closeup fills the frame
+   * with the tutor's face, the crown is above the top of the screen, and the
+   * caption node was `hidden` and `inert` — the tutor's words on a desktop
+   * existed only inside the lesson plate, and the plate rests CLOSED on a phone.
+   * It now slides down to the edge and stays.
+   */
+  const anchorRef = useAnchorSlot(slot, { place: 'above', avoid: true, keepInFrame: true });
 
   useEffect(() => {
     if (timerRef.current !== null) window.clearInterval(timerRef.current);

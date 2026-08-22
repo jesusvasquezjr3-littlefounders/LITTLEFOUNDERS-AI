@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TutorOrchestrator } from '../tutor/orchestrator.js';
+import type { SpeechResult } from '../voice/speech.js';
 import type { SessionContext } from '../core/client.js';
 
 /*
@@ -55,8 +56,16 @@ function judgeSays(safe: boolean): Response {
   );
 }
 
-/** No audio in tests: the synthesizer seam is injected precisely so it can be inert. */
-const silent = async () => null;
+/**
+ * No audio in tests: the synthesizer seam is injected precisely so it can be
+ * inert. `billedChars: 0` is the honest report — nothing was sent to a paid
+ * API — and it is what keeps the voice half of the ledger at zero here.
+ */
+const silent = async (): Promise<SpeechResult> => ({
+  url: null,
+  source: 'unavailable',
+  billedChars: 0,
+});
 
 let fetchMock: ReturnType<typeof vi.fn>;
 
@@ -100,6 +109,58 @@ describe('the happy path', () => {
     const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
     await orchestrator.handleLearnerText('hola', Date.now());
     expect(orchestrator.totalCostUsd).toBeGreaterThan(0);
+  });
+});
+
+describe('the greeting is written, not generated', () => {
+  it('opens the session with NO model call and NO synthesis charge', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = await orchestrator.greet(Date.now());
+
+    // The line the owner asked us to stop paying for twice per session: this
+    // used to be a reasoning round trip plus a text-to-speech charge.
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(orchestrator.totalCostUsd).toBe(0);
+    expect(outcome.emission.source).toBe('scripted');
+    expect(outcome.emission.turn.next).toBe('ask');
+  });
+
+  it('speaks as the chosen character, in the learner’s locale', async () => {
+    const rho = await new TutorOrchestrator(KID, Date.now(), silent).greet(Date.now());
+    const zara = await new TutorOrchestrator({ ...KID, character: 'zara' }, Date.now(), silent).greet(
+      Date.now(),
+    );
+
+    expect(rho.emission.turn.say).not.toBe(zara.emission.turn.say);
+    // es-MX for both, because the learner's language is not the character's.
+    expect(rho.emission.turn.say).toMatch(/¿/);
+    expect(zara.emission.turn.say).toMatch(/¿/);
+  });
+
+  it('never says the learner’s nickname — that belongs in the caption', async () => {
+    // Baking a name into the audio would make the clip unshareable and put us
+    // straight back to one paid synthesis per child per session.
+    for (const character of ['dina', 'liruf', 'rho', 'zara'] as const) {
+      for (const locale of ['en-US', 'es-MX', 'pt-BR'] as const) {
+        const outcome = await new TutorOrchestrator(
+          { ...KID, character, locale, nickname: 'Robi' },
+          Date.now(),
+          silent,
+        ).greet(Date.now());
+        expect(outcome.emission.turn.say).not.toContain('Robi');
+      }
+    }
+  });
+
+  it('enters the session history like any other tutor line', async () => {
+    // A scripted greeting is still a turn: it is counted, it is recorded, and
+    // it is one of the tutor's own recent lines. Skipping the model must not
+    // make the opening invisible to everything downstream.
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const greeting = await orchestrator.greet(Date.now());
+
+    expect(orchestrator.turnCount).toBe(1);
+    expect(orchestrator.recentTutorLines).toContain(greeting.emission.turn.say);
   });
 });
 

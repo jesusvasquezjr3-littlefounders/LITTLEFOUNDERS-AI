@@ -5,6 +5,7 @@ import { getConfig } from '../env.js';
 import { moderationReadiness } from '../safety/moderation.js';
 import { modelConfigured } from '../model/provider.js';
 import { getVoiceProvider } from '../voice/index.js';
+import { pregeneratedCount, pregeneratedGeneratedAt } from '../voice/pregenerated.js';
 
 /*
  * Oracle's internal HTTP surface. Small on purpose: the real work happens on
@@ -68,6 +69,17 @@ export function runtimeRouter(liveSessions: () => number): Router {
       voice: getVoiceProvider().name,
       voiceAvailable: getVoiceProvider().available,
       moderationForMinors: moderationReadiness(true).ready ? 'ready' : 'unavailable',
+      /*
+       * How many fixed lines this instance can speak for FREE.
+       *
+       * Reported because a missing manifest is otherwise invisible: everything
+       * still works, every line is still spoken, and every one of them is
+       * billed again. `0` on a deployment with a voice provider means
+       * `npm run speech:pregenerate` has never been run here (/ORACLE.md §15.1).
+       */
+      pregeneratedLines: pregeneratedCount(),
+      pregeneratedAt: pregeneratedGeneratedAt(),
+      speechCacheScope: getConfig().SPEECH_CACHE_SCOPE,
     }),
   );
 

@@ -1,8 +1,8 @@
 import rateLimit, { MemoryStore } from 'express-rate-limit';
 import RedisStore from 'rate-limit-redis';
-import { createClient } from 'redis';
-import { getConfig, isTestOrDev } from '../env.js';
+import { isTestOrDev } from '../env.js';
 import { withTimeout } from '../lib/http.js';
+import { redisClient } from '../lib/redis.js';
 
 /*
  * Rate limiting is an AVAILABILITY control, not an authorization one
@@ -13,20 +13,17 @@ import { withTimeout } from '../lib/http.js';
  * live Redis outage leaves `isOpen` true because node-redis retries in the
  * background, so a hung sendCommand never rejects, `passOnStoreError` never
  * fires, and every request hangs instead of failing open.
+ *
+ * The client itself now lives in `lib/redis.ts`, shared with the speech cache.
+ * One connection, one reconnect loop, one thing to be down.
  */
 const COMMAND_TIMEOUT_MS = 250;
-
-export const rateLimitClient = createClient({ url: getConfig().REDIS_URL });
-
-if (!isTestOrDev) {
-  rateLimitClient.on('error', (err) => console.error('[oracle] rate-limit redis error', err));
-}
 
 function store() {
   if (isTestOrDev) return new MemoryStore();
   return new RedisStore({
     sendCommand: (...args: string[]) =>
-      withTimeout(rateLimitClient.sendCommand(args), COMMAND_TIMEOUT_MS, 'redis'),
+      withTimeout(redisClient.sendCommand(args), COMMAND_TIMEOUT_MS, 'redis'),
   });
 }
 

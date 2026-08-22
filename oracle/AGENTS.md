@@ -27,7 +27,7 @@ to know everything Oracle can possibly learn about a child.
 
 ---
 
-## §2 The five rules that must not be relaxed
+## §2 The six rules that must not be relaxed
 
 ### §2.1 Nothing reaches a model without passing a seal
 
@@ -53,6 +53,14 @@ no downstream check can recall it.
 A self-harm disclosure must reach a **human-written line, every time**. Never a
 generated one. `src/tutor/scripted.ts` holds those lines in all three
 languages, and they are the most important strings in the service.
+
+**The greeting joined them on 2026-08-22.** It used to be a model call — the
+tutor was asked to invent an opening, which cost a reasoning round trip and a
+text-to-speech charge in every session forever, to produce a sentence nobody
+had reviewed. It is now twelve written lines, one per character per locale,
+following GLOSSARY.md's canonical cast table. They carry **no nickname**: the
+learner's name goes in the caption, and a name in the audio would make the clip
+unshareable, which is the entire cost this removed.
 
 ### §2.3 The model's output is a closed JSON turn, or it is discarded
 
@@ -116,6 +124,36 @@ is what makes it the common case, so it is worth knowing here: **the honest
 default posture of this service is exactly the state the UI must handle
 best.**
 
+### §2.6 A line is never paid for twice, and never played from the wrong text
+
+`src/voice/speech.ts` is the ONLY place in the service that can spend money on
+speech, and it tries three things in order: the pre-generated manifest, the
+cache, then the provider. Two rules hold it together.
+
+**The key is a content hash of the exact text plus the provider's voice
+fingerprint** (`voiceFingerprint()` — provider, TTS model, enrolled voice id).
+So editing a scripted line or re-enrolling a character ORPHANS the old audio
+rather than playing it for the new words. That is a child-safety property, not
+an optimisation: **a cached line is always the line that was actually
+reviewed.** Never key a clip on a name, a slot or an index.
+
+**The bucket name is the retention policy.** `tutor-speech` is one child's
+session audio, swept at 90 days; `tutor-speech-shared` is the closed scripted
+set, reused by everyone, and Core's sweep refuses to delete from it
+(`backend/src/services/tutorRetention.ts`). Depot is content-addressed, so a
+shared clip is ONE object thousands of transcripts point at — deleting it when
+the first of those sessions expires would protect nobody and silence every
+session after it.
+
+The consequence: **do not widen reuse without deciding the retention question
+first.** `SPEECH_CACHE_SCOPE=all` shares model-generated turns between
+learners, and a shared clip cannot be deleted with one child's session. It is a
+flag, defaulted off, with a sign-off to record — the same shape as
+`TUTOR_VOICE_FOR_MINORS`, for the same reason.
+
+A cache miss of any kind — no manifest, Redis down, Redis slow — degrades to a
+paid call. It must never degrade to silence, and a test pins that.
+
 ---
 
 ## §3 Layout
@@ -134,9 +172,15 @@ src/
   content/generate.ts  tier-3 authoring + the independent judge
   session/          single-use token · pure budget reducer
   voice/            provider interface · Inworld adapter · silent provider
+                    speech.ts     the ONLY thing that can pay for audio (§2.6)
+                    pregenerated  the tracked manifest of fixed lines
+                    cache.ts      content hash -> Depot URL, in Redis
   ws/               wire protocol · the one browser-facing socket
-  depot/client.ts   stores the TUTOR's audio (never the learner's)
-scripts/verify-tutor.ts   the §5 gate a human reads
+  depot/client.ts   stores the TUTOR's audio (never the learner's), in the
+                    bucket that decides how long it may live
+  lib/redis.ts      ONE connection, shared by the limiter and the cache
+scripts/verify-tutor.ts        the §5 gate a human reads
+scripts/pregenerate-speech.ts  buys the 144 fixed clips, once, ever
 ```
 
 ---
@@ -146,7 +190,7 @@ scripts/verify-tutor.ts   the §5 gate a human reads
 ```bash
 npm run type-check
 npm run lint
-npm test              # 119 tests, no network, VOICE_PROVIDER=none
+npm test              # 165 tests, no network, VOICE_PROVIDER=none
 npm run verify:tutor  # /AGENTS.md §5 — prints the privacy + canary result
 npm run build
 ```
@@ -194,7 +238,12 @@ everything passes the blocked half perfectly and destroys the product.
    drifting apart with nothing asserting the join. When you add or change a
    field on the wire, say in `/ORACLE.md` what is supposed to happen to it on
    screen, and when you change what one MEANS, treat it as breaking (§2.3).
-8. **`ready.microphone` is a capability, not a visibility flag.** Oracle
+8. **Speech is billed per CHARACTER OF TEXT, and only text we actually sent.**
+   `SpeechResult.billedChars` is zero on every free path and non-zero even when
+   Depot then lost the audio — because that synthesis WAS charged. A ledger
+   that only counted audio a learner heard would under-report exactly the
+   failure that wastes the most money (`npm run speaks:verify` exists for it).
+9. **`ready.microphone` is a capability, not a visibility flag.** Oracle
    reports whether the microphone can open. It does not report whether a
    microphone control should exist — that control is always present, and
    `/ORACLE.md` §14.1 is the rule. The three blocked reasons are Core's

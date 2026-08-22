@@ -34,6 +34,11 @@ class SilentVoiceProvider implements VoiceProvider {
   synthesize(_request: SynthesisRequest): Promise<SynthesisResult> {
     return Promise.reject(new VoiceUnavailableError('no voice provider is configured'));
   }
+
+  /** Nothing can be spoken here, so nothing can be cached here either. */
+  voiceFingerprint(): string | null {
+    return null;
+  }
 }
 
 let cached: VoiceProvider | null = null;

@@ -130,7 +130,7 @@ motion:                           # CLOSED 5-recipe system
 > **AUTHORITATIVE** for all frontend visual work (root AGENTS.md §1.1 rank 4).
 > The tokens above are CLOSED sets — implemented 1:1 in
 > `frontend/tailwind.config.js` + `frontend/src/index.css`. Never invent values
-> those files don't define. **Last updated:** 2026-08-21 (Tutor screen recipe).
+> those files don't define. **Last updated:** 2026-08-22 (Tutor island framing).
 
 ## §0 Composition Fidelity — PRIME RULE
 
@@ -555,11 +555,22 @@ island and the learner watches their own world blink.
   learner.
 - **World-anchored chrome** — the caption above the speaker's crown over a
   24 px gradient scrim, offer chips at the tutor's chest, rim pads on the
-  island, recap chips at the places they recap, and one small rune over the
+  island, **one sun marker on the sky arc** during personalization, recap chips
+  at the places they recap, and one small rune over the
   sky for minutes-left. All WorldChip over HudPlate, each mirroring a
   pickable mesh, each hidden and inert when its anchor leaves the frame —
   and each culled against its own BOX, not against its centre point, so a chip
   is never left half off the frame and still focusable.
+  **One control per axis, not one per option** (added 2026-08-22). The light
+  used to be four labelled stops across `sky.mark.0..3`. Every sky mark sits at
+  the same height on one circle, so an arc seen edge-on is a point: measured at
+  375x812 the four were 45 px wide inside a one-pixel vertical band, spending
+  most of the camera's orbit rising off each other on the stacking rule, in
+  blank sky, above an island painting 12% of the viewport — four of the twelve
+  surfaces on that phase. One marker shows the light that is ON and moves the
+  sun along the arc when it is pressed, which is both what a sun does and one
+  label instead of four. Picking a specific option directly is what the
+  guaranteed list is for; the world gets the gesture, the list gets the menu.
 - **The lesson plate** — the ONE surface carrying a live exercise. **Desktop:
   a FLOATING plate**, `plate-max` 420 px wide, height fitted to content up to
   `plate-max-height` 62vh, inset `hud-inset` 24 px from the bottom-right, with
@@ -647,6 +658,23 @@ short side stays put rather than half-escaping. `/dev/tutor-lab` prints the live
 collision count beside the phase switcher; a phase that overlaps at rest is a
 bug, and one that overlaps for a frame while a sheet animates is not.
 
+**"May never hide" includes the FRAME EDGE, and for a year it did not**
+(corrected 2026-08-22). The escape above only ever cleared viewport-anchored
+CHROME; nothing cleared the edge of the picture, so the caption fell through to
+the ordinary box cull like every other anchored node. Measured on
+`/dev/tutor-lab` at 1280x800 in `conversing`: the closeup fills the frame with
+the tutor's face, the crown is above the top of the screen, and the caption node
+was `hidden` and `inert` for the whole conversation — the same at 1280x800 in
+`introducing`. On desktop the tutor's words existed only inside the lesson
+plate, and that plate rests CLOSED on a phone, so the rule that was supposed to
+protect the deaf learner's only channel was the rule taking it away. The caption
+now **clamps** back inside the frame (`tutor-scene/culling.ts` →
+`clampIntoView`), inset by the same gap it keeps over a crown so it reads as
+resting against the edge rather than cropped by it. It is a per-node opt-in
+(`ScreenAnchor` → `AnchorOptions.keepInFrame`) and the caption is the only node
+that has it: for everything else disappearing is correct, because a chip pressed
+flat against the frame edge points at nothing.
+
 **Colour and contrast.** Every plate carrying body text uses the opaque
 `bg-surface` floor; glass is the frame (§Colors → the opaque floor rule). One
 indigo action per phase still holds, and during a conversation the mic orb IS
@@ -658,6 +686,8 @@ invisible padded pick proxies sized from the character measurements, never by
 hoping the mesh happens to be big enough at that camera distance. **The scene
 keeps the majority of the viewport in every phase the learner did not ask to
 change**, and that is a number somebody has to measure rather than a feeling.
+(True of five of the seven phases as of 2026-08-22, up from two; the exceptions
+and the reason are at the end of this section.)
 Measured on `/dev/tutor-lab` at 375x812, from the top of the viewport to the
 first pixel of HUD: 560 px resting in a live conversation, 452 px with an
 adaptation question up, 612 px while the tutor is offering openings. A change
@@ -699,6 +729,84 @@ owner's original "minimizaste el escenario", still present, in the phases
 nobody had ever looked at. Scene coverage is the metric; distance-to-HUD is at
 best a lower bound on how much room the HUD left, and a change is measured
 against BOTH.
+
+**FIXED 2026-08-22, and the fix was the fit STRATEGY rather than its
+arithmetic.** An island shot no longer asks "how far back must I be to contain
+this bounding box"; it asks "how close may I stand and still hold the points I
+promised", and lets everything else run off the edges. On a portrait phone that
+also means TILTING DOWN: the island is a floating disc on an alpha canvas, so a
+camera near eye level sees it edge on with transparency above and below, and the
+disc's projected height grows as `sin(elevation)` while its width does not move
+at all. Half of the loss was in `composition.ts` rather than in the framing — a
+fitting shot used to retreat by `viewport / free`, so the microphone dock pushed
+a shot that had just been sized to fill a phone back until it filled a third of
+one; the retreat is now measured against the radius the shot says it is holding,
+which for a subject that deliberately bleeds is no retreat at all.
+
+Re-counted from the canvas alpha channel, same method, same fixtures, at
+375x812: **arriving 6.5% → 50.7%, closing 10.7% → 50.1%, unavailable 3.3% →
+51.6%, adapting 6.9% → 34.6%, personalizing 12.6% → 30.2%**, with introducing
+(72.3% → 73.9%) and conversing (69.1% → 69.1%) unchanged, as they must be —
+those two hold a character at a fixed on-screen height. At 1280x800: **arriving
+13.6% → 53.1%, unavailable 6.6% → 53.3%, adapting 22.3% → 47.4%, personalizing
+32.6% → 48.8%, closing 25.9% → 44.7%**, introducing and conversing unchanged.
+Every phase now paints at least 30% of a phone and at least 44% of a desktop.
+
+The floor is a TEST now, not a screenshot: `tutor-scene/shots.test.ts` → "how
+much of the frame the island actually covers" casts one ray per sample against
+the island's ground disc and holds each shot to a measured floor, so a phase
+that leaves a phone two-thirds empty goes red. It is a headless LOWER BOUND on
+the alpha measurement — it counts no rock, no palms and no characters — which is
+the right direction for a gate to be wrong in; the browser pass stays mandatory.
+
+`personalizing` is the one phase still under half a phone, and the reason is a
+product requirement rather than a framing bug: it is an AUDITION, so the whole
+catalog stands on the island at once out to 0.70 of its radius with a name plate
+on each crown, and holding four of them inside a 17-degree horizontal field
+costs about 19 m of stand-off. Coming closer culls a candidate — measured, at a
+0.62 hold Liruf's plate comes back `hidden` — and a candidate who cannot be
+tapped is the bug the audition exists to fix. It gained a candidate rather than
+losing one: at 375 px all four plates are now on screen where three were before.
+
+**FEWER WORDS IS A COUNT, NOT A FEELING** (added 2026-08-22, the owner's
+"menos palabras, más claridad; menos elementos, más simplicidad"). Every phase
+on this route has a word count and a surface count, both measurable on
+`/dev/tutor-lab`, and a change that claims to simplify states them before and
+after. Counted at 375x812 — visible text nodes inside `[data-tutor-stage]`, and
+`.lf-glass`/`button`/`input` boxes that are neither culled nor nested:
+
+| phase | words before → after | surfaces before → after |
+|---|---|---|
+| arriving | 13 → 7 | 3 → 3 |
+| personalizing | 28 → 20 | 12 → 9 |
+| introducing | 50 → 31 | 10 → 10 |
+| conversing | 27 → 26 | 6 → 6 |
+| adapting | 38 → 36 | 10 → 10 |
+| closing | 22 → 15 | 4 → 4 |
+| unavailable | 15 → 9 | 3 → 3 |
+| **total** | **193 → 144** | **48 → 45** |
+
+Two things the table is honest about. `conversing` and `adapting` barely move
+because almost every word on them is the TUTOR'S OWN, in the caption and the
+transcript — which is the right answer: this pass cuts chrome, never the
+lesson. And at 1280 px the same counts go UP on those two phases, because the
+speech caption was being culled there and is now on screen (§the frame-edge
+correction above); a channel coming back is not a regression in word count, it
+is the word count finally telling the truth.
+
+The rules that produced the cut, in the order they were applied. **A label that
+repeats what the picture already says is a word to delete** — the greeting used
+to end with "What would you like to look at together today?", asked directly
+above four chips that are that question. **A second sentence that restates the
+first is a sentence to delete** — "You've used all of today's tutor time. Come
+back tomorrow!" keeps both halves because they are two facts; "Turn on anything
+that helps. You can change it any time, and your tutor will follow it." kept
+neither, because nothing on that panel is permanent and nobody said it was.
+**A promise keeps its words** — the nickname helper still says the nickname is
+the only name the tutor is ever told, because that is the sentence a learner
+needs in order to choose what to type. **And shorter English is not shorter
+Spanish**: labels swing up to 1.86x across the three locales, so each one is
+written per locale rather than trimmed in en-US and translated.
 
 **What this recipe forbids by name**, because each one is a mistake that has
 already shipped on this route: no `Card` from `components/ui` during a live

@@ -12,8 +12,8 @@ import {
   verifyGeneratedSegment,
   type SessionContext,
 } from '../core/client.js';
-import { storeTurnAudio } from '../depot/client.js';
 import { getVoiceProvider } from '../voice/index.js';
+import { newSpeechScope, speakLine, type SpeechScope } from '../voice/speech.js';
 import { generateSegment } from '../content/generate.js';
 import { moderationReadiness } from '../safety/moderation.js';
 import { TutorOrchestrator, type TurnOutcome } from '../tutor/orchestrator.js';
@@ -40,6 +40,8 @@ interface Live {
   socket: WebSocket;
   session: SessionContext;
   orchestrator: TutorOrchestrator;
+  /** What this session has already paid to say. Dropped when the socket dies. */
+  speech: SpeechScope;
   /** Rolling per-turn floor, so one client cannot spin the model. */
   lastTurnAtMs: number;
   microphone: boolean;
@@ -136,10 +138,12 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
   const minorVoiceAllowed = getConfig().TUTOR_VOICE_FOR_MINORS;
   const microphone = voice && (!session.isMinor || (session.voiceConsent && minorVoiceAllowed));
 
+  const speech = newSpeechScope(session);
   const live: Live = {
     socket,
     session,
-    orchestrator: new TutorOrchestrator(session, Date.now(), (turn, ctx) => synthesize(turn.say, ctx)),
+    orchestrator: new TutorOrchestrator(session, Date.now(), (turn) => speakLine(turn.say, speech)),
+    speech,
     lastTurnAtMs: 0,
     microphone,
     closing: false,
@@ -169,6 +173,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
 
   socket.on('close', () => {
     clearInterval(live.heartbeat);
+    live.speech.memo.clear();
     if (!live.closing) {
       // The socket died without a farewell. Record it as `learner_left`, which
       // is true, rather than as `completed`, which would quietly inflate every
@@ -417,6 +422,22 @@ async function finish(
   live.closing = true;
   clearInterval(live.heartbeat);
 
+  /*
+   * One line, at the one moment the whole session's economics are known.
+   *
+   * Model and voice are split because they behave differently and are fixed
+   * differently: model cost tracks turns, voice cost tracks how much of what
+   * was said had never been said before. `free` counting higher than `paid` is
+   * the pre-generated set and the cache doing their job; `free: 0` on a normal
+   * session means the manifest was never generated in this environment.
+   */
+  const speech = live.orchestrator.speechCounts;
+  console.log(
+    `[oracle] session closed (${reason}) — turns=${live.orchestrator.turnCount} ` +
+      `model=$${live.orchestrator.modelCostUsd.toFixed(5)} voice=$${live.orchestrator.voiceCostUsd.toFixed(5)} ` +
+      `speech paid=${speech.paid} free=${speech.free}`,
+  );
+
   await closeSession({
     sessionId: live.session.sessionId,
     closeReason: reason,
@@ -427,18 +448,6 @@ async function finish(
 
   send(live.socket, { type: 'closed', reason });
   live.socket.close(reason === 'completed' ? CLOSE_CODES.NORMAL : CLOSE_CODES.BUDGET_EXHAUSTED, reason);
-}
-
-async function synthesize(text: string, session: SessionContext): Promise<string | null> {
-  const provider = getVoiceProvider();
-  if (!provider.available) return null;
-  const result = await provider.synthesize({
-    text,
-    locale: session.locale,
-    character: session.character,
-  });
-  const stored = await storeTurnAudio(result.audio, result.mimeType, session.sessionId);
-  return stored?.url ?? null;
 }
 
 async function transcribe(

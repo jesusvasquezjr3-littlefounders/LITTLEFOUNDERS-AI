@@ -109,6 +109,48 @@ describe('purgeExpiredTutorSessions', () => {
     stub({ purged: [{ session_id: '1', audio_paths: [] }] });
     expect(await purgeExpiredTutorSessions()).toMatchObject({ sessionsDeleted: 1, audioDeleted: 0 });
   });
+
+  it('RETAINS shared scripted audio instead of deleting it', async () => {
+    /*
+     * `tutor-speech-shared` holds the closed, human-written line set — the
+     * greetings, the safety lines, the closes — pre-generated once and reused
+     * by every learner (/ORACLE.md §15). Depot is content-addressed, so each
+     * of those is ONE object that thousands of transcripts point at. Deleting
+     * it when the first of those sessions expires would protect nobody and
+     * silence every session afterwards.
+     */
+    const calls = stub({
+      purged: [
+        {
+          session_id: '1',
+          audio_paths: [
+            'tutor-speech/a.mp3',
+            'https://media.example.com/files/tutor-speech-shared/greeting-rho.mp3',
+          ],
+        },
+      ],
+    });
+
+    const result = await purgeExpiredTutorSessions();
+
+    expect(result).toMatchObject({ audioDeleted: 1, audioRetained: 1, audioFailed: 0 });
+    // Retained is not "failed": nothing needs retrying and nothing leaked.
+    expect(result?.orphanedPaths).toEqual([]);
+    const deletes = calls.filter((c) => c.method === 'DELETE');
+    expect(deletes).toHaveLength(1);
+    expect(deletes[0]?.url).toContain('tutor-speech/a.mp3');
+    expect(calls.some((c) => c.url.includes('tutor-speech-shared'))).toBe(false);
+  });
+
+  it('refuses to delete from any other bucket at all', async () => {
+    // The guard predates the shared bucket in usefulness: this function would
+    // otherwise delete whatever path the database handed it, including a
+    // lesson-narration URL written into audio_path by a bug.
+    const calls = stub({ purged: [{ session_id: '1', audio_paths: ['lesson-audio/narration.mp3'] }] });
+    const result = await purgeExpiredTutorSessions();
+    expect(result).toMatchObject({ audioDeleted: 0, audioRetained: 1, audioFailed: 0 });
+    expect(calls.filter((c) => c.method === 'DELETE')).toHaveLength(0);
+  });
 });
 
 describe('POST /api/v1/tutor/internal/retention/purge', () => {

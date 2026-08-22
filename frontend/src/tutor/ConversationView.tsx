@@ -402,7 +402,21 @@ export function ConversationView({
           island has no performance to keep up with, and a line that types
           itself out here is a delay rather than a character speaking.
         */
-        <div className="pointer-events-none fixed inset-x-0 top-3 z-30 mx-auto flex w-full max-w-[min(34rem,92vw)] flex-col items-center gap-2 px-4 lg:top-6">
+        <div
+          /*
+           * BELOW THE WAY OUT, not on top of it. The anchored caption escapes
+           * the fixed chrome through the shared registry (`SafeAreaContext` →
+           * `chromeRef`); this plate is not anchored, so nothing arbitrated for
+           * it and nothing could. Measured on `/dev/tutor-lab` at 375x812 with
+           * no first frame: the plate spanned (15, 8, 345, 102) across the
+           * way-out chip at (16, 16, 44, 44) — the tutor's first sentence laid
+           * over the only navigation on the route, in the one state where the
+           * learner most needs to leave. 80 px clears the chip at both widths
+           * (44 px tall from a 16 px inset on a phone, 44 from 24 on desktop)
+           * with room to spare, and this branch has no scene to protect.
+           */
+          className="pointer-events-none fixed inset-x-0 top-20 z-30 mx-auto flex w-full max-w-[min(34rem,92vw)] flex-col items-center gap-2 px-4"
+        >
           {turn?.text && (
             <HudPlate shape="plate" floor="surface">
               <span className="lf-body" aria-live="polite" aria-atomic="true">

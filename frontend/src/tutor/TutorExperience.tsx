@@ -544,7 +544,7 @@ export function TutorExperience() {
         orb's own blocked line (26, 736, 322, 64), at both widths, one on top of
         the other. Two explanations for one situation is a bug even when they
         clear each other, and the one to keep is the one attached to the control
-        it is about. `micForPhase` hands the orb `tutor.page.unavailable` — the
+        it is about. `micForPhase` hands the orb `tutor.page.tutorUnavailable` — the
         same sentence, in the only place a learner is already looking.
       */}
 

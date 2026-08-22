@@ -110,7 +110,7 @@ function plateHeight(): string {
  * waiting and that pressing this opens it.
  */
 function resizeHandle(): HTMLElement {
-  return screen.getByRole('button', { name: /Make this panel bigger or smaller/ });
+  return screen.getByRole('button', { name: /Resize this panel/ });
 }
 
 /** The sheet's body is not mounted at PEEK, so this is how a test asks. */
@@ -191,7 +191,7 @@ function renderInShell(socket: TutorSocket, ready: boolean) {
 
 describe('answering the adaptation offer', () => {
   const OFFER = 'slower_pacing' as const;
-  const QUESTION = 'Would you like me to slow down a little?';
+  const QUESTION = 'Shall I slow down?';
 
   it('puts the question AND both answers somewhere no camera can take them away', () => {
     const socket = makeSocket({ adaptationOffer: OFFER });
@@ -487,20 +487,20 @@ describe('the resting lesson sheet', () => {
     // character who is teaching it.
     expect(plateHeight()).toBe('88px');
     // In words, on the row itself...
-    expect(resizeHandle().textContent).toContain('Open the activity');
+    expect(resizeHandle().textContent).toContain('Activity ready');
     // ...and to a learner who is not looking at it. The transcript's own live
     // region is not mounted at PEEK, so this is the only channel left.
     expect(screen.getByRole('status', { name: '' }).textContent).toBe(
-      'An activity is waiting for you',
+      'An activity is ready.',
     );
   });
 
   it('names the panel plainly when nothing has arrived', () => {
     renderConversation(makeSocket(), { ready: true });
-    expect(resizeHandle().textContent).toContain('Open your panel');
+    expect(resizeHandle().textContent).toContain('Conversation');
     // No news, no announcement. A row that says something on every turn is a
     // row a learner learns to ignore on the turn that matters.
-    expect(screen.queryByText('An activity is waiting for you')).toBeNull();
+    expect(screen.queryByText('An activity is ready.')).toBeNull();
   });
 
   it('carries the visible words into the accessible name of the row', () => {
@@ -508,8 +508,8 @@ describe('the resting lesson sheet', () => {
     const name = resizeHandle().getAttribute('aria-label') ?? '';
     // Visible label first: leading with the resize sentence drops the words a
     // learner would say out loud out of the front of the name.
-    expect(name.startsWith('Open the activity')).toBe(true);
-    expect(name).toContain('Make this panel bigger or smaller');
+    expect(name.startsWith('Activity ready')).toBe(true);
+    expect(name).toContain('Resize this panel');
   });
 
   it('opens on one press, and the activity is there when it does', () => {

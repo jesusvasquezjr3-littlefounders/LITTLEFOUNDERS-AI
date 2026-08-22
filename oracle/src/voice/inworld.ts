@@ -108,6 +108,22 @@ export class InworldVoiceProvider implements VoiceProvider {
     return Boolean(getConfig().INWORLD_API_KEY);
   }
 
+  /**
+   * Everything that decides what this character sounds like, in one string.
+   *
+   * The cache keys on it, so a re-enrolment (`voices:clone` issues a new
+   * voiceId) or a model switch produces different keys and the old audio is
+   * simply never found again. That is the correct behaviour and the cheap one:
+   * no invalidation pass, no stale clip, no child hearing a voice that was
+   * replaced on purpose.
+   */
+  voiceFingerprint(character: SynthesisRequest['character'], locale: Locale): string | null {
+    if (!getConfig().INWORLD_API_KEY) return null;
+    const voiceId = resolveCharacterVoice(character, locale);
+    if (!voiceId) return null;
+    return `inworld:${getConfig().INWORLD_TTS_MODEL || DEFAULT_TTS_MODEL}:${voiceId}`;
+  }
+
   private headers(): Record<string, string> {
     const key = getConfig().INWORLD_API_KEY;
     if (!key) throw new VoiceUnavailableError('INWORLD_API_KEY is not configured');

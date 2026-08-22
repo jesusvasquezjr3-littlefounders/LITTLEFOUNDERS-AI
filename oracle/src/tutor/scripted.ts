@@ -1,15 +1,16 @@
-import type { Locale } from '../context/schema.js';
+import { CHARACTER_IDS, LOCALES, type CharacterId, type Locale } from '../context/schema.js';
 import type { SafetyCategory } from '../safety/classifier.js';
 import type { TutorTurn } from './turnSchema.js';
 
 /*
- * Human-written lines, for every moment a generated one must not be used.
+ * Human-written lines, for every moment a generated one must not be used —
+ * and now also for the moment that opens every single session.
  *
  * These are the most important strings in the service and the least
- * impressive-looking. Every one of them covers a case where something went
- * wrong — the model is down, moderation refused, a child said something that
- * must never reach a language model — and in all of those the correct output
- * is a sentence a person wrote and reviewed, in the child's own language.
+ * impressive-looking. Most of them cover a case where something went wrong —
+ * the model is down, moderation refused, a child said something that must
+ * never reach a language model — and in all of those the correct output is a
+ * sentence a person wrote and reviewed, in the child's own language.
  *
  * WHY THEY LIVE IN CODE RATHER THAN IN THE FRONTEND'S i18n FILES. These are
  * spoken by the tutor, so they go through the same turn pipeline as a
@@ -20,6 +21,20 @@ import type { TutorTurn } from './turnSchema.js';
  *
  * They are written to be true rather than soothing. A child who has just
  * disclosed something serious is not helped by a cheerful deflection.
+ *
+ * ── THIS SET IS CLOSED, AND THAT IS WHAT MAKES IT FREE ──────────────────────
+ *
+ * Every text in this file is enumerated by `scriptedLineCatalogue()` below.
+ * Across 4 characters and 3 locales the whole set is 144 pieces of audio that
+ * never change, so `npm run speech:pregenerate` synthesises them ONCE and the
+ * runtime serves the stored URLs forever after (/ORACLE.md §15).
+ *
+ * The consequence for whoever edits a line here: changing one character of a
+ * string changes its content hash, so the pre-generated entry stops matching
+ * and the runtime pays for that line again until the script is re-run. That is
+ * deliberate and it is a safety property, not an inconvenience — a cached line
+ * is only ever the line that was actually reviewed, and there is no way for
+ * edited text to be spoken in the old audio.
  */
 
 type Trilingual = Record<Locale, string>;
@@ -106,10 +121,58 @@ const CONSENT_REVOKED: Trilingual = {
   'pt-BR': 'Vamos desligar o microfone. Você pode continuar tocando nas suas respostas.',
 };
 
-const GREETING_FALLBACK: Trilingual = {
-  'en-US': 'Hello! Good to see you. What would you like to work on today?',
-  'es-MX': '¡Hola! Qué gusto verte. ¿En qué te gustaría trabajar hoy?',
-  'pt-BR': 'Oi! Que bom te ver. No que você quer trabalhar hoje?',
+/*
+ * ── THE OPENING LINE, WRITTEN RATHER THAN GENERATED ─────────────────────────
+ *
+ * The greeting used to be a model call: the orchestrator asked DeepSeek to
+ * invent an opening, then paid to synthesize whatever came back. That is a
+ * reasoning round trip (~4 s) plus a text-to-speech charge at the start of
+ * EVERY session, forever, to produce a sentence that varies only in ways
+ * nobody asked for. The owner asked for it to go.
+ *
+ * These twelve lines replace it, and they are better than an improvisation for
+ * the ordinary reason: a person wrote them once, in character, per locale, and
+ * they will be heard thousands of times. They are written per locale rather
+ * than translated from the English — es-MX and pt-BR each say the thing that
+ * character would say in that language, which is not the same sentence.
+ *
+ * NO NICKNAME, ON PURPOSE. The learner's name belongs in the CAPTION, where
+ * the client composes it; baking it into the audio would make the line
+ * unshareable between learners and put us straight back into paying for one
+ * synthesis per child per session. It also means this audio contains nothing
+ * about anybody, which is what lets it live in the shared bucket (§15).
+ *
+ * The voices follow GLOSSARY.md's canonical cast table — Dina female and calm,
+ * Liruf male and bouncing, Dr. Rho male ("el Dr. Rho", never "la Dra.") and
+ * precise, Zara Vex female and quick. Get one wrong and a child meets a
+ * different person from the one they know out of the lessons.
+ */
+const GREETINGS: Record<CharacterId, Trilingual> = {
+  // Calm and patient. She opens by giving the learner permission to be slow.
+  dina: {
+    'en-US': 'Hello. Take your time getting settled — I am in no hurry at all. What shall we look at together today?',
+    'es-MX': 'Hola. Acomódate con calma, que yo no tengo ninguna prisa. ¿Qué te gustaría que viéramos juntos hoy?',
+    'pt-BR': 'Oi. Pode se ajeitar com calma, eu não estou com pressa nenhuma. O que você quer ver comigo hoje?',
+  },
+  // Playful, short words, all energy — and MALE, so the adjectives agree.
+  liruf: {
+    'en-US': 'You came back! I waited all morning and I could not sit still. Pick something and let us start!',
+    'es-MX': '¡Volviste! Te esperé toda la mañana y no me podía quedar quieto. ¡Escoge algo y empezamos!',
+    'pt-BR': 'Você voltou! Esperei a manhã toda e não conseguia ficar parado. Escolhe uma coisa e a gente começa!',
+  },
+  // Warm and precise. "el Dr. Rho", never "la Dra." — he offers one small,
+  // exact first step, which is how he explains everything.
+  rho: {
+    'en-US': 'Good to see you. Let us start with something small and get it exactly right. What would you like to work on?',
+    'es-MX': 'Qué gusto verte. Empecemos por algo pequeño y hagámoslo bien hecho. ¿En qué te gustaría trabajar?',
+    'pt-BR': 'Que bom te ver. Vamos começar por algo pequeno e fazer bem feito. No que você quer trabalhar?',
+  },
+  // Curious and quick — she arrives already mid-thought, then hands over.
+  zara: {
+    'en-US': 'Oh good, you are here. I already have about nine questions — but you first. What are we figuring out today?',
+    'es-MX': 'Ay, qué bueno que llegaste. Ya traigo como nueve preguntas, pero primero tú. ¿Qué vamos a descubrir hoy?',
+    'pt-BR': 'Ah, que bom que você chegou. Já estou com umas nove perguntas, mas primeiro você. O que a gente vai descobrir hoje?',
+  },
 };
 
 export function safetyResponse(category: SafetyCategory, locale: Locale): TutorTurn {
@@ -137,8 +200,18 @@ export function consentRevokedResponse(locale: Locale): TutorTurn {
   return turn(CONSENT_REVOKED[locale], 'neutral', 'nod');
 }
 
-export function greetingFallback(locale: Locale): TutorTurn {
-  return turn(GREETING_FALLBACK[locale], 'happy', 'wave');
+/**
+ * The session's opening line — written, in character, and never generated.
+ *
+ * Everyone waves; the emotion follows the cast table. Liruf and Zara open
+ * `excited` because bouncing and racing ahead are who they are, Dina and Dr.
+ * Rho open `happy` because calm and precise are who THEY are. It matters more
+ * than it looks for Liruf and Dina, who have no mouth card: posture is their
+ * only speech channel (/ORACLE.md §2.2).
+ */
+export function greetingResponse(character: CharacterId, locale: Locale): TutorTurn {
+  const lively = character === 'liruf' || character === 'zara';
+  return turn(GREETINGS[character][locale], lively ? 'excited' : 'happy', 'wave');
 }
 
 export function closingResponse(locale: Locale, kind: 'soft' | 'hard'): TutorTurn {
@@ -151,3 +224,60 @@ export function closingResponse(locale: Locale, kind: 'soft' | 'hard'): TutorTur
     offerAdaptation: null,
   };
 }
+
+/*
+ * ── THE CATALOGUE ───────────────────────────────────────────────────────────
+ *
+ * Every fixed line this service can speak, enumerated once so that the
+ * pre-generation script and the runtime cannot disagree about what the set is.
+ *
+ * They are enumerated PER CHARACTER even though most of the texts are
+ * character-independent, because the audio is not: each of the four has their
+ * own cloned voice per locale (/ORACLE.md §3.3), so "That is our time for
+ * today" is four different recordings, not one.
+ *
+ * 12 texts × 4 characters × 3 locales = 144 clips, and that number is the
+ * whole point: it is finite, it does not grow with usage, and once it exists
+ * nobody is ever billed for any of it again.
+ */
+export interface ScriptedLine {
+  /** Stable id, for the manifest and for a human reading a diff. */
+  key: string;
+  character: CharacterId;
+  locale: Locale;
+  text: string;
+}
+
+export function scriptedLineCatalogue(): ScriptedLine[] {
+  const lines: ScriptedLine[] = [];
+  for (const character of CHARACTER_IDS) {
+    for (const locale of LOCALES) {
+      lines.push({ key: 'greeting', character, locale, text: GREETINGS[character][locale] });
+      for (const [category, trilingual] of Object.entries(SAFETY_LINES)) {
+        lines.push({ key: `safety.${category}`, character, locale, text: trilingual[locale] });
+      }
+      lines.push({ key: 'model_down', character, locale, text: MODEL_DOWN[locale] });
+      lines.push({ key: 'moderation_blocked', character, locale, text: MODERATION_BLOCKED[locale] });
+      lines.push({ key: 'soft_close', character, locale, text: SOFT_CLOSE[locale] });
+      lines.push({ key: 'hard_close', character, locale, text: HARD_CLOSE[locale] });
+      lines.push({ key: 'consent_revoked', character, locale, text: CONSENT_REVOKED[locale] });
+    }
+  }
+  return lines;
+}
+
+/**
+ * Every distinct scripted TEXT, for the runtime's "is this line reusable?"
+ * question.
+ *
+ * Membership decides which Depot bucket a clip lands in and therefore how long
+ * it lives (`src/voice/speech.ts`): a text in here is human-written, closed,
+ * identical for every learner and contains nothing about anybody, so it is
+ * shareable and permanent. Anything else belongs to one child's session.
+ *
+ * Derived from the catalogue rather than listed again, so an edited line can
+ * never fall out of the set by being edited in only one of two places.
+ */
+export const SCRIPTED_TEXTS: ReadonlySet<string> = new Set(
+  scriptedLineCatalogue().map((line) => line.text),
+);

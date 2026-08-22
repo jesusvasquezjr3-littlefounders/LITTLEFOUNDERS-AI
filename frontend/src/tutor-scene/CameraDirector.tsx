@@ -88,6 +88,30 @@ const ARRIVAL_EPSILON = 0.02;
 const ORBIT_RATE = 0.04;
 
 /**
+ * How far the idle orbit is allowed to travel either side of the shot's own
+ * bearing, in radians.
+ *
+ * IT USED TO BE UNBOUNDED, and that was survivable only because the island shot
+ * used to stand so far back that nothing could leave the frame however far the
+ * camera walked round. `angle = ORBIT_RATE * phase` on a phase that only ever
+ * accumulates is a CIRCUIT: half a minute on `unavailable` is 69 degrees, two
+ * minutes is a quarter turn, and the placement solver faces the cast outward
+ * along the stage bearing, so far enough round is the backs of their heads.
+ *
+ * Now that `establishing` frames close enough to bleed off the sides of a
+ * phone, an unbounded orbit also walks the cast out of frame: at 375x812 the
+ * half-frame is about 1.8 m of world and a character stands about 2.0 m from
+ * the island's centre, so a quarter turn puts them outside it. A shot cannot
+ * promise to hold a subject it is going to orbit away from.
+ *
+ * 0.10 rad is 5.7 degrees — the parallax still reads as a living place rather
+ * than a photograph, it never approaches the cast's own facing, and it is small
+ * enough that `HOLD_MARGIN` covers the lateral travel it causes (about 0.20 m
+ * for a subject 2 m off the aim, against 0.25 m of reserve).
+ */
+const ORBIT_SWING = 0.1;
+
+/**
  * How often the canvas's own position on the page is re-read, in seconds.
  *
  * HUD rects are measured against the viewport and the camera composes against
@@ -295,7 +319,12 @@ export function CameraDirector({
          * from, which is both correct and free.
          */
         orbitPhase.current += dt * amplitude;
-        const angle = ORBIT_RATE * orbitPhase.current;
+        // A SWING, not a circuit — see `ORBIT_SWING`. The phase still only
+        // advances while an orbit shot is live, so the stage comes back to the
+        // bearing it left from rather than to wherever a global clock had got
+        // to; bounding it means it also comes back to a bearing that still
+        // holds what the shot promised.
+        const angle = ORBIT_SWING * Math.sin(ORBIT_RATE * orbitPhase.current);
         const cos = Math.cos(angle);
         const sin = Math.sin(angle);
         goalX = composed.target.x + offsetX * cos + offsetZ * sin;

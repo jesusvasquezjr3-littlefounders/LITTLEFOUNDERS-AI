@@ -972,6 +972,68 @@ the activity is DOM chrome on a plate, and a world camera cannot frame a
 screen-space rectangle. The pair moment that IS expressible — one character
 putting a question to another — is `two-shot`, which `/ORACLE.md` §9.4 assigns.
 
+**An island shot stands as CLOSE as its promises allow and lets the rest
+bleed** (added 2026-08-22). `establishing` used to fit the island's bounding BOX
+inside the frame on both axes. On a portrait phone half the horizontal field of
+view is 8.53 degrees, so the width term pushed the camera to 29 m and the island
+then used a quarter of the frame's height — 220x110 px in an 812 px page, 6.5%
+of the canvas by alpha count, which is the owner's original "minimizaste el
+escenario" surviving in the phases nobody had photographed. A subject with air
+on all four sides is an object on a table; one that runs past the edge is a
+place you are standing in.
+
+So the fit is now a set of PROMISED POINTS (`shots.ts` → `holdDistance`): the
+cast's heads, crowns and chests, the top of the island's own box, and a ring at
+`ISLAND_HOLD` / `APPROACH_HOLD` of the island's radius. Each point states the
+distance IT needs to stay inside the frame with `HOLD_MARGIN` to spare, the shot
+takes the largest, and everything outside that runs off the edges. `ISLAND_HOLD`
+is **below 1 in portrait and above 1 in landscape**, which is the whole
+composition decision in one constant: a phone gets an island that overflows, a
+desktop gets the whole rim with margin — the latter because `DESIGN.md` spends
+the freed width on the scene and because the `island.rim.*` pads are pickable
+there.
+
+**Elevation is what fills a portrait frame**, and it is not a taste. The island
+is a floating disc on an `alpha: true` canvas, so a camera near the cast's eye
+line sees it EDGE ON with transparency above and below; its projected height
+grows as `sin(elevation)` while its width does not move at all. Portrait
+therefore tilts down harder than landscape (`ISLAND_ELEVATION`,
+`APPROACH_ELEVATION`, `TWO_SHOT_ELEVATION` are all per aspect), and `two-shot`
+went from a level camera — which framed two figures against void, 7.0% of a
+phone — to a tilt that puts the island BEHIND the pair.
+
+**`approach` is now WIDER than `establishing` on a phone, and that inversion is
+deliberate.** Its one phase is `personalizing`, which is an audition: the whole
+catalog stands out to 0.70 of the island's radius with a name plate on each
+crown, and a plate whose anchor leaves the frame is hidden AND inert. Holding
+four of them costs about 19 m in portrait while `establishing`, free to bleed,
+stands at 14 m. The two shots frame different subjects — the PLACE and the
+PEOPLE — and only in landscape is the place the larger of the two.
+
+**The idle orbit is a SWING, not a circuit** (`CameraDirector` → `ORBIT_SWING`,
+0.10 rad). It used to accumulate without bound, which was survivable only while
+the island shot stood far enough back that nothing could leave the frame however
+far the camera walked round. A shot that bleeds cannot promise to hold a subject
+it is going to orbit away from, and the placement solver faces the cast outward
+along the stage bearing, so far enough round is the backs of their heads.
+
+**The retreat a fitting shot owes the HUD is measured against what the shot is
+holding**, not against the viewport (`composition.ts`). The old rule was
+`max(viewport / free)`, so a microphone dock covering a quarter of the height
+pushed every island shot back a third whatever it was framing — and coverage
+falls as the SQUARE of that, which cancelled the framing at 1280x800 from 41.6%
+to 15.7%. `keepInFrame` is now stated PER SCREEN AXIS for the same reason: one
+scalar reported an island shot's 3.4 m lateral ring as 3.4 m of vertical
+protection too, against a 2.7 m half-frame, and the solver concluded the subject
+already overflowed and refused to compose at all.
+
+**Coverage is a gate.** `shots.test.ts` → "how much of the frame the island
+actually covers" casts one ray per sample against the island's ground disc and
+holds every shot to a floor at both breakpoints, so a phase that leaves a phone
+two-thirds empty fails a test rather than a screenshot. It is a deliberate LOWER
+BOUND on the canvas alpha measurement — no rock, no palms, no characters — and
+it does not replace looking.
+
 **Every shot is asserted to hold its own subject, at BOTH breakpoints.**
 `shots.test.ts` projects each shot's promised points — heads with a 12% margin
 inside the frame edge, crown/chest/rim anchors merely inside it — at 1280×800

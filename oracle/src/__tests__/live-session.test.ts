@@ -316,6 +316,9 @@ describe('a real live session over a real websocket', () => {
     const greeting = opening.find((m) => m.type === 'turn');
     expect(greeting).toMatchObject({ emotion: 'happy', audioUrl: null });
     expect(String(greeting?.say)).not.toBe('');
+    // WRITTEN, not generated: the opening line costs neither a model call nor
+    // a synthesis, in this session or in any session ever again.
+    expect(modelJournal.bodies).toHaveLength(0);
 
     // ── the learner says something ──
     const answered = collect(socket, (m) => m.filter((x) => x.type === 'turn').length >= 1);
@@ -343,7 +346,15 @@ describe('a real live session over a real websocket', () => {
     const { socket } = open(await socketUrl());
     await collect(socket, (m) => m.some((x) => x.type === 'turn'));
 
+    // The greeting is scripted now, so the first thing that reaches the model
+    // is a learner turn. Drive one, or this asserts about an empty journal.
+    // (`collect` starts a fresh buffer, so one more turn is the whole wait.)
+    const answered = collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quiero ahorrar para una bici' }));
+    await answered;
+
     const sent = modelJournal.bodies.join('\n');
+    expect(sent).not.toBe('');
     expect(sent).not.toContain(USER_ID);
     expect(sent).not.toContain(SESSION_ID);
     // The nickname is the ONE name-shaped value permitted to travel (§4.1).

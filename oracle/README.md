@@ -33,6 +33,9 @@ startup log says exactly what this instance can and cannot do.
 | `npm run build` / `start` | Compile / run |
 | `npm run type-check` · `lint` · `test` | The usual gates |
 | `npm run verify:tutor` | **The §5 gate.** Prints, check by check, that the model context rejects every unlisted field and the injection canary corpus still fails to escape |
+| `npm run voices:clone` | Enrols the four characters' cloned voices, per locale, from Echo's reference samples |
+| `npm run voices:verify` · `speaks:verify` | The provider round trip, and whether a character can actually be heard end to end |
+| `npm run speech:pregenerate` | **Buys the fixed lines once.** Synthesises every scripted line (12 texts × 4 characters × 3 locales = 144 clips) and records the URLs in `speech.pregenerated.json`. Reports without `--confirm`; makes zero network calls in that mode |
 
 ## Routes
 
@@ -60,6 +63,29 @@ browser ──HTTPS──> Core            auth, preferences, personalization, g
 Oracle holds **no database credentials**. Every fact about a learner arrives
 from Core over HTTP, already scoped to one person.
 
+## What speech costs, and why most of it is free
+
+Text-to-speech is the most expensive surface in the product, and most of what
+the tutor says it has said before. Three things sit in front of the paid call,
+cheapest first (`src/voice/speech.ts`):
+
+1. **The fixed lines are bought once, ever.** Greetings, the six safety
+   responses, both closes and the fallbacks are a closed set — 12 texts × 4
+   characters × 3 locales — synthesised by `npm run speech:pregenerate` and
+   recorded in `speech.pregenerated.json`. **The greeting is written, not
+   generated**: it costs no model call and no synthesis, so the session opens
+   as fast as the socket.
+2. **A cache**, keyed on a hash of (voice fingerprint, exact text), in the
+   Redis already here for the rate limiter. An unreachable Redis is a MISS —
+   one paid call, spoken normally. Never a silence.
+3. **The provider**, and only then. What it charges lands in the session ledger
+   (`voiceCostUsd`), which is what makes the saving measurable.
+
+Two buckets, because reuse and deletion are the same question: `tutor-speech`
+holds one child's session audio and is swept at 90 days; `tutor-speech-shared`
+holds the scripted set, belongs to nobody, and Core's sweep refuses to touch
+it.
+
 ## Environment
 
 See [`.env.example`](./.env.example). Three that catch people out:
@@ -67,9 +93,14 @@ See [`.env.example`](./.env.example). Three that catch people out:
 - `TUTOR_SESSION_SECRET` must **differ** from `INTERNAL_API_KEY`.
 - `SESSION_HARD_BUDGET_MS` must exceed `SESSION_SOFT_BUDGET_MS`, or startup
   fails deliberately.
-- `VOICE_PROVIDER=none` is the default. Set `inworld` only after verifying the
-  API surface in `src/voice/inworld.ts` (marked UNVERIFIED) **and** with a
-  data-processing agreement covering minors' audio in place.
+- `VOICE_PROVIDER=none` is the default. The API surface in
+  `src/voice/inworld.ts` was verified against the live service on 2026-08-21
+  (`npm run voices:verify` re-runs it), but a minor's microphone additionally
+  needs `TUTOR_VOICE_FOR_MINORS=true`, which needs a data-processing agreement
+  covering minors' audio.
+- `SPEECH_CACHE_SCOPE=scripted` is the default and the safe one. `all` shares
+  model-generated audio between learners, which outlives the 90-day retention
+  window — an owner decision, not a tuning knob.
 
 ## Deployment
 

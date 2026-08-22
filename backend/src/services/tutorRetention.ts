@@ -25,6 +25,14 @@ export interface PurgeResult {
   sessionsDeleted: number;
   audioDeleted: number;
   audioFailed: number;
+  /**
+   * Paths deliberately left in place because they are shared, learner-
+   * independent scripted audio rather than this child's session
+   * (`SWEEPABLE_BUCKET` below). Counted separately so "retained" can never be
+   * read as "deleted" or as "failed" — the whole point of this job is that its
+   * numbers mean what they say.
+   */
+  audioRetained: number;
   /** Depot paths whose delete failed. Logged so a retry can target them. */
   orphanedPaths: string[];
 }
@@ -52,12 +60,15 @@ export async function purgeExpiredTutorSessions(limit = 500): Promise<PurgeResul
   const paths = rows.flatMap((row) => row.audio_paths ?? []).filter((p) => typeof p === 'string' && p !== '');
 
   let audioDeleted = 0;
+  let audioRetained = 0;
   const orphanedPaths: string[] = [];
   for (const path of paths) {
     // Sequential rather than parallel: this runs at 03:00 against a service
     // that also serves lesson audio, and a burst of hundreds of deletes is a
     // self-inflicted outage for no gain — nothing is waiting on this job.
-    if (await deleteDepotFile(path)) audioDeleted += 1;
+    const outcome = await deleteDepotFile(path);
+    if (outcome === 'deleted') audioDeleted += 1;
+    else if (outcome === 'retained') audioRetained += 1;
     else orphanedPaths.push(path);
   }
 
@@ -65,9 +76,34 @@ export async function purgeExpiredTutorSessions(limit = 500): Promise<PurgeResul
     sessionsDeleted: rows.length,
     audioDeleted,
     audioFailed: orphanedPaths.length,
+    audioRetained,
     orphanedPaths,
   };
 }
+
+/**
+ * The ONE bucket this sweep is allowed to delete from.
+ *
+ * Oracle writes speech into two: `tutor-speech` holds one child's session
+ * audio and dies with the session, and `tutor-speech-shared` holds the closed,
+ * human-written scripted set — the greetings, the safety lines, the closes —
+ * which is identical for every learner, contains nothing about anybody, and is
+ * pre-generated once and reused forever (/ORACLE.md §15).
+ *
+ * The guard matters because Depot is CONTENT-ADDRESSED: the same bytes are one
+ * object, so a shared clip is a single file that thousands of transcripts
+ * point at. Deleting it when the first of those sessions expires would protect
+ * nobody and silence every session after it — and the same hazard already
+ * existed unnamed, because this function would previously delete any path the
+ * database handed it, including a lesson-narration URL written into
+ * `audio_path` by a bug.
+ *
+ * So the bucket name is the retention policy, and it is checked here rather
+ * than trusted upstream.
+ */
+const SWEEPABLE_BUCKET = 'tutor-speech';
+
+type DeleteOutcome = 'deleted' | 'retained' | 'failed';
 
 /**
  * Deletes one stored audio file.
@@ -78,12 +114,15 @@ export async function purgeExpiredTutorSessions(limit = 500): Promise<PurgeResul
  * Depot reported and that has been an absolute URL in every environment so
  * far — parsing defensively costs nothing and guessing wrong leaks a file.
  */
-async function deleteDepotFile(pathOrUrl: string): Promise<boolean> {
+async function deleteDepotFile(pathOrUrl: string): Promise<DeleteOutcome> {
   const { FILEBASE_URL, FILEBASE_INTERNAL_KEY } = getConfig();
-  if (!FILEBASE_URL || !FILEBASE_INTERNAL_KEY) return false;
+  if (!FILEBASE_URL || !FILEBASE_INTERNAL_KEY) return 'failed';
 
   const tail = extractBucketAndFile(pathOrUrl);
-  if (!tail) return false;
+  if (!tail) return 'failed';
+  // Not this job's file. Nothing failed and nothing needs retrying — a shared
+  // scripted clip has no session to expire with. See SWEEPABLE_BUCKET above.
+  if (!tail.startsWith(`${SWEEPABLE_BUCKET}/`)) return 'retained';
 
   try {
     const response = await fetch(`${FILEBASE_URL}/api/v1/files/${tail}`, {
@@ -92,9 +131,9 @@ async function deleteDepotFile(pathOrUrl: string): Promise<boolean> {
       signal: AbortSignal.timeout(10_000),
     });
     // A 404 means it is already gone, which is the state we wanted.
-    return response.ok || response.status === 404;
+    return response.ok || response.status === 404 ? 'deleted' : 'failed';
   } catch {
-    return false;
+    return 'failed';
   }
 }
 

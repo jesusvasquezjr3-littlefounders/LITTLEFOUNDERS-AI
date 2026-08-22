@@ -1,7 +1,7 @@
 import { createServer } from 'http';
 import { createApp, SERVICE } from './app.js';
 import { getConfig } from './env.js';
-import { rateLimitClient } from './middleware/rateLimit.js';
+import { redisClient } from './lib/redis.js';
 import { attachTutorSocket, closeAllSockets } from './ws/server.js';
 import { modelConfigured } from './model/provider.js';
 import { getVoiceProvider } from './voice/index.js';
@@ -50,10 +50,17 @@ httpServer.listen(config.PORT, () => {
   }
 });
 
-// Redis connects in the background. Non-blocking, and never fatal.
-rateLimitClient
+/*
+ * Redis connects in the background. Non-blocking, and never fatal.
+ *
+ * It now backs two things — the rate limiter and the speech cache — and both
+ * degrade rather than fail without it: the limiter passes traffic through, and
+ * a cache miss becomes a paid text-to-speech call. Neither is silence and
+ * neither is an outage.
+ */
+redisClient
   .connect()
-  .then(() => console.log(`[${SERVICE}] rate-limit redis connected`))
+  .then(() => console.log(`[${SERVICE}] redis connected (rate limit + speech cache)`))
   .catch((err: unknown) => console.warn(`[${SERVICE}] redis connect failed (non-fatal):`, err));
 
 function shutdown(): void {
@@ -62,7 +69,7 @@ function shutdown(): void {
   // a connection that simply stops answering mid-sentence.
   closeAllSockets(wss);
   httpServer.close();
-  rateLimitClient.disconnect().catch(() => {});
+  redisClient.disconnect().catch(() => {});
   setTimeout(() => process.exit(0), 250).unref();
 }
 

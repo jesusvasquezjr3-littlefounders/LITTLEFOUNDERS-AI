@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import type { AnchorId } from './anchors';
 import type { HudRect } from './composition';
-import { isAnchorNodeVisible, stackClearance, type ViewportBox } from './culling';
+import { clampIntoView, isAnchorNodeVisible, stackClearance, type ViewportBox } from './culling';
 import { escapeReserved, HUD_SURFACE_GAP_PX } from './hudSpace';
 import { useSafeArea } from './SafeAreaContext';
 
@@ -125,6 +125,8 @@ interface AnchoredNode {
   avoid: boolean;
   /** True for a node that rises clear of other stacking nodes instead of onto them. */
   stack: boolean;
+  /** True for a node that clamps back into the frame instead of being culled. */
+  keepInFrame: boolean;
   /**
    * Half the node's own UNSCALED layout box, in CSS pixels.
    *
@@ -238,6 +240,30 @@ export interface AnchorOptions {
    * unrelated families of chrome never start pushing each other around.
    */
   stack?: boolean;
+  /**
+   * Never disappear. Slide back into the frame instead of being culled.
+   *
+   * FOR THE SPEECH CAPTION AND NOTHING ELSE, and it closes a defect that was
+   * measured rather than reasoned about. /DESIGN.md → Screen Recipes → Tutor
+   * already states the rule — "a WorldChip hides, and the speech caption MOVES,
+   * because it is the deaf learner's whole channel and may never hide" — and
+   * `avoid` only ever implemented half of it. `avoid` escapes viewport-anchored
+   * CHROME; nothing escaped the frame EDGE. So at 1280x800 in `conversing`, a
+   * shot that fills the frame with the tutor's face puts the crown above the top
+   * of the screen, the caption's box left the view, and the ordinary cull ran:
+   * `hidden` and `inert`, measured live on `/dev/tutor-lab`. On desktop, for the
+   * whole of every conversation, the tutor's words existed only inside the
+   * lesson plate — and the plate rests CLOSED on a phone, so the same rule would
+   * have taken the last copy away there too.
+   *
+   * Clamping is the smallest honest answer: the caption keeps following the
+   * speaker's crown everywhere it can, and where the crown is off screen it
+   * stops at the edge instead of leaving with it. It stays a per-node opt-in
+   * because for everything else disappearing is CORRECT — a chip pinned to the
+   * far side of the island belongs off screen when the island is, and a chip
+   * pressed to the frame edge points at nothing.
+   */
+  keepInFrame?: boolean;
 }
 
 export function useAnchorSlot(
@@ -253,6 +279,7 @@ export function useAnchorSlot(
   const place = options.place ?? 'centre';
   const avoid = options.avoid ?? false;
   const stack = options.stack ?? false;
+  const keepInFrame = options.keepInFrame ?? false;
 
   return useCallback(
     (node: HTMLElement | null) => {
@@ -314,6 +341,7 @@ export function useAnchorSlot(
         placement: place,
         avoid,
         stack,
+        keepInFrame,
         halfWidth: width > 0 ? width / 2 : 0,
         halfHeight: height > 0 ? height / 2 : 0,
         culled: true,
@@ -327,7 +355,7 @@ export function useAnchorSlot(
       set.add(entry);
       attached.current = entry;
     },
-    [registry, slot, place, avoid, stack],
+    [registry, slot, place, avoid, stack, keepInFrame],
   );
 }
 
@@ -429,7 +457,7 @@ export function AnchorProjector() {
       const y = view.current.top + (-projected.y * 0.5 + 0.5) * size.height;
 
       for (const entry of nodes) {
-        if (behind) {
+        if (behind && !entry.keepInFrame) {
           cull(entry);
           continue;
         }
@@ -464,6 +492,18 @@ export function AnchorProjector() {
          */
         let targetX = x;
         let targetY = y - rise;
+        /*
+         * A point behind the camera projects to a plausible position mirrored
+         * through the origin, so for the one node that may not disappear there
+         * is nothing to follow and the honest answer is a fixed place: the top
+         * of the frame, where the caption already lives whenever the speaker is
+         * close. The escape and the clamp below still apply to it, so it lands
+         * clear of the way out rather than under it.
+         */
+        if (behind) {
+          targetX = view.current.left + view.current.width / 2;
+          targetY = view.current.top + halfHeight + HUD_SURFACE_GAP_PX;
+        }
         if (entry.avoid && halfWidth > 0 && halfHeight > 0 && reserved.current.length > 0) {
           const move = escapeReserved(
             {
@@ -513,8 +553,27 @@ export function AnchorProjector() {
          * caught half-cut.
          */
         if (!isAnchorNodeVisible(targetX, targetY, halfWidth, halfHeight, view.current)) {
-          cull(entry);
-          continue;
+          if (!entry.keepInFrame) {
+            cull(entry);
+            continue;
+          }
+          /*
+           * It slides back in rather than leaving. See `keepInFrame`: the rule
+           * /DESIGN.md states — the caption MOVES, it never hides — was only
+           * half implemented, because `avoid` escapes fixed CHROME and nothing
+           * escaped the frame EDGE.
+           */
+          const clamped = clampIntoView(targetX, targetY, halfWidth, halfHeight, {
+            // Inset by the same gap the node keeps over a crown, so a clamped
+            // caption reads as resting against the edge rather than as cropped
+            // by it. Measured without it: the plate sat at top = 0, flush.
+            left: view.current.left + HUD_SURFACE_GAP_PX,
+            top: view.current.top + HUD_SURFACE_GAP_PX,
+            width: view.current.width - HUD_SURFACE_GAP_PX * 2,
+            height: view.current.height - HUD_SURFACE_GAP_PX * 2,
+          });
+          targetX = clamped.x;
+          targetY = clamped.y;
         }
 
         if (!entry.placed) {
