@@ -306,6 +306,13 @@ export default function TutorLabPage() {
    */
   const [panelOpen, setPanelOpen] = useState(() => window.innerWidth >= 768);
   const [consentGranted, setConsentGranted] = useState(false);
+  /*
+   * The DPA policy, separately from consent, because they are separate facts
+   * and the four combinations are four different screens. The default is
+   * `blocked` — the state we actually ship in, and the one worth landing on
+   * first when this page opens.
+   */
+  const [voicePolicy, setVoicePolicy] = useState<'allowed' | 'blocked'>('blocked');
 
   /*
    * The three flags `TutorExperience` DERIVES and the lab has to be TOLD.
@@ -332,7 +339,7 @@ export default function TutorLabPage() {
     setPreferences((prev) => (prev.character === cast ? prev : { ...prev, character: cast }));
   }, [cast]);
 
-  useStubbedCoreApi(consentGranted, locale);
+  useStubbedCoreApi(consentGranted, locale, voicePolicy);
 
   const scene: LabScene = surface === 'consent' ? 'introducing' : surface;
   const phase = phaseForScene(scene);
@@ -595,9 +602,17 @@ export default function TutorLabPage() {
               thinking
             </LabSwitch>
             {surface === 'consent' && (
-              <LabSwitch on={consentGranted} onClick={() => setConsentGranted((on) => !on)}>
-                consent granted
-              </LabSwitch>
+              <>
+                <LabSwitch on={consentGranted} onClick={() => setConsentGranted((on) => !on)}>
+                  consent granted
+                </LabSwitch>
+                <LabSwitch
+                  on={voicePolicy === 'allowed'}
+                  onClick={() => setVoicePolicy((p) => (p === 'allowed' ? 'blocked' : 'allowed'))}
+                >
+                  policy allows
+                </LabSwitch>
+              </>
             )}
             <span className="lf-caption self-center whitespace-nowrap px-1 text-content-muted">
               {stageReady ? 'stage ready' : 'no first frame'}
@@ -643,7 +658,7 @@ export default function TutorLabPage() {
           </p>
           <div className="rounded-lg border border-outline bg-surface">
             <VoiceConsentControl
-              key={String(consentGranted)}
+              key={`${String(consentGranted)}-${voicePolicy}`}
               kidUserId={LAB_KID_ID}
               token={LAB_TOKEN}
               kidName="Ana"

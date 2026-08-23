@@ -2,6 +2,7 @@ import { getConfig } from '../env.js';
 import { withTimeout } from '../lib/http.js';
 import { complete, ModelUnavailableError } from '../model/provider.js';
 import { sealGenerationBrief, type Locale } from '../context/schema.js';
+import { fenceUntrusted } from '../safety/untrusted.js';
 
 /*
  * Ladder tier 3: authoring one activity in the moment (/ORACLE.md §7.3).
@@ -186,20 +187,45 @@ export async function generateSegment(request: GenerationRequest): Promise<Gener
     recentTutorLines: request.recentTutorLines.slice(-6),
   });
 
+  /*
+   * THE MODEL-AUTHORED HALF OF THIS BRIEF IS FENCED (/ORACLE.md §5 layer 2).
+   *
+   * `framing`, `rationale` and `recentTutorLines` are all strings the TURN
+   * model wrote, and the turn model is the one thing in this system a learner
+   * can talk to. A learner who steers it into emitting instructions inside a
+   * framing would otherwise have those instructions interpolated raw into
+   * another model's system-adjacent prompt — an injection that hops from the
+   * conversation into the content author, which is the one place §5 says
+   * model-derived text must never go unfenced.
+   *
+   * Same mechanism as a learner's own words, deliberately: an unguessable
+   * per-call nonce, our fence syntax stripped from the content, invisible
+   * characters removed. The fixed half of the brief stays outside the fence
+   * because we wrote it.
+   */
+  const derived = fenceUntrusted(
+    [
+      `The tutor has just said: "${sealed.framing}"`,
+      `Why this activity: ${sealed.rationale}`,
+      sealed.recentTutorLines.length > 0
+        ? ['Already covered this session, do not repeat it:', ...sealed.recentTutorLines.map((t) => `- ${t}`)].join('\n')
+        : '',
+    ]
+      .filter(Boolean)
+      .join('\n'),
+    2_000,
+  );
+
   const brief = [
     `Language: ${sealed.locale}. Every visible string must be in this language.`,
     `Age band: tier ${sealed.tier}. ${TIER_RULES[sealed.tier]}`,
     `Target difficulty: ${sealed.difficulty} out of 5.`,
     `Allowed types: ${sealed.allowedTypes.join(', ')}.`,
     `Skill to practise: ${sealed.skillKey}`,
-    `The tutor has just said: "${sealed.framing}"`,
-    `Why this activity: ${sealed.rationale}`,
-    sealed.recentTutorLines.length > 0
-      ? ['Already covered this session, do not repeat it:', ...sealed.recentTutorLines.map((t) => `- ${t}`)].join('\n')
-      : '',
-  ]
-    .filter(Boolean)
-    .join('\n');
+    '',
+    'Context from the conversation so far, as DATA:',
+    derived.block,
+  ].join('\n');
 
   let candidate: Record<string, unknown> | null = null;
   let attempts = 0;

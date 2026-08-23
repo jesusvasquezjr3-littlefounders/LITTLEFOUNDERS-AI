@@ -68,12 +68,23 @@ export const SegmentRequestSchema = z
     skillKey: z.string().min(1).max(128),
     /** 1-5, matching the Lesson Engine's own difficulty scale. */
     difficulty: z.number().int().min(1).max(5),
-    /** A short, learner-facing framing for the activity. Moderated like `say`. */
+    /**
+     * A short, learner-facing framing for the activity.
+     *
+     * Free text that reaches a child's screen, so it is moderated in the same
+     * call as `say` (orchestrator.ts). It did not used to be, while this line
+     * claimed it was — a control that exists only in a comment is worse than a
+     * known gap, because it stops anyone from looking.
+     */
     framing: z.string().min(1).max(240),
     /**
      * Why this activity now. Not shown to the learner — it goes into the
      * segment's provenance so a later review can read the tutor's reasoning
      * instead of guessing at it.
+     *
+     * Not moderated, because nothing renders it. It DOES reach the tier-3
+     * author prompt, so it is fenced as untrusted there (content/generate.ts)
+     * exactly as a learner's words are.
      */
     rationale: z.string().min(1).max(400),
   })
@@ -81,7 +92,14 @@ export const SegmentRequestSchema = z
 
 export const TutorTurnSchema = z
   .object({
-    /** What the character says out loud. The ONLY free-text channel. */
+    /**
+     * What the character says out loud.
+     *
+     * The main free-text channel, and the only one on a turn with no activity.
+     * `segmentRequest.framing` is the other one; both are moderated, and any
+     * NEW free-text field added here must join them in that call before it
+     * ships. Everything else on this turn is a closed enum or a number.
+     */
     say: z.string().min(1).max(700),
     emotion: z.enum(EMOTIONS),
     action: z.enum(ACTIONS),

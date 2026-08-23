@@ -48,6 +48,34 @@ httpServer.listen(config.PORT, () => {
   if (!moderationReadiness(true).ready) {
     console.warn(`[${SERVICE}] no moderation judge — sessions for minors will be REFUSED`);
   }
+
+  /*
+   * THE JUDGE MUST NOT BE THE AUTHOR.
+   *
+   * Everything §6 and §7.3 claim rests on the judge being a genuinely
+   * independent second opinion — /ORACLE.md's own record is that an
+   * independent judge caught twelve semantic defects across 544 lessons that
+   * nine deterministic gates passed. A model grading its own work grades it
+   * generously, so a deployment that points both at the same endpoint keeps
+   * every moderation call and every content verdict while silently losing the
+   * property that made them worth anything.
+   *
+   * `check-provider-parity.mjs` pins these against Forge, not against each
+   * other, so nothing anywhere would have said a word. It is a warning rather
+   * than a fatal error because refusing to boot would turn a misconfiguration
+   * into an outage — but it names the exact variables to change.
+   */
+  if (
+    config.JUDGE_API_BASE === config.MODEL_API_BASE &&
+    config.JUDGE_MODEL_NAME === config.MODEL_NAME
+  ) {
+    console.warn(
+      `[${SERVICE}] JUDGE IS THE AUTHOR — JUDGE_API_BASE and JUDGE_MODEL_NAME match ` +
+        `MODEL_API_BASE and MODEL_NAME ("${config.MODEL_NAME}"). Moderation and the ` +
+        `content judge are no longer independent of the model they check. Point the ` +
+        `judge at a different provider.`,
+    );
+  }
 });
 
 /*

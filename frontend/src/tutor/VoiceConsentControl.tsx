@@ -32,7 +32,7 @@ export interface VoiceConsentControlProps {
 
 type State =
   | { status: 'loading' }
-  | { status: 'ready'; active: boolean; grantedAt: string | null }
+  | { status: 'ready'; active: boolean; grantedAt: string | null; policy: 'allowed' | 'blocked' }
   | { status: 'error' };
 
 export function VoiceConsentControl({ kidUserId, token, kidName }: VoiceConsentControlProps) {
@@ -47,7 +47,14 @@ export function VoiceConsentControl({ kidUserId, token, kidName }: VoiceConsentC
     const result = await getVoiceConsent(token, kidUserId);
     setState(
       result.data
-        ? { status: 'ready', active: result.data.active, grantedAt: result.data.grantedAt }
+        ? {
+            status: 'ready',
+            active: result.data.active,
+            grantedAt: result.data.grantedAt,
+            // An older build, or a payload that lost the field, must not be
+            // read as permission. Absent means blocked.
+            policy: result.data.policy === 'allowed' ? 'allowed' : 'blocked',
+          }
         : { status: 'error' },
     );
   }, [token, kidUserId]);
@@ -95,6 +102,28 @@ export function VoiceConsentControl({ kidUserId, token, kidName }: VoiceConsentC
   const active = state.status === 'ready' && state.active;
   const formatter = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'medium' });
 
+  /*
+   * POLICY BEFORE CONSENT (/ORACLE.md §16).
+   *
+   * While the platform is not offering minors' voice at all, there is nothing
+   * here for a guardian to decide. Showing them a switch would be asking for
+   * agreement to wording that is still a placeholder, in exchange for a
+   * microphone that stays shut either way.
+   *
+   * So the control STAYS — hiding it would leave a parent wondering whether
+   * they missed a setting — and says the true reason instead of offering a
+   * permission that does nothing. Revocation is never gated: a consent granted
+   * while the policy was open must remain withdrawable after it closes.
+   */
+  const policyBlocked = state.status === 'ready' && state.policy === 'blocked';
+  const canGrant = !policyBlocked;
+
+  const statusLine = policyBlocked
+    ? t(active ? 'tutor.consent.pausedByPolicy' : 'tutor.consent.unavailable')
+    : active && state.status === 'ready' && state.grantedAt
+      ? t('tutor.consent.activeSince', { date: formatter.format(new Date(state.grantedAt)) })
+      : t('tutor.consent.inactive');
+
   return (
     <div className="border-t border-outline/50 px-4 py-2.5">
       {/*
@@ -116,11 +145,7 @@ export function VoiceConsentControl({ kidUserId, token, kidName }: VoiceConsentC
               their child's microphone is on; it is status, not decoration, and
               the one line here that must never be hard to read.
             */}
-            <span className="lf-caption block text-content-muted">
-              {active && state.status === 'ready' && state.grantedAt
-                ? t('tutor.consent.activeSince', { date: formatter.format(new Date(state.grantedAt)) })
-                : t('tutor.consent.inactive')}
-            </span>
+            <span className="lf-caption block text-content-muted">{statusLine}</span>
           </span>
         </span>
 
@@ -133,7 +158,7 @@ export function VoiceConsentControl({ kidUserId, token, kidName }: VoiceConsentC
           >
             {t('tutor.consent.revoke')}
           </Button>
-        ) : (
+        ) : canGrant ? (
           <Button
             variant="secondary"
             onClick={() => setConfirming((open) => !open)}
@@ -143,10 +168,10 @@ export function VoiceConsentControl({ kidUserId, token, kidName }: VoiceConsentC
           >
             {t('tutor.consent.grant')}
           </Button>
-        )}
+        ) : null}
       </div>
 
-      {confirming && !active && (
+      {confirming && !active && canGrant && (
         <div className="mt-3 rounded-md bg-surface-sunken p-3">
           <p className="lf-label mb-1 text-content">
             {t('tutor.consent.forChild', { name: kidName })}

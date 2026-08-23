@@ -909,6 +909,34 @@ export function tutorRouter(): Router {
     // child, and not an admin acting on their behalf.
     if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Only a verified guardian can grant this consent');
 
+    /*
+     * POLICY BEFORE PERSISTENCE (/ORACLE.md §16, the DPA decision).
+     *
+     * While `TUTOR_VOICE_FOR_MINORS` is off, a granted consent buys the family
+     * NOTHING — the socket refuses the microphone anyway — and costs them
+     * something real: this row stores the wording verbatim as the record of
+     * what a guardian agreed to, and that wording is a placeholder awaiting
+     * counsel. Collecting an unreviewed agreement for a capability we do not
+     * offer is worse than not collecting it, so the write is refused here as
+     * well as hidden in the UI. Two independent guards, because the UI one is
+     * a rendering decision and this one is the record.
+     *
+     * Revocation below is deliberately NOT gated the same way: a consent
+     * granted before the flag flipped must always be withdrawable.
+     */
+    const policy = await preflight(true, true);
+    // `!== 'allowed'`, not `=== 'blocked'`. The field is optional on the wire,
+    // so an Oracle that omits it — an older build, a truncated payload — must
+    // read as "no" rather than as permission. Absent is not consent.
+    if (policy.minorVoicePolicy !== 'allowed') {
+      return fail(
+        res,
+        409,
+        'POLICY_BLOCKED',
+        'Microphone consent is not being collected yet',
+      );
+    }
+
     const row = await grantVoiceConsent({
       userId: parsed.data.kidUserId,
       grantedBy: user.id,
@@ -930,11 +958,28 @@ export function tutorRouter(): Router {
       if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
     }
 
-    const consent = await getActiveVoiceConsent(kidUserId.data);
+    /*
+     * The consent state and the POLICY are different facts and the surface
+     * needs both. Without the policy the control can only offer a switch, and
+     * a guardian who flips it has agreed to placeholder wording in exchange
+     * for a microphone that stays shut — a permission that does nothing reads
+     * as a broken product at best and a dark pattern at worst.
+     *
+     * Read even when a consent already exists, because the answer changes what
+     * the guardian is told about a consent they already granted.
+     */
+    const [consent, policy] = await Promise.all([
+      getActiveVoiceConsent(kidUserId.data),
+      preflight(true, true),
+    ]);
     return ok(res, {
       active: consent !== null,
       grantedAt: consent?.granted_at ?? null,
       locale: consent?.locale ?? null,
+      // `PREFLIGHT_DOWN` reports 'blocked', so an unreachable Oracle degrades
+      // to the honest, conservative answer rather than to an optimistic one —
+      // and anything that is not an explicit 'allowed' reads the same way.
+      policy: policy.minorVoicePolicy === 'allowed' ? 'allowed' : 'blocked',
     });
   });
 

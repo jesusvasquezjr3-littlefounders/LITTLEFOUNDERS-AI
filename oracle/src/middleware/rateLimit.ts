@@ -33,6 +33,24 @@ export const globalRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   passOnStoreError: true,
+  /*
+   * THE INTERNAL SURFACE IS EXEMPT, and this is the difference between a
+   * limiter and an outage.
+   *
+   * Oracle has exactly one HTTP caller: Core, from one address. Keying by IP
+   * therefore put ALL platform traffic in a single 200-per-15-minutes bucket —
+   * and `preflight` runs on the tutor OFFER screen, not just on session start,
+   * so roughly 200 tutor page views in a quarter of an hour made Core answer
+   * `ORACLE_UNAVAILABLE` to every learner. Ordinary success was the trigger;
+   * no attacker was required. Worse, `/health` stayed 200 throughout, so the
+   * platform saw a healthy service and never restarted or scaled it.
+   *
+   * Exempting it costs nothing, because `requireInternalKey` already fronts
+   * that surface with a shared secret — an IP bucket in front of a key check
+   * defends against nobody. What the limiter still guards is everything
+   * unauthenticated, which is where a real flood would arrive.
+   */
+  skip: (req) => req.path.startsWith('/api/v1/tutor'),
   message: {
     data: null,
     error: { code: 'RATE_LIMITED', message: 'Too many requests, please try again later.' },

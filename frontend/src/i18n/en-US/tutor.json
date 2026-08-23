@@ -259,6 +259,8 @@
     "revoke": "Turn the microphone off",
     "activeSince": "Microphone allowed since {{date}}",
     "inactive": "The microphone is off. Your child can still use the tutor by typing.",
+    "unavailable": "We're not offering the microphone to children yet. The whole tutor works by typing.",
+    "pausedByPolicy": "You allowed this, but we're not offering the microphone to children yet.",
     "granting": "Saving…",
     "failed": "We couldn't save that. Try again.",
     "forChild": "For {{name}}",

@@ -104,6 +104,11 @@ function stub(opts: StubOpts = {}) {
               blockedBy: null,
               voiceAvailable: true,
               microphoneAvailable: true,
+              // Stated explicitly rather than omitted: the consent routes read
+              // this and treat anything other than 'allowed' as blocked, so a
+              // fixture that leaves it out is testing the refusal path by
+              // accident instead of the one it means to.
+              minorVoicePolicy: 'allowed',
             },
             error: null,
           }),
@@ -383,6 +388,109 @@ describe('consent', () => {
     // stay answerable.
     expect(patch?.url).toContain('revoked_at=is.null');
     expect(JSON.parse(patch?.body ?? '{}').revoked_at).toBeTruthy();
+  });
+
+  /*
+   * THE POLICY GATE ON THE RECORD ITSELF (/ORACLE.md §16).
+   *
+   * The UI already hides the switch while `TUTOR_VOICE_FOR_MINORS` is off.
+   * These assert the second, independent guard: even a hand-made request must
+   * not be able to write a consent row. The two guards protect different
+   * things — the UI protects the guardian from being asked, this protects the
+   * RECORD from containing an agreement to placeholder wording for a
+   * capability we do not offer.
+   */
+  const WORDING = 'I allow my child to speak with the AI tutor using the microphone on this device.';
+  const guardianOf = (kid: string) => [
+    { parent_user_id: PARENT, kid_user_id: kid, verification_status: 'verified' },
+  ];
+
+  it('refuses to record a consent while the DPA policy is blocked', async () => {
+    const calls = stub({
+      guardianLinks: guardianOf(KID),
+      consent: [],
+      preflight: {
+        canStart: true,
+        blockedBy: null,
+        voiceAvailable: true,
+        microphoneAvailable: false,
+        minorVoicePolicy: 'blocked',
+      },
+    });
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/consent')
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+      .send({ kidUserId: KID, consentText: WORDING, locale: 'es-MX' });
+
+    expect(response.status).toBe(409);
+    expect(response.body.error.code).toBe('POLICY_BLOCKED');
+    // Nothing was written. A refusal that still persists the row would defeat
+    // the whole point of the guard.
+    expect(calls.some((c) => c.method === 'POST' && c.url.includes('tutor_voice_consent'))).toBe(false);
+  });
+
+  it('refuses to record a consent when Oracle omits the policy field entirely', async () => {
+    const calls = stub({
+      guardianLinks: guardianOf(KID),
+      consent: [],
+      // An older Oracle, or a payload that lost the field in transit. Absent
+      // must read as "no" — this is the fail-open shape the guard exists for.
+      preflight: { canStart: true, blockedBy: null, voiceAvailable: true, microphoneAvailable: true },
+    });
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/consent')
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+      .send({ kidUserId: KID, consentText: WORDING, locale: 'es-MX' });
+
+    expect(response.status).toBe(409);
+    expect(calls.some((c) => c.method === 'POST' && c.url.includes('tutor_voice_consent'))).toBe(false);
+  });
+
+  it('reports the policy alongside the consent state, so the UI can be honest', async () => {
+    stub({
+      guardianLinks: guardianOf(KID),
+      consent: [],
+      preflight: {
+        canStart: true,
+        blockedBy: null,
+        voiceAvailable: true,
+        microphoneAvailable: false,
+        minorVoicePolicy: 'blocked',
+      },
+    });
+
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/consent/${KID}`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.active).toBe(false);
+    expect(response.body.data.policy).toBe('blocked');
+  });
+
+  it('still lets a guardian revoke while the policy is blocked', async () => {
+    // The reachable case: a consent granted while the policy was open, then
+    // the policy closes. Revocation must never depend on it.
+    const calls = stub({
+      guardianLinks: guardianOf(KID),
+      consent: [{ id: '55555555-5555-4555-8555-555555555555', user_id: KID, granted_at: 'x', revoked_at: null }],
+      preflight: {
+        canStart: true,
+        blockedBy: null,
+        voiceAvailable: true,
+        microphoneAvailable: false,
+        minorVoicePolicy: 'blocked',
+      },
+    });
+
+    const response = await request(createApp())
+      .delete(`/api/v1/tutor/consent/${KID}`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+    expect(response.status).toBe(200);
+    expect(calls.some((c) => c.method === 'PATCH' && c.url.includes('tutor_voice_consent'))).toBe(true);
   });
 });
 

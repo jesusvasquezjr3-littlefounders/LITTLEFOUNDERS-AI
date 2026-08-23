@@ -36,6 +36,7 @@
 | Course Engine (hierarchy, curriculum catalog, generation pipeline, gates, providers) | COURSE_ENGINE.md | all |
 | Forge production-readiness audit and research synthesis | COURSEGEN_AUDIT_2026-08-01.md | all |
 | AI tutor (Oracle) — product flow, privacy contract, injection defences, content ladder | ORACLE.md | all; §0 = owner decision record |
+| Tutor security audit — what was attacked, what was found, what is NOT covered | SECURITY_AUDIT_2026-08-23.md | §3 = the uncovered risk |
 | AI tutor runtime code (prompts, moderation, voice, session) | oracle/AGENTS.md · oracle/README.md | all |
 | AI tutor legal exposure (minors' voice, ungated generated content, retention) | /LEGAL/AI_TUTOR_LEGAL_REVIEW.md | all; §7 = open questions for counsel |
 | Tutor 3D stage (assets, rigs, procedural actions, placement, perf, Blender handoff) | TUTOR_3D.md | all |

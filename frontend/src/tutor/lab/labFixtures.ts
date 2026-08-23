@@ -670,13 +670,31 @@ function refusal(code: string, message: string, status: number): Response {
 /**
  * Everything the lab answers on Core's behalf.
  *
- * Split out of the hook so the routing table reads as a table. `granted` is the
- * only thing a human drives from the page, and it belongs to the guardian
- * consent surface rather than to the stage.
+ * Split out of the hook so the routing table reads as a table. `granted` and
+ * `policy` are the only things a human drives from the page, and both belong
+ * to the guardian consent surface rather than to the stage.
  */
-function answerTutorPath(path: string, method: string, granted: boolean, locale: Locale): Response {
+function answerTutorPath(
+  path: string,
+  method: string,
+  granted: boolean,
+  locale: Locale,
+  policy: 'allowed' | 'blocked',
+): Response {
   if (path.includes('/tutor/consent/')) {
-    return envelope({ active: granted, grantedAt: granted ? '2026-08-01T10:00:00Z' : null, locale });
+    /*
+     * TWO independent axes, because they produce four different screens and
+     * one of them is the state we ship in: policy blocked and no consent, where
+     * the control must show the reason and offer nothing. Folding them into one
+     * switch would make that screen unreachable in the harness — and it is the
+     * only one a real family sees today.
+     */
+    return envelope({
+      active: granted,
+      grantedAt: granted ? '2026-08-01T10:00:00Z' : null,
+      locale,
+      policy,
+    });
   }
 
   if (path.includes('/grade') && method === 'POST') {
@@ -738,7 +756,11 @@ function answerTutorPath(path: string, method: string, granted: boolean, locale:
  * production component should not carry a door that exists for a harness — a
  * door that exists is a door that ships.
  */
-export function useStubbedCoreApi(consentGranted: boolean, locale: Locale): void {
+export function useStubbedCoreApi(
+  consentGranted: boolean,
+  locale: Locale,
+  voicePolicy: 'allowed' | 'blocked' = 'blocked',
+): void {
   /*
    * REFS, and installed ONCE. Keying the effect on the value reinstalled the
    * shim, and React runs child effects before parent ones — so a remounting
@@ -750,6 +772,10 @@ export function useStubbedCoreApi(consentGranted: boolean, locale: Locale): void
   granted.current = consentGranted;
   const language = useRef(locale);
   language.current = locale;
+  // Same ref treatment as the other two, and for the same reason: flipping the
+  // policy must repaint the control, never tear the shim down mid-fetch.
+  const policy = useRef(voicePolicy);
+  policy.current = voicePolicy;
 
   useEffect(() => {
     const real = window.fetch;
@@ -761,7 +787,7 @@ export function useStubbedCoreApi(consentGranted: boolean, locale: Locale): void
       if (!url.includes('/api/v1/tutor')) return real(input, init);
 
       const method = (init?.method ?? (input instanceof Request ? input.method : 'GET')).toUpperCase();
-      return answerTutorPath(url, method, granted.current, language.current);
+      return answerTutorPath(url, method, granted.current, language.current, policy.current);
     }) as typeof window.fetch;
 
     return () => {

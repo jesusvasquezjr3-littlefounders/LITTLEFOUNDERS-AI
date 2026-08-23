@@ -86,3 +86,8 @@ audiogen/src/samples/
 # Only the OPTIMIZED output is published, via Depot. Source files belong in the
 # team asset store, never in git.
 /glb/
+
+# Generated deliverables. The PDF is rendered from the published Artifact
+# (scratchpad/oracle.html) on demand; committing a 1 MB binary that is
+# regenerated on every edit buys nothing and bloats the history forever.
+/LittleFounders-*.pdf

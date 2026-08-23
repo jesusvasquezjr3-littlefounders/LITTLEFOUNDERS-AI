@@ -1139,14 +1139,34 @@ owner testing.
 tested: **2 sessions per learner per day** and **120 tutor XP per day** (Core,
 `routes/tutor.ts`), a **25-minute hard stop with a 15-minute kind wind-down**
 and a **120-turn cap** (`session/budget.ts`), a **600-character** cap on one
-learner utterance, a **700 ms floor between turns**, a **2 MB** websocket frame
-cap, **single-use session-scoped tokens** minted by Core, **20/15/8-second**
-timeouts on the model, the voice provider and Core, and a **per-session cost
-ledger** covering model tokens AND synthesized speech. Every read that feeds a
-limit **fails closed** — a database that cannot answer returns 502 and the
-session does not start, rather than defaulting to "no sessions used yet".
-Moderation and consent fail closed; rate limiting fails open, deliberately,
-because it is an availability control (§1.14).
+learner utterance, a **700 ms floor between turns** and **one turn in flight at
+a time**, a **2 MB** websocket frame cap, **single-use session-scoped tokens**
+minted by Core, **20/15/8-second** timeouts on the model, the voice provider and
+Core, and a **per-session cost ledger** covering model tokens AND synthesized
+speech. Every read that feeds a limit **fails closed** — a database that cannot
+answer returns 502 and the session does not start, rather than defaulting to
+"no sessions used yet". Moderation and consent fail closed; rate limiting fails
+open, deliberately, because it is an availability control (§1.14).
+
+> **This paragraph was false for five days, and that is the point (2026-08-23).**
+>
+> An adversarial audit found that the 700 ms floor and the 120-turn cap were
+> real *on the path they were written for* and absent on the one beside it.
+> `segment_graded` reached the model without passing either, `learner_audio`
+> paid the speech-to-text provider before any gate ran, and the turn counter
+> advanced only *after* a completion returned — so a burst of frames all
+> measured themselves against the same stale count and all passed a cap none
+> of them had reached. A single authenticated learner could open one ordinary
+> session and force dozens of concurrent paid completions inside the one
+> process serving everybody.
+>
+> All four are fixed (`claimTurn` in `ws/server.ts`, the entry guard in
+> `orchestrator.produce`), and `src/__tests__/hardening.test.ts` holds a
+> regression test per defect — each confirmed to FAIL against the code as it
+> stood. The lesson worth keeping is not the bug: it is that **this document
+> asserted the control and the assertion is what stopped anyone looking.** A
+> claim here is a claim about code, and it decays silently. When a control is
+> named in this file, name the test that proves it.
 
 **What does not hold, and would be noticed at a thousand concurrent learners.**
 
@@ -1220,6 +1240,32 @@ the build session of 2026-08-21; unticked ones block enabling this for minors.
 - [ ] All three `/LEGAL/` documents updated and `npm run legal:sync` run.
       **Blocked on counsel** — the brief is written, the answers are not.
       The consent wording currently in `tutor.consent.body` is a PLACEHOLDER.
+
+> ### The placeholder is now UNREACHABLE, not merely unfinished (2026-08-23)
+>
+> Found while preparing the production deploy: `VoiceConsentControl` did not
+> know the policy existed. It rendered "Allow the microphone" to every guardian
+> regardless, and pressing it showed the placeholder wording and stored it in
+> `tutor_voice_consent` as the verbatim record of what that guardian agreed to
+> — in exchange for a microphone the socket refuses anyway while
+> `TUTOR_VOICE_FOR_MINORS` is false. Three faults in one control: unreviewed
+> legal text presented as an agreement, that text persisted as the record, and
+> a permission that does nothing.
+>
+> Two independent guards now, because they protect different things:
+>
+> - **The surface** reads `policy` alongside the consent state and says the
+>   true reason (`tutor.consent.unavailable`) instead of offering a switch. An
+>   absent `policy` field reads as blocked — absent is not consent.
+> - **The record** refuses the write: `POST /api/v1/tutor/consent` answers
+>   `409 POLICY_BLOCKED` unless preflight reports `minorVoicePolicy: 'allowed'`.
+>
+> **Revocation is deliberately gated by neither.** A consent granted while the
+> policy was open must stay withdrawable after it closes.
+>
+> The consequence for this checklist item: counsel's wording is still required
+> before a minor speaks, but the placeholder can no longer reach a guardian or
+> a database row, so it no longer blocks deploying the rest of the product.
 - [x] The consent gate blocks the microphone with no consent, and revocation
       takes effect on the next turn — both tested (`backend` tutor suite,
       `oracle` socket guard).
@@ -1253,6 +1299,32 @@ the build session of 2026-08-21; unticked ones block enabling this for minors.
       pre-existing and tracked separately rather than rewritten inside a Tutor
       change.
 - [x] Owner sign-off recorded for the §1.5 exception (§3.2).
+- [x] **Adversarial security audit, 2026-08-23.** Six surfaces attacked
+      independently (injection stack, socket auth, the PII boundary,
+      moderation and the content ladder, availability and budgets, secrets and
+      the speech cache), every finding then put to a skeptic instructed to
+      refute it. 27 raised, 7 survived, 5 of them high. All five are fixed and
+      each has a regression test in `oracle/src/__tests__/hardening.test.ts`
+      that was confirmed to fail against the pre-fix code.
+      - `segmentRequest.framing` reached a child's screen with no moderation,
+        while two comments claimed it was moderated — now moderated in the same
+        call as `say`, and fenced before it reaches the tier-3 author prompt.
+      - `segment_graded` and `learner_audio` bypassed the turn floor and the
+        budget; audio was transcribed and billed before any gate. All
+        model-producing paths now go through one `claimTurn`.
+      - Oracle's IP rate limiter fronted the Core-only internal surface, so
+        ~200 tutor page views in fifteen minutes took the tutor offline
+        platform-wide while `/health` stayed green. That surface is exempt; it
+        is already behind `requireInternalKey`.
+      - A mid-session consent re-check treated "Core unreadable" as "still
+        granted". It now refuses, matching the door.
+      **What the audit did not cover** is recorded honestly in
+      `/SECURITY_AUDIT_2026-08-23.md` — no live provider calls, no
+      dependency review, no multi-instance analysis, no load testing.
+- [ ] **Oracle runs as a SINGLE Railway replica.** The `jti` ledger that makes
+      a session token single-use is in-process, so on two replicas a token
+      burned on one is still fresh on the other. Verify before scaling, not
+      after — and if this is ever untrue, move the ledger to Redis first.
 
 ### §16.1 The immersion gates — added 2026-08-21, measured 2026-08-23
 

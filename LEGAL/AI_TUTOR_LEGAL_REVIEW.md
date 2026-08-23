@@ -293,6 +293,56 @@ Engineering has no position on any of these.
 
 ---
 
+## §7b The document edits this feature will require — added 2026-08-23
+
+Recorded now, while the reasoning is fresh, so that the day counsel answers §7
+the work is a specified edit rather than a fresh investigation. **Nothing here
+is drafted yet and none of it is engineering's to word.**
+
+The three `/LEGAL/` documents are byte-parallel translations of one another and
+are the single source of truth (`/AGENTS.md` §1.8). Any change lands in all
+three in the same commit, followed by `npm run legal:sync`, which regenerates
+the `marketing.json` legal sections. Never hand-edit those.
+
+**Terms & Conditions — `TERMINOSyCONDICIONES.md` / `TERMSANDCONDITIONS.md` /
+`TERMOSDECONDIÇÕES.md`:**
+
+| Chapter | What has to change |
+|---|---|
+| §8 Artificial intelligence and content personalization | Today it describes generated *course* content, published by a human. The Tutor generates **live, in the moment, for one child, with no human between the model and the screen** (§5 of this brief). That is a materially different processing activity and §8 does not currently describe it. |
+| §5 Child accounts and parental control | Must name the microphone as a separate, separately-consented capability, and state that a guardian may withdraw it at any time and that withdrawal takes effect on the next turn. |
+| §6 Educational experiences | Should name conversation retention (90 days) and the guardian's right to read the full transcript, which is a product invariant rather than a setting. |
+| §12 Personal data protection | Cross-reference the privacy notice's new speech-provider section rather than restating it. |
+
+**Privacy notice — the corresponding chapters in the same three files:**
+
+- **A new processor.** The speech provider receives a child's **voice**, which
+  exceeds every other third-party disclosure the platform makes. §2.1 and §6 of
+  this brief have the specifics, including the §2.5 finding that the provider
+  is technically capable of speaker profiling and that we set
+  `enableVoiceProfile: false` on every call.
+- **Voice cloning is a separate relationship** (§2.4) — the four characters'
+  voices are cloned from the owner's own reference recordings, not from any
+  learner's audio. Worth saying explicitly, because "voice cloning" in a
+  children's product invites exactly the wrong assumption.
+- **Retention, stated as a promise with a mechanism.** 90 days, rows *and*
+  audio, with the sweep named.
+- **What is never sent** (§2.3) is as load-bearing as what is, and reads better
+  as an affirmative list than as an absence.
+
+**The consent text itself** (`tutor.consent.body`, three locales) is the
+smallest artefact and the highest-stakes: it is stored verbatim with every
+consent row and a dispute is resolved against it. The placeholder currently in
+the repository is engineering's plain-language description of the processing —
+useful as a starting brief for counsel, **not** as wording to ship.
+
+> Until all of the above lands, the consent surface refuses to collect anything:
+> the control shows the reason instead of a switch, and `POST /tutor/consent`
+> answers `409 POLICY_BLOCKED`. See `/ORACLE.md` §16. So this work gates a
+> minor's microphone; it does not gate the Tutor.
+
+---
+
 ## §8 What engineering commits to
 
 - No field is added to §2.2 without updating this document in the same commit.
@@ -323,3 +373,4 @@ Provided so counsel's technical reviewer can verify any statement above.
 | Speech-provider isolation | `oracle/src/voice/`, and the test in `oracle/src/__tests__/boundaries.test.ts` |
 | Guardian visibility | `backend/src/routes/tutor.ts` (`/tutor/kids/:id/sessions`); the surface is `frontend/src/routes/app/family/KidTutorPage.tsx` |
 | The consent flow a guardian actually sees | `frontend/src/tutor/VoiceConsentControl.tsx` — shows the wording before it is agreed to, and sends that rendered string |
+| That no consent can be collected while the policy is closed | the same file (the surface) and `backend/src/routes/tutor.ts` `POST /consent` → `409 POLICY_BLOCKED` (the record). Two independent guards; revocation is gated by neither |

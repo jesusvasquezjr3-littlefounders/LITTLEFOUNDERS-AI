@@ -261,6 +261,31 @@ export class TutorOrchestrator {
   ): Promise<TurnOutcome> {
     const budget = this.currentBudget(nowMs);
 
+    /*
+     * THE CAP IS ENFORCED HERE, AT THE ENTRY TO EVERY MODEL CALL.
+     *
+     * `handleLearnerText` refused an ended session before calling this; no
+     * other caller did. `handleSegmentResult` went straight through, so a
+     * client that sent `segment_graded` kept buying model turns after the
+     * budget said stop — and since `this.seq` only advanced AFTER the upstream
+     * call returned, a burst of frames all measured themselves against the
+     * same stale count and all passed a cap none of them had reached yet.
+     *
+     * Two changes, and both matter. The refusal moves to the one function
+     * every path funnels through, so a new caller inherits it instead of
+     * having to remember it. And the slot is RESERVED below before the call
+     * rather than counted after it, so the cap describes turns started rather
+     * than turns finished.
+     */
+    if (this.stopped || budget.state === 'ended') {
+      return this.scriptedOutcome(
+        closingResponse(this.session.locale, 'hard'),
+        budget,
+        budget.reason === 'turn_cap' ? 'turn_cap' : 'hard_budget',
+        null,
+      );
+    }
+
     let context: TutorContext;
     try {
       context = this.context();
@@ -277,6 +302,18 @@ export class TutorOrchestrator {
 
     let turn: TutorTurn | null = null;
     let source: 'model' | 'scripted' = 'model';
+
+    /*
+     * THE SLOT IS RESERVED HERE — after the context sealed, before anything is
+     * bought, and never released.
+     *
+     * After the seal because a context that fails `.strict()` never reaches
+     * the model and costs nothing, and because that path returns through
+     * `scriptedOutcome`, which counts its own turn. Before the call because
+     * counting afterwards is what let a burst of concurrent frames each read
+     * the same stale `seq` and each pass a cap none of them had reached.
+     */
+    this.seq += 1;
 
     try {
       // One retry, and only for a SHAPE failure. A model that returned prose
@@ -328,10 +365,33 @@ export class TutorOrchestrator {
     let safety: SafetyEvent | null = null;
     let moderationRecord: Record<string, unknown> = { allowed: true, source };
 
+    /*
+     * EVERY learner-visible string the model authored, not just `say`.
+     *
+     * `segmentRequest.framing` is 240 characters of free prose that the client
+     * prints under the activity, and it was moderated NOWHERE while two
+     * comments — one in turnSchema.ts, one in LiveSegmentPanel.tsx — asserted
+     * it was "moderated like `say`". A model that wanted to reach a child with
+     * something we would block had only to put it in the other field of the
+     * same turn: same model, same turn, same pixel, no judge.
+     *
+     * They are moderated TOGETHER in one call rather than separately, for two
+     * reasons. It is one upstream round trip instead of two on the routine
+     * path. And a block already drops the whole turn including its segment
+     * request, so a per-field verdict would have nothing extra to act on —
+     * there is no state in which we would want to keep the activity and
+     * discard its framing.
+     *
+     * The separator is a blank line so the judge reads two sentences rather
+     * than one run-on, which is what it would otherwise score.
+     */
+    const visibleText =
+      turn.segmentRequest != null ? `${turn.say}\n\n${turn.segmentRequest.framing}` : turn.say;
+
     const verdict =
       source === 'model'
         ? await moderateTutorOutput({
-            text: turn.say,
+            text: visibleText,
             locale: this.session.locale,
             tier: this.session.tier,
             nonce: opts.nonce,
@@ -354,8 +414,8 @@ export class TutorOrchestrator {
       source = 'scripted';
     }
 
+    // `this.seq` was already advanced at entry, where the slot was reserved.
     this.history.push({ speaker: 'tutor', text: turn.say });
-    this.seq += 1;
 
     const audioUrl = await this.speak(turn);
 

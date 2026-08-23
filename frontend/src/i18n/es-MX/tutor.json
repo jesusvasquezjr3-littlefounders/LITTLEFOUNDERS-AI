@@ -259,6 +259,8 @@
     "revoke": "Apagar el micrófono",
     "activeSince": "Micrófono permitido desde el {{date}}",
     "inactive": "El micrófono está apagado. Tu hijo o hija puede seguir usando el tutor escribiendo.",
+    "unavailable": "Todavía no ofrecemos el micrófono para menores. El tutor completo funciona escribiendo.",
+    "pausedByPolicy": "Tú lo permitiste, pero todavía no ofrecemos el micrófono para menores.",
     "granting": "Guardando…",
     "failed": "No pudimos guardarlo. Inténtalo de nuevo.",
     "forChild": "Para {{name}}",

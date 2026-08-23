@@ -44,6 +44,15 @@ interface Live {
   speech: SpeechScope;
   /** Rolling per-turn floor, so one client cannot spin the model. */
   lastTurnAtMs: number;
+  /**
+   * Whether a turn is already being produced for this socket.
+   *
+   * `socket.on('message')` dispatches fire-and-forget, so without this every
+   * frame already in the read buffer starts its own upstream call at the same
+   * instant. The floor below cannot catch that on its own: a burst arrives
+   * inside one millisecond, so they all see the same `lastTurnAtMs`.
+   */
+  inFlight: boolean;
   microphone: boolean;
   closing: boolean;
   heartbeat: NodeJS.Timeout;
@@ -53,6 +62,42 @@ interface Live {
 const MIN_TURN_GAP_MS = 700;
 /** How often a live session re-checks that consent is still in force. */
 const CONSENT_RECHECK_EVERY_TURNS = 5;
+
+/**
+ * Claims this socket's single turn slot, or says why not.
+ *
+ * EVERY path that can reach the model goes through here — `learner_text`,
+ * `learner_audio`, `segment_graded` and the farewell. It is a function rather
+ * than a check inlined in the one handler that had it because that is exactly
+ * how the gap happened: the floor lived inside `handleLearnerTurn`, and
+ * `segment_graded` called the orchestrator directly, so a client could buy
+ * unbounded concurrent completions by sending the frame the floor did not
+ * cover. A new frame type that forgets to claim cannot reach the model at all,
+ * which is the failure we want.
+ *
+ * `enforceFloor` is off for the farewell only: a learner pressing "end" within
+ * 700 ms of their last turn should be let go, not told to wait.
+ */
+function claimTurn(live: Live, now: number, enforceFloor = true): 'ok' | 'busy' | 'too-soon' {
+  if (live.inFlight) return 'busy';
+  if (enforceFloor && now - live.lastTurnAtMs < MIN_TURN_GAP_MS) return 'too-soon';
+  live.inFlight = true;
+  live.lastTurnAtMs = now;
+  return 'ok';
+}
+
+function releaseTurn(live: Live): void {
+  live.inFlight = false;
+}
+
+/** Refuses a claim out loud. Both refusals read as one moment, deliberately. */
+function refuseTurn(live: Live, why: 'busy' | 'too-soon'): void {
+  send(live.socket, {
+    type: 'error',
+    code: 'RATE_LIMITED',
+    message: why === 'busy' ? 'One at a time.' : 'One moment.',
+  });
+}
 
 function send(socket: WebSocket, message: ServerMessage): void {
   if (socket.readyState === socket.OPEN) socket.send(JSON.stringify(message));
@@ -145,6 +190,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
     orchestrator: new TutorOrchestrator(session, Date.now(), (turn) => speakLine(turn.say, speech)),
     speech,
     lastTurnAtMs: 0,
+    inFlight: false,
     microphone,
     closing: false,
     heartbeat: setInterval(() => {
@@ -219,25 +265,49 @@ async function onMessage(live: Live, raw: string): Promise<void> {
       });
       return;
 
-    case 'end_session':
-      await deliver(live, await live.orchestrator.farewell(Date.now(), 'soft'));
-      await finish(live, 'completed');
+    case 'end_session': {
+      // Claimed so a burst of `end_session` cannot produce a pile of
+      // farewells, but exempt from the floor: nobody is made to wait to leave.
+      const claim = claimTurn(live, Date.now(), false);
+      if (claim !== 'ok') return refuseTurn(live, claim);
+      try {
+        await deliver(live, await live.orchestrator.farewell(Date.now(), 'soft'));
+        await finish(live, 'completed');
+      } finally {
+        releaseTurn(live);
+      }
       return;
+    }
 
     case 'adaptation_response':
+      // Local state only — no upstream call, so no slot to claim.
       if (message.data.accepted) live.orchestrator.applyAdaptation(message.data.adaptation);
       return;
 
-    case 'segment_graded':
-      await deliver(
-        live,
-        await live.orchestrator.handleSegmentResult(message.data.score, message.data.correct, Date.now()),
-      );
+    case 'segment_graded': {
+      const claim = claimTurn(live, Date.now());
+      if (claim !== 'ok') return refuseTurn(live, claim);
+      try {
+        await deliver(
+          live,
+          await live.orchestrator.handleSegmentResult(message.data.score, message.data.correct, Date.now()),
+        );
+      } finally {
+        releaseTurn(live);
+      }
       return;
+    }
 
-    case 'learner_text':
-      await handleLearnerTurn(live, message.data.text);
+    case 'learner_text': {
+      const claim = claimTurn(live, Date.now());
+      if (claim !== 'ok') return refuseTurn(live, claim);
+      try {
+        await handleLearnerTurn(live, message.data.text);
+      } finally {
+        releaseTurn(live);
+      }
       return;
+    }
 
     case 'learner_audio': {
       if (!live.microphone) {
@@ -248,27 +318,40 @@ async function onMessage(live: Live, raw: string): Promise<void> {
         });
         return;
       }
-      const text = await transcribe(message.data.audio, message.data.mimeType, live.session);
-      if (text === null || text.trim() === '') {
-        send(live.socket, { type: 'error', code: 'STT_FAILED', message: 'I did not catch that.' });
-        return;
+      /*
+       * CLAIMED BEFORE `transcribe`, which is the whole point.
+       *
+       * Transcription is a billed third-party call carrying up to ~1.1 MB of
+       * audio, and it used to run before any gate: the floor sat in the callee,
+       * so every frame was transcribed and paid for and only the survivor
+       * produced a turn. A hundred frames bought a hundred transcriptions and
+       * discarded ninety-nine.
+       */
+      const claim = claimTurn(live, Date.now());
+      if (claim !== 'ok') return refuseTurn(live, claim);
+      try {
+        const text = await transcribe(message.data.audio, message.data.mimeType, live.session);
+        if (text === null || text.trim() === '') {
+          send(live.socket, { type: 'error', code: 'STT_FAILED', message: 'I did not catch that.' });
+          return;
+        }
+        // Echoed back so the learner can see what we heard. A misheard turn that
+        // the learner cannot see is a tutor answering a question nobody asked.
+        send(live.socket, { type: 'transcript', text });
+        await handleLearnerTurn(live, text);
+      } finally {
+        releaseTurn(live);
       }
-      // Echoed back so the learner can see what we heard. A misheard turn that
-      // the learner cannot see is a tutor answering a question nobody asked.
-      send(live.socket, { type: 'transcript', text });
-      await handleLearnerTurn(live, text);
       return;
     }
   }
 }
 
 async function handleLearnerTurn(live: Live, text: string): Promise<void> {
-  const now = Date.now();
-  if (now - live.lastTurnAtMs < MIN_TURN_GAP_MS) {
-    send(live.socket, { type: 'error', code: 'RATE_LIMITED', message: 'One moment.' });
-    return;
-  }
-  live.lastTurnAtMs = now;
+  // The floor and the single-flight slot are the CALLER's, claimed before any
+  // paid work — including the transcription that precedes an audio turn. This
+  // function must not re-check the floor: `claimTurn` has already stamped
+  // `lastTurnAtMs`, so a second check here would refuse every turn.
 
   // Consent is re-checked periodically DURING a session, not only at the door.
   // /ORACLE.md §4.3 requires revocation to take effect on the next turn, and a
@@ -279,8 +362,22 @@ async function handleLearnerTurn(live: Live, text: string): Promise<void> {
     live.orchestrator.turnCount > 0 &&
     live.orchestrator.turnCount % CONSENT_RECHECK_EVERY_TURNS === 0
   ) {
+    /*
+     * `!== true`, NOT `=== false`.
+     *
+     * `checkVoiceConsent` answers `null` for "could not determine" — Core
+     * unreachable, timed out, or an envelope that did not parse. Acting only on
+     * the literal `false` meant an unreadable answer read as "still granted",
+     * so a revocation that landed during a Core outage was never observed for
+     * the rest of the session and the child kept streaming to the provider.
+     *
+     * The door already gets this right: `fetchSessionContext` returning `null`
+     * closes the socket. §1.14 — failure must be distinguishable from
+     * emptiness, and the caller must refuse. This is the same upstream
+     * guarding the same child-safety property, so it refuses the same way.
+     */
     const active = await checkVoiceConsent(live.session.userId);
-    if (active === false) {
+    if (active !== true) {
       live.microphone = false;
       send(live.socket, {
         type: 'error',
@@ -301,7 +398,10 @@ async function handleLearnerTurn(live: Live, text: string): Promise<void> {
     source: 'stt',
   });
 
-  await deliver(live, await live.orchestrator.handleLearnerText(text, now));
+  // `Date.now()` here rather than the caller's stamp: for an audio turn the
+  // claim happened before a transcription that may have taken a second, and
+  // the budget should be measured against when the tutor actually answers.
+  await deliver(live, await live.orchestrator.handleLearnerText(text, Date.now()));
 }
 
 async function deliver(live: Live, outcome: TurnOutcome): Promise<void> {

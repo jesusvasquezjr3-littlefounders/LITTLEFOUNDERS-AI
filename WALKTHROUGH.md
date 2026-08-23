@@ -2,6 +2,109 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Attacking the Tutor before shipping it: five HIGH defects, all of them in the seam (2026-08-23)
+
+**The owner asked for the artifact as a PDF, for the Tutor to go to production
+if it was ready, and for the security measures — prompt injection especially —
+to be verified.** The honest answer to the middle one turned out to be no, and
+the reason is the third one.
+
+### The audit
+
+Six surfaces attacked independently and in parallel — the seven-layer injection
+stack, socket auth, the PII boundary, moderation and the content ladder,
+availability and budgets, secrets and the speech cache — each by an adversary
+told to build a concrete exploit or report nothing. Every finding then went to a
+skeptic instructed to REFUTE it: check the quoted code is real, the path
+reachable, and the attack not already stopped by another layer. **27 raised, 7
+survived, 5 high.** Full record and, more importantly, what was NOT covered:
+`/SECURITY_AUDIT_2026-08-23.md`.
+
+Most of the system held, and held under direct attack: token auth (single-use,
+session-scoped, digest comparison with no `String.length` pre-check), `.strict()`
+at every nesting level, moderation fail-closed on all five failure modes, the
+speech cache unable to cross a character or a locale, no credential anywhere it
+should not be. The design was sound. What failed was four places where the code
+did less than `/ORACLE.md` said it did.
+
+### What was wrong, and the shape they share
+
+**`segmentRequest.framing` reached a child's screen with no moderation** while a
+comment in `turnSchema.ts` and another in `LiveSegmentPanel.tsx` both asserted it
+was "moderated exactly like `say`". Only `say` was ever passed to the judge. A
+model steered into saying something we would block had only to put it in the
+other field of the same turn — same model, same turn, same pixel. It also flowed
+raw into the tier-3 author prompt, the one place §5 says model-derived text must
+never go unfenced.
+
+**`segment_graded` and `learner_audio` skipped every cost control.** The 700 ms
+floor lived inside `handleLearnerTurn`; `segment_graded` called the orchestrator
+directly and never entered it, and `learner_audio` paid the speech-to-text
+provider BEFORE delegating there. Dispatch is fire-and-forget, and the turn
+counter advanced only after a completion returned — so a burst all measured
+itself against the same stale count and all passed a cap none of them had
+reached. One learner, one session, one burst: dozens of concurrent paid calls
+inside the single process serving everybody.
+
+**Oracle's IP rate limiter fronted the Core-only internal surface.** One caller,
+one address, one bucket of 200 per fifteen minutes — and `preflight` runs on the
+tutor OFFER screen, not just on session start. Roughly 200 page views took the
+tutor offline platform-wide, with `/health` green throughout so nothing
+restarted and nothing scaled. No attacker; ordinary success was the trigger.
+
+**A mid-session consent re-check read "Core unreadable" as "still granted"** —
+`=== false` where the door twenty lines away correctly refuses on `null`.
+
+They share a shape. Every one lives in the seam between two components, on the
+path BESIDE the one the feature was written for. `learner_text` was covered;
+`segment_graded` was the same idea one function along. `say` was moderated;
+`framing` was the other half of the same object.
+
+### The fixes, and the one that is not code
+
+All five fixed: one `claimTurn` that every model-producing path goes through
+before any paid work, the turn slot reserved at entry to `produce()` rather than
+counted at exit, `say` and `framing` moderated in one call, the tier-3 brief
+fenced with a nonce, the internal surface exempt from the IP limiter, and
+`!== true` on the consent re-check. Plus a startup warning nobody filed: nothing
+asserted `JUDGE_MODEL_NAME` differed from `MODEL_NAME`, so a deployment could
+have pointed the judge at the author and kept every verdict while losing the
+independence that made them worth anything.
+
+`oracle/src/__tests__/hardening.test.ts` holds one regression test per defect,
+written to the ATTACK rather than to the feature — and **six of the seven were
+confirmed to fail against the pre-fix code** (`git stash`, run, pop). A
+regression test that passes both ways proves only that it ran.
+
+### The finding that was not in the audit
+
+Found separately while preparing the deploy: `VoiceConsentControl` did not know
+the policy flag existed. It offered "Allow the microphone" to every guardian,
+showed the PLACEHOLDER legal wording awaiting counsel, and stored that wording
+verbatim as the record of what they agreed to — for a microphone the socket
+refuses anyway while `TUTOR_VOICE_FOR_MINORS` is false. Three faults at once:
+unreviewed legal text presented as an agreement, persisted as the record, and a
+permission that does nothing.
+
+Two independent guards now. The surface reads `policy` and says the true reason
+instead of offering a switch; `POST /tutor/consent` answers `409 POLICY_BLOCKED`.
+Both treat an ABSENT policy field as blocked — absent is not consent. Revocation
+is gated by neither, deliberately: a consent granted while the policy was open
+must stay withdrawable after it closes. Verified in-browser across all four
+states at 1280 px and 375 px.
+
+### The lesson
+
+`/ORACLE.md` §15.2 asserted the turn floor and the turn cap held. True of one
+path, false of another — and **the assertion is what stopped anyone looking**.
+A claim in a specification is a claim about code, and it decays silently as the
+code changes around it. §15.2 now carries the correction in place rather than a
+quiet edit, because the failure mode is worth more than the fix.
+
+**Gates after the work: 1,784 tests green** (frontend 1163/90 files, backend 449,
+oracle 172), plus `docs:check`, `secrets:check`, `i18n:check`, `paths:check`,
+`provider:check`, `verify:tutor`, `verify:rig`, `verify:placement`.
+
 ## Certifying the Tutor: every gate green, 108 screenshots, and the two things a picture found (2026-08-23)
 
 **The task was to certify, or to say why it could not be certified.** Three

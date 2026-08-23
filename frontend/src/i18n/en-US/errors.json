@@ -3,6 +3,7 @@
     "VALIDATION_ERROR": "Something in the request wasn't right.",
     "UNAUTHORIZED": "You need to sign in for that.",
     "FORBIDDEN": "You don't have permission for that.",
+    "POLICY_BLOCKED": "We're not offering that to children yet.",
     "NOT_FOUND": "We couldn't find that.",
     "CONFLICT": "That conflicts with something that already exists.",
     "RATE_LIMITED": "Too many tries, wait a moment.",

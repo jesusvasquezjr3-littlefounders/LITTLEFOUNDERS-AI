@@ -93,6 +93,13 @@ export interface ConsentState {
   active: boolean;
   grantedAt: string | null;
   locale: string | null;
+  /**
+   * Whether policy currently permits a minor's microphone AT ALL — the DPA
+   * gate (`TUTOR_VOICE_FOR_MINORS`, /ORACLE.md §16), which is a separate fact
+   * from whether this guardian has consented. While it is `blocked` there is
+   * nothing to consent TO, and the control must not offer it.
+   */
+  policy: 'allowed' | 'blocked';
 }
 
 export function getVoiceConsent(token: string, userId: string): Promise<ApiResult<ConsentState>> {

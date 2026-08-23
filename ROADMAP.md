@@ -289,6 +289,19 @@ rather than guessed at.
    a development machine: no credentials here, and it spends real money against
    a real contract.
 
+**Security: audited adversarially on 2026-08-23** (`/SECURITY_AUDIT_2026-08-23.md`).
+Six surfaces attacked, every finding put to a skeptic told to refute it: 27
+raised, 7 survived, 5 high, **all fixed with a regression test each that was
+confirmed to fail against the pre-fix code**. The four that mattered were a
+model-authored field reaching a child's screen unmoderated while two comments
+claimed otherwise, two paths to the model that skipped the turn floor and the
+budget, an IP rate limiter that could take the tutor offline platform-wide on
+ordinary traffic, and a consent re-check that read "unreadable" as "granted".
+What the audit did NOT cover is written down in its §3 — no live provider calls,
+no dependency review, no load testing, no multi-instance analysis. **One
+consequence to hold onto: Oracle must run as a SINGLE Railway replica** until
+the in-process `jti` ledger moves to Redis.
+
 **Not blocking launch, but named before a real cohort** (`/ORACLE.md` §15.2):
 there is no platform-wide spend ceiling or circuit breaker, no admission control
 on concurrent sessions, no rate limit on the websocket handshake itself, no

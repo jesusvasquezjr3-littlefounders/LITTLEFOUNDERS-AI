@@ -3,6 +3,7 @@
     "VALIDATION_ERROR": "Algo na solicitação não estava certo.",
     "UNAUTHORIZED": "Você precisa entrar para isso.",
     "FORBIDDEN": "Você não tem permissão para isso.",
+    "POLICY_BLOCKED": "Ainda não oferecemos isso para crianças.",
     "NOT_FOUND": "Não conseguimos encontrar isso.",
     "CONFLICT": "Isso conflita com algo que já existe.",
     "RATE_LIMITED": "Muitas tentativas, espere um momento.",
