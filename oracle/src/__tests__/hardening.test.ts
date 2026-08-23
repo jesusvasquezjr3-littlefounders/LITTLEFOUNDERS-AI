@@ -411,6 +411,55 @@ describe('the rate limiter cannot take the platform down', () => {
     expect(throttled).toBe(0);
   });
 
+  it('rejects an unauthenticated request to that surface before parsing its body', async () => {
+    /*
+     * The cost of exempting the surface, bounded.
+     *
+     * With the limiter skipped there, an unauthenticated flood is no longer
+     * stopped by a bucket — so the rejection has to be cheap.
+     *
+     * The body is deliberately OVER the parser's 256 kB limit, because that is
+     * what makes this test discriminate: with the parser mounted first it
+     * answers 413 PAYLOAD_TOO_LARGE, having read and measured the whole thing.
+     * Only with `requireInternalKey` above it does an unauthenticated caller
+     * get 401 for the price of one header read. A body UNDER the limit would
+     * return 401 either way and prove nothing.
+     */
+    const response = await fetch(`http://127.0.0.1:${oraclePort}/api/v1/tutor/preflight`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ padding: 'x'.repeat(400_000) }),
+    });
+
+    expect(response.status).toBe(401);
+    const body = (await response.json()) as { error: { code: string } };
+    expect(body.error.code).toBe('UNAUTHORIZED');
+    // 413 here would mean the parser ran first and measured 400 kB before
+    // anyone asked whether the caller was allowed to send it.
+    expect(response.status).not.toBe(413);
+  });
+
+  it('answers an oversized AUTHENTICATED body 413, not 500', async () => {
+    // The other half of the same discovery: express.json()'s typed error was
+    // reaching the catch-all, so a caller who sent too much was told WE broke
+    // and invited to retry the one thing that cannot work.
+    const response = await fetch(`http://127.0.0.1:${oraclePort}/api/v1/tutor/preflight`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-internal-api-key': process.env.INTERNAL_API_KEY as string,
+      },
+      body: JSON.stringify({ padding: 'x'.repeat(400_000) }),
+    });
+
+    expect(response.status).toBe(413);
+    const body = (await response.json()) as { data: null; error: { code: string } };
+    // The envelope holds even here (§1.6), and the code is one the frontend
+    // already has copy for.
+    expect(body.data).toBeNull();
+    expect(body.error.code).toBe('PAYLOAD_TOO_LARGE');
+  });
+
   it('still throttles everything outside that surface', async () => {
     // The exemption is scoped, not a removal: an unauthenticated flood is
     // exactly what the limiter is still for.

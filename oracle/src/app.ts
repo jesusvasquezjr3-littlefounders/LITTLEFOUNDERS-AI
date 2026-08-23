@@ -46,9 +46,26 @@ export function createApp(liveSessions: () => number = () => 0): express.Express
   });
 
   app.use(globalRateLimiter);
+
+  /*
+   * AUTHENTICATE THE INTERNAL SURFACE BEFORE PARSING A BODY FOR IT.
+   *
+   * The limiter above deliberately skips `/api/v1/tutor` — its only caller is
+   * Core, from one address, and an IP bucket in front of a shared secret
+   * defended nobody while making ~200 tutor page views able to take the
+   * platform down (see middleware/rateLimit.ts). But skipping it means an
+   * unauthenticated flood is no longer bounded here, and with the body parser
+   * mounted first, every one of those requests would buy 256 kB of JSON
+   * parsing before `requireInternalKey` got to reject it.
+   *
+   * So the key check moves ABOVE the parser. It reads one header and compares
+   * fixed-width digests, which is as cheap as a rejection gets. The parser
+   * still runs for the authenticated request that follows it.
+   */
+  app.use('/api/v1/tutor', requireInternalKey);
   app.use(express.json({ limit: '256kb' }));
 
-  app.use('/api/v1/tutor', requireInternalKey, runtimeRouter(liveSessions));
+  app.use('/api/v1/tutor', runtimeRouter(liveSessions));
 
   app.use((_req, res) => {
     res.status(404).json({ data: null, error: { code: 'NOT_FOUND', message: 'Route not found' } });
@@ -57,6 +74,35 @@ export function createApp(liveSessions: () => number = () => 0): express.Express
   // Express identifies error middleware by arity — the 4th param must exist
   // even though nothing calls it.
   app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    /*
+     * A BODY OVER THE LIMIT IS THE CALLER'S FAULT, NOT OURS.
+     *
+     * `express.json()` throws a typed error for an oversized or malformed body,
+     * and it landed here — so a 300 kB request came back `500 INTERNAL`, which
+     * tells the caller we broke and invites a retry of the exact thing that
+     * cannot work. Both codes already exist in the frontend's error map
+     * (§1.6); nothing was producing them. Found while checking that an
+     * unauthenticated request is rejected before its body is parsed.
+     */
+    const status = (err as { status?: number; statusCode?: number })?.status
+      ?? (err as { statusCode?: number })?.statusCode;
+    const type = (err as { type?: string })?.type;
+
+    if (status === 413 || type === 'entity.too.large') {
+      res.status(413).json({
+        data: null,
+        error: { code: 'PAYLOAD_TOO_LARGE', message: 'That request was too large.' },
+      });
+      return;
+    }
+    if (status === 400 && typeof type === 'string' && type.startsWith('entity.')) {
+      res.status(400).json({
+        data: null,
+        error: { code: 'VALIDATION_ERROR', message: 'That request body could not be read.' },
+      });
+      return;
+    }
+
     console.error(`[${SERVICE}] unhandled error:`, err);
     res.status(500).json({ data: null, error: { code: 'INTERNAL', message: 'Unexpected error' } });
   });
