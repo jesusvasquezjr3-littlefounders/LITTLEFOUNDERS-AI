@@ -8,6 +8,9 @@ import { ConversationView } from '../ConversationView';
 import { ClosingInWorld } from '../ClosingInWorld';
 import { OfferChips } from '../OfferChips';
 import { PersonalizeInWorld } from '../PersonalizeInWorld';
+import { ReplayInWorld } from '../replay/ReplayInWorld';
+import { buildReplayScript } from '../replay/replayScript';
+import { useReplayDirector } from '../replay/useReplayDirector';
 import { VoiceConsentControl } from '../VoiceConsentControl';
 import { micBlockedForOffers, narrowBlockedReason } from '../mic';
 import { auditionFor } from '../stage/phases';
@@ -19,17 +22,25 @@ import {
   type ConversationLayerProps,
   type OfferLayerProps,
   type PersonalizeLayerProps,
+  type ReplayLayerProps,
   type StageMicProps,
 } from '../stage/StageShell';
 import { useMicrophone } from '../useMicrophone';
 import type { TutorPreferences } from '../types';
+import type { Locale } from '@/i18n';
 import {
+  DEFAULT_LAB_ACTIVITY,
+  DEFAULT_LAB_LOCALE,
+  LAB_ACTIVITIES,
   LAB_CATALOG,
-  LAB_OFFERS,
+  LAB_LOCALES,
   LAB_PREFERENCES,
   LAB_SCENES,
-  LAB_SESSION,
   LAB_TOKEN,
+  labLocaleOf,
+  labOffers,
+  labSession,
+  labTranscript,
   phaseForScene,
   useLabSocket,
   useStubbedCoreApi,
@@ -70,6 +81,17 @@ import {
  * noise in the locale files that §1.8 exists to keep honest. Every string the
  * LEARNER sees on this page comes from the real components and therefore from
  * the real locale files.
+ *
+ * THE INSTRUMENT IS IN ENGLISH; THE PRODUCT INSIDE IT IS NOT. That distinction
+ * is the whole of the locale switch on the panel. The fixtures used to be
+ * pinned to `es-MX` while the UI ran in whatever the browser detected, so every
+ * screenshot showed English chrome around Spanish content and read as a product
+ * full of hardcoded strings — it is not, and `labFixtures.ts` carries the note
+ * on what actually went wrong. One switch now moves `i18n.changeLanguage` and
+ * the simulated session together, so the two cannot disagree and a screenshot is
+ * always coherent. It is also the only way to LOOK at the locale swing: these
+ * three labels run to 1.86x of each other, and a plate sized for English is a
+ * defect nobody can see in English.
  */
 
 /** The lab's own surfaces. The stage is the point; consent has no stage. */
@@ -229,10 +251,50 @@ function LabSwitch({
 // ── The page ────────────────────────────────────────────────────────────────
 
 export default function TutorLabPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const viewport = useViewport();
 
   const [surface, setSurface] = useState<LabSurface>('introducing');
+
+  /*
+   * THE LOCALE, AND IT DRIVES BOTH HALVES.
+   *
+   * Seeded from whatever i18next already resolved, so arriving on the page does
+   * not silently change the language of the app in another tab; after that the
+   * switch is the authority. `changeLanguage` persists through the detector, the
+   * same way the product's own language picker does — a lab that changed the
+   * language only for itself would be one more way for the instrument and the
+   * thing under measurement to disagree.
+   */
+  const [locale, setLocale] = useState<Locale>(() => labLocaleOf(i18n.language ?? DEFAULT_LAB_LOCALE));
+  useEffect(() => {
+    if (labLocaleOf(i18n.language ?? DEFAULT_LAB_LOCALE) !== locale) void i18n.changeLanguage(locale);
+  }, [i18n, locale]);
+
+  const offers = useMemo(() => labOffers(locale), [locale]);
+
+  /*
+   * THE CAST SWITCH, and it exists because two of the four tutors could not be
+   * looked at in a conversation at all.
+   *
+   * `labSession` pins the speaking tutor to `rho`, and the audition's picker
+   * only moves `preferences` — which the conversing phase deliberately ignores,
+   * because upstream a started session carries the cast it was started with. So
+   * `liruf` and `dina` were unreachable on the one phase where the thing that
+   * makes them different is visible: they have no 3D mouth (/TUTOR_3D.md §3.1),
+   * their shot is `closeup-wide` rather than `closeup`, and the 2D face in the
+   * caption is the only articulation they have. This sets both halves at once,
+   * so the picker and the session can never disagree here either.
+   */
+  const [cast, setCast] = useState(LAB_PREFERENCES.character);
+  const session = useMemo(() => ({ ...labSession(locale), character: cast }), [locale, cast]);
+
+  /*
+   * WHICH EXERCISE IS ON THE PLATE. See `labFixtures` -> the activity switch:
+   * the scripted one is nearly the shortest thing the plate ever holds, and the
+   * plate's height is what this page is for.
+   */
+  const [activity, setActivity] = useState<string>(DEFAULT_LAB_ACTIVITY);
   /*
    * Open on desktop, collapsed to one chip on a phone.
    *
@@ -264,12 +326,33 @@ export default function TutorLabPage() {
   // Held in state, and patched optimistically, because that is what makes the
   // picker a picker: a choice has to reach the live island on the same tick.
   const [preferences, setPreferences] = useState<TutorPreferences>(LAB_PREFERENCES);
+  // The cast switch moves the picker with it, so no phase can show a different
+  // tutor from the one the conversation is being held with.
+  useEffect(() => {
+    setPreferences((prev) => (prev.character === cast ? prev : { ...prev, character: cast }));
+  }, [cast]);
 
-  useStubbedCoreApi(consentGranted);
+  useStubbedCoreApi(consentGranted, locale);
 
   const scene: LabScene = surface === 'consent' ? 'introducing' : surface;
   const phase = phaseForScene(scene);
-  const socket = useLabSocket(scene);
+  const socket = useLabSocket(scene, locale, activity);
+
+  /*
+   * THE REPLAY, DRIVEN BY THE REAL DIRECTOR against a fixture transcript.
+   *
+   * Nothing about the performance is faked here — `buildReplayScript` and
+   * `useReplayDirector` are the ones `/tutor` runs, so the running order, the
+   * beat timing, the poses read off the stored rows and the end-of-replay
+   * camera pull are all the product's. What the lab supplies is the transcript
+   * Core would have served, and only that, which is the same seam every other
+   * fixture on this page is drawn at.
+   */
+  const replayScript = useMemo(
+    () => (scene === 'replaying' ? buildReplayScript(labTranscript(locale)) : null),
+    [scene, locale],
+  );
+  const director = useReplayDirector(replayScript);
 
   // Switching surface resets what a previous surface was in the middle of. The
   // panel is a time machine, not a session, and a stale "thinking" ring carried
@@ -308,8 +391,22 @@ export default function TutorLabPage() {
     onAutoRelease: handleClip,
   });
 
-  const character = phase === 'conversing' ? LAB_SESSION.character : preferences.character;
-  const companion = phase === 'conversing' ? LAB_SESSION.companion : preferences.companion;
+  /*
+   * A replay performs the CAST IT WAS RECORDED WITH, exactly as upstream does:
+   * the summary in the transcript carries the character and the island, and
+   * they outrank whatever the picker currently holds.
+   */
+  const replaySession = phase === 'replaying' ? (replayScript?.session ?? null) : null;
+  const character = replaySession
+    ? replaySession.character
+    : phase === 'conversing'
+      ? session.character
+      : preferences.character;
+  const companion = replaySession
+    ? replaySession.companion
+    : phase === 'conversing'
+      ? session.companion
+      : preferences.companion;
   const diorama =
     preferences.diorama in SCENE_ASSETS
       ? (preferences.diorama as keyof typeof SCENE_ASSETS)
@@ -321,14 +418,15 @@ export default function TutorLabPage() {
     phase,
     articulates,
     adaptationOffered: socket.adaptationOffer !== null,
+    replayEnded: director?.finished ?? false,
   });
 
   const audition = useMemo(() => auditionFor(phase, LAB_CATALOG.characters), [phase]);
 
   const blockedBy =
     phase === 'conversing'
-      ? narrowBlockedReason(LAB_SESSION.microphoneBlockedBy)
-      : micBlockedForOffers(LAB_OFFERS);
+      ? narrowBlockedReason(session.microphoneBlockedBy)
+      : micBlockedForOffers(offers);
 
   const micPlan = micForPhase({
     phase,
@@ -367,7 +465,7 @@ export default function TutorLabPage() {
 
   const offerLayer: OfferLayerProps = {
     ...common,
-    offers: LAB_OFFERS,
+    offers,
     starting: false,
     startError: null,
     onStart: () => setSurface('conversing'),
@@ -375,11 +473,12 @@ export default function TutorLabPage() {
     // The lab's stand-in token. It never leaves the page — the shim in
     // `labFixtures` answers the replay list before `fetch` does.
     token: LAB_TOKEN,
+    onReplay: () => setSurface('replaying'),
   };
 
   const conversationLayer: ConversationLayerProps = {
     ...common,
-    session: LAB_SESSION,
+    session,
     socket,
     token: LAB_TOKEN,
     speaking,
@@ -389,6 +488,17 @@ export default function TutorLabPage() {
       socket.endSession();
       setSurface('closing');
     },
+  };
+
+  const replayLayer: ReplayLayerProps = {
+    ...common,
+    director,
+    // The fixture is synchronous, so neither of the two failure surfaces is
+    // reachable from the switcher. They are the ordinary shape of one fetch and
+    // are exercised by `/tutor` itself.
+    loading: false,
+    error: null,
+    onDone: () => setSurface('introducing'),
   };
 
   const panel = (
@@ -417,6 +527,65 @@ export default function TutorLabPage() {
               </LabSwitch>
             ))}
           </div>
+
+          {/*
+            THE LOCALE SWITCH, and it is one switch rather than two because the
+            two halves it moves may never be set separately. Pressing `es-MX`
+            changes the app's language AND the simulated session's content, so
+            the tutor's line, the activity, the transcript and the chrome around
+            them are always one language. Every screenshot ever taken of this
+            page before this row existed showed English chrome around Spanish
+            content, and was read — reasonably — as evidence of hardcoded
+            strings in the product.
+          */}
+          <div className="flex max-w-full gap-1 overflow-x-auto">
+            {LAB_LOCALES.map((id) => (
+              <LabSwitch key={id} on={locale === id} onClick={() => setLocale(id)}>
+                {id}
+              </LabSwitch>
+            ))}
+          </div>
+
+          {/*
+            THE CAST, and WHICH EXERCISE IS ON THE PLATE. Two instruments, one
+            row, because both answer the same question: what does this
+            composition do when it is handed the hard case rather than the
+            fixture it was designed against. The character decides whether the
+            2D face in the caption is the tutor's ONLY mouth; the activity
+            decides whether the plate is holding three two-character options or
+            a market stall with a till.
+          */}
+          <div className="flex max-w-full items-center gap-1 overflow-x-auto">
+            {LAB_CATALOG.characters.map((id) => (
+              <LabSwitch key={id} on={cast === id} onClick={() => setCast(id)}>
+                {id}
+              </LabSwitch>
+            ))}
+            <select
+              value={activity}
+              onChange={(event) => setActivity(event.target.value)}
+              aria-label="activity on the plate"
+              className="lf-caption ml-1 max-w-[11rem] shrink-0 rounded-sm bg-surface-sunken px-1 py-1 text-content"
+            >
+              {LAB_ACTIVITIES.map((id) => (
+                <option key={id} value={id}>
+                  {id}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/*
+            NO CAVEAT UNDER THIS SWITCH ANY MORE, and the deletion is the point.
+            It used to read "engine fixture — es-MX content by design", because
+            the engine's fixtures were pinned to Spanish and a lesson DOCUMENT is
+            single-locale (LESSON_ENGINE.md §3). True, and beside the point: a
+            page whose whole job is to rule out a language defect may not itself
+            print two languages at once and explain it in a footnote.
+            `lesson-engine/lab/fixtureCopy.ts` writes every fixture in all three
+            now, so every activity on this switch is safe to photograph the
+            language from.
+          */}
 
           <div className="flex max-w-full gap-1 overflow-x-auto">
             <LabSwitch on={speaking} onClick={() => setSpeaking((on) => !on)}>
@@ -489,18 +658,30 @@ export default function TutorLabPage() {
     <>
       <StageShell
         mic={mic}
+        dockLabel={
+          phase === 'replaying'
+            ? t('tutor.stage.replayControls')
+            : phase === 'closing'
+              ? t('tutor.stage.closeControls')
+              : undefined
+        }
         audition={audition}
         scene={diorama}
         character={character}
         companion={companion}
         backdrop={backdrop}
-        emotion={socket.turn?.emotion ?? 'neutral'}
-        action={socket.turn?.action ?? 'idle'}
-        actionKey={socket.turn?.seq ?? 0}
-        // Null always. Audio is a network edge and the lab has no clip; the
+        // In a replay the pose is the one the character ORIGINALLY held, read
+        // off the stored row by the real director — the same expression the
+        // real route hands the canvas.
+        emotion={director?.beat?.emotion ?? socket.turn?.emotion ?? 'neutral'}
+        action={director?.beat?.action ?? socket.turn?.action ?? 'idle'}
+        actionKey={director?.beatKey ?? socket.turn?.seq ?? 0}
+        // Null always. Audio is a network edge and the lab has no clip — the
+        // replay fixture is deliberately a silent recording, which is the
+        // arrangement every conversation reaches after ninety days — so the
         // `speaking` switch drives everything the clip would have driven.
         speechUrl={null}
-        audioKey={socket.turn?.seq ?? 0}
+        audioKey={director?.beatKey ?? socket.turn?.seq ?? 0}
         shot={shot}
         onReady={() => setStageReady(true)}
         onSpeechEnd={() => setSpeaking(false)}
@@ -535,7 +716,21 @@ export default function TutorLabPage() {
             copies is how a lab comes to report on a screen nobody ships.
           */
           <StageLayer label={t('tutor.stage.closeLayer')} placement="world">
-            <ClosingInWorld token={LAB_TOKEN} onStartAnother={() => setSurface('introducing')} />
+            <ClosingInWorld
+              token={LAB_TOKEN}
+              onStartAnother={() => setSurface('introducing')}
+              onReplay={() => setSurface('replaying')}
+            />
+          </StageLayer>
+        )}
+
+        {phase === 'replaying' && (
+          /*
+            The same component `/tutor` mounts, driven by the same director. The
+            only fixture underneath it is the transcript Core would have served.
+          */
+          <StageLayer label={t('tutor.stage.replayLayer')} placement="world">
+            <ReplayInWorld {...replayLayer} />
           </StageLayer>
         )}
       </StageShell>

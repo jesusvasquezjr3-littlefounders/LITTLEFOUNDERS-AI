@@ -8,7 +8,15 @@ import { cn } from '@/lib/utils'
 import { Icon } from '@/components/ui'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
-import { OptionCard, SunkenWell, TokenChip, type OptionVisualState } from '../../core/primitives'
+import {
+  FOCUS_RING,
+  OptionCard,
+  SunkenWell,
+  TokenChip,
+  VerdictGlyph,
+  optionStateClasses,
+  type OptionVisualState,
+} from '../../core/primitives'
 import { seededSort } from '../../core/shuffle'
 
 type Dict = Record<string, unknown>
@@ -39,7 +47,7 @@ function multiSelectState(
 
 function StepNumber({ n }: { n: number }) {
   return (
-    <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface-sunken lf-label text-content-muted">
+    <span className="lf-well mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full lf-label text-content">
       {n}
     </span>
   )
@@ -136,7 +144,7 @@ export function CauseEffect({ segment, value, onChange, disabled, verdict }: Exe
                   </span>
                 </OptionCard>
               ) : (
-                <div className="flex min-h-11 items-center gap-3 rounded-md border-2 border-dashed border-outline/60 bg-surface-sunken px-4 py-3">
+                <div className="lf-well-target flex min-h-12 items-center gap-3 rounded-md px-4 py-3">
                   <StepNumber n={i + 1} />
                 </div>
               )}
@@ -207,13 +215,40 @@ export function CompareTable({ segment, value, onChange, disabled, verdict }: Ex
 
   return (
     <div className="space-y-4">
+      {/*
+        THE TABLE FITS THE PHONE, and it did not.
+
+        `min-w-[420px]` on a `w-full` table is a floor of 420 px inside a 335 px
+        column at 375, so the SECOND column was cut off mid-word — with no fade,
+        no shadow and nothing else that says "swipe". `canSubmit` requires every
+        cell, so a child who could not see column two could not finish the
+        exercise at all; the overflow scroller technically reached it and no
+        six-year-old was going to find that.
+
+        `table-fixed` with an explicit first column makes the data columns share
+        whatever width there is, equally, at every size — 3 columns (the
+        schema's maximum) come out at ~80 px each at 375 and ~200 px each at
+        1280. The floor moved onto the CELL, where it belongs, and dropped to
+        the tap floor. `overflow-x-auto` stays as the safety net for a row label
+        no wrapping can shrink, and `break-words` means that case now needs a
+        single unbroken 20-character word to happen at all.
+      */}
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[420px] border-separate border-spacing-1.5">
+        <table
+          className="w-full table-fixed border-separate border-spacing-1.5"
+          style={{ minWidth: `${72 + cols.length * 76}px` }}
+        >
+          <colgroup>
+            <col className="w-[26%]" />
+            {cols.map((col) => (
+              <col key={col.id} />
+            ))}
+          </colgroup>
           <thead>
             <tr>
               <th />
               {cols.map((col) => (
-                <th key={col.id} className="px-2 pb-1 text-center lf-label text-content-muted">
+                <th key={col.id} className="break-words px-1 pb-1 text-center lf-label text-content-muted">
                   {col.label}
                 </th>
               ))}
@@ -222,7 +257,7 @@ export function CompareTable({ segment, value, onChange, disabled, verdict }: Ex
           <tbody>
             {rows.map((row) => (
               <tr key={row.id}>
-                <th className="pr-2 text-left lf-label text-content">{row.label}</th>
+                <th className="break-words pr-2 text-left lf-label text-content">{row.label}</th>
                 {cols.map((col) => {
                   const key = `${row.id}:${col.id}`
                   const filled = cells[key]
@@ -238,18 +273,10 @@ export function CompareTable({ segment, value, onChange, disabled, verdict }: Ex
                         aria-pressed={focused === key}
                         onClick={() => tapCell(key)}
                         className={cn(
-                          'flex min-h-11 w-full min-w-[104px] items-center justify-center rounded-md border-2 px-2 py-2 lf-caption font-semibold',
-                          'transition-[border-color,background-color] duration-150',
-                          'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                          'disabled:cursor-not-allowed',
-                          state === 'idle'
-                            ? 'border-outline/70 bg-surface text-content hover:border-primary/60'
-                            : state === 'selected'
-                              ? 'border-primary/60 bg-surface text-content'
-                              : state === 'correct'
-                                ? 'border-success bg-success-soft text-content'
-                                : 'border-error bg-error-soft text-content',
-                          focused === key && !verdict && 'border-primary ring-2 ring-primary',
+                          'flex min-h-12 w-full min-w-12 items-center justify-center gap-1 break-words rounded-md px-2 py-2 text-center lf-label',
+                          FOCUS_RING,
+                          optionStateClasses(state),
+                          focused === key && !verdict && 'lf-answer-selected',
                         )}
                       >
                         {filled ? (
@@ -257,6 +284,7 @@ export function CompareTable({ segment, value, onChange, disabled, verdict }: Ex
                         ) : (
                           <Icon name="add" className="text-content-faint" />
                         )}
+                        <VerdictGlyph state={state} />
                       </button>
                     </td>
                   )
@@ -498,7 +526,7 @@ function KidChart({ chart }: { chart: ChartData }) {
   if (chart.kind === 'pie') return <PieChart chart={chart} />
   return (
     <div className="space-y-3">
-      <div className="overflow-x-auto rounded-lg border-2 border-outline/60 bg-surface p-3">
+      <div className="lf-slab overflow-x-auto rounded-lg p-3">
         {chart.kind === 'bar' ? <BarChart chart={chart} /> : <LineChart chart={chart} />}
       </div>
       {chart.series.length > 1 ? (
@@ -561,6 +589,7 @@ export function ReadChart({ segment, value, onChange, disabled, verdict }: Exerc
 // ---- evidence_hunt -----------------------------------------------------------------
 
 export function EvidenceHunt({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
+  const { t } = useTranslation()
   const draft = draftOf(value)
   const selected = (draft.selected as string[] | undefined) ?? []
   const claim = segment.payload.claim_md as string
@@ -568,37 +597,37 @@ export function EvidenceHunt({ segment, value, onChange, disabled, verdict }: Ex
   const evidenceIds = revealOf(verdict).evidence_ids as string[] | undefined
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border-2 border-primary bg-surface p-4 shadow-glass-sm">
-        <MarkdownLite text={claim} className="lf-body-lg text-content" />
-      </div>
+      {/*
+        THE CLAIM IS NOT AN ANSWER, and it was wearing the answer's skin.
+
+        It was `lf-slab lf-answer-selected`: the exact 2 px primary ring and
+        primary-soft fill that everything else on this screen uses to mean "you
+        chose this". It sits directly above six sentence options in the same
+        column, so the first thing a learner saw was a question whose first
+        option appeared to be already ticked — on the one exercise that asks
+        them to judge which statements support it. /DESIGN.md §Answer surfaces
+        gives the scenario a question is about its own material: `.lf-well`, a
+        place something goes, which is literally what a claim is here.
+      */}
+      <SunkenWell>
+        <p className="lf-caption text-content-faint">{t('lesson.families.analyze.claim')}</p>
+        <MarkdownLite text={claim} className="mt-0.5 lf-body-lg text-content" />
+      </SunkenWell>
       <div className="space-y-2">
         {sentences.map((sentence) => {
           const isSelected = selected.includes(sentence.id)
-          let stateClasses = isSelected
-            ? 'border-warning-strong bg-warning-soft text-content'
-            : 'border-outline/70 bg-surface text-content hover:border-warning-strong/60'
-          if (verdict && evidenceIds) {
-            if (evidenceIds.includes(sentence.id)) stateClasses = 'border-success bg-success-soft text-content'
-            else if (isSelected) stateClasses = 'border-error bg-error-soft text-content'
-            else stateClasses = 'border-outline/50 bg-surface text-content-muted opacity-60'
-          }
+          const state: OptionVisualState = multiSelectState(sentence.id, selected, verdict, evidenceIds)
           return (
-            <button
+            <OptionCard
               key={sentence.id}
-              type="button"
-              aria-pressed={isSelected}
+              role="checkbox"
+              ariaChecked={isSelected}
+              state={state}
               disabled={disabled}
-              onClick={() => onChange({ selected: toggleId(selected, sentence.id) })}
-              className={cn(
-                'min-h-11 w-full rounded-md border-2 px-4 py-3 text-left lf-body',
-                'transition-[border-color,background-color,transform] duration-150',
-                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                'active:translate-y-px disabled:cursor-not-allowed',
-                stateClasses,
-              )}
+              onSelect={() => onChange({ selected: toggleId(selected, sentence.id) })}
             >
               <MarkdownLite text={sentence.text_md} />
-            </button>
+            </OptionCard>
           )
         })}
       </div>
@@ -632,8 +661,8 @@ export function RedFlags({ segment, value, onChange, disabled, verdict }: Exerci
   const redflagIds = revealOf(verdict).redflag_ids as string[] | undefined
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border-2 border-outline bg-surface-sunken p-4">
-        <div className="mb-3 flex items-center gap-2 border-b-2 border-outline/60 pb-2">
+      <div className="lf-well rounded-lg p-4">
+        <div className="mb-3 flex items-center gap-2 border-b border-content/10 pb-2">
           <Icon name={ARTIFACT_ICON[kind] ?? 'campaign'} className="text-content-muted" />
           <span className="ml-auto flex gap-1.5" aria-hidden="true">
             <span className="h-2 w-2 rounded-full bg-outline" />
@@ -688,7 +717,7 @@ export function FactOpinion({ segment, value, onChange, disabled, verdict }: Exe
             : 'opinion'
           : undefined
         return (
-          <li key={statement.id} className="rounded-md border-2 border-outline/70 bg-surface p-3">
+          <li key={statement.id} className="lf-slab rounded-md p-3">
             <MarkdownLite text={statement.text_md} className="lf-body text-content" />
             <div className="mt-2 flex gap-2" role="radiogroup">
               {(['fact', 'opinion'] as const).map((kind) => {

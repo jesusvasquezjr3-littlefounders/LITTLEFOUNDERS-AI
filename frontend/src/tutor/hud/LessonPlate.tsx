@@ -15,9 +15,12 @@ import { HudPlate } from './HudPlate';
  * dashboard whatever is drawn beside it. Narrowing that slab to 400 px does not
  * answer the complaint, because a full-height column is still a full-height
  * column. So on desktop this is a plate that FLOATS: `plate-max` 420 px wide,
- * fitted to its content up to `plate-max-height` 62vh, inset `hud-inset` 24 px
- * from the bottom-right, with island visible above it, below it, to its left
- * and to its right. Those four gaps are the design, not spacing.
+ * fitted to its content up to `plate-max-height`, inset `hud-inset` 24 px from
+ * the bottom-right, with island visible above it, below it, to its left and to
+ * its right. Those four gaps are the design, not spacing — and since 2026-08-22
+ * the top one is a DISTANCE rather than a percentage of the viewport, because a
+ * fraction reserved most of the screen exactly where there was least to spare
+ * (see `PLATE_MAX_HEIGHT`).
  *
  * ON A PHONE IT IS A BOTTOM SHEET, because 420 px of floating plate on a 375 px
  * screen is the whole screen. Three detents from /DESIGN.md's `sheet-detents`:
@@ -77,6 +80,22 @@ const SHEET_INSET_PX = 16;
 
 /** Below this the plate is a sheet. `lg`, the same breakpoint Tailwind uses. */
 const DESKTOP_QUERY = '(min-width: 1024px)';
+
+/**
+ * The tallest the desktop plate may be — `layout.immersive.plate-max-height`.
+ *
+ * A CONSTANT BAND OF ISLAND ABOVE IT, not a fraction of the viewport, and the
+ * change (2026-08-22) is a correction rather than a preference. The plate sits
+ * `hud-inset` 24 px off the bottom, so `100vh - 200px` puts its top edge at
+ * 176 px on every screen: the island is visible above it, below it, and on both
+ * sides, which is what /DESIGN.md asks for, at the same distance whatever the
+ * monitor. `62vh` asked for the same thing as a percentage and got 280 px of
+ * empty island at 1280x800 and 250 px at 1280x720 — most reserved exactly where
+ * there was least to spare, above a panel whose exercise ran past its bottom
+ * edge. Written as a literal class rather than an arbitrary value built at
+ * runtime, because Tailwind scans source text and never sees a template string.
+ */
+const PLATE_MAX_HEIGHT = 'max-h-[calc(100vh-200px)]';
 
 /** A pointer has to travel this far before the gesture stops being a tap. */
 const DRAG_SLOP_PX = 4;
@@ -254,6 +273,44 @@ export interface LessonPlateProps {
    * a purely visual event for a learner who is not looking at the sheet.
    */
   peekStatus?: string;
+  /**
+   * Where ONE TAP on the resting row lands, when the row is carrying news.
+   *
+   * The row's default is to step up one detent, which is right when the learner
+   * is simply opening the sheet to look. It is wrong when the row says an
+   * ACTIVITY IS WAITING: HALF is 45% of a phone, and after the plate's own
+   * header and the pinned check control that left about 90 px for the exercise
+   * itself (measured at 375x812) — so the one tap the row invites lands the
+   * learner somewhere they still cannot work, and they have to discover a
+   * second gesture. A control that announces something should open far enough
+   * to act on it.
+   *
+   * Only consulted while the sheet is RESTING and `peekLabel` is set, so the
+   * ordinary "open the sheet" tap is untouched.
+   */
+  peekOpensTo?: LessonPlateDetent;
+  /**
+   * How the body is laid out — and it decides WHAT SCROLLS.
+   *
+   * `scroll` (the default, and every caller that has not asked otherwise) makes
+   * the body one scroller with the children stacked inside it. Simple, and
+   * correct for a plate whose content is prose.
+   *
+   * `column` makes the body a non-scrolling flex column and hands the scrolling
+   * to ONE child. That is what a plate carrying an EXERCISE needs, and the
+   * difference is measurable rather than stylistic. In `scroll` the prompt, the
+   * answers, the check control and the conversation log are one tall strip: a
+   * learner reaching the last option scrolls the question they are answering off
+   * the top, and on the 14 of 55 exercise types that do not fit a 420 px plate
+   * they scroll the `Check` control out of the frame as well. Measured at
+   * 1280x800: `read_chart` needs 817 px of prompt-plus-answers against 540 px of
+   * plate. In `column` the question is pinned above and the action is pinned
+   * below, so what scrolls is the answers, between two things that never move.
+   *
+   * The caller owns the arithmetic: exactly ONE child may be `flex-auto
+   * min-h-0` with its own scroller, and the rest must be `shrink-0`.
+   */
+  bodyLayout?: 'scroll' | 'column';
   children: ReactNode;
   className?: string;
 }
@@ -269,6 +326,8 @@ export function LessonPlate({
   header,
   peekLabel,
   peekStatus,
+  peekOpensTo,
+  bodyLayout = 'scroll',
   children,
   className,
 }: LessonPlateProps) {
@@ -464,6 +523,11 @@ export function LessonPlate({
       suppressClickRef.current = false;
       return;
     }
+    // A resting row that is ANNOUNCING something opens far enough to act on it.
+    if (resting && peekLabel && peekOpensTo) {
+      onDetentChange(peekOpensTo);
+      return;
+    }
     onDetentChange(detent === 'full' ? 'peek' : step(detent, 1));
   };
 
@@ -523,7 +587,18 @@ export function LessonPlate({
           ? // Bottom-RIGHT, not bottom-centre: the character is composed into
             // the free width on the left, which is the arrangement the owner
             // described and the one the camera is already solving for.
-            'bottom-6 right-6 max-h-[62vh]'
+            //
+            // THE CEILING IS A BAND OF ISLAND, NOT A FRACTION OF THE VIEWPORT
+            // (/DESIGN.md `layout.immersive.plate-max-height`, changed
+            // 2026-08-22). `62vh` reserved 38% of the screen above the plate,
+            // which is generous on a tall monitor and ruinous on a laptop: the
+            // shorter the screen, the smaller the plate got, and the exercise
+            // was already the thing that did not fit. Measured at 1280x800 it
+            // left 280 px of empty island over a panel whose learner had to
+            // scroll to reach the answers. A constant band is the honest rule —
+            // the four gaps around the plate are the design, and a gap is a
+            // distance rather than a percentage.
+            `bottom-6 right-6 ${PLATE_MAX_HEIGHT}`
           : 'inset-x-0 bottom-4 mx-auto motion-safe:transition-[height] motion-safe:duration-300 motion-safe:ease-[var(--lf-ease)]',
         className,
       )}
@@ -614,7 +689,30 @@ export function LessonPlate({
         */}
         <div
           hidden={resting}
-          className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 pb-4 pt-2 lg:px-5 lg:pb-5"
+          // The body is the thing a measurement script and a test both have to
+          // find, and both used to find it by an accessible name that happened
+          // to be inside it. A named seam beats a lucky landmark.
+          data-plate-body=""
+          /*
+           * `display: none` INLINE, not the `hidden` attribute alone, and this
+           * is the third surface on this route to learn it the same way.
+           * `[hidden] { display: none }` is a 0-1-0 USER-AGENT rule, and in
+           * `column` mode this element carries `flex` from an author
+           * stylesheet, which beats it outright. Measured on `/dev/tutor-lab` at
+           * 375x812 with the sheet resting at PEEK: the whole exercise was laid
+           * out below the fold — three option buttons at y = 925, 986 and 1047 —
+           * reporting `hidden === true` to every script that asked, focusable,
+           * announced, and 200 px past the bottom of the phone. Exactly the trap
+           * `ScreenAnchor` and `WorldChip` already record.
+           */
+          style={resting ? { display: 'none' } : undefined}
+          className={cn(
+            'min-h-0 flex-1 px-4 pb-4 pt-2 lg:px-5 lg:pb-5',
+            bodyLayout === 'column'
+              ? // The body does not scroll; one child does. See `bodyLayout`.
+                'flex flex-col gap-3 overflow-hidden'
+              : 'space-y-3 overflow-y-auto overscroll-contain',
+          )}
         >
           {children}
         </div>

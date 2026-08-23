@@ -121,13 +121,13 @@ export function StoryBranch({ segment, disabled, onFinish, verdict }: ExercisePr
             <li
               key={`${step.node_id}-${i}`}
               className={cn(
-                'rounded-md border-2 p-3',
-                best && isBest ? 'border-success bg-success-soft' : 'border-outline/60 bg-surface',
+                'rounded-md p-3',
+                best && isBest ? 'lf-slab lf-answer-correct' : 'lf-slab',
               )}
             >
               {choice ? <MarkdownLite text={choice.text_md} className="lf-body text-content" /> : null}
               {bestChoice ? (
-                <div className="mt-2 rounded-sm bg-surface-sunken px-2 py-1.5">
+                <div className="lf-well mt-2 rounded-sm px-2 py-1.5">
                   <p className="lf-caption text-content-muted">
                     {t('lesson.families.storyplay.bestChoice')}
                   </p>
@@ -163,7 +163,7 @@ interface DialoguePersona {
 
 function NpcBubble({ text }: { text: string }) {
   return (
-    <div className="mr-8 rounded-md rounded-bl-none border-2 border-outline/60 bg-surface p-3">
+    <div className="lf-slab mr-8 rounded-md rounded-bl-none p-3">
       <MarkdownLite text={text} className="lf-body text-content" />
     </div>
   )
@@ -171,7 +171,7 @@ function NpcBubble({ text }: { text: string }) {
 
 function KidBubble({ text }: { text: string }) {
   return (
-    <div className="ml-8 rounded-md rounded-br-none border-2 border-primary/40 bg-primary-soft p-3">
+    <div className="lf-slab lf-answer-selected ml-8 rounded-md rounded-br-none p-3">
       <MarkdownLite text={text} className="lf-body text-content" />
     </div>
   )
@@ -231,7 +231,7 @@ export function DialogueChoice({ segment, disabled, onFinish, verdict }: Exercis
               <NpcBubble text={turn.npc_md} />
               {chosenReply ? <KidBubble text={chosenReply.text_md} /> : null}
               {bestReply ? (
-                <div className="ml-8 rounded-sm bg-surface-sunken px-2 py-1.5">
+                <div className="lf-well ml-8 rounded-sm px-2 py-1.5">
                   <p className="lf-caption text-content-muted">
                     {t('lesson.families.storyplay.bestReply')}
                   </p>
@@ -610,12 +610,8 @@ export function LightningRound({ segment, disabled, onFinish, verdict }: Exercis
             <li
               key={q.id}
               className={cn(
-                'rounded-md border-2 p-3',
-                correct
-                  ? right
-                    ? 'border-success bg-success-soft'
-                    : 'border-error bg-error-soft'
-                  : 'border-outline/60 bg-surface',
+                'lf-slab rounded-md p-3',
+                correct ? (right ? 'lf-answer-correct' : 'lf-answer-wrong') : '',
               )}
             >
               <MarkdownLite text={q.prompt_md} className="lf-caption text-content-muted" />
@@ -627,7 +623,7 @@ export function LightningRound({ segment, disabled, onFinish, verdict }: Exercis
                 )}
               </div>
               {correctOption ? (
-                <div className="mt-2 rounded-sm bg-surface-sunken px-2 py-1.5">
+                <div className="lf-well mt-2 rounded-sm px-2 py-1.5">
                   <p className="lf-caption text-content-muted">
                     {t('lesson.families.storyplay.correctAnswer')}
                   </p>
@@ -683,7 +679,7 @@ export function WouldYouRather({ segment, value, onChange, disabled, verdict }: 
         ) : null}
         <MarkdownLite text={data.text_md} className="lf-body-lg" />
         {betterSide === side ? (
-          <span className="rounded-full bg-surface-sunken px-3 py-1 lf-caption text-content-muted">
+          <span className="lf-well rounded-full px-3 py-1 lf-caption text-content">
             {t('lesson.families.storyplay.bestChoice')}
           </span>
         ) : null}

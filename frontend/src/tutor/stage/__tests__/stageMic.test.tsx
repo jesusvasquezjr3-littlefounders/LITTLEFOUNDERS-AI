@@ -122,21 +122,30 @@ describe('the microphone is a property of the stage', () => {
 
   /*
    * The absence is asserted as tightly as the presence, and the list is spelled
-   * out rather than derived, so that removing the orb from a SECOND phase is a
+   * out rather than derived, so that removing the orb from a FURTHER phase is a
    * deliberate edit to this line and not a quiet consequence of a plan change.
    * Going missing by accident is the original bug; going missing on purpose is
-   * a product decision, and only one has been made.
+   * a product decision, and exactly two have been made.
+   *
+   * `replaying` joined `closing` on 2026-08-22 (/ORACLE.md §12). A replay is a
+   * recording: the learner cannot talk to it, and offering a child a microphone
+   * on the one screen where speaking into it can never do anything is the
+   * goodbye's bug in a worse form. The transport stands in the same rectangle,
+   * so a learner reaching for the orb finds a play button instead — which is
+   * the honesty requirement discharged physically, before any sentence.
    */
-  it('is absent from exactly one phase, and it is the one where speaking is over', () => {
+  it('is absent from exactly the two phases where speaking is not possible', () => {
     const absent = STAGE_PHASES.filter((phase) => !micFor(phase).present);
-    expect(absent).toEqual(['closing']);
+    expect(absent).toEqual(['closing', 'replaying']);
 
-    const { unmount } = renderPhase('closing');
-    // Not merely disabled — not in the DOM. A disabled 96 px orb here landed on
-    // the goodbye plate, on the indigo "start another session" button and on
-    // its own reason line, all at 375 px.
-    expect(orbs()).toHaveLength(0);
-    unmount();
+    for (const phase of absent) {
+      const { unmount } = renderPhase(phase);
+      // Not merely disabled — not in the DOM. A disabled 96 px orb on the
+      // goodbye landed on its plate, on the indigo "start another session"
+      // button and on its own reason line, all at 375 px.
+      expect(orbs(), phase).toHaveLength(0);
+      unmount();
+    }
   });
 
   it('is never hidden, inert or nameless, in any phase that has one', () => {

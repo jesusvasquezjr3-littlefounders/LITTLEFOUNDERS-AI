@@ -1,15 +1,21 @@
 // Central registry — composes the family slices (LESSON_ENGINE.md §4, §11).
 // Adding a family = one import block here; families never edit each other.
 
+// NO FIXTURE IMPORT HERE, DELIBERATELY. This module is EAGER — `LessonPlayer`
+// reaches it for `getRegistryEntry` on every lesson a learner opens — so
+// anything it imports rides into `index-*.js`. The demo fixtures used to, and
+// writing them in three languages would have tripled that for a phone that
+// renders one. They live in `lab/fixtureSets.ts`, which only the two lazy lab
+// routes import (see the note there).
 import type { FamilyGrader, Registry, RegistryEntry } from './core/types'
-import { choiceFixtures, choiceGraders, choiceRegistry } from './families/choice/register'
-import { storyFixtures, storyGraders, storyRegistry } from './families/story/register'
-import { inputFixtures, inputGraders, inputRegistry } from './families/input/register'
-import { arrangeFixtures, arrangeGraders, arrangeRegistry } from './families/arrange/register'
-import { analyzeFixtures, analyzeGraders, analyzeRegistry } from './families/analyze/register'
-import { storyplayFixtures, storyplayGraders, storyplayRegistry } from './families/storyplay/register'
-import { makerFixtures, makerGraders, makerRegistry } from './families/maker/register'
-import { moneyFixtures, moneyGraders, moneyRegistry } from './families/money/register'
+import { choiceGraders, choiceRegistry } from './families/choice/register'
+import { storyGraders, storyRegistry } from './families/story/register'
+import { inputGraders, inputRegistry } from './families/input/register'
+import { arrangeGraders, arrangeRegistry } from './families/arrange/register'
+import { analyzeGraders, analyzeRegistry } from './families/analyze/register'
+import { storyplayGraders, storyplayRegistry } from './families/storyplay/register'
+import { makerGraders, makerRegistry } from './families/maker/register'
+import { moneyGraders, moneyRegistry } from './families/money/register'
 
 export const REGISTRY: Registry = {
   ...storyRegistry,
@@ -33,22 +39,22 @@ export const GRADERS: Record<string, FamilyGrader> = {
   ...makerGraders,
 }
 
-/** Fixtures by family, for /dev/lesson-lab. */
-export const FIXTURES_BY_FAMILY = {
-  story: storyFixtures,
-  choice: choiceFixtures,
-  input: inputFixtures,
-  arrange: arrangeFixtures,
-  money: moneyFixtures,
-  analyze: analyzeFixtures,
-  storyplay: storyplayFixtures,
-  maker: makerFixtures,
-} as const
+/** The eight families, in taxonomy order. */
+export const LESSON_FAMILIES = [
+  'story',
+  'choice',
+  'input',
+  'arrange',
+  'money',
+  'analyze',
+  'storyplay',
+  'maker',
+] as const
+
+export type LessonFamily = (typeof LESSON_FAMILIES)[number]
 
 export const ALL_TYPES: string[] = Object.keys(REGISTRY)
 export const GRADED_TYPES: string[] = Object.keys(GRADERS)
-
-export type LessonFamily = keyof typeof FIXTURES_BY_FAMILY
 
 /** type id → family id, derived from the same slices that compose REGISTRY. */
 export const FAMILY_OF_TYPE: Record<string, LessonFamily> = Object.fromEntries(

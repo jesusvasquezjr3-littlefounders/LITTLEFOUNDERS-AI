@@ -186,3 +186,76 @@ export function warmBy(lighting: BackdropLighting, amount: number): BackdropLigh
     sunIntensity: lighting.sunIntensity * (1 + t * 0.12),
   };
 }
+
+/**
+ * WHAT COLOUR THE LIGHT IS, for a surface that cannot be lit.
+ *
+ * The mouth card is the one thing in the scene on an UNLIT material, and
+ * `MouthCard.tsx` records why: every lit material renders that particular map
+ * solid black and the cause is still not found. Its own comment named the
+ * consequence — "what it will not do is darken with the face as the scene's
+ * lighting changes" — and the consequence turned out to be worse than the
+ * sentence sounds. Photographed at Dusk on a 1280 stage, Zara's mouth is a
+ * bright cream rectangle across an orange-lit face: it reads as tape over her
+ * mouth, on the character the camera closes in on BECAUSE she articulates.
+ *
+ * An unlit material still multiplies its map by `color`, so the light can be
+ * applied by hand even though the shader will not do it. This is that
+ * multiplier: an approximation of the irradiance on a forward-facing patch of
+ * skin, half of it sky and half of it sun, expressed RELATIVE TO THE DEFAULT
+ * PALETTE.
+ *
+ * Relative, and clamped to white, is what makes this safe to land on a
+ * finished product: `auto` in light mode — the default nobody has changed —
+ * comes out exactly `#ffffff`, so the card renders the same bytes it does
+ * today. Only a learner who has chosen a darker hour sees any difference, and
+ * what they see is their choice reaching one more surface.
+ *
+ * It is deliberately NOT physically accurate. The card carries the character's
+ * own albedo, sampled from their texture, so the job is to keep it the same
+ * distance from the skin around it as the light moves — not to compute a
+ * radiance. `warmBy` is not applied: the closing warmth lands while the camera
+ * is pulling back to the establishing shot, where the mouth is a few pixels.
+ */
+function irradiance(lighting: BackdropLighting): [number, number, number] {
+  const sky = channels(lighting.sky) ?? [1, 1, 1];
+  const sun = channels(lighting.sun) ?? [1, 1, 1];
+  return [0, 1, 2].map(
+    (i) =>
+      (sky[i] as number) * lighting.hemisphereIntensity * 0.5 +
+      (sun[i] as number) * lighting.sunIntensity * 0.5,
+  ) as [number, number, number];
+}
+
+const REFERENCE_IRRADIANCE = irradiance(AUTO_LIGHT);
+
+/**
+ * The sRGB transfer function, and it is load-bearing rather than pedantry.
+ *
+ * `material.color` is read as an sRGB value and converted to LINEAR before the
+ * shader multiplies it by the map, so writing a linear ratio straight into it
+ * applies that ratio TWICE over — measured on the stage: the first version of
+ * this tint fixed Dusk and turned Night's mouth into a black rectangle, which
+ * is the white bar again wearing the other colour. Encoding the ratio is what
+ * makes the multiplier the one that was computed.
+ *
+ * The exact piecewise curve, not `x ** (1 / 2.2)`: the two disagree by several
+ * points at the dark end, which is precisely the end this exists to get right.
+ */
+function linearToSrgb(value: number): number {
+  const v = Math.min(1, Math.max(0, value));
+  return v <= 0.0031308 ? v * 12.92 : 1.055 * v ** (1 / 2.4) - 0.055;
+}
+
+export function mouthCardTint(lighting: BackdropLighting): string {
+  const here = irradiance(lighting);
+  const ratio = (i: number) => {
+    const reference = REFERENCE_IRRADIANCE[i] as number;
+    // A reference channel of zero would mean the default palette emits nothing
+    // in that channel, which it does not — but dividing by it would tint the
+    // mouth by an accident of arithmetic rather than by the light.
+    if (reference <= 0) return 1;
+    return linearToSrgb((here[i] as number) / reference);
+  };
+  return toHex(ratio(0), ratio(1), ratio(2));
+}

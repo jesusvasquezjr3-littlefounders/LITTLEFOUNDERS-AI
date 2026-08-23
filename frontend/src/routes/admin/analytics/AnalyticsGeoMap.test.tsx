@@ -3,6 +3,25 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { AnalyticsGeoMap } from './AnalyticsGeoMap';
 import { COUNTRY_SHAPE_BY_CODE, countryPosition, MICRO_STATE_CENTROIDS } from './worldGeography';
 
+/*
+ * WARM THE CODE-SPLIT CHUNK BEFORE THE CLOCK STARTS.
+ *
+ * `AnalyticsGeoMap` renders the map through `React.lazy(() => import('./WorldChoropleth'))`,
+ * and that module pulls in `worldGeography.ts` — 171 KB of generated Natural
+ * Earth outlines. `waitFor`'s default budget is 1000 ms, so a test that waits
+ * for a country path is really waiting for Vite to transform ~190 KB inside
+ * that second. Alone it takes ~480 ms and passes; inside the full run, with 89
+ * test files competing for the same worker pool, it does not, and the failure
+ * lands on whichever assertion happened to be behind the boundary.
+ *
+ * Importing the module here moves that transform into COLLECTION, which has no
+ * deadline, so `lazy()` later resolves from Vite's module cache. It weakens no
+ * assertion: the component still mounts its own lazy boundary and still has to
+ * suspend and resolve it. The alternative — a longer timeout — would only
+ * widen the window the race runs in.
+ */
+await import('./WorldChoropleth');
+
 const { mockAdminData, mockFilter } = vi.hoisted(() => ({
   mockAdminData: vi.fn(),
   mockFilter: vi.fn(),

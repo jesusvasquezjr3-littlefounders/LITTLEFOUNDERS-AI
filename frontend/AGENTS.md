@@ -13,7 +13,7 @@ The SPA: the four product sections (learn, tutor, tasks, profile). Talks ONLY to
 - **Action Color Contract (/DESIGN.md §Colors) is NON-NEGOTIABLE**: every button/action's color is chosen by what it DOES, not by taste — `primary`/`accent` variant = the ONE main CTA (indigo fill), `secondary` (alternative/lower emphasis, outlined), `success` (positive completion), `danger` (destructive/irreversible). Indigo (`primary` token) is for links/focus/info. `delight` (violet) and `warning` are status/celebration only, never button fills.
 - **COMPOSITION FIDELITY (/DESIGN.md §0):** build from **/DESIGN.md §Screen Recipes** — they are the single composition source (there is no mockup directory). Deviating without human sign-off is a design bug; if a recipe is ambiguous, fix the recipe in the same commit.
 - **Motion is a closed system** (/DESIGN.md §Motion): only the five recipes (page transition via layout, `<Reveal>` scroll reveal with ≤3×80ms stagger, `.lf-pop` panels, press physics, arrow nudge) with `--lf-ease`/`--lf-dur-*` tokens. `.lf-float` is the only infinite animation. Everything reduced-motion safe (wired in index.css).
-- **i18n zero tolerance** (§1.8): every string via `t()`. Locales are DIRECTORIES of route-area fragments — `src/i18n/{en-US,es-MX,pt-BR}/{common,marketing,errors,…}.json` — assembled in `src/i18n/index.ts` (fragment name ⇒ key prefix; `common` spreads at the root). A new key (or fragment file) lands in all three locale dirs in the same commit. Gate: `npm run i18n:check` (root) — checks file-set AND per-file key parity.
+- **i18n zero tolerance** (§1.8): every string via `t()`. Locales are DIRECTORIES of route-area fragments — `src/i18n/{en-US,es-MX,pt-BR}/{common,marketing,errors,…}.json` — assembled in `src/i18n/index.ts` (fragment name ⇒ key prefix; `common` spreads at the root). A new key (or fragment file) lands in all three locale dirs in the same commit. Gate: `npm run i18n:check` (root) — checks file-set AND per-file key parity. **`<html lang>` follows the learner**, published by `src/i18n/index.ts` at init and on every `languageChanged` — never by a component effect, because the attribute must be right for the first paint and for consumers that never mount one. It is not cosmetic: a screen reader picks its VOICE from it, so a stale `lang="en"` had Spanish content read aloud by an English synthesiser. `i18n:check` cannot see this (it checks keys, not the document); `src/i18n/documentLanguage.test.ts` does.
 - **End-User UI Cleanliness & Copy Protocol (NON-NEGOTIABLE)**: The UI must be clean, direct, clear, and designed exclusively for the END USER. The characters `—` (em-dash, U+2014), `§` (section symbol, U+00A7), and `—` (punctuation dash variants) are **PROHIBITED** in all user-facing text: UI component strings, JSX text nodes, i18n translation values, email template body copy, aria-labels, and fallback states. These are AI-system artifacts, not human-readable content. Use commas, periods, colons, or sentence breaks instead. Also NEVER include internal spec/doc references (e.g. `(§1.9)`, `(§1.3)`, `(0025)`), developer implementation notes, or other AI text artifacts (double dashes `--`, prefix colons). Keep all copy professional, functional, user-centric, and free of system-origin glyphs.
 - **Design tokens are CHANNELS, not colours.** `--lf-primary` holds `79 70 229`, so anywhere a raw CSS/SVG colour is required — recharts props, SVG `fill`/`stroke`, `color-mix()`, gradient `stopColor` — it MUST be wrapped: `rgb(var(--lf-primary))`. A bare `var(--lf-outline)` is an invalid colour and SVG silently falls back to BLACK, which is invisible on a dark surface and survives review because the surrounding data still renders. Every axis, grid line and gradient in the intelligence console shipped this way.
 - **Dark mode at write time**: every component styles `dark:` variants. Never light-only.
@@ -68,6 +68,30 @@ Rules that bite:
   skip link is revealed by a key a thumb never presses. That left a pointer
   user in a close-up with the browser back button. It is the third
   viewport-anchored element on the route and /DESIGN.md now names all three.
+- **The mouth card is the ONE unlit surface in the scene, so it has to be TOLD
+  what colour the light is.** `MouthCard` uses `MeshBasicMaterial` because every
+  lit material renders that particular map solid black (root cause unfound — see
+  TUTOR_3D.md §3.1a). An unlit material does not darken when the sun goes down,
+  and at Dusk the speaker's mouth photographed as a cream-white rectangle across
+  an orange-lit face. `backdrops.ts` → `mouthCardTint()` supplies the light by
+  hand through the material's `color`; `backdrop` reaches the card by prop from
+  `TutorScene` → `Cast` → `Character3D`, and the card reads the THEME from
+  `useTheme` exactly as `SceneLighting` does — one answer to "is it dark", never
+  two that can disagree. Two rules if you touch it: the tint is expressed
+  RELATIVE to the default palette so `auto` in light mode is provably
+  `#ffffff` and nobody's untouched scene moves, and it is encoded through the
+  sRGB transfer function because `material.color` is read as sRGB and multiplied
+  in linear — writing the linear ratio straight in applies it twice and turns
+  the mouth BLACK, which is the same defect wearing the other colour.
+- **A screenshot is the only gate that can see any of this.** Every defect in
+  this directory found since 2026-08-15 — the 221 m contact shadow, the ghost
+  character, the white mouth bar, the plate on the wrong dinosaur — passed
+  type-check, lint and the whole unit suite. `/dev/tutor-lab` mounts the REAL
+  `StageShell` with switches for phase, locale, cast and activity; drive it with
+  headless Chrome over CDP (RUNBOOK.md has the recipe and the four traps,
+  including that `getComputedStyle` cannot answer "is this visible" and that
+  `drawImage` on a WebGL canvas returns stale pixels). Do not close a change
+  here on a green suite.
 - **The stage is mounted ONCE for the whole route.** `StageShell` holds the
   single `TutorStage`; a phase changes the camera SHOT and which HUD layer is
   on top, never the tree under the canvas. A surface that mounts its own
@@ -102,6 +126,29 @@ Rules that bite:
   "looked at on /tutor itself" — a route that needs a token, a running Oracle
   and a live socket, so in practice nobody ever looked. The owner found the
   phone layout first, which is the only outcome that arrangement could produce.
+- **Drive the lab's LOCALE switch, and screenshot all three** (added
+  2026-08-22). The panel carries `en-US · es-MX · pt-BR`, and one press moves
+  `i18n.changeLanguage` AND the simulated session's content together — the
+  tutor's line, the transcript, the activity, the flagged skill. It is one
+  control on purpose: the fixtures used to be pinned to `es-MX` while the UI ran
+  in whatever the browser detected, so every screenshot showed English chrome
+  around Spanish content and was read, reasonably, as hardcoded strings in the
+  product. Nothing was hardcoded — production drives everything off
+  `session.locale` — but a QA surface that lies about the exact thing being
+  reviewed is worse than no QA surface. It is also the only way to SEE the
+  locale swing: these labels run to 1.86x of each other, and a plate sized for
+  English is a defect invisible in English. The lab's own chrome stays in plain
+  English (it is an instrument label); the simulated product never does.
+- **`/dev/lesson-lab` has the same switch now, for the same reason** (added
+  2026-08-23). It renders its chrome through i18n and used to render fixtures
+  pinned to `es-MX`, so it had the identical defect and was the instrument the
+  lesson-engine work was being reviewed through. Every fixture is now written in
+  all three (`lesson-engine/lab/fixtureCopy.ts`), STRUCTURE once and copy three
+  times, with the en-US object as the key source of truth and the other two
+  typed against it so a missing key is a compile error. The tutor lab's activity
+  switch draws from the same fixtures, so its `script`-only caveat is gone too.
+  `registry.test.tsx` blanks every string and compares what is left, which is
+  what stops the three from drifting into three different exercises.
 - **`three` must only ever be reached through a lazy route.** `TutorPage` and
   the scene lab are `lazy()` imports; a static import anywhere in the eager
   graph would put ~285 kB gzipped into the entry bundle of every marketing
@@ -137,6 +184,31 @@ Rules that bite:
   sit 40° apart while the gap the fourth candidate needs is 27° wide, so the spot
   existed and nothing was ever sampled in it. `verify:placement` now runs the
   whole-cast audition against both islands, which is how both were found.
+- **Ask a SHARED model how big it is in its OWN space — never `setFromObject`.**
+  `useSceneModel` hands out the loader's cached `gltf.scene` by reference, so one
+  `Object3D` is the model and it is attached to whichever group is rendering it.
+  `Box3.setFromObject` measures in WORLD space, which is the right answer for the
+  composed scene, the ground and the camera fit — and the wrong one for "how big
+  is this export", because on a REMOUNT the object is still inside the outgoing
+  instance's scaled group during the incoming instance's render pass. That put
+  Dina's feet 12.24 m under the island and stretched her contact shadow to
+  221.53 m, covering the canvas; the three characters who export at scale 1.0
+  hid it for five days. Use `modelBounds` / `modelFooting`
+  (`tutor-scene/modelBounds.ts`), which compose local matrices down from the
+  model root and read nothing above it. /TUTOR_3D.md §5.1.
+- **A character's Suspense boundary must not depend on their ROLE.** Wrapping
+  principals in a `Fragment` and extras in a `Suspense` made a role change an
+  element-TYPE change under an unchanged key, which React implements as
+  unmount-and-remount — and that remount is what took the world-space
+  measurement above. Every character gets their own `<Suspense key={id}>`
+  unconditionally; `onReady` waits for the tutor and companion through an
+  explicit `PrincipalModels` gate instead. /TUTOR_3D.md §5.2.
+- **`verify:placement` sweeps the audition WITH a companion**, every character in
+  both roles on both islands, using the product's own `standingCast`
+  (`tutor-scene/cast.ts`). That configuration — a candidate who is also the
+  session's companion — is the one the gate never covered and the only one that
+  broke. It also measures footing free versus mounted, which fails on the
+  pre-fix code.
 - **The whole cast stands on the island during personalization, and it turns the
   shadow pass off to afford it.** Four characters measure 106,208 triangles;
   with either island that is 151,204 or 173,076 per frame against a 220,000

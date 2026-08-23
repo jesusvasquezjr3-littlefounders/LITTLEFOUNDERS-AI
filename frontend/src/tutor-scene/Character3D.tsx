@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { AnimationMixer, Box3, Group, LoopOnce, LoopRepeat, Vector3, type AnimationAction } from 'three';
+import { AnimationMixer, Group, LoopOnce, LoopRepeat, type AnimationAction } from 'three';
 import { useSceneModel } from './useSceneModel';
+import { modelFooting } from './modelBounds';
 import { characterScale, CHARACTER_ASSETS, SCENE_ASSET_BASE, type CharacterAsset } from './assets';
 import { MouthCard, hasMouthCard } from './MouthCard';
+import type { SceneBackdropId } from './backdrops';
 import type { QualitySettings } from './quality';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
 import { useGround } from './ground';
@@ -69,6 +71,15 @@ export interface Character3DProps {
    * change — which is the whole reason the mouth is a card and not a rig.
    */
   viseme?: number;
+  /**
+   * The hour the island is standing in, forwarded to `MouthCard`.
+   *
+   * The character's own materials are lit and need nothing; the mouth card is
+   * the one unlit surface in the scene and has to be told what colour the light
+   * is (`backdrops.ts` -> `mouthCardTint`). Defaulted so a caller that has no
+   * opinion — every test, and `/dev/scene-lab` — gets today's behaviour.
+   */
+  backdrop?: SceneBackdropId;
 }
 
 /** Distinct irrational-ish multipliers keep two characters from breathing in sync. */
@@ -83,6 +94,7 @@ export function Character3D({
   action = 'idle',
   actionKey = 0,
   viseme = 0,
+  backdrop = 'auto',
 }: Character3DProps) {
   const asset: CharacterAsset = CHARACTER_ASSETS[id];
   const { scene } = useSceneModel(asset.url, settings);
@@ -93,21 +105,18 @@ export function Character3D({
   /*
    * Feet-on-the-ground in two measured parts:
    *   footOffset — how far the model's own lowest vertex sits from its origin,
-   *                after scaling. The exports mostly rest on y=0, but "mostly"
-   *                is not a contract and a character sunk a centimetre into an
-   *                island reads as cheap.
+   *                after scaling.
    *   surfaceY   — the island's actual surface under this (x, z), by raycast.
+   *
+   * MEASURED IN THE MODEL'S OWN SPACE, and it has to be. `useSceneModel` shares
+   * one Object3D per character, so on a remount this memo runs while that object
+   * is still attached to the OUTGOING instance's scaled group — and
+   * `Box3.setFromObject`, which this used to call, would then return the box
+   * already in scene metres and scale it a second time. See `modelBounds.ts` for
+   * the measurements; Dina's contact shadow reached 221 m across and her feet
+   * 12 m below the island.
    */
-  const { footOffset, footprint } = useMemo(() => {
-    const box = new Box3().setFromObject(scene);
-    const size = box.getSize(new Vector3());
-    return {
-      footOffset: -box.min.y * scale,
-      // Footprint, not height: a quadruped is wide and low, a human narrow and
-      // tall, and a shadow sized off height would be absurd on both.
-      footprint: (Math.max(size.x, size.z) * scale) / 2,
-    };
-  }, [scene, scale]);
+  const { footOffset, footprint } = useMemo(() => modelFooting(scene, scale), [scene, scale]);
 
   const { sampleGround } = useGround();
   const [surfaceY, setSurfaceY] = useState<number | null>(null);
@@ -362,6 +371,7 @@ export function Character3D({
             assetBase={SCENE_ASSET_BASE}
             viseme={viseme}
             anisotropy={settings.anisotropy}
+            backdrop={backdrop}
           />
         ) : null}
       </group>

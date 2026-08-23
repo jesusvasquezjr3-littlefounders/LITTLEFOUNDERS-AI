@@ -133,6 +133,7 @@ export function OfferChips({
   onStart,
   onPersonalize,
   token,
+  onReplay,
   ready,
   character,
   nickname,
@@ -478,6 +479,40 @@ export function OfferChips({
   );
 
   /*
+   * SAVED CONVERSATIONS, AND THEY STAND IN THE DOCK LIKE EVERYTHING ELSE HERE.
+   *
+   * It used to be `absolute inset-x-0 bottom-0 z-40` inside the HUD layer, and
+   * that z-index could never have worked: `StageLayer`'s wrapper is
+   * `absolute inset-0 z-30`, which is a positioned element with a z-index and
+   * therefore a STACKING CONTEXT — so a z-40 child of it is confined to the
+   * layer's own 30, and the microphone dock, also at 30 and later in the DOM,
+   * paints over the top of it. Measured at 375x812 with the archive open: the
+   * "My island" and "Hide" chips sat across the list, and "Play it again" — the
+   * one control on the surface — was underneath them, half covered and still
+   * pressable, which is worse than being gone.
+   *
+   * The dock's own `above` slot has none of that problem, is measured into the
+   * safe area so the camera composes around it, and is exactly where the
+   * goodbye already puts the same list (`ClosingInWorld`). One archive, two
+   * phases, one arrangement. It scrolls inside itself because the dock grows
+   * UPWARD from the bottom edge, so a learner with thirty conversations would
+   * otherwise push the first row off the top of the screen.
+   */
+  const archive = replaysOpen ? (
+    <HudPlate shape="sheet" className="pointer-events-auto max-h-[52vh] overflow-y-auto overscroll-contain">
+      {/*
+        The plate's own floor centres its content, which is right for a one-line
+        chip and wrong for a list. The list sets its own alignment rather than
+        the primitive growing a variant for it.
+      */}
+      <div className="flex w-full flex-col gap-3 text-left">
+        <span className="lf-headline text-content">{t('tutor.history.title')}</span>
+        <SessionHistory token={token} onReplay={onReplay} />
+      </div>
+    </HudPlate>
+  ) : null;
+
+  /*
    * The dock is absent on the scene lab and in a unit test, and a control that
    * exists only where a shell is mounted is a control two of the three places
    * this component runs cannot reach. Where there is no dock the pair falls back
@@ -551,6 +586,14 @@ export function OfferChips({
               {status}
               {chipsIn && chips}
               {chipsIn && !dockAbove && secondary}
+              {/*
+                THE ARCHIVE IS DELIBERATELY NOT HERE. This cluster is the
+                anchored node `ScreenAnchor` rewrites the transform of on every
+                frame; a 52vh scrolling sheet inside it would be a list flying
+                around the island. Where there is no dock the archive belongs to
+                the guaranteed column below, which is the arrangement a device
+                without a stage actually gets.
+              */}
             </div>
           </div>
 
@@ -560,7 +603,15 @@ export function OfferChips({
             the chest cluster is the 44 px that decided whether the openings fit
             above the dock at 375 px.
           */}
-          {chipsIn && dockAbove ? createPortal(secondary, dockAbove) : null}
+          {chipsIn && dockAbove
+            ? createPortal(
+                <>
+                  {archive}
+                  {secondary}
+                </>,
+                dockAbove,
+              )
+            : null}
         </>
       ) : (
         /*
@@ -596,39 +647,10 @@ export function OfferChips({
             with no WebGL there is no render to put controls over.
           */}
           {secondary}
+          {archive}
         </div>
       )}
 
-      {replaysOpen && (
-        /*
-         * Saved conversations, opened deliberately and closed again.
-         *
-         * It is a list of cards over the island, which is the silhouette this
-         * whole rebuild is removing, and it is acceptable ONLY because a
-         * learner asked for it: nothing about the arrival screen is a list.
-         * /ORACLE.md §12's replay becomes stones on the island's shore and a
-         * camera move down to one; until then, dropping the feature outright
-         * would take away conversations a child already has.
-         */
-        <div className="pointer-events-auto absolute inset-x-0 bottom-0 z-40 max-h-[70vh] overflow-y-auto overscroll-contain p-4">
-          <HudPlate shape="sheet" className="mx-auto">
-            {/*
-              The plate's own floor centres its content, which is right for a
-              one-line chip and wrong for a list. The list sets its own
-              alignment rather than the primitive growing a variant for it.
-            */}
-            <div className="flex w-full flex-col gap-3 text-left">
-              <span className="lf-headline text-content">{t('tutor.history.title')}</span>
-              <SessionHistory token={token} />
-              <div className="flex justify-center">
-                <HudPlate as="button" shape="chip" onClick={() => setReplaysOpen(false)}>
-                  <span className="lf-action">{t('tutor.introduce.hideReplays')}</span>
-                </HudPlate>
-              </div>
-            </div>
-          </HudPlate>
-        </div>
-      )}
     </>
   );
 }

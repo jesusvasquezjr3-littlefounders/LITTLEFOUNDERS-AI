@@ -11,12 +11,14 @@ import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
 import { seededSort } from '../../core/shuffle'
 import {
+  FOCUS_RING,
   KidSlider,
   NumberPad,
   OptionCard,
   SunkenWell,
   TokenChip,
   VisualMark,
+  optionStateClasses,
   type OptionVisualState,
 } from '../../core/primitives'
 
@@ -50,8 +52,8 @@ function useNumberFormat(): (n: number) => string {
 /** Coin (< 20, round) vs bill (≥ 20, rounded rectangle) — visual only, via tokens. */
 function denominationClasses(value: number): string {
   return value < 20
-    ? 'aspect-square min-w-14 rounded-full border-warning-strong bg-warning-soft'
-    : 'min-w-20 rounded-sm border-success-strong bg-success-soft px-4'
+    ? 'aspect-square min-w-14 rounded-full bg-warning-soft'
+    : 'min-w-20 rounded-sm bg-success-soft px-4'
 }
 
 function DenominationButton({
@@ -74,10 +76,10 @@ function DenominationButton({
       onClick={onSelect}
       aria-label={ariaLabel}
       className={cn(
-        'inline-flex min-h-11 min-w-11 items-center justify-center border-2 lf-label lf-number text-content',
-        'transition-[transform,border-color,background-color] duration-150',
-        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-        'active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60',
+        'inline-flex min-h-12 min-w-12 items-center justify-center lf-label lf-number',
+        FOCUS_RING,
+        'disabled:opacity-60',
+        optionStateClasses('idle'),
         denominationClasses(value),
       )}
     >
@@ -156,7 +158,7 @@ function TrayTotal({
       <p
         className={cn(
           'lf-display-lg lf-number',
-          verdict ? (verdict.correct ? 'text-success-strong' : 'text-error-strong') : 'text-content',
+          verdict ? (verdict.correct ? 'text-success-strong' : 'text-warning-strong') : 'text-content',
         )}
       >
         {format(total)}
@@ -252,10 +254,10 @@ function StepperButton({
       onClick={onPress}
       aria-label={label}
       className={cn(
-        'inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border-2 border-outline/70 bg-surface text-content',
-        'transition-[transform,border-color] duration-150 hover:border-primary/60',
-        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-        'active:translate-y-px disabled:cursor-not-allowed disabled:opacity-40',
+        'inline-flex min-h-12 min-w-12 items-center justify-center rounded-full',
+        FOCUS_RING,
+        'disabled:opacity-40',
+        optionStateClasses('idle'),
       )}
     >
       <Icon name={icon} />
@@ -300,44 +302,72 @@ export function PiggySplit({ segment, value, onChange, disabled, verdict }: Exer
           const range = targets?.[jar.id]
           const inRange = range ? amount >= range.min && amount <= range.max : undefined
           return (
-            <div key={jar.id} className="flex items-center gap-3 rounded-md border-2 border-outline/70 bg-surface p-3">
-              <VisualMark
-                imageUrl={jar.image_url}
-                icon={jar.icon}
-                iconClassName="text-[28px] text-primary"
-                imgClassName="h-10 w-10"
-              />
-              <div className="min-w-0 flex-1">
-                <p className="lf-label text-content">{jar.label}</p>
-                {jar.hint_md ? (
-                  <MarkdownLite text={jar.hint_md} className="lf-caption text-content-muted" />
-                ) : null}
-                {range ? (
-                  <p className="lf-caption lf-number text-content-muted">
-                    {format(range.min)} – {format(range.max)}
-                  </p>
-                ) : null}
+            /*
+              THE JAR ROW STACKS ON A PHONE, and it has to.
+
+              One flex row holds an icon, the label, two 48px steppers and a
+              20-unit amount: 240 px of fixed furniture inside a 311 px row at
+              375, which leaves the label 71 px. A jar label is one word, and
+              one word does not wrap — so "Compartir" was already spilling 10 px
+              past its box into the minus button, and Portuguese's
+              "Compartilhar" spills far enough to sit ON it. That is a layout
+              sized for whichever language happened to be in the fixture, which
+              is the exact class of defect the lab's new locale switch exists to
+              surface (/AGENTS.md §1.11: no fixed pixel widths for structural
+              layout — everything reflows).
+
+              Below `sm` the row becomes two: the jar identifies itself on the
+              full width, and the stepper trio gets its own line with the
+              amount centred between the two buttons — which is also a better
+              thumb layout than three controls crushed against the right edge.
+              `break-words` is the belt to that braces: no label, in any
+              language, can overlap a control again.
+            */
+            <div
+              key={jar.id}
+              className="lf-slab flex flex-col gap-2 rounded-md p-3 sm:flex-row sm:items-center sm:gap-3"
+            >
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                <VisualMark
+                  imageUrl={jar.image_url}
+                  icon={jar.icon}
+                  iconClassName="text-[28px] text-primary"
+                  imgClassName="h-10 w-10"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="break-words lf-label text-content">{jar.label}</p>
+                  {jar.hint_md ? (
+                    <MarkdownLite text={jar.hint_md} className="break-words lf-caption text-content-muted" />
+                  ) : null}
+                  {range ? (
+                    <p className="lf-caption lf-number text-content-muted">
+                      {format(range.min)} – {format(range.max)}
+                    </p>
+                  ) : null}
+                </div>
               </div>
-              <StepperButton
-                icon="remove"
-                label={`${t('lesson.families.money.less')} ${jar.label}`}
-                disabled={disabled || amount - step < 0}
-                onPress={() => setJar(jar.id, amount - step)}
-              />
-              <span
-                className={cn(
-                  'lf-title lf-number w-20 text-right',
-                  inRange === undefined ? 'text-content' : inRange ? 'text-success-strong' : 'text-error-strong',
-                )}
-              >
-                {format(amount)}
-              </span>
-              <StepperButton
-                icon="add"
-                label={`${t('lesson.families.money.more')} ${jar.label}`}
-                disabled={disabled || remaining - step < 0}
-                onPress={() => setJar(jar.id, amount + step)}
-              />
+              <div className="flex shrink-0 items-center justify-between gap-3 sm:justify-end">
+                <StepperButton
+                  icon="remove"
+                  label={`${t('lesson.families.money.less')} ${jar.label}`}
+                  disabled={disabled || amount - step < 0}
+                  onPress={() => setJar(jar.id, amount - step)}
+                />
+                <span
+                  className={cn(
+                    'lf-title lf-number min-w-20 text-center sm:text-right',
+                    inRange === undefined ? 'text-content' : inRange ? 'text-success-strong' : 'text-warning-strong',
+                  )}
+                >
+                  {format(amount)}
+                </span>
+                <StepperButton
+                  icon="add"
+                  label={`${t('lesson.families.money.more')} ${jar.label}`}
+                  disabled={disabled || remaining - step < 0}
+                  onPress={() => setJar(jar.id, amount + step)}
+                />
+              </div>
             </div>
           )
         })}
@@ -372,7 +402,7 @@ export function NeedsWants({ segment, value, onChange, disabled, verdict }: Exer
         const decided = decisions[item.id]
         const isNeedCorrect = correctNeeds?.includes(item.id)
         return (
-          <li key={item.id} className="rounded-md border-2 border-outline/70 bg-surface p-3">
+          <li key={item.id} className="lf-slab rounded-md p-3">
             <div className="flex items-center gap-2">
               {item.image_url || item.icon ? (
                 <VisualMark
@@ -531,7 +561,7 @@ export function BudgetFit({ segment, value, onChange, disabled, verdict }: Exerc
         </SunkenWell>
         <SunkenWell className="text-center" aria-live="polite">
           <p className="lf-caption text-content-muted">{t('lesson.families.money.remaining')}</p>
-          <p className={cn('lf-title lf-number', remaining < 0 ? 'text-error-strong' : 'text-content')}>
+          <p className={cn('lf-title lf-number', remaining < 0 ? 'text-warning-strong' : 'text-content')}>
             {format(remaining)}
           </p>
         </SunkenWell>
@@ -621,12 +651,11 @@ export function SavingsGoal({ segment, value, onChange, disabled, verdict }: Exe
               aria-pressed={active === key}
               onClick={() => setActive(key)}
               className={cn(
-                'flex min-h-11 w-full items-center justify-between gap-3 rounded-md border-2 bg-surface px-4 py-3 text-left',
-                'transition-[border-color] duration-150',
-                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                'disabled:cursor-not-allowed',
-                active === key && !verdict ? 'border-primary' : 'border-outline/70',
-                verdict && expected !== undefined ? (isRight ? 'border-success bg-success-soft' : 'border-error bg-error-soft') : '',
+                'flex min-h-12 w-full items-center justify-between gap-3 rounded-md px-4 py-3 text-left',
+                FOCUS_RING,
+                verdict && expected !== undefined
+                  ? optionStateClasses(isRight ? 'correct' : 'wrong')
+                  : optionStateClasses(active === key ? 'selected' : 'idle'),
               )}
             >
               <span className="lf-body text-content">
@@ -683,12 +712,16 @@ export function FairTrade({ segment, value, onChange, disabled, verdict }: Exerc
           { tag: 'A', offer: offerA },
           { tag: 'B', offer: offerB },
         ].map(({ tag, offer }) => (
-          <div key={tag} className="rounded-md border-2 border-outline/70 bg-surface p-4 text-center">
+          <div key={tag} className="lf-slab rounded-md p-4 text-center">
             <span className="inline-block rounded-full bg-primary-soft px-2.5 py-0.5 lf-caption text-primary">{tag}</span>
             <VisualMark
               imageUrl={offer.image_url}
               icon={offer.icon}
-              iconClassName="mt-1 block text-[40px] text-primary"
+              // `inline-block` (the .lf-icon default), NOT `block`: the parent
+              // already centres it, and a full-width icon span used to make the
+              // broken-glyph check measure the CARD instead of the glyph and
+              // replace both valid icons with a question mark.
+              iconClassName="mt-1 text-[40px] text-primary"
               imgClassName="mt-1 mx-auto block h-14 w-14"
             />
             <p className="lf-title lf-number text-content">{formatNumber(offer.qty)}</p>

@@ -23,20 +23,25 @@ const schemaByType = {
   eavesdrop,
 } as const
 
+// Fixtures are built per locale now (lab/fixtureCopy.ts); the SHAPE is the same
+// in all three by construction and registry.test.tsx proves it, so one locale
+// is enough here.
+const fixtures = storyFixtures('en-US')
+
 describe('story fixtures parse against their schemas', () => {
   it('covers every story type exactly once', () => {
-    expect(storyFixtures.map((f) => f.type).sort()).toEqual(Object.keys(schemaByType).sort())
+    expect(fixtures.map((f) => f.type).sort()).toEqual(Object.keys(schemaByType).sort())
     expect(storySchemas).toHaveLength(6)
   })
 
   it('content types carry xp: 0 and no answer key', () => {
-    for (const fixture of storyFixtures) {
+    for (const fixture of fixtures) {
       expect(fixture.xp, fixture.id).toBe(0)
       expect(fixture.answer, fixture.id).toBeUndefined()
     }
   })
 
-  for (const fixture of storyFixtures) {
+  for (const fixture of fixtures) {
     it(`${fixture.type} fixture (${fixture.id}) parses`, () => {
       const schema = schemaByType[fixture.type as keyof typeof schemaByType]
       expect(schema).toBeDefined()

@@ -12,6 +12,8 @@ import {
   type Object3D,
 } from 'three';
 import type { CharacterId } from '@/components/characters/control/types';
+import { useTheme } from '@/theme/useTheme';
+import { mouthCardTint, resolveBackdrop, type SceneBackdropId } from './backdrops';
 import {
   ATLAS_COLUMNS,
   ATLAS_ROWS,
@@ -44,6 +46,17 @@ export interface MouthCardProps {
   viseme: number;
   /** Anisotropy from the active quality tier. */
   anisotropy: number;
+  /**
+   * The hour the island is standing in.
+   *
+   * Needed because this material is UNLIT and therefore has to be told what
+   * colour the light is — see `mouthCardTint` in `backdrops.ts` for the whole
+   * argument. It is the backdrop ID rather than a resolved colour so that this
+   * component reads the theme the same way `SceneLighting` does, from
+   * `useTheme`, instead of taking a second answer to the same question through
+   * a prop that could disagree with the lights.
+   */
+  backdrop: SceneBackdropId;
 }
 
 /**
@@ -61,9 +74,11 @@ function findHeadBone(root: Object3D): Object3D | null {
   return found;
 }
 
-export function MouthCard({ id, scene, assetBase, viseme, anisotropy }: MouthCardProps) {
+export function MouthCard({ id, scene, assetBase, viseme, anisotropy, backdrop }: MouthCardProps) {
   const card = useMemo(() => mouthCardFor(id), [id]);
   const texture = useLoader(TextureLoader, mouthAtlasUrl(assetBase, id));
+  const { isDark } = useTheme();
+  const tint = useMemo(() => mouthCardTint(resolveBackdrop(backdrop, isDark)), [backdrop, isDark]);
 
   useEffect(() => {
     texture.colorSpace = SRGBColorSpace;
@@ -109,10 +124,17 @@ export function MouthCard({ id, scene, assetBase, viseme, anisotropy }: MouthCar
      *
      * Unlit is correct enough to ship because the atlas is painted with the
      * character's own ALBEDO, sampled from their texture — so the card shows
-     * exactly the colour the face's material starts from. What it will not do
-     * is darken with the face as the scene's lighting changes, which is a real
-     * mismatch in dark mode and the reason this comment exists rather than
-     * being quietly omitted.
+     * exactly the colour the face's material starts from.
+     *
+     * WHAT IT WILL NOT DO BY ITSELF is darken with the face as the scene's
+     * lighting changes, and that turned out to be a defect rather than a
+     * blemish: photographed at Dusk, Zara's mouth was a cream rectangle across
+     * an orange-lit face, reading as tape over her mouth — on one of the two
+     * characters the camera closes in on BECAUSE they articulate. So the light
+     * is now applied by hand, through this material's own `color` multiplier,
+     * in the effect below. The shader still does not light the card; we tell it
+     * what colour the light is. `mouthCardTint` carries the arithmetic and the
+     * reason it is normalised so the default palette comes out pure white.
      */
     const material = new MeshBasicMaterial({
       map: texture,
@@ -144,6 +166,18 @@ export function MouthCard({ id, scene, assetBase, viseme, anisotropy }: MouthCar
     built.name = `${id}-mouth-card`;
     return built;
   }, [card, scene, texture, id]);
+
+  /*
+   * The light, as a colour, in its own effect.
+   *
+   * Not folded into the `useMemo` above: rebuilding the mesh would re-run the
+   * geometry fit and re-parent the card every time the learner steps the sun
+   * one hour, and the card is glued to a bone. A colour is one assignment.
+   */
+  useEffect(() => {
+    if (!mesh) return;
+    (mesh.material as MeshBasicMaterial).color.set(tint);
+  }, [mesh, tint]);
 
   useEffect(() => {
     if (!mesh) return;

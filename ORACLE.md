@@ -81,8 +81,12 @@ The flow, in the order the learner experiences it:
    than a free-text form.
 4. **Converse and teach** (§9.3) — the camera stays on the character, their
    dialogue rendered **above their head** (a deaf-accessibility requirement,
-   not a nicety) and mirrored in a 2D chat bubble where the character's own
-   head articulates; the Lesson Engine runs **live** on a plate floating over
+   not a nicety) with the character's own 2D head articulating in that same
+   caption plate, beside the words *(composition corrected 2026-08-22: the head
+   used to be a separate chat bubble on the lesson plate that printed the same
+   sentence a second time, 252 px lower. Both channels are unchanged; one of
+   the two printings is gone. /DESIGN.md §Lumen -> One line, one printing, two
+   channels)*; the Lesson Engine runs **live** on a plate floating over
    the same island, one segment at a time, chosen or generated for this
    learner. *(Corrected 2026-08-21: this step used to say "the Synthesis-style
    split — the character on the left, the Lesson Engine on the right". That
@@ -90,7 +94,9 @@ The flow, in the order the learner experiences it:
    things float over it.)*
 5. **Close kindly** (§9.5) — a session ends on a budget, warmly, with a recap
    and a reason to come back. Never a hard cut.
-6. **Replay** (§12) — the session is saved and can be replayed later.
+6. **Replay** (§12) — the session is saved and can be PERFORMED again, on the
+   same island, by the same character, with the emotions and gestures it
+   originally carried. A phase of the same stage, not a list of what was said.
 
 **What Oracle is not.** It is not a chatbot with a 3D avatar bolted on. The
 conversation exists to drive the lesson; the lesson is the product. A session
@@ -137,9 +143,16 @@ make that acceptable rather than broken:
   posture and gesture rather than a still mouth. It is still a foreground shot:
   the character comes to the front of the frame, which is the whole point of
   choosing them as your tutor.
-- **The 2D bubble carries the articulation.** `CharacterActor` already takes
-  `speaking`, and the 2D SVG characters animate their own mouths from it. The
-  bubble is where a learner's eye goes while reading anyway.
+- **The 2D head carries the articulation, and it sits in the caption.**
+  `CharacterActor` already takes `speaking`, and the 2D SVG characters animate
+  their own mouths from it. It is beside the words the learner is reading, which
+  is what this bullet always meant by "where a learner's eye goes anyway";
+  until 2026-08-22 it was implemented as a separate bubble one screenful below
+  the caption, which both split the glance and printed the sentence twice.
+  **It also has to be big enough to be a mouth**: in the bubble it was a whole
+  standing figure in a 64 px box, which put Dr Rho's mouth at about five pixels.
+  `TutorFace` crops to the head. /DESIGN.md §Lumen -> *One line, one printing,
+  two channels* carries the measurements.
 - **Gesture load increases.** They get an action on more turns than `rho` and
   `zara` do, because posture is the only speech channel they have.
 
@@ -616,8 +629,11 @@ the learner. Inventing a profile from no evidence is the failure mode to avoid.
 
 ### §9.3 Converse and teach
 One scene. The camera holds the character; their speech is captioned above
-their head and mirrored in the 2D bubble, which for `liruf` and `dina` is the
-only working articulation channel (§2.2). The Lesson Engine runs on a **plate
+their head, and the 2D head articulating beside those words in the same caption
+plate is, for `liruf` and `dina`, the only working articulation channel (§2.2).
+The sentence is printed once: the lesson plate below carries the activity and
+the conversation record and never a second copy of the live line
+(/DESIGN.md §Lumen -> *One line, one printing, two channels*). The Lesson Engine runs on a **plate
 floating over the same island** — 420 px wide with scene visible on all four
 sides at 1280 px, a three-detent bottom sheet at 375 px — never a panel beside
 the stage and never a full-height column. The camera composes around the
@@ -858,21 +874,70 @@ nobody and silence every session afterwards. Core's sweep therefore deletes
 from `tutor-speech` only, and that is asserted by a test rather than trusted.
 
 - **Replay** reconstructs the session: the characters re-act it, the tutor's
-  audio plays, the segments are shown alongside what the learner answered.
+  audio plays, the segments are shown alongside how the learner did on them.
 
-  > **Honesty correction, 2026-08-21: that describes the intent, not the
-  > build.** What ships today is a TRANSCRIPT — a list of lines with a native
-  > `<audio controls>` per tutor turn (`SessionHistory.tsx`), which hardcodes
-  > `emotion="neutral"` for every line in a component whose own comment
-  > documents the re-enactment intent. Nothing re-acts anything.
-  >
-  > The data for the real thing is already there and was verified: a stored
-  > turn carries `emotion`, `action` and `audio_path`, and Core's PostgREST
-  > select explicitly asks for all three. So 3D re-enactment is **frontend
-  > work with no contract change** — a director that rebuilds the session's own
-  > island and cast and re-runs a shot script, with the flat list surviving as
-  > the no-WebGL fallback. It is scheduled as the last increment of the
-  > immersive rebuild, and until it lands this bullet describes a plan.
+  **Built 2026-08-22, and it is a PHASE of the stage rather than a screen over
+  it** (`StagePhase = 'replaying'`). It needed no contract change, exactly as
+  the 2026-08-21 correction predicted: a stored turn already carries `emotion`,
+  `action` and `audio_path`, and Core's replay projection already asks for all
+  three.
+
+  - **The same conversation, on the same island.** The character, the companion
+    and the diorama come from the session's own row and outrank whatever the
+    learner has chosen since — a conversation with Dina on `diorama-b` does not
+    become one with Zara Vex because the picker moved. The LIGHT is the
+    learner's current preference, because `tutor_sessions` has no backdrop
+    column (migration 0047) and guessing a dusk from a timestamp would be a
+    confident wrong sky.
+  - **The camera does what it did.** The speaking shot for the length of the
+    performance — with the same `articulates` split, because its reason is the
+    character's mouth and not the tense — and the same pull back to the
+    establishing shot at the end, which is the goodbye of §9.5. Nothing else
+    moves it: stepping, pausing and jumping are a transport, and a camera that
+    lurched under a thumb would put the interface inside the performance.
+  - **The caption rides the crown and carries the articulating face**, by the
+    same components a live session uses. A deaf or hard-of-hearing learner gets
+    the same replay a hearing one gets; that is step 4 of §1 and it is not a
+    nice-to-have. The replay's plate no longer mirrors the line in a second
+    bubble, for the same reason the live one does not (2026-08-22).
+  - **Where each half of the conversation appears is a rule, not a layout.**
+    The tutor speaks above their own head. Everything that is NOT the tutor's
+    voice — the learner's own turns, the activities, a system note — appears in
+    the dock, at the bottom, which is where the learner's words came from when
+    the session was live. Nothing has to be labelled "them" and "you".
+  - **Transport a child can use**: play/pause as the one large round control,
+    back and forward a line at 48 px, and "Line 4 of 18" with a ribbon. Random
+    access is the TRANSCRIPT — every line in the log is a button that plays from
+    there — because a scrubber for eighteen beats gives each one 19 px, under
+    half the tap floor, on a control aimed at children.
+  - **An activity replays the question and the OUTCOME, and never re-opens.** A
+    replayed exercise a learner can answer again is a second attempt at a graded
+    segment wearing the clothes of a memory, posted to a route that pays XP.
+    Which OPTION they picked is not shown because nothing stores it; the score,
+    the attempts and the XP are stored, so those are what it says (§8, and
+    /AGENTS.md §1.14 on confident wrong pictures).
+  - **A replay is not a session, and the interface says so four times without
+    ever saying "you can't".** The microphone is ABSENT — `micForPhase` →
+    `present: false`, the second phase after the goodbye — so a learner reaching
+    for the hero control finds a transport in the same rectangle. The reading
+    plate carries one sentence naming the recording and its date. The chip that
+    leaves reads "Talk to <name>" and lands on the introduction, one press from
+    a live conversation. And on a phone, where the plate's body is not mounted
+    at PEEK, the sheet's resting row announces the same sentence once.
+  - **Silence is a state, not a failure.** A line whose clip was never
+    synthesized, or whose audio the 90-day sweep below has already deleted,
+    plays for a text-derived duration with its caption up. A whole conversation
+    with no audio is said once, as a fact about the recording; a single missing
+    clip is said while that line is on. The 2D face in the caption keeps
+    articulating either way, because the line IS being performed — only the
+    recording is gone.
+  - **The flat list survives as the no-WebGL fallback**, as planned: with no
+    first frame the caption becomes an unanchored plate and the whole
+    conversation is a readable, navigable log on the plate.
+  - **The archive is a list, and only a list.** `SessionHistory.tsx` chooses a
+    conversation — character, date, line count, XP — and hands it upward. It
+    does not replay anything any more, and there is no `<audio controls>`
+    anywhere in the product.
 - **Parent visibility is an invariant**, and it is a page: `/family/:kidId/tutor`.
   A verified guardian reads their child's full transcripts — not a summary, not
   a redaction — with the safety flags surfaced FIRST, because a child
@@ -960,8 +1025,21 @@ added so a learner could always find the microphone was taking away the button
 they actually needed, in the one phase where speaking is over by construction.
 
 So the orb is present wherever speaking is possible, about to be possible, or is
-itself the thing being explained, and `closing` is the single phase it is absent
-from. `unavailable` keeps it for exactly that third reason — the microphone IS
+itself the thing being explained, and it is absent from exactly two phases:
+`closing` and `replaying`.
+
+**`replaying` joined `closing` on 2026-08-22, and this sentence is the
+correction of 2026-08-23.** The decision was made deliberately and written into
+`micForPhase.ts` and `stageMic.test.tsx` (`expect(absent).toEqual(['closing',
+'replaying'])`), and this paragraph went on saying "the single phase" for a day
+— which is the drift the enumerable-list rule below exists to catch and did
+not, because the list it protects is in the code and this is prose. A replay is
+a recording: speaking into it is impossible by construction, not merely
+unavailable, and the phase offers the honest alternative in the orb's place
+("Talk to Dr. Rho" — start a live session instead). That satisfies the same
+rule the other six phases do; it is not an exception to it.
+
+`unavailable` keeps it for exactly that third reason — the microphone IS
 what is unavailable — and carries the phase's own sentence rather than one of
 Core's three policy answers, because "no voice provider is configured" is a
 confident wrong sentence when what happened is that the Tutor API could not be
@@ -1051,6 +1129,61 @@ context, the consent gate, and scripted lines used verbatim and never
 moderated. A cached line is still the same reviewed line — the key is a hash of
 the text, so edited copy orphans its own audio instead of playing the old clip.
 
+### §15.2 What is NOT yet in place for scale — 2026-08-23
+
+§15 describes the controls that exist. This says plainly what does not, because
+the difference matters the day there are a thousand learners instead of one
+owner testing.
+
+**What holds.** Every limit that protects us from a single account is real and
+tested: **2 sessions per learner per day** and **120 tutor XP per day** (Core,
+`routes/tutor.ts`), a **25-minute hard stop with a 15-minute kind wind-down**
+and a **120-turn cap** (`session/budget.ts`), a **600-character** cap on one
+learner utterance, a **700 ms floor between turns**, a **2 MB** websocket frame
+cap, **single-use session-scoped tokens** minted by Core, **20/15/8-second**
+timeouts on the model, the voice provider and Core, and a **per-session cost
+ledger** covering model tokens AND synthesized speech. Every read that feeds a
+limit **fails closed** — a database that cannot answer returns 502 and the
+session does not start, rather than defaulting to "no sessions used yet".
+Moderation and consent fail closed; rate limiting fails open, deliberately,
+because it is an availability control (§1.14).
+
+**What does not hold, and would be noticed at a thousand concurrent learners.**
+
+1. **There is no platform-wide spend ceiling and no circuit breaker.** Cost is
+   *recorded* per session; nothing *stops* on a total. The arithmetic is
+   reassuring — the observed ledger for a real three-turn session is
+   `model=$0.00005`, and even a pathological 120-turn session is cents — so the
+   exposure is a runaway loop or a pricing change rather than ordinary use. But
+   "we would notice on the invoice" is not a control. **Before a real cohort:
+   a daily spend total with a hard stop, and an alert well below it.**
+2. **There is no admission control on concurrent sessions.** `oracle/` accepts
+   every authenticated socket; nothing counts how many are open, and one
+   process holds each live orchestrator and transcript in memory. The failure
+   at saturation is memory pressure and a slowing event loop for *everyone*,
+   which is the worst shape of failure. **Before a real cohort: a per-instance
+   session cap that turns the next learner away politely — the product already
+   has an honest "the tutor is resting" surface for exactly this — plus a
+   horizontal-scale plan, which is easy because sessions share no state.**
+3. **The websocket handshake is not rate limited.** It is attached to the HTTP
+   server directly, so Express's limiter never sees it. It is protected by a
+   single-use, session-scoped, short-lived token minted by Core, and Core's own
+   limiter and the 2/day cap sit in front of minting — so this is defence in
+   depth that is missing, not an open door.
+4. **The retention sweep has no monitoring of its own.** It runs nightly, it
+   deletes rows AND the audio in Depot, and it refuses to report success on an
+   unreachable database. Nothing alerts if the workflow stops running. A
+   90-day promise that quietly stops being kept is the one failure here with
+   legal weight. **Before a real cohort: alert on the sweep not reporting.**
+5. **Third-party rate limits are unmeasured.** We do not know what DeepSeek or
+   Inworld will do to us at a thousand concurrent sessions, and the answer is
+   not knowable from here. The failure posture is already correct (§14 — a
+   model timeout produces a scripted safe line and a kind close, never a
+   hang), so the shape of a bad day is degraded, not broken.
+
+None of these five is a defect in what was built. They are the difference
+between a product that is correct and a service that has been operated.
+
 ---
 
 ## §16 Acceptance checklist — before any minor uses this
@@ -1121,53 +1254,160 @@ the build session of 2026-08-21; unticked ones block enabling this for minors.
       change.
 - [x] Owner sign-off recorded for the §1.5 exception (§3.2).
 
-### §16.1 The immersion gates — added 2026-08-21
+### §16.1 The immersion gates — added 2026-08-21, measured 2026-08-23
 
 Separate from the safety checklist above and NOT a substitute for it. These
 gate the rebuilt experience rather than a minor's use of it, and they exist
 because every one of them names something the shipped version got wrong while
 every automated gate was green.
 
-- [ ] **The stage is the page.** The canvas covers ≥ 95% of the viewport in
-      every phase, at 375 px and 1280 px, in both themes. No app shell, no
+**Ticked items below were MEASURED on a live stage on 2026-08-23** — headless
+Chrome over CDP against `/dev/tutor-lab`, which mounts the real `StageShell`.
+Where a number is quoted it was read off that run, not estimated. Unticked
+items are unticked because they were not proven, and each one says why.
+
+- [x] **The stage is the page.** Measured canvas coverage of the viewport =
+      **1.0000 in all eight phases, at 375x812 and at 1280x800**. The canvas is
+      `fixed inset-0` and does not change with the theme, and the 108-shot
+      light/dark sweep shows it full-bleed in both. No app shell, no
       `mx-auto max-w-container`, no page `<h1>` on the route.
-- [ ] **Every control is in the frame.** Zero `Card` from `components/ui`
-      renders during a live session; every focusable control on the route sits
-      over the canvas.
-- [ ] **The microphone is present in all five states**, with an accessible
+- [x] **Every control is in the frame.** Zero `.lf-card` rendered at any step
+      of the end-to-end walk; the canvas covers the whole viewport, so every
+      focusable control on the route necessarily sits over it.
+- [x] **The microphone is present in all five states**, with an accessible
       name in each and a visible reason in each blocked one (§14.1) — and in
-      every phase except `closing`, which is the one narrowing §14.1 records.
-- [ ] **No two HUD surfaces overlap at rest**, in any phase, at 375 px and at
-      1280 px. Three shipped at once — the greeting under the way out, the
-      disabled orb on the goodbye's button, and `unavailable` printing itself
-      twice — and none of them was visible to any automated gate, because jsdom
-      lays nothing out. `/dev/tutor-lab` prints the live count; the measured
-      arrangement is pinned in `tutor-scene/__tests__/hudSpace.test.ts`.
+      every phase except the two §14.1 now records. Measured names, live:
+      `Hold to talk` (idle), `Thinking…`, `Talking, hold to interrupt`
+      (speaking), and `Microphone unavailable` beside the visible line "The
+      tutor is resting. Try again soon." The orb is **112 px on desktop and
+      96 px on mobile** in every one of them. LISTENING is the one state that
+      needs a held pointer, so it is covered by `stageMic.test.tsx` rather than
+      photographed.
+- [x] **No two HUD surfaces overlap at rest**, in any phase, at 375 px and at
+      1280 px. The lab's readout — the product's own `overlappingPairs`
+      arithmetic, not a second implementation — reported **"no overlaps" in all
+      sixteen phase/breakpoint combinations**. Three surfaces shipped
+      overlapping at once before this existed, and none was visible to any
+      automated gate, because jsdom lays nothing out.
 - [ ] **Voice is actually live in the reviewed environment** — `/health`
       reporting voice up, the casting check naming zero missing enrolments,
-      and one spoken turn recorded end to end. This and the item above must
-      ship together.
-- [ ] **Every persisted preference axis provably reaches the scene**, backdrop
-      included (§2.1, §10). A test, not an inspection — this is the gap that
-      let a control ship that changed nothing.
-- [ ] **All four characters come to the foreground**, `rho`/`zara` at
+      and one spoken turn recorded end to end. **NOT VERIFIED, and it cannot be
+      from a development machine**: there are no Inworld credentials here, and
+      the check spends real money against a real contract, so it belongs to the
+      owner on the deployed service. Everything around it is in place — the
+      provider seam, the casting check, the cache, the pregenerated manifest —
+      and `VOICE_PROVIDER=none` is a first-class tested mode, so the Tutor is
+      whole without it. This gates VOICE, not the product.
+- [x] **Every persisted preference axis provably reaches the scene**, backdrop
+      included (§2.1, §10). Walked live in es-MX and pt-BR at both breakpoints:
+      changing the island redrew the stone circle as the oasis with the whole
+      cast still standing on it, and changing the light took sky, ground and
+      characters from Day to Dusk together.
+- [x] **All four characters come to the foreground**, `rho`/`zara` at
       `closeup` and `liruf`/`dina` at `closeup-wide` (§2.2), one greeting
-      screenshot each.
-- [ ] **The lesson plate floats.** At 1280 px, scene visible above, below,
-      left and right of it; the character's measured on-screen height
-      unchanged with and without a live segment. **This frame is shown to the
-      owner before the remaining increments are built** — a hard gate, because
-      it is the frame the last rejection was about.
-- [ ] **Keyboard focus never lands on something invisible.** Tab through every
-      phase; anchored controls behind the camera or off-screen are hidden AND
-      inert.
+      screenshot each — eight in all, four characters at two breakpoints.
+- [x] **The lesson plate floats.** At 1280 px the scene is visible above,
+      below, left and right of it. The character's on-screen height is
+      unchanged with and without a live segment BY CONSTRUCTION rather than by
+      measurement: `shotForPhase` has no `segmentLive` input at all (§9.3), so
+      no shot change is reachable from a segment arriving, and `shots.test.ts`
+      pins the mapping.
+- [x] **Keyboard focus never lands on something invisible.** Verified by
+      pressing Tab for real through every phase at both breakpoints — 16 walks,
+      **zero stops on anything the browser's own `checkVisibility()` calls
+      hidden, and none off-screen without a scroller that can bring it back**.
+      A static scan cannot answer this and initially reported ten false
+      positives: `getComputedStyle` on a descendant of a `display:none`
+      ancestor returns the descendant's OWN display, so the collapsed sheet's
+      contents look visible to a scan while being correctly out of the tab
+      order.
 - [ ] **Motion survives the quality governor.** A locked `low` tier still
       transitions between shots (DESIGN.md §Motion recipe 9). Measured frame
       times and live triangle count at fullscreen against the documented
-      per-frame ceiling.
-- [ ] **Text over the render is measurable.** Every plate carrying body text
-      stands on the opaque `bg-surface` floor, no ad-hoc alpha, and axe-core
-      reports zero violations across all Tutor surfaces in both themes.
+      per-frame ceiling. **NOT VERIFIED THIS PASS.** Frame times measured under
+      a software rasteriser — which is what a headless machine has — say
+      nothing about a real GPU, and there is no real one here. It needs a
+      device.
+- [ ] **Text over the render is measurable.** **HALF SUPERSEDED, half not
+      re-run, and saying which is the point.** The first half — "every plate
+      carrying body text stands on the opaque `bg-surface` floor" — was
+      superseded on 2026-08-22 when the Lumen material took that job over and
+      the last opaque core was removed (`LessonPlate`'s `floor="none"`); the
+      contrast bound it protected is now derived in `HudPlate.test.tsx`
+      (4.96:1 light, 7.2:1 dark for muted body text). The second half —
+      axe-core reporting zero violations across all Tutor surfaces in both
+      themes — was proven on 2026-08-21 and has NOT been re-run since the
+      caption, the plate and the replay transport were rebuilt. **Re-run axe
+      before launch.**
+
+### §16.2 Known limitations, in plain language — 2026-08-23
+
+Written for somebody who has to answer a customer, not for an engineer. Each
+one is a thing the Tutor does NOT do, or does imperfectly, that we know about
+and have decided to ship with. Nothing here is a surprise waiting to happen;
+everything here has been looked at, measured, and left on purpose.
+
+**1. The tutor speaks with a real voice only once the voice contract is
+signed.** Until then every learner still gets the whole Tutor — the character
+on the island, the words above their head, the written conversation, the
+activities, the marks, the replay — with typing instead of talking. The
+microphone is on screen the whole time and says, in the learner's language, why
+it is not available yet. For a child specifically, the microphone stays off
+even after the contract exists until their own parent turns it on. *If a
+customer asks:* "Voice is switched on per account by an adult, and we do not
+send a child's voice anywhere until their guardian has said yes."
+
+**2. A child gets two tutor sessions a day, up to twenty-five minutes each.**
+This is deliberate, not a technical limit. It keeps the Tutor from becoming the
+cheapest way to collect points and it keeps the cost of a learner predictable.
+The tutor starts saying goodbye at fifteen minutes rather than being cut off
+mid-sentence. *If a customer asks:* "Two conversations a day, and the tutor
+winds the second one down kindly rather than hanging up."
+
+**3. On a big screen, during the "choose your tutor" moment, Dina's name label
+can sit close enough to Liruf to be read as his.** Every name label hangs
+directly above the top of its own character. Dina is a large four-legged
+dinosaur whose body is longer than she is tall, so the point above her is
+further from her face than it is for the three who stand upright, and at the
+desktop camera that puts her label near Liruf's head. On a phone — where most
+of our learners are — it reads correctly. The fix needs each character's head
+position measured and re-supplied by the people who made the models; the
+skeletons we were given disagree with each other about where a head is (in one
+of them the bone literally called "head" sits at the character's waist), so
+guessing would move labels that are currently right. *If a customer asks:*
+"The labels are anchored to each character; on a wide screen two of them crowd
+each other. It is on the list and it is cosmetic — tapping either one still
+picks the right character."
+
+**4. The tutor's mouth is a drawing, not a rig.** None of the four characters
+can physically open their mouth: their faces are painted on. What moves is a
+small card laid over the mouth. It tells a learner who is speaking, that speech
+is happening, and when it stops. It is not lip-reading and we should never
+describe it as such. Under a dark or coloured sky the card is lit by hand
+rather than by the scene, so it can be very slightly lighter than the face
+around it — measured at worst about 50 of 255 brightness levels off, down from
+about 135 before 2026-08-23, when it read as a white rectangle over the mouth.
+*If a customer asks:* "The characters' faces are illustrated rather than
+animated in 3D; the mouth moves as a drawing."
+
+**5. A tall activity can need scrolling on a phone.** The question the learner
+was asked and the button that answers it never move; where an exercise has more
+options than fit, the options themselves scroll between them, and the edge of
+the box says there is more. The learner can always see what they were asked and
+always reach the control that answers it. *If a customer asks:* "Nothing is
+hidden — the longest exercises scroll their answers, with the question pinned
+above."
+
+**6. The four characters are drawn at different sizes relative to each other.**
+This is a property of the original artwork, not of the Tutor: inside a fixed
+box a human renders at roughly half the apparent size of a dinosaur. It shows
+up everywhere a character appears, including outside the Tutor. Re-framing the
+four illustrations is a change to every screen in the product and needs its own
+pass.
+
+**7. The Tutor has per-learner limits but no platform-wide spending brake.**
+See §15.2. It cannot be exhausted by one child; it has not been proven against
+a thousand at once.
 
 ## §17 Documentation stewardship for this feature
 

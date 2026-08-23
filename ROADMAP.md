@@ -247,10 +247,59 @@ Next, in Jesús's stated order of interest:
 - **Release-gate coverage (2026-08-02 — local):** the root `run-all.sh` gate now includes every TypeScript service in the service map (including Prism, Depot and Data Intel). The expanded run fixed and regression-tested Data Intel's export-job `rows`/`row_count` SQL alias mismatch; all ten services pass type-check, lint, tests and build.
 - **Tutor 3D runtime foundation (2026-08-15 — local, owner-authorized):** the Tutor section becomes a 3D scene for EVERY user (owner mandate, not tiered by device). Stack added under §1.2 with explicit sign-off: `three` 0.185 + `@react-three/fiber` **v8** — v9/drei v10 require React ≥19 and we are on 18.3.1, so the v8 line is forced. **drei is deliberately NOT a dependency**: its React-18 line is frozen at Feb 2025, it would pin `three` backwards, and the ~150 lines actually needed weigh less than the bundle it adds to every user's device. Because the scene ships to all devices, quality is MEASURED, not assumed: a static probe picks a starting tier and a pure reducer (`tutor-scene/governor.ts`) steps it from real frame times, with asymmetric evidence (2 windows down / 5 up), a dead band and a demotion latch to prevent oscillation. Rendering pauses entirely when the canvas is offscreen or the tab is backgrounded — the largest device-load lever in the system — and lost WebGL contexts are recovered rather than left black. Assets are single-file `.glb` with meshopt geometry (chosen over Draco: no externally hosted decoder, and faster decode on the low-end phones the budget exists for) and KTX2 textures (a VRAM decision, not a download one). Depot accepts `model/gltf-binary` in bucket `tutor-scenes`. The asset budget lives in code (`tutor-scene/budget.ts`) and is measured against real exports by `/dev/scene-lab` and `npm run assets:3d`. Verified in-browser at 375px and 1280px, light and dark, zero console errors; the optimizer took a 46.6 MB export to 1.03 MB (-97.8%) and it loaded clean. The `/tutor` surface now renders the composed stage for every user. The four characters were delivered mid-session and measured (`npm run assets:inspect`): 156 MB → 5.19 MB total, all four rigs intact, scene at 7 draw calls / 51k triangles. Three share one 24-joint biped skeleton; Dina is a quadruped on her own 27-joint rig and was the sole unit-scale outlier (Unreal units, 0.028 m). Since every export ships only ONE clip and all of them are locomotion cycles, the full 12-action / 7-emotion vocabulary is driven PROCEDURALLY (`characterActions.ts`) against the same closed vocabulary the 2D rig and the existing lesson catalog already use — so authored `emotion`/`action` fields drive the 3D cast unchanged. Standing positions and ground height are SOLVED from the geometry (`standingSpots.ts`, `ground.tsx`), never hand-authored, so a new diorama needs no coordinates. NOT yet built: lip-sync (no jaw or facial bone exists on any export — needs a Blender pass), authored animation clips, KTX2 texture compression (KTX-Software not installed; textures ship as WebP and decode to full RGBA in VRAM), and the upload of optimized assets to Depot, which is the one remaining blocker before deploy.
 
+## Tutor (Oracle) — CERTIFICATION PASS, 2026-08-23
+
+**Status: the Tutor is FEATURE-COMPLETE and every gate in the repository is
+green. It is NOT yet cleared for a public launch with minors, and the three
+things standing in the way are all outside the code.**
+
+Green, run this session on the reconciled tree: frontend type-check / lint /
+**1159 tests** / build / `verify:rig` / `verify:placement`; oracle type-check /
+lint / **165 tests** / build / `verify:tutor`; backend type-check / lint /
+**445 tests** / build; database migration + transport gates; root `docs:check`,
+`secrets:check`, `i18n:check`, `paths:check`, `provider:check`, `tools:test`
+(11), `repo:map`. Looked at: **108 screenshots** across seven phases plus
+`adapting` and `consent`, two breakpoints, both themes, three locales; four
+end-to-end journeys in es-MX and pt-BR with zero failed clicks; the four
+characters in the foreground; a lesson outside the Tutor in all three locales.
+`/ORACLE.md` §16 and §16.1 are ticked against what was measured and left
+unticked, with reasons, where it was not.
+
+**Two defects found by looking and fixed** (neither was visible to any test):
+the unlit mouth card rendered as a white bar over the speaker's mouth at every
+backdrop but Day (TUTOR_3D.md §3.1a), and `/ORACLE.md` §14.1's prose had drifted
+from a deliberate decision made in code the previous day. **One defect found by
+looking and deliberately NOT fixed**: on the desktop audition Dina's name plate
+can read as Liruf's, because a plate hangs above a bounding box and a
+quadruped's bounding-box top is not over her head. The head-bone fix needs data
+the four exports do not agree on — rho's `head` joint is at 0.535 of his height,
+which is his waist — so it is recorded with its measurements (TUTOR_3D.md §3.1b)
+rather than guessed at.
+
+**Blocking a public launch WITH MINORS, all three outside the code:**
+
+1. **The Inworld data-processing agreement covering minors' audio.** OWNER
+   ACTION. Until it exists `TUTOR_VOICE_FOR_MINORS` stays `false` and no child's
+   microphone opens. This gates one INPUT METHOD, not the product: every learner
+   keeps the whole Tutor, captioned and typed.
+2. **The three `/LEGAL/` documents and `npm run legal:sync`.** Blocked on
+   counsel; `tutor.consent.body` is still a placeholder.
+3. **Voice proven live in the reviewed environment** — `/health` reporting voice
+   up, zero missing enrolments, one spoken turn end to end. Cannot be done from
+   a development machine: no credentials here, and it spends real money against
+   a real contract.
+
+**Not blocking launch, but named before a real cohort** (`/ORACLE.md` §15.2):
+there is no platform-wide spend ceiling or circuit breaker, no admission control
+on concurrent sessions, no rate limit on the websocket handshake itself, no
+alerting on the retention sweep, and no measurement of third-party rate limits.
+Every per-learner control is real and tested; what is missing is the difference
+between a product that is correct and a service that has been operated.
+
 ## Next up (post-sprint backlog, unordered)
 
 - Guardian verification flow (provider decision: Stripe Identity / Persona / Veriff / manual)
-- **tutor/ Oracle — FULL DESIGN APPROVED 2026-08-21, implementation not started (`/ORACLE.md` rewritten, §0 holds the owner decision record).** The v1 "Money Moments" design is superseded (`/ORACLE.md` §18). The approved product is a live, spoken, adaptive tutoring session on the already-deployed 3D stage: personalize the island → one button → the character introduces itself in close framing and offers a closed set of starting points (a course topic, a Data-Intel-flagged weak skill, a curated FAQ, or open conversation) → a Synthesis-style split with the character speaking on the left, captioned above its head for deaf accessibility and mirrored in an articulating 2D bubble, and the Lesson Engine running live on the right → a kind, budgeted close → a saved, replayable session. Eight owner decisions carry real invariant weight and are recorded in `/ORACLE.md` §0: **kids may use the microphone from v1** behind a blocking parental-consent gate (overrides the plain reading of §1.9); **Inworld is voice-only** (STT/TTS) with the pedagogical model staying DeepSeek/Qwen in our infrastructure; **content is a three-tier ladder** — published-catalog composition, then a human-published pre-generated bank, then **live generation for uncovered topics and for learners who need a different explanation**, which is the largest §1.9 exception in the project and is guarded by a type allowlist, the Forge gates, an independent judge, answer-key re-execution and post-hoc sampled human review; **all four characters are selectable as the speaking tutor** despite `liruf`/`dina` having no mouth card (TUTOR_3D.md §3.1), mitigated by wider framing and the 2D bubble; **tutor lessons award full XP** through server-authoritative grading, so a live segment pays XP only if Core can independently re-derive its key; **adaptation is offered, never inferred or imposed**; **audio is proxied through our own service**, never browser→provider direct; and **only the transcript and the tutor's audio persist** — the child's audio transits for STT and is never stored. Blocking on owner action: a data-processing agreement with Inworld covering minors' voice, and sign-off on the §1.5 browser exception below.
+- **tutor/ Oracle — FULL DESIGN APPROVED 2026-08-21, implementation not started (`/ORACLE.md` rewritten, §0 holds the owner decision record).** The v1 "Money Moments" design is superseded (`/ORACLE.md` §18). The approved product is a live, spoken, adaptive tutoring session on the already-deployed 3D stage: personalize the island → one button → the character introduces itself in close framing and offers a closed set of starting points (a course topic, a Data-Intel-flagged weak skill, a curated FAQ, or open conversation) → a Synthesis-style split with the character speaking on the left, captioned above its head for deaf accessibility with the articulating 2D head in that same caption (the caption and the head are two channels on ONE surface; corrected 2026-08-22, /DESIGN.md §Lumen -> One line, one printing, two channels), and the Lesson Engine running live on the right → a kind, budgeted close → a saved, replayable session. Eight owner decisions carry real invariant weight and are recorded in `/ORACLE.md` §0: **kids may use the microphone from v1** behind a blocking parental-consent gate (overrides the plain reading of §1.9); **Inworld is voice-only** (STT/TTS) with the pedagogical model staying DeepSeek/Qwen in our infrastructure; **content is a three-tier ladder** — published-catalog composition, then a human-published pre-generated bank, then **live generation for uncovered topics and for learners who need a different explanation**, which is the largest §1.9 exception in the project and is guarded by a type allowlist, the Forge gates, an independent judge, answer-key re-execution and post-hoc sampled human review; **all four characters are selectable as the speaking tutor** despite `liruf`/`dina` having no mouth card (TUTOR_3D.md §3.1), mitigated by wider framing and the 2D head in the caption; **tutor lessons award full XP** through server-authoritative grading, so a live segment pays XP only if Core can independently re-derive its key; **adaptation is offered, never inferred or imposed**; **audio is proxied through our own service**, never browser→provider direct; and **only the transcript and the tutor's audio persist** — the child's audio transits for STT and is never stored. Blocking on owner action: a data-processing agreement with Inworld covering minors' voice, and sign-off on the §1.5 browser exception below.
 - tasks/ parent→kid assignment + rewards
 - Character voices for Echo (voice map ready; owner supplies voices pre-run)
 - **Game Engine — REMOVED 2026-07-31.** A `games/` section runtime (8 deterministic Phaser mechanics) and its Arcade content-generation pipeline (`gamegen/`) were designed and substantially implemented across 2026-07-30/31 on `feat/game-engine` (never merged, never deployed, no paid generation run ever executed). After several redesign passes the owner judged the result did not meet the bar for a real game experience and made the explicit call to remove the feature entirely rather than keep iterating — `gamegen/`, `backend/src/game-contract/`, `frontend/src/game-engine/`, the `/games` product section, and every cross-service integration point (admin generation monitor, family dashboard, dataintel funnels, Prism's game-illustration prompts) were deleted in the same session. Full narrative: WALKTHROUGH.md decision log. Do not re-attempt this feature from the old spec — start any future games effort from a fresh design brief.

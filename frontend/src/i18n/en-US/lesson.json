@@ -9,6 +9,10 @@
   "exit": "Exit lesson",
   "unsupported": "This exercise needs a newer version of the app. Skipping it won't affect your score.",
   "gradeError": "We couldn't check your answer right now. Give it another try!",
+  "answer": {
+    "correct": "Correct answer",
+    "notThis": "Not this one"
+  },
   "chips": {
     "hearts_one": "{{count}} heart left",
     "hearts_other": "{{count}} hearts left"
@@ -119,6 +123,7 @@
   },
   "families": {
     "analyze": {
+      "claim": "The claim",
       "fact": "Fact",
       "opinion": "Opinion",
       "eventBank": "Event bank",

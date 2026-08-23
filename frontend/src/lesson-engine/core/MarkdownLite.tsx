@@ -20,7 +20,7 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
     else if (m[4] !== undefined) nodes.push(<em key={`${keyPrefix}-i${i++}`}>{m[4]}</em>)
     else if (m[6] !== undefined)
       nodes.push(
-        <code key={`${keyPrefix}-c${i++}`} className="rounded-sm bg-surface-sunken px-1.5 py-0.5 font-code text-[0.9em]">
+        <code key={`${keyPrefix}-c${i++}`} className="lf-well rounded-sm px-1.5 py-0.5 font-code text-[0.9em]">
           {m[6]}
         </code>,
       )

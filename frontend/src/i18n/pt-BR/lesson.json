@@ -9,6 +9,10 @@
   "exit": "Sair da lição",
   "unsupported": "Este exercício precisa de uma versão mais nova do app. Pular não afeta sua pontuação.",
   "gradeError": "Não conseguimos verificar sua resposta agora. Tente de novo!",
+  "answer": {
+    "correct": "Resposta certa",
+    "notThis": "Esta não era"
+  },
   "chips": {
     "hearts_one": "{{count}} coração restante",
     "hearts_other": "{{count}} corações restantes"
@@ -119,6 +123,7 @@
   },
   "families": {
     "analyze": {
+      "claim": "A afirmação",
       "fact": "Fato",
       "opinion": "Opinião",
       "eventBank": "Banco de eventos",

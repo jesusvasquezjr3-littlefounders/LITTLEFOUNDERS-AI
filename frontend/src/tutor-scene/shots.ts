@@ -137,6 +137,22 @@ export interface ShotContext {
   lead: ShotSubject | null;
   /** The second character, when there is one. */
   companion: ShotSubject | null;
+  /**
+   * EVERYONE AN ISLAND SHOT HAS TO HOLD, when that is more than two people.
+   *
+   * Absent (the ordinary case) means the lead and their companion, which is who
+   * is on the island. It is only ever supplied during a personalization
+   * audition, where the WHOLE catalog stands there and every one of them has a
+   * name plate that has to be readable — and where, until this field existed,
+   * the shot was framing them through a proxy: a fixed fraction of the island's
+   * radius, hand-tuned once against one arrangement on one island.
+   *
+   * A proxy is exactly as good as the arrangement it was tuned against. This is
+   * the arrangement itself, so the framing follows it: gather the cast and the
+   * camera comes in, spread them and it gives ground, and neither of those is a
+   * number anybody has to remember to re-tune.
+   */
+  cast?: readonly ShotSubject[] | null;
   /** Viewport aspect, width / height. */
   aspect: number;
   /** The camera's vertical field of view, in degrees. */
@@ -288,51 +304,65 @@ export const ISLAND_ELEVATION = {
 export const ISLAND_HOLD = { landscape: 1.06, portrait: 0.44 } as const;
 
 /**
- * The same promise for `approach`, which is a WIDER hold than `establishing`
- * asks for because of what stands on the island during its one phase.
+ * The same promise for `approach`, and in PORTRAIT it is now a FLOOR rather
+ * than the answer.
  *
  * `approach` is `personalizing`, and `personalizing` is an AUDITION: the whole
- * catalog stands on the island at once, on rings out to 0.70 of its radius
- * (`standingSpots.ts`), each with a name plate riding their crown. A plate
- * whose anchor leaves the frame is hidden AND inert, so a candidate framed out
- * is a candidate who cannot be chosen by looking at them — which is the exact
- * bug the audition was built to fix.
+ * catalog stands on the island at once, each with a name plate riding their
+ * crown. A plate whose anchor leaves the frame is hidden AND inert, so a
+ * candidate framed out is a candidate who cannot be chosen by looking at them —
+ * which is the exact bug the audition was built to fix.
  *
- * SO THE PORTRAIT FIGURE IS MEASURED, NOT REASONED. Driven at 375x812 on
- * `/dev/tutor-lab` with the whole catalog on stage: at 0.62 the fourth plate
- * (Liruf's) comes back `hidden`, at 0.68 all four are on screen and the island
- * paints 30% of the viewport, and every step above that only spends coverage.
- * The widest candidate the solver seats measures about 0.69 of the radius from
- * the island's centre, which is why the number lands where it does.
+ * PORTRAIT WAS 0.68 UNTIL 2026-08-22, AND THAT NUMBER WAS A PROXY FOR THE CAST.
+ * It was measured, honestly, against one arrangement on one island: the widest
+ * candidate the solver seated stood about 0.69 of the radius out, so the hold
+ * was tuned until they fitted. The trouble with a proxy is that it holds a
+ * SYMMETRIC RING of that radius on the camera's own right axis — the whole
+ * circle, both sides, all the way out — when what actually had to be in frame
+ * was four points. Measured at 375x812: the cast's real spread was 1.97 m either
+ * side of the aim and the proxy charged the camera for 2.35 m, so the frame came
+ * out 5.56 m wide against a 6.5 m island and the island painted 29.9% of the
+ * viewport while every other establishing phase reached 50%. The one screen a
+ * child chooses their tutor on was four fifths sky.
  *
- * The landscape figure is set by the `island.rim.*` pads instead — they are the
- * one world control this phase mounts that lives out at 0.88 of the radius, and
- * at 1280 px there is width enough to keep them and their chip inside the
- * frame.
+ * So the shot holds the CAST now (`ShotContext.cast`, `castPoints`), and this
+ * number is what is left over: the least island a portrait frame may show when
+ * the cast asks for less than that. It is `ISLAND_HOLD.portrait` exactly,
+ * which states the rule in one sentence — THE AUDITION IS NEVER FRAMED FURTHER
+ * OUT THAN ARRIVAL. A learner who has just watched the island fill their phone
+ * must not have it shrink when they step toward it.
  *
- * SO ON A PHONE THIS SHOT SITS FURTHER OUT THAN `establishing` DOES, and the
- * inversion is deliberate rather than an oversight. It used to be a fixed 0.62
- * of the island fit, which made it strictly nearer at every aspect; keeping
- * that relationship while `establishing` came in close enough to fill a phone
- * would have framed one candidate out of four. The two shots answer different
- * questions — `establishing` frames the PLACE, `approach` frames the PEOPLE
- * standing on it — and in portrait, four people spread across a 6.5 m island
- * need more horizontal room than the island's middle does. In landscape, where
- * there is width to spare, `approach` is nearer than `establishing` exactly as
- * it always was.
+ * The landscape figure is unchanged and is still set by the `island.rim.*`
+ * pads — the one world control this phase mounts that lives out at 0.88 of the
+ * radius, and at 1280 px there is width enough to keep them and their chip
+ * inside the frame. It stays the binding constraint there because the cast is
+ * always well inside it at that aspect.
  */
-export const APPROACH_HOLD = { landscape: 0.94, portrait: 0.68 } as const;
+export const APPROACH_HOLD = { landscape: 0.94, portrait: 0.44 } as const;
 
 /**
  * And its own elevation, steeper in portrait than `establishing`'s.
  *
- * Steeper BECAUSE it is further out. Elevation is the only thing that converts
- * a floating island into pixels on a portrait phone's long axis, and this shot
- * has to stand about 20 m back to keep four candidates and their name plates
- * inside a 17-degree horizontal field. From there a character is roughly 105 px
- * tall whatever the angle, so the tilt costs almost nothing in face legibility
- * and buys the difference between an island band across the middle of the
- * screen and an island the learner is standing over.
+ * ELEVATION IS THE ONLY LEVER THAT DOES NOT COST WIDTH, and on a portrait phone
+ * that makes it the cheapest one there is. The frame's world WIDTH is fixed by
+ * the hold — the widest thing that must stay in frame, divided by the horizontal
+ * field of view — and its height follows from the aspect, so neither distance
+ * nor field of view can be traded for coverage. What tilt changes is the ISLAND:
+ * a floating disc seen edge-on is a band, and its projected height grows as
+ * `sin(elevation)` while its width does not move at all.
+ *
+ * 44 UNTIL 2026-08-22. Measured at 375x812 with the cast gathered
+ * (`standingSpots.ts` → `AUDITION_NARROW_WEIGHT`), the island's own ground ring
+ * projected 387 px tall inside an 812 px frame at 44 degrees and 423 px at 50 —
+ * about four points of viewport coverage for six degrees, with the cast's
+ * on-screen positions unchanged to the pixel, because lateral offset is
+ * perpendicular to the tilt.
+ *
+ * IT STOPS AT 50 BECAUSE THE FACE IS THE POINT. A character's own on-screen
+ * height falls as `cos(elevation)`: 44 to 50 costs 10% of it, and past about 56
+ * the learner is choosing a tutor by the top of their head. The gain is roughly
+ * linear and the cost accelerates, so this is the last angle where the trade is
+ * clearly worth making.
  *
  * Landscape is SHALLOWER than `establishing`'s, and for the mirror reason: at
  * 1280 px this shot is the nearer of the two, the candidates are large, and
@@ -341,7 +371,7 @@ export const APPROACH_HOLD = { landscape: 0.94, portrait: 0.68 } as const;
  */
 export const APPROACH_ELEVATION = {
   landscape: (24 * Math.PI) / 180,
-  portrait: (44 * Math.PI) / 180,
+  portrait: (50 * Math.PI) / 180,
 } as const;
 
 /**
@@ -349,10 +379,20 @@ export const APPROACH_ELEVATION = {
  *
  * It was 0.6, which is a portrait lean: it parks the frame on one character and
  * charges the shot for the distance needed to keep the others from falling off
- * the far edge. A quarter of the way still reads as "toward them" and costs the
- * ring almost nothing.
+ * the far edge. Then 0.25, on the reasoning that a quarter of the way costs the
+ * RING almost nothing — which was true of the ring and was never the bill. The
+ * shot holds the CAST now, and a lean is charged directly against it: every
+ * metre the aim moves toward one candidate is a metre the ones on the other side
+ * move toward the frame's edge, and the camera pays for it in distance. Measured
+ * headless against both islands, 0.25 costs a point of viewport coverage on
+ * `diorama-a` and four and a half on `diorama-b`.
+ *
+ * It is not zero, because the aim leaning toward whoever is currently chosen is
+ * what makes this a step TOWARD them rather than a wider version of arrival, and
+ * that reading is the phase's whole difference from `establishing`. 0.12 is the
+ * smallest lean that still moves the frame by a visible amount at 375 px.
  */
-export const APPROACH_LEAN = 0.25;
+export const APPROACH_LEAN = 0.12;
 
 /**
  * How far inside the frame edge a held point must land, as a fraction of the
@@ -726,7 +766,10 @@ const CAST_SHOULDER = 0.22;
 
 function castPoints(ctx: ShotContext): HoldPoint[] {
   const points: HoldPoint[] = [];
-  for (const subject of [ctx.lead, ctx.companion]) {
+  // The audition's whole catalog when there is one, the session's two people
+  // otherwise. See `ShotContext.cast`.
+  const subjects = ctx.cast && ctx.cast.length > 0 ? ctx.cast : [ctx.lead, ctx.companion];
+  for (const subject of subjects) {
     if (!subject) continue;
     const pad = subject.height * CAST_SHOULDER;
     points.push({ point: vec(subject.x, subject.y + subject.height * 0.25, subject.z), pad });

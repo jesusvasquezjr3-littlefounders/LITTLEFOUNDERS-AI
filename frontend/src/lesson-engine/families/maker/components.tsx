@@ -10,6 +10,7 @@ import type { ExerciseProps, SegmentBase } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
 import { seededSort, seededSortMiddling } from '../../core/shuffle'
 import {
+  FOCUS_RING,
   NumberPad,
   OptionCard,
   SunkenWell,
@@ -99,13 +100,9 @@ export function CodeOrder({ segment, value, onChange, disabled, verdict }: Exerc
                     disabled={disabled}
                     onClick={() => onChange({ order: order.filter((x) => x !== id) })}
                     className={cn(
-                      'min-h-11 flex-1 rounded-md border-2 px-3 py-2 text-left',
-                      'transition-[border-color,background-color,transform] duration-150',
-                      'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                      'active:translate-y-px disabled:cursor-not-allowed',
-                      placedState(id, index) === 'idle'
-                        ? 'border-outline/70 bg-surface text-content hover:border-primary/60'
-                        : optionStateClasses(placedState(id, index)),
+                      'min-h-12 flex-1 rounded-md px-3 py-2 text-left',
+                      FOCUS_RING,
+                      optionStateClasses(placedState(id, index)),
                     )}
                   >
                     <CodeLine text={blockById.get(id)?.text_md ?? id} />
@@ -127,10 +124,10 @@ export function CodeOrder({ segment, value, onChange, disabled, verdict }: Exerc
                 disabled={disabled}
                 onClick={() => onChange({ order: [...order, block.id] })}
                 className={cn(
-                  'min-h-11 w-full rounded-md border-2 border-outline/70 bg-surface-sunken px-3 py-2 text-left text-content',
-                  'transition-[border-color,transform] duration-150 hover:border-primary/60',
-                  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                  'active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60',
+                  'min-h-12 w-full rounded-md px-3 py-2 text-left',
+                  FOCUS_RING,
+                  'disabled:opacity-60',
+                  optionStateClasses('idle'),
                 )}
               >
                 <CodeLine text={block.text_md} />
@@ -291,11 +288,21 @@ export function RobotPath({ segment, disabled, onFinish, verdict }: ExerciseProp
                 key={`${x}-${y}`}
                 className={cn(
                   'flex aspect-square items-center justify-center rounded-sm',
-                  isWall ? 'bg-secondary-soft' : 'bg-surface-sunken',
-                  isGoal && verdict && (verdict.correct ? 'bg-success-soft' : 'bg-error-soft'),
+                  // A WALL HAS TO LOOK SOLID, IN BOTH THEMES. It was
+                  // `bg-secondary-soft`, which is slate-100 in light and
+                  // slate-900 in dark — so the one impassable square on the
+                  // board was the LIGHTEST tile in light mode and the DARKEST
+                  // in dark, and in both it read as an empty space rather than
+                  // an obstacle. Ink at 18% is the only wash that darkens a
+                  // light theme and lightens a dark one (/DESIGN.md §Answer
+                  // surfaces, on why an object's edge is ink), and the glyph
+                  // says it a second time so the meaning is never colour alone.
+                  isWall ? 'lf-slab bg-content/[0.18]' : 'lf-well',
+                  isGoal && verdict && (verdict.correct ? 'bg-success-soft' : 'bg-warning-soft'),
                 )}
               >
                 {isGoal ? <Icon name="flag" fill className="text-[24px] text-accent" /> : null}
+                {isWall ? <Icon name="block" className="text-[22px] text-content/40" /> : null}
               </div>
             )
           })}
@@ -427,7 +434,7 @@ export function DebugHunt({ segment, value, onChange, disabled, verdict }: Exerc
         ))}
       </div>
       {fixMd ? (
-        <div className="rounded-md border-2 border-success bg-success-soft p-3">
+        <div className="lf-slab lf-answer-correct rounded-md p-3">
           <MarkdownLite text={fixMd} className="lf-body text-content" />
         </div>
       ) : null}
@@ -458,64 +465,119 @@ export function BalanceScale({ segment, value, onChange, disabled, verdict }: Ex
 
   return (
     <div className="space-y-4">
-      <div className="mx-auto w-full max-w-sm">
+      {/*
+        A BALANCE, RATHER THAN THREE PARTS NEAR EACH OTHER.
+        (Rebuilt 2026-08-22 after looking at it at 375.)
+
+        What was on screen: a bar floating diagonally ABOVE two boxes it never
+        touched; a stem `rounded-b-full` hanging in the gap BELOW and BETWEEN
+        the pans, attached to nothing; and both pans rotated with the beam, so
+        at full tilt the child read "Cofre · 12" on a slant. The whole point of
+        this type is that equation equality is made PHYSICAL — a scale whose
+        parts do not connect teaches the opposite of the thing.
+
+        Three changes, each mechanical rather than decorative:
+
+        1. The beam now ends exactly over each pan's centre (`inset-x-[23%]`
+           against pans that are `w-[46%]` in a `justify-between` row), with a
+           hanger dropping from each end to the pan it carries. The link is
+           visible, so the beam is holding something.
+        2. The post and base sit OUTSIDE the rotating group, centred on the
+           pivot and running the full height behind the gap between the pans.
+           The group pivots at `origin-top`, which is where the cap is drawn,
+           so the pivot is a fixed point rather than a shape that swings.
+        3. Each pan is COUNTER-rotated about its own top centre. Its hanger
+           still rides the beam, so the geometry stays exact at every width
+           with nothing measured — and the pan hangs level, which is both what
+           a real balance does and what a legible label needs.
+      */}
+      {/* `pb-6` is travel room: a pan hangs from a beam end that swings up to
+          ~20px at the 12° clamp, so the base needs to clear the LOW pan rather
+          than the level one. */}
+      <div className="relative mx-auto w-full max-w-sm pb-6">
+        <span
+          aria-hidden="true"
+          className="absolute bottom-2 left-1/2 top-1 w-1.5 -translate-x-1/2 rounded-t-full bg-content-muted/45"
+        />
+        <span
+          aria-hidden="true"
+          className="absolute bottom-0 left-1/2 h-2 w-28 -translate-x-1/2 rounded-full bg-content-muted/60"
+        />
         <div
-          className="relative pt-2 transition-transform duration-300 ease-out motion-reduce:transition-none"
+          className="relative origin-top pt-1 transition-transform duration-300 ease-out motion-reduce:transition-none"
           style={{ transform: `rotate(${angle}deg)` }}
         >
-          <div className="absolute inset-x-8 top-0 h-2 rounded-full bg-content-muted/60" />
-          <div className="flex justify-between gap-4 pt-3">
-            <div
-              role="group"
-              aria-label={t('lesson.families.maker.leftPan')}
-              className="min-h-24 w-[46%] rounded-md border-2 border-outline/70 bg-surface p-2"
-            >
-              <div className="flex flex-wrap justify-center gap-1.5">
-                {leftFixed.map((item, i) => (
-                  <span
-                    key={i}
-                    className="inline-flex min-h-9 items-center rounded-full bg-primary-soft px-3 py-1 lf-label text-primary"
-                  >
-                    {item.label} · {item.value}
-                  </span>
-                ))}
-              </div>
-              <p className="mt-2 text-center lf-title text-content">{leftTotal}</p>
-            </div>
-            <div
-              role="group"
-              aria-label={t('lesson.families.maker.rightPan')}
-              className={cn(
-                'min-h-24 w-[46%] rounded-md border-2 p-2',
-                verdict
-                  ? verdict.correct
-                    ? 'border-success bg-success-soft'
-                    : 'border-error bg-error-soft'
-                  : 'border-dashed border-outline/70 bg-surface',
-              )}
-            >
-              <div className="flex flex-wrap justify-center gap-1.5">
-                {placed.map((id) => {
-                  const weight = weights.find((w) => w.id === id)
-                  if (!weight) return null
-                  return (
-                    <TokenChip
-                      key={id}
-                      state="selected"
-                      disabled={disabled}
-                      onSelect={() => onChange({ placed: placed.filter((x) => x !== id) })}
-                      className="min-h-9 px-3 py-1"
+          <span aria-hidden="true" className="absolute inset-x-[23%] top-0 h-2 rounded-full bg-content-muted/70" />
+          <span
+            aria-hidden="true"
+            className="absolute left-1/2 top-0 h-4 w-4 -translate-x-1/2 -translate-y-1 rounded-full bg-content-muted/70"
+          />
+          <div className="flex items-start justify-between gap-4 pt-2">
+            {(
+              [
+                { side: 'left' as const },
+                { side: 'right' as const },
+              ]
+            ).map(({ side }) => (
+              <div key={side} className="w-[46%]">
+                <span aria-hidden="true" className="mx-auto block h-4 w-0.5 bg-content-muted/55" />
+                <div
+                  style={{ transform: `rotate(${-angle}deg)`, transformOrigin: 'top center' }}
+                  className="transition-transform duration-300 ease-out motion-reduce:transition-none"
+                >
+                  {side === 'left' ? (
+                    <div
+                      role="group"
+                      aria-label={t('lesson.families.maker.leftPan')}
+                      className="lf-slab min-h-24 rounded-md p-2"
                     >
-                      {weight.label}
-                    </TokenChip>
-                  )
-                })}
+                      <div className="flex flex-wrap justify-center gap-1.5">
+                        {leftFixed.map((item, i) => (
+                          <span
+                            key={i}
+                            className="inline-flex min-h-9 items-center rounded-full bg-primary-soft px-3 py-1 lf-label text-primary"
+                          >
+                            {item.label} · {item.value}
+                          </span>
+                        ))}
+                      </div>
+                      <p className="mt-2 text-center lf-title text-content">{leftTotal}</p>
+                    </div>
+                  ) : (
+                    <div
+                      role="group"
+                      aria-label={t('lesson.families.maker.rightPan')}
+                      className={cn(
+                        'min-h-24 rounded-md p-2',
+                        verdict
+                          ? cn('lf-slab', verdict.correct ? 'lf-answer-correct' : 'lf-answer-wrong')
+                          : 'lf-well-target',
+                      )}
+                    >
+                      <div className="flex flex-wrap justify-center gap-1.5">
+                        {placed.map((id) => {
+                          const weight = weights.find((w) => w.id === id)
+                          if (!weight) return null
+                          return (
+                            <TokenChip
+                              key={id}
+                              state="selected"
+                              disabled={disabled}
+                              onSelect={() => onChange({ placed: placed.filter((x) => x !== id) })}
+                            >
+                              {weight.label}
+                            </TokenChip>
+                          )
+                        })}
+                      </div>
+                      <p className="mt-2 text-center lf-title text-content">{rightSum}</p>
+                    </div>
+                  )}
+                </div>
               </div>
-              <p className="mt-2 text-center lf-title text-content">{rightSum}</p>
-            </div>
+            ))}
           </div>
         </div>
-        <div className="mx-auto -mt-1 h-8 w-2 rounded-b-full bg-content-muted/60" />
       </div>
 
       <div className="space-y-2">
@@ -707,11 +769,11 @@ export function MeasureRead({ segment, value, onChange, disabled, verdict }: Exe
       <div className="text-center">
         <span
           className={cn(
-            'inline-flex min-h-11 items-center gap-2 rounded-full px-5 py-1.5 lf-title',
+            'inline-flex min-h-12 items-center gap-2 rounded-full px-5 py-1.5 lf-title',
             verdict
               ? verdict.correct
                 ? 'bg-success-soft text-success-strong'
-                : 'bg-error-soft text-error-strong'
+                : 'bg-warning-soft text-warning-strong'
               : 'bg-primary-soft text-primary',
           )}
         >
@@ -740,11 +802,11 @@ function MachineRow({ input, output, highlight }: { input: string; output: strin
   return (
     <div
       className={cn(
-        'flex items-center justify-center gap-2 rounded-md border-2 p-2',
-        highlight ? 'border-primary bg-primary-soft/40' : 'border-outline/50 bg-surface',
+        'lf-slab flex items-center justify-center gap-2 rounded-md p-2',
+        highlight && 'lf-answer-selected',
       )}
     >
-      <span className="inline-flex min-h-9 min-w-11 items-center justify-center rounded-md bg-surface-sunken px-3 font-code text-sm text-content">
+      <span className="lf-well inline-flex min-h-9 min-w-11 items-center justify-center rounded-md px-3 font-code text-sm text-content">
         {input}
       </span>
       <Icon name="arrow_forward" className="text-[18px] text-content-muted" />
@@ -755,7 +817,7 @@ function MachineRow({ input, output, highlight }: { input: string; output: strin
       <span
         className={cn(
           'inline-flex min-h-9 min-w-11 items-center justify-center rounded-md px-3 font-code text-sm',
-          highlight ? 'bg-primary-soft text-primary' : 'bg-surface-sunken text-content',
+          highlight ? 'bg-primary-soft text-primary' : 'lf-well text-content',
         )}
       >
         {output}

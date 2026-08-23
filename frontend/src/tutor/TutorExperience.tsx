@@ -4,12 +4,22 @@ import { useAuth } from '@/auth/AuthContext';
 import { duckTutorAmbient, playPlatformSound } from '@/lib/sound';
 import { SCENE_ASSETS } from '@/tutor-scene/assets';
 import { isSceneBackdropId, type SceneBackdropId } from '@/tutor-scene/backdrops';
-import { getOffers, getPreferences, savePreferences, startSession, type StartSessionInput } from './tutorApi';
+import {
+  getOffers,
+  getPreferences,
+  getTranscript,
+  savePreferences,
+  startSession,
+  type StartSessionInput,
+} from './tutorApi';
 import { micBlockedForOffers, micBlockedReason, narrowBlockedReason, primaryOpening } from './mic';
 import { PersonalizeInWorld } from './PersonalizeInWorld';
 import { OfferChips } from './OfferChips';
 import { ConversationView } from './ConversationView';
 import { ClosingInWorld } from './ClosingInWorld';
+import { ReplayInWorld } from './replay/ReplayInWorld';
+import { buildReplayScript, type ReplayScript } from './replay/replayScript';
+import { useReplayDirector } from './replay/useReplayDirector';
 import { auditionFor } from './stage/phases';
 import { micForPhase } from './stage/micForPhase';
 import {
@@ -19,12 +29,13 @@ import {
   type ConversationLayerProps,
   type OfferLayerProps,
   type PersonalizeLayerProps,
+  type ReplayLayerProps,
   type StageMicProps,
   type StagePhase,
 } from './stage/StageShell';
 import { useMicrophone, type Microphone } from './useMicrophone';
 import { useTutorSocket } from './useTutorSocket';
-import type { StartedSession, TutorCatalog, TutorOffers, TutorPreferences } from './types';
+import type { SessionSummary, StartedSession, TutorCatalog, TutorOffers, TutorPreferences } from './types';
 
 /*
  * The Tutor, as the learner meets it (/ORACLE.md §1).
@@ -157,7 +168,37 @@ export function TutorExperience() {
    */
   const [awaitingReply, setAwaitingReply] = useState(false);
 
+  /*
+   * THE SAVED CONVERSATION BEING PERFORMED, in three pieces (/ORACLE.md §12).
+   *
+   * The SUMMARY arrives from the archive and lands first, because it carries
+   * the character and the island: the camera can start on the right world
+   * while the transcript is still in flight, instead of opening on the default
+   * one and correcting itself in front of the learner. The SCRIPT is the
+   * transcript compiled into beats (`replay/replayScript.ts`). The two flags
+   * are the ordinary shape of one fetch, kept separate from the script so that
+   * "nothing loaded yet", "it failed" and "it loaded and has no lines in it"
+   * are three states the layer can say three different things about.
+   */
+  const [replaySummary, setReplaySummary] = useState<SessionSummary | null>(null);
+  const [replayScript, setReplayScript] = useState<ReplayScript | null>(null);
+  const [replayLoading, setReplayLoading] = useState(false);
+  const [replayError, setReplayError] = useState<string | null>(null);
+
+  /**
+   * Which transcript we are actually waiting for.
+   *
+   * A learner who opens one conversation, changes their mind and opens another
+   * has two requests in flight, and PostgREST is under no obligation to answer
+   * them in order. Without this the slower one wins and performs the wrong
+   * session. Cleared on leaving, so a response that lands after the learner has
+   * gone cannot resurrect the phase.
+   */
+  const wantedReplayRef = useRef<string | null>(null);
+
   const socket = useTutorSocket(phase === 'conversing' ? (session?.socketUrl ?? null) : null);
+
+  const director = useReplayDirector(phase === 'replaying' ? replayScript : null);
 
   useEffect(() => {
     let cancelled = false;
@@ -237,6 +278,59 @@ export function TutorExperience() {
     [token],
   );
 
+  /*
+   * OPEN A SAVED CONVERSATION, ON THE ISLAND IT HAPPENED ON.
+   *
+   * The phase changes FIRST and the fetch follows, which is the opposite of
+   * what a list-shaped replay would do. The canvas never unmounts, so moving to
+   * `replaying` immediately puts the camera on the right character in the right
+   * world and the transcript arrives into a stage that is already standing —
+   * rather than the learner staring at the archive for a round trip and then
+   * being dropped into a scene.
+   */
+  const openReplay = useCallback(
+    (summary: SessionSummary) => {
+      if (!token) return;
+      wantedReplayRef.current = summary.id;
+      setReplaySummary(summary);
+      setReplayScript(null);
+      setReplayError(null);
+      setReplayLoading(true);
+      setPhase('replaying');
+
+      void getTranscript(token, summary.id).then((result) => {
+        // Somebody else's answer, or an answer to a learner who has already
+        // left. Either way it is not the performance on screen.
+        if (wantedReplayRef.current !== summary.id) return;
+        setReplayLoading(false);
+        if (result.error || !result.data) {
+          setReplayError(result.error?.code ?? 'INTERNAL');
+          return;
+        }
+        setReplayScript(buildReplayScript(result.data));
+      });
+    },
+    [token],
+  );
+
+  const closeReplay = useCallback(() => {
+    wantedReplayRef.current = null;
+    setReplayScript(null);
+    setReplaySummary(null);
+    setReplayError(null);
+    setReplayLoading(false);
+    /*
+     * The live session goes with it. A replay reached from the GOODBYE leaves a
+     * finished `StartedSession` in state, and returning to the introduction
+     * with it still set would keep deriving the island and the cast from a
+     * conversation that is over — so the learner's own preferences, which is
+     * what the introduction is supposed to show, would be ignored until they
+     * started another one.
+     */
+    setSession(null);
+    setPhase('introducing');
+  }, []);
+
   // The session ended on the server side. Move the UI with it rather than
   // leaving a dead socket behind a live-looking screen.
   useEffect(() => {
@@ -256,13 +350,46 @@ export function TutorExperience() {
    * on the very first frame instead of a default that morphs into theirs
    * (/ORACLE.md §9.1).
    */
-  const scene = narrowScene(session?.diorama ?? preferences?.diorama);
+  /*
+   * A REPLAY OUTRANKS BOTH, and only while it is the phase.
+   *
+   * A saved session recorded the island and the cast it happened with, so those
+   * are what it is performed on — not whatever the learner has chosen since. A
+   * conversation with Dina on diorama-b does not become a conversation with
+   * Zara Vex because the learner repainted the place last Tuesday.
+   *
+   * Written as a narrowed local rather than a boolean so TypeScript follows it:
+   * a `const replaying = phase === 'replaying' && summary !== null` cannot
+   * narrow `summary` at the use site, and every read below would need its own
+   * non-null assertion.
+   */
+  const replay = phase === 'replaying' ? replaySummary : null;
+
+  const scene = narrowScene(replay ? replay.diorama : (session?.diorama ?? preferences?.diorama));
+  /*
+   * THE LIGHT IS THE LEARNER'S, AND THAT IS HONEST RATHER THAN A SHORTCUT.
+   *
+   * `tutor_sessions` has no backdrop column — migration 0047 records the
+   * character, the companion and the diorama, and the light travels with the
+   * PREFERENCE (`tutor_preferences.backdrop`), which is why `StartedSession`
+   * carries it from prefs at start time and the transcript's summary does not
+   * carry it at all. So a replay runs under the light the learner has chosen,
+   * which is the same light every other phase of their route is under. The
+   * alternative would be to guess a dusk from a timestamp, and a confidently
+   * wrong sunset is worse than the learner's own sky (/AGENTS.md §1.14).
+   */
   const backdrop = narrowBackdrop(session?.backdrop ?? preferences?.backdrop);
-  const character = session?.character ?? preferences?.character ?? 'rho';
+  const character = replay
+    ? replay.character
+    : (session?.character ?? preferences?.character ?? 'rho');
   // `null` is a real answer here ("just us"), so the nullish chain has to be
   // written out: `session?.companion ?? preferences?.companion` would treat a
   // deliberately empty companion slot as "unset" and re-fill it.
-  const companion = session ? session.companion : (preferences?.companion ?? null);
+  const companion = replay
+    ? replay.companion
+    : session
+      ? session.companion
+      : (preferences?.companion ?? null);
 
   const turn = socket.turn;
   const turnSeq = turn?.seq ?? 0;
@@ -282,7 +409,25 @@ export function TutorExperience() {
    */
   const [interruptedSeq, setInterruptedSeq] = useState<number | null>(null);
   const interrupted = interruptedSeq !== null && interruptedSeq === turnSeq;
-  const speechUrl = phase === 'conversing' && stageReady && !interrupted ? (turn?.audioUrl ?? null) : null;
+  const liveSpeechUrl =
+    phase === 'conversing' && stageReady && !interrupted ? (turn?.audioUrl ?? null) : null;
+
+  /*
+   * ONE AUDIO ELEMENT, TWO THINGS THAT CAN FILL IT.
+   *
+   * The stage owns exactly one `<audio>` and everything about it is driven by
+   * these three props. A live session fills them from the socket; a replay
+   * fills them from the director. They are combined HERE, at the one place that
+   * knows which phase is on, rather than by letting a layer reach the element —
+   * two owners of one clip is a tutor talking over its own recording.
+   *
+   * The KEY is the director's beat key rather than an index, so pressing play
+   * on the line that is already on screen genuinely replays it: the URL has not
+   * changed, and `TutorStage` restarts on either prop moving.
+   */
+  const replayKey = director?.beatKey ?? 0;
+  const speechUrl = phase === 'replaying' ? (director?.speechUrl ?? null) : liveSpeechUrl;
+  const audioKey = phase === 'replaying' ? replayKey : turnSeq;
 
   /*
    * Mirrored into state rather than read as `Boolean(speechUrl)` because the
@@ -292,7 +437,7 @@ export function TutorExperience() {
    */
   useEffect(() => {
     setSpeaking(speechUrl !== null);
-  }, [speechUrl, turnSeq]);
+  }, [speechUrl, audioKey]);
 
   /*
    * The tutor answering is what ends the wait, whatever the learner sent. ANY
@@ -369,10 +514,28 @@ export function TutorExperience() {
     phase,
     articulates,
     adaptationOffered: socket.adaptationOffer !== null,
+    // The pull back to the island at the end of a replay is the same goodbye
+    // the session itself ended on (/ORACLE.md §9.5, and the note in `phases.ts`).
+    replayEnded: director?.finished ?? false,
   });
 
   const handleReady = useCallback(() => setStageReady(true), []);
-  const handleSpeechEnd = useCallback(() => setSpeaking(false), []);
+
+  /*
+   * THE CLIP ENDED — and in a replay that is also the beat ending.
+   *
+   * Held in a ref rather than closed over, because the director is a new object
+   * on every beat and this callback is a prop of the ONE canvas: rebuilding it
+   * sixty times a conversation would hand `TutorStage` a new `onEnded` for every
+   * pose change. The ref is written during render, the same pattern the plate's
+   * detent and the lab's socket use, so it can never be a commit behind.
+   */
+  const speechEndRef = useRef<(() => void) | null>(null);
+  speechEndRef.current = phase === 'replaying' ? (director?.handleSpeechEnd ?? null) : null;
+  const handleSpeechEnd = useCallback(() => {
+    setSpeaking(false);
+    speechEndRef.current?.();
+  }, []);
 
   /*
    * The layer props are built as whole, typed objects rather than spread inline
@@ -410,6 +573,7 @@ export function TutorExperience() {
           onStart: begin,
           onPersonalize: () => setPhase('personalizing'),
           token,
+          onReplay: openReplay,
         }
       : null;
 
@@ -429,6 +593,14 @@ export function TutorExperience() {
           },
         }
       : null;
+
+  const replayLayer: ReplayLayerProps = {
+    ...common,
+    director,
+    loading: replayLoading,
+    error: replayError,
+    onDone: closeReplay,
+  };
 
   /*
    * WHAT THE ORB IS DOING, in whichever phase this is.
@@ -508,16 +680,39 @@ export function TutorExperience() {
   return (
     <StageShell
       mic={mic}
+      /*
+       * THE DOCK IS NAMED FOR WHAT IT IS IN THIS PHASE.
+       *
+       * It is the bottom cluster whether or not the microphone is standing in
+       * it (/DESIGN.md → Screen Recipes → Tutor), and its landmark name was the
+       * constant "Talk to your tutor" — correct in the four phases with an orb,
+       * and a flat contradiction in the two without one, where it wraps a
+       * goodbye or a transport.
+       */
+      dockLabel={
+        phase === 'replaying'
+          ? t('tutor.stage.replayControls')
+          : phase === 'closing'
+            ? t('tutor.stage.closeControls')
+            : undefined
+      }
       audition={audition}
       scene={scene}
       character={character}
       companion={companion}
       backdrop={backdrop}
-      emotion={turn?.emotion ?? 'neutral'}
-      action={turn?.action ?? 'idle'}
-      actionKey={turnSeq}
+      /*
+       * THE POSE COMES FROM WHICHEVER IS PERFORMING. Live, it is the turn the
+       * socket just delivered; in a replay it is the emotion and the action the
+       * character ORIGINALLY carried, read straight off the stored row. That is
+       * the sentence /ORACLE.md §12 has been promising since the schema was
+       * written, and it needed no contract change to keep.
+       */
+      emotion={director?.beat?.emotion ?? turn?.emotion ?? 'neutral'}
+      action={director?.beat?.action ?? turn?.action ?? 'idle'}
+      actionKey={phase === 'replaying' ? replayKey : turnSeq}
       speechUrl={speechUrl}
-      audioKey={turnSeq}
+      audioKey={audioKey}
       shot={shot}
       onReady={handleReady}
       onSpeechEnd={handleSpeechEnd}
@@ -616,7 +811,28 @@ export function TutorExperience() {
               setSession(null);
               setPhase('introducing');
             }}
+            onReplay={openReplay}
           />
+        </StageLayer>
+      )}
+
+      {phase === 'replaying' && (
+        /*
+          `world`, like every other layer, and here the placement is load
+          bearing rather than invisible: the replay's caption is anchored to the
+          performing character's own crown, exactly as a live one is, and a
+          `fill` column would sit over the island catching the taps the scene is
+          entitled to. Everything else this layer renders is either the lesson
+          plate or a row portalled into the shell's dock.
+
+          THE PERFORMANCE IS DRIVEN FROM HERE, not from inside the layer. The
+          pose, the clip and the shot above are read off the director and handed
+          to the one canvas, so a replay is the same four scene props a live
+          session fills — which is the entire reason a saved conversation can be
+          re-enacted at all without a second stage (/ORACLE.md §12).
+        */
+        <StageLayer label={t('tutor.stage.replayLayer')} placement="world">
+          <ReplayInWorld {...replayLayer} />
         </StageLayer>
       )}
     </StageShell>

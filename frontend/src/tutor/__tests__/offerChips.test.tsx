@@ -71,6 +71,7 @@ function renderChips(offers: Partial<TutorOffers> = {}, props: Record<string, un
       startError={null}
       onStart={onStart}
       onPersonalize={vi.fn()}
+      onReplay={vi.fn()}
       token="test-token"
       character="rho"
       nickname="Robi"

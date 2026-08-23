@@ -184,6 +184,74 @@ gitignored and owner-held.
 
 ---
 
+## `npm test` in `database/` could never pass on Windows — and the failure looked like a migration defect (fixed 2026-08-23)
+
+**Symptom.** `database/npm test` fails at the `confirm-apply` scenario with
+`FAIL: apply 0023_learning_insights.sql: success sentinel missing from remote
+output (transport exit codes are untrustworthy); refusing to continue`, after
+dumping several kilobytes of base64 to stderr. It reads exactly like the
+production transport bug the runner was hardened against, on a real migration,
+and it appears on a clean checkout with nothing modified under `database/`.
+
+**Cause — the test harness, not the runner.** The fake `railway` executable in
+`scripts/railway-migrate.test.mjs` executed the remote command with
+`spawnSync('sh', ['-c', command])`. On Windows, MSYS `sh.exe` spawned by a
+NATIVE process (node) **silently truncates its command line at 8191 characters
+and still exits 0.** The payload is a base64 blob of a whole migration — 13 KB
+for `0023`, 31 KB for `0025` — so `echo <b64> | base64 -d | psql` lost its own
+pipeline mid-string and ran only the truncated `echo`. The runner then refused
+a reply carrying no sentinel, which is exactly what it is supposed to do.
+
+Measured, because the cut is silent and exact: a command line of **8163**
+characters round-trips correctly; **8193** comes back as the raw echo argument,
+status 0, stderr empty.
+
+**Fix.** The fake writes the command to a script FILE and runs `sh <file>`. A
+script file has no command-line length, so the fake behaves identically on
+every OS. The contract the scenarios exist to pin is untouched — the remote
+command still arrives as one positional argument and the remote exit status is
+still discarded.
+
+**Why it matters beyond Windows.** This gate protects the ONLY approved path to
+production Vault, and it could not be run at all on the machine the owner
+develops on. A gate that only runs in CI is a gate nobody uses before pushing.
+
+**If you see it again:** check whether anything is invoking a Git-Bash tool
+with a multi-kilobyte argument from a native Windows process. The failure mode
+is silent truncation plus exit 0 — never an error.
+
+## Certifying the Tutor by LOOKING at it (recipe, 2026-08-23)
+
+Every browser window opened by an agent on this machine is one the OS never
+shows, so `document.visibilityState` is `"hidden"` and `SceneCanvas` correctly
+refuses to draw. **Headless Chrome over CDP is visible to itself** and is the
+only way to photograph the 3D stage here.
+
+```
+cd frontend && npx vite --port 5190 --strictPort      # a dedicated server
+chrome --headless=new --remote-debugging-port=NNNN        --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader        --force-device-scale-factor=1 --hide-scrollbars
+```
+
+Then drive `/dev/tutor-lab`, which mounts the REAL `StageShell` behind fixtures
+and has switches for phase, locale, cast and activity. Four things learned the
+hard way:
+
+- **Capture with `Page.captureScreenshot`, never `canvas.toDataURL()` or
+  `drawImage(canvas)`.** A WebGL canvas without `preserveDrawingBuffer` returns
+  stale or blank pixels outside the frame; the compositor screenshot is always
+  correct. A canvas colour census taken with `drawImage` produced confident,
+  wrong "the scene went dark" readings all session.
+- **`getComputedStyle` cannot answer "is this visible".** On a descendant of a
+  `display:none` ancestor it returns the descendant's OWN display. Use
+  `Element.checkVisibility()`, or better, press Tab for real and look at
+  `document.activeElement`.
+- **A control inside a scroller is not "below the fold".** A naive rect test
+  reported six reachable replay rows as unreachable; measuring the scroll
+  container (`scrollHeight 650, clientHeight 192`) showed every row reachable.
+- **Subtract the instrument.** Everything in `/dev/tutor-lab`'s own panel is
+  marked `[data-lab-chrome]`; a measurement that counts it is measuring the
+  ruler.
+
 ## Rollback to v1 (historical — v2 is in production as of 2026-07-17)
 
 v1 is no longer live and no longer on `main` (superseded by the `feat: total v2 rewrite` squash commit, 2026-07-17). To inspect or resurrect it: `git log main --diff-filter=D` finds the squash commit; v1's actual last state is the parent of that commit. There is no automatic rollback — reverting to v1 in production would mean redeploying its old Render/Railway/Vercel config from that commit by hand, which no longer matches the current Railway project (`littlefounders-b2c`) or Vercel project settings (Root Directory now `frontend`). Treat this as "possible but non-trivial," not a one-command undo.

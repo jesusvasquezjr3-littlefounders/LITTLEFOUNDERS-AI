@@ -1,41 +1,60 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '@/components/ui';
 import { CharacterActor } from '@/components/characters/control/CharacterActor';
 import { HudPlate } from './hud/HudPlate';
-import { getTranscript, listSessions } from './tutorApi';
-import type { SessionSummary, SessionTranscript } from './types';
+import { listSessions } from './tutorApi';
+import type { SessionSummary } from './types';
 
 /*
- * Saved conversations, and their replay (/ORACLE.md §12).
+ * THE ARCHIVE — the list you choose a conversation FROM, and nothing else.
  *
- * WHAT A REPLAY IS AND IS NOT. It reconstructs the session from the
- * transcript: the character re-acts each line with the emotion and action it
- * originally carried, and the tutor's stored audio plays. It is NOT a
- * recording of the learner — there is no such thing in this product, because
- * there is nowhere in the schema to put one (owner decision 8, migration
- * 0047).
+ * WHAT THIS FILE STOPPED BEING. It used to be the replay itself: press "Play it
+ * again" and the row expanded into a stack of `<p>`s, one per line, with a
+ * native `<audio controls>` widget beside every tutor turn. Its own comment
+ * claimed the character "re-acts each line with the emotion and action it
+ * originally carried"; nothing re-acted anything, and /ORACLE.md §12 had
+ * already been amended to say so in as many words. The owner's report was
+ * exact: "no se ven fluidas e inmersivas como una sesion con tutor natural,
+ * debe sentirse como una repeticion".
  *
- * The list is deliberately plain. A learner looking for "the one about
- * saving" needs a date, a character and a topic — not a dashboard.
+ * The performance moved to the stage, where a performance belongs
+ * (`replay/ReplayInWorld.tsx`, driven by `replay/useReplayDirector.ts`). What
+ * is left here is the ONE job a list is genuinely good at: letting a learner
+ * point at the conversation they mean. So a row is a poster for a performance —
+ * who it was with, when, and how much of it there is — and pressing it hands
+ * the session id upward and leaves.
  *
- * AND IT IS PLAIN IN THE MATERIAL'S SENSE NOW. Every row used to be a `Card` —
- * Liquid Glass, `blur(20px)`, a five-layer atmospheric shadow — mounted inside a
- * Lumen sheet, which is glass stacked on glass and is forbidden outright
- * (/DESIGN.md §Elevation, rule 6). Over a moving island the two blurs stop
- * reading as one material and start reading as a bug in the blur. The rows are
- * rows now: a hairline between them, nothing painted, the sheet underneath
- * doing the only work a surface has to do here.
+ * IT IS THE THING THAT LEAVES THE LIST, WHICH IS WHY `onReplay` IS REQUIRED.
+ * Only the component that owns the phase can move to it, and a fallback that
+ * quietly rendered the old transcript when no handler was passed would be
+ * exactly the arrangement that let a list survive as a feature: two replays in
+ * the codebase, one of them the one nobody reviews.
+ *
+ * AND IT IS PLAIN IN THE MATERIAL'S SENSE. Every row used to be a `Card` —
+ * Liquid Glass, `blur(20px)`, a five-layer atmospheric shadow — mounted inside
+ * a Lumen sheet, which is glass stacked on glass and is forbidden outright
+ * (/DESIGN.md §Elevation, rule 6). The rows are rows: a hairline between them,
+ * nothing painted, the sheet underneath doing the only work a surface has to do
+ * here.
  */
 
 export interface SessionHistoryProps {
   token: string;
+  /**
+   * Play this one, on the island.
+   *
+   * The whole summary travels rather than just the id, because the phase above
+   * needs the character and the diorama on the FIRST frame — a replay that
+   * opened on the default island and then swapped to the right one the moment
+   * the transcript landed would make the learner watch their own memory
+   * correct itself.
+   */
+  onReplay: (session: SessionSummary) => void;
 }
 
-export function SessionHistory({ token }: SessionHistoryProps) {
+export function SessionHistory({ token, onReplay }: SessionHistoryProps) {
   const { t, i18n } = useTranslation();
   const [sessions, setSessions] = useState<SessionSummary[] | null>(null);
-  const [openId, setOpenId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -75,8 +94,19 @@ export function SessionHistory({ token }: SessionHistoryProps) {
                 <p className="lf-title text-content">
                   {t(`tutor.intent.${session.intent}`, { defaultValue: session.intent })}
                 </p>
+                {/*
+                  WHAT IS IN IT, not what it scored. The date answers "which one
+                  was that", the line count answers "how long is this going to
+                  be", and both are questions a learner actually has with their
+                  finger over the button. XP joins them only when there is any:
+                  a zero on a row is a mark against a conversation that may have
+                  been the best one they had.
+                */}
                 <p className="lf-caption text-content-muted">
                   {formatter.format(new Date(session.startedAt))}
+                  {` · ${t('tutor.history.lines', { count: session.turnCount })}`}
+                  {session.segmentCount > 0 &&
+                    ` · ${t('tutor.history.activityCount', { count: session.segmentCount })}`}
                   {session.xpAwarded > 0 && ` · ${t('tutor.history.xp', { count: session.xpAwarded })}`}
                 </p>
               </div>
@@ -85,82 +115,24 @@ export function SessionHistory({ token }: SessionHistoryProps) {
             <HudPlate
               as="button"
               shape="chip"
-              onClick={() => setOpenId(openId === session.id ? null : session.id)}
+              /*
+               * The character and the date are in the accessible name because
+               * "Play it again" on eight adjacent rows is eight identical
+               * controls to anybody navigating by name. The visible label comes
+               * first so voice control still reaches it by what is written on
+               * it.
+               */
+              aria-label={`${t('tutor.history.replay')}: ${t(
+                `tutor.character.${session.character}.name`,
+              )}, ${formatter.format(new Date(session.startedAt))}`}
+              onClick={() => onReplay(session)}
               className="shrink-0"
             >
-              <span className="lf-action">
-                {openId === session.id ? t('tutor.history.hide') : t('tutor.history.replay')}
-              </span>
+              <span className="lf-action">{t('tutor.history.replay')}</span>
             </HudPlate>
           </div>
-
-          {openId === session.id && <Replay token={token} sessionId={session.id} />}
         </li>
       ))}
     </ul>
-  );
-}
-
-function Replay({ token, sessionId }: { token: string; sessionId: string }) {
-  const { t } = useTranslation();
-  const [transcript, setTranscript] = useState<SessionTranscript | null>(null);
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    void getTranscript(token, sessionId).then((result) => {
-      if (cancelled) return;
-      if (result.data) setTranscript(result.data);
-      else setFailed(true);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [token, sessionId]);
-
-  if (failed) return <p className="lf-body mt-4 text-content-muted">{t('tutor.history.loadFailed')}</p>;
-  if (!transcript) return <p className="lf-body mt-4 text-content-muted">{t('tutor.history.loading')}</p>;
-
-  return (
-    <div className="mt-3 space-y-2 border-t border-content/10 pt-3">
-      {transcript.turns.map((turn) => (
-        <div key={turn.id} className="flex items-start gap-2">
-          <p
-            className={
-              turn.speaker === 'tutor'
-                ? 'lf-body flex-1 rounded-md bg-surface-sunken px-3 py-2 text-content'
-                : 'lf-body ml-auto max-w-[80%] rounded-md bg-accent-soft px-3 py-2 text-content'
-            }
-          >
-            {turn.text}
-          </p>
-          {turn.audio_path && (
-            <audio
-              controls
-              preload="none"
-              src={turn.audio_path}
-              className="h-8 shrink-0"
-              aria-label={t('tutor.history.playLine')}
-            />
-          )}
-        </div>
-      ))}
-
-      {transcript.segments.length > 0 && (
-        <div className="pt-2">
-          <p className="lf-label mb-2 text-content">{t('tutor.history.activities')}</p>
-          <ul className="space-y-1">
-            {transcript.segments.map((segment) => (
-              <li key={segment.segmentId} className="lf-body flex items-center gap-2 text-content-muted">
-                <Icon name={segment.score !== null && segment.score >= 70 ? 'check_circle' : 'radio_button_unchecked'} />
-                <span>
-                  {String((segment.segment as { prompt_md?: string }).prompt_md ?? '').slice(0, 80)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
   );
 }

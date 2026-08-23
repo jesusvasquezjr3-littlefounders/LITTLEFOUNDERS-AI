@@ -104,6 +104,15 @@ export interface TutorStageProps {
    * to a blank canvas.
    */
   onReady?: () => void;
+  /**
+   * The resolved quality tier, whenever the adaptive governor moves it.
+   *
+   * Forwarded verbatim to `TutorScene`. It reaches this surface at all because
+   * the ONE quality decision the renderer cannot apply itself is the HUD
+   * material's `backdrop-filter`, and the HUD is DOM outside the canvas — see
+   * `TutorSceneProps.onQuality` and /DESIGN.md §Lumen → The blur, profiled.
+   */
+  onQuality?: TutorSceneProps['onQuality'];
 }
 
 export function TutorStage({
@@ -123,6 +132,7 @@ export function TutorStage({
   speakingFraming = 'conversation',
   audition = null,
   onReady,
+  onQuality,
 }: TutorStageProps) {
   const audio = useRef<HTMLAudioElement | null>(null);
   const [element, setElement] = useState<HTMLAudioElement | null>(null);
@@ -168,6 +178,21 @@ export function TutorStage({
         src={speechUrl ?? undefined}
         preload="auto"
         onEnded={handleEnded}
+        /*
+         * A CLIP THAT CANNOT LOAD HAS ALSO FINISHED, and saying so is the whole
+         * fix. `ended` never fires for a 404, a decode failure or an aborted
+         * fetch, so the one callback the stage publishes about its audio simply
+         * never arrived — the mouth was already handled (the `play()` rejection
+         * clears `speaking`), but anything WAITING on the clip waited forever.
+         *
+         * Live that was invisible, because nothing waits: the tutor's next line
+         * is driven by the socket. A REPLAY waits, because the clip ending IS
+         * what ends the beat, and a session whose audio has been swept by the
+         * 90-day retention (/ORACLE.md §12) is every session eventually. Rather
+         * than teach the replay to distrust this callback, the callback is made
+         * true: the clip is over, for whichever of the two reasons.
+         */
+        onError={handleEnded}
       />
       <TutorScene
         className={className}
@@ -182,6 +207,7 @@ export function TutorStage({
         backdrop={backdrop}
         audition={audition}
         onReady={onReady}
+        onQuality={onQuality}
       />
     </>
   );

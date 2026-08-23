@@ -162,6 +162,48 @@ describe('findStandingSpots', () => {
     expect(spread(-0.25)).toBeGreaterThan(spread(0.25));
   });
 
+  it('separates a cast in DEPTH rather than across the frame when given a narrow axis', () => {
+    /*
+     * WHY THE PHONE WAS EMPTY, as arithmetic on a featureless slab.
+     *
+     * `approach` has to keep every candidate inside a horizontal field of view
+     * that is 17 degrees at 375x812, so the frame's world WIDTH is set by
+     * whichever of them sits furthest across it — and the island's share of the
+     * screen follows from that one number. A metre spent sideways is a metre
+     * the camera stands back; the same metre spent in DEPTH satisfies the same
+     * separation rule and costs the framing nothing.
+     *
+     * The separations themselves must survive: the point is to trade one axis
+     * for the other, never to let anybody stand inside anybody else.
+     */
+    const measure = (narrowWeight: number) => {
+      const across = new Vector3(1, 0, 0);
+      const spots = findStandingSpots(slab(), {
+        count: 4,
+        minSeparation: 1.4,
+        grouping: -0.25,
+        samplesPerMetre: 12,
+        narrowAxis: across,
+        narrowWeight,
+      });
+      expect(spots).toHaveLength(4);
+      let widest = 0;
+      let closest = Infinity;
+      for (let a = 0; a < spots.length; a += 1) {
+        widest = Math.max(widest, Math.abs(spots[a]!.x));
+        for (let b = a + 1; b < spots.length; b += 1) {
+          closest = Math.min(closest, Math.hypot(spots[a]!.x - spots[b]!.x, spots[a]!.z - spots[b]!.z));
+        }
+      }
+      return { widest, closest };
+    };
+
+    const loose = measure(0);
+    const gathered = measure(0.8);
+    expect(gathered.widest).toBeLessThan(loose.widest);
+    expect(gathered.closest).toBeGreaterThanOrEqual(1.4);
+  });
+
   it('returns nothing for an empty object rather than guessing an origin', () => {
     expect(findStandingSpots(new Mesh(), { count: 2 })).toEqual([]);
   });

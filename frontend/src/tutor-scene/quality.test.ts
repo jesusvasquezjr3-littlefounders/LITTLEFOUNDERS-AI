@@ -80,4 +80,37 @@ describe('resolveSettings', () => {
     expect(high.tier).toBe('high');
     expect(high.shadows).toBe(true);
   });
+
+  /*
+   * The blur is a MOTION-independent performance decision, and the two are
+   * easy to conflate because `ambientMotion` sits next to it and is not. A
+   * learner who asked for less movement did not ask for a flatter material.
+   */
+  it('does not take the HUD blur away for prefers-reduced-motion', () => {
+    expect(resolveSettings('high', true).lumenBlur).toBe(true);
+    expect(resolveSettings('medium', true).lumenBlur).toBe(true);
+  });
+});
+
+/*
+ * The HUD's `backdrop-filter` is the only setting in the tier that costs the
+ * COMPOSITOR rather than the renderer, so it is the only one applied outside
+ * three.js — `StageShell` publishes it as an attribute and `index.css` reads
+ * it. That split is exactly the kind that drifts, so the tier's half is pinned
+ * here and the stylesheet's half in `HudPlate.test.tsx`.
+ *
+ * Profiled 2026-08-22 (/DESIGN.md §Lumen → The blur, profiled): flat against
+ * radius and against blurred area, so there is no cheaper middle setting to
+ * offer and the lever is binary — which is why this asserts a boolean ladder
+ * with exactly one step in it rather than a scale.
+ */
+describe('the HUD material on the tier ladder', () => {
+  it('keeps the blur wherever the device has shown it can hold a frame', () => {
+    expect(QUALITY_SETTINGS.high.lumenBlur).toBe(true);
+    expect(QUALITY_SETTINGS.medium.lumenBlur).toBe(true);
+  });
+
+  it('takes it away only at the floor, where the device has twice proved it cannot', () => {
+    expect(QUALITY_SETTINGS.low.lumenBlur).toBe(false);
+  });
 });

@@ -17,11 +17,19 @@ import { TutorStage, type TutorStageProps } from '@/tutor-scene/TutorStage';
 import { AnchorProvider } from '@/tutor-scene/ScreenAnchor';
 import { SafeAreaProvider, useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { atmosphereFor } from '@/tutor-scene/atmosphere';
+import type { QualitySettings } from '@/tutor-scene/quality';
 import { HudPlate } from '@/tutor/hud/HudPlate';
 import { MicOrb, type MicBlockedReason, type MicOrbState } from '@/tutor/hud/MicOrb';
 import type { Microphone } from '@/tutor/useMicrophone';
 import type { StagePhase } from './phases';
-import type { StartedSession, TutorCatalog, TutorOffers, TutorPreferences } from '@/tutor/types';
+import type { ReplayDirector } from '@/tutor/replay/useReplayDirector';
+import type {
+  SessionSummary,
+  StartedSession,
+  TutorCatalog,
+  TutorOffers,
+  TutorPreferences,
+} from '@/tutor/types';
 import type { StartSessionInput } from '@/tutor/tutorApi';
 import type { TutorSocket } from '@/tutor/useTutorSocket';
 
@@ -177,9 +185,30 @@ const DOCK_GAP_PX = 12;
  * for the phase at all: a prop nothing reads is a second source of truth
  * waiting for somebody to trust it.
  */
-export interface StageShellProps extends Omit<TutorStageProps, 'className'> {
+/*
+ * `onQuality` is omitted deliberately: the shell OWNS it. The tier decides
+ * whether the HUD's material keeps its blur (/DESIGN.md §Lumen → The blur,
+ * profiled), and the shell is the only element that both hears the scene and
+ * contains every plate — so a caller supplying its own handler would either be
+ * ignored or would fight the one that matters.
+ */
+export interface StageShellProps extends Omit<TutorStageProps, 'className' | 'onQuality'> {
   /** The one microphone. Never optional: absence is the bug this closed. */
   mic: StageMicProps;
+  /**
+   * What the bottom cluster IS, in this phase, for a screen reader.
+   *
+   * The dock is a landmark group, and its name was the constant "Talk to your
+   * tutor" — which is true in the four phases the orb stands in and a plain lie
+   * in the two it does not. /DESIGN.md already says the dock is "the phase's
+   * bottom cluster whether or not the orb is in it"; a learner on a screen
+   * reader hearing "Talk to your tutor" around a play button and a "back to the
+   * tutor" chip is being told the opposite of what the phase is for.
+   *
+   * Optional, defaulting to the microphone's own name, so the phases that
+   * really are about talking say nothing new.
+   */
+  dockLabel?: string;
   /**
    * The HUD. One layer per phase, rendered over the same canvas, never instead
    * of it. Layers are ordinary DOM: the mesh is the delightful path and the DOM
@@ -222,7 +251,7 @@ export function StageShell(props: StageShellProps) {
   );
 }
 
-function StageShellInner({ children, mic, onReady, ...stage }: StageShellProps) {
+function StageShellInner({ children, mic, dockLabel, onReady, ...stage }: StageShellProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const safeArea = useSafeArea();
@@ -250,6 +279,32 @@ function StageShellInner({ children, mic, onReady, ...stage }: StageShellProps) 
     setReady(true);
     onReady?.();
   }, [onReady]);
+
+  /*
+   * WHETHER THE MATERIAL KEEPS ITS BLUR, decided by the same governor that
+   * already decides the pixel ratio, the antialiasing, the shadows and the
+   * ambient motion (`tutor-scene/quality.ts` → `QualitySettings.lumenBlur`).
+   *
+   * It has to be published HERE rather than applied in the renderer because
+   * Lumen is DOM: `backdrop-filter` is the one quality setting that costs the
+   * COMPOSITOR, on surfaces that are siblings of the canvas rather than
+   * children of it. The shell is the only element that hears the scene and
+   * contains every plate, and custom properties inherit, so one attribute on
+   * this node reaches all of them.
+   *
+   * Profiled 2026-08-22 on the target Intel UHD at a phone's pixel count
+   * (/DESIGN.md §Lumen → The blur, profiled): ~0.5 ms of presented frame time
+   * and up to three extra compositor render passes. Cheap where it could be measured
+   * — which is exactly not the device class `low` exists for, and the reason
+   * this is wired rather than waved through.
+   *
+   * State, not a ref: it flips a handful of times a session at most, and a
+   * re-render is how the attribute reaches the DOM at all.
+   */
+  const [lumenBlur, setLumenBlur] = useState(true);
+  const handleQuality = useCallback((settings: QualitySettings) => {
+    setLumenBlur(settings.lumenBlur);
+  }, []);
 
   /*
    * The timer lifts the VEIL only. It deliberately does not call `onReady`,
@@ -417,6 +472,15 @@ function StageShellInner({ children, mic, onReady, ...stage }: StageShellProps) 
       <div
         data-tutor-stage=""
         /*
+         * THE ONE QUALITY DECISION THE RENDERER CANNOT MAKE, published where
+         * the material can read it. `off` swaps Lumen for its blur-less form —
+         * the same one a browser without `backdrop-filter` gets, defined once
+         * in `index.css` — rather than removing the material from the plates.
+         * Absent (not `"on"`) while the blur is kept, so the default costs no
+         * attribute and the selector has nothing to match.
+         */
+        data-lumen-blur={lumenBlur ? undefined : 'off'}
+        /*
          * `fixed inset-0`, the Lesson Player's own layer precedent
          * (/DESIGN.md → layout.immersive.stage). `bg-base` is what the first
          * frame and the no-WebGL fallback are seen against; without it the
@@ -466,7 +530,7 @@ function StageShellInner({ children, mic, onReady, ...stage }: StageShellProps) 
          * this whole rebuild exists to remove. Filling a sized parent has no
          * such conflict.
          */}
-        <TutorStage {...stage} className="h-full w-full" onReady={handleReady} />
+        <TutorStage {...stage} className="h-full w-full" onReady={handleReady} onQuality={handleQuality} />
 
         {/*
          * THE WAY OUT. Always visible, always focusable, first in the tab
@@ -571,7 +635,7 @@ function StageShellInner({ children, mic, onReady, ...stage }: StageShellProps) 
         <div
           ref={attachDock}
           role="group"
-          aria-label={t('tutor.stage.controlsLabel')}
+          aria-label={dockLabel ?? t('tutor.stage.controlsLabel')}
           className={cn(
             'pointer-events-auto fixed inset-x-0 z-30 mx-auto flex w-full max-w-[min(30rem,92vw)] flex-col items-stretch gap-2 px-1',
             // The resting inset. A bottom surface overrides it inline, above.
@@ -846,6 +910,14 @@ export interface OfferLayerProps extends StageLayerCommonProps {
   onPersonalize: () => void;
   /** The learner's access token, for the replay list. */
   token: string;
+  /**
+   * Perform a saved conversation on this island.
+   *
+   * The archive lives on this layer because a learner who has just arrived is
+   * the one who asks for it, but the PERFORMANCE is a phase of the stage, so
+   * the list can only hand a session upward. This is that hand-off.
+   */
+  onReplay: (session: SessionSummary) => void;
 }
 
 /**
@@ -895,4 +967,34 @@ export interface ConversationLayerProps extends StageLayerCommonProps {
   onAwaitReply: () => void;
   /** End the session. The close is a camera move, not a screen. */
   onExit: () => void;
+}
+
+/**
+ * The replay layer (/ORACLE.md §12).
+ *
+ * A SAVED CONVERSATION IS A PHASE OF THIS STAGE, not a list on top of it. The
+ * layer renders the transport, the learner's half of the conversation and the
+ * reading plate; the DIRECTOR one level up decides which beat is on, and
+ * `TutorExperience` turns that into the same four scene props a live session
+ * fills — emotion, action, speech URL, shot. That is the same division every
+ * other layer observes, and here it also buys the thing that makes replay
+ * possible at all: the canvas never unmounts, so a replay opens on the island
+ * the learner is already looking at rather than reloading it.
+ *
+ * IT CARRIES NO TOKEN AND MAKES NO REQUEST. The transcript is fetched once,
+ * upstream, and handed down as a finished script — a layer that could refetch
+ * is a layer that can restart a performance halfway through it.
+ */
+export interface ReplayLayerProps extends StageLayerCommonProps {
+  /**
+   * The performance, or null while the transcript is still in flight or after
+   * it failed. Null and `loading` and `error` are three different screens, and
+   * the layer says three different things.
+   */
+  director: ReplayDirector | null;
+  loading: boolean;
+  /** The last failure's error CODE, never a wire message. */
+  error: string | null;
+  /** Leave the replay. Lands on the introduction, one press from a real one. */
+  onDone: () => void;
 }

@@ -148,6 +148,27 @@ export function micForPhase(input: StageMicInput): StageMicPlan {
        */
       return { ...blocked('tutor.mic.afterConversation'), present: false };
 
+    case 'replaying':
+      /*
+       * THE SECOND PHASE WITH NO MICROPHONE, AND ITS ABSENCE IS THE PRODUCT.
+       *
+       * A replay is a recording. The learner cannot talk to it, and the
+       * interface has to make that plain without making it feel broken — which
+       * is exactly what the `present` field was invented to express. Mounting a
+       * disabled orb here would be the goodbye's bug again in a worse form: not
+       * only a 96 px control sitting on the transport it cannot be used
+       * instead of, but a MICROPHONE, offered to a child, on the one screen
+       * where speaking into it can never do anything. Absence is the honest
+       * answer, and the transport standing in the same rectangle is what the
+       * learner finds when they reach for it.
+       *
+       * The reason is still filled in, exactly as it is for `closing`: this
+       * field removes a control, never a decision. And the sentence is the
+       * replay's own rather than "the conversation is over", because this
+       * conversation is not over — it happened, and the learner is watching it.
+       */
+      return { ...blocked('tutor.replay.noMicrophone'), present: false };
+
     case 'unavailable':
       /*
        * PRESENT, AND CARRYING THE PHASE'S OWN SENTENCE.

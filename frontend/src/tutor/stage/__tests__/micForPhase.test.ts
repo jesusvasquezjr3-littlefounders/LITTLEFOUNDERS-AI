@@ -67,6 +67,25 @@ describe('micForPhase', () => {
     });
   });
 
+  it('has no microphone in a replay, and says why in the replay’s own words', () => {
+    /*
+     * A replay is a recording (/ORACLE.md §12). The learner cannot talk to it,
+     * so the orb is absent rather than disabled — offering a child a microphone
+     * on the one screen where speaking into it can never do anything is the
+     * goodbye's bug in a worse form. The transport stands in the same
+     * rectangle.
+     *
+     * The sentence is NOT `tutor.mic.afterConversation`: this conversation is
+     * not over, it happened, and the learner is watching it.
+     */
+    expect(micForPhase(input({ phase: 'replaying', live: false }))).toMatchObject({
+      present: false,
+      state: 'unavailable',
+      blockedReason: null,
+      blockedKey: 'tutor.replay.noMicrophone',
+    });
+  });
+
   it('gives the unreachable-API phase ONE sentence, and it is the phase’s own', () => {
     /*
      * `unavailable` used to carry two: a layer plate reading

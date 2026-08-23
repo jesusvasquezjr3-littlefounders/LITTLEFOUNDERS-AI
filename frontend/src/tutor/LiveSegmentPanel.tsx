@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
 import { MarkdownLite } from '@/lesson-engine/core/MarkdownLite';
 import { REGISTRY } from '@/lesson-engine/registry';
 import type { SegmentBase, Verdict } from '@/lesson-engine/core/types';
 import { HudPlate } from './hud/HudPlate';
+import { useScrollEdges } from './hud/useScrollEdges';
 import { gradeSegment } from './tutorApi';
 import type { LiveSegmentState } from './useTutorSocket';
 
@@ -39,23 +41,29 @@ import type { LiveSegmentState } from './useTutorSocket';
  *
  * WHAT THIS FILE STILL DOES NOT OWN: the option cards themselves. They come
  * from `lesson-engine/core/primitives.tsx`, which is shared with the Lesson
- * Player and with all 57 renderers, and they are outlined `surface` boxes that
- * read as form fields on this layer. Restyling them is a lesson-engine
- * decision, not a Tutor one; it is recorded in /DESIGN.md §Lumen → What this
- * layer still owes rather than done here, because a Tutor pass that quietly
- * changed the look of every lesson in the product would be a much worse bug
- * than the one it fixed.
+ * Player and with all 57 renderers — and as of 2026-08-22 they are made of the
+ * three ANSWER SURFACES (/DESIGN.md §Answer surfaces) rather than of the
+ * outlined `bg-surface` boxes that used to read as a web form dropped into a
+ * diorama. That was fixed IN the lesson engine, deliberately, and not here: it
+ * is the one component family that renders on both layers, so a Tutor-local
+ * patch would have left the other half of the product behind.
  */
 
 export interface LiveSegmentPanelProps {
   live: LiveSegmentState;
   token: string;
   onGraded: (segmentId: string, score: number, correct: boolean) => void;
+  /**
+   * Sizing from the plate. It is expected to be `flex-auto min-h-0`: this panel
+   * is the ONE child of the lesson plate's column that owns the free height and
+   * scrolls (`LessonPlate` -> `bodyLayout`).
+   */
+  className?: string;
 }
 
 const MAX_ATTEMPTS = 2;
 
-export function LiveSegmentPanel({ live, token, onGraded }: LiveSegmentPanelProps) {
+export function LiveSegmentPanel({ live, token, onGraded, className }: LiveSegmentPanelProps) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState<unknown>(undefined);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
@@ -66,6 +74,11 @@ export function LiveSegmentPanel({ live, token, onGraded }: LiveSegmentPanelProp
 
   const segment = live.segment as unknown as SegmentBase;
   const entry = REGISTRY[segment.type];
+
+  // The answers are the one scrolling box on the plate, so they are the one box
+  // that has to SAY it scrolls. See `useScrollEdges`.
+  const answersRef = useRef<HTMLDivElement | null>(null);
+  useScrollEdges(answersRef);
 
   // A new segment resets everything. Without this, the previous activity's
   // draft and verdict bleed into the next one — which looks like the tutor
@@ -126,8 +139,27 @@ export function LiveSegmentPanel({ live, token, onGraded }: LiveSegmentPanelProp
   const locked = checking || verdict?.correct === true || attempt > MAX_ATTEMPTS;
 
   return (
-    <section className="flex min-h-0 flex-col gap-3">
-      <header className="space-y-1">
+    /*
+     * THE QUESTION IS PINNED, THE ACTION IS PINNED, AND WHAT SCROLLS IS THE
+     * ANSWERS BETWEEN THEM (2026-08-22).
+     *
+     * This used to be an auto-height stack inside the plate's own scroller, and
+     * the plate is 420 px wide, which makes exercises tall. Measured on
+     * `/dev/tutor-lab` at 1280x800 across all 55 engine fixtures: 14 of them
+     * need more prompt-plus-answers height than the plate has — `read_chart`
+     * wants 817 px against 540 — and in a single scroller that meant a learner
+     * reaching the last option had pushed the question they were answering off
+     * the top and the `Check` control off the bottom. A child should not have to
+     * remember the question or go looking for the button.
+     *
+     * So the panel owns its own layout: header fixed, answers scrolling, verdict
+     * and action fixed. On the 41 fixtures that fit, nothing scrolls at all and
+     * this is invisible. On the 14 that do not, the prompt and the action stay
+     * on screen and the answers move between them, which is the arrangement a
+     * form has when it is built properly.
+     */
+    <section className={cn('flex min-h-0 flex-col gap-3', className)}>
+      <header className="shrink-0 space-y-1">
         {/*
           "TRY THIS" IS GONE, AND IT WAS THE ONLY UPPERCASE LABEL ON THE ROUTE
           (/DESIGN.md §Lumen → What to delete). The exercise IS the try: a
@@ -152,9 +184,7 @@ export function LiveSegmentPanel({ live, token, onGraded }: LiveSegmentPanelProp
           a bare prompt with no lead-in, as if the exercise had appeared by
           itself rather than been offered by the character talking to them.
         */}
-        {live.framing.trim() !== '' && (
-          <p className="lf-body text-content-muted">{live.framing}</p>
-        )}
+        {live.framing.trim() !== '' && <p className="lf-body text-content-muted">{live.framing}</p>}
 
         {/*
           The prompt in the TUTOR'S voice, because that is whose question it is.
@@ -168,29 +198,40 @@ export function LiveSegmentPanel({ live, token, onGraded }: LiveSegmentPanelProp
         <MarkdownLite text={segment.prompt_md} className="lf-speech text-content" />
       </header>
 
-      <div className="min-h-0">
-        <Component
-          segment={segment}
-          value={draft}
-          onChange={setDraft}
-          disabled={locked}
-          verdict={verdict}
-          onFinish={(answer) => void submit(answer)}
-          onContentDone={() => onGraded(live.segmentId, 100, true)}
-        />
+      {/*
+        THE SCROLLING REGION, and the only one on the plate.
+
+        `-mx-2 px-2` gives the answer objects' seated shadows somewhere to land:
+        an `overflow-y-auto` box clips on BOTH axes, and without the bleed the
+        left and right edge of every option's shadow — and its 2 px state ring —
+        was being shaved off by the scroller. `overscroll-contain` stops a flick
+        at the end of the options from scrolling the page behind the island.
+      */}
+      <div className="lf-scroll-edge -mx-2 flex min-h-0 flex-auto flex-col">
+        <div ref={answersRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2">
+          <Component
+            segment={segment}
+            value={draft}
+            onChange={setDraft}
+            disabled={locked}
+            verdict={verdict}
+            onFinish={(answer) => void submit(answer)}
+            onContentDone={() => onGraded(live.segmentId, 100, true)}
+          />
+        </div>
       </div>
 
       {verdict && (
         <div
           className={cnVerdict(verdict)}
+          // Below the scrolling answers, never inside them: the result of the
+          // learner's action is the one thing that must not need finding.
           // assertive: the result of an action the learner just took is the one
           // thing that should interrupt whatever a screen reader was saying.
           aria-live="assertive"
         >
           <p className="lf-label">{t(`tutor.segment.tier.${verdict.tier}`)}</p>
-          {verdict.feedback_md && (
-            <MarkdownLite text={verdict.feedback_md} className="lf-body mt-1" />
-          )}
+          {verdict.feedback_md && <MarkdownLite text={verdict.feedback_md} className="lf-body mt-1" />}
           {xpAwarded !== null && xpAwarded > 0 && (
             <p className="lf-caption mt-1 text-content-muted">
               {t('tutor.segment.xpEarned', { count: xpAwarded })}
@@ -203,13 +244,13 @@ export function LiveSegmentPanel({ live, token, onGraded }: LiveSegmentPanelProp
       )}
 
       {failed && (
-        <p className="lf-body text-content-muted" role="status">
+        <p className="shrink-0 lf-body text-content-muted" role="status">
           {t('tutor.segment.gradeFailed')}
         </p>
       )}
 
       {entry.kind === 'input' && (
-        <div className="flex flex-col gap-1.5">
+        <div className="flex shrink-0 flex-col gap-1.5">
           {/*
             The honest line about XP, where the answer is actually given. It
             used to ride an uppercase eyebrow at the top of the panel, three
@@ -251,11 +292,13 @@ export function LiveSegmentPanel({ live, token, onGraded }: LiveSegmentPanelProp
 }
 
 function cnVerdict(verdict: Verdict): string {
-  const base = 'rounded-md px-3 py-2';
+  // A verdict is an OBJECT that arrived with news, so it is a slab in the
+  // shared answer material rather than a bare tinted rectangle: over a Lumen
+  // reading plate a flat `bg-*-soft` block is the one remaining shape with no
+  // edge, no seat and no relationship to the light behind it.
+  const base = 'lf-slab shrink-0 rounded-md px-3 py-2 text-content';
   // P3: feedback teaches, never punishes. Even `tryAgain` gets a warm well
   // rather than an error colour — there is no red "WRONG" anywhere in this
   // product (LESSON_ENGINE.md §1).
-  return verdict.correct
-    ? `${base} bg-success-soft text-content`
-    : `${base} bg-warning-soft text-content`;
+  return verdict.correct ? `${base} lf-answer-correct` : `${base} lf-answer-wrong`;
 }

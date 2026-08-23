@@ -131,6 +131,40 @@ describe('the Lumen contrast bound, re-derived from the shipped stylesheet', () 
     expect(DENSITIES[1].alpha).toBeGreaterThan(chrome);
   });
 
+  /*
+   * THE FLAT FORM — what a plate becomes when there is no blur behind it, for
+   * either of the two reasons there can be: a browser without
+   * `backdrop-filter`, or a device the quality governor has demoted to `low`
+   * (/DESIGN.md §Lumen → The blur, profiled). Both write the same token, and
+   * this is the assertion that keeps the degraded path from becoming the
+   * illegible path.
+   *
+   * Denser than either published density is a SUFFICIENT proof of the bound.
+   * Compositing the worst backdrop toward the fill is monotonic in alpha, and
+   * both published alphas already clear 4.5:1 above, so anything denser clears
+   * it too — no separate derivation needed, and none that could quietly rot.
+   */
+  it('closes the plate when the blur is gone, rather than leaving it open and sharp', () => {
+    const flat = cssNumber('lf-lumen-alpha-flat');
+    expect(flat).toBeGreaterThanOrEqual(DENSITIES[1].alpha);
+    expect(flat).toBeGreaterThan(DENSITIES[0].alpha);
+    expect(flat).toBeLessThanOrEqual(1);
+  });
+
+  it('reaches that one form by both routes, writing one token rather than a rule per surface', () => {
+    // The blur is ONE token, so there is one switch to throw rather than two
+    // declarations that can disagree.
+    expect(CSS).toMatch(/backdrop-filter:\s*var\(--lf-lumen-backdrop\);/);
+    // The `low` tier's route. `StageShell` publishes the attribute; the
+    // material reads it and the custom properties inherit to every plate.
+    expect(CSS).toMatch(/\[data-lumen-blur='off'\]\s*\{[^}]*--lf-lumen-backdrop:\s*none;/);
+    // Exactly two writers of the flat alpha: the unsupported-browser route and
+    // the low-tier route. A third would be a second opinion about what a
+    // blur-less plate looks like.
+    expect(CSS.match(/--lf-lumen-alpha:\s*var\(--lf-lumen-alpha-flat\)/g)).toHaveLength(2);
+    expect(CSS.match(/--lf-lumen-alpha-reading:\s*var\(--lf-lumen-alpha-flat\)/g)).toHaveLength(2);
+  });
+
   it('refuses muted ink on chrome, which is the rule the density exists to state', () => {
     // Not an accident of the numbers: at the chrome alpha muted body text is
     // BELOW the floor, and /DESIGN.md prohibits it there for exactly that

@@ -2,6 +2,770 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Certifying the Tutor: every gate green, 108 screenshots, and the two things a picture found (2026-08-23)
+
+**The task was to certify, or to say why it could not be certified.** Three
+parallel passes had landed in one working tree — the mounting/measurement fix,
+the caption/fold rebuild, and the 57-renderer sweep — and nothing had been run
+across all of them together, nor looked at end to end.
+
+### Reconciliation and the gates
+
+Every gate in the repository was run against the reconciled tree. All green,
+with two that needed work first.
+
+**The frontend suite was 1151/1152, and it was not a flake.** `AnalyticsGeoMap`
+waits for a country path that lives behind `React.lazy(() =>
+import('./WorldChoropleth'))`, and that module pulls in 171 KB of generated
+Natural Earth outlines. `waitFor`'s default budget is 1000 ms, so the test was
+really waiting for Vite to transform ~190 KB inside one second while 89 test
+files competed for the worker pool — 479 ms alone, over budget under load. The
+failing test NAME moved between runs, which is what made it look like a flake.
+Importing the module at the top of the test file moves the transform into
+COLLECTION, which has no deadline. No assertion weakened; the component still
+mounts its own lazy boundary and still has to suspend. **1152/1152, then
+1159/1159 with the new tests.**
+
+**`database/npm test` could never have passed on Windows.** The `confirm-apply`
+scenario failed with "success sentinel missing from remote output" on
+`0023_learning_insights.sql` — which reads exactly like the production
+transport defect the runner exists to catch. It was the test's own fake
+`railway`: it ran the remote command through `spawnSync('sh', ['-c', cmd])`,
+and MSYS `sh.exe` spawned by a native process **silently truncates its command
+line at 8191 characters and still exits 0**. The payload is a base64 blob of a
+whole migration (13 KB for `0023`), so the pipeline lost its own `| base64 -d |
+psql` mid-string and the runner correctly refused a sentinel-free reply.
+Measured: 8163 chars round-trips, 8193 comes back as the raw echo argument,
+status 0, stderr empty. The fake now writes the command to a script file and
+runs `sh <file>` — no command line, no limit, identical on every OS, and the
+contract the scenarios pin is untouched. **12 transport scenarios green.** The
+gate that protects the only approved path to production Vault is now runnable
+on the machine the owner develops on. RUNBOOK.md carries it.
+
+### Looking: 108 screenshots, and what they found
+
+Seven phases plus `adapting` and `consent`, at 375x812 and 1280x800, light and
+dark, in en-US, es-MX and pt-BR. Plus the four-character greeting set, the four
+end-to-end journeys, and a lesson outside the Tutor in all three locales.
+
+Measured across that sweep: **canvas coverage 1.0000 in every phase at both
+breakpoints**; **"no overlaps" from the product's own `overlappingPairs` in all
+sixteen phase/breakpoint combinations**; **zero horizontal overflow**; **zero
+sub-44 px interactive targets**; **zero raw i18n keys on screen**; and **zero
+tab stops on anything invisible**, verified by pressing Tab for real rather than
+by a static scan.
+
+**The end-to-end journey works, including the recipe that used to break.** In
+es-MX and pt-BR, at both breakpoints: personalize → open the list → invite each
+of the three companions in turn → change the island → change the light → start
+→ converse → adapt → close → replay. Forty-eight steps, **zero failed clicks**,
+every control found by the accessible name the learner reads. After inviting all
+three and switching to the Oasis, all four characters stand correctly scaled on
+the new island — no 221 m shadow, no feet twelve metres under it, no 70 px
+speck. The mounting-and-measurement fix holds.
+
+### Two defects a picture found
+
+**1. The tutor's mouth was a white rectangle at every hour but midday.**
+`MouthCard` is the one unlit surface in the scene, and its own comment had long
+said it "will not darken with the face as the scene's lighting changes". At Dusk
+that is not a blemish: Zara's mouth photographed as a cream-white bar across an
+orange-lit face, reading as tape — on one of the two characters the camera
+closes in on BECAUSE they articulate. Measured against skin two head-widths
+away: **+62/+104/+111 of 255 at Dusk and +133/+138/+130 at Night**, against a
+Day baseline of +7/+16/+24.
+
+An unlit material still multiplies its map by `color`, so the light is now
+applied by hand — `mouthCardTint()` in `backdrops.ts`, an approximate irradiance
+for a forward-facing patch of skin, expressed as a ratio against the DEFAULT
+palette and encoded through the sRGB transfer function. Three properties make it
+safe on a finished product and all three are tested: `auto` in light mode
+returns exactly `#ffffff` so the default is byte-identical; the tint carries the
+HUE of the hour, not only its brightness; and the sRGB encode is load-bearing —
+**the first version wrote the linear ratio straight into an sRGB slot, applied
+it twice, fixed Dusk and turned Night's mouth into a BLACK rectangle.** The same
+defect wearing the other colour, caught by a screenshot and not by the test.
+Worst-case mismatch fell from ~135 to ~50 of 255. TUTOR_3D.md §3.1a.
+
+**2. ORACLE.md §14.1 said "closing is the single phase" the microphone is absent
+from. It has been two since 2026-08-22.** `replaying` joined it deliberately —
+the decision is in `micForPhase.ts` and asserted in `stageMic.test.tsx`
+(`expect(absent).toEqual(['closing', 'replaying'])`) — but the prose was not
+updated. Corrected, with the reason: a replay is a recording, so speaking into
+it is impossible by construction rather than unavailable, and the phase offers
+the honest alternative in the orb's place.
+
+### The decision NOT to fix the name plate
+
+On the desktop audition, Dina's name plate can sit close enough to Liruf to read
+as his. Every plate hangs at the top of its own character's bounding box; Dina
+is a quadruped whose standing spot is under her hips, so 1.90 m above that spot
+projects up and back, near Liruf's snout. At 375 px it reads correctly.
+
+The obvious fix — anchor to the head bone — was investigated and **rejected on
+measured evidence.** Read out of the source bind poses as a fraction of each
+character's height: rho's `head` joint is at **0.535** (his waist) while his
+`head_end` is at 1.002; zara's are 0.808 and 1.001; liruf's are 0.590 and 0.659
+while his MESH reaches 1.000; dina's are 0.616 and 0.464 while her `earend`
+reaches 1.010. There is no rule over that table, and each model is a single
+unnamed primitive with no head sub-mesh to measure instead. A per-character head
+anchor is new measured data that has to come from re-rigging or a geometric
+head-finder — an asset-pipeline change with its own verification pass. Moving
+the plate by a constant that looks right at one camera is the failure
+`TutorScene` already documents for CSS-pixel nudges. Recorded as a known
+limitation in TUTOR_3D.md §3.1b with the table, and in ORACLE.md §16.2 in
+language a customer-facing person can use.
+
+### The production question, asked for the first time
+
+ORACLE.md gains **§15.2 — what is NOT yet in place for scale.** Every control
+that protects us from a single account is real and tested: 2 sessions/day, 120
+XP/day, a 25-minute hard stop with a 15-minute kind wind-down, a 120-turn cap, a
+600-character utterance cap, a 700 ms turn floor, a 2 MB frame cap, single-use
+session-scoped tokens, 20/15/8 s upstream timeouts, and a per-session ledger
+covering model tokens AND speech. Every read that feeds a limit fails closed.
+
+What is missing is operational, not architectural, and all five would be noticed
+at a thousand concurrent learners: **no platform-wide spend ceiling or circuit
+breaker** (cost is recorded, nothing stops on a total); **no admission control
+on concurrent sessions** (`oracle/` accepts every authenticated socket and holds
+each orchestrator in memory, so saturation degrades everyone at once); **the
+websocket handshake is not rate limited** (it bypasses Express — mitigated by
+the single-use token and Core's own limiter in front of minting); **the
+retention sweep has no alerting of its own** (the one gap with legal weight);
+and **third-party rate limits are unmeasured**. The failure posture around all
+of them is already correct, so the shape of a bad day is degraded rather than
+broken.
+
+### What is honestly still open
+
+`/ORACLE.md` §16 and §16.1 are now ticked against what was actually measured and
+unticked where it was not. Three remain open and each says why in the document:
+**voice live in the reviewed environment** (no credentials here; it spends real
+money against a real contract — the owner's to run on the deployed service);
+**motion under the quality governor** (frame times under a software rasteriser
+say nothing about a GPU — it needs a device); and **an axe-core re-run** (it was
+clean on 2026-08-21 and the caption, plate and replay transport have been
+rebuilt since). The DPA and the legal documents remain owner actions, unchanged.
+
+## 51 renderers nobody had looked at, and a lab that lied about the language (2026-08-23)
+
+**The setup.** The §Answer-surfaces material change had been applied across all
+eight families and guarded by a source scan that fails the build on a
+hand-written outline, an opaque object fill, a red "wrong" or an answer authored
+under 48 px. Six renderers had actually been LOOKED at. A source scan cannot see
+a layout that collapses, a glyph that overlaps or a state that reads wrong, so
+the other 51 were driven through `/dev/lesson-lab` over headless Chrome and
+photographed — every family, 375 and 1280, light and dark, idle / interacting /
+verdict. Prioritised by exposure: the taxonomy's own tier-1 family allowlist
+(`coursegen/curriculum/*/taxonomy.yaml`) says which types the youngest and
+largest cohort can be served at all, so `story`, `choice`, `input`, `arrange`,
+`money`, `storyplay` and the four tier-1 exceptions came first.
+
+**Nine defects, and the two that were not visual at all.**
+
+*`fair_trade` showed a question mark instead of the two things being traded.*
+`Icon` replaces an unresolvable ligature with a neutral `help` so an invented
+name never paints as giant text — and it decided by reading `el.scrollWidth`,
+the width of the ELEMENT. That equals the glyph's width only while the span is
+shrink-to-fit; `fair_trade` passed `block` to centre its icons, the span became
+the card's 322 px against a 40 px font, and `sell` and `toys` — both perfectly
+valid — became question marks. It measures a `Range` over the text run now, which
+reads nothing about the box around it. A checker that reports a healthy thing as
+broken is worse than no checker (/AGENTS.md §1.14), and this one shipped a
+confidently wrong picture on the one exercise that asks which of two things is
+worth more.
+
+*`compare_table` cut its second column off at 375 and `canSubmit` needs every
+cell.* `min-w-[420px]` on a `w-full` table inside a 335 px column, with no fade,
+no shadow and nothing else saying "swipe". `table-fixed` with an explicit first
+column now shares the width equally at every size; the floor moved onto the CELL
+where it belongs.
+
+*`balance_scale` was three parts near each other.* A bar floating diagonally
+above two boxes it never touched, a stem hanging in the gap BELOW and between
+the pans, and both pans rotated with the beam so at full tilt the label read on a
+slant. Rebuilt: the beam ends over each pan's centre with a visible hanger, the
+post and base sit outside the rotating group on the pivot, and each pan is
+counter-rotated about its own top so it hangs level — exact at every width with
+nothing measured.
+
+*`memory_flip` re-laid its board on every flip.* `min-h-24` let a face-up card
+grow to its text, 210 px beside a 178 px neighbour, so the cards a child is
+memorising by POSITION moved under them. Square cells now.
+
+*`evidence_hunt` painted the claim in the chosen-answer skin.* `lf-slab
+lf-answer-selected` — the same ring and fill everything else on that screen uses
+to mean "you picked this" — directly above six options, on the exercise that asks
+which statements support it. It is a `.lf-well` with a label now, which is what
+§Answer surfaces already says the scenario a question is about is made of.
+
+*`concept_reveal` turned a card GREEN when you opened it,* on a content segment
+where nothing is graded. The code comment justified it by "the check the eye
+reads as seen"; there is no check (a bare button, not an `OptionCard`).
+
+*`pattern_complete` wrapped the pattern* into 4 + 2 at 375 with the options bank
+below as an unlabelled third row of identical tiles. The sequence is one
+scrolling line now, auto-scrolled to the slot to be filled, and the bank moved
+into the same well every other bank uses.
+
+*`robot_path`'s walls were the lightest tile on the board in light mode and the
+darkest in dark* (`bg-secondary-soft` flips between slate-100 and slate-900), so
+the one impassable square read as empty in both. Ink at 18% plus a `block` glyph.
+
+*Single-character chips measured 41 px across.* `TokenChip` had `min-h-12` and no
+`min-w`, which is a floor on the object's height rather than on the target;
+`equation_builder` and `balance_scale` are made entirely of one-character chips.
+
+**And the lab was lying about the language.** `/dev/lesson-lab` renders its
+chrome through i18n and its fixtures were pinned to `es-MX`, so every screenshot
+showed English chrome around Spanish content — the same instrument defect that
+made the owner believe the Tutor had hardcoded strings, on the surface the
+lesson-engine work was being reviewed through. Every family's `fixtures.ts` is
+now `(locale) => SegmentBase[]`: structure written once, copy written three
+times, en-US as the key source of truth with the other two typed against it so a
+missing key will not compile (`lesson-engine/lab/fixtureCopy.ts`). The switch
+moves `i18n.changeLanguage` and the fixture set together. `/dev/tutor-lab` draws
+its activity switch from the same fixtures, so its written `script`-only caveat
+is gone.
+
+**It paid for itself the same hour.** In pt-BR at 375, `piggy_split`'s jar label
+"Compartilhar" sat ON the minus button: the row is one flex line with 240 px of
+fixed furniture in a 311 px space, leaving 71 px for a word that does not wrap.
+Spanish's "Compartir" was already spilling 10 px past its box. The row stacks
+below `sm` now. Nothing but the switch could have shown that.
+
+**Known limitation, recorded rather than fixed on the last pass.** The four
+characters are drawn with different viewBox padding — Dr. Rho is `-175 -125 750
+750` against Dina's `0 0 550 550` — so in the narrator strip's fixed 56/96 px box
+a human renders at roughly half the apparent size of a dinosaur. It reads as a
+tiny person beside a large one. It is a property of the character artwork rather
+than of any lesson renderer, it is shared by every surface in the product that
+mounts a character, and re-framing four SVGs is a global visual change that needs
+its own sweep across marketing, dashboard and Tutor. Measured and left alone
+deliberately.
+
+## The tutor said everything twice, and the exercise ran off the bottom (2026-08-22)
+
+**Two reports, one cause.** At 1280x800 the same 21-word sentence was printed
+twice, 252 px apart — the caption over the character's crown and the 2D bubble
+at the top of the lesson plate — for 142 words on screen. And 274 px of the live
+exercise sat below the fold of that same plate (303 px in es-MX, 353 px at
+1280x720), so a child had to discover that a panel scrolled in order to reach
+the answers to the question they had just been asked. The second copy of the
+sentence was 132 px of the 436 px the plate had to work with, which is how the
+two reports turn out to be one.
+
+**Why the duplicate had survived a previous pass, and why that was right at the
+time.** /DESIGN.md §Lumen → *What to delete* ruled that both channels stay: the
+caption is a deaf learner's channel and the 2D head is the only articulating
+mouth `liruf` and `dina` have (/TUTOR_3D.md §3.1, /ORACLE.md §0 decision 4). An
+agent that deleted one would have been overriding a higher-ranked document to
+suit itself (/AGENTS.md §1.0). The document was right about the RULE and the
+implementation was one reading of it: **two channels became two surfaces each
+printing the whole sentence.** The channels the owner asked for are *the words*
+and *a moving mouth*, not *the words* and *the words again*.
+
+**The decision, now written into /DESIGN.md §Lumen → *One line, one printing,
+two channels*.** Both channels share ONE surface: the caption over the speaker's
+crown carries the sentence AND the articulating 2D face (`TutorFace` inside
+`SpeechCaption`), so a learner reading the lips and a learner reading the words
+are looking at the same 300 px of screen. The lesson plate carries the activity
+and the conversation record, and never a second copy of the live line. At any
+instant the tutor's current sentence exists exactly once.
+
+**The mouth was not a mouth.** The bubble mounted a whole standing figure in a
+64 px box: Dr Rho's head group measures 196x183 of a 750x750 viewBox, so his
+head rendered at about 17 px and his mouth at about five. The accessibility
+requirement was being honoured in the component tree and nowhere on the screen.
+`TutorFace` crops to the head by measuring the artwork — four SVGs, four
+viewBoxes, four head transforms, one head group each — and shows the whole
+figure unchanged when it cannot measure.
+
+**And the fold.** Three fixes, all composition: the duplicate line went (132 px);
+`plate-max-height` stopped being `62vh` and became a constant band of island
+above the plate (`calc(100vh - 200px)`, top edge at 176 px on every screen,
+body 540 px instead of 436 at 1280x800); and the plate's body became a flex
+COLUMN in which exactly one child scrolls — the ANSWERS, with the question
+pinned above them and the check control pinned below. The conversation log
+yields to an activity with a `flex-shrink` large enough that a shortfall comes
+out of the log before it comes out of the answers, and any box with content past
+its edge now says so (`.lf-scroll-edge`).
+
+**Measured across all 57 engine fixtures on the plate, at both breakpoints**
+(the Tutor serves any graded type a published lesson holds — the
+`LIVE_TYPE_ALLOWLIST` constrains tier-3 generation and nothing else; two
+`content` types finish on mount, so 55 are measurable): the plate's own scroller
+never scrolls — 0 px hidden, every fixture, both sizes — the prompt is visible
+without scrolling in all 55, and the `Check` control is on screen without
+scrolling in all 43 `input` types, at 1280x800 and at 375x812. 30 of 55 need no
+scrolling at all at 1280, 19 at 375. The tallest — `read_chart` wants 834 px of
+prompt-plus-answers in a 420 px plate — scroll their answers between a question
+that stays and an action that stays; that is recorded as a known limitation
+rather than hidden.
+
+**Four defects found by looking rather than by testing, and every one of them
+would have shipped.**
+
+1. **The crop was right for two characters and wrong for two.** The offsets were
+   computed from `getBoundingClientRect` — SCREEN pixels — and written as a
+   `translate()` in the element's own space, which the caption's anchor scale
+   then multiplied a second time. Dr Rho's shot sits at scale 1.00 and looked
+   perfect; Dina's stands off at 0.71 and her head sat against the right edge of
+   the box with her jaw cut off. **A transform written in an element's own space
+   may never be computed from a measurement taken in screen space.**
+2. **Laying the plate's body out as a column un-hid it at PEEK.** The body is
+   hidden with the `hidden` ATTRIBUTE, a 0-1-0 user-agent rule that the new
+   `flex` class beats outright. Measured at 375x812 with the sheet resting: the
+   whole exercise laid out below the fold, three option buttons at y = 925, 986
+   and 1047 on an 812 px phone, focusable, in the tab order, and reporting
+   `hidden === true` to every script that asked. Third surface on this route to
+   learn it (`ScreenAnchor`, `WorldChip`, the plate) — so it is a rule now: on
+   this layer, hiding writes `display`.
+3. **The log took its 96 px out of the exercise.** With the ordinary shrink
+   factor a 96 px log beside a 550 px exercise absorbed a seventh of any
+   shortfall, and six activity types that fitted whole started scrolling by
+   15-41 px. The log yields first now.
+4. **One tap on "an activity is ready" landed at HALF**, which after the pinned
+   prompt and the pinned check left about 90 px of exercise on a phone. A row
+   that announces something opens far enough to act on it.
+
+**Two instruments were added to `/dev/tutor-lab`, and neither is a nicety.** A
+CAST switch, because `labSession` pinned the speaking tutor to `rho` and the two
+characters with no 3D mouth — the whole reason the 2D face exists — could not be
+put on a conversation at all. And an ACTIVITY switch drawing on the lesson
+engine's own fixtures, because the scripted `quiz_mcq` is close to the shortest
+thing the plate ever holds, and the plate's height is the measurement that page
+exists for. The fold question could not have been answered honestly without it.
+
+**Known limitation, stated to be defended rather than discovered.** A cartoon
+mouth is not lip-readable and this pass does not claim otherwise. What the face
+gives a learner who cannot hear is who is speaking, that speech is happening,
+and when it stops — beside the words, at a size where all three are visible.
+
+## Inviting Dina put her feet 12 m under the island, and the fix is two rules (2026-08-22)
+
+**The report.** On `personalizing`, open the list and invite Dina as the
+companion. Dina stops rendering, three characters remain where there should be
+four, the sky turns grey and canvas coverage jumps 55.6% → 100%. It never
+recovers — hiding the list, dismissing her, leaving and re-entering the phase all
+stay broken — and changing the island from there collapses the camera to a 70 px
+speck with all four name plates stacked in one column. Deterministic at 375 and
+1280, in en-US and es-MX. The same recipe with Zara returns to baseline exactly.
+
+**Reproduced, then measured.** A CDP harness patched `Object3D.prototype.onBeforeRender`
+on the module instance the page had already loaded — `WebGLRenderer.render` is an
+own property assigned in the constructor, so the prototype is not the seam — and
+dumped the live scene graph either side of the invite:
+
+| | before | after |
+|---|---|---|
+| Dina's contact shadow | 3.25 m across | **221.53 m** |
+| Dina's feet | y = 0.14 | **y = −12.24** |
+| Liruf's feet | y = 0.17 | y = 0.00 |
+| composed scene box | 6.49 x 2.10 x 6.14 | **235 x 14 x 235** |
+| canvas coverage | 55.6% | **100%** |
+
+The grey sky was a 221 m black-gradient plane — Dina's own `ContactShadow`,
+which is sized off her footprint. Dina was not "not rendering"; she was twelve
+metres under the island. Nothing about the PLACEMENT was wrong: every spot was
+walkable, inside the rim and correctly turned, which is why the gate said OK.
+
+**Root cause, two halves, both required.** `Character3D` derived `footOffset`
+and `footprint` from `new Box3().setFromObject(scene)` — a WORLD-space
+measurement — on an object `useSceneModel` deliberately shares by reference. On
+a first mount that object is unparented and the numbers are the export's own; on
+a REMOUNT it is still inside the outgoing instance's group during the incoming
+instance's render pass, so the box returns already in scene metres and is scaled
+by `characterScale` a second time. Dina's scale is 67.86 (Unreal-unit export);
+the other three are 1.0, which is the entire reason this was invisible for five
+days — they only sank by the island's surface height.
+
+And the remount itself: `Cast` wrapped principals in a `<Fragment key={id}>` and
+audition extras in a `<Suspense key={id}>`, so a character's ELEMENT TYPE
+depended on their ROLE. Inviting a candidate to stay changes the type under an
+unchanged key, which React implements as unmount-and-remount — and moves the
+outgoing companion the other way at the same instant, which is why Liruf sank in
+the same frame.
+
+**Not a regression from this cycle.** `Character3D.tsx` is byte-identical to
+`main` and the measurement dates to 17b6950f (2026-08-17); the role-dependent
+boundary and the audition that reaches it landed in df383d05 (2026-08-21), also
+on `main`. Confirmed by running the same instrumented recipe in a `git worktree`
+at `main` with junctioned `node_modules`: identical numbers, 224.15 m shadow,
+y = −12.24. **It is shipped on `main` today.**
+
+**The fix.** `tutor-scene/modelBounds.ts` measures a model in its OWN space by
+composing local matrices down from the root, reading nothing above it — so it is
+parent-independent by construction rather than by being called at the right
+moment. `Character3D` and `Diorama` use it. `setFromObject` stays where the
+world IS the question (the composed scene, the ground, the camera fit). Two
+details cost a run each: the object-level box must win over the geometry box
+wherever a class defines one, because every character is a `SkinnedMesh` whose
+geometry box is bind-space (reading it collapsed Dina's shadow to 1.06 m); and
+that box is computed once and cached by three, on the first, unparented,
+measurement. Separately, every character now gets their own `<Suspense>`
+unconditionally, and `onReady` keeps its promise through an explicit
+`PrincipalModels` gate that suspends on the tutor's and companion's assets,
+renders nothing, and unmounts once the stage lights up.
+
+**The gate that missed it, closed.** `npm run verify:placement` certified the
+audition and it certified lead+companion pairs, and never the character who is
+both. It now sweeps every character in every role on both islands — 16 cases per
+island, cast built by the product's own `standingCast` (`tutor-scene/cast.ts`,
+extracted so the gate and the product cannot disagree), each compared
+seat-for-seat against the plain audition — and it measures FOOTING free versus
+mounted. Tightest numbers found: rim clearance **0.49 m** (`diorama-a`) and
+**0.29 m** (`diorama-b`); contact-shadow margin **0.28 m** and **0.08 m**, all
+four Dina. Proven to have teeth by reverting `modelBounds` to `setFromObject`:
+the run fails with Dina at 1.414 m free / 95.937 m mounted.
+`src/tutor-scene/modelBounds.test.ts` (10 tests) locks the measurement itself
+against a real, skinned, nested model.
+
+**Verified by looking**, at 375x812 and 1280x800, in en-US and es-MX, light and
+dark, on both islands: after the invite the scene is byte-identical to the
+baseline — coverage 55.6%, scene box 6.49 x 2.10 x 6.14, shadows
+[3.25, 1.95, 0.95, 0.94], four characters on the ground — and changing the
+island gives 9.44 x 4.04 x 9.45 with everyone still standing.
+
+**Known limitation, unchanged by this fix and pre-existing:** a candidate's name
+plate rides `focus.y + height * 0.25`, i.e. the character's own target height
+above their spot. For a QUADRUPED that is the tail, not the head, so Dina's plate
+sits about 270 px above her face at the audition camera and reads as adjacent to
+Liruf's. It is correct for the three bipeds. Fixing it needs a measured head
+height per character, or the live rig's head bone published as an anchor; both
+are larger than a ship-blocker fix and neither is attempted here.
+
+## Reconciliation: four parallel workstreams, one tree, and three defects that only a merge could see (2026-08-22)
+
+Four sessions worked the same worktree at once — the Lesson Engine's answer
+surfaces, the Tutor's replay phase, the lab's locales plus the audition's
+framing, and the `backdrop-filter` profile. Each reported its own gates green.
+This pass reconciled them, ran **every** gate over the union, and photographed
+the result at 375x812 and 1280x800, in light and dark, in all three locales, in
+all eight lab scenes — 96 cells.
+
+Everything the four built survived intact. What the merge surfaced was three
+defects that no single session could have owned:
+
+**1. A NUL byte in a tracked source file.** `frontend/src/tutor/lab/labFixtures.ts`
+carried a literal `U+0000` inside a template literal — `` `${scene}\0${locale}` ``
+written with a raw byte where the two-character escape was meant. It compiled and
+every gate passed, but **git and ripgrep classify the whole file as binary**, so
+`grep` silently returned nothing for it and a diff showed as "Binary files
+differ". A file that no search can see is a file the next session edits blind.
+Replaced with the real escape.
+
+**2. `<html lang>` never left `"en"`.** `index.html` ships `lang="en"` and
+nothing in the app ever changed it, so **every Spanish and Portuguese screen in
+the product declared itself English** — including the Tutor, whose entire
+premise is a spoken conversation. A screen reader takes its voice and its
+pronunciation rules from that attribute, so a child on the Spanish Tutor heard
+Spanish read aloud by an English synthesiser. This is the owner's own standing
+instruction ("SIEMPRE se debe hablar en el idioma que tiene configurado el
+usuario") broken on the one surface where speech IS the product, and it was
+invisible to `i18n:check`, which verifies key parity and not the document's
+declared language.
+
+Fixed in `src/i18n/index.ts`, attached to the i18next instance rather than to a
+React effect: the attribute must be right for the FIRST paint and for consumers
+that never mount a component (the marketing shell, a crawler, an error
+boundary). It narrows a resolved-but-unshipped region (`es`, `pt-PT`) to the
+locale actually in use. `src/i18n/documentLanguage.test.ts` locks it.
+
+*How it was found:* the screenshot harness reports `document.documentElement.lang`
+beside every cell, and it read `lang=en` under Spanish content. Nothing else in
+the repo could have said so.
+
+**3. A `className` that could not win.** See /DESIGN.md §Answer surfaces → "A
+shape is a PROP, never a `className`". `cn()` is a concatenator, not
+`tailwind-merge`, so three call sites' overrides were discarded by CSS source
+order — one of them visibly, as a centred capsule sitting where a square slot
+piece belonged in `arrange`'s `order_steps`. `TokenChip` now takes a typed
+`shape` prop, and `answerSurfaces.test.tsx` fails the build on any owned
+property handed down as a class.
+
+## The blur is measured, and the `low` tier stops paying for it (2026-08-22)
+
+The debt was named in this file two sessions ago and in /DESIGN.md's own "still
+owes" list: *a real `backdrop-filter` profiling run on the target Intel UHD,
+which is still reasoned rather than measured.* Lumen puts `backdrop-filter` on
+every surface of a route that also renders an animated 3D island, so "it's
+probably fine" was the last unmeasured assumption between the Tutor and a child
+on a cheap phone.
+
+**It is measured now** — headless Chrome over CDP against `/dev/tutor-lab`, in
+`conversing` and `adapting`, at 375x812 with `deviceScaleFactor: 3` (a budget
+Android's real pixel count), touch-emulated so the scene's probe starts the tier
+where a phone starts it, and CPU-throttled at 1x/4x/6x. On a REAL GPU, not
+SwiftShader: `ANGLE (Intel, Intel(R) UHD Graphics (0x0000A7A8), D3D11)`, the
+same part the debt named. Each cell A/Bs one live page `on → blur(8px) → off →
+on` so nothing but the filter moves, and the repeated `on` is what would have
+exposed tier drift. It never drifted. Full method, its honest limits and the
+table are in /DESIGN.md §Lumen → *The blur, profiled*.
+
+**The answer, in one line: it is cheap, and the cost is the render PASS.** Four
+compositor render passes per frame against one, ~0.5 ms of presented frame time
+(1.1 ms worst measured), 3-8% of throughput. Three findings make the decision
+rather than the headline number:
+
+- *Flat against the radius.* `blur(8px)` instead of 24 recovers only 0.18 of the
+  0.65 ms of compositor draw. A "cheaper blur for weaker devices" would pay
+  almost the whole price for none of the look.
+- *Flat against the AREA.* The same scene at `deviceScaleFactor` 1, 2 and 3
+  blurs 0.098, 0.39 and 0.88 Mpx for 0.70, 0.63 and 0.65 ms. Nine times the
+  pixels, no change. So the lever is binary; there is no middle to offer.
+- *Flat against CPU throttling.* At 6x the renderer's main thread goes from
+  150 ms to 900 ms of busy time per wall second and the blur's cost does not
+  move. It is compositor work, which is also the honest statement of what this
+  emulation CANNOT see: `setCPUThrottlingRate` never touches the GPU process, an
+  Intel UHD is several times an Adreno 610, and a phone's tile-based renderer
+  pays for extra passes in a way an immediate-mode desktop one does not. That
+  gap is why the pass count is reported beside the milliseconds.
+
+**So the blur stays everywhere except `low`.** `QualitySettings.lumenBlur` now
+sits beside `maxPixelRatio`, `shadows` and `ambientMotion`; `StageShell`
+publishes it as `data-lumen-blur="off"` on the stage root and three inherited
+custom properties carry it to every plate. Wiring it is not hedging against the
+numbers above — it is that `low` is the one device class the profile could not
+emulate, it is a VERDICT rather than a guess (two sub-45fps windows, twice), and
+on that tier the blur is buying the least: the pessimistic bracket (SwiftShader,
+where the governor really does fall to `low`) spends 9% of an already-missed
+frame softening a backdrop the device is barely drawing.
+
+**What it degrades to is not new.** The same blur-less form a browser without
+`backdrop-filter` already got — plate closed to `--lf-lumen-alpha-flat` 0.97,
+keeping the sky-leaning fill, the key light's lip, the ground-coloured shadow
+and the pane radius. One value, written once, reached two ways. Verified by
+screenshot at 375 and 1280 in both themes: the flat plate reads as the same
+material with the window shut, and the contrast bound only improves, which
+`HudPlate.test.tsx` now asserts. Measured again through the SHIPPED switch
+rather than a CDP override: 4 passes → 1, 102.4 → 108.4 fps.
+
+## A saved conversation is performed again, not listed (2026-08-22)
+
+The owner's note was one sentence: replays "no se ven fluidas e inmersivas como
+una sesion con tutor natural, debe sentirse como una repeticion". What shipped
+was a disclosure inside a list — press "Play it again" and the row expanded into
+stacked `<p>`s with a native `<audio controls>` beside every tutor line. Eleven
+grey browser widgets, pressed one at a time, in order, to hear a conversation
+you had already had. `SessionHistory.tsx`'s own comment claimed the character
+"re-acts each line with the emotion and action it originally carried"; nothing
+re-acted anything, and /ORACLE.md §12 had already been amended to say so.
+
+**Replay is now a PHASE of the stage** — `StagePhase = 'replaying'`, the seventh
+— and it needed no contract change, exactly as that amendment predicted. A
+stored turn carries its text, its `emotion`, its `action` and the Depot URL of
+the clip synthesized for it (migration 0047); Core's replay projection already
+asked for all four. Three new files: `replay/replayScript.ts` compiles a
+transcript into ordered BEATS and is pure, `replay/useReplayDirector.ts` is the
+clock, `replay/ReplayInWorld.tsx` is the HUD. `TutorExperience` turns the
+current beat into the same four scene props a live session fills, so a replay is
+the same canvas doing the same thing with a different source.
+
+**Three decisions worth keeping.**
+
+*The running order is not `seq`.* Oracle writes a learner's turn at the
+orchestrator's current turn count and the tutor's reply at the emission's, so
+both halves of one exchange can share a number — and Core serves them
+`order=seq.asc` and nothing else. Sorting on `seq` alone left the order of an
+exchange to whatever PostgREST returned, which is a coin flip that decides
+whether a replay shows the answer before the question. The comparator is `seq`,
+then `created_at`, then a rank that puts an activity after the turn that handed
+it over (a segment's `seq` IS that turn's).
+
+*The dock may not change height between beats.* The learner's own lines appear
+in the dock — the rectangle their words came from when the session was live —
+and the dock publishes itself on the `mic` safe-area slot, which the composition
+solver aims the character around. So a row that appears on every learner turn
+made the CHARACTER rise and sink in time with whose turn it was. Found by
+looking, at 375x812. The row contributes no height now (`h-0 relative`, plate
+positioned out of the top) and the dock measures (15, 480, 345, 216) on every
+beat: tutor, learner, activity alike.
+
+*A `z-40` inside a HUD layer is worth 30.* `StageLayer`'s wrapper is
+`absolute inset-0 z-30` — a stacking context — so the introduction's
+saved-conversation list, built as a `z-40` child of it, was painted over by the
+microphone dock. At 375 px "Play it again" sat half covered by two dock chips
+and still pressable. The archive moved into the dock's own `above` slot, where
+the goodbye's copy of the same list already lived.
+
+**Honesty is four statements and never the word "can't".** The microphone is
+absent (`micForPhase` → `present: false`, the second phase after the goodbye),
+the transport stands in its rectangle, the reading plate names the recording and
+its date, and the chip that leaves says "Talk to Dr. Rho" — the thing a replay
+cannot do, offered in the place the learner reached for it. On a phone the
+sheet's resting row announces the same sentence once, because the plate's body
+is not mounted at PEEK.
+
+**Silence is a state.** Every clip is gone after ninety days by policy, so the
+silent replay is the one that had to be right: a line with no audio is timed
+from its text, captioned, and the 2D bubble keeps articulating, because the line
+IS being performed and only the recording is missing. The lab's fixture is
+deliberately a silent recording for that reason — there is no synthesized clip
+in this repo and there must not be one. The stage's `<audio>` also calls
+`onSpeechEnd` on `error` now, so a URL the retention sweep has already deleted
+ends its beat instead of hanging the show.
+
+Verified by looking: 16 screenshots (four moments x 375/1280 x light/dark) plus
+the archive at both widths and the replay in es-MX and pt-BR. No control under
+44 px in any of them.
+
+## The lab speaks all three languages, and the tutor picker gets its island (2026-08-22)
+
+Two findings from the same screenshot pass, and the first one was ours rather
+than the product's.
+
+**THE LAB WAS LYING ABOUT LANGUAGE.** Every fixture in
+`frontend/src/tutor/lab/labFixtures.ts` was pinned to `es-MX` while the browser
+ran the lab's own UI in whatever `i18next-browser-languagedetector` picked, so
+every screenshot ever taken of `/dev/tutor-lab` showed English chrome wrapped
+around Spanish content. The owner saw those and concluded the product had
+hardcoded strings. **It does not.** Production drives the whole session off
+`session.locale`, Oracle's prompt ends with "Language: ${context.locale}. Answer
+entirely in this language", and `npm run i18n:check` passes all three phases.
+The instrument was the broken thing, and a QA surface that lies about the exact
+property under review is worse than no QA surface at all.
+
+The panel now carries one locale switch that moves `i18n.changeLanguage` AND the
+simulated session together — there is no reachable state where they disagree,
+which is the only property that makes a screenshot of that page evidence. The
+three scripts are WRITTEN, not translated: the same lesson, three learners, a
+bike costed in pesos, dollars and reais with the arithmetic that follows from
+each, plus a locale-appropriate flagged-skill slug (`OfferChips` derives the
+chip's visible topic from the slug, so a Spanish slug put "Ahorro con meta" on
+an English chip). Verified: seven phases x two breakpoints x three locales, no
+overflow, no truncation, no plate sized for English.
+
+**AND THE TUTOR PICKER WAS A THIRD OF A PHONE.** `personalizing` measured 29.9%
+island at 375x812 while `arriving`, two taps earlier, measured 50.7% — on the
+one screen a child chooses their tutor on. The cause was a PROXY: `approach`
+framed the audition through a symmetric ring at 0.68 of the island's radius,
+hand-tuned once against one arrangement, when what actually had to be in frame
+was four people standing at 1.97 m. A ring is not four points, and it went on
+charging after the cast moved.
+
+Three things changed together and none works alone (`TUTOR_3D.md` §5, §9.1):
+`ShotContext.cast` carries the whole audition so the framing follows the
+arrangement; the audition separates in DEPTH rather than across the frame,
+because depth satisfies the same separation floor and costs the frame's width
+nothing; and `APPROACH_HOLD.portrait` became a floor equal to
+`ISLAND_HOLD.portrait` — the audition is never framed further out than arrival.
+**29.9% → 49.1%** at 375 and **48.5% → 55.5%** at 1280, all four candidates on
+screen and facing the learner, every name legible, no control under 44 px.
+
+Two things the numbers taught, both recorded where they will be read again:
+
+1. **A gate that asks the easy question stays green through the hard one.** The
+   coverage floor in `shots.test.ts` checked `approach` with the two-person
+   fixture every other shot uses. Holding two is strictly easier than holding
+   four, so the gate was green for the whole life of the 29.9%. It now has a
+   four-candidate case taken off `npm run verify:placement`.
+2. **Cutting the outer rings is the obvious way to gather a cast and the way
+   that loses people.** A ring set stopping at 0.54 of the radius seats all four
+   on `diorama-a` and only three on `diorama-b`, whose pond takes the inner
+   deck. The gathering has to be a PREFERENCE, which degrades into "stand
+   wherever you can"; the rings only have to be there when it needs them.
+
+Known and deliberately not changed: the microphone still stands on
+`personalizing` as a plate saying "Ready when the conversation starts."
+(`micForPhase`). With the island now filling the frame it sits over a place
+rather than over a void, and removing it would reopen `/ORACLE.md` §14.1's
+"present in every phase where speaking is possible or about to be" without a
+measurement to justify it — the coverage number does not move either way,
+because coverage is set by the shot's distance and not by the HUD.
+
+## Lumen reaches the Lesson Engine: three answer surfaces, shared by the whole product (2026-08-22)
+
+The Tutor's most-looked-at screen had one thing left on it that Lumen had not
+touched, and /DESIGN.md §Lumen named it out loud under "What this layer still
+owes": on `conversing` at 1280 in light, the three exercise answers were white
+outlined boxes on the reading plate — a web form dropped into a diorama.
+
+**It was fixed in the LESSON ENGINE, not in the Tutor, and that was the point.**
+`OptionCard` and its siblings in `lesson-engine/core/primitives.tsx` are shared
+with the Lesson Player and with all 57 exercise renderers, so a Tutor-local
+patch would have fixed one screen and left the other half of the product looking
+like the thing we had just called unshippable. The owner chose the wider change
+deliberately.
+
+**The cause was not a component, it was a recipe.** `rounded-md border-2
+border-outline/70 bg-surface` — four sides of uniform hairline around a flat
+opaque fill, which is the silhouette of an HTML input — had been written out by
+hand in about forty places across the eight families. No amount of care at a
+call site was going to change that.
+
+**What replaced it: three objects and no fourth** (/DESIGN.md §Answer surfaces).
+`.lf-well` is a place something goes; `.lf-slab` is an object that carries
+content; `.lf-answer` is an object you press. They are not Liquid Glass (a glass
+panel over the island is the sticker Lumen deleted) and not Lumen (glass on
+glass, which §Elevation rule 6 forbids). They are made of the one thing both
+layers publish — THE LIGHT — because `--lf-sky`, `--lf-key`, `--lf-ground` and
+`--lf-sun-height` are registered properties with global defaults, so the same
+recipe reads as the island's own hour on the stage and as neutral room light on
+a page, with no conditional anywhere.
+
+The physical rule underneath, from which every value follows: **the pane is
+glass and the object on it is opaque and lit.** That is why an answer always
+reads as raised in both themes over any backdrop a moving render can produce.
+
+**Four things that only looking found:**
+
+1. **An opaque object on a 0.86 plate is not visibly raised in light mode.** The
+   plate is 86% of nearly the same fill, so on a bright island the two composite
+   to within a couple of percent. Tone could not do it. A convex top-lit
+   gradient could, and does — the object has FORM now rather than a tone
+   difference that does not exist.
+2. **`rounded-md` (16 px) on a 48 px bar is most of the way to a capsule.** They
+   photographed as pills, which is §Lumen's own "panes, not pills" objection.
+   `rounded-sm` (10 px) is also what the concentric rule asks for: the plate is
+   `lg` (24) with 16 px of padding.
+3. **The number pad's readout was indistinguishable from its twelve keys** —
+   same size, same material, directly above them. It is a `.lf-well` now: "your
+   number lands here", said without a word in any locale.
+4. **A `font-weight` on the material would have silently rewritten the closed
+   type scale** on every button already carrying `lf-label` or `lf-title` (700).
+   Weight went back to the call site.
+
+**And the fifth thing only `getComputedStyle` found, after the screenshots had
+already been approved.** The no-`color-mix` fallback was guarded with
+`@supports not (color-mix(in srgb, red 50%, transparent))`, which looks like a
+feature test and is actually a `<general-enclosed>` — the spec evaluates it to
+UNKNOWN, Chrome resolves `not unknown` to TRUE, so **the fallback applied in
+every browser** and the entire light-aware recipe was dead code. On the live
+stage an answer's edge was `--lf-outline` and its shadow was the five-layer
+atmospheric one; the ink edge and the sun-agreeing seat the material is built
+around had never run. It photographed acceptably, which is why it survived —
+the fallback is a decent design, it is just not this one. It also erased the
+2 px state ring off every stated object, because the fallback block sits after
+the state modifiers and rewrites `box-shadow`: the balance scale's right pan,
+judged wrong, rendered as a plain white pan, and renders amber-ringed now.
+Reading the computed style off the real page is what caught it, and it is worth
+writing down that looking was not enough here — the screenshots were the reason
+it nearly shipped, not the reason it was found.
+
+**Two spec violations fell out of the same pass, both years old and both in the
+most-looked-at control in the product.** LESSON_ENGINE.md §1 P3 is one sentence
+— "No red WRONG" — and `optionStateClasses` painted `border-error bg-error-soft`
+on the learner's own pick, while the Lesson Player's `tryAgain` banner did the
+same in `error-soft` with red text and a red icon. Both are amber now, which is
+what the Tutor's own verdict well already used for the same tier. And
+`correct`/`wrong` were **colour only**, which /AGENTS.md §1.11 and /DESIGN.md
+both forbid: `AnswerMark` is a component now — an empty ring becomes a filled
+check when an option is chosen or right and a filled cross when the learner's
+pick was not, with a screen-reader word on the two verdicts.
+
+**The guard is a source scan, not a component test.** `core/answerSurfaces.test.tsx`
+reads every `.ts`/`.tsx` in the engine and fails on a hand-written outline, an
+opaque object fill, a red "wrong", or an answer authored at the bare 44 px
+floor. A recipe that came back forty times will come back again one renderer at
+a time, and a rule that lives only in a document is a rule the next author
+re-derives.
+
+Tap floor went 44 → **48 px** for every answer object, on the same reasoning
+§Lumen applies to a HUD plate: an answer option is the control a child mis-taps
+most, and 44 is the floor rather than the target.
+
 ## Reconciling the two Lumen passes: five defects that lived in the seams (2026-08-22)
 
 The material pass and the applying pass were done in parallel by two engineers.
@@ -66,7 +830,9 @@ elements. The ship measurement is in /DESIGN.md → Screen Recipes → Tutor. Tw
 things are still owed and are named there rather than closed: the exercise
 option cards (a lesson-engine decision, shared with 57 renderers) and a real
 `backdrop-filter` profiling run on the target Intel UHD, which is still reasoned
-rather than measured.
+rather than measured. *(Both paid on 2026-08-22 — the option cards by the
+answer-surfaces pass below, the blur by the profiling entry at the top of this
+file.)*
 
 ## Applying Lumen: every surface on the material, and nine deletions with their measurements (2026-08-22)
 

@@ -129,6 +129,15 @@ export interface CameraDirectorProps {
   lead: ShotSubject | null;
   companion: ShotSubject | null;
   /**
+   * EVERYONE ON THE ISLAND, when that is more than the two this session is
+   * about — which is exactly the personalization audition and nothing else.
+   *
+   * Passed straight through to `ShotContext.cast`, where the note on why it
+   * exists lives. Null in every other phase, and the shots then hold the lead
+   * and their companion as they always did.
+   */
+  cast?: readonly ShotSubject[] | null;
+  /**
    * The quality tier's ambient-motion budget. Gates orbit, handheld and bob.
    * NEVER the damper.
    */
@@ -155,6 +164,7 @@ export function CameraDirector({
   shot,
   lead,
   companion,
+  cast = null,
   ambientMotion,
   reducedMotion,
   fitKey,
@@ -213,6 +223,7 @@ export function CameraDirector({
       scene: measured.current,
       lead,
       companion,
+      cast,
       aspect: viewport.width / viewport.height,
       fov: baseFov.current,
     };

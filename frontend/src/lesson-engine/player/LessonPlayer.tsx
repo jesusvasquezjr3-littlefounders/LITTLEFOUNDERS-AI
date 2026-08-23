@@ -309,7 +309,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
             type="button"
             onClick={onExit}
             aria-label={t('lesson.exit')}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-content-muted transition-colors hover:bg-surface-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-content-muted transition-colors hover:bg-content/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
           >
             <Icon name="close" />
           </button>
@@ -335,9 +335,34 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
         </div>
       </header>
 
-      {/* Segment column */}
-      <main className="mx-auto w-full max-w-[720px] flex-1 px-5 pb-40 pt-6 md:px-0">
-        <div key={segment.id} className="lf-pop space-y-5">
+      {/*
+        Segment column.
+
+        `md:my-auto` ON THE CHILD, and that is the whole desktop fix. `main` is
+        `flex-1` inside a `flex flex-col` shell, so it always fills the height
+        left over — but its content was pinned to the top of it, and a
+        three-option question is about 380 px tall. Measured on
+        `/dev/lesson-lab` at 1280x800: `order_steps` ended at y=570 and
+        `timeline_order` at y=480, leaving 230 and 320 px of empty base colour
+        above the footer. /AGENTS.md §1.11 calls that out by name — "no dead
+        vertical rhythm", and a desktop screen that does not use the space it
+        has is a bug rather than a preference.
+
+        `my-auto`, NOT `justify-center` on the parent. They centre identically
+        while the content fits, and they differ in the one case that matters: a
+        long segment (a table, a five-option question, a scenario with hints
+        already revealed) overflows a `justify-center` flex container in BOTH
+        directions, and the top — the prompt, the thing being asked — becomes
+        unreachable because a scroll container cannot scroll above its own
+        origin. `auto` margins collapse to zero the moment there is no free
+        space, so a tall segment behaves exactly as it did before this line
+        existed.
+
+        Mobile is deliberately untouched: at 375 the same content already fills
+        the viewport, and `pb-40` is reserving room for the fixed footer there.
+      */}
+      <main className="mx-auto flex w-full max-w-[720px] flex-1 flex-col px-5 pb-40 pt-6 md:px-0">
+        <div key={segment.id} className="lf-pop space-y-5 md:my-auto">
           {/* Narrator strip */}
           {segment.narrator ? (
             // Avatar shrinks on mobile (56px) so the speech bubble keeps a
@@ -351,7 +376,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
                   size="fill"
                 />
               </div>
-              <div className="flex min-w-0 flex-1 items-start gap-2 rounded-lg rounded-bl-sm border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm">
+              <div className="lf-slab flex min-w-0 flex-1 items-start gap-2 rounded-lg rounded-bl-sm px-4 py-3">
                 <MarkdownLite text={segment.prompt_md} className="lf-title min-w-0 flex-1 text-content" />
                 <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} lessonId={lessonId} preview={preview} />
               </div>
@@ -534,7 +559,7 @@ function IntroScreen({
           type="button"
           onClick={onExit}
           aria-label={t('lesson.exit')}
-          className="flex h-11 w-11 items-center justify-center rounded-full text-content-muted transition-colors hover:bg-surface-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+          className="flex h-11 w-11 items-center justify-center rounded-full text-content-muted transition-colors hover:bg-content/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
         >
           <Icon name="close" />
         </button>
@@ -604,7 +629,7 @@ function FeedbackBanner({
     perfect: 'bg-success-soft',
     great: 'bg-success-soft',
     almost: 'bg-warning-soft',
-    tryAgain: 'bg-error-soft',
+    tryAgain: 'bg-warning-soft',
   }[verdict.tier]
   const tierIcon = {
     perfect: 'celebration',
@@ -616,7 +641,7 @@ function FeedbackBanner({
     perfect: 'text-success-strong',
     great: 'text-success-strong',
     almost: 'text-warning-strong',
-    tryAgain: 'text-error-strong',
+    tryAgain: 'text-warning-strong',
   }[verdict.tier]
   const variant = (segIndex % 3) + 1
 
@@ -843,7 +868,7 @@ function GlowsGrowsBlock({ doc, state }: { doc: LessonDocument; state: ReturnTyp
         : t('lesson.results.grow.mastered')
 
   return (
-    <div className="w-full max-w-xl rounded-lg border border-outline/70 bg-surface px-4 py-1 shadow-glass-sm text-left">
+    <div className="lf-slab w-full max-w-xl rounded-lg px-4 py-1 text-left">
       <div className="flex items-center gap-3 py-3">
         <Icon name="star" className="shrink-0 text-[26px] text-warning-strong" aria-hidden />
         <div>
@@ -852,7 +877,7 @@ function GlowsGrowsBlock({ doc, state }: { doc: LessonDocument; state: ReturnTyp
         </div>
       </div>
       {growText ? (
-        <div className="flex items-center gap-3 border-t border-outline/50 py-3">
+        <div className="flex items-center gap-3 border-t border-content/10 py-3">
           <Icon name="flag" className="shrink-0 text-[26px] text-primary" aria-hidden />
           <div>
             <p className="lf-caption text-content-faint leading-tight">{t('lesson.results.growTitle')}</p>
@@ -866,7 +891,7 @@ function GlowsGrowsBlock({ doc, state }: { doc: LessonDocument; state: ReturnTyp
 
 function ResultStat({ icon, label, value, tone }: { icon: React.ReactNode | string; label: string; value: string; tone: string }) {
   return (
-    <div className="rounded-lg border border-outline/70 bg-surface px-3 py-3 shadow-glass-sm flex items-center justify-start gap-3">
+    <div className="lf-slab rounded-lg px-3 py-3 flex items-center justify-start gap-3">
       <div className="flex shrink-0 items-center justify-center text-content-faint">
         {typeof icon === 'string' ? <Icon name={icon} className="text-[32px]" /> : icon}
       </div>

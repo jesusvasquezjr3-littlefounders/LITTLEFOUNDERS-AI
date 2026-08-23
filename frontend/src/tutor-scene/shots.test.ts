@@ -357,37 +357,98 @@ describe('approach', () => {
     }
   });
 
-  it('is nearer than the establishing shot on a desktop and WIDER on a phone', () => {
+  it('is nearer than the establishing shot on a desktop, and never further out than arrival for its own sake', () => {
     /*
-     * THE ONE PLACE THIS SHOT STOPPED BEHAVING THE WAY ITS NAME SUGGESTS, and
-     * the inversion is deliberate rather than drift.
+     * THE RULE CHANGED ON 2026-08-22, AND THE OLD ONE IS WHY THE PHONE WAS
+     * EMPTY.
      *
      * `approach`'s only phase is `personalizing`, and `personalizing` is an
-     * AUDITION: the whole catalog stands on the island at once, out to 0.70 of
-     * its radius, each with a name plate riding their crown. A plate whose
-     * anchor leaves the frame is hidden AND inert, so a candidate framed out is
-     * a candidate who cannot be chosen by looking at them — the exact bug the
-     * audition exists to fix. On a portrait phone half the horizontal field of
-     * view is 8.53 degrees, so holding that ring costs about 19 m, while
-     * `establishing` — which frames the PLACE and is free to let it bleed off
-     * the sides — stands at about 14 m.
+     * AUDITION: the whole catalog stands on the island at once, each with a
+     * name plate riding their crown. A plate whose anchor leaves the frame is
+     * hidden AND inert, so a candidate framed out is a candidate who cannot be
+     * chosen by looking at them — the exact bug the audition exists to fix.
      *
-     * It used to be a fixed 0.62 of the island fit, strictly nearer at every
-     * aspect. Keeping that once `establishing` came in close enough to fill a
-     * phone framed a candidate straight off the screen: driven at 375x812 with
-     * the hold at 0.62, Liruf's plate came back `hidden`.
+     * The shot used to buy that safety with a bigger HOLD: a symmetric ring at
+     * 0.68 of the island's radius, hand-tuned until the widest candidate fitted.
+     * A ring is not four people. It charged the camera for both sides of a
+     * circle when what had to be in frame was four points, and it kept charging
+     * after the cast moved — so `personalizing` painted 29.9% of a 375x812
+     * phone while `arriving` painted 50.7%.
+     *
+     * Now the shot holds the CAST (`ShotContext.cast`) and this constant is only
+     * the FLOOR, equal to `ISLAND_HOLD.portrait`: the audition is never framed
+     * further out than arrival for want of a subject. It can still end up
+     * further out when the cast genuinely stands wide, which is the next test.
      */
     const landscape = 1280 / 800;
     expect(distance(poseFor('approach', context({ aspect: landscape })))).toBeLessThan(
       distance(poseFor('establishing', context({ aspect: landscape }))),
     );
 
-    const portrait = 375 / 812;
-    expect(distance(poseFor('approach', context({ aspect: portrait })))).toBeGreaterThan(
-      distance(poseFor('establishing', context({ aspect: portrait }))),
-    );
-    // And it is wider because it holds MORE, not because it drifted.
-    expect(APPROACH_HOLD.portrait).toBeGreaterThan(ISLAND_HOLD.portrait);
+    expect(APPROACH_HOLD.portrait).toBe(ISLAND_HOLD.portrait);
+  });
+
+  it('comes IN when the cast gathers, and gives ground when it spreads', () => {
+    /*
+     * THE WHOLE POINT OF `ShotContext.cast`, as arithmetic.
+     *
+     * This is the property the old fixed hold could not have: the framing is a
+     * function of where the people actually are. `standingSpots.ts` →
+     * `AUDITION_NARROW_WEIGHT` is the other half — it is what makes the cast
+     * gather in DEPTH rather than across the frame, and depth is free because
+     * the frame's width is what a portrait phone has least of.
+     *
+     * Measured on the real islands, the gathering moved `diorama-a`'s widest
+     * candidate from 1.97 m off the aim to 1.56 m, and the island went from
+     * 29.9% of a 375x812 phone to 49.1%.
+     */
+    const portrait = { aspect: 375 / 812 };
+    const at = (lateral: number): number => {
+      const rightX = Math.cos(STAGE_BEARING);
+      const rightZ = -Math.sin(STAGE_BEARING);
+      const spread: ShotSubject[] = [-1, 1].map((side) => ({
+        x: rightX * lateral * side,
+        y: 1.5,
+        z: rightZ * lateral * side,
+        facing: STAGE_BEARING,
+        height: 1.7,
+      }));
+      return distance(poseFor('approach', context({ ...portrait, cast: spread })));
+    };
+
+    expect(at(1.4)).toBeLessThan(at(2.6));
+
+    /*
+     * And the floor holds underneath it. A cast standing almost on top of each
+     * other must not walk the camera into the island — `APPROACH_HOLD` still
+     * promises that much of the rim, so the distance stops falling.
+     */
+    expect(at(0.1)).toBeCloseTo(at(0.5), 5);
+  });
+
+  it('holds every candidate, not just the lead and the companion', () => {
+    /*
+     * The regression this field exists to prevent: a fourth candidate standing
+     * wider than either principal has to be able to push the camera back. With
+     * `cast` ignored they were framed by whoever happened to be the tutor that
+     * session, which is a different answer every time the learner picks
+     * somebody.
+     */
+    const portrait = { aspect: 375 / 812 };
+    const rightX = Math.cos(STAGE_BEARING);
+    const rightZ = -Math.sin(STAGE_BEARING);
+    const outlier: ShotSubject = {
+      x: rightX * 2.9,
+      y: 1.5,
+      z: rightZ * 2.9,
+      facing: STAGE_BEARING,
+      height: 1.7,
+    };
+
+    const pair = poseFor('approach', context(portrait));
+    const withOutlier = poseFor('approach', context({ ...portrait, cast: [RHO, DINA, outlier] }));
+    expect(distance(withOutlier)).toBeGreaterThan(distance(pair));
+    expect(withOutlier.keepInFrame.right).toBeGreaterThan(pair.keepInFrame.right);
   });
 });
 
@@ -868,6 +929,14 @@ describe('how much of the frame the island actually covers', () => {
    *      personalizing 375  31.1%          30.2%
    *      adapting  375      29.4%          34.6%
    *
+   * Re-measured on 2026-08-22, after `approach` started holding the CAST rather
+   * than a fixed fraction of the island and the audition started gathering in
+   * depth (`shots.ts` -> `APPROACH_HOLD`, `standingSpots.ts` ->
+   * `AUDITION_NARROW_WEIGHT`):
+   *
+   *      personalizing 375  47.2%          49.1%
+   *      personalizing 1280 46.4%          55.5%
+   *
    * So a floor here is a slightly conservative floor on the real thing, which
    * is the right direction for a gate to be wrong in.
    *
@@ -876,7 +945,7 @@ describe('how much of the frame the island actually covers', () => {
    *
    *      shot            1280x800   375x812        now
    *      establishing      18.1%      7.2%    ->  41.6% / 42.7%
-   *      approach          32.5%     11.1%    ->  44.9% / 31.1%
+   *      approach          32.5%     11.1%    ->  46.4% / 47.2%
    *      two-shot          30.9%      4.5%    ->  43.4% / 29.4%
    *      closeup           32.2%     36.9%    ->  unchanged
    *      closeup-wide      33.9%     26.1%    ->  unchanged
@@ -895,7 +964,7 @@ describe('how much of the frame the island actually covers', () => {
    */
   const COVERAGE_FLOOR: Readonly<Record<ShotId, number>> = Object.freeze({
     establishing: 0.3,
-    approach: 0.24,
+    approach: 0.37,
     closeup: 0.2,
     'closeup-wide': 0.2,
     'two-shot': 0.24,
@@ -960,6 +1029,60 @@ describe('how much of the frame the island actually covers', () => {
     const ctx = context({ aspect });
     const covered = islandCoverage(poseFor(shot, ctx), ctx.scene, aspect);
     expect(covered, `${shot} leaves the frame empty`).toBeGreaterThan(COVERAGE_FLOOR[shot]);
+  });
+
+  it.each(AUDIT)('the audition still paints a place with the WHOLE cast on stage, at %s', (_label, aspect) => {
+    /*
+     * THE CASE THE FLOOR ABOVE CANNOT SEE, and it is the one that shipped
+     * broken.
+     *
+     * Every other case here frames the two people a session is about.
+     * `approach` never does: its one phase is `personalizing`, where the whole
+     * catalog is standing there and the shot has to hold all four. That is
+     * strictly harder than holding two, so a gate that only ever asks the easy
+     * question passes while the real screen paints 29.9% of a phone — which is
+     * exactly what happened.
+     *
+     * The fixture is the arrangement the solver actually produces on
+     * `diorama-a` with the audition's own options, read off
+     * `npm run verify:placement`: four candidates within 1.56 m of the aim
+     * across the frame and spread 3.0 m in depth, which is the gathering
+     * `AUDITION_NARROW_WEIGHT` buys.
+     */
+    const rightX = Math.cos(STAGE_BEARING);
+    const rightZ = -Math.sin(STAGE_BEARING);
+    const inX = Math.sin(STAGE_BEARING);
+    const inZ = Math.cos(STAGE_BEARING);
+    const stand = (lateral: number, depth: number, height: number): ShotSubject => ({
+      x: rightX * lateral + inX * depth,
+      y: 1.28 + height * 0.75,
+      z: rightZ * lateral + inZ * depth,
+      facing: STAGE_BEARING,
+      height,
+    });
+    const audition = [
+      stand(-0.2, 1.5, 1.9),
+      stand(1.56, -0.4, 1.65),
+      stand(-1.5, -0.3, 1.7),
+      stand(-0.6, -1.4, 1.61),
+    ];
+
+    const ctx = context({ aspect, cast: audition });
+    const pose = poseFor('approach', ctx);
+    expect(
+      islandCoverage(pose, ctx.scene, aspect),
+      'the audition leaves the frame empty',
+    ).toBeGreaterThan(COVERAGE_FLOOR.approach);
+
+    // And every one of them is still inside the frame, which is the constraint
+    // that made this hard in the first place: a candidate framed out is a
+    // candidate who cannot be chosen by looking at them.
+    for (const candidate of audition) {
+      const at = project(pose, { x: candidate.x, y: candidate.y, z: candidate.z }, aspect);
+      expect(at, 'a candidate is behind the camera').not.toBeNull();
+      expect(Math.abs(at!.x), 'a candidate is off the side of the frame').toBeLessThan(1);
+      expect(Math.abs(at!.y), 'a candidate is off the top or bottom of the frame').toBeLessThan(1);
+    }
   });
 
   it.each(AUDIT)('the microphone dock does not undo the framing at %s', (label, aspect) => {

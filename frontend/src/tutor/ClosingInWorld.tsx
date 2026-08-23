@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { HudPlate } from '@/tutor/hud/HudPlate';
 import { SessionHistory } from './SessionHistory';
 import { useStageDock } from './stage/StageShell';
+import type { SessionSummary } from './types';
 
 /*
  * The goodbye (/ORACLE.md §9.5), and it stands where the microphone stands.
@@ -40,9 +41,17 @@ export interface ClosingInWorldProps {
    * offered and broken.
    */
   token: string | null;
+  /**
+   * Perform one of them on this island (/ORACLE.md §12).
+   *
+   * The goodbye is the second place the archive is offered, and like the
+   * introduction it can only point: the replay is a PHASE of the stage, so the
+   * component that owns the phase is the one that enters it.
+   */
+  onReplay: (session: SessionSummary) => void;
 }
 
-export function ClosingInWorld({ onStartAnother, token }: ClosingInWorldProps) {
+export function ClosingInWorld({ onStartAnother, token, onReplay }: ClosingInWorldProps) {
   const { t } = useTranslation();
   const dock = useStageDock();
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -112,7 +121,7 @@ export function ClosingInWorld({ onStartAnother, token }: ClosingInWorldProps) {
         <HudPlate shape="sheet" className="max-h-[52vh] overflow-y-auto overscroll-contain">
           <div className="flex w-full flex-col gap-3 text-left">
             <span className="lf-headline text-content">{t('tutor.history.title')}</span>
-            <SessionHistory token={token} />
+            <SessionHistory token={token} onReplay={onReplay} />
           </div>
         </HudPlate>
       )}

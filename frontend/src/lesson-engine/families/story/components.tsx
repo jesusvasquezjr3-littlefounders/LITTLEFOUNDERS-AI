@@ -13,7 +13,7 @@ import { CharacterActor } from '@/components/characters/control/CharacterActor'
 import { narrationUnitId, useNarration } from '../../player/narration'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
-import { SceneAnchor, SunkenWell, VisualMark } from '../../core/primitives'
+import { FOCUS_RING, SceneAnchor, SunkenWell, VisualMark, optionStateClasses } from '../../core/primitives'
 import type {
   CheckpointSegment,
   ConceptRevealSegment,
@@ -102,12 +102,10 @@ export function StoryDialogue({ segment, disabled, onContentDone }: ExerciseProp
           disabled={disabled || finished}
           aria-label={t('lesson.families.story.tapToContinue')}
           className={cn(
-            'min-h-11 w-full flex-1 rounded-lg rounded-bl-sm border-2 border-outline/70 bg-surface p-4 text-left shadow-glass-sm',
-            'transition-[border-color,transform] duration-150',
-            'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-            finished
-              ? 'cursor-default'
-              : 'hover:border-primary/60 active:translate-y-px',
+            'min-h-12 w-full flex-1 rounded-lg rounded-bl-sm p-4 text-left',
+            FOCUS_RING,
+            optionStateClasses('idle'),
+            finished && 'cursor-default',
           )}
         >
           <MarkdownLite text={line.text_md} className="lf-body text-content" />
@@ -236,7 +234,7 @@ export function KeyIdeas({ segment, onContentDone }: ExerciseProps) {
           key={i}
           style={{ transitionDelay: revealed ? `${Math.min(i, 3) * 80}ms` : '0ms' }}
           className={cn(
-            'flex items-start gap-3 rounded-md border-2 border-outline/70 bg-surface p-4 shadow-glass-sm',
+            'lf-slab flex items-start gap-3 rounded-md p-4',
             'transition-[opacity,transform] duration-300',
             !revealed && 'motion-safe:translate-y-2 motion-safe:opacity-0',
           )}
@@ -296,15 +294,20 @@ export function ConceptReveal({ segment, disabled, onContentDone }: ExerciseProp
               disabled={disabled}
               onClick={() => flip(i)}
               className={cn(
-                'min-h-11 rounded-lg border-2 p-4 text-left',
-                // Simple swap with a color transition — reduced-motion safe by
-                // construction (no positional animation to suppress).
-                'transition-[border-color,background-color,transform] duration-300',
-                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                'disabled:cursor-not-allowed',
-                isFlipped
-                  ? 'border-success bg-success-soft'
-                  : 'border-outline/70 bg-surface hover:border-primary/60 active:translate-y-px',
+                'min-h-12 rounded-lg p-4 text-left',
+                FOCUS_RING,
+                // OPENED, not CORRECT — and the difference is the whole point
+                // of the second channel. This used to take the `correct` skin,
+                // justified in a comment by "the check the eye reads as seen";
+                // there is no check here (a bare button, not an `OptionCard`),
+                // so what a child actually saw was a card turning GREEN on a
+                // segment where nothing is graded and nothing can be right.
+                // `correct` is reserved (/DESIGN.md §Answer surfaces: state is
+                // never colour alone, and the two verdict colours mean one
+                // thing each). `selected` is what happened — the card was
+                // pressed — and it already agrees with the `aria-pressed` a
+                // screen reader announces.
+                optionStateClasses(isFlipped ? 'selected' : 'idle'),
               )}
             >
               {isFlipped ? (
@@ -480,7 +483,7 @@ export function Eavesdrop({ segment, disabled, onContentDone }: ExerciseProps) {
               size="sm"
               className="shrink-0"
             />
-            <div className="min-h-11 flex-1 rounded-lg rounded-bl-sm border-2 border-outline/70 bg-surface p-3 shadow-glass-sm">
+            <div className="lf-slab min-h-12 flex-1 rounded-lg rounded-bl-sm p-3">
               <p className="lf-body text-content">
                 {splitHighlights(line.text_md).map((part, i) =>
                   part.kind === 'text' ? (
@@ -500,6 +503,15 @@ export function Eavesdrop({ segment, disabled, onContentDone }: ExerciseProps) {
                       aria-label={t('lesson.families.story.whatDoesItMean', { term: part.value })}
                       className={cn(
                         'mx-0.5 inline-flex min-h-6 items-center gap-0.5 rounded-md border-b-2 border-dashed border-primary/70 bg-primary-soft/60 px-1 font-semibold text-primary',
+                        // THE TARGET IS BIGGER THAN THE INK. Measured at 375,
+                        // this chip is 27px tall — it is set inline in running
+                        // prose, so it CANNOT be padded to 44 without pushing
+                        // the sentence's lines apart and undoing the one thing
+                        // that makes a glossary term feel like part of the
+                        // sentence. An invisible pseudo-element extends the hit
+                        // area instead: 27 + 2×10 = 47px for the thumb, zero
+                        // change to layout.
+                        'relative before:absolute before:inset-x-0 before:-inset-y-2.5 before:content-[""]',
                         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
                       )}
                     >

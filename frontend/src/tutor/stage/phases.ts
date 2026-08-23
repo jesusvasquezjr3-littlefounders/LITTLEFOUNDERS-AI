@@ -31,6 +31,19 @@ export type StagePhase =
   | 'conversing'
   /** The kind goodbye: a pull back to the island, not a summary box. */
   | 'closing'
+  /**
+   * A saved conversation, performed again on the same island (/ORACLE.md §12).
+   *
+   * A PHASE AND NOT A SCREEN, which is the whole difference between this and
+   * what shipped. Replay used to be a disclosure inside a list — rows of text
+   * with a native `<audio controls>` per line — mounted over whichever phase
+   * the learner happened to be in. It is now the stage itself, running the
+   * stored turns: the same character, the same island, the same emotions and
+   * actions, the same shot vocabulary, the same caption over the same crown.
+   * Everything it needs was already in the schema (migration 0047), so it is
+   * frontend work with no contract change, exactly as §12 predicted.
+   */
+  | 'replaying'
   /** The Tutor API could not be reached. The island stays; the talking rests. */
   | 'unavailable';
 
@@ -47,6 +60,7 @@ export const STAGE_PHASES = [
   'introducing',
   'conversing',
   'closing',
+  'replaying',
   'unavailable',
 ] as const satisfies readonly StagePhase[];
 
@@ -88,6 +102,21 @@ export interface StageShotInput {
   articulates: boolean;
   /** True while the tutor is waiting on an answer to an adaptation offer. */
   adaptationOffered?: boolean;
+  /**
+   * True when a replay has reached the end of its last beat.
+   *
+   * The ONE input the `replaying` phase adds, and it exists so the camera can
+   * do at the end of a replay exactly what it does at the end of a session:
+   * pull back to the island. A replay that simply stopped on a close-up would
+   * end by freezing on a face; the pull back IS the goodbye (/ORACLE.md §9.5),
+   * and a re-performance that skips it is not a re-performance of the session
+   * that was recorded.
+   *
+   * Ignored in every other phase, and named for the state rather than for the
+   * shot so the mapping stays the only place that decides what the state looks
+   * like.
+   */
+  replayEnded?: boolean;
   /*
    * THERE IS DELIBERATELY NO `segmentLive` HERE ANY MORE. Removed 2026-08-21.
    *
@@ -118,6 +147,7 @@ export function shotForPhase({
   phase,
   articulates,
   adaptationOffered = false,
+  replayEnded = false,
 }: StageShotInput): ShotId {
   const speaking: ShotId = articulates ? 'closeup' : 'closeup-wide';
 
@@ -146,5 +176,22 @@ export function shotForPhase({
       // The pull back IS the goodbye (/ORACLE.md §9.5). The director damps
       // toward it over roughly two seconds, and that travel is the performance.
       return 'establishing';
+    case 'replaying':
+      /*
+       * A REPLAY IS THE SESSION HAPPENING AGAIN, SO THE CAMERA DOES WHAT IT
+       * DID. The whole conversation was played at the speaking shot, and the
+       * goodbye pulled back to the island, so a replay is the speaking shot for
+       * the length of the performance and the establishing shot the moment it
+       * ends. The `articulates` split carries over unchanged — a replay of
+       * Liruf frames as wide as a session with Liruf, because the reason is the
+       * character's mouth and not the tense.
+       *
+       * NOTHING ELSE MOVES IT. Stepping to another line, pausing, jumping from
+       * the transcript: none of them change the shot, for the same reason an
+       * arriving activity does not during a conversation. The learner is
+       * operating a transport, and a camera that lurched every time a thumb
+       * touched a control would put the interface inside the performance.
+       */
+      return replayEnded ? 'establishing' : speaking;
   }
 }

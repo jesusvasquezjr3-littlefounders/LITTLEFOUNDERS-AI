@@ -4,10 +4,12 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
+import { Icon } from '@/components/ui'
 import type { ExerciseProps } from '../../core/types'
 import { fuzzyEquals } from '../../core/scoring'
 import { seededSort } from '../../core/shuffle'
 import {
+  FOCUS_RING,
   KidSlider,
   NumberPad,
   SunkenWell,
@@ -38,14 +40,25 @@ function useNumberFormat(): (v: number) => string {
   }, [i18n.language])
 }
 
-/** Correct-answer line shown once the boundary releases the reveal. */
+/**
+ * Correct-answer line shown once the boundary releases the reveal.
+ *
+ * It is an OBJECT rather than a stray caption, because of what it is: on a
+ * numeric exercise the learner got wrong, this line is the entire teaching
+ * moment — and it was a small green sentence floating under a number pad,
+ * left-aligned against nothing, easy to scroll straight past. A slab with the
+ * verdict's own glyph puts it where the eye already goes for an answer.
+ */
 function CorrectAnswerNote({ verdict, value }: { verdict: ExerciseProps['verdict']; value: string | undefined }) {
   const { t } = useTranslation()
   if (!verdict || verdict.correct || value === undefined) return null
   return (
-    <p className="lf-label text-success-strong">
-      {t('lesson.families.input.correctAnswer', { value })}
-    </p>
+    <div className="lf-slab flex items-center justify-center gap-2 rounded-md px-4 py-3">
+      <Icon name="check_circle" fill className="text-[20px] text-success-strong" aria-hidden />
+      <p className="lf-label text-success-strong">
+        {t('lesson.families.input.correctAnswer', { value })}
+      </p>
+    </div>
   )
 }
 
@@ -63,7 +76,7 @@ function renderInlineMd(text: string, keyPrefix: string): React.ReactNode[] {
     else if (m[4] !== undefined) nodes.push(<em key={`${keyPrefix}-i${i++}`}>{m[4]}</em>)
     else if (m[6] !== undefined)
       nodes.push(
-        <code key={`${keyPrefix}-c${i++}`} className="rounded-sm bg-surface-sunken px-1.5 py-0.5 font-code text-[0.9em]">
+        <code key={`${keyPrefix}-c${i++}`} className="lf-well rounded-sm px-1.5 py-0.5 font-code text-[0.9em]">
           {m[6]}
         </code>,
       )
@@ -93,9 +106,8 @@ export function TypeAnswer({ segment, value, onChange, disabled, verdict }: Exer
         aria-label={t('lesson.families.input.yourAnswer')}
         onChange={(e) => onChange({ text: e.target.value })}
         className={cn(
-          'min-h-11 w-full rounded-md border-2 px-4 py-3 lf-body font-semibold',
-          'placeholder:text-content-muted focus-visible:outline focus-visible:outline-2',
-          'focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed',
+          'min-h-12 w-full rounded-md px-4 py-3 lf-body font-semibold placeholder:text-content-muted',
+          FOCUS_RING,
           optionStateClasses(verdictState(verdict, text.trim().length > 0)),
         )}
       />
@@ -213,9 +225,8 @@ export function FillBlank({ segment, value, onChange, disabled, verdict }: Exerc
                 aria-label={t('lesson.families.input.fillBlank.gapLabel', { n: piece.n })}
                 onChange={(e) => setGap(piece.n, e.target.value)}
                 className={cn(
-                  'mx-1 inline-block min-h-11 w-28 rounded-md border-2 px-2 py-1 text-center lf-body font-semibold align-middle',
-                  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                  'disabled:cursor-not-allowed',
+                  'mx-1 inline-block min-h-12 w-28 rounded-md px-2 py-1 text-center lf-body font-semibold align-middle',
+                  FOCUS_RING,
                   optionStateClasses(state),
                 )}
               />
@@ -233,10 +244,15 @@ export function FillBlank({ segment, value, onChange, disabled, verdict }: Exerc
                 else setFocusedGap(piece.n)
               }}
               className={cn(
-                'mx-1 inline-flex min-h-11 min-w-24 items-center justify-center rounded-md border-2 border-dashed px-3 py-1 lf-body font-semibold align-middle',
-                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                'active:translate-y-px disabled:cursor-not-allowed',
-                focusedGap === piece.n && !verdict ? 'border-primary bg-primary-soft' : optionStateClasses(state),
+                'mx-1 inline-flex min-h-12 min-w-24 items-center justify-center rounded-md px-3 py-1 lf-body font-semibold align-middle',
+                FOCUS_RING,
+                // An EMPTY gap is a place a word goes, so it takes the dashed
+                // waiting well; a filled one is an object like any other.
+                !userValue && !verdict && focusedGap !== piece.n
+                  ? 'lf-well-target'
+                  : focusedGap === piece.n && !verdict
+                    ? optionStateClasses('selected')
+                    : optionStateClasses(state),
               )}
             >
               {userValue ? renderInlineMd(bankTextOf(userValue), `fbv-${idx}`) : null}
@@ -293,8 +309,12 @@ function NumberEntry({
       <div
         aria-label={t('lesson.families.input.yourAnswer')}
         className={cn(
-          'mx-auto flex min-h-14 w-full max-w-xs items-baseline justify-center gap-2 rounded-md border-2 px-4 py-3',
-          optionStateClasses(verdictState(verdict, text.length > 0)),
+          'mx-auto flex min-h-14 w-full max-w-xs items-baseline justify-center gap-2 rounded-md px-4 py-3',
+          // The readout is a PLACE THE ANSWER GOES, not a key — and it sits
+          // directly above twelve keys that are the same size. Made of the same
+          // raised object it was indistinguishable from them: the well says
+          // "this is where your number lands" without a word in any locale.
+          !verdict && text.length === 0 ? 'lf-well' : optionStateClasses(verdictState(verdict, text.length > 0)),
         )}
       >
         <span className={cn('lf-title tabular-nums', text ? 'text-content' : 'text-content-muted')}>
@@ -395,7 +415,7 @@ export function CountObjects(props: ExerciseProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-center gap-2">
-        <span className="inline-flex min-h-11 items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5">
+        <span className="inline-flex min-h-12 items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5">
           <VisualMark
             icon={askIcon}
             imageUrl={askImageUrl}
@@ -440,7 +460,7 @@ export function EquationBuilder({ segment, value, onChange, disabled, verdict }:
   return (
     <div className="space-y-4">
       <div className="text-center">
-        <span className="inline-block rounded-full bg-primary-soft px-4 py-1.5 lf-title text-primary tabular-nums">
+        <span className="lf-slab inline-block rounded-full px-4 py-1.5 lf-title text-content tabular-nums">
           {t('lesson.families.input.equation.target', { value: format(target) })}
         </span>
       </div>
@@ -457,7 +477,7 @@ export function EquationBuilder({ segment, value, onChange, disabled, verdict }:
                 <span
                   key={`empty-${i}`}
                   aria-hidden="true"
-                  className="inline-block h-11 w-11 rounded-md border-2 border-dashed border-outline/60 bg-surface"
+                  className="lf-well-target inline-block h-12 w-12 rounded-md"
                 />
               )
             }

@@ -56,6 +56,38 @@ const resources = {
   'pt-BR': { translation: { ...ptCommon, marketing: ptMarketing, errors: ptErrors, auth: ptAuth, dashboard: ptDashboard, profile: ptProfile, lesson: ptLesson, learn: ptLearn, admin: ptAdmin, onboarding: ptOnboarding, placement: ptPlacement, tutor: ptTutor } },
 };
 
+/**
+ * Keep `<html lang>` on the language the learner is actually reading.
+ *
+ * `index.html` ships `lang="en"` and nothing ever changed it, so every Spanish
+ * and Portuguese screen in the product declared itself English. That is not a
+ * cosmetic attribute:
+ *
+ * - A SCREEN READER picks its voice and its pronunciation rules from it. A
+ *   child using VoiceOver on the Spanish Tutor heard Spanish read aloud by an
+ *   English synthesiser — which is the owner's own rule, "SIEMPRE se debe
+ *   hablar en el idioma que tiene configurado el usuario", broken on the one
+ *   surface where speech IS the product.
+ * - Hyphenation, `:lang()` selectors, quote marks, spell-check and the
+ *   browser's own translate prompt all key off it.
+ *
+ * Attached to the instance rather than to a React effect on purpose: the
+ * attribute must be right for the FIRST paint and for any consumer that never
+ * mounts a component (the marketing shell, a crawler, an error boundary), and
+ * i18next resolves the detected language during `init`, before React exists.
+ *
+ * `i18n.language` can carry a region i18next resolved but we do not ship
+ * (`es`, `pt-PT`), so the tag written is the supported locale actually in use.
+ */
+function publishDocumentLanguage(lng: string | undefined): void {
+  if (typeof document === 'undefined') return;
+  const resolved =
+    LOCALES.find((id) => id === lng) ??
+    LOCALES.find((id) => id.slice(0, 2) === (lng ?? '').slice(0, 2).toLowerCase()) ??
+    'en-US';
+  document.documentElement.setAttribute('lang', resolved);
+}
+
 void i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -65,5 +97,8 @@ void i18n
     supportedLngs: [...LOCALES],
     interpolation: { escapeValue: false },
   });
+
+publishDocumentLanguage(i18n.language);
+i18n.on('languageChanged', publishDocumentLanguage);
 
 export default i18n;

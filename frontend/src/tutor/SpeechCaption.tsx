@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import type { AnchorId } from '@/tutor-scene/anchors';
 import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
 import { HudPlate } from './hud/HudPlate';
+import { TutorFace, type TutorFaceProps } from './TutorFace';
 
 /*
  * The tutor's words, ABOVE the character's head.
@@ -46,6 +47,26 @@ import { HudPlate } from './hud/HudPlate';
  * The typewriter reveal is capped and interruptible: a caption that is still
  * typing when the next line arrives would fall behind the audio and stay
  * behind for the rest of the session.
+ *
+ * ────────────────────────────────────────────────────────────────────────────
+ * IT CARRIES THE 2D FACE NOW, AND IT IS THE ONLY SURFACE THAT PRINTS THE LINE
+ * (2026-08-22 — /DESIGN.md §Lumen → *One line, one printing, two channels*).
+ *
+ * The owner's accessibility requirement is TWO channels: a caption above the
+ * head, and the 2D animated head, for a deaf or hard-of-hearing learner. It was
+ * being satisfied as two SURFACES that each printed the whole sentence — the
+ * caption here and the bubble on the lesson plate — which at 1280x800 measured
+ * 21 spoken words printed twice, 252 px apart, inside 142 words on screen. Two
+ * channels is the requirement; two printings was an implementation of it, and
+ * the wrong one: whichever copy the learner reads, the other is noise, and the
+ * one in the plate was pushing the exercise below the fold to be noise.
+ *
+ * Both channels survive intact, in one place. The words are here, at
+ * `lf-speech`, over the speaker. The mouth is here too, beside them, so a
+ * learner reading the lips and a learner reading the words are looking at the
+ * same 300 px of screen instead of choosing — which is the argument this file
+ * has made about the caption's POSITION since it was written, now applied to
+ * the mouth as well. What went is the duplicate sentence, not a channel.
  */
 
 export interface SpeechCaptionProps {
@@ -63,6 +84,16 @@ export interface SpeechCaptionProps {
   className?: string;
   /** Skips the reveal animation. Respected from prefers-reduced-motion too. */
   instant?: boolean;
+  /**
+   * The speaker's 2D face, articulating, beside the words.
+   *
+   * Optional because two callers have no character to show: the greeting on the
+   * audition phase is spoken by whoever the learner has not chosen yet. When it
+   * is supplied it is the product's ONLY articulating mouth for `liruf` and
+   * `dina` (/TUTOR_3D.md §3.1), so it is an accessibility channel and not an
+   * avatar — see `TutorFace`.
+   */
+  face?: TutorFaceProps | null;
 }
 
 /** Fast enough to keep up with speech, slow enough to read as "being said". */
@@ -95,6 +126,7 @@ export function SpeechCaption({
   slot = 'lead.crown',
   className,
   instant = false,
+  face = null,
 }: SpeechCaptionProps) {
   const [shown, setShown] = useState('');
   const timerRef = useRef<number | null>(null);
@@ -217,9 +249,27 @@ export function SpeechCaption({
         aria-live="polite"
         aria-atomic="true"
         className="pointer-events-none"
+        // `gap-3` and not the plate's default `gap-2`: a face needs a little
+        // more air beside a sentence than two words of a chip label do.
+        floorClassName={face ? 'gap-3' : undefined}
       >
-        <span aria-hidden="true">{shown}</span>
-        <span className="sr-only">{text}</span>
+        {/* `self-start`: a face beside a four-line caption belongs at the top of
+            the paragraph, the way a speaker's portrait does. Centred, it drifts
+            to the middle of the block and reads as an illustration. */}
+        {face && <TutorFace {...face} className="h-11 w-11 self-start sm:h-14 sm:w-14" />}
+        {/*
+          `text-start`, because a sentence beside a portrait is a line of prose
+          and a centred paragraph with a ragged left edge against a face reads
+          as a greetings card. Without a face the plate stays centred, which is
+          what it has always been. The alignment is set here rather than through
+          `floorClassName` on purpose: `HudPlate`'s core already carries
+          `text-center`, and two text-align utilities on one element are settled
+          by stylesheet order rather than by which one was written last.
+        */}
+        <span className={face ? 'min-w-0 flex-1 text-start' : undefined}>
+          <span aria-hidden="true">{shown}</span>
+          <span className="sr-only">{text}</span>
+        </span>
       </HudPlate>
 
       {/*

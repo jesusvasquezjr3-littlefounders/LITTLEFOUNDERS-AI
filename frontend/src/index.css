@@ -181,6 +181,30 @@
        the most the contrast arithmetic above will carry. */
     --lf-lumen-tint: 6%;
 
+    /*
+     * THE BACKDROP AS ONE TOKEN, because this layer needs exactly one switch
+     * for the one property on it that costs a compositor anything.
+     *
+     * Profiled 2026-08-22 on the target Intel UHD, at a phone's pixel count
+     * (/DESIGN.md §Lumen → The blur, profiled): up to three extra compositor render
+     * passes and about 0.5 ms of presented frame time per frame — cheap, and
+     * flat against CPU throttling, blur radius and blurred AREA alike, because
+     * what it buys is passes rather than pixels. Cheap on hardware we can
+     * measure is not the same as cheap on the hardware the `low` tier exists
+     * for, which is the hardware nothing here could emulate, so `low` flips
+     * this token off (`--lf-lumen-alpha-flat` below).
+     */
+    --lf-lumen-backdrop: blur(var(--lf-lumen-blur)) saturate(var(--lf-lumen-chroma));
+    /*
+     * THE FLAT FORM'S ONE VALUE. No blur means the island comes through SHARP
+     * behind the words, and removing that detail is what the blur was FOR — so
+     * a plate that loses it CLOSES rather than merely defrosting. Stated once
+     * because it is reached two ways: a browser with no `backdrop-filter` at
+     * all, and a device the quality governor has demoted to `low`. It is denser
+     * than either published density, so the contrast bound can only improve.
+     */
+    --lf-lumen-alpha-flat: 0.97;
+
     /* Derived — the fill, and the colour every shadow on this layer is made of. */
     --lf-lumen-fill: color-mix(in srgb, rgb(var(--lf-surface)) calc(100% - var(--lf-lumen-tint)), var(--lf-sky) var(--lf-lumen-tint));
     --lf-lumen-shade: color-mix(in srgb, var(--lf-ground) 34%, #000 66%);
@@ -204,6 +228,64 @@
        camera orbits, and a glow on the wrong side is worse than a glow with no
        side at all. */
     --lf-stage-sun-y: calc(88% - var(--lf-sun-height) * 66%);
+
+    /*
+     * ANSWER SURFACES — the lesson engine's three objects
+     * (/DESIGN.md §Answer surfaces). One recipe, two contexts.
+     *
+     * An answer option is the ONE component family that lives on both layers:
+     * inside the Tutor it sits on a Lumen reading plate over a live island,
+     * and in the Lesson Player it sits on an ordinary page. So it cannot be
+     * made of Lumen (glass on glass) and it cannot be made of Liquid Glass
+     * (a `.lf-glass` panel over the island is the sticker this pass deleted).
+     * It is made of the thing both layers agree on: THE LIGHT. The four
+     * registered properties are global and carry AUTO_LIGHT defaults, so this
+     * recipe reads as the island's own hour on the stage and as neutral room
+     * light on a page, without a single conditional.
+     *
+     * THE PHYSICAL RULE, and every value below follows from it: the pane is
+     * GLASS and the object on it is OPAQUE AND LIT. That is what makes an
+     * object always read as raised in both themes and over any backdrop — a
+     * translucent plate composites toward whatever is behind it, an opaque
+     * object does not, and the object additionally catches `--lf-obj-lift` more
+     * of the key light because it is nearer to it.
+     */
+
+    /* How much more key light an object catches than the pane under it. */
+    --lf-obj-lift: 7%;
+    /* The object's body — opaque, and lit. Never a bare `surface`. */
+    --lf-obj-fill: color-mix(in srgb, var(--lf-lumen-fill) calc(100% - var(--lf-obj-lift)), var(--lf-key) var(--lf-obj-lift));
+
+    /*
+     * The edge is made of INK, not of the scene's shade, and that is the one
+     * place these objects deliberately differ from Lumen. A plate's edge is
+     * shade because a plate is a hole in the picture; an object's edge is where
+     * its own body ends, and ink is the only colour that darkens a light theme
+     * and lightens a dark one — which is the direction elevation runs in each.
+     * A shade edge would vanish in dark mode exactly where the drop shadow
+     * already has.
+     */
+    --lf-obj-edge: color-mix(in srgb, rgb(var(--lf-content)) 17%, transparent);
+    --lf-obj-edge-hover: color-mix(in srgb, rgb(var(--lf-content)) 28%, transparent);
+
+    /*
+     * The seat. Same sun as the plate's shadow, at roughly a third the throw:
+     * an option is a small thing lying ON its pane, not a pane floating over an
+     * island, and a plate-length shadow under a 48 px row reads as a balloon.
+     */
+    --lf-obj-drop-y: calc(1px + (1 - var(--lf-sun-height)) * 4px);
+    --lf-obj-drop-blur: calc(5px + (1 - var(--lf-sun-height)) * 11px);
+    --lf-obj-drop-alpha: calc((0.09 + (1 - var(--lf-sun-height)) * 0.09) * 100%);
+    /* The specular top lip, in the key light's colour — the same ramp Lumen
+       uses, at half strength, because a small object catches less of it. */
+    --lf-obj-rim: calc((0.16 + var(--lf-sun-height) * 0.30) * 50%);
+
+    /*
+     * A stated object keeps its lip, its edge and its seat and only changes
+     * BODY, so it is still the same object. The body it changes to is the
+     * theme's own `-soft` well tone, which is already tuned per theme, rather
+     * than a fresh mix that would have to be tuned twice and drift.
+     */
   }
 
   .dark {
@@ -504,8 +586,8 @@
        simply does not know what hour it is. */
     background-color: rgb(var(--lf-surface) / 0.9);
     background-color: color-mix(in srgb, var(--lf-lumen-fill) calc(var(--lf-lumen-alpha) * 100%), transparent);
-    -webkit-backdrop-filter: blur(var(--lf-lumen-blur)) saturate(var(--lf-lumen-chroma));
-    backdrop-filter: blur(var(--lf-lumen-blur)) saturate(var(--lf-lumen-chroma));
+    -webkit-backdrop-filter: var(--lf-lumen-backdrop);
+    backdrop-filter: var(--lf-lumen-backdrop);
     box-shadow: var(--lf-shadow-glass-sm);
     box-shadow:
       /* the specular lip, in the key light's colour */
@@ -625,11 +707,419 @@
         color-mix(in srgb, var(--lf-lumen-shade) var(--lf-lumen-drop-alpha), transparent);
   }
 
+  /* ══════════════════════════════════════════════════════════════════════
+     THE EDGE THAT SAYS THERE IS MORE — added 2026-08-22.
+
+     A box whose content continues below the fold looks exactly like a box
+     that has finished, and an overlay scrollbar only appears once the
+     learner is already scrolling, which is after the moment they needed to
+     be told. The lesson plate is 420 px wide, so 27 of the 55 exercise types
+     fit whole and the rest have to scroll their answers (measured on
+     `/dev/tutor-lab` at 1280x800): this is what stops that scroll from being
+     something a child has to discover.
+
+     IT IS MADE OF INK, not of the plate's fill, and that is what makes it
+     work in both themes over any backdrop a moving render can produce: ink
+     darkens a light theme and lightens a dark one, which is the direction
+     "there is more underneath" runs in each. A fade to the surface colour
+     would need to know what the surface composites to, and over a live
+     island nothing does.
+
+     The two attributes are written imperatively by `useScrollEdges` — a
+     scroll handler on this route may write an attribute and may never call
+     `setState`.
+     ══════════════════════════════════════════════════════════════════════ */
+  .lf-scroll-edge {
+    position: relative;
+    /*
+     * The edges belong to the BOX, and this is what makes that true when the
+     * box is shorter than they are. Each is 24 px tall and pinned to an edge,
+     * so in a frame that has been squeezed to nothing — which is exactly what
+     * the conversation log does while an exercise needs the plate — the top one
+     * hangs 24 px out of the bottom. Measured on `/dev/tutor-lab` at 1280x800
+     * with `read_chart` up: 4 px of the plate's own column overflowing past a
+     * body that is supposed never to scroll. Invisible, and the kind of
+     * invisible that turns into a scrollbar on somebody else's platform.
+     */
+    overflow: hidden;
+  }
+
+  .lf-scroll-edge::before,
+  .lf-scroll-edge::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    height: 1.5rem;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 1;
+    transition: opacity var(--lf-dur-base) var(--lf-ease);
+  }
+
+  .lf-scroll-edge::before {
+    top: 0;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, rgb(var(--lf-content)) 13%, transparent),
+      transparent
+    );
+  }
+
+  .lf-scroll-edge::after {
+    bottom: 0;
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, rgb(var(--lf-content)) 13%, transparent),
+      transparent
+    );
+  }
+
+  .lf-scroll-edge[data-scroll-above='yes']::before,
+  .lf-scroll-edge[data-scroll-below='yes']::after {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lf-scroll-edge::before,
+    .lf-scroll-edge::after {
+      transition: none;
+    }
+  }
+
+  /*
+   * ONE BLUR-LESS LUMEN, REACHED TWO WAYS.
+   *
+   * No blur means the island shows through SHARP, and removing the detail
+   * behind text is what the blur was FOR — so the plate CLOSES instead. It
+   * keeps the sky-leaning fill, the key light's lip, the ground-coloured
+   * shadow and the pane radius: this is Lumen with the window shut, not a
+   * second material and not the opaque-floor era coming back.
+   *
+   * Both routes close the plate by writing the ALPHA tokens rather than a
+   * `background-color`, so `.lf-lumen-reading` closes with the chrome instead
+   * of being overridden by specificity, and so the value lives in exactly one
+   * place. Only the tier route also writes `--lf-lumen-backdrop: none`: a
+   * browser that does not know the property drops the declaration at parse
+   * time, so there is nothing there to switch off.
+   */
   @supports not (backdrop-filter: blur(1px)) {
-    /* No blur means the island shows through SHARP, and detail behind text is
-       what the blur was removing. The plate closes instead. */
-    .lf-lumen {
-      background-color: rgb(var(--lf-surface) / 0.97);
+    :root {
+      --lf-lumen-alpha: var(--lf-lumen-alpha-flat);
+      --lf-lumen-alpha-reading: var(--lf-lumen-alpha-flat);
+    }
+  }
+
+  /*
+   * THE OTHER WAY: a device the scene's own quality governor has demoted to
+   * `low` (`tutor-scene/quality.ts` → `QualitySettings.lumenBlur`, published by
+   * `StageShell` on the stage root). The tokens inherit from there down to
+   * every plate on the layer, which is why this is three custom properties and
+   * not a rule per surface.
+   *
+   * It is the SAME evidence the tier already spends on pixel ratio,
+   * antialiasing, shadows and ambient motion: two consecutive sub-45fps
+   * windows, twice (`governor.ts`). The device that loses the blur is the
+   * device that has demonstrated on its own frames that it cannot pay for it.
+   */
+  [data-lumen-blur='off'] {
+    --lf-lumen-backdrop: none;
+    --lf-lumen-alpha: var(--lf-lumen-alpha-flat);
+    --lf-lumen-alpha-reading: var(--lf-lumen-alpha-flat);
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     ANSWER SURFACES — the lesson engine's three objects
+     (/DESIGN.md §Answer surfaces). Shared by `OptionCard` and its siblings in
+     `lesson-engine/core/primitives.tsx`, and therefore by all 57 exercise
+     renderers, the Lesson Player and the Tutor's live segment panel.
+
+     WHAT WAS WRONG. Every one of them was the same Tailwind recipe written out
+     by hand about forty times — `rounded-md border-2 border-outline/70
+     bg-surface` — which is four sides of uniform hairline around a flat opaque
+     fill. That is the silhouette of an HTML form field, and it was the most
+     visible thing on the Tutor route: three white outlined boxes sitting on a
+     Lumen reading plate over a live island, reading as a web form dropped into
+     a diorama. On the ordinary lesson page the same recipe put white on
+     slate-50 with the whole distinction carried by a 1.4%-contrast border.
+
+     There are exactly THREE objects and no fourth:
+
+       .lf-well   recessed — a place something GOES (trays, banks, drop targets,
+                  the scenario the question is about)
+       .lf-slab   resting  — an object that CARRIES content and is not pressable
+                  (case rows, statement panels, speech bubbles, tables)
+       .lf-answer tappable — an object you PRESS (options, chips, tiles, keys,
+                  text fields)
+
+     They are one material in three states of elevation, and the elevation is
+     made of light rather than of tone, which is what lets the same recipe sit
+     on a translucent plate over a moving render AND on a flat page.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  .lf-slab,
+  .lf-answer {
+    background-color: var(--lf-obj-fill);
+    /*
+     * THE OBJECT IS CONVEX, and this one gradient is what says so.
+     *
+     * Flat fill alone was not enough over a Lumen READING plate: the plate is
+     * 0.86 of nearly the same fill, so on a bright island an opaque option and
+     * the pane under it composite to within a couple of percent of each other
+     * and the only separation left is a hairline. A lit convex surface is
+     * brighter along its top and falls away toward its bottom, and reproducing
+     * that gives the object FORM instead of asking tone to do a job it cannot
+     * do here. It costs nothing and it is the same trick the specular lip is
+     * already playing one line down, at the scale of the whole body.
+     */
+    background-image: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--lf-key) 9%, transparent),
+      transparent 62%,
+      color-mix(in srgb, var(--lf-lumen-shade) 5%, transparent)
+    );
+    box-shadow:
+      /* the specular top lip, in the key light's own colour */
+      inset 0 1px 0 color-mix(in srgb, var(--lf-key) var(--lf-obj-rim), transparent),
+      /* the edge — ink, so it darkens a light theme and lightens a dark one */
+      inset 0 0 0 1px var(--lf-obj-edge),
+      /* the seat — one shadow, agreeing with the same sun the plate's does */
+      0 var(--lf-obj-drop-y) var(--lf-obj-drop-blur) calc(var(--lf-obj-drop-y) * -0.5)
+        color-mix(in srgb, var(--lf-lumen-shade) var(--lf-obj-drop-alpha), transparent);
+    transition:
+      box-shadow var(--lf-dur-base) var(--lf-ease),
+      background-color var(--lf-dur-base) var(--lf-ease),
+      transform var(--lf-dur-fast) var(--lf-ease);
+  }
+
+  /*
+   * WEIGHT IS NOT SET HERE, deliberately, and that is a correction made during
+   * the pass. The material sat on buttons that already carry `lf-label` (700)
+   * and `lf-title` (700), and a `font-weight` on the component would have
+   * silently rewritten both — a closed type scale quietly overridden by a
+   * material is exactly the kind of drift /DESIGN.md §Typography exists to
+   * stop. Weight stays where it is legible: at the call site, on the element
+   * whose type it is.
+   */
+  .lf-answer {
+    cursor: pointer;
+  }
+
+  /*
+   * Hover LIFTS. It is a bonus channel and never the only one — there is no
+   * hover on a phone, which is where most of these are pressed (/DESIGN.md
+   * §Layout → Responsive Adaptation).
+   */
+  @media (hover: hover) {
+    .lf-answer:not(:disabled):not([aria-disabled='true']):hover {
+      box-shadow:
+        inset 0 1px 0 color-mix(in srgb, var(--lf-key) var(--lf-obj-rim), transparent),
+        inset 0 0 0 1px var(--lf-obj-edge-hover),
+        0 calc(var(--lf-obj-drop-y) * 1.8) calc(var(--lf-obj-drop-blur) * 1.4)
+          calc(var(--lf-obj-drop-y) * -0.5)
+          color-mix(in srgb, var(--lf-lumen-shade) calc(var(--lf-obj-drop-alpha) * 1.3), transparent);
+    }
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .lf-answer:not(:disabled):not([aria-disabled='true']):hover {
+      transform: translateY(-1px);
+    }
+  }
+
+  /* Pressed: the object seats itself into the pane. Its shadow collapses with
+     it, because a shadow that stays put while the thing above it moves is the
+     tell that neither is real. */
+  .lf-answer:not(:disabled):not([aria-disabled='true']):active {
+    transform: translateY(1px);
+    box-shadow:
+      inset 0 0 0 1px var(--lf-obj-edge-hover),
+      0 0 0 0 transparent;
+  }
+
+  .lf-answer:disabled,
+  .lf-answer[aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+
+  /*
+   * THE FOUR STATED BODIES. Each keeps the lip, the edge and the seat and adds
+   * a 2 px inset ring in its own colour — inset, so it never changes layout and
+   * never fights a `ring-*` utility, the same correction `.lf-lumen-selected`
+   * records one screen up.
+   *
+   * NONE OF THEM IS THE ONLY CHANNEL. `primitives.tsx` prints a MARK inside
+   * every stated option — an empty circle becomes a filled check when chosen or
+   * right, and a filled cross when the learner's own pick was not — so the
+   * state survives colour blindness, a greyscale print and a bright phone in
+   * sunlight (/AGENTS.md §1.11, /DESIGN.md §Colour → never colour alone).
+   */
+  .lf-answer-selected {
+    background-color: rgb(var(--lf-primary-soft));
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--lf-key) var(--lf-obj-rim), transparent),
+      inset 0 0 0 2px rgb(var(--lf-primary)),
+      0 var(--lf-obj-drop-y) var(--lf-obj-drop-blur) calc(var(--lf-obj-drop-y) * -0.5)
+        color-mix(in srgb, var(--lf-lumen-shade) var(--lf-obj-drop-alpha), transparent);
+  }
+
+  .lf-answer-correct {
+    background-color: rgb(var(--lf-success-soft));
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--lf-key) var(--lf-obj-rim), transparent),
+      inset 0 0 0 2px rgb(var(--lf-success)),
+      0 var(--lf-obj-drop-y) var(--lf-obj-drop-blur) calc(var(--lf-obj-drop-y) * -0.5)
+        color-mix(in srgb, var(--lf-lumen-shade) var(--lf-obj-drop-alpha), transparent);
+  }
+
+  /*
+   * NOT RED, AND THAT IS A SPEC FIX RATHER THAN A PREFERENCE.
+   * LESSON_ENGINE.md §1 P3 is one sentence long — "No red WRONG" — and the
+   * shared option card had been painting `border-error bg-error-soft` on the
+   * learner's own pick since the primitives were written, on the single most
+   * looked-at control in the product. Amber is the colour the Tutor's own
+   * verdict well already uses for `tryAgain`, and the CROSS in the mark is what
+   * actually says "not this one".
+   */
+  .lf-answer-wrong {
+    background-color: rgb(var(--lf-warning-soft));
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--lf-key) var(--lf-obj-rim), transparent),
+      inset 0 0 0 2px rgb(var(--lf-warning)),
+      0 var(--lf-obj-drop-y) var(--lf-obj-drop-blur) calc(var(--lf-obj-drop-y) * -0.5)
+        color-mix(in srgb, var(--lf-lumen-shade) var(--lf-obj-drop-alpha), transparent);
+  }
+
+  /*
+   * Dimmed is the one state with NO ring: it is not a verdict, it is the
+   * absence of one — an option nobody chose and nobody has to read again. It
+   * loses its seat too, because the point is that it is no longer an object in
+   * front of the learner.
+   */
+  .lf-answer-dimmed {
+    background-color: transparent;
+    /* The convex lighting goes with the seat: a dimmed option is not an object
+       in front of the learner any more, it is a line they no longer have to
+       read. Leaving the gradient on would keep it looking pressable. */
+    background-image: none;
+    box-shadow: inset 0 0 0 1px var(--lf-obj-edge);
+    opacity: 0.55;
+  }
+
+  /*
+   * THE RECESSED ONE. A place something goes, cut into the pane rather than
+   * laid on it: the lip moves to the BOTTOM (a hollow catches light on its far
+   * lower wall, which is the whole trick), the shadow moves INSIDE, and the
+   * body darkens instead of lifting.
+   *
+   * It is deliberately not `bg-surface-sunken`: that token is opaque, and over
+   * a Lumen plate an opaque well is a second sticker inside the first one.
+   */
+  .lf-well {
+    background-color: color-mix(in srgb, var(--lf-lumen-shade) 7%, transparent);
+    box-shadow:
+      inset 0 -1px 0 color-mix(in srgb, var(--lf-key) var(--lf-obj-rim), transparent),
+      inset 0 0 0 1px var(--lf-obj-edge),
+      inset 0 2px 6px -2px color-mix(in srgb, var(--lf-lumen-shade) 18%, transparent);
+    transition:
+      box-shadow var(--lf-dur-base) var(--lf-ease),
+      background-color var(--lf-dur-base) var(--lf-ease);
+  }
+
+  /* A well with something over it, or holding the thing being judged. */
+  .lf-well-active {
+    box-shadow:
+      inset 0 -1px 0 color-mix(in srgb, var(--lf-key) var(--lf-obj-rim), transparent),
+      inset 0 0 0 2px rgb(var(--lf-primary)),
+      inset 0 2px 6px -2px color-mix(in srgb, var(--lf-lumen-shade) 18%, transparent);
+  }
+
+  /*
+   * THE EMPTY MARK — the "not this one" state of the second channel
+   * (`primitives.tsx` → `AnswerMark`). A ring rather than a filled shape,
+   * because an unchosen option must read as unchosen at a glance across a whole
+   * column of them, and a filled grey circle beside a filled indigo one is a
+   * comparison the eye has to make rather than a difference it just sees.
+   */
+  .lf-answer-mark-empty {
+    box-shadow: inset 0 0 0 2px var(--lf-obj-edge-hover);
+  }
+
+  /*
+   * A well that is WAITING for something keeps the dashed outline, because the
+   * dash is the only part of this vocabulary that means "empty on purpose" — a
+   * solid empty well reads as a component that failed to load. It goes solid
+   * and indigo the moment something is over it.
+   */
+  .lf-well-target {
+    background-color: color-mix(in srgb, var(--lf-lumen-shade) 5%, transparent);
+    box-shadow: none;
+    outline: 2px dashed var(--lf-obj-edge-hover);
+    outline-offset: -2px;
+  }
+  /*
+   * READY — something is picked up and this zone could take it. Three states,
+   * not two: with only "resting" and "the pointer is here" a learner who has
+   * lifted a piece cannot tell which of the boxes on screen will accept it,
+   * which is the moment they most need telling.
+   */
+  .lf-well-target-ready {
+    outline-color: color-mix(in srgb, rgb(var(--lf-primary)) 55%, transparent);
+  }
+  .lf-well-target[data-active='true'] {
+    background-color: rgb(var(--lf-primary-soft));
+    outline: 2px solid rgb(var(--lf-primary));
+  }
+
+  /*
+   * A browser without `color-mix` gets a legible object that simply does not
+   * know what hour it is — the same fallback strategy `.lf-lumen` takes.
+   *
+   * THE CONDITION IS A DECLARATION, NOT A BARE VALUE, and that is a bug fix
+   * rather than a tidy-up. `@supports not (color-mix(…))` looks like it asks
+   * "is color-mix supported"; it is actually a `<general-enclosed>`, which the
+   * spec says evaluates to UNKNOWN — and Chrome resolves `not unknown` to TRUE.
+   * So the fallback applied in every browser, on every one of these objects,
+   * and the entire "made of the scene's light" recipe above it was dead code:
+   * measured on the live stage, an answer's edge was `--lf-outline` and its
+   * shadow was the five-layer atmospheric one, not the ink edge and the
+   * sun-agreeing seat this section describes. It photographed acceptably, which
+   * is exactly why it survived — the fallback is a decent design, it is just
+   * not this one.
+   */
+  @supports not (background-color: color-mix(in srgb, red 50%, transparent)) {
+    .lf-slab,
+    .lf-answer {
+      background-color: rgb(var(--lf-surface));
+      box-shadow: inset 0 0 0 1px rgb(var(--lf-outline)), var(--lf-shadow-glass-sm);
+    }
+    .lf-well {
+      background-color: rgb(var(--lf-surface-sunken));
+      box-shadow: inset 0 0 0 1px rgb(var(--lf-outline));
+    }
+    /*
+     * THE STATE RING SURVIVES THE FALLBACK, and it has to be restated here
+     * rather than left to the rules above, because this block sits AFTER them
+     * and `box-shadow` is a single property: a fallback that redefines the base
+     * silently erases every ring declared before it. That is not a style
+     * regression, it is the loss of one of the two channels a verdict is
+     * required to have — so on the one browser that would take this path, a
+     * child's right answer and their mistake would look identical apart from a
+     * fill they may not be able to distinguish.
+     */
+    .lf-answer-selected {
+      box-shadow: inset 0 0 0 2px rgb(var(--lf-primary)), var(--lf-shadow-glass-sm);
+    }
+    .lf-answer-correct {
+      box-shadow: inset 0 0 0 2px rgb(var(--lf-success)), var(--lf-shadow-glass-sm);
+    }
+    .lf-answer-wrong {
+      box-shadow: inset 0 0 0 2px rgb(var(--lf-warning)), var(--lf-shadow-glass-sm);
+    }
+    .lf-answer-dimmed {
+      background-color: transparent;
+      box-shadow: inset 0 0 0 1px rgb(var(--lf-outline));
+    }
+    .lf-answer-mark-empty {
+      box-shadow: inset 0 0 0 2px rgb(var(--lf-content-faint));
     }
   }
 

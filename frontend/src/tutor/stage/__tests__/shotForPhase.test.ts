@@ -71,10 +71,25 @@ describe('shotForPhase', () => {
     expect(shotForPhase({ phase: 'conversing', articulates: true, segmentLive: true })).toBe('closeup');
   });
 
+  it('replays a conversation at the shot it happened at, and ends it by pulling back', () => {
+    /*
+     * A REPLAY IS THE SESSION HAPPENING AGAIN (/ORACLE.md §12), so the camera
+     * does what it did: the speaking shot for the length of the conversation,
+     * and the same pull back to the island that IS the goodbye (§9.5). A replay
+     * that simply stopped on a close-up would end by freezing on a face.
+     *
+     * The articulation split carries over unchanged, because its reason is the
+     * character's mouth (/TUTOR_3D.md §3.1) and not the tense.
+     */
+    expect(shotForPhase({ phase: 'replaying', articulates: true })).toBe('closeup');
+    expect(shotForPhase({ phase: 'replaying', articulates: false })).toBe('closeup-wide');
+    expect(shotForPhase({ phase: 'replaying', articulates: true, replayEnded: true })).toBe('establishing');
+  });
+
   it('never leaves a phase without a shot', () => {
     // The union and the runtime list must agree, or a phase added later maps to
     // undefined and the director damps toward a pose that does not exist.
-    expect(STAGE_PHASES).toHaveLength(6);
+    expect(STAGE_PHASES).toHaveLength(7);
     const covered = new Set(STAGE_PHASES.map((phase) => shotForPhase({ phase, articulates: true })));
     expect(covered.size).toBeGreaterThan(1);
   });

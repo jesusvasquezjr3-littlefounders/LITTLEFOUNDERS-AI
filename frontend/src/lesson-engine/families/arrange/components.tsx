@@ -20,7 +20,15 @@ import { cn } from '@/lib/utils'
 import { Icon } from '@/components/ui'
 import type { ExerciseProps, SegmentBase } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
-import { KidSlider, SunkenWell, TokenChip, VisualMark, optionStateClasses, type OptionVisualState } from '../../core/primitives'
+import {
+  FOCUS_RING,
+  KidSlider,
+  SunkenWell,
+  TokenChip,
+  VisualMark,
+  optionStateClasses,
+  type OptionVisualState,
+} from '../../core/primitives'
 import { seededSort, seededSortMiddling } from '../../core/shuffle'
 import { playSfx } from '../../player/sfx'
 
@@ -177,14 +185,15 @@ function OrderedSlots({
                 state={slotState(i, tapOrder.order, verdict, correctOrder)}
                 disabled={disabled}
                 onSelect={() => tapOrder.remove(id)}
-                className="flex-1 justify-start rounded-md text-left"
+                shape="slot"
+                className="flex-1"
               >
                 <VisualLabel item={item} imgClassName="h-10 w-10" iconClassName="text-[24px]" />
               </TokenChip>
             ) : (
               <div
                 aria-label={t('lesson.families.arrange.slot', { index: i + 1 })}
-                className="min-h-11 flex-1 rounded-md border-2 border-dashed border-outline/60 bg-surface-sunken"
+                className="lf-well-target min-h-12 flex-1 rounded-md"
               />
             )}
           </li>
@@ -197,30 +206,32 @@ function OrderedSlots({
 // ---- match_pairs -----------------------------------------------------------------
 
 const PAIR_TINTS = [
-  'border-primary bg-primary-soft',
-  'border-accent bg-accent-soft',
-  'border-secondary bg-secondary-soft',
-  'border-delight bg-delight-soft',
-  'border-warning bg-warning-soft',
+  'bg-primary-soft',
+  'bg-accent-soft',
+  'bg-secondary-soft',
+  'bg-delight-soft',
+  'bg-warning-soft',
 ] as const
 
-const CHIP_BASE =
-  'min-h-11 w-full rounded-md border-2 px-3 py-2 text-left lf-body font-semibold text-content ' +
-  'transition-[border-color,background-color,transform] duration-150 ' +
-  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ' +
-  'active:translate-y-px disabled:cursor-not-allowed'
+const CHIP_BASE = 'min-h-12 w-full rounded-md px-3 py-2 text-left lf-body font-semibold text-content ' + FOCUS_RING
 
+/**
+ * A matched pair is the one place in the engine where colour genuinely IS the
+ * message — the tint is which PAIR a chip belongs to, not whether it is right —
+ * so it keeps a tint, and it is the one that survives the material rather than
+ * replacing it. Every other state routes through the shared one.
+ */
 function pairChipClass(
   paired: number,
   selected: boolean,
   verdictState: OptionVisualState | null,
 ): string {
-  if (verdictState === 'correct') return 'border-success bg-success-soft'
-  if (verdictState === 'wrong') return 'border-error bg-error-soft'
-  if (verdictState === 'dimmed') return 'border-outline/50 bg-surface opacity-60'
-  if (paired >= 0) return PAIR_TINTS[paired % PAIR_TINTS.length] as string
-  if (selected) return 'border-primary bg-primary-soft shadow-glass-sm'
-  return 'border-outline/70 bg-surface hover:border-primary/60'
+  if (verdictState === 'correct') return optionStateClasses('correct')
+  if (verdictState === 'wrong') return optionStateClasses('wrong')
+  if (verdictState === 'dimmed') return optionStateClasses('dimmed')
+  if (paired >= 0) return optionStateClasses('idle') + ' ' + (PAIR_TINTS[paired % PAIR_TINTS.length] as string)
+  if (selected) return optionStateClasses('selected')
+  return optionStateClasses('idle')
 }
 
 export function MatchPairs({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
@@ -415,15 +426,22 @@ export function MemoryFlip({ segment, disabled, onFinish, verdict }: ExercisePro
               disabled={disabled || isMatched || Boolean(verdict)}
               onClick={() => tap(card)}
               className={cn(
-                'flex min-h-24 flex-col items-center justify-center gap-1 rounded-lg border-2 p-2 text-center lf-label',
-                'transition-[border-color,background-color,transform] duration-150',
-                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                'active:translate-y-px disabled:cursor-not-allowed',
+                // THE BOARD MUST NOT MOVE WHEN A CARD TURNS OVER.
+                // `min-h-24` let a face-UP card grow to its text — 210px beside
+                // a 178px face-down neighbour — so every flip re-laid the grid
+                // and the cards a child was memorising by POSITION shuffled
+                // under them. That is the one thing a concentration game may
+                // not do. A square cell is fixed by the column width, so the
+                // board is the same board before and after every tap; the face
+                // is clamped to fit it rather than the cell stretching to fit
+                // the face.
+                'flex aspect-square min-h-24 flex-col items-center justify-center gap-1 overflow-hidden rounded-lg p-2 text-center lf-label',
+                FOCUS_RING,
                 isMatched
-                  ? 'border-success bg-success-soft text-content'
+                  ? optionStateClasses('correct')
                   : isUp
-                    ? 'border-primary bg-surface text-content'
-                    : 'border-outline/70 bg-primary-soft text-primary',
+                    ? optionStateClasses('selected')
+                    : cn(optionStateClasses('idle'), 'bg-primary-soft text-primary'),
               )}
             >
               {isUp ? (
@@ -433,12 +451,12 @@ export function MemoryFlip({ segment, disabled, onFinish, verdict }: ExercisePro
                       src={card.image_url}
                       alt=""
                       loading="lazy"
-                      className="h-12 w-12 rounded-md object-contain"
+                      className="h-10 w-10 shrink-0 rounded-md object-contain sm:h-12 sm:w-12"
                     />
                   ) : (
-                    <Icon name={card.icon} className="text-[28px]" />
+                    <Icon name={card.icon} className="shrink-0 text-[28px]" />
                   )}
-                  <MarkdownLite text={card.text_md} />
+                  <MarkdownLite text={card.text_md} className="line-clamp-4 leading-tight" />
                 </>
               ) : (
                 <Icon name="question_mark" className="text-[28px]" />
@@ -582,10 +600,8 @@ function SortChip({
       onPointerDown={onPointerDown}
       style={{ touchAction: 'none' }}
       className={cn(
-        'inline-flex min-h-11 items-center justify-center rounded-full border-2 px-4 py-2 lf-label',
-        'transition-[border-color,background-color,transform,opacity] duration-150',
-        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-        'active:translate-y-px disabled:cursor-not-allowed',
+        'inline-flex min-h-12 items-center justify-center rounded-full px-4 py-2 lf-label',
+        FOCUS_RING,
         !disabled && 'cursor-grab',
         optionStateClasses(state),
         dragging && 'opacity-30',
@@ -658,13 +674,14 @@ function SortingBoard({
             <div
               key={zone.id}
               data-dropzone={zone.id}
+              data-active={isHover ? 'true' : undefined}
               className={cn(
-                'rounded-lg border-2 border-dashed bg-surface-sunken p-3 transition-colors',
-                isHover
-                  ? 'border-primary bg-primary-soft/40'
-                  : selected || drag
-                    ? 'border-primary/60'
-                    : 'border-outline/60',
+                'lf-well-target rounded-lg p-3',
+                // A zone that is READY to receive (something is picked up) is
+                // brighter than a resting one but not yet the indigo of the
+                // zone the pointer is actually over — three states, because
+                // with two a learner cannot tell "you may drop" from "here".
+                !isHover && (selected || drag) && 'lf-well-target-ready',
               )}
             >
               <button
@@ -672,7 +689,7 @@ function SortingBoard({
                 disabled={disabled || !selected}
                 onClick={() => selected && onAssign(selected, zone.id)}
                 className={cn(
-                  'min-h-11 w-full rounded-sm px-2 text-center transition-colors',
+                  'min-h-12 w-full rounded-sm px-2 text-center transition-colors',
                   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
                   'disabled:cursor-default',
                   selected ? 'bg-primary-soft text-primary' : 'text-content',
@@ -710,7 +727,7 @@ function SortingBoard({
       {drag ? (
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed z-50 inline-flex items-center rounded-full border-2 border-primary bg-primary-soft px-4 py-2 lf-label text-content shadow-glass-md"
+          className="lf-answer lf-answer-selected pointer-events-none fixed z-50 inline-flex items-center rounded-full px-4 py-2 lf-label text-content"
           style={{ left: drag.x, top: drag.y, transform: 'translate(-50%, -150%)' }}
         >
           <MarkdownLite text={textById(drag.itemId)} />
@@ -812,7 +829,7 @@ export function BuildSentence({ segment, value, onChange, disabled, verdict }: E
   return (
     <div className="space-y-4">
       <SunkenWell active={tapOrder.order.length < slots}>
-        <div className="flex min-h-11 flex-wrap items-center gap-2">
+        <div className="flex min-h-12 flex-wrap items-center gap-2">
           {Array.from({ length: slots }, (_, i) => {
             const id = tapOrder.order[i]
             return id ? (
@@ -828,7 +845,7 @@ export function BuildSentence({ segment, value, onChange, disabled, verdict }: E
               <span
                 key={i}
                 aria-label={t('lesson.families.arrange.slot', { index: i + 1 })}
-                className="inline-block h-11 w-16 rounded-full border-2 border-dashed border-outline/60"
+                className="lf-well-target inline-block h-12 w-16 rounded-full"
               />
             )
           })}
@@ -865,7 +882,8 @@ export function TimelineOrder({ segment, value, onChange, disabled, verdict }: E
                   state={slotState(i, tapOrder.order, verdict, correctOrder)}
                   disabled={disabled}
                   onSelect={() => tapOrder.remove(id)}
-                  className="flex-1 rounded-md md:w-full"
+                  shape="slot"
+                  className="flex-1 md:w-full"
                 >
                   <span className="flex items-center gap-1.5">
                     {(() => {
@@ -885,7 +903,7 @@ export function TimelineOrder({ segment, value, onChange, disabled, verdict }: E
               ) : (
                 <div
                   aria-label={t('lesson.families.arrange.slot', { index: i + 1 })}
-                  className="min-h-11 flex-1 rounded-md border-2 border-dashed border-outline/60 bg-surface-sunken md:w-full"
+                  className="lf-well-target min-h-12 flex-1 rounded-md md:w-full"
                 />
               )}
             </li>
@@ -943,13 +961,46 @@ export function PatternComplete({ segment, value, onChange, disabled, verdict }:
     onChange({ placed: next })
   }
 
-  const tile = 'flex h-16 w-16 items-center justify-center rounded-md border-2'
+  const tile = 'flex h-16 w-16 items-center justify-center rounded-md'
+
+  /**
+   * Keep the slot the child has to fill ON SCREEN.
+   *
+   * The pattern is a LINE — that is the whole perceptual claim of the exercise
+   * — and up to twelve 64 px tiles cannot fit a 335 px column at any tile size
+   * the tap floor allows, so the row scrolls. A scroller parked at its left end
+   * hides the slots, which are always last, and the child is looking at a
+   * pattern with nothing to do. So the row starts scrolled to the first empty
+   * slot and follows it as slots fill. Written against `scrollLeft` rather than
+   * `scrollIntoView`, which would also scroll the PAGE.
+   */
+  const stripRef = useRef<HTMLDivElement>(null)
+  const firstEmptyRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    const strip = stripRef.current
+    const slot = firstEmptyRef.current
+    if (!strip || !slot) return
+    if (strip.scrollWidth <= strip.clientWidth) return
+    strip.scrollLeft = Math.max(0, slot.offsetLeft - (strip.clientWidth - slot.offsetWidth) / 2)
+  }, [nextEmpty])
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-center gap-2">
+      {/*
+        A PATTERN IS A LINE, AND `flex-wrap` BROKE IT INTO A GRID.
+        At 375 a six-tile sequence wrapped 4 + 2, so the thing the child is
+        asked to READ ALONG stopped being a sequence — and the options bank
+        directly below, drawn as a third row of identical 64px tiles with no
+        container of its own, became indistinguishable from a continuation of
+        it. `flex-nowrap` inside a scroller keeps the pattern one line at every
+        width, and the bank moved into the same `.lf-well` every other bank in
+        the engine uses (/DESIGN.md §Answer surfaces: a well is "a place
+        something goes"), so the two rows can no longer be confused.
+      */}
+      <div ref={stripRef} className="-mx-1 overflow-x-auto px-1 pb-1">
+        <div className="flex w-max min-w-full flex-nowrap items-center justify-center gap-2">
         {sequence.map((s, i) => (
-          <span key={`s${i}`} className={cn(tile, 'border-outline/50 bg-surface')}>
+          <span key={`s${i}`} className={cn(tile, 'shrink-0', 'lf-slab')}>
             <VisualMark
               icon={s.icon}
               imageUrl={s.image_url}
@@ -961,17 +1012,15 @@ export function PatternComplete({ segment, value, onChange, disabled, verdict }:
         {slotIndexes.map((slot) => {
           const optionId = placed[String(slot)]
           const option = options.find((o) => o.id === optionId)
-          let stateClass = 'border-dashed border-primary bg-primary-soft/40'
-          if (option) stateClass = 'border-primary bg-surface'
+          let stateClass = 'lf-well-target'
+          if (option) stateClass = optionStateClasses('selected')
           if (verdict && correct) {
-            stateClass =
-              optionId === correct[String(slot)]
-                ? 'border-success bg-success-soft'
-                : 'border-error bg-error-soft'
+            stateClass = optionStateClasses(optionId === correct[String(slot)] ? 'correct' : 'wrong')
           }
           return (
             <button
               key={`slot${slot}`}
+              ref={slot === nextEmpty ? firstEmptyRef : undefined}
               type="button"
               aria-label={
                 option
@@ -980,13 +1029,7 @@ export function PatternComplete({ segment, value, onChange, disabled, verdict }:
               }
               disabled={disabled || !option}
               onClick={() => clear(slot)}
-              className={cn(
-                tile,
-                'transition-[border-color,background-color] duration-150',
-                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                'disabled:cursor-not-allowed',
-                stateClass,
-              )}
+              className={cn(tile, 'shrink-0', FOCUS_RING, stateClass)}
             >
               {option ? (
                 <VisualMark
@@ -1001,34 +1044,34 @@ export function PatternComplete({ segment, value, onChange, disabled, verdict }:
             </button>
           )
         })}
+        </div>
       </div>
-      <div className="flex flex-wrap justify-center gap-2">
-        {options.map((option) => {
-          const used = usedOptionIds.has(option.id)
-          return (
-            <button
-              key={option.id}
-              type="button"
-              aria-pressed={used}
-              disabled={disabled || used || nextEmpty === undefined}
-              onClick={() => fill(option.id)}
-              className={cn(
-                tile,
-                'transition-[border-color,background-color,transform] duration-150',
-                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                'active:translate-y-px disabled:cursor-not-allowed',
-                used || verdict ? 'border-outline/50 bg-surface opacity-60' : 'border-outline/70 bg-surface hover:border-primary/60',
-              )}
-            >
-              <VisualMark
-                icon={option.icon}
-                imageUrl={option.image_url}
-                iconClassName={cn('text-[32px]', TILE_TINTS[option.tint] ?? 'text-primary')}
-                imgClassName="h-12 w-12"
-              />
-            </button>
-          )
-        })}
+      <div className="space-y-2">
+        <p className="lf-label text-content-muted">{t('lesson.families.arrange.bank')}</p>
+        <SunkenWell active={nextEmpty !== undefined && !verdict}>
+          <div className="flex flex-wrap justify-center gap-2">
+            {options.map((option) => {
+              const used = usedOptionIds.has(option.id)
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  aria-pressed={used}
+                  disabled={disabled || used || nextEmpty === undefined}
+                  onClick={() => fill(option.id)}
+                  className={cn(tile, FOCUS_RING, optionStateClasses(used || verdict ? 'dimmed' : 'idle'))}
+                >
+                  <VisualMark
+                    icon={option.icon}
+                    imageUrl={option.image_url}
+                    iconClassName={cn('text-[32px]', TILE_TINTS[option.tint] ?? 'text-primary')}
+                    imgClassName="h-12 w-12"
+                  />
+                </button>
+              )
+            })}
+          </div>
+        </SunkenWell>
       </div>
     </div>
   )

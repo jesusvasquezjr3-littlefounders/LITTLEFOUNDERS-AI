@@ -149,7 +149,8 @@ export function TrueFalse({ segment, value, onChange, disabled, verdict }: Exerc
             state={boolState(isTrue)}
             disabled={disabled}
             onSelect={() => onChange({ ...draft, is_true: isTrue })}
-            className="text-center"
+            mark={false}
+            className="justify-center text-center"
           >
             <span className="lf-title">{isTrue ? t('lesson.trueFalse.true') : t('lesson.trueFalse.false')}</span>
           </OptionCard>
@@ -311,7 +312,7 @@ export function YesNoCases({ segment, value, onChange, disabled, verdict }: Exer
           const decided = decisions[c.id]
           const shouldApply = correctIds?.includes(c.id)
           return (
-            <li key={c.id} className="rounded-md border-2 border-outline/70 bg-surface p-3">
+            <li key={c.id} className="lf-slab rounded-md p-3">
               {c.image_url || c.icon ? (
                 <div className="flex items-center gap-3">
                   <VisualMark imageUrl={c.image_url} icon={c.icon} imgClassName="h-12 w-12" iconClassName="text-[32px]" />

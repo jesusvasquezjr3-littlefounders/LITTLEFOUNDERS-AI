@@ -7,7 +7,8 @@ import { HudPlate } from './hud/HudPlate';
 import { LessonPlate, type LessonPlateDetent } from './hud/LessonPlate';
 import { WorldChip } from './hud/WorldChip';
 import { SpeechCaption } from './SpeechCaption';
-import { TutorBubble, TutorTranscript } from './TutorBubble';
+import { TutorFace } from './TutorFace';
+import { TutorTranscript } from './TutorTranscript';
 import { LiveSegmentPanel } from './LiveSegmentPanel';
 import { useStageDock, type ConversationLayerProps, type StageDockValue } from './stage/StageShell';
 
@@ -85,13 +86,16 @@ import { useStageDock, type ConversationLayerProps, type StageDockValue } from '
  * this same socket one level up and handed to the single canvas there, so a
  * conversation ending can never take the island down with it.
  *
- * WHY THE SAME LINE APPEARS THREE TIMES. The caption above the head, the 2D
- * bubble, and the audio are not redundancy — they are three channels for three
- * different learners, and every one of them is somebody's only channel. A deaf
- * learner has the first two; a pre-reader has the third; a learner on a phone
- * on a bus with no headphones has the first two again. For `liruf` and `dina`
- * the bubble is the only articulating mouth that exists (/TUTOR_3D.md §3.1), so
- * it is not the fallback: for half the cast it is the feature.
+ * THE TUTOR'S LINE IS PRINTED ONCE (2026-08-22 — /DESIGN.md §Lumen → *One
+ * line, one printing, two channels*). There are still three CHANNELS, and each
+ * is somebody's only one: the words, the moving mouth, and the audio. A deaf
+ * learner has the first two; a pre-reader has the third; a learner on a bus
+ * with no headphones has the first two again. What changed is that the first
+ * two now share ONE surface — the caption over the speaker's crown carries the
+ * sentence AND the 2D face (`TutorFace`), instead of the caption printing it
+ * over the character and the lesson plate printing it again 252 px lower. Two
+ * copies of one sentence is not a second channel; it is the same channel twice,
+ * and it was pushing the exercise below the fold to be there.
  */
 
 export type ConversationViewProps = ConversationLayerProps;
@@ -165,6 +169,23 @@ export function ConversationView({
 
   const { turn, sendText } = socket;
   const turnSeq = turn?.seq ?? 0;
+
+  /*
+   * THE SPEAKER'S FACE, for the caption to carry beside the words.
+   *
+   * Built once here rather than at each of the two call sites below, because
+   * the no-scene branch has to show exactly the same face: on a device with no
+   * usable WebGL this is not a second view of the character, it is the ONLY
+   * one, and a learner who cannot be shown the island should still be able to
+   * see who is talking to them.
+   */
+  const face = {
+    character: session.character,
+    emotion: turn?.emotion ?? ('neutral' as const),
+    action: turn?.action ?? ('idle' as const),
+    actionKey: turnSeq,
+    speaking,
+  };
   const segmentId = socket.segment?.segmentId ?? null;
   const ended = socket.closedReason !== null || socket.connection === 'closed';
 
@@ -373,7 +394,12 @@ export function ConversationView({
     <>
       {ready ? (
         <>
-          <SpeechCaption text={turn?.text ?? null} turnSeq={turnSeq} />
+          {/*
+            THE ONE SURFACE THAT PRINTS WHAT THE TUTOR IS SAYING, and it carries
+            both channels: the words, and the 2D mouth that is the only
+            articulation `liruf` and `dina` have (/TUTOR_3D.md §3.1).
+          */}
+          <SpeechCaption text={turn?.text ?? null} turnSeq={turnSeq} face={face} />
 
           {/*
             Time is a rune over the island, not a chip in a header bar, because
@@ -399,12 +425,14 @@ export function ConversationView({
           Both nodes above are anchored, and an anchored node is hidden and
           inert until the projector places it. Where there is no usable WebGL
           the projector never runs at all, so mounting them here would put the
-          tutor's own words on a node nothing will ever position. That is worse
-          than it sounds: the 2D bubble on the plate carries the same sentence
-          VISUALLY but is deliberately not a live region, precisely because the
-          caption already is (`TutorBubble.tsx`). Dropping the caption without
-          replacing it therefore leaves a screen-reader learner with a tutor
-          that never says anything at all.
+          tutor's own words on a node nothing will ever position — and since
+          2026-08-22 the caption is the ONLY surface that prints the line at
+          all, so dropping it here would leave the learner with a tutor that
+          says nothing, visually and to a screen reader alike.
+
+          AND THE FACE COMES WITH IT, which matters more here than anywhere
+          else on the route: with no island there is no 3D character, so this
+          2D one is not a second view of the tutor, it is the only one.
 
           The typewriter goes with the projection. A device that cannot draw the
           island has no performance to keep up with, and a line that types
@@ -426,8 +454,13 @@ export function ConversationView({
           className="pointer-events-none fixed inset-x-0 top-20 z-30 mx-auto flex w-full max-w-[min(34rem,92vw)] flex-col items-center gap-2 px-4"
         >
           {turn?.text && (
-            <HudPlate shape="plate">
-              <span className="lf-speech" aria-live="polite" aria-atomic="true">
+            <HudPlate shape="plate" floorClassName="gap-3">
+              <TutorFace {...face} className="h-11 w-11 self-start sm:h-14 sm:w-14" />
+              <span
+                className="lf-speech min-w-0 flex-1 text-start"
+                aria-live="polite"
+                aria-atomic="true"
+              >
                 {turn.text}
               </span>
             </HudPlate>
@@ -470,6 +503,27 @@ export function ConversationView({
         onCornerHeld={dock?.setCornerPlate}
         peekLabel={peekLabel}
         peekStatus={peekStatus}
+        /*
+         * ONE TAP ON "AN ACTIVITY IS WAITING" LANDS SOMEWHERE IT CAN BE DONE.
+         *
+         * HALF is the next detent up and it is the right one for a learner who
+         * just wants to see the conversation. It is the wrong one for an
+         * exercise: at 375x812 it leaves about 90 px between the pinned prompt
+         * and the pinned check control. The row that announces the activity
+         * opens to the detent the activity is answerable in, and the learner can
+         * still drag it anywhere afterwards.
+         */
+        peekOpensTo="full"
+        /*
+         * THE BODY IS A COLUMN, NOT A SCROLLER (2026-08-22).
+         *
+         * Exactly one child below owns the free height and scrolls — the
+         * activity while there is one, the conversation log while there is not.
+         * Everything else is `shrink-0`. That is what keeps a question and its
+         * answers on screen together on the exercise types that are taller than
+         * the plate (`LessonPlate` -> `bodyLayout`, `LiveSegmentPanel`).
+         */
+        bodyLayout="column"
         header={
           /*
            * Finishing is a first-class turn, so it lives on the one surface
@@ -490,28 +544,26 @@ export function ConversationView({
           </HudPlate>
         }
       >
-        <TutorBubble
-          character={session.character}
-          emotion={turn?.emotion ?? 'neutral'}
-          action={turn?.action ?? 'idle'}
-          actionKey={turnSeq}
-          speaking={speaking}
-          history={socket.history}
-          line={turn?.text ?? null}
-          label={t('tutor.conversation.bubbleLabel')}
-          // The log is mounted separately, below the activity: the tutor speaks,
-          // hands over an exercise, and the history belongs under both.
-          transcript={false}
-        />
+        {/*
+          NO SECOND PRINTING OF THE LIVE LINE HERE (2026-08-22, /DESIGN.md
+          §Lumen → *One line, one printing, two channels*).
 
+          The plate used to open with the 2D bubble: the tutor's head beside the
+          exact sentence the caption was already carrying 252 px above it. Both
+          channels the owner asked for survive — the words and the moving mouth
+          are in the caption together now — and what the plate got back is the
+          132 px that sentence was costing the exercise underneath it.
+        */}
         {socket.budget === 'wrapping' && (
-          <p className="lf-body rounded-md bg-warning-soft px-3 py-2 text-content" role="status">
+          <p className="shrink-0 lf-body rounded-md bg-warning-soft px-3 py-2 text-content" role="status">
             {t('tutor.conversation.wrappingUp')}
           </p>
         )}
 
         {socket.intelDegraded && (
-          <p className="lf-caption text-content-muted">{t('tutor.conversation.gettingToKnowYou')}</p>
+          <p className="shrink-0 lf-caption text-content-muted">
+            {t('tutor.conversation.gettingToKnowYou')}
+          </p>
         )}
 
         {/*
@@ -520,35 +572,48 @@ export function ConversationView({
           spoke, and this carries it for the many more who typed.
         */}
         {awaitingReply && (
-          <p className="lf-caption text-content-muted" role="status">
+          <p className="shrink-0 lf-caption text-content-muted" role="status">
             {t('tutor.mic.thinking')}
           </p>
         )}
 
         {socket.segment ? (
-          <LiveSegmentPanel live={socket.segment} token={token} onGraded={socket.reportGrade} />
+          <LiveSegmentPanel
+            live={socket.segment}
+            token={token}
+            onGraded={socket.reportGrade}
+            // The one child of the column that takes the free height and scrolls.
+            className="min-h-0 flex-auto"
+          />
         ) : ended ? (
-          <p className="lf-body text-content-muted" role="status">
+          <p className="shrink-0 lf-body text-content-muted" role="status">
             {t('tutor.conversation.ended')}
           </p>
         ) : (
           turn?.next === 'segment' && (
-            <p className="lf-body text-content-muted" role="status">
+            <p className="shrink-0 lf-body text-content-muted" role="status">
               {t('tutor.conversation.listening')}
             </p>
           )
         )}
 
         {/*
-          `spokenSeq` is what stops the same sentence printing three times. The
-          caption carries it over the crown, the bubble carries it beside the
-          animating mouth, and the log carried it a third time at the bottom of
-          the same plate — measured at 1280x800 in `adapting` as 118 words on
-          screen for the 30 being said (/DESIGN.md §Lumen → What to delete).
+          THE RECORD, AND IT YIELDS TO THE ACTIVITY.
+
+          `spokenSeq` keeps the live line out of the log — the caption above the
+          speaker's crown is where the present tense lives, and a log that also
+          carries it is a log catching up with itself. `compact` is the other
+          half: with an exercise on the plate the learner is answering a
+          question, and 192 px of history under it was the difference between a
+          `Check` control on screen and a `Check` control past the bottom edge
+          (measured at 1280x800 in es-MX). It is capped, never hidden — it is a
+          live region, and the only place a learner ever sees what the
+          microphone actually heard.
         */}
         <TutorTranscript
           history={socket.history}
           spokenSeq={turn ? turnSeq : null}
+          compact={socket.segment !== null}
           label={t('tutor.conversation.transcriptLabel')}
         />
       </LessonPlate>

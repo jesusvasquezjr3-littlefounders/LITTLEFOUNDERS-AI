@@ -150,6 +150,98 @@ good, for two COMPANIONS who do not carry the speech.
 
 rho and zara — the two human characters — lip-sync. That is the decision.
 
+### §3.1a The mouth card is UNLIT, so it has to be TOLD what colour the light is (2026-08-23)
+
+`MouthCard` uses `MeshBasicMaterial`, and its own comment has always said why:
+every lit material renders that particular map **solid black** over the mouth —
+`MeshStandardMaterial` and `MeshLambertMaterial` alike — while the same material
+with a flat `color` and no map lights up perfectly. The lights reach it, the
+normals point outward, it is out of shadow mapping, it is front-side only. The
+failure is isolated to "lit shader + this map" and **the root cause is still not
+found**.
+
+The comment also named the consequence — "what it will not do is darken with the
+face as the scene's lighting changes" — and the consequence turned out to be
+much worse than that sentence sounds. Photographed at Dusk at 1280x800: **Zara's
+mouth was a cream-white rectangle across an orange-lit face.** It read as tape
+over her mouth, on one of the two characters the camera closes in on precisely
+BECAUSE they articulate (§2.2). Measured against the skin two head-widths away,
+the card was **+62/+104/+111 of 255 brighter at Dusk and +133/+138/+130 at
+Night**, against a Day baseline mismatch of +7/+16/+24.
+
+**An unlit material still multiplies its map by `color`.** So the light is now
+applied by hand: `backdrops.ts` → `mouthCardTint(lighting)` returns an
+approximate irradiance for a forward-facing patch of skin — half sky, half sun —
+expressed as a ratio against the DEFAULT palette (`AUTO_LIGHT`) and encoded
+through the exact sRGB transfer function.
+
+Three properties make it safe to have landed on a finished product, and each is
+asserted in `mouthTint.test.ts`:
+
+- **The default is byte-identical.** `auto` in light mode is the reference, so
+  it returns exactly `#ffffff`; `day` clamps to `#ffffff` too. Nobody who has
+  not chosen a darker hour sees any change at all.
+- **It carries the HUE of the hour, not only its brightness.** A tint that only
+  dimmed would swap a white sticker for a grey one. Dusk comes back warm
+  (`#e1b9a8`), Night cold (`#79859b`).
+- **The sRGB encode is load-bearing, not pedantry.** `material.color` is read as
+  sRGB and converted to linear before the shader multiplies, so writing a linear
+  ratio straight in applies it twice. The first version did exactly that: it
+  fixed Dusk and turned Night's mouth into a BLACK rectangle — the same defect
+  wearing the other colour. Caught by screenshot, not by the test.
+
+**Measured result: worst-case mismatch fell from ~135 to ~50 of 255.** It is not
+zero, and it will not be while an unlit patch has to track a lit, tone-mapped
+surface: the pipeline stacks ACES tone mapping on a `CLAY_EMISSIVE_FLOOR`
+(`characterMaterial.ts`) on normalised export materials, and no closed-form
+multiplier follows all three. Fitting an exponent by eye across two screenshots
+was considered and rejected — that is the confident-wrong-number failure
+/AGENTS.md §1.14 is about. **The real fix is still the one this section opens
+with: find out why a lit material renders that map black.** Then the card takes
+the light like everything else and no multiplier exists to be wrong.
+
+`backdrop` reaches the card by prop from `TutorScene` → `Cast` → `Character3D` →
+`MouthCard`, and the card reads the THEME from `useTheme` exactly as
+`SceneLighting` does — one answer to "is it dark", not two that can disagree.
+
+### §3.1b KNOWN LIMITATION: a name plate hangs above a BOUNDING BOX, which is not a head on a quadruped
+
+During the personalization audition every candidate carries a name plate,
+anchored in `TutorScene` at `focus.y + focus.height * 0.25` — which, since
+`focus.y` is the mid-head point at `spot.y + height * 0.75`, is exactly the top
+of that character's bounding box, in metres. Correct by construction for the
+three characters who stand upright.
+
+Dina is a quadruped 1.90 m tall and 2.80 m long, and her standing spot is the
+centre of her FOOTPRINT — under her hips, not under her head. So her plate rides
+1.90 m above her hips, and at the desktop audition camera that projects up and
+back, next to Liruf's snout. Photographed at 1280x800 it reads as though the
+green dinosaur is called Dina. **At 375 px — where most of these learners are —
+the camera is further back and the same plate reads correctly.**
+
+**Why it is not fixed here, with the measurement that decided it.** The obvious
+fix is to anchor the plate to the head bone. The four exports came from
+different pipelines and their skeletons do not agree on what a head is. Measured
+out of the source `.glb` bind poses (inverse bind matrices, so joints and mesh
+are in one space), as a fraction of each character's own height:
+
+| character | `head` joint | `head_end` joint | highest joint of any name |
+|---|---|---|---|
+| rho | **0.535** (his waist) | 1.002 | `head_end` |
+| zara | 0.808 | 1.001 | `head_end` |
+| liruf | 0.590 | 0.659 | `head_end`, at 0.659 — his MESH reaches 1.000 |
+| dina | 0.616 | 0.464 | `earend` / `R_earend`, at **1.010** |
+
+There is no rule over that table. Each model is also a single unnamed primitive,
+so there is no head sub-mesh to measure instead. A per-character head anchor is
+therefore new MEASURED data that has to come from re-rigging or from a geometric
+head-finder, and either is an asset-pipeline change with its own verification
+pass. Moving the plate by a constant chosen to look right at one camera is the
+failure `TutorScene` already documents for CSS-pixel nudges: right at one shot,
+wrong at the next.
+
+Recorded in /ORACLE.md §16.2 in plain language, because a customer may see it.
+
 ### §3.2 Depot is CONTENT-ADDRESSED — the base URL alone is not enough
 
 This was documented for weeks as "blocked only on credentials". That was wrong,
@@ -572,6 +664,51 @@ Two preferences, neither a rule, both added with the mask:
 Both are preferences because rejecting on them can return NO spot, and `Cast`
 renders nothing without one. A cramped character beats an empty island.
 
+### An audition separates in DEPTH, because depth is what a phone has spare
+
+Added 2026-08-22. A third preference, and it applies only to the personalization
+audition (`AUDITION_NARROW_WEIGHT`, `AUDITION_RINGS`, and the `narrowAxis` /
+`narrowWeight` / `rings` options).
+
+`approach` has to keep every candidate inside a horizontal field of view that is
+**17 degrees** at 375x812, so the frame's world WIDTH is decided by whichever of
+them sits furthest ACROSS it — and the island's share of the screen follows from
+that one number and nothing else. Field of view cannot trade against it (a
+narrower lens stands further back and the frame comes out the same size);
+distance cannot trade against it either. A metre spent sideways is a metre the
+camera stands back, and coverage falls as the SQUARE of that. **The same metre
+spent in DEPTH satisfies the same separation floor and costs the framing
+nothing.**
+
+So the solver charges each candidate spot for its off-axis distance, squared, in
+island radii. Squared rather than linear: a candidate a third of the way out is
+barely charged and one at the rim is charged the lot — a linear penalty of any
+useful size collapses the cast onto the centre line and turns an audition into a
+queue receding from the camera. On `diorama-a` it moves the widest candidate
+from **1.97 m off the aim to 1.56 m**, which is what took the island from 29.9%
+of a phone to 49.1% (§9.1).
+
+**The outer rings stay.** Cutting them was the obvious way to gather the cast
+and it is the way that loses people: a set stopping at 0.54 of the radius seats
+all four on `diorama-a` and only THREE on `diorama-b`, whose pond takes most of
+the inner deck, and a candidate with no spot has no anchor, so their plate is
+hidden and inert and they cannot be chosen at all. The gathering is a
+PREFERENCE, which degrades into "stand wherever you can"; the rings only have to
+be there when it needs them. `AUDITION_RINGS` samples five rings from 0.24 to
+0.66, finer inward than the two-person default and stopping just short of it
+outward.
+
+The gathering does cost something and it is written down: on `diorama-b`, whose
+walkable deck is a ring around a pond, the four end up in a narrow column near
+the middle of a 1280 px frame rather than spread across it. `diorama-a` is the
+default island and keeps a good lateral spread at both breakpoints. Placement
+may not read the camera (§9.1's trap), so there is one arrangement for both
+aspects and this is the side to be wrong on: a phone that reads as a place,
+against a desktop that reads as a slightly tight group.
+
+`npm run verify:placement` passes the audition options through, because a gate
+that exercises a different configuration certifies a different product.
+
 ### `npm run verify:placement`
 
 Runs the real solver against the real islands, headless, in seconds, and reports
@@ -622,6 +759,124 @@ NEGATIVE grouping weight, because four candidates are a ring you look along
 rather than a huddle — and the huddle is what leaves the last one nowhere to
 stand. `npm run verify:placement` runs the audition against both real islands
 alongside every shipped pairing.
+
+**AND IT RUNS THE AUDITION *PLUS* A COMPANION** (added 2026-08-22, and the
+omission is the shape of the ship-blocker in §5.1). The gate certified the
+audition, and it certified lead+companion pairs, and it never certified a
+character who is BOTH — which is the only configuration that broke. It now
+sweeps every character in every role on both islands: 16 cases per island,
+built by the product's own `standingCast` (`tutor-scene/cast.ts`, imported for
+the same reason the solver is), each solved in full and compared seat-for-seat
+against the plain audition. The property being asserted is that **who you pick
+does not move anybody** — if the cast ever starts depending on the pairing, the
+solve runs on that cast and the seats stop matching.
+
+Measured, and these are the tightest numbers the new case finds:
+
+| | tightest rim clearance | tightest contact-shadow margin |
+|---|---|---|
+| `diorama-a` | **0.49 m** (dina) | **0.28 m** (dina) |
+| `diorama-b` | **0.29 m** (dina) | **0.08 m** (dina) |
+
+Identical to the plain audition's own, in all 32 cases — which is the answer the
+sweep exists to produce rather than to assume.
+
+**And it checks FOOTING, which is a third fact the gate did not know.** Every
+spot in the broken build was walkable, inside the rim and correctly turned; what
+was wrong was where the character's feet and contact shadow ended up once
+mounted. So each character is now measured twice through the product's own
+`modelFooting` — once free, once from inside the scaled group `Character3D`
+mounts them in — and the two readings must be identical. On the pre-fix code
+Dina's half-footprint reads 1.414 m free and 95.937 m mounted, and the run
+fails. The contact-shadow margin above is the second half of it: `ContactShadow`
+is a flat plane of `footprint x 1.15` radius laid on the surface, so from
+wherever a character stands it has to fit inside the rim, and Dina on
+`diorama-b` has 8 cm to spare.
+
+The footing section uses `CHARACTER_MEASUREMENTS` rather than the shipped .glb,
+and that is forced rather than chosen: the shipped characters are
+meshopt-quantized AND skinned, so their POSITION accessors hold integers whose
+metres only exist after dequantization and posing — `npm run assets:inspect`
+says so itself about these files ("world size n/a — mesh is quantized"), and the
+source exports are not in the repository. The table is where those measurements
+were written down and it is the same table the solver separates the cast by.
+Cross-checked against the live renderer: Dina's contact shadow measures 3.25 m
+across in the browser, and the table predicts 3.251 m. That the measurement is
+parent-independent for a real, skinned, nested model is certified separately and
+exactly by `src/tutor-scene/modelBounds.test.ts`.
+
+### §5.1 A measurement of a SHARED model must not depend on where it hangs
+
+Added 2026-08-22, from the worst defect this stage has shipped.
+
+`useSceneModel` hands out the loader's cached `gltf.scene` **by reference** —
+deliberately, since cloning would double VRAM for a scene that mounts each
+character once. One `Object3D` therefore IS the model, and it is attached to
+whichever group is currently rendering it.
+
+`Box3.setFromObject` is a WORLD-space measurement. Called on that shared object
+it answers "how much room does this occupy on stage", not "how big is this
+export", and the two coincide only while the object has no parent. `Character3D`
+called it to derive `footOffset` and `footprint`. On a first mount the object is
+unparented and the numbers are the export's own; on a REMOUNT the object is
+still inside the outgoing instance's group during the incoming instance's render
+pass, so the box comes back already scaled into scene metres and is multiplied
+by `characterScale` a second time.
+
+Three of the four characters export at scale 1.0, so the defect only sank them
+by the island's surface height and was invisible for five days. Dina exports in
+Unreal units at scale 67.86. Measured on `diorama-a` at the moment she was
+invited to stay:
+
+| | before | after |
+|---|---|---|
+| Dina's contact shadow | 3.25 m across | **221.53 m** |
+| Dina's feet | y = 0.14 | **y = −12.24** |
+| Liruf's feet | y = 0.17 | y = 0.00 (sunk 17 cm) |
+| composed scene box | 6.49 x 2.10 x 6.14 | **235 x 14 x 235** |
+| canvas coverage | 55.6% | **100%** |
+
+The 221 m black plane is what "the sky turned grey" was, and the 235 m scene box
+is why changing the island from that state collapsed the camera to a 70 px
+speck — `CameraDirector` refits on `fitKey` and the content it fits had grown by
+a factor of thirty-six.
+
+The rule, and it is not confined to characters: **ask a shared model how big it
+is in ITS OWN space.** `modelBounds` / `modelFooting` (`tutor-scene/modelBounds.ts`)
+compose local matrices down from the model root and read nothing above it, so
+they are parent-independent by construction rather than by being called at the
+right moment. `Character3D` and `Diorama` both use them. `setFromObject` remains
+correct — and is still used — for the composed scene, the ground and the camera
+fit, where the world IS the question.
+
+Two details that cost a run each: the object-level box wins over the geometry
+box wherever a class defines one, exactly as `Box3.expandByObject` makes it win,
+because every character is a `SkinnedMesh` whose geometry box is bind-space and
+means nothing (reading it collapsed Dina's shadow to 1.06 m and the bipeds' to a
+centimetre); and the object-level box is computed once and cached by three, on
+the first measurement, which happens while the model is unparented.
+
+### §5.2 A character's Suspense boundary must not depend on their ROLE
+
+The other half of the same defect, and the reason a remount happened at all.
+
+`Cast` used to wrap principals in a `<Fragment key={id}>` and audition extras in
+a `<Suspense key={id}>`. Inviting a candidate to stay moves them across that
+branch, which changes the ELEMENT TYPE under an unchanged key, which React
+implements as unmount-and-remount. The outgoing companion crosses it in the
+other direction at the same instant, which is why Liruf sank in the same frame.
+
+Every character now gets their own `<Suspense key={id}>`, always. What the
+principals' shared boundary bought — `onReady`, and therefore the tutor's first
+spoken line, waiting for the people the session is about — is bought explicitly
+instead by `PrincipalModels`, which suspends on exactly those assets, renders
+nothing, and is mounted only until the stage lights up. After that it can only
+do harm: a companion invited later would suspend the shared boundary and blank
+the whole cast while their .glb loaded, which is the failure the per-character
+boundaries exist to prevent.
+
+A role change now costs nothing at all: no remount, no new `AnimationMixer` on a
+shared skeleton, no rig re-bind, no ground re-sample, no one-frame gap.
 
 ## §6 Performance contract
 
@@ -862,6 +1117,14 @@ That is what the atlas bought.
 >   bubble carries the articulation — `CharacterActor`'s `speaking` prop
 >   animates the SVG mouths that §3.1 could not give them in 3D.
 >
+>   **Where that 2D head LIVES changed on 2026-08-22, and only the place.** It
+>   was a chat bubble on the lesson plate; it is now inside the caption over the
+>   speaker's crown, cropped to the head (`TutorFace`), beside the words. Two
+>   surfaces printing one sentence 252 px apart was never the requirement, and
+>   in a 64 px whole-body figure the mouth this section is about measured about
+>   five pixels. See /DESIGN.md §Lumen -> *One line, one printing, two
+>   channels*.
+>
 >   **CORRECTED 2026-08-21 — that second half was `/ORACLE.md` §2.2's FALLBACK,
 >   not its decision.** §2.2's primary mitigation reads "They frame wider.
 >   Their `conversation` framing keeps more of the body in shot"; never closing
@@ -1051,13 +1314,53 @@ therefore tilts down harder than landscape (`ISLAND_ELEVATION`,
 went from a level camera — which framed two figures against void, 7.0% of a
 phone — to a tilt that puts the island BEHIND the pair.
 
-**`approach` is now WIDER than `establishing` on a phone, and that inversion is
-deliberate.** Its one phase is `personalizing`, which is an audition: the whole
-catalog stands out to 0.70 of the island's radius with a name plate on each
-crown, and a plate whose anchor leaves the frame is hidden AND inert. Holding
-four of them costs about 19 m in portrait while `establishing`, free to bleed,
-stands at 14 m. The two shots frame different subjects — the PLACE and the
-PEOPLE — and only in landscape is the place the larger of the two.
+**`approach` holds the CAST, not a fraction of the island** (changed
+2026-08-22, and the paragraph this replaces is the reason the picker was
+empty). Its one phase is `personalizing`, which is an audition: the whole
+catalog stands on the island with a name plate on each crown, and a plate whose
+anchor leaves the frame is hidden AND inert, so a candidate framed out is a
+candidate who cannot be chosen by looking at them.
+
+The shot used to buy that safety with a bigger HOLD — a symmetric ring at 0.68
+of the radius, hand-tuned once until the widest candidate fitted — and the
+paragraph here said, correctly for that design, that `approach` was therefore
+WIDER than `establishing` on a phone. **A ring is not four people.** It charged
+the camera for both sides of a whole circle when what actually had to be in
+frame was four points, and it went on charging after the cast moved. Measured at
+375x812 on `diorama-a`: the cast's real spread was 1.97 m either side of the aim
+and the proxy charged 2.35 m, so the frame came out 5.56 m wide against a 6.5 m
+island and `personalizing` painted **29.9%** of the viewport while `arriving`
+painted 50.7%. The one screen a child chooses their tutor on was four fifths
+sky, and every gate in the repo was green — the coverage gate included, because
+it asked `approach` the same two-character question it asks every other shot,
+and holding two is strictly easier than holding four.
+
+Three things changed together, and none of them works alone:
+
+- **`ShotContext.cast`** carries the whole audition, and `castPoints` promises
+  every one of them with their own silhouette pad. The framing is now a function
+  of where the people are: gather them and the camera comes in, spread them and
+  it gives ground. No number to re-tune.
+- **The audition gathers in DEPTH** (`standingSpots.ts` →
+  `AUDITION_NARROW_WEIGHT`, §5). Depth is free — two characters a metre apart in
+  depth are a metre apart to the separation rule and cost the frame's WIDTH
+  nothing, which is the axis a portrait phone has least of.
+- **`APPROACH_HOLD.portrait` became a floor**, equal to `ISLAND_HOLD.portrait`:
+  the audition is never framed further out than arrival for want of a subject.
+  `APPROACH_LEAN` dropped 0.25 → 0.12 for the same reason the hold did — a lean
+  is charged directly against the cast now, and a quarter of the way cost a
+  point of coverage on `diorama-a` and four and a half on `diorama-b`.
+
+Result, measured on `/dev/tutor-lab` with the orbit stopped: **29.9% → 49.1%**
+at 375x812 and **48.5% → 55.5%** at 1280x800, with all four candidates on
+screen, facing the learner, each name legible, and no control under 44 px.
+`shots.test.ts` now asks the audition question directly — a four-candidate
+fixture taken off `npm run verify:placement`, held to the same coverage floor
+AND asserted to keep every candidate inside the frame at both breakpoints.
+
+Landscape is unchanged: there the `island.rim.*` pads at 0.88 of the radius are
+still the binding promise, the cast is always well inside them, and `approach`
+is nearer than `establishing` exactly as it always was.
 
 **The idle orbit is a SWING, not a circuit** (`CameraDirector` → `ORBIT_SWING`,
 0.10 rad). It used to accumulate without bound, which was survivable only while
@@ -1324,8 +1627,12 @@ The scene mounts once and stays mounted for the whole `/tutor` route
   character on every tier. Asserted in `budget.test.ts` — both halves, including
   that it does NOT fit with shadows on, so the override cannot quietly become
   unnecessary and stay.
-- **Each audition extra gets its own Suspense boundary.** The tutor and their
-  companion stay inside the boundary that gates `onReady`, so "the cast is on
-  screen" still means the people the session is about. A candidate nobody has
-  chosen must not be able to hold the tutor's first spoken line behind three
-  more .glb fetches.
+- **EVERY character gets their own Suspense boundary — including the tutor and
+  their companion.** Superseded 2026-08-22; it used to be "each audition EXTRA",
+  with the principals sharing the boundary that gates `onReady`, and that
+  distinction shipped the worst defect this stage has had. A wrapper that
+  depends on a character's role remounts them when the role changes. See §5.2
+  for what the remount then did, and for how `onReady` keeps its promise
+  without it. A candidate nobody has chosen still must not be able to hold the
+  tutor's first spoken line behind three more .glb fetches, and now neither can
+  a companion invited halfway through.

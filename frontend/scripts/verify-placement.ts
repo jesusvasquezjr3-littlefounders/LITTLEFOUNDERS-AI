@@ -30,6 +30,19 @@
  * right PLACE and being turned the right WAY are two facts, and a gate that
  * only knows the first will keep reporting OK through the second.
  *
+ * AND IT CHECKS WHERE THEIR FEET GO, added 2026-08-22 for the same reason: a
+ * third fact the gate did not know. It certified the audition, and it certified
+ * lead+companion pairs, and it never certified a character who is BOTH — which
+ * is the one configuration that broke. Inviting Dina to stay while she was also
+ * an audition candidate put her feet 12.24 m under the island and stretched her
+ * contact shadow to 221 m across, covering the canvas; changing the island from
+ * there collapsed the camera to a 70 px speck. Nothing about the PLACEMENT was
+ * wrong — every spot was walkable, inside the rim and correctly turned — so a
+ * gate that only asked about placement reported OK straight through it. The two
+ * new sections below ask the other two questions: does the cast depend on the
+ * pairing (it must not), and does a character's footing depend on how they were
+ * mounted (it must not).
+ *
  * Usage:  npm run verify:placement
  */
 import { dirname, resolve } from 'node:path';
@@ -42,12 +55,20 @@ import {
   Box3,
   BufferAttribute,
   BufferGeometry,
+  Group,
   Mesh,
   MeshBasicMaterial,
+  Object3D,
   Raycaster,
   Vector3,
 } from 'three';
-import { AUDITION_GROUPING, AUDITION_SAMPLES_PER_METRE, findStandingSpots } from '../src/tutor-scene/standingSpots.js';
+import {
+  AUDITION_GROUPING,
+  AUDITION_NARROW_WEIGHT,
+  AUDITION_RINGS,
+  AUDITION_SAMPLES_PER_METRE,
+  findStandingSpots,
+} from '../src/tutor-scene/standingSpots.js';
 import { MAX_OFF_VIEWER, offViewer, solveFacings } from '../src/tutor-scene/facing.js';
 import { STAGE_BEARING } from '../src/tutor-scene/shots.js';
 import type { CharacterId } from '../src/components/characters/control/types.js';
@@ -61,6 +82,7 @@ import type { CharacterId } from '../src/components/characters/control/types.js'
 import {
   castClearanceM,
   castSeparationM,
+  characterScale,
   pairSeparationM,
   CHARACTER_MEASUREMENTS,
   characterFootprintM,
@@ -68,6 +90,8 @@ import {
   sceneScale,
   type SceneMeasurement,
 } from '../src/tutor-scene/measurements.js';
+import { standingCast } from '../src/tutor-scene/cast.js';
+import { modelFooting } from '../src/tutor-scene/modelBounds.js';
 import { walkabilityFor } from '../src/tutor-scene/walkability.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -228,6 +252,45 @@ const PAIRINGS: Array<[CharacterId, CharacterId | null]> = [
  */
 const AUDITION: CharacterId[] = ['dina', 'liruf', 'rho', 'zara'];
 
+/**
+ * A stand-in for a character export, sized from its MEASURED extents.
+ *
+ * IT IS NOT THE .glb, AND THAT IS NOT A SHORTCUT — the shipped assets cannot
+ * answer this question at all. Every character is meshopt-quantized
+ * (KHR_mesh_quantization), so its POSITION accessor holds integers that only
+ * become metres once the runtime dequantizes them, and every character is also
+ * SKINNED, so the box that matters is the posed one rather than the bind-space
+ * one. `npm run assets:inspect` says exactly that about these files — "world
+ * size n/a — mesh is quantized; measure the source export instead" — and the
+ * source exports are not in the repository. `CHARACTER_MEASUREMENTS` is where
+ * those measurements were written down, and it is the same table the placement
+ * solver separates the cast by, so it is the honest input here.
+ *
+ * Cross-checked against the live renderer on 2026-08-22: Dina's contact shadow
+ * measures 3.25 m across in the browser, and 2 x 1.15 x half of
+ * `characterFootprintM(dina)` is 3.251 m.
+ *
+ * What this DOES certify is the arithmetic between that table and the island —
+ * feet, footprint and contact shadow, in both roles — which is what the
+ * ship-blocker got wrong. That the measurement itself is parent-independent for
+ * a real, skinned, nested model is certified separately and precisely by
+ * `src/tutor-scene/modelBounds.test.ts`.
+ */
+function characterStandIn(who: CharacterId): Object3D {
+  const measurement = CHARACTER_MEASUREMENTS[who];
+  const half = measurement.sourceFootprintM / 2;
+  const geometry = new BufferGeometry();
+  // Resting on its own y=0, which is how these exports are authored and what
+  // `footOffset` exists to stop being assumed.
+  geometry.boundingBox = new Box3(
+    new Vector3(-half, 0, -half),
+    new Vector3(half, measurement.sourceHeightM, half),
+  );
+  const root = new Object3D();
+  root.add(new Mesh(geometry, new MeshBasicMaterial()));
+  return root;
+}
+
 let failures = 0;
 
 for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
@@ -240,7 +303,12 @@ for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
 
   console.log(`\n=== ${id} — ${asset.targetWidthM} m across (radius ${radius.toFixed(2)} m) ===`);
 
-  const runCast = (cast: CharacterId[], label: string, audition = false) => {
+  const runCast = (
+    cast: readonly CharacterId[],
+    label: string,
+    audition = false,
+    quiet = false,
+  ): { seats: string; clearance: number; spots: ReturnType<typeof findStandingSpots> } => {
     const footprints = cast.map((who) => characterFootprintM(CHARACTER_MEASUREMENTS[who]));
     const minSeparation = castSeparationM(footprints);
 
@@ -251,6 +319,11 @@ for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
         pairSeparationM(footprints[index] ?? 0, footprints[other] ?? 0),
       grouping: audition ? AUDITION_GROUPING : undefined,
       samplesPerMetre: audition ? AUDITION_SAMPLES_PER_METRE : undefined,
+      rings: audition ? AUDITION_RINGS : undefined,
+      narrowAxis: audition
+        ? new Vector3(Math.cos(STAGE_BEARING), 0, -Math.sin(STAGE_BEARING))
+        : undefined,
+      narrowWeight: audition ? AUDITION_NARROW_WEIGHT : undefined,
       preferDirection: new Vector3(0.35, 0, 1),
       // The SAME wiring the product uses. A gate that exercises a different
       // configuration certifies a different product.
@@ -273,16 +346,21 @@ for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
         closest = Math.min(closest, Math.hypot(spots[a]!.x - spots[b]!.x, spots[a]!.z - spots[b]!.z));
       }
     }
-    console.log(
-      `  ${label}  (min separation ${minSeparation.toFixed(2)} m` +
-        `${Number.isFinite(closest) ? `, closest pair ${closest.toFixed(2)} m` : ''})`,
-    );
+    if (!quiet) {
+      console.log(
+        `  ${label}  (min separation ${minSeparation.toFixed(2)} m` +
+          `${Number.isFinite(closest) ? `, closest pair ${closest.toFixed(2)} m` : ''})`,
+      );
+    }
+
+    /* Tightest rim clearance in this cast, for the sweep's summary line. */
+    let tightest = Infinity;
 
     for (let i = 0; i < cast.length; i += 1) {
       const who = cast[i]!;
       const spot = spots[i];
       if (!spot) {
-        console.log(`      ✗ ${who.padEnd(6)} NO SPOT FOUND`);
+        console.log(`      ✗ ${label} — ${who.padEnd(6)} NO SPOT FOUND`);
         failures += 1;
         continue;
       }
@@ -329,24 +407,149 @@ for (const [id, asset] of Object.entries(SCENE_MEASUREMENTS)) {
 
       const bad = surface === 'WATER?' || overhang > 0 || turnedAway;
       if (bad) failures += 1;
+      tightest = Math.min(tightest, -overhang);
 
-      console.log(
-        `      ${bad ? '✗' : '✓'} ${who.padEnd(6)} ` +
-          `y=${spot.y.toFixed(2).padStart(6)}  score=${spot.score.toFixed(3)}  ` +
-          `${fromCentre.toFixed(2)} m out  ` +
-          `${overhang > 0 ? `OVERHANGS ${overhang.toFixed(2)} m` : `${(-overhang).toFixed(2)} m clear`}  ` +
-          `${turnedAway ? `TURNED ${awayDeg.toFixed(0)} deg FROM THE LEARNER  ` : `facing ${awayDeg.toFixed(0)} deg off  `}` +
-          `${below >= 5 ? `PEDESTAL(${below}/8 down to ${drop.toFixed(2)}m)  ` : ''}` +
-          `on ${surface}${rgb ? ` rgb(${rgb.join(',')})` : ''}`,
-      );
+      if (!quiet || bad) {
+        console.log(
+          `      ${bad ? '✗' : '✓'} ${quiet ? `${label} — ` : ''}${who.padEnd(6)} ` +
+            `y=${spot.y.toFixed(2).padStart(6)}  score=${spot.score.toFixed(3)}  ` +
+            `${fromCentre.toFixed(2)} m out  ` +
+            `${overhang > 0 ? `OVERHANGS ${overhang.toFixed(2)} m` : `${(-overhang).toFixed(2)} m clear`}  ` +
+            `${turnedAway ? `TURNED ${awayDeg.toFixed(0)} deg FROM THE LEARNER  ` : `facing ${awayDeg.toFixed(0)} deg off  `}` +
+            `${below >= 5 ? `PEDESTAL(${below}/8 down to ${drop.toFixed(2)}m)  ` : ''}` +
+            `on ${surface}${rgb ? ` rgb(${rgb.join(',')})` : ''}`,
+        );
+      }
     }
+
+    /*
+     * A stable fingerprint of the whole seating, so the sweep can say "the same
+     * people ended up in the same places" in one comparison rather than four.
+     */
+    const seats = cast
+      .map((who, i) => {
+        const spot = spots[i];
+        return spot
+          ? `${who}@${spot.x.toFixed(4)},${spot.z.toFixed(4)}/${(facings[i] ?? STAGE_BEARING).toFixed(4)}`
+          : `${who}@NONE`;
+      })
+      .join(' ');
+
+    return { seats, clearance: Number.isFinite(tightest) ? tightest : 0, spots };
   };
 
   for (const [lead, companion] of PAIRINGS) {
-    runCast(companion ? [lead, companion] : [lead], `${lead} + ${companion ?? '—'}`);
+    runCast(standingCast(null, lead, companion), `${lead} + ${companion ?? '—'}`);
   }
 
-  runCast(AUDITION, 'AUDITION: the whole cast, as personalization stands them', true);
+  const reference = runCast(
+    AUDITION,
+    'AUDITION: the whole cast, as personalization stands them',
+    true,
+  );
+
+  /*
+   * AUDITION *PLUS* COMPANION — the configuration that shipped broken.
+   *
+   * Every character, in both roles, on both islands: as an audition candidate
+   * the learner has not chosen, and as an audition candidate who is ALSO the
+   * session's tutor or companion. The product's own `standingCast` decides who
+   * is on the island in each case, imported rather than restated, so this
+   * asserts the property the whole feature rests on: WHO YOU PICK DOES NOT MOVE
+   * ANYBODY. If the cast ever starts depending on the pairing — appending the
+   * companion, say, which would put five characters on a 6.5 m island — the
+   * solve below runs on that cast and the seats stop matching.
+   */
+  console.log('  AUDITION + COMPANION: every character in both roles');
+  let sweepTightest = Infinity;
+  let sweepCases = 0;
+  for (const lead of AUDITION) {
+    for (const companion of [...AUDITION.filter((who) => who !== lead), null]) {
+      const cast = standingCast(AUDITION, lead, companion);
+      const label = `audition, lead ${lead}, companion ${companion ?? '—'}`;
+      const result = runCast(cast, label, true, true);
+      sweepCases += 1;
+      sweepTightest = Math.min(sweepTightest, result.clearance);
+      if (result.seats !== reference.seats) {
+        console.log(`      ✗ ${label} SEATS THE CAST DIFFERENTLY from the plain audition`);
+        console.log(`          reference ${reference.seats}`);
+        console.log(`          this case ${result.seats}`);
+        failures += 1;
+      }
+    }
+  }
+  console.log(
+    `      ${sweepCases} cases, tightest rim clearance ${sweepTightest.toFixed(2)} m` +
+      `${sweepTightest === reference.clearance ? ' (the plain audition’s own)' : ''}`,
+  );
+
+  /*
+   * WHERE THEIR FEET GO, and how big their shadow is — measured through the
+   * product's own `modelFooting`, once while the export hangs free and once
+   * while it hangs where `Character3D` hangs it.
+   *
+   * This is the assertion the ship-blocker needed and nobody had. Both readings
+   * describe the same export, so they must be the same number; the broken build
+   * returned 1.41 m and 96.34 m for Dina's half-footprint, because the second
+   * reading was taken in world space through a 67.86x group. The two roles above
+   * are exactly what decides whether that second reading ever happens, which is
+   * why the sweep is per character AND per role rather than per character.
+   */
+  console.log('  FOOTING: the same character, measured free and measured on stage');
+  const auditionSpots = reference.spots;
+  let tightestShadow = Infinity;
+  for (let i = 0; i < AUDITION.length; i += 1) {
+    const who = AUDITION[i]!;
+    const spot = auditionSpots[i];
+    const scale = characterScale(CHARACTER_MEASUREMENTS[who]);
+    const model = characterStandIn(who);
+
+    const free = modelFooting(model, scale);
+
+    /*
+     * BOTH ROLES, and the difference between them is the mount and nothing
+     * else. An audition extra keeps the group React first built for them; a
+     * candidate invited to stay used to be torn down and rebuilt, and the
+     * rebuild measured the model while it was STILL inside the outgoing group.
+     * So: measure once free (the first mount), then again from inside the
+     * group (every mount after it). The two are the same character.
+     */
+    const stage = new Group();
+    stage.scale.setScalar(scale);
+    stage.position.set(spot?.x ?? 0, spot?.y ?? 0, spot?.z ?? 0);
+    stage.add(model);
+    stage.updateMatrixWorld(true);
+    const remounted = modelFooting(model, scale);
+
+    const drift = Math.max(
+      Math.abs(remounted.footOffset - free.footOffset),
+      Math.abs(remounted.footprint - free.footprint),
+    );
+
+    /*
+     * And what that footprint costs the ISLAND. `ContactShadow` is a flat plane
+     * of `footprint * 1.15` radius laid on the surface, so it has to fit inside
+     * the rim from wherever this character is standing — a blob wider than the
+     * ground it is cast on hangs over the edge against open sky, and at 110 m it
+     * covers the whole canvas, which is precisely how the ship-blocker LOOKED.
+     */
+    const shadowRadius = free.footprint * 1.15;
+    const out = spot ? Math.hypot(spot.x - centre.x, spot.z - centre.z) : 0;
+    const margin = radius - (out + shadowRadius);
+    tightestShadow = Math.min(tightestShadow, margin);
+
+    const bad = drift > 1e-9 || margin < 0 || !spot;
+    if (bad) failures += 1;
+    console.log(
+      `      ${bad ? '✗' : '✓'} ${who.padEnd(6)} ` +
+        `half-footprint ${free.footprint.toFixed(3)} m free / ${remounted.footprint.toFixed(3)} m remounted` +
+        `${drift > 1e-9 ? '  DRIFTED' : ''}  ` +
+        `lift ${free.footOffset.toFixed(3)} m  ` +
+        `shadow ${(shadowRadius * 2).toFixed(2)} m across, ` +
+        `${margin >= 0 ? `${margin.toFixed(2)} m inside the rim` : `OVER THE RIM BY ${(-margin).toFixed(2)} m`}`,
+    );
+  }
+  console.log(`      tightest contact-shadow margin ${tightestShadow.toFixed(2)} m`);
 }
 
 console.log(

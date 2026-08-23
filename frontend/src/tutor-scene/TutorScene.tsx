@@ -1,14 +1,17 @@
-import { Fragment, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Box3, Group, Vector3 } from 'three';
 import { SceneCanvas, type SceneStats } from './SceneCanvas';
 import { SceneLighting } from './SceneLighting';
 import { Diorama } from './Diorama';
 import { Character3D } from './Character3D';
+import { useSceneModel } from './useSceneModel';
 import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
 import {
   AUDITION_GROUPING,
+  AUDITION_NARROW_WEIGHT,
+  AUDITION_RINGS,
   AUDITION_SAMPLES_PER_METRE,
   findStandingSpots,
   type StandingSpot,
@@ -21,6 +24,7 @@ import {
   pairSeparationM,
   type SCENE_ASSETS,
 } from './assets';
+import { standingCast } from './cast';
 import { walkabilityFor } from './walkability';
 import { CameraDirector } from './CameraDirector';
 import { solveFacings } from './facing';
@@ -157,6 +161,16 @@ export interface TutorSceneProps {
    * first line.
    */
   onReady?: () => void;
+  /**
+   * The quality tier the adaptive governor has settled on, whenever it moves.
+   *
+   * Distinct from `onStats`, which is a once-a-second telemetry feed for an
+   * instrument panel. This one fires only when a DECISION changes, because the
+   * HUD outside the canvas has one of its own to make: the Lumen material's
+   * `backdrop-filter` is compositor work, so it is the one quality setting the
+   * renderer cannot apply itself (/DESIGN.md §Lumen → The blur, profiled).
+   */
+  onQuality?: (settings: QualitySettings) => void;
 }
 
 /** Flips visibility on once the first real frame has been drawn, so nothing pops. */
@@ -388,25 +402,18 @@ function StageAnchors({
 function Cast({
   scene,
   standing,
-  principals,
   audition,
   settings,
   emotion,
   action,
   actionKey,
   viseme,
+  backdrop,
   onPlaced,
 }: {
   scene: keyof typeof SCENE_ASSETS;
   /** Everyone to place, in the order their marks are assigned. */
   standing: readonly CharacterId[];
-  /**
-   * The tutor and their companion. They resolve inside the SUSPENDING boundary
-   * so `onReady` still means "the people this session is about are on screen";
-   * an audition extra gets a boundary of its own and fades in when it arrives,
-   * rather than holding the tutor's first line behind three more .glb fetches.
-   */
-  principals: ReadonlySet<CharacterId>;
   /** True while the whole catalog is on stage to be chosen from. */
   audition: boolean;
   settings: QualitySettings;
@@ -414,6 +421,8 @@ function Cast({
   action: CharacterAction;
   actionKey: number;
   viseme: number;
+  /** Passed straight through to the mouth card, which is unlit. */
+  backdrop: SceneBackdropId;
   onPlaced: (placements: readonly CastPlacement[]) => void;
 }) {
   const { groundRef } = useGround();
@@ -483,6 +492,24 @@ function Cast({
         // fourth candidate needs. Both are measured; both live in `standingSpots`.
         grouping: audition ? AUDITION_GROUPING : undefined,
         samplesPerMetre: audition ? AUDITION_SAMPLES_PER_METRE : undefined,
+        /*
+         * AND AN AUDITION GATHERS, which is a fact about the CAMERA rather
+         * than about the island. `approach` has to keep four candidates and
+         * their name plates inside a horizontal field of view that is 17
+         * degrees on a portrait phone, so the frame's world width is set by
+         * the widest of them and everything else about the picture follows
+         * from that one number. Spread across the rim, the cast made that
+         * number 5.56 m against a 6.5 m island and the island painted 29.9%
+         * of a 375x812 phone. Depth costs the frame nothing, so the solver
+         * separates them along the view axis instead and the camera comes in
+         * with them. Both constants are measured; both live in
+         * `standingSpots`.
+         */
+        rings: audition ? AUDITION_RINGS : undefined,
+        narrowAxis: audition
+          ? new Vector3(Math.cos(STAGE_BEARING), 0, -Math.sin(STAGE_BEARING))
+          : undefined,
+        narrowWeight: audition ? AUDITION_NARROW_WEIGHT : undefined,
         // The camera opens on +Z, so the cast gathers on that side of the
         // island instead of behind the back wall.
         preferDirection: new Vector3(0.35, 0, 1),
@@ -558,8 +585,32 @@ function Cast({
 
   return (
     <>
-      {posed.map(({ id, spot, facing }) => {
-        const figure = (
+      {/*
+        EVERY character suspends ON THEIR OWN, and the uniformity is the point.
+        Two things follow from it, and the second one is why it is written this
+        way rather than the obvious way.
+
+        One: a .glb still in flight only withholds the person waiting on it. Four
+        candidates arriving together would otherwise mean nobody appears until
+        the slowest one lands, and `onReady` — which gates the tutor's first
+        spoken line — would wait behind a candidate nobody has chosen.
+
+        Two, and this is the ship-blocker: A CHARACTER'S WRAPPER MUST NOT DEPEND
+        ON THEIR ROLE. It used to — principals were wrapped in a Fragment and
+        extras in a Suspense — so inviting a candidate as the companion changed
+        the ELEMENT TYPE under an unchanged key, which React implements as
+        unmount-and-remount. That remount re-measured a model still attached to
+        the outgoing instance's scaled group (`modelBounds.ts`), which put Dina's
+        feet twelve metres under the island and stretched her contact shadow to
+        221 m across. The measurement is fixed; this makes the remount stop
+        happening as well, because a role change should not restart a character's
+        mixer, rig binding and ground sampling either.
+
+        What the principals' boundary used to buy is bought explicitly instead,
+        by `PrincipalModels` in `TutorScene` — see its own note.
+      */}
+      {posed.map(({ id, spot, facing }) => (
+        <Suspense key={id} fallback={null}>
           <Character3D
             id={id}
             settings={settings}
@@ -569,25 +620,54 @@ function Cast({
             action={action}
             actionKey={actionKey}
             viseme={viseme}
+            backdrop={backdrop}
           />
-        );
-        /*
-         * An audition extra suspends ON ITS OWN. Inside the shared boundary all
-         * four .glb fetches would have to land before ANY of them appeared —
-         * and `onReady`, which gates the tutor's first spoken line, sits in that
-         * same boundary. A candidate nobody has chosen must not be able to hold
-         * up the tutor talking.
-         */
-        return principals.has(id) ? (
-          <Fragment key={id}>{figure}</Fragment>
-        ) : (
-          <Suspense key={id} fallback={null}>
-            {figure}
-          </Suspense>
-        );
-      })}
+        </Suspense>
+      ))}
     </>
   );
+}
+
+/**
+ * Holds the shared boundary until the people this session is ABOUT have their
+ * bytes — and renders nothing at all.
+ *
+ * `onReady` promises the island and the cast are on screen, and the
+ * conversational layer gates the tutor's first line on it: fired early, the
+ * tutor talks at an empty island. That promise used to be kept by WHERE the
+ * principals were mounted — inside the suspending boundary, with the extras in
+ * boundaries of their own — which meant a character's wrapper depended on their
+ * role, and changing role remounted them (see `Cast`). So the promise is stated
+ * directly here instead: this component suspends on exactly the assets the
+ * principals need, in the boundary `Reveal` sits in.
+ *
+ * It calls the product's own loader, so the cache key is identical to the one
+ * the figure will use and the model is fetched and parsed once, not twice.
+ *
+ * Rendered only while the stage is still dark. `ready` never resets, so once the
+ * first frame is out this can only do harm: a companion invited later would
+ * suspend the shared boundary and blank the whole cast while their .glb loads,
+ * which is the failure the per-character boundaries exist to prevent.
+ */
+function PrincipalModels({
+  ids,
+  settings,
+}: {
+  ids: readonly CharacterId[];
+  settings: QualitySettings;
+}) {
+  return (
+    <>
+      {ids.map((id) => (
+        <PrincipalModel key={id} id={id} settings={settings} />
+      ))}
+    </>
+  );
+}
+
+function PrincipalModel({ id, settings }: { id: CharacterId; settings: QualitySettings }) {
+  useSceneModel(CHARACTER_ASSETS[id].url, settings);
+  return null;
 }
 
 /** Two focus points are the same when every number is. */
@@ -630,6 +710,7 @@ export function TutorScene({
   backdrop = 'auto',
   audition = null,
   onReady,
+  onQuality,
 }: TutorSceneProps) {
   const [settings, setSettings] = useState<QualitySettings>(QUALITY_SETTINGS.medium);
   const [ready, setReady] = useState(false);
@@ -647,6 +728,18 @@ export function TutorScene({
     onReady?.();
   }, [ready, onReady]);
 
+  /*
+   * The tier, announced OUTWARD, because one quality decision cannot be applied
+   * in here: Lumen's `backdrop-filter` is compositor work on DOM that is a
+   * sibling of the canvas, not a three.js setting (/DESIGN.md §Lumen → The
+   * blur, profiled). Fires on a tier change, which is a handful of times a
+   * session at most — `onStats` is the per-second telemetry feed and this is
+   * not it.
+   */
+  useEffect(() => {
+    onQuality?.(settings);
+  }, [settings, onQuality]);
+
   const content = useRef<Group>(null);
   const [placements, setPlacements] = useState<readonly CastPlacement[]>(NO_PLACEMENTS);
 
@@ -655,25 +748,19 @@ export function TutorScene({
   }, []);
 
   /*
-   * WHO IS ON THE ISLAND, in the order their marks are assigned.
-   *
-   * During an audition that is the whole catalog, in catalog order, so a name
-   * plate keeps the same mark whoever is currently chosen: a candidate who
-   * moved when you picked somebody else would make the next choice a hunt. The
-   * tutor is appended if the catalog somehow does not contain them, because a
-   * session with nobody to talk to is a worse failure than an unmarked extra.
+   * WHO IS ON THE ISLAND, in the order their marks are assigned — the rule
+   * itself lives in `cast.ts` so `npm run verify:placement` can sweep the same
+   * one the product uses rather than its own copy of it.
    */
   const auditionIds = audition && audition.length > 0 ? audition : null;
-  const standing = useMemo<readonly CharacterId[]>(() => {
-    if (auditionIds) {
-      return auditionIds.includes(character) ? auditionIds : [...auditionIds, character];
-    }
-    return companion ? [character, companion] : [character];
-  }, [auditionIds, character, companion]);
+  const standing = useMemo<readonly CharacterId[]>(
+    () => standingCast(auditionIds, character, companion ?? null),
+    [auditionIds, character, companion],
+  );
 
-  /** Who this session is actually about; see `Cast`'s own note on boundaries. */
-  const principals = useMemo(
-    () => new Set<CharacterId>(companion ? [character, companion] : [character]),
+  /** Who this session is actually about; see `PrincipalModels`. */
+  const principals = useMemo<readonly CharacterId[]>(
+    () => (companion && companion !== character ? [character, companion] : [character]),
     [character, companion],
   );
 
@@ -681,6 +768,15 @@ export function TutorScene({
   const companionFocus = companion
     ? (placements.find((entry) => entry.id === companion)?.focus ?? null)
     : null;
+
+  /**
+   * Everyone the audition put on the island, for the camera to frame.
+   *
+   * A `CastPlacement` already carries the focus point each shot wants, so this
+   * is only a projection — but it is the projection that stops `approach` from
+   * guessing. See `shots.ts` → `ShotContext.cast`.
+   */
+  const auditionCast = useMemo(() => placements.map((entry) => entry.focus), [placements]);
 
   /*
    * THE AUDITION TURNS THE SHADOW PASS OFF, and the number is the argument.
@@ -746,15 +842,18 @@ export function TutorScene({
               <Cast
                 scene={scene}
                 standing={standing}
-                principals={principals}
                 audition={auditionIds !== null}
                 settings={composed}
                 emotion={emotion}
                 action={action}
                 actionKey={actionKey}
                 viseme={viseme}
+                backdrop={backdrop}
                 onPlaced={onPlaced}
               />
+              {/* Keeps `Reveal` behind the tutor's and companion's own assets,
+                  and only until the stage lights up. See `PrincipalModels`. */}
+              {ready ? null : <PrincipalModels ids={principals} settings={composed} />}
               {/*
                * INSIDE the cast's boundary, not beside it. `onReady` promises the
                * island AND the cast are on screen, and the conversational layer
@@ -781,6 +880,13 @@ export function TutorScene({
           shot={activeShot}
           lead={leadFocus}
           companion={companionFocus}
+          /*
+           * The whole catalog, during an audition and never otherwise. It is
+           * what `approach` frames, and until it was passed the shot was
+           * framing a hand-tuned fraction of the island's radius instead —
+           * see `shots.ts` → `APPROACH_HOLD`.
+           */
+          cast={auditionIds ? auditionCast : null}
           ambientMotion={settings.ambientMotion}
           reducedMotion={prefersReducedMotion}
           fitKey={fitKey}

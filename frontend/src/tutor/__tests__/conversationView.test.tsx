@@ -113,10 +113,26 @@ function resizeHandle(): HTMLElement {
   return screen.getByRole('button', { name: /Resize this panel/ });
 }
 
+/**
+ * The sheet's body, by its own seam.
+ *
+ * It used to be found through the 2D bubble's accessible name, which worked
+ * only while the bubble existed and stopped meaning anything the moment it
+ * moved into the caption (/DESIGN.md §Lumen → *One line, one printing, two
+ * channels*). `data-plate-body` is the body saying what it is.
+ */
+function plateBody(): HTMLElement {
+  const body = screen
+    .getByLabelText('Your tutor and your activity')
+    .querySelector<HTMLElement>('[data-plate-body]');
+  if (!body) throw new Error('the lesson plate has no body');
+  return body;
+}
+
 /** The sheet's body is not mounted at PEEK, so this is how a test asks. */
 function plateBodyShown(): boolean {
-  const bubble = screen.queryByLabelText('What your tutor is saying');
-  return bubble !== null && bubble.closest('[hidden]') === null;
+  const body = plateBody();
+  return !body.hasAttribute('hidden') && body.style.display !== 'none';
 }
 
 /** An anchored node is positioned by the projector; nothing else carries this. */
@@ -556,8 +572,85 @@ describe('the resting lesson sheet', () => {
      * exercise that is not on screen and the focus ring goes somewhere nobody
      * can see — the same defect the projector's cull exists to prevent.
      */
-    const bubble = screen.getByLabelText('What your tutor is saying');
-    expect(bubble.closest('[hidden]')).not.toBeNull();
+    const body = plateBody();
+    expect(body.hasAttribute('hidden')).toBe(true);
+
+    /*
+     * AND IT IS REALLY NOT PAINTED, which is a second assertion because it was
+     * a second bug. `[hidden] { display: none }` is a 0-1-0 user-agent rule,
+     * and the body carries `flex` from an author stylesheet the moment it lays
+     * its children out as a column — so the attribute alone reported `hidden`
+     * to every script that asked while the whole exercise was laid out below
+     * the fold. Measured on `/dev/tutor-lab` at 375x812: three option buttons
+     * at y = 925, 986 and 1047 on an 812 px phone, focusable and announced.
+     */
+    expect(body.style.display).toBe('none');
+  });
+});
+
+/*
+ * ONE SENTENCE, ONE PRINTING, TWO CHANNELS (/DESIGN.md §Lumen).
+ *
+ * The owner's accessibility requirement is a caption above the speaker's head
+ * AND the 2D animated head, for a deaf or hard-of-hearing learner. It was being
+ * met by two SURFACES that each printed the whole sentence — measured at
+ * 1280x800 as 21 spoken words printed twice, 252 px apart. Both channels are
+ * still here; they share one surface, and the sentence is written once.
+ */
+describe('the tutor says it once', () => {
+  it('prints the live line in the caption and nowhere else, sheet wide open', () => {
+    const { container } = render(conversation(makeSocket({ segment: SEGMENT }), true));
+    // Open the sheet: at PEEK the body is not mounted, which would make this
+    // pass for the wrong reason.
+    fireEvent.click(resizeHandle());
+    expect(plateBodyShown()).toBe(true);
+
+    // The caption is the one surface that carries it. Its `sr-only` twin holds
+    // the whole sentence while the typewriter is still revealing it, which is
+    // exactly what a screen reader is given.
+    const caption = container.querySelector('.lf-speech.fixed');
+    expect(caption?.textContent).toContain(TUTOR_LINE);
+
+    // And the plate does not — not in a bubble, and not in the log either,
+    // because a log's job is the past (`TutorTranscript` → `spokenSeq`).
+    expect(plateBody().textContent).not.toContain(TUTOR_LINE);
+  });
+
+  it('keeps the articulating 2D face, in the caption, beside the words', () => {
+    const { container } = renderConversation(makeSocket(), { ready: true });
+    const caption = container.querySelector('.lf-speech.fixed');
+    expect(caption).not.toBeNull();
+    // `liruf` and `dina` have no mouth in 3D (/TUTOR_3D.md §3.1), so this is
+    // the only articulation half the cast has. It is decoration to a screen
+    // reader — the plate around it is the live region carrying the sentence.
+    const face = caption?.querySelector('[data-character]');
+    expect(face).not.toBeNull();
+    expect(face?.closest('[aria-hidden="true"]')).not.toBeNull();
+  });
+
+  it('makes the conversation log yield to an activity, without unmounting it', () => {
+    // Two turns of history, so that filtering the LIVE one out still leaves a
+    // log to look at.
+    const earlier = [
+      { speaker: 'tutor' as const, text: 'Shall we count some coins?', seq: 0 },
+      { speaker: 'tutor' as const, text: TUTOR_LINE, seq: 1 },
+    ];
+    const { rerender } = render(
+      conversation(makeSocket({ segment: SEGMENT, history: earlier }), true),
+    );
+    fireEvent.click(resizeHandle());
+    const log = screen.getByLabelText('Everything said so far');
+    const withActivity = log.parentElement?.className ?? '';
+
+    rerender(conversation(makeSocket({ history: earlier }), true));
+    const without = screen.getByLabelText('Everything said so far').parentElement?.className ?? '';
+
+    // Capped and able to give the rest back while an exercise is up; free to
+    // take the plate when there is none. Never removed: it is a live region and
+    // the only place a learner sees what the microphone actually heard.
+    expect(withActivity).toContain('max-h-24');
+    expect(withActivity).toContain('shrink-[999]');
+    expect(without).not.toContain('max-h-24');
   });
 });
 

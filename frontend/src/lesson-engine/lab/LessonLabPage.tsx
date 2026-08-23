@@ -1,17 +1,62 @@
 // /dev/lesson-lab — the visual QA surface and living authoring contract
 // (LESSON_ENGINE.md §10). Dev-gated in App.tsx; never ships to production nav.
+//
+// THE INSTRUMENT IS IN ENGLISH; THE PRODUCT INSIDE IT IS NOT — and until this
+// pass those two facts were not being kept in step. The page's own chrome runs
+// through i18n (it is real product chrome: the player, the hearts pill, the
+// theme toggle), while the FIXTURES were pinned to Spanish, so every screenshot
+// ever taken of this page showed English chrome around Spanish content and read
+// as a product full of hardcoded strings. It is not: a lesson document is
+// single-locale by design (LESSON_ENGINE.md §3) and production documents arrive
+// from Forge already written in the learner's language. `/dev/tutor-lab` had the
+// identical defect and fixed it the identical way; the switch below is the same
+// switch, moving `i18n.changeLanguage` and the fixture set together so the two
+// can never disagree. See `./fixtureCopy.ts`.
+//
+// It is also the only way to LOOK at the locale swing on a lesson: the same
+// prompt runs to noticeably different lengths across the three, and a card,
+// a chip row or an answer bar sized in English is a defect nobody can see in
+// English.
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge, Button, Card, Icon, ThemeToggle } from '@/components/ui'
+import { cn } from '@/lib/utils'
+import { LOCALES, type Locale } from '@/i18n'
 import type { LessonDocument, SegmentBase } from '../core/types'
 import { stripAnswers } from '../core/strip'
-import { FIXTURES_BY_FAMILY, GRADED_TYPES, ALL_TYPES } from '../registry'
+import { GRADED_TYPES, ALL_TYPES } from '../registry'
+import { fixturesByFamily } from './fixtureSets'
+import { DEFAULT_FIXTURE_LOCALE, fixtureLocaleOf } from './fixtureCopy'
 import { createLocalGrader } from './localGrader'
 import LessonPlayer from '../player/LessonPlayer'
 import type { CharacterId } from '@/components/characters/control/types'
 
-function makeLabDocument(segments: SegmentBase[], title: string, hearts: number | null): LessonDocument {
+/** Titles the lab gives its own throwaway documents, per locale. */
+const LAB_TITLES: Record<Locale, { showcase: string; family: (name: string) => string; objective: string }> = {
+  'en-US': {
+    showcase: 'Engine Showcase',
+    family: (name) => `Family: ${name}`,
+    objective: 'Try out the lesson engine',
+  },
+  'es-MX': {
+    showcase: 'Muestrario del motor',
+    family: (name) => `Familia: ${name}`,
+    objective: 'Probar el motor de lecciones',
+  },
+  'pt-BR': {
+    showcase: 'Mostruário do motor',
+    family: (name) => `Família: ${name}`,
+    objective: 'Testar o motor de lições',
+  },
+}
+
+function makeLabDocument(
+  segments: SegmentBase[],
+  title: string,
+  hearts: number | null,
+  locale: Locale,
+): LessonDocument {
   const cast = Array.from(
     new Set(segments.map((s) => s.narrator?.character).filter((c): c is CharacterId => Boolean(c))),
   )
@@ -20,10 +65,12 @@ function makeLabDocument(segments: SegmentBase[], title: string, hearts: number 
     meta: {
       slug: 'lesson-lab',
       title,
-      locale: 'es-MX',
+      // The document declares the locale it is WRITTEN in, which is now true
+      // rather than a constant that happened to be right one third of the time.
+      locale,
       subject: 'mixed',
       estimated_minutes: Math.max(1, Math.min(30, segments.length)),
-      objectives: ['Probar el motor de lecciones'],
+      objectives: [LAB_TITLES[locale].objective],
       cast: cast.length > 0 ? cast : ['dina'],
     },
     scoring: { pass_threshold: 70, hint_penalty_pct: 10, max_attempts: 2, hearts },
@@ -31,17 +78,50 @@ function makeLabDocument(segments: SegmentBase[], title: string, hearts: number 
   }
 }
 
+/** The lab's own switch. Dev chrome, so its label is the locale tag itself. */
+function LabSwitch({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={on}
+      className={cn(
+        'flex min-h-12 shrink-0 items-center whitespace-nowrap rounded-sm px-3 lf-label transition-colors',
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+        on ? 'bg-primary text-on-primary' : 'lf-answer text-content',
+      )}
+    >
+      {children}
+    </button>
+  )
+}
+
 export function LessonLabPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [active, setActive] = useState<LessonDocument | null>(null)
   const [hearts, setHearts] = useState<number | null>(null)
 
-  const families = useMemo(() => Object.entries(FIXTURES_BY_FAMILY), [])
+  /**
+   * ONE SWITCH FOR BOTH HALVES. Seeded from whatever i18next already resolved,
+   * so arriving on the page does not silently change the app's language; from
+   * the first press the switch is the authority, and `changeLanguage` persists
+   * through the detector exactly as the real language picker does.
+   */
+  const [locale, setLocale] = useState<Locale>(() => fixtureLocaleOf(i18n.language ?? DEFAULT_FIXTURE_LOCALE))
+  useEffect(() => {
+    if (fixtureLocaleOf(i18n.language ?? DEFAULT_FIXTURE_LOCALE) !== locale) void i18n.changeLanguage(locale)
+  }, [i18n, locale])
+
+  const families = useMemo(() => Object.entries(fixturesByFamily(locale)), [locale])
   const allFixtures = useMemo(() => families.flatMap(([, fixtures]) => fixtures), [families])
+  const titles = LAB_TITLES[locale]
 
   if (active) {
     return (
       <LessonPlayer
+        // Keyed on the locale so switching while a lesson is open rebuilds it
+        // in the new language instead of leaving a stale document mounted.
+        key={active.meta.locale}
         document={stripAnswers(active)}
         grader={createLocalGrader(active)}
         onExit={() => setActive(null)}
@@ -63,21 +143,35 @@ export function LessonLabPage() {
               {t('lesson.lab.subtitle', { types: ALL_TYPES.length, graded: GRADED_TYPES.length })}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {/* Standalone route (no app shell) — the lab applies the theme itself. */}
             <ThemeToggle />
+            {/*
+              THE LOCALE SWITCH, and it is one switch rather than two because
+              the two halves it moves may never be set separately. Pressing
+              `pt-BR` changes the app's language AND the fixture set, so the
+              prompt, the options, the feedback and the chrome around them are
+              always one language.
+            */}
+            <div className="flex max-w-full gap-1 overflow-x-auto">
+              {LOCALES.map((id) => (
+                <LabSwitch key={id} on={locale === id} onClick={() => setLocale(id)}>
+                  {id}
+                </LabSwitch>
+              ))}
+            </div>
             <button
               type="button"
               onClick={() => setHearts((h) => (h === null ? 3 : null))}
               aria-pressed={hearts !== null}
-              className="flex min-h-11 items-center gap-2 rounded-full border-2 border-outline/70 bg-surface px-4 lf-label text-content transition-colors hover:border-primary/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+              className="lf-answer flex min-h-12 items-center gap-2 rounded-full px-4 lf-label text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
               <Icon name="favorite" fill className={hearts !== null ? 'text-error-strong' : 'text-content-faint'} />
               {hearts !== null ? t('lesson.lab.heartsOn') : t('lesson.lab.heartsOff')}
             </button>
             <Button
               variant="primary"
-              onClick={() => setActive(makeLabDocument(allFixtures, 'Engine Showcase', hearts))}
+              onClick={() => setActive(makeLabDocument(allFixtures, titles.showcase, hearts, locale))}
             >
               <Icon name="play_arrow" className="mr-1" />
               {t('lesson.lab.showcase')}
@@ -92,9 +186,7 @@ export function LessonLabPage() {
               <Badge>{fixtures.length}</Badge>
               <Button
                 variant="secondary"
-                onClick={() =>
-                  setActive(makeLabDocument(fixtures, `Familia: ${family}`, hearts))
-                }
+                onClick={() => setActive(makeLabDocument(fixtures, titles.family(family), hearts, locale))}
               >
                 {t('lesson.lab.playFamily')}
               </Button>
@@ -104,7 +196,7 @@ export function LessonLabPage() {
                 <Card key={fixture.id}>
                   <button
                     type="button"
-                    onClick={() => setActive(makeLabDocument([fixture], fixture.type, hearts))}
+                    onClick={() => setActive(makeLabDocument([fixture], fixture.type, hearts, locale))}
                     className="flex w-full items-start justify-between gap-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
                   >
                     <div className="min-w-0">

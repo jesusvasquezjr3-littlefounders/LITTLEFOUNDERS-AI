@@ -115,6 +115,17 @@ lumen:                            # CLOSED — the immersive layer's ONE materia
   radius: {chip: md, plate: md, orb: full, sheet: lg}   # panes, not pills
   tap-floor: 44px rendered / 48px authored
 
+answer-surfaces:                  # CLOSED — the lesson engine's THREE objects (§Answer surfaces)
+  objects: [lf-well, lf-slab, lf-answer]   # recessed / resting / tappable. No fourth.
+  states: [idle, selected, correct, wrong, dimmed]  # + hover, focus-visible, disabled
+  lift: 7%                        # how much more key light an object catches than its pane
+  edge: "ink 11% (19% hover)"     # ink, not shade — darkens light, lightens dark
+  rim: "key light, half the Lumen ramp"
+  seat: "one drop, same sun as Lumen, ~1/3 the throw"
+  wash: "the theme's own -soft token; ring + mark carry the state"
+  second-channel: "AnswerMark — empty ring / filled check / filled cross + sr-only word"
+  tap-floor: 48px                 # the control a child mis-taps most
+
 layout:
   container-max: 1200px           # mx-auto max-w-container px-5 md:px-8
   section-rhythm: "py-20 sm:py-28"
@@ -129,7 +140,8 @@ layout:
     hud-inset: 24px               # desktop gap from a floating plate to the viewport edge
     hud-inset-mobile: 16px        # matches margin-mobile; a thumb needs the same room
     plate-max: 420px              # widest a floating HUD plate may be
-    plate-max-height: 62vh        # it FLOATS: scene stays visible above AND below it
+    plate-max-height: calc(100vh - 200px)   # a BAND of island above it, not a fraction
+    plate-island-band: 176px      # what the line above buys: island over the plate, any screen
     sheet-detents: {peek: 88px, half: 45vh, full: 88vh}   # mobile bottom sheet
     orb: {mobile: 96px, desktop: 112px}   # the primary in-scene control
 
@@ -144,9 +156,12 @@ motion:                           # CLOSED 5-recipe system
 > **AUTHORITATIVE** for all frontend visual work (root AGENTS.md §1.1 rank 4).
 > The tokens above are CLOSED sets — implemented 1:1 in
 > `frontend/tailwind.config.js` + `frontend/src/index.css`. Never invent values
-> those files don't define. **Last updated:** 2026-08-22 (§Lumen — the Tutor's
-> material, type, motion and light, and the applying pass that put every
-> remaining surface on it).
+> those files don't define. **Last updated:** 2026-08-23 (§Answer surfaces — "the tap
+> floor has two sides" and "a broken-glyph check must measure the GLYPH", after
+> looking at all 57 exercise renderers; 2026-08-22 — the lesson engine's three
+> objects, shared by the Lesson Player and the Tutor, plus "a shape is a PROP,
+> never a `className`"; and §Lumen — the Tutor's material, type, motion and
+> light).
 
 ## §0 Composition Fidelity — PRIME RULE
 
@@ -404,6 +419,130 @@ in; a control authored at exactly 44 pins its whole cluster to full size. As of
 2026-08-22 the count under the floor is **0** in all seven phases, at both
 breakpoints, in both themes.
 
+### The blur, profiled — what the material's one expensive property costs
+
+Until this pass, `backdrop-filter` was the only thing in §Lumen carried on an
+argument instead of a number, and the debt list below said so in those words:
+*reasoned rather than profiled on the target hardware*. It is profiled now, and
+the answer is short — **on everything that could be measured it is cheap, and it
+still comes off the `low` tier, for reasons the profile itself supplies.**
+
+**What was emulated, stated first, because a number off an unthrottled desktop
+is worse than no number: it gets believed.** Headless Chrome over CDP against
+`/dev/tutor-lab`, in `conversing` and `adapting` — the two phases carrying the
+most Lumen surfaces — at **375x812 CSS with `deviceScaleFactor: 3`**, which is a
+budget Android's actual pixel count (1125x2436), with `mobile: true`, touch
+emulation on so the scene's own probe sees a coarse pointer and starts where a
+phone starts, and a Moto-G user agent. CPU throttled with
+`Emulation.setCPUThrottlingRate` at **1x, 4x and 6x**. The GPU is a real one —
+`ANGLE (Intel, Intel(R) UHD Graphics (0x0000A7A8), D3D11)`, the same target
+Intel UHD the debt named — and deliberately **not** SwiftShader, because the
+question is what a compositor costs and a software rasterizer is not one. Each
+cell loads the page once, settles 12 s so the quality governor has latched, then
+A/Bs the SAME live page `on → blur(8px) → off → on`, so the only thing that
+changes between windows is the filter and tier drift would show as a discrepancy
+between the two `on` windows rather than as a bias. It never did: every cell held
+the `high` tier throughout. Frames are counted two ways — `requestAnimationFrame`
+gaps (what the learner is actually presented) and the GPU process's own trace
+(`Display::DrawAndSwap`, `DirectRenderer::DrawRenderPass`,
+`DirectRenderer::DrawFrame`).
+
+**How faithful that is, stated just as plainly.** `setCPUThrottlingRate` slows
+the renderer's MAIN THREAD and nothing else — and this measurement is what
+proves that matters here: at 6x the main thread goes from 150 ms to 900 ms of
+busy time per wall second and the blur's cost does not move at all. It is not
+CPU work. So the emulation is faithful about the pixel count, about the tier a
+phone starts on and about the main-thread budget, and it is **silent about a
+phone's GPU**, in two ways that are named rather than smoothed over. An Intel
+UHD has several times the fill rate of an Adreno 610-class part; and it is an
+immediate-mode renderer, where a phone's is tile-based and pays for every extra
+render pass by resolving the tile buffer out to memory and reading it back
+again. That second one is the actual reason `backdrop-filter` has the reputation
+it has on mobile, and no desktop emulation reproduces it. Which is why the
+render-PASS COUNT is reported beside the milliseconds: the milliseconds are this
+machine's, the pass count is the number that transfers.
+
+**Measured**, 375x812 at dsf 3, light theme, `on` averaged over the two windows
+either side of `off` (dark theme cross-checked at 1x: 0.81 ms vs 0.13 ms of
+compositor draw, identical — the cost has no theme):
+
+| | conversing | adapting |
+|---|---|---|
+| Lumen surfaces painted | 7 | 8 |
+| blurred backdrop | 97.7k CSS px² (0.88 Mpx at dsf 3) | 81.6k CSS px² (0.73 Mpx) |
+| compositor render passes / frame, blur **on** | **4** | **2** |
+| … blur **off** | **1** | **1** |
+| `DirectRenderer::DrawFrame`, blur on → off | 0.78 → 0.13 ms | 0.79 → 0.13 ms |
+| … with `blur(8px)` instead of 24px | 0.60 ms | 0.60 ms |
+| presented fps, on → off, **1x** CPU | 103 → 107 (+0.4 ms/frame) | 118 → 124 (+0.4 ms) |
+| … **4x** | 103 → 109 (+0.5 ms) | 110 → 120 (+0.8 ms) |
+| … **6x** | 76 → 82 (+1.1 ms) | 64 → 66 (+0.4 ms) |
+
+**Four things follow, and every one of them is load-bearing.**
+
+1. **The blur costs about half a millisecond of presented frame time** — 0.4 ms
+   typical, 1.1 ms worst measured — and 3-8% of throughput. On anything with a
+   desktop-class GPU it is cheap. Stop worrying about it there.
+2. **The cost is the RENDER PASS, not the radius, and not the pixels.** Dropping
+   24px to 8px — which would gut the material, since removing detail behind text
+   is what the blur is FOR — recovers only 0.18 of the 0.65 ms. And the same
+   scene measured at `deviceScaleFactor` 1, 2 and 3 blurs 0.098, 0.39 and
+   0.88 Mpx of backdrop for a compositor draw cost of 0.70, 0.63 and 0.65 ms:
+   **flat**. Nine times the blurred pixels, the same cost. So the expense is the
+   three extra passes existing at all, which means the graduated "cheaper blur
+   on weaker devices" that looks like the obvious answer would pay almost the
+   whole price for none of the look. **The only lever worth having is on/off.**
+3. **CPU throttling does not touch it**, per the paragraph above. A device is
+   not demoted for being slow at JavaScript and then charged for the blur; the
+   two costs live on different sides of the process boundary.
+4. **On a rasterizer that IS the bottleneck it is still under a tenth of the
+   frame.** The pessimistic bracket — the same page under SwiftShader, where
+   every pixel is drawn on the CPU and the governor duly falls to `low` — runs
+   at 11.7 fps with the blur and 12.9 without at 1x, and 11.4 against 12.5 at
+   4x. That is **+7.6 ms, or 9% of a frame**, in a regime roughly eight times
+   slower than the iGPU. It is not a phone GPU and is not offered as one; it is
+   the floor, and the floor says the blur is not what breaks a weak device.
+
+**The decision: the blur comes off `low`, and off nothing else.**
+`QualitySettings.lumenBlur` sits beside `maxPixelRatio`, `shadows` and
+`ambientMotion` in `tutor-scene/quality.ts`, false only on `low`; `StageShell`
+publishes it on the stage root as `data-lumen-blur="off"`, and three inherited
+custom properties carry it down to every plate. Three reasons, in order of
+weight:
+
+- **`low` is the one device class this profile could not emulate.** Everything
+  above is measured; nothing above is an Adreno. Wiring the switch costs one
+  attribute and turns an unmeasurable risk into a defined behaviour.
+- **`low` is not a guess about hardware.** It is where the governor puts a
+  device that has twice failed to hold 45 fps on its own frames
+  (`tutor-scene/governor.ts`) — the same evidence that already took its pixel
+  ratio, its antialiasing, its shadows and its ambient motion away. The device
+  that loses the blur is the device that has demonstrated it cannot pay for it.
+- **On that tier the blur is buying the least.** At `low` the pixel ratio is
+  already 1 and the scene behind the plate is at its coarsest; 9% of a frame
+  that is already missing its budget is being spent softening a backdrop the
+  device is barely drawing.
+
+**What it degrades TO is the form the stylesheet already had.** The backdrop
+token set to `none`, and both alphas raised to `--lf-lumen-alpha-flat` **0.97** —
+byte-identical to what a browser with no `backdrop-filter` gets, because there
+should be exactly one blur-less Lumen and one place its value is written. No
+blur means the island comes through SHARP behind the words, and removing that
+detail is what the blur was for, so the plate **closes** rather than merely
+defrosting. It keeps the sky-leaning fill, the key light's lip, the
+ground-coloured shadow and the pane radius: Lumen with the window shut, not the
+opaque-floor era coming back, and not a fourth material. The contrast bound can
+only improve — 0.97 is denser than either published density — which
+`HudPlate.test.tsx` asserts rather than assumes, and the swap rides the
+material's existing 300 ms `background-color` transition, so a device demoted
+mid-session closes its plates rather than snapping them.
+
+And the switch was then measured through ITSELF rather than through the CDP
+override that produced the table — `conversing`, dsf 3, 1x: **4 render passes →
+1, 0.78 → 0.14 ms of compositor draw, 102.4 → 108.4 fps**. Looked at, too, at
+375 and 1280 in both themes: the flat plate reads as the same material with the
+window shut, which is the whole test a graceful degradation has to pass.
+
 ### Type — one confident line
 
 Two additions to the closed scale, both fenced to this layer:
@@ -562,6 +701,86 @@ are what a viewer actually reads as an hour; direction stays straight down.
 **Nothing on this layer may be written per frame except an anchored node's own
 `transform`.**
 
+### One line, one printing, two channels (added 2026-08-22)
+
+> This supersedes the reading of *What to delete* → *the duplicated tutor line*
+> that kept two full printings of one sentence. The RULE it was protecting — two
+> channels, because a deaf learner needs both — is unchanged and is now
+> guaranteed in one place instead of remembered in two.
+
+**The requirement, in the owner's terms, first, because everything below is
+subordinate to it.** A deaf or hard-of-hearing learner gets the tutor's words as
+a CAPTION over the speaking character's head, and gets the 2D ANIMATED HEAD,
+because `liruf` and `dina` have no mouth in 3D (/TUTOR_3D.md §3.1) and all four
+are selectable as the tutor (/ORACLE.md §0 decision 4). Neither channel is
+negotiable and neither has been removed.
+
+**What was wrong, measured.** At 1280x800 in `conversing` the same sentence was
+printed twice, 252 px apart: once in the caption over the crown at `lf-speech`,
+and once in the 2D bubble at the top of the lesson plate, also at `lf-speech`.
+Twenty-one spoken words became forty-two printed ones inside 142 words on
+screen. And it was not only noise — the bubble was 132 px of the plate's 436 px
+of usable height, on the surface where 274 px of live exercise was already
+running past the bottom edge. The learner was scrolling past a second copy of a
+sentence that was still on screen above them to reach the answers to it.
+
+**The reading that produced it.** "Both channels stay" was implemented as "both
+SURFACES print the whole sentence". That is one reading of the requirement and
+it is the expensive one: whichever copy the learner reads, the other is noise,
+and the two channels the owner asked for are *words* and *a moving mouth* —
+not *words* and *words again*.
+
+**The decision.** The two channels share ONE surface. The caption over the
+speaker's crown carries the sentence AND the articulating 2D face
+(`TutorFace`, inside `SpeechCaption`). Mouth and words are one glance, which is
+the argument the caption's POSITION has rested on since it was written, now
+applied to the mouth as well. The lesson plate carries the activity and the
+conversation RECORD, and never a second copy of the live line — the log already
+withheld it (`TutorTranscript` → `spokenSeq`), and now nothing else prints it
+either. **At any instant the tutor's current sentence exists exactly once on
+screen, and both channels are on it.**
+
+**What that cost and bought, measured on `/dev/tutor-lab`:**
+
+| | before | after |
+|---|---|---|
+| printings of the live line, 1280x800 | 2, 252 px apart | 1 |
+| words on screen for 21 spoken (en-US) | 142 | 121 |
+| the 2D mouth's rendered size | ~5 px, inside a 64 px whole-body figure | a cropped face filling a 44–56 px box |
+| plate height freed | — | 132 px |
+
+**And the mouth is now a mouth.** The bubble mounted a whole standing figure in
+a 64 px box: Dr Rho's head group measures 196x183 of a 750x750 viewBox, so his
+head landed at about 17 px and his mouth at about five. Five pixels of mouth is
+not an articulation channel; it is a thumbnail of a character standing up, and
+the requirement was being honoured in the component tree and nowhere on the
+screen. `TutorFace` crops to the head, and it does it by MEASURING the artwork
+rather than by tabulating four sets of magic numbers: the four characters are
+four independent SVGs with four viewBoxes and four head transforms, but every
+one of them has a head group (they need it for their own look-at rigs), so the
+component reads that group's rendered rectangle and solves for the transform
+that seats it in the box. If it cannot measure — no head group, no layout, a
+test environment — it leaves the figure alone, which is the old behaviour: a
+smaller picture, never a wrong one.
+
+**One defect it produced, recorded because it only showed on half the cast.**
+The first version computed the crop offsets from `getBoundingClientRect`, which
+reports SCREEN pixels — and the caption is an anchored node whose whole
+transform is multiplied by the speaker's distance from the camera every frame.
+The SCALE is a ratio of two screen measurements and survives that untouched;
+the two OFFSETS do not, and get multiplied a second time. Dr Rho's shot happens
+to sit at an anchor scale of 1.00 and his crop was perfect; Dina's stands off at
+0.71 and her head sat against the right edge of the box with her jaw cut off.
+The fix is one division by `offsetWidth / getBoundingClientRect().width`. The
+general shape: **a transform written in an element's own space may never be
+computed from a measurement taken in screen space.**
+
+**What is deliberately NOT claimed.** A cartoon mouth is not lip-readable and
+this document does not pretend otherwise. What the face gives a learner who
+cannot hear is *who is speaking*, *that speech is happening*, and *when it
+stops* — beside the words, at a size where all three are visible. That is the
+channel the owner asked for, and it is now doing more than it did.
+
 ### What to delete
 
 Premium is mostly subtraction. Each of these exists because a space looked
@@ -591,12 +810,15 @@ beside it, because a subtraction with no measurement is a preference.
   17 px at 375x812 (the chip wraps to three lines in the fixture locale, and
   `auto-rows-fr` spends the difference making the four a 2×2 block rather than
   two mismatched rows).
-- ✅ **The duplicated tutor line at 1280 px.** The caption over the crown and
-  the 2D bubble both stay — they are two channels for two learners, and for
-  `liruf` and `dina` the bubble is the only articulating mouth there is. What
-  went is the THIRD copy: the transcript's latest turn, which is a log catching
-  up with the present (`TutorTranscript` → `spokenSeq`). It reappears the moment
-  the tutor says anything else, which is exactly when it becomes history.
+- ✅ **The duplicated tutor line at 1280 px — CLOSED PROPERLY 2026-08-22.**
+  This entry first deleted the THIRD copy (the transcript's latest turn, a log
+  catching up with the present — `TutorTranscript` → `spokenSeq`) and ruled that
+  the caption and the 2D bubble both stay. The rule was right about the
+  CHANNELS and wrong about the surfaces: two printings of one sentence 252 px
+  apart is not two channels, it is one channel twice. The caption now carries
+  the words AND the articulating face, the plate carries neither, and the live
+  line exists exactly once on screen. See §Lumen → *One line, one printing, two
+  channels* above for the measurement and the reasoning.
 - ✅ **"TRY THIS"** above the exercise, the only uppercase label on the route.
   `practice only` survived it — that one is a fact rather than a heading — and
   moved down beside the check control, where the answer is actually given.
@@ -705,22 +927,364 @@ row in it.
 Named rather than quietly left, because a list is the only thing that survives a
 hand-off.
 
-- **The exercise option cards** are outlined `surface` boxes that read as form
-  fields rather than as anything on this layer. They come from
-  `lesson-engine/core/primitives.tsx` → `OptionCard`, which is shared with the
-  Lesson Player and with all 57 renderers, so restyling them is a LESSON-ENGINE
-  decision and not a Tutor one. A Tutor pass that quietly changed the look of
-  every lesson in the product would be a worse bug than the one it fixed.
-- **The lesson plate at 1280 px running past the bottom of the frame** was on
-  this list and did NOT reproduce. Measured on `/dev/tutor-lab` at 1280x800 in
-  `conversing`: (836, 280, 420, 496) — exactly `plate-max` wide, exactly
-  `plate-max-height` 62vh tall, bottom edge at 776 with the recipe's 24 px
-  `hud-inset` of island under it. It is recorded here as measured rather than
-  removed silently, because "somebody looked and it was fine" is the part of a
-  hand-off that usually goes missing.
-- **`backdrop-filter` cost is still reasoned rather than profiled** on the
-  target hardware. Unchanged by this pass: the same elements carry the same blur
-  over the same area.
+- ✅ **The exercise option cards** were outlined `surface` boxes that read as
+  form fields rather than as anything on this layer. **Paid 2026-08-22**, and
+  paid where the debt actually was: in `lesson-engine/core/primitives.tsx`,
+  which is shared with the Lesson Player and with all 57 renderers. See
+  §Answer surfaces below — it is its own section because what came out of it is
+  a third material with its own rules, not a patch to this one.
+- ✅ **The lesson plate at 1280 px running past the bottom of the frame.** This
+  entry said the defect did NOT reproduce, and that was true of the PLATE and
+  false of what was inside it — which is worth keeping as a worked example of a
+  measurement answering a question nobody asked. The plate is where the recipe
+  says: (836, 280, 420, 496) at 1280x800, exactly `plate-max` wide, bottom edge
+  at 776 with 24 px of `hud-inset` island under it. The learner's problem was
+  one level in: **274 px of live exercise below the fold of the plate's own
+  scroller** (353 px at 1280x720, 303 px in es-MX), with the `Check` control
+  clipped or off-plate. The screenshots that cleared it were taken with
+  `--hide-scrollbars`, so the one visual cue that the panel scrolled was not in
+  the picture. **Paid 2026-08-22** — see §Lumen → *Room to answer in* below.
+- ✅ **`backdrop-filter` cost was reasoned rather than profiled** on the target
+  hardware. **Paid 2026-08-22** — see §Lumen → *The blur, profiled* above, which
+  carries the emulation, its honest limits, and the numbers. Short version: 4
+  compositor render passes against 1, about half a millisecond of presented
+  frame time, 3-8% of throughput on the target Intel UHD at a phone's pixel
+  count, and flat against CPU throttling, blur radius and blurred area alike. It
+  stays everywhere except the `low` tier, which now switches it off through
+  `QualitySettings.lumenBlur` — because that tier is precisely the device class
+  the profile could not emulate.
+
+### Room to answer in — the plate, the fold, and what actually scrolls (added 2026-08-22)
+
+**The defect, in a sentence a customer would recognise: a child was asked a
+question and had to discover that a panel scrolled in order to reach the
+answers.** Measured on `/dev/tutor-lab` at 1280x800 in `conversing`, with the
+plate holding the scripted `quiz_mcq` — very close to the SHORTEST thing it ever
+carries — the plate's single scroller showed 436 px of 710 px of content: 274 px
+hidden, 303 px in es-MX, 353 px at 1280x720, and in two of those the `Check`
+control was past the bottom edge.
+
+**Three causes, and all three were composition rather than styling.**
+
+1. **The plate was carrying a duplicate of the tutor's live line** — 132 px of
+   the 436, on the surface with least to spare. Deleted; see *One line, one
+   printing, two channels* above.
+2. **`plate-max-height` was a FRACTION of the viewport.** `62vh` reserved 38% of
+   the screen above the plate: 280 px of empty island at 1280x800 and 250 px at
+   1280x720 — most reserved exactly where there was least to give. The four gaps
+   around the plate are the design, and a gap is a DISTANCE. The ceiling is
+   `calc(100vh - 200px)` now, which puts the plate's top edge at 176 px of
+   island on every screen, and gives the body 540 px at 1280x800 instead of 436.
+3. **The prompt, the answers, the action and the conversation log were one tall
+   strip in one scroller.** So reaching the last option scrolled the question
+   off the top, and on a tall exercise it scrolled the `Check` control off the
+   bottom as well.
+
+**The rule, and it is a shape rather than a number: the question is pinned, the
+action is pinned, and what moves is the answers between them.** The plate's body
+is a flex COLUMN that does not scroll (`LessonPlate` → `bodyLayout="column"`);
+exactly one child owns the free height and scrolls, and everything else is
+`shrink-0`. Inside the exercise that child is the ANSWERS
+(`LiveSegmentPanel`): the header carrying the tutor's framing and the prompt sits
+above it and never moves, the verdict and the check control sit below it and
+never move. With no exercise up, the child that takes the height is the
+conversation log, because then the conversation IS the plate.
+
+**The log yields, and it yields FIRST.** While an activity is live the log is
+capped to two rows and carries an enormous `flex-shrink`, so a shortfall comes
+out of the log before it comes out of the answers — with the ordinary factor of
+1 a 96 px log beside a 550 px exercise absorbed a seventh of the squeeze and six
+activity types that fitted whole were scrolling by 15-41 px because of it. It is
+capped, never unmounted: it is a live region and the only place a learner ever
+sees what the microphone actually heard.
+
+**And a box that continues below the fold SAYS SO.** `.lf-scroll-edge` — a soft
+ink gradient at whichever edge has content beyond it, written imperatively by
+`useScrollEdges` and visible at rest on a phone with no hover and no pointer.
+It is made of INK rather than of the plate's fill, for the same reason the
+answer objects' edge is (§Answer surfaces): ink darkens a light theme and
+lightens a dark one, which is the direction "there is more underneath" runs in
+each, and a fade to the surface colour would have to know what the surface
+composites to over a live island, which nothing does. Overlay scrollbars appear
+only once a learner is already scrolling, which is after the moment they needed
+to be told — and the screenshots that cleared this defect the first time were
+taken with `--hide-scrollbars`, which is the same blindness with a flag on it.
+
+**Measured across ALL 57 engine fixtures, on the plate, at both breakpoints.**
+The Tutor can serve any graded type a published lesson holds (`serveFromCatalog`
+filters on having a GRADER, not on a shape; the `LIVE_TYPE_ALLOWLIST` constrains
+tier-3 GENERATION and nothing else), so "the tallest families" is not a
+hypothetical — `read_chart` wants 834 px of prompt-plus-answers in a 420 px-wide
+plate. Driven through the activity switch on `/dev/tutor-lab`. Two of the 57 are
+`content` types that report themselves finished on mount (`key_ideas`,
+`story_scene`), so the panel is gone before it can be measured and 55 are
+counted:
+
+| | 1280x800 (plate body 540 px) | 375x812, sheet at FULL (body 456 px) |
+|---|---|---|
+| the plate's own scroller ever scrolls | **never** — 0 px hidden, all 55 | **never** |
+| prompt visible without scrolling | **all 55** | **all 55** |
+| `Check` on screen without scrolling | **all 43 `input` types** | **all 43** |
+| whole exercise visible, nothing scrolls | 30 | 19 |
+| answers scroll, worst case | `read_chart`, 406 px | `read_chart`, 471 px |
+
+Families tested, by name, because "we tested it" is not a measurement:
+**choice** (`quiz_mcq`, `true_false`, `picture_choice`, `odd_one_out`,
+`best_decision`, `yes_no_cases`, `speed_tap`, `confidence_quiz`), **input**
+(`type_answer`, `fill_blank`, `number_input`, `estimate_slider`,
+`count_objects`, `equation_builder`), **arrange** (`match_pairs`,
+`memory_flip`, `sort_buckets`, `order_steps`, `rank_choices`, `build_sentence`,
+`timeline_order`, `pattern_complete`, `group_sets`, `number_line`), **money**
+(`coin_count`, `make_change`, `piggy_split`, `needs_wants`, `price_compare`,
+`budget_fit`, `savings_goal`, `fair_trade`, `interest_peek`), **analyze**
+(`spot_error`, `cause_effect`, `compare_table`, `read_chart`, `evidence_hunt`,
+`red_flags`, `fact_opinion`), **maker** (`code_order`, `robot_path`,
+`debug_hunt`, `balance_scale`, `measure_read`, `machine_io`), **storyplay**
+(`story_branch`, `dialogue_choice`, `flash_match`, `lightning_round`,
+`would_you_rather`) and **story** (`story_dialogue`, `story_scene`,
+`key_ideas`, `concept_reveal`, `checkpoint`, `eavesdrop`).
+
+**The known limitation, stated so it can be defended rather than discovered.**
+The tallest types cannot show their whole answer set inside a 420 px plate at
+800 px of viewport — no arrangement of a corner plate can, since `read_chart`
+alone wants more height than the frame has. For those the answers scroll,
+between a question that stays and an action that stays, with the edge saying
+there is more. What is guaranteed is the sentence a customer will ask about:
+**the learner can always see what they were asked, and can always reach the
+control that answers it, without scrolling.** The 8 `flow` types and the 6
+`content` types have no plate-level `Check` at all — their controls are part of
+the exercise and scroll with it, which is the renderers' own contract and not a
+property of this plate; measured, the ones whose own control lands off the
+visible box are `robot_path` at 1280x800, and `checkpoint`, `dialogue_choice`
+and `robot_path` at 375x812.
+
+**And one tap on "an activity is ready" now lands somewhere it can be done.**
+The resting row's default is to step up one detent, which is right for a learner
+opening the sheet to look and wrong for an exercise: HALF is 45% of a phone, and
+after the plate's header and the pinned check control that left about 90 px for
+the activity itself. A row that announces something opens far enough to act on
+it (`LessonPlate` -> `peekOpensTo`), and the learner can still drag it anywhere
+afterwards.
+
+**One defect this section produced, recorded because a screenshot found it and
+nothing else could have.** Laying the body out as a flex column gave it a
+`display: flex` from an author stylesheet, and the PEEK detent hides that body
+with the `hidden` ATTRIBUTE — a 0-1-0 user-agent rule, which `flex` beats
+outright. Measured at 375x812 with the sheet resting: the whole exercise was
+laid out below the fold, three option buttons at y = 925, 986 and 1047 on an
+812 px phone, focusable, in the tab order, announced, and reporting
+`hidden === true` to every script that asked. It is an inline `display: none`
+now. That is the third surface on this route to learn the same lesson
+(`ScreenAnchor`, `WorldChip`, and now the plate), which is enough repetitions to
+state it as a rule: **on this layer, hiding writes `display`, never the
+attribute alone.**
+
+
+## Answer surfaces — the lesson engine's three objects (added 2026-08-22)
+
+> **Scope.** `lesson-engine/core/primitives.tsx` and every renderer that builds
+> from it: `OptionCard`, `TokenChip`, `BigIconTile`, `NumberPad`, `KidSlider`,
+> `SunkenWell`, `GentleTimerBar`, the text fields, the drop targets and the
+> feedback wells. That is the Lesson Player, all 57 exercise types, and the
+> Tutor's live segment panel — one component family rendering on **both**
+> layers, which is the whole reason this section exists.
+
+**What was wrong, stated plainly.** On `conversing` at 1280 in light, the three
+exercise answers were white outlined boxes sitting on a Lumen reading plate over
+a live island: a web form dropped into a diorama, and the single most visible
+non-Lumen thing on the route. The cause was one Tailwind recipe —
+`rounded-md border-2 border-outline/70 bg-surface` — written out by hand in
+about forty places across the eight families. Four sides of uniform hairline
+around a flat opaque fill is the silhouette of an HTML input, and no amount of
+care at the call sites was going to change that, because the recipe WAS the
+design. On the ordinary lesson page the same recipe put white on slate-50 with
+the entire distinction carried by a border, and a whole column of them read as a
+questionnaire rather than as a question.
+
+**Why it is a third material and not one of the existing two.** Liquid Glass
+over the island is exactly the sticker §Lumen deleted. Lumen on an ordinary page
+is a window onto nothing. Lumen inside a Lumen plate is glass on glass, which
+§Elevation rule 6 forbids outright. So these objects are made of the one thing
+both layers publish: **the light**. `--lf-sky`, `--lf-key`, `--lf-ground` and
+`--lf-sun-height` are registered properties with global defaults, so the same
+recipe reads as the island's own hour inside the Tutor and as neutral room light
+on a page, with no conditional anywhere. Two materials was not inconsistency and
+neither is three — a page holds still, an island does not, and an ANSWER is
+pressed on both.
+
+### The physical rule, from which every value follows
+
+**The pane is glass and the object on it is opaque and lit.** That one sentence
+is why an answer always reads as raised, in both themes, over any backdrop a
+moving render can produce: a translucent plate composites toward whatever is
+behind it and an opaque object does not, and the object additionally catches
+`--lf-obj-lift` (7%) more of the key light because it is nearer to it. Nothing
+here needs to know what is behind it, which is what makes it work in two places.
+
+### Three objects, and there is no fourth
+
+| Class | It is | Made of |
+|---|---|---|
+| `.lf-well` | a place something GOES — trays, banks, drop targets, the scenario a question is about | body darkens; lip moves to the BOTTOM (a hollow catches light on its far lower wall); the shadow moves INSIDE |
+| `.lf-slab` | an object that CARRIES content and is not pressable — case rows, statement panels, speech bubbles, chart frames, verdict wells | body + lip + ink edge + seat |
+| `.lf-answer` | an object you PRESS — options, chips, tiles, number-pad keys, text fields | `.lf-slab` + press physics + hover lift + the state modifiers |
+
+`.lf-well-target` is the dashed variant of the well, and the dash is a real
+distinction rather than a decoration: it is the only thing in this vocabulary
+that means "empty ON PURPOSE, put something here", which a solid empty box
+cannot say — that just looks like a component that failed to load. It has
+**three** states, not two (`resting` → `.lf-well-target-ready` when a piece is
+picked up → `[data-active]` when the pointer is over it), because with two a
+learner who has lifted something cannot tell which box will accept it, which is
+the moment they most need telling.
+
+### The parts, and why each is what it is
+
+| Part | Value | Why |
+|---|---|---|
+| body | `--lf-lumen-fill` lifted 7% toward `--lf-key` | opaque and LIT — the object is nearer the light than the pane it sits on |
+| edge | ink at 11% (19% on hover), `inset 0 0 0 1px` | **ink, not the scene's shade.** A plate's edge is shade because a plate is a hole in the picture; an object's edge is where its own body ends, and ink is the only colour that darkens a light theme and lightens a dark one — which is the direction elevation runs in each. A shade edge vanishes in dark mode exactly where the drop shadow already has |
+| lip | `--lf-key` at half the Lumen rim ramp | the same specular highlight, and a small object catches less of it |
+| seat | one drop, same sun as Lumen, about a third of the throw | an option lies ON its pane; a plate-length shadow under a 48 px row reads as a balloon |
+| state | the theme's own `-soft` token, plus a 2 px INSET ring | inset so it never changes layout and never loses the lip, the edge and the seat to a `ring-*` utility — the same correction `.lf-lumen-selected` records |
+| tap floor | **48 px** | an answer option is the control a child mis-taps most; 44 is the floor, not the target |
+
+Everything transitions on `--lf-dur-base`; the press seats the object AND
+collapses its shadow with it, because a shadow that stays put while the thing
+above it moves is the tell that neither is real. The hover lift is
+`(hover: hover)` and reduced-motion-gated, and it is never the only channel —
+there is no hover on a phone, which is where most of these are pressed.
+
+### State is never colour alone, and a component enforces it
+
+`correct` and `wrong` carry meaning for a child, so /AGENTS.md §1.11 and this
+document both require a second channel — and requiring it produced nothing,
+because the shared card had painted state in colour only since the primitives
+were written. It is a COMPONENT now: `AnswerMark` prints an empty ring that
+becomes a **filled check** when chosen or right and a **filled cross** when the
+learner's own pick was not, with a screen-reader word on the two verdicts.
+`VerdictGlyph` is its compact form for objects with no room for a leading mark
+(chips, tiles, table cells). Three shapes survive colour blindness, a greyscale
+print and a bright phone in sunlight; a hue does not.
+
+The mark also says how many answers are allowed before one has been given — a
+circle for a single choice, a squircle for a multi-select — and it is what turns
+a full-width bar of text into something visibly pressable rather than something
+visibly typeable. Renderers whose content is centred or stacked (the true/false
+pad, picture tiles) pass `mark={false}` and take the corner mark instead.
+
+**`wrong` is amber, not red, and that is a spec fix.** LESSON_ENGINE.md §1 P3 is
+one sentence long — "No red WRONG" — and `optionStateClasses` had been painting
+`border-error bg-error-soft` on the learner's own pick, on the most looked-at
+control in the product, while the Tutor's verdict well two files away already
+used a warm one for the same tier. The Lesson Player's `tryAgain` feedback
+banner had the same red and lost it in the same pass. The CROSS is what says
+"not this one"; the colour only agrees with it.
+
+### One defect this section produced, recorded because it nearly shipped
+
+The first version guarded the no-`color-mix` fallback with
+`@supports not (color-mix(in srgb, red 50%, transparent))`. That reads like
+"is color-mix supported"; it is actually a `<general-enclosed>`, which the spec
+evaluates to UNKNOWN and Chrome resolves `not unknown` to TRUE. **The fallback
+therefore applied in every browser**, and every rule above it was dead code —
+measured on the live stage with `getComputedStyle`, an answer's edge was
+`--lf-outline` and its shadow was the five-layer atmospheric one, not the ink
+edge and the sun-agreeing seat this section specifies. It photographed
+acceptably, which is exactly why it survived a screenshot review: the fallback
+is a decent design, it is just not this one.
+
+**And it had a second effect that a picture DOES show, once you know to look for
+it.** The fallback block sits after the state modifiers in source order and
+rewrites `box-shadow` on `.lf-slab, .lf-answer` — so it was erasing the 2 px
+state ring off every stated object. The balance scale's right pan, judged wrong,
+rendered as a plain white pan; with the condition fixed it renders amber-ringed
+on an amber-50 fill, which is what the section says it does. The condition is a
+DECLARATION now (`@supports not (background-color: color-mix(...))`), and what
+found it was reading the computed style off the real page rather than looking at
+a picture of it.
+
+### What this does NOT change
+
+- **Liquid Glass is still the page's material** and Lumen is still the
+  immersive layer's. These three objects sit INSIDE either one; they never
+  replace a card, a panel or a plate.
+- **The type scale is untouched, and the material deliberately does not touch
+  it either.** An early version of `.lf-answer` carried `font-weight: 600` so a
+  call site would not have to — and it would have silently rewritten every
+  button that already carries `lf-label` or `lf-title` (700), which is exactly
+  the drift §Typography's closed scale exists to prevent. Weight stays at the
+  call site, on the element whose type it is.
+- **Grading, shuffling, scoring and every renderer's behaviour.** This pass
+  moved classes and added one mark component. No answer key, no `canSubmit`, no
+  grader and no payload shape was touched.
+
+### A shape is a PROP, never a `className` (added 2026-08-22)
+
+`cn()` in `frontend/src/lib/utils.ts` is a plain concatenator — deliberately, so
+that no dependency is needed for it — and it is **not** `tailwind-merge`. So a
+class passed down to a component that already sets the same property does not
+win: **CSS source order** decides, and Tailwind emits `rounded-full` after
+`rounded-md`, `justify-center` after `justify-start`, and `min-h-12` after
+`min-h-9`.
+
+Three call sites in the engine had been passing exactly those, and all three
+were silently discarded. One of them was visible: `arrange`'s `order_steps` and
+its timeline passed `justify-start rounded-md text-left` to a `TokenChip` whose
+base is `justify-center rounded-full`, so a **placed** step rendered as a
+centred capsule directly beside the square dashed `.lf-well-target` it had just
+filled. It read as deliberate and was not; it survived review precisely because
+the class *looks* like it is doing something.
+
+The rule, therefore:
+
+- **A shared control owns its own geometry.** `rounded-*`, `justify-*`,
+  `min-h-*` and `text-left|center|right` are set by the component, from a typed
+  prop, and exactly one value is ever emitted. `TokenChip`'s is `TokenShape`:
+  `pill` (free in a bank — capsule, centred) or `slot` (seated in a numbered
+  slot or timeline node — `rounded-md`, left-aligned, agreeing with the
+  `.lf-well-target` it replaces).
+- **A `className` on a shared control may only carry properties the base does
+  not set** — `flex-1`, `w-full`, a responsive `md:` layout hint.
+- `core/answerSurfaces.test.tsx` scans every engine source and fails the build
+  on a `className` handed to `TokenChip` or `OptionCard` that names an owned
+  property. Nothing else can catch this: a dead class type-checks, lints, and
+  passes every behavioural test.
+
+### The tap floor has two sides (added 2026-08-23)
+
+`min-h-12` was on `TokenChip` from the start and `min-w` was not, which is a
+floor on the object's HEIGHT rather than on the TARGET. A chip whose whole
+content is one character — `5`, `+`, `×` — is 32 px of padding around a 9 px
+glyph, so `equation_builder`'s operator tiles and `balance_scale`'s weights
+measured **41 px across at 48 tall**: under even the 44 px minimum, on the two
+exercises whose entire interaction is tapping single characters, and invisible
+to a checker that only reads height. `TokenChip` now sets `min-w-12` as well,
+and the scan asserts it, so no call site has to remember.
+
+### A broken-glyph check must measure the GLYPH (added 2026-08-23)
+
+`Icon` swaps in a neutral `help` when the ligature it was handed is not a real
+Material Symbol, because the font otherwise paints the raw string as giant text
+(coursegen can emit `piggy_bank`, `lemonade`). The first version measured
+`el.scrollWidth` — the width of the ELEMENT, which equals the glyph's width only
+while the span is shrink-to-fit, and a caller can take that away without
+knowing. `fair_trade` passed `block` so its two offer icons would centre; the
+span grew to the card's 322 px against a 40 px font; `322 > 40 × 1.5` was true;
+and both `sell` and `toys` — valid glyphs, and the two things being traded —
+rendered as a question mark on the one exercise that asks which of two things is
+worth more. A checker that reports a healthy thing as broken is worse than no
+checker, because the placeholder it substitutes is confidently wrong
+(/AGENTS.md §1.14).
+
+It measures a `Range` over the node's contents now: the laid-out TEXT RUN, which
+reads nothing about the box around it, so the answer is the same whether the
+caller made the span inline, block, a flex item or a grid cell. The secondary
+signal is the number of client rects (a glyph is always one line) rather than
+the run's height, because height follows `line-height` and a caller can set
+that — reintroducing a caller-controlled input is exactly how the first version
+went wrong. Where there is no layout at all (jsdom) it returns `null` and the
+check is skipped: "cannot measure" is not "measured zero".
 
 ## Motion — closed system
 
@@ -897,6 +1461,27 @@ a rule violated everywhere stops being a rule.
   shell published beside it when the browser refused — a separate surface saying
   the control was unusable, next to a control that still looked perfectly
   usable.
+- **TutorFace** (Tutor route only) — the speaking character's 2D head,
+  articulating, inside the caption plate beside the words. It is an
+  ACCESSIBILITY channel and not an avatar: `liruf` and `dina` have no mouth in
+  3D (/TUTOR_3D.md §3.1) and all four are selectable as the tutor, so for half
+  the cast this is the only articulating mouth in the product. It is
+  `aria-hidden`, because the plate around it is the live region carrying the
+  sentence and a character announced on every turn is noise in front of the
+  words. It crops itself to the head by MEASURING the artwork rather than by
+  carrying four sets of coordinates, and when it cannot measure it shows the
+  whole figure rather than a wrong crop. See §Lumen → *One line, one printing,
+  two channels*.
+- **`.lf-scroll-edge`** (a recipe, not a component) — the two soft ink gradients
+  that appear at the top or bottom of a scrolling box when there is content
+  beyond that edge. Written imperatively by `useScrollEdges` onto the box's
+  FRAME (a pseudo-element inside a scroller scrolls with the content), because a
+  scroll handler on this route may write an attribute and may never call
+  `setState`. It is visible at rest, on a phone, before anything is touched:
+  §Layout forbids hover-only affordances, and an overlay scrollbar is a
+  hover-only affordance that also waits until the learner has already found the
+  scroll. See §Lumen → *Room to answer in*.
+
 
 ## Screen Recipes
 
@@ -993,7 +1578,11 @@ the background of EVERY phase — arrive, personalize, introduce, converse,
 adapt, close, replay — mounted once and never unmounted between them. A phase
 change is a camera move plus a change in what is anchored over the render. It
 is never a route change and never a remount, because a remount reloads the
-island and the learner watches their own world blink.
+island and the learner watches their own world blink. **Replay is a phase of
+this list and not an exception to it** (2026-08-22): a saved conversation is
+performed on the same continuous canvas, by the character it happened with,
+carrying the emotions and gestures it originally carried, and it opens on the
+island the learner is already looking at rather than loading one of its own.
 
 **Anatomy**, from the render outward:
 
@@ -1022,8 +1611,15 @@ island and the learner watches their own world blink.
   guaranteed list is for; the world gets the gesture, the list gets the menu.
 - **The lesson plate** — the ONE surface carrying a live exercise. **Desktop:
   a FLOATING plate**, `plate-max` 420 px wide, height fitted to content up to
-  `plate-max-height` 62vh, inset `hud-inset` 24 px from the bottom-right, with
-  scene visible above, below, left and right of it. It is explicitly **not** a
+  `plate-max-height` — which is a constant BAND of island above it
+  (`calc(100vh - 200px)`, so the top edge sits at 176 px on every screen) and no
+  longer a fraction of the viewport, corrected 2026-08-22 because `62vh`
+  reserved most of the screen exactly where there was least to spare and left
+  274 px of the exercise below the fold. It is inset `hud-inset` 24 px from the
+  bottom-right, with scene visible above, below, left and right of it.
+  **Its body is a COLUMN and does not scroll**: the question is pinned above,
+  the action is pinned below, and what moves is the answers between them
+  (§Lumen → *Room to answer in*). It is explicitly **not** a
   full-height edge-to-edge column, and shrinking such a column to 400 px does
   not satisfy this: the rejected version's fault was the SILHOUETTE — a
   near-opaque slab down a third of the screen — and a silhouette is a
@@ -1062,9 +1658,14 @@ island and the learner watches their own world blink.
   right for three of the four; applied to the goodbye it put a 96 px DISABLED
   orb at (139, 632) on top of the "See you soon!" plate, on top of the indigo
   "Start another session" — the one action of the phase — and on top of its own
-  reason line. `closing` is the single phase it is absent from, and the decision
-  is a field on the plan (`stage/micForPhase.ts` → `present`) rather than an
-  `&&` at a call site, so a new phase cannot be added without making it.
+  reason line. The decision is a field on the plan
+  (`stage/micForPhase.ts` → `present`) rather than an `&&` at a call site, so a
+  new phase cannot be added without making it. It is absent from exactly TWO
+  phases (updated 2026-08-22): `closing`, and `replaying` — a replay is a
+  recording, the learner cannot talk to it, and offering a child a microphone on
+  the one screen where speaking into it can never do anything is the goodbye's
+  bug in a worse form. Its absence is the phase's first and most physical
+  statement about what a replay is.
   **The dock it stands in is the phase's bottom cluster whether or not the orb
   is in it** (added 2026-08-22). `closing` used to lay its own three surfaces
   against the bottom edge through a `bottom` StageLayer, and a bottom layer's
@@ -1077,7 +1678,29 @@ island and the learner watches their own world blink.
   (`tutor/ClosingInWorld.tsx`), which is measured on the `mic` safe-area slot
   and therefore a rectangle the camera already aims around. The count of
   viewport-anchored surfaces is unchanged: this IS the bottom cluster, wearing a
-  different set of controls on the one phase the microphone is not using it.
+  different set of controls on the phases the microphone is not using it.
+  **`replaying` wears a transport** (added 2026-08-22): play/pause as one 72 px
+  round accent control where the orb stands, back and forward a line at 48 px
+  either side, "Line 4 of 18" over a progress ribbon, and the chip that leaves.
+  **Its measured rectangle may not change from beat to beat**, and that is a
+  camera rule rather than a tidiness one: the dock publishes itself on the `mic`
+  safe-area slot, so a row that appears on every learner turn makes the
+  CHARACTER rise and sink in time with whose turn it is. Driven at 375x812 the
+  learner's own line was doing exactly that. The row carrying it therefore
+  contributes no height — an `h-0 relative` box with the plate positioned out of
+  the top of it — and the dock measures (15, 480, 345, 216) on every beat of the
+  performance. Same rule, same reason, as the lesson plate's "identical
+  on-screen height with and without a segment".
+  **Where a phase's OWN disclosure goes, and why `z-40` was never going to
+  work** (added 2026-08-22). `StageLayer`'s wrapper is `absolute inset-0 z-30`,
+  which is a positioned element with a z-index and therefore a stacking context:
+  a `z-40` child of a layer is confined to the layer's 30, and the dock — also
+  30, and later in the DOM — paints over it. The introduction's saved-conversation
+  list was built that way, and at 375x812 the two dock chips sat across the list
+  with "Play it again", the only control on the surface, half covered underneath
+  them and still pressable. Anything a phase opens ON PURPOSE and closes again
+  belongs in the dock's `above` slot, where the goodbye's copy of the same list
+  already was.
 - **The way out** — a HudPlate chip at the top-left safe area (`hud-inset`,
   16 px mobile / 24 px desktop), back arrow, first in the tab order, above the
   loading veil, and **never culled**. **The translated line rides with the arrow
@@ -1372,6 +1995,36 @@ on each crown, and holding four of them inside a 17-degree horizontal field
 costs about 19 m of stand-off. Coming closer culls a candidate — measured, at a
 0.62 hold Liruf's plate comes back `hidden` — and a candidate who cannot be
 tapped is the bug the audition exists to fix.
+
+**THAT PARAGRAPH WAS A DESCRIPTION OF A CONSTRAINT WE HAD PUT THERE OURSELVES**
+(corrected 2026-08-22). "Holding four of them costs 19 m" was arithmetic about
+an arrangement, stated as though it were arithmetic about the cast — and the
+arrangement was ours: the audition spread the four candidates out to 0.70 of the
+island's radius, and `approach` then framed them through a PROXY, a symmetric
+ring hand-tuned to 0.68 of the radius. Neither number was the people. On
+`diorama-a` the cast's real spread was 1.97 m either side of the aim while the
+proxy charged the camera 2.35 m, and the frame came out 5.56 m wide against a
+6.5 m island: **29.9%** of a phone on the one screen a child chooses their tutor
+on, with `arriving` at 50.7% two taps earlier.
+
+Both halves moved (`TUTOR_3D.md` §5, §9.1). The shot holds the CAST itself, so
+the framing is a function of where the people are instead of a constant somebody
+tuned once; and the audition separates in DEPTH rather than across the frame,
+because depth satisfies the same separation floor and costs the frame's WIDTH —
+the axis a portrait phone has least of — nothing at all. `approach`'s own hold
+became a floor equal to `establishing`'s, which says the rule in one sentence:
+**the audition is never framed further out than arrival.**
+
+Measured on `/dev/tutor-lab` with the orbit stopped, seven phases, both
+breakpoints, both themes, all three locales: `personalizing` **29.9% → 49.1%**
+at 375x812 and **48.5% → 55.5%** at 1280x800, with all four candidates on
+screen and facing the learner, every name legible, 0 controls under 44 px, 0
+overlaps at rest, 0 surfaces off-frame and 0 invisible focusables. No other
+phase moved. The gate moved with it: `shots.test.ts` now asks the audition
+question directly, with a four-candidate fixture rather than the two-person one
+every other shot is checked against — holding two is strictly easier than
+holding four, which is why the coverage floor stayed green through the whole of
+the 29.9%.
 
 **AND THAT CLAIM WAS TRUE FOR THE BEARING IT WAS SCREENSHOTTED AT, WHICH IS NOT
 THE SAME THING** (corrected 2026-08-22). It said "at 375 px all four plates are

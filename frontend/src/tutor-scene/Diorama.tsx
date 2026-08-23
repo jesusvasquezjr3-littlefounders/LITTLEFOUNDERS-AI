@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { Box3, Group, Vector3 } from 'three';
+import { Group, Vector3 } from 'three';
 import { useSceneModel } from './useSceneModel';
+import { modelBounds } from './modelBounds';
 import { sceneScale, SCENE_ASSETS, type SceneAsset } from './assets';
 import type { QualitySettings } from './quality';
 import { useGround } from './ground';
@@ -31,8 +32,17 @@ export function Diorama({ id, settings }: DioramaProps) {
   const { scene } = useSceneModel(asset.url, settings);
   const scale = useMemo(() => sceneScale(asset), [asset]);
 
+  /*
+   * In the island's OWN space, for the same reason `Character3D` measures in
+   * the character's: `useSceneModel` shares one Object3D per asset, and a
+   * world-space `setFromObject` would fold in whatever group that object
+   * happened to be attached to when the memo ran. The island only ever gets
+   * measured while unparented today — the memo re-runs on the NEW asset, which
+   * has not been attached yet — so this changes no number; it removes a
+   * dependency on that ordering staying true. See `modelBounds.ts`.
+   */
   const offset = useMemo(() => {
-    const box = new Box3().setFromObject(scene);
+    const box = modelBounds(scene);
     const center = box.getCenter(new Vector3());
     return new Vector3(-center.x * scale, -box.min.y * scale, -center.z * scale);
   }, [scene, scale]);

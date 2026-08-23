@@ -98,6 +98,39 @@ export interface FindSpotsOptions {
    */
   samplesPerMetre?: number;
   /**
+   * The direction that costs the CAMERA, in the XZ plane — normally the screen's
+   * own horizontal axis.
+   *
+   * Supplying it makes the solver prefer to separate the cast ALONG THE VIEW
+   * AXIS rather than across it. Depth is free: two characters a metre apart in
+   * depth are a metre apart to the separation rule and cost the framing nothing,
+   * because the frame's width is what a portrait phone has least of. The same
+   * metre spent sideways is a metre the camera has to stand back to keep inside
+   * the frame, and the retreat costs coverage as its square.
+   *
+   * Omitting it is the shipped two-person behaviour byte for byte: a pair is
+   * framed in close-up, where the island's own extent decides nothing.
+   */
+  narrowAxis?: Vector3;
+  /**
+   * How hard that preference pushes, as a score weight against the SQUARE of the
+   * off-axis distance in island radii.
+   *
+   * Squared rather than linear on purpose: a candidate a third of the way out is
+   * barely charged, one at the rim is charged the lot. A linear penalty of any
+   * useful size collapses the whole cast onto the centre line and turns an
+   * audition into a queue receding from the camera.
+   */
+  narrowWeight?: number;
+  /**
+   * Which rings are sampled, as fractions of the island's radius.
+   *
+   * The default reaches 0.70 — nearly the rim — which is right for two people
+   * sharing a place and wrong for four being LOOKED at on a phone. See
+   * `AUDITION_RINGS`.
+   */
+  rings?: readonly number[];
+  /**
    * Half the widest character's footprint, in metres. Used to PREFER spots with
    * room around them, never to reject.
    *
@@ -132,6 +165,56 @@ export const AUDITION_GROUPING = -0.25;
  */
 export const AUDITION_SAMPLES_PER_METRE = 12;
 
+/**
+ * THE RINGS AN AUDITION STANDS ON, and they stop well short of the rim.
+ *
+ * The default set reaches 0.70 of the island's radius, which is the right answer
+ * for two people sharing a place: a close shot frames THEM and the island's
+ * extent decides nothing. It is the wrong answer for four candidates on a
+ * portrait phone, and the arithmetic is not close. `approach` must keep every
+ * candidate inside a frame whose horizontal field of view is 17 degrees, so the
+ * frame's WORLD WIDTH is fixed at roughly 2.3x the widest candidate's distance
+ * from the aim — and everything else about the picture follows from that one
+ * number. Measured on `diorama-a`: the cast solved out to 1.97 m either side of
+ * the aim, the frame came out 5.56 m wide against a 6.5 m island, and the island
+ * painted 29.9% of a 375x812 phone while the other establishing phases reached
+ * 50%. Four fifths of the screen were sky and void on the one screen a child
+ * chooses their tutor on.
+ *
+ * Pulling the rings in does not merely move people: it moves the CAMERA, because
+ * the shot now holds the cast itself (`shots.ts` → `ShotContext.cast`) rather
+ * than a hand-tuned fraction of the island. Gather the cast and the camera comes
+ * with them.
+ *
+ * 0.24 is the inner limit rather than 0.32 because these islands put a feature —
+ * a stone table, a fire — near the middle, and the flatness and walkability
+ * gates already reject anything standing on it. A ring that is mostly rejected
+ * costs raycasts and nothing else; a ring that is missing costs a candidate.
+ *
+ * AND 0.66 IS THE OUTER LIMIT RATHER THAN 0.50, which is the mistake this set
+ * nearly shipped with. Cutting the outer rings looked like the direct way to
+ * gather the cast and it is the way that loses people: run headless against the
+ * real islands, a set stopping at 0.54 seats all four candidates on `diorama-a`
+ * and only THREE on `diorama-b`, whose pond takes most of the inner deck. A
+ * candidate with no spot has no anchor, so their plate is hidden and inert and
+ * they cannot be chosen at all. The gathering is the score's job
+ * (`AUDITION_NARROW_WEIGHT`), which is a PREFERENCE and degrades into "stand
+ * wherever you can" — the rings only have to be there when it needs them.
+ */
+export const AUDITION_RINGS = [0.24, 0.34, 0.45, 0.56, 0.66] as const;
+
+/**
+ * How hard an audition prefers depth over width. See `FindSpotsOptions.narrowWeight`.
+ *
+ * Measured by sweeping it against the real islands and the real `approach` pose:
+ * at 0 the cast spreads 1.97 m either side on `diorama-a` and the island paints
+ * 30% of a phone; at 0.8 it spreads 1.12 m and paints 50%; past that the gain
+ * flattens out because the island's own hold floor takes over as the binding
+ * constraint, and the cast starts forming a single file receding from the
+ * camera, which is a queue rather than a line-up.
+ */
+export const AUDITION_NARROW_WEIGHT = 0.8;
+
 const DOWN = new Vector3(0, -1, 0);
 
 /** The eight compass directions, for probing the room around a candidate. */
@@ -149,6 +232,9 @@ export function findStandingSpots(ground: Object3D, options: FindSpotsOptions): 
     samplesPerMetre = 6,
     probe = 0.35,
     preferDirection = new Vector3(0, 0, 1),
+    narrowAxis,
+    narrowWeight = 0,
+    rings = [0.32, 0.45, 0.58, 0.7],
     isWalkable,
     clearance = 0,
   } = options;
@@ -162,6 +248,15 @@ export function findStandingSpots(ground: Object3D, options: FindSpotsOptions): 
 
   const raycaster = new Raycaster();
   const prefer = preferDirection.clone().setY(0).normalize();
+  /*
+   * The axis the camera pays for, normalised once. Zero-length is treated as
+   * "no preference" rather than as a division by zero: a caller who passes
+   * (0,0,0) meant to leave this off.
+   */
+  const narrow =
+    narrowAxis && narrowAxis.lengthSq() > 1e-6 && narrowWeight > 0
+      ? narrowAxis.clone().setY(0).normalize()
+      : null;
 
   /** Surface height under (x, z), or null when the ray misses the island. */
   const surfaceAt = (x: number, z: number): number | null => {
@@ -177,7 +272,7 @@ export function findStandingSpots(ground: Object3D, options: FindSpotsOptions): 
 
   // Rings from just outside the centre (usually occupied by a feature) to
   // inside the rim (which is usually sloped or fenced).
-  for (const radiusFactor of [0.32, 0.45, 0.58, 0.7]) {
+  for (const radiusFactor of rings) {
     const radius = islandRadius * radiusFactor;
     const steps = Math.max(8, Math.round(radius * samplesPerMetre));
     for (let step = 0; step < steps; step++) {
@@ -239,11 +334,23 @@ export function findStandingSpots(ground: Object3D, options: FindSpotsOptions): 
         room = clear / AROUND.length;
       }
 
+      /*
+       * And the width this spot would cost the CAMERA. `off` is how far the
+       * spot sits across the frame, in island radii; squared, so the middle of
+       * the island is nearly free and the rim is expensive. Depth is not
+       * charged at all — it is the axis a portrait phone has to spare.
+       */
+      let width = 0;
+      if (narrow) {
+        const off = Math.abs((x - center.x) * narrow.x + (z - center.z) * narrow.z) / islandRadius;
+        width = Math.min(off, 1) ** 2 * narrowWeight;
+      }
+
       candidates.push({
         x,
         z,
         y,
-        score: flatness * 0.44 + facing * 0.24 + relativeHeight * 0.12 + room * 0.2,
+        score: flatness * 0.44 + facing * 0.24 + relativeHeight * 0.12 + room * 0.2 - width,
       });
     }
   }

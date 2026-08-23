@@ -176,6 +176,8 @@ frontend/
       hud/
         __tests__/
       lab/
+      replay/
+        __tests__/
       stage/
         __tests__/
 oracle/
@@ -1039,10 +1041,10 @@ Knowing learner behavior — patterns, drop-off, rhythm, family dynamics — is
 > **Status:** v1 — engine implemented in `frontend/src/lesson-engine/`. Server-side
 > grading in Core + the definitive content schema in Vault land in the dedicated
 > content-schema session (0002 is provisional until then).
-> **Last updated:** 2026-07-12 · Language: English (project rule).
+> **Last updated:** 2026-08-22 (§4 material rule — the three answer surfaces) ·
+> Language: English (project rule).
 
 ---
-
 ```
 
 ### ORACLE.md
@@ -1192,17 +1194,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Reconciling the two Lumen passes: five defects that lived in the seams (2026-08-22)
+## Certifying the Tutor: every gate green, 108 screenshots, and the two things a picture found (2026-08-23)
 
-The material pass and the applying pass were done in parallel by two engineers.
-This session drove the result together — all seven phases at 375x812 and
-1280x800 in both themes, and then the whole learner's journey as 24 real clicks
-— and found five defects. Every one of them lived in a SEAM: a rule enforced in
-one place and copied by hand into a second, or a signal published by one owner
-and read by another that had gone stale. None of them was visible to either
-author's own screenshots, and four of the five were being hidden by the ambient
-camera orbit, which is why every measurement below was taken with
-`prefers-reduced-motion: reduce` — the state a reduced-motion learner is in
+**The task was to certify, or to say why it could not be certified.** Three
+parallel passes had landed in one working tree — the mounting/measurement fix,
+the caption/fold rebuild, and the 57-renderer sweep — and nothing had been run
+across all of them together, nor looked at end to end.
+
+### Reconciliation and the gates
+
+Every gate in the repository was run against the reconciled tree. All green,
+with two that needed work first.
 ```
 
 ### agent/README.md
@@ -11973,6 +11975,26 @@ interface FileFieldProps {
   error?: string;
 ```
 
+### frontend/src/components/ui/Icon.test.tsx
+
+```
+/**
+ * THE BROKEN-GLYPH CHECK MUST MEASURE THE GLYPH.
+ *
+ * `Icon` swaps in a neutral `help` when the ligature it was handed is not a
+ * real Material Symbol, because the font otherwise paints the raw string as
+ * giant text. The first version measured `el.scrollWidth` — the width of the
+ * ELEMENT, which equals the glyph's width only while the span is
+ * shrink-to-fit. `fair_trade` passed `block` so its two offer icons would
+ * centre, the span grew to the card's 322 px against a 40 px font, and both
+ * `sell` and `toys` — valid glyphs, the two things being traded — rendered as
+ * a question mark. Nothing failed; it just showed the wrong picture.
+ *
+ * jsdom has no layout, so these tests drive the measurement directly: a stub
+ * `Range` reports the text run while the element reports a wide box, which is
+ * exactly the shape of the defect.
+```
+
 ### frontend/src/components/ui/Icon.tsx
 
 ```
@@ -12213,6 +12235,26 @@ export { LoadingOverlay } from './LoadingOverlay';
 export { StatCard } from './StatCard';
 ```
 
+### frontend/src/i18n/documentLanguage.test.ts
+
+```
+/**
+ * `<html lang>` FOLLOWS THE LEARNER.
+ *
+ * `index.html` ships `lang="en"`, and for the whole life of the app nothing
+ * changed it — so every Spanish and Portuguese screen declared itself English
+ * to the one consumer that cannot see the words. A screen reader takes its
+ * voice and its pronunciation rules from this attribute, which means a child
+ * on the Spanish Tutor heard Spanish spoken by an English synthesiser.
+ *
+ * This is a one-line side effect with no visible surface, which is exactly the
+ * kind of thing that silently regresses when someone reorganises `i18n/index`.
+ * Hence a test rather than a comment.
+ */
+
+import { beforeAll, describe, expect, it } from 'vitest';
+```
+
 ### frontend/src/i18n/en-US/admin.json
 
 ```
@@ -12347,9 +12389,9 @@ export { StatCard } from './StatCard';
   "exit": "Exit lesson",
   "unsupported": "This exercise needs a newer version of the app. Skipping it won't affect your score.",
   "gradeError": "We couldn't check your answer right now. Give it another try!",
-  "chips": {
-    "hearts_one": "{{count}} heart left",
-    "hearts_other": "{{count}} hearts left"
+  "answer": {
+    "correct": "Correct answer",
+    "notThis": "Not this one"
   },
 ```
 
@@ -12448,9 +12490,9 @@ export { StatCard } from './StatCard';
     "introduceLayer": "Start a conversation",
     "conversationLayer": "Your conversation",
     "closeLayer": "End of the session",
-    "controlsLabel": "Talk to your tutor"
-  },
-  "lab": {
+    "controlsLabel": "Talk to your tutor",
+    "replayLayer": "A conversation, playing again",
+    "replayControls": "Replay controls",
 ```
 
 ### frontend/src/i18n/es-MX/admin.json
@@ -12587,9 +12629,9 @@ export { StatCard } from './StatCard';
   "exit": "Salir de la lección",
   "unsupported": "Este ejercicio necesita una versión más nueva de la app. Saltarlo no afecta tu puntaje.",
   "gradeError": "No pudimos revisar tu respuesta ahora mismo. ¡Inténtalo otra vez!",
-  "chips": {
-    "hearts_one": "Queda {{count}} corazón",
-    "hearts_other": "Quedan {{count}} corazones"
+  "answer": {
+    "correct": "Respuesta correcta",
+    "notThis": "Esta no era"
   },
 ```
 
@@ -12688,9 +12730,9 @@ export { StatCard } from './StatCard';
     "introduceLayer": "Empezar una conversación",
     "conversationLayer": "Tu conversación",
     "closeLayer": "Fin de la sesión",
-    "controlsLabel": "Habla con tu tutor"
-  },
-  "lab": {
+    "controlsLabel": "Habla con tu tutor",
+    "replayLayer": "Una conversación, reproduciéndose otra vez",
+    "replayControls": "Controles de la repetición",
 ```
 
 ### frontend/src/i18n/index.ts
@@ -12847,9 +12889,9 @@ import enErrors from './en-US/errors.json';
   "exit": "Sair da lição",
   "unsupported": "Este exercício precisa de uma versão mais nova do app. Pular não afeta sua pontuação.",
   "gradeError": "Não conseguimos verificar sua resposta agora. Tente de novo!",
-  "chips": {
-    "hearts_one": "{{count}} coração restante",
-    "hearts_other": "{{count}} corações restantes"
+  "answer": {
+    "correct": "Resposta certa",
+    "notThis": "Esta não era"
   },
 ```
 
@@ -12948,9 +12990,9 @@ import enErrors from './en-US/errors.json';
     "introduceLayer": "Começar uma conversa",
     "conversationLayer": "Sua conversa",
     "closeLayer": "Fim da sessão",
-    "controlsLabel": "Fale com seu tutor"
-  },
-  "lab": {
+    "controlsLabel": "Fale com seu tutor",
+    "replayLayer": "Uma conversa, tocando de novo",
+    "replayControls": "Controles da repetição",
 ```
 
 ### frontend/src/index.css
@@ -12991,6 +13033,26 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
   const re = /(\*\*([^*]+)\*\*)|(\*([^*]+)\*)|(`([^`]+)`)/g
   let last = 0
   let m: RegExpExecArray | null
+```
+
+### frontend/src/lesson-engine/core/answerSurfaces.test.tsx
+
+```
+/**
+ * ANSWER SURFACES — the guards for /DESIGN.md §Answer surfaces.
+ *
+ * Three of these are behavioural and the fourth is a SOURCE scan, and the
+ * source scan is the one that matters most. The defect this material replaced
+ * was not a bug in one component: it was one Tailwind recipe
+ * (`border-2 border-outline/70 bg-surface`) copied by hand into about forty
+ * places across eight families, which is exactly the shape of thing that comes
+ * back one renderer at a time. A rule that lives only in a document is a rule
+ * the next author re-derives; this one fails the build.
+ */
+
+import { describe, expect, it } from 'vitest'
+import { readFileSync, readdirSync, statSync } from 'node:fs'
+import { dirname, join, resolve } from 'node:path'
 ```
 
 ### frontend/src/lesson-engine/core/director.ts
@@ -13058,19 +13120,19 @@ function doc(segments: Array<{ id: string; type: string; xp: number }>): LessonD
 ```
 // Shared interaction primitives — every exercise renderer builds from these so
 // look, feel and accessibility stay uniform (LESSON_ENGINE.md §4). Tap-first
-// everywhere; ≥44px hit areas; keyboard/focus-visible on everything. The
+// everywhere; ≥48px hit areas; keyboard/focus-visible on everything. The
 // classification types (sort_buckets/group_sets) layer an ADDITIVE pointer-drag
 // on top of tap (see arrange/components.tsx SortingBoard) — tap stays the
 // accessible fallback, so these primitives remain tap-only by themselves.
-
-import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { useTranslation } from 'react-i18next'
-import { cn } from '@/lib/utils'
-import { Icon } from '@/components/ui'
-import MarkdownLite from './MarkdownLite'
-
-export type OptionVisualState = 'idle' | 'selected' | 'correct' | 'wrong' | 'dimmed'
-
+//
+// ── THE MATERIAL ─────────────────────────────────────────────────────────────
+// Everything here is made of the three answer-surface objects defined in
+// index.css and specified in /DESIGN.md §Answer surfaces: `.lf-well` (a place
+// something goes), `.lf-slab` (an object that carries content) and `.lf-answer`
+// (an object you press). Nothing in this file writes `border-2
+// border-outline/70 bg-surface` any more, and neither may any renderer.
+//
+// WHY IT IS ITS OWN MATERIAL AND NOT ONE OF THE OTHER TWO. These components are
 ```
 
 ### frontend/src/lesson-engine/core/schemaBase.ts
@@ -13266,31 +13328,31 @@ import { cn } from '@/lib/utils'
 import { Icon } from '@/components/ui'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
-import { OptionCard, SunkenWell, TokenChip, type OptionVisualState } from '../../core/primitives'
-import { seededSort } from '../../core/shuffle'
-
-type Dict = Record<string, unknown>
-const draftOf = (v: unknown): Dict => (typeof v === 'object' && v !== null ? (v as Dict) : {})
+import {
+  FOCUS_RING,
+  OptionCard,
+  SunkenWell,
+  TokenChip,
 ```
 
 ### frontend/src/lesson-engine/families/analyze/fixtures.ts
 
 ```
-// `analyze` family — one demo segment per type for /dev/lesson-lab (es-MX content).
-// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
+// `analyze` family — one demo segment per type for /dev/lesson-lab.
+// Written per locale; see `../../lab/fixtureCopy.ts`. Structure and answer keys
+// are written once and are identical in every locale by construction.
 
+import type { Locale } from '@/i18n'
 import type { SegmentBase } from '../../core/types'
+import { copyPack, type Copy } from '../../lab/fixtureCopy'
 
-export const analyzeFixtures: SegmentBase[] = [
-  {
-    id: 'fx-spot-error',
-    type: 'spot_error',
-    prompt_md: 'Liruf calculó su cambio. Encuentra el paso con **error**.',
-    difficulty: 2,
-    xp: 15,
-    hints: ['Revisa la resta: ¿cuánto es $50 menos $25?'],
-    explanation_md: 'Para revisar un cálculo, sigue **cada paso** con calma: el error casi siempre se esconde en uno solo.',
-    narrator: { character: 'rho', emotion: 'thinking' },
+const EN = {
+  errorPrompt: 'Liruf worked out his change. Find the step with the **mistake**.',
+  errorHint: 'Check the subtraction: how much is $50 minus $25?',
+  errorExplain:
+    'To check a calculation, follow **every step** calmly: the mistake is almost always hiding in just one.',
+  errorContext: 'Liruf wants a **$25** notebook and pays with a **$50** note.',
+  errorS1: 'The notebook costs $25.',
 ```
 
 ### frontend/src/lesson-engine/families/analyze/grade.test.ts
@@ -13396,21 +13458,21 @@ import {
 ### frontend/src/lesson-engine/families/arrange/fixtures.ts
 
 ```
-// `arrange` family — one demo segment per type for /dev/lesson-lab (es-MX content).
-// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
+// `arrange` family — one demo segment per type for /dev/lesson-lab.
+// Written per locale; see `../../lab/fixtureCopy.ts`. Structure and answer keys
+// are written once and are identical in every locale by construction.
 
+import type { Locale } from '@/i18n'
 import type { SegmentBase } from '../../core/types'
+import { copyPack, type Copy } from '../../lab/fixtureCopy'
 
-export const arrangeFixtures: SegmentBase[] = [
-  {
-    id: 'fx-match-pairs',
-    type: 'match_pairs',
-    prompt_md: 'Une cada **moneda** con lo que puedes comprar con ella.',
-    difficulty: 2,
-    xp: 15,
-    hints: ['Empieza por la moneda más grande: ¿qué cosa cuesta más?'],
-    explanation_md: 'Cada cosa tiene un **precio** distinto — conocerlos te ayuda a planear tus compras.',
-    narrator: { character: 'dina', emotion: 'happy' },
+const EN = {
+  matchPrompt: 'Match each **coin** with something you can buy with it.',
+  matchHint: 'Start with the biggest coin: which thing costs most?',
+  matchExplain: 'Everything has its own **price** — knowing them helps you plan what you buy.',
+  matchL1: '$5',
+  matchL2: '$20',
+  matchL3: '$50',
 ```
 
 ### frontend/src/lesson-engine/families/arrange/grade.test.ts
@@ -13516,21 +13578,21 @@ import {
 ### frontend/src/lesson-engine/families/choice/fixtures.ts
 
 ```
-// `choice` family — one demo segment per type for /dev/lesson-lab (es-MX content).
-// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
+// `choice` family — one demo segment per type for /dev/lesson-lab.
+// Written per locale; see `../../lab/fixtureCopy.ts`. Structure and answer keys
+// are written once and are identical in every locale by construction.
 
+import type { Locale } from '@/i18n'
 import type { SegmentBase } from '../../core/types'
+import { copyPack, type Copy } from '../../lab/fixtureCopy'
 
-export const choiceFixtures: SegmentBase[] = [
-  {
-    id: 'fx-quiz-mcq',
-    type: 'quiz_mcq',
-    prompt_md: '¿Qué es el **ahorro**?',
-    difficulty: 1,
-    xp: 10,
-    hints: ['Piensa en tu alcancía: ¿qué haces con las monedas que guardas?'],
-    explanation_md: 'Ahorrar es **guardar una parte** de tu dinero hoy para poder usarlo después.',
-    narrator: { character: 'dina', emotion: 'happy' },
+const EN = {
+  mcqPrompt: 'What is **saving**?',
+  mcqHint: 'Think about your piggy bank: what do you do with the coins you keep?',
+  mcqExplain: 'Saving is **keeping part** of your money today so you can use it later.',
+  mcqA: 'Keeping part of my money for later',
+  mcqB: 'Spending all my money on candy',
+  mcqBWhy: 'That is *spending*, not saving. Spend it all today and nothing is left for tomorrow.',
 ```
 
 ### frontend/src/lesson-engine/families/choice/grade.test.ts
@@ -13622,35 +13684,35 @@ export const quizMcq = segmentSchema(
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
+import { Icon } from '@/components/ui'
 import type { ExerciseProps } from '../../core/types'
 import { fuzzyEquals } from '../../core/scoring'
 import { seededSort } from '../../core/shuffle'
 import {
+  FOCUS_RING,
   KidSlider,
   NumberPad,
   SunkenWell,
-  TokenChip,
-  VisualMark,
 ```
 
 ### frontend/src/lesson-engine/families/input/fixtures.ts
 
 ```
-// `input` family — one demo segment per type for /dev/lesson-lab (es-MX content).
-// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
+// `input` family — one demo segment per type for /dev/lesson-lab.
+// Written per locale; see `../../lab/fixtureCopy.ts`. Structure and answer keys
+// are written once and are identical in every locale by construction — with one
+// deliberate exception noted below (`type_answer`'s accepted spellings, which
+// ARE the answer and are words).
 
+import type { Locale } from '@/i18n'
 import type { SegmentBase } from '../../core/types'
+import { copyPack, type Copy } from '../../lab/fixtureCopy'
 
-export const inputFixtures: SegmentBase[] = [
-  {
-    id: 'fx-type-answer',
-    type: 'type_answer',
-    prompt_md: '¿Cómo se llama el cochinito donde guardas tus **monedas** en casa?',
-    difficulty: 1,
-    xp: 10,
-    hints: ['Empieza con "al…" y a veces tiene forma de puerquito.'],
-    explanation_md: 'La **alcancía** es tu primer banco: ahí empieza el hábito de ahorrar.',
-    narrator: { character: 'dina', emotion: 'happy' },
+const EN = {
+  typePrompt: 'What do you call the little pot where you keep your **coins** at home?',
+  typeHint: 'It starts with "pig…" and it is usually shaped like one.',
+  typeExplain: 'A **piggy bank** is your first bank: the saving habit starts there.',
+  typePlaceholder: 'Type your answer…',
 ```
 
 ### frontend/src/lesson-engine/families/input/grade.test.ts
@@ -13748,29 +13810,29 @@ import type { ExerciseProps, SegmentBase } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
 import { seededSort, seededSortMiddling } from '../../core/shuffle'
 import {
+  FOCUS_RING,
   NumberPad,
   OptionCard,
-  SunkenWell,
 ```
 
 ### frontend/src/lesson-engine/families/maker/fixtures.ts
 
 ```
-// `maker` family — one demo segment per type for /dev/lesson-lab (es-MX content).
-// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
+// `maker` family — one demo segment per type for /dev/lesson-lab.
+// Written per locale; see `../../lab/fixtureCopy.ts`. Structure and answer keys
+// are written once and are identical in every locale by construction.
 
+import type { Locale } from '@/i18n'
 import type { SegmentBase } from '../../core/types'
+import { copyPack, type Copy } from '../../lab/fixtureCopy'
 
-export const makerFixtures: SegmentBase[] = [
-  {
-    id: 'fx-code-order',
-    type: 'code_order',
-    prompt_md: 'Ordena los bloques para armar la **rutina de ahorro** de Liruf.',
-    difficulty: 2,
-    xp: 15,
-    hints: ['Todo programa empieza con `inicio` y termina mostrando el resultado.'],
-    explanation_md:
-      'Primero **empiezas**, luego **repites** el paso de guardar, y al final **miras** cuánto juntaste.',
+const EN = {
+  codePrompt: "Put the blocks in order to build Liruf's **saving routine**.",
+  codeHint: 'Every program starts with `start` and ends by showing the result.',
+  codeExplain:
+    'First you **start**, then you **repeat** the saving step, and at the end you **show** how much you have.',
+  codeB1: 'start',
+  codeB2: 'repeat 4 times:',
 ```
 
 ### frontend/src/lesson-engine/families/maker/grade.test.ts
@@ -13869,28 +13931,28 @@ import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
 import { seededSort } from '../../core/shuffle'
 import {
+  FOCUS_RING,
   KidSlider,
-  NumberPad,
 ```
 
 ### frontend/src/lesson-engine/families/money/fixtures.ts
 
 ```
-// `money` family — one demo segment per type for /dev/lesson-lab (es-MX content).
-// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
-// MXN denominations: coins ≤ $10, bills ≥ $20.
+// `money` family — one demo segment per type for /dev/lesson-lab.
+// Written per locale; see `../../lab/fixtureCopy.ts`. Structure and answer keys
+// are written once and are identical in every locale by construction.
+//
+// The CURRENCY moves with the copy (`FIXTURE_CURRENCY`), because these
+// renderers format with `Intl` from the payload's `currency` — a Brazilian
+// fixture whose prose says "R$5" while its till prints "$5.00" is exactly the
+// half-translated state this file exists to make impossible. The denomination
+// LADDER is deliberately the same everywhere (1/2/5/10/20/50): all three
+// currencies have coins at the low end and notes from 20 up, and holding the
+// numbers still keeps every grader assertion locale-independent.
 
+import type { Locale } from '@/i18n'
 import type { SegmentBase } from '../../core/types'
-
-export const moneyFixtures: SegmentBase[] = [
-  {
-    id: 'fx-coin-count',
-    type: 'coin_count',
-    prompt_md: 'Dina quiere comprar un cuaderno. Paga la cantidad **exacta** tocando monedas y billetes.',
-    difficulty: 1,
-    xp: 10,
-    hints: ['Empieza con el billete más grande que no se pase.'],
-    explanation_md: 'Hay varias combinaciones que suman **$37**: por ejemplo $20 + $10 + $5 + $2.',
+import { FIXTURE_CURRENCY, copyPack, type Copy } from '../../lab/fixtureCopy'
 ```
 
 ### frontend/src/lesson-engine/families/money/grade.test.ts
@@ -14016,21 +14078,21 @@ import MarkdownLite from '../../core/MarkdownLite'
 ### frontend/src/lesson-engine/families/story/fixtures.ts
 
 ```
-// `story` family — one demo segment per type for /dev/lesson-lab (es-MX content).
-// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
+// `story` family — one demo segment per type for /dev/lesson-lab.
 // Content types are ungraded and carry xp: 0 (LESSON_ENGINE.md §3, §5.1).
+//
+// WRITTEN PER LOCALE — see `../../lab/fixtureCopy.ts` for why, and for the
+// parity rule the type system enforces. Structure (ids, payload shape, answer
+// keys) is written ONCE below and is identical in every locale by construction;
+// only the copy differs.
 
+import type { Locale } from '@/i18n'
 import type { SegmentBase } from '../../core/types'
+import { copyPack, type Copy } from '../../lab/fixtureCopy'
 
-export const storyFixtures: SegmentBase[] = [
-  {
-    id: 'fx-story-dialogue',
-    type: 'story_dialogue',
-    prompt_md: 'La gran idea de la limonada',
-    difficulty: 1,
-    xp: 0,
-    narrator: { character: 'dina', emotion: 'happy' },
-    payload: {
+const EN = {
+  dialoguePrompt: 'The big lemonade idea',
+  dialogue1: 'Dina, Dina! I found **$20** cleaning my room. I am buying candy RIGHT NOW!',
 ```
 
 ### frontend/src/lesson-engine/families/story/grade.ts
@@ -14129,21 +14191,21 @@ import {
 ### frontend/src/lesson-engine/families/storyplay/fixtures.ts
 
 ```
-// `storyplay` family — one demo segment per type for /dev/lesson-lab (es-MX content).
-// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
+// `storyplay` family — one demo segment per type for /dev/lesson-lab.
+// Written per locale; see `../../lab/fixtureCopy.ts`. Structure and answer keys
+// are written once and are identical in every locale by construction.
 
+import type { Locale } from '@/i18n'
 import type { SegmentBase } from '../../core/types'
+import { copyPack, type Copy } from '../../lab/fixtureCopy'
 
-export const storyplayFixtures: SegmentBase[] = [
-  {
-    id: 'fx-story-branch',
-    type: 'story_branch',
-    prompt_md: 'Tu **puesto de limonada** abre hoy. Cada decisión cuenta.',
-    difficulty: 3,
-    xp: 20,
-    explanation_md:
-      'Invertir en **calidad**, avisar a tus clientes y poner un **precio justo** hace que vuelvan mañana.',
-    narrator: { character: 'dina', emotion: 'excited' },
+const EN = {
+  branchPrompt: 'Your **lemonade stand** opens today. Every decision counts.',
+  branchExplain:
+    'Investing in **quality**, telling your customers and setting a **fair price** is what brings them back tomorrow.',
+  branchN1: 'You have **$50** to start your lemonade stand. What do you buy?',
+  branchN1a: 'Juicy lemons and good sugar ($30)',
+  branchN1b: 'Cheap, half-dried lemons ($10)',
 ```
 
 ### frontend/src/lesson-engine/families/storyplay/grade.test.ts
@@ -14231,19 +14293,19 @@ import {
 ```
 // /dev/lesson-lab — the visual QA surface and living authoring contract
 // (LESSON_ENGINE.md §10). Dev-gated in App.tsx; never ships to production nav.
-
-import { useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Badge, Button, Card, Icon, ThemeToggle } from '@/components/ui'
-import type { LessonDocument, SegmentBase } from '../core/types'
-import { stripAnswers } from '../core/strip'
-import { FIXTURES_BY_FAMILY, GRADED_TYPES, ALL_TYPES } from '../registry'
-import { createLocalGrader } from './localGrader'
-import LessonPlayer from '../player/LessonPlayer'
-import type { CharacterId } from '@/components/characters/control/types'
-
-function makeLabDocument(segments: SegmentBase[], title: string, hearts: number | null): LessonDocument {
-  const cast = Array.from(
+//
+// THE INSTRUMENT IS IN ENGLISH; THE PRODUCT INSIDE IT IS NOT — and until this
+// pass those two facts were not being kept in step. The page's own chrome runs
+// through i18n (it is real product chrome: the player, the hearts pill, the
+// theme toggle), while the FIXTURES were pinned to Spanish, so every screenshot
+// ever taken of this page showed English chrome around Spanish content and read
+// as a product full of hardcoded strings. It is not: a lesson document is
+// single-locale by design (LESSON_ENGINE.md §3) and production documents arrive
+// from Forge already written in the learner's language. `/dev/tutor-lab` had the
+// identical defect and fixed it the identical way; the switch below is the same
+// switch, moving `i18n.changeLanguage` and the fixture set together so the two
+// can never disagree. See `./fixtureCopy.ts`.
+//
 ```
 
 ### frontend/src/lesson-engine/lab/LessonViewPage.tsx
@@ -14264,6 +14326,46 @@ import LessonPlayer from '../player/LessonPlayer'
 import type { AudioManifest } from '../player/narration'
 
 interface IndexEntry {
+```
+
+### frontend/src/lesson-engine/lab/fixtureCopy.ts
+
+```
+/**
+ * THE LAB FIXTURES ARE WRITTEN PER LOCALE, AND THIS IS THE REASON.
+ *
+ * `/dev/lesson-lab` renders chrome through i18n and fixtures from these files.
+ * While the fixtures were pinned to Spanish, every screenshot of the lab showed
+ * ENGLISH CHROME AROUND SPANISH CONTENT — and was read, reasonably, as evidence
+ * that the lesson engine has hardcoded strings. It does not: a lesson DOCUMENT
+ * is single-locale by design (LESSON_ENGINE.md §3) and production documents
+ * arrive from Forge already written in the learner's language. The lab was
+ * simply lying about the one thing it exists to show. `/dev/tutor-lab` had the
+ * identical defect and fixed it the identical way (`labFixtures.ts`), and the
+ * tutor lab's lesson-sheet switch draws from THESE fixtures — so this change
+ * makes both instruments honest at once.
+ *
+ * ── THE PARITY RULE, ENFORCED BY THE COMPILER ────────────────────────────────
+```
+
+### frontend/src/lesson-engine/lab/fixtureSets.ts
+
+```
+/**
+ * The demo fixtures, by family — **and this module is why they are not in the
+ * production bundle.**
+ *
+ * `fixturesByFamily` used to be a constant in `registry.ts`, and `registry.ts`
+ * is EAGER: `LessonPlayer` reaches it for `getRegistryEntry` on every lesson a
+ * learner opens, so every demo sentence about lemonade rode into `index-*.js`
+ * with it. That was tolerable while the fixtures were written once. Writing
+ * them in three languages tripled it, and shipping three languages of dev data
+ * to a phone that will only ever render one is not a trade worth making — so
+ * the fixtures moved OUT of the eager graph instead.
+ *
+ * Both labs are `lazy()` routes (`App.tsx`, and the tutor lab's activity switch
+ * pulls from here), so nothing in the eager graph imports this file and Rollup
+ * puts the whole set in the lab chunks. Measured on the build that introduced
 ```
 
 ### frontend/src/lesson-engine/lab/localGrader.ts
@@ -14415,15 +14517,15 @@ export type SfxName =
 
 import { describe, expect, it } from 'vitest'
 import { render } from '@testing-library/react'
-import { ALL_TYPES, FIXTURES_BY_FAMILY, GRADERS, REGISTRY, getRegistryEntry } from './registry'
+import { LOCALES } from '@/i18n'
+import { ALL_TYPES, GRADERS, REGISTRY, getRegistryEntry } from './registry'
+import { allFixtures } from './lab/fixtureSets'
 import { lessonDocumentSchema } from './schema'
 import { stripAnswers } from './core/strip'
-import type { LessonDocument } from './core/types'
+import type { LessonDocument, SegmentBase } from './core/types'
 import MarkdownLite from './core/MarkdownLite'
 
-const ALL_FIXTURES = Object.values(FIXTURES_BY_FAMILY).flat()
-
-describe('registry completeness', () => {
+/**
 ```
 
 ### frontend/src/lesson-engine/registry.ts
@@ -14432,18 +14534,18 @@ describe('registry completeness', () => {
 // Central registry — composes the family slices (LESSON_ENGINE.md §4, §11).
 // Adding a family = one import block here; families never edit each other.
 
+// NO FIXTURE IMPORT HERE, DELIBERATELY. This module is EAGER — `LessonPlayer`
+// reaches it for `getRegistryEntry` on every lesson a learner opens — so
+// anything it imports rides into `index-*.js`. The demo fixtures used to, and
+// writing them in three languages would have tripled that for a phone that
+// renders one. They live in `lab/fixtureSets.ts`, which only the two lazy lab
+// routes import (see the note there).
 import type { FamilyGrader, Registry, RegistryEntry } from './core/types'
-import { choiceFixtures, choiceGraders, choiceRegistry } from './families/choice/register'
-import { storyFixtures, storyGraders, storyRegistry } from './families/story/register'
-import { inputFixtures, inputGraders, inputRegistry } from './families/input/register'
-import { arrangeFixtures, arrangeGraders, arrangeRegistry } from './families/arrange/register'
-import { analyzeFixtures, analyzeGraders, analyzeRegistry } from './families/analyze/register'
-import { storyplayFixtures, storyplayGraders, storyplayRegistry } from './families/storyplay/register'
-import { makerFixtures, makerGraders, makerRegistry } from './families/maker/register'
-import { moneyFixtures, moneyGraders, moneyRegistry } from './families/money/register'
-
-export const REGISTRY: Registry = {
-  ...storyRegistry,
+import { choiceGraders, choiceRegistry } from './families/choice/register'
+import { storyGraders, storyRegistry } from './families/story/register'
+import { inputGraders, inputRegistry } from './families/input/register'
+import { arrangeGraders, arrangeRegistry } from './families/arrange/register'
+import { analyzeGraders, analyzeRegistry } from './families/analyze/register'
 ```
 
 ### frontend/src/lesson-engine/schema.ts
@@ -15405,16 +15507,16 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { AnalyticsGeoMap } from './AnalyticsGeoMap';
 import { COUNTRY_SHAPE_BY_CODE, countryPosition, MICRO_STATE_CENTROIDS } from './worldGeography';
 
-const { mockAdminData, mockFilter } = vi.hoisted(() => ({
-  mockAdminData: vi.fn(),
-  mockFilter: vi.fn(),
-}));
-
-vi.mock('../adminShared', () => ({ useAdminData: mockAdminData }));
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string, values?: Record<string, string | number>) => (values?.count ? `${key} ${values.count}` : key),
-    i18n: { resolvedLanguage: 'en-US' },
+/*
+ * WARM THE CODE-SPLIT CHUNK BEFORE THE CLOCK STARTS.
+ *
+ * `AnalyticsGeoMap` renders the map through `React.lazy(() => import('./WorldChoropleth'))`,
+ * and that module pulls in `worldGeography.ts` — 171 KB of generated Natural
+ * Earth outlines. `waitFor`'s default budget is 1000 ms, so a test that waits
+ * for a country path is really waiting for Vite to transform ~190 KB inside
+ * that second. Alone it takes ~480 ms and passes; inside the full run, with 89
+ * test files competing for the same worker pool, it does not, and the failure
+ * lands on whichever assertion happened to be behind the boundary.
 ```
 
 ### frontend/src/routes/admin/analytics/AnalyticsGeoMap.tsx
@@ -20948,10 +21050,12 @@ import {
 ```
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { AnimationMixer, Box3, Group, LoopOnce, LoopRepeat, Vector3, type AnimationAction } from 'three';
+import { AnimationMixer, Group, LoopOnce, LoopRepeat, type AnimationAction } from 'three';
 import { useSceneModel } from './useSceneModel';
+import { modelFooting } from './modelBounds';
 import { characterScale, CHARACTER_ASSETS, SCENE_ASSET_BASE, type CharacterAsset } from './assets';
 import { MouthCard, hasMouthCard } from './MouthCard';
+import type { SceneBackdropId } from './backdrops';
 import type { QualitySettings } from './quality';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
 import { useGround } from './ground';
@@ -20959,8 +21063,6 @@ import { ContactShadow } from './ContactShadow';
 import { bindRig, resetRig, type Rig, type RigKind } from './rig';
 import {
   ACTION_SECONDS,
-  CLIP_LIFT,
-  LOOPING_ACTIONS,
 ```
 
 ### frontend/src/tutor-scene/ContactShadow.tsx
@@ -20987,8 +21089,9 @@ import { CanvasTexture, DoubleSide, SRGBColorSpace } from 'three';
 
 ```
 import { useEffect, useMemo, useRef } from 'react';
-import { Box3, Group, Vector3 } from 'three';
+import { Group, Vector3 } from 'three';
 import { useSceneModel } from './useSceneModel';
+import { modelBounds } from './modelBounds';
 import { sceneScale, SCENE_ASSETS, type SceneAsset } from './assets';
 import type { QualitySettings } from './quality';
 import { useGround } from './ground';
@@ -21000,7 +21103,6 @@ import { useGround } from './ground';
  * -0.24 and -0.41 units) and neither is centred on the origin. Rather than ask
  * an artist to re-export with a specific pivot — a request that gets forgotten
  * on the next asset — the component measures the loaded bounds, centres the
- * island on the origin and rests its UNDERSIDE on y=0.
 ```
 
 ### frontend/src/tutor-scene/MouthCard.tsx
@@ -21020,7 +21122,7 @@ import {
   type Object3D,
 } from 'three';
 import type { CharacterId } from '@/components/characters/control/types';
-import {
+import { useTheme } from '@/theme/useTheme';
 ```
 
 ### frontend/src/tutor-scene/SafeAreaContext.tsx
@@ -21106,21 +21208,21 @@ import { useSafeArea } from './SafeAreaContext';
 ### frontend/src/tutor-scene/TutorScene.tsx
 
 ```
-import { Fragment, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Box3, Group, Vector3 } from 'three';
 import { SceneCanvas, type SceneStats } from './SceneCanvas';
 import { SceneLighting } from './SceneLighting';
 import { Diorama } from './Diorama';
 import { Character3D } from './Character3D';
+import { useSceneModel } from './useSceneModel';
 import { getDeviceProbe, QUALITY_SETTINGS, type QualitySettings } from './quality';
 import { GroundProvider, useGround } from './ground';
 import {
   AUDITION_GROUPING,
+  AUDITION_NARROW_WEIGHT,
+  AUDITION_RINGS,
   AUDITION_SAMPLES_PER_METRE,
-  findStandingSpots,
-  type StandingSpot,
-} from './standingSpots';
 ```
 
 ### frontend/src/tutor-scene/TutorStage.tsx
@@ -21361,6 +21463,26 @@ describe('readBudget', () => {
  * TWO DIFFERENT TRIANGLE COUNTS EXIST and confusing them will waste an
  * afternoon:
  *   - `scripts/optimize-glb.mjs` reports MESH triangles — how complex the asset
+```
+
+### frontend/src/tutor-scene/cast.ts
+
+```
+import type { CharacterId } from '@/components/characters/control/types';
+
+/*
+ * WHO IS STANDING ON THE ISLAND — one rule, in one place, imported by both the
+ * product and the gate that certifies it.
+ *
+ * It was four lines inside `TutorScene`, which is a React component that
+ * imports three.js and react-three-fiber, so `scripts/verify-placement.ts`
+ * could not reach it and had to hard-code its own idea of the cast instead. A
+ * gate holding its own copy of the rule certifies a slightly different product
+ * — the same reason the solver, the separation arithmetic and the facing rule
+ * are all imported there rather than reimplemented.
+ *
+ * The distinction this file exists to make explicit: during a personalization
+ * audition the cast is the CATALOG, and it does not depend on who the session's
 ```
 
 ### frontend/src/tutor-scene/characterActions.test.ts
@@ -21783,6 +21905,46 @@ import type { CharacterId } from '@/components/characters/control/types';
  * a single measured number without dragging in asset URL resolution.
 ```
 
+### frontend/src/tutor-scene/modelBounds.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import {
+  Bone,
+  Box3,
+  BoxGeometry,
+  Float32BufferAttribute,
+  Group,
+  Mesh,
+  MeshBasicMaterial,
+  Object3D,
+  Skeleton,
+  SkinnedMesh,
+  Uint16BufferAttribute,
+  Vector3,
+} from 'three';
+```
+
+### frontend/src/tutor-scene/modelBounds.ts
+
+```
+import { Box3, Matrix4, Vector3, type Mesh, type Object3D } from 'three';
+
+/*
+ * HOW BIG IS THIS MODEL — asked in the model's OWN space, never in the world's.
+ *
+ * `Box3.setFromObject` is a WORLD-space measurement: it walks the graph and
+ * transforms every geometry by its `matrixWorld`, which folds in the transform
+ * of whatever the object is attached to at that instant. That is the right
+ * answer for "how much room does the island occupy on stage" and the wrong one
+ * for "how tall is this character's export", and the two questions look
+ * identical at the call site.
+ *
+ * IT SHIPPED AS A SHIP-BLOCKER, and the reason it took a scene dump to see is
+ * that it is only wrong on the SECOND mount. `useSceneModel` hands out the
+ * loader's cached `gltf.scene` BY REFERENCE — deliberately, cloning would double
+```
+
 ### frontend/src/tutor-scene/mouthAtlas.test.ts
 
 ```
@@ -21841,6 +22003,26 @@ import generated from './mouthCards.generated.json';
     ],
     [
      -0.056826,
+```
+
+### frontend/src/tutor-scene/mouthTint.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { mouthCardTint, resolveBackdrop, SCENE_BACKDROP_IDS } from './backdrops';
+
+/*
+ * The mouth card is the ONE unlit surface in the scene (`MouthCard.tsx` records
+ * why: every lit material renders that particular map solid black and the cause
+ * is not found). An unlit material does not darken when the sun goes down, so
+ * at Dusk the card was a cream rectangle across an orange-lit face — tape over
+ * the mouth of a character the camera closes in on BECAUSE she articulates.
+ *
+ * `mouthCardTint` is the hand-applied light. These are the properties that make
+ * it safe to land on a finished product, rather than a plausible-looking
+ * constant somebody would have to re-check by eye every time a palette moves.
+ */
+
 ```
 
 ### frontend/src/tutor-scene/quality.test.ts
@@ -22152,6 +22334,7 @@ import { useTranslation } from 'react-i18next';
 import { HudPlate } from '@/tutor/hud/HudPlate';
 import { SessionHistory } from './SessionHistory';
 import { useStageDock } from './stage/StageShell';
+import type { SessionSummary } from './types';
 
 /*
  * The goodbye (/ORACLE.md §9.5), and it stands where the microphone stands.
@@ -22160,7 +22343,6 @@ import { useStageDock } from './stage/StageShell';
  * surfaces against the bottom of the same viewport; only one of them is a place
  * the CAMERA knows about. A `bottom` layer registers with `keepClearOf`, which
  * moves the microphone dock up — and the microphone is deliberately absent on
- * this phase (`stage/micForPhase.ts` → `present: false`), so that channel pushed
 ```
 
 ### frontend/src/tutor/ConversationView.tsx
@@ -22175,23 +22357,25 @@ import { HudPlate } from './hud/HudPlate';
 import { LessonPlate, type LessonPlateDetent } from './hud/LessonPlate';
 import { WorldChip } from './hud/WorldChip';
 import { SpeechCaption } from './SpeechCaption';
-import { TutorBubble, TutorTranscript } from './TutorBubble';
+import { TutorFace } from './TutorFace';
+import { TutorTranscript } from './TutorTranscript';
 import { LiveSegmentPanel } from './LiveSegmentPanel';
 import { useStageDock, type ConversationLayerProps, type StageDockValue } from './stage/StageShell';
 
 /*
- * The session itself, composed IN the scene.
 ```
 
 ### frontend/src/tutor/LiveSegmentPanel.tsx
 
 ```
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
 import { MarkdownLite } from '@/lesson-engine/core/MarkdownLite';
 import { REGISTRY } from '@/lesson-engine/registry';
 import type { SegmentBase, Verdict } from '@/lesson-engine/core/types';
 import { HudPlate } from './hud/HudPlate';
+import { useScrollEdges } from './hud/useScrollEdges';
 import { gradeSegment } from './tutorApi';
 import type { LiveSegmentState } from './useTutorSocket';
 
@@ -22199,8 +22383,6 @@ import type { LiveSegmentState } from './useTutorSocket';
  * The Lesson Engine, running live, on the floating plate.
  *
  * IT REUSES THE REAL REGISTRY. Every one of the 57 renderers, the shared
- * primitives, the tap-first interaction rules and the accessibility work all
- * come along for free, and a lesson type improved for courses improves here on
 ```
 
 ### frontend/src/tutor/OfferChips.tsx
@@ -22248,19 +22430,19 @@ import type { Adaptation } from './types';
 ```
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '@/components/ui';
 import { CharacterActor } from '@/components/characters/control/CharacterActor';
 import { HudPlate } from './hud/HudPlate';
-import { getTranscript, listSessions } from './tutorApi';
-import type { SessionSummary, SessionTranscript } from './types';
+import { listSessions } from './tutorApi';
+import type { SessionSummary } from './types';
 
 /*
- * Saved conversations, and their replay (/ORACLE.md §12).
+ * THE ARCHIVE — the list you choose a conversation FROM, and nothing else.
  *
- * WHAT A REPLAY IS AND IS NOT. It reconstructs the session from the
- * transcript: the character re-acts each line with the emotion and action it
- * originally carried, and the tutor's stored audio plays. It is NOT a
- * recording of the learner — there is no such thing in this product, because
+ * WHAT THIS FILE STOPPED BEING. It used to be the replay itself: press "Play it
+ * again" and the row expanded into a stack of `<p>`s, one per line, with a
+ * native `<audio controls>` widget beside every tutor turn. Its own comment
+ * claimed the character "re-acts each line with the emotion and action it
+ * originally carried"; nothing re-acted anything, and /ORACLE.md §12 had
 ```
 
 ### frontend/src/tutor/SpeechCaption.tsx
@@ -22271,6 +22453,7 @@ import { cn } from '@/lib/utils';
 import type { AnchorId } from '@/tutor-scene/anchors';
 import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
 import { HudPlate } from './hud/HudPlate';
+import { TutorFace, type TutorFaceProps } from './TutorFace';
 
 /*
  * The tutor's words, ABOVE the character's head.
@@ -22280,27 +22463,11 @@ import { HudPlate } from './hud/HudPlate';
  * that lives in a side panel makes them choose between watching the character
  * and reading what it said. Above the head, they are the same glance.
  *
- * IT IS AN HTML OVERLAY, NOT SCENE GEOMETRY. Text inside WebGL is a font-atlas
 ```
 
 ### frontend/src/tutor/TutorBubble.tsx
 
 ```
-import { useEffect, useRef } from 'react';
-import { CharacterActor } from '@/components/characters/control/CharacterActor';
-import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
-import { cn } from '@/lib/utils';
-
-/*
- * The 2D chat bubble: the character's head, articulating, beside the line it is
- * saying right now, and the running transcript of everything before it.
- *
- * WHY THIS EXISTS ALONGSIDE THE 3D STAGE, rather than instead of it. Two
- * reasons, and the second is the one that decided it:
- *
- * 1. A transcript is the accessible spine of the whole feature. The caption
- *    above the head gives the CURRENT line; this gives everything that was
- *    said, in order, scrollable and selectable.
 ```
 
 ### frontend/src/tutor/TutorExperience.tsx
@@ -22312,15 +22479,55 @@ import { useAuth } from '@/auth/AuthContext';
 import { duckTutorAmbient, playPlatformSound } from '@/lib/sound';
 import { SCENE_ASSETS } from '@/tutor-scene/assets';
 import { isSceneBackdropId, type SceneBackdropId } from '@/tutor-scene/backdrops';
-import { getOffers, getPreferences, savePreferences, startSession, type StartSessionInput } from './tutorApi';
-import { micBlockedForOffers, micBlockedReason, narrowBlockedReason, primaryOpening } from './mic';
-import { PersonalizeInWorld } from './PersonalizeInWorld';
-import { OfferChips } from './OfferChips';
-import { ConversationView } from './ConversationView';
-import { ClosingInWorld } from './ClosingInWorld';
-import { auditionFor } from './stage/phases';
-import { micForPhase } from './stage/micForPhase';
 import {
+  getOffers,
+  getPreferences,
+  getTranscript,
+  savePreferences,
+  startSession,
+  type StartSessionInput,
+} from './tutorApi';
+import { micBlockedForOffers, micBlockedReason, narrowBlockedReason, primaryOpening } from './mic';
+```
+
+### frontend/src/tutor/TutorFace.tsx
+
+```
+import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import { CharacterActor } from '@/components/characters/control/CharacterActor';
+import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
+import { cn } from '@/lib/utils';
+
+/*
+ * The tutor's 2D FACE — the articulating mouth, cropped to the head.
+ *
+ * WHY IT EXISTS AS ITS OWN COMPONENT. `liruf` and `dina` have no mouth in 3D
+ * (/TUTOR_3D.md §3.1, six techniques exhausted), and all four characters are
+ * selectable as the speaking tutor (/ORACLE.md §0 decision 4). So for half the
+ * cast the ONLY articulating mouth in the product is the 2D one, and
+ * /ORACLE.md §2.2 names it as one of the three things that make shipping them
+ * acceptable. That makes this an accessibility surface, not decoration.
+ *
+```
+
+### frontend/src/tutor/TutorTranscript.tsx
+
+```
+import { useEffect, useRef } from 'react';
+import { cn } from '@/lib/utils';
+import { useScrollEdges } from './hud/useScrollEdges';
+
+/*
+ * The running transcript: everything that has been said, in order.
+ *
+ * ════════════════════════════════════════════════════════════════════════════
+ * THIS FILE USED TO BE `TutorBubble.tsx`, AND THE BUBBLE IS GONE — 2026-08-22.
+ * ════════════════════════════════════════════════════════════════════════════
+ *
+ * The bubble was the character's 2D head beside the line it was saying right
+ * now, mounted on the lesson plate. It existed for two stated reasons, and both
+ * of them moved rather than died (/DESIGN.md §Lumen → *One line, one printing,
+ * two channels*):
 ```
 
 ### frontend/src/tutor/VoiceConsentControl.tsx
@@ -22643,6 +22850,26 @@ import { isBehindHud, WorldChip } from '../WorldChip';
  * either erased or applied twice, and "applied twice" is a chip sitting half its
 ```
 
+### frontend/src/tutor/hud/useScrollEdges.ts
+
+```
+import { useEffect, type RefObject } from 'react';
+
+/*
+ * "THERE IS MORE BELOW" — said by the EDGE of a scrolling box.
+ *
+ * WHY IT EXISTS. The lesson plate is 420 px wide, which makes exercises tall:
+ * measured across all 55 engine fixtures on `/dev/tutor-lab` at 1280x800, 27 of
+ * them fit whole and the rest have to scroll their answers. A scroll that a
+ * learner has to DISCOVER is a defect — /AGENTS.md §1.14 in its quietest form,
+ * because a panel with more content below looks exactly like a panel that has
+ * finished. Overlay scrollbars make it worse: they are invisible until the box
+ * is already being scrolled, which is after the moment the learner needed to
+ * know.
+ *
+ * WHY IT IS AN ATTRIBUTE AND NOT STATE. This runs on every scroll event of a
+```
+
 ### frontend/src/tutor/lab/TutorLabPage.tsx
 
 ```
@@ -22656,31 +22883,31 @@ import { ConversationView } from '../ConversationView';
 import { ClosingInWorld } from '../ClosingInWorld';
 import { OfferChips } from '../OfferChips';
 import { PersonalizeInWorld } from '../PersonalizeInWorld';
+import { ReplayInWorld } from '../replay/ReplayInWorld';
+import { buildReplayScript } from '../replay/replayScript';
+import { useReplayDirector } from '../replay/useReplayDirector';
 import { VoiceConsentControl } from '../VoiceConsentControl';
 import { micBlockedForOffers, narrowBlockedReason } from '../mic';
-import { auditionFor } from '../stage/phases';
-import { micForPhase } from '../stage/micForPhase';
-import {
 ```
 
 ### frontend/src/tutor/lab/labFixtures.ts
 
 ```
 import { useEffect, useRef, useState } from 'react';
-import type { Adaptation, StartedSession, TutorCatalog, TutorOffers, TutorPreferences } from '../types';
+import { LOCALES, type Locale } from '@/i18n';
+import { allFixtures } from '@/lesson-engine/lab/fixtureSets';
+import type { SegmentBase } from '@/lesson-engine/core/types';
+import type {
+  Adaptation,
+  SessionSummary,
+  SessionTranscript,
+  StartedSession,
+  TutorCatalog,
+  TutorOffers,
+  TutorPreferences,
+} from '../types';
 import type { LiveSegmentState, TutorSocket, TutorTurnState } from '../useTutorSocket';
 import type { StagePhase } from '../stage/phases';
-
-/*
- * ════════════════════════════════════════════════════════════════════════════
- *  EVERY FAKE THING IN `/dev/tutor-lab` IS IN THIS FILE, AND NOTHING ELSE IS.
- * ════════════════════════════════════════════════════════════════════════════
- *
- * The lab mounts the REAL `StageShell`, the REAL `TutorScene`, the REAL
- * `OfferChips`, `PersonalizeInWorld` and `ConversationView`. A lab that renders
- * a copy of a screen is a lab that lies: it agrees with itself forever while the
- * product drifts away underneath it, and the one bug it would have caught — the
- * HUD sitting on top of the character at 375 px — is a bug about how the real
 ```
 
 ### frontend/src/tutor/mic.ts
@@ -22701,6 +22928,126 @@ import type { TutorOffers } from './types';
  * keeps saying yes after the original has started saying no.
  */
 
+```
+
+### frontend/src/tutor/replay/ReplayInWorld.tsx
+
+```
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
+import { Icon } from '@/components/ui';
+import { MarkdownLite } from '@/lesson-engine/core/MarkdownLite';
+import { HudPlate } from '../hud/HudPlate';
+import { LessonPlate, type LessonPlateDetent } from '../hud/LessonPlate';
+import { useScrollEdges } from '../hud/useScrollEdges';
+import { SpeechCaption } from '../SpeechCaption';
+import { TutorFace } from '../TutorFace';
+import { useStageDock, type ReplayLayerProps } from '../stage/StageShell';
+import type { ReplayBeat } from './replayScript';
+
+/*
+```
+
+### frontend/src/tutor/replay/__tests__/replayInWorld.test.tsx
+
+```
+import { fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { ReplayInWorld } from '../ReplayInWorld';
+import { buildReplayScript, type ReplayScript } from '../replayScript';
+import type { ReplayDirector } from '../useReplayDirector';
+import type { SessionSummary, SessionTranscript, TranscriptTurn } from '../../types';
+
+/*
+ * The replay's layer, tested at the places a mistake is a LEARNER's problem.
+ *
+ * The composition is verified by looking at it — 375 and 1280, light and dark,
+ * four moments of the performance — because that is the only thing that has
+ * ever caught a defect on this route. What runs here is everything that must
+ * hold with no camera at all:
+ *
+```
+
+### frontend/src/tutor/replay/__tests__/replayScript.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import {
+  backstopMsFor,
+  beatAt,
+  buildReplayScript,
+  estimateBeatMs,
+  progressOf,
+  type ReplayBeat,
+} from '../replayScript';
+import type { SessionSummary, SessionTranscript, TranscriptSegment, TranscriptTurn } from '../../types';
+
+/*
+ * The running order of a replayed conversation, tested headless.
+ *
+ * These are the assertions that cannot be made by looking. A replay plays one
+```
+
+### frontend/src/tutor/replay/__tests__/useReplayDirector.test.ts
+
+```
+import { act, renderHook } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { buildReplayScript } from '../replayScript';
+import { useReplayDirector } from '../useReplayDirector';
+import type { SessionSummary, SessionTranscript, TranscriptTurn } from '../../types';
+
+/*
+ * The clock of a replay, tested with a clock we control.
+ *
+ * WHY THIS IS WORTH A TEST AT ALL, given the standing instruction on this
+ * project that the Tutor is verified by LOOKING at it: everything here happens
+ * over minutes and the failures are all of the form "it stopped". A beat that
+ * never advances, a pause that stops the sound but not the clock, an audio
+ * `ended` arriving after the learner paused and stepping the performance
+ * forward underneath them — none of those are visible in a screenshot, and
+```
+
+### frontend/src/tutor/replay/replayScript.ts
+
+```
+import type { CharacterAction, CharacterEmotion } from '@/components/characters/control/types';
+import type { SessionSummary, SessionTranscript, TranscriptSegment, TranscriptTurn } from '../types';
+
+/*
+ * A SAVED CONVERSATION, TURNED INTO A PERFORMANCE.
+ *
+ * This file is the script. It takes the transcript Core serves — turns with
+ * their text, their emotion, their action and the Depot URL of the tutor's own
+ * clip, plus the activities that were served alongside them — and orders it
+ * into BEATS: the smallest unit the stage can perform, one at a time, in the
+ * order it happened.
+ *
+ * IT IS PURE, AND THAT IS THE POINT. No React, no audio element, no camera, no
+ * `three`. The whole question "what happens, in what order, for how long" is
+ * arithmetic over two arrays, so it is checkable in a unit test that runs in
+```
+
+### frontend/src/tutor/replay/useReplayDirector.ts
+
+```
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { backstopMsFor, beatAt, progressOf, type ReplayBeat, type ReplayScript } from './replayScript';
+
+/*
+ * THE CLOCK OF THE PERFORMANCE.
+ *
+ * `replayScript.ts` says what happens and in what order. This says WHEN, and it
+ * is the only thing in the replay that holds time. It owns four facts — which
+ * beat is on, whether it is running, whether the performance has finished, and
+ * a key that makes the same beat replayable — and it exposes the six controls a
+ * transport needs. Everything else about a replay is derived from those.
+ *
+ * IT DOES NOT OWN AN AUDIO ELEMENT, and that is the whole reason a replay can
+ * exist without a second one. The stage already has exactly one `<audio>`
+ * (`TutorStage`), fed by `speechUrl`/`audioKey` and reporting back through
 ```
 
 ### frontend/src/tutor/stage/StageShell.tsx

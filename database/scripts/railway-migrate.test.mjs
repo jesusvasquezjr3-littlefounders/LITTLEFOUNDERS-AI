@@ -29,7 +29,9 @@ writeFileSync(keyPath, 'test-key');
 writeFileSync(
   join(binDir, 'railway'),
   `#!/usr/bin/env node
-import { appendFileSync } from 'node:fs';
+import { appendFileSync, writeFileSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 const args = process.argv.slice(2);
 appendFileSync(process.env.RAILWAY_FAKE_ARGS, JSON.stringify(args) + '\\n');
@@ -46,7 +48,25 @@ for (let i = 0; i < args.length; i++) {
   command = args[i];
 }
 if (command !== null) {
-  const result = spawnSync('sh', ['-c', command], { env: process.env, encoding: 'utf8' });
+  // RUN THE COMMAND FROM A FILE, NOT FROM \`sh -c\`.
+  //
+  // The payload is a base64 blob of a whole migration — 13 KB for 0023, 31 KB
+  // for 0025. On Windows, MSYS \`sh.exe\` spawned by a native process (node)
+  // silently TRUNCATES its command line at 8191 characters and still exits 0,
+  // so \`echo <b64> | base64 -d | psql\` lost its own pipeline and printed the
+  // base64 instead of the sentinel. The runner then refused, correctly, a
+  // reply that carried no sentinel — a real defect report about a fake
+  // transport. Measured: the cut is exact and silent (8163 chars round-trips,
+  // 8193 comes back as the raw echo argument, status 0, stderr empty).
+  //
+  // A script FILE has no command-line length at all, so the fake behaves the
+  // same on every OS. The contract these scenarios exist to pin is untouched:
+  // the remote command still arrives as ONE positional argument, and the
+  // remote exit status below is still discarded.
+  const scriptPath = join(tmpdir(), \`lf-fake-railway-\${process.pid}-\${Date.now()}.sh\`);
+  writeFileSync(scriptPath, command);
+  const result = spawnSync('sh', [scriptPath], { env: process.env, encoding: 'utf8' });
+  rmSync(scriptPath, { force: true });
   process.stdout.write(result.stdout ?? '');
   process.stderr.write(result.stderr ?? '');
 }

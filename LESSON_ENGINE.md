@@ -9,7 +9,8 @@
 > **Status:** v1 — engine implemented in `frontend/src/lesson-engine/`. Server-side
 > grading in Core + the definitive content schema in Vault land in the dedicated
 > content-schema session (0002 is provisional until then).
-> **Last updated:** 2026-07-12 · Language: English (project rule).
+> **Last updated:** 2026-08-22 (§4 material rule — the three answer surfaces) ·
+> Language: English (project rule).
 
 ---
 
@@ -137,7 +138,27 @@ The classification types `sort_buckets`/`group_sets` add a **progressive-enhance
 drag** (press-and-drag a chip into a bucket) on top of tap — implemented with
 native Pointer Events (no drag-and-drop library) in `arrange/components.tsx`'s
 `SortingBoard`; tap remains the accessible/keyboard fallback, so drag is never
-the ONLY way to place. Touch = desktop = same interaction. ≥44px hit areas.
+the ONLY way to place. Touch = desktop = same interaction. ≥48px hit areas
+(raised from 44 on 2026-08-22 — see the material rule below).
+
+**Material rule (added 2026-08-22, /DESIGN.md §Answer surfaces is authoritative).**
+Every surface a renderer draws is one of **three** objects, and a renderer may
+not invent a fourth or hand-write its own: `.lf-well` (a place something GOES),
+`.lf-slab` (an object that CARRIES content), `.lf-answer` (an object you PRESS).
+They come from `core/primitives.tsx` — `optionStateClasses()` returns the whole
+material for a state, and a call site supplies only geometry. This exists
+because the previous arrangement was one Tailwind recipe
+(`border-2 border-outline/70 bg-surface`) copied into about forty places, which
+read as an HTML form on the page and as a web form dropped into a diorama on the
+Tutor's 3D stage. `core/answerSurfaces.test.tsx` scans every source in the
+engine and fails the build on a hand-written outline, an opaque object fill, a
+red "wrong" (P3) or an answer authored at 44 px.
+
+**P3 has a component now, not just a rule.** `AnswerMark` prints an empty ring
+that becomes a filled CHECK when an option is chosen or right and a filled CROSS
+when the learner's own pick was not, with a screen-reader word on the two
+verdicts — so `correct`/`wrong` are never colour alone. `wrong` is amber; there
+is no red anywhere a child's answer is judged.
 
 ## §5 Taxonomy — 57 types
 
@@ -515,6 +536,37 @@ type CharacterAction  = 'idle' | 'jump' | 'hop' | 'wave' | 'point' | 'celebrate'
   fixtures by family; click → plays that single-segment lesson with the local grader;
   plus "Showcase" — one full lesson containing every type. This is the visual QA
   surface and the living authoring contract.
+- **The lab's LOCALE switch, and why the fixtures are written three times**
+  (added 2026-08-23). `en-US · es-MX · pt-BR`, and one press moves
+  `i18n.changeLanguage` AND the fixture set together. The two halves may never be set
+  separately: the lab's chrome is real product chrome and runs through i18n, so while
+  the fixtures were pinned to `es-MX` every screenshot showed English chrome around
+  Spanish content and read as a product full of hardcoded strings. It is not — §3 makes
+  a lesson document single-locale on purpose and Forge writes one per locale — but a QA
+  surface that lies about the thing being reviewed is worse than no QA surface, and
+  `/dev/tutor-lab` had already had to fix the identical defect. Every family's
+  `fixtures.ts` is now `(locale) => SegmentBase[]`: **structure written once** (ids,
+  payload shape, answer keys, xp, difficulty) and **copy written three times**, with the
+  en-US object as the key source of truth (§1.8) and the other two typed against it so a
+  missing key will not compile. `registry.test.tsx` blanks every string and compares
+  what is left across all three, so an answer key cannot drift into one locale.
+  Money fixtures carry the locale's own currency, since the renderers format from the
+  payload with `Intl` and a Brazilian prose price beside a dollar-formatted till is the
+  same defect one layer down. See `lesson-engine/lab/fixtureCopy.ts`.
+- **The fixtures are NOT in the production bundle, and that is load-bearing.**
+  `registry.ts` is EAGER (`LessonPlayer` reaches it for `getRegistryEntry` on every
+  lesson), so while the fixture map lived there every demo sentence shipped to every
+  learner. Writing them in three languages would have tripled that, so they moved to
+  `lesson-engine/lab/fixtureSets.ts`, which only the two `lazy()` lab routes import:
+  `index-*.js` fell 95 kB and the three-language set became its own chunk nobody but a
+  developer loads. Importing `fixtureSets.ts` from anything on a learner's route
+  silently undoes it; the check is `grep -c "Liruf-Bot 3000" dist/assets/index-*.js`,
+  and the answer must be `0`.
+- **The lab is where a layout sized for one language gets caught.** `piggy_split`'s jar
+  row was one flex line holding 240 px of fixed furniture in a 311 px row at 375, which
+  left 71 px for a one-word label — so "Compartir" already spilled 10 px into the minus
+  button and "Compartilhar" sat on top of it. Nothing but the switch could have shown
+  that.
 
 ## §11 Extension protocol — adding type #57 without breaking production
 
@@ -528,7 +580,9 @@ type CharacterAction  = 'idle' | 'jump' | 'hop' | 'wave' | 'point' | 'celebrate'
 4. **Render** — component from `core/primitives` + registry entry
    (`kind: content|input|flow`, `canSubmit`, `buildAnswer?`).
 5. **Fixture** — one demo segment in the family's `fixtures.ts` (lesson-lab picks it up
-   automatically) + template `agent/prompts/templates/new-lesson-type.md`.
+   automatically) + template `agent/prompts/templates/new-lesson-type.md`. The fixture's
+   STRUCTURE goes in the builder and its WORDS go in all three copy objects — add the
+   key to `EN` first and the compiler will demand `ES` and `PT` (§10).
 6. **Docs & i18n** — this file's §5 + any new chrome keys ×3 locales.
 
 Old clients render unknown types as the "unsupported segment" card (§6) — shipping new

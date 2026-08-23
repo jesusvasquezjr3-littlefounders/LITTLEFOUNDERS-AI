@@ -421,8 +421,13 @@ describe('interest_peek', () => {
 })
 
 describe('fixtures', () => {
+  // Fixtures are built per locale now (lab/fixtureCopy.ts); the SHAPE is the
+  // same in all three by construction and registry.test.tsx proves it, so one
+  // locale is enough here.
+  const fixtures = moneyFixtures('en-US')
+
   it('every fixture parses against its Zod schema', () => {
-    for (const fixture of moneyFixtures) {
+    for (const fixture of fixtures) {
       const schema = moneySchemas.find((s) => s.shape.type.value === fixture.type)
       expect(schema, `schema for ${fixture.type}`).toBeDefined()
       const result = schema!.safeParse(fixture)
@@ -431,7 +436,7 @@ describe('fixtures', () => {
   })
 
   it('covers all 9 money types exactly once', () => {
-    expect(moneyFixtures.map((f) => f.type).sort()).toEqual(Object.keys(moneyGraders).sort())
+    expect(fixtures.map((f) => f.type).sort()).toEqual(Object.keys(moneyGraders).sort())
   })
 })
 

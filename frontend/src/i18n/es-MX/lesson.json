@@ -9,6 +9,10 @@
   "exit": "Salir de la lección",
   "unsupported": "Este ejercicio necesita una versión más nueva de la app. Saltarlo no afecta tu puntaje.",
   "gradeError": "No pudimos revisar tu respuesta ahora mismo. ¡Inténtalo otra vez!",
+  "answer": {
+    "correct": "Respuesta correcta",
+    "notThis": "Esta no era"
+  },
   "chips": {
     "hearts_one": "Queda {{count}} corazón",
     "hearts_other": "Quedan {{count}} corazones"
@@ -119,6 +123,7 @@
   },
   "families": {
     "analyze": {
+      "claim": "La afirmación",
       "fact": "Hecho",
       "opinion": "Opinión",
       "eventBank": "Banco de eventos",

@@ -37,12 +37,31 @@ export interface QualitySettings {
    * an accessibility instruction. Both can independently disable motion.
    */
   ambientMotion: boolean;
+  /**
+   * Whether the HUD's material keeps its `backdrop-filter` (/DESIGN.md §Lumen).
+   *
+   * The only setting here that costs the COMPOSITOR rather than the renderer,
+   * and the only one measured outside three.js. Profiled 2026-08-22 on the
+   * target Intel UHD at a phone's pixel count: up to three extra compositor render
+   * passes and ~0.5 ms of presented frame time — 3-8% of throughput. Cheap
+   * there, and deliberately still switched off on `low`, for two reasons the
+   * profile itself supplies. The cost is flat against blur radius and blurred
+   * area, so it is per-PASS overhead, so there is no cheaper middle setting to
+   * offer and the lever is binary. And on a fill-rate-starved rasterizer (the
+   * pessimistic bracket in that profile) it is 9% of a frame that is already
+   * missing its budget — spent on softening a backdrop the device is barely
+   * drawing.
+   *
+   * `low` is not a guess about hardware: it is where the governor puts a device
+   * that has twice failed to hold 45fps on its own frames.
+   */
+  lumenBlur: boolean;
 }
 
 export const QUALITY_SETTINGS: Readonly<Record<QualityTier, QualitySettings>> = Object.freeze({
-  low: { tier: 'low', maxPixelRatio: 1, antialias: false, shadows: false, anisotropy: 1, ambientMotion: false },
-  medium: { tier: 'medium', maxPixelRatio: 1.5, antialias: true, shadows: false, anisotropy: 4, ambientMotion: true },
-  high: { tier: 'high', maxPixelRatio: 2, antialias: true, shadows: true, anisotropy: 8, ambientMotion: true },
+  low: { tier: 'low', maxPixelRatio: 1, antialias: false, shadows: false, anisotropy: 1, ambientMotion: false, lumenBlur: false },
+  medium: { tier: 'medium', maxPixelRatio: 1.5, antialias: true, shadows: false, anisotropy: 4, ambientMotion: true, lumenBlur: true },
+  high: { tier: 'high', maxPixelRatio: 2, antialias: true, shadows: true, anisotropy: 8, ambientMotion: true, lumenBlur: true },
 });
 
 /**
