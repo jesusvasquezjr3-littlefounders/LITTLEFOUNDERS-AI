@@ -81,7 +81,9 @@ service inventory, active `RUNNING` instances, and required provider/service
 variables without printing secret values; it must pass before the
 migration/deploy handoff.
 
-Those last three also run in CI via [`.github/workflows/repo-gates.yml`](.github/workflows/repo-gates.yml) — on every pull request and every push to `main`/`littlefounders_v2`, deliberately **without** a `paths:` filter, because a secret hardcoded in `backend/` or an unmirrored `AGENTS.md` edit touches no path a per-service workflow watches. Per-service CI still owns type-check/lint/test.
+**Six gates run in CI** via [`.github/workflows/repo-gates.yml`](.github/workflows/repo-gates.yml) — `docs:check`, `secrets:check`, `i18n:check`, `paths:check`, `provider:check` and `tools:test` — on every pull request and every push to `main`/`littlefounders_v2`, deliberately **without** a `paths:` filter, because a secret hardcoded in `backend/` or an unmirrored `AGENTS.md` edit touches no path a per-service workflow watches. Per-service CI still owns type-check/lint/test.
+
+`release:readiness` and both `production:preflight` commands are **operator-only and never run in CI** — they reach Railway with real credentials. *This paragraph used to begin "Those last three", written when the three gates above it were the whole list; three more commands were appended over time and the sentence was not, so it read as promising that the Railway preflight ran on every PR and that the gates which actually protect the repository did not.*
 
 ## Documentation entry points
 

@@ -92,19 +92,44 @@ function packageDirs() {
   assert.ok(highest, 'database/migrations must contain NNNN_description.sql files');
 
   const roadmap = readFileSync(path.join(root, 'ROADMAP.md'), 'utf8');
+
+  /*
+   * A DELTA RANGE IS OPTIONAL, BECAUSE "NOTHING PENDING" IS THE HEALTHY STATE.
+   *
+   * This used to be mandatory, and that was a gate compelling a false
+   * statement: once `0047` was applied and the repo held no unapplied
+   * migration, the only way to go green was to keep writing "the most recent
+   * unapplied deltas `0047`–`0047` are PENDING" about a migration that had
+   * shipped two days earlier — in the paragraph an operator reads before a
+   * handoff. It stayed there until the documentation audit of 2026-08-23.
+   *
+   * So: state a range when one is pending and it is checked as before; state
+   * none and the high-water mark must simply account for every migration in
+   * the repo. The arithmetic below is the invariant either way.
+   */
   const delta = /unapplied deltas `(\d{4})`–`(\d{4})`/.exec(roadmap);
-  assert.ok(delta?.[1] && delta?.[2], 'ROADMAP.md must state the migration delta range it last handed off');
-  assert.ok(delta[1] <= delta[2], 'ROADMAP.md delta range must be ordered');
-  assert.equal(
-    delta[2],
-    highest,
-    'ROADMAP.md delta upper bound must match the highest shipped migration',
-  );
-  const pendingCount = Number(delta[2]) - Number(delta[1]) + 1;
+  let pendingCount = 0;
+  if (delta) {
+    assert.ok(delta[1] <= delta[2], 'ROADMAP.md delta range must be ordered');
+    assert.equal(
+      delta[2],
+      highest,
+      'ROADMAP.md delta upper bound must match the highest shipped migration',
+    );
+    pendingCount = Number(delta[2]) - Number(delta[1]) + 1;
+  }
 
   // The verified production high-water mark, stated as `NN/NN`, must also
   // agree with the repo — this is the number an operator acts on.
-  const highWater = /production at \*\*(\d+)\/(\d+)\*\*/.exec(roadmap);
+  /*
+   * The LAST stated mark, not the first. The handoff paragraph is written
+   * chronologically and accumulates the probes it has run — "confirmed
+   * production at **46/46**" on 2026-08-14, then "**47/47**" on 2026-08-23 —
+   * so `.exec` returning the first match reads a superseded number and fails
+   * against a document that is telling the truth.
+   */
+  const marks = [...roadmap.matchAll(/production at \*\*(\d+)\/(\d+)\*\*/g)];
+  const highWater = marks.at(-1);
   assert.ok(highWater, 'ROADMAP.md must state the verified production high-water mark as **NN/NN**');
   assert.equal(highWater[1], highWater[2], 'a partially applied ledger must not be recorded as verified');
   // Either everything is applied, or the shortfall is EXACTLY the delta range
@@ -114,7 +139,8 @@ function packageDirs() {
   assert.ok(
     applied === migrations.length || applied + pendingCount === migrations.length,
     `ROADMAP.md must account for every migration: ${migrations.length} in the repo, ` +
-      `${applied} recorded as applied, ${pendingCount} declared pending`,
+      `${applied} recorded as applied, ${pendingCount} declared pending` +
+      (delta ? '' : ' (no pending range declared — so all of them must be applied)'),
   );
 
   const audit = readFileSync(path.join(root, 'COURSEGEN_AUDIT_2026-08-01.md'), 'utf8');

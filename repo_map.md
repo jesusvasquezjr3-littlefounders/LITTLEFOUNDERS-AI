@@ -1059,12 +1059,12 @@ Knowing learner behavior — patterns, drop-off, rhythm, family dynamics — is
 > is `/COURSE_ENGINE.md`. On conflict with /AGENTS.md or DESIGN.md, those win and
 > this file gets fixed.
 >
-> **Status (2026-08-21):** RUNTIME BUILT, EXPERIENCE BEING REBUILT. `oracle/`
-> (the runtime), migration `0047` and Core's `/api/v1/tutor/*` surface exist
-> and pass their gates. The `/tutor` **experience** shipped as a dashboard of
-> flat cards with the 3D stage shrunk into a panel, and the owner rejected it:
-> it has to be an immersive 3D experience with the controls inside the scene.
-> That rebuild is in progress and §9, §10, §14.1 and §16.1 are its contract.
+> **Status (2026-08-23): IN PRODUCTION.** The runtime, migration `0047`, Core's
+> `/api/v1/tutor/*` surface AND the immersive experience are all built, shipped
+> and verified end to end against the deployed service — Core reaches Oracle
+> privately, both providers answer, a turn seals/parses/passes the judge, and
+> the cast is enrolled, synthesized in their own voices, stored and fetchable.
+> Live at `oracle-production-e82a.up.railway.app`. §16.1's immersion gates were
 ```
 
 ### PRODUCT.md
@@ -23638,6 +23638,26 @@ import {
  * important one is `rejects an unlisted field` — it is the difference between
 ```
 
+### oracle/src/__tests__/env-example.test.ts
+
+```
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { afterEach, describe, expect, it } from 'vitest';
+
+/*
+ * `.env.example` MUST PARSE AS-IS.
+ *
+ * oracle/README.md tells a new contributor to copy this file and run the
+ * service. Following that produced EIGHTEEN validation errors and a refusal to
+ * start, for two reasons that both look fine to a reader:
+ *
+ *   1. Three internal keys carried the 10-character value `replace-me` against
+ *      `z.string().min(16)`.
+ *   2. Every optional key was assigned an EMPTY value. `.optional()` permits
+ *      `undefined`, not `''` — an empty assignment is a PRESENT value of length
+```
+
 ### oracle/src/__tests__/hardening.test.ts
 
 ```
@@ -23696,6 +23716,26 @@ import type { SessionContext } from '../core/client.js';
 const KID: SessionContext = {
   sessionId: '11111111-1111-4111-8111-111111111111',
   userId: '22222222-2222-4222-8222-222222222222',
+```
+
+### oracle/src/__tests__/privacy-contract-docs.test.ts
+
+```
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { TutorContextSchema } from '../context/schema.js';
+
+/*
+ * THE PRIVACY CONTRACT IS TWO DOCUMENTS AND ONE SCHEMA, AND THEY MUST AGREE.
+ *
+ * `/ORACLE.md` §4.1 calls itself "the complete allowed set". A brief for
+ * counsel, `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` §2.2, calls itself "the complete
+ * set of learner data sent to a language model". Both listed eight fields; the
+ * schema has nine. `character` had been in the sealed context and in the prompt
+ * since the runtime was built, and neither document mentioned it.
+ *
+ * The omission was harmless in substance — a character id says nothing about a
 ```
 
 ### oracle/src/__tests__/safety.test.ts

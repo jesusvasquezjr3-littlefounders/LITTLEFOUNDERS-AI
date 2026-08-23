@@ -55,8 +55,8 @@ On conflict: **fix the lower-priority document, never the higher one.**
 | Deploy — frontend | Vercel |
 | Deploy — everything else | Railway |
 | Course/lesson generation LLMs | DeepSeek + Qwen |
-| Image generation | Qwen `qwen-image` (DashScope) via `picturegen/` — the only image path; Gemini discarded 2026-07-23 (quota-0) |
-| TTS (lesson narration, batch) | Qwen3-TTS (DashScope) in `audiogen/` — resolved; ElevenLabs is SOUND-EFFECTS-ONLY (one-off generated assets committed in `frontend/public/sfx/`, never called at runtime) |
+| Image generation | Qwen `qwen-image-max` (DashScope) via `picturegen/` — the only image path; Gemini discarded 2026-07-23 (quota-0) |
+| TTS (lesson narration, batch) | Qwen3-TTS (DashScope) in `audiogen/` — resolved; ElevenLabs is SOUND-EFFECTS-ONLY, **never called at runtime and with no assets committed yet** (`ELEVENLABS_API_KEY` exists in `audiogen/src/env.ts` and nothing reads it). The sound set the player actually uses is the rescued v1 one in `frontend/public/sounds/` (13 files, resolved by `frontend/src/lesson-engine/player/sfx.ts`) — different provenance, not ElevenLabs. *This row named `frontend/public/sfx/`, which has never existed, until 2026-08-23.* |
 | Real-time voice (Tutor STT + TTS + voice cloning) | **Inworld**, reached ONLY from `oracle/` — owner sign-off 2026-08-21, API **verified live** the same day (`npm run voices:verify`), see ROADMAP.md. The four canonical characters keep THEIR OWN voices: Echo clones them for lessons, `npm run voices:clone` enrols the same reference samples here, and an unenrolled character is SILENT rather than given a stock voice. **VOICE ONLY**: the pedagogical model stays DeepSeek/Qwen on our own infrastructure. Explicitly interim — to be replaced by self-hosted STT/TTS once there are recurring users, which is why it sits behind `oracle/src/voice/provider.ts` and nothing outside that directory may import a provider SDK. Echo keeps batch lesson narration; two TTS paths is deliberate (one batch and cached, one live and disposable), not duplication |
 | Avatars | DiceBear, `avataaars` style |
 | 3D (Tutor scene) | three.js + React Three Fiber **v8** (drei deliberately NOT used). Assets are single-file `.glb`, meshopt geometry + KTX2 textures, served by Depot from bucket `tutor-scenes`. Owner sign-off 2026-08-15 — see ROADMAP.md |
@@ -102,7 +102,7 @@ Role upgrade paths: `universal → parent` (identity verification via Guardian),
 | `parent-id-check/` | Guardian | Identity verification — the ONLY path to `kid`/`bigfounder` verified states | 4004 | Railway |
 | `email-server/` | Courier | Transactional email (open-source Resend replacement) | 4005 | Railway |
 | `filebase/` | Depot | Media storage: lesson audio & generated images (content-addressed, Railway volume) | 4006 | Railway |
-| `picturegen/` | Prism | The ONLY image-generation service: art-director judge (LF visual identity) + Qwen `qwen-image` + Depot storage + Vault cache (an identical request never hits the paid API twice) | 4007 | Railway |
+| `picturegen/` | Prism | The ONLY image-generation service: art-director judge (LF visual identity) + Qwen `qwen-image-max` + Depot storage + Vault cache (an identical request never hits the paid API twice) | 4007 | Railway |
 | `dataintel/` | Data Intel | Analytics warehouse: DuckDB OLAP, segmentation, forecasting, anomaly detection, experiments | 4008 | Railway |
 | `oracle/` | Oracle | The AI Tutor runtime: live spoken sessions, turn orchestration, prompt-injection defence, moderation-before-speech, the three-tier content ladder, and the ONLY service that reaches the real-time voice provider | 4009 | Railway |
 | `pulse/` | Pulse | Observability: self-hosted analytics (Plausible CE + Umami) + system health (Uptime Kuma) — pinned third-party stack, not a TS service | — | Railway (5 services) |

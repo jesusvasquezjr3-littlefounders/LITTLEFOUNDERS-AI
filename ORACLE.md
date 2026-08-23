@@ -7,15 +7,31 @@
 > is `/COURSE_ENGINE.md`. On conflict with /AGENTS.md or DESIGN.md, those win and
 > this file gets fixed.
 >
-> **Status (2026-08-21):** RUNTIME BUILT, EXPERIENCE BEING REBUILT. `oracle/`
-> (the runtime), migration `0047` and Core's `/api/v1/tutor/*` surface exist
-> and pass their gates. The `/tutor` **experience** shipped as a dashboard of
-> flat cards with the 3D stage shrunk into a panel, and the owner rejected it:
-> it has to be an immersive 3D experience with the controls inside the scene.
-> That rebuild is in progress and §9, §10, §14.1 and §16.1 are its contract.
-> **NOT ENABLED FOR MINORS** — §16's checklist gates that, and its first item
-> is a data-processing agreement that does not yet exist. Legal review in
-> progress: `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md`.
+> **Status (2026-08-23): IN PRODUCTION.** The runtime, migration `0047`, Core's
+> `/api/v1/tutor/*` surface AND the immersive experience are all built, shipped
+> and verified end to end against the deployed service — Core reaches Oracle
+> privately, both providers answer, a turn seals/parses/passes the judge, and
+> the cast is enrolled, synthesized in their own voices, stored and fetchable.
+> Live at `oracle-production-e82a.up.railway.app`. §16.1's immersion gates were
+> measured on 2026-08-23; three remain unticked and each says why.
+>
+> An adversarial security audit on 2026-08-23 found five HIGH defects, all
+> fixed with a regression test each: `/SECURITY_AUDIT_2026-08-23.md`, whose §3
+> records what it did NOT cover.
+>
+> **STILL NOT ENABLED FOR MINORS.** `TUTOR_VOICE_FOR_MINORS` is `false` and
+> gates one INPUT METHOD, not the product — every learner has the whole Tutor,
+> captioned and typed. It waits on two things outside the code: the
+> data-processing agreement covering minors' audio, and counsel-approved
+> consent wording. Since 2026-08-23 the platform also refuses to COLLECT that
+> consent while the flag is off (§16). Legal review:
+> `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md`.
+>
+> *History, kept because it is the reason §9, §10, §14.1 and §16.1 read as they
+> do:* the `/tutor` experience first shipped as a dashboard of flat cards with
+> the 3D stage shrunk into a panel, and the owner rejected it — it had to be an
+> immersive 3D experience with the controls inside the scene. Those sections
+> are that rebuild's contract, and it is now delivered.
 >
 > Where this document and the code disagree, the code is right and this
 > document is the bug — §3.1 and §7.3 were corrected once already for exactly
@@ -24,7 +40,7 @@
 > was wrong, or that had recorded a fallback as a decision. Both directions
 > happen. Every correction says what it used to say.
 >
-> **Last updated:** 2026-08-22 · Language: English (project rule).
+> **Last updated:** 2026-08-23 · Language: English (project rule).
 
 ---
 
@@ -113,12 +129,20 @@ the audio, drives the mouth from that audio, and closes the camera in for as
 long as the character is talking. Wiring Oracle is passing props, not reaching
 into the scene.
 
-### §2.1 The gaps between "stage" and "tutor" — FOUR CLOSED, ONE REOPENED
+### §2.1 The gaps between "stage" and "tutor" — ALL FIVE CLOSED
 
 > **This table said "ALL CLOSED" and it was wrong on two rows.** Corrected
 > 2026-08-21 during the immersive rebuild. Both corrections are recorded here
 > rather than edited away quietly, because a document that silently repairs
 > itself teaches nobody which of its remaining claims to check.
+>
+> **And then it was wrong in the other direction.** The Backdrop row went on
+> saying OPEN for two days after the rebuild closed it, naming a file that no
+> longer exists and asserting the prop reached no renderer when three
+> components carry it and a test pins the forwarding. Corrected 2026-08-23.
+> Both directions of error cost something, and this one costs more than it
+> looks: a stale OPEN sends somebody to fix working code, and it sat in the one
+> table a reader consults to learn what is broken.
 
 | Gap | State |
 |---|---|
@@ -126,7 +150,7 @@ into the scene.
 | **On-canvas overlays** | **CLOSED, and the doctrine generalizes past captions.** `frontend/src/tutor/SpeechCaption.tsx` is a billboarded HTML overlay ON the canvas, never scene geometry. Text in WebGL is a font-atlas problem (glyph coverage for three locales, hinting, subpixel rendering) that buys nothing here, because an overlay always faces the viewer anyway. A div gets real text rendering, real selection, real screen-reader output and real i18n for free. The caption reveals with a typewriter for sighted readers while `aria-live` announces the COMPLETE sentence — announcing the animating slice would stutter it two characters at a time. **The same reasoning covers the ENTIRE HUD**, not just captions: every offer chip, recap chip, minutes rune and lesson plate is a DOM node projected to a world point, for the same four reasons. Text in the scene is a rendering choice; text in the DOM is an accessibility guarantee. See `/TUTOR_3D.md` §9.2 for the projection channel. |
 | **Streamed speech** | **CLOSED.** Oracle writes each turn's audio to Depot and hands over a URL, which is the simpler of the two options the design left open. Revisit only if the round trip is MEASURED to hurt. |
 | **Per-character framing** | **CORRECTED — this row recorded the FALLBACK as the decision.** It said `liruf` and `dina` "stay at the island shot". §2.2's own primary mitigation says the opposite: *"They frame wider. Their `conversation` framing keeps more of the body in shot."* Never closing the camera on them is §2.2's stated FALLBACK, to be used only "if this reads as broken in the first real screenshot pass" — and no such pass ever ran. What shipped (`speakingFraming={ARTICULATES.includes(...) ? 'conversation' : 'vignette'}`, `ConversationView.tsx`) applied the fallback without its trigger, so two of the four selectable tutors never came to the foreground at all. The rebuild returns to the primary decision as a named shot, `closeup-wide` (§2.2). This is a correction to a document, not a new owner decision. |
-| **Backdrop** | **OPEN. Reopened 2026-08-21 — it was never closed, and nothing said so.** The `auto \| dawn \| day \| dusk \| night` axis is offered in the picker (`PersonalizePanel.tsx`), Zod-validated and persisted (migration `0047`, `tutor_preferences.backdrop` with a CHECK constraint), and returned by TWO Core endpoints (`backend/src/routes/tutor.ts`). It then **reaches no renderer**: neither `TutorSceneProps` nor `TutorStageProps` has a `backdrop` field, and `SceneLighting` takes only `settings`. A learner picks "night", the choice is saved forever, and the island is lit exactly as it was. This is §1.14's "failure must be distinguishable" in its quietest form — a control that does nothing looks identical to a control that works, from every side except the one nobody looked at. Closing it is `SceneLighting` gaining the prop and lerping its colours and intensities, which the immersive rebuild's scene work does; this row moves to CLOSED when §16.1's "every persisted preference axis provably reaches the scene" gate passes, and not before — a prop that exists is not a light that changed, and believing otherwise is what produced this row. |
+| **Backdrop** | **CLOSED 2026-08-23** — and it was the last one. The `auto \| dawn \| day \| dusk \| night` axis is offered in the picker (`frontend/src/tutor/PersonalizeInWorld.tsx`), Zod-validated and persisted (migration `0047`, `tutor_preferences.backdrop` with a CHECK constraint), returned by two Core endpoints, and now **reaches the renderer**: `TutorStage.tsx:76` declares `backdrop?: SceneBackdropId` and forwards it at `:207`; `TutorScene.tsx:136` passes it to `<SceneLighting settings backdrop />` at `:830`; `SceneLighting.tsx:56` lerps to `warmBy(resolveBackdrop(backdrop, isDark), warmth)` at `:66`. `TutorStage.test.tsx:118-128` asserts the forwarding, and §16.1's "every persisted preference axis provably reaches the scene" gate was measured live on 2026-08-23. *Kept, because it is the clearest example in this file of §1.14's quietest failure:* for a while the control existed, saved forever, and changed nothing — and a control that does nothing looks identical to one that works, from every side except the one nobody looked at. |
 
 ### §2.2 The static-mouth mitigation (decision 4)
 
@@ -341,11 +365,24 @@ This is the section to read before changing any prompt.
 | `nickname` | learner-chosen, validated, moderated — never the profile name | The tutor must be able to address someone. |
 | `tier` | `1 \| 2 \| 3`, derived from `birth_date` (≤7, ≤9, rest) | Vocabulary and cognitive load. **Never** the birth date, never an exact age. |
 | `locale` | `en-US \| es-MX \| pt-BR` | Language. |
-| `skillState[]` | Data Intel's derived state: `skillKey`, `masteryProbability`, `uncertainty`, `evidenceCount`, `recommendedAction`, `reasonCode` | Pedagogical guidance. |
+| `skillStates` | An array of Data Intel's derived state: `skillKey`, `masteryProbability`, `uncertainty`, `evidenceCount`, `recommendedAction`, `reasonCode` | Pedagogical guidance. |
 | `courseContext` | ids and titles of the PUBLISHED course/topic in play | Scope. |
 | `intent` | a closed enum from the offer screen | What we are doing. |
-| `adaptation` | closed enum of learner-chosen preferences (§11) | How to explain. |
+| `adaptations` | closed enum of learner-chosen preferences (§11) | How to explain. |
+| `character` | `dina \| liruf \| rho \| zara`, a closed enum | Which of the four the learner chose, so the model writes in that character's voice and manner (`prompt.ts` reads `CHARACTER_VOICES[context.character]`). Says nothing about the learner. **Added to this table 2026-08-23** — it had been in the sealed schema and in the prompt since the runtime was built, and this table called itself the complete allowed set while omitting it. |
 | `turnHistory` | this session's turns only, truncated | Conversational coherence. |
+
+> **This table was incomplete for two days, which is the one defect a privacy
+> contract cannot afford.** It listed eight fields and called itself complete;
+> `TutorContextSchema` has nine. `character` was the missing one — harmless in
+> substance, since it says nothing about the learner, and serious in kind: the
+> whole value of an enumerated allow-list is that it is exhaustive, and a
+> reader who spot-checks one field against the code and finds it missing has no
+> reason to trust the other eight. Two field names were also wrong
+> (`skillState[]`, `adaptation`). **When adding a field to
+> `oracle/src/context/schema.ts`, add the row here and the matching item to
+> `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` §2.2 in the SAME commit** — §17 already
+> requires it, and this is what it looks like when that does not happen.
 
 **Everything else is forbidden**, and the list is stated POSITIVELY because
 §1.14 has already taught this project that a prohibition expressed only by
@@ -376,7 +413,18 @@ tutor", not a checkbox buried inside a general terms acceptance. Consent is:
 
 - **Blocking.** Not a feature flag, not a default-on setting. No consent, no mic;
   the tutor still works fully, in text-and-choices mode.
-- **Revocable**, and revocation takes effect on the next turn, not the next day.
+- **Revocable**, and revocation is observed **within five turns** — at the next
+  consent re-check, which runs every fifth turn (`CONSENT_RECHECK_EVERY_TURNS`,
+  `oracle/src/ws/server.ts`). *This bullet said "on the next turn" until
+  2026-08-23 and the code never did that:* there is no push channel from Core,
+  only a poll from the session, so a guardian who revokes mid-conversation can
+  leave the microphone live for up to four more turns. Measured, not estimated —
+  the test that proves revocation works loops six turns to see it.
+  **Closing the gap to a true next-turn guarantee is a CODE change** (re-check
+  every turn while a minor's microphone is actually open, which is the only case
+  that matters) and it is not done. It affects nobody today, because
+  `TUTOR_VOICE_FOR_MINORS` is false and no minor's microphone opens at all —
+  but it must be closed before that flag flips. Tracked in §16.
 - **Recorded** in Vault with a timestamp and the granting guardian, and audited.
 - **Reflected in the legal documents** — all three `/LEGAL/` files in the same
   commit, then `npm run legal:sync` (§1.8, non-negotiable).
@@ -401,7 +449,14 @@ they are.
 
 1. **Closed structured output.** The model never emits prose that is rendered as
    given. It emits JSON against a strict schema:
-   `{ say, emotion: <7>, action: <12>, next: 'ask' | 'segment' | 'close', segmentRef? }`.
+   `{ say, emotion: <7>, action: <12>, next: 'ask' | 'segment' | 'close',
+   segmentRequest?: { skillKey, difficulty, framing, rationale },
+   offerAdaptation?: <5> }`. There are TWO free-text fields, not one — `say`
+   and `segmentRequest.framing` — and both are moderated in a single call
+   (`orchestrator.ts`). This line said `segmentRef?` until 2026-08-23, which
+   hid the second one; `framing` reached children's screens unmoderated for
+   five days partly because every document drew the schema without it.
+   **A new free-text field here must join that moderation call before it ships.**
    Invalid JSON is a **discarded turn**, not a displayed one. This single layer
    removes most of the injection surface, because a successful injection still
    has no channel through which to express itself.
@@ -495,7 +550,7 @@ when we have written one" is not a tutoring product.
 | Answer-key re-execution | Core re-derives the answer independently before the segment can pay XP (§8). |
 | Moderation | §6, same as speech. |
 | Provenance | Every live segment is stored with `origin='live'`, its full generation record, and the session it was born in. A defect found later must be traceable to every learner who saw it. |
-| Post-hoc sampling | A fraction of live segments lands in `/admin/content` for human review after the fact. This does not protect the first learner; it is what catches a systematic defect before it reaches the thousandth. |
+| Post-hoc sampling | **HALF BUILT, and the half that is missing is the human.** A fraction of live segments IS sampled and flagged — `backend/src/routes/tutor.ts` sets `review_status: 'pending'`, persisted with a partial index (migration `0047`). **Nothing reads it.** No Core query filters on it and `/admin/content` reviews lessons, not tutor segments, so every sampled segment is marked pending and seen by nobody. Corrected 2026-08-23: this row asserted a control that does not exist. It is the one guard in this table that is not real, and unlike the other seven it cannot be made real by code alone — it needs a queue AND somebody who reads it. Tracked in §15.2. |
 
 **Where generation and verification actually live.** Oracle authors the
 candidate and runs the independent judge; **Core verifies it and only then
@@ -936,7 +991,7 @@ from `tutor-speech` only, and that is asserted by a test rather than trusted.
     conversation is a readable, navigable log on the plate.
   - **The archive is a list, and only a list.** `SessionHistory.tsx` chooses a
     conversation — character, date, line count, XP — and hands it upward. It
-    does not replay anything any more, and there is no `<audio controls>`
+    does not replay anything any more, and there is no `<audio controls>` in the TUTOR
     anywhere in the product.
 - **Parent visibility is an invariant**, and it is a page: `/family/:kidId/tutor`.
   A verified guardian reads their child's full transcripts — not a summary, not
@@ -972,7 +1027,7 @@ record, not a model's interpretation of what the learner said.
 | Moderation unavailable | **Fail closed** — the turn is not spoken. |
 | Live generation fails any guard | Emit nothing; fall back to tier 1 and say so honestly. |
 | Stage assets fail to load | The existing `SceneBoundary` fallback. The conversation must still run without 3D. |
-| Consent revoked mid-session | The microphone stops on the next turn. |
+| Consent revoked mid-session | The microphone stops at the next consent re-check — every fifth turn, so within five turns and not on the next one (§4.3). An unreadable answer from Core counts as revoked, not as still-granted. |
 
 ### §14.1 The affordance is always present — corrected 2026-08-21
 
@@ -1201,8 +1256,22 @@ open, deliberately, because it is an availability control (§1.14).
    model timeout produces a scripted safe line and a kind close, never a
    hang), so the shape of a bad day is degraded, not broken.
 
-None of these five is a defect in what was built. They are the difference
-between a product that is correct and a service that has been operated.
+6. **The post-hoc human review of live content has no reader, and no reader
+   means no reviewer.** §7.3 lists sampling as one of eight guards that make
+   live generation acceptable for a minor without a human in the loop. The
+   sampling is real — segments are flagged `review_status='pending'` and
+   indexed for it — but nothing anywhere reads that column, `/admin/content`
+   reviews lessons rather than tutor segments, and Oracle's own
+   `LIVE_REVIEW_SAMPLE_RATE` is dead config. So the flagged segments are
+   invisible to every human, forever. **Before a real cohort: an admin queue
+   that lists them, and a named person who reads it.** This one is different in
+   kind from the other five — they are operational headroom we chose not to
+   build yet, and this is a §1.9 compensating control that was written down as
+   existing. Found by the documentation audit of 2026-08-23.
+
+None of the first five is a defect in what was built; they are the difference
+between a product that is correct and a service that has been operated. The
+sixth is a defect: a control this document asserted and the code does not have.
 
 ---
 
@@ -1266,9 +1335,19 @@ the build session of 2026-08-21; unticked ones block enabling this for minors.
 > The consequence for this checklist item: counsel's wording is still required
 > before a minor speaks, but the placeholder can no longer reach a guardian or
 > a database row, so it no longer blocks deploying the rest of the product.
-- [x] The consent gate blocks the microphone with no consent, and revocation
-      takes effect on the next turn — both tested (`backend` tutor suite,
-      `oracle` socket guard).
+- [x] The consent gate blocks the microphone with no consent — tested
+      (`backend` tutor suite, `oracle` socket guard). Since 2026-08-23 the
+      platform also refuses to COLLECT a consent while the policy is closed,
+      in the UI and at `POST /tutor/consent` independently.
+- [ ] **Revocation takes effect on the NEXT turn.** It does not. It is observed
+      at the next re-check, every fifth turn (§4.3), so a guardian who revokes
+      mid-conversation can leave the microphone live for up to four more turns.
+      This item was TICKED and claiming next-turn until 2026-08-23; the code
+      never did it and the test that "proves" it loops six turns. Harmless
+      today — `TUTOR_VOICE_FOR_MINORS` is false, so no minor's microphone opens
+      at all — and it **must be closed before that flag flips**: re-check every
+      turn while a minor's microphone is actually open, which is the only case
+      that matters and the only one where the extra Core call is warranted.
 - [x] The model context object rejects every unlisted field (`.strict()`),
       tested — eighteen forbidden fields asserted in `verify:tutor`.
 - [x] The injection canary corpus passes in CI, in BOTH directions.
@@ -1288,8 +1367,14 @@ the build session of 2026-08-21; unticked ones block enabling this for minors.
       `/glb/` source exports, which are outside the repository.
 - [x] Verified in-browser at 375 px, 720 px and 1280 px, light and dark,
       screenshots taken, no horizontal overflow at any width (§1.11).
-- [x] **Accessibility audited with axe-core** (WCAG 2.0/2.1 A and AA) across
-      all four Tutor surfaces in both themes: zero violations. Every
+- [~] **Accessibility audited with axe-core** (WCAG 2.0/2.1 A and AA) across
+      all four Tutor surfaces in both themes: zero violations — **proven
+      2026-08-21, and NOT re-run since the caption, the plate and the replay
+      transport were rebuilt** (§16.1). Marked `~` rather than `[x]` because a
+      tick here was contradicted by §16.1 two hundred lines below, and a
+      child-safety checklist that disagrees with itself is worse than one with
+      an honest gap in it. **Re-run axe before a minor uses this.** What
+      follows is what the 08-21 run established. Every
       interactive element is tabbable, carries an accessible name and can take
       focus; the caption and transcript both announce politely. One real
       failure was found and fixed — the consent status line used a faint colour
@@ -1361,15 +1446,17 @@ items are unticked because they were not proven, and each one says why.
       sixteen phase/breakpoint combinations**. Three surfaces shipped
       overlapping at once before this existed, and none was visible to any
       automated gate, because jsdom lays nothing out.
-- [ ] **Voice is actually live in the reviewed environment** — `/health`
-      reporting voice up, the casting check naming zero missing enrolments,
-      and one spoken turn recorded end to end. **NOT VERIFIED, and it cannot be
-      from a development machine**: there are no Inworld credentials here, and
-      the check spends real money against a real contract, so it belongs to the
-      owner on the deployed service. Everything around it is in place — the
-      provider seam, the casting check, the cache, the pregenerated manifest —
-      and `VOICE_PROVIDER=none` is a first-class tested mode, so the Tutor is
-      whole without it. This gates VOICE, not the product.
+- [x] **Voice is actually live in the reviewed environment** — CLOSED
+      2026-08-21, re-confirmed 2026-08-23 against the deployed service. It was
+      correctly unticked here while it could only be done by the owner on
+      production; it was then done there, and this line went on saying "NOT
+      VERIFIED" for two days. The evidence, from `step=verify` of
+      `.github/workflows/tutor-deploy.yml`: `/health` reports
+      `voice: "up"`, `speaks:verify` names zero missing enrolments, and one
+      line was synthesized in the character's OWN cloned voice in 973 ms,
+      stored in Depot, and fetched back over plain HTTP with no credentials —
+      the way a browser asks. `VOICE_PROVIDER=inworld` in production.
+      `VOICE_PROVIDER=none` remains a first-class tested mode.
 - [x] **Every persisted preference axis provably reaches the scene**, backdrop
       included (§2.1, §10). Walked live in es-MX and pt-BR at both breakpoints:
       changing the island redrew the stone circle as the oasis with the whole
@@ -1382,7 +1469,7 @@ items are unticked because they were not proven, and each one says why.
       below, left and right of it. The character's on-screen height is
       unchanged with and without a live segment BY CONSTRUCTION rather than by
       measurement: `shotForPhase` has no `segmentLive` input at all (§9.3), so
-      no shot change is reachable from a segment arriving, and `shots.test.ts`
+      no shot change is reachable from a segment arriving, and `shotForPhase.test.ts`
       pins the mapping.
 - [x] **Keyboard focus never lands on something invisible.** Verified by
       pressing Tab for real through every phase at both breakpoints — 16 walks,

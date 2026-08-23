@@ -243,13 +243,22 @@ broken.
 ### What is honestly still open
 
 `/ORACLE.md` §16 and §16.1 are now ticked against what was actually measured and
-unticked where it was not. Three remain open and each says why in the document:
-**voice live in the reviewed environment** (no credentials here; it spends real
-money against a real contract — the owner's to run on the deployed service);
-**motion under the quality governor** (frame times under a software rasteriser
-say nothing about a GPU — it needs a device); and **an axe-core re-run** (it was
-clean on 2026-08-21 and the caption, plate and replay transport have been
-rebuilt since). The DPA and the legal documents remain owner actions, unchanged.
+unticked where it was not. Three were open when this was written; **the first
+closed later the same day** and this paragraph is corrected rather than rewritten,
+because which of the three closed and how is the useful part.
+
+- ~~**Voice live in the reviewed environment**~~ — **CLOSED.** It was correctly
+  open while it could only be done by the owner on production. It was then done
+  there, in the deploy workflow's `verify` step: `/health` reporting `voice: "up"`,
+  zero missing enrolments, and one line synthesized in the character's own voice,
+  stored in Depot and fetched back over plain HTTP.
+- **Motion under the quality governor** — still open. Frame times under a software
+  rasteriser say nothing about a GPU; it needs a device.
+- **An axe-core re-run** — still open. It was clean on 2026-08-21 and the caption,
+  plate and replay transport have been rebuilt since.
+
+The DPA and the legal documents remain owner actions, unchanged — and those two
+are what the count "two blockers" now refers to.
 
 ## 51 renderers nobody had looked at, and a lab that lied about the language (2026-08-23)
 
@@ -1224,6 +1233,12 @@ https://oracle-production-e82a.up.railway.app/health  ->  200
 {"service":"oracle","version":"0.1.0","status":"ok",
  "components":{"model":"up","voice":"down","moderation":"up"},"liveSessions":0}
 ```
+
+> *Superseded, and kept as the record of this moment:* `voice` reads `"up"` from
+> 2026-08-21 onward, once the twelve cloned voices were enrolled. Re-confirmed
+> against the deployed service on 2026-08-23 — `speaks:verify` walked the whole
+> chain, one line synthesized in the character's own voice in 973 ms, stored and
+> fetched back over plain HTTP.
 
 - migration `0047_tutor_oracle.sql` applied — production ledger 46 → **47**
 - the `oracle` Railway service exists, holds 13 variables, and is RUNNING
@@ -2863,7 +2878,7 @@ the way (stale SSH key path, `railway service restart` hanging — use
 - **The engine mirrors the Lesson Engine deliberately, down to the failure posture.** Hand-written mechanics (code) + generated manifest (data); `cheer` mode is the tier-1 default with no fail state and `arcade` mode ends at the RESULTS screen with a retry CTA, never a mid-game ejection — one product-wide failure posture rather than a per-surface invention. Games consolidate a concept a child already learned; they never teach one cold, and a game is locked until the bound topic has a passed lesson for that user.
 - **Rewards are server-derived by replay, not client-reported.** The client sends `{ run_id, seed, input_log, duration_seconds, local_date }` and no score at all; Core loads the full document plus the validation sidecar with the service role, re-runs the mechanic's simulator through the one shared `replayGame()` entry point, and derives score/stats itself — a log violation is `422 RESULT_REJECTED` with no reward. `backend/src/game-contract/` will be a parity copy of the pure simulation code with its own `contract:check`, exactly like the lesson graders. `learning_stats` writes are delta-only and **`lessons_completed` is never touched by a game** — incrementing it would corrupt course progress, the parent dashboard, the `lessons_completed === 0` first-lesson-ever assertion in `backend/src/routes/learn.ts`, and every `dataintel` funnel.
 - **Raw input logs are never persisted.** The log is replayed in memory and discarded; `game_attempts.stats` holds derived aggregates only. A tick-resolution behavioural trace of a child at play is precisely the data COPPA-minded minimalism says not to keep, and the reward does not need it.
-- **Audio is honestly incomplete and documented as such.** The manifest vocabulary for SFX/BGM is closed so generated content can only name known sounds, but the only audio assets that exist are the 9 files already in `frontend/public/sfx/`. New event names map to the closest honest existing file or resolve to no sound; a missing asset is a silent no-op, and every game must be fully playable and winnable with zero audio. Real game audio (ElevenLabs one-offs vs licensed loops) is an owner decision and the one pending owner action — game audio is not "done" and is not described as such anywhere.
+- **Audio is honestly incomplete and documented as such.** The manifest vocabulary for SFX/BGM is closed so generated content can only name known sounds, but the only audio assets that exist are the 13 files already in `frontend/public/sounds/` (the rescued v1 set — this line said 9 files in `public/sfx/`, a path that has never existed, until 2026-08-23). New event names map to the closest honest existing file or resolve to no sound; a missing asset is a silent no-op, and every game must be fully playable and winnable with zero audio. Real game audio (ElevenLabs one-offs vs licensed loops) is an owner decision and the one pending owner action — game audio is not "done" and is not described as such anywhere.
 - **The paid generation run is out of scope by design.** Publish writes `status='review'`; the §1.9 human publish flip stays the single blocking gate, and an actual paid Arcade run needs the owner's go-ahead like every Forge run (`agent/core/BOUNDARIES.md`).
 - **Companion docs move in the same commit (§8 stewardship):** root `AGENTS.md`/`CLAUDE.md` §1.5 Arcade mission line (byte-identical, `docs:check`), `gamegen/AGENTS.md` (decision RESOLVED), `gamegen/README.md`, `GLOSSARY.md`, `doc_map.md`, `DESIGN.md` (Games hub + player recipes, the `GAME_PALETTES` enumeration, the canvas-vs-chrome rule, the game-canvas motion carve-out), `ROADMAP.md` (this decision + the 7-phase program) and this file. Those edits were in flight while this entry was written.
 
@@ -3006,7 +3021,7 @@ the way (stale SSH key path, `railway service restart` hanging — use
 - Testing course (`first-lemonade-stand`): **62/62 published under the strict content-playbook judge, 186/186 documents contract-valid, 0 gradable segments without keys, fully narrated (846 units)** — fixture re-exported (`db:import-course`-able by any dev).
 - Forge convergence hardening for mass generation: `FORGE_SLOT_ATTEMPTS` outer regen-from-scratch retries, `stripNullValues` (+ SEMANTIC_NULL_KEYS), `repairDocument` (balance_scale, interest_peek), icon whitelist in-prompt, graded-answer-key gate, judge calibrations (fluency drills + content-only story lessons).
 - **DECISION — Prism (`picturegen/`, port 4007), owner-directed:** the ONLY image-generation service (mirror of Echo for audio). Art-director judge (Qwen chat) turns a label+context into a detailed prompt carrying the LF illustration identity; generation = official Qwen `qwen-image` on DashScope (verified live); assets stored in Depot; `picture_assets` cache in Vault (migration 0014) so an identical request NEVER hits the paid API twice ("optimizar consumo"). **Gemini image gen DISCARDED** — every Google image model returned quota-0 on the available key. Forge now calls Prism over HTTP (`PICTUREGEN_URL`, internal key); `providers/gemini.ts` deleted. Hardened same-day after live inspection: cache keyed on the REQUEST descriptor computed BEFORE the judge (prompt-keyed cache never hit — the judge is nondeterministic), and a **pictorial verifier** (qwen-vl vision model reads the actual pixels; readable text/numerals → regenerate from a fresh judge prompt, ≤3 attempts, exhaustion = `IMAGE_VERIFICATION_FAILED` + nothing cached) because qwen-image's text bias survived every prompt-level defense — the no-text guarantee is now mechanical, not stylistic.
-- **DECISION — ElevenLabs is SOUND-EFFECTS-ONLY** (TTS stays Qwen3-TTS): 9 kid-friendly player SFX generated ONCE and committed as static assets in `frontend/public/sfx/` — zero runtime generation calls, exactly the consumption-discipline rule Prism enforces for images.
+- **DECISION — ElevenLabs is SOUND-EFFECTS-ONLY** (TTS stays Qwen3-TTS): kid-friendly player SFX to be generated ONCE and committed as static assets — **this has not happened yet**; no ElevenLabs asset is committed and the shipped set is still the rescued v1 one in `frontend/public/sounds/` — zero runtime generation calls, exactly the consumption-discipline rule Prism enforces for images.
 
 
 ## Current State (2026-07-22) — Analytics deepened + GA4 dual-tracking + sidebar scroll + Pulse cost trim

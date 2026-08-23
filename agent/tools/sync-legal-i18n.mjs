@@ -90,7 +90,24 @@ function toPlainText(text) {
 
 const parsed = {};
 for (const [locale, relative] of Object.entries(SOURCES)) {
-  const markdown = readFileSync(resolve(root, relative), 'utf8');
+  /*
+   * CRLF IS NORMALIZED AT THE DOOR.
+   *
+   * Git checks these documents out with native line endings, so on Windows the
+   * same source that produces "\n" on a Linux runner produces "\r\n" here. The
+   * carriage returns then travel INTO the JSON string values — a paragraph
+   * separator inside a legal clause becomes a literal `\r\n` in
+   * `marketing.json`.
+   *
+   * Nothing catches it: the chapter and paragraph counts match, `legal:sync`
+   * reports OK, and the diff is 102 lines that appear to rewrite the terms and
+   * conditions while changing not one word of them. Whoever ran it last on a
+   * Linux machine would then produce the exact inverse diff, forever.
+   *
+   * The tool's whole job is to make the JSON a faithful copy of the document,
+   * and a line ending is a property of the CHECKOUT, not of the contract.
+   */
+  const markdown = readFileSync(resolve(root, relative), 'utf8').replace(/\r\n?/g, '\n');
   parsed[locale] = parseChapters(markdown);
 }
 

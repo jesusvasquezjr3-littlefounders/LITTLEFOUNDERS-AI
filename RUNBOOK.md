@@ -172,15 +172,62 @@ Two things worth knowing while it is open:
 - **Repository secrets `CORE_URL` and `INTERNAL_API_KEY`** for the nightly
   `tutor-retention.yml` workflow.
 
-### What stays off, and why
+### What stays off, and why — corrected 2026-08-23
 
-`TUTOR_VOICE_FOR_MINORS=false` and `VOICE_PROVIDER=none` until a data-processing
-agreement covering minors' audio exists (`/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` §6).
-The tutor is complete without them: captioned, typed, graded, replayable. The
-agreement gates one input method, not the product. Flipping either is an owner
-decision to record in `/ORACLE.md` §16. Enrolling the cast's cloned voices
-(`npm run voices:clone`) additionally needs `audiogen/src/samples/`, which is
-gitignored and owner-held.
+**`VOICE_PROVIDER=inworld` in production, and the cast is enrolled.** This
+paragraph used to say `none`; that was true when it was written and stopped
+being true on 2026-08-21, when the twelve cloned voices went in and
+`speaks:verify` walked the whole chain — enrolled, synthesized in their own
+voice, stored in Depot, fetched back over plain HTTP. Verified again against
+the deployed service on 2026-08-23.
+
+**`TUTOR_VOICE_FOR_MINORS=false`, and that is the one that matters**, until a
+data-processing agreement covering minors' audio exists
+(`/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` §6). Adults may speak; no child's microphone
+opens. The tutor is complete without it for everyone: captioned, typed, graded,
+replayable. Flipping it is an owner decision to record in `/ORACLE.md` §16.
+
+Since 2026-08-23 the flag also gates COLLECTION, not just use: the guardian
+consent control reads the policy and states the real reason instead of offering
+a switch, and `POST /api/v1/tutor/consent` answers `409 POLICY_BLOCKED`. So the
+placeholder consent wording awaiting counsel cannot reach a guardian or a
+database row. Revocation is gated by neither.
+
+Re-enrolling the cast (`npm run voices:clone`) needs `audiogen/src/samples/`,
+which is gitignored and owner-held.
+
+### Two ways to break Oracle by changing nothing in the code
+
+Both were found by the 2026-08-23 security audit
+(`/SECURITY_AUDIT_2026-08-23.md`). Neither is a bug today; both are one
+dashboard click away from being one, and neither announces itself.
+
+**1. Scaling Oracle past ONE replica silently breaks single-use tokens.**
+The `jti` ledger that burns a session token after its first use is
+**in-process**. On two replicas a token burned on instance A is still fresh on
+instance B, so the one property that makes the browser's direct websocket
+acceptable under §1.5 quietly stops holding. Nothing logs, nothing fails, no
+test catches it — the tokens still work, they just work more than once.
+
+*If you need to scale Oracle:* move the ledger to the Redis that is already
+there for the rate limiter and the speech cache (`oracle/src/lib/redis.ts`),
+**then** raise the replica count. Not the other way round. Until then Oracle
+stays at one replica, and that is recorded as an unticked gate in
+`/ORACLE.md` §16.
+
+**2. Pointing the judge at the author collapses two safety controls at once.**
+If `JUDGE_API_BASE`/`JUDGE_MODEL_NAME` ever come to match
+`MODEL_API_BASE`/`MODEL_NAME`, moderation and the tier-3 content judge keep
+returning verdicts — generous ones, because a model grading its own work grades
+it generously. Every gate stays green. `check-provider-parity.mjs` will not
+catch it: it pins Oracle against Forge, not the judge against the author.
+
+Since 2026-08-23 the service **warns at startup** when the two match, naming
+the variables. It is a warning and not a refusal on purpose — refusing to boot
+turns a misconfiguration into an outage — so it is only useful if somebody reads
+the deploy log. Current production values, confirmed 2026-08-23:
+`deepseek-v4-flash` at `api.deepseek.com` authoring, `qwen3-max` at DashScope
+judging. Different vendor, different key, different model.
 
 ---
 

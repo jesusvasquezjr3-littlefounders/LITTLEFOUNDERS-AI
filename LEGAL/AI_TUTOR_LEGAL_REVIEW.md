@@ -67,6 +67,15 @@ constraint.
    five.
 8. **This session's turns** — the last twenty exchanges, truncated. Never a
    previous session's.
+9. **Chosen character** — which of the four cast members the learner picked
+   (`dina`, `liruf`, `rho` or `zara`), so the model writes in that character's
+   voice and manner. It is a product setting and says nothing whatever about
+   the learner. **Added 2026-08-23**: it had been in the enforced schema since
+   the runtime was built, and both this list and `/ORACLE.md` §4.1 described
+   themselves as complete while omitting it. Recorded rather than quietly
+   inserted, because the value of an enumerated allow-list is that it is
+   exhaustive, and counsel is entitled to know that one entry was found missing
+   when it was checked field-by-field against the code.
 
 ### §2.3 What is explicitly NOT sent, and cannot be
 

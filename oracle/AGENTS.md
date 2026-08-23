@@ -27,7 +27,7 @@ to know everything Oracle can possibly learn about a child.
 
 ---
 
-## §2 The six rules that must not be relaxed
+## §2 The seven rules that must not be relaxed
 
 ### §2.1 Nothing reaches a model without passing a seal
 
@@ -156,12 +156,40 @@ paid call. It must never degrade to silence, and a test pins that.
 
 ---
 
+### §2.7 Every path to the model claims the socket's one turn slot
+
+`socket.on('message')` dispatches fire-and-forget, so without a gate every
+frame already sitting in the read buffer starts its own upstream call at the
+same instant. **Every model-producing path — `learner_text`, `learner_audio`,
+`segment_graded` and the farewell — calls `claimTurn` BEFORE any paid work and
+releases it in a `finally`.** The 700 ms floor lives there too, waived only for
+the farewell, because nobody should be made to wait to leave.
+
+It is a function rather than a check inlined in a handler, and that is the
+whole point. The floor used to sit inside `handleLearnerTurn`; `segment_graded`
+called the orchestrator directly and never entered it, and `learner_audio` paid
+the speech-to-text provider *before* delegating there. One authenticated
+learner could force dozens of concurrent paid completions inside the single
+process serving every live session. A new frame type that forgets to claim
+cannot reach the orchestrator at all, which is the failure mode we want.
+
+The turn slot is also reserved at the top of `orchestrator.produce()` rather
+than counted at the bottom — counting after the call is what let a burst of
+frames all measure themselves against the same stale `seq` and all pass a cap
+none of them had reached. Regression tests: `src/__tests__/hardening.test.ts`.
+
 ## §3 Layout
 
 ```
 src/
   app.ts            express app — /health above the rate limiter and above
-                    every optional dependency (§1.14)
+                    every optional dependency (§1.14). The limiter SKIPS
+                    /api/v1/tutor: one caller (Core), one IP, so an IP bucket
+                    there was a platform-wide outage waiting to happen
+                    (middleware/rateLimit.ts). Because of that skip,
+                    requireInternalKey mounts ABOVE express.json — an
+                    unauthenticated request must be refused before its body is
+                    parsed. DO NOT REORDER THESE THREE.
   index.ts          listener opens FIRST, Redis connects in the background
   env.ts            Zod config; provider keys are OPTIONAL by design
   context/schema.ts THE PRIVACY BOUNDARY — read §2.1 before touching
@@ -190,7 +218,7 @@ scripts/pregenerate-speech.ts  buys the 144 fixed clips, once, ever
 ```bash
 npm run type-check
 npm run lint
-npm test              # 165 tests, no network, VOICE_PROVIDER=none
+npm test              # 181 tests, no network, VOICE_PROVIDER=none
 npm run verify:tutor  # /AGENTS.md §5 — prints the privacy + canary result
 npm run build
 ```
