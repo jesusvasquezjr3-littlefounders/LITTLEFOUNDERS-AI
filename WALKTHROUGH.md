@@ -2,6 +2,75 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Three things wrong with one screenshot (2026-08-23)
+
+The owner sent a phone photo of `/admin/analytics` and named two faults. It
+contained a third they had not mentioned, and the third is the one with a class
+behind it.
+
+### The raw translation key across the top of the chart
+
+Above the visitor count, in place of a label, the product was rendering
+`admin.analytics.web.visitorsInRange` — the key itself, as text, in Spanish, on
+the admin console. All four metrics did it: `pageviewsInRange`,
+`bounceRateInRange` and `visitDurationInRange` were missing too.
+
+`AnalyticsTrendChart` assembles that key from a template literal, and
+`npm run i18n:check` **says in its own output** that it cannot verify a key
+built at runtime — "under a dynamic segment only the static namespace is
+verified. The individual LEAF keys below it are NOT checked and cannot be."
+Around 170 call sites sit in that blind spot. Every gate was green the whole
+time.
+
+**The class is now closed where it can be.** The tests are the one place the
+interpolated value is real, so i18next emits `missingKey` and
+`src/test-setup.ts` fails the run at the end with the complete list. It found
+the four immediately — and 28 more, which turned out to be the legal-document
+viewer deliberately probing one paragraph past the end and reading the miss as
+its terminator. That probe now asks `i18n.exists()`: the question it was
+actually asking, emitting nothing, and no longer leaning on i18next's habit of
+echoing a missing key back — a habit that changes the moment anyone sets
+`parseMissingKeyHandler`, and would silently truncate the contract again.
+
+### The chart that stopped on the 18th
+
+Plausible returns rows only for days that HAVE traffic. A quiet fortnight came
+back as no rows at all, Recharts scaled the axis to the shortened series, and
+the range the operator PICKED stopped matching the range they were SHOWN. That
+reads as a broken view; the truth was "nobody came".
+
+`fillDailySeries` now guarantees the series spans the requested window. It is a
+UNION and not a filter: filling can only add zeros, and can never drop a day
+Plausible returned. "Should not happen" is how data gets deleted, and a chart
+missing a day looks exactly like a day with no traffic.
+
+### No way back from the map
+
+Clicking a country does three things — selects it, zooms into its regions, and
+**focuses the entire console on it** through a country filter. "Back to world"
+undid only the zoom. The filter survived, every card on the page stayed scoped
+to one country, and the only release was a chip in the filter bar several
+sections up — off-screen on a phone. Hence the report: you cannot get back
+without reloading.
+
+The control that reverses an action now sits beside the action. Back-to-world
+clears the zoom, the selection AND the filter, and it appears as soon as a
+country is SELECTED rather than only when zoomed, because selecting focuses the
+console just as much as zooming does. Zoom-in moved to the right edge: both can
+be on screen at once now, and two `left-3 top-3` buttons would have sat on top
+of each other.
+
+### What was verified, and what was not
+
+1,811 tests green — frontend 1176/91 files, backend 453, oracle 182 — plus all
+six repo gates and a clean production build. The two map tests and the four
+`InRange` keys were each confirmed to FAIL against the previous code.
+
+**Not visually verified:** `/admin/analytics` needs admin credentials this
+session does not have, so those fixes rest on component tests and the runtime
+key gate rather than on a screenshot. Recorded plainly because §1.11 asks for
+the screenshot and this one could not be taken.
+
 ## Four production faults, and the one that made all of them invisible (2026-08-23)
 
 **The owner's report:** the Tutor's conversation does not work, there are no
