@@ -45,12 +45,16 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
           chmod 600 ~/.ssh/railway_key
+          # LogLevel ERROR because $out merges stderr into what this job
+          # PRINTS AS THE QUERY RESULT: without it every answer is preceded by
+          # "Warning: Permanently added ...", which reads as data.
           # Railway's SSH proxy host is ephemeral per session, not a fixed
           # host worth pinning — a fresh runner has no cached host key.
           cat <<'CONFIG' >> ~/.ssh/config
           Host *
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
+            LogLevel ERROR
           CONFIG
           chmod 600 ~/.ssh/config
 
