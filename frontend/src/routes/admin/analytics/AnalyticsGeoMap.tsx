@@ -18,10 +18,13 @@ export function AnalyticsGeoMap({
   periodQuery,
   filterQuery,
   onFilter,
+  onClearFilter,
 }: {
   periodQuery: PeriodQuery;
   filterQuery: string;
   onFilter: (dimension: DimensionKey, value: string) => void;
+  /** Removes every filter on one dimension. See `backToWorld`. */
+  onClearFilter: (dimension: DimensionKey) => void;
 }) {
   const { t, i18n } = useTranslation();
   const { data } = useAdminData<BreakdownData>(
@@ -45,6 +48,28 @@ export function AnalyticsGeoMap({
     },
     [onFilter],
   );
+
+  /*
+   * THE WAY BACK UNDOES EVERYTHING THE MAP DID, which it did not before.
+   *
+   * One click on a country does three things: selects it, zooms the map into
+   * its regions, and focuses the WHOLE CONSOLE on it via a country filter.
+   * "Back to world" undid only the zoom. The filter stayed, so every card on
+   * the page kept showing one country and the only control that could release
+   * it was a chip in the filter bar three sections up — off-screen on a phone,
+   * which is exactly how this was reported: "you cannot get back to the
+   * general view without reloading the page".
+   *
+   * A control that reverses an action belongs beside the action. This is that
+   * control, and it is now offered whenever EITHER the zoom or the selection
+   * is set, not only while zoomed — selecting a country from the list focuses
+   * the console just as much as clicking the map does.
+   */
+  const backToWorld = useCallback(() => {
+    setZoomed(null);
+    setSelected(null);
+    onClearFilter('country');
+  }, [onClearFilter]);
 
   const title = t('admin.analytics.geo.title');
   const subtitle = t('admin.analytics.geo.subtitle');
@@ -97,6 +122,7 @@ export function AnalyticsGeoMap({
             onUnplaceable={setUnplaceable}
             zoomed={zoomed}
             onZoom={setZoomed}
+            onBackToWorld={backToWorld}
             regionRows={regionRows}
           />
         </Suspense>

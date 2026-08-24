@@ -362,9 +362,13 @@
     "web": {
       "title": "Web analytics",
       "visitors": "Visitors",
+      "visitorsInRange": "Visitors in range",
       "pageviews": "Pageviews",
+      "pageviewsInRange": "Pageviews in range",
       "bounceRate": "Bounce rate",
+      "bounceRateInRange": "Bounce rate in range",
       "visitDuration": "Visit duration",
+      "visitDurationInRange": "Visit duration in range",
       "trend": "Daily visitors",
       "trendAria": "Daily visitors over the selected period",
       "trendEmpty": "No traffic recorded in this period yet.",

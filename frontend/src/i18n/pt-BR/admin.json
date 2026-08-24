@@ -362,9 +362,13 @@
     "web": {
       "title": "Analytics da web",
       "visitors": "Visitantes",
+      "visitorsInRange": "Visitantes no período",
       "pageviews": "Visualizações",
+      "pageviewsInRange": "Visualizações no período",
       "bounceRate": "Taxa de rejeição",
+      "bounceRateInRange": "Taxa de rejeição no período",
       "visitDuration": "Duração da visita",
+      "visitDurationInRange": "Duração da visita no período",
       "trend": "Visitantes por dia",
       "trendAria": "Visitantes diários no período selecionado",
       "trendEmpty": "Ainda não há tráfego registrado neste período.",

@@ -3,7 +3,7 @@ import request from 'supertest';
 import type { Response as SupertestResponse } from 'superagent';
 import { createApp } from '../app.js';
 import { ACQUISITION_SCOPE } from '../services/pulse.js';
-import { resetPulseForTests } from '../services/pulse.js';
+import { fillDailySeries, resetPulseForTests, resolveRange } from '../services/pulse.js';
 import { resetExclusionsForTests } from '../services/analyticsExclusions.js';
 import { jsonResponse, mintToken } from './helpers.js';
 
@@ -352,10 +352,30 @@ describe('GET /api/v1/admin/analytics/report', () => {
     expect(res.body.data.audience).toBe('marketing');
     expect(new Date(res.body.data.generatedAt).toString()).not.toBe('Invalid Date');
     expect(res.body.data.aggregate).toEqual({ visitors: 120, pageviews: 340, bounceRate: 41.5, visitDuration: 95 });
-    expect(res.body.data.timeseries).toEqual([
-      { date: '2026-07-19', visitors: 60, pageviews: 170 },
-      { date: '2026-07-20', visitors: 60, pageviews: 170 },
-    ]);
+    /*
+     * SEVEN days for a 7d window, not the two the stub returned.
+     *
+     * This used to assert the raw upstream rows. Plausible only sends days it
+     * has traffic on, so asserting them verbatim locked in the defect the
+     * owner reported: a quiet tail shortened the series, Recharts rescaled the
+     * axis, and the range on the chart stopped matching the range that was
+     * picked. The contract is now "the series covers the window", and the two
+     * real days still carry their real numbers.
+     */
+    // 7 days of window + the 2 fixture days, which sit outside it. The union
+    // is the point: filling adds zeros and never drops a measured day.
+    expect(res.body.data.timeseries).toHaveLength(9);
+    expect(res.body.data.timeseries).toEqual(
+      expect.arrayContaining([
+        { date: '2026-07-19', visitors: 60, pageviews: 170 },
+        { date: '2026-07-20', visitors: 60, pageviews: 170 },
+      ]),
+    );
+    const totals = res.body.data.timeseries.reduce(
+      (n: number, r: { visitors: number }) => n + r.visitors,
+      0,
+    );
+    expect(totals).toBe(120);
     expect(Object.keys(res.body.data.breakdowns)).toEqual(MARKETING_DIMS);
     expect(res.body.data.breakdowns.source[0]).toEqual(ROW_SHAPE);
   });
@@ -430,5 +450,75 @@ describe('GET /api/v1/admin/analytics/report.pdf', () => {
     const res = await request(createApp()).get('/api/v1/admin/analytics/report.pdf').set('Authorization', authed());
     expect(res.status).toBe(502);
     expect(res.body.error.code).toBe('UPSTREAM_FAILED');
+  });
+});
+
+describe('the visitor chart spans the window that was asked for', () => {
+  /*
+   * REPORTED: "the chart still shows a limit up to 18 August."
+   *
+   * Plausible returns rows only for days that HAVE traffic, so a quiet tail
+   * came back as no rows and Recharts scaled the axis to the shortened series.
+   * The range the operator picked and the range they were shown stopped
+   * agreeing, and a fortnight with no visitors read as a broken view rather
+   * than as the true answer: nobody came.
+   */
+  it('fills the quiet tail to the end of the range instead of stopping early', () => {
+    const resolved = resolveRange({ kind: 'custom', from: '2026-08-01', to: '2026-08-10' });
+    const filled = fillDailySeries(
+      [
+        { date: '2026-08-01', visitors: 3, pageviews: 6 },
+        { date: '2026-08-02', visitors: 1, pageviews: 2 },
+      ],
+      resolved,
+    );
+
+    expect(filled).toHaveLength(10);
+    expect(filled[0]).toEqual({ date: '2026-08-01', visitors: 3, pageviews: 6 });
+    expect(filled.at(-1)).toEqual({ date: '2026-08-10', visitors: 0, pageviews: 0 });
+    // The real days survive untouched; only the gaps are invented, as zeros.
+    expect(filled.reduce((n, r) => n + r.visitors, 0)).toBe(4);
+  });
+
+  it('fills holes in the middle, so a gap is a dip and not a shortened axis', () => {
+    const resolved = resolveRange({ kind: 'custom', from: '2026-08-01', to: '2026-08-05' });
+    const filled = fillDailySeries(
+      [
+        { date: '2026-08-01', visitors: 2, pageviews: 4 },
+        { date: '2026-08-05', visitors: 7, pageviews: 9 },
+      ],
+      resolved,
+    );
+
+    expect(filled.map((r) => r.date)).toEqual([
+      '2026-08-01',
+      '2026-08-02',
+      '2026-08-03',
+      '2026-08-04',
+      '2026-08-05',
+    ]);
+    expect(filled[2]).toEqual({ date: '2026-08-03', visitors: 0, pageviews: 0 });
+  });
+
+  it('produces the whole window even when nothing at all was recorded', () => {
+    // The state the owner was actually looking at. An empty chart that spans
+    // the range says "nobody came"; an empty chart that spans nothing says
+    // nothing, and reads as a fault.
+    const resolved = resolveRange({ kind: 'custom', from: '2026-08-20', to: '2026-08-24' });
+    const filled = fillDailySeries([], resolved);
+
+    expect(filled).toHaveLength(5);
+    expect(filled.every((r) => r.visitors === 0 && r.pageviews === 0)).toBe(true);
+  });
+
+  it('does not invent years of leading zeros for all-time', () => {
+    // `all` reaches back to a 2020 sentinel. Filling from there would be tens
+    // of thousands of meaningless points; the gap that matters is the recent
+    // one, so it fills from the first day that has data.
+    const resolved = resolveRange({ kind: 'preset', period: 'all' });
+    const filled = fillDailySeries([{ date: '2026-08-20', visitors: 5, pageviews: 5 }], resolved);
+
+    expect(filled[0]?.date).toBe('2026-08-20');
+    expect(filled.length).toBeLessThan(40);
   });
 });

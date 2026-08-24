@@ -22,9 +22,10 @@ import { COUNTRY_SHAPE_BY_CODE, countryPosition, MICRO_STATE_CENTROIDS } from '.
  */
 await import('./WorldChoropleth');
 
-const { mockAdminData, mockFilter } = vi.hoisted(() => ({
+const { mockAdminData, mockFilter, mockClear } = vi.hoisted(() => ({
   mockAdminData: vi.fn(),
   mockFilter: vi.fn(),
+  mockClear: vi.fn(),
 }));
 
 vi.mock('../adminShared', () => ({ useAdminData: mockAdminData }));
@@ -41,6 +42,7 @@ function rows(list: [string, number][]) {
 
 beforeEach(() => {
   mockFilter.mockClear();
+  mockClear.mockClear();
   mockAdminData.mockReturnValue({
     data: { state: 'ready', data: { period: '30d', dimension: 'country', rows: rows([['US', 20], ['MX', 10]]) } },
   });
@@ -78,7 +80,7 @@ describe('worldGeography (generated)', () => {
 
 describe('AnalyticsGeoMap', () => {
   it('renders ranked countries from the real breakdown and filters on selection', async () => {
-    render(<AnalyticsGeoMap periodQuery="period=30d" filterQuery="" onFilter={mockFilter} />);
+    render(<AnalyticsGeoMap periodQuery="period=30d" filterQuery="" onFilter={mockFilter} onClearFilter={mockClear} />);
 
     expect(await screen.findByText('🇺🇸 United States')).toBeInTheDocument();
     expect(screen.getByText('🇲🇽 Mexico')).toBeInTheDocument();
@@ -88,7 +90,7 @@ describe('AnalyticsGeoMap', () => {
   });
 
   it('draws only the countries that have traffic as interactive', async () => {
-    render(<AnalyticsGeoMap periodQuery="period=30d" filterQuery="" onFilter={mockFilter} />);
+    render(<AnalyticsGeoMap periodQuery="period=30d" filterQuery="" onFilter={mockFilter} onClearFilter={mockClear} />);
     await waitFor(() => expect(screen.getAllByRole('button', { name: /United States: 20/ }).length).toBeGreaterThan(0));
     // A country with no visitors is land, not a filter into a guaranteed-empty result.
     expect(screen.queryByRole('button', { name: /Japan/ })).toBeNull();
@@ -98,7 +100,40 @@ describe('AnalyticsGeoMap', () => {
     mockAdminData.mockReturnValue({
       data: { state: 'ready', data: { period: '30d', dimension: 'country', rows: rows([['US', 20], ['ZZ', 5]]) } },
     });
-    render(<AnalyticsGeoMap periodQuery="period=30d" filterQuery="" onFilter={mockFilter} />);
+    render(<AnalyticsGeoMap periodQuery="period=30d" filterQuery="" onFilter={mockFilter} onClearFilter={mockClear} />);
     await waitFor(() => expect(screen.getByText(/admin\.analytics\.geo\.unmapped/)).toBeInTheDocument());
+  });
+  /*
+   * THE REPORTED SYMPTOM: "after zooming into the map you cannot get back to
+   * the general view without reloading the page."
+   *
+   * Selecting a country does not just move the map — it filters the WHOLE
+   * console. The map's own back control used to undo only its geometry, so the
+   * page stayed focused on one country and the only release was a chip in the
+   * filter bar several sections up, which on a phone is off-screen entirely.
+   */
+  it('offers a way back as soon as a country is selected, not only when zoomed', async () => {
+    render(<AnalyticsGeoMap periodQuery="period=30d" filterQuery="" onFilter={mockFilter} onClearFilter={mockClear} />);
+
+    expect(screen.queryByRole('button', { name: /backToWorld/ })).toBeNull();
+
+    const countryButtons = await screen.findAllByRole('button', { name: /United States/ });
+    fireEvent.click(countryButtons[countryButtons.length - 1]!);
+
+    expect(await screen.findByRole('button', { name: /backToWorld/ })).toBeInTheDocument();
+  });
+
+  it('releases the console filter on the way back, not just the map zoom', async () => {
+    render(<AnalyticsGeoMap periodQuery="period=30d" filterQuery="" onFilter={mockFilter} onClearFilter={mockClear} />);
+
+    const countryButtons = await screen.findAllByRole('button', { name: /United States/ });
+    fireEvent.click(countryButtons[countryButtons.length - 1]!);
+    expect(mockFilter).toHaveBeenCalledWith('country', 'US');
+
+    fireEvent.click(await screen.findByRole('button', { name: /backToWorld/ }));
+
+    // Undoing the zoom without this leaves every card on the page filtered.
+    expect(mockClear).toHaveBeenCalledWith('country');
+    expect(screen.queryByRole('button', { name: /backToWorld/ })).toBeNull();
   });
 });

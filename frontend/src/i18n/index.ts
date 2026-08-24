@@ -96,6 +96,21 @@ void i18n
     fallbackLng: 'en-US',
     supportedLngs: [...LOCALES],
     interpolation: { escapeValue: false },
+    /*
+     * The event this emits is what lets the test suite catch a key that only
+     * exists at runtime (see src/test-setup.ts).
+     *
+     * `check-t-keys` says it plainly in its own output: under a dynamic
+     * segment only the static namespace is verified, and the leaf keys below
+     * it are not checked and CANNOT be. There are around 170 such call sites.
+     * One of them shipped a key that did not exist and rendered as itself,
+     * in Spanish, across the top of the web-analytics chart.
+     *
+     * Costs nothing in production: i18next emits an event and carries on
+     * rendering exactly as before. It is a signal, not a behaviour change.
+     */
+    saveMissing: true,
+    missingKeyNoValueFallbackToKey: false,
   });
 
 publishDocumentLanguage(i18n.language);

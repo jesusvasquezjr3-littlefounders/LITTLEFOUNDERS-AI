@@ -57,6 +57,19 @@ export function AnalyticsHealthPage() {
   const removeFilter = useCallback((index: number) => {
     setFilters((fs) => fs.filter((_, i) => i !== index));
   }, []);
+  /*
+   * Drop every filter on one dimension, by NAME rather than by index.
+   *
+   * The chip list removes by index because that is what a chip knows. The map
+   * cannot: it applied a country filter three sections up the page and has no
+   * idea where that chip landed. Without this, the only way out of a focused
+   * console was to scroll back to the filter bar and find the chip — and on a
+   * phone that bar is off-screen entirely, which is why the reported symptom
+   * was "you cannot get back without reloading the page".
+   */
+  const clearDimension = useCallback((dimension: DimensionKey) => {
+    setFilters((fs) => fs.filter((f) => f.dimension !== dimension));
+  }, []);
 
   const { data: overview, reload: reloadOverview } = useAdminData<OverviewData>(
     `/admin/analytics/overview?${periodQuery}${filterQuery}`,
@@ -289,7 +302,12 @@ export function AnalyticsHealthPage() {
           <h2 id="admin-geography" className="lf-headline font-bold text-content">{t('admin.analytics.geo.sectionTitle')}</h2>
           <p className="lf-caption mt-1 text-content-faint">{t('admin.analytics.geo.sectionSubtitle')}</p>
         </div>
-        <AnalyticsGeoMap periodQuery={periodQuery} filterQuery={filterQuery} onFilter={addFilter} />
+        <AnalyticsGeoMap
+          periodQuery={periodQuery}
+          filterQuery={filterQuery}
+          onFilter={addFilter}
+          onClearFilter={clearDimension}
+        />
       </section>
 
       {/* ── Behavioral (Umami) ── */}

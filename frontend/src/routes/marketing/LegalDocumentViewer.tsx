@@ -28,24 +28,43 @@ const PRIVACY_SECTIONS = [
  * A legal document that displays some of its clauses is worse than one that
  * displays none, because it looks complete.
  *
- * i18next returns the key itself when a key is absent, which is the signal used
- * to stop walking. The cap is a loop guard, not a content limit.
+ * The walk stops at the first paragraph that does not exist. The cap is a loop
+ * guard, not a content limit.
+ *
+ * IT ASKS `exists()`, IT DOES NOT PROBE WITH `t()`. The original compared the
+ * returned string against the key, relying on i18next's default of echoing a
+ * missing key back — true today, and untrue the moment anyone sets
+ * `parseMissingKeyHandler`, `returnNull`, or a fallback that yields a string.
+ * The whole contract would silently truncate again, which is the exact defect
+ * the comment above records.
+ *
+ * It also stops LYING TO THE GATE. `t()` on an absent key emits `missingKey`,
+ * and the test suite now fails on those (src/test-setup.ts) — this walk alone
+ * reported 28 keys that were never missing, which is how a real one would have
+ * been lost in the noise. `exists()` answers the question actually being asked
+ * and emits nothing.
  */
 const MAX_PARAGRAPHS_PER_SECTION = 40;
 
-function sectionParagraphs(t: (key: string) => string, prefix: string, key: string): string[] {
+function sectionParagraphs(
+  t: (key: string) => string,
+  exists: (key: string) => boolean,
+  prefix: string,
+  key: string,
+): string[] {
   const paragraphs: string[] = [];
   for (let index = 1; index <= MAX_PARAGRAPHS_PER_SECTION; index += 1) {
     const lookup = `marketing.legal.${prefix}.${key}.p${index}`;
+    if (!exists(lookup)) break;
     const value = t(lookup);
-    if (!value || value === lookup) break;
+    if (!value) break;
     paragraphs.push(value);
   }
   return paragraphs;
 }
 
 export function LegalDocumentViewer({ doc }: LegalDocumentViewerProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -259,7 +278,7 @@ export function LegalDocumentViewer({ doc }: LegalDocumentViewerProps) {
           ) : (
             filteredSectionKeys.map((key) => {
               const title = t(`marketing.legal.${prefix}.${key}.title`);
-              const paragraphs = sectionParagraphs(t, prefix, key);
+              const paragraphs = sectionParagraphs(t, (k) => i18n.exists(k), prefix, key);
 
               return (
                 <section

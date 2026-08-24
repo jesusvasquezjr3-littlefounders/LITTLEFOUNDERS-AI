@@ -338,6 +338,64 @@ function toAggregate(metrics: number[] | undefined): PlausibleAggregate {
   return { visitors: m[0] ?? 0, pageviews: m[1] ?? 0, bounce_rate: m[2] ?? 0, visit_duration: m[3] ?? 0 };
 }
 
+/**
+ * Makes the series span the window that was ASKED FOR, not the window that
+ * happened to have traffic.
+ *
+ * Plausible returns rows only for days it has data on. A quiet tail therefore
+ * came back as no rows at all and the chart simply stopped — so a fortnight
+ * with no visitors rendered as a graph ending on the 18th, which reads as a
+ * broken view rather than as the honest answer "nobody came". That is
+ * /AGENTS.md §1.14 drawn on a chart: an absence must be distinguishable from a
+ * fault, and a flat line at zero says the true thing where a missing line says
+ * nothing at all.
+ *
+ * It also fixes the axis. Recharts scales to the data it is handed, so a
+ * truncated series silently relabels the x-axis and the range the operator
+ * PICKED stops matching the range they are SHOWN — which is exactly how this
+ * was reported.
+ *
+ * `all` fills only from the first day that HAS data: years of leading zeros
+ * from before the site existed mean nothing, and the gap that matters is
+ * always the recent one.
+ */
+export function fillDailySeries(
+  rows: { date: string; visitors: number; pageviews: number }[],
+  resolved: Pick<ResolvedRange, 'startMs' | 'endMs' | 'dateRange'>,
+): { date: string; visitors: number; pageviews: number }[] {
+  const byDay = new Map(rows.map((r) => [r.date, r]));
+
+  const allTime = resolved.dateRange === 'all';
+  const firstWithData = rows.length ? Date.parse(`${rows[0]?.date}T00:00:00Z`) : Number.NaN;
+  const from =
+    allTime && Number.isFinite(firstWithData) ? Math.max(resolved.startMs, firstWithData) : resolved.startMs;
+
+  // A guard, not a policy: a malformed range must not spin here. 800 days is
+  // past any window this console offers and still cheap to build.
+  const days = Math.floor((resolved.endMs - from) / DAY_MS) + 1;
+  if (!Number.isFinite(days) || days < 1 || days > 800) return rows;
+
+  const out = new Map<string, { date: string; visitors: number; pageviews: number }>();
+  for (let i = 0; i < days; i += 1) {
+    const date = dayKey(from + i * DAY_MS);
+    out.set(date, byDay.get(date) ?? { date, visitors: 0, pageviews: 0 });
+  }
+
+  /*
+   * A UNION, so filling can only ADD zeros and can never LOSE a day.
+   *
+   * Plausible is given the same `date_range`, so a row outside the window
+   * should not exist — but "should not" is how data gets dropped. A timezone
+   * edge, a clock skew, or a future change to how the range is built would
+   * silently delete real traffic from the chart, and a chart missing a day
+   * looks exactly like a day with no traffic. The window is a floor on what is
+   * drawn, not a filter on what was measured.
+   */
+  for (const row of rows) if (!out.has(row.date)) out.set(row.date, row);
+
+  return [...out.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+
 /** Aggregate + per-day timeseries + previous-period comparison. Null on any upstream failure. */
 export function getPlausibleOverview(range: AnalyticsRange, filters?: PlausibleFilter[]): Promise<PlausibleOverview | null> {
   const cfg = getPulseConfig();
@@ -375,11 +433,14 @@ export function getPlausibleOverview(range: AnalyticsRange, filters?: PlausibleF
 
     return {
       aggregate: toAggregate(aggParsed.data.results[0]?.metrics),
-      timeseries: seriesParsed.data.results.map((r) => ({
-        date: String(r.dimensions[0] ?? ''),
-        visitors: r.metrics[0] ?? 0,
-        pageviews: r.metrics[1] ?? 0,
-      })),
+      timeseries: fillDailySeries(
+        seriesParsed.data.results.map((r) => ({
+          date: String(r.dimensions[0] ?? ''),
+          visitors: r.metrics[0] ?? 0,
+          pageviews: r.metrics[1] ?? 0,
+        })),
+        resolved,
+      ),
       previous,
     };
   });

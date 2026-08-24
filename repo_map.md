@@ -3115,7 +3115,7 @@ import request from 'supertest';
 import type { Response as SupertestResponse } from 'superagent';
 import { createApp } from '../app.js';
 import { ACQUISITION_SCOPE } from '../services/pulse.js';
-import { resetPulseForTests } from '../services/pulse.js';
+import { fillDailySeries, resetPulseForTests, resolveRange } from '../services/pulse.js';
 import { resetExclusionsForTests } from '../services/analyticsExclusions.js';
 import { jsonResponse, mintToken } from './helpers.js';
 
@@ -21029,20 +21029,20 @@ vi.mock('@/lib/api', () => ({ api: vi.fn() }));
 
 ```
 import '@testing-library/jest-dom/vitest'
-import '@/i18n'
+import { afterAll } from 'vitest'
+import i18n from '@/i18n'
 
-window.scrollTo = () => {}
-
-window.HTMLElement.prototype.scrollIntoView = () => {}
-
-class IntersectionObserverMock {
-  observe = () => {}
-  unobserve = () => {}
-  disconnect = () => {}
-  root = null
-  rootMargin = ''
-  thresholds = []
-  takeRecords = () => []
+/*
+ * EVERY MISSING TRANSLATION KEY THE SUITE TOUCHES IS A FAILURE.
+ *
+ * `npm run i18n:check` can only verify keys it can read statically, and it
+ * says so in its own output. This application has ~170 `t()` calls whose key
+ * is assembled from a template literal at runtime, and not one of them is
+ * checkable that way — which is how `admin.analytics.web.visitorsInRange`
+ * reached production and rendered its own key, as literal text, across the top
+ * of the web-analytics chart. All four metrics on that chart did it. Every
+ * gate was green the whole time.
+ *
 ```
 
 ### frontend/src/theme/useTheme.tsx

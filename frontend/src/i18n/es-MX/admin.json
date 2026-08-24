@@ -362,9 +362,13 @@
     "web": {
       "title": "Analítica web",
       "visitors": "Visitantes",
+      "visitorsInRange": "Visitantes en el rango",
       "pageviews": "Páginas vistas",
+      "pageviewsInRange": "Páginas vistas en el rango",
       "bounceRate": "Tasa de rebote",
+      "bounceRateInRange": "Tasa de rebote en el rango",
       "visitDuration": "Duración de visita",
+      "visitDurationInRange": "Duración de visita en el rango",
       "trend": "Visitantes por día",
       "trendAria": "Visitantes diarios en el periodo seleccionado",
       "trendEmpty": "Aún no hay tráfico registrado en este periodo.",

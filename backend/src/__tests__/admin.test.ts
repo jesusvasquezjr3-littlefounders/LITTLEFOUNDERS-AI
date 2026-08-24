@@ -109,8 +109,15 @@ describe('GET /api/v1/admin/analytics/overview', () => {
     expect(res.status).toBe(200);
     expect(res.body.error).toBeNull();
     expect(res.body.data.aggregate).toEqual({ visitors: 120, pageviews: 340, bounce_rate: 41.5, visit_duration: 95 });
-    expect(res.body.data.timeseries).toHaveLength(2);
+    /*
+     * The series covers the WINDOW, not just the days upstream had traffic on
+     * — 7 days of `7d` plus the 2 fixture days that sit outside it. Asserting
+     * the raw upstream rows is what let a quiet tail shorten the chart and
+     * relabel its axis, which is how "the chart stops on the 18th" happened.
+     */
+    expect(res.body.data.timeseries).toHaveLength(9);
     expect(res.body.data.timeseries[0]).toEqual({ date: '2026-07-19', visitors: 60, pageviews: 170 });
+    expect(res.body.data.timeseries.every((r: { date: string }) => /^\d{4}-\d\d-\d\d$/.test(r.date))).toBe(true);
   });
 
   it('also unlocks for a superadmin', async () => {

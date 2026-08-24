@@ -53,6 +53,12 @@ interface Props {
   /** Country the map is zoomed into, or null for the world. */
   zoomed: string | null;
   onZoom: (code: string | null) => void;
+  /**
+   * Returns to the general view: clears the zoom, the selection AND the
+   * country filter this map applied to the whole console. Distinct from
+   * `onZoom(null)`, which only undoes the map's own geometry.
+   */
+  onBackToWorld: () => void;
   /** Region rows (ISO 3166-2) for the zoomed country. */
   regionRows: BreakdownRow[];
 }
@@ -91,7 +97,7 @@ function stepFor(value: number, max: number): number {
   return RAMP.length - 1;
 }
 
-export function WorldChoropleth({ rows, selected, onSelect, onUnplaceable, zoomed, onZoom, regionRows }: Props) {
+export function WorldChoropleth({ rows, selected, onSelect, onUnplaceable, zoomed, onZoom, onBackToWorld, regionRows }: Props) {
   const { t, i18n } = useTranslation();
   const [hovered, setHovered] = useState<string | null>(null);
   // `cachedRegions` seeds synchronously on a revisit, so returning to a country
@@ -371,30 +377,41 @@ export function WorldChoropleth({ rows, selected, onSelect, onUnplaceable, zoome
           })}
         </svg>
 
-        {/* Zoom control. Present only when zooming is meaningful. */}
-        {zoomed ? (
+        {/*
+          The way back, and the way in.
+          Offered whenever the console is focused on a country — zoomed or
+          merely selected — because both states filter every card on the page
+          and both used to be escapable only from a chip in a bar the reader
+          may never have scrolled to.
+        */}
+        {zoomed || selected ? (
           <button
             type="button"
-            onClick={() => onZoom(null)}
-            className="lf-glass absolute left-3 top-3 z-10 flex min-h-11 items-center gap-1.5 rounded-full border border-outline/50 px-3 py-1.5 font-bold text-content shadow-pop focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            onClick={onBackToWorld}
+            className="lf-glass absolute left-3 top-3 z-10 flex min-h-11 max-w-[38%] items-center gap-1.5 rounded-full border border-outline/50 px-3 py-1.5 font-bold text-content shadow-pop focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            <Icon name="arrow_back" className="!text-[18px]" />
-            <span className="lf-caption">{t('admin.analytics.geo.backToWorld')}</span>
+            <Icon name="arrow_back" className="!text-[18px] shrink-0" />
+            <span className="lf-caption truncate">{t('admin.analytics.geo.backToWorld')}</span>
           </button>
-        ) : (
-          selected &&
-          hasRegions(selected) && (
-            <button
-              type="button"
-              onClick={() => onZoom(selected)}
-              className="lf-glass absolute left-3 top-3 z-10 flex min-h-11 items-center gap-1.5 rounded-full border border-outline/50 px-3 py-1.5 font-bold text-content shadow-pop focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            >
-              <Icon name="zoom_in" className="!text-[18px]" />
-              <span className="lf-caption">
-                {t('admin.analytics.geo.zoomInto', { country: countryLabel(selected, i18n.resolvedLanguage) })}
-              </span>
-            </button>
-          )
+        ) : null}
+
+        {/*
+          Zoom IN sits on the RIGHT. Both controls can now be on screen at once
+          — a selected country offers "back to the world" and "zoom into it" at
+          the same time — and two `left-3 top-3` buttons would sit on top of
+          each other.
+        */}
+        {!zoomed && selected && hasRegions(selected) && (
+          <button
+            type="button"
+            onClick={() => onZoom(selected)}
+            className="lf-glass absolute right-3 top-3 z-10 flex min-h-11 max-w-[60%] items-center gap-1.5 rounded-full border border-outline/50 px-3 py-1.5 font-bold text-content shadow-pop focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <Icon name="zoom_in" className="!text-[18px] shrink-0" />
+            <span className="lf-caption truncate">
+              {t('admin.analytics.geo.zoomInto', { country: countryLabel(selected, i18n.resolvedLanguage) })}
+            </span>
+          </button>
         )}
 
         {/*
