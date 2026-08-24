@@ -10,13 +10,15 @@
  * networking and reachable from nowhere else — using Core's own service key
  * from the container's environment, so nothing travels.
  *
- * A REAL FILE, not a heredoc in the workflow. The first version inlined this
- * with `read -r -d '' SCRIPT <<'INNER'` and an INDENTED terminator; a heredoc
- * terminator must sit at column 0 (`<<-` strips tabs, never spaces), so bash
- * never found it, the parse failed, and the step died in under a second with
- * no output at all — diagnosing a silent failure with a silently failing tool.
- * A tracked file is also lintable, diffable and testable, which a string
- * inside YAML is not.
+ * A REAL FILE rather than a string inside the workflow YAML, so it is
+ * lintable, diffable and `node --check`-able.
+ *
+ * The first two runs of this tool failed and the heredoc was blamed. That was
+ * WRONG — `tutor-deploy.yml` uses the same shape and runs green, because YAML
+ * dedents a block scalar before bash sees it. The actual cause was a missing
+ * `~/.ssh/config`, and it was found the moment this tool was changed to PRINT
+ * its transport error instead of swallowing it. Which is the whole thesis: the
+ * tool that says what went wrong is the one that gets fixed in ten minutes.
  */
 
 const base = process.env.SUPABASE_URL;
@@ -37,6 +39,8 @@ async function rest(path) {
       headers: { apikey: key, Authorization: `Bearer ${key}`, Prefer: 'count=exact' },
       signal: AbortSignal.timeout(20_000),
     });
+    // 200 and 206 are both success here: PostgREST answers 206 Partial Content
+    // whenever a count or a range is requested.
     const total = (response.headers.get('content-range') || '').split('/')[1] ?? '?';
     let body = null;
     try {
@@ -54,7 +58,7 @@ console.log('== THE EXCLUSION REGISTRY — what silences a visitor before any hi
 const ex = await rest(
   'analytics_ip_exclusions?select=network,label,created_at,revoked_at&order=created_at.desc&limit=100',
 );
-if (ex.status !== 200) {
+if (ex.status < 200 || ex.status >= 300) {
   console.log(`   COULD NOT READ: HTTP ${ex.status} ${ex.error ?? ''}`);
 } else {
   const rows = ex.body || [];
@@ -77,7 +81,7 @@ if (ex.status !== 200) {
 console.log('');
 console.log(`== FIRST-PARTY EVENTS, per day, last ${days} days ==`);
 const ev = await rest(`learning_events?select=created_at&created_at=gte.${since}&limit=20000`);
-if (ev.status !== 200) {
+if (ev.status < 200 || ev.status >= 300) {
   console.log(`   COULD NOT READ: HTTP ${ev.status} ${ev.error ?? ''}`);
 } else {
   const byDay = {};
