@@ -9,12 +9,16 @@ name: Analytics diagnose (operator)
 # It prints counts and configuration only — no learner data, no visitor IP, no
 # secret value.
 #
-# The work is in `agent/tools/analytics-diagnose.mjs`, deliberately a tracked
-# FILE rather than a heredoc in this YAML. The first version inlined it with an
-# INDENTED heredoc terminator, which bash never matches (`<<-` strips tabs, not
-# spaces), so the step died in under a second with no output — a silently
-# failing tool for diagnosing a silent failure. A file is also lintable and
-# diffable, which a string inside YAML is not.
+# The work is in `agent/tools/analytics-diagnose.mjs`, a tracked FILE rather
+# than a string inside this YAML — so it is lintable, diffable and
+# `node --check`-able, none of which a heredoc is.
+#
+# What actually broke the first two runs was neither the heredoc nor the
+# script: `~/.ssh/config` was missing, so ssh refused an ephemeral Railway
+# proxy host with "Host key verification failed." Recorded because the first
+# diagnosis here blamed the heredoc and was WRONG — and the run that disproved
+# it is the one where this tool printed its transport error, which is the
+# entire reason it prints it.
 #
 # It runs INSIDE Core over `railway ssh`, because Vault is on Railway private
 # networking and reachable from nowhere else — the same reason tutor-deploy's
@@ -60,6 +64,17 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
           chmod 600 ~/.ssh/railway_key
+          # Railway's SSH proxy host is ephemeral per session, so a fresh
+          # runner has no cached host key and ssh refuses with "Host key
+          # verification failed." Every other workflow here already carries
+          # this block; omitting it is what made the first two runs fail.
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            LogLevel ERROR
+          CONFIG
+          chmod 600 ~/.ssh/config
 
       - name: Is anything being RECORDED?
         run: |
