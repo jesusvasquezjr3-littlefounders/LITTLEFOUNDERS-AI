@@ -230,6 +230,31 @@ export interface StageShellProps extends Omit<TutorStageProps, 'className' | 'on
  */
 const VEIL_TIMEOUT_MS = 8000;
 
+/**
+ * "Your browser has muted this page — tap to let the tutor speak."
+ *
+ * Deliberately a chip and not a dialog. The conversation is fully usable
+ * without sound (every line is captioned, §16), so blocking the stage behind a
+ * modal would punish the learner for a decision their browser made. Tapping it
+ * IS a user gesture, which is what `armAudioUnlock` is waiting for, so the
+ * control fixes the thing it is complaining about simply by being pressed.
+ */
+function SoundBlockedNotice({ onDismiss }: { onDismiss: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <div className="pointer-events-none absolute inset-x-0 bottom-28 z-40 flex justify-center px-4">
+      <button
+        type="button"
+        onClick={onDismiss}
+        className="lf-lumen pointer-events-auto flex max-w-[min(92vw,26rem)] items-center gap-2 rounded-full px-4 py-2 text-left"
+      >
+        <Icon name="volume_off" className="shrink-0 text-[18px] text-content-muted" aria-hidden />
+        <span className="lf-caption text-content">{t('tutor.stage.soundBlocked')}</span>
+      </button>
+    </div>
+  );
+}
+
 export function StageShell(props: StageShellProps) {
   /*
    * Both providers sit ABOVE the canvas so the HUD and the scene share one
@@ -251,7 +276,31 @@ export function StageShell(props: StageShellProps) {
   );
 }
 
-function StageShellInner({ children, mic, dockLabel, onReady, ...stage }: StageShellProps) {
+function StageShellInner({
+  children,
+  mic,
+  dockLabel,
+  onReady,
+  onSpeechBlocked,
+  ...stage
+}: StageShellProps) {
+  /*
+   * THE BROWSER REFUSED TO MAKE A SOUND, AND THE LEARNER IS TOLD.
+   *
+   * The Tutor speaks before anyone has touched the page, which every autoplay
+   * policy blocks. The rejection used to vanish into a `.catch()`: the mouth
+   * closed, nothing was heard, and the product looked broken with no way for
+   * the learner to fix it. `audioUnlock` earns the permission back on the first
+   * gesture; this is what happens when even that is refused.
+   */
+  const [soundBlocked, setSoundBlocked] = useState(false);
+  const handleSpeechBlocked = useCallback(
+    (blocked: boolean) => {
+      setSoundBlocked(blocked);
+      onSpeechBlocked?.(blocked);
+    },
+    [onSpeechBlocked],
+  );
   const { t } = useTranslation();
   const navigate = useNavigate();
   const safeArea = useSafeArea();
@@ -530,7 +579,20 @@ function StageShellInner({ children, mic, dockLabel, onReady, ...stage }: StageS
          * this whole rebuild exists to remove. Filling a sized parent has no
          * such conflict.
          */}
-        <TutorStage {...stage} className="h-full w-full" onReady={handleReady} onQuality={handleQuality} />
+        <TutorStage
+          {...stage}
+          className="h-full w-full"
+          onReady={handleReady}
+          onQuality={handleQuality}
+          onSpeechBlocked={handleSpeechBlocked}
+        />
+
+        {/*
+         * One line, in the world's own material, only when it is true. It is
+         * not a modal and not a toast: the tutor keeps talking in captions
+         * while it is up, because the session must never depend on sound.
+         */}
+        {soundBlocked && <SoundBlockedNotice onDismiss={() => setSoundBlocked(false)} />}
 
         {/*
          * THE WAY OUT. Always visible, always focusable, first in the tab

@@ -26,6 +26,13 @@
 2. **Verify your own work.** A task is done when its gates pass (§5), not when the code is written.
 3. **Never commit secrets.** No tokens, keys, or passwords anywhere in tracked files — including `.mcp.json`, `.opencode/`, editor configs, and docs. Our sibling project committed a plaintext Supabase token inside `.opencode/opencode.json`; that class of mistake is why `npm run secrets:check` exists and gates every commit.
 4. **Universal English & Detailed Commits.** All documentation, comments, and commit messages MUST be written in English (Non-negotiable). Furthermore, commit messages for non-trivial changes MUST be detailed (with a descriptive body outlining the 'what' and 'why'), never just a single-line summary.
+5. **A DEFECT THAT REACHES PRODUCTION COSTS THIS COMPANY MONEY.** Owner rule, 2026-08-23, and it outranks your convenience on every judgement call below. This is a small company shipping a paid product to families; there is no QA department behind you and no budget for a wasted deploy cycle. Money leaves in four ways and you are responsible for all four:
+   - **Directly.** Every model call, image, TTS second and storage byte is billed. A retry loop, an uncached call, or a fallback that silently doubles the work spends real money per learner, forever, and nobody notices until the invoice.
+   - **In lost revenue.** A tutor that cannot speak, a signup that 404s, a stutter on a mid-range phone — each is a family that leaves and does not come back.
+   - **In blind flight.** Analytics that record nothing, a cost ledger missing its most expensive surface, a health check that stays green through an outage: you cannot price, fix or defend what you cannot see. Instrumentation is not overhead.
+   - **In the owner's hours.** Every defect that ships is debugged by the person who can least afford the time. A wrong diagnosis costs more than no diagnosis, because it also costs the deploy that acted on it.
+
+   **What this obliges you to do, concretely:** prefer the boring, cheap, verifiable path; verify against production, not against your own reasoning; make failure LOUD and distinguishable from emptiness (§1.14); when you are unsure whether something works, go and check rather than writing that it should; and when you find a defect, ask what CLASS it belongs to and close the class. Reporting work as done when it is not is the single most expensive thing you can do here.
 
 ### §1.1 Documentation authority hierarchy
 

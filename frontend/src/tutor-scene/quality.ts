@@ -56,12 +56,31 @@ export interface QualitySettings {
    * that has twice failed to hold 45fps on its own frames.
    */
   lumenBlur: boolean;
+  /**
+   * A multiplier on the renderer's pixel ratio, BELOW the tier's own ceiling.
+   *
+   * The tier ladder bottoms out at `low`, and `low` still renders every
+   * triangle at `dpr` 1. A device that cannot hold frame rate there had
+   * nowhere left to go: the governor demoted it to the floor, saw it still
+   * failing, and — by its own comment — reset the evidence rather than
+   * accumulating a demotion it could not spend. The learner sat at 25 fps
+   * forever while the system had concluded there was nothing to do.
+   *
+   * This is the lever underneath the floor, and it is the cheapest one there
+   * is: halving the scale quarters the pixels shaded. The scene keeps every
+   * character, every animation and every word — it is drawn softer, which is
+   * a far better trade than a stutter.
+   *
+   * 1 at every tier by default; only the governor lowers it, and only for a
+   * device already at `low` that is still missing its budget.
+   */
+  renderScale: number;
 }
 
 export const QUALITY_SETTINGS: Readonly<Record<QualityTier, QualitySettings>> = Object.freeze({
-  low: { tier: 'low', maxPixelRatio: 1, antialias: false, shadows: false, anisotropy: 1, ambientMotion: false, lumenBlur: false },
-  medium: { tier: 'medium', maxPixelRatio: 1.5, antialias: true, shadows: false, anisotropy: 4, ambientMotion: true, lumenBlur: true },
-  high: { tier: 'high', maxPixelRatio: 2, antialias: true, shadows: true, anisotropy: 8, ambientMotion: true, lumenBlur: true },
+  low: { tier: 'low', maxPixelRatio: 1, antialias: false, shadows: false, anisotropy: 1, ambientMotion: false, lumenBlur: false, renderScale: 1 },
+  medium: { tier: 'medium', maxPixelRatio: 1.5, antialias: true, shadows: false, anisotropy: 4, ambientMotion: true, lumenBlur: true, renderScale: 1 },
+  high: { tier: 'high', maxPixelRatio: 2, antialias: true, shadows: true, anisotropy: 8, ambientMotion: true, lumenBlur: true, renderScale: 1 },
 });
 
 /**
@@ -135,9 +154,28 @@ export function raiseTier(tier: QualityTier): QualityTier {
  * performance signal — a user who asked for less motion on a fast machine
  * still gets less motion.
  */
-export function resolveSettings(tier: QualityTier, prefersReducedMotion: boolean): QualitySettings {
+export function resolveSettings(
+  tier: QualityTier,
+  prefersReducedMotion: boolean,
+  renderScale = 1,
+): QualitySettings {
   const base = QUALITY_SETTINGS[tier];
-  return prefersReducedMotion ? { ...base, ambientMotion: false } : base;
+  const scaled = renderScale === 1 ? base : { ...base, renderScale };
+  return prefersReducedMotion ? { ...scaled, ambientMotion: false } : scaled;
+}
+
+/** The steps below `low`, in order. The floor is deliberately not zero. */
+export const RENDER_SCALES = [1, 0.8, 0.65, 0.5] as const;
+
+/** One step softer. Returns the same value at the floor. */
+export function lowerRenderScale(scale: number): number {
+  const floor: number = RENDER_SCALES[RENDER_SCALES.length - 1] ?? 0.5;
+  const i = RENDER_SCALES.indexOf(scale as (typeof RENDER_SCALES)[number]);
+  // An unrecognised scale goes straight to the floor rather than to step one:
+  // the only way to hold a value that is not on the ladder is to already be
+  // in trouble.
+  if (i === -1) return floor;
+  return RENDER_SCALES[Math.min(RENDER_SCALES.length - 1, i + 1)] ?? floor;
 }
 
 let cachedProbe: DeviceProbe | null = null;

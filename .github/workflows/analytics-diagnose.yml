@@ -1,0 +1,157 @@
+name: Analytics diagnose (operator)
+
+# READ-ONLY. Answers one question the repository cannot: is the platform
+# RECORDING nothing, or SHOWING nothing? Those look identical from the admin
+# console and have completely different fixes, and guessing between them costs
+# a deploy cycle.
+#
+# Written on 2026-08-23 after "analytics has recorded nothing since 18 August".
+# Everything it reads is counts and configuration; it prints no learner data, no
+# IP address belonging to a visitor, and no secret value.
+#
+# It runs from INSIDE Core over `railway ssh`, because Vault sits on Railway
+# private networking and is reachable from nowhere else — the same reason
+# tutor-deploy.yml's verify step works that way.
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'How many days of event history to summarise'
+        required: false
+        default: '30'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    name: 'Analytics diagnose'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      ENVIRONMENT: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install the Railway CLI
+        run: |
+          npm i -g @railway/cli@5.43.1
+          railway --version
+
+      - name: Write the Railway SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
+          chmod 600 ~/.ssh/railway_key
+
+      - name: Is anything being RECORDED?
+        run: |
+          set -uo pipefail
+          set +e
+
+          DAYS='${{ inputs.days }}'
+          case "$DAYS" in ''|*[!0-9]*) DAYS=30 ;; esac
+
+          # One node script, run inside Core, using Core's own service key. It
+          # never leaves the container and nothing it prints is a secret.
+          read -r -d '' SCRIPT <<'INNER'
+          const base = process.env.SUPABASE_URL;
+          const key  = process.env.SUPABASE_SERVICE_ROLE_KEY;
+          const days = Number(process.env.LF_DAYS || 30);
+          const since = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
+
+          const rest = async (path) => {
+            const r = await fetch(`${base}/rest/v1/${path}`, {
+              headers: { apikey: key, Authorization: `Bearer ${key}`, Prefer: 'count=exact' },
+            });
+            const total = (r.headers.get('content-range') || '').split('/')[1] ?? '?';
+            let body = null;
+            try { body = await r.json(); } catch { /* non-JSON */ }
+            return { status: r.status, total, body };
+          };
+
+          const line = (s) => console.log(s);
+
+          line('== THE EXCLUSION REGISTRY (this is what silences a visitor) ==');
+          const ex = await rest('analytics_ip_exclusions?select=network,label,created_at,revoked_at&order=created_at.desc&limit=100');
+          if (ex.status !== 200) {
+            line(`   could not read: HTTP ${ex.status}`);
+          } else {
+            const rows = ex.body || [];
+            const active = rows.filter((r) => !r.revoked_at);
+            line(`   ${rows.length} row(s), ${active.length} ACTIVE`);
+            for (const r of active) {
+              // A /32 or /128 is one machine. Anything wider is worth a hard look:
+              // a consumer ISP or CGNAT range silences thousands of real visitors.
+              const bits = Number((r.network || '').split('/')[1]);
+              const wide = Number.isFinite(bits) && ((r.network.includes(':') ? bits < 128 : bits < 32));
+              line(`   ${wide ? '!! WIDE' : '   single'}  ${r.network}  "${r.label}"  ${String(r.created_at).slice(0, 10)}`);
+            }
+            if (!active.length) line('   (none — so no visitor is being excluded by IP)');
+          }
+
+          line('');
+          line(`== FIRST-PARTY EVENTS, per day, last ${days} days ==`);
+          const ev = await rest(`learning_events?select=created_at&created_at=gte.${since}&limit=20000`);
+          if (ev.status !== 200) {
+            line(`   could not read: HTTP ${ev.status}`);
+          } else {
+            const byDay = {};
+            for (const r of ev.body || []) {
+              const d = String(r.created_at).slice(0, 10);
+              byDay[d] = (byDay[d] || 0) + 1;
+            }
+            const keys = Object.keys(byDay).sort();
+            line(`   total in window: ${ev.total}`);
+            if (!keys.length) line('   NOTHING in the window. The emit side is dead, not the read side.');
+            for (const d of keys) line(`   ${d}  ${String(byDay[d]).padStart(6)}`);
+          }
+
+          line('');
+          line('== TUTOR SESSIONS, all time ==');
+          const ts = await rest('tutor_sessions?select=id,started_at&order=started_at.desc&limit=10');
+          line(`   status ${ts.status}, total ${ts.total}`);
+          for (const r of ts.body || []) line(`   ${String(r.started_at).slice(0, 19)}`);
+
+          line('');
+          line('== CAN CORE REACH PULSE AT ALL ==');
+          for (const [name, url] of [
+            ['plausible', (process.env.PLAUSIBLE_URL || '') + '/api/health'],
+            ['umami', (process.env.UMAMI_URL || '') + '/api/heartbeat'],
+          ]) {
+            if (!url.startsWith('http')) { line(`   ${name}: not configured`); continue; }
+            try {
+              const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
+              line(`   ${name}: HTTP ${r.status}`);
+            } catch (e) {
+              line(`   ${name}: UNREACHABLE (${String(e).slice(0, 80)})`);
+            }
+          }
+          INNER
+
+          b64=$(printf '%s' "$SCRIPT" | base64 | tr -d '\n')
+          railway ssh --service littlefounders-backend -i ~/.ssh/railway_key -- \
+            sh -c "LF_DAYS=$DAYS; export LF_DAYS; echo $b64 | base64 -d > /tmp/diag.mjs && node /tmp/diag.mjs" 2>&1 \
+            | grep -Ev '^Warning: Permanently added' \
+            | sed 's/^/   /'
+
+      - name: What the trackers are TOLD, from a clean address
+        run: |
+          set -uo pipefail
+          # The runner is not on any staff network, so this is the answer a real
+          # visitor gets. `excluded: true` here would mean everybody is silenced.
+          echo "== GET /api/v1/analytics/tracking-decision, as an ordinary visitor =="
+          curl -s --max-time 15 \
+            -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36' \
+            https://api-b2c.littlefounders.ai/api/v1/analytics/tracking-decision | sed 's/^/   /'
+          echo ""
+          echo "   excluded:false  -> visitors ARE measured; look at the read side"
+          echo "   excluded:true   -> EVERY visitor is silenced; look at the registry above"
+          echo "   degraded:true   -> Vault could not answer; the decision is an assumption"

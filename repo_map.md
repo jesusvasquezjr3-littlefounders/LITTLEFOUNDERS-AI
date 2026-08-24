@@ -247,6 +247,26 @@ updates:
       - "/pulse/railway/kuma"
 ```
 
+### .github/workflows/analytics-diagnose.yml
+
+```
+name: Analytics diagnose (operator)
+
+# READ-ONLY. Answers one question the repository cannot: is the platform
+# RECORDING nothing, or SHOWING nothing? Those look identical from the admin
+# console and have completely different fixes, and guessing between them costs
+# a deploy cycle.
+#
+# Written on 2026-08-23 after "analytics has recorded nothing since 18 August".
+# Everything it reads is counts and configuration; it prints no learner data, no
+# IP address belonging to a visitor, and no secret value.
+#
+# It runs from INSIDE Core over `railway ssh`, because Vault sits on Railway
+# private networking and is reachable from nowhere else — the same reason
+# tutor-deploy.yml's verify step works that way.
+
+```
+
 ### .github/workflows/audiogen-cd.yml
 
 ```
@@ -1214,17 +1234,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Attacking the Tutor before shipping it: five HIGH defects, all of them in the seam (2026-08-23)
+## Four production faults, and the one that made all of them invisible (2026-08-23)
 
-**The owner asked for the artifact as a PDF, for the Tutor to go to production
-if it was ready, and for the security measures — prompt injection especially —
-to be verified.** The honest answer to the middle one turned out to be no, and
-the reason is the third one.
+**The owner's report:** the Tutor's conversation does not work, there are no
+voices at all, some devices stutter at 25-30 fps, and analytics has recorded
+nothing since 18 August. Plus a standing instruction now written into
+`/AGENTS.md` §1.0 as rule 5: **a defect that reaches production costs this
+company money**, in four ways, and that outranks convenience on every call.
 
-### The audit
+### Why nothing could be diagnosed
 
-Six surfaces attacked independently and in parallel — the seven-layer injection
-stack, socket auth, the PII boundary, moderation and the content ladder,
+Everything server-side passed, and kept passing while the product was broken.
 ```
 
 ### agent/README.md
@@ -21250,6 +21270,7 @@ import {
 ```
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { TutorScene, type TutorFraming, type TutorSceneProps } from './TutorScene';
+import { armAudioUnlock } from './audioUnlock';
 import { useLipSync } from './useLipSync';
 import { VISEME_CLOSED } from './lipSync';
 import { shotForLegacyFraming, type ShotId } from './shots';
@@ -21262,7 +21283,6 @@ import type { CharacterAction, CharacterEmotion, CharacterId } from '@/component
  * `TutorScene` is the renderer and takes low-level props — a viseme index, a
  * shot. This is the surface the conversational layer talks to, and it exists so
  * that wiring RAG and TTS is passing props rather than reaching into the scene:
- * hand it a speech URL and it plays the audio, drives the mouth from that audio,
 ```
 
 ### frontend/src/tutor-scene/__tests__/TutorStage.test.tsx
@@ -21423,6 +21443,46 @@ import { resolveBackdrop, type BackdropLighting, type SceneBackdropId } from './
  * WHY IT IS FOUR VALUES AND NOT A STYLESHEET. Everything derived from them —
  * the fill mix, the shade, the shadow ramps, the sky glow — is arithmetic that
  * CSS does for free at use time (`index.css` → LUMEN). What CSS cannot do is
+```
+
+### frontend/src/tutor-scene/audioUnlock.test.ts
+
+```
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { armAudioUnlock, audioIsUnlocked, resetAudioUnlockForTests } from './audioUnlock';
+
+/*
+ * THE DEFECT THIS PINS.
+ *
+ * The Tutor's whole opening is the character speaking BEFORE the learner has
+ * touched anything, which is precisely what every browser autoplay policy
+ * refuses. The refusal was swallowed by a bare `.catch()`, so the product was
+ * silently silent on first load — for every learner, on every browser, every
+ * time. The owner's report was "there are no voices, voice does not work for
+ * anything", and this was why.
+ *
+ * These assert the two halves of the fix: a gesture earns the permission, and
+ * a refusal is still reported rather than hidden.
+```
+
+### frontend/src/tutor-scene/audioUnlock.ts
+
+```
+/*
+ * BROWSERS DO NOT LET A PAGE MAKE NOISE UNTIL SOMEBODY TOUCHES IT.
+ *
+ * That rule and this product disagree by design: the Tutor's whole opening is
+ * the character speaking FIRST, before the learner has done anything. So the
+ * greeting's `play()` is rejected, every time, on every browser, for every
+ * learner — and the rejection was being swallowed. The mouth closed, nothing
+ * was said, and nothing anywhere reported that the product's headline feature
+ * had just been refused by the platform.
+ *
+ * The fix is the standard one and it has to happen EARLY: the first time the
+ * learner touches the page for any reason — a tap, a key, a pointer down —
+ * play a silent clip through the same element the tutor will use. That single
+ * successful play is what grants the element permission for the rest of the
+ * page's life, so the tutor's next line is audible even though the gesture had
 ```
 
 ### frontend/src/tutor-scene/backdrops.ts
@@ -21788,7 +21848,7 @@ const FINE = (DEMOTE_BELOW_FPS + PROMOTE_ABOVE_FPS) / 2;
 ### frontend/src/tutor-scene/governor.ts
 
 ```
-import { lowerTier, raiseTier, type QualityTier } from './quality';
+import { lowerRenderScale, lowerTier, raiseTier, type QualityTier } from './quality';
 
 /*
  * The tier-stepping decision, as a PURE reducer.

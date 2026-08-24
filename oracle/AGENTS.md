@@ -218,7 +218,7 @@ scripts/pregenerate-speech.ts  buys the 144 fixed clips, once, ever
 ```bash
 npm run type-check
 npm run lint
-npm test              # 181 tests, no network, VOICE_PROVIDER=none
+npm test              # 182 tests, no network, VOICE_PROVIDER=none
 npm run verify:tutor  # /AGENTS.md §5 — prints the privacy + canary result
 npm run build
 ```

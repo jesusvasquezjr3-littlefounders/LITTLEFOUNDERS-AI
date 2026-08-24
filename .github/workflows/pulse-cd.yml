@@ -30,7 +30,7 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
       - name: Install Railway CLI
-        run: npm i -g @railway/cli
+        run: npm i -g @railway/cli@5.43.1
       - name: Deploy pulse-${{ matrix.service }}
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

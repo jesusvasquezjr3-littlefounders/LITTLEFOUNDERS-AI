@@ -13,7 +13,8 @@
     "controlsLabel": "Habla con tu tutor",
     "replayLayer": "Una conversación, reproduciéndose otra vez",
     "replayControls": "Controles de la repetición",
-    "closeControls": "Qué sigue"
+    "closeControls": "Qué sigue",
+    "soundBlocked": "Tu navegador silenció esta página. Toca aquí para que el tutor pueda hablar."
   },
   "lab": {
     "title": "Laboratorio de escena",

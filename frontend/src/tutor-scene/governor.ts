@@ -1,4 +1,4 @@
-import { lowerTier, raiseTier, type QualityTier } from './quality';
+import { lowerRenderScale, lowerTier, raiseTier, type QualityTier } from './quality';
 
 /*
  * The tier-stepping decision, as a PURE reducer.
@@ -34,10 +34,21 @@ export interface GovernorState {
   demotions: number;
   /** Once true the tier can only go down. */
   locked: boolean;
+  /**
+   * The lever BELOW the tier floor (see `QualitySettings.renderScale`).
+   *
+   * Only moves once `tier` is already `low` and the device is STILL missing
+   * its budget. Before this existed the governor's own comment described the
+   * dead end honestly — "already at the floor, reset the evidence rather than
+   * accumulating a demotion that cannot be spent" — and a device that simply
+   * could not run the scene sat there at 25 fps for the whole session while
+   * the system had decided there was nothing left to try.
+   */
+  renderScale: number;
 }
 
 export function initialGovernorState(tier: QualityTier): GovernorState {
-  return { tier, badWindows: 0, goodWindows: 0, demotions: 0, locked: false };
+  return { tier, badWindows: 0, goodWindows: 0, demotions: 0, locked: false, renderScale: 1 };
 }
 
 /** Folds one closed measurement window into the governor state. */
@@ -50,15 +61,24 @@ export function stepGovernor(state: GovernorState, windowFps: number): GovernorS
 
     const tier = lowerTier(state.tier);
     if (tier === state.tier) {
-      // Already at the floor. Reset the evidence rather than accumulating a
-      // demotion that cannot be spent — otherwise a device that simply cannot
-      // run the scene would latch on nothing but its own floor.
-      return { ...state, badWindows: 0, goodWindows: 0 };
+      /*
+       * At the floor, and still failing. Soften the render scale instead —
+       * quartering the shaded pixels is the cheapest frame time there is, and
+       * it costs sharpness rather than content: every character, every
+       * animation and every word survives.
+       *
+       * When even the softest scale is not enough there is genuinely nothing
+       * left, and resetting the evidence is right: the device is doing its
+       * best and hammering it with more demotions changes nothing.
+       */
+      const renderScale = lowerRenderScale(state.renderScale);
+      return { ...state, badWindows: 0, goodWindows: 0, renderScale };
     }
 
     const demotions = state.demotions + 1;
     return {
       tier,
+      renderScale: state.renderScale,
       badWindows: 0,
       goodWindows: 0,
       demotions,

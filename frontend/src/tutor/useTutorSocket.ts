@@ -185,8 +185,30 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     };
 
     socket.onerror = () => setConnection('failed');
-    socket.onclose = () => {
+    socket.onclose = (event) => {
+      /*
+       * THE CLOSE EVENT CARRIES THE REASON, AND IT WAS BEING THROWN AWAY.
+       *
+       * Oracle closes with meaningful codes — 4001 unauthorized, 4004 session
+       * not found, 4003 service degraded — and every one of them arrived here
+       * as an undifferentiated 'closed'. The `error` field was only ever
+       * populated from a server error FRAME, which by definition never arrives
+       * when the handshake itself fails, so a socket that never opened and a
+       * conversation that ended normally were indistinguishable to the UI.
+       *
+       * 1000 and 1005 are the normal endings (explicit and "no status"), and a
+       * close AFTER the server said goodbye is expected — neither is a fault.
+       */
+      const clean = event.code === 1000 || event.code === 1005;
       setConnection((prev) => (prev === 'failed' ? 'failed' : 'closed'));
+      if (!clean) {
+        setError((prev) =>
+          prev ?? {
+            code: `SOCKET_${event.code}`,
+            message: event.reason || 'The tutor connection closed unexpectedly.',
+          },
+        );
+      }
     };
 
     return () => {

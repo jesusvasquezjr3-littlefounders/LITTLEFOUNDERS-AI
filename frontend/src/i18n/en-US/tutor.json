@@ -13,7 +13,8 @@
     "controlsLabel": "Talk to your tutor",
     "replayLayer": "A conversation, playing again",
     "replayControls": "Replay controls",
-    "closeControls": "What next"
+    "closeControls": "What next",
+    "soundBlocked": "Your browser muted this page. Tap here to let the tutor speak."
   },
   "lab": {
     "title": "Scene Lab",

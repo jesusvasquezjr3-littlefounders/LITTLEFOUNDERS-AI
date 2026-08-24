@@ -2,6 +2,129 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Four production faults, and the one that made all of them invisible (2026-08-23)
+
+**The owner's report:** the Tutor's conversation does not work, there are no
+voices at all, some devices stutter at 25-30 fps, and analytics has recorded
+nothing since 18 August. Plus a standing instruction now written into
+`/AGENTS.md` §1.0 as rule 5: **a defect that reaches production costs this
+company money**, in four ways, and that outranks convenience on every call.
+
+### Why nothing could be diagnosed
+
+Everything server-side passed, and kept passing while the product was broken.
+`GET /health` reported model, voice and moderation all up. The deploy
+workflow's `verify` step walked the whole chain from inside the platform —
+private networking, both providers, a sealed and judged turn, a line
+synthesized in a cloned voice, stored in Depot and fetched back. Probed from
+here: the websocket upgrade succeeds and refuses a bad token with the right
+close code, all nine 3D assets serve 200, the bundle carries
+`VITE_SCENE_ASSET_BASE`, Pulse's collectors answer.
+
+Every one of those checks is a NON-BROWSER client. The faults were all in the
+browser, and one of them was hiding the rest.
+
+### The one that hid the others
+
+`TutorExperience` folded three different endings into one. The server saying
+goodbye, a socket that opened and dropped, and **a socket that never opened at
+all** each set phase to `closing` — which renders Dr. Rho waving and the words
+"saved, you can listen to it whenever you want", about a conversation that had
+not happened. `useTutorSocket` threw the CloseEvent away, so Oracle's
+meaningful close codes never reached the UI either.
+
+A total outage therefore looked like a completed session. That is §1.14 at its
+most expensive: not an error dressed as success, but a **failure dressed as a
+warm goodbye**. A socket that carried no turn now goes to `unavailable`, which
+already degrades to the island with the reason on the microphone itself, and
+non-clean close codes populate the error channel.
+
+### No voices, for a reason no server could see
+
+The `<audio>` element carried no `crossOrigin`. `useLipSync` routes it through
+Web Audio so the mouth can follow the waveform — and per spec, a
+`MediaElementAudioSourceNode` whose media is cross-origin and not CORS-approved
+outputs **digital silence**. Depot does send `Access-Control-Allow-Origin: *`
+(verified today), but the header is irrelevant while the element never asks.
+
+So every clip fetched, decoded, played for its full duration, fired `ended`,
+raised no error, and made no sound. The analyser read zeros, so the mouth
+stayed shut too. `curl`, `verify-speaks` and every server check fetched the
+same bytes happily; none of them is a browser routing audio through an
+analyser, which is the only client that can see this. Set in the ref rather
+than as a JSX prop, because assigning `src` first starts a load that stays
+tainted.
+
+Separately and also real: the tutor speaks BEFORE the learner touches anything,
+which every autoplay policy blocks, and the rejection was swallowed. There is
+now a one-shot unlock armed on mount that spends the first gesture — any
+gesture — on a silent clip through the same element, and a learner who is still
+refused is told so and can tap to fix it.
+
+### 25-30 fps, and a governor that had run out of road
+
+Two things, and the first is the more embarrassing. **`antialias` is a
+context-creation attribute**, fixed for the life of the WebGL context — so the
+quality governor's `antialias: false` on the low tier was a no-op. Every touch
+device starts at `medium` (`pickInitialTier` caps coarse pointers there), medium
+had MSAA on, and the governor spent the whole session believing it had turned
+off something it could not reach. Fill rate is precisely what those devices
+lack. MSAA is now decided once, from the device, and never promised to the tier.
+
+Second: the tier ladder bottomed out at `low`, and `low` still renders every
+triangle at `dpr` 1. The governor's own comment described the dead end
+honestly — "already at the floor, reset the evidence rather than accumulating a
+demotion that cannot be spent" — and a device that could not hold frame rate
+there sat at 25 fps for the whole session with the system satisfied there was
+nothing left to try. There is now a `renderScale` lever underneath the floor
+(1 → 0.8 → 0.65 → 0.5), the cheapest frame time there is: halving it quarters
+the pixels shaded, and it costs sharpness rather than content.
+
+### Analytics: twelve consecutive silent nights
+
+`insights-maintenance.yml` **last succeeded on 2026-08-07 and has failed every
+single night since** — twelve consecutive runs at the time of writing. The
+Insights rollups have been stale that whole time, which is why the console
+shows an empty product.
+
+The transport shape is wrong: `-- sh -c "'echo ... | psql ...'"` wraps the
+command in single quotes inside the double quotes, so the remote `sh -c` gets
+one argument starting with a literal quote and tries to run it as a command
+name; and `-f -` was missing, so psql was never told to read the decoded SQL as
+a script. `tutor-deploy.yml` uses the same `-- sh -c` form WITHOUT the inner
+quotes and ran green today, which is what isolates the defect. It now matches
+`railway-migrate.sh`'s proven positional shape.
+
+**But the shape is not why it took a fortnight.** The retry loop captured the
+error into `$out` and printed it only on SUCCESS. Twelve nights of evidence,
+deleted on arrival, leaving "attempt 1 failed, retrying in 20s" five times and
+an exit code. The error is now printed on every attempt and the final failure
+is a GitHub `::error::` that names the consequence.
+
+What changed on 2026-08-07 is still unknown and is written down as unknown: no
+`@railway/cli` version was published between 07-08 and 08-13, so a release is
+not the trigger, and nothing in the repository touched the file. The next run
+will say, because it can now speak. All sixteen workflows that install the CLI
+are pinned to `5.43.1` regardless — an unpinned dependency in the transport
+layer is how a working job becomes a broken one with no commit to blame.
+
+`analytics-diagnose.yml` is new, read-only, and exists to answer the one
+question the repository cannot: whether the platform is RECORDING nothing or
+SHOWING nothing. It dumps the exclusion registry (flagging any rule wider than
+a single address), per-day event counts, and what an ordinary visitor is told.
+
+### Also closed
+
+The consent-revocation gap from this morning: `/ORACLE.md` §4.3 promised a
+guardian that revocation takes effect on the next turn, and the poll ran every
+fifth. Rather than weaken the promise to match the code, the code now keeps it
+— a minor with an OPEN microphone is re-checked every turn, everyone else keeps
+the cheap five-turn poll. One internal call per turn, on exactly the sessions
+where a child is speaking to a third party.
+
+**Gates: 1,805 tests green** — frontend 1174/91 files, backend 449, oracle 182 —
+plus all six repo gates, `verify:tutor`, `verify:rig` and `verify:placement`.
+
 ## Attacking the Tutor before shipping it: five HIGH defects, all of them in the seam (2026-08-23)
 
 **The owner asked for the artifact as a PDF, for the Tutor to go to production

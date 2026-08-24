@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { TutorScene, type TutorFraming, type TutorSceneProps } from './TutorScene';
+import { armAudioUnlock } from './audioUnlock';
 import { useLipSync } from './useLipSync';
 import { VISEME_CLOSED } from './lipSync';
 import { shotForLegacyFraming, type ShotId } from './shots';
@@ -113,6 +114,18 @@ export interface TutorStageProps {
    * `TutorSceneProps.onQuality` and /DESIGN.md §Lumen → The blur, profiled.
    */
   onQuality?: TutorSceneProps['onQuality'];
+  /**
+   * Fires when the browser REFUSES to play a line, and again when it stops
+   * refusing.
+   *
+   * The Tutor speaks before the learner has touched anything, which is exactly
+   * what every autoplay policy blocks. That rejection used to be swallowed:
+   * the mouth closed and the product was silently silent, which reads as
+   * broken and teaches nobody to fix it. The shell uses this to offer a "turn
+   * sound on" affordance — a tutor that says why it is quiet is a product; one
+   * that is just quiet is a bug report.
+   */
+  onSpeechBlocked?: (blocked: boolean) => void;
 }
 
 export function TutorStage({
@@ -133,12 +146,22 @@ export function TutorStage({
   audition = null,
   onReady,
   onQuality,
+  onSpeechBlocked,
 }: TutorStageProps) {
   const audio = useRef<HTMLAudioElement | null>(null);
   const [element, setElement] = useState<HTMLAudioElement | null>(null);
   const [speaking, setSpeaking] = useState(false);
 
   const viseme = useLipSync(speaking ? element : null);
+
+  /*
+   * ARMED ON MOUNT, not on the first line. Permission is granted at the moment
+   * of a gesture and only to an element that actually attempts a play then —
+   * so waiting until the tutor has something to say is already too late. By
+   * the time the greeting arrives, any tap the learner has made on the way in
+   * has already bought the right to be heard.
+   */
+  useEffect(() => armAudioUnlock(audio.current), []);
 
   useEffect(() => {
     const node = audio.current;
@@ -152,15 +175,21 @@ export function TutorStage({
 
     setElement(node);
     setSpeaking(true);
-    /*
-     * `play()` rejects when the browser has not seen a user gesture yet. That
-     * is a NORMAL first-load state, not an error to throw on — but the mouth
-     * must not be left open pretending to talk over silence, so the speaking
-     * flag is cleared on rejection.
-     */
     node.currentTime = 0;
-    void node.play().catch(() => setSpeaking(false));
-  }, [speechUrl, audioKey]);
+    void node
+      .play()
+      .then(() => onSpeechBlocked?.(false))
+      .catch(() => {
+        /*
+         * Refused. The mouth must not be left open pretending to talk over
+         * silence — and, unlike before, the shell is TOLD, so the learner gets
+         * an honest "tap to turn sound on" instead of a tutor that mouths
+         * nothing. §1.14: a failure has to be distinguishable from working.
+         */
+        setSpeaking(false);
+        onSpeechBlocked?.(true);
+      });
+  }, [speechUrl, audioKey, onSpeechBlocked]);
 
   const handleEnded = useCallback(() => {
     setSpeaking(false);
@@ -173,6 +202,34 @@ export function TutorStage({
     <>
       <audio
         ref={(node) => {
+          /*
+           * `crossOrigin` IS SET HERE, IN THE REF, AND NOT AS A JSX PROP.
+           *
+           * THE BUG THIS CLOSES — the reason the Tutor had no voice at all in
+           * production, on every browser, for every learner:
+           *
+           * `useLipSync` routes this element through Web Audio
+           * (`createMediaElementSource`) so the mouth can follow the waveform.
+           * Per the spec, a MediaElementAudioSourceNode whose media is
+           * cross-origin and NOT CORS-approved outputs DIGITAL SILENCE — the
+           * element is "tainted". Depot serves the clips from a different
+           * origin and does send `Access-Control-Allow-Origin: *`, but that
+           * header is irrelevant while the element never ASKS for CORS.
+           *
+           * So the clip fetched, decoded, "played" for its full duration and
+           * fired `ended` — with no error anywhere — and produced no sound.
+           * The mouth stayed shut too, because the analyser read zeros. Every
+           * server-side check passed: Oracle synthesized it, Depot stored it,
+           * `curl` and `verify-speaks` fetched it back. None of them is a
+           * browser routing audio through an analyser, which is the only
+           * client that can see this.
+           *
+           * Order matters, which is why this is not a prop: assigning `src`
+           * first starts a load that stays tainted for that resource. React
+           * sets attributes in JSX order and that order is not a contract, so
+           * the flag goes on before anything can trigger a fetch.
+           */
+          if (node && node.crossOrigin !== 'anonymous') node.crossOrigin = 'anonymous';
           audio.current = node;
         }}
         src={speechUrl ?? undefined}

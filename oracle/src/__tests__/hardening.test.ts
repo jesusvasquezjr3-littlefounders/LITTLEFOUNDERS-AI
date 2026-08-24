@@ -473,6 +473,37 @@ describe('the rate limiter cannot take the platform down', () => {
   });
 });
 
+describe('revocation takes effect on the NEXT turn, as promised', () => {
+  it('closes a minor’s microphone on the very next turn after Core says revoked', async () => {
+    /*
+     * /ORACLE.md §4.3 tells a guardian that revocation takes effect on the next
+     * turn. It used to be every FIFTH turn, so a child could keep streaming to
+     * the speech provider for four more — and the §16 checklist item claiming
+     * next-turn was ticked. This asserts the promise, not the old behaviour.
+     */
+    const socket = await openReady();
+
+    // One ordinary turn with consent in force, so the session is past the
+    // greeting and the next turn is unambiguously "the next turn".
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'hola' }));
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    socket.removeAllListeners('message');
+    await new Promise((resolve) => setTimeout(resolve, 750));
+
+    // The guardian revokes. Core now says so.
+    consentBody = { data: { active: false }, error: null };
+
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'otra vez' }));
+    const messages = await collect(
+      socket,
+      (m) => m.some((x) => x.code === 'CONSENT_REVOKED') || m.filter((x) => x.type === 'turn').length >= 2,
+    );
+    socket.close();
+
+    expect(messages.some((m) => m.code === 'CONSENT_REVOKED')).toBe(true);
+  });
+});
+
 describe('an unreadable consent answer is not a granted one', () => {
   it('mutes a minor’s microphone when Core cannot be read', async () => {
     const socket = await openReady();

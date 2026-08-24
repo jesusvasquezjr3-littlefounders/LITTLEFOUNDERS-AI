@@ -60,7 +60,24 @@ interface Live {
 
 /** Minimum gap between learner turns. Not a rate limit — a sanity floor. */
 const MIN_TURN_GAP_MS = 700;
-/** How often a live session re-checks that consent is still in force. */
+/**
+ * How often a live session re-checks that consent is still in force.
+ *
+ * EVERY TURN while a minor's microphone is actually open, because /ORACLE.md
+ * §4.3 promises a guardian that revocation takes effect on the next turn and
+ * for two days it did not: the poll ran every fifth turn, so a guardian who
+ * revoked mid-conversation could leave the child's microphone streaming for
+ * four more. Documentation promised one thing, code did another, and the §16
+ * checklist item was ticked.
+ *
+ * The cost of keeping the promise is one internal HTTP call per turn on
+ * exactly the sessions where a child is speaking to a third party — which is
+ * the one place in this product where an extra round trip is obviously worth
+ * paying for. Every other session keeps the cheap five-turn poll: a typed
+ * session has no microphone to close, and an adult's consent is not the
+ * guardian's to withdraw.
+ */
+const CONSENT_RECHECK_MINOR_MIC_TURNS = 1;
 const CONSENT_RECHECK_EVERY_TURNS = 5;
 
 /**
@@ -356,11 +373,16 @@ async function handleLearnerTurn(live: Live, text: string): Promise<void> {
   // Consent is re-checked periodically DURING a session, not only at the door.
   // /ORACLE.md §4.3 requires revocation to take effect on the next turn, and a
   // guardian who revokes while their child is mid-session means it now.
+  const recheckEvery =
+    live.microphone && live.session.isMinor
+      ? CONSENT_RECHECK_MINOR_MIC_TURNS
+      : CONSENT_RECHECK_EVERY_TURNS;
+
   if (
     live.microphone &&
     live.session.isMinor &&
     live.orchestrator.turnCount > 0 &&
-    live.orchestrator.turnCount % CONSENT_RECHECK_EVERY_TURNS === 0
+    live.orchestrator.turnCount % recheckEvery === 0
   ) {
     /*
      * `!== true`, NOT `=== false`.

@@ -66,12 +66,20 @@ export function useAdaptiveQuality(): AdaptiveQuality {
     const next = stepGovernor(governor.current, windowFps);
     governor.current = next;
     // Only re-render when something the scene actually depends on moved.
-    if (next.tier !== visible.tier || next.locked !== visible.locked) setVisible(next);
-  }, [visible.tier, visible.locked]);
+    // `renderScale` joins the list: it is the lever under the tier floor, and
+    // leaving it out would compute a softer scale and never apply it.
+    if (
+      next.tier !== visible.tier ||
+      next.locked !== visible.locked ||
+      next.renderScale !== visible.renderScale
+    ) {
+      setVisible(next);
+    }
+  }, [visible.tier, visible.locked, visible.renderScale]);
 
   const settings = useMemo(
-    () => resolveSettings(visible.tier, probe.prefersReducedMotion),
-    [visible.tier, probe.prefersReducedMotion],
+    () => resolveSettings(visible.tier, probe.prefersReducedMotion, visible.renderScale),
+    [visible.tier, probe.prefersReducedMotion, visible.renderScale],
   );
 
   return { settings, probe, fps, locked: visible.locked, onFrame };

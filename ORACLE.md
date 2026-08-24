@@ -413,18 +413,18 @@ tutor", not a checkbox buried inside a general terms acceptance. Consent is:
 
 - **Blocking.** Not a feature flag, not a default-on setting. No consent, no mic;
   the tutor still works fully, in text-and-choices mode.
-- **Revocable**, and revocation is observed **within five turns** — at the next
-  consent re-check, which runs every fifth turn (`CONSENT_RECHECK_EVERY_TURNS`,
-  `oracle/src/ws/server.ts`). *This bullet said "on the next turn" until
-  2026-08-23 and the code never did that:* there is no push channel from Core,
-  only a poll from the session, so a guardian who revokes mid-conversation can
-  leave the microphone live for up to four more turns. Measured, not estimated —
-  the test that proves revocation works loops six turns to see it.
-  **Closing the gap to a true next-turn guarantee is a CODE change** (re-check
-  every turn while a minor's microphone is actually open, which is the only case
-  that matters) and it is not done. It affects nobody today, because
-  `TUTOR_VOICE_FOR_MINORS` is false and no minor's microphone opens at all —
-  but it must be closed before that flag flips. Tracked in §16.
+- **Revocable, and revocation takes effect ON THE NEXT TURN** — the promise this
+  bullet has always made, and as of 2026-08-23 the one the code keeps. While a
+  minor's microphone is actually open the session re-checks consent **every
+  turn** (`CONSENT_RECHECK_MINOR_MIC_TURNS`, `oracle/src/ws/server.ts`); every
+  other session keeps the cheaper five-turn poll, because a typed session has no
+  microphone to close. *For two days the poll was every fifth turn on all
+  sessions, so a guardian who revoked mid-conversation could leave the child's
+  microphone live for four more — while this bullet, §14 and a TICKED §16 item
+  all said next-turn.* The cost of keeping the promise is one internal call per
+  turn on exactly the sessions where a child is speaking to a third party, which
+  is the one place in this product where that is obviously worth paying for.
+  Pinned by `hardening.test.ts`, confirmed to fail against the old interval.
 - **Recorded** in Vault with a timestamp and the granting guardian, and audited.
 - **Reflected in the legal documents** — all three `/LEGAL/` files in the same
   commit, then `npm run legal:sync` (§1.8, non-negotiable).
@@ -1027,7 +1027,7 @@ record, not a model's interpretation of what the learner said.
 | Moderation unavailable | **Fail closed** — the turn is not spoken. |
 | Live generation fails any guard | Emit nothing; fall back to tier 1 and say so honestly. |
 | Stage assets fail to load | The existing `SceneBoundary` fallback. The conversation must still run without 3D. |
-| Consent revoked mid-session | The microphone stops at the next consent re-check — every fifth turn, so within five turns and not on the next one (§4.3). An unreadable answer from Core counts as revoked, not as still-granted. |
+| Consent revoked mid-session | The microphone stops on the NEXT turn — a minor with an open microphone is re-checked every turn (§4.3). An unreadable answer from Core counts as revoked, not as still-granted. |
 
 ### §14.1 The affordance is always present — corrected 2026-08-21
 
@@ -1339,15 +1339,13 @@ the build session of 2026-08-21; unticked ones block enabling this for minors.
       (`backend` tutor suite, `oracle` socket guard). Since 2026-08-23 the
       platform also refuses to COLLECT a consent while the policy is closed,
       in the UI and at `POST /tutor/consent` independently.
-- [ ] **Revocation takes effect on the NEXT turn.** It does not. It is observed
-      at the next re-check, every fifth turn (§4.3), so a guardian who revokes
-      mid-conversation can leave the microphone live for up to four more turns.
-      This item was TICKED and claiming next-turn until 2026-08-23; the code
-      never did it and the test that "proves" it loops six turns. Harmless
-      today — `TUTOR_VOICE_FOR_MINORS` is false, so no minor's microphone opens
-      at all — and it **must be closed before that flag flips**: re-check every
-      turn while a minor's microphone is actually open, which is the only case
-      that matters and the only one where the extra Core call is warranted.
+- [x] **Revocation takes effect on the NEXT turn** — closed 2026-08-23. A minor
+      with an open microphone is re-checked every turn; everyone else keeps the
+      five-turn poll. This item was ticked and claiming next-turn for two days
+      while the code polled every fifth turn: the documentation audit unticked
+      it, and the same day the code was changed to keep the promise rather than
+      the promise weakened to match the code. Pinned by a test that was
+      confirmed to fail against the old interval.
 - [x] The model context object rejects every unlisted field (`.strict()`),
       tested — eighteen forbidden fields asserted in `verify:tutor`.
 - [x] The injection canary corpus passes in CI, in BOTH directions.

@@ -331,14 +331,33 @@ export function TutorExperience() {
     setPhase('introducing');
   }, []);
 
-  // The session ended on the server side. Move the UI with it rather than
-  // leaving a dead socket behind a live-looking screen.
+  /*
+   * THE SESSION ENDED — BUT WHICH ENDING?
+   *
+   * These are three different events and they were all rendered as the same
+   * warm goodbye: the server said farewell, the socket opened and dropped, and
+   * the socket NEVER OPENED. The last one is a total outage, and the learner
+   * was shown Dr. Rho waving and the words "saved — you can listen to it
+   * whenever you want", about a conversation that had not happened.
+   *
+   * That is why this fault was invisible for so long: the product's failure
+   * mode was a convincing success. §1.14 — a failure must be distinguishable
+   * from a completion, and it must be distinguishable BY THE PERSON LOOKING AT
+   * IT, not only in a console nobody has open.
+   *
+   * A socket that never carried a single turn did not hold a conversation, so
+   * it goes to `unavailable` — the honest "the tutor cannot be reached" state
+   * that already exists for a failed preferences read.
+   */
   useEffect(() => {
     if (phase !== 'conversing') return;
-    if (socket.closedReason !== null || socket.connection === 'closed' || socket.connection === 'failed') {
-      setPhase('closing');
-    }
-  }, [phase, socket.closedReason, socket.connection]);
+    const ended =
+      socket.closedReason !== null || socket.connection === 'closed' || socket.connection === 'failed';
+    if (!ended) return;
+
+    const heldAConversation = socket.history.length > 0;
+    setPhase(heldAConversation ? 'closing' : 'unavailable');
+  }, [phase, socket.closedReason, socket.connection, socket.history.length]);
 
   /*
    * What the cast and the place actually are, right now.

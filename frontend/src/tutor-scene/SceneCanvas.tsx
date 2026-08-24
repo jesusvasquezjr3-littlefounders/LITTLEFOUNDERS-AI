@@ -184,7 +184,7 @@ export function SceneCanvas({ children, className, onStats, onSettings, camera }
         // dpr is the single biggest fill-rate lever: [floor, ceiling]. The
         // ceiling moves with the tier, so a struggling device renders fewer
         // pixels rather than losing scene content.
-        dpr={[1, settings.maxPixelRatio]}
+        dpr={[Math.min(1, settings.renderScale), settings.maxPixelRatio * settings.renderScale]}
         shadows={settings.shadows}
         frameloop={active ? 'always' : 'never'}
         /*
@@ -203,7 +203,26 @@ export function SceneCanvas({ children, className, onStats, onSettings, camera }
          * low-end devices the quality tiers exist to protect.
          */
         gl={{
-          antialias: settings.antialias,
+          /*
+           * MSAA IS FIXED FOR THE LIFE OF THE CONTEXT, so this reads the
+           * INITIAL tier and the governor can never change it.
+           *
+           * That is not a limitation being worked around, it is a WebGL fact:
+           * `antialias` is a context-creation attribute. The governor's
+           * `antialias: false` on the low tier was therefore a no-op — and
+           * since every touch device starts at `medium` (pickInitialTier caps
+           * coarse pointers there) and medium had it on, every phone carried
+           * MSAA for the whole session while the governor believed it had
+           * turned it off. Fill rate is exactly what those devices lack.
+           *
+           * Recreating the context to apply it would remount the canvas and
+           * refetch the island — the learner watches their world blink — so
+           * the decision is made ONCE, honestly, from the device rather than
+           * from a tier that can move: MSAA only where it is affordable.
+           * Everything adaptive happens through `dpr`, which R3F does apply
+           * live.
+           */
+          antialias: settings.antialias && !probe.coarsePointer,
           powerPreference: 'high-performance',
           alpha: true,
           preserveDrawingBuffer: import.meta.env.DEV,
