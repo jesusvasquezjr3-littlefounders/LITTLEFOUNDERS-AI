@@ -33,6 +33,40 @@ if (!isTestOrDev) {
   redisClient.on('error', (err) => console.error('[oracle] redis error', err));
 }
 
+/*
+ * HAS THIS CLIENT EVER BEEN UP? A different question from `isOpen`.
+ *
+ * The rate limiter's store issues a command the moment it is constructed, and
+ * it is constructed at module load — before index.ts connects, which it does in
+ * the background on purpose so the listener never waits on optional
+ * infrastructure (§1.14). "Not connected yet, at boot" and "not connected, an
+ * hour in" need opposite answers: the first should WAIT a beat, the second must
+ * fail immediately so a Redis outage cannot add latency to every request.
+ */
+let everOpened = redisClient.isOpen;
+redisClient.on('ready', () => {
+  everOpened = true;
+});
+
+/**
+ * Resolves when the client first comes up, or after `timeoutMs`, whichever is
+ * sooner. Returns instantly once it has EVER been open, so this only ever costs
+ * anything during startup — and it resolves rather than rejecting, leaving the
+ * caller to check `isOpen` and decide.
+ */
+export function awaitFirstConnect(timeoutMs: number): Promise<void> {
+  if (everOpened) return Promise.resolve();
+  return new Promise((resolve) => {
+    const settle = (): void => {
+      clearTimeout(timer);
+      redisClient.off('ready', settle);
+      resolve();
+    };
+    const timer = setTimeout(settle, timeoutMs);
+    redisClient.once('ready', settle);
+  });
+}
+
 /** Reads a key. `null` covers "absent", "unreachable" and "too slow" alike. */
 export async function redisGet(key: string): Promise<string | null> {
   if (!redisClient.isOpen) return null;
