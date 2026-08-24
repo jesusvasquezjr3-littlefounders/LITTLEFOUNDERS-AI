@@ -257,14 +257,14 @@ name: Analytics diagnose (operator)
 # console and have completely different fixes, and guessing between them costs
 # a deploy cycle.
 #
-# Written on 2026-08-23 after "analytics has recorded nothing since 18 August".
-# Everything it reads is counts and configuration; it prints no learner data, no
-# IP address belonging to a visitor, and no secret value.
+# Written 2026-08-23 after "analytics has recorded nothing since 18 August".
+# It prints counts and configuration only — no learner data, no visitor IP, no
+# secret value.
 #
-# It runs from INSIDE Core over `railway ssh`, because Vault sits on Railway
-# private networking and is reachable from nowhere else — the same reason
-# tutor-deploy.yml's verify step works that way.
-
+# The work is in `agent/tools/analytics-diagnose.mjs`, a tracked FILE rather
+# than a string inside this YAML — so it is lintable, diffable and
+# `node --check`-able, none of which a heredoc is.
+#
 ```
 
 ### .github/workflows/audiogen-cd.yml

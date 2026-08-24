@@ -111,7 +111,42 @@ layer is how a working job becomes a broken one with no commit to blame.
 `analytics-diagnose.yml` is new, read-only, and exists to answer the one
 question the repository cannot: whether the platform is RECORDING nothing or
 SHOWING nothing. It dumps the exclusion registry (flagging any rule wider than
-a single address), per-day event counts, and what an ordinary visitor is told.
+a single address), per-day event counts, the AGE of the newest rollup, and what
+an ordinary visitor is told.
+
+**It answered, and the answer was not what the report suggested.** Run against
+production:
+
+- **Real visitors were being measured the whole time.** From a clean address
+  `tracking-decision` answers `excluded:false, degraded:false`; the registry
+  holds four active rules and every one is a `/32` — two staff machines added
+  2026-08-14, two more 2026-08-19. Nothing wide, no ISP range, no CGNAT pool.
+- **4,345 first-party events** in the last thirty days. The emit side was never
+  dead.
+- **The rollups the console reads were 17 days stale** — newest row 2026-08-07,
+  which is the night the maintenance job started failing.
+
+So "nothing since 18 August" was two separate things wearing one symptom: the
+Insights console reading rollups frozen on the 7th, and the owner's own devices
+correctly excluded from measurement on the 14th and 19th, which removed the
+traffic they were personally looking for.
+
+**Fixed and confirmed:** `insights-maintenance` went green for the first time
+since 2026-08-07, and a re-run of the diagnostic reports the newest rollup as
+**1 day old, 113 rows** (was 55). The console populates again.
+
+Two more defects were found in the tools themselves while doing this, both the
+same shape as the thing they were built to find. The diagnostic's first two
+runs failed and I blamed an indented heredoc — wrong; `tutor-deploy.yml` uses
+that shape and runs green, because YAML dedents a block scalar before bash sees
+it. The real cause was a missing `~/.ssh/config`, and it surfaced the instant
+the tool was changed to PRINT its transport error. Then the tool reported a
+working query as "COULD NOT READ" because PostgREST answers `206 Partial
+Content` for a counted read and the check was `!== 200` — the instrument built
+to separate failure from emptiness, confusing success with failure. And
+`insights-maintenance` was printing `Warning: Permanently added
+ssh.railway.com` as its query result, because `$out` merges stderr and its ssh
+config lacked the `LogLevel ERROR` that `tutor-deploy.yml` already carries.
 
 ### Also closed
 
