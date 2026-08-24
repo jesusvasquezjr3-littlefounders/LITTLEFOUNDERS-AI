@@ -1,34 +1,54 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { api } from '@/lib/api';
-import { Button, Card, Field, Icon, OptionGroup, ProgressBar, type OptionGroupOption } from '@/components/ui';
-import { CharacterActor } from '@/components/characters/control/CharacterActor';
-import type { CharacterId } from '@/components/characters/control/types';
+import { Button, Field, OptionGroup, type OptionGroupOption } from '@/components/ui';
+import { GuidedStage } from '@/guided-voice/GuidedStage';
+import { characterFor, useGuidedVoice } from '@/guided-voice/useGuidedVoice';
 
 /*
- * Guest-first onboarding (Duolingo-style): name (required), an optional
- * discovery-channel survey, optional age, then the create-account-now-or-
- * later offer. One /onboarding/complete call submits everything at once —
- * fewer round-trips, and it also activates day-1 streak server-side.
+ * Guest-first onboarding, narrated by the characters in their own voices.
  *
- * Guest-only in practice (a real account never reaches this route — see
- * RequireOnboarded), but this page defensively redirects home if somehow
- * reached after completion rather than trusting the router alone.
+ * WHAT CHANGED. This was four silent form steps with a static mascot beside
+ * them. It is now a guided sequence: one character on screen at a time, saying
+ * one line out loud, asking for one thing. Everything that is not those three
+ * elements has been taken off the screen on purpose — a first-run screen
+ * competing for attention is a first-run screen people leave.
+ *
+ * WHY THE FIRST LINE IS TAP-TO-HEAR. Browsers refuse audio until the page has
+ * been touched, on every browser, for every learner. Rather than fight that
+ * with a silent-clip unlock and hope, the welcome step simply shows its line
+ * and offers a speaker button; the tap that starts the flow is the gesture, and
+ * every line after it plays on its own. Honest about the platform instead of
+ * appearing broken on the one screen that forms a first impression.
+ *
+ * SUBTITLES ALWAYS. Every spoken line is on screen as text, at all times, for
+ * whoever cannot hear it, has sound off, or is on the majority of first visits
+ * where audio has not been unlocked yet.
  */
 
 const BIRTH_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const DISCOVERY_CHANNELS = ['friend', 'social_media', 'search', 'app_store', 'school', 'ad', 'other'] as const;
 type DiscoveryChannel = (typeof DISCOVERY_CHANNELS)[number];
 
-const STEPS = ['name', 'discovery', 'age', 'accountOffer'] as const;
+const STEPS = ['welcome', 'name', 'age', 'discovery', 'account'] as const;
+type StepName = (typeof STEPS)[number];
+
+/** Sanity floor/ceiling for a typed date, so a slip of the keyboard is caught before the server sees it. */
+function birthDateOutOfRange(value: string): boolean {
+  const time = Date.parse(value);
+  if (Number.isNaN(time)) return true;
+  const year = Number(value.slice(0, 4));
+  return time > Date.now() || year < 1900;
+}
 
 export function OnboardingPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { getToken, refreshMe, onboardingComplete } = useAuth();
+  const voice = useGuidedVoice();
 
   const [step, setStep] = useState(0);
   const [displayName, setDisplayName] = useState('');
@@ -36,64 +56,52 @@ export function OnboardingPage() {
   const [birthDate, setBirthDate] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
+  /** Flips on the first tap. Until then the browser will refuse to make noise anyway. */
+  const gestured = useRef(false);
 
-  // The `!submitting` guard matters: refreshMe() below flips onboardingComplete
-  // to true via AuthContext BEFORE complete()'s own explicit navigate() call
-  // runs (loadMe's setState reaches React's scheduler in fewer microtask hops
-  // than complete()'s continuation does), so without it this defensive
-  // redirect raced the "created_now" branch's navigate('/upgrade-account')
-  // and won, silently skipping the account-creation form for every guest who
-  // chose to save their progress. `submitting` stays true for the whole
-  // success path specifically so this guard can tell "reached mid-flow, by
-  // our own submit" apart from "reached this route after already finishing,
-  // via back button/bookmark" — the case the guard exists for.
+  const current: StepName = STEPS[step]!;
+  const narrationKey = `onboarding.${current}`;
+  const line = t(`onboarding.narration.${current}`);
+  // Pulled out because these two are stable across a `speaking` change, and the
+  // narration effect below must not re-run when the mouth starts moving.
+  const { speak, stop } = voice;
+
+  // Speak each step as it arrives — but never before the learner has touched
+  // the page, where the browser would refuse and the failure would look like a
+  // bug rather than a policy.
+  useEffect(() => {
+    if (!gestured.current) return;
+    speak(narrationKey, line);
+    return () => stop();
+  }, [narrationKey, line, speak, stop]);
+
+  // The `!submitting` guard matters: refreshMe() flips onboardingComplete via
+  // AuthContext BEFORE complete()'s own navigate() runs (loadMe's setState
+  // reaches React's scheduler in fewer microtask hops), so without it this
+  // defensive redirect raced the "created_now" branch's navigate to
+  // /upgrade-account and won, silently skipping account creation for every
+  // guest who chose to save their progress. `submitting` stays true for the
+  // whole success path specifically so this guard can tell "mid-flow, by our
+  // own submit" apart from "returned here after finishing, via back button".
   if (onboardingComplete && !submitting) return <Navigate to={APP_HOME} replace />;
 
-  const birthDateInvalid = birthDate.length > 0 && !BIRTH_DATE_RE.test(birthDate);
-  const discoveryOptions: OptionGroupOption<DiscoveryChannel>[] = DISCOVERY_CHANNELS.map((value) => ({
-    value,
-    label: t(`onboarding.discovery.options.${value}`),
-  }));
-
-  // One character narrates each step, matching each mascot's established
-  // personality (LESSON_ENGINE.md §9): Liruf hypes up the name (the very
-  // first thing he can cheer), Rho maps the discovery survey, Dina handles
-  // the personal/sensitive age question warmly, Zara closes with confidence.
   const trimmedName = displayName.trim();
-  const stepCharacter: { character: CharacterId; emotion: 'neutral' | 'happy' | 'excited' | 'encouraging'; bubble: string } =
-    STEPS[step] === 'name'
-      ? {
-          character: 'liruf',
-          emotion: trimmedName ? 'excited' : 'encouraging',
-          bubble: trimmedName ? t('onboarding.name.characterBubbleFilled', { name: trimmedName }) : t('onboarding.name.characterBubble'),
-        }
-      : STEPS[step] === 'discovery'
-        ? { character: 'rho', emotion: 'neutral', bubble: t('onboarding.discovery.characterBubble') }
-        : STEPS[step] === 'age'
-          ? {
-              character: 'dina',
-              emotion: !birthDateInvalid && birthDate ? 'happy' : 'encouraging',
-              bubble:
-                !birthDateInvalid && birthDate
-                  ? t('onboarding.age.characterBubbleFilled')
-                  : t('onboarding.age.characterBubble', { name: trimmedName || t('onboarding.name.label') }),
-            }
-          : { character: 'zara', emotion: 'excited', bubble: t('onboarding.accountOffer.characterBubble') };
+  const birthDateInvalid = birthDate.length > 0 && (!BIRTH_DATE_RE.test(birthDate) || birthDateOutOfRange(birthDate));
 
-  function goNext() {
-    setStep((s) => Math.min(s + 1, STEPS.length - 1));
-  }
-  function goBack() {
-    setStep((s) => Math.max(s - 1, 0));
+  function advance(delta: 1 | -1) {
+    gestured.current = true;
+    stop();
+    setStep((s) => Math.min(Math.max(s + delta, 0), STEPS.length - 1));
   }
 
   async function complete(accountOfferChoice: 'created_now' | 'later') {
     setSubmitting(true);
     setError(false);
+    stop();
     const token = await getToken();
     const { error: apiError } = await api<{ streakDays: number }>('/onboarding/complete', {
       body: {
-        displayName: displayName.trim(),
+        displayName: trimmedName,
         discoveryChannel: discoveryChannel ?? undefined,
         birthDate: birthDate || undefined,
         accountOfferChoice,
@@ -106,128 +114,159 @@ export function OnboardingPage() {
       setError(true);
       return;
     }
-    // submitting stays true here (see the top-of-component guard comment) —
-    // reset only on the error path above; the success path navigates away.
+    // submitting stays true (see the guard above) — reset only on the error path.
     await refreshMe();
     navigate(accountOfferChoice === 'created_now' ? '/upgrade-account' : APP_HOME, { replace: true });
   }
 
+  const discoveryOptions: OptionGroupOption<DiscoveryChannel>[] = DISCOVERY_CHANNELS.map((value) => ({
+    value,
+    label: t(`onboarding.discovery.options.${value}`),
+  }));
+
+  /*
+   * The character reacts to what the learner has actually done — a filled name,
+   * a chosen date — with an on-screen aside. These are interpolated and so have
+   * no recorded audio by construction; the spoken line stays the fixed one.
+   */
+  const aside =
+    current === 'name' && trimmedName
+      ? t('onboarding.name.bubbleFilled', { name: trimmedName })
+      : current === 'age' && birthDate && !birthDateInvalid
+        ? t('onboarding.age.bubbleFilled')
+        : null;
+
   return (
-    <div className="relative flex min-h-screen justify-center bg-base px-5 py-14 sm:py-20 md:px-8">
-      <div className="relative w-full max-w-md">
-        <div className="mb-6 flex items-center gap-3">
-          {step > 0 && (
-            <button
-              type="button"
-              aria-label={t('onboarding.back')}
-              onClick={goBack}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            >
-              <Icon name="arrow_back" />
-            </button>
-          )}
-          <ProgressBar
-            value={((step + 1) / STEPS.length) * 100}
-            label={t('onboarding.progressLabel', { current: step + 1, total: STEPS.length })}
-            className="flex-1"
+    <GuidedStage
+      character={characterFor(narrationKey)}
+      speaking={voice.speaking}
+      line={line}
+      aside={aside}
+      onReplay={() => {
+        gestured.current = true;
+        speak(narrationKey, line);
+      }}
+      voice={voice}
+      onBack={step > 0 ? () => advance(-1) : undefined}
+      backLabel={t('onboarding.back')}
+      soundOnLabel={t('onboarding.soundOn')}
+      soundOffLabel={t('onboarding.soundOff')}
+      replayLabel={t('onboarding.replayLine')}
+      progress={{ current: step + 1, total: STEPS.length, label: t('onboarding.progressLabel', { current: step + 1, total: STEPS.length }) }}
+      error={error ? t('onboarding.error') : null}
+    >
+      {current === 'welcome' && (
+        <div className="flex flex-col gap-6 text-center">
+          <div>
+            <h1 className="lf-display-lg text-content">{t('onboarding.welcome.title')}</h1>
+            <p className="lf-body-lg mt-2 text-content-muted">{t('onboarding.welcome.subtitle')}</p>
+          </div>
+          <Button className="w-full" onClick={() => advance(1)}>
+            {t('onboarding.welcome.cta')}
+          </Button>
+        </div>
+      )}
+
+      {current === 'name' && (
+        <form
+          className="flex flex-col gap-6"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (trimmedName) advance(1);
+          }}
+        >
+          <div>
+            <h1 className="lf-display-lg text-content">{t('onboarding.name.title')}</h1>
+            <p className="lf-body-lg mt-2 text-content-muted">{t('onboarding.name.subtitle')}</p>
+          </div>
+          <Field
+            label={t('onboarding.name.label')}
+            autoComplete="name"
+            autoFocus
+            required
+            maxLength={80}
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
           />
+          <Button type="submit" className="w-full" disabled={!trimmedName}>
+            {t('onboarding.continue')}
+          </Button>
+        </form>
+      )}
+
+      {current === 'age' && (
+        <div className="flex flex-col gap-6">
+          <div>
+            <h1 className="lf-display-lg text-content">{t('onboarding.age.title')}</h1>
+            <p className="lf-body-lg mt-2 text-content-muted">{t('onboarding.age.subtitle')}</p>
+          </div>
+          {/*
+           * A real date input, not a yyyy-mm-dd text field. The old one asked a
+           * six-year-old to type a format; this opens the platform's own date
+           * picker on every phone.
+           */}
+          <Field
+            label={t('onboarding.age.label')}
+            type="date"
+            max={new Date().toISOString().slice(0, 10)}
+            min="1900-01-01"
+            value={birthDate}
+            onChange={(e) => setBirthDate(e.target.value)}
+            error={birthDateInvalid ? t('onboarding.age.invalid') : undefined}
+          />
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              className="flex-1"
+              onClick={() => {
+                setBirthDate('');
+                advance(1);
+              }}
+            >
+              {t('onboarding.skip')}
+            </Button>
+            <Button className="flex-1" disabled={birthDateInvalid} onClick={() => advance(1)}>
+              {t('onboarding.continue')}
+            </Button>
+          </div>
         </div>
+      )}
 
-        <div className="mb-4 flex flex-col items-center gap-3 text-center">
-          <CharacterActor character={stepCharacter.character} emotion={stepCharacter.emotion} size="md" />
-          <p className="lf-body rounded-2xl bg-surface-sunken px-4 py-2.5 text-content">{stepCharacter.bubble}</p>
+      {current === 'discovery' && (
+        <div className="flex flex-col gap-6">
+          <div>
+            <h1 className="lf-display-lg text-content">{t('onboarding.discovery.title')}</h1>
+            <p className="lf-body-lg mt-2 text-content-muted">{t('onboarding.discovery.subtitle')}</p>
+          </div>
+          <OptionGroup
+            value={discoveryChannel}
+            options={discoveryOptions}
+            ariaLabel={t('onboarding.discovery.title')}
+            onChange={(value) => {
+              setDiscoveryChannel(value);
+              advance(1);
+            }}
+          />
+          <Button variant="secondary" className="w-full" onClick={() => advance(1)}>
+            {t('onboarding.skip')}
+          </Button>
         </div>
+      )}
 
-        <Card className="p-6 sm:p-8">
-          {error && (
-            <p role="alert" className="lf-caption mb-4 text-error-strong">
-              {t('onboarding.error')}
-            </p>
-          )}
-
-          {STEPS[step] === 'name' && (
-            <div className="flex flex-col gap-5">
-              <div>
-                <h1 className="lf-display-lg text-content">{t('onboarding.name.title')}</h1>
-                <p className="lf-body-lg mt-2 text-content-muted">{t('onboarding.name.subtitle')}</p>
-              </div>
-              <Field
-                label={t('onboarding.name.label')}
-                autoComplete="name"
-                required
-                maxLength={80}
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-              />
-              <Button className="w-full" disabled={!displayName.trim()} onClick={goNext}>
-                {t('onboarding.continue')}
-              </Button>
-            </div>
-          )}
-
-          {STEPS[step] === 'discovery' && (
-            <div className="flex flex-col gap-5">
-              <div>
-                <h1 className="lf-display-lg text-content">{t('onboarding.discovery.title')}</h1>
-                <p className="lf-body-lg mt-2 text-content-muted">{t('onboarding.discovery.subtitle')}</p>
-              </div>
-              <OptionGroup
-                value={discoveryChannel}
-                options={discoveryOptions}
-                ariaLabel={t('onboarding.discovery.title')}
-                onChange={(value) => {
-                  setDiscoveryChannel(value);
-                  goNext();
-                }}
-              />
-              <Button variant="secondary" className="w-full" onClick={goNext}>
-                {t('onboarding.skip')}
-              </Button>
-            </div>
-          )}
-
-          {STEPS[step] === 'age' && (
-            <div className="flex flex-col gap-5">
-              <div>
-                <h1 className="lf-display-lg text-content">{t('onboarding.age.title')}</h1>
-                <p className="lf-body-lg mt-2 text-content-muted">{t('onboarding.age.subtitle')}</p>
-              </div>
-              <Field
-                label={t('onboarding.age.label')}
-                inputMode="numeric"
-                placeholder="2016-05-01"
-                value={birthDate}
-                onChange={(e) => setBirthDate(e.target.value)}
-                hint={t('onboarding.age.hint')}
-                error={birthDateInvalid ? t('onboarding.age.invalid') : undefined}
-              />
-              <div className="flex gap-3">
-                <Button variant="secondary" className="flex-1" onClick={() => { setBirthDate(''); goNext(); }}>
-                  {t('onboarding.skip')}
-                </Button>
-                <Button className="flex-1" disabled={birthDateInvalid} onClick={goNext}>
-                  {t('onboarding.continue')}
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {STEPS[step] === 'accountOffer' && (
-            <div className="flex flex-col gap-5">
-              <div>
-                <h1 className="lf-display-lg text-content">{t('onboarding.accountOffer.title')}</h1>
-                <p className="lf-body-lg mt-2 text-content-muted">{t('onboarding.accountOffer.subtitle')}</p>
-              </div>
-              <Button className="w-full" disabled={submitting} onClick={() => void complete('created_now')}>
-                {submitting ? t('onboarding.submitting') : t('onboarding.accountOffer.createNow')}
-              </Button>
-              <Button variant="secondary" className="w-full" disabled={submitting} onClick={() => void complete('later')}>
-                {submitting ? t('onboarding.submitting') : t('onboarding.accountOffer.later')}
-              </Button>
-            </div>
-          )}
-        </Card>
-      </div>
-    </div>
+      {current === 'account' && (
+        <div className="flex flex-col gap-4">
+          <div>
+            <h1 className="lf-display-lg text-content">{t('onboarding.account.title')}</h1>
+            <p className="lf-body-lg mt-2 text-content-muted">{t('onboarding.account.subtitle')}</p>
+          </div>
+          <Button className="w-full" disabled={submitting} onClick={() => void complete('created_now')}>
+            {submitting ? t('onboarding.submitting') : t('onboarding.account.createNow')}
+          </Button>
+          <Button variant="secondary" className="w-full" disabled={submitting} onClick={() => void complete('later')}>
+            {submitting ? t('onboarding.submitting') : t('onboarding.account.later')}
+          </Button>
+        </div>
+      )}
+    </GuidedStage>
   );
 }

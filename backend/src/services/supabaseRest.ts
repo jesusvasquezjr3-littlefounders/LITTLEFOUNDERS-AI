@@ -431,9 +431,11 @@ export interface CourseHierarchyRow {
   subject: string;
   position: number;
   badge_asset: string | null;
+  /** 0048 — true while the course is live but still missing narration/illustrations. */
+  in_progress: boolean;
 }
 
-const COURSE_HIERARCHY_FIELDS = 'id,slug,title,description,subject,position,badge_asset';
+const COURSE_HIERARCHY_FIELDS = 'id,slug,title,description,subject,position,badge_asset,in_progress';
 
 export function getPublishedCourseRows(accessToken: string): Promise<CourseHierarchyRow[] | null> {
   return rest<CourseHierarchyRow[]>(`/courses?status=eq.published&select=${COURSE_HIERARCHY_FIELDS}&order=position.asc`, accessToken);

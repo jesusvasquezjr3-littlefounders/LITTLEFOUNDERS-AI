@@ -1,47 +1,59 @@
 {
-  "loading": "Loading your placement quiz…",
-  "back": "Go back",
+  "loading": "Getting your placement ready…",
+  "back": "Back",
   "continue": "Continue",
   "skip": "Skip",
-  "submitting": "Placing you…",
-  "error": "Something went wrong, please try again.",
-  "progressLabel": "Step {{current}} of {{total}}",
-  "level": {
-    "title": "How much do you already know about this?",
-    "characterBubble": "Wherever you start, we'll take you further.",
-    "options": {
-      "new": "This is all new to me",
-      "some": "I know a little",
-      "confident": "I already know quite a bit"
-    }
+  "submitting": "Saving…",
+  "error": "Something went wrong. Please try again.",
+  "soundOn": "Turn voices on",
+  "soundOff": "Mute voices",
+  "progressLabel": "Question {{current}}",
+  "progressLabelOf": "Question {{current}} of about {{total}}",
+  "narration": {
+    "welcome": "I'm Doctor Rho. Before we start, I want to put you where you actually belong — not so far back that you're bored, not so far ahead that you're lost.",
+    "intake": "Tell me in your own words what you already know about this. Write whatever comes to mind; there's no wrong answer.",
+    "quiz": "A few short questions now. If you don't know one, say so — that helps me just as much.",
+    "confirm": "One more to confirm, and we're done.",
+    "resultAhead": "Look at that! You already knew a good chunk, so we're skipping what you've got covered.",
+    "resultStart": "We'll start from the beginning. It's the best place to build solid foundations.",
+    "adjust": "I'm Zara. If this feels too far ahead, move it back — no shame in it. You decide where to start."
   },
-  "education": {
-    "title": "What's your current level of schooling?",
-    "characterBubble": "This helps me set your pace.",
-    "options": {
-      "preschool": "Preschool",
-      "elementary": "Elementary school",
-      "middle": "Middle school",
-      "high": "High school",
-      "adult": "Adult"
-    }
+  "welcome": {
+    "title": "Let's find your starting point",
+    "subtitle": "Just a few short questions. Nobody repeats what they know, and nobody starts where they're lost.",
+    "cta": "Get started",
+    "startFromZero": "I'd rather start from scratch"
   },
-  "age": {
-    "title": "How old are you?",
-    "label": "Birth date",
-    "hint": "Format: yyyy-mm-dd, e.g. 2016-05-01",
-    "invalid": "Use the format yyyy-mm-dd",
-    "nudge": "If you're a kid, it's best to do this with a parent or guardian nearby.",
-    "nudgeLink": "Learn about family accounts",
-    "characterBubble": "A quick check to fine-tune your path.",
-    "characterBubbleFilled": "Perfect, noted!"
+  "intake": {
+    "title": "What do you already know about this?",
+    "subtitle": "Write it in your own words. I'll start you where it makes sense.",
+    "label": "What I already know",
+    "placeholder": "For example: I already keep a budget and save part of what I earn.",
+    "cta": "Continue",
+    "skip": "Just ask me questions instead",
+    "thinking": "Reading what you wrote…",
+    "neutral": "Thanks for telling me. Let's start and see how you go."
   },
   "quiz": {
-    "characterBubble": "Pick your best answer."
+    "title": "Pick the right answer",
+    "dontKnow": "I don't know this yet"
   },
-  "submit": {
-    "title": "Ready to find your starting point?",
-    "cta": "Get my placement",
-    "characterBubble": "Your starting point is ready."
-  }
+  "result": {
+    "titleAhead": "You're starting further in",
+    "titleStart": "You're starting from the beginning",
+    "creditedLessons": "We're skipping {{count}} lessons you've already got.",
+    "creditedLessons_one": "We're skipping 1 lesson you've already got.",
+    "creditedNone": "You'll build from the ground up, step by step.",
+    "positionLabel": "Your starting point",
+    "positionValue": "Topic {{position}} of {{total}}",
+    "cta": "Start here",
+    "tooHigh": "This feels too advanced",
+    "adjustTitle": "Where would you rather start?",
+    "adjustHint": "You can start earlier than we placed you. You can always move fast later.",
+    "adjustEarlier": "A bit earlier",
+    "adjustBeginning": "From the beginning",
+    "adjustKeep": "Leave it as it is",
+    "cappedByPrerequisite": "We stopped you just before a topic that needs something we haven't covered."
+  },
+  "replayLine": "Play again"
 }

@@ -64,10 +64,12 @@ describe('gatePlacementProbe (deterministic, no network)', () => {
 });
 
 describe('authorPlacementProbe', () => {
+  const AUDIENCE = { subject: 'money', ages: '6-7', register: 'kid' as const };
   const input = {
     concept: 'El dinero sirve para intercambiar bienes y servicios.',
     learningObjective: 'El niño identifica para qué sirve el dinero.',
     keyVocabulary: ['dinero', 'intercambio'],
+    audience: AUDIENCE,
   };
 
   it('returns a valid probe on the first attempt', async () => {
@@ -75,6 +77,39 @@ describe('authorPlacementProbe', () => {
     const probe = await authorPlacementProbe(input, { complete: complete as never });
     expect(probe).toEqual(VALID_PROBE);
     expect(complete).toHaveBeenCalledTimes(1);
+  });
+
+  /*
+   * The lemonade-stand guard (/AGENTS.md §1.14). The prompt used to hardcode
+   * "a children's financial-literacy course", so every probe for the 12-18
+   * catalogs would have silently inherited a 6-year-old's register. These two
+   * tests assert the audience REACHES the prompt and that the two registers
+   * are actually distinguishable — a parameter nothing reads is the same
+   * defect wearing a different name.
+   */
+  it('puts THIS course\'s subject and age band into the system prompt', async () => {
+    const complete = mockComplete(JSON.stringify(VALID_PROBE));
+    await authorPlacementProbe(
+      { ...input, audience: { subject: 'economics', ages: '12-18', register: 'adult' } },
+      { complete: complete as never },
+    );
+    const system = complete.mock.calls[0]![0].messages[0].content as string;
+    expect(system).toContain('economics');
+    expect(system).toContain('12-18');
+    expect(system).not.toContain('financial-literacy');
+  });
+
+  it('gives the adult register a different directive than the kid register', async () => {
+    const kid = mockComplete(JSON.stringify(VALID_PROBE));
+    await authorPlacementProbe({ ...input, audience: { subject: 'money', ages: '6-7', register: 'kid' } }, { complete: kid as never });
+    const adult = mockComplete(JSON.stringify(VALID_PROBE));
+    await authorPlacementProbe({ ...input, audience: { subject: 'money', ages: '12-18', register: 'adult' } }, { complete: adult as never });
+
+    const kidSystem = kid.mock.calls[0]![0].messages[0].content as string;
+    const adultSystem = adult.mock.calls[0]![0].messages[0].content as string;
+    expect(kidSystem).not.toEqual(adultSystem);
+    expect(adultSystem).toMatch(/peer|adult/i);
+    expect(adultSystem).toMatch(/[Nn]ever infantilizing/);
   });
 
   it('sends only the topic content (concept/objective/vocabulary/facts) — no learner id, no free-text beyond what was passed in', async () => {
@@ -117,10 +152,11 @@ describe('authorPlacementProbe', () => {
 });
 
 describe('translatePlacementProbe', () => {
+  const TRANSLATE_AUDIENCE = { subject: 'money', ages: '6-7', register: 'kid' as const };
   it('translates prompt/options and preserves correctIndex', async () => {
     const translated = { prompt: 'What is money?', options: ['Something used to trade', 'A toy', 'A color'], correctIndex: 0 };
     const complete = mockComplete(JSON.stringify(translated));
-    const result = await translatePlacementProbe(VALID_PROBE, 'en-US', { complete: complete as never });
+    const result = await translatePlacementProbe(VALID_PROBE, 'en-US', TRANSLATE_AUDIENCE, { complete: complete as never });
     expect(result).toEqual(translated);
   });
 
@@ -128,7 +164,7 @@ describe('translatePlacementProbe', () => {
     const wrongIndex = { prompt: 'What is money?', options: ['Something used to trade', 'A toy', 'A color'], correctIndex: 1 };
     const rightIndex = { prompt: 'What is money?', options: ['Something used to trade', 'A toy', 'A color'], correctIndex: 0 };
     const complete = mockComplete(JSON.stringify(wrongIndex), JSON.stringify(rightIndex));
-    const result = await translatePlacementProbe(VALID_PROBE, 'en-US', { complete: complete as never });
+    const result = await translatePlacementProbe(VALID_PROBE, 'en-US', TRANSLATE_AUDIENCE, { complete: complete as never });
     expect(result.correctIndex).toBe(0);
     expect(complete).toHaveBeenCalledTimes(2);
   });

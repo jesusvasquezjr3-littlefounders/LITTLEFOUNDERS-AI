@@ -1,0 +1,30 @@
+{
+  "_comment": [
+    "WHO SAYS EACH GUIDED LINE. One file, read by two packages: the frontend renders",
+    "the character and the subtitle from it, and oracle/scripts/pregenerate-guided-voice.ts",
+    "reads the same map to decide which enrolled voice synthesises which line.",
+    "",
+    "It is a plain JSON map and not a TypeScript const precisely so the generator can",
+    "read it without importing across package boundaries. A character named here must",
+    "be one of the four canonical ids; an unknown one fails the generator loudly rather",
+    "than silently producing no audio for that step.",
+    "",
+    "THE LINE TEXT ITSELF IS NOT HERE. It lives in the frontend i18n bundles, which is",
+    "where the subtitle comes from, so the spoken line and the written line cannot drift",
+    "apart into two different sentences."
+  ],
+  "cast": {
+    "onboarding.welcome": "dina",
+    "onboarding.name": "liruf",
+    "onboarding.age": "dina",
+    "onboarding.discovery": "rho",
+    "onboarding.account": "zara",
+    "placement.welcome": "rho",
+    "placement.intake": "rho",
+    "placement.quiz": "rho",
+    "placement.confirm": "rho",
+    "placement.resultAhead": "liruf",
+    "placement.resultStart": "dina",
+    "placement.adjust": "zara"
+  }
+}

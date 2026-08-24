@@ -77,6 +77,50 @@ constraint.
    exhaustive, and counsel is entitled to know that one entry was found missing
    when it was checked field-by-field against the code.
 
+### §2.2b The placement intake — a second, narrower disclosure (added 2026-08-24)
+
+A learner choosing where to start a course may be offered a short conversation
+instead of a dropdown: they describe, in their own words, what they already
+know, and a model turns that into a single number estimating how far into the
+course their existing knowledge reaches.
+
+**This is a separate processing operation from §2.2** and sends a different,
+smaller set, enforced by its own `.strict()` schema
+(`oracle/src/tutor/placementIntake.ts`):
+
+1. **The published course's title and subject label** — no learner data.
+2. **An outline of the course at chapter level** — at most twelve chapter
+   titles. Deliberately not the full topic list.
+3. **Language** — `en-US`, `es-MX` or `pt-BR`.
+4. **Age band** — one of `12-14`, `15-17`, `18+`. As in §2.2 the date of birth
+   is converted inside our own systems and **never leaves**.
+5. **What the learner typed** — at most 600 characters, wrapped in a
+   per-request fence that instructs the model to treat it as data and never as
+   an instruction.
+
+Nothing else. Not the nickname, not any identifier, not skill state, not
+history, not any earlier text.
+
+**Two safeguards are material to how this should be assessed.**
+
+*It is offered to learners aged 12 and over only.* The floor is enforced by
+Core, which is the only service holding the date of birth. An **unknown** date
+of birth is treated as under-12 and the conversation is not offered — the
+carve-out is for learners we know are old enough, not for ones we cannot rule
+out.
+
+*The model does not decide the placement.* Its answer is a starting hint for
+the first question. Every unit of content a learner is credited with skipping
+is established by a deterministically-graded answer to a question written and
+reviewed in advance. A model that misreads the learner, or that is talked into
+claiming they know everything, changes which question is asked first and
+nothing else.
+
+The sentence the model composes back to the learner passes the same moderation
+gate as every other thing a character says, before display; for the two minor
+bands the model-based moderation pass is mandatory, and any failure falls back
+to a pre-written neutral line.
+
 ### §2.3 What is explicitly NOT sent, and cannot be
 
 Real name, surname, email address, date of birth, exact age, home address,

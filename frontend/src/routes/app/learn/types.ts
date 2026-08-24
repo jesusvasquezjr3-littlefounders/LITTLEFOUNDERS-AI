@@ -72,6 +72,8 @@ export interface CourseTree {
     description: Json
     subject: string
     badgeAsset?: string | null
+    /** 0048 — live, but still missing narration/illustrations. Drives the "still being built" notice. */
+    inProgress?: boolean
     progress: ProgressShape
     /** True until this user has completed this course's placement quiz (0043) — the client-side redirect is UX only, the real gate is server-side (learn.ts's PLACEMENT_REQUIRED 403). */
     placementRequired: boolean

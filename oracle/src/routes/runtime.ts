@@ -6,6 +6,7 @@ import { moderationReadiness } from '../safety/moderation.js';
 import { modelConfigured } from '../model/provider.js';
 import { getVoiceProvider } from '../voice/index.js';
 import { pregeneratedCount, pregeneratedGeneratedAt } from '../voice/pregenerated.js';
+import { PlacementIntakeInputSchema, runPlacementIntake } from '../tutor/placementIntake.js';
 
 /*
  * Oracle's internal HTTP surface. Small on purpose: the real work happens on
@@ -28,6 +29,40 @@ export function runtimeRouter(liveSessions: () => number): Router {
   const PreflightBody = z
     .object({ isMinor: z.boolean(), wantsVoice: z.boolean() })
     .strict();
+
+  /**
+   * The conversational placement intake (see tutor/placementIntake.ts).
+   *
+   * Core calls this INSTEAD of showing a dropdown, for learners 12 and older
+   * only — the 12+ floor is Core's to enforce, because Core is the service that
+   * holds the birth date; what arrives here is a BAND. The reply is advisory:
+   * it moves the first quiz question and nothing else, so this endpoint failing
+   * degrades the experience and never the placement.
+   */
+  const PlacementIntakeBody = PlacementIntakeInputSchema.extend({
+    /** Core owns the i18n catalog; the line to fall back to arrives already localized. */
+    neutralReflection: z.string().min(1).max(400),
+  }).strict();
+
+  router.post('/placement-intake', async (req, res) => {
+    const parsed = PlacementIntakeBody.safeParse(req.body);
+    if (!parsed.success) {
+      return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid body');
+    }
+    if (!modelConfigured()) {
+      // Not an error: the caller treats this as "no intake available today" and
+      // shows the deterministic path instead.
+      return ok(res, { available: false, priorFraction: null, reflection: null, source: null });
+    }
+
+    const { neutralReflection, ...intake } = parsed.data;
+    try {
+      const result = await runPlacementIntake(intake, neutralReflection);
+      return ok(res, { available: true, ...result });
+    } catch {
+      return ok(res, { available: false, priorFraction: null, reflection: null, source: null });
+    }
+  });
 
   router.post('/preflight', (req, res) => {
     const parsed = PreflightBody.safeParse(req.body);

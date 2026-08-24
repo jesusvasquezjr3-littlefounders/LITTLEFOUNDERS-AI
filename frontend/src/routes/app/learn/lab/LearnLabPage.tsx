@@ -22,7 +22,14 @@ import { LearnPage } from '@/routes/app/LearnPage'
 import { CoursePage } from '../CoursePage'
 import { TerritoryPage } from '../TerritoryPage'
 import { PlacementPage } from '../PlacementPage'
-import { FIXTURE_COURSES, FIXTURE_PROBE, FIXTURE_TREE } from './fixtures'
+import {
+  FIXTURE_COURSES,
+  FIXTURE_PLACEMENT_COMMIT,
+  FIXTURE_PLACEMENT_INTAKE_INFO,
+  FIXTURE_PLACEMENT_INTAKE_REPLY,
+  FIXTURE_PLACEMENT_STEPS,
+  FIXTURE_TREE,
+} from './fixtures'
 
 type View = 'home' | 'course' | 'territory' | 'placement'
 
@@ -37,11 +44,29 @@ const FIXTURE_ME = {
   onboardingComplete: true,
 }
 
-function fixtureFor(path: string): unknown | undefined {
+/*
+ * The adaptive quiz is a sequence, so the stub walks one. Reset when the lab
+ * remounts the page, otherwise a second run through the tab starts at the
+ * result and shows a state no learner ever reaches by that route.
+ */
+let placementStep = 0
+function resetPlacement(): void {
+  placementStep = 0
+}
+
+function fixtureFor(path: string, method: string): unknown | undefined {
   if (path.endsWith('/auth/me')) return FIXTURE_ME
   if (path.endsWith('/learn/courses')) return FIXTURE_COURSES
   if (path.includes('/learn/courses/') && path.endsWith('/tree')) return FIXTURE_TREE
-  if (path.includes('/placement/') && path.endsWith('/probe')) return FIXTURE_PROBE
+  if (path.includes('/placement/') && path.endsWith('/intake')) {
+    return method === 'POST' ? FIXTURE_PLACEMENT_INTAKE_REPLY : FIXTURE_PLACEMENT_INTAKE_INFO
+  }
+  if (path.includes('/placement/') && path.endsWith('/step')) {
+    const step = FIXTURE_PLACEMENT_STEPS[Math.min(placementStep, FIXTURE_PLACEMENT_STEPS.length - 1)]
+    placementStep += 1
+    return step
+  }
+  if (path.includes('/placement/') && path.endsWith('/commit')) return FIXTURE_PLACEMENT_COMMIT
   return undefined
 }
 
@@ -68,7 +93,7 @@ function installStub(): void {
   const real = window.fetch.bind(window)
   window.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url
-    const data = fixtureFor(new URL(url, window.location.origin).pathname)
+    const data = fixtureFor(new URL(url, window.location.origin).pathname, (init?.method ?? 'GET').toUpperCase())
     if (data === undefined) return real(input as RequestInfo, init)
     return new Response(JSON.stringify({ data, error: null }), {
       status: 200,
@@ -94,7 +119,10 @@ export function LearnLabPage() {
           <button
             key={candidate}
             type="button"
-            onClick={() => setView(candidate)}
+            onClick={() => {
+              if (candidate === 'placement') resetPlacement()
+              setView(candidate)
+            }}
             className={`lf-caption shrink-0 rounded-full px-3 py-1.5 font-bold ${
               view === candidate ? 'bg-accent text-on-accent' : 'bg-surface-sunken text-content-muted'
             }`}

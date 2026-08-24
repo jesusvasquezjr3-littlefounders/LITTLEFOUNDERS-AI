@@ -2,6 +2,144 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Placement placed nobody, and onboarding was a silent form (2026-08-24)
+
+**The owner's report:** onboarding and placement are "deplorables, poco
+intuitivas, cero funcionales". Testers — teenagers and adults — said the
+placement quiz put them at a level that had nothing to do with what they knew.
+The ask: characters actively guiding, IN THEIR OWN VOICES, minimal UI, and a
+placement that works off the KNOWLEDGE GRAPH, with age as one signal inside it
+rather than the thing that decides.
+
+### Placement was not badly tuned. It was inert.
+
+Queried against production before changing anything:
+
+| | |
+|---|---|
+| Topics in the catalog | 871 |
+| Topics carrying a placement probe | **0** |
+| Topics carrying a prerequisite | **0** |
+| `placement_credits` ever issued | **0** |
+| Real placements, `no_probe_content_fallback` | **5 of 6** |
+
+Two of those six had declared themselves **confident adults** and were dropped
+at lesson 1 of 1,305. The three questions they answered changed nothing,
+because `computePlacement` cannot do anything without probes and there were
+none.
+
+**Root cause, and it is a familiar shape.** `coursegen/src/scripts/author-publish.ts`
+— the subagent harness that actually generated the live catalog — hardcoded
+`placementProbe: null`. The full pipeline (`run.ts`) authors probes properly;
+the path that ran did not. The catalog even HAD 43 prerequisites written in
+YAML for financial-education; they never reached Vault because the content
+predates migration `0042`. Half of a pair implemented, the other half silently
+absent — the same class as the lemonade stand and the orphaned plan brief.
+
+**And it could not have worked anyway.** The algorithm administered at most 6
+probes and credited the longest contiguous correct prefix from topic 1. Over
+216 teaching topics that is a hard ceiling of 2.8% for every learner alive: an
+expert who answered all six correctly landed at topic 7. `educationLevel` was
+collected, stored, and read by nothing.
+
+### What replaced it
+
+A binary search for the learner's frontier `k` over pre-authored probes —
+around eight questions to reach any point in a 216-topic course. Evidence is
+bounded to `lo = 1 + highest correct`, `hi = lowest wrong`, `k = min(lo, hi)`,
+so **evidence of not knowing always outranks evidence of knowing** and a lucky
+guess cannot carry someone past a topic they failed.
+
+The owner's instruction settled the design question: signals decide **where the
+first question is asked** and nothing else. For a learner whose answers are
+consistent with one frontier, the placement is identical whatever their age,
+schooling or AI intake said — asserted directly in `placementAlgorithm.test.ts`,
+because that is a promise and not an implementation detail. What the prior
+actually buys is that a confident 35-year-old is no longer opened on a question
+written for a six-year-old, which is the specific insult that was reported.
+
+Three further changes came out of the same report:
+
+- **The learner gets the last word.** The result screen shows where they landed
+  and offers to move it EARLIER — freely, down to zero — but never later than
+  the evidence earned. The complaint was never "the questions were bad", it was
+  ending up somewhere that was not theirs with no way to say so.
+- **"I don't know this yet"** is a first-class answer, sent as an index one past
+  the last option so it can never accidentally be right. Real evidence, no
+  forced guessing.
+- **Stateless steps.** The client holds its answers and the server replays the
+  search. A refresh, a dropped connection or a back button cost nothing, and
+  nothing is written until the learner accepts.
+
+### The conversational half, and where its blast radius ends
+
+Learners **12 and over** may describe what they know in their own words
+(`oracle/src/tutor/placementIntake.ts`, /ORACLE.md §4.1b). Core enforces the
+floor because Core holds the birth date, and an **unknown** birth date counts
+as under-12 — "we cannot rule out that this is a seven-year-old" is not a basis
+for opening a free-text box.
+
+The model produces one number and one sentence. The number moves the first
+question. Every credited topic still comes from a deterministically-graded
+answer. A model talked into `priorFraction: 1` therefore buys exactly one
+question, which is the whole reason the split exists. Every failure path —
+model down, malformed JSON, an extra field, a refused reflection — lands on a
+neutral prior identical to not having had the conversation.
+
+`boundaries.test.ts` caught something worth keeping: it asserts that any file
+calling the model has sealed a payload first, and it failed on the new file.
+The seal had been at the HTTP edge only. It now sits one line from the send
+(`sealPlacementIntake`), where a future in-process caller cannot go around it.
+
+### Onboarding: guided, voiced, and honest about the browser
+
+Four silent form steps became five guided ones with a character speaking each,
+in the four canonical enrolled voices. 36 clips, ~3,400 characters, synthesised
+ONCE into Depot and free for the life of the product — the same economics the
+Tutor's scripted lines already run on.
+
+- **Subtitles always**, never a fallback. Most first visits never hear a word,
+  because browsers refuse audio before a gesture.
+- **The welcome line is tap-to-hear.** That tap IS the gesture; every line after
+  it plays on its own. Honest about the platform rather than appearing broken.
+- **The voice and the subtitle are the same sentence.** The manifest stores the
+  exact text each clip says, and the player REFUSES a clip whose text no longer
+  matches what is on screen. Editing the copy makes a line go silent rather than
+  speak last month's sentence over this month's subtitle.
+- The birth-date field is a real date input. It used to ask a six-year-old to
+  type `yyyy-mm-dd`.
+
+### Two defects found by actually running it
+
+- `audio.play()` is only SPECIFIED to return a promise. Calling `.catch()` on
+  the `undefined` some environments return threw from inside a render effect
+  and took the page down. Latent until the manifest had entries — before that
+  `speak()` returned at the lookup and never reached the line. It would have
+  shipped on the exact screen that forms a first impression.
+- The mute button and the replay button shared one accessible name.
+
+### What is live, and what is not
+
+Backfilled to production with `npm run graph:backfill`:
+
+| Course | Teaching topics w/ live lessons | Probed |
+|---|---|---|
+| financial-education (published) | 190 | **189 (99%)** |
+| entrepreneurship | 187 | 97 (52%) |
+| investing | 190 | 0 |
+
+**The run stopped because the shared DeepSeek account hit `Insufficient
+Balance`.** That account is `MODEL_API_KEY` for Oracle as well, so the AI Tutor
+is down in production until it is topped up, and Oracle's preflight cannot
+detect it — `modelConfigured()` only checks that a key string exists, so it
+still answers `canStart: true` and the learner watches the stage load before
+every turn fails. Filed separately; not fixed here.
+
+The published course is at 99%, so adaptive placement is fully functional where
+it is actually reachable today. Partial coverage degrades correctly by design
+(the search routes around unprobed topics — tested), and re-running the backfill
+picks up only what is missing.
+
 ## The learn screens said everything three times (2026-08-24)
 
 **The owner's report:** the `/learn/*` views have FAR TOO MUCH TEXT. The

@@ -14,6 +14,16 @@ import type { UsageLedger } from '../providers/usage.js';
 import { withCorrectiveRetry, safeJsonParse, formatZodIssues } from './correctiveRetry.js';
 
 const MAX_PROBE_ATTEMPTS = 3;
+/*
+ * The completion budget for ONE probe. A probe is ~60 tokens of JSON, so this
+ * looks absurdly generous — it is not: deepseek-v4-pro spends its completion
+ * budget REASONING before it emits any content, and an exhausted budget comes
+ * back as an empty string with finish_reason='length', not as an error. At
+ * 2000 this silently failed 1 probe in 3 on the very first pilot run. Sized so
+ * the reasoning phase can never be what runs out; the JSON itself is noise
+ * against it, and unused budget is not billed.
+ */
+const PROBE_MAX_TOKENS = 8000;
 const MIN_OPTIONS = 2;
 const MAX_OPTIONS = 5;
 const MAX_PROMPT_LENGTH = 240;
@@ -69,16 +79,48 @@ export function gatePlacementProbe(probe: PlacementProbe): PlacementProbeGateRes
   return { ok: problems.length === 0, problems };
 }
 
+/**
+ * WHO this probe is for, and in WHAT domain. REQUIRED, and deliberately not
+ * defaulted (/AGENTS.md §1.14): the previous prompt hardcoded "a children's
+ * financial-literacy course", so every probe authored for the 12-18
+ * entrepreneurship and investing catalogs would have inherited a 6-year-old's
+ * register and the wrong domain — the same shape of defect as the visual
+ * identity's inherited lemonade stand. A caller must SAY who is being asked.
+ */
+export interface ProbeAudience {
+  /** Free-form domain label from the catalog, e.g. "money", "economics". */
+  subject: string;
+  /** The catalog age band this course is written for, e.g. "6-7", "12-18". */
+  ages: string;
+  /** COURSE_ENGINE.md §3.3 register — decides tone, not difficulty. */
+  register: 'kid' | 'adult';
+}
+
 export interface AuthorPlacementProbeInput {
   concept: string;
   learningObjective: string;
   keyVocabulary: string[];
   factRefs?: string[];
+  audience: ProbeAudience;
 }
 
 export interface AuthorPlacementProbeDeps {
   ledger?: UsageLedger;
   complete?: typeof completeDeepSeek;
+}
+
+/**
+ * Stated POSITIVELY on both branches (/AGENTS.md §1.14): a generative model
+ * told only what NOT to do invents a default, and the default it invents for
+ * an unqualified "quiz question" is a children's one. Each register says what
+ * the register IS.
+ */
+function registerGuidance(register: 'kid' | 'adult'): string {
+  return register === 'adult'
+    ? 'Address the learner directly and as a peer: plain, respectful, adult phrasing, ' +
+        'anchored in real adult situations. Never infantilizing, no mascot voice, no baby talk.'
+    : 'Use warm, concrete, everyday language a child of that age actually uses, ' +
+        'anchored in situations they have really lived. Never abstract jargon.';
 }
 
 function buildMessages(input: AuthorPlacementProbeInput, issues: string | undefined) {
@@ -87,7 +129,9 @@ function buildMessages(input: AuthorPlacementProbeInput, issues: string | undefi
       role: 'system' as const,
       content:
         'You write ONE short multiple-choice placement-quiz question in Mexican Spanish (es-MX) for a ' +
-        "children's financial-literacy course. The question tests whether a learner ALREADY understands " +
+        `course on ${input.audience.subject} written for learners aged ${input.audience.ages}. ` +
+        registerGuidance(input.audience.register) +
+        ' The question tests whether a learner ALREADY understands ' +
         'the concept below well enough to skip its lesson, not whether they can recall a definition ' +
         'verbatim. Exactly 3 answer options, exactly one correct, the other two plausible but clearly ' +
         'wrong to someone who understands the concept. No child names, no personal data of any kind — ' +
@@ -134,7 +178,7 @@ export async function authorPlacementProbe(
     callModel: async (issues) => {
       const messages = buildMessages(input, issues);
       const result = await complete(
-        { messages, temperature: 0.4, jsonMode: true, maxTokens: 2000 },
+        { messages, temperature: 0.4, jsonMode: true, maxTokens: PROBE_MAX_TOKENS },
         { operation: 'placement-probe', ledger: deps.ledger },
       );
       return result.content;
@@ -168,6 +212,7 @@ export interface TranslatePlacementProbeDeps {
 export async function translatePlacementProbe(
   probe: PlacementProbe,
   targetLocale: 'en-US' | 'pt-BR',
+  audience: ProbeAudience,
   deps: TranslatePlacementProbeDeps = {},
 ): Promise<PlacementProbe> {
   const complete = deps.complete ?? completeDeepSeek;
@@ -180,7 +225,9 @@ export async function translatePlacementProbe(
           role: 'system' as const,
           content:
             `Translate this multiple-choice placement-quiz question from Mexican Spanish (es-MX) into ${localeName}, ` +
-            "for a children's financial-literacy app. Keep the same meaning, difficulty, and correctIndex — " +
+            `for a course on ${audience.subject} written for learners aged ${audience.ages}. ` +
+            registerGuidance(audience.register) +
+            ' Keep the same meaning, difficulty, and correctIndex — ' +
             'translate naturally, do not translate word-for-word. Output ONLY this JSON shape, nothing else, ' +
             'no markdown fences: {"prompt": string, "options": string[], "correctIndex": number}.',
         },
@@ -190,7 +237,7 @@ export async function translatePlacementProbe(
           : []),
       ];
       const result = await complete(
-        { messages, temperature: 0.3, jsonMode: true, maxTokens: 2000 },
+        { messages, temperature: 0.3, jsonMode: true, maxTokens: PROBE_MAX_TOKENS },
         { operation: 'placement-probe-translate', ledger: deps.ledger },
       );
       return result.content;

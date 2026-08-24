@@ -1,47 +1,59 @@
 {
-  "loading": "Carregando seu teste de nivelamento…",
+  "loading": "Preparando sua posição…",
   "back": "Voltar",
   "continue": "Continuar",
   "skip": "Pular",
-  "submitting": "Encontrando seu nível…",
-  "error": "Algo deu errado, tente novamente.",
-  "progressLabel": "Passo {{current}} de {{total}}",
-  "level": {
-    "title": "O quanto você já sabe sobre isso?",
-    "characterBubble": "Comece de onde começar, vamos te levar mais longe.",
-    "options": {
-      "new": "Isso é tudo novo para mim",
-      "some": "Sei um pouco",
-      "confident": "Já sei bastante"
-    }
+  "submitting": "Salvando…",
+  "error": "Algo deu errado. Tente de novo.",
+  "soundOn": "Ativar vozes",
+  "soundOff": "Silenciar vozes",
+  "progressLabel": "Pergunta {{current}}",
+  "progressLabelOf": "Pergunta {{current}} de umas {{total}}",
+  "narration": {
+    "welcome": "Eu sou o doutor Rho. Antes de começar quero te colocar onde você realmente está, nem tão atrás que fique chato nem tão à frente que você se perca.",
+    "intake": "Me conta com suas palavras o que você já sabe sobre isso. Escreve o que vier à cabeça, não tem resposta errada.",
+    "quiz": "Agora vêm algumas perguntas curtas. Se não souber alguma, me diz que não sabe: isso também me ajuda.",
+    "confirm": "Mais uma para confirmar e a gente termina.",
+    "resultAhead": "Olha só! Você já sabia boa parte, então a gente pula o que você já domina.",
+    "resultStart": "Vamos começar do início. É o melhor lugar para construir uma base firme.",
+    "adjust": "Eu sou a Zara. Se achar que ficou muito à frente, pode voltar sem problema. Você decide onde começar."
   },
-  "education": {
-    "title": "Qual é o seu nível escolar atual?",
-    "characterBubble": "Isso me ajuda a ajustar seu ritmo.",
-    "options": {
-      "preschool": "Pré-escola",
-      "elementary": "Ensino fundamental",
-      "middle": "Ensino fundamental II",
-      "high": "Ensino médio",
-      "adult": "Adulto"
-    }
+  "welcome": {
+    "title": "Vamos achar seu ponto de partida",
+    "subtitle": "São algumas perguntas curtas. Ninguém repete o que já sabe, e ninguém começa onde não entende.",
+    "cta": "Começar",
+    "startFromZero": "Prefiro começar do zero"
   },
-  "age": {
-    "title": "Quantos anos você tem?",
-    "label": "Data de nascimento",
-    "hint": "Formato: aaaa-mm-dd, por exemplo 2016-05-01",
-    "invalid": "Use o formato aaaa-mm-dd",
-    "nudge": "Se você é uma criança, o ideal é fazer isso com um responsável por perto.",
-    "nudgeLink": "Conheça as contas familiares",
-    "characterBubble": "Uma checagem rápida para ajustar seu caminho.",
-    "characterBubbleFilled": "Perfeito, anotado!"
+  "intake": {
+    "title": "O que você já sabe disso?",
+    "subtitle": "Escreve com suas palavras. Com isso eu começo por onde faz sentido.",
+    "label": "O que eu já sei",
+    "placeholder": "Por exemplo: eu já faço um orçamento e guardo uma parte do que ganho.",
+    "cta": "Continuar",
+    "skip": "Melhor só me perguntar",
+    "thinking": "Lendo o que você escreveu…",
+    "neutral": "Obrigado por me contar. Vamos começar e ver como você vai."
   },
   "quiz": {
-    "characterBubble": "Escolha sua melhor resposta."
+    "title": "Escolha a resposta certa",
+    "dontKnow": "Ainda não sei"
   },
-  "submit": {
-    "title": "Pronto para encontrar seu ponto de partida?",
-    "cta": "Obter meu nivelamento",
-    "characterBubble": "Seu ponto de partida está pronto."
-  }
+  "result": {
+    "titleAhead": "Você começa mais à frente",
+    "titleStart": "Você começa do início",
+    "creditedLessons": "A gente vai pular {{count}} lições que você já domina.",
+    "creditedLessons_one": "A gente vai pular 1 lição que você já domina.",
+    "creditedNone": "Você vai construir desde a base, passo a passo.",
+    "positionLabel": "Seu ponto de partida",
+    "positionValue": "Tema {{position}} de {{total}}",
+    "cta": "Começar aqui",
+    "tooHigh": "Parece muito avançado",
+    "adjustTitle": "Onde você prefere começar?",
+    "adjustHint": "Você pode começar antes de onde a gente te colocou. Sempre dá para avançar rápido depois.",
+    "adjustEarlier": "Um pouco antes",
+    "adjustBeginning": "Desde o início",
+    "adjustKeep": "Deixa como está",
+    "cappedByPrerequisite": "A gente parou você bem antes de um tema que precisa de algo que ainda não vimos."
+  },
+  "replayLine": "Ouvir de novo"
 }

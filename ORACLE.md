@@ -395,6 +395,43 @@ sessions' transcripts, and any free text the learner typed outside this session.
 object is built by a single function, validated, and only then serialized. An
 unknown key is a rejection, not a passthrough — `.strict()`, always.
 
+### §4.1b The placement intake — a SECOND, separate allowed set (2026-08-24)
+
+`oracle/src/tutor/placementIntake.ts` is not a tutor turn and does not use
+`TutorContextSchema`. It is reached by Core service-to-service when a learner
+is choosing where to start a course, and it sends its own, smaller set. It gets
+its own `.strict()` gate and its own table for the same reason §4.1 exists: an
+allow-list is worth nothing unless it is exhaustive and written down.
+
+| Field | Form | Why |
+|---|---|---|
+| `courseTitle` | the PUBLISHED course's own title | So the reply names what they are starting. |
+| `courseSubject` | catalog label, e.g. `money`, `economics` | Register and domain for the question. |
+| `outline` | ADVENTURE-level titles only, ≤12, in order | Enough to locate a learner along the course. Deliberately NOT the topic list: a model that can see 216 topic titles can be talked into naming one. |
+| `locale` | `en-US \| es-MX \| pt-BR` | Language. |
+| `ageBand` | `12-14 \| 15-17 \| 18+` | Register only. **Never** a birth date, never an exact age — Core converts and the date never leaves it. |
+| `learnerText` | the learner's own words, ≤600 chars, nonce-FENCED | The thing being interpreted. |
+
+**Everything else is forbidden**, stated positively: no name, no nickname, no
+user id, no session id, no birth date, no exact age, no skill states, no
+history, no prior text, no other learner's anything.
+
+**Two things bound what this can do.** It is offered to **12 and over only** —
+Core enforces the floor because Core holds the birth date, and an UNKNOWN birth
+date is treated as under-12, because "we cannot rule out that this is a
+seven-year-old" is not a basis for opening a free-text box. And its output is
+closed to one number and one sentence: the number only decides where the FIRST
+quiz question is asked, and every topic a learner is actually credited with
+comes from a deterministically-graded answer to a pre-authored probe. A model
+talked into `priorFraction: 1` moves one question and changes nothing else.
+
+**The reply is moderated before it is returned**, through the same
+`moderateTutorOutput` gate every spoken line uses, with the fence nonce handed
+in; the model pass is REQUIRED for the two minor bands. Every failure — model
+down, malformed JSON, an extra field, a refused reflection — lands on a neutral
+prior identical to having had no conversation at all. It never throws at the
+learner and never returns a number it did not derive.
+
 ### §4.2 To the voice provider (Inworld)
 
 - **Inbound:** the learner's audio, for transcription. It transits, is never

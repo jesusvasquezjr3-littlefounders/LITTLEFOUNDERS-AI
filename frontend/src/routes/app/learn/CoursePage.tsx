@@ -171,6 +171,20 @@ export function CoursePage() {
       </div>
 
       <main className="flex flex-col gap-6">
+        {/*
+         * Said once, at the top of the path, in full — the card's badge is the
+         * headline and this is the sentence. Entrepreneurship and Investing go
+         * live with every lesson written and judged, and with no narration and
+         * no illustrations at all; a learner who meets that unwarned concludes
+         * the product is broken rather than unfinished.
+         */}
+        {tree.course.inProgress && (
+          <div className="flex items-start gap-3 rounded-xl border border-outline/50 bg-surface-sunken px-4 py-3">
+            <Icon name="construction" className="mt-0.5 !text-[20px] shrink-0 text-content-muted" aria-hidden />
+            <p className="lf-caption text-content-muted">{t('learn.courseInProgress.notice')}</p>
+          </div>
+        )}
+
         {tree.adventures.map((adventure, idx) => {
           const isOpen = adventure.id === openAdventureId;
           return (

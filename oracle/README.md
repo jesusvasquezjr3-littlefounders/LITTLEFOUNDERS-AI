@@ -45,6 +45,7 @@ Everything under `/api/v1/` requires `x-internal-api-key`. `/health` does not.
 |---|---|---|
 | `GET` | `/health` | Liveness. Above the rate limiter and every optional dependency; reports component status without ever failing on it |
 | `POST` | `/api/v1/tutor/preflight` | Core asks whether a session can start, BEFORE minting a token — so a degraded Oracle produces an honest disabled button rather than a thirty-second load that ends in a closed socket |
+| `POST` | `/api/v1/tutor/placement-intake` | Turns a learner's own words about what they already know into ONE prior fraction, so a course placement quiz opens somewhere worth their time. 12+ only (Core enforces the floor and sends an age BAND). Advisory: the number moves the first question and never the placement — see /ORACLE.md §4.1b |
 | `GET` | `/api/v1/tutor/status` | Operational read for the admin console. No learner data, by construction |
 | `WS` | `/ws/tutor?token=…` | **The one browser-facing surface** (`/AGENTS.md` §1.5, Oracle exception). Takes a Core-minted, single-use, session-scoped token — never a Supabase JWT |
 

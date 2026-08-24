@@ -18,6 +18,7 @@ export interface CourseRowLite {
   description: Json;
   subject: string;
   badge_asset?: string | null;
+  in_progress?: boolean;
 }
 
 export interface AdventureRowLite {
@@ -162,6 +163,8 @@ export interface CourseTree {
     description: Json;
     subject: string;
     badgeAsset: string | null;
+    /** 0048 — live, but still missing narration/illustrations. Drives the catalog's "still being built" notice. */
+    inProgress: boolean;
     progress: ProgressShape;
     /** True until this user has a completed course_placements row (0043) — gates the first lesson server-side (learn.ts's PLACEMENT_REQUIRED check). */
     placementRequired: boolean;
@@ -330,6 +333,7 @@ export function assembleCourseTree(
       description: course.description,
       subject: course.subject,
       badgeAsset: course.badge_asset ?? null,
+      inProgress: course.in_progress ?? false,
       progress: progressOf(
         flatLessons.map((l) => l.id),
         effectivePassedLessonIds,
@@ -385,27 +389,45 @@ export interface PlacementProbeForClient {
 }
 
 /**
- * Locale-picked, ANSWER-STRIPPED placement probes for the first `limit`
- * probed topics in course order (0043) — never exposes correctIndex to the
- * client, the same sanctity stripAnswers() gives lesson content. Falls back
- * es-MX (authoring locale) -> any available locale when the caller's own
- * locale has no bundle, mirroring pickLessonLocale's fallback posture.
+ * ONE locale-picked, ANSWER-STRIPPED probe, by topic id — the adaptive quiz
+ * asks for exactly the topic its search chose, so this replaced the old
+ * "first N probes in course order" lister along with the prefix walk that
+ * consumed it. correctIndex is never exposed, the same sanctity stripAnswers()
+ * gives lesson content. Falls back es-MX (authoring locale) -> any available
+ * locale, mirroring pickLessonLocale's posture.
  */
-export function listPlacementProbes(tree: CourseTree, locale: 'en-US' | 'es-MX' | 'pt-BR', limit: number): PlacementProbeForClient[] {
-  const out: PlacementProbeForClient[] = [];
+export function placementProbeForTopic(
+  tree: CourseTree,
+  topicId: string,
+  locale: 'en-US' | 'es-MX' | 'pt-BR',
+): PlacementProbeForClient | null {
   for (const adventure of tree.adventures) {
     for (const saga of adventure.sagas) {
       for (const topic of saga.topics) {
-        if (out.length >= limit) return out;
+        if (topic.id !== topicId) continue;
         const bundle = topic.placementProbe;
-        if (!bundle) continue;
+        if (!bundle) return null;
         const probe = bundle[locale] ?? bundle['es-MX'] ?? Object.values(bundle)[0];
-        if (!probe) continue;
-        out.push({ topicId: topic.id, prompt: probe.prompt, options: probe.options });
+        return probe ? { topicId: topic.id, prompt: probe.prompt, options: probe.options } : null;
       }
     }
   }
-  return out;
+  return null;
+}
+
+/**
+ * The course at ADVENTURE granularity, in order — the coarse outline the
+ * conversational intake sends to the model. Deliberately not the topic list: a
+ * model that can see 216 topic titles can be talked into naming one, and the
+ * intake is only ever allowed to produce a rough position.
+ */
+export function courseOutline(tree: CourseTree, locale: 'en-US' | 'es-MX' | 'pt-BR'): string[] {
+  return tree.adventures
+    .map((adventure) => {
+      const title = adventure.title as Record<string, string> | null;
+      return title?.[locale] ?? title?.['es-MX'] ?? Object.values(title ?? {})[0] ?? adventure.slug;
+    })
+    .filter((title): title is string => typeof title === 'string' && title.length > 0);
 }
 
 export interface PlacementProbeForGrading {
@@ -436,6 +458,7 @@ export interface CourseSummary {
   title: Json;
   subject: string;
   badgeAsset: string | null;
+  inProgress: boolean;
   adventureCount: number;
   lessonCount: number;
   progress: ProgressShape;
@@ -449,6 +472,7 @@ export function summarizeCourseTree(course: CourseRowLite, tree: CourseTree): Co
     title: course.title,
     subject: course.subject,
     badgeAsset: course.badge_asset ?? null,
+    inProgress: course.in_progress ?? false,
     adventureCount: tree.adventures.length,
     lessonCount: tree.course.progress.total,
     progress: tree.course.progress,

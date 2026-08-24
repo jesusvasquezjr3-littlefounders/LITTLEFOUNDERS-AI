@@ -1,45 +1,55 @@
 {
   "progressLabel": "Step {{current}} of {{total}}",
-  "back": "Go back",
+  "back": "Back",
   "continue": "Continue",
   "skip": "Skip",
   "submitting": "Saving…",
-  "error": "Something went wrong, please try again.",
+  "error": "Something went wrong. Please try again.",
+  "soundOn": "Turn voices on",
+  "soundOff": "Mute voices",
+  "narration": {
+    "welcome": "Hi, I'm Dina. In under a minute you'll be ready to start. Whenever you're ready, let's go.",
+    "name": "I'm Liruf. Tell me your name — it's the first thing I get to shout when you win your first lesson.",
+    "age": "When were you born? It helps me pick what to show you. If you'd rather not say, that's fine too.",
+    "discovery": "I'm Doctor Rho. Tell me how you found your way here. It's just our curiosity, so feel free to skip it.",
+    "account": "I'm Zara. Last step: decide whether we save your progress now or later. Either one is fine."
+  },
+  "welcome": {
+    "title": "Welcome to LittleFounders",
+    "subtitle": "We'll walk you through it. It takes under a minute.",
+    "cta": "Get started"
+  },
   "name": {
     "title": "What's your name?",
     "subtitle": "So we can make this feel like yours.",
     "label": "Name",
-    "characterBubble": "Hey! I'm Liruf. First things first — what should I cheer when you win your first lesson?",
-    "characterBubbleFilled": "{{name}}! What an awesome name — get ready to be famous around here."
+    "bubbleFilled": "{{name}}! I like that name."
+  },
+  "age": {
+    "title": "When were you born?",
+    "subtitle": "Optional. It helps us pick the right content for you.",
+    "label": "Date of birth",
+    "invalid": "Check that date — it doesn't look right.",
+    "bubbleFilled": "Got it. Now I know how to guide you."
   },
   "discovery": {
-    "title": "Where did you hear about LittleFounders?",
-    "subtitle": "Totally optional, it just helps us know where to find more families like yours.",
-    "characterBubble": "I'm Dr. Rho. Tell me how you found us — I'm already mapping your journey.",
+    "title": "Where did you hear about us?",
+    "subtitle": "Completely optional.",
     "options": {
       "friend": "A friend or family member",
       "social_media": "Social media",
-      "search": "A web search",
+      "search": "An internet search",
       "app_store": "The app store",
       "school": "School",
       "ad": "An ad",
       "other": "Somewhere else"
     }
   },
-  "age": {
-    "title": "How old are you?",
-    "subtitle": "Optional, this helps us pick the right content for you.",
-    "label": "Birth date",
-    "hint": "Format: yyyy-mm-dd, e.g. 2016-05-01",
-    "invalid": "Use the format yyyy-mm-dd",
-    "characterBubble": "So nice to meet you, {{name}}! I'm Dina. When's your birthday? That way I know exactly what you need.",
-    "characterBubbleFilled": "Got it — I know exactly how to guide you now. This is going to be amazing!"
-  },
-  "accountOffer": {
-    "title": "Want to save your progress?",
-    "subtitle": "Create an account now to keep your streak safe on any device, or start exploring and decide later.",
+  "account": {
+    "title": "Shall we save your progress?",
+    "subtitle": "With an account your streak follows you on any device. You can also decide later.",
     "createNow": "Create my account",
-    "later": "Maybe later",
-    "characterBubble": "I'm Zara. Last step — no matter what you choose, your adventure is ready either way."
-  }
+    "later": "Later"
+  },
+  "replayLine": "Play again"
 }

@@ -140,6 +140,9 @@ export const FIXTURE_TREE: CourseTree = {
     },
     subject: 'finance',
     badgeAsset: null,
+    // Turned on in the lab so the path's full "still being built" notice is
+    // something a reviewer can actually see at both breakpoints (0048).
+    inProgress: true,
     progress: { passed: 7, total: 16, pct: 44 },
     placementRequired: false,
   },
@@ -171,6 +174,8 @@ export const FIXTURE_COURSES = {
       title: { 'en-US': 'Entrepreneurship', 'es-MX': 'Emprendimiento' },
       lessonCount: 414,
       badgeAsset: null,
+      // Mirrors production: live, fully written, and with zero narration or art (0048).
+      inProgress: true,
       progress: { passed: 0, total: 414, pct: 0 },
     },
     {
@@ -179,23 +184,76 @@ export const FIXTURE_COURSES = {
       title: { 'en-US': 'Investing', 'es-MX': 'Inversiones' },
       lessonCount: 416,
       badgeAsset: null,
+      inProgress: true,
       progress: { passed: 416, total: 416, pct: 100 },
     },
   ],
 }
 
-export const FIXTURE_PROBE = {
-  probes: [
-    {
-      topicId: uuid(700),
-      prompt: 'If you save 10 pesos a week, how much do you have after a month?',
-      options: ['10 pesos', '40 pesos', '100 pesos', 'It depends on the bank'],
-    },
-    {
-      topicId: uuid(701),
-      prompt: 'Which of these is a need, not a want?',
-      options: ['A new game', 'Lunch', 'Concert tickets', 'A skateboard'],
-    },
-  ],
-  ageAlreadyKnown: false,
+/*
+ * Placement is now a MULTI-STEP conversation, so the lab needs more than one
+ * canned payload: the info the page opens with, the intake reply, a couple of
+ * adaptive questions, and a result worth looking at. `FIXTURE_PLACEMENT_STEPS`
+ * is consumed in order, so clicking through the lab walks a real quiz.
+ */
+export const FIXTURE_PLACEMENT_INTAKE_INFO = {
+  ageAlreadyKnown: true,
+  conversationalIntakeAvailable: true,
 }
+
+export const FIXTURE_PLACEMENT_INTAKE_REPLY = {
+  available: true,
+  priorFraction: 0.55,
+  reflection: 'Ya llevas un presupuesto, eso es terreno ganado.',
+}
+
+export const FIXTURE_PLACEMENT_STEPS = [
+  {
+    kind: 'ask',
+    probe: {
+      topicId: uuid(700),
+      prompt: 'Si ahorras 10 pesos cada semana, ¿cuánto tienes después de un mes?',
+      options: ['10 pesos', '40 pesos', '100 pesos'],
+    },
+    questionNumber: 1,
+    questionsRemaining: 7,
+    phase: 'search',
+  },
+  {
+    kind: 'ask',
+    probe: {
+      topicId: uuid(701),
+      prompt: '¿Cuál de estas es una necesidad y no un gusto?',
+      options: ['Un videojuego nuevo', 'La comida del día', 'Boletos para un concierto'],
+    },
+    questionNumber: 2,
+    questionsRemaining: 5,
+    phase: 'search',
+  },
+  {
+    kind: 'ask',
+    probe: {
+      topicId: uuid(702),
+      prompt: 'Una más para confirmar: ¿qué pasa si gastas todo el día que te pagan?',
+      options: ['No pasa nada', 'Te quedas sin nada para el resto', 'Ganas más al día siguiente'],
+    },
+    questionNumber: 3,
+    questionsRemaining: 2,
+    phase: 'confirm',
+  },
+  {
+    kind: 'done',
+    result: {
+      frontier: 128,
+      startTopicId: uuid(703),
+      startLessonId: uuid(704),
+      creditedLessonCount: 213,
+      creditedTopicCount: 128,
+      totalTopicCount: 216,
+      method: 'adaptive_quiz',
+      cappedByPrerequisite: false,
+    },
+  },
+]
+
+export const FIXTURE_PLACEMENT_COMMIT = { startLessonId: uuid(704) }

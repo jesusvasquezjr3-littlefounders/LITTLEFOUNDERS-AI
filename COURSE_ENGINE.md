@@ -239,23 +239,59 @@ years at 1/day).**
   which curriculum graphs habitually under-model. Every edge carries a
   one-sentence human-readable `reason` (debuggability + judge grounding).
   `hard` = a true gate for future placement; `soft` = a sequencing nudge.
-- These two fields power onboarding/placement (Duolingo-style, **built**):
+- These two fields power onboarding/placement (**built; rewritten 2026-08-24**):
   guest accounts start with zero signup friction (GoTrue anonymous sign-in),
   a one-time onboarding wizard activates day-1 streak, and a mandatory
-  per-course placement quiz (`backend/src/services/placementAlgorithm.ts`)
-  walks the flat topic order administering up to 6 pre-authored probes
-  (`topics.placement_probe`, migration `0042`, authored offline by Forge —
-  `coursegen/src/pipeline/placementProbe.ts` — never per learner, so no
-  minor PII ever reaches a provider), computes the longest contiguous
-  correct-and-probed prefix from the start, caps it at the earliest `hard`
-  prerequisite (migration `0042`'s `topics.prerequisites`) not satisfied by
-  everything credited before it, and drops the learner at the first
-  uncredited topic. Skipped lessons are recorded in `placement_credits`
-  (migration `0043`) — never a fabricated `lesson_progress` row, but they DO
-  count toward course-completion badges and the progress bar (Duolingo-style
-  product decision). `backend/src/routes/learn.ts`'s `PLACEMENT_REQUIRED` 403
-  is the server-side enforcement; `frontend/src/routes/app/learn/PlacementPage.tsx`
-  is the wizard that clears it.
+  per-course **adaptive** placement quiz (`backend/src/services/placementAlgorithm.ts`).
+
+  **The model.** A learner is one number: the frontier `k`, "knows the first
+  `k` topics of the ordered teaching path". Placement is a binary search for
+  `k` over pre-authored probes (`topics.placement_probe`, migration `0042`,
+  authored offline by Forge — `coursegen/src/pipeline/placementProbe.ts` —
+  never per learner, so no minor PII ever reaches a provider). Evidence is
+  bounded strictly: `lo` = 1 + the highest index answered correctly, `hi` =
+  the lowest index answered incorrectly, `k = min(lo, hi)`. Taking the MIN is
+  what keeps a non-monotonic learner safe — evidence of NOT knowing always
+  outranks evidence of knowing. `k` is then capped at the earliest `hard`
+  prerequisite (`topics.prerequisites`) not satisfied by everything credited
+  before it.
+
+  **Signals are priors, never verdicts.** Age, education level, claimed level
+  and the optional conversational intake decide exactly one thing: where the
+  FIRST question is asked. They never enter `k`. For a learner whose answers
+  are consistent with a single frontier the placement is identical whatever
+  the signals said — asserted in `placementAlgorithm.test.ts`, because
+  "placement is by knowledge, not by age" is a product promise.
+
+  **The conversational intake** (`oracle/src/tutor/placementIntake.ts`, called
+  by Core service-to-service) is offered to learners **12 and over only**, the
+  /ORACLE.md §0 carve-out. It turns the learner's own words into one prior
+  fraction; a model that hallucinates, or is talked into saying 1.0, moves one
+  question and changes nothing else. It is OPTIONAL infrastructure: an Oracle
+  that is down costs a nicer opening question and never a placement (§1.14).
+
+  **The learner gets the last word.** The result screen offers to move the
+  placement EARLIER (freely, down to zero) — never later than the evidence
+  earned. A placement a learner cannot argue with is one they leave the
+  product to escape.
+
+  Skipped lessons are recorded in `placement_credits` (migration `0043`) —
+  never a fabricated `lesson_progress` row, but they DO count toward
+  course-completion badges and the progress bar (product decision).
+  `backend/src/routes/learn.ts`'s `PLACEMENT_REQUIRED` 403 is the server-side
+  enforcement; `frontend/src/routes/app/learn/PlacementPage.tsx` clears it.
+
+  **What the rewrite replaced, and why it mattered.** The first version walked
+  the topic list from the front administering up to 6 probes and credited the
+  longest contiguous correct prefix — a hard ceiling of 6 topics out of 216
+  (2.8%) for every learner, so an adult who answered everything correctly
+  still started at topic 7. In production it never got that far: the authoring
+  harness (`coursegen/src/scripts/author-publish.ts`) hardcoded
+  `placementProbe: null`, so 871 topics carried ZERO probes and ZERO
+  prerequisites, `computePlacement` took its `no_probe_content_fallback`
+  branch for 5 of the 6 real placements — two of them adults who had declared
+  themselves "confident" — and issued exactly zero credits in its lifetime.
+  Backfilled by `npm run graph:backfill` (`coursegen/src/scripts/backfill-graph.ts`).
 
 ### §3.3 Audience registers (kids today, adults later)
 

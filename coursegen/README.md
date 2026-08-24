@@ -118,6 +118,31 @@ completeness — any `lesson-images` url not covered by the map fails the run
 Dry-run by default; first real run 2026-07-25 rewrote 334 urls across 120
 documents (the PNG→WebP migration: 1.5 GB → 51 MB on Depot).
 
+### Competency-graph backfill (`npm run graph:backfill -- --course <slug|all> [--prereqs-only|--probes-only] [--dry-run] [--confirm] [--max-usd N] [--concurrency N] [--limit N] [--force-probes]`)
+
+Fills in the two columns migration `0042` added and nothing ever wrote —
+`topics.prerequisites` and `topics.placement_probe` — on already-live content,
+without regenerating a single lesson.
+
+It exists because production carried 871 topics with **zero** of either, so
+Core's placement algorithm took its no-probe fallback for every learner who
+ever ran the quiz. The catalog had the prerequisites all along; they simply
+never reached Vault, and `author-publish.ts` hardcoded `placementProbe: null`.
+
+- **Additive.** The PATCH names only those two columns. No lesson row is read
+  or written, and nothing re-enters the human release gate.
+- **Resumable.** A topic that already has a probe is skipped, so an interrupted
+  run costs nothing to resume. `--force-probes` deliberately re-authors.
+- **Paid work is opt-in.** Probe authoring calls DeepSeek. Without `--confirm`
+  it reports exactly what it would author and spends nothing.
+- **The audience is derived, never assumed.** Each probe carries its own
+  course's subject and age band (/AGENTS.md §1.14), so an entrepreneurship probe
+  cannot inherit financial-education's six-year-old register.
+- **A topic with no live lesson is not probed** — paying to write a question
+  about archived content is money burned.
+
+Measured 2026-08-24: 567 probes across three courses at roughly $0.003 each.
+
 ### Image backfill (`npm run images:backfill -- --course <slug> [--adventure <slug>] [--restyle-scenes] [--reuse-only] [--dry-run]`)
 
 **Operator-triggered only.** Fills in missing illustrations on lessons that are **already published or in review**, without regenerating any content. For every `lesson_document` of a published-or-review lesson in the course, it runs the same shared per-type images stage as generation (`illustrateSegments`) over the STORED `document`, then PATCHes **only** the `document` column back.

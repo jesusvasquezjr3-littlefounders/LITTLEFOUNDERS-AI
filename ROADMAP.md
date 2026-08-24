@@ -311,6 +311,42 @@ alerting on the retention sweep, and no measurement of third-party rate limits.
 Every per-learner control is real and tested; what is missing is the difference
 between a product that is correct and a service that has been operated.
 
+## Onboarding + placement rebuilt — 2026-08-24
+
+**Owner report:** both flows "deplorables, poco intuitivas, cero funcionales";
+testers placed at a level unrelated to what they knew. Four decisions were
+taken at the start of the session and they shape everything below.
+
+1. **Publish the remaining courses**, with a short notice that they are still
+   being built (migration `0048`, `courses.in_progress`). Verified against
+   production first, because the notice had to be true: entrepreneurship and
+   investing carry **zero** narration (0 of ~1,245 locale documents each) and
+   zero illustrations, against financial-education's 1,425 of 1,425 narrated.
+2. **Placement is decided by the KNOWLEDGE GRAPH, not by age.** Age is a signal
+   inside it. Implemented as: signals choose where the first question is asked
+   and never enter the result — a testable property, not a stated intention.
+3. **Voices pregenerated**, spend pre-authorised. 36 clips, ~3,400 characters,
+   synthesised once into Depot, free thereafter.
+4. **Conversational intake for 12+, deterministic for kids** — the §1.9 line,
+   with the floor enforced in Core because Core holds the birth date.
+
+Full trace, including the production evidence that placement had never placed
+anybody, is in WALKTHROUGH.md 2026-08-24.
+
+### Blocking, owner action
+
+- **The shared DeepSeek account is out of balance** (`Insufficient Balance`,
+  verified live 2026-08-24). One key serves BOTH `coursegen` (generation) and
+  `oracle` (`MODEL_API_KEY`), so this is not only a backfill blocker: **the AI
+  Tutor is down in production** until it is topped up. Oracle's preflight
+  cannot detect it — `modelConfigured()` only checks that a key string exists —
+  so a learner is told the session can start and then every turn fails.
+- Consequence for placement: probe coverage stands at **189/190 (99%) on the
+  published course**, 97/187 on entrepreneurship, 0/190 on investing. Adaptive
+  placement is fully functional where learners can actually reach it today, and
+  `npm run graph:backfill --course all --confirm` resumes for free on what is
+  already done.
+
 ## Next up (post-sprint backlog, unordered)
 
 - Guardian verification flow (provider decision: Stripe Identity / Persona / Veriff / manual)

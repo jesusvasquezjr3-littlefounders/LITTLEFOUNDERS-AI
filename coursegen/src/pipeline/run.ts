@@ -33,7 +33,7 @@ import { RubricLog } from './rubricLog.js';
 import { ingestRunTelemetry } from '../vault/telemetry.js';
 import { LiveTelemetry } from './liveTelemetry.js';
 import { localizeLesson, translateTitle } from './localize.js';
-import { authorPlacementProbe, translatePlacementProbe, type PlacementProbe } from './placementProbe.js';
+import { authorPlacementProbe, translatePlacementProbe, type PlacementProbe, type ProbeAudience } from './placementProbe.js';
 import { fetchPrismStyleVersion } from '../providers/picturegen.js';
 import { illustrateSegments } from './images.js';
 import { publishLessonSlot, type PublishInput } from './publish.js';
@@ -277,7 +277,11 @@ type PlacementProbeBundle = Partial<Record<LessonLocale, { prompt: string; optio
  * learner data ever reaches this — /AGENTS.md §1.9 by construction), then
  * localizes es-MX -> en-US/pt-BR the same way titles are translated.
  */
-async function resolvePlacementProbe(slot: Slot, ledger?: UsageLedger): Promise<PlacementProbeBundle | null> {
+async function resolvePlacementProbe(
+  slot: Slot,
+  audience: ProbeAudience,
+  ledger?: UsageLedger,
+): Promise<PlacementProbeBundle | null> {
   if (slot.lesson.position !== 1 || slot.topic.kind !== 'teaching') return null;
 
   const override = slot.topic.placement_probe;
@@ -289,13 +293,14 @@ async function resolvePlacementProbe(slot: Slot, ledger?: UsageLedger): Promise<
           learningObjective: slot.topic.learning_objective,
           keyVocabulary: slot.topic.key_vocabulary,
           factRefs: slot.topic.fact_refs,
+          audience,
         },
         { ledger },
       );
 
   const [enUs, ptBr] = await Promise.all([
-    translatePlacementProbe(esMx, 'en-US', { ledger }),
-    translatePlacementProbe(esMx, 'pt-BR', { ledger }),
+    translatePlacementProbe(esMx, 'en-US', audience, { ledger }),
+    translatePlacementProbe(esMx, 'pt-BR', audience, { ledger }),
   ]);
 
   return { 'es-MX': esMx, 'en-US': enUs, 'pt-BR': ptBr };
@@ -570,7 +575,16 @@ async function processSlot(
       // in all 3 locales. Content itself was already regenerated end-to-end
       // above (never filtered/dressed-up kid content — the documented
       // anti-pattern this whole module exists to avoid).
-      const placementProbe = await resolvePlacementProbe(slot, ledger);
+      // The audience is derived from the catalog, never assumed: subject and
+      // age band come from THIS course's own files, so an entrepreneurship
+      // probe can never inherit financial-education's 6-year-old register
+      // (/AGENTS.md §1.14).
+      const probeAudience: ProbeAudience = {
+        subject: course.catalog.course.subject,
+        ages: course.taxonomy?.age_tiers?.[slot.tier]?.ages ?? slot.tier,
+        register: register.register,
+      };
+      const placementProbe = await resolvePlacementProbe(slot, probeAudience, ledger);
       const publishInput: PublishInput = {
         course: {
           slug: `${course.catalog.course.slug}${register.slugSuffix}`,

@@ -24,6 +24,8 @@ interface Course {
   title: Record<string, string>;
   lessonCount: number;
   badgeAsset?: string | null;
+  /** 0048 — live, but still missing narration/illustrations. */
+  inProgress?: boolean;
   progress: { passed: number; total: number; pct: number };
 }
 
@@ -213,6 +215,20 @@ export function LearnPage() {
                       <h3 className="lf-title text-content transition-colors duration-150 group-hover:text-primary">
                         {course.title[locale] ?? course.title['en-US'] ?? course.slug}
                       </h3>
+
+                      {/*
+                       * A course can be live and still be missing its narration
+                       * and art (0048). Saying so on the card is the difference
+                       * between "they are still building this" and "this product
+                       * is broken", and a learner who is not told picks the
+                       * second reading.
+                       */}
+                      {course.inProgress && (
+                        <span className="lf-caption inline-flex w-fit items-center gap-1.5 rounded-full bg-surface-sunken px-2.5 py-1 text-content-muted">
+                          <Icon name="construction" className="!text-[16px]" aria-hidden />
+                          {t('learn.courseInProgress.badge')}
+                        </span>
+                      )}
 
                       <div className="mt-auto flex items-center gap-3">
                         <ProgressBar

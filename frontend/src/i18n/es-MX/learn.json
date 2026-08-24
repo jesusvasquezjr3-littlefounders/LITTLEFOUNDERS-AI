@@ -34,5 +34,9 @@
       "inProgress": "En progreso",
       "notStarted": "Sin empezar"
     }
+  },
+  "courseInProgress": {
+    "badge": "En construcción",
+    "notice": "Seguimos construyendo este curso: por ahora algunas lecciones van sin voz ni ilustraciones. Gracias por la paciencia."
   }
 }
