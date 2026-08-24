@@ -37,10 +37,25 @@ describe('GET /api/v1/learn/courses', () => {
         lessonCount: 2,
         subject: 'money',
         badgeAsset: 'course-badges/financial-education.png',
+        inProgress: false,
         adventureCount: 1,
         progress: { passed: 0, total: 2, pct: 0 },
       },
     ]);
+  });
+
+  /*
+   * This handler re-lists CourseSummary's fields by hand instead of spreading
+   * it, so adding a field to the summary does NOT serve it. `inProgress` was
+   * computed correctly and dropped right here, and the "still being built"
+   * badge never rendered in production — the frontend's own tests passed
+   * because their fixtures already carried the field.
+   */
+  it('serves inProgress, which the card badge depends on', async () => {
+    db.courses[0]!.in_progress = true;
+    const res = await auth(request(createApp()).get('/api/v1/learn/courses'));
+    expect(res.status).toBe(200);
+    expect(res.body.data.courses[0].inProgress).toBe(true);
   });
 
   it('502s when PostgREST is unreachable', async () => {

@@ -174,6 +174,12 @@ export function learnRouter(): Router {
         lessonCount: summary.lessonCount,
         subject: summary.subject,
         badgeAsset: summary.badgeAsset,
+        // 0048 — a live course still missing narration/art says so on its card.
+        // This handler re-lists the summary's fields by hand rather than
+        // spreading it, so a field added to CourseSummary is NOT automatically
+        // served: `inProgress` was computed correctly and silently dropped here,
+        // and the badge never rendered in production.
+        inProgress: summary.inProgress,
         adventureCount: summary.adventureCount,
         progress: summary.progress,
       });
