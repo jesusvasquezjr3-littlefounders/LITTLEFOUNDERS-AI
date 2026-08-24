@@ -182,6 +182,7 @@ frontend/
         __tests__/
 oracle/
   scripts/
+    fixtures/
   src/
     __tests__/
     content/
@@ -1234,17 +1235,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Four production faults, and the one that made all of them invisible (2026-08-23)
+## The microphone said "something went wrong on our side" for six days (2026-08-24)
 
-**The owner's report:** the Tutor's conversation does not work, there are no
-voices at all, some devices stutter at 25-30 fps, and analytics has recorded
-nothing since 18 August. Plus a standing instruction now written into
-`/AGENTS.md` §1.0 as rule 5: **a defect that reaches production costs this
-company money**, in four ways, and that outranks convenience on every call.
+**The owner's report:** the Tutor does not work in production. Pressing the
+microphone produces "Algo salió mal de nuestro lado" and nothing else. Prior
+sessions had reported it fixed.
 
-### Why nothing could be diagnosed
+Two independent defects wearing one sentence. The second is why the first lasted.
 
-Everything server-side passed, and kept passing while the product was broken.
+### The session before this one could not have found it
+
+`main` on this machine was **59 commits behind `origin/main`** — the entire
 ```
 
 ### agent/README.md
@@ -23574,8 +23575,8 @@ export default tseslint.config(
  *      we get no text; if either shape drifted we find out here rather than
  *      in front of a child.
  *
- *   2. CASTING — is each canonical character enrolled in each locale? This is
- *      not a transport question and a green transport says nothing about it.
+ *   2. BROWSER CONTAINERS — can we transcribe what a MICROPHONE produces?
+ *      This is the question whose absence cost the entire feature. The round
 ```
 
 ### oracle/scripts/verify-model.ts
@@ -24061,7 +24062,8 @@ import { withTimeout } from './http.js';
 ### oracle/src/middleware/rateLimit.ts
 
 ```
-import rateLimit, { MemoryStore } from 'express-rate-limit';
+import rateLimit, { MemoryStore, type RateLimitRequestHandler } from 'express-rate-limit';
+import type { RequestHandler } from 'express';
 import RedisStore from 'rate-limit-redis';
 import { isTestOrDev } from '../env.js';
 import { withTimeout } from '../lib/http.js';
@@ -24075,7 +24077,6 @@ import { redisClient } from '../lib/redis.js';
  * The command timeout exists for a failure this project has already hit: a
  * live Redis outage leaves `isOpen` true because node-redis retries in the
  * background, so a hung sendCommand never rejects, `passOnStoreError` never
- * fires, and every request hangs instead of failing open.
 ```
 
 ### oracle/src/model/provider.ts

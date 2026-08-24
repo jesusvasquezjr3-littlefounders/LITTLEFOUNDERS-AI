@@ -11,7 +11,21 @@
  *      we get no text; if either shape drifted we find out here rather than
  *      in front of a child.
  *
- *   2. CASTING — is each canonical character enrolled in each locale? This is
+ *   2. BROWSER CONTAINERS — can we transcribe what a MICROPHONE produces?
+ *      This is the question whose absence cost the entire feature. The round
+ *      trip above transcribes the TTS response using ITS OWN mimeType, which is
+ *      `audio/mpeg`, so for months the only container this script ever exercised
+ *      was MP3 — a format no browser records. Meanwhile every Chrome, Edge and
+ *      Android turn arrived as WebM, was labelled `OGG_OPUS`, and came back 500.
+ *      `voices:verify` was green throughout, because MP3 was fine.
+ *
+ *      So this section replays real recorded containers from
+ *      `scripts/fixtures/`: WebM/Opus (Chrome, Edge, Android) and M4A
+ *      (Safari/iOS, which offers nothing else). Committed as fixtures rather
+ *      than transcoded at run time because the point is to test bytes a browser
+ *      really writes, on a runner that may have no ffmpeg.
+ *
+ *   3. CASTING — is each canonical character enrolled in each locale? This is
  *      not a transport question and a green transport says nothing about it.
  *      An unenrolled character is SILENT (never a stock substitute), so this
  *      section is the difference between "the tutor can speak" and "the tutor
@@ -22,6 +36,7 @@
  */
 
 import process from 'node:process';
+import { readFile } from 'node:fs/promises';
 import { getConfig, resetConfigCache } from '../src/env.js';
 import { InworldVoiceProvider, resolveCharacterVoice, voiceEnvVar } from '../src/voice/inworld.js';
 import type { Locale } from '../src/context/schema.js';
@@ -133,6 +148,41 @@ async function main(): Promise<void> {
     failures += 1;
   } finally {
     if (usingStock) delete process.env[probeVar];
+  }
+
+  /*
+   * THE CONTAINERS A MICROPHONE ACTUALLY PRODUCES.
+   *
+   * A 500 here means Inworld has changed what it accepts, and the microphone is
+   * down for whichever browser owns the failing fixture. That is not a warning.
+   */
+  const FIXTURES = [
+    { file: 'browser-chrome.webm', mimeType: 'audio/webm;codecs=opus', browsers: 'Chrome, Edge, Android' },
+    { file: 'browser-safari.m4a', mimeType: 'audio/mp4', browsers: 'Safari, iOS' },
+  ] as const;
+
+  const fixtureDir = new URL('fixtures/', import.meta.url);
+  for (const fixture of FIXTURES) {
+    try {
+      const audio = await readFile(new URL(fixture.file, fixtureDir));
+      const started = Date.now();
+      const heard = await provider.transcribe({ audio, mimeType: fixture.mimeType, locale: PROBE_LOCALE });
+      const ms = Date.now() - started;
+
+      if (heard.text.trim() === '') {
+        bad(`${fixture.file} transcribed to nothing`, `the microphone is down for ${fixture.browsers}`);
+        failures += 1;
+      } else {
+        ok(`microphone container ${fixture.mimeType}`, `${ms}ms — ${fixture.browsers}`);
+        console.log(`        heard : ${heard.text}`);
+      }
+    } catch (error) {
+      bad(
+        `${fixture.file} could not be transcribed`,
+        `${error instanceof Error ? error.message : String(error)} — the microphone is down for ${fixture.browsers}`,
+      );
+      failures += 1;
+    }
   }
 
   console.log('\n2. Casting — is each character enrolled, per locale?\n');

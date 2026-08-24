@@ -831,6 +831,50 @@ jobs:
           echo "::error::Oracle could not produce a valid turn (exit $status) — read the stages above; the first FAIL is the cause"
           exit 1
 
+      - name: Be HEARD FROM — the microphone, from inside Oracle
+        if: ${{ !cancelled() && inputs.step == 'verify' }}
+        run: |
+          set -uo pipefail
+          set +e
+
+          # THE STEP WHOSE ABSENCE COST THE WHOLE FEATURE.
+          #
+          # `verify-speaks` proves the tutor can be HEARD. Nothing proved the
+          # tutor could HEAR — and for six days it could not. Every Chrome, Edge
+          # and Android microphone turn arrived as WebM, was labelled `OGG_OPUS`
+          # by the adapter, and came back 500. Meanwhile the only round trip
+          # anyone ran transcribed the TTS response using its own mimeType,
+          # `audio/mpeg`, so the sole container ever exercised was MP3 — which no
+          # browser records and which worked fine.
+          #
+          # `verify-inworld.ts` now replays committed fixtures recorded in the
+          # containers browsers really produce: WebM/Opus and M4A. A FAIL here
+          # means the microphone is down for whichever browser owns the fixture,
+          # and the message says which.
+          SCRIPT='cd /app && npx --no-install tsx scripts/verify-inworld.ts'
+          b64=$(printf '%s' "$SCRIPT" | base64 | tr -d '\n')
+          out="$(railway ssh --service oracle -i ~/.ssh/railway_key -- \
+                  sh -c "echo $b64 | base64 -d | sh" 2>&1)"
+          printf '%s\n' "$out" | sed 's/^/   /'
+
+          if printf '%s' "$out" | grep -q 'voices:verify OK'; then
+            echo ""
+            echo "OK: the microphone works — WebM/Opus and M4A both transcribed"
+            exit 0
+          fi
+
+          echo ""
+          if printf '%s' "$out" | grep -qiE 'tsx: not found|could not determine executable|npm ERR'; then
+            echo "::warning::tsx is not available in the container, so the microphone could not be exercised here."
+            exit 0
+          fi
+          if printf '%s' "$out" | grep -q 'provider reports unavailable'; then
+            echo "::warning::VOICE_PROVIDER is none — there is no microphone to test."
+            exit 0
+          fi
+          echo "::error::the microphone could not transcribe a real browser container — read the stages above; the first FAIL names the affected browsers"
+          exit 1
+
       - name: Be heard, from inside Oracle
         if: ${{ !cancelled() && inputs.step == 'verify' }}
         run: |
