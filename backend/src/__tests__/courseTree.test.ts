@@ -181,4 +181,52 @@ describe('placement (0043)', () => {
     expect(flat[0]).toMatchObject({ id: 't1', hasProbe: false, prerequisites: [], lessonIds: ['l1', 'l2'] });
     expect(flat[1]).toMatchObject({ id: 't2', lessonIds: ['l3'] });
   });
+
+  it('drops a topic whose lessons are all archived — placement walks what can be played', () => {
+    // RLS hides archived lessons, so such a topic arrives with no lessons at all.
+    const tree = assembleCourseTree(course, adventures, sagas, topics, lessons.filter((l) => l.topic_id !== 't2'), []);
+    const flat = flattenTopicsForPlacement(tree);
+    expect(flat.map((t) => t.id)).toEqual(['t1']);
+  });
+
+  /*
+   * The pair. Dropping a topic from the walk without dropping the edges that
+   * POINT at it leaves a requirement nobody can ever meet, and the hard cap
+   * reads that as "stop crediting here" — permanently, for everyone. In
+   * production that ceiling was topic 144 of 259 on the published course.
+   */
+  it('drops a prerequisite that points at a topic the filter just removed', () => {
+    const topicsWithEdge = [
+      topics[0]!,
+      { ...topics[1]!, prerequisites: [{ path: 'adventure-1/saga-1/topic-1', strength: 'hard' as const, reason: 'r' }] },
+    ];
+    // t1 archived away; t2's hard edge now points at content nobody can reach.
+    const tree = assembleCourseTree(course, adventures, sagas, topicsWithEdge, lessons.filter((l) => l.topic_id === 't2'), []);
+    const flat = flattenTopicsForPlacement(tree);
+    expect(flat.map((t) => t.id)).toEqual(['t2']);
+    expect(flat[0]!.prerequisites).toEqual([]);
+  });
+
+  it('keeps a prerequisite whose target is still playable', () => {
+    const topicsWithEdge = [
+      topics[0]!,
+      { ...topics[1]!, prerequisites: [{ path: 'adventure-1/saga-1/topic-1', strength: 'hard' as const, reason: 'r' }] },
+    ];
+    const tree = assembleCourseTree(course, adventures, sagas, topicsWithEdge, lessons, []);
+    const flat = flattenTopicsForPlacement(tree);
+    expect(flat[1]!.prerequisites).toEqual([{ path: 'adventure-1/saga-1/topic-1', strength: 'hard' }]);
+  });
+
+  it('keeps a SAGA-level prerequisite as long as that saga still has playable content', () => {
+    const topicsWithEdge = [
+      topics[0]!,
+      { ...topics[1]!, prerequisites: [{ path: 'adventure-1/saga-1', strength: 'hard' as const, reason: 'r' }] },
+    ];
+    const kept = assembleCourseTree(course, adventures, sagas, topicsWithEdge, lessons, []);
+    expect(flattenTopicsForPlacement(kept)[1]!.prerequisites).toHaveLength(1);
+
+    // …and drops it once every topic of that saga is archived away.
+    const gone = assembleCourseTree(course, adventures, sagas, topicsWithEdge, lessons.filter((l) => l.topic_id === 't2'), []);
+    expect(flattenTopicsForPlacement(gone)[0]!.prerequisites).toEqual([]);
+  });
 });

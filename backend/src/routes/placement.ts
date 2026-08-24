@@ -130,18 +130,6 @@ function signalsFrom(
   };
 }
 
-/**
- * Placement walks topics that a learner can actually PLAY. A topic whose
- * lessons are all archived arrives from the tree with an empty lesson list
- * (RLS hides archived rows), and financial-education alone has 733 archived
- * lessons behind 26 such topics. Leaving them in the ordered path would let the
- * frontier land on a topic with nothing in it, and would silently inflate every
- * "you skipped N lessons" number with lessons that do not exist.
- */
-function playableTopics(tree: Parameters<typeof flattenTopicsForPlacement>[0]): PlacementTopic[] {
-  return flattenTopicsForPlacement(tree).filter((t) => t.lessonIds.length > 0);
-}
-
 /** The shape the client renders a finished placement with. */
 function describeResult(done: DoneStep, topics: readonly PlacementTopic[]) {
   return {
@@ -253,7 +241,7 @@ export function placementRouter(): Router {
     if (!profiles) return fail(res, 502, 'INTERNAL', 'Profile service unreachable');
 
     const locale = (profiles[0]?.locale as Locale | undefined) ?? 'en-US';
-    const topics = playableTopics(tree);
+    const topics = flattenTopicsForPlacement(tree);
     const graded = gradeQuizAnswers(listPlacementProbesForGrading(tree, locale), parsed.data.answers);
     const signals = signalsFrom(parsed.data.signals, profiles[0]?.birth_date, new Date());
     const step = nextPlacementStep(topics, signals, graded);
@@ -303,7 +291,7 @@ export function placementRouter(): Router {
     if (!profiles) return fail(res, 502, 'INTERNAL', 'Profile service unreachable');
 
     const locale = (profiles[0]?.locale as Locale | undefined) ?? 'en-US';
-    const topics = playableTopics(tree);
+    const topics = flattenTopicsForPlacement(tree);
     const graded = gradeQuizAnswers(listPlacementProbesForGrading(tree, locale), parsed.data.answers);
     const signals = signalsFrom(parsed.data.signals, profiles[0]?.birth_date, new Date());
 

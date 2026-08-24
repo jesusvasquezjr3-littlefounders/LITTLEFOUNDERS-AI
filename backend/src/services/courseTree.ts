@@ -365,11 +365,11 @@ export function assembleCourseTree(
  * verified.
  */
 export function flattenTopicsForPlacement(tree: CourseTree): PlacementTopic[] {
-  const flat: PlacementTopic[] = [];
+  const all: PlacementTopic[] = [];
   for (const adventure of tree.adventures) {
     for (const saga of adventure.sagas) {
       for (const topic of saga.topics) {
-        flat.push({
+        all.push({
           id: topic.id,
           path: `${adventure.slug}/${saga.slug}/${topic.slug}`,
           hasProbe: topic.placementProbe !== null,
@@ -379,7 +379,42 @@ export function flattenTopicsForPlacement(tree: CourseTree): PlacementTopic[] {
       }
     }
   }
-  return flat;
+
+  /*
+   * Placement walks topics a learner can actually PLAY. RLS already hides
+   * archived lessons, so a topic whose lessons were all archived arrives with
+   * an empty lesson list — 68 of financial-education's 327 topics, after the
+   * quality prune took that catalog from 1,208 lessons to 475. Leaving them in
+   * would let the frontier land on a topic with nothing in it and would inflate
+   * every "you skipped N lessons" count with lessons that do not exist.
+   */
+  const playable = all.filter((t) => t.lessonIds.length > 0);
+  const playablePaths = new Set(playable.map((t) => t.path));
+  const playableSagaPaths = new Set(playable.map((t) => t.path.split('/').slice(0, 2).join('/')));
+
+  /*
+   * AND THEN THE EDGES HAVE TO FOLLOW THE FILTER.
+   *
+   * Dropping a topic from the walk without dropping the edges that POINT AT it
+   * leaves a requirement nobody can ever meet — and the hard-prerequisite cap
+   * reads an unmet edge as "stop crediting here", permanently, for everyone.
+   * Measured against production before this existed: seven of
+   * financial-education's 43 edges pointed at topics the prune had archived,
+   * two of them `hard`, and the earliest capped EVERY learner at topic 144 of
+   * 259 however much they knew — a silent 55% ceiling on the published course,
+   * produced by filtering one half of a pair. That is the same shape as the
+   * defect this placement rewrite exists to fix.
+   *
+   * Dropping the edge is safe HERE specifically because `graph:check` validates
+   * every path against the FULL catalog at authoring time
+   * (`competency-reference`), so a target missing at runtime can only mean the
+   * content was archived — a legitimate lifecycle state, not a typo. Gating on
+   * material no learner can reach is gating on nothing.
+   */
+  return playable.map((topic) => ({
+    ...topic,
+    prerequisites: topic.prerequisites.filter((p) => playablePaths.has(p.path) || playableSagaPaths.has(p.path)),
+  }));
 }
 
 export interface PlacementProbeForClient {
