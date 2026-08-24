@@ -515,6 +515,10 @@ this one, fewer than the 544 lesson count because most topics hold 2
 lessons); the publish step fails closed per-lesson with `no en-US/pt-BR title
 for topic "…" — supply it via --titles` if any slug is missing. Generate this
 file once per course, before the first publish attempt, not per adventure.
+**Stale as of the 2026-08-21 catalog prune** (see `WALKTHROUGH.md`): a topic
+with zero surviving lessons needs no title at all, and 272/544 no longer
+match either course's live topic/lesson count. Regenerate `--titles` against
+the current surviving lesson set, never against these historical numbers.
 
 ## Read before touching
 

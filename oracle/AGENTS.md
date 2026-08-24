@@ -237,27 +237,52 @@ everything passes the blocked half perfectly and destroys the product.
 
 ## §5 Things that will bite whoever touches this next
 
-1. **A Response body can only be read once.** In tests, `mockResolvedValue`
+1. **NEVER NAME THE AUDIO ENCODING. The provider sniffs the container.** This
+   cost the entire microphone in production, on every Chrome, Edge and Android
+   device, for six days. `encodingFor()` mapped `audio/webm;codecs=opus` to
+   `OGG_OPUS` because both carry Opus — but WebM and Ogg are different
+   CONTAINERS, and Inworld's demuxer answers `500 {"code":13,"message":"proxy
+   has failed to process your request"}`. Measured against the live API:
+   `AUTO_DETECT` transcribes webm, ogg, m4a, wav and mp3 correctly, all five,
+   and there is no enum to reach for anyway (`WEBM_OPUS` and `M4A` are both
+   rejected as `AUDIO_ENCODING_UNSPECIFIED`). Do not reintroduce a MIME→enum
+   table in `voice/inworld.ts`; a test asserts that no browser MIME type ever
+   produces a named encoding, because the PREVIOUS test asserted the opposite
+   and stayed green for the whole outage.
+2. **Every error code Oracle emits over the socket needs a translated
+   sentence.** `STT_FAILED`, `NO_SEGMENT`, `CONSENT_REQUIRED`, `RATE_LIMITED`
+   and the six close reasons render through `tutor.conversationError.*` in
+   `frontend/src/i18n/*/tutor.json` — NOT through `errors.api.*`, which is
+   Core's HTTP envelope vocabulary and has never contained them. A code with no
+   key falls through to a generic apology, which is how one sentence came to
+   mean four unrelated failures. `i18n:check` CANNOT catch this: the key is
+   built from a template literal and the tool says so in its own output. Adding
+   a code to the socket means adding three strings in the same commit.
+3. **A failed upstream call must log the BODY, not just the status.** Weeks of
+   dead microphone logged `inworld stt responded 500` and nothing else — a bad
+   container, a bad key and an exhausted quota were indistinguishable. Whatever
+   you add here, print enough to tell them apart.
+4. **A Response body can only be read once.** In tests, `mockResolvedValue`
    hands back the SAME object on every call and the second read throws "Body is
    unusable". Use `mockImplementation(() => Promise.resolve(...))`.
-2. **An answer KEY is not a SUBMISSION.** `quiz_mcq`'s key is
+5. **An answer KEY is not a SUBMISSION.** `quiz_mcq`'s key is
    `{correct_option_id}` and its submission is `{option_id}`; `fill_blank`'s
    key is an array and its submission is an object. Conflating them makes every
    generated exercise report as unverifiable — failing safe, silently, forever.
    The conversion lives in Core (`tutorLadder.ts`), pinned by a test.
-3. **`getConfig()` caches.** A test that changes `process.env` must call
+6. **`getConfig()` caches.** A test that changes `process.env` must call
    `resetConfigCache()`.
-4. **The session token is not a JWT and Oracle rejects one by name.** If the
+7. **The session token is not a JWT and Oracle rejects one by name.** If the
    client sends a Supabase JWT the log says exactly that, because "malformed"
    would send whoever wired it looking at their JSON encoding instead.
-5. **There is no reconnect, deliberately.** The token is single-use and expires
+8. **There is no reconnect, deliberately.** The token is single-use and expires
    in sixty seconds, and a session that silently resumed would replay a
    greeting into the middle of a lesson.
-6. **Never log a learner's utterance.** Not at debug level, not temporarily.
+9. **Never log a learner's utterance.** Not at debug level, not temporarily.
    Safety flags record a category and a severity and never the words — a flag
    is a signal to a human, not a second unregulated copy of what a distressed
    child said.
-7. **A field this service emits is not a field anybody renders.** Assume
+10. **A field this service emits is not a field anybody renders.** Assume
    nothing either way, in either direction. `segmentRequest.framing` was
    moderated learner-facing prose that reached no screen for the whole life of
    the first build; meanwhile `ready.microphone` was rendered as the CONDITION
@@ -266,12 +291,12 @@ everything passes the blocked half perfectly and destroys the product.
    drifting apart with nothing asserting the join. When you add or change a
    field on the wire, say in `/ORACLE.md` what is supposed to happen to it on
    screen, and when you change what one MEANS, treat it as breaking (§2.3).
-8. **Speech is billed per CHARACTER OF TEXT, and only text we actually sent.**
+11. **Speech is billed per CHARACTER OF TEXT, and only text we actually sent.**
    `SpeechResult.billedChars` is zero on every free path and non-zero even when
    Depot then lost the audio — because that synthesis WAS charged. A ledger
    that only counted audio a learner heard would under-report exactly the
    failure that wastes the most money (`npm run speaks:verify` exists for it).
-9. **`ready.microphone` is a capability, not a visibility flag.** Oracle
+12. **`ready.microphone` is a capability, not a visibility flag.** Oracle
    reports whether the microphone can open. It does not report whether a
    microphone control should exist — that control is always present, and
    `/ORACLE.md` §14.1 is the rule. The three blocked reasons are Core's

@@ -2,6 +2,135 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## The microphone said "something went wrong on our side" for six days (2026-08-24)
+
+**The owner's report:** the Tutor does not work in production. Pressing the
+microphone produces "Algo salió mal de nuestro lado" and nothing else. Prior
+sessions had reported it fixed.
+
+Two independent defects wearing one sentence. The second is why the first lasted.
+
+### The session before this one could not have found it
+
+`main` on this machine was **59 commits behind `origin/main`** — the entire
+Oracle service, the tutor route, `oracle/`, all of it existed only on the
+remote. Any investigation starting from the local tree would have concluded the
+Tutor's backend did not exist. Sync first; the tree is not the product.
+
+### Defect 1: a container labelled as a different container
+
+`encodingFor()` in `oracle/src/voice/inworld.ts` translated the browser's MIME
+type into Inworld's encoding enum, and mapped `audio/webm;codecs=opus` — what
+Chrome, Edge and every Android browser's `MediaRecorder` produces — to
+`OGG_OPUS`.
+
+WebM and Ogg are **different containers** that happen to carry the same codec.
+Inworld's demuxer fails on the mismatch and answers `500 {"code":13,"message":
+"proxy has failed to process your request"}`. Measured against the live API,
+not read off a documentation page:
+
+| bytes | label sent | result |
+|---|---|---|
+| webm/opus (Chrome, Edge, Android) | `OGG_OPUS` | **500** — production |
+| webm/opus | `AUTO_DETECT` | 200, correct transcript |
+| webm/opus | `WEBM_OPUS` | 400 — not a valid enum value |
+| ogg/opus (a real Ogg container) | `OGG_OPUS` | 200 — the label was never wrong here |
+| m4a (Safari/iOS, its only option) | `AUTO_DETECT` | 200 |
+| mp4, generic `isom` brand | `AUTO_DETECT` | 400 — unsupported format |
+| wav | `LINEAR16` | 200 |
+| mp3 | `MP3` | 200 |
+
+`AUTO_DETECT` was correct for **all five** real containers, so the mapping
+bought nothing and cost the entire microphone on the majority of devices. There
+is no enum to reach for even if we wanted one: `WEBM_OPUS` and `M4A` are both
+rejected as `AUDIO_ENCODING_UNSPECIFIED`. We stop naming the encoding.
+
+**The test suite asserted the defect.** `expect(audioEncoding).toBe('OGG_OPUS')`
+passed green for as long as the microphone was broken — a test that pinned the
+bug in place and reported health while doing it. It is inverted now: no browser
+MIME type may ever produce a named encoding again, and a future edit that
+reintroduces a MIME→enum table fails in CI instead of in a child's microphone.
+
+The remaining honest gap: the generic-branded mp4 that failed is an **ffmpeg**
+artefact, not Safari's output, so what Safari's `MediaRecorder` actually writes
+was inferred from the M4A result rather than measured. `useMicrophone` now asks
+for a container we HAVE measured, in wire-size order, which makes Safari land on
+`audio/mp4` deliberately instead of by default.
+
+### Defect 2: a vocabulary nobody had translated
+
+`ConversationView` resolved socket failures through `errors.api.<code>` — the
+envelope vocabulary for **Core's HTTP surface**. The conversation does not speak
+that vocabulary. It emits `STT_FAILED`, `NO_SEGMENT`, `RATE_LIMITED`,
+`CONSENT_REQUIRED`, and — since the previous session started forwarding close
+codes — `SOCKET_1006`-style codes minted from a number.
+
+**Not one of them had an `errors.api` key.** Every single one fell through the
+`defaultValue` to `errors.api.INTERNAL`: "Algo salió mal de nuestro lado."
+
+So a child whose microphone simply had not caught them was told the company had
+broken. A dropped Wi-Fi connection, an expired token, a finished budget and a
+real server fault all produced the same sentence — which is exactly why six days
+of reports could not distinguish them, and why the previous session's fix
+(forwarding close codes to the UI) improved nothing observable. It replaced a
+failure dressed as a warm goodbye with a failure dressed as a generic apology.
+
+`i18n:check` cannot catch this and says so in its own output: a key built from a
+template literal is invisible to it. The runtime `missingKey` gate added on
+08-23 only fires for keys a TEST actually requests, and no test rendered a
+socket error.
+
+Close codes now map to a **closed vocabulary of six reasons** before reaching
+the UI — numbers are unbounded, sentences have to be written — and the
+conversation resolves in its own `tutor.conversationError.*` namespace, twelve
+keys, present in all three locales. The numeric code is not lost; it rides in
+`message`, which is logged and never rendered. Twelve new tests assert that no
+code renders as a raw key, and that `STT_FAILED` specifically says the
+microphone missed rather than that the platform fell over.
+
+`tutor.startError` separately gained the four codes `POST /tutor/sessions` can
+actually return and nobody had translated: `DATA_UNAVAILABLE`, `POLICY_BLOCKED`,
+`VALIDATION_ERROR`, `RATE_LIMITED`.
+
+### Also in the production log, once someone read it
+
+**The judge was gagging the tutor.** `[oracle] blocked tutor turn
+(unsafe_content)` with reasons like "asks for personal financial information
+from the child" and "asks for personal information about the child's parents".
+The judge is **right**; the prompt was wrong. "Concrete before abstract. A real
+situation with real small numbers" is what sent the model asking a child what
+they actually receive, actually save, actually spend. Loosening the judge would
+have been the §1.9 violation; the prompt now invents the numbers itself, and the
+prohibition is stated **positively** — this is a money course, the temptation is
+constant, and the answer is always a hypothetical.
+
+**The 500 was unreadable by construction.** `throw new VoiceUnavailableError(
+\`inworld stt responded ${response.status}\`)` discarded the body, so weeks of
+failures logged a status and nothing else — no way to tell a bad container from
+a bad key from an exhausted quota. It carries the body and the mimeType now.
+That one line is the difference between this session and the last three.
+
+**A stack trace on every healthy boot.** The rate limiter is constructed at
+module load; `rateLimit()` runs `store.init()` synchronously and `RedisStore`
+immediately issues a command — before `index.ts` connects Redis in the
+background, which it does deliberately so the listener can open without waiting
+on optional infrastructure (§1.14). Every clean start printed
+`ClientClosedError: The client is closed`.
+
+Guarding `sendCommand` was tried first and **only changed which error printed**:
+express-rate-limit logs the trace itself regardless of what the rejection says.
+Verified by reading the deployed log, which is the only reason it was caught —
+the commit message had already claimed the trace was gone. Construction is now
+deferred to the first request, by which time the connect has resolved. A
+degraded limiter still fails open; the trade is unchanged and the log is honest.
+
+### Verified
+
+Oracle 183 tests, frontend 1188, both type-check, lint and build clean, all six
+repo gates green. The encoding matrix was run against the live Inworld API. The
+oracle deploy was confirmed live by reading its boot log for a string only the
+new build emits.
+
 ## Three things wrong with one screenshot (2026-08-23)
 
 The owner sent a phone photo of `/admin/analytics` and named two faults. It
@@ -1893,6 +2022,67 @@ Oracle's websocket (recommended shape written up, needs owner sign-off), the
 Inworld DPA, and verification of Inworld's actual API surface — which was
 deliberately NOT assumed anywhere in the specification, and is flagged as
 unverified inside `/ORACLE.md` §3.3 rather than written as if known.
+
+## Catalog quality prune: 771 lessons archived across all 3 courses (2026-08-21)
+
+Owner directive: the catalog had grown by volume (financial-education 988
+published, entrepreneurship/investing 544 each in `review`), not by curated
+quality, and image/audio generation should only ever be spent on lessons that
+clear a real bar — Brilliant/Duolingo-grade, not merely gate-passing. Target:
+cut financial-education toward ~50% of its current 988, cut
+entrepreneurship/investing 20-25% each, archive (never delete) the rest.
+
+**Mechanism.** No prior pruning tool existed in the repo — the 2026-08-16
+rescue was ad hoc agents + direct SQL, nothing committed. Built fresh: a
+`Workflow` run with 120 judge agents (one per saga, all 40 sagas × 3 courses)
+scoring every lesson against coursegen's own generation-time rubric, reused
+verbatim from `coursegen/src/pipeline/review.ts` (kid_safety, age_fit,
+pedagogy, narrative_quality, naturalness, concreteness, cognitive_engagement,
+feedback_quality, distractor_quality, 1-5 each) plus an added
+`overall_score`/`filler_flag`/`redundant_with`/`brilliant_bar` verdict.
+Per-saga batching (not per-lesson) was deliberate: within-topic redundancy
+("this lesson repeats lesson 7 with different numbers") is only visible when
+a judge reads sibling lessons together. Cutoff per course picked by the
+steepest score-gap inside the target keep-count band, then a 3-judge panel
+re-ranked the ~30 lessons straddling that line per course (9 more agents) —
+judged blind to the first pass's scores, given only summaries + rationale,
+majority vote decided ties.
+
+**Result, verified by direct production query before and after:**
+financial-education 988→475 `published` (513 newly archived, on top of the
+220 already archived from 2026-08-16 — 733 archived total), entrepreneurship
+544→414 `review` (130 archived pre-publish, never went live), investing
+544→416 `review` (128 archived pre-publish). All three landed inside their
+target bands (51.9%, 23.9%, 23.5% cut). Sanity-checked before mutating: no
+saga-level judge bias (the review-saga `repaso-del-viaje-completo` correctly
+scored worst at 68.8% cut without ever being told its name implied review
+content; the one real outlier, `el-mercado-y-sus-precios` at 93.1% cut, had
+per-lesson rationale citing specific lesson numbers and mechanics, not
+boilerplate — 29 lessons had accumulated teaching one comparison skill).
+Entrepreneurship/investing were pruned pre-publish specifically because
+zero `picture_assets`/`speech_assets` existed for either course at prune
+time (confirmed via query) — no generation spend was ever at risk.
+
+**Backup:** full pre-mutation row dump (all columns, all 771 lessons) at
+`~/Movies/LITTLEFOUNDERS/lf-lesson-backup-2026-08-21/lessons_pre_archive.json`,
+same pattern as the 2026-08-16 rescue. `archived` is a reversible status flip,
+not a delete.
+
+**Two `Workflow` gotchas hit and fixed live:** (1) a pipeline stage that
+returns a JS `Set` across the script's phase boundary silently breaks —
+intermediate values round-trip through JSON, and `Set` serializes to `{}`,
+so `.has()` becomes `undefined is not a function` on the very last line after
+all 129 agents had already finished successfully; use plain arrays and build
+the `Set` only inside the same synchronous block that consumes it. (2)
+`Workflow({resumeFromRunId})` does NOT carry the original `args` forward —
+omitting it on a resume call fails instantly with `args.<key> is undefined`
+before any agent even runs; `args` must be re-passed in full on every resume.
+
+**Not done this session:** entrepreneurship/investing's surviving lessons
+(414 + 416) are still `review`, not `published` — the human-publish step is
+unchanged and still per-lesson via Core admin. Image/audio generation for
+either course should target only the surviving lesson set once DashScope
+arrears clear.
 
 ## Current State (2026-08-20, SESSION CLOSE) — Inversiones course COMPLETE: 544/544 lessons, all 8 adventures, in production `review`
 
