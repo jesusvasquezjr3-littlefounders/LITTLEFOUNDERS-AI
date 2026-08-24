@@ -256,6 +256,19 @@ years at 1/day).**
   prerequisite (`topics.prerequisites`) not satisfied by everything credited
   before it.
 
+  **An edge pointing at archived content is not a gate.** Placement walks
+  topics a learner can PLAY, so topics whose lessons were all archived are
+  dropped — and the prerequisites POINTING AT them are dropped with them, in
+  the same function (`courseTree.flattenTopicsForPlacement`). Dropping only the
+  first half leaves a requirement nobody can ever satisfy, and the hard cap
+  reads that as "stop crediting here", permanently, for everyone: measured on
+  the published course, seven of 43 edges pointed at pruned topics and the
+  earliest capped every learner at topic 144 of 259, whatever they knew. This
+  is safe ONLY because `graph:check` validates every path against the full
+  catalog at authoring time (`competency-reference`), so a target missing at
+  runtime can only mean archiving. `npm run placement:verify` (backend) is the
+  operator check that this has not silently regressed after a prune.
+
   **Signals are priors, never verdicts.** Age, education level, claimed level
   and the optional conversational intake decide exactly one thing: where the
   FIRST question is asked. They never enter `k`. For a learner whose answers

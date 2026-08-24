@@ -118,6 +118,42 @@ Tutor's scripted lines already run on.
   shipped on the exact screen that forms a first impression.
 - The mute button and the replay button shared one accessible name.
 
+### The same defect, wearing new clothes — found the next day
+
+Driving the real algorithm over the real catalog (`npm run placement:verify`,
+written for exactly this and kept) turned up something no fixture could have.
+An expert on the PUBLISHED course was placed at topic 144 of 259 and credited
+260 of 475 lessons. Not a search failure: a silent 55% ceiling, for everyone.
+
+Placement walks topics a learner can play, so topics the quality prune had
+emptied were filtered out. The edges POINTING AT them were not. A hard
+prerequisite whose target is no longer in the walk can never be satisfied, and
+the cap reads an unmet hard edge as "stop crediting here". Seven of
+financial-education's 43 edges pointed at archived topics, two of them hard.
+
+Half of a pair filtered, the other half left behind — written into this log
+twice already, once as the lemonade stand and once as the orphaned plan brief,
+and reintroduced here by the very change meant to fix the family.
+
+Checked before fixing: `unlockRules.ts` does not read prerequisites at all, so
+ordinary linear play was never affected. The damage was confined to placement.
+
+| Learner knows | Was placed | Now |
+|---|---|---|
+| 233 of 259 topics | 144 | **232** |
+| 259 of 259 topics | 144 | **253** |
+| Lessons credited to an expert | 260 of 475 | **468 of 475** |
+| Worst error across the course | 115 topics | **6** |
+
+Dropping the edge is safe HERE specifically because `graph:check` validates
+every path against the full catalog at authoring time, so a target missing at
+runtime can only mean the content was archived — a lifecycle state, not a typo.
+
+The lesson is the tooling one: the unit suite was green throughout, and stayed
+green, because a synthetic course has none of the shapes production has. What
+found it was pointing the real code at the real data. That check now exists as
+a command instead of a scratch file, because the next prune will do this again.
+
 ### What is live, and what is not
 
 Backfilled to production with `npm run graph:backfill`:
