@@ -4,19 +4,25 @@ import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { CourseBadgeArtwork } from '@/components/course/CourseBadgeArtwork';
 import { trackInsight } from '@/lib/insights';
-import { Badge, Card, Icon, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
+import { Card, Icon, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
 import CharacterActor from '@/components/characters/control/CharacterActor';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { AdventureBanner } from './AdventureBanner';
 import { SagaSection } from './SagaSection';
-import { findAdventureForLesson, findLesson, localizedText, type CourseTree } from './types';
+import { findAdventureForLesson, localizedText, type CourseTree } from './types';
 
 /*
- * /learn/:courseSlug — guided course path. The learner sees the course promise,
- * one clear next action, and an expandable syllabus that can be explored at
- * their own pace. The server-derived tree remains the only source of progress.
+ * /learn/:courseSlug — the course path (/DESIGN.md §Screen Recipes → Learn).
+ *
+ * One column, one way forward. The page used to carry the learner's next
+ * lesson in three places at once: a card in a desktop rail, a floating
+ * button, and a labelled button on the row itself. Three affordances for one
+ * action is not three times the guidance, it is a learner deciding which of
+ * them is the real one. The floating pill is the only one left, and it is the
+ * page's single accent CTA. The rail is gone with it: its progress lives in
+ * the bar under the header, and its chapter list was the accordion it sat
+ * next to. The server-derived tree remains the only source of progress.
  */
 
 type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; tree: CourseTree };
@@ -127,188 +133,83 @@ export function CoursePage() {
   }
 
   const courseTitle = localizedText(tree.course.title, locale, tree.course.slug);
-  const nextLesson = findLesson(tree, tree.nextLessonId);
+  const progressLabel = t('learn.lessonsProgress', {
+    passed: tree.course.progress.passed,
+    total: tree.course.progress.total,
+  });
+
   return (
     <div className="flex flex-col gap-6">
-      {/* Sticky Fixed Top Course Hero Header */}
-      <div className="sticky top-0 z-30 bg-base/90 pb-2 pt-1 backdrop-blur-md">
-        <Reveal>
-          <header className="rounded-xl border border-outline/60 bg-gradient-to-r from-surface via-surface/95 to-primary-soft/30 p-5 shadow-glass md:p-6">
-            <div className="mb-2">
-              <Link
-                to="/learn"
-                className="lf-caption inline-flex items-center gap-1.5 font-bold text-primary hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              >
-                <Icon name="arrow_back" className="!text-[16px]" aria-hidden />
-                {t('dashboard.nav.learn')}
-              </Link>
-            </div>
+      {/* One slim row, and one bar that IS the course progress. */}
+      <div className="sticky top-0 z-30 -mx-5 bg-base/85 px-5 pt-1 backdrop-blur-md md:-mx-8 md:px-8">
+        <header className="flex items-center gap-3 py-3">
+          <Link
+            to="/learn"
+            aria-label={t('dashboard.nav.learn')}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:bg-surface-sunken hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            <Icon name="arrow_back" className="!text-[20px]" aria-hidden />
+          </Link>
 
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div className="flex flex-col gap-1.5">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge className="bg-primary-soft text-primary font-bold">
-                    {t('learn.chapters', { num: tree.adventures.length })}: {tree.adventures.length}
-                  </Badge>
-                  <Badge className="bg-accent-soft text-accent-strong font-bold">
-                    {t('learn.totalLessons', { count: tree.course.progress.total })}
-                  </Badge>
-                </div>
-                <h1 className="lf-display-lg text-content">{courseTitle}</h1>
-                {localizedText(tree.course.description, locale) && (
-                  <p className="lf-body max-w-2xl text-content-muted">{localizedText(tree.course.description, locale)}</p>
+          <h1 className="lf-headline min-w-0 flex-1 truncate text-content">{courseTitle}</h1>
+
+          <span className="lf-caption lf-number hidden shrink-0 font-bold text-content-muted sm:inline">
+            {progressLabel}
+          </span>
+
+          <Link
+            to={`/learn/${tree.course.slug}/territory`}
+            aria-label={t('learn.territory.open')}
+            title={t('learn.territory.open')}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:bg-surface-sunken hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            <Icon name="map" className="!text-[20px]" aria-hidden />
+          </Link>
+        </header>
+
+        <ProgressBar value={tree.course.progress.pct} tone="accent" label={t('learn.territory.progress')} />
+      </div>
+
+      <main className="flex flex-col gap-6">
+        {tree.adventures.map((adventure, idx) => {
+          const isOpen = adventure.id === openAdventureId;
+          return (
+            <Reveal key={adventure.id} delay={(idx % 3) * 60}>
+              <div className="flex flex-col overflow-hidden rounded-xl border border-outline/50 bg-surface">
+                <AdventureBanner
+                  adventure={adventure}
+                  locale={locale}
+                  expanded={isOpen}
+                  onToggle={() => setOpenAdventureId(isOpen ? null : adventure.id)}
+                />
+                {isOpen && adventure.state !== 'locked' && (
+                  <div className="flex flex-col gap-8 p-4 md:p-6">
+                    {adventure.sagas.map((saga) => (
+                      <SagaSection
+                        key={saga.id}
+                        saga={saga}
+                        locale={locale}
+                        courseSlug={courseSlug}
+                        nextLessonId={tree.nextLessonId}
+                        registerNodeRef={registerNodeRef}
+                      />
+                    ))}
+                  </div>
                 )}
               </div>
+            </Reveal>
+          );
+        })}
+      </main>
 
-              <div className="flex items-center gap-3 shrink-0">
-                <Link
-                  to={`/learn/${tree.course.slug}/territory`}
-                  className="lf-label flex min-h-11 items-center gap-2 rounded-full border border-primary/30 bg-primary-soft/60 px-5 font-bold text-primary shadow-glass-sm transition-[background-color,border-color,color] duration-150 hover:border-primary hover:bg-primary hover:text-on-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                >
-                  <Icon name="map" className="text-[18px]" aria-hidden />
-                  {t('learn.territory.open')}
-                </Link>
-              </div>
-            </div>
-          </header>
-        </Reveal>
-      </div>
-
-      {/* Main Layout: readable syllabus plus a compact, sticky orientation rail on desktop. */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
-        <main className="order-2 flex min-w-0 flex-col gap-6 lg:order-1">
-          {tree.adventures.map((adventure, idx) => {
-            const isOpen = adventure.id === openAdventureId;
-            return (
-              <Reveal key={adventure.id} delay={(idx % 3) * 60}>
-                <div className="flex flex-col overflow-hidden rounded-xl border border-outline/60 bg-surface shadow-glass">
-                  <AdventureBanner
-                    adventure={adventure}
-                    locale={locale}
-                    expanded={isOpen}
-                    onToggle={() => setOpenAdventureId(isOpen ? null : adventure.id)}
-                  />
-                  {isOpen && adventure.state !== 'locked' && (
-                    <div className="flex flex-col gap-6 border-t border-outline/50 p-4 md:p-6">
-                      {adventure.sagas.map((saga) => (
-                        <SagaSection
-                          key={saga.id}
-                          saga={saga}
-                          locale={locale}
-                          courseSlug={courseSlug}
-                          nextLessonId={tree.nextLessonId}
-                          registerNodeRef={registerNodeRef}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </Reveal>
-            );
-          })}
-        </main>
-
-        <aside className="order-1 flex flex-col lg:sticky lg:top-24 lg:order-2">
-          <Card className="flex flex-col gap-5 border-outline/60 p-5 shadow-glass">
-            <div className="flex items-center gap-4">
-              <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-visible rounded-2xl border border-outline/50 bg-primary-soft/40">
-                <CourseBadgeArtwork asset={tree.course.badgeAsset} slug={tree.course.slug} size="orientation" />
-                <div className="absolute bottom-1 right-1 flex h-8 w-8 items-center justify-center rounded-full border border-surface bg-surface/95 shadow-glass-sm">
-                  <CharacterActor character="dina" emotion="happy" action="idle" size="fill" />
-                </div>
-              </div>
-              <div className="flex flex-col gap-1 min-w-0">
-                <h3 className="lf-title text-content truncate">{courseTitle}</h3>
-                <span className="lf-caption font-bold text-content-muted">{t('learn.syllabus')}</span>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2 pt-3 border-t border-outline/50">
-              <div className="flex items-center justify-between lf-caption font-bold text-content-muted">
-                <span>{t('learn.territory.progress')}</span>
-                <span className="lf-number">{tree.course.progress.pct}%</span>
-              </div>
-              <ProgressBar
-                value={tree.course.progress.pct}
-                tone="accent"
-                label={t('learn.lessonsProgress', { passed: tree.course.progress.passed, total: tree.course.progress.total })}
-              />
-              <span className="lf-caption lf-number text-content-faint text-right font-medium">
-                {t('learn.lessonsProgress', { passed: tree.course.progress.passed, total: tree.course.progress.total })}
-              </span>
-            </div>
-
-            {nextLesson && (
-              <div className="flex flex-col gap-3 rounded-lg border border-primary/30 bg-primary-soft/50 p-4">
-                <div className="flex items-center gap-2 text-primary">
-                  <Icon name="play_circle" className="!text-[18px]" aria-hidden />
-                  <span className="lf-caption font-bold uppercase tracking-[0.08em]">{t('learn.nextLesson')}</span>
-                </div>
-                <p className="lf-title break-words text-content">{localizedText(nextLesson.title, locale, nextLesson.slug)}</p>
-                <p className="lf-caption text-content-muted">
-                  {t('learn.lessonMeta', { minutes: nextLesson.estimated_minutes, xp: nextLesson.xp_total })}
-                </p>
-                <Link
-                  to={`/learn/lesson/${nextLesson.id}`}
-                  state={{ courseSlug }}
-                  className="lf-label inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-accent px-4 py-2 text-on-accent shadow-glass-sm transition-colors duration-150 hover:bg-accent-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                >
-                  {nextLesson.state === 'passed' ? t('learn.reviewLesson') : t('learn.continueLesson')}
-                  <Icon name="arrow_forward" className="!text-[16px]" aria-hidden />
-                </Link>
-              </div>
-            )}
-
-            <div className="flex flex-col gap-2 border-t border-outline/50 pt-4">
-              <h4 className="lf-label text-content-muted">{t('learn.chapters')}</h4>
-              <div className="flex max-h-64 flex-col gap-1.5 overflow-y-auto pr-1">
-                {tree.adventures.map((adventure, idx) => {
-                  const isCurrentOpen = adventure.id === openAdventureId;
-                  const isAdvCompleted = adventure.state === 'completed';
-                  const isAdvLocked = adventure.state === 'locked';
-
-                  return (
-                    <button
-                      key={adventure.id}
-                      type="button"
-                      disabled={isAdvLocked}
-                      onClick={() => setOpenAdventureId(adventure.id)}
-                      aria-label={t('learn.chapter', { num: idx + 1 })}
-                      className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-left text-xs transition-colors ${
-                        isCurrentOpen
-                          ? 'bg-primary-soft text-primary font-bold shadow-glass-sm'
-                          : isAdvLocked
-                          ? 'text-content-faint opacity-60 cursor-not-allowed'
-                          : 'text-content hover:bg-surface-sunken font-medium'
-                      }`}
-                    >
-                      <span className="truncate max-w-[180px]">
-                        {idx + 1}. {localizedText(adventure.title, locale, adventure.slug)}
-                      </span>
-                      {isAdvCompleted ? (
-                        <Icon name="check_circle" className="!text-[14px] text-success-strong" />
-                      ) : (
-                        <span className="lf-number text-[11px]">
-                          {adventure.progress.passed}/{adventure.progress.total}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </Card>
-        </aside>
-      </div>
-
-      {/* Floating Action Portal for Active Lesson */}
+      {/* The page's ONE accent CTA (/DESIGN.md §Colors → Action Color Contract). */}
       {tree.nextLessonId && createPortal(
         <button
           type="button"
           onClick={goToMyLesson}
-          className="lf-glass lf-pulse-attention motion-safe-press fixed bottom-20 right-4 z-40 flex min-h-11 items-center gap-2 rounded-full px-5 py-3 shadow-pop lf-label text-content lg:bottom-8 lg:right-8"
+          className="lf-label motion-safe-press fixed bottom-20 right-4 z-40 flex min-h-11 items-center gap-2 rounded-full bg-accent px-5 py-3 text-on-accent shadow-pop transition-colors duration-150 hover:bg-accent-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary lg:bottom-8 lg:right-8"
         >
-          <Icon name="target" className="text-current" />
+          <Icon name="target" className="!text-[18px] text-current" aria-hidden />
           {t('learn.goToMyLesson')}
         </button>,
         document.body

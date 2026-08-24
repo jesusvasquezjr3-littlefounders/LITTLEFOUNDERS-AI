@@ -1,28 +1,30 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Badge, Icon } from '@/components/ui';
+import { Icon } from '@/components/ui';
 import type { CharacterId } from '@/components/characters/control/types';
 import { localizedText, type LessonNode } from './types';
 
 /*
- * Learner-first syllabus row. The action remains visible on desktop and drops
- * below the lesson metadata on narrow screens so long localized titles never
- * compete with a squeezed button.
+ * A syllabus row (/DESIGN.md §Screen Recipes → Learn). The row IS the
+ * button, so it does not also contain one: a labelled "Start" pill inside a
+ * tappable row is a second target for the same navigation, and on a phone the
+ * two are a thumb-width apart. What is left is state, title, and the two
+ * numbers a learner actually weighs before tapping — how long, how much XP.
  */
 
 const STATUS_ICONS: Record<LessonNode['state'], string> = {
-  passed: 'check_circle',
-  current: 'play_circle',
-  available: 'play_circle',
+  passed: 'check',
+  current: 'play_arrow',
+  available: 'play_arrow',
   locked: 'lock',
 };
 
-const STATUS_BADGE_CLASSES: Record<LessonNode['state'], string> = {
-  passed: 'bg-success-soft text-success-strong border border-success/30',
-  current: 'bg-accent text-on-accent shadow-glass-sm',
-  available: 'bg-primary-soft text-primary border border-primary/30',
-  locked: 'bg-surface-sunken text-content-faint border border-outline/50',
+const STATUS_TILE_CLASSES: Record<LessonNode['state'], string> = {
+  passed: 'bg-success-soft text-success-strong',
+  current: 'bg-accent text-on-accent',
+  available: 'bg-primary-soft text-primary',
+  locked: 'bg-surface-sunken text-content-faint',
 };
 
 interface LessonPathNodeProps {
@@ -47,18 +49,12 @@ export function LessonPathNode({
   const navigate = useNavigate();
   const clickable = lesson.state !== 'locked';
   const title = localizedText(lesson.title, locale, lesson.slug);
+  const isCurrent = lesson.state === 'current' || isNextLesson;
 
   function go() {
     if (!clickable) return;
     navigate(`/learn/lesson/${lesson.id}`, { state: { courseSlug } });
   }
-
-  const isCurrent = lesson.state === 'current' || isNextLesson;
-  const ctaLabel = lesson.state === 'passed'
-    ? t('learn.reviewLesson')
-    : isCurrent
-    ? t('learn.continueLesson')
-    : t('learn.startLesson');
 
   return (
     <button
@@ -69,70 +65,45 @@ export function LessonPathNode({
       aria-disabled={!clickable}
       aria-label={`${title}, ${t(`learn.state.${lesson.state}`)}`}
       className={cn(
-        'group relative flex w-full flex-col items-stretch justify-between gap-4 rounded-xl border p-4 text-left shadow-glass-sm transition-[border-color,background-color,box-shadow,transform] duration-200 sm:flex-row sm:items-center',
-        clickable ? 'cursor-pointer hover:border-primary/50 hover:bg-primary-soft/10 hover:shadow-glass' : 'cursor-not-allowed opacity-70 bg-surface-sunken/40 border-outline/40',
-        isCurrent ? 'border-primary/60 bg-gradient-to-r from-primary-soft/30 via-surface to-surface shadow-glass' : 'border-outline/60 bg-surface',
-        isNextLesson && 'lf-pop'
+        'group flex w-full items-center gap-3.5 rounded-xl border p-3.5 text-left transition-[border-color,background-color] duration-200',
+        clickable
+          ? 'cursor-pointer border-outline/50 bg-surface hover:border-primary/50 hover:bg-primary-soft/15'
+          : 'cursor-not-allowed border-outline/40 bg-surface-sunken/40 opacity-70',
+        isCurrent && 'border-accent/60 bg-accent-soft/20',
+        isNextLesson && 'lf-pop',
       )}
     >
-      {/* Left Icon & Lesson Details */}
-      <div className="flex items-center gap-3.5 min-w-0 flex-1">
-        {/* Status Badge Tile */}
-        <div
-          className={cn(
-            'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-bold',
-            STATUS_BADGE_CLASSES[lesson.state]
-          )}
-        >
-          <Icon name={STATUS_ICONS[lesson.state]} className="!text-[22px]" aria-hidden />
-        </div>
-
-        {/* Title & Metadata */}
-        <div className="flex flex-col gap-1 min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h4 className="lf-title break-words text-content transition-colors duration-150 group-hover:text-primary">
-              {title}
-            </h4>
-            {isCurrent && (
-              <Badge className="bg-accent text-on-accent border-none font-bold">
-                {t('learn.startHere')}
-              </Badge>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2 text-content-muted lf-caption lf-number font-medium">
-            <span className="flex items-center gap-1">
-              <Icon name="schedule" className="!text-[14px]" />
-              {t('learn.minutes', { count: lesson.estimated_minutes })}
-            </span>
-            <span>·</span>
-            <span className="flex items-center gap-1 font-bold text-primary">
-              <Icon name="stars" className="!text-[14px]" />
-              {t('learn.xp', { xp: lesson.xp_total })}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Action Button */}
-      <div className="shrink-0 self-start sm:self-auto">
-        {clickable ? (
-          <span
-            className={cn(
-              'inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-5 py-2.5 lf-label font-bold shadow-glass-sm transition-[border-color,background-color,color,transform] duration-200 group-hover:translate-x-0.5',
-              isCurrent ? 'bg-primary text-on-primary hover:bg-primary-strong' : 'border border-outline/70 bg-surface text-primary hover:border-primary/50'
-            )}
-          >
-            {ctaLabel}
-            <Icon name="arrow_forward" className="!text-[16px]" />
-          </span>
-        ) : (
-          <span className="lf-caption flex items-center gap-1 font-bold text-content-faint px-3 py-2 rounded-full bg-surface-sunken">
-            <Icon name="lock" className="!text-[14px]" />
-            {t('learn.locked')}
-          </span>
+      <span
+        className={cn(
+          'flex h-10 w-10 shrink-0 items-center justify-center rounded-full',
+          STATUS_TILE_CLASSES[lesson.state],
         )}
-      </div>
+      >
+        <Icon name={STATUS_ICONS[lesson.state]} className="!text-[20px]" aria-hidden />
+      </span>
+
+      {/*
+        * List rows (/DESIGN.md §Layout → Grid Systems): one full-width row at
+        * every breakpoint. The width the row gains on desktop is spent moving
+        * the meta out from under the title and onto the right, so a wide row
+        * is a wider row and never a mobile row with empty space in the middle.
+        */}
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <span className="lf-body break-words font-bold text-content transition-colors duration-150 group-hover:text-primary">
+          {title}
+        </span>
+        <span className="lf-caption lf-number shrink-0 text-content-muted">
+          {t('learn.lessonMeta', { minutes: lesson.estimated_minutes, xp: lesson.xp_total })}
+        </span>
+      </span>
+
+      {clickable && (
+        <Icon
+          name="chevron_right"
+          className="!text-[20px] shrink-0 text-content-faint transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-primary"
+          aria-hidden
+        />
+      )}
     </button>
   );
 }

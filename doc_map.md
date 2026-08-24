@@ -26,6 +26,8 @@
 | Vault stack deploy specifics (pinned images, backups, upgrade) | database/DEPLOYMENT.md | all |
 | Terminology | GLOSSARY.md | all |
 | Visual design (authoritative tokens); desktop+mobile responsive rules | DESIGN.md | all, esp. §Layout → Responsive Adaptation |
+| Screen compositions (what a screen is built OUT of) | DESIGN.md | §Screen Recipes (Marketing · Landing · Auth · Dashboard · Profile · List rows · **Learn** · Lesson · Tutor) |
+| Dev QA surfaces — looking at a screen without the whole stack (`/dev/lesson-lab`, `/dev/learn-lab`, `/dev/scene-lab`, `/dev/tutor-lab`) | frontend/AGENTS.md | "Read before touching" + Tutor 3D scene |
 | Current repo state, past decisions | WALKTHROUGH.md | Current State / Decision Log |
 | Incidents, rollback | RUNBOOK.md | all |
 | Skills catalog & session rituals | TEAM_PROTOCOL.md | all |

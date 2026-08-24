@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import i18n from '@/i18n';
 import { api } from '@/lib/api';
@@ -158,11 +158,18 @@ describe('CoursePage', () => {
     expect(screen.getByText('What is money')).toBeInTheDocument();
     expect(screen.getByText('Saving basics')).toBeInTheDocument();
     expect(screen.getByText('Lesson One')).toBeInTheDocument();
-    expect(screen.getAllByText('Lesson Two')).toHaveLength(2);
     expect(screen.getByText('Lesson Three')).toBeInTheDocument();
 
-    // Current lesson gets the "start here" call-out.
-    expect(screen.getByText('Start here')).toBeInTheDocument();
+    // The next lesson is named ONCE. It used to be printed three times over:
+    // the row, a rail card, and the rail's chapter list. Three copies of one
+    // action is the defect this composition exists to prevent, so the count
+    // is asserted rather than merely its presence.
+    expect(screen.getAllByText('Lesson Two')).toHaveLength(1);
+
+    // The state a lesson is in is carried by its own row, and the row is the
+    // only control: no nested "Start"/"Continue" button inside a button.
+    expect(screen.queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Lesson Two/ })).toHaveAccessibleName(/start here/i);
 
     // Passed lesson is clickable; locked lesson is not.
     const passedButton = screen.getByRole('button', { name: /Lesson One/ });
@@ -170,13 +177,13 @@ describe('CoursePage', () => {
     const lockedButton = screen.getByRole('button', { name: /Lesson Three/ });
     expect(lockedButton).toBeDisabled();
 
-    // Locked adventure shows a lock overlay, not an expand trigger.
-    expect(within(screen.getByText('Locked Adventure').closest('div')!.parentElement!).getByText('Locked')).toBeInTheDocument();
+    // A locked adventure is not an expand trigger, and it says it is locked
+    // in its accessible name rather than in a word painted over the artwork.
     expect(screen.queryByRole('button', { name: /Locked Adventure/ })).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/Locked Adventure, Locked/)).toBeInTheDocument();
 
-    // Floating "go to my lesson" pill shows when there's a next lesson.
-    expect(screen.getByRole('button', { name: 'Go to my lesson' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Continue/ })).toHaveAttribute('href', '/learn/lesson/lesson-current');
+    // Exactly ONE way forward on the page, and it is the floating pill.
+    expect(screen.getByRole('button', { name: 'My lesson' })).toBeInTheDocument();
   });
 
   it('shows an error banner when the tree fetch fails', async () => {
@@ -193,7 +200,7 @@ describe('CoursePage', () => {
     });
     renderCoursePage();
 
-    expect(await screen.findByText('This adventure is loading')).toBeInTheDocument();
+    expect(await screen.findByText('Nothing here yet')).toBeInTheDocument();
   });
 
   it('turns playable territory topics into direct lesson links', () => {

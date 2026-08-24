@@ -139,6 +139,25 @@ Rules that bite:
   locale swing: these labels run to 1.86x of each other, and a plate sized for
   English is a defect invisible in English. The lab's own chrome stays in plain
   English (it is an instrument label); the simulated product never does.
+- **`/dev/learn-lab/:courseSlug` is the learn surfaces' QA route** (added
+  2026-08-24). `/learn/*` is the one product area whose four screens all sit
+  behind `RequireAuth` and a live course tree, so looking at them used to mean
+  running the whole Supabase stack — which meant, in practice, that nobody
+  looked, and §1.11's "screenshot 375 and 1280 before closing" was satisfied by
+  intention rather than by a screenshot. The lab mounts the REAL `LearnPage`,
+  `CoursePage`, `TerritoryPage` and `PlacementPage` inside a copy of
+  `AppLayout`'s content box, so widths measured there are the widths that ship.
+  Only the network edge is stubbed: a module-scope `window.fetch` shim answers
+  the four learn endpoints from `learn/lab/fixtures.ts` and passes everything
+  else through, and a matching stored session exists because `TerritoryPage`
+  correctly refuses to fetch without a token. **The route carries `:courseSlug`
+  on purpose** — the pages read it with `useParams`, and it is what decides
+  whether a territory chip is a link or a padlock; mounted without one, every
+  chip falls to its locked branch and the lab shows a state no learner is ever
+  in. Fixture ids are valid UUIDv4 (§1.14) and `nextLessonId` is DERIVED from
+  the lesson whose state is `current`, never hand-written, because a
+  hand-written id drifts the moment a lesson is inserted above it and the lab
+  then paints the "you are here" highlight on a lesson already passed.
 - **`/dev/lesson-lab` has the same switch now, for the same reason** (added
   2026-08-23). It renders its chrome through i18n and used to render fixtures
   pinned to `es-MX`, so it had the identical defect and was the instrument the

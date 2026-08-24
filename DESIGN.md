@@ -156,7 +156,9 @@ motion:                           # CLOSED 5-recipe system
 > **AUTHORITATIVE** for all frontend visual work (root AGENTS.md §1.1 rank 4).
 > The tokens above are CLOSED sets — implemented 1:1 in
 > `frontend/tailwind.config.js` + `frontend/src/index.css`. Never invent values
-> those files don't define. **Last updated:** 2026-08-23 (§Answer surfaces — "the tap
+> those files don't define. **Last updated:** 2026-08-24 (§Screen Recipes —
+> *Learn*, the recipe the four learn routes were built without; 2026-08-23 —
+> §Answer surfaces — "the tap
 > floor has two sides" and "a broken-glyph check must measure the GLYPH", after
 > looking at all 57 exercise renderers; 2026-08-22 — the lesson engine's three
 > objects, shared by the Lesson Player and the Tutor, plus "a shape is a PROP,
@@ -1547,6 +1549,57 @@ a `hero` card, same grammar as Learn's empty state. Destructive-ish actions
 that aren't truly destructive (block) use a two-step inline confirm — label
 flips to a `danger`-tone confirmation for a few seconds — rather than a
 modal; true modals stay reserved for nothing in this app so far.
+
+**Learn (`/learn`, `/learn/:slug`, `/learn/:slug/territory`,
+`/learn/:slug/placement`)** — added 2026-08-24, and like the Tutor entry, the
+ABSENCE of this one is why it exists. §0 makes building outside a recipe a
+design bug; there was no Learn recipe, so four screens were assembled out of
+the Dashboard's grammar plus whatever the previous screen had done, and each
+pass added a label rather than removing one. The result was a course page that
+printed the learner's next lesson in three places at once and a home page where
+one course occupied nine text elements. The rule this recipe encodes: **on the
+learn surfaces, a fact is printed ONCE, and the largest thing on the screen is
+the thing to tap.**
+
+- **Learn home** — three blocks on `base`, nothing else. ① a quiet
+  `lf-headline content-muted` greeting; ② the **resume card**, one `hero` Card:
+  course title at `lf-display-lg` (the biggest type on the page — the course,
+  not the salutation), ProgressBar + `passed/total` on one line, ONE indigo
+  Button, and the badge medallion with Dina opposite it. Art on top and centred
+  below `sm:`, beside the copy above it. ③ the **catalog**: an `lf-headline`
+  line and the **Card grid** (1 / 2 / 3, `gap-4`). A course card is
+  medallion · title · ProgressBar + `passed/total`, and a trophy when it is
+  finished. The whole card is the link, so it carries no CTA of its own, no
+  lesson-count badge (the total is already in the pair of numbers), and no
+  category caption. **The track filter appears only above six courses** — four
+  pills to filter three rows is furniture, and the control earns its place when
+  the grid stops fitting on a screen.
+- **Course path** — one column, no rail. A slim sticky row (back chevron ·
+  course title · `passed/total` · territory map icon) over a full-width
+  ProgressBar that IS the course progress. Then the chapters: each is an
+  illustrated **adventure band** (`scenes/`, 280 px at `md:`+, the whole scene
+  scaled down rather than cropped below it, because the scenes anchor their
+  subject to the bottom) with one `.lf-glass-deep` strip carrying name,
+  `passed/total`, and a chevron; locked is a scrim and a padlock, completed is a
+  trophy — the words for both live in the accessible name. Inside an open band:
+  a one-line chapter header (icon · name · count), a `lf-caption content-faint`
+  topic label, and the lesson rows. **A lesson row is the button and does not
+  contain one**: state tile · title · `min · XP` (under the title on mobile,
+  right-aligned from `sm:` so the width a desktop row gains is width the row
+  uses) · chevron. The page's ONE accent CTA is the floating pill that jumps to
+  the current lesson.
+- **Territory** — back link, `lf-display` title, the progress strip
+  (bar + `passed/total` + a `warning` chip only when reviews are due), and a
+  legend **for the states actually present on the page**. Adventure Cards hold
+  saga columns (Card grid) of topic chips: state icon · name · `passed/total`,
+  plus a `warning` review chip. Locked adventures stay fog-of-war — name and
+  padlock, the word in the accessible name.
+- **Placement** — the Auth recipe's focused single column (`max-w-md` on
+  `base`), one ProgressBar and a back chevron above it, one character with one
+  short line, then a Card holding **a title and the options, and nothing
+  between them**. A subtitle under a title that a character has just said in
+  their own voice is the same sentence three times; the step carries the
+  character's line or a subtitle, never both.
 
 **Lesson** — the fullscreen Lesson Player (`lesson-engine/player/`, spec:
 `LESSON_ENGINE.md`). Own layer over everything (`fixed inset-0 bg-base`), no

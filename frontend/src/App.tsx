@@ -69,6 +69,7 @@ const SceneLabPage = lazy(() => import('@/tutor-scene/lab/SceneLabPage'));
  * conversation) against fixtures — the §1.11 both-breakpoints check without
  * needing a live session, a model key or a websocket. */
 const TutorLabPage = lazy(() => import('@/tutor/lab/TutorLabPage'));
+const LearnLabPage = lazy(() => import('@/routes/app/learn/lab/LearnLabPage'));
 
 /* The Tutor's 3D stage. Lazy is MANDATORY, not an optimisation: `three` plus the
  * scene code is a large chunk, and a static import would put it in the entry
@@ -131,6 +132,16 @@ export function App() {
               element={
                 <Suspense fallback={null}>
                   <SceneLabPage />
+                </Suspense>
+              }
+            />
+          ) : null}
+          {import.meta.env.DEV ? (
+            <Route
+              path="dev/learn-lab/:courseSlug"
+              element={
+                <Suspense fallback={null}>
+                  <LearnLabPage />
                 </Suspense>
               }
             />

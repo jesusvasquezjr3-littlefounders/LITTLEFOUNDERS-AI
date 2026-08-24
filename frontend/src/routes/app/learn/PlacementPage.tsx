@@ -189,10 +189,7 @@ export function PlacementPage() {
 
           {currentStepKind === 'level' && (
             <div className="flex flex-col gap-5">
-              <div>
-                <h1 className="lf-display-lg text-content">{t('placement.level.title')}</h1>
-                <p className="lf-body-lg mt-2 text-content-muted">{t('placement.level.subtitle')}</p>
-              </div>
+              <h1 className="lf-display-lg text-content">{t('placement.level.title')}</h1>
               <OptionGroup
                 value={claimedLevel}
                 options={claimedLevelOptions}
@@ -207,10 +204,7 @@ export function PlacementPage() {
 
           {currentStepKind === 'education' && (
             <div className="flex flex-col gap-5">
-              <div>
-                <h1 className="lf-display-lg text-content">{t('placement.education.title')}</h1>
-                <p className="lf-body-lg mt-2 text-content-muted">{t('placement.education.subtitle')}</p>
-              </div>
+              <h1 className="lf-display-lg text-content">{t('placement.education.title')}</h1>
               <OptionGroup
                 value={educationLevel}
                 options={educationLevelOptions}
@@ -225,10 +219,7 @@ export function PlacementPage() {
 
           {currentStepKind === 'age' && (
             <div className="flex flex-col gap-5">
-              <div>
-                <h1 className="lf-display-lg text-content">{t('placement.age.title')}</h1>
-                <p className="lf-body-lg mt-2 text-content-muted">{t('placement.age.subtitle')}</p>
-              </div>
+              <h1 className="lf-display-lg text-content">{t('placement.age.title')}</h1>
               <Field
                 label={t('placement.age.label')}
                 inputMode="numeric"
@@ -265,10 +256,7 @@ export function PlacementPage() {
               if (!probe) return null;
               return (
                 <div className="flex flex-col gap-5">
-                  <div>
-                    <p className="lf-caption text-content-muted">{t('placement.quiz.eyebrow')}</p>
-                    <h1 className="lf-display-lg mt-1 text-content">{probe.prompt}</h1>
-                  </div>
+                  <h1 className="lf-display-lg text-content">{probe.prompt}</h1>
                   <OptionGroup
                     value={answers[probe.topicId] !== undefined ? String(answers[probe.topicId]) : null}
                     options={probe.options.map((label, index) => ({ value: String(index), label }))}
@@ -285,10 +273,7 @@ export function PlacementPage() {
 
           {currentStepKind === 'submit' && (
             <div className="flex flex-col gap-5">
-              <div>
-                <h1 className="lf-display-lg text-content">{t('placement.submit.title')}</h1>
-                <p className="lf-body-lg mt-2 text-content-muted">{t('placement.submit.subtitle')}</p>
-              </div>
+              <h1 className="lf-display-lg text-content">{t('placement.submit.title')}</h1>
               <Button className="w-full" disabled={submitting} onClick={() => void submit()}>
                 {submitting ? t('placement.submitting') : t('placement.submit.cta')}
               </Button>

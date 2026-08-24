@@ -8,8 +8,7 @@
   "progressLabel": "Passo {{current}} de {{total}}",
   "level": {
     "title": "O quanto você já sabe sobre isso?",
-    "subtitle": "Seja honesto, não existe resposta errada.",
-    "characterBubble": "Eu sou a Zara. Não importa de onde você está partindo, vamos te levar mais longe do que você imagina.",
+    "characterBubble": "Comece de onde começar, vamos te levar mais longe.",
     "options": {
       "new": "Isso é tudo novo para mim",
       "some": "Sei um pouco",
@@ -18,8 +17,7 @@
   },
   "education": {
     "title": "Qual é o seu nível escolar atual?",
-    "subtitle": "Isso nos ajuda a escolher o ritmo e os exemplos certos para você.",
-    "characterBubble": "Aqui é o Dr. Rho — isso me ajuda a mapear o ritmo certo para você.",
+    "characterBubble": "Isso me ajuda a ajustar seu ritmo.",
     "options": {
       "preschool": "Pré-escola",
       "elementary": "Ensino fundamental",
@@ -30,23 +28,20 @@
   },
   "age": {
     "title": "Quantos anos você tem?",
-    "subtitle": "Opcional, isso nos ajuda a escolher o conteúdo certo para você.",
     "label": "Data de nascimento",
     "hint": "Formato: aaaa-mm-dd, por exemplo 2016-05-01",
     "invalid": "Use o formato aaaa-mm-dd",
     "nudge": "Se você é uma criança, o ideal é fazer isso com um responsável por perto.",
     "nudgeLink": "Conheça as contas familiares",
-    "characterBubble": "A Dina de novo — checagem rápida, isso me ajuda a ajustar seu caminho.",
+    "characterBubble": "Uma checagem rápida para ajustar seu caminho.",
     "characterBubbleFilled": "Perfeito, anotado!"
   },
   "quiz": {
-    "eyebrow": "Checagem rápida",
-    "characterBubble": "Vamos ver o que você já sabe — escolha sua melhor resposta."
+    "characterBubble": "Escolha sua melhor resposta."
   },
   "submit": {
     "title": "Pronto para encontrar seu ponto de partida?",
-    "subtitle": "Vamos te posicionar na lição certa, para você nunca começar do zero.",
     "cta": "Obter meu nivelamento",
-    "characterBubble": "Aqui é o Liruf! Vamos lá — seu ponto de partida personalizado já está pronto."
+    "characterBubble": "Seu ponto de partida está pronto."
   }
 }

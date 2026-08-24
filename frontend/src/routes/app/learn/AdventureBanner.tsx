@@ -4,12 +4,11 @@ import { GradientFallbackScene, SCENES, isKnownScene } from './scenes';
 import { localizedText, type AdventureNode } from './types';
 
 /*
- * One vertically-stacked adventure banner on the course map (DESIGN.md
- * Screen Recipes — no dedicated "Lesson map" recipe exists yet; this
- * composition follows the Dashboard/Lesson recipes' grammar: scene +
- * .lf-glass-deep chrome on an inverse-equivalent illustrated band; documented
- * here per §0 Composition Fidelity since the recipe itself wasn't extended
- * (frontend/AGENTS.md forbids touching root docs from this task).
+ * The illustrated chapter band (/DESIGN.md §Screen Recipes → Learn). The
+ * scene is the premium surface on this route and the only decoration that
+ * earns its place, so the chrome over it stays to a name, a count and a
+ * chevron. "Completed" is a trophy rather than a trophy plus the word, and
+ * the accessible name carries the state for anyone the trophy does not reach.
  */
 
 interface AdventureBannerProps {
@@ -28,38 +27,41 @@ export function AdventureBanner({ adventure, locale, expanded, onToggle }: Adven
 
   const content = (
     <>
+      {/*
+        * The scenes are authored at 280px with their subject anchored to the
+        * bottom, so a short band that CROPS them shows sky and a slice of a
+        * tree trunk. Below md the whole scene is scaled down instead: a small
+        * island is still an island, half a trunk is not.
+        */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-        <div className="h-[280px] w-full shrink-0">
+        <div className="h-[280px] w-[222%] shrink-0 scale-[0.45] md:w-full md:scale-100">
           <Scene />
         </div>
       </div>
 
       {locked && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-1.5 bg-[#080f28]/55 backdrop-blur-[1px]">
-          <Icon name="lock" className="text-[26px] text-white" />
-          <span className="lf-label text-white">{t('learn.locked')}</span>
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#080f28]/60 backdrop-blur-[1px]">
+          <Icon name="lock" className="text-[26px] text-white" aria-hidden />
         </div>
       )}
 
       {completed && (
-        <div className="lf-glass-deep absolute right-3 top-3 z-20 flex items-center gap-1.5 rounded-full px-3 py-1.5 md:right-4 md:top-4">
-          <Icon name="emoji_events" fill className="text-[16px] text-on-inverse" />
-          <span className="lf-caption font-bold text-on-inverse">{t('learn.completed')}</span>
-        </div>
+        <span className="lf-glass-deep absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full md:right-4 md:top-4">
+          <Icon name="emoji_events" fill className="text-[18px] text-on-inverse" aria-hidden />
+        </span>
       )}
 
       <div className="lf-glass-deep absolute inset-x-0 bottom-0 z-20 flex items-center justify-between gap-3 px-4 py-3 md:px-6 md:py-4">
-        <h2 className="lf-title text-on-inverse flex items-center gap-2">
-          {title}
-        </h2>
-        <div className="flex items-center gap-2">
-          <span className="lf-caption lf-number shrink-0 rounded-full bg-white/15 px-3 py-1 font-bold text-on-inverse">
+        <h2 className="lf-title min-w-0 flex-1 truncate text-on-inverse">{title}</h2>
+        <div className="flex shrink-0 items-center gap-2">
+          <span className="lf-caption lf-number font-bold text-on-inverse">
             {t('learn.lessonsProgress', { passed: adventure.progress.passed, total: adventure.progress.total })}
           </span>
           {!locked && (
             <Icon
               name="expand_more"
               className={`text-[20px] text-on-inverse transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
+              aria-hidden
             />
           )}
         </div>
@@ -67,9 +69,15 @@ export function AdventureBanner({ adventure, locale, expanded, onToggle }: Adven
     </>
   );
 
+  const stateLabel = locked ? t('learn.locked') : completed ? t('learn.completed') : '';
+
   if (locked) {
     return (
-      <div aria-disabled="true" className="relative isolate h-[120px] w-full overflow-hidden rounded-lg shadow-glass md:h-[280px]">
+      <div
+        aria-disabled="true"
+        aria-label={`${title}, ${stateLabel}`}
+        className="relative isolate h-[126px] w-full overflow-hidden md:h-[280px]"
+      >
         {content}
       </div>
     );
@@ -80,7 +88,8 @@ export function AdventureBanner({ adventure, locale, expanded, onToggle }: Adven
       type="button"
       onClick={onToggle}
       aria-expanded={expanded}
-      className="motion-safe-press relative isolate h-[120px] w-full overflow-hidden rounded-lg text-left shadow-glass transition-shadow duration-200 hover:shadow-pop focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary md:h-[280px]"
+      aria-label={stateLabel ? `${title}, ${stateLabel}` : title}
+      className="motion-safe-press relative isolate h-[126px] w-full overflow-hidden text-left transition-shadow duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary md:h-[280px]"
     >
       {content}
     </button>

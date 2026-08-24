@@ -2,6 +2,109 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## The learn screens said everything three times (2026-08-24)
+
+**The owner's report:** the `/learn/*` views have FAR TOO MUCH TEXT. The
+platform is meant to feel like Duolingo or Brilliant; these screens do not.
+
+The report was about text, and the cause was not copy. It was that **no Learn
+recipe existed.** /DESIGN.md §0 makes building outside §Screen Recipes a design
+bug, and there was no entry for the four learn routes, so each was assembled out
+of the nearest recipe that did exist (Dashboard) plus whatever the previous pass
+had left. Nothing in that loop ever removes a label; every pass adds one. The
+`AdventureBanner` header comment had said so in writing since it was authored
+("no dedicated 'Lesson map' recipe exists yet") and the note aged for weeks as a
+description rather than being read as a defect.
+
+### What that produced
+
+On `/learn/:slug`, the learner's next lesson was printed **three times at
+once**: a card in the desktop rail, the floating pill, and a labelled
+Start/Continue button inside the lesson row itself. Three affordances for one
+action are not three times the guidance. They are a learner deciding which of
+them is the real one, and on a phone two of them sit a thumb-width apart.
+
+The same rail also carried the course title (already in the header), the course
+progress as a bar AND a percentage AND a `7/16` caption AND a repeat of the same
+caption below the bar, and a chapter list that was a text copy of the accordion
+standing next to it.
+
+On `/learn`, one course occupied **nine** elements: a "recommended for you"
+chip, a lesson-count badge, a "your next step" label, the title, a bar, a
+`passed/total`, the same figure again as a percentage, a CTA, and an arrow. In
+the grid each card repeated the pattern with a category caption naming a filter
+that was not on screen. The filter row itself was four pills filtering three
+courses.
+
+### The rule the recipe now encodes
+
+**A fact is printed ONCE, and the largest thing on the screen is the thing to
+tap.** Written into /DESIGN.md §Screen Recipes → *Learn*, covering all four
+routes, in the commit that rebuilt them. Concretely:
+
+- The rail is gone. Its progress is the bar under the header; its chapter list
+  WAS the accordion beside it. The floating pill is the page's one accent CTA.
+- **A lesson row is the button and does not contain one.** State tile, title,
+  `min · XP`, chevron. The meta moves to the right of the title from `sm:` up,
+  so width a desktop row gains is width the row uses rather than empty middle.
+- On `/learn`, the course a learner is mid-way through is `lf-display-lg` and
+  the greeting is the quiet line above it. The salutation is not the point of
+  the page and is no longer sized like it.
+- **The track filter renders only above six courses.** Four controls to remove
+  one row is furniture; the control earns its place when the grid stops fitting
+  on a screen. The capability is intact, the keys are intact, and a test now
+  asserts both halves of the threshold.
+- Placement steps carried a character line AND a title AND a subtitle saying
+  much the same thing. The subtitles and the quiz eyebrow are gone, the
+  character lines are shorter, and the em-dashes prohibited by
+  frontend/AGENTS.md are out of all three locales.
+
+Twelve i18n keys stopped being referenced and were deleted from all three
+locales rather than left to rot: parity gates cannot see a dead key, because a
+key present in no component is trivially in parity with itself.
+
+### The gate that did not exist, and is the actual lesson
+
+`/learn/*` is the one product area whose four screens ALL sit behind
+`RequireAuth` and a live course tree. Looking at them meant running the whole
+self-hosted Supabase stack locally. So in practice nobody looked, and §1.11's
+"no UI change is done until verified at 375 px AND 1280 px, screenshots" was
+being satisfied by intention rather than by a screenshot — which is exactly the
+class this repo has been bitten by four times in `tutor-scene/`, where every
+defect found since 2026-08-15 passed type-check, lint and the whole unit suite.
+
+`/dev/learn-lab/:courseSlug` closes it: the REAL four pages, inside a copy of
+`AppLayout`'s content box so measured widths are shipped widths, with only
+`window.fetch` stubbed against `learn/lab/fixtures.ts`. Two details are load
+-bearing and both were found by using it:
+
+- **The route carries `:courseSlug`.** The pages read it with `useParams`, and
+  it is what decides whether a territory chip is a link or a padlock. Mounted at
+  a bare `/dev/learn-lab` the param is empty, every chip falls to its locked
+  branch, and the lab shows a state no learner is ever in. A QA surface that
+  lies is worse than none.
+- **`nextLessonId` is DERIVED** from the lesson whose state is `current`, never
+  hand-written. The first fixture hand-wrote it, an id drifted by one when a
+  helper incremented a shared counter, and the lab painted the "you are here"
+  highlight on a lesson already passed.
+
+The lab then immediately earned itself twice. The adventure bands looked correct
+at 1280 px and showed **sky and half a tree trunk** at 375 px: the scenes are
+authored at 280 px with their subject anchored to the BOTTOM, and a short band
+that crops them centres on the empty middle. Below `md:` the whole scene is now
+scaled instead of cropped. And the informational figures (`min · XP`, chapter
+counts) had drifted to `content-faint`, which /DESIGN.md reserves for captions;
+they are back at `content-muted`. Neither is visible to any gate that is not a
+picture.
+
+### Verified
+
+`type-check`, `lint`, `build`, **1190 tests green** (91 files), `i18n:check`,
+`docs:check`, `secrets:check`, `paths:check`. Screenshots at 375 px and 1280 px,
+light and dark, for all four routes. The seven rewritten view files are
+**+344 / -569** lines, and `frontend/src` as a whole is **+487 / -763**: the
+change removed more than it added, which for this report is the point.
+
 ## The microphone said "something went wrong on our side" for six days (2026-08-24)
 
 **The owner's report:** the Tutor does not work in production. Pressing the

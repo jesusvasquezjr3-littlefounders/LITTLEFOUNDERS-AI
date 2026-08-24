@@ -1,13 +1,15 @@
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Icon, IconChip, ProgressBar } from '@/components/ui';
+import { Icon } from '@/components/ui';
 import { LessonPathNode } from './LessonPathNode';
 import { localizedText, type SagaNode } from './types';
 
 /*
- * Brilliant.org-style Saga/Module Section.
- * Structured module card featuring a clean header with progress metrics,
- * topic sub-headers, and vertical list of interactive syllabus lesson rows.
+ * A chapter's lessons (/DESIGN.md §Screen Recipes → Learn). The header is one
+ * line: an icon, a name, a count. It used to be a card of its own holding a
+ * progress bar the adventure band above it and the header bar above that both
+ * already showed — three readings of the same number, nested two cards deep.
+ * The lessons are the content here; everything else is a label on them.
  */
 
 interface SagaSectionProps {
@@ -29,46 +31,25 @@ export function SagaSection({ saga, locale, courseSlug, nextLessonId, registerNo
   );
 
   return (
-    <section className="flex flex-col gap-5 pt-6 first:pt-0">
-      {/* Chapter/Saga Header */}
-      <div className="flex flex-col gap-3 rounded-xl border border-outline/50 bg-surface-sunken/40 p-4">
-        <div className="flex items-center gap-3">
-          <IconChip tone="primary" size="md">
-            <Icon name={saga.icon || 'auto_stories'} className="text-[20px]" />
-          </IconChip>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-2">
-              <h3 className="lf-title text-content truncate">
-                {localizedText(saga.title, locale, saga.slug)}
-              </h3>
-              <span className="lf-caption lf-number shrink-0 font-bold text-content-muted">
-                {t('learn.lessonsProgress', { passed: saga.progress.passed, total: saga.progress.total })}
-              </span>
-            </div>
-            <ProgressBar
-              value={saga.progress.pct}
-              tone="accent"
-              label={t('learn.lessonsProgress', { passed: saga.progress.passed, total: saga.progress.total })}
-              className="mt-2"
-            />
-          </div>
-        </div>
+    <section className="flex flex-col gap-4">
+      <div className="flex items-center gap-2.5">
+        <Icon name={saga.icon || 'auto_stories'} className="!text-[20px] shrink-0 text-primary" aria-hidden />
+        <h3 className="lf-title min-w-0 flex-1 truncate text-content">
+          {localizedText(saga.title, locale, saga.slug)}
+        </h3>
+        <span className="lf-caption lf-number shrink-0 font-bold text-content-muted">
+          {t('learn.lessonsProgress', { passed: saga.progress.passed, total: saga.progress.total })}
+        </span>
       </div>
 
-      {/* Topics & Lesson List */}
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-5">
         {saga.topics.map((topic) => (
-          <div key={topic.id} className="flex flex-col gap-3">
-            {/* Topic Sub-Header */}
-            <div className="flex items-center gap-2 px-1 pt-1">
-              <Icon name="bookmark" className="!text-[16px] text-primary" />
-              <h5 className="lf-label text-content-muted">
-                {localizedText(topic.title, locale, topic.slug)}
-              </h5>
-            </div>
+          <div key={topic.id} className="flex flex-col gap-2">
+            <h4 className="lf-caption font-bold text-content-faint">
+              {localizedText(topic.title, locale, topic.slug)}
+            </h4>
 
-            {/* Lesson Rows List */}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
               {topic.lessons.map((lesson) => (
                 <LessonPathNode
                   key={lesson.id}

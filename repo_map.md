@@ -159,6 +159,7 @@ frontend/
         family/
         learn/
           __tests__/
+          lab/
           scenes/
         profile/
       auth/
@@ -1235,17 +1236,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## The microphone said "something went wrong on our side" for six days (2026-08-24)
+## The learn screens said everything three times (2026-08-24)
 
-**The owner's report:** the Tutor does not work in production. Pressing the
-microphone produces "Algo salió mal de nuestro lado" and nothing else. Prior
-sessions had reported it fixed.
+**The owner's report:** the `/learn/*` views have FAR TOO MUCH TEXT. The
+platform is meant to feel like Duolingo or Brilliant; these screens do not.
 
-Two independent defects wearing one sentence. The second is why the first lasted.
-
-### The session before this one could not have found it
-
-`main` on this machine was **59 commits behind `origin/main`** — the entire
+The report was about text, and the cause was not copy. It was that **no Learn
+recipe existed.** /DESIGN.md §0 makes building outside §Screen Recipes a design
+bug, and there was no entry for the four learn routes, so each was assembled out
+of the nearest recipe that did exist (Dashboard) plus whatever the previous pass
+had left. Nothing in that loop ever removes a label; every pass adds one. The
+`AdventureBanner` header comment had said so in writing since it was authored
 ```
 
 ### agent/README.md
@@ -12400,9 +12401,8 @@ import { beforeAll, describe, expect, it } from 'vitest';
 
 ```
 {
-  "loading": "Loading your adventure…",
-  "startHere": "Start here",
-  "goToMyLesson": "Go to my lesson",
+  "loading": "Loading…",
+  "goToMyLesson": "My lesson",
   "lessonsProgress": "{{passed}}/{{total}}",
   "locked": "Locked",
   "completed": "Completed",
@@ -12410,10 +12410,11 @@ import { beforeAll, describe, expect, it } from 'vitest';
   "minutes_one": "{{count}} min",
   "minutes_other": "{{count}} min",
   "backToCourse": "Back to course",
-  "chapter": "Chapter {{num}}",
-  "startLesson": "Start",
-  "continueLesson": "Continue",
-  "reviewLesson": "Review",
+  "lessonMeta": "{{minutes}} min · {{xp}} XP",
+  "emptyTitle": "Nothing here yet",
+  "emptyBody": "The first missions of this course are on their way.",
+  "state": {
+    "locked": "locked",
 ```
 
 ### frontend/src/i18n/en-US/lesson.json
@@ -12489,11 +12490,11 @@ import { beforeAll, describe, expect, it } from 'vitest';
   "progressLabel": "Step {{current}} of {{total}}",
   "level": {
     "title": "How much do you already know about this?",
-    "subtitle": "Be honest, there's no wrong answer.",
-    "characterBubble": "I'm Zara. No matter where you're starting from, we'll take you further than you imagined.",
+    "characterBubble": "Wherever you start, we'll take you further.",
     "options": {
       "new": "This is all new to me",
       "some": "I know a little",
+      "confident": "I already know quite a bit"
 ```
 
 ### frontend/src/i18n/en-US/profile.json
@@ -12640,9 +12641,8 @@ import { beforeAll, describe, expect, it } from 'vitest';
 
 ```
 {
-  "loading": "Cargando tu aventura…",
-  "startHere": "Empieza aquí",
-  "goToMyLesson": "Ir a mi lección",
+  "loading": "Cargando…",
+  "goToMyLesson": "Mi lección",
   "lessonsProgress": "{{passed}}/{{total}}",
   "locked": "Bloqueado",
   "completed": "Completado",
@@ -12650,10 +12650,11 @@ import { beforeAll, describe, expect, it } from 'vitest';
   "minutes_one": "{{count}} min",
   "minutes_other": "{{count}} min",
   "backToCourse": "Volver al curso",
-  "chapter": "Capítulo {{num}}",
-  "startLesson": "Iniciar",
-  "continueLesson": "Continuar",
-  "reviewLesson": "Repasar",
+  "lessonMeta": "{{minutes}} min · {{xp}} XP",
+  "emptyTitle": "Aún no hay nada aquí",
+  "emptyBody": "Las primeras misiones de este curso ya vienen en camino.",
+  "state": {
+    "locked": "bloqueado",
 ```
 
 ### frontend/src/i18n/es-MX/lesson.json
@@ -12729,11 +12730,11 @@ import { beforeAll, describe, expect, it } from 'vitest';
   "progressLabel": "Paso {{current}} de {{total}}",
   "level": {
     "title": "¿Qué tanto sabes ya de esto?",
-    "subtitle": "Sé honesto, no hay respuesta incorrecta.",
-    "characterBubble": "Soy Zara. No importa desde dónde empieces, te llevaremos más lejos de lo que imaginas.",
+    "characterBubble": "Empieces donde empieces, te llevaremos más lejos.",
     "options": {
       "new": "Esto es nuevo para mí",
       "some": "Sé un poco",
+      "confident": "Ya sé bastante"
 ```
 
 ### frontend/src/i18n/es-MX/profile.json
@@ -12900,9 +12901,8 @@ import enErrors from './en-US/errors.json';
 
 ```
 {
-  "loading": "Carregando sua aventura…",
-  "startHere": "Comece aqui",
-  "goToMyLesson": "Ir para minha lição",
+  "loading": "Carregando…",
+  "goToMyLesson": "Minha lição",
   "lessonsProgress": "{{passed}}/{{total}}",
   "locked": "Bloqueado",
   "completed": "Concluído",
@@ -12910,10 +12910,11 @@ import enErrors from './en-US/errors.json';
   "minutes_one": "{{count}} min",
   "minutes_other": "{{count}} min",
   "backToCourse": "Voltar ao curso",
-  "chapter": "Capítulo {{num}}",
-  "startLesson": "Iniciar",
-  "continueLesson": "Continuar",
-  "reviewLesson": "Revisar",
+  "lessonMeta": "{{minutes}} min · {{xp}} XP",
+  "emptyTitle": "Ainda não há nada aqui",
+  "emptyBody": "As primeiras missões deste curso estão a caminho.",
+  "state": {
+    "locked": "bloqueado",
 ```
 
 ### frontend/src/i18n/pt-BR/lesson.json
@@ -12989,11 +12990,11 @@ import enErrors from './en-US/errors.json';
   "progressLabel": "Passo {{current}} de {{total}}",
   "level": {
     "title": "O quanto você já sabe sobre isso?",
-    "subtitle": "Seja honesto, não existe resposta errada.",
-    "characterBubble": "Eu sou a Zara. Não importa de onde você está partindo, vamos te levar mais longe do que você imagina.",
+    "characterBubble": "Comece de onde começar, vamos te levar mais longe.",
     "options": {
       "new": "Isso é tudo novo para mim",
       "some": "Sei um pouco",
+      "confident": "Já sei bastante"
 ```
 
 ### frontend/src/i18n/pt-BR/profile.json
@@ -19667,7 +19668,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Badge, Button, Card, Icon, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
+import { Button, Card, Icon, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
 import { CourseBadgeArtwork } from '@/components/course/CourseBadgeArtwork';
 import CharacterActor from '@/components/characters/control/CharacterActor';
 import { DinaCharacter } from '@/components/characters/DinaCharacter';
@@ -19675,8 +19676,8 @@ import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { courseBadgeAsset } from '@/lib/courseBadges';
 
 /*
- * learn/ — the learner's home. The composition follows Brilliant's strongest
- * learning pattern: make the next useful action obvious, then keep discovery
+ * learn/ — the learner's home (/DESIGN.md §Screen Recipes → Learn).
+ * One greeting, one resume card, one grid. Every element that only restated
 ```
 
 ### frontend/src/routes/app/SectionComingSoon.tsx
@@ -19808,15 +19809,15 @@ import { GradientFallbackScene, SCENES, isKnownScene } from './scenes';
 import { localizedText, type AdventureNode } from './types';
 
 /*
- * One vertically-stacked adventure banner on the course map (DESIGN.md
- * Screen Recipes — no dedicated "Lesson map" recipe exists yet; this
- * composition follows the Dashboard/Lesson recipes' grammar: scene +
- * .lf-glass-deep chrome on an inverse-equivalent illustrated band; documented
- * here per §0 Composition Fidelity since the recipe itself wasn't extended
- * (frontend/AGENTS.md forbids touching root docs from this task).
+ * The illustrated chapter band (/DESIGN.md §Screen Recipes → Learn). The
+ * scene is the premium surface on this route and the only decoration that
+ * earns its place, so the chrome over it stays to a name, a count and a
+ * chevron. "Completed" is a trophy rather than a trophy plus the word, and
+ * the accessible name carries the state for anyone the trophy does not reach.
  */
 
 interface AdventureBannerProps {
+  adventure: AdventureNode;
 ```
 
 ### frontend/src/routes/app/learn/CoursePage.tsx
@@ -19828,15 +19829,15 @@ import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { CourseBadgeArtwork } from '@/components/course/CourseBadgeArtwork';
 import { trackInsight } from '@/lib/insights';
-import { Badge, Card, Icon, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
+import { Card, Icon, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
 import CharacterActor from '@/components/characters/control/CharacterActor';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { AdventureBanner } from './AdventureBanner';
 import { SagaSection } from './SagaSection';
-import { findAdventureForLesson, findLesson, localizedText, type CourseTree } from './types';
+import { findAdventureForLesson, localizedText, type CourseTree } from './types';
 
+/*
 ```
 
 ### frontend/src/routes/app/learn/LessonPathNode.tsx
@@ -19845,18 +19846,18 @@ import { findAdventureForLesson, findLesson, localizedText, type CourseTree } fr
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Badge, Icon } from '@/components/ui';
+import { Icon } from '@/components/ui';
 import type { CharacterId } from '@/components/characters/control/types';
 import { localizedText, type LessonNode } from './types';
 
 /*
- * Learner-first syllabus row. The action remains visible on desktop and drops
- * below the lesson metadata on narrow screens so long localized titles never
- * compete with a squeezed button.
+ * A syllabus row (/DESIGN.md §Screen Recipes → Learn). The row IS the
+ * button, so it does not also contain one: a labelled "Start" pill inside a
+ * tappable row is a second target for the same navigation, and on a phone the
+ * two are a thumb-width apart. What is left is state, title, and the two
+ * numbers a learner actually weighs before tapping — how long, how much XP.
  */
 
-const STATUS_ICONS: Record<LessonNode['state'], string> = {
-  passed: 'check_circle',
 ```
 
 ### frontend/src/routes/app/learn/LessonRoute.tsx
@@ -19904,19 +19905,19 @@ import type { CharacterId } from '@/components/characters/control/types';
 ```
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Icon, IconChip, ProgressBar } from '@/components/ui';
+import { Icon } from '@/components/ui';
 import { LessonPathNode } from './LessonPathNode';
 import { localizedText, type SagaNode } from './types';
 
 /*
- * Brilliant.org-style Saga/Module Section.
- * Structured module card featuring a clean header with progress metrics,
- * topic sub-headers, and vertical list of interactive syllabus lesson rows.
+ * A chapter's lessons (/DESIGN.md §Screen Recipes → Learn). The header is one
+ * line: an icon, a name, a count. It used to be a card of its own holding a
+ * progress bar the adventure band above it and the header bar above that both
+ * already showed — three readings of the same number, nested two cards deep.
+ * The lessons are the content here; everything else is a label on them.
  */
 
 interface SagaSectionProps {
-  saga: SagaNode;
-  locale: string;
 ```
 
 ### frontend/src/routes/app/learn/TerritoryPage.tsx
@@ -19943,7 +19944,7 @@ import { localizedText, type CourseTree, type TopicNode, type TopicState } from 
 
 ```
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import i18n from '@/i18n';
 import { api } from '@/lib/api';
@@ -20037,6 +20038,46 @@ import type { GradeMeta, Grader, Verdict } from '@/lesson-engine/core/types';
  * promise so LessonPlayer.submit()'s catch shows the neutral gradeError state
  * and never fabricates a verdict. The old code synthesized a score-0 "fail" for
  * 409, which — combined with lifetime attempt counting — painted a 0/100 FAIL
+```
+
+### frontend/src/routes/app/learn/lab/LearnLabPage.tsx
+
+```
+/*
+ * /dev/learn-lab — DEV-ONLY visual harness for the learn surfaces, in the
+ * spirit of /dev/lesson-lab and /dev/tutor-lab. Every defect this directory
+ * has produced was a COMPOSITION defect, and a composition defect passes
+ * type-check, lint and the whole unit suite. This route mounts the REAL
+ * pages, inside the REAL app-shell measurements, so that the §1.11
+ * "screenshot 375 and 1280 before closing" gate is something you can
+ * actually do without the whole Supabase stack running locally.
+ *
+ * Only the network edge is stubbed: `window.fetch` answers the four learn
+ * endpoints from `./fixtures` and passes everything else through.
+ *
+ * The route carries a `:courseSlug` because the pages read it with
+ * `useParams`, and it is what decides whether a territory chip is a link or a
+ * padlock. Mounted without one, every chip falls to its locked branch and the
+```
+
+### frontend/src/routes/app/learn/lab/fixtures.ts
+
+```
+/*
+ * Fixture course tree for the dev-only learn lab. Same wire shape Core
+ * returns (`./types`), so the lab drives the REAL pages rather than a
+ * lookalike. Ids are valid UUIDv4 strings because the app's schemas are
+ * strict everywhere, tests and labs included (/AGENTS.md §1.14).
+ */
+import type { CourseTree, LessonNode, SagaNode, TopicNode } from '../types'
+
+function uuid(seed: number): string {
+  const hex = seed.toString(16).padStart(12, '0')
+  return `4f2b1a7c-9d3e-4c8b-a5f6-${hex}`
+}
+
+let counter = 0
+
 ```
 
 ### frontend/src/routes/app/learn/scenes/ArchipelagoScene.tsx
@@ -24062,12 +24103,11 @@ import { withTimeout } from './http.js';
 ### oracle/src/middleware/rateLimit.ts
 
 ```
-import rateLimit, { MemoryStore, type RateLimitRequestHandler } from 'express-rate-limit';
-import type { RequestHandler } from 'express';
+import rateLimit, { MemoryStore } from 'express-rate-limit';
 import RedisStore from 'rate-limit-redis';
 import { isTestOrDev } from '../env.js';
 import { withTimeout } from '../lib/http.js';
-import { redisClient } from '../lib/redis.js';
+import { awaitFirstConnect, redisClient } from '../lib/redis.js';
 
 /*
  * Rate limiting is an AVAILABILITY control, not an authorization one
@@ -24077,6 +24117,7 @@ import { redisClient } from '../lib/redis.js';
  * The command timeout exists for a failure this project has already hit: a
  * live Redis outage leaves `isOpen` true because node-redis retries in the
  * background, so a hung sendCommand never rejects, `passOnStoreError` never
+ * fires, and every request hangs instead of failing open.
 ```
 
 ### oracle/src/model/provider.ts
