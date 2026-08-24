@@ -14,6 +14,23 @@ npm run contract:check         # the parity gate below (also runs as part of `np
 npm run lesson-contract:check  # lesson-contract/ vs frontend/src/lesson-engine
 ```
 
+## `npm run placement:verify` — does placement actually place people?
+
+Operator tool (needs `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`; read-only,
+calls no model, costs nothing). Drives the real algorithm over the real catalog
+and reports probe coverage, how far off each simulated learner ends up, how many
+questions it took, and whether identical answers still place identically for an
+adult, a child and someone who said nothing.
+
+It exists because the unit suite cannot have the shapes production has. Its
+first run found an expert being capped at topic 144 of 259 on the published
+course — a silent 55% ceiling caused by prerequisite edges left pointing at
+topics an archive pass had removed. Run it after any archiving pass, any
+catalog republish, and any `graph:backfill`.
+
+A LARGE error at the top of a course is the cap signature. A small residual
+error is correct: the search will not credit past a topic it could not verify.
+
 ## Routes
 
 | Method | Path | Auth | Description |

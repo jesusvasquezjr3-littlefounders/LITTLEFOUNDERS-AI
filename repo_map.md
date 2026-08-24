@@ -46,6 +46,7 @@ backend/
     lib/
     middleware/
     routes/
+    scripts/
     services/
 coursegen/
   curriculum/
@@ -4245,6 +4246,26 @@ import {
 
 /*
  * POST /api/v1/verification/parent — the universal → parent (Tutor) upgrade.
+```
+
+### backend/src/scripts/verify-placement.ts
+
+```
+#!/usr/bin/env node
+/*
+ * `npm run placement:verify` — drives the REAL placement algorithm over the
+ * REAL catalog and reports how well it can actually place people.
+ *
+ * (Named `placement:verify`, not `verify:placement`: the frontend already owns
+ * that second name for the Tutor's 3D character placement, and two unrelated
+ * checks answering to one name is how a green run gets read as proof of the
+ * wrong thing.)
+ *
+ * WHY THIS EXISTS. The unit suite proves the search is correct against
+ * synthetic courses, and it does that well. It cannot prove anything about the
+ * shapes a synthetic course does not have: partial probe coverage, topics
+ * emptied by an archiving pass, and prerequisite edges pointing across both.
+ * The first run of this script found an expert learner being capped at topic
 ```
 
 ### backend/src/services/adminData.ts

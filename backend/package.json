@@ -16,7 +16,8 @@
     "test": "npm run contract:check && vitest run",
     "test:watch": "vitest",
     "contract:check": "npm run lesson-contract:check",
-    "lesson-contract:check": "tsx scripts/contract-check.ts"
+    "lesson-contract:check": "tsx scripts/contract-check.ts",
+    "placement:verify": "tsx --env-file-if-exists=.env src/scripts/verify-placement.ts"
   },
   "dependencies": {
     "exceljs": "^4.4.0",
