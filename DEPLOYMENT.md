@@ -22,6 +22,7 @@
 | Media (Depot) | **Railway** — filebase | PII-free media reads; internal writes | `media-b2c.littlefounders.ai` |
 | Internal services | **Railway** — coursegen, audiogen, picturegen, parent-id-check, email-server, dataintel | service-to-service only | **no public domain (private networking only)** |
 | Vault internals | **Railway** — db, auth, rest, realtime, storage, meta, supavisor, studio | reached only via Kong / private net | no public domain |
+| Embedded game | **Railway** — kartrush (separate repo) | KartRush static bundle, framed by a lesson | `kartrush-production.up.railway.app` (intended: `game-b2c.littlefounders.ai`) |
 | Cache/limit | **Railway** — Redis | rate-limit store | no public domain |
 
 **One Railway project holds everything** (`littlefounders-b2c`) so services talk
@@ -59,7 +60,17 @@ prevented at two levels:
    - **EXCLUDE (dev-only / rebuilt):** `node_modules/`, `dist/`, `coursegen/runs/`,
      `audiogen/src/samples/`, `filebase/data/` (prod uses the `/data` volume),
      any `.env` (secrets live in Railway variables, never in the archive).
-3. **Frontend (Vercel)** is isolated by **Root Directory = `frontend`** — Vercel
+3. **KartRush is isolated by being a different repository.** It deploys with the same
+   `railway up . --path-as-root --service kartrush --ci` shape from its own tree, and carries
+   its own `.railwayignore` for the same re-rooting reason. Its exclusions drop ~285 MB of
+   Blender sources, Meshy GLBs and reference textures; they deliberately KEEP
+   `assets/characters/*.glb` and `public/models/**`, which are build- and runtime-required —
+   excluding either yields a build that succeeds and a game with no characters.
+   **One non-obvious trap, recorded because it costs a deploy cycle to rediscover:** Railway's
+   `NODE_ENV=production` makes `npm ci` omit devDependencies, where `vite` and `typescript`
+   live, so `NPM_CONFIG_INCLUDE=dev` is load-bearing on any service that builds from source
+   with a production `NODE_ENV`.
+4. **Frontend (Vercel)** is isolated by **Root Directory = `frontend`** — Vercel
    only builds that subtree and reads `frontend/vercel.json` from it. (If the Root
    Directory is ever blank, Vercel builds the repo root and the SPA rewrite is
    missed → deep-link 404s. See `RUNBOOK.md`.)

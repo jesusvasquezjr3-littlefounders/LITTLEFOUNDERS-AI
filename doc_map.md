@@ -44,6 +44,7 @@
 | Tutor 3D stage (assets, rigs, procedural actions, placement, perf, Blender handoff) | TUTOR_3D.md | all |
 | Analytics warehouse (DuckDB, segmentation, forecasting, experiments) | /DATAINTEL.md · dataintel/AGENTS.md | all |
 | Data intelligence console (/admin/intel) | /DATAINTEL.md | §7 |
+| Embedded lesson game (KartRush) — deploy, embed contract, integration TODO | `LittleFounders-AI/KartRush` → `docs/21-DEPLOYMENT.md` | all; §3 = the embed contract, §5 = what integration needs |
 | Task templates | agent/prompts/templates/ | pick by task |
 | Multi-step procedures | agent/workflows/ | pick by job |
 | File locations | repo_map.md (generated — `npm run repo:map`) | — |

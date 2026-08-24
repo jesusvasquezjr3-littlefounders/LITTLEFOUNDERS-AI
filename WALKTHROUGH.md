@@ -279,6 +279,86 @@ light and dark, for all four routes. The seven rewritten view files are
 **+344 / -569** lines, and `frontend/src` as a whole is **+487 / -763**: the
 change removed more than it added, which for this report is the point.
 
+## A game the platform can frame, and the four things that had to be true first (2026-08-24)
+
+**The owner's request:** deploy `KartRush` — a finished browser 3D kart racer living in
+its own repository — to Railway, embedded in the platform, ready for the integration work
+that comes next. Explicitly *not* the integration itself.
+
+### The repository already had a game; it did not have a way to be served
+
+`KartRush` builds to a static Vite bundle in 650 ms and has 120 test files. What it had no
+concept of was being *hosted*: no server, no health endpoint, no notion of another origin
+displaying it. Railway serves processes, not buckets, so something had to answer HTTP — and
+once something answers HTTP, the interesting question is not "does it return the file" but
+**which headers it returns**, because the whole point of this deploy is that a different
+origin frames the game.
+
+That is why it got a real server (`server/app.ts`, Express, two runtime dependencies) rather
+than `npx serve`. The headers are the deliverable. Hiding them in deploy configuration would
+put the contract somewhere this repository cannot see and `npm test` cannot assert.
+
+### The four things that had to be true, and what each would have cost
+
+**`frame-ancestors` had to be closed, not open.** `*` would let any site on the internet
+frame a commercial game as its own. The allow-list rejects `*` at parse time, rejects a
+schemeless origin, and — the part that matters — **throws when the environment variable is set
+but parses to nothing**, rather than falling back to the default. A misconfigured allow-list
+must not be indistinguishable from an intentional one (§1.14).
+
+**`X-Frame-Options` had to be absent.** It has no allow-list form, and in browsers honouring
+both it *overrides* `frame-ancestors`. Setting it "for safety" would produce a blank rectangle
+inside a lesson whose only diagnostic is a console line nobody thinks to open.
+
+**Failure had to be loud.** A missing `dist/index.html` exits 1 instead of listening, because
+an empty build and a broken build are identical over HTTP — both serve 404s — and Railway must
+fail the deploy rather than promote a blank game.
+
+**The bytes had to be priced.** A cold load is ~12 MB. Content-hashed bundles are immutable for
+a year; unhashed models revalidate, which costs a 304 and zero body bytes rather than serving a
+stale model after a deploy. Brotli takes the 1.2 MB bundle to ~336 kB. Source maps — 6.2 MB, and
+the game's full commented source — are 404 in production; browsers only ask for them with
+devtools open, so refusing them costs players nothing.
+
+### The deploy trap worth remembering
+
+Railway sets `NODE_ENV=production`. **npm reads that and makes `npm ci` omit devDependencies**,
+which is where `vite` and `typescript` live. `NPM_CONFIG_INCLUDE=dev` is therefore load-bearing
+on any service that builds from source with a production `NODE_ENV`, and it now says so in
+DEPLOYMENT.md §2 rather than only in one service's variables.
+
+### The verification found one thing, and it was in the test, not the product
+
+The first cross-origin screenshot came back **blank with no console errors** — the exact shape
+§1.14 warns about. It was not the CSP: Chrome's Local Network Access check was refusing a
+`localhost` parent fabricated by the harness, a condition that does not exist between two public
+HTTPS origins. Worth recording because the wrong conclusion was one screenshot away, and it
+would have been a wrong conclusion about a control that was working.
+
+What was actually verified, against the deployed URL and not against reasoning: the `/health`
+envelope; `frame-ancestors` present and `X-Frame-Options` absent; `.map` returning 404; Brotli
+active; the immutable/no-cache split; the game rendering standalone at desktop and mobile; the
+game rendering **framed from an allowed origin**; and the frame **refused from a disallowed
+one**, with the CSP violation logged. Both halves — the allow and the deny — because an
+allow-list only tested on the allow side is a list that has never been tested.
+
+### What this is not
+
+It is not integration. Nothing crosses the frame: no progress, no identity, no XP, no lesson
+coupling. The game still saves to its own `localStorage`, keyed to its own origin, invisible to
+us. ROADMAP.md's Open Decisions now carries the sequence that has to happen first, and its first
+item is not an engineering question — *what does a game record that is worth a learner's time?*
+A finished race is not a learning outcome, and building the plumbing before answering that would
+be building it twice.
+
+Also noted and not fixed, because it is game-side and out of the requested scope: character
+select clips its unlock text at 375 px. §1.11 applies to anything a learner opens on a phone,
+so it has to be fixed before a lesson ships around it.
+
+**Live:** `https://kartrush-production.up.railway.app` · service `kartrush` in
+`littlefounders-b2c` · contract and integration TODO in that repository's
+`docs/21-DEPLOYMENT.md`.
+
 ## The microphone said "something went wrong on our side" for six days (2026-08-24)
 
 **The owner's report:** the Tutor does not work in production. Pressing the

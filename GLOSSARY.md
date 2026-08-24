@@ -44,7 +44,11 @@
 | `pulse/` | **Pulse** | Observability — self-hosted analytics (Plausible CE + Umami v3) & system health (Uptime Kuma); pinned third-party stack, data read only through Core |
 | `oracle/` | **Oracle** | The AI Tutor runtime — live sessions, turn orchestration, injection defence, moderation before speech; the only service reaching a real-time voice provider. Holds no database credentials |
 
+| — (separate repo) | **KartRush** | *KartRush: The Circuit* — a browser 3D kart racer, the first game to be embedded inside a lesson. Deployed as its own Railway service; serves static assets only |
+
 The AI tutor **feature** spans `oracle/` (runtime), `backend/` (`/api/v1/tutor/*`, the content ladder, grading) and `frontend/src/tutor/` (the experience). Spec: `/ORACLE.md`.
+
+**Embedded game** — a game that runs inside a lesson in an `<iframe>`, served by its own deployment rather than bundled into the SPA. Distinct from the removed 2026-07 `games/` product section, which was a standalone section with an in-repo Phaser runtime (ROADMAP.md). KartRush is the first, and today it is embedded but not yet integrated: framed, not talking to us.
 
 ## Course hierarchy terms (spec: /COURSE_ENGINE.md)
 
