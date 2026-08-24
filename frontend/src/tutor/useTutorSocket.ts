@@ -41,6 +41,51 @@ export interface LiveSegmentState {
 
 export type ConnectionState = 'connecting' | 'open' | 'closed' | 'failed';
 
+/*
+ * A CLOSE CODE IS A NUMBER. A CHILD NEEDS A SENTENCE.
+ *
+ * This used to emit `SOCKET_${event.code}` — `SOCKET_1006`, `SOCKET_4001` —
+ * straight into the error channel, where `ConversationView` looked it up as
+ * `errors.api.SOCKET_1006`, found nothing, and fell back to the generic
+ * "something went wrong on our side". Every distinct failure, from an expired
+ * token to a dropped Wi-Fi connection, arrived at the learner as that one
+ * sentence, and it is the sentence the owner reported seeing.
+ *
+ * Mapping to a CLOSED vocabulary here is what makes the copy translatable:
+ * numbers are unbounded, these seven are not, and every one of them has a real
+ * line in all three locales. The numeric code is not lost — it travels in
+ * `message`, which is logged and never rendered.
+ */
+export type CloseReasonCode =
+  | 'SESSION_EXPIRED'
+  | 'SESSION_NOT_FOUND'
+  | 'CONSENT_REQUIRED'
+  | 'BUDGET_EXHAUSTED'
+  | 'SERVICE_DEGRADED'
+  | 'CONNECTION_LOST';
+
+export function closeCodeToReason(code: number): CloseReasonCode {
+  switch (code) {
+    case 4001:
+      return 'SESSION_EXPIRED';
+    case 4003:
+      return 'CONSENT_REQUIRED';
+    case 4004:
+      return 'SESSION_NOT_FOUND';
+    case 4008:
+      return 'BUDGET_EXHAUSTED';
+    case 4013:
+      return 'SERVICE_DEGRADED';
+    /*
+     * 1006 is the one that matters most in the field: "closed abnormally, no
+     * close frame" — a dropped connection, a sleeping phone, a proxy timeout.
+     * It is not a server fault and must not be described as one.
+     */
+    default:
+      return 'CONNECTION_LOST';
+  }
+}
+
 export interface TutorSocket {
   connection: ConnectionState;
   /** The tutor's current line. Null before the first turn arrives. */
@@ -204,8 +249,9 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
       if (!clean) {
         setError((prev) =>
           prev ?? {
-            code: `SOCKET_${event.code}`,
-            message: event.reason || 'The tutor connection closed unexpectedly.',
+            code: closeCodeToReason(event.code),
+            // The raw code stays in `message` — never shown, always logged.
+            message: event.reason || `socket closed ${event.code}`,
           },
         );
       }

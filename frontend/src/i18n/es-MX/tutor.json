@@ -247,11 +247,16 @@
     "activityUnanswered": "Esta no la contestaste"
   },
   "startError": {
+    "CONSENT_REQUIRED": "Necesitas el permiso de un adulto para el micrófono. Aún puedes escribir.",
+    "DATA_UNAVAILABLE": "No pudimos cargar a tu tutor en este momento. Inténtalo en un momento.",
     "INTERNAL": "Algo salió mal. Inténtalo de nuevo.",
-    "SESSION_LIMIT": "Ya usaste el tiempo de hoy. ¡Vuelve mañana!",
     "MODEL_UNAVAILABLE": "Tu tutor está descansando. Vuelve pronto.",
     "MODERATION_UNAVAILABLE": "Ahorita no podemos empezar con seguridad. Vuelve pronto.",
-    "ORACLE_UNAVAILABLE": "Tu tutor está descansando. Vuelve pronto."
+    "ORACLE_UNAVAILABLE": "Tu tutor está descansando. Vuelve pronto.",
+    "POLICY_BLOCKED": "Todavía no ofrecemos eso para los más pequeños.",
+    "RATE_LIMITED": "Demasiados intentos seguidos. Espera un momento e inténtalo otra vez.",
+    "SESSION_LIMIT": "Ya usaste el tiempo de hoy. ¡Vuelve mañana!",
+    "VALIDATION_ERROR": "Algo en esa solicitud no estuvo bien. Inténtalo de nuevo."
   },
   "consent": {
     "title": "Micrófono para el tutor con IA",
@@ -291,5 +296,19 @@
       "model_output_blocked": "La respuesta del tutor se bloqueó antes de decirse"
     },
     "retentionNote": "Las conversaciones se guardan 90 días y después se borran solas."
+  },
+  "conversationError": {
+    "BUDGET_EXHAUSTED": "Se acabó el tiempo de esta conversación. ¡Vuelve pronto!",
+    "CONNECTION_LOST": "Se cortó la conexión. Revisa tu internet e inténtalo de nuevo.",
+    "CONSENT_REQUIRED": "Necesitas el permiso de un adulto para el micrófono. Mientras tanto puedes escribir.",
+    "INTERNAL": "Algo no funcionó en ese intento. Inténtalo de nuevo.",
+    "NO_SEGMENT": "Esa actividad ya no está lista. Sigamos platicando.",
+    "RATE_LIMITED": "Un momento: déjame terminar antes de que sigas.",
+    "SERVICE_DEGRADED": "Tu tutor está descansando. Vuelve pronto.",
+    "SESSION_EXPIRED": "Esta conversación caducó. Empieza una nueva para seguir.",
+    "SESSION_NOT_FOUND": "No encontramos esta conversación. Empieza una nueva.",
+    "STT_FAILED": "No alcancé a escucharte. Inténtalo otra vez, un poquito más cerca del micrófono.",
+    "VALIDATION_ERROR": "No entendí eso. ¿Lo intentas de otra forma?",
+    "generic": "Algo no funcionó en ese intento. Inténtalo de nuevo."
   }
 }

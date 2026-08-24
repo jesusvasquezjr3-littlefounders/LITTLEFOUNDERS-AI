@@ -786,3 +786,56 @@ describe('the soft keyboard and the lesson plate', () => {
     expect(plateHeight()).toBe('88px');
   });
 });
+
+/*
+ * THE DEFECT THE OWNER REPORTED: pressing the microphone produced "Algo salió
+ * mal de nuestro lado" and nothing else.
+ *
+ * Two independent causes, one visible symptom. Oracle's STT was 500ing on every
+ * Chrome/Android turn (fixed in oracle/src/voice/inworld.ts), and the error it
+ * DID send — `STT_FAILED` — was looked up under `errors.api.*`, a namespace it
+ * has never belonged to. The lookup missed, fell back to `errors.api.INTERNAL`,
+ * and told a child the platform was broken when the microphone had merely not
+ * caught them.
+ *
+ * These assert the SECOND cause, because the first is unobservable from here:
+ * no socket error code may ever render as a key, and none may render as the
+ * generic apology when it has a sentence of its own.
+ */
+describe('a failure says what actually failed', () => {
+  const CODES = [
+    'STT_FAILED',
+    'CONNECTION_LOST',
+    'SESSION_EXPIRED',
+    'SESSION_NOT_FOUND',
+    'BUDGET_EXHAUSTED',
+    'SERVICE_DEGRADED',
+    'CONSENT_REQUIRED',
+    'RATE_LIMITED',
+    'NO_SEGMENT',
+    'VALIDATION_ERROR',
+    'INTERNAL',
+  ] as const;
+
+  it.each(CODES)('renders a real sentence for %s, never a raw key', (code) => {
+    const socket = makeSocket({ error: { code, message: 'wire detail the child never sees' } });
+    const { container } = renderConversation(socket, { ready: true });
+    const text = container.textContent ?? '';
+
+    // Never the key itself, and never the wire message.
+    expect(text).not.toContain('tutor.conversationError');
+    expect(text).not.toContain('errors.api');
+    expect(text).not.toContain('wire detail the child never sees');
+  });
+
+  it('does not tell a child the platform broke when it simply misheard them', () => {
+    const { container } = renderConversation(
+      makeSocket({ error: { code: 'STT_FAILED', message: 'socket closed 1006' } }),
+      { ready: true },
+    );
+    const text = container.textContent ?? '';
+    // The old behaviour rendered errors.api.INTERNAL — "something went wrong on
+    // our side" — for this. The new line is about the microphone.
+    expect(text).toMatch(/didn't quite catch that/i);
+  });
+});

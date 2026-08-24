@@ -153,7 +153,7 @@ describe('the transcription request', () => {
      * a default is something a provider may change and we would never notice.
      */
     expect(body.transcribeConfig.voiceProfileConfig?.enableVoiceProfile).toBe(false);
-    expect(body.transcribeConfig.audioEncoding).toBe('OGG_OPUS');
+    expect(body.transcribeConfig.audioEncoding).toBe('AUTO_DETECT');
     expect(body.transcribeConfig.language).toBe('es');
   });
 
@@ -182,7 +182,20 @@ describe('the transcription request', () => {
     expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('voice profile'));
   });
 
-  it('maps browser MIME types to the encodings Inworld accepts', async () => {
+  /*
+   * THIS TEST USED TO ASSERT THE DEFECT.
+   *
+   * It expected `audio/webm;codecs=opus` — Chrome, Edge and every Android
+   * browser — to be labelled `OGG_OPUS`, and it passed for as long as the
+   * microphone was broken in production. WebM is not Ogg; Inworld's demuxer
+   * answers 500. Measured against the live API on 2026-08-24, `AUTO_DETECT`
+   * transcribed webm, ogg, m4a, wav and mp3 correctly, all five.
+   *
+   * So the assertion is inverted on purpose: NO browser MIME type may ever
+   * produce a named encoding again. A future edit that reintroduces a
+   * MIME→enum table fails here instead of in a child's microphone.
+   */
+  it('never names an encoding — the container header is the provider\'s to read', async () => {
     const seen: string[] = [];
     vi.stubGlobal(
       'fetch',
@@ -201,10 +214,48 @@ describe('the transcription request', () => {
     );
 
     const provider = new InworldVoiceProvider();
-    for (const mime of ['audio/wav', 'audio/mpeg', 'audio/flac', 'audio/webm;codecs=opus', 'audio/weird']) {
+    // Every format a MediaRecorder anywhere actually emits, plus the ones the
+    // old table named. `audio/webm;codecs=opus` is Chrome/Android; `audio/mp4`
+    // is Safari/iOS, which has no other option.
+    const mimes = [
+      'audio/wav',
+      'audio/mpeg',
+      'audio/flac',
+      'audio/webm;codecs=opus',
+      'audio/ogg;codecs=opus',
+      'audio/mp4',
+      'audio/weird',
+    ];
+    for (const mime of mimes) {
       await provider.transcribe({ audio: Buffer.from('a'), mimeType: mime, locale: 'en-US' });
     }
-    expect(seen).toEqual(['LINEAR16', 'MP3', 'FLAC', 'OGG_OPUS', 'AUTO_DETECT']);
+    expect(seen).toEqual(mimes.map(() => 'AUTO_DETECT'));
+  });
+
+  /*
+   * The 500 that hid this defect said only `inworld stt responded 500`. The
+   * provider's real answer never reached a log, so a bad container could not
+   * be told apart from a bad key or an exhausted quota.
+   */
+  it('carries the provider\'s error body and the mimeType into the thrown message', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve(
+          new Response('{"code":13, "message":"proxy has failed to process your request"}', {
+            status: 500,
+          }),
+        ),
+      ),
+    );
+
+    await expect(
+      new InworldVoiceProvider().transcribe({
+        audio: Buffer.from('a'),
+        mimeType: 'audio/webm;codecs=opus',
+        locale: 'es-MX',
+      }),
+    ).rejects.toThrow(/500 for audio\/webm;codecs=opus: .*proxy has failed/);
   });
 });
 

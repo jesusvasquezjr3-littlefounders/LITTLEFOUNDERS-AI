@@ -247,11 +247,16 @@
     "activityUnanswered": "You didn't answer this one"
   },
   "startError": {
+    "CONSENT_REQUIRED": "You need a grown-up's permission for the microphone. You can still type.",
+    "DATA_UNAVAILABLE": "We couldn't load your tutor just now. Try again in a moment.",
     "INTERNAL": "Something went wrong. Try again.",
-    "SESSION_LIMIT": "You've used today's tutor time. Come back tomorrow!",
     "MODEL_UNAVAILABLE": "The tutor is resting. Try again soon.",
     "MODERATION_UNAVAILABLE": "We can't start safely right now. Try again soon.",
-    "ORACLE_UNAVAILABLE": "The tutor is resting. Try again soon."
+    "ORACLE_UNAVAILABLE": "The tutor is resting. Try again soon.",
+    "POLICY_BLOCKED": "We don't offer that for younger learners yet.",
+    "RATE_LIMITED": "Too many tries at once. Wait a moment and try again.",
+    "SESSION_LIMIT": "You've used today's tutor time. Come back tomorrow!",
+    "VALIDATION_ERROR": "Something about that request wasn't right. Try again."
   },
   "consent": {
     "title": "Microphone for the AI tutor",
@@ -291,5 +296,19 @@
       "model_output_blocked": "The tutor’s reply was blocked before it was said"
     },
     "retentionNote": "Conversations are kept for 90 days and then deleted automatically."
+  },
+  "conversationError": {
+    "BUDGET_EXHAUSTED": "That's all the time for this conversation. Come back soon!",
+    "CONNECTION_LOST": "The connection dropped. Check your internet and try again.",
+    "CONSENT_REQUIRED": "You need a grown-up's permission for the microphone. You can type in the meantime.",
+    "INTERNAL": "Something didn't work just then. Try again.",
+    "NO_SEGMENT": "That activity isn't ready anymore. Let's keep talking.",
+    "RATE_LIMITED": "One moment — let me finish before you go again.",
+    "SERVICE_DEGRADED": "The tutor is resting. Try again soon.",
+    "SESSION_EXPIRED": "This conversation expired. Start a new one to keep going.",
+    "SESSION_NOT_FOUND": "We couldn't find this conversation. Start a new one.",
+    "STT_FAILED": "I didn't quite catch that. Try again, a little closer to the microphone.",
+    "VALIDATION_ERROR": "I didn't understand that. Want to try saying it another way?",
+    "generic": "Something didn't work just then. Try again."
   }
 }

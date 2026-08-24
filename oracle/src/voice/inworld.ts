@@ -37,6 +37,36 @@ const DEFAULT_TTS_MODEL = 'inworld-tts-1';
 const STT_MODEL = 'inworld/inworld-stt-1';
 
 /*
+ * WE DO NOT NAME THE ENCODING. THE PROVIDER SNIFFS IT.
+ *
+ * This function used to translate the browser's MIME type into Inworld's
+ * encoding enum, and it mapped `audio/webm;codecs=opus` — what Chrome, Edge
+ * and every Android browser's `MediaRecorder` produces — to `OGG_OPUS`.
+ *
+ * WebM and Ogg are DIFFERENT CONTAINERS that happen to carry the same codec.
+ * Telling the API a Matroska stream is an Ogg stream makes its demuxer fail,
+ * and it answers `500 {"code":13,"message":"proxy has failed to process your
+ * request"}`. Measured against the live API on 2026-08-24:
+ *
+ *   webm + OGG_OPUS      500  ← every microphone turn on Chrome/Edge/Android
+ *   webm + AUTO_DETECT   200  "Hola, quiero aprender a ahorrar dinero."
+ *   ogg  + OGG_OPUS      200  (a real Ogg container — the label was never wrong here)
+ *   m4a  + AUTO_DETECT   200  ← Safari/iOS, which has no other recording format
+ *   wav  + AUTO_DETECT   200
+ *   mp3  + AUTO_DETECT   200
+ *
+ * `AUTO_DETECT` returned a correct transcript for ALL FIVE containers, so the
+ * mapping bought nothing and cost the entire microphone on the majority of
+ * devices. There is also no enum to reach for even if we wanted one: `WEBM_OPUS`
+ * and `M4A` are both rejected as `AUDIO_ENCODING_UNSPECIFIED`.
+ *
+ * §1.14: a confident wrong label is worse than no label. The bytes carry their
+ * own container header; the provider reads it correctly; we stop guessing.
+ * Do not reintroduce a MIME→enum table here — that is this defect, exactly.
+ */
+const AUDIO_ENCODING = 'AUTO_DETECT';
+
+/*
  * THE CHARACTER VOICES ARE THE WHOLE POINT.
  *
  * Dina, Liruf, Dr. Rho and Zara already have voices: Echo clones them per
@@ -147,7 +177,7 @@ export class InworldVoiceProvider implements VoiceProvider {
               modelId: STT_MODEL,
               // Inworld takes a bare language subtag here, not a BCP-47 pair.
               language: request.locale.slice(0, 2),
-              audioEncoding: encodingFor(request.mimeType),
+              audioEncoding: AUDIO_ENCODING,
               voiceProfileConfig: { enableVoiceProfile: false },
             },
             audioData: { content: request.audio.toString('base64') },
@@ -161,7 +191,19 @@ export class InworldVoiceProvider implements VoiceProvider {
     }
 
     if (!response.ok) {
-      throw new VoiceUnavailableError(`inworld stt responded ${response.status}`);
+      /*
+       * THE BODY, NOT JUST THE STATUS.
+       *
+       * This threw `inworld stt responded 500` for weeks. Inworld's actual
+       * answer — `{"code":13,"message":"proxy has failed to process your
+       * request"}` — never reached a log, so the microphone was dead with no
+       * way to tell a bad container from a bad key from a bad quota. The
+       * mimeType is included because the container is what goes wrong here.
+       */
+      const detail = await response.text().catch(() => '');
+      throw new VoiceUnavailableError(
+        `inworld stt responded ${response.status} for ${request.mimeType}: ${detail.slice(0, 300)}`,
+      );
     }
 
     const body = (await response.json()) as RecognizeResponse;
@@ -220,16 +262,6 @@ export class InworldVoiceProvider implements VoiceProvider {
 
     return { audio: Buffer.from(body.audioContent, 'base64'), mimeType: 'audio/mpeg' };
   }
-}
-
-/** Browser MIME → Inworld's encoding enum. AUTO_DETECT covers what we cannot name. */
-function encodingFor(mimeType: string): string {
-  const type = mimeType.toLowerCase();
-  if (type.includes('wav') || type.includes('x-wav')) return 'LINEAR16';
-  if (type.includes('mpeg') || type.includes('mp3')) return 'MP3';
-  if (type.includes('flac')) return 'FLAC';
-  if (type.includes('ogg') || type.includes('opus') || type.includes('webm')) return 'OGG_OPUS';
-  return 'AUTO_DETECT';
 }
 
 // ── Enrolment (used by scripts/clone-character-voices.ts, never at runtime) ──

@@ -314,12 +314,27 @@ export function ConversationView({
    * we already wrote for a guardian turning the microphone off, because
    * "something went wrong on our side" is not what happened and a child should
    * not be told it was.
+   *
+   * THE REST USED TO GET TOLD EXACTLY THAT, AND IT WAS THE REPORTED BUG.
+   *
+   * This resolved through `errors.api.<code>` — the envelope vocabulary for
+   * Core's HTTP surface. The conversation does not speak that vocabulary. It
+   * emits `STT_FAILED`, `NO_SEGMENT`, `CONNECTION_LOST` and the rest, none of
+   * which have an `errors.api` key, so EVERY one of them fell through to
+   * `errors.api.INTERNAL` — "Algo salió mal de nuestro lado." A child whose
+   * microphone simply did not catch them was told the company had broken.
+   *
+   * `tutor.conversationError.*` is the conversation's own namespace, every key
+   * present in all three locales, and its fallback apologises for a turn rather
+   * than for a platform.
    */
   const errorLine = !socket.error
     ? null
     : socket.error.code === 'CONSENT_REVOKED'
       ? t('tutor.offers.voiceNeedsConsent')
-      : t(`errors.api.${socket.error.code}`, { defaultValue: t('errors.api.INTERNAL') });
+      : t(`tutor.conversationError.${socket.error.code}`, {
+          defaultValue: t('tutor.conversationError.generic'),
+        });
 
   const minutes = Math.max(0, Math.ceil(socket.remainingMs / 60_000));
   const budgetRune =

@@ -22,8 +22,28 @@ const COMMAND_TIMEOUT_MS = 250;
 function store() {
   if (isTestOrDev) return new MemoryStore();
   return new RedisStore({
+    /*
+     * THE `isOpen` GUARD ITS SIBLINGS ALREADY HAD.
+     *
+     * `redisGet`/`redisSetEx` both refuse early when the socket is not up.
+     * This one did not, and it is constructed at MODULE LOAD — before
+     * index.ts connects the client in the background, deliberately, so the
+     * listener can open without waiting on Redis. So `RedisStore.init()`
+     * called `sendCommand` against a client that had not connected yet and
+     * every boot printed:
+     *
+     *   express-rate-limit: async error during store initialization.
+     *   ClientClosedError: The client is closed
+     *
+     * Failing open was always the intent (`passOnStoreError`), so nothing was
+     * broken — but a stack trace on every healthy start is noise that trains
+     * you to ignore the log, and this service's real faults live in that log.
+     * Rejecting cleanly says the same thing without the trace.
+     */
     sendCommand: (...args: string[]) =>
-      withTimeout(redisClient.sendCommand(args), COMMAND_TIMEOUT_MS, 'redis'),
+      redisClient.isOpen
+        ? withTimeout(redisClient.sendCommand(args), COMMAND_TIMEOUT_MS, 'redis')
+        : Promise.reject(new Error('redis not connected yet')),
   });
 }
 

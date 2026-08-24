@@ -29,9 +29,10 @@ import type { MutableRefObject } from 'react';
  *
  * THE HOLD CAP IS MEASURED IN BYTES, NOT SECONDS.
  *
- * `new MediaRecorder(stream)` takes no options on purpose — the browser picks
- * the codec, and we want whatever it is best at. That also means we cannot know
- * the bitrate, so "how many seconds fit under the wire cap" has no answer:
+ * The recorder asks for a container Oracle's transcriber has been MEASURED
+ * against (see `PREFERRED_MIME_TYPES`) and otherwise lets the browser pick. We
+ * still cannot know the bitrate, so "how many seconds fit under the wire cap"
+ * has no answer:
  * 1.5M base64 characters is roughly thirty-five seconds of PCM and several
  * minutes of Opus. Guessing a duration would either truncate a Chrome learner
  * mid-sentence or hand Oracle a frame its schema rejects. So the recorder runs
@@ -39,6 +40,38 @@ import type { MutableRefObject } from 'react';
  * hold releases itself at 90% of the cap. The number is then exact on every
  * browser without knowing anything about any of them.
  */
+
+/*
+ * CONTAINERS WE HAVE ACTUALLY SENT TO THE TRANSCRIBER AND SEEN COME BACK.
+ *
+ * The recorder used to take no options at all, on the reasoning that the
+ * browser knows best. It does — about recording. It knows nothing about what
+ * our speech-to-text provider accepts, and the two disagreed: Inworld supports
+ * WAV, MP3, OGG, FLAC, M4A and WebM, and rejects anything else with a 400.
+ *
+ * Ordering matters. Opus in WebM is first because it is the smallest of the
+ * accepted formats over the wire — this frame is base64 in a websocket message
+ * — and because it is what Chrome, Edge and Android produce anyway. Safari has
+ * only ever offered `audio/mp4`, so it lands there, which Inworld accepts as
+ * M4A.
+ *
+ * An empty result is not a failure: `isTypeSupported` may be absent, and every
+ * unmatched browser falls through to `new MediaRecorder(stream)` exactly as
+ * before. Preferring a measured format improves the odds; it is not load-bearing.
+ */
+const PREFERRED_MIME_TYPES = [
+  'audio/webm;codecs=opus',
+  'audio/webm',
+  'audio/ogg;codecs=opus',
+  'audio/mp4',
+] as const;
+
+function pickRecorderMimeType(): string | null {
+  if (typeof MediaRecorder === 'undefined' || typeof MediaRecorder.isTypeSupported !== 'function') {
+    return null;
+  }
+  return PREFERRED_MIME_TYPES.find((type) => MediaRecorder.isTypeSupported(type)) ?? null;
+}
 
 export type MicPermission = 'idle' | 'requesting' | 'granted' | 'denied' | 'unsupported';
 
@@ -215,7 +248,10 @@ export function useMicrophone(enabled: boolean, options: MicrophoneOptions = {})
     resetMeters();
     startedAtRef.current = Date.now();
 
-    const recorder = new MediaRecorder(stream);
+    const preferred = pickRecorderMimeType();
+    const recorder = preferred
+      ? new MediaRecorder(stream, { mimeType: preferred })
+      : new MediaRecorder(stream);
     recorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
         chunksRef.current.push(event.data);
