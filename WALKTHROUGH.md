@@ -117,12 +117,23 @@ background, which it does deliberately so the listener can open without waiting
 on optional infrastructure (§1.14). Every clean start printed
 `ClientClosedError: The client is closed`.
 
-Guarding `sendCommand` was tried first and **only changed which error printed**:
-express-rate-limit logs the trace itself regardless of what the rejection says.
-Verified by reading the deployed log, which is the only reason it was caught —
-the commit message had already claimed the trace was gone. Construction is now
-deferred to the first request, by which time the connect has resolved. A
-degraded limiter still fails open; the trade is unchanged and the log is honest.
+**It took three attempts, and the first two both shipped looking finished.**
+Guarding `sendCommand` only changed WHICH error printed — express-rate-limit
+logs the trace itself, whatever the rejection says. Deferring the limiter's
+construction to the first request removed that trace and earned
+`ERR_ERL_CREATED_IN_REQUEST_HANDLER`, a warning the library raises on purpose,
+now on a request path rather than at boot.
+
+Both were caught the same way: by reading the deployed boot log after the commit
+message had already declared the log clean. §1.12 #5 is the rule, and it applies
+to logs exactly as it does to tests.
+
+The race belongs in the STORE. `awaitFirstConnect(ms)` resolves when the shared
+client first comes up and returns instantly once it has EVER been open — "not
+connected yet, at boot" waits a beat, "not connected, an hour in" fails
+immediately, so an outage cannot add a grace period to every request. The
+limiter is built at app init again, where the library wants it. Verified by
+reading the log: `listening on :4009`, `redis connected`, nothing else.
 
 ### Verified
 
