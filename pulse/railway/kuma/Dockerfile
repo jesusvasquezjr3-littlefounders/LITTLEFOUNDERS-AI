@@ -7,7 +7,7 @@
 #
 # 2.4.0 is the security floor (patched an admin-surface RCE class issue);
 # keep the pin fresh via Dependabot — its admin UI is the sensitive surface.
-FROM louislam/uptime-kuma:2.4.0
+FROM louislam/uptime-kuma:2.5.3
 
 # State (monitors, history) is SQLite under /app/data — REQUIRES the Railway
 # volume mounted there, or every redeploy wipes the monitor config.
