@@ -5,7 +5,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
 import { LOCALES, type Locale } from '@/i18n';
-import { Button, Card, Dropdown, Icon, IconChip, type DropdownOption } from '@/components/ui';
+import { Button, Card, Dropdown, Icon, IconChip, LocaleFlag, type DropdownOption } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { UserListItem, type ListedUser } from './UserListItem';
@@ -29,12 +29,6 @@ interface OwnProfileFields {
 
 const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
 const BIRTH_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
-
-const LOCALE_FLAGS: Record<Locale, string> = {
-  'en-US': '🇺🇸',
-  'es-MX': '🇲🇽',
-  'pt-BR': '🇧🇷',
-};
 
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
@@ -95,7 +89,7 @@ export function SettingsPage() {
   const localeOptions: DropdownOption<Locale>[] = LOCALES.map((l) => ({
     value: l,
     label: t(`language.${l}`),
-    prefix: <span aria-hidden="true">{LOCALE_FLAGS[l]}</span>,
+    prefix: <LocaleFlag locale={l} />,
   }));
 
   async function onSubmit(e: FormEvent) {

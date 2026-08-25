@@ -5,7 +5,7 @@ import { LOCALES, type Locale } from '@/i18n';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { playPlatformSound } from '@/lib/sound';
-import { Badge, Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
+import { Badge, Button, Dropdown, Icon, LocaleFlag, ThemeToggle, type DropdownOption } from '@/components/ui';
 import { Avatar } from '@/components/Avatar';
 import { cn } from '@/lib/utils';
 import { NAV_ITEMS, isUnlocked, type NavItem } from './navConfig';
@@ -20,12 +20,6 @@ import { visibleAdminSections } from '@/routes/admin/adminNav';
  */
 
 const COLLAPSE_KEY = 'lf-sidebar-collapsed';
-
-const LOCALE_FLAGS: Record<Locale, string> = {
-  'en-US': '🇺🇸',
-  'es-MX': '🇲🇽',
-  'pt-BR': '🇧🇷',
-};
 
 function SidebarItem({ item, roles, collapsed }: { item: NavItem; roles: string[]; collapsed: boolean }) {
   const { t } = useTranslation();
@@ -155,7 +149,7 @@ export function AppLayout() {
   const localeOptions: DropdownOption<Locale>[] = LOCALES.map((l) => ({
     value: l,
     label: t(`language.${l}`),
-    prefix: <span aria-hidden="true">{LOCALE_FLAGS[l]}</span>,
+    prefix: <LocaleFlag locale={l} />,
   }));
 
   async function handleLanguageChange(l: Locale) {

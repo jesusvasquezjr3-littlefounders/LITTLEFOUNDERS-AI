@@ -10,10 +10,13 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap"
       rel="stylesheet"
     />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..700,0..1,0&display=block"
-      rel="stylesheet"
-    />
+    <!--
+      Material Symbols Outlined is self-hosted (src/index.css @font-face),
+      not loaded from Google Fonts. Every icon in the product depends on
+      this one font resolving, so it must not depend on a third-party
+      request that iOS Safari content blockers and locked-down school/
+      corporate networks are known to drop. See src/index.css for the why.
+    -->
   </head>
   <body>
     <div id="root"></div>

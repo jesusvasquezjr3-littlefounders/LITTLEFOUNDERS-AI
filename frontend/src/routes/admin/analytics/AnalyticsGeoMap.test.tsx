@@ -82,8 +82,8 @@ describe('AnalyticsGeoMap', () => {
   it('renders ranked countries from the real breakdown and filters on selection', async () => {
     render(<AnalyticsGeoMap periodQuery="period=30d" filterQuery="" onFilter={mockFilter} onClearFilter={mockClear} />);
 
-    expect(await screen.findByText('🇺🇸 United States')).toBeInTheDocument();
-    expect(screen.getByText('🇲🇽 Mexico')).toBeInTheDocument();
+    expect(await screen.findByText('United States')).toBeInTheDocument();
+    expect(screen.getByText('Mexico')).toBeInTheDocument();
     const countryButtons = screen.getAllByRole('button', { name: /United States/ });
     fireEvent.click(countryButtons[countryButtons.length - 1]!);
     expect(mockFilter).toHaveBeenCalledWith('country', 'US');

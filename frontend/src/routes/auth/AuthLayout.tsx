@@ -2,13 +2,7 @@ import { useLayoutEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LOCALES, type Locale } from '@/i18n';
-import { Dropdown, ThemeToggle, type DropdownOption } from '@/components/ui';
-
-const LOCALE_FLAGS: Record<Locale, string> = {
-  'en-US': '🇺🇸',
-  'es-MX': '🇲🇽',
-  'pt-BR': '🇧🇷',
-};
+import { Dropdown, LocaleFlag, ThemeToggle, type DropdownOption } from '@/components/ui';
 
 /*
  * Auth pages — full-viewport background image (B&W blurred, color on hover),
@@ -27,7 +21,7 @@ export function AuthLayout() {
   const localeOptions: DropdownOption<Locale>[] = LOCALES.map((l) => ({
     value: l,
     label: t(`language.${l}`),
-    prefix: <span aria-hidden="true">{LOCALE_FLAGS[l]}</span>,
+    prefix: <LocaleFlag locale={l} />,
   }));
 
   return (

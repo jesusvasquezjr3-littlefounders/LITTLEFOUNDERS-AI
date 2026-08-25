@@ -3,6 +3,42 @@
 @tailwind utilities;
 
 /*
+ * Material Symbols Outlined, self-hosted (frontend/AGENTS.md, DESIGN.md).
+ *
+ * This used to be a Google Fonts <link> in index.html. That is a third-party
+ * request to fonts.gstatic.com on every first load, and it is exactly the
+ * kind of request privacy content blockers (1Blocker, AdGuard, Wipr — common
+ * on iOS Safari, where they run as first-class Safari extensions) and
+ * school/corporate network filters block by default, several of which flag
+ * Google Fonts specifically as a cross-site tracking surface. When that
+ * request never completes, EVERY icon in the product has no font to
+ * substitute a glyph for its ligature name, and the browser paints the raw
+ * name ("arrow_forward") as text — read by `Icon.tsx` as a broken glyph
+ * checked at render (see its own comment) or, past the safety margin, just
+ * shown as long English words the way `.material-symbols-outlined` intends a
+ * glyph to appear. This is a genuinely different failure than the ligature
+ * feature-flag bug fixed on `.lf-icon` below: THAT one already fired even
+ * when the font loaded fine; THIS one fires only when the font never arrives
+ * at all, which is systematically more likely on the exact platforms
+ * (iOS Safari, locked-down school/corporate Windows networks) this file's
+ * report came from. The fix for both is to stop depending on network
+ * conditions and a third party's server at all: the font ships as part of
+ * this app's own static assets, same-origin, same caching and reliability
+ * guarantee as everything else in `public/`.
+ *
+ * The file is the exact variable-font woff2 Google Fonts itself serves for
+ * this family (fetched once, vendored — see frontend/README.md), so it still
+ * carries the opsz/wght/FILL/GRAD axes `.lf-icon`/`.lf-icon-fill` rely on.
+ */
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: block;
+  src: url('/fonts/material-symbols-outlined.woff2') format('woff2');
+}
+
+/*
  * THE ATMOSPHERE CHANNEL (/DESIGN.md §Lumen → Light).
  *
  * Four values describing the light the Tutor's island is standing in. They are
@@ -1203,7 +1239,20 @@
     }
   }
 
-  /* Material Symbols (DESIGN.md: the only icon set). Ligature-based. */
+  /*
+   * Material Symbols (DESIGN.md: the only icon set). Ligature-based: the DOM
+   * text is a name like "arrow_forward" and the font substitutes a glyph for
+   * it via the OpenType 'liga' feature. Without declaring that feature
+   * explicitly, whether ligature substitution actually happens is left to the
+   * platform's text-shaping engine: CoreText (macOS/iOS Safari, and Chrome's
+   * fallback path there) enables optional ligatures for a downloaded webfont
+   * by default, but HarfBuzz (Chrome/Firefox/Edge on Windows, Linux, Android,
+   * ChromeOS) does not, for an ARBITRARY custom font, unless the page asks for
+   * it. That is why every icon rendered correctly for anyone testing on a Mac
+   * and printed as raw text (or, once the Icon component's own width-based
+   * fallback caught the overflow, a generic help glyph) everywhere else — not
+   * a font-loading failure, a missing feature declaration.
+   */
   .lf-icon {
     font-family: 'Material Symbols Outlined';
     font-weight: normal;
@@ -1215,7 +1264,11 @@
     white-space: nowrap;
     word-wrap: normal;
     direction: ltr;
+    font-feature-settings: 'liga' 1;
+    -webkit-font-feature-settings: 'liga' 1;
+    font-variant-ligatures: discretionary-ligatures;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     user-select: none;
     color: currentColor; /* Universal rule: icons always inherit text color */
   }

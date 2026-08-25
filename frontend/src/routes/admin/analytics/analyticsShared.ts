@@ -122,24 +122,29 @@ export function filtersToQuery(filters: AnalyticsFilter[]): string {
 }
 
 /**
- * Plausible reports countries as ISO-3166 alpha-2 codes. Map to a flag emoji +
- * the locale-aware region name via Intl.DisplayNames; fall back to the raw
- * code for anything unmappable.
+ * Plausible reports countries as ISO-3166 alpha-2 codes. Map to the
+ * locale-aware region name via Intl.DisplayNames; fall back to the raw code
+ * for anything unmappable.
+ *
+ * This used to prefix a flag built from regional-indicator emoji codepoints
+ * (`0x1F1E6 + letter offset`). Windows ships no glyphs at all for those
+ * codepoint pairs — Segoe UI Emoji deliberately omits flags — so every admin
+ * on Windows saw a stray empty box or two-letter tofu before the country
+ * name, for all ~250 possible codes, not just the 3 the language switcher
+ * covers. Building a real flag for every ISO country is a materially bigger
+ * asset problem than 3 locale flags and out of proportion for an admin-only
+ * table where the name alone is already fully identifying, so this drops the
+ * emoji instead of trying to replace it — consistent with DESIGN.md's icon
+ * rule, which no longer carries any emoji exception.
  */
 export function countryLabel(code: string, locale?: string): string {
   const cc = code.trim().toUpperCase();
   if (!/^[A-Z]{2}$/.test(cc)) return code;
-  const flag = cc
-    .split('')
-    .map((c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65))
-    .join('');
-  let name: string | undefined;
   try {
-    name = new Intl.DisplayNames(locale ? [locale] : undefined, { type: 'region' }).of(cc);
+    return new Intl.DisplayNames(locale ? [locale] : undefined, { type: 'region' }).of(cc) ?? cc;
   } catch {
-    name = undefined;
+    return cc;
   }
-  return `${flag} ${name ?? cc}`;
 }
 
 /* ── Response shapes (backend contract) ─────────────────────────────── */

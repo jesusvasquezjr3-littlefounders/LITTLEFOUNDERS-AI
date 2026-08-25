@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { LOCALES, type Locale } from '@/i18n';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
-import { Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
+import { Button, Dropdown, Icon, LocaleFlag, ThemeToggle, type DropdownOption } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { CookiePreferencesButton } from '@/components/CookieConsentBanner';
 
@@ -17,15 +17,6 @@ const NAV_LINKS = [
 ] as const;
 
 const CONTACT_EMAIL = 'informame@littlefounders.ai';
-
-// Country flag paired with each locale (DESIGN.md exception: flags are content
-// labels for language identity, not functional UI icons — Material Symbols
-// has no equivalent).
-const LOCALE_FLAGS: Record<Locale, string> = {
-  'en-US': '🇺🇸',
-  'es-MX': '🇲🇽',
-  'pt-BR': '🇧🇷',
-};
 
 function navLinkClass({ isActive }: { isActive: boolean }): string {
   return cn(
@@ -55,7 +46,7 @@ export function MarketingLayout() {
   const localeOptions: DropdownOption<Locale>[] = LOCALES.map((l) => ({
     value: l,
     label: t(`language.${l}`),
-    prefix: <span aria-hidden="true">{LOCALE_FLAGS[l]}</span>,
+    prefix: <LocaleFlag locale={l} />,
   }));
 
   return (

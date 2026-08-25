@@ -2184,8 +2184,11 @@ IconChips; a profile hero may use a inverse band with a glass-deep identity card
   `lf-caption` on world-anchored chrome, no `content-muted` at chrome density,
   no Tailwind `ring-*` for selection, and nothing written per frame except an
   anchored node's own `transform`.
-- ❌ No emojis as icons (country flags in the language switcher are the one
-  exception). No new infinite animations — with ONE carve-out, the Tutor
+- ❌ No emojis as icons, with no exceptions — the language switcher's flags
+  used to be the one carve-out and broke on every non-macOS platform (Windows
+  ships no glyphs at all for the regional-indicator emoji pairs a flag is made
+  of), so they are real SVGs (`components/ui/LocaleFlag.tsx`) instead. No new
+  infinite animations — with ONE carve-out, the Tutor
   stage's ambient camera drift (§Motion), which is bounded by reduced-motion,
   by the quality governor and by the duration of any live segment. A carve-out
   with three off switches is a rule; a carve-out with none is how the next one
