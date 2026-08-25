@@ -20,6 +20,14 @@
 
 set -euo pipefail
 
+# docker compose's COMPOSE_FILE (set in docker/.env, e.g.
+# "docker-compose.yml:docker-compose.local-ports.yml") is colon-separated by
+# upstream convention. The Windows-native docker compose CLI defaults
+# COMPOSE_PATH_SEPARATOR to ';' (the OS path-list separator), so it fails to
+# split the list and treats the joined string as one nonexistent filename.
+# Force ':' so the same .env works on every host OS.
+export COMPOSE_PATH_SEPARATOR=:
+
 DB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DOCKER_DIR="$DB_DIR/supabase/docker"
 MIGRATE_ROLE="${MIGRATE_ROLE:-supabase_admin}"

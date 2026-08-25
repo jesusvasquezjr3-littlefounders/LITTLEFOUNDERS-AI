@@ -46,16 +46,20 @@ done
 # 2. Database setup sequence
 echo -e "\n${YELLOW}--> Provisioning local database...${NC}"
 cd database
-echo "  [1/4] Starting stack, applying migrations, and running dev_seed..."
+echo "  [1/5] Materializing the pinned supabase/supabase clone..."
+npm run db:sync
+
+echo "  [2/5] Starting stack and applying migrations..."
 npm run db:reset
 
-echo "  [2/4] Creating test users and linking families..."
+echo "  [3/5] Running dev_seed (role-stub users + demo family)..."
+npm run db:seed
+
+echo "  [4/5] Creating test users and linking families..."
 npm run db:seed:users
 
-echo "  [3/4] Importing QA smoketest fixture..."
+echo "  [5/5] Importing and publishing QA smoketest fixture..."
 npm run db:import-course -- seeds/first-lemonade-stand-fixture.sql
-
-echo "  [4/4] Publishing QA smoketest fixture..."
 npm run db:publish-course -- first-lemonade-stand
 cd ..
 
