@@ -188,19 +188,40 @@ export function HowItWorks() {
 
       <Reveal as="section" className="bg-base py-20 sm:py-28">
         <div className="mx-auto max-w-container px-5 md:px-8">
-          <Card hero className="mx-auto max-w-4xl text-center">
-            <h2 className="lf-display-lg">
-              {t("marketing.howItWorks.closing.title")}
-            </h2>
-            <p className="lf-body-lg mx-auto mt-4 max-w-2xl text-content-muted">
-              {t("marketing.howItWorks.closing.body")}
-            </p>
-            <PrimaryCta
-              dataCta="how-it-works-primary"
-              wrapperClassName="mt-7 inline-block"
-              buttonClassName="mt-7"
-              guestLabel={t("marketing.howItWorks.cta")}
+          {/* Photo LEFT, copy right - the mirror of the Landing's final CTA,
+              which puts its photo on the right. Below `lg` the grid collapses
+              and the photo stacks on top, so the CTA is never pushed under a
+              full-width image on a phone. */}
+          <Card
+            hero
+            className="mx-auto grid max-w-4xl items-center gap-8 overflow-hidden lg:grid-cols-[0.95fr_1.05fr]"
+          >
+            <img
+              src="/marketing/pexels-kid-saving-7118210.jpg"
+              alt={t("marketing.howItWorks.closing.imageAlt")}
+              // `object-bottom`, not the default centre crop. The source is portrait
+              // 2:3 and its whole subject - the hands, the coins, the labelled
+              // savings jar - sits in the bottom third, so a centred 3:2 crop
+              // keeps empty floor and the back of a head and discards the
+              // reason the photo was chosen.
+              className="aspect-[3/2] w-full rounded-lg object-cover object-bottom shadow-glass"
+              loading="lazy"
+              decoding="async"
             />
+            <div className="text-center lg:text-left">
+              <h2 className="lf-display-lg">
+                {t("marketing.howItWorks.closing.title")}
+              </h2>
+              <p className="lf-body-lg mt-4 text-content-muted">
+                {t("marketing.howItWorks.closing.body")}
+              </p>
+              <PrimaryCta
+                dataCta="how-it-works-primary"
+                wrapperClassName="mt-7 inline-block"
+                buttonClassName="mt-7"
+                guestLabel={t("marketing.howItWorks.cta")}
+              />
+            </div>
           </Card>
         </div>
       </Reveal>

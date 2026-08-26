@@ -11431,6 +11431,7 @@ Photos from [Pexels](https://www.pexels.com), used under the Pexels license (fre
 
 | File | Source |
 |---|---|
+| `pexels-kid-saving-7118210.jpg` | https://www.pexels.com/photo/7118210/ |
 | `pexels-kid-piggybank-12955547.jpg` | https://www.pexels.com/photo/12955547/ |
 | `pexels-learning-group.jpg` | https://www.pexels.com/photo/children-collaborating-in-a-classroom-setting-34526413/ |
 | `pexels-classroom-learning.jpg` | https://www.pexels.com/photo/children-learning-in-classroom-setting-31152359/ |
@@ -11439,7 +11440,6 @@ Photos from [Pexels](https://www.pexels.com), used under the Pexels license (fre
 | `atlas/3985092.jpg` | https://www.pexels.com/photo/family-doing-shopping-in-the-grocery-store-3985092/ |
 | `atlas/3985077.jpg` | https://www.pexels.com/photo/grocery-shopping-with-family-3985077/ |
 | `atlas/3985081.jpg` | https://www.pexels.com/photo/family-grocery-shopping-3985081/ |
-| `atlas/3985056.jpg` | https://www.pexels.com/photo/family-doing-shopping-in-the-grocery-store-3985056/ |
 ```
 
 ### frontend/scripts/generate-walkmask.ts
@@ -15387,21 +15387,21 @@ import { failedFromI18nKey, formatPct } from './generationI18n';
 ### frontend/src/routes/admin/LiveStats.tsx
 
 ```
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useTranslation } from "react-i18next";
-import { useAuth } from "@/auth/AuthContext";
-import { api } from "@/lib/api";
-import {
-  Card,
-  Dropdown,
-  Icon,
-  ProgressBar,
-  StatCard,
-  type DropdownOption,
-} from "@/components/ui";
-import { cn } from "@/lib/utils";
-import { getSupabaseClient } from "@/lib/supabaseRealtime";
-import { formatPct } from "./generationI18n";
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Card, Dropdown, Icon, ProgressBar, StatCard, type DropdownOption } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import { getSupabaseClient } from '@/lib/supabaseRealtime';
+import { formatPct } from './generationI18n';
+import { processedSlots, resolveGenerationKind, stagesForKind, type LiveGenerationStatus, type LiveRunHeartbeat } from './generationTypes';
+
+/*
+ * Live Monitor data flow:
+ *   1. Core hydrates the current state and polls as the reliable baseline.
+ *   2. Supabase Realtime accelerates updates when it is configured and healthy.
+ *   3. Realtime failure never hides a heartbeat that Core can still provide.
 ```
 
 ### frontend/src/routes/admin/PipelineFlow.tsx
@@ -15627,9 +15627,9 @@ const USERS = [
 ### frontend/src/routes/admin/__tests__/LiveStats.realtime.test.tsx
 
 ```
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
-import { LiveStats } from "../LiveStats";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import { LiveStats } from '../LiveStats';
 
 /*
  * REGRESSION COVER FOR A LATCHING REALTIME FAILURE.
