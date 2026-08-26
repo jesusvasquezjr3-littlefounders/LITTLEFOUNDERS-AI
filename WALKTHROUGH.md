@@ -2,6 +2,59 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## /how-it-works answers four questions, and its own CTA had to stop contradicting one of them (2026-08-26)
+
+**What the owner asked for.** A rebuild of the page around "how do we do it, why
+this way, what makes us different, why should you open an account" - brief,
+punchy, marketing first, not a technical tour. Seven blocks were proposed as a
+table; the owner approved 1, 2, 4, 6 and 7, rejecting the fourteen pedagogical
+principles and the safety/trust block. The page now runs: the concept atlas with
+its title, "We do not give lessons. We give decisions.", "Four mentors who
+answer.", "Start without an account.", and "Make it yours."
+
+**Four portraits, not one line-up.** The mentor block was captured first as a
+single 1400x562 banner of all four standing together. It is a good render and it
+is the wrong asset: at 2.5:1 it lands each mentor about 90px tall on a 375px
+phone, a row of figurines. Split into four square stills, the same four reflow
+to 2x2 on a phone and 4-across on a desktop, and each one can carry a name. Each
+is trimmed to its OWN ink and re-padded to a square, which is what lets a 1.61 m
+human and a 1.9 m dinosaur share a grid cell at the same apparent size without
+either being cropped. They are stills rather than video because the life comes
+from a CSS float with a per-card phase offset: four WebPs totalling 186 KB and
+zero video decoders, against four VP9-alpha streams, for motion a viewer cannot
+tell apart.
+
+**The names are read from the Tutor, not re-written here.** `tutor.character.*`
+already holds all four names and personalities. A marketing copy of the same
+four blurbs would drift the first time a personality is retuned, and the page
+would then contradict the product it is describing.
+
+**The CTA had to move because the copy above it moved.** Block 6 promises
+"start without an account"; the page's button went to `/signup`. Starting
+without an account is not a destination - it is `startGuestSession()` followed
+by a navigation, and `<Link to="/onboarding">` would simply bounce off
+`RequireAuth`. That behaviour lived inside Landing as a local `PrimaryCta`, so
+it was extracted to `marketing/PrimaryCta.tsx` and both pages now share it,
+including the conversion event and the failure notice. Copying it would have
+left one page reporting the acquisition goal and the other not.
+
+**Two things the capture harness got wrong before the page did.** A `fullPage`
+screenshot reported the closing block as BLANK; a DOM probe showed it at opacity
+1 with its text present, so the blank was the capture compositing layers that
+had never been on screen. Verification switched to per-viewport shots. Before
+that, the page-walk that fires the scroll reveals sampled `document.body
+.scrollHeight` ONCE, at the start - lazy images and the atlas canvas grow the
+document afterwards, so the walk stopped half way and three whole blocks were
+photographed at opacity 0. Both were defects in the instrument, and both would
+have been read as defects in the page.
+
+**What is flagged rather than decided.** Block 2 needed a character and a
+concrete decision, and that question was asked in the proposal and never
+answered. Chosen and recorded in the component: Zara, and "buy the candy today"
+against "save for the bike". Zara because she is already the mentor who hands
+the learner a decision during onboarding. Neither option is styled as correct,
+because the claim is that the story changes, not that one answer wins.
+
 ## The Landing's lower half became compositions, and a pixel of sideways scroll turned out not to be where it looked (2026-08-26)
 
 **What the owner asked for, in order.** The card composition beside the "67% of
@@ -4013,6 +4066,10 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-26 | **An asset's ASPECT RATIO is a responsiveness decision, and one wide composition is not a cheaper version of several square ones.** The four mentors on /how-it-works are four square stills, each trimmed to its own ink and re-padded, laid out 2x2 on a phone and 4-across on a desktop. | The same four were captured first as one 1400x562 banner. Nothing was wrong with the render; the SHAPE was wrong. A 2.5:1 asset in a single column puts each mentor at roughly 90px tall at 375px, which §1.11 calls a bug outright, and no CSS fixes it because the four are baked into one image. Splitting also removed the four video decoders the animated version would have cost: the float is CSS, at 186 KB total. |
+| 2026-08-26 | **A CTA's DESTINATION is part of the copy around it. "Start without an account" over a button to /signup is a defect, not a mismatch of tone.** `marketing/PrimaryCta.tsx` extracted out of Landing; both marketing pages share it, and a test pins that the /how-it-works button is a guest-start button carrying `data-cta`. | The block the owner approved promises no account is needed; the page then asked for one. It could not be fixed by changing the href, because starting without an account is `startGuestSession()` plus a navigation and `/onboarding` is behind `RequireAuth`. Duplicating the handler instead of sharing it would eventually have left one page firing the `guest_start` conversion and the other silently not - the acquisition number would have looked like a traffic story. |
+| 2026-08-26 | **A `fullPage` screenshot is not evidence about a page, and a scroll-walk that samples the document height ONCE is not evidence either.** Verification on marketing routes now stitches per-viewport captures, and the reveal walk re-reads `document.body.scrollHeight` every step. | Both instruments reported defects that did not exist. `fullPage` showed the closing block empty while a DOM probe found it at opacity 1 with its text; it was compositing layers that had never been on screen. Separately, the walk fixed its bound before lazy images and the atlas canvas had grown the document, stopped half way, and photographed three whole blocks at opacity 0. Reading either as a page defect would have cost a fix to code that was already correct. |
+| 2026-08-26 | **A key assembled at runtime is invisible to `i18n:check`, which says so itself, so it needs a test instead.** `App.test.tsx` now renders /how-it-works and asserts all eleven dynamic keys resolve to something other than themselves AND appear on screen. | The mentor grid builds `tutor.character.<who>.<field>` and the reward labels build `marketing.howItWorks.account.<what>`. Key-set parity passes on those files whatever they are named, so renaming a character key would ship the literal string `tutor.character.zara.name` to a visitor with every gate green. |
 | 2026-08-26 | **`Skeleton.pose()` is not a safe way back to the bind pose, and the failure is invisible to every matrix-based check.** Poses are built by snapshotting each bone's bind quaternion at load and composing deltas onto the copy. | Rho's export carries a 0.01 scale on the node above the rig, and `pose()` rebuilds each bone from its inverse bind matrix in world space and decomposes back to local - a round trip that scale does not survive. He rendered SIX PIXELS TALL while `__project` still reported him filling the frame, because the projection reads matrices and the renderer reads the skinned result, and only one of them had been ruined. This is the same class as the 2026-08-25 `quaternion.identity()` lesson and the general rule is now twice paid for: never ASK a rig to reconstruct its rest state, COPY the rest state before touching it and restore from the copy. |
 | 2026-08-26 | **A composition is centred on its INK, never on its box, and the correction belongs in percent.** The free-fall artwork's transparent bands (4.5% of height above, 15.5% below) are removed with negative margins so `justify-center` centres what the eye sees. | Flex centring works on boxes, and this render carries sky the file still pays for, so the group was centred while the artwork sat 22px low and the copy beneath it started a sixth of a picture below where the picture appears to end. Every number said centred; only a measurement of the INK disagreed. The margins are PERCENT because a percentage margin resolves against the containing block's inline size, and that block is exactly as wide as the artwork - so one declaration is correct at every viewport, where a pixel value is correct at one breakpoint and wrong at the rest. |
 | 2026-08-26 | **An element's bounding rect is not evidence that it overflows: follow the ancestor chain for a clipping context first.** The Landing's 1px of horizontal scroll at 768px was the footer's contact email, not the technology graph's canvas it had been attributed to. | The canvas measures 821px inside a 768px viewport and looks exactly like a culprit, but `.lf-atlas` already carries `overflow-x: hidden`, and a clipped element cannot extend an ancestor's `scrollWidth`. The real cause was a grid item's default `min-width: auto` letting an unbreakable 241px email push a 208px column instead of wrapping - which only happens in the narrow window where the footer becomes three columns. Also a lesson about sampling: the first pass checked five widths, concluded "only 768", and missed that 769 overflowed too. The sweep now runs 22 widths and asserts `scrollWidth <= clientWidth` at each. |

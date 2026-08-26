@@ -1239,17 +1239,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## The Landing's lower half became compositions, and a pixel of sideways scroll turned out not to be where it looked (2026-08-26)
+## /how-it-works answers four questions, and its own CTA had to stop contradicting one of them (2026-08-26)
 
-**What the owner asked for, in order.** The card composition beside the "67% of
-adults" statistic was invisible on a phone. Then: a free-fall composition in the
-empty slot below it, Liruf and Zara falling, later Dina added above them, later
-still speed lines behind them and the group centred as one object. Then a copy
-block under it. Then a tab shape carrying the band into the page below, with Rho
-diving out of it. Then the section after that reduced to a single centred
-statement, and the final CTA relabelled.
+**What the owner asked for.** A rebuild of the page around "how do we do it, why
+this way, what makes us different, why should you open an account" - brief,
+punchy, marketing first, not a technical tour. Seven blocks were proposed as a
+table; the owner approved 1, 2, 4, 6 and 7, rejecting the fourteen pedagogical
+principles and the safety/trust block. The page now runs: the concept atlas with
+its title, "We do not give lessons. We give decisions.", "Four mentors who
+answer.", "Start without an account.", and "Make it yours."
 
-**The card deck was `hidden lg:block`.** Nothing in it needed a wide viewport:
+**Four portraits, not one line-up.** The mentor block was captured first as a
 ```
 
 ### agent/README.md
@@ -21023,26 +21023,41 @@ export function ComingSoon({ page }: { page: 'howItWorks' | 'families' | 'faq' }
 ### frontend/src/routes/marketing/HowItWorks.css
 
 ```
+/*
+ * /how-it-works, blocks 2, 4 and 6.
+ *
+ * Every size here is relative. Structural pixel widths are prohibited outside
+ * the `container-max` / `sidebar-width` tokens (§1.11), and these blocks each
+ * have to survive the full range from a 375px phone to a 1280px desktop.
+ */
+
+/* ---------------------------------------------------------------- block 2 */
+
+.lf-hiw-choice {
+  display: grid;
+  justify-items: center;
+  gap: 1.5rem;
+}
 ```
 
 ### frontend/src/routes/marketing/HowItWorks.tsx
 
 ```
-import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/auth/AuthContext';
-import { APP_HOME } from '@/routes/app/navConfig';
-import { Button, Card, Icon, Reveal } from '@/components/ui';
-import { TechnologyGraph } from './TechnologyGraph';
+import { useTranslation } from "react-i18next";
+import { Card, LottieIcon, Reveal } from "@/components/ui";
+import { PrimaryCta } from "./PrimaryCta";
+import { TechnologyGraph } from "./TechnologyGraph";
+import "./HowItWorks.css";
 
 /*
- * DELIBERATELY DOWN TO TWO BLOCKS. The page is being rewritten around an
- * explanation of the product in a following session, so it keeps its hero and
- * its closing invitation and nothing in between.
+ * The page answers four questions in order: how do we teach, who teaches, what
+ * does it cost to try, and why open an account. Five blocks, no more. Anything
+ * that explains the machinery rather than the promise belongs in the docs.
  *
- * What went: the three-step walk, the lesson demo, the parent-dashboard block
- * and the growth readout. Not commented out and not hidden - the markup, the
- * i18n keys in all three locales, and `HowItWorks.css` (every class in it was
+ * THE MENTORS ARE NOT RE-NAMED HERE. Their names and personalities are read
+ * from `tutor.character.*`, which is where the product already keeps them. A
+ * marketing copy of the same four blurbs would drift the first time a
+ * personality is retuned, and the page would then contradict the Tutor itself.
 ```
 
 ### frontend/src/routes/marketing/Landing.css
@@ -21068,14 +21083,13 @@ import { TechnologyGraph } from './TechnologyGraph';
 ### frontend/src/routes/marketing/Landing.tsx
 
 ```
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/auth/AuthContext";
 import { trackMarketingGoal } from "@/lib/analytics";
-import { APP_HOME } from "@/routes/app/navConfig";
 import { Button, Card, Icon, LottieIcon, Reveal } from "@/components/ui";
 import { useTheme } from "@/theme/useTheme";
+import { PrimaryCta } from "./PrimaryCta";
 import { TechnologyGraph } from "./TechnologyGraph";
 import { useAlphaVideoSupport, usePrefersReducedMotion } from "./alphaVideo";
 import "./Landing.css";
@@ -21083,6 +21097,7 @@ import "./Landing.css";
 /* DESIGN.md §Screen Recipes → Landing. This is a marketing narrative, not a
    product specification: invitation → learning experience → proof → CTA. */
 
+export function Landing() {
 ```
 
 ### frontend/src/routes/marketing/LegalDocumentViewer.tsx
@@ -21133,6 +21148,26 @@ import { CookiePreferencesButton } from '@/components/CookieConsentBanner';
 const NAV_LINKS = [
   { to: '/how-it-works', key: 'howItWorks' },
   { to: '/families', key: 'families' },
+```
+
+### frontend/src/routes/marketing/PrimaryCta.tsx
+
+```
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "@/auth/AuthContext";
+import { trackMarketingGoal } from "@/lib/analytics";
+import { APP_HOME } from "@/routes/app/navConfig";
+import { Button, Icon } from "@/components/ui";
+
+/*
+ * THE ACQUISITION BUTTON, shared by every public marketing page.
+ *
+ * It lived inside Landing until /how-it-works grew a block promising "start
+ * without an account": a `<Link to="/signup">` under that heading contradicts
+ * the sentence above it, and a `<Link to="/onboarding">` would simply bounce
+ * off `RequireAuth`. Starting without an account is not a destination, it is
 ```
 
 ### frontend/src/routes/marketing/TechnologyGraph.css

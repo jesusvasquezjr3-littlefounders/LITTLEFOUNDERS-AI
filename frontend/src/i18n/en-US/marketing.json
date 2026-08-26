@@ -44,6 +44,25 @@
   "howItWorks": {
     "title": "From curiosity to financial confidence",
     "cta": "Start free",
+    "decisions": {
+      "heading": "We do not give lessons. We give decisions.",
+      "body": "Every lesson puts your child inside a choice that has a consequence. They learn because they decided, not because they listened.",
+      "question": "You earned 10 coins. What do you do?",
+      "optionA": "Buy the candy today",
+      "optionB": "Save for the bike",
+      "consequence": "Choose, and the story changes. That is what sticks."
+    },
+    "mentors": {
+      "heading": "Four mentors who answer. Not a video that plays.",
+      "body": "Dina, Liruf, Dr. Rho and Zara guide every lesson. The Tutor holds a conversation: ask, repeat, slower."
+    },
+    "account": {
+      "heading": "Start without an account. Create one when you want to keep it.",
+      "body": "Try it right now. The account saves the progress, the streak and your family’s profile.",
+      "streak": "Your streak",
+      "lessons": "Your lessons",
+      "coins": "Your coins"
+    },
     "closing": {
       "title": "Make it yours.",
       "body": "One step. A lifetime of ideas."

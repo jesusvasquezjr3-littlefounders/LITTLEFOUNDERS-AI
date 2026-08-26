@@ -44,6 +44,25 @@
   "howItWorks": {
     "title": "De la curiosidad a la confianza financiera",
     "cta": "Empieza gratis",
+    "decisions": {
+      "heading": "No damos clases. Damos decisiones.",
+      "body": "Cada lección mete a tu hijo dentro de una elección con consecuencia. Aprende porque decidió, no porque escuchó.",
+      "question": "Ganaste 10 monedas. ¿Qué haces?",
+      "optionA": "Compro el dulce hoy",
+      "optionB": "Guardo para la bici",
+      "consequence": "Elige, y la historia cambia. Eso es lo que se recuerda."
+    },
+    "mentors": {
+      "heading": "Cuatro mentores que responden. No un video que se reproduce.",
+      "body": "Dina, Liruf, Dr. Rho y Zara guían cada lección. Con el Tutor se conversa: pregunta, repite, más despacio."
+    },
+    "account": {
+      "heading": "Empieza sin cuenta. Créala cuando quieras conservarlo.",
+      "body": "Pruébalo ahora mismo. La cuenta guarda el progreso, la racha y el perfil de tu familia.",
+      "streak": "Tu racha",
+      "lessons": "Tus lecciones",
+      "coins": "Tus monedas"
+    },
     "closing": {
       "title": "Hazlo tuyo.",
       "body": "Un paso. Ideas para toda la vida."

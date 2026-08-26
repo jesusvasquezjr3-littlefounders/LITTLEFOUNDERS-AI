@@ -1,11 +1,10 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/auth/AuthContext";
 import { trackMarketingGoal } from "@/lib/analytics";
-import { APP_HOME } from "@/routes/app/navConfig";
 import { Button, Card, Icon, LottieIcon, Reveal } from "@/components/ui";
 import { useTheme } from "@/theme/useTheme";
+import { PrimaryCta } from "./PrimaryCta";
 import { TechnologyGraph } from "./TechnologyGraph";
 import { useAlphaVideoSupport, usePrefersReducedMotion } from "./alphaVideo";
 import "./Landing.css";
@@ -27,102 +26,8 @@ export function Landing() {
    */
   const alphaVideo = useAlphaVideoSupport();
   const reducedMotion = usePrefersReducedMotion();
-  const { session, meLoaded, startGuestSession } = useAuth();
+  const { session, meLoaded } = useAuth();
   const { pathname } = useLocation();
-  const navigate = useNavigate();
-  const [startingGuest, setStartingGuest] = useState(false);
-  const [guestError, setGuestError] = useState(false);
-  const ctaTo = session ? APP_HOME : "/signup";
-  const ctaLabel = session
-    ? t("dashboard.continueCta")
-    : t("marketing.hero.ctaPrimary");
-
-  // Guest-first entry (Duolingo-style, no signup friction): the primary CTA
-  // starts a guest session and drops the visitor straight into onboarding.
-  // Signed-in visitors keep the plain declarative Link above (ctaTo).
-  async function startAsGuest() {
-    /*
-     * The acquisition conversion. Reported BEFORE the await, not after: the
-     * call navigates away on success, and an event fired after a route change
-     * would be attributed to the destination rather than to the marketing
-     * page that actually earned it.
-     *
-     * trackMarketingGoal re-checks the same gate the pageview path uses, so
-     * this is a no-op for a signed-in visitor, a non-consented one, or any
-     * surface outside the public marketing set — this component never has to
-     * reason about the boundary itself.
-     */
-    trackMarketingGoal("guest_start", { pathname, session, meLoaded });
-    setStartingGuest(true);
-    setGuestError(false);
-    const { error } = await startGuestSession();
-    setStartingGuest(false);
-    if (error) {
-      setGuestError(true);
-      return;
-    }
-    navigate("/onboarding");
-  }
-
-  /*
-   * `guestLabel` overrides the wording for a VISITOR only. The signed-in branch
-   * deliberately cannot be relabelled: /AGENTS.md §1.13 requires a marketing
-   * CTA to be session-aware, and someone with a session gets "continue where
-   * you left off" pointing at the dashboard no matter which button they found.
-   */
-  function PrimaryCta({
-    dataCta,
-    wrapperClassName,
-    buttonClassName,
-    guestLabel,
-  }: {
-    dataCta: string;
-    wrapperClassName?: string;
-    buttonClassName?: string;
-    guestLabel?: string;
-  }) {
-    if (session) {
-      return (
-        <Link
-          to={ctaTo}
-          data-cta={dataCta}
-          className={wrapperClassName}
-          onClick={() =>
-            trackMarketingGoal("cta_signup_start", {
-              pathname,
-              session,
-              meLoaded,
-            })
-          }
-        >
-          <Button className={`group ${buttonClassName ?? ""}`}>
-            {ctaLabel}
-            <Icon
-              name="arrow_forward"
-              className="transition-transform duration-200 motion-safe:group-hover:translate-x-0.5"
-            />
-          </Button>
-        </Link>
-      );
-    }
-    return (
-      <Button
-        data-cta={dataCta}
-        className={`group ${buttonClassName ?? ""}`}
-        disabled={startingGuest}
-        onClick={() => void startAsGuest()}
-      >
-        {startingGuest
-          ? t("marketing.hero.ctaStarting")
-          : (guestLabel ?? ctaLabel)}
-        <Icon
-          name="arrow_forward"
-          className="transition-transform duration-200 motion-safe:group-hover:translate-x-0.5"
-        />
-      </Button>
-    );
-  }
-
   return (
     <div>
       <section className="relative isolate overflow-hidden bg-base text-content dark:bg-inverse dark:text-on-inverse">
@@ -177,11 +82,6 @@ export function Landing() {
                 </Link>
               )}
             </div>
-            {guestError && (
-              <p role="alert" className="lf-caption mt-3 text-error-strong">
-                {t("marketing.hero.guestError")}
-              </p>
-            )}
             {!session && (
               <div className="sr-only">
                 <Link to="/login">{t("marketing.hero.loginLink")}</Link>
@@ -636,7 +536,11 @@ export function Landing() {
             240 units either side gives a broad, blunt tip, where 80 gave a
             narrow V. The shoulder controls sit just outside them (1020 / 420),
             which is what keeps the sides steep while the bottom stays wide. */}
-        <svg viewBox="0 0 1440 200" preserveAspectRatio="none" focusable="false">
+        <svg
+          viewBox="0 0 1440 200"
+          preserveAspectRatio="none"
+          focusable="false"
+        >
           <path
             className="lf-band-tongue__fill"
             d="M0 0 H1440 C1020 0 960 200 720 200 C480 200 420 0 0 0 Z"

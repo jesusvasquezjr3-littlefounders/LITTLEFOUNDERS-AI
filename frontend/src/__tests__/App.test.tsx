@@ -44,19 +44,62 @@ describe('Marketing site', () => {
   });
 
   /*
-   * The page is down to its title and its closing invitation while the product
-   * explanation is rewritten. Asserted against the BUNDLE rather than against
-   * pinned prose, for the same reason as the landing tests above: this copy is
-   * expected to change, and a literal here fails on the rewrite while claiming
-   * the page is broken.
+   * Asserted against the BUNDLE rather than against pinned prose, for the same
+   * reason as the landing tests above: this copy is expected to change, and a
+   * literal here fails on the rewrite while claiming the page is broken.
    */
-  it('renders the how-it-works page down to its title and its closing invitation', () => {
+  it('renders the how-it-works page: title, the three explanation blocks, and the closing invitation', () => {
     renderApp('/how-it-works');
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       i18n.t('marketing.howItWorks.title'),
     );
+    for (const block of ['decisions', 'mentors', 'account'] as const) {
+      expect(
+        screen.getByText(i18n.t(`marketing.howItWorks.${block}.heading`)),
+      ).toBeInTheDocument();
+    }
     expect(screen.getByText(i18n.t('marketing.howItWorks.closing.title'))).toBeInTheDocument();
     expect(screen.queryByText('Coming soon')).not.toBeInTheDocument();
+  });
+
+  /*
+   * `npm run i18n:check` says so itself: it verifies key-set parity but cannot
+   * follow a key built at runtime. This page builds two families of them -
+   * `tutor.character.<who>.<field>` for the mentor grid and
+   * `marketing.howItWorks.account.<what>` for the reward labels - so a rename
+   * on either side would ship raw key strings to a visitor with every gate
+   * still green. This is the test that would catch it.
+   */
+  it('resolves every dynamically built key on the how-it-works page', () => {
+    renderApp('/how-it-works');
+    for (const who of ['zara', 'rho', 'liruf', 'dina'] as const) {
+      for (const field of ['name', 'blurb'] as const) {
+        const key = `tutor.character.${who}.${field}`;
+        const value = i18n.t(key);
+        expect(value).not.toBe(key);
+        expect(screen.getByText(value)).toBeInTheDocument();
+      }
+    }
+    for (const what of ['streak', 'lessons', 'coins'] as const) {
+      const key = `marketing.howItWorks.account.${what}`;
+      const value = i18n.t(key);
+      expect(value).not.toBe(key);
+      expect(screen.getByText(value)).toBeInTheDocument();
+    }
+  });
+
+  /*
+   * §1.13, on the page that now promises "start without an account" three
+   * blocks above its own button: that button must open a guest session rather
+   * than send the visitor to /signup for one.
+   */
+  it('the how-it-works CTA starts a guest session rather than demanding an account', () => {
+    renderApp('/how-it-works');
+    const cta = screen.getByRole('button', {
+      name: new RegExp(i18n.t('marketing.howItWorks.cta')),
+    });
+    expect(cta).not.toHaveAttribute('href');
+    expect(cta).toHaveAttribute('data-cta', 'how-it-works-primary');
   });
 
   it('the primary CTA is a guest-start button (never a plain /signup link), and login/signup stay reachable as secondary options', () => {
