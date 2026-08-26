@@ -2,6 +2,60 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## The auth surface had two shells and only one of them followed the recipe (2026-08-26)
+
+**How it was found.** The owner asked for a proposal to improve /login, /signup
+and the registration and parental-verification routes. Reading them turned up
+something structural before any taste question: `DESIGN.md` §0 is the PRIME RULE
+("deviating from a recipe without human sign-off is a design bug"), its Auth
+recipe specifies a focused single centered column on `base` with one resting
+card and cross-links in `primary` - and only half the auth pages did that.
+
+`AuthShell` implemented the recipe and carried /verify-parent, /upgrade-account
+and /auth/callback. `AuthSplit` - two columns over a full-bleed stock photo -
+carried /login, /signup, /forgot-password and /reset-password. Verified in git
+rather than assumed: the recipe text has NEVER changed, `WALKTHROUGH.md` records
+on 2026-07-20 that login/signup used `AuthShell` and quotes the recipe as the
+reason, and commit `602ac44d` on 2026-08-01 moved them onto the new split shell
+in a message claiming it aligned things "strictly to visual hierarchy
+guidelines". No sign-off is recorded in ROADMAP.md or WALKTHROUGH.md.
+
+**Everything else on those pages followed from that.** Half a 1280px viewport
+carrying two lines of text; a glass card reading as grey plastic because what
+was behind it was a blurred greyscale photo rather than the page; six copies of
+the raw hex `#ff775c` across four files where the recipe says `primary`; a
+`ThemeToggle` at `hidden sm:inline-flex`, so a phone lost the one theme control
+the rest of the product offers everywhere; and a colour-on-hover flourish on the
+background that does nothing on a device with no hover.
+
+**And a theme bug hiding inside the layout.** The whole layer was
+`text-on-inverse` over a `bg-black/40` scrim, which meant a visitor in light
+mode still got a dark page. The theme they chose stopped applying at exactly the
+screen that asks them for a password.
+
+**What was done.** `AuthSplit` is deleted and all six pages compose from
+`AuthShell`. The shell keeps the recipe (single centered column, `max-w-md` /
+`max-w-2xl`, the `primary/10` glow, title above the card) and gains the marketing
+surfaces' visual language WITHOUT breaking it: one mentor bust above the title,
+the onboarding pattern of "one character with one short line" rather than a
+photograph behind everything. The busts are cropped from the four mentor renders
+already shipped for /how-it-works - one sharp pass, not a capture cycle - with a
+per-character crop fraction, because Zara and Rho are humans whose heads are a
+small part of the figure while Liruf and Dina are big-headed creatures and one
+shared number decapitates one pair.
+
+`AUTH_LINK_CLASS` replaces the six hex copies. The layout is `bg-base` /
+`text-content`. `ThemeToggle` renders at every width. `auth-bg.jpg` and its 32
+lines of CSS are gone, with nothing left reading either.
+
+**The test that should have existed.** `AuthRecipe.test.tsx` reads the SOURCE
+of every auth page and asserts it renders `AuthShell`, never `AuthSplit`, and
+names no colour of its own; that the shell keeps the column and the glow; and
+that the utility row keeps the theme control unconditionally. All four
+assertions were confirmed to FAIL against the pre-fix files and pass after. A
+rule that lives only in a document is a rule nothing checks, which is the whole
+reason this drifted for three weeks under green gates.
+
 ## The admin Live Monitor was losing Realtime permanently, and the only symptom was a test warning (2026-08-26)
 
 **What was reported.** A full test run printed one unhandled rejection, `cannot
@@ -4118,6 +4172,9 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-26 | **One auth shell, and a test that reads the source to keep it that way.** `AuthSplit` deleted; all six auth pages compose from `AuthShell`; `AuthRecipe.test.tsx` asserts the composition, the absence of arbitrary colours, and the theme control - confirmed to fail against the pre-fix files. | `DESIGN.md` §0 calls an unsigned deviation from a recipe a design bug, and this was one: the recipe text never changed, but on 2026-08-01 the four busiest auth pages moved onto a second shell while two stayed compliant. Every gate stayed green for three weeks because the only thing asserting the recipe was prose. A control named in a document and not pinned by a test is a control that eventually is not there. |
+| 2026-08-26 | **Page chrome never hard-codes a light or dark surface.** The auth layer was `text-on-inverse` over a scrimmed photograph; it is now `bg-base` / `text-content`. | A visitor in light mode got a dark page - their theme silently stopped applying at the one screen that asks for a password. The scrim also put a grey blur behind the glass Card, so the card read as flat plastic rather than as glass over the page, and the photo's colour-on-hover flourish was inert on any phone (§1.11). |
+| 2026-08-26 | **Marketing polish reaches the trust surface as a CHARACTER, not as a photograph.** One mentor bust above the title (the onboarding "one character, one short line" pattern), cropped from the renders already shipped for /how-it-works with a per-character fraction. | The owner asked for the Landing / how-it-works composition on these pages. Taken literally that is a hero, which the Auth recipe forbids for good reason - a trust surface spends wide screens on calm. A character carries the same brand language inside the recipe instead of against it. Per-character crop because a human's head is a small part of the figure and a big-headed creature's is not; one shared fraction decapitates one pair or leaves the other full-body. |
 | 2026-08-26 | **The two marketing closing cards are one component in one role, so they measure the same: neither carries a width cap of its own.** `max-w-4xl` removed from /how-it-works; both are governed by `max-w-container` alone. Measured 1136x393 at x=72 on both pages. | The cap was left over from the version of that block that was a centred single column, and it made the card 240px narrower than the Landing's on any desktop while MATCHING below 768px - where `max-w-container` is the smaller constraint and the cap never binds. That is the shape of the bug worth naming: a difference that disappears exactly at the widths a quick mobile check looks at. The columns stay mirrored (`[0.95fr_1.05fr]` against the Landing's `[1.05fr_0.95fr]`) because the photo is on the other side. |
 | 2026-08-26 | **A character pose that means something gets its own asset.** Zara is re-posed for /how-it-works block 2 - body three-quarter toward the decision card, open presenting hand, gaze following - as `zara-presents.webp`, leaving `mentor-zara.webp` untouched for the mentor grid. | The two blocks were reading the SAME file, so "turn her toward the card" would also have turned her sideways in the line-up of four mentors, where all four facing the viewer is the composition. The two renders look similar enough that the next person tidying up would collapse them back, so the component says why they are not interchangeable. The rig's axes were read off two throwaway contact sheets (which way a positive yaw turns her, then which bone/axis/sign swings the near arm out and turns the head) rather than reasoned about - the four exports do not share conventions, and a wrong guess costs a whole capture cycle. |
 | 2026-08-26 | **A licensed photo and its CREDITS.md line move together, in BOTH directions.** `pexels-kid-saving-7118210.jpg` was restored from history into the /how-it-works closing card, and its attribution row restored with it. Its alt text was recovered from the same commit that deleted it rather than re-authored. | Removing the photo in a9258cb7 correctly removed the credit; bringing it back without the credit would have shipped an unattributed stock image, which is a licensing problem rather than a tidiness one. The alt already existed in all three locales, written for this exact frame - rewriting it would have been three fresh translations of a sentence we already had. Its crop is anchored `object-bottom`: the source is portrait 2:3 with the hands, coins and labelled jar all in the bottom third, so the default centred 3:2 crop kept empty floor and discarded the subject. |

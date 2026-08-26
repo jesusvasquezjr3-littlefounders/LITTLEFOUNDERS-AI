@@ -14,6 +14,8 @@ import { ErrorBanner } from './ErrorBanner';
  * identity. Same auth.users.id afterward, so progress/streak/profile carry
  * over with zero data migration (see AuthContext.upgradeAccount).
  */
+const MENTOR = '/marketing/mentor-zara-bust.webp';
+
 export function UpgradeAccountPage() {
   const { t } = useTranslation();
   const { isGuest, upgradeAccount } = useAuth();
@@ -44,7 +46,7 @@ export function UpgradeAccountPage() {
   }
 
   return (
-    <AuthShell title={t('auth.upgrade.title')} subtitle={t('auth.upgrade.subtitle')}>
+    <AuthShell character={MENTOR} title={t('auth.upgrade.title')} subtitle={t('auth.upgrade.subtitle')}>
       <form onSubmit={(e) => void onSubmit(e)} noValidate className="flex flex-col gap-5">
         {errorCode && <ErrorBanner code={errorCode} />}
         <Field

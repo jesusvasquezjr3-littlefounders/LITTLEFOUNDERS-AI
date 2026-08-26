@@ -5,7 +5,7 @@ import { api } from '@/lib/api';
 import { playPlatformSound } from '@/lib/sound';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
-import { AuthSplit } from './AuthSplit';
+import { AUTH_LINK_CLASS, AuthShell } from './AuthShell';
 import { ErrorBanner } from './ErrorBanner';
 
 /*
@@ -16,6 +16,8 @@ import { ErrorBanner } from './ErrorBanner';
  * normal session: it exists only to authorize the one POST /reset-password
  * call below, then the user signs in fresh with the new password.
  */
+const MENTOR = '/marketing/mentor-rho-bust.webp';
+
 export function ResetPasswordPage() {
   const { t } = useTranslation();
   const ran = useRef(false);
@@ -58,7 +60,7 @@ export function ResetPasswordPage() {
 
   if (done) {
     return (
-      <AuthSplit title={t('auth.resetPassword.doneTitle')}>
+      <AuthShell character={MENTOR} title={t('auth.resetPassword.doneTitle')}>
         <div className="flex flex-col items-center gap-4 text-center">
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-success-soft">
             <Icon name="check_circle" className="text-success-strong" />
@@ -66,33 +68,33 @@ export function ResetPasswordPage() {
           <p className="lf-body text-content">{t('auth.resetPassword.doneBody')}</p>
           <Link
             to="/login"
-            className="lf-label rounded-sm text-[#ff775c] hover:text-[#e55f45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff775c]"
+            className={AUTH_LINK_CLASS}
           >
             {t('auth.resetPassword.goToLogin')}
           </Link>
         </div>
-      </AuthSplit>
+      </AuthShell>
     );
   }
 
   if (recoveryToken === null) {
     return (
-      <AuthSplit title={t('auth.resetPassword.expiredTitle')}>
+      <AuthShell character={MENTOR} title={t('auth.resetPassword.expiredTitle')}>
         <div className="flex flex-col items-center gap-4 text-center">
           <p className="lf-body text-content-muted">{t('auth.resetPassword.expiredBody')}</p>
           <Link
             to="/forgot-password"
-            className="lf-label rounded-sm text-[#ff775c] hover:text-[#e55f45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff775c]"
+            className={AUTH_LINK_CLASS}
           >
             {t('auth.resetPassword.requestNew')}
           </Link>
         </div>
-      </AuthSplit>
+      </AuthShell>
     );
   }
 
   return (
-    <AuthSplit title={t('auth.resetPassword.title')} subtitle={t('auth.resetPassword.subtitle')}>
+    <AuthShell character={MENTOR} title={t('auth.resetPassword.title')} subtitle={t('auth.resetPassword.subtitle')}>
       <form onSubmit={(e) => void onSubmit(e)} noValidate className="flex flex-col gap-5" aria-busy={recoveryToken === undefined}>
         {errorCode && <ErrorBanner code={errorCode} />}
         <Field
@@ -121,6 +123,6 @@ export function ResetPasswordPage() {
           {submitting ? t('auth.resetPassword.submitting') : t('auth.resetPassword.submit')}
         </Button>
       </form>
-    </AuthSplit>
+    </AuthShell>
   );
 }

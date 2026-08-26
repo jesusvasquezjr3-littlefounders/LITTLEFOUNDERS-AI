@@ -5,13 +5,15 @@ import { api } from '@/lib/api';
 import { playPlatformSound } from '@/lib/sound';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
-import { AuthSplit } from './AuthSplit';
+import { AUTH_LINK_CLASS, AuthShell } from './AuthShell';
 
 /*
  * Kicks off the recovery.html email (Courier). The backend always answers
  * `{sent: true}` — GoTrue never reveals whether the address has an account —
  * so this screen shows the SAME confirmation regardless of what was typed.
  */
+const MENTOR = '/marketing/mentor-rho-bust.webp';
+
 export function ForgotPasswordPage() {
   const { t } = useTranslation();
 
@@ -30,7 +32,7 @@ export function ForgotPasswordPage() {
 
   if (sent) {
     return (
-      <AuthSplit title={t('auth.forgotPassword.sentTitle')}>
+      <AuthShell character={MENTOR} title={t('auth.forgotPassword.sentTitle')}>
         <div className="flex flex-col items-center gap-4 text-center">
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-success-soft">
             <Icon name="mark_email_read" className="text-success-strong" />
@@ -38,23 +40,23 @@ export function ForgotPasswordPage() {
           <p className="lf-body text-content">{t('auth.forgotPassword.sentBody', { email })}</p>
           <Link
             to="/login"
-            className="lf-label rounded-sm text-[#ff775c] hover:text-[#e55f45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff775c]"
+            className={AUTH_LINK_CLASS}
           >
             {t('auth.forgotPassword.backToLogin')}
           </Link>
         </div>
-      </AuthSplit>
+      </AuthShell>
     );
   }
 
   return (
-    <AuthSplit
+    <AuthShell character={MENTOR}
       title={t('auth.forgotPassword.title')}
       subtitle={t('auth.forgotPassword.subtitle')}
       footer={
         <Link
           to="/login"
-          className="lf-label rounded-sm text-[#ff775c] hover:text-[#e55f45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff775c]"
+          className={AUTH_LINK_CLASS}
         >
           {t('auth.forgotPassword.backToLogin')}
         </Link>
@@ -73,6 +75,6 @@ export function ForgotPasswordPage() {
           {submitting ? t('auth.forgotPassword.submitting') : t('auth.forgotPassword.submit')}
         </Button>
       </form>
-    </AuthSplit>
+    </AuthShell>
   );
 }

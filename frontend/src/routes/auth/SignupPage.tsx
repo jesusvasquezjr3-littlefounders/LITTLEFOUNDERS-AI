@@ -9,7 +9,7 @@ import type { Locale } from '@/i18n';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { Checkbox } from '@/components/ui/Checkbox';
-import { AuthSplit } from './AuthSplit';
+import { AUTH_LINK_CLASS, AuthShell } from './AuthShell';
 import { ErrorBanner } from './ErrorBanner';
 import { SocialAuth } from './SocialAuth';
 
@@ -18,6 +18,8 @@ import { SocialAuth } from './SocialAuth';
  * friction). The Tutor checkbox only records intent: the parent role itself
  * is granted exclusively by Guardian verification (/verify-parent).
  */
+const MENTOR = '/marketing/mentor-liruf-bust.webp';
+
 export function SignupPage() {
   const { t, i18n } = useTranslation();
   const { signup, getToken } = useAuth();
@@ -84,19 +86,19 @@ export function SignupPage() {
 
   if (confirmationPending) {
     return (
-      <AuthSplit title={t('auth.signup.confirmTitle')}>
+      <AuthShell character={MENTOR} title={t('auth.signup.confirmTitle')}>
         <div className="flex flex-col items-center gap-4 text-center">
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-success-soft">
             <Icon name="mark_email_read" className="text-success-strong" />
           </span>
           <p className="lf-body text-content">{t('auth.signup.confirmBody', { email })}</p>
         </div>
-      </AuthSplit>
+      </AuthShell>
     );
   }
 
   return (
-    <AuthSplit
+    <AuthShell character={MENTOR}
       title={t('auth.signup.title')}
       subtitle={t('auth.signup.subtitle')}
       footer={
@@ -104,7 +106,7 @@ export function SignupPage() {
           {t('auth.signup.haveAccount')}{' '}
           <Link
             to="/login"
-            className="lf-label rounded-sm text-[#ff775c] hover:text-[#e55f45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff775c]"
+            className={AUTH_LINK_CLASS}
           >
             {t('auth.signup.loginLink')}
           </Link>
@@ -167,6 +169,6 @@ export function SignupPage() {
         </Button>
         <p className="lf-caption text-center text-content-muted">{t('auth.signup.universalNote')}</p>
       </form>
-    </AuthSplit>
+    </AuthShell>
   );
 }

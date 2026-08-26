@@ -7,9 +7,11 @@ import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
-import { AuthSplit } from './AuthSplit';
+import { AUTH_LINK_CLASS, AuthShell } from './AuthShell';
 import { ErrorBanner } from './ErrorBanner';
 import { SocialAuth } from './SocialAuth';
+
+const MENTOR = '/marketing/mentor-zara-bust.webp';
 
 export function LoginPage() {
   const { t } = useTranslation();
@@ -50,7 +52,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthSplit
+    <AuthShell character={MENTOR}
       title={t('auth.login.title')}
       subtitle={t('auth.login.subtitle')}
       footer={
@@ -58,7 +60,7 @@ export function LoginPage() {
           {t('auth.login.noAccount')}{' '}
           <Link
             to="/signup"
-            className="lf-label rounded-sm text-[#ff775c] hover:text-[#e55f45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff775c]"
+            className={AUTH_LINK_CLASS}
           >
             {t('auth.login.signupLink')}
           </Link>
@@ -107,6 +109,6 @@ export function LoginPage() {
           {submitting ? t('auth.login.submitting') : t('auth.login.submit')}
         </Button>
       </form>
-    </AuthSplit>
+    </AuthShell>
   );
 }

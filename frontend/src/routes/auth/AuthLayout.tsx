@@ -5,10 +5,20 @@ import { LOCALES, type Locale } from '@/i18n';
 import { Dropdown, LocaleFlag, ThemeToggle, type DropdownOption } from '@/components/ui';
 
 /*
- * Auth pages — full-viewport background image (B&W blurred, color on hover),
- * 2-column split layout (DESIGN.md §Screen Recipes → Auth). Image covers both
- * sides as a unified backdrop; the grid overlays text left, form right.
- * Utility row (logo, language, theme) floats above the image.
+ * Auth shell chrome. /DESIGN.md §Screen Recipes → Auth: "A minimal utility row
+ * sits above the column (logo → `/`, language Dropdown, ThemeToggle) — no nav
+ * links, no CTA button; it's an escape hatch and two settings, not a second
+ * header."
+ *
+ * THE PAGE IS `base`, NOT A PHOTOGRAPH. It carried a full-viewport stock photo
+ * (blurred greyscale, colour on hover) under a `bg-black/40` scrim, with the
+ * whole layer forced to `text-on-inverse`. Three things followed from that and
+ * all three were bugs: the recipe says the trust surface is a focused column on
+ * `base`; a permanently dark layer meant a visitor in light mode still got a
+ * dark page, so the theme they chose stopped applying exactly where they were
+ * asked to type a password; and the glass Card had a grey blur behind it rather
+ * than the page, so it read as flat plastic. The colour-on-hover flourish also
+ * did nothing on a phone, which has no hover (§1.11).
  */
 export function AuthLayout() {
   const { t, i18n } = useTranslation();
@@ -25,19 +35,12 @@ export function AuthLayout() {
   }));
 
   return (
-    <div className="relative min-h-screen text-on-inverse">
-      <div className="auth-bg">
-        <img src="/marketing/auth-bg.jpg" alt="" className="auth-bg-img-bw" />
-        <img src="/marketing/auth-bg.jpg" alt="" className="auth-bg-img-color" />
-        <div className="absolute inset-0 bg-black/40" />
-      </div>
-
-      <div className="pointer-events-none relative z-10 flex min-h-screen flex-col">
-        <header className="lf-glass pointer-events-auto sticky top-0 z-40">
+    <div className="relative flex min-h-screen flex-col bg-base text-content">
+      <header className="lf-glass sticky top-0 z-40">
         <div className="mx-auto flex h-16 max-w-container items-center justify-between gap-4 px-5 md:px-8">
           <Link
             to="/"
-            className="flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-inverse"
+            className="flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <img
               src="/logo-main-trimmed.png"
@@ -53,15 +56,18 @@ export function AuthLayout() {
               onChange={(l) => void i18n.changeLanguage(l)}
               ariaLabel={t('language.label')}
             />
-            <ThemeToggle className="hidden sm:inline-flex" />
+            {/* Visible at EVERY width. It shipped `hidden sm:inline-flex`, so a
+                phone lost the one theme control the rest of the product gives
+                it everywhere else - and the recipe lists it in this row without
+                a breakpoint. */}
+            <ThemeToggle />
           </div>
-          </div>
-        </header>
+        </div>
+      </header>
 
-        <main key={location.pathname} className="lf-page-enter flex-1">
-          <Outlet />
-        </main>
-      </div>
+      <main key={location.pathname} className="lf-page-enter flex-1">
+        <Outlet />
+      </main>
     </div>
   );
 }

@@ -1239,17 +1239,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## The admin Live Monitor was losing Realtime permanently, and the only symptom was a test warning (2026-08-26)
+## The auth surface had two shells and only one of them followed the recipe (2026-08-26)
 
-**What was reported.** A full test run printed one unhandled rejection, `cannot
-add postgres_changes callbacks for realtime:generation-live after subscribe()`,
-from `LiveStats.tsx`. It had been flagged as noise in the same area as an
-already-known flake.
+**How it was found.** The owner asked for a proposal to improve /login, /signup
+and the registration and parental-verification routes. Reading them turned up
+something structural before any taste question: `DESIGN.md` §0 is the PRIME RULE
+("deviating from a recipe without human sign-off is a design bug"), its Auth
+recipe specifies a focused single centered column on `base` with one resting
+card and cross-links in `primary` - and only half the auth pages did that.
 
-**It was not noise.** Three behaviours of `@supabase/realtime-js`, verified
-against the installed copy rather than assumed: `channel(topic)` returns the
-EXISTING channel when the topic is already registered; `.on()` on a channel that
-has already been subscribed throws; and the topic stays registered after that
+`AuthShell` implemented the recipe and carried /verify-parent, /upgrade-account
+and /auth/callback. `AuthSplit` - two columns over a full-bleed stock photo -
 ```
 
 ### agent/README.md
@@ -11187,8 +11187,8 @@ The SPA: the four product sections (learn, tutor, tasks, profile). Talks ONLY to
 - **/DESIGN.md is AUTHORITATIVE** (LittleFounders Liquid Glass). Tokens live in `tailwind.config.js` + `src/index.css` CSS vars — never add values those files/DESIGN.md don't define. Type ONLY via the closed `lf-*` scale (`lf-display-xl`…`lf-caption`, Inter + Sora). Build UI with the kit in `src/components/ui/` (Button, Icon, Card, IconChip, Dropdown, ThemeToggle, ProgressBar, Badge, StatCard) — no per-view restyling. Elevation ONLY via the liquid-glass set (`shadow-glass*`, `shadow-pop`, `.lf-glass`, `.lf-glass-deep`) — frosted translucent panels with backdrop-blur, subtle light borders, and layered soft shadows; flat opaque surfaces and raw hex are prohibited. Icons: Material Symbols via `<Icon name="…"/>` — never emojis, no exceptions. Country flags (language switcher) are real SVGs via `<LocaleFlag locale="…"/>` (`components/ui/LocaleFlag.tsx`), not emoji: Windows ships no glyphs at all for the regional-indicator emoji pairs a flag emoji is made of, so the old emoji carve-out rendered as boxes or nothing on every non-macOS platform.
 - **No native pickers**: never `<select>`, `<input type="date">`, etc. as a choice control — always `Dropdown` or a purpose-built component (`ThemeToggle`).
 - **Action Color Contract (/DESIGN.md §Colors) is NON-NEGOTIABLE**: every button/action's color is chosen by what it DOES, not by taste — `primary`/`accent` variant = the ONE main CTA (indigo fill), `secondary` (alternative/lower emphasis, outlined), `success` (positive completion), `danger` (destructive/irreversible). Indigo (`primary` token) is for links/focus/info. `delight` (violet) and `warning` are status/celebration only, never button fills.
-- **COMPOSITION FIDELITY (/DESIGN.md §0):** build from **/DESIGN.md §Screen Recipes** — they are the single composition source (there is no mockup directory). Deviating without human sign-off is a design bug; if a recipe is ambiguous, fix the recipe in the same commit.
-- **Motion is a closed system** (/DESIGN.md §Motion): only the five recipes (page transition via layout, `<Reveal>` scroll reveal with ≤3×80ms stagger, `.lf-pop` panels, press physics, arrow nudge) with `--lf-ease`/`--lf-dur-*` tokens. `.lf-float` is the only infinite animation. Everything reduced-motion safe (wired in index.css).
+- **The auth surface has ONE shell, `routes/auth/AuthShell.tsx`, and `AuthRecipe.test.tsx` is what keeps it that way.** Every `*Page.tsx` under `routes/auth/` renders `<AuthShell>`; cross-links use the exported `AUTH_LINK_CLASS`, never a colour of their own. A second shell (`AuthSplit`, two columns over a full-bleed photo) once took over /login, /signup, /forgot-password and /reset-password while /verify-parent and /upgrade-account stayed compliant, and every gate stayed green for weeks because the recipe existed only in a document. If a recipe matters, a test has to read the source and say so.
+- **A page-level layer must never hard-code a light or dark surface.** The auth layout forced `text-on-inverse` over a scrimmed photograph, so a visitor in light mode still got a dark page - the theme they had chosen stopped applying at exactly the screen where they were asked to type a password. Page chrome uses `bg-base` / `text-content` and lets the tokens resolve; the only surfaces that name a side are the ones DESIGN.md says are inverse.
 ```
 
 ### frontend/README.md
@@ -20790,14 +20790,14 @@ import { LOCALES, type Locale } from '@/i18n';
 import { Dropdown, LocaleFlag, ThemeToggle, type DropdownOption } from '@/components/ui';
 
 /*
- * Auth pages — full-viewport background image (B&W blurred, color on hover),
- * 2-column split layout (DESIGN.md §Screen Recipes → Auth). Image covers both
- * sides as a unified backdrop; the grid overlays text left, form right.
- * Utility row (logo, language, theme) floats above the image.
- */
-export function AuthLayout() {
-  const { t, i18n } = useTranslation();
-  const location = useLocation();
+ * Auth shell chrome. /DESIGN.md §Screen Recipes → Auth: "A minimal utility row
+ * sits above the column (logo → `/`, language Dropdown, ThemeToggle) — no nav
+ * links, no CTA button; it's an escape hatch and two settings, not a second
+ * header."
+ *
+ * THE PAGE IS `base`, NOT A PHOTOGRAPH. It carried a full-viewport stock photo
+ * (blurred greyscale, colour on hover) under a `bg-black/40` scrim, with the
+ * whole layer forced to `text-on-inverse`. Three things followed from that and
 ```
 
 ### frontend/src/routes/auth/AuthShell.tsx
@@ -20807,37 +20807,22 @@ import type { ReactNode } from 'react';
 import { Card } from '@/components/ui';
 
 /*
- * Composition per /DESIGN.md §Screen Recipes → Auth: focused single column
- * (max-w-md) centered on `base`, soft primary glow behind one resting card.
- * Wide screens spend their space on calm, not columns — trust surface.
- */
-export function AuthShell({ title, subtitle, children, footer, wide = false }: {
-  title: string;
-  subtitle?: string;
-  children: ReactNode;
-  footer?: ReactNode;
-  wide?: boolean;
-}) {
+ * THE ONE AUTH COMPOSITION. /DESIGN.md §Screen Recipes → Auth: focused single
+ * centered column on `base` (max-w-md; verification forms max-w-2xl), soft
+ * `primary/10` glow behind ONE resting card, `lf-display-lg` title + muted
+ * subtitle above the card, one indigo submit CTA, cross-links in `primary`.
+ *
+ * There used to be TWO shells. `AuthSplit` - two columns over a full-bleed
+ * stock photo - carried /login, /signup, /forgot-password and /reset-password,
+ * while this one carried /verify-parent and /upgrade-account, so half the auth
+ * system obeyed the recipe and half obeyed something else. The recipe text has
+ * never changed since it was written; the pages moved off it on 2026-08-01 with
+ * no sign-off recorded anywhere, which /DESIGN.md §0 calls a design bug in so
 ```
 
 ### frontend/src/routes/auth/AuthSplit.tsx
 
 ```
-import type { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Icon } from '@/components/ui';
-
-/*
- * /DESIGN.md §Screen Recipes → Auth: 2-column split layout.
- * Desktop: text left, form right — full-viewport image behind both.
- * Mobile: single column, text then form.
- */
-export function AuthSplit({ title, subtitle, children, footer }: {
-  title: string;
-  subtitle?: string;
-  children: ReactNode;
-  footer?: ReactNode;
 ```
 
 ### frontend/src/routes/auth/ErrorBanner.tsx
@@ -20870,14 +20855,14 @@ import { api } from '@/lib/api';
 import { playPlatformSound } from '@/lib/sound';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
-import { AuthSplit } from './AuthSplit';
+import { AUTH_LINK_CLASS, AuthShell } from './AuthShell';
 
 /*
  * Kicks off the recovery.html email (Courier). The backend always answers
  * `{sent: true}` — GoTrue never reveals whether the address has an account —
  * so this screen shows the SAME confirmation regardless of what was typed.
  */
-export function ForgotPasswordPage() {
+const MENTOR = '/marketing/mentor-rho-bust.webp';
 ```
 
 ### frontend/src/routes/auth/LoginPage.tsx
@@ -20892,12 +20877,12 @@ import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
-import { AuthSplit } from './AuthSplit';
+import { AUTH_LINK_CLASS, AuthShell } from './AuthShell';
 import { ErrorBanner } from './ErrorBanner';
 import { SocialAuth } from './SocialAuth';
 
-export function LoginPage() {
-  const { t } = useTranslation();
+const MENTOR = '/marketing/mentor-zara-bust.webp';
+
 ```
 
 ### frontend/src/routes/auth/ResetPasswordPage.tsx
@@ -20910,7 +20895,7 @@ import { api } from '@/lib/api';
 import { playPlatformSound } from '@/lib/sound';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
-import { AuthSplit } from './AuthSplit';
+import { AUTH_LINK_CLASS, AuthShell } from './AuthShell';
 import { ErrorBanner } from './ErrorBanner';
 
 /*
@@ -20934,7 +20919,7 @@ import type { Locale } from '@/i18n';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { Checkbox } from '@/components/ui/Checkbox';
-import { AuthSplit } from './AuthSplit';
+import { AUTH_LINK_CLASS, AuthShell } from './AuthShell';
 import { ErrorBanner } from './ErrorBanner';
 import { SocialAuth } from './SocialAuth';
 
@@ -21018,6 +21003,26 @@ function renderApp(path: string) {
 }
 
 beforeEach(async () => {
+```
+
+### frontend/src/routes/auth/__tests__/AuthRecipe.test.tsx
+
+```
+import { describe, expect, it } from 'vitest';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+/*
+ * THE RECIPE, PINNED.
+ *
+ * /DESIGN.md §Screen Recipes → Auth specifies one composition for the whole
+ * trust surface, and /DESIGN.md §0 calls deviating from a recipe without
+ * sign-off a design bug. It drifted anyway: on 2026-08-01 four of the six auth
+ * pages were moved onto a second shell - two columns over a full-bleed stock
+ * photo - while /verify-parent and /upgrade-account stayed on the compliant
+ * one. Every gate stayed green for weeks, because a rule written only in a
+ * document is a rule nothing checks.
+ *
 ```
 
 ### frontend/src/routes/marketing/ComingSoon.tsx

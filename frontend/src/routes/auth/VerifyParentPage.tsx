@@ -22,6 +22,8 @@ type Verdict = { verified: boolean; checks?: Record<string, boolean>; role?: str
 const CHECK_KEYS = ['documentReadable', 'nameMatch', 'birthDateMatch', 'notExpired'] as const;
 const BIRTH_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
+const MENTOR = '/marketing/mentor-rho-bust.webp';
+
 export function VerifyParentPage() {
   const { t } = useTranslation();
   const { roles, getToken, refreshMe } = useAuth();
@@ -73,7 +75,7 @@ export function VerifyParentPage() {
 
   if (isParent && !verdict?.verified) {
     return (
-      <AuthShell title={t('auth.verify.alreadyTitle')}>
+      <AuthShell character={MENTOR} title={t('auth.verify.alreadyTitle')}>
         <div className="flex flex-col items-center gap-4 text-center">
           <Badge className="bg-success-soft text-success-strong">{t('auth.verify.tutorBadge')}</Badge>
           <p className="lf-body text-content">{t('auth.verify.alreadyBody')}</p>
@@ -87,7 +89,7 @@ export function VerifyParentPage() {
 
   if (verdict?.verified) {
     return (
-      <AuthShell title={t('auth.verify.successTitle')}>
+      <AuthShell character={MENTOR} title={t('auth.verify.successTitle')}>
         <div className="flex flex-col items-center gap-4 text-center">
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-success-soft">
             <Icon name="verified_user" className="text-success-strong" />
@@ -105,7 +107,7 @@ export function VerifyParentPage() {
   const failedChecks = verdict && !verdict.verified ? CHECK_KEYS.filter((k) => verdict.checks?.[k] === false) : [];
 
   return (
-    <AuthShell wide title={t('auth.verify.title')} subtitle={t('auth.verify.subtitle')}>
+    <AuthShell character={MENTOR} wide title={t('auth.verify.title')} subtitle={t('auth.verify.subtitle')}>
       <form onSubmit={(e) => void onSubmit(e)} noValidate className="flex flex-col gap-5">
         {/* The privacy promise, before anything else. */}
         <div className="flex items-start gap-3 rounded-md bg-primary-soft/50 px-4 py-3">
