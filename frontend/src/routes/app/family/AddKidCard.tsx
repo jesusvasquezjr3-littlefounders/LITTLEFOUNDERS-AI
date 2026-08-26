@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import type { Locale } from '@/i18n';
-import { Button, Card, Icon } from '@/components/ui';
+import { Button, Card, DateField, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 
@@ -187,13 +187,15 @@ export function AddKidCard({ onCreated }: { onCreated: (kid: CreatedKid) => void
             </button>
           }
         />
-        <Field
+        <DateField
           label={t('family.addKid.birthDate')}
           hint={t('family.addKid.birthDateHint')}
-          inputMode="numeric"
-          placeholder="2016-04-09"
           value={birthDate}
-          onChange={(e) => setBirthDate(e.target.value)}
+          onChange={setBirthDate}
+          dayLabel={t('family.addKid.dayLabel')}
+          monthLabel={t('family.addKid.monthLabel')}
+          yearLabel={t('family.addKid.yearLabel')}
+          yearPlaceholder="2016"
           error={birthDateInvalid ? t('auth.verify.birthDateInvalid') : undefined}
         />
         <div className="flex flex-col gap-3 sm:flex-row-reverse">

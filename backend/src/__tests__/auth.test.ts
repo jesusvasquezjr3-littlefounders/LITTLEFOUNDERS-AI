@@ -32,7 +32,7 @@ describe('POST /api/v1/auth/signup', () => {
     });
     const res = await request(createApp())
       .post('/api/v1/auth/signup')
-      .send({ email: 'ana@example.com', password: 'longenough1', displayName: 'Ana', locale: 'es-MX', parentIntent: true });
+      .send({ email: 'ana@example.com', password: 'longenough1', displayName: 'Ana', locale: 'es-MX', parentIntent: true, birthDate: '1990-05-14' });
     expect(res.status).toBe(201);
     expect(res.body.data.session.accessToken).toBe('at');
     expect(res.body.data.confirmationRequired).toBe(false);
@@ -42,10 +42,53 @@ describe('POST /api/v1/auth/signup', () => {
     stubFetch(() => jsonResponse(200, { id: '11111111-1111-4111-8111-111111111111', email: 'ana@example.com' }));
     const res = await request(createApp())
       .post('/api/v1/auth/signup')
-      .send({ email: 'ana@example.com', password: 'longenough1', displayName: 'Ana' });
+      .send({ email: 'ana@example.com', password: 'longenough1', displayName: 'Ana', birthDate: '1990-05-14' });
     expect(res.status).toBe(201);
     expect(res.body.data.session).toBeNull();
     expect(res.body.data.confirmationRequired).toBe(true);
+  });
+
+
+  /*
+   * THE AGE SCREEN. The route used to assert in a comment that a fresh signup
+   * is "an adult account by construction" because the DB trigger makes it
+   * `universal` - which is a fact about our vocabulary, not about the person
+   * typing. A child could hand us a name and an email, which is exactly the
+   * collection COPPA is about.
+   */
+  it('refuses to create an account for a child, and says so with its own code', async () => {
+    const spy = vi.fn();
+    stubFetch(spy);
+    const born = new Date(Date.now() - 9 * 365.25 * 24 * 3600 * 1000).toISOString().slice(0, 10);
+    const res = await request(createApp())
+      .post('/api/v1/auth/signup')
+      .send({ email: 'nine@example.com', password: 'longenough1', displayName: 'Nine', birthDate: born });
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('AGE_RESTRICTED');
+    // Nothing was created: the address never reached GoTrue.
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('requires a date of birth at all', async () => {
+    const spy = vi.fn();
+    stubFetch(spy);
+    const res = await request(createApp())
+      .post('/api/v1/auth/signup')
+      .send({ email: 'ana@example.com', password: 'longenough1', displayName: 'Ana' });
+    expect(res.status).toBe(400);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('never forwards the date of birth to GoTrue — it screens and is discarded', async () => {
+    let sent: unknown = null;
+    stubFetch((_url: string, init?: RequestInit) => {
+      sent = JSON.parse(String(init?.body ?? '{}'));
+      return jsonResponse(200, { access_token: 'at', refresh_token: 'rt', expires_in: 3600, user: { id: '11111111-1111-4111-8111-111111111111', email: 'ana@example.com' } });
+    });
+    await request(createApp())
+      .post('/api/v1/auth/signup')
+      .send({ email: 'ana@example.com', password: 'longenough1', displayName: 'Ana', birthDate: '1990-05-14' });
+    expect(JSON.stringify(sent)).not.toContain('1990-05-14');
   });
 
   it('rejects a short password without calling GoTrue', async () => {
@@ -63,7 +106,7 @@ describe('POST /api/v1/auth/signup', () => {
     stubFetch(() => jsonResponse(422, { msg: 'User already registered' }));
     const res = await request(createApp())
       .post('/api/v1/auth/signup')
-      .send({ email: 'ana@example.com', password: 'longenough1', displayName: 'Ana' });
+      .send({ email: 'ana@example.com', password: 'longenough1', displayName: 'Ana', birthDate: '1990-05-14' });
     expect(res.status).toBe(422);
     expect(res.body.error.code).toBe('EMAIL_IN_USE');
   });

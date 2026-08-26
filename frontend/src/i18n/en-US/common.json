@@ -70,7 +70,10 @@
       "doneTitle": "All set",
       "doneBody": "{{name}} can sign in with the username {{username}} and the passphrase you chose.",
       "doneCta": "Done",
-      "privacy": "We ask for as little as possible: a first name, a username and a passphrase. No email, no surname, no address."
+      "privacy": "We ask for as little as possible: a first name, a username and a passphrase. No email, no surname, no address.",
+      "dayLabel": "Day",
+      "monthLabel": "Month",
+      "yearLabel": "Year"
     }
   },
   "cookies": {

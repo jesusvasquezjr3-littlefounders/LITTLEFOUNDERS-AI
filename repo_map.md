@@ -131,6 +131,7 @@ frontend/
         control/
       course/
       ui/
+        __tests__/
     guided-voice/
       __tests__/
     i18n/
@@ -11226,10 +11227,10 @@ The SPA: the four product sections (learn, tutor, tasks, profile). Talks ONLY to
 ## Invariants that bite here
 
 - **/DESIGN.md is AUTHORITATIVE** (LittleFounders Liquid Glass). Tokens live in `tailwind.config.js` + `src/index.css` CSS vars — never add values those files/DESIGN.md don't define. Type ONLY via the closed `lf-*` scale (`lf-display-xl`…`lf-caption`, Inter + Sora). Build UI with the kit in `src/components/ui/` (Button, Icon, Card, IconChip, Dropdown, ThemeToggle, ProgressBar, Badge, StatCard) — no per-view restyling. Elevation ONLY via the liquid-glass set (`shadow-glass*`, `shadow-pop`, `.lf-glass`, `.lf-glass-deep`) — frosted translucent panels with backdrop-blur, subtle light borders, and layered soft shadows; flat opaque surfaces and raw hex are prohibited. Icons: Material Symbols via `<Icon name="…"/>` — never emojis, no exceptions. Country flags (language switcher) are real SVGs via `<LocaleFlag locale="…"/>` (`components/ui/LocaleFlag.tsx`), not emoji: Windows ships no glyphs at all for the regional-indicator emoji pairs a flag emoji is made of, so the old emoji carve-out rendered as boxes or nothing on every non-macOS platform.
+- **Dates are `DateField`, never a text box with a date-shaped regex.** Three numeric segments that advance themselves, emitting the ISO string callers already expect - and `''` for anything incomplete OR impossible, so "half typed" can never be mistaken for "valid". It validates a REAL calendar date by round-tripping through `Date`, which is what rejects 31 February (the constructor rolls it forward, so the parts coming back out no longer match). What it replaced was one field, `^\d{4}-\d{2}-\d{2}$` and the placeholder "1988-02-14": an internal format asked of a parent, with no help while typing and a rejection only after the fact, on a phone, at the most expensive moment in the funnel.
+- **A component whose displayed value can differ from the value it EMITS must hold its own state, not a ref.** `DateField` emits `''` while a date is incomplete, so the parent re-sets the same `''` and React bails out of re-rendering - held in a ref, the typed digits were never painted and every box looked empty until the third segment completed. The first version did exactly that and three tests caught it.
 - **No native pickers**: never `<select>`, `<input type="date">`, etc. as a choice control — always `Dropdown` or a purpose-built component (`ThemeToggle`).
 - **Action Color Contract (/DESIGN.md §Colors) is NON-NEGOTIABLE**: every button/action's color is chosen by what it DOES, not by taste — `primary`/`accent` variant = the ONE main CTA (indigo fill), `secondary` (alternative/lower emphasis, outlined), `success` (positive completion), `danger` (destructive/irreversible). Indigo (`primary` token) is for links/focus/info. `delight` (violet) and `warning` are status/celebration only, never button fills.
-- **The auth surface has ONE shell, `routes/auth/AuthShell.tsx`, and `AuthRecipe.test.tsx` is what keeps it that way.** Every `*Page.tsx` under `routes/auth/` renders `<AuthShell>`; cross-links use the exported `AUTH_LINK_CLASS`, never a colour of their own. A second shell (`AuthSplit`, two columns over a full-bleed photo) once took over /login, /signup, /forgot-password and /reset-password while /verify-parent and /upgrade-account stayed compliant, and every gate stayed green for weeks because the recipe existed only in a document. If a recipe matters, a test has to read the source and say so.
-- **A page-level layer must never hard-code a light or dark surface.** The auth layout forced `text-on-inverse` over a scrimmed photograph, so a visitor in light mode still got a dark page - the theme they had chosen stopped applying at exactly the screen where they were asked to type a password. Page chrome uses `bg-base` / `text-content` and lets the tokens resolve; the only surfaces that name a side are the ones DESIGN.md says are inverse.
 ```
 
 ### frontend/README.md
@@ -12061,6 +12062,26 @@ interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'typ
 
 ```
 
+### frontend/src/components/ui/DateField.tsx
+
+```
+import { useId, useRef, useState, type ChangeEvent, type KeyboardEvent } from 'react';
+import { cn } from '@/lib/utils';
+
+/*
+ * A date, entered as three numbers.
+ *
+ * WHY NOT `<input type="date">`. /DESIGN.md forbids native pickers outright
+ * ("never `<select>`, `<input type="date">`, etc. as a choice control"), and
+ * for good reasons beyond consistency: the native control renders in the
+ * BROWSER's locale rather than the one the visitor chose, its calendar opens on
+ * the current month when the answer is thirty years earlier, and on Android it
+ * is a full-screen takeover in the middle of an identity form.
+ *
+ * WHY NOT A SINGLE TEXT BOX EITHER. That is what shipped: one field, a
+ * `^\d{4}-\d{2}-\d{2}$` regex and the placeholder "1988-02-14". It asks a
+```
+
 ### frontend/src/components/ui/Dropdown.tsx
 
 ```
@@ -12381,6 +12402,26 @@ interface TrendChartProps {
   ariaLabel: string;
 ```
 
+### frontend/src/components/ui/__tests__/DateField.test.tsx
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { useState } from 'react';
+import { DateField } from '../DateField';
+
+/*
+ * The date control that replaced a free-text box with a `^\d{4}-\d{2}-\d{2}$`
+ * regex and the placeholder "1988-02-14".
+ *
+ * The behaviour worth pinning is the CONTRACT, not the typing sugar: an
+ * incomplete or impossible entry emits '' and never a partial string, so a
+ * caller can never mistake "half typed" for "valid" - which is the failure the
+ * old field made easy, since '198' matched nothing and looked like nothing.
+ */
+
+```
+
 ### frontend/src/components/ui/index.ts
 
 ```
@@ -12388,6 +12429,7 @@ export { Button } from './Button';
 export { Icon } from './Icon';
 export { LocaleFlag } from './LocaleFlag';
 export { Dropdown } from './Dropdown';
+export { DateField } from './DateField';
 export type { DropdownOption } from './Dropdown';
 export { OptionGroup } from './OptionGroup';
 export type { OptionGroupOption } from './OptionGroup';
@@ -12398,7 +12440,6 @@ export { IconChip } from './IconChip';
 export { ProgressBar } from './ProgressBar';
 export { Badge } from './Badge';
 export { LottieIcon } from './LottieIcon';
-export { LoadingOverlay } from './LoadingOverlay';
 ```
 
 ### frontend/src/guided-voice/GuidedStage.tsx
@@ -19992,7 +20033,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import type { Locale } from '@/i18n';
-import { Button, Card, Icon } from '@/components/ui';
+import { Button, Card, DateField, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 
@@ -20992,7 +21033,7 @@ import { playPlatformSound } from '@/lib/sound';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import type { Locale } from '@/i18n';
-import { Button, Icon } from '@/components/ui';
+import { Button, DateField, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { AUTH_LINK_CLASS, AuthShell } from './AuthShell';
@@ -21050,10 +21091,10 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { api } from '@/lib/api';
-import { Badge, Button, Dropdown, Icon, type DropdownOption } from '@/components/ui';
+import { Badge, Button, DateField, Dropdown, Icon, type DropdownOption } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { FileField } from '@/components/ui/FileField';
-import { AuthShell } from './AuthShell';
+import { AUTH_LINK_CLASS, AuthShell } from './AuthShell';
 import { ErrorBanner } from './ErrorBanner';
 
 /*

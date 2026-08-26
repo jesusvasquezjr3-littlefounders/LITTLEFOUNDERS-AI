@@ -70,7 +70,10 @@
       "doneTitle": "Listo",
       "doneBody": "{{name}} puede entrar con el usuario {{username}} y la contraseña que elegiste.",
       "doneCta": "Listo",
-      "privacy": "Pedimos lo mínimo posible: un nombre, un usuario y una contraseña. Sin correo, sin apellidos, sin domicilio."
+      "privacy": "Pedimos lo mínimo posible: un nombre, un usuario y una contraseña. Sin correo, sin apellidos, sin domicilio.",
+      "dayLabel": "Día",
+      "monthLabel": "Mes",
+      "yearLabel": "Año"
     }
   },
   "cookies": {

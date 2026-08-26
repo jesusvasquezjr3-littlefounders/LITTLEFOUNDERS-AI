@@ -44,7 +44,14 @@ function fill({ name = 'Sofía', username = 'sofia_2016', pass = 'una-frase-larg
   fireEvent.change(screen.getByLabelText(/family.addKid.displayName$/), { target: { value: name } });
   fireEvent.change(screen.getByLabelText(/family.addKid.username$/), { target: { value: username } });
   fireEvent.change(screen.getByLabelText(/family.addKid.passphrase$/), { target: { value: pass } });
-  if (birth) fireEvent.change(screen.getByLabelText(/family.addKid.birthDate$/), { target: { value: birth } });
+  if (birth) {
+    // Three segments now, not one ISO string: the date control types the way a
+    // person says a date and assembles the ISO value itself.
+    const [y, m, d] = birth.split('-');
+    fireEvent.change(screen.getByLabelText(/family.addKid.dayLabel/), { target: { value: d } });
+    fireEvent.change(screen.getByLabelText(/family.addKid.monthLabel/), { target: { value: m } });
+    fireEvent.change(screen.getByLabelText(/family.addKid.yearLabel/), { target: { value: y } });
+  }
 }
 
 describe('AddKidCard', () => {
@@ -52,6 +59,10 @@ describe('AddKidCard', () => {
     open();
     const labels = screen.getAllByText(/family\.addKid\.(displayName|username|passphrase|birthDate)$/);
     expect(labels.length).toBe(4);
+    // The date is three numeric segments, not a free-text ISO string.
+    for (const seg of ['dayLabel', 'monthLabel', 'yearLabel']) {
+      expect(screen.getByLabelText(new RegExp(`family.addKid.${seg}`))).toHaveAttribute('inputMode', 'numeric');
+    }
     // The fields a child account must never have.
     for (const forbidden of [/email/i, /surname/i, /address/i, /apellido/i, /domicilio/i]) {
       expect(screen.queryByLabelText(forbidden)).toBeNull();

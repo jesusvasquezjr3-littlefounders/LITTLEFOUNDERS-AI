@@ -6,7 +6,7 @@ import { playPlatformSound } from '@/lib/sound';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import type { Locale } from '@/i18n';
-import { Button, Icon } from '@/components/ui';
+import { Button, DateField, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { AUTH_LINK_CLASS, AuthShell } from './AuthShell';
@@ -29,6 +29,7 @@ export function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [birthDate, setBirthDate] = useState('');
   const [parentIntent, setParentIntent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorCode, setErrorCode] = useState<string | null>(null);
@@ -37,6 +38,8 @@ export function SignupPage() {
   const startedRef = useRef(false);
 
   const passwordTooShort = password.length > 0 && password.length < 8;
+  const BIRTH_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+  const birthDateReady = BIRTH_DATE_RE.test(birthDate);
 
   // Funnel step 2 (/INSIGHTS.md): fired once, when the visitor first engages
   // with the form rather than merely landing on it — "started the signup" has
@@ -59,6 +62,7 @@ export function SignupPage() {
       displayName,
       locale: ((i18n.resolvedLanguage as Locale) ?? 'en-US'),
       parentIntent,
+      birthDate,
     });
     setSubmitting(false);
     if (error) {
@@ -82,6 +86,28 @@ export function SignupPage() {
       return;
     }
     navigate(parentIntent ? '/verify-parent' : APP_HOME, { replace: true });
+  }
+
+  /*
+   * A CHILD IS NOT TURNED AWAY FROM THE PRODUCT, only from handing us an
+   * email. The guest path collects nothing at all, so the honest answer here
+   * is the way forward rather than a closed door: keep learning now, and a
+   * parent can create the real account from theirs later, keeping the progress.
+   */
+  if (errorCode === 'AGE_RESTRICTED') {
+    return (
+      <AuthShell character={MENTOR} title={t('auth.signup.ageBlockedTitle')}>
+        <div className="flex flex-col items-center gap-4 text-center">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-soft">
+            <Icon name="escalator_warning" className="text-primary" />
+          </span>
+          <p className="lf-body text-content">{t('auth.signup.ageBlockedBody')}</p>
+          <Link to="/">
+            <Button>{t('auth.signup.ageBlockedCta')}</Button>
+          </Link>
+        </div>
+      </AuthShell>
+    );
   }
 
   if (confirmationPending) {
@@ -154,6 +180,16 @@ export function SignupPage() {
             </button>
           }
         />
+        <DateField
+          label={t('auth.signup.birthDate')}
+          hint={t('auth.signup.birthDateHint')}
+          required
+          value={birthDate}
+          onChange={setBirthDate}
+          dayLabel={t('auth.signup.dayLabel')}
+          monthLabel={t('auth.signup.monthLabel')}
+          yearLabel={t('auth.signup.yearLabel')}
+        />
         <Checkbox
           label={t('auth.signup.tutorIntent')}
           help={t('auth.signup.tutorIntentHelp')}
@@ -162,7 +198,7 @@ export function SignupPage() {
         />
         <Button
           type="submit"
-          disabled={submitting || !displayName || !email || password.length < 8}
+          disabled={submitting || !displayName || !email || password.length < 8 || !birthDateReady}
           className="mt-1 w-full"
         >
           {submitting ? t('auth.signup.submitting') : t('auth.signup.submit')}

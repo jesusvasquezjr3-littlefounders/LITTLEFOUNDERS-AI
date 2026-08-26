@@ -36,7 +36,7 @@ error is correct: the search will not credit past a topic it could not verify.
 | Method | Path | Auth | Description |
 |---|---|---|---|
 | GET | /health | — | Service health envelope. Mounted above the rate limiter — it never depends on Redis and never spends the caller's request budget (AGENTS.md) |
-| POST | /api/v1/auth/signup | — | Email+password signup via GoTrue; every account starts `universal` (DB trigger). Returns session or `confirmationRequired` |
+| POST | /api/v1/auth/signup | — | Email+password signup via GoTrue; every account starts `universal` (DB trigger). Returns session or `confirmationRequired`. Requires `birthDate` (ISO): SCREENED against a 13-year minimum and then DISCARDED — never forwarded to GoTrue, never stored. Under-age answers 403 `AGE_RESTRICTED` |
 | POST | /api/v1/auth/login | — | Password login → session (access/refresh tokens). Accepts `identifier` (or legacy `email`): an email for an adult, or a username for a child — disambiguated on `@`, which `profiles.username` cannot contain (0005), and resolved to the account's synthetic address |
 | POST | /api/v1/auth/refresh | — | Exchange refresh token for a fresh session |
 | POST | /api/v1/auth/logout | Bearer | Best-effort GoTrue sign-out |

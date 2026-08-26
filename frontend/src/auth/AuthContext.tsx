@@ -47,6 +47,8 @@ export interface SignupInput {
   displayName: string;
   locale: string;
   parentIntent: boolean;
+  /** ISO date. Core SCREENS on it and discards it; it is never persisted. */
+  birthDate: string;
 }
 
 interface SessionPayload {

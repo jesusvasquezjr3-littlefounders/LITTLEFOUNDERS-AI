@@ -70,7 +70,10 @@
       "doneTitle": "Pronto",
       "doneBody": "{{name}} pode entrar com o usuário {{username}} e a senha que você escolheu.",
       "doneCta": "Pronto",
-      "privacy": "Pedimos o mínimo possível: um nome, um usuário e uma senha. Sem e-mail, sem sobrenome, sem endereço."
+      "privacy": "Pedimos o mínimo possível: um nome, um usuário e uma senha. Sem e-mail, sem sobrenome, sem endereço.",
+      "dayLabel": "Dia",
+      "monthLabel": "Mês",
+      "yearLabel": "Ano"
     }
   },
   "cookies": {

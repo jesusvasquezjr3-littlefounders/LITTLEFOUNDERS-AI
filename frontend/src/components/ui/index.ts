@@ -2,6 +2,7 @@ export { Button } from './Button';
 export { Icon } from './Icon';
 export { LocaleFlag } from './LocaleFlag';
 export { Dropdown } from './Dropdown';
+export { DateField } from './DateField';
 export type { DropdownOption } from './Dropdown';
 export { OptionGroup } from './OptionGroup';
 export type { OptionGroupOption } from './OptionGroup';

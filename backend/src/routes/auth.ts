@@ -26,12 +26,39 @@ type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
 
 const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
 
+/*
+ * AGE SCREENING, AND WHY IT IS A CHECK AND NOT A FIELD WE KEEP.
+ *
+ * Nothing here used to ask. The route's own comment said a fresh signup is
+ * "an adult account by construction" because the DB trigger makes it
+ * `universal` - but the role is our vocabulary, not a fact about the person.
+ * A nine-year-old could hand us a name and an email, which is precisely the
+ * collection COPPA is about, whatever we call the row.
+ *
+ * So the date of birth is REQUIRED to create an account and is then thrown
+ * away: it gates, it is not stored. Keeping it would be collecting a second
+ * piece of personal data to justify not collecting the first. Onboarding asks
+ * again, optionally, and that one IS stored - because there it buys the learner
+ * an age-appropriate level rather than buying us a compliance record.
+ *
+ * A child under the threshold is not turned away from the product: the guest
+ * path collects nothing at all, and a parent can create them a proper account
+ * from /family. They are turned away from GIVING US AN EMAIL.
+ */
+const MIN_SIGNUP_AGE_YEARS = 13;
+
+function yearsOld(isoDate: string, now: number): number {
+  return (now - Date.parse(isoDate)) / (365.25 * 24 * 3600 * 1000);
+}
+
 const SignupBody = z.object({
   email: z.email().max(254),
   password: z.string().min(8, 'Password must be at least 8 characters').max(128),
   displayName: z.string().trim().min(1).max(80),
   locale: z.enum(LOCALES).default('en-US'),
   parentIntent: z.boolean().default(false),
+  /** Screened against MIN_SIGNUP_AGE_YEARS and then discarded — never persisted. */
+  birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'A date of birth is required'),
   /** First-party visitor id (lf_aid) — links the signup to its acquisition source. */
   anonId: z.string().uuid().optional(),
 });
@@ -103,13 +130,26 @@ export function authRouter(): Router {
     if (!parsed.success) {
       return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
     }
+    const age = yearsOld(parsed.data.birthDate, Date.now());
+    if (!Number.isFinite(age) || age >= 120) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'That date of birth is not valid');
+    }
+    if (age < MIN_SIGNUP_AGE_YEARS) {
+      // A distinct code, because the frontend must explain the way OUT of this
+      // (a parent creates the account) rather than show a generic rejection.
+      return fail(res, 403, 'AGE_RESTRICTED', 'An adult has to create this account');
+    }
+
+    // `birthDate` is deliberately NOT forwarded: signUp takes what it needs and
+    // the date has already done its only job.
     const { data, error } = await gotrue.signUp(parsed.data);
     if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
 
     // Attribution: which channel produced this signup (/INSIGHTS.md §7).
-    // Every fresh signup is `universal` by DB trigger, so this is an adult
-    // account by construction — a kid only ever becomes one later, via a
-    // verified guardian, and attributeSignup refuses kids regardless.
+    // Every fresh signup is `universal` by DB trigger AND has now passed the
+    // age screen above — the previous version of this comment claimed the
+    // account was adult "by construction", which was an assumption about the
+    // role name rather than a check on the person.
     const newUserId = data.user?.id;
     if (parsed.data.anonId && newUserId) {
       void attributeSignup(parsed.data.anonId, newUserId, ['universal']);
