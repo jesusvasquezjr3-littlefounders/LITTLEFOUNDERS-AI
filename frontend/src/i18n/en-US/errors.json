@@ -32,6 +32,7 @@
     "NOT_A_GUEST": "This account already has a permanent identity.",
     "ONBOARDING_ALREADY_COMPLETE": "Onboarding was already completed.",
     "PLACEMENT_REQUIRED": "Complete this course's placement quiz first.",
-    "PLACEMENT_ALREADY_COMPLETE": "Placement was already completed for this course."
+    "PLACEMENT_ALREADY_COMPLETE": "Placement was already completed for this course.",
+    "USERNAME_IN_USE": "That username is taken. Try another one."
   }
 }

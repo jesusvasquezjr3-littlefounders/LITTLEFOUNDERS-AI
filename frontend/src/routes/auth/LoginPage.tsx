@@ -70,10 +70,17 @@ export function LoginPage() {
       <SocialAuth />
       <form onSubmit={(e) => void onSubmit(e)} noValidate className="flex flex-col gap-5">
         {errorCode && <ErrorBanner code={errorCode} />}
+        {/* NOT `type="email"`. A child signs in with the username their parent
+            chose, and an email-typed input gives them an email keyboard on a
+            phone and a browser-level rejection of a perfectly valid handle.
+            `autoComplete="username"` covers both shapes. */}
         <Field
-          label={t('auth.login.email')}
-          type="email"
-          autoComplete="email"
+          label={t('auth.login.identifier')}
+          type="text"
+          inputMode="email"
+          autoComplete="username"
+          autoCapitalize="none"
+          spellCheck={false}
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}

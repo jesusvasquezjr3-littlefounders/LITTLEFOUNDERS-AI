@@ -160,6 +160,7 @@ frontend/
       app/
         __tests__/
         family/
+          __tests__/
         learn/
           __tests__/
           lab/
@@ -1239,17 +1240,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## The auth surface had two shells and only one of them followed the recipe (2026-08-26)
+## The `kid` role finally has a way to exist (2026-08-26)
 
-**How it was found.** The owner asked for a proposal to improve /login, /signup
-and the registration and parental-verification routes. Reading them turned up
-something structural before any taste question: `DESIGN.md` §0 is the PRIME RULE
-("deviating from a recipe without human sign-off is a design bug"), its Auth
-recipe specifies a focused single centered column on `base` with one resting
-card and cross-links in `primary` - and only half the auth pages did that.
+**The gap.** Guardian verification granted `parent`, `/family` listed children,
+and nothing in the product could create one: `backend/src/routes/family.ts` had
+`GET /kids` and two consent toggles, no POST, and `FamilyPage.tsx` only
+rendered a list. §1.3 requires a kid to hold a verified guardian link, §1.4 puts
+"manage a family / kid accounts" on `parent`, and `/LEGAL/TERMINOSyCONDICIONES
+.md` already describes a Cuenta CHILD "vinculada obligatoriamente" to a Cuenta
+TUTOR. The terms promised a feature with no code path. `ROADMAP.md` named it and
+it had not been started.
 
-`AuthShell` implemented the recipe and carried /verify-parent, /upgrade-account
-and /auth/callback. `AuthSplit` - two columns over a full-bleed stock photo -
 ```
 
 ### agent/README.md
@@ -3292,6 +3293,26 @@ import { COURSE_SLUG, LESSON_1_ID, makeDb } from './learnFixtures.js';
 const PARENT_ID = '11111111-1111-4111-8111-111111111111';
 ```
 
+### backend/src/__tests__/familyKids.test.ts
+
+```
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { randomUUID } from 'node:crypto';
+import { createApp } from '../app.js';
+import { jsonResponse, mintToken } from './helpers.js';
+
+/*
+ * POST /api/v1/family/kids — creating a child account and linking it.
+ *
+ * The invariant under test is §1.3: "A `kid` account MUST have >= 1 verified
+ * guardian link. A kid row without one is a bug, not a state." That makes the
+ * ORDER of the writes the safety property, not an implementation detail, so
+ * these tests assert the order and the rollback rather than only the happy
+ * path.
+ */
+```
+
 ### backend/src/__tests__/health.test.ts
 
 ```
@@ -4077,6 +4098,7 @@ import { getConfig } from '../config.js';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
 import { authRateLimiter } from '../middleware/rateLimit.js';
+import { kidEmail } from './family.js';
 import * as gotrue from '../services/gotrue.js';
 import { attributeSignup, hasActiveAnalyticsConsent } from '../services/insights.js';
 import { getOnboardingResponse, getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
@@ -4085,7 +4107,6 @@ import { getOnboardingResponse, getOwnAvatar, getOwnProfile, getOwnRoles } from 
 const OAUTH_PROVIDERS = ['google'] as const;
 type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
 
-/*
 ```
 
 ### backend/src/routes/events.ts
@@ -4116,6 +4137,7 @@ import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { assembleCourseTree } from '../services/courseTree.js';
+import { adminCreateUser, adminDeleteUser } from '../services/gotrue.js';
 import {
   getConsentsForKids,
   getRolesForGate,
@@ -4125,7 +4147,6 @@ import {
   stampRole,
 } from '../services/insights.js';
 import {
-  getAdventuresByCourseIds,
 ```
 
 ### backend/src/routes/learn.ts
@@ -12529,6 +12550,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
     "title": "Welcome back",
     "subtitle": "Sign in to keep building",
     "email": "Email",
+    "identifier": "Email or username",
     "password": "Password",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
@@ -12537,7 +12559,6 @@ import { beforeAll, describe, expect, it } from 'vitest';
     "noAccount": "New to LittleFounders?",
     "signupLink": "Create an account",
     "forgotPassword": "Forgot your password?"
-  },
 ```
 
 ### frontend/src/i18n/en-US/common.json
@@ -12769,6 +12790,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
     "title": "Hola de nuevo",
     "subtitle": "Inicia sesión para seguir construyendo",
     "email": "Correo electrónico",
+    "identifier": "Correo o usuario",
     "password": "Contraseña",
     "showPassword": "Mostrar contraseña",
     "hidePassword": "Ocultar contraseña",
@@ -12777,7 +12799,6 @@ import { beforeAll, describe, expect, it } from 'vitest';
     "noAccount": "¿Nuevo en LittleFounders?",
     "signupLink": "Crea una cuenta",
     "forgotPassword": "¿Olvidaste tu contraseña?"
-  },
 ```
 
 ### frontend/src/i18n/es-MX/common.json
@@ -13029,6 +13050,7 @@ import enErrors from './en-US/errors.json';
     "title": "Bem-vindo de volta",
     "subtitle": "Entre para continuar construindo",
     "email": "E-mail",
+    "identifier": "E-mail ou usuário",
     "password": "Senha",
     "showPassword": "Mostrar senha",
     "hidePassword": "Ocultar senha",
@@ -13037,7 +13059,6 @@ import enErrors from './en-US/errors.json';
     "noAccount": "Novo na LittleFounders?",
     "signupLink": "Crie uma conta",
     "forgotPassword": "Esqueceu sua senha?"
-  },
 ```
 
 ### frontend/src/i18n/pt-BR/common.json
@@ -19963,6 +19984,26 @@ vi.mock('@/components/characters/DinaCharacter', () => ({ DinaCharacter: () => <
 
 ```
 
+### frontend/src/routes/app/family/AddKidCard.tsx
+
+```
+import { useState, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import type { Locale } from '@/i18n';
+import { Button, Card, Icon } from '@/components/ui';
+import { Field } from '@/components/ui/Field';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+
+/*
+ * ADD A CHILD — the flow that makes the `kid` role reachable at all.
+ *
+ * Until this existed, /family listed children the product had no way to
+ * create: Guardian verification granted `parent`, and then nothing. The legal
+ * terms describe a CHILD account "vinculada obligatoriamente" to a TUTOR
+```
+
 ### frontend/src/routes/app/family/FamilyPage.tsx
 
 ```
@@ -19974,13 +20015,13 @@ import { api } from '@/lib/api';
 import { Card, Icon, LoadingOverlay } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { VoiceConsentControl } from '@/tutor/VoiceConsentControl';
+import { AddKidCard, type CreatedKid } from './AddKidCard';
 
 /*
  * /family — the parent dashboard's front door (parent-role gated in App.tsx;
  * navConfig renders it LOCKED for everyone else). Lists the caller's VERIFIED
  * kids (Core re-checks guardian_links on every request) and opens each kid's
  * territory. Parent visibility is a product invariant (§1.9) — this is that
- * invariant becoming a surface.
 ```
 
 ### frontend/src/routes/app/family/KidTerritoryPage.tsx
@@ -20021,6 +20062,26 @@ import type { SessionTranscript } from '@/tutor/types';
  *
  * PARENT VISIBILITY IS A PRODUCT INVARIANT (/AGENTS.md §1.9), and this page is
  * that invariant becoming a surface. It shows the FULL transcript — not a
+```
+
+### frontend/src/routes/app/family/__tests__/AddKidCard.test.tsx
+
+```
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { AddKidCard } from '../AddKidCard';
+
+/*
+ * The add-a-child form. What matters here is not that it renders - it is what
+ * it SENDS and what it refuses to send.
+ *
+ * §1.9 caps what may travel with a minor at "age band + first name". This form
+ * is the collection point, so the test asserts the request body by its exact
+ * key set rather than by spot-checking a field: a future edit that quietly adds
+ * a surname, an email or an address has to fail here.
+ */
+
+const { mockApi, mockGetToken } = vi.hoisted(() => ({
 ```
 
 ### frontend/src/routes/app/learn/AdventureBanner.tsx

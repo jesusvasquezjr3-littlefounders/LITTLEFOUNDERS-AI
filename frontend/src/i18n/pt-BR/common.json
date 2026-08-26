@@ -51,6 +51,26 @@
     "insightsConsent": {
       "label": "Compartilhar dados de uso",
       "hint": "Ajude a melhorar as lições com sinais de uso. Você pode desativar quando quiser."
+    },
+    "addKid": {
+      "cta": "Adicionar um filho",
+      "title": "Adicionar um filho",
+      "body": "Você cria a conta, então seu filho não precisa de e-mail. Daqui você vê tudo o que ele faz.",
+      "displayName": "O primeiro nome dele",
+      "displayNameHint": "Só o primeiro nome. É assim que os mentores vão chamá-lo.",
+      "username": "Usuário para entrar",
+      "usernameHint": "Minúsculas, números e _ . De três a vinte caracteres.",
+      "passphrase": "Senha",
+      "passphraseHint": "No mínimo 8 caracteres. Você escolhe e pode trocar depois.",
+      "birthDate": "Data de nascimento",
+      "birthDateHint": "Opcional. Serve apenas para escolher a faixa etária certa.",
+      "submit": "Criar a conta",
+      "submitting": "Criando…",
+      "cancel": "Cancelar",
+      "doneTitle": "Pronto",
+      "doneBody": "{{name}} pode entrar com o usuário {{username}} e a senha que você escolheu.",
+      "doneCta": "Pronto",
+      "privacy": "Pedimos o mínimo possível: um nome, um usuário e uma senha. Sem e-mail, sem sobrenome, sem endereço."
     }
   },
   "cookies": {

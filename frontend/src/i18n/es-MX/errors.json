@@ -32,6 +32,7 @@
     "NOT_A_GUEST": "Esta cuenta ya tiene una identidad permanente.",
     "ONBOARDING_ALREADY_COMPLETE": "El onboarding ya se había completado.",
     "PLACEMENT_REQUIRED": "Completa primero el quiz de ubicación de este curso.",
-    "PLACEMENT_ALREADY_COMPLETE": "El quiz de ubicación ya se había completado para este curso."
+    "PLACEMENT_ALREADY_COMPLETE": "El quiz de ubicación ya se había completado para este curso.",
+    "USERNAME_IN_USE": "Ese usuario ya está ocupado. Prueba con otro."
   }
 }

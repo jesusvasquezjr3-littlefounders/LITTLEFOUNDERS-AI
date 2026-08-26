@@ -4,6 +4,7 @@ import { getConfig } from '../config.js';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
 import { authRateLimiter } from '../middleware/rateLimit.js';
+import { kidEmail } from './family.js';
 import * as gotrue from '../services/gotrue.js';
 import { attributeSignup, hasActiveAnalyticsConsent } from '../services/insights.js';
 import { getOnboardingResponse, getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
@@ -35,10 +36,26 @@ const SignupBody = z.object({
   anonId: z.string().uuid().optional(),
 });
 
-const LoginBody = z.object({
-  email: z.email().max(254),
-  password: z.string().min(1).max(128),
-});
+/*
+ * ONE FIELD, TWO KINDS OF ACCOUNT. An adult signs in with an email; a child
+ * signs in with the handle their parent chose, because a child has no mailbox
+ * and we do not collect one (§1.9). Rather than a second endpoint or a mode
+ * toggle a nine-year-old has to understand, the identifier is accepted either
+ * way and disambiguated by the one character that cannot appear in a username:
+ * `@` is excluded by the `^[a-z0-9_]{3,20}$` constraint on `profiles.username`
+ * (migration 0005), so the two shapes can never collide.
+ *
+ * `email` is kept as the field name for wire compatibility with every client
+ * already sending it; `identifier` is accepted as the honest alias.
+ */
+const LoginBody = z
+  .object({
+    email: z.string().trim().max(254).optional(),
+    identifier: z.string().trim().max(254).optional(),
+    password: z.string().min(1).max(128),
+  })
+  .transform((v) => ({ identifier: v.identifier ?? v.email ?? '', password: v.password }))
+  .refine((v) => v.identifier.length > 0, { message: 'An email or username is required' });
 
 const RefreshBody = z.object({ refreshToken: z.string().min(1) });
 
@@ -159,7 +176,12 @@ export function authRouter(): Router {
     if (!parsed.success) {
       return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
     }
-    const { data, error } = await gotrue.signInWithPassword(parsed.data.email, parsed.data.password);
+    // A username resolves to the synthetic `.invalid` address the kid account
+    // was created with - derived, never stored twice, which is also why a kid's
+    // username is not editable (see family.ts kidEmail).
+    const identifier = parsed.data.identifier;
+    const email = identifier.includes('@') ? identifier : kidEmail(identifier.toLowerCase());
+    const { data, error } = await gotrue.signInWithPassword(email, parsed.data.password);
     if (error) {
       const status = error.code === 'INVALID_CREDENTIALS' || error.code === 'EMAIL_NOT_CONFIRMED' ? 401 : error.status >= 500 ? 502 : error.status;
       return fail(res, status, error.code, error.message);

@@ -864,6 +864,60 @@ export function getVerifiedKidLinks(parentUserId: string): Promise<GuardianLinkR
   );
 }
 
+/*
+ * The link that makes a kid account legitimate. §1.3: a `kid` row without a
+ * VERIFIED guardian link is a bug, not a state - so this is written `verified`
+ * outright rather than `pending`. The verification already happened: only a
+ * Guardian-verified `parent` can reach the route that calls this, and their
+ * identity document was matched before that role was granted. A `pending` row
+ * here would describe a second, imaginary check that nothing performs.
+ */
+export async function insertVerifiedGuardianLink(parentUserId: string, kidUserId: string): Promise<boolean> {
+  const res = await rest<unknown>('/guardian_links', serviceToken(), {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({
+      parent_user_id: parentUserId,
+      kid_user_id: kidUserId,
+      verification_status: 'verified',
+      verified_at: new Date().toISOString(),
+    }),
+  });
+  return res !== null;
+}
+
+/*
+ * The kid's profile row. GoTrue's own trigger (migration 0011) seeds
+ * display_name and locale from user_metadata; this adds what only the family
+ * flow knows - the handle the child signs in with, and the birth date that
+ * decides their age band.
+ */
+export async function patchKidProfile(
+  kidUserId: string,
+  patch: { username: string; display_name: string; locale: string; birth_date: string | null },
+): Promise<boolean> {
+  const res = await rest<unknown>(`/profiles?user_id=eq.${eu(kidUserId)}`, serviceToken(), {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify(patch),
+  });
+  return res !== null;
+}
+
+/*
+ * Answers the question the DB's unique index would otherwise answer with a
+ * 409 AFTER an auth user had already been created. Checked before anything is
+ * written, so the common "that name is taken" case never leaves a half-made
+ * account behind.
+ */
+export async function usernameExists(username: string): Promise<boolean | null> {
+  const rows = await serviceRest<{ user_id: string }[]>(
+    `/profiles?username=eq.${es(username)}&select=user_id&limit=1`,
+  );
+  if (rows === null) return null;
+  return rows.length > 0;
+}
+
 export interface KidProfileRow {
   user_id: string;
   display_name: string | null;

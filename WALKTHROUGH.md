@@ -2,6 +2,56 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## The `kid` role finally has a way to exist (2026-08-26)
+
+**The gap.** Guardian verification granted `parent`, `/family` listed children,
+and nothing in the product could create one: `backend/src/routes/family.ts` had
+`GET /kids` and two consent toggles, no POST, and `FamilyPage.tsx` only
+rendered a list. §1.3 requires a kid to hold a verified guardian link, §1.4 puts
+"manage a family / kid accounts" on `parent`, and `/LEGAL/TERMINOSyCONDICIONES
+.md` already describes a Cuenta CHILD "vinculada obligatoriamente" to a Cuenta
+TUTOR. The terms promised a feature with no code path. `ROADMAP.md` named it and
+it had not been started.
+
+**The shape chosen.** A child has no mailbox and must not be made to get one, so
+the ordinary signup path is wrong twice over: it would collect an address §1.9
+forbids, and with `GOTRUE_MAILER_AUTOCONFIRM=false` in production it would park
+the account behind a confirmation email nobody can open. Core creates the user
+through GoTrue's admin endpoint, already confirmed, with a synthetic address on
+a `.invalid` domain - reserved by RFC 2606 precisely so it can never resolve.
+The address is derived from the username rather than stored a second time, which
+is also why a kid's username is not editable.
+
+The parent supplies a first name, a username, a passphrase and an optional
+birth date. No email, no surname, no address: that is the §1.9 ceiling applied
+at the point of collection, and the form says so above the fields rather than in
+a policy nobody opens.
+
+**The order is the invariant.** Username checked first, so the common rejection
+happens before anything is written. Then the auth user. Then the VERIFIED
+guardian link - `verified` outright rather than `pending`, because the
+verification already happened: only a Guardian-verified parent can reach the
+route, and their identity document was matched before that role existed. A
+`pending` row would describe a second, imaginary check. If the link cannot be
+written the auth user is DELETED again and the rollback is audited. The role is
+granted last, because a kid with no link and no role is inert while a kid with a
+role and no link is exactly the state §1.3 forbids. Eight backend tests assert
+that order, the rollback, the synthetic address, and that the audit entry
+carries no name, handle or birth date.
+
+**Signing in.** One field, two kinds of account: an adult types an email, a
+child types their handle, and Core disambiguates on `@`, which
+`profiles.username` cannot contain (migration 0005). No second endpoint and no
+mode toggle for a nine-year-old to understand. The login input stopped being
+`type="email"` - that gave a child an email keyboard and a browser-level
+rejection of a perfectly valid handle.
+
+**One thing the codebase caught before a test did.** `usernameExists` first
+built its query with `eu()`, which VALIDATES that its argument is a UUID. It
+threw a ZodError straight out of the route as a 500. The helper being strict is
+the reason the mistake surfaced immediately instead of reaching a query that
+silently matched nothing.
+
 ## The auth surface had two shells and only one of them followed the recipe (2026-08-26)
 
 **How it was found.** The owner asked for a proposal to improve /login, /signup
@@ -4172,6 +4222,9 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-26 | **Creating a kid account and linking it is one operation, and the WRITE ORDER is the safety property.** username check → auth user → VERIFIED `guardian_links` → role, with the auth user deleted again if the link fails. Eight tests pin the order, the rollback and the audit payload. | §1.3 says a kid row without a verified link is a bug rather than a state, which makes ordering a correctness question and not a style one. Role last because a kid with no link and no role is inert, while a kid with a role and no link is the forbidden state itself. The link is written `verified`, not `pending`: only a Guardian-verified parent can reach the route, so a `pending` row would describe a second check that nothing performs. |
+| 2026-08-26 | **A child is CREATED through the admin endpoint, never signed up, with a synthetic `.invalid` address.** | The signup path would demand an email we must not collect from a minor (§1.9) and then, with `GOTRUE_MAILER_AUTOCONFIRM=false` in production, hold the account behind a confirmation nobody can open. `.invalid` is reserved by RFC 2606 so the address cannot resolve or receive mail; it exists because `auth.users` needs an identifier, and it is derived from the username so nothing keeps a second copy - which is why a kid's username is not editable. |
+| 2026-08-26 | **One sign-in field for both kinds of account, disambiguated on `@`.** `/login` accepts an email or a username; the input is no longer `type="email"`. | A child has no mailbox. A second endpoint or a mode toggle would put the burden on a nine-year-old; `@` cannot appear in a username under the `^[a-z0-9_]{3,20}$` constraint (0005), so the two shapes can never collide. `type="email"` was actively hostile here: an email keyboard on a phone and a browser-level rejection of a valid handle. |
 | 2026-08-26 | **The home address is gone from Guardian verification - form, Zod schema, persistence, copy in three locales, and the column (`0049`).** A backend test asserts a client that still SENDS one cannot get it stored. | It was `required`, validated and written to `parent_verifications`, and never forwarded anywhere: `parent-id-check/` contains no occurrence of the word and its verdict is four checks, none of them an address. Nothing read it back. So it was write-only PII gathered on the one screen whose most prominent element is a promise about what we do not keep - and migration 0004 states that table's own contract as "only the applicant-declared data that was MATCHED AGAINST THE DOCUMENT lands here", which the address never was. The test sends one deliberately, because removing the field is not the guarantee; the guarantee is that an old cached bundle or a curl still cannot store one. |
 | 2026-08-26 | **Correction: the `LiveStats` heartbeat test was NOT resolved by 1d33da22, and saying it was was premature.** The Realtime latching defect that commit fixed is real and stays fixed; the flake is separate. Its assertion is now awaited. | It failed once in a full run after that commit, then passed 15 consecutive times (6 isolated, 4 paired with the new realtime file, 5 full). The assertion read `toHaveBeenLastCalledWith` on a value delivered by an EFFECT, immediately after a `waitFor` on the DOM - two things that need not land in the same tick under load. That is the most likely cause and is NOT confirmed, so this is recorded as a probable fix rather than a closed one. Three clean runs were not enough evidence the first time and are not enough now. |
 | 2026-08-26 | **One auth shell, and a test that reads the source to keep it that way.** `AuthSplit` deleted; all six auth pages compose from `AuthShell`; `AuthRecipe.test.tsx` asserts the composition, the absence of arbitrary colours, and the theme control - confirmed to fail against the pre-fix files. | `DESIGN.md` §0 calls an unsigned deviation from a recipe a design bug, and this was one: the recipe text never changed, but on 2026-08-01 the four busiest auth pages moved onto a second shell while two stayed compliant. Every gate stayed green for three weeks because the only thing asserting the recipe was prose. A control named in a document and not pinned by a test is a control that eventually is not there. |

@@ -206,8 +206,18 @@ Next, in Jesús's stated order of interest:
   lesson. A complete visual lesson uses a separate human-approved cap sized to
   its target count; review its ledger before any full-track spend. A
   `--no-images` pass is non-releasable by the visual coverage gate.)
-- **Kid accounts from the Tutor dashboard** — creation + guardian linking UX
-  (Testing Tutor ↔ Testing Niño seed pair exists for this).
+- **Kid accounts from the Tutor dashboard (2026-08-26 — SHIPPED, local only):**
+  `POST /api/v1/family/kids` creates the child's auth user through GoTrue's
+  admin endpoint (already confirmed, synthetic `.invalid` address — RFC 2606,
+  so it can never receive mail), writes a VERIFIED `guardian_links` row, sets
+  the profile handle and birth date, then grants `kid`. That order is the §1.3
+  safety property: the account is deleted again if the link cannot be written,
+  and the role is granted last. `/family` gains an add-a-child card, and
+  `/login` accepts a username as well as an email (disambiguated on `@`, which
+  `profiles.username` cannot contain) so a child can sign in without a mailbox.
+  Collected: first name, username, passphrase, optional birth date. Never: an
+  email, a surname or an address. Not yet built: editing or removing a child,
+  and rotating their passphrase.
 - **Admin Generation Dashboard v2 (2026-07-27 — Phase 1 + 2 shipped):**
   - ✅ Phase 1 (backend + coursegen): Live telemetry (0018), `liveTelemetry.ts`, Core endpoints `/admin/generation/live` + `/admin/generation/analytics`.
   - ✅ Phase 2 (frontend): React Flow interactive canvas (`PipelineFlow.tsx`), live stats panel with 2s polling (`LiveStats.tsx`), cross-run analytics charts (`AnalyticsCharts.tsx`), three-tab layout (Live Monitor / Run History / Analytics) in `/admin/generation`. i18n in 3 locales.

@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { Card, Icon, LoadingOverlay } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { VoiceConsentControl } from '@/tutor/VoiceConsentControl';
+import { AddKidCard, type CreatedKid } from './AddKidCard';
 
 /*
  * /family — the parent dashboard's front door (parent-role gated in App.tsx;
@@ -68,6 +69,10 @@ export function FamilyPage() {
     );
   }
 
+  function onKidCreated(kid: CreatedKid) {
+    setState((prev) => (prev.status === 'ready' ? { ...prev, kids: [...prev.kids, kid] } : prev));
+  }
+
   if (state.status === 'loading') return <LoadingOverlay label={t('family.loading')} />;
   if (state.status === 'error') return <ErrorBanner code={state.code} />;
 
@@ -83,6 +88,7 @@ export function FamilyPage() {
           <Icon name="family_restroom" className="text-[40px] text-content-faint" aria-hidden />
           <h2 className="lf-title text-content">{t('family.emptyTitle')}</h2>
           <p className="lf-body max-w-md text-content-muted">{t('family.emptyBody')}</p>
+          <AddKidCard onCreated={onKidCreated} />
         </Card>
       ) : (
         <ul className="flex flex-col gap-3">
@@ -147,6 +153,8 @@ export function FamilyPage() {
           ))}
         </ul>
       )}
+
+      {state.kids.length > 0 && <AddKidCard onCreated={onKidCreated} />}
     </div>
   );
 }

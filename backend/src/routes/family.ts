@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { assembleCourseTree } from '../services/courseTree.js';
+import { adminCreateUser, adminDeleteUser } from '../services/gotrue.js';
 import {
   getConsentsForKids,
   getRolesForGate,
@@ -21,6 +22,11 @@ import {
   getSagasByAdventureIds,
   getTopicsBySagaIds,
   getVerifiedKidLinks,
+  grantRole,
+  insertAuditLog,
+  insertVerifiedGuardianLink,
+  patchKidProfile,
+  usernameExists,
 } from '../services/supabaseRest.js';
 
 /*
@@ -36,6 +42,19 @@ import {
  * kid's progress/stats rows use the service role — and only the whitelisted
  * fields the dashboard shows.
  */
+
+/*
+ * A child's `auth.users` identifier. `.invalid` is reserved by RFC 2606 so
+ * the address can never resolve or receive mail - which is the point: it
+ * exists because the auth table needs a unique handle, not because anyone
+ * writes to it. Derived from the username so sign-in can reproduce it
+ * without storing a second copy, which is also why a kid's username is not
+ * editable: changing it would strand the account behind its old address.
+ */
+export const KID_EMAIL_DOMAIN = 'kids.littlefounders.invalid';
+export function kidEmail(username: string): string {
+  return `${username}@${KID_EMAIL_DOMAIN}`;
+}
 
 const NOT_FOUND = 'NOT_FOUND';
 const DATA_UNAVAILABLE = 'DATA_UNAVAILABLE';
@@ -67,6 +86,94 @@ export function familyRouter(): Router {
         analyticsConsent: consents.get(l.kid_user_id) ?? false,
       })),
     });
+  });
+
+
+  /*
+   * CREATE A KID ACCOUNT AND LINK IT. §1.4 puts "manage a family / kid
+   * accounts" on `parent` alone, and `parent` comes only from Guardian, so the
+   * router's `requireRole(['parent'])` is the whole authorization story: the
+   * adult standing behind this call has had an identity document matched.
+   *
+   * WHAT IS DELIBERATELY NOT COLLECTED. No email, no surname, no address for
+   * the child. A handle the parent chooses, a display name, a passphrase, and
+   * an optional birth date for the age band - which is the ceiling §1.9 sets
+   * for what may travel with a minor ("age band + first name"). The auth user
+   * needs SOME identifier, so it gets a synthetic one on a `.invalid` domain
+   * (RFC 2606, reserved so it can never resolve); nothing mails it and the
+   * child never sees it.
+   *
+   * ORDERING IS THE SAFETY PROPERTY. §1.3 says a `kid` row without a verified
+   * guardian link is a bug rather than a state, so the account may not outlive
+   * a failure to link it. The username is checked first (the common rejection,
+   * before anything is written), then the auth user is created, and if the LINK
+   * cannot be written the user is deleted again and the request fails. The role
+   * grant is last, because a kid with no link and no role is inert while a kid
+   * with a role and no link is exactly the state the invariant forbids.
+   */
+  const CreateKid = z.object({
+    displayName: z.string().trim().min(1).max(80),
+    // The DB's own constraint (0005), restated at the edge so a bad handle is
+    // a 400 with a message rather than a 409 from Postgres after a signup.
+    username: z.string().trim().toLowerCase().regex(/^[a-z0-9_]{3,20}$/),
+    // Longer than the adult minimum on purpose: this is chosen BY an adult FOR
+    // a child, typed rarely, and never rotated by the child themselves.
+    passphrase: z.string().min(8).max(72),
+    birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+    locale: z.enum(['en-US', 'es-MX', 'pt-BR']).default('en-US'),
+  });
+
+  router.post('/kids', async (req, res) => {
+    const parent = authedUser(res);
+    const parsed = CreateKid.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the child account details');
+    const { displayName, username, passphrase, locale } = parsed.data;
+    const birthDate = parsed.data.birthDate ?? null;
+
+    const taken = await usernameExists(username);
+    if (taken === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check the username');
+    if (taken) return fail(res, 409, 'USERNAME_IN_USE', 'That username is already taken');
+
+    const created = await adminCreateUser({
+      email: kidEmail(username),
+      password: passphrase,
+      displayName,
+      locale,
+    });
+    if (created.error) {
+      return fail(res, created.error.status >= 500 ? 502 : 400, created.error.code, created.error.message);
+    }
+    const kidId = created.data.id;
+
+    const linked = await insertVerifiedGuardianLink(parent.id, kidId);
+    if (!linked) {
+      // The account cannot be allowed to exist unlinked (§1.3). A failed
+      // rollback is logged rather than swallowed: it leaves an orphan that
+      // someone has to know about.
+      const undone = await adminDeleteUser(kidId);
+      await insertAuditLog(parent.id, 'family.kid_create.rolled_back', kidId, {
+        rollbackSucceeded: undone.error === null,
+      });
+      return fail(res, 502, DATA_UNAVAILABLE, 'Could not link the child account');
+    }
+
+    const profiled = await patchKidProfile(kidId, {
+      username,
+      display_name: displayName,
+      locale,
+      birth_date: birthDate,
+    });
+    if (!profiled) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the child profile');
+
+    const granted = await grantRole(kidId, 'kid', parent.id);
+    if (!granted) return fail(res, 502, DATA_UNAVAILABLE, 'Could not grant the child role');
+
+    // No handle, no display name, no birth date in the audit detail: the log is
+    // append-only and readable by staff, and it needs to record that the act
+    // happened, not to become a second copy of a minor's profile.
+    await insertAuditLog(parent.id, 'family.kid_created', kidId, {});
+
+    return ok(res, { kid: { userId: kidId, displayName, username } }, 201);
   });
 
   /*

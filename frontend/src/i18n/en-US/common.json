@@ -51,6 +51,26 @@
     "insightsConsent": {
       "label": "Share usage insights",
       "hint": "Help improve lessons with anonymous-style usage signals. You can turn this off anytime."
+    },
+    "addKid": {
+      "cta": "Add a child",
+      "title": "Add a child",
+      "body": "You create the account, so your child never needs an email address. You can see everything they do from here.",
+      "displayName": "Their first name",
+      "displayNameHint": "Only the first name. It is what the mentors will call them.",
+      "username": "Username to sign in",
+      "usernameHint": "Lowercase letters, numbers and _ . Three to twenty characters.",
+      "passphrase": "Passphrase",
+      "passphraseHint": "At least 8 characters. You choose it and you can change it later.",
+      "birthDate": "Date of birth",
+      "birthDateHint": "Optional. It only picks the right age band for the lessons.",
+      "submit": "Create the account",
+      "submitting": "Creating…",
+      "cancel": "Cancel",
+      "doneTitle": "All set",
+      "doneBody": "{{name}} can sign in with the username {{username}} and the passphrase you chose.",
+      "doneCta": "Done",
+      "privacy": "We ask for as little as possible: a first name, a username and a passphrase. No email, no surname, no address."
     }
   },
   "cookies": {

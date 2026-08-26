@@ -92,6 +92,70 @@ export function signUp(input: SignUpInput): Promise<GotrueResult<Partial<GotrueS
   });
 }
 
+/*
+ * KID ACCOUNTS ARE CREATED, NOT SIGNED UP. A child has no mailbox, so the
+ * ordinary /signup path is wrong twice over: it would demand an address we must
+ * not collect from a minor (§1.9), and with `GOTRUE_MAILER_AUTOCONFIRM=false`
+ * in production it would then park the account behind a confirmation email
+ * nobody can ever open.
+ *
+ * The admin endpoint creates the user already confirmed, with a synthetic
+ * address on a `.invalid` domain - reserved by RFC 2606 precisely so it can
+ * never resolve or receive mail. It exists only because `auth.users` needs an
+ * identifier; nothing sends to it, and the child never sees or types it.
+ *
+ * Service role, and therefore Core-only. It is deliberately not exported
+ * through any route the browser can reach on its own: the single caller is
+ * POST /family/kids, behind a verified `parent`.
+ */
+export function adminCreateUser(input: {
+  email: string;
+  password: string;
+  displayName: string;
+  locale: string;
+}): Promise<GotrueResult<GotrueUser>> {
+  const { SUPABASE_SERVICE_ROLE_KEY } = getConfig();
+  return gotrue('/admin/users', {
+    method: 'POST',
+    headers: {
+      apikey: SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email: input.email,
+      password: input.password,
+      email_confirm: true,
+      user_metadata: {
+        display_name: input.displayName,
+        locale: input.locale,
+        // Read by nothing that grants anything - the ROLE is the authority
+        // (user_roles, granted by Core). This is a hint for support and for
+        // GoTrue's own admin views, never a permission.
+        is_kid: true,
+      },
+    }),
+  });
+}
+
+/*
+ * Undo, for the window between "auth user exists" and "the family link that
+ * makes it legitimate exists". §1.3 says a kid row without a verified guardian
+ * link is a bug rather than a state, so if the link cannot be written the user
+ * must not survive the request.
+ */
+export function adminDeleteUser(userId: string): Promise<GotrueResult<Record<string, never>>> {
+  const { SUPABASE_SERVICE_ROLE_KEY } = getConfig();
+  return gotrue(`/admin/users/${encodeURIComponent(userId)}`, {
+    method: 'DELETE',
+    headers: {
+      apikey: SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
 /**
  * Guest session — GoTrue's native anonymous sign-in (`POST /signup` with no
  * email/password, gated server-side by `GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED`).

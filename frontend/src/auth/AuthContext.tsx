@@ -75,7 +75,8 @@ interface AuthContextValue {
   startGuestSession(): Promise<{ error: ApiError | null; analyticsEnabled: boolean }>;
   /** Attach a permanent email+password identity to the CURRENT guest session, in place — never /signup, which would mint a second, blank identity. */
   upgradeAccount(input: { email: string; password: string }): Promise<{ error: ApiError | null }>;
-  login(email: string, password: string): Promise<{ error: ApiError | null; analyticsEnabled: boolean }>;
+  /** `identifier` is an email for an adult or a username for a child. */
+  login(identifier: string, password: string): Promise<{ error: ApiError | null; analyticsEnabled: boolean }>;
   signup(
     input: SignupInput,
   ): Promise<{ error: ApiError | null; confirmationRequired: boolean; analyticsEnabled: boolean }>;
@@ -251,7 +252,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(
     async (email: string, password: string): Promise<{ error: ApiError | null; analyticsEnabled: boolean }> => {
       const { data, error } = await api<{ session: SessionPayload | null }>('/auth/login', {
-        body: { email, password },
+        // `identifier`, because a child signs in with the username their
+        // parent chose and has no mailbox to use instead. Core disambiguates
+        // on `@`, which `profiles.username` cannot contain (migration 0005).
+        body: { identifier: email, password },
       });
       if (error) return { error, analyticsEnabled: false };
       const next = data.session ? toStored(data.session) : null;
