@@ -31,7 +31,6 @@ export function VerifyParentPage() {
   const [givenNames, setGivenNames] = useState('');
   const [surnames, setSurnames] = useState('');
   const [birthDate, setBirthDate] = useState('');
-  const [address, setAddress] = useState('');
   const [documentType, setDocumentType] = useState<DocumentType>('national-id');
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -59,7 +58,6 @@ export function VerifyParentPage() {
     form.set('givenNames', givenNames);
     form.set('surnames', surnames);
     form.set('birthDate', birthDate);
-    form.set('address', address);
     form.set('documentType', documentType);
     form.set('document', file);
 
@@ -167,13 +165,6 @@ export function VerifyParentPage() {
             />
           </div>
         </div>
-        <Field
-          label={t('auth.verify.address')}
-          autoComplete="street-address"
-          required
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-        />
         <FileField
           label={t('auth.verify.photo')}
           help={t('auth.verify.photoHelp')}
@@ -184,7 +175,7 @@ export function VerifyParentPage() {
         />
         <Button
           type="submit"
-          disabled={submitting || !givenNames || !surnames || !address || !file || !BIRTH_DATE_RE.test(birthDate)}
+          disabled={submitting || !givenNames || !surnames ||  !file || !BIRTH_DATE_RE.test(birthDate)}
           className="w-full"
         >
           {submitting ? t('auth.verify.checking') : t('auth.verify.submit')}

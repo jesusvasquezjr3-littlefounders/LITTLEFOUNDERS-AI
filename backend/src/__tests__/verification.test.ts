@@ -23,6 +23,8 @@ interface StubOptions {
   verdict?: { verified: boolean; checks: Record<string, boolean> };
   guardianStatus?: number;
   calls?: string[];
+  /** Bodies of every service-role write, so a test can assert what is stored. */
+  writes?: { url: string; body: unknown }[];
 }
 
 function stubBackends(opts: StubOptions = {}) {
@@ -42,6 +44,9 @@ function stubBackends(opts: StubOptions = {}) {
         return Promise.resolve(jsonResponse(200, (opts.existingRoles ?? []).map((role) => ({ role }))));
       }
       // service-role writes: parent_verifications, user_roles insert, audit_logs
+      if (opts.writes && init?.body) {
+        opts.writes.push({ url, body: JSON.parse(String(init.body)) as unknown });
+      }
       return Promise.resolve(new Response(null, { status: 201 }));
     }),
   );
@@ -123,5 +128,31 @@ describe('POST /api/v1/verification/parent', () => {
     const res = await post(mintToken({ sub }));
     expect(res.status).toBe(429);
     expect(res.body.error.code).toBe('RATE_LIMITED');
+  });
+
+  /*
+   * A HOME ADDRESS MUST NOT SURVIVE THE REQUEST. It used to be `required`,
+   * validated and persisted - and never forwarded to Guardian, which verifies
+   * exactly four things (documentReadable, nameMatch, birthDateMatch,
+   * notExpired) and has no occurrence of the word in its source. Nothing ever
+   * read the column back. That is write-only PII on the one screen whose most
+   * prominent element is a promise about what we do not keep (§1.9), and it sat
+   * in a table whose own contract (migration 0004) says only data MATCHED
+   * AGAINST THE DOCUMENT lands there.
+   *
+   * The field is still SENT here on purpose: dropping it from the form is not
+   * the guarantee. The guarantee is that a client which supplies one - an old
+   * cached bundle, a curl, a probe - still cannot get it stored.
+   */
+  it('never stores a home address, even when the client sends one', async () => {
+    const writes: { url: string; body: unknown }[] = [];
+    stubBackends({ writes });
+    const res = await post(mintToken({ sub: randomUUID() }));
+    expect(res.status).toBe(200);
+
+    const stored = writes.filter((w) => w.url.includes('/parent_verifications'));
+    expect(stored.length).toBe(1);
+    expect(Object.keys(stored[0]!.body as Record<string, unknown>)).not.toContain('address');
+    expect(JSON.stringify(writes)).not.toContain('Siempre Viva');
   });
 });

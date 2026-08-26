@@ -771,7 +771,6 @@ export interface ParentVerificationInsert {
   given_names: string;
   surnames: string;
   birth_date: string;
-  address: string;
   document_type: string;
   checks: Record<string, boolean>;
 }

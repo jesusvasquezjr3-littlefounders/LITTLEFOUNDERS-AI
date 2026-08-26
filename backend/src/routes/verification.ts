@@ -29,7 +29,6 @@ const Fields = z.object({
       const age = (Date.now() - Date.parse(d)) / (365.25 * 24 * 3600 * 1000);
       return age >= 18 && age < 120;
     }, 'Applicant must be an adult'),
-  address: z.string().trim().min(1).max(240),
   documentType: z.enum(['national-id', 'passport', 'driver-license']).default('national-id'),
 });
 
@@ -117,7 +116,6 @@ export function verificationRouter(): Router {
       given_names: parsed.data.givenNames,
       surnames: parsed.data.surnames,
       birth_date: parsed.data.birthDate,
-      address: parsed.data.address,
       document_type: parsed.data.documentType,
       checks: verdict.checks,
     });

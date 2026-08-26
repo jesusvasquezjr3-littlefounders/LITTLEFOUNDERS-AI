@@ -58,11 +58,27 @@ describe('LiveStats', () => {
     await waitFor(() => expect(screen.getByText('live-run-1')).toBeInTheDocument());
     expect(screen.getByText('admin.generation.live.automatic')).toBeInTheDocument();
     expect(mockApi).toHaveBeenCalledWith('/admin/generation/live', { token: 'fake-token' });
-    expect(mockOnHeartbeat).toHaveBeenLastCalledWith(expect.objectContaining({
-      runId: 'live-run-1',
-      completedSlots: 4,
-      skippedSlots: 1,
-    }));
+    /*
+     * AWAITED, because the value arrives through an EFFECT and not through the
+     * render this test just observed. `onHeartbeat` is called with `null` on
+     * the first commit (no runs yet) and again with the run once Core answers;
+     * asserting the last call synchronously after a `waitFor` on the DOM makes
+     * the pass depend on those two landing in the same tick, which under a
+     * loaded full suite they do not always do. This failed exactly once in a
+     * full run and has not reproduced in fifteen since - so this is the most
+     * likely cause and NOT a confirmed one; it is written this way because an
+     * asynchronously delivered value must be awaited regardless.
+     *
+     * It still cannot pass on a component that never delivers a heartbeat: the
+     * waitFor would time out on `null`.
+     */
+    await waitFor(() =>
+      expect(mockOnHeartbeat).toHaveBeenLastCalledWith(expect.objectContaining({
+        runId: 'live-run-1',
+        completedSlots: 4,
+        skippedSlots: 1,
+      })),
+    );
 
     unmount();
   });
