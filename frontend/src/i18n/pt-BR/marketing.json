@@ -42,71 +42,14 @@
     "cta": "Comece a jornada hoje"
   },
   "howItWorks": {
-    "title": "Curiosidade entra. Confiança sai.",
-    "intro": "Três passos. Habilidades reais.",
+    "title": "Da curiosidade à confiança financeira",
     "cta": "Comece grátis",
-    "steps": {
-      "title": "Três momentos. Uma aventura.",
-      "discover": {
-        "number": "01",
-        "title": "Descubra",
-        "body": "Uma história que desperta uma pergunta real."
-      },
-      "practice": {
-        "number": "02",
-        "title": "Jogue",
-        "body": "Toque, compare, escolha. Aprenda fazendo."
-      },
-      "celebrate": {
-        "number": "03",
-        "title": "Suba de nível",
-        "body": "Cada conquista impulsiona a próxima."
-      }
-    },
-    "lesson": {
-      "title": "Lições curtas, pensamento real.",
-      "body": "Cada escolha ensina algo novo.",
-      "moments": {
-        "stories": {
-          "title": "Histórias próximas",
-          "body": "Histórias que elas já conhecem."
-        },
-        "choices": {
-          "title": "Desafios para resolver",
-          "body": "Pequenas ações, grandes descobertas."
-        },
-        "wins": {
-          "title": "Progresso visível",
-          "body": "Crescimento que dá para ver e sentir."
-        }
-      },
-      "demoAriaLabel": "Prévia animada mostrando como tocar na resposta certa libera uma comemoração e avança o progresso."
-    },
     "closing": {
       "title": "Torne isso seu.",
       "body": "Um passo. Ideias para a vida toda."
     }
   },
   "technology": {
-    "parentTitle": "Progresso que dá para ver",
-    "parentBody": "Sem sistema para gerenciar. Só crescimento visível.",
-    "parentPoints": {
-      "visible": {
-        "icon": "visibility",
-        "title": "Progresso com contexto",
-        "body": "O que ela aprende, e como está crescendo."
-      },
-      "adaptive": {
-        "icon": "route",
-        "title": "Próximos passos intencionais",
-        "body": "Cada desafio se constrói sobre o anterior."
-      },
-      "private": {
-        "icon": "shield",
-        "title": "Privacidade desde o design",
-        "body": "Os dados do seu filho, sempre privados."
-      }
-    },
     "concepts": {
       "curiosity": {
         "title": "Nunca começamos pela lição",

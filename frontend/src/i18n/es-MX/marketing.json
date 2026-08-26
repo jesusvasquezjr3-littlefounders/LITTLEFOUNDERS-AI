@@ -42,71 +42,14 @@
     "cta": "Comenzar el viaje hoy"
   },
   "howItWorks": {
-    "title": "Entra la curiosidad. Sale la confianza.",
-    "intro": "Tres pasos. Habilidades reales.",
+    "title": "De la curiosidad a la confianza financiera",
     "cta": "Empieza gratis",
-    "steps": {
-      "title": "Tres momentos. Una aventura.",
-      "discover": {
-        "number": "01",
-        "title": "Descubre",
-        "body": "Una historia que despierta una pregunta real."
-      },
-      "practice": {
-        "number": "02",
-        "title": "Juega",
-        "body": "Toca, compara, elige. Aprende haciendo."
-      },
-      "celebrate": {
-        "number": "03",
-        "title": "Avanza de nivel",
-        "body": "Cada logro impulsa el siguiente."
-      }
-    },
-    "lesson": {
-      "title": "Lecciones breves, pensamiento real.",
-      "body": "Cada elección enseña algo nuevo.",
-      "moments": {
-        "stories": {
-          "title": "Historias cercanas",
-          "body": "Historias que ya conocen."
-        },
-        "choices": {
-          "title": "Retos para resolver",
-          "body": "Pequeñas acciones, grandes descubrimientos."
-        },
-        "wins": {
-          "title": "Progreso que se siente",
-          "body": "Crecimiento que ven y sienten."
-        }
-      },
-      "demoAriaLabel": "Vista previa animada que muestra cómo tocar la respuesta correcta desbloquea una celebración y avanza el progreso."
-    },
     "closing": {
       "title": "Hazlo tuyo.",
       "body": "Un paso. Ideas para toda la vida."
     }
   },
   "technology": {
-    "parentTitle": "Progreso que sí puedes ver",
-    "parentBody": "Sin sistemas que administrar. Solo crecimiento visible.",
-    "parentPoints": {
-      "visible": {
-        "icon": "visibility",
-        "title": "Progreso con contexto",
-        "body": "Lo que aprende y cómo va creciendo."
-      },
-      "adaptive": {
-        "icon": "route",
-        "title": "Siguientes pasos con propósito",
-        "body": "Cada reto se construye sobre el anterior."
-      },
-      "private": {
-        "icon": "shield",
-        "title": "Privacidad desde el diseño",
-        "body": "Los datos de tu hijo, siempre privados."
-      }
-    },
     "concepts": {
       "curiosity": {
         "title": "Nunca empezamos con la lección",

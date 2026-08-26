@@ -43,11 +43,19 @@ describe('Marketing site', () => {
     expect(screen.getAllByRole('button', { name: /Start free/ }).length).toBeGreaterThan(0);
   });
 
-  it('renders the lesson-focused how-it-works page', () => {
+  /*
+   * The page is down to its title and its closing invitation while the product
+   * explanation is rewritten. Asserted against the BUNDLE rather than against
+   * pinned prose, for the same reason as the landing tests above: this copy is
+   * expected to change, and a literal here fails on the rewrite while claiming
+   * the page is broken.
+   */
+  it('renders the how-it-works page down to its title and its closing invitation', () => {
     renderApp('/how-it-works');
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/Curiosity in\. Confidence out\./);
-    expect(screen.getByText('Three moments. One adventure.')).toBeInTheDocument();
-    expect(screen.getByText('Short lessons, real thinking.')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      i18n.t('marketing.howItWorks.title'),
+    );
+    expect(screen.getByText(i18n.t('marketing.howItWorks.closing.title'))).toBeInTheDocument();
     expect(screen.queryByText('Coming soon')).not.toBeInTheDocument();
   });
 

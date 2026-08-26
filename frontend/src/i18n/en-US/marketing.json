@@ -42,71 +42,14 @@
     "cta": "Start the journey today"
   },
   "howItWorks": {
-    "title": "Curiosity in. Confidence out.",
-    "intro": "Three steps. Real skills.",
+    "title": "From curiosity to financial confidence",
     "cta": "Start free",
-    "steps": {
-      "title": "Three moments. One adventure.",
-      "discover": {
-        "number": "01",
-        "title": "Discover",
-        "body": "A story that sparks a real question."
-      },
-      "practice": {
-        "number": "02",
-        "title": "Play",
-        "body": "Tap, compare, choose. Learn by doing."
-      },
-      "celebrate": {
-        "number": "03",
-        "title": "Level up",
-        "body": "Every win sparks the next one."
-      }
-    },
-    "lesson": {
-      "title": "Short lessons, real thinking.",
-      "body": "Every choice teaches something new.",
-      "moments": {
-        "stories": {
-          "title": "Familiar stories",
-          "body": "Stories kids already know."
-        },
-        "choices": {
-          "title": "Challenges to solve",
-          "body": "Small actions, real discoveries."
-        },
-        "wins": {
-          "title": "Progress you can feel",
-          "body": "Growth they can see and feel."
-        }
-      },
-      "demoAriaLabel": "Animated preview showing how tapping the correct answer earns a celebration and moves progress forward."
-    },
     "closing": {
       "title": "Make it yours.",
       "body": "One step. A lifetime of ideas."
     }
   },
   "technology": {
-    "parentTitle": "Progress you can actually see",
-    "parentBody": "No system to manage. Just visible growth.",
-    "parentPoints": {
-      "visible": {
-        "icon": "visibility",
-        "title": "Progress with context",
-        "body": "What they're learning, and how they're growing."
-      },
-      "adaptive": {
-        "icon": "route",
-        "title": "Purposeful next steps",
-        "body": "Each challenge builds naturally on the last."
-      },
-      "private": {
-        "icon": "shield",
-        "title": "Built around privacy",
-        "body": "Your child's data stays private. Always."
-      }
-    },
     "concepts": {
       "curiosity": {
         "title": "We never open with the lesson",
