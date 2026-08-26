@@ -2,6 +2,65 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## The Landing diorama became a video, and a copy edit turned out to cost audio (2026-08-25)
+
+**The owner's ask, in three steps.** Render the diorama on the Landing's
+"Learn from mentors, not teachers" section at MAXIMUM QUALITY, because it is a
+marketing surface and not the Tutor. Then: it must read as a LOOP, not as a
+short video that starts and ends. Then: at least 24 fps, low weight, low decode
+cost, and "can we use another format, or convert it to a Lottie?"
+
+**What the render needed.** The shipped asset was a 420x315 animated GIF built
+from the RUNTIME .glb builds on whatever quality tier a headless SwiftShader
+happened to settle on. The replacement is captured from the ARTIST SOURCE
+exports (1.9 M triangles on screen against the runtime stage's small fraction
+of that), on the `high` tier, at 2400x1800, downsampled 2:1 with Lanczos-3 so
+the supersample fixes the aliasing INSIDE textured surfaces that MSAA cannot
+touch. Two things made that capture possible at all, and both are worth
+keeping: a VIRTUAL CLOCK (`performance.now`/`Date.now`/`requestAnimationFrame`
+replaced before app code runs, stepped by hand) so the adaptive governor
+measures a steady 60 fps and promotes to `high` however slow the rasterizer
+really is, and a long SETTLE, because the camera damper and the light rig both
+ease exponentially and are never exactly arrived.
+
+**Why it was not a loop, and why that was two bugs.** The first was mechanical:
+sharp's `webp({ delay })` applies a SCALAR to page 0 only and leaves every other
+frame on libwebp's 100 ms default, so a clip authored at 336 ms ran in 1.9 s
+instead of 5.7 s with a 336 ms hitch at the top of every cycle. The second was
+structural and not fixable by sampling: nothing in the shot returns to where it
+started. The ambient camera swing is `ORBIT_SWING * sin(ORBIT_RATE * phase)`
+with `ORBIT_RATE = 0.04`, a 157-second period; each character carries a
+14.6-second body tilt; the dance drivers put the bipeds at 3.4 rad/s against the
+quadrupeds' 4.5 and 3.2, which as 34 : 45 : 32 have a common period of 62.8
+SECONDS. The answer is a PING-PONG, which needs no period at all.
+
+**And the idle pose had nothing to loop.** Measured, its entire ambient motion
+is 0.21 px peak to peak at this framing. The movement the retired GIF appeared
+to have was its own 256-colour palette dithering flickering between frames. That
+is why the cast now dances: it is the only way the section is actually alive.
+Staging all four at once is the scene's own `audition` arrangement, which the
+lab could not previously reach - `/dev/scene-lab` gained the toggle.
+
+**The format question, answered with numbers rather than opinion.** Animated
+WebP and GIF have no motion compensation, so every frame re-encodes the whole
+changed rectangle as a fresh image; here that rectangle is 59% of the picture,
+which is why 13 fps cost 2.33 MB and 24 fps would have cost about 4 MB. Lottie
+does not apply at all: it is a VECTOR format and a textured 3D render has no
+vector form, so the only way in is a sequence of embedded PNGs, heavier than the
+WebP and composited on the CPU every frame. VP9-in-WebM predicts between frames
+and decodes in hardware: 42 frames at 24 fps for 572 KB, and its decode of frame
+0 is measurably CLOSER to the lossless render (mean error 1.14/255) than the q92
+WebP still beside it (2.46).
+
+**What the session found that nobody asked about.** A previous session had left
+the Tutor's own runtime raised for a capture: `quality.ts` at `anisotropy: 16`
+on the `high` tier, and 66 MB of artist-source .glb standing in for the runtime
+builds inside `public/` - which Vite copies wholesale into `dist/`. Both are put
+back. The em-dash cleanup in the same working tree had orphaned four PAID voice
+clips, which is the third row below. And the page scrolls sideways by 1 px at
+exactly 768 px, from the technology graph's canvas; that one is left flagged
+rather than fixed, because those files have their own in-flight work.
+
 ## Placement placed nobody, and onboarding was a silent form (2026-08-24)
 
 **The owner's report:** onboarding and placement are "deplorables, poco
@@ -3897,6 +3956,9 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-25 | **A marketing still and the Tutor's runtime are the SAME asset under opposite constraints, and whatever a capture borrows has to be given back in the same session.** The Landing diorama is captured from the `/glb/` artist sources on the `high` tier at 2400x1800 and downsampled 2:1; `frontend/public/scenes/` holds the RUNTIME builds again, and `quality.ts` is back to `anisotropy: 8`. | Owner rule, stated twice: max quality is for these renders ONLY, and the Tutor has an obligatory frame budget. The failure mode is asymmetric and that is the point. Shipping the runtime build into a still bakes a frame-budget compromise into a picture that has no frames; leaving the runtime RAISED after a capture charges every learner, on every session, for one marketing image. The second had already happened here - `high` was sitting at `anisotropy: 16` and 66 MB of source exports were standing in for the runtime .glb inside `public/`, which Vite copies wholesale into `dist/`, so they were one build away from being deployed. Anything borrowed for a capture is a LOAN: write down what you moved before you move it, and check `git status` for it at the end. |
+| 2026-08-25 | **An animated image cannot buy frame rate, because the format has no motion compensation - the Landing diorama is a VP9-alpha `<video>` chosen by a decode probe, with a max-quality still as the floor.** New `routes/marketing/alphaVideo.ts`. | Animated WebP and GIF re-encode the whole changed rectangle as a fresh image every frame, and here that rectangle is 59% of the picture: 13 fps cost 2.33 MB and 24 fps would have cost ~4 MB. That is a property of the container, not a setting, and Lottie is not an escape - it is a VECTOR format, so a textured 3D render can only enter it as embedded PNGs, heavier than the WebP AND composited on the CPU per frame. VP9-in-WebM is 572 KB for 42 frames at 24 fps and decodes in hardware, and its frame 0 is measurably closer to the lossless render (1.14/255) than the q92 WebP still (2.46). The probe exists because the clip is a CUT-OUT whose transparency cannot be baked into a rectangle - the glow blobs behind it move with viewport width - and WebKit plays a VP9-alpha WebM while IGNORING its alpha, which paints a black rectangle where the island should be. `canPlayType` answers about container and codec, so both browsers say yes; the only honest question is asked by decoding a 583-byte, 16x16, fully transparent frame and reading whether it stayed transparent. Every failure path, including the timeout, answers `false` and shows the still. |
+| 2026-08-25 | **Editing a VOICED line is not a copy edit, it is a paid regeneration - and the guard that catches it has no partial state, so the wording and the audio move together or not at all.** Four en-US narration lines are deliberately held at the text their recorded clips actually say, against `frontend/AGENTS.md`'s em-dash prohibition, until `oracle/scripts/pregenerate-guided-voice.ts` is re-run. | An em-dash cleanup elsewhere in the same working tree rewrote `onboarding.name` and `placement.welcome`/`quiz`/`adjust`, which orphaned four clips already synthesised, paid for and hosted in Depot: `speak()` refuses a clip whose recorded text no longer matches the subtitle, so those four characters had gone silent in en-US and nothing said so except a test. Three invariants then cannot hold at once - the copy protocol forbids the dash, the manifest must cover every cast key in every locale, and every entry's text must equal the current copy - and the only resolution that satisfies all three costs money and is the owner's call. Holding the four lines is not introducing a violation: it is leaving them exactly as they already ship, rather than trading a prose nit for four mute characters or a red suite. The general shape: a string with an audio recording behind it is coupled to a paid pipeline, and the copy rules that apply to silent text cannot be applied to it unilaterally. |
 | 2026-08-21 | **Two HUD layout systems that cannot see each other get ONE shared registry of what space is taken, not tuned constants.** `SafeAreaContext` now publishes `chromeRef` — every viewport-anchored surface including the way out — as a SUPERSET of the three rects the camera composes around. World-anchored chrome answers being covered in exactly two ways: a `WorldChip` hides, and the speech caption MOVES, by the shortest displacement that clears and stays in frame (`tutor-scene/hudSpace.ts`). Recorded in /DESIGN.md → Screen Recipes → Tutor. | Three collisions shipped at once and every gate was green: at 375 px the greeting caption (54, 31, 266, 68) sat under the way-out chip (16, 16, 155, 44) on three of three fresh mounts, so the learner read the second half of a sentence; the disabled mic orb (139, 632, 96, 96) sat on the goodbye plate AND on the indigo button beneath it; and `unavailable` printed the same sentence in two plates that overlapped. None is a constant to retune — the caption rides a projected point, so any offset correct at one shot is wrong at the next. `exit` is deliberately absent from the CAMERA's list: charging a 44 px corner chip as a 60 px top inset would push the subject down the frame in every phase to make room for a back arrow, for a collision the HUD can settle by itself for 22 px sideways. The way out therefore drops its label below `md:` (155 px → 44 px), because labelled it spans the caption's only horizontal escape route on a 375 px screen and the solver's only remaining move is 37 px straight DOWN, across the tutor's forehead. |
 | 2026-08-21 | **"Present in every phase" and "present in a phase where speaking is over" are different claims, and the microphone now makes only the first.** `StageMicPlan` gained `present`; `closing` is the single phase without an orb, `unavailable` keeps one and carries the phase's OWN sentence so the phase explains itself once. Recorded in /ORACLE.md §14.1 and /DESIGN.md. | Mounting the orb in every phase was the right fix for four phases having none — including the first screen a new learner sees — and the wrong fix for the goodbye: measured on a phone, a 96 px DISABLED microphone covered the second line of "See you soon!", covered "Start another session" (the one action of the phase), and covered its own reason line. The control added so the microphone could always be found was taking away the button the learner needed. The decision is a field on a total function over the phase vocabulary rather than an `&&`, and the ABSENCE is asserted as tightly as the presence — the list of phases without an orb is spelled out in the test, so a second removal is deliberate rather than a silent consequence. |
 | 2026-08-21 | **A ResizeObserver teardown that also forgets WHAT it was observing cannot survive a StrictMode remount, and dev is the only build anybody looks at.** `SafeAreaProvider`'s cleanup now drops the observer but keeps the node map, and the setup re-observes and re-publishes whatever is already registered. | React 18 StrictMode mounts, unmounts and remounts every effect; the ref callbacks that filled the map do not run again. So after the remount there was no observer, nothing observed, and the window-resize handler iterated an empty map: every HUD rect stayed frozen at its very first measurement for the life of the page. Measured live in a headless browser — resized 375 → 430 px, the microphone dock kept reporting the 345 px width it had had at mount. The camera composed around a HUD that had moved, and the new caption-avoidance read the same stale rects. Invisible in production, where StrictMode does not double-invoke, which is exactly why it survived: the one build where this route gets looked at is the one build where it was broken. |

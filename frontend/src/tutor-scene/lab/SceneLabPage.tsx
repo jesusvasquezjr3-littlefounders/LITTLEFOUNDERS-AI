@@ -16,6 +16,7 @@ import { ANCHOR_IDS, type AnchorId } from '../anchors';
 import {
   CHARACTER_ACTIONS,
   CHARACTER_EMOTIONS,
+  CHARACTER_IDS,
   type CharacterAction,
   type CharacterEmotion,
   type CharacterId,
@@ -196,6 +197,23 @@ export default function SceneLabPage() {
    * companion away.
    */
   const [solo, setSolo] = useState(false);
+  /*
+   * The AUDITION — the whole catalog standing on the island at once, which is
+   * what `TutorScene`'s `audition` prop and `cast.standingCast` exist to
+   * produce. The lab could not show it at all: `solo` toggled between one and
+   * two, and there was no way to reach the four-mark ring the placement solver
+   * switches to (AUDITION_RINGS / AUDITION_GROUPING). That is the arrangement
+   * with the least headroom — four footprints on a 6.5 m island, one of them
+   * Dina's 2.83 m — so it is precisely the one a placement harness has to be
+   * able to put on screen.
+   *
+   * Note it is not merely "more characters": the scene answers an audition with
+   * a different solver AND with the shadow pass off, because four casts plus a
+   * shadow map re-render is 1.4-1.6x over the per-frame triangle ceiling (see
+   * the argument in TutorScene). Reading that as a bug in the capture rather
+   * than as the product's own budget decision would be the wrong conclusion.
+   */
+  const [audition, setAudition] = useState(false);
   const [emotion, setEmotion] = useState<CharacterEmotion>('neutral');
   /*
    * A real <audio> element driving the mouth, so the TTS path is exercised end
@@ -276,6 +294,7 @@ export default function SceneLabPage() {
                 actionKey={actionKey}
                 character={lead}
                 companion={solo ? null : lead === 'liruf' ? 'rho' : 'liruf'}
+                audition={audition ? CHARACTER_IDS : null}
                 viseme={speaking ? spokenViseme : viseme}
                 shot={shot}
                 backdrop={backdrop}
@@ -405,6 +424,20 @@ export default function SceneLabPage() {
                   }
                 >
                   {solo ? 'cast: 1' : 'cast: 2'}
+                </button>
+              ) : null}
+              {composed ? (
+                <button
+                  type="button"
+                  data-audition={audition ? 'on' : 'off'}
+                  onClick={() => setAudition((v) => !v)}
+                  className={
+                    audition
+                      ? 'lf-caption rounded-sm border border-primary bg-primary-soft px-3 py-1.5 font-semibold text-content'
+                      : 'lf-caption rounded-sm border border-outline px-3 py-1.5 font-semibold text-content'
+                  }
+                >
+                  audition: all {CHARACTER_IDS.length}
                 </button>
               ) : null}
               {composed

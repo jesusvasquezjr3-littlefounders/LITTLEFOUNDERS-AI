@@ -26,12 +26,12 @@ export function HowItWorks() {
 
   return (
     <div>
-      <section className="relative isolate overflow-hidden bg-inverse text-on-inverse">
+      <section className="relative isolate overflow-hidden bg-base text-content dark:bg-inverse dark:text-on-inverse">
         <div className="pointer-events-none absolute inset-0 bg-primary/20 blur-3xl" aria-hidden="true" />
         <div className="relative mx-auto w-full max-w-none">
           <Reveal className="lf-how-hero-copy pointer-events-none absolute z-10 max-w-xl px-5 md:px-0">
             <h1 className="lf-display-xl">{t('marketing.howItWorks.title')}</h1>
-            <p className="lf-body-lg mt-6 text-on-inverse-muted">{t('marketing.howItWorks.intro')}</p>
+            <p className="lf-body-lg mt-6 text-content-muted dark:text-on-inverse-muted">{t('marketing.howItWorks.intro')}</p>
           </Reveal>
           <Reveal delay={80}><TechnologyGraph showTitle={false} /></Reveal>
         </div>

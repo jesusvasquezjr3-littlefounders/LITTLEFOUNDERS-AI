@@ -419,7 +419,7 @@
       },
       "boundaryNote_one": "Incluye {{count}} página vista de /admin registrada antes del arreglo del 14 ago 2026.",
       "boundaryNote_other": "Incluye {{count}} páginas vistas de /admin registradas antes del arreglo del 14 ago 2026. No se pueden filtrar en lectura: Umami no tiene filtro de negación.",
-      "boundaryUnknown": "No se pudo verificar el tráfico fuera de límite — es desconocido, no cero."
+      "boundaryUnknown": "No se pudo verificar el tráfico fuera de límite. Es desconocido, no cero."
     },
     "filters": {
       "dimensionLabel": "Filtrar por",
@@ -547,7 +547,7 @@
       "detectedEmpty": "No se detectaron direcciones del equipo en esta ventana.",
       "seenBy_one": "{{name}}, {{count}} solicitud, visto {{when}}",
       "seenBy_other": "{{name}}, {{count}} solicitudes, visto {{when}}",
-      "sharedEgress_one": "Vista con {{count}} cuenta del equipo — salida compartida. Verifica con whois antes de excluir.",
+      "sharedEgress_one": "Vista con {{count}} cuenta del equipo, salida compartida. Verifica con whois antes de excluir.",
       "sharedEgress_other": "Vista con {{count}} cuentas distintas del equipo, así que es una salida compartida (NAT de oficina o nodo VPN), no un dispositivo. Excluir un nodo VPN elimina a todos los demás visitantes que salen por ahí y no excluirá al equipo, porque esas IP rotan. Revisa whois primero.",
       "exclude": "Excluir",
       "activeTitle_one": "{{count}} exclusión activa",
@@ -561,7 +561,7 @@
       "add": "Agregar",
       "forwardOnly": "Las exclusiones aplican desde el momento en que las agregas. Los datos ya registrados no cambian.",
       "deviceTitle": "Este navegador",
-      "deviceHint": "Deja de medir solo en este dispositivo — sobrevive a un cambio de IP y no afecta a nadie más.",
+      "deviceHint": "Deja de medir solo en este dispositivo. Sobrevive a un cambio de IP y no afecta a nadie más.",
       "deviceExclude": "Excluir este navegador",
       "deviceResume": "Reanudar medición"
     },

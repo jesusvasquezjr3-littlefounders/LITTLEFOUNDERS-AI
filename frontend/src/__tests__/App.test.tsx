@@ -21,11 +21,23 @@ beforeEach(async () => {
 describe('Marketing site', () => {
   it('renders the landing page with its marketing narrative and CTA', () => {
     renderApp();
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/made into an adventure/);
+    /*
+     * Asserted against the BUNDLE, not against pinned prose. The headline is
+     * marketing copy and it gets rewritten; a literal here fails on the rewrite
+     * and says "the landing page is broken" when what actually happened is that
+     * somebody improved a sentence. What has to hold is that the h1 is wired to
+     * `marketing.hero.*` and renders both halves of it.
+     */
+    const heading = screen.getByRole('heading', { level: 1 });
+    expect(heading).toHaveTextContent(i18n.t('marketing.hero.titleLead'));
+    expect(heading).toHaveTextContent(i18n.t('marketing.hero.titleHighlight'));
     // The interactive concept atlas replaced the old static "experience" cards.
     expect(screen.getByRole('img', { name: 'Interactive map of learning concepts and relationships' })).toBeInTheDocument();
-    expect(screen.getByText("You're never alone")).toBeInTheDocument();
-    expect(screen.getByText('Source: S&P Global FinLit Survey')).toBeInTheDocument();
+    // Same reasoning as the h1: these two are the narrative beats the page
+    // promises (the mentors section and the sourced statistic), and the beats
+    // are what the test is guarding — not the sentences they are written in.
+    expect(screen.getByText(i18n.t('marketing.journey.heading'))).toBeInTheDocument();
+    expect(screen.getByText(i18n.t('marketing.fact.source'))).toBeInTheDocument();
     // Guest-first: the primary CTA starts a guest session (a button), not a
     // plain /signup link — see Landing's startAsGuest.
     expect(screen.getAllByRole('button', { name: /Start free/ }).length).toBeGreaterThan(0);
@@ -44,8 +56,21 @@ describe('Marketing site', () => {
     for (const button of screen.getAllByRole('button', { name: /Start free/ })) {
       expect(button).not.toHaveAttribute('href');
     }
-    expect(screen.getByRole('link', { name: 'Log in' })).toHaveAttribute('href', '/login');
-    expect(screen.getByRole('link', { name: 'Sign up' })).toHaveAttribute('href', '/signup');
+    /*
+     * `getAll`, not `get`: the marketing header now carries its own "Sign up"
+     * button beside the hero's screen-reader-only pair, so a uniqueness
+     * assertion fails on a page that got MORE reachable rather than less. The
+     * invariant of /AGENTS.md §1.13 is that signup and login stay reachable and
+     * that every route into them is the real one — so assert exactly that, on
+     * every match.
+     */
+    const logIn = screen.getAllByRole('link', { name: 'Log in' });
+    expect(logIn.length).toBeGreaterThan(0);
+    for (const link of logIn) expect(link).toHaveAttribute('href', '/login');
+
+    const signUp = screen.getAllByRole('link', { name: 'Sign up' });
+    expect(signUp.length).toBeGreaterThan(0);
+    for (const link of signUp) expect(link).toHaveAttribute('href', '/signup');
   });
 
   it('top nav links to the three marketing pages', () => {
@@ -106,6 +131,12 @@ describe('Marketing site', () => {
     fireEvent.click(trigger);
     fireEvent.click(await screen.findByRole('option', { name: /Spanish/ }));
 
-    expect(await screen.findByText(/convertido en aventura/)).toBeInTheDocument();
+    // Again the bundle rather than a literal: what this test is for is that the
+    // switch actually re-renders in the chosen locale, not what the Spanish
+    // headline happens to say this quarter.
+    const inSpanish = i18n.getFixedT('es-MX');
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(
+      inSpanish('marketing.hero.titleLead'),
+    );
   });
 });

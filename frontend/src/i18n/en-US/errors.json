@@ -23,7 +23,7 @@
     "ROLE_REJECTED": "The database rejected that role change (role invariants).",
     "DATA_UNAVAILABLE": "Couldn't load that data.",
     "RELEASE_NOT_FOUND": "That course doesn't exist anymore.",
-    "RELEASE_ARCHIVED": "This course is archived — restore it to draft before publishing.",
+    "RELEASE_ARCHIVED": "This course is archived. Restore it to draft before publishing.",
     "RELEASE_INCOMPLETE_HIERARCHY": "This course needs at least one adventure, saga, topic, and lesson before release.",
     "RELEASE_LESSONS_NOT_REVIEWABLE": "Every lesson must be in review or already published before release.",
     "RELEASE_INCOMPLETE_LOCALES": "Every lesson needs its en-US, es-MX, and pt-BR documents before release.",

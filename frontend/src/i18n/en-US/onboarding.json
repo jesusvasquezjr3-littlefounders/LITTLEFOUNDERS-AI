@@ -29,7 +29,7 @@
     "title": "When were you born?",
     "subtitle": "Optional. It helps us pick the right content for you.",
     "label": "Date of birth",
-    "invalid": "Check that date — it doesn't look right.",
+    "invalid": "Check that date. It doesn't look right.",
     "bubbleFilled": "Got it. Now I know how to guide you."
   },
   "discovery": {

@@ -419,7 +419,7 @@
       },
       "boundaryNote_one": "Inclui {{count}} visualização de /admin registrada antes da correção de 14 ago 2026.",
       "boundaryNote_other": "Inclui {{count}} visualizações de /admin registradas antes da correção de 14 ago 2026. Não podem ser filtradas na leitura: o Umami não tem filtro de negação.",
-      "boundaryUnknown": "Não foi possível verificar o tráfego fora do limite — é desconhecido, não zero."
+      "boundaryUnknown": "Não foi possível verificar o tráfego fora do limite. É desconhecido, não zero."
     },
     "filters": {
       "dimensionLabel": "Filtrar por",
@@ -547,7 +547,7 @@
       "detectedEmpty": "Nenhum endereço da equipe detectado nesta janela.",
       "seenBy_one": "{{name}}, {{count}} requisição, visto {{when}}",
       "seenBy_other": "{{name}}, {{count}} requisições, visto {{when}}",
-      "sharedEgress_one": "Vista com {{count}} conta da equipe — saída compartilhada. Verifique com whois antes de excluir.",
+      "sharedEgress_one": "Vista com {{count}} conta da equipe, saída compartilhada. Verifique com whois antes de excluir.",
       "sharedEgress_other": "Vista com {{count}} contas diferentes da equipe, ou seja, uma saída compartilhada (NAT do escritório ou nó VPN), não um dispositivo. Excluir um nó VPN remove todos os outros visitantes que saem por ali e não excluirá a equipe, porque esses IPs rotacionam. Consulte o whois antes.",
       "exclude": "Excluir",
       "activeTitle_one": "{{count}} exclusão ativa",
@@ -561,7 +561,7 @@
       "add": "Adicionar",
       "forwardOnly": "As exclusões valem a partir do momento em que você as adiciona. Os dados já registrados permanecem como estão.",
       "deviceTitle": "Este navegador",
-      "deviceHint": "Para a medição apenas neste dispositivo — sobrevive à troca de IP e não afeta mais ninguém.",
+      "deviceHint": "Para a medição apenas neste dispositivo. Sobrevive à troca de IP e não afeta mais ninguém.",
       "deviceExclude": "Excluir este navegador",
       "deviceResume": "Retomar medição"
     },

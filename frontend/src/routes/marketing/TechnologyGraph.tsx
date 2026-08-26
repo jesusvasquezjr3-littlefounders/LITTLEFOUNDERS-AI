@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/theme/useTheme';
+import { Icon } from '@/components/ui/Icon';
 import './TechnologyGraph.css';
 
 type ConceptKey =
@@ -130,7 +132,7 @@ function createAtlasLinks(): AtlasLink[] {
   return links;
 }
 
-const AMBIENT_BUBBLE_COUNT = 46;
+const AMBIENT_BUBBLE_COUNT = 68;
 const AMBIENT_TONES: Tone[] = ['primary', 'delight', 'success', 'on'];
 /**
  * Scattered through the same tree volume as the real nodes, but entirely
@@ -152,6 +154,86 @@ function createAmbientBubbles(): AmbientBubble[] {
       tone: AMBIENT_TONES[Math.floor(rand(i + 3500) * AMBIENT_TONES.length)]!,
       phase: rand(i + 3600) * Math.PI * 2,
       speed: 1800 + rand(i + 3700) * 2400,
+    };
+  });
+}
+
+interface AmbientLink { a: number; b: number; }
+const AMBIENT_LINK_COUNT = 26;
+/**
+ * A handful of faint field lines between nearby ambient bubbles — the
+ * "denser web" the withmarble.com reference reads as, without paying for it
+ * every frame. The nearest-neighbor search is O(bubbles^2), which sounds
+ * expensive, but it runs exactly ONCE (useMemo, same lifetime as the bubbles
+ * themselves) for ~70 points — under 5,000 distance checks, done before the
+ * first paint, never repeated. The render loop only ever iterates the fixed
+ * output list (capped at AMBIENT_LINK_COUNT), so this adds a small constant
+ * number of cheap stroke() calls per frame, not a per-frame search.
+ */
+function createAmbientLinks(bubbles: AmbientBubble[]): AmbientLink[] {
+  const candidates: Array<AmbientLink & { distance: number }> = [];
+  for (let i = 0; i < bubbles.length; i += 1) {
+    let nearest = -1;
+    let nearestDistance = Infinity;
+    for (let j = 0; j < bubbles.length; j += 1) {
+      if (i === j) continue;
+      const a = bubbles[i]!;
+      const b = bubbles[j]!;
+      const distance = Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearest = j;
+      }
+    }
+    if (nearest >= 0) candidates.push({ a: i, b: nearest, distance: nearestDistance });
+  }
+  candidates.sort((x, y) => x.distance - y.distance);
+  const seen = new Set<string>();
+  const links: AmbientLink[] = [];
+  for (const candidate of candidates) {
+    const key = candidate.a < candidate.b ? `${candidate.a}-${candidate.b}` : `${candidate.b}-${candidate.a}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    links.push({ a: candidate.a, b: candidate.b });
+    if (links.length >= AMBIENT_LINK_COUNT) break;
+  }
+  return links;
+}
+
+interface DecorIcon { x: number; y: number; z: number; icon: string; tone: Tone; phase: number; speed: number; }
+// Material Symbols only (/AGENTS.md "never emojis, no exceptions") — an emoji
+// coin/bag glyph is exactly the icon that renders as a blank box on Windows,
+// the failure this codebase spent real effort eradicating everywhere else.
+// Rendering these as ligature TEXT on the canvas would reintroduce a
+// different version of that same problem: Canvas2D's `font` property has no
+// equivalent of `font-feature-settings`, so there is no way to force ligature
+// substitution the way the DOM `.lf-icon` rule now does, and the reliability
+// this DOM font already earned would not carry over. These are drawn as real
+// `<Icon>` DOM elements instead, absolutely positioned over the canvas and
+// pushed to the SAME (x, y) the 3D projection computes for their spot in the
+// tree every frame — real icons, real reliability, still visually "inside"
+// the rotating scene.
+const DECOR_ICONS: Array<{ icon: string; tone: Tone }> = [
+  { icon: 'payments', tone: 'primary' },
+  { icon: 'savings', tone: 'success' },
+  { icon: 'account_balance', tone: 'on' },
+  { icon: 'monetization_on', tone: 'delight' },
+  { icon: 'storefront', tone: 'primary' },
+  { icon: 'handshake', tone: 'success' },
+  { icon: 'trending_up', tone: 'delight' },
+];
+function createDecorIcons(): DecorIcon[] {
+  return DECOR_ICONS.map((entry, i) => {
+    const stage = 0.6 + rand(i + 5000) * 3.1; // stays clear of the root cluster
+    const spread = TREE_SPREAD[Math.min(4, Math.round(stage))]! * 1.9;
+    return {
+      x: TREE_CENTER_X + (rand(i + 5100) - 0.5) * spread * 2,
+      y: TREE_Y[0]! - (stage / 4) * (TREE_Y[0]! - TREE_Y[4]!) + (rand(i + 5200) - 0.5) * 0.04,
+      z: (rand(i + 5300) - 0.5) * 0.55,
+      icon: entry.icon,
+      tone: entry.tone,
+      phase: rand(i + 5400) * Math.PI * 2,
+      speed: 2600 + rand(i + 5500) * 2000,
     };
   });
 }
@@ -192,7 +274,11 @@ const toneVar: Record<Tone, string> = {
   primary: '--lf-primary',
   delight: '--lf-delight',
   success: '--lf-success',
-  on: '--lf-on-inverse-muted',
+  // The local, theme-scoped token (TechnologyGraph.css) rather than the
+  // fixed-dark --lf-on-inverse-muted — otherwise the 'on' tone (used by a
+  // quarter of the ambient bubbles) would render near-invisible light-gray
+  // dots against light mode's near-white background.
+  on: '--atlas-on-muted',
 };
 
 const conceptImages: Record<ConceptKey, string> = {
@@ -200,15 +286,24 @@ const conceptImages: Record<ConceptKey, string> = {
   choice: '/marketing/atlas/3985077.jpg', needsVsWants: '/marketing/atlas/12357425.jpg', price: '/marketing/atlas/3985081.jpg', compare: '/marketing/atlas/3985056.jpg', budget: '/marketing/atlas/34383963.jpg',
   saving: '/marketing/atlas/7646224.jpg', plan: '/marketing/atlas/34471650.jpg', prioritize: '/marketing/atlas/9207491.jpg', tradeoff: '/marketing/atlas/8208755.jpg', time: '/marketing/atlas/7669175.jpg',
   create: '/marketing/atlas/32760477.jpg', resource: '/marketing/atlas/8798702.jpg', offer: '/marketing/atlas/15955290.jpg', cost: '/marketing/atlas/4894603.jpg', revenue: '/marketing/atlas/5082866.jpg',
-  share: '/marketing/atlas/7489083.jpg', iterate: '/marketing/atlas/7671313.jpg', reflect: '/marketing/atlas/6274956.jpg', confidence: '/marketing/atlas/4609073.jpg', nextStep: '/marketing/atlas/7118210.jpg',
+  // nextStep used to point at 7118210.jpg, which never existed anywhere in
+  // the repo or its git history (confirmed: the file was never committed).
+  // Every click on that node served a broken <img>. Reassigned to an
+  // existing, real photo from this same set (9207491.jpg) rather than left
+  // broken or silently swapped for a placeholder icon.
+  share: '/marketing/atlas/7489083.jpg', iterate: '/marketing/atlas/7671313.jpg', reflect: '/marketing/atlas/6274956.jpg', confidence: '/marketing/atlas/4609073.jpg', nextStep: '/marketing/atlas/9207491.jpg',
 };
 
 export function TechnologyGraph({ compact = false, showTitle = !compact }: { compact?: boolean; showTitle?: boolean }) {
   const { t } = useTranslation();
+  const { isDark } = useTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const nodes = useMemo(createAtlasNodes, []);
   const links = useMemo(createAtlasLinks, []);
   const bubbles = useMemo(createAmbientBubbles, []);
+  const ambientLinks = useMemo(() => createAmbientLinks(bubbles), [bubbles]);
+  const decorIcons = useMemo(createDecorIcons, []);
+  const decorRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [selected, setSelected] = useState<number | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -260,7 +355,25 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
     // Keep the cinematic glow crisp without letting Retina devices allocate
     // four times the pixels for an interaction redraw.
     const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
-    const colors = new Map(Object.values(toneVar).map((variable) => [variable, `rgb(${getComputedStyle(document.documentElement).getPropertyValue(variable)})`]));
+    // Read from `parent` (the .lf-atlas element), not document.documentElement:
+    // the theme-scoped --atlas-* tokens (TechnologyGraph.css) are only defined
+    // there and under `.dark .lf-atlas`, so resolving them off <html> would
+    // always miss and silently fall back to the hardcoded defaults below.
+    // --atlas-on is included even though it's not one of the four node tones —
+    // it is the selected-node ring color, which used to look up the
+    // never-populated key '--lf-on-inverse' and always hit its '#fff'
+    // fallback regardless of theme.
+    const paletteVars = [...new Set([...Object.values(toneVar), '--atlas-on'])];
+    const colors = new Map(paletteVars.map((variable) => [variable, `rgb(${getComputedStyle(parent).getPropertyValue(variable)})`]));
+    // Additive ('lighter') blending is what makes dots and lines read as
+    // GLOWING against a near-black backdrop — the same low-alpha values
+    // composited normally over a light backdrop just look like a faint gray
+    // smudge, not a bug in the colors themselves. Light mode uses ordinary
+    // alpha compositing instead, with a few of the lowest-alpha values below
+    // bumped to compensate for the loss of additive brightening. Every dark
+    // mode value below is completely unchanged from before this file
+    // supported light mode at all.
+    const blendMode: GlobalCompositeOperation = isDark ? 'lighter' : 'source-over';
     // Built once per effect run (colors are static for the session), not
     // per frame — see makeGlowSprite's doc comment.
     const glowSprites = new Map([...colors.values()].map((rgb) => [rgb, makeGlowSprite(rgb)]));
@@ -269,6 +382,13 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
       const sprite = glowFor(rgb);
       context!.drawImage(sprite, x - radius, y - radius, radius * 2, radius * 2);
     };
+    // Color is theme-static for the life of this effect run, so it is set
+    // once here rather than every frame — only position/opacity (which
+    // genuinely change every frame, from the rotation) are touched inside draw().
+    decorIcons.forEach((deco, i) => {
+      const el = decorRefs.current[i];
+      if (el) el.style.color = colors.get(toneVar[deco.tone]) ?? colors.get('--lf-primary') ?? '#818cf8';
+    });
     const resize = () => {
       const rect = parent.getBoundingClientRect();
       canvas.width = rect.width * dpr;
@@ -294,14 +414,31 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
       }
       context!.clearRect(0, 0, width, height);
       const project = (nx: number, ny: number, nz: number) => {
-        const x = (nx - 0.5) * zoom;
+        // Rotate around the TREE's own trunk (TREE_CENTER_X), not the canvas
+        // center (0.5). The tree's nodes are already offset from 0.5 by
+        // design (TREE_CENTER_X = 0.74, "sits in the open right side" per
+        // createAtlasNodes's own comment) — rotating that offset around 0.5
+        // made the whole silhouette orbit across the canvas as `rotation`
+        // completed its cycle, swinging left far enough to pass behind the
+        // hero copy at some phase of every turn instead of spinning in
+        // place. Anchoring both the rotation origin AND the final screen
+        // position at TREE_CENTER_X keeps the trunk fixed on screen; only
+        // the branches (offset from the trunk by their own small
+        // TREE_SPREAD, at most 0.24) swing, which is what "rotating in
+        // place" is supposed to look like.
+        const x = (nx - TREE_CENTER_X) * zoom;
         const y = (ny - 0.5) * zoom;
         const cameraX = x * Math.cos(rotation) - nz * Math.sin(rotation);
         const depth = nz * Math.cos(rotation) + x * Math.sin(rotation);
         const cameraY = y * Math.cos(tilt) - depth * Math.sin(tilt);
         const zDepth = depth * Math.cos(tilt) + y * Math.sin(tilt);
         const scale = 0.62 + ((zDepth + 1) / 2) * 0.82;
-        return { zDepth, scale, x: width / 2 + panX + cameraX * width * scale, y: height / 2 + panY + cameraY * height * scale };
+        return {
+          zDepth,
+          scale,
+          x: width * TREE_CENTER_X + panX + cameraX * width * scale,
+          y: height / 2 + panY + cameraY * height * scale,
+        };
       };
       projected = nodes.map((node) => ({ node, ...project(node.x, node.y, node.z) }));
       const sorted = [...projected].sort((a, b) => a.zDepth - b.zDepth);
@@ -311,13 +448,25 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
       // Same cached-sprite glow as the real nodes (no shadowBlur), just at
       // low alpha, so this doesn't add meaningfully to the per-frame cost.
       context!.save();
-      context!.globalCompositeOperation = 'lighter';
+      context!.globalCompositeOperation = blendMode;
       for (const bubble of bubbles) {
         const p = project(bubble.x, bubble.y, bubble.z);
         const twinkle = 0.5 + Math.sin(time / bubble.speed + bubble.phase) * 0.5;
         const bubbleColor = colors.get(toneVar[bubble.tone]) ?? colors.get('--lf-primary') ?? '#818cf8';
-        context!.globalAlpha = (0.08 + twinkle * 0.18) * p.scale;
+        context!.globalAlpha = (isDark ? 0.08 + twinkle * 0.18 : 0.16 + twinkle * 0.26) * p.scale;
         drawGlow(bubbleColor, p.x, p.y, bubble.radius * p.scale * 3);
+      }
+      // Ambient links: same handful of precomputed short field lines every
+      // frame, plain thin strokes (no glow sprite) — see createAmbientLinks.
+      for (const link of ambientLinks) {
+        const a = bubbles[link.a]; const b = bubbles[link.b];
+        if (!a || !b) continue;
+        const pa = project(a.x, a.y, a.z); const pb = project(b.x, b.y, b.z);
+        const lineColor = colors.get(toneVar[a.tone]) ?? colors.get('--lf-primary') ?? '#818cf8';
+        context!.globalAlpha = (isDark ? 0.14 : 0.22) * Math.min(pa.scale, pb.scale);
+        context!.strokeStyle = lineColor;
+        context!.lineWidth = 0.6;
+        context!.beginPath(); context!.moveTo(pa.x, pa.y); context!.lineTo(pb.x, pb.y); context!.stroke();
       }
       context!.restore();
 
@@ -331,28 +480,28 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
         const isActive = a.node.id === selectedRef.current || b.node.id === selectedRef.current;
         const edgeColor = isActive ? (colors.get('--lf-delight') ?? '#f472b6') : (colors.get('--lf-primary') ?? '#818cf8');
         context!.save();
-        context!.globalAlpha = isActive ? 0.82 : link.kind === 'bridge' ? 0.3 : 0.16;
+        context!.globalAlpha = isActive ? 0.82 : link.kind === 'bridge' ? (isDark ? 0.3 : 0.46) : (isDark ? 0.16 : 0.28);
         context!.strokeStyle = edgeColor;
         context!.lineWidth = isActive ? 2.2 : link.kind === 'bridge' ? 1.1 : 0.75;
-        context!.globalCompositeOperation = 'lighter';
+        context!.globalCompositeOperation = blendMode;
         context!.beginPath(); context!.moveTo(a.x, a.y); context!.lineTo(b.x, b.y); context!.stroke();
         context!.restore();
         if (isActive) {
           context!.save();
-          context!.globalCompositeOperation = 'lighter';
+          context!.globalCompositeOperation = blendMode;
           drawGlow(edgeColor, (a.x + b.x) / 2, (a.y + b.y) / 2, 22);
           context!.restore();
         }
         const pulse = (time / 2200 + linkIndex * 0.14) % 1;
         const trailColor = link.kind === 'bridge' ? (colors.get('--lf-success') ?? '#34d399') : edgeColor;
         context!.save();
-        context!.globalCompositeOperation = 'lighter';
+        context!.globalCompositeOperation = blendMode;
         context!.fillStyle = trailColor;
         for (let trail = 2; trail >= 0; trail -= 1) {
           const trailPulse = (pulse - trail * 0.035 + 1) % 1;
           const px = a.x + (b.x - a.x) * trailPulse;
           const py = a.y + (b.y - a.y) * trailPulse;
-          context!.globalAlpha = (isActive ? 0.9 : 0.34) / (trail + 1);
+          context!.globalAlpha = (isActive ? 0.9 : isDark ? 0.34 : 0.5) / (trail + 1);
           context!.beginPath(); context!.arc(px, py, (isActive ? 3.2 : 1.8) - trail * 0.35, 0, Math.PI * 2); context!.fill();
         }
         context!.restore();
@@ -360,7 +509,7 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
           const px = a.x + (b.x - a.x) * pulse;
           const py = a.y + (b.y - a.y) * pulse;
           context!.save();
-          context!.globalAlpha = 0.26;
+          context!.globalAlpha = isDark ? 0.26 : 0.4;
           context!.strokeStyle = colors.get('--lf-success') ?? '#34d399';
           context!.lineWidth = 1;
           context!.beginPath(); context!.arc(px, py, 6 + Math.sin(time / 240) * 2, 0, Math.PI * 2); context!.stroke();
@@ -374,7 +523,7 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
         const coreRadius = node.radius * scale * pulse;
         context!.save();
         context!.globalAlpha = active ? 1 : 0.48 + ((zDepth + 1) / 2) * 0.5;
-        context!.globalCompositeOperation = 'lighter';
+        context!.globalCompositeOperation = blendMode;
         // Cached-sprite glow (cheap blit) replaces a per-node shadowBlur —
         // the glow radius still scales with the same "active/mid-row/rest"
         // tiers the old shadowBlur values encoded (28 / 14 / 5).
@@ -386,11 +535,28 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
         context!.beginPath(); context!.arc(x, y, coreRadius, 0, Math.PI * 2); context!.fill();
         if (active) {
           context!.globalAlpha = 0.55;
-          context!.strokeStyle = colors.get('--lf-on-inverse') ?? '#fff';
+          // --atlas-on: dark ink in light mode, white in dark mode — this
+          // used to read the never-populated '--lf-on-inverse' key and
+          // always fall back to '#fff', a ring invisible against a light
+          // background.
+          context!.strokeStyle = colors.get('--atlas-on') ?? '#fff';
           context!.lineWidth = 1.2;
           context!.beginPath(); context!.arc(x, y, coreRadius * 3.3, 0, Math.PI * 2); context!.stroke();
         }
         context!.restore();
+      });
+
+      // Decorative financial icons: real DOM <Icon> elements (never emoji,
+      // never canvas-drawn ligature text — see createDecorIcons's comment),
+      // pushed to the same 3D-projected spot every frame with a cheap
+      // transform + opacity write. No layout is triggered by either property.
+      decorIcons.forEach((deco, i) => {
+        const el = decorRefs.current[i];
+        if (!el) return;
+        const p = project(deco.x, deco.y, deco.z);
+        const twinkle = 0.55 + Math.sin(time / deco.speed + deco.phase) * 0.45;
+        el.style.transform = `translate3d(${p.x}px, ${p.y}px, 0) translate(-50%, -50%) scale(${(0.8 + p.scale * 0.4).toFixed(3)})`;
+        el.style.opacity = String(Math.max(0, Math.min(1, twinkle * (0.5 + ((p.zDepth + 1) / 2) * 0.55))));
       });
     };
     // Single render loop drives everything (idle sway, drag feedback, and
@@ -460,7 +626,7 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
     resizeObserver?.observe(parent);
     resize(); draw(0); ensureLoop(); observer?.observe(parent); document.addEventListener('visibilitychange', onVisibilityChange); window.addEventListener('resize', resize); canvas.addEventListener('pointerdown', onPointerDown); canvas.addEventListener('pointermove', onPointerMove); canvas.addEventListener('pointerup', onPointerUp); canvas.addEventListener('pointercancel', onPointerCancel);
     return () => { redrawRef.current = null; ensureLoopRef.current = null; if (rafId !== null) cancelAnimationFrame(rafId); observer?.disconnect(); resizeObserver?.disconnect(); document.removeEventListener('visibilitychange', onVisibilityChange); window.removeEventListener('resize', resize); canvas.removeEventListener('pointerdown', onPointerDown); canvas.removeEventListener('pointermove', onPointerMove); canvas.removeEventListener('pointerup', onPointerUp); canvas.removeEventListener('pointercancel', onPointerCancel); };
-  }, [links, nodes, bubbles, reducedMotion]);
+  }, [links, nodes, bubbles, ambientLinks, decorIcons, reducedMotion, isDark]);
 
   const active = nodes.find((node) => node.id === selected) ?? nodes[0]!;
   const related = selected === null ? [] : links.filter((link) => link.from === selected || link.to === selected).slice(0, 3).map((link) => link.from === selected ? link.to : link.from);
@@ -468,6 +634,16 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
     <div className={`lf-atlas ${compact ? 'lf-atlas-compact' : ''} ${showTitle ? '' : 'lf-atlas-no-title'}`}>
       <canvas ref={canvasRef} className="lf-atlas__canvas" aria-label={t('marketing.technology.atlas.ariaLabel')} role="img" />
       <div className="lf-atlas__backdrop" aria-hidden="true" />
+      {decorIcons.map((deco, i) => (
+        <div
+          key={deco.icon}
+          ref={(el) => { decorRefs.current[i] = el; }}
+          className="lf-atlas__decor"
+          aria-hidden="true"
+        >
+          <Icon name={deco.icon} />
+        </div>
+      ))}
       <div className="lf-atlas__title"><span>{t('marketing.technology.atlas.eyebrow')}</span><h2>{t('marketing.technology.atlas.titleLead')}<br /><em>{t('marketing.technology.atlas.titleAccent')}</em></h2><p>{t('marketing.technology.atlas.body')}</p><div className="lf-atlas__stats"><b>{NODE_COUNT}</b><span>{t('marketing.technology.atlas.nodes')}</span><b>{links.length}</b><span>{t('marketing.technology.atlas.paths')}</span></div></div>
       {inspectorOpen && <aside className="lf-atlas__inspector">
         <button type="button" className="lf-atlas__close" onClick={() => setInspectorOpen(false)} aria-label={t('marketing.technology.atlas.close')}>×</button>

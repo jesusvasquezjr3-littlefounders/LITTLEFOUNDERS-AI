@@ -4,14 +4,14 @@
     "families": "Families",
     "faq": "FAQ",
     "cta": "Start free",
-    "loginCta": "I already have an account"
+    "signupCta": "Sign up"
   },
   "hero": {
-    "titleLead": "Money",
-    "titleHighlight": "made into an adventure",
-    "subtitle": "Financial skills, disguised as play.",
+    "titleLead": "Financial learning",
+    "titleHighlight": "for the digital economy and smart investing",
+    "subtitle": "Help your family build a healthy relationship with money through a safe, modern, and 100% guided digital environment.",
     "ctaPrimary": "Start free",
-    "ctaSecondary": "How it works",
+    "ctaSecondary": "I already have an account",
     "ctaStarting": "Starting…",
     "guestError": "We couldn't start your session, please try again.",
     "loginLink": "Log in",
@@ -19,20 +19,13 @@
     "logoAlt": "LittleFounders"
   },
   "fact": {
-    "heading": "Most adults never learned this",
-    "intro": "Start earlier. Change the outcome.",
-    "stat": "1 in 3",
-    "title": "adults worldwide are financially literate",
-    "source": "Source: S&P Global FinLit Survey",
-    "imageAlt": "A family learns together about money and goals"
+    "heading": "67% of adults never learned to manage money in time.",
+    "intro": "Do not wait for them to stumble into real life. Prepare them today with the tools of the digital era.",
+    "source": "Source: S&P Global FinLit Survey"
   },
   "journey": {
-    "heading": "You're never alone",
-    "intro": "What every adventure includes",
-    "guided": "A caring character guide",
-    "free": "Always free",
-    "fun": "Real fun, not homework",
-    "safe": "Built safe for every kid"
+    "heading": "Learn from mentors, not teachers.",
+    "intro": "Our characters guide your family every step of the way, turning abstract money concepts into real-life decisions."
   },
   "family": {
     "title": "It comes home too",
@@ -117,138 +110,138 @@
     },
     "concepts": {
       "curiosity": {
-        "title": "Curiosity starts the journey",
-        "body": "A child’s own question turns an everyday moment into an opportunity to discover."
+        "title": "We never open with the lesson",
+        "body": "A character asks the question first. A financial concept nobody asked about is one a kid forgets by dinner, so curiosity always comes before the concept."
       },
       "needs": {
-        "title": "Name what we need",
-        "body": "Naming a need helps separate what is essential from what can wait."
+        "title": "Feeling first, definition never",
+        "body": "We do not define what a need is. We put a kid inside a moment where they must decide what matters right now, and the definition arrives after the decision."
       },
       "goal": {
-        "title": "Give a goal a name",
-        "body": "A concrete goal makes it clear what we want to achieve and why it matters."
+        "title": "A goal only counts if it can be pictured",
+        "body": "We reject abstract targets like save money. Every goal in this curriculum is something a kid can point to and name specifically."
       },
       "value": {
-        "title": "Understand value",
-        "body": "Comparing usefulness, effort, and satisfaction supports intentional choices."
+        "title": "Worth is felt, not calculated",
+        "body": "Before we ask a kid to compare price and quality, we make them feel the tradeoff, because a formula nobody has felt is one they forget."
       },
       "question": {
-        "title": "Ask a better question",
-        "body": "A clear question opens room to think, test, and learn."
+        "title": "A sharper question beats a right answer",
+        "body": "We value a kid's ability to ask a better question more than their first guess, because that skill outlasts any single lesson."
       },
       "choice": {
-        "title": "Choose between possibilities",
-        "body": "Seeing more than one option helps children anticipate consequences without fearing mistakes."
+        "title": "No lesson without a decision",
+        "body": "If an idea cannot be taught through something a kid chooses live, with a visible consequence, we do not teach it that way. That is the line."
       },
       "needsVsWants": {
-        "title": "Need or want",
-        "body": "Classifying a purchase makes priorities easier to explain in simple words."
+        "title": "Consequences, not categories",
+        "body": "We do not ask a kid to sort a list into need or want. We hand them a limited budget and let the wrong choice run out, live, in front of them."
       },
       "price": {
-        "title": "Read a price",
-        "body": "Recognizing what something costs connects numbers to a real decision."
+        "title": "A number alone means nothing",
+        "body": "We never show a price without a reason behind it. A number with nothing at stake is trivia, and trivia does not change behavior."
       },
       "compare": {
-        "title": "Compare before choosing",
-        "body": "Putting two options side by side reveals differences that are easy to miss."
+        "title": "Side by side, never in isolation",
+        "body": "We never ask a kid to judge one option on its own. Comparison only works when the alternative is right there to see."
       },
       "budget": {
-        "title": "Give every coin a job",
-        "body": "A simple budget turns a limit into a plan that can be reviewed."
+        "title": "A limit is a plan, not a punishment",
+        "body": "Where most treat a budget as a restriction, we treat it as the first real plan a kid ever gets to write themselves."
       },
       "saving": {
-        "title": "Save for later",
-        "body": "Saving shows how a small decision can move us toward a future goal."
+        "title": "The why always comes before the how much",
+        "body": "We refuse to teach saving as a number in a jar. Every saving goal here is tied, first, to something a kid actually wants."
       },
       "plan": {
-        "title": "Turn a goal into steps",
-        "body": "Breaking an objective into small actions makes progress feel possible."
+        "title": "Small steps or it does not ship",
+        "body": "A goal that cannot be broken into a step small enough for this kid to attempt today is not a lesson we consider finished."
       },
       "prioritize": {
-        "title": "Decide what comes first",
-        "body": "Ordering priorities helps us use time and money with intention."
+        "title": "Order is the lesson, not the list",
+        "body": "We do not teach a kid what to prioritize. We teach them to notice that choosing an order at all is itself the skill."
       },
       "tradeoff": {
-        "title": "See what we leave out",
-        "body": "Every choice has an opportunity cost, and naming it strengthens judgment."
+        "title": "Every yes is also a no",
+        "body": "We build every choice so picking one option visibly removes another, because a tradeoff a kid only hears about is one they do not believe."
       },
       "time": {
-        "title": "Let time help",
-        "body": "Waiting can be a strategy when a goal needs consistency."
+        "title": "Patience is designed in, not preached",
+        "body": "Instead of telling a kid to be patient, we design the pacing itself so that waiting is the version that works better."
       },
       "create": {
-        "title": "Imagine something that could exist",
-        "body": "Creating begins when an idea responds to a real need or desire."
+        "title": "An idea only counts once it is built",
+        "body": "We do not reward the idea. We reward the version of it a kid actually finished, however small."
       },
       "resource": {
-        "title": "Recognize resources",
-        "body": "Time, materials, skills, and support are part of every project."
+        "title": "Start from what exists, not what is missing",
+        "body": "Before we ask what a project needs, we make a kid name what they already have. Scarcity thinking starts backwards."
       },
       "offer": {
-        "title": "Design a proposal",
-        "body": "A strong proposal explains what it offers, who it serves, and why it may help."
+        "title": "A pitch has to survive a real reaction",
+        "body": "We never grade a kid's idea. We let a character respond to it honestly, the way a real customer would."
       },
       "cost": {
-        "title": "Calculate the cost of creating",
-        "body": "Counting materials and effort supports responsible decisions."
+        "title": "If the kid did not choose it, it is not cost yet",
+        "body": "We never hand a kid a materials list. Every cost in this curriculum is the sum of choices the kid made themselves."
       },
       "revenue": {
-        "title": "See how money comes in",
-        "body": "Connecting a sale to an outcome shows how an idea can sustain itself."
+        "title": "Money in has to trace back to a decision",
+        "body": "We refuse to teach revenue as a formula. Every sale here connects visibly to an earlier choice, so cause always comes before effect."
       },
       "share": {
-        "title": "Tell the idea",
-        "body": "Sharing an idea invites questions, support, and new perspectives."
+        "title": "Growth is the metric, not the score",
+        "body": "We measure what a kid is learning to do next, not what they got right today. A percentage tells a family nothing useful."
       },
       "iterate": {
-        "title": "Improve with another try",
-        "body": "A second version uses what was learned to make a clearer decision."
+        "title": "Wrong is a step, not a stop",
+        "body": "A second attempt is not a consolation prize here. It is the expected shape of learning, built into every exercise from the start."
       },
       "reflect": {
-        "title": "Look at what happened",
-        "body": "Reflection turns an experience into a tool for the next challenge."
+        "title": "We ask what changed, not what happened",
+        "body": "Instead of summarizing a lesson, we ask a kid what they would do differently next time. That question is the actual lesson."
       },
       "confidence": {
-        "title": "Notice what I can already do",
-        "body": "Naming progress turns effort into visible confidence."
+        "title": "We name the skill, not the win",
+        "body": "We never say good job. We say, specifically, what a kid can now do that they could not do yesterday."
       },
       "nextStep": {
-        "title": "Choose the next step",
-        "body": "Every win opens an achievable action that keeps learning alive."
+        "title": "One door, not a hallway",
+        "body": "We never hand a kid a menu of options. There is exactly one next step, chosen for exactly where they are, every time."
       }
     },
     "graph": {
       "question": {
         "code": "ORIGIN",
         "label": "Start with curiosity",
-        "title": "A question opens the path",
-        "body": "A familiar situation gives every adventure a meaningful starting point.",
-        "pedagogyTitle": "Curiosity before correctness",
-        "pedagogyBody": "Children form their own question first. That makes the learning personal instead of feeling like a test."
+        "title": "We refuse to open with a fact",
+        "body": "Every adventure starts inside a situation a kid already recognizes, never a definition on a slide.",
+        "pedagogyTitle": "A guess counts more than a right answer",
+        "pedagogyBody": "We let a kid answer wrong first. Correcting a real guess teaches more than confirming a fact they were only told."
       },
       "practice": {
         "code": "ACTION",
         "label": "Learn by doing",
-        "title": "Practice makes an idea tangible",
-        "body": "Short, active challenges let kids try a choice and see why it matters.",
-        "pedagogyTitle": "Choice becomes understanding",
-        "pedagogyBody": "A child makes a decision, sees what happens, and gets another chance to try with more confidence."
+        "title": "An idea only counts once it is tried",
+        "body": "We never explain a concept before a kid has already acted on it, wrong or right.",
+        "pedagogyTitle": "The mistake is not cleaned up, it is kept",
+        "pedagogyBody": "We do not erase a wrong choice. We let a kid see exactly what it caused, then hand them a second try."
       },
       "connection": {
         "code": "LINK",
         "label": "Connect ideas",
-        "title": "Ideas become part of a bigger picture",
-        "body": "Related moments build a coherent learning journey instead of isolated activities.",
-        "pedagogyTitle": "Meaning grows between ideas",
-        "pedagogyBody": "New knowledge sticks when children can connect it to something they already know or care about."
+        "title": "No idea stands alone here",
+        "body": "We refuse to teach a concept in isolation. Every topic reaches back to one a kid has already mastered.",
+        "pedagogyTitle": "New knowledge has to attach to something",
+        "pedagogyBody": "We build every topic as a link, not a chapter, because a fact with nothing to hold onto is one that gets forgotten by Tuesday."
       },
       "progress": {
         "code": "NEXT",
         "label": "Keep moving",
-        "title": "Every win points to what comes next",
-        "body": "Progress stays encouraging, visible, and connected to the child’s next discovery.",
-        "pedagogyTitle": "Confidence needs a next move",
-        "pedagogyBody": "A small win becomes useful when it opens a new, achievable challenge rather than ending the journey."
+        "title": "A win is only useful if it points somewhere",
+        "body": "We never let progress dead-end. Every completed challenge opens exactly one next one, sized for the kid who just finished it.",
+        "pedagogyTitle": "Confidence has to be spent immediately",
+        "pedagogyBody": "We do not let a win sit still. It gets handed a new, reachable challenge before the feeling fades."
       }
     },
     "stage": {

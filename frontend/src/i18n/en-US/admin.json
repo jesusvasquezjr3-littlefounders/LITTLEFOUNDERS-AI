@@ -418,8 +418,8 @@
         "event": "Events"
       },
       "boundaryNote_one": "Includes {{count}} /admin pageview recorded before the 2026-08-14 tracker fix.",
-      "boundaryNote_other": "Includes {{count}} /admin pageviews recorded before the 2026-08-14 tracker fix. They cannot be filtered out at read time — Umami has no negation filter.",
-      "boundaryUnknown": "Could not check for out-of-boundary pageviews — this is unknown, not zero."
+      "boundaryNote_other": "Includes {{count}} /admin pageviews recorded before the 2026-08-14 tracker fix. They cannot be filtered out at read time: Umami has no negation filter.",
+      "boundaryUnknown": "Could not check for out-of-boundary pageviews. This is unknown, not zero."
     },
     "filters": {
       "dimensionLabel": "Filter by",
@@ -547,7 +547,7 @@
       "detectedEmpty": "No staff addresses seen in this window.",
       "seenBy_one": "{{name}}, {{count}} request, last seen {{when}}",
       "seenBy_other": "{{name}}, {{count}} requests, last seen {{when}}",
-      "sharedEgress_one": "Seen with {{count}} staff account — shared egress. Verify with whois before excluding.",
+      "sharedEgress_one": "Seen with {{count}} staff account, shared egress. Verify with whois before excluding.",
       "sharedEgress_other": "Seen with {{count}} different staff accounts, so this is a shared egress (office NAT or VPN exit), not one device. Excluding a VPN exit removes every other visitor behind it and will not exclude staff, because exit IPs rotate. Check whois first.",
       "exclude": "Exclude",
       "activeTitle_one": "{{count}} active exclusion",
@@ -561,7 +561,7 @@
       "add": "Add",
       "forwardOnly": "Exclusions apply from the moment you add them. Data already recorded stays exactly as it is.",
       "deviceTitle": "This browser",
-      "deviceHint": "Stops tracking on this device only — survives a changing IP and affects nobody else.",
+      "deviceHint": "Stops tracking on this device only. Survives a changing IP and affects nobody else.",
       "deviceExclude": "Exclude this browser",
       "deviceResume": "Resume tracking"
     },

@@ -4,14 +4,14 @@
     "families": "Famílias",
     "faq": "Perguntas frequentes",
     "cta": "Comece grátis",
-    "loginCta": "Já tenho conta"
+    "signupCta": "Cadastre-se"
   },
   "hero": {
-    "titleLead": "O dinheiro",
-    "titleHighlight": "vira uma aventura",
-    "subtitle": "Educação financeira disfarçada de brincadeira.",
+    "titleLead": "Aprendizado Financeiro",
+    "titleHighlight": "para a era da economia digital e dos investimentos inteligentes",
+    "subtitle": "Ajude sua família a construir uma relação saudável com o dinheiro em um ambiente digital seguro, moderno e 100% guiado.",
     "ctaPrimary": "Comece grátis",
-    "ctaSecondary": "Como funciona",
+    "ctaSecondary": "Já tenho conta",
     "ctaStarting": "Iniciando…",
     "guestError": "Não foi possível iniciar a sessão, tente novamente.",
     "loginLink": "Entrar",
@@ -19,20 +19,13 @@
     "logoAlt": "LittleFounders"
   },
   "fact": {
-    "heading": "A maioria dos adultos nunca aprendeu isso",
-    "intro": "Comece antes. Mude o resultado.",
-    "stat": "1 em cada 3",
-    "title": "adultos no mundo têm educação financeira",
-    "source": "Fonte: S&P Global FinLit Survey",
-    "imageAlt": "Uma família aprende junta sobre dinheiro e objetivos"
+    "heading": "67% dos adultos nunca aprenderam a administrar seu dinheiro a tempo.",
+    "intro": "Não espere que tropecem na vida real. Prepare-os hoje com as ferramentas da era digital.",
+    "source": "Fonte: S&P Global FinLit Survey"
   },
   "journey": {
-    "heading": "Você nunca está sozinho",
-    "intro": "O que cada aventura inclui",
-    "guided": "Um personagem que te acompanha",
-    "free": "Sempre grátis",
-    "fun": "Diversão de verdade, não tarefa",
-    "safe": "Seguro para cada criança"
+    "heading": "Aprender com mentores, não com professores.",
+    "intro": "Nossos personagens acompanham sua família em cada passo, transformando conceitos econômicos abstratos em decisões da vida real."
   },
   "family": {
     "title": "Chega em casa também",
@@ -117,138 +110,138 @@
     },
     "concepts": {
       "curiosity": {
-        "title": "A curiosidade inicia a jornada",
-        "body": "Uma pergunta própria transforma uma situação cotidiana em oportunidade de descoberta."
+        "title": "Nunca começamos pela lição",
+        "body": "Um personagem faz a pergunta primeiro. Um conceito financeiro que ninguém perguntou é um que a criança esquece antes do jantar, então a curiosidade sempre vem antes do conceito."
       },
       "needs": {
-        "title": "Distinguir o que precisamos",
-        "body": "Nomear uma necessidade ajuda a separar o essencial do que pode esperar."
+        "title": "Primeiro o sentir, nunca a definição",
+        "body": "Não definimos o que é uma necessidade. Colocamos a criança dentro de um momento em que ela precisa decidir o que importa agora, e a definição chega depois da decisão."
       },
       "goal": {
-        "title": "Dar nome a uma meta",
-        "body": "Uma meta concreta torna visível o que queremos alcançar e por que importa."
+        "title": "Uma meta só conta se puder ser imaginada",
+        "body": "Recusamos metas abstratas como economizar dinheiro. Cada meta deste currículo é algo que a criança consegue apontar e nomear com precisão."
       },
       "value": {
-        "title": "Entender o valor",
-        "body": "Comparar utilidade, esforço e satisfação ajuda a decidir com intenção."
+        "title": "O valor se sente, não se calcula",
+        "body": "Antes de pedir para uma criança comparar preço e qualidade, fazemos ela sentir a troca, porque uma fórmula que nunca foi sentida é uma fórmula esquecida."
       },
       "question": {
-        "title": "Fazer uma boa pergunta",
-        "body": "Uma pergunta clara abre opções para pensar, testar e aprender."
+        "title": "Uma pergunta mais afiada vale mais que uma resposta certa",
+        "body": "Valorizamos mais a capacidade da criança de fazer uma pergunta melhor do que seu primeiro palpite, porque essa habilidade sobrevive a qualquer lição."
       },
       "choice": {
-        "title": "Escolher entre possibilidades",
-        "body": "Ver várias opções antecipa consequências sem medo de errar."
+        "title": "Nenhuma lição sem uma decisão",
+        "body": "Se uma ideia não pode ser ensinada através de algo que a criança escolhe ao vivo, com uma consequência visível, não a ensinamos assim. Essa é a linha."
       },
       "needsVsWants": {
-        "title": "Necessidade vs Desejo",
-        "body": "Classificar uma compra ajuda a explicar prioridades com palavras simples."
+        "title": "Consequências, não categorias",
+        "body": "Não pedimos para a criança classificar uma lista em necessidade ou desejo. Damos um orçamento limitado e deixamos a escolha errada acabar, ao vivo, na frente dela."
       },
       "price": {
-        "title": "Ler o preço",
-        "body": "Reconhecer o custo de um item conecta números a uma decisão real."
+        "title": "Um número sozinho não significa nada",
+        "body": "Nunca mostramos um preço sem um motivo por trás. Um número sem nada em jogo é curiosidade, e curiosidade não muda comportamento."
       },
       "compare": {
-        "title": "Comparar antes de escolher",
-        "body": "A comparação lado a lado revela diferenças ocultas."
+        "title": "Lado a lado, nunca isolado",
+        "body": "Nunca pedimos para a criança julgar uma opção sozinha. Comparar só funciona quando a alternativa está ali, visível."
       },
       "budget": {
-        "title": "Dar uma função a cada moeda",
-        "body": "Um orçamento simples transforma um limite em um plano revisável."
+        "title": "Um limite é um plano, não um castigo",
+        "body": "Onde a maioria trata um orçamento como uma restrição, tratamos como o primeiro plano de verdade que a criança chega a escrever sozinha."
       },
       "saving": {
-        "title": "Guardar para depois",
-        "body": "Guardar mostra como pequenas escolhas nos aproximam de metas futuras."
+        "title": "O para quê sempre vem antes do quanto",
+        "body": "Recusamos ensinar a poupança como um número em um pote. Toda meta de poupança aqui está ligada, primeiro, a algo que a criança realmente quer."
       },
       "plan": {
-        "title": "Transformar uma meta em etapas",
-        "body": "Dividir um objetivo em pequenas ações torna o progresso possível."
+        "title": "Passos pequenos ou não vai ao ar",
+        "body": "Uma meta que não pode ser dividida em um passo pequeno o suficiente para essa criança tentar hoje não é uma lição que consideramos pronta."
       },
       "prioritize": {
-        "title": "Decidir o que vem primeiro",
-        "body": "Ordenar prioridades usa tempo e dinheiro de forma intencional."
+        "title": "A ordem é a lição, não a lista",
+        "body": "Não ensinamos a criança o que priorizar. Ensinamos que escolher uma ordem já é, em si, a habilidade."
       },
       "tradeoff": {
-        "title": "Entender o que deixamos de fora",
-        "body": "Toda escolha traz um custo de oportunidade; explicá-lo fortalece o critério."
+        "title": "Todo sim também é um não",
+        "body": "Construímos cada escolha para que optar por uma coisa remova outra de forma visível, porque uma troca da qual só se fala é uma que a criança não chega a acreditar."
       },
       "time": {
-        "title": "Deixar o tempo ajudar",
-        "body": "Esperar é uma estratégia quando uma meta exige constância."
+        "title": "A paciência é projetada, não pregada",
+        "body": "Em vez de dizer para a criança ter paciência, projetamos o próprio ritmo para que esperar seja a versão que funciona melhor."
       },
       "create": {
-        "title": "Imaginar algo novo",
-        "body": "Criar começa quando uma ideia responde a uma necessidade ou desejo real."
+        "title": "Uma ideia só conta quando é construída",
+        "body": "Não premiamos a ideia. Premiamos a versão dela que a criança realmente terminou, por menor que seja."
       },
       "resource": {
-        "title": "Reconhecer recursos",
-        "body": "Tempo, materiais, habilidades e apoio fazem parte de qualquer projeto."
+        "title": "Começa pelo que existe, não pelo que falta",
+        "body": "Antes de perguntar o que um projeto precisa, fazemos a criança nomear o que ela já tem. Pensar pela escassez começa ao contrário."
       },
       "offer": {
-        "title": "Criar uma proposta",
-        "body": "Uma boa proposta explica o que oferece, para quem e por que é útil."
+        "title": "Uma proposta precisa sobreviver a uma reação real",
+        "body": "Nunca avaliamos a ideia de uma criança com nota. Deixamos um personagem reagir com honestidade, como um cliente de verdade faria."
       },
       "cost": {
-        "title": "Calcular o custo de criação",
-        "body": "Acompanhar materiais e esforço guia decisões responsáveis."
+        "title": "Se a criança não escolheu, ainda não é custo",
+        "body": "Nunca damos para a criança uma lista de materiais. Cada custo deste currículo é a soma de decisões que a própria criança tomou."
       },
       "revenue": {
-        "title": "Entender a entrada de receita",
-        "body": "Relacionar vendas a resultados mostra como uma ideia se sustenta."
+        "title": "O dinheiro que entra precisa remontar a uma decisão",
+        "body": "Recusamos ensinar receita como fórmula. Toda venda aqui se conecta, de forma visível, a uma escolha anterior, porque a causa sempre vem antes do efeito."
       },
       "share": {
-        "title": "Compartilhar a ideia",
-        "body": "Compartilhar atrai perguntas, feedback e novas perspectivas."
+        "title": "O crescimento é a métrica, não a nota",
+        "body": "Medimos o que a criança está aprendendo a fazer a seguir, não o que ela acertou hoje. Uma porcentagem não diz nada útil para uma família."
       },
       "iterate": {
-        "title": "Melhorar com mais um teste",
-        "body": "Uma segunda versão usa o aprendizado para uma escolha mais clara."
+        "title": "Errar é um passo, não um fim",
+        "body": "Uma segunda tentativa não é um prêmio de consolação aqui. É o formato esperado do aprendizado, incorporado em cada exercício desde o início."
       },
       "reflect": {
-        "title": "Refletir sobre o ocorrido",
-        "body": "A reflexão transforma experiência em ferramentas para o próximo desafio."
+        "title": "Perguntamos o que mudou, não o que aconteceu",
+        "body": "Em vez de resumir uma lição, perguntamos à criança o que ela faria diferente da próxima vez. Essa pergunta é a lição de verdade."
       },
       "confidence": {
-        "title": "Reconhecer a própria capacidade",
-        "body": "Nomear o avanço transforma esforço em confiança visível."
+        "title": "Nomeia-se a habilidade, não a conquista",
+        "body": "Nunca dizemos bom trabalho. Dizemos, com precisão, o que a criança já consegue fazer que não conseguia ontem."
       },
       "nextStep": {
-        "title": "Escolher o próximo passo",
-        "body": "Cada conquista desbloqueia uma ação alcançável que mantém o aprendizado vivo."
+        "title": "Uma porta, não um corredor",
+        "body": "Nunca damos para a criança um menu de opções. Existe exatamente um próximo passo, escolhido para exatamente onde ela está, sempre."
       }
     },
     "graph": {
       "question": {
         "code": "ORIGEM",
         "label": "Começa com curiosidade",
-        "title": "Uma pergunta abre o caminho",
-        "body": "Uma situação familiar dá a cada aventura um início significativo.",
-        "pedagogyTitle": "Curiosidade antes das respostas",
-        "pedagogyBody": "A criança faz sua própria pergunta primeiro, tornando o aprendizado pessoal."
+        "title": "Nos recusamos a começar com um fato",
+        "body": "Toda aventura começa dentro de uma situação que a criança já reconhece, nunca com uma definição em um slide.",
+        "pedagogyTitle": "Uma tentativa vale mais que uma resposta certa",
+        "pedagogyBody": "Deixamos a criança responder errado primeiro. Corrigir uma tentativa real ensina mais do que confirmar um fato que ela só ouviu."
       },
       "practice": {
         "code": "AÇÃO",
         "label": "Aprender fazendo",
-        "title": "A prática torna uma ideia tangível",
-        "body": "Desafios curtos permitem testar escolhas e entender por que importam.",
-        "pedagogyTitle": "Escolher se torna compreender",
-        "pedagogyBody": "A criança toma uma decisão, observa resultados e tenta novamente com confiança."
+        "title": "Uma ideia só conta depois de ser tentada",
+        "body": "Nunca explicamos um conceito antes de a criança já ter agido sobre ele, certo ou errado.",
+        "pedagogyTitle": "O erro não é apagado, ele é guardado",
+        "pedagogyBody": "Não apagamos uma escolha errada. Deixamos a criança ver exatamente o que ela causou, e então damos uma segunda tentativa."
       },
       "connection": {
         "code": "LINK",
         "label": "Conectando ideias",
-        "title": "Ideias fazem parte de um panorama maior",
-        "body": "Momentos relacionados constroem uma jornada coerente.",
-        "pedagogyTitle": "Significado cresce entre ideias",
-        "pedagogyBody": "O conhecimento permanece quando se conecta ao que a criança já conhece."
+        "title": "Nenhuma ideia fica sozinha aqui",
+        "body": "Recusamos ensinar um conceito isolado. Todo tópico se conecta a um que a criança já domina.",
+        "pedagogyTitle": "O conhecimento novo precisa de algo para se segurar",
+        "pedagogyBody": "Construímos cada tópico como uma ligação, não um capítulo, porque um fato sem nada para se segurar é um que se esquece antes de terça."
       },
       "progress": {
         "code": "PRÓXIMO",
         "label": "Continuar avançando",
-        "title": "Cada conquista aponta para frente",
-        "body": "O progresso permanece encorajador, visível e conectado à próxima descoberta.",
-        "pedagogyTitle": "A confiança precisa de um próximo passo",
-        "pedagogyBody": "Uma pequena conquista abre um novo desafio em vez de encerrar a jornada."
+        "title": "Uma conquista só serve se apontar para algo",
+        "body": "Nunca deixamos o progresso chegar a um beco sem saída. Todo desafio concluído abre exatamente o próximo, do tamanho certo para a criança que acabou de terminá-lo.",
+        "pedagogyTitle": "A confiança precisa ser usada na hora",
+        "pedagogyBody": "Não deixamos uma conquista parada. Ela ganha um novo desafio alcançável antes que a sensação passe."
       }
     },
     "stage": {

@@ -32,9 +32,9 @@ export function MarketingLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { session } = useAuth();
 
-  // Signed-in visitors get "open my dashboard" instead of "login".
-  const ctaTo = session ? APP_HOME : '/login';
-  const ctaLabel = session ? t('dashboard.continueCta') : t('marketing.nav.loginCta');
+  // Signed-in visitors get "open my dashboard" instead of "sign up".
+  const ctaTo = session ? APP_HOME : '/signup';
+  const ctaLabel = session ? t('dashboard.continueCta') : t('marketing.nav.signupCta');
 
   // Every new page starts at the top — SPA navigation doesn't reset scroll
   // for free (only native full-page loads do that). Explicit 'auto' overrides
@@ -52,8 +52,8 @@ export function MarketingLayout() {
   return (
     <div className="min-h-screen bg-base text-content">
       {/* Sticky top app bar — frosted glass over the page (/DESIGN.md §Elevation) */}
-      <header className="lf-glass sticky top-0 z-40 border-x-0 border-t-0">
-        <div className="mx-auto flex h-16 min-w-0 max-w-container items-center justify-between gap-2 px-4 sm:gap-4 sm:px-5 md:px-8">
+      <header className="lf-glass lf-marketing-header sticky top-0 z-40 border-x-0 border-t-0">
+        <div className="mx-auto flex h-[4.6rem] min-w-0 max-w-container items-center justify-between gap-2 px-4 sm:gap-4 sm:px-5 md:px-8">
           <Link
             to="/"
             className="flex shrink-0 items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"

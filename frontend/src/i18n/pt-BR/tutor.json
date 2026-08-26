@@ -224,7 +224,7 @@
     "plateLabel": "Esta conversa, de novo",
     "transcriptLabel": "Cada fala, em ordem",
     "peekOpen": "Repetição · {{date}}",
-    "notASession": "Esta é a gravação da sua conversa de {{date}}. {{name}} não ouve você aqui — volte e comece uma nova para conversar.",
+    "notASession": "Esta é a gravação da sua conversa de {{date}}. {{name}} não ouve você aqui. Volte e comece uma nova para conversar.",
     "noMicrophone": "Esta você pode ouvir. Para conversar, comece uma conversa nova.",
     "noSoundSaved": "Esta conversa foi salva sem som. Cada fala está escrita.",
     "lineNoSound": "O som desta fala não foi guardado.",

@@ -574,6 +574,21 @@
       0 8px 16px rgba(0,0,0,0.25),
       0 16px 32px rgba(0,0,0,0.35);
   }
+  /*
+   * The marketing topbar keeps .lf-glass's frosted blur (the actual "glass"
+   * look) but drops its box-shadow. Sitting right above a full-bleed hero
+   * that already carries its own atmosphere (the knowledge-graph canvas,
+   * radial glows), the shared component's 5-layer atmospheric shadow plus
+   * hover shadow read as a second, competing light source rather than a
+   * quiet piece of chrome — distracting, per the report. Scoped to this one
+   * header rather than changed on .lf-glass itself, which the sticky
+   * dropdown, mobile menu and cards elsewhere still rely on unchanged.
+   */
+  .lf-marketing-header,
+  .lf-marketing-header:hover {
+    box-shadow: none;
+  }
+
   .lf-glass-deep {
     background-color: rgb(255 255 255 / 0.06);
     background-image: var(--lf-glass-caustic), var(--lf-glass-mesh);

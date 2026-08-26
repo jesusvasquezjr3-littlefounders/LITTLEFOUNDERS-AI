@@ -113,6 +113,7 @@ frontend/
   public/
     course-badges/
     email-templates/
+    fonts/
     lottie/
     marketing/
       atlas/
@@ -1239,17 +1240,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Placement placed nobody, and onboarding was a silent form (2026-08-24)
+## The Landing diorama became a video, and a copy edit turned out to cost audio (2026-08-25)
 
-**The owner's report:** onboarding and placement are "deplorables, poco
-intuitivas, cero funcionales". Testers — teenagers and adults — said the
-placement quiz put them at a level that had nothing to do with what they knew.
-The ask: characters actively guiding, IN THEIR OWN VOICES, minimal UI, and a
-placement that works off the KNOWLEDGE GRAPH, with age as one signal inside it
-rather than the thing that decides.
+**The owner's ask, in three steps.** Render the diorama on the Landing's
+"Learn from mentors, not teachers" section at MAXIMUM QUALITY, because it is a
+marketing surface and not the Tutor. Then: it must read as a LOOP, not as a
+short video that starts and ends. Then: at least 24 fps, low weight, low decode
+cost, and "can we use another format, or convert it to a Lottie?"
 
-### Placement was not badly tuned. It was inert.
-
+**What the render needed.** The shipped asset was a 420x315 animated GIF built
+from the RUNTIME .glb builds on whatever quality tier a headless SwiftShader
+happened to settle on. The replacement is captured from the ARTIST SOURCE
 ```
 
 ### agent/README.md
@@ -11184,7 +11185,7 @@ The SPA: the four product sections (learn, tutor, tasks, profile). Talks ONLY to
 
 ## Invariants that bite here
 
-- **/DESIGN.md is AUTHORITATIVE** (LittleFounders Liquid Glass). Tokens live in `tailwind.config.js` + `src/index.css` CSS vars — never add values those files/DESIGN.md don't define. Type ONLY via the closed `lf-*` scale (`lf-display-xl`…`lf-caption`, Inter + Sora). Build UI with the kit in `src/components/ui/` (Button, Icon, Card, IconChip, Dropdown, ThemeToggle, ProgressBar, Badge, StatCard) — no per-view restyling. Elevation ONLY via the liquid-glass set (`shadow-glass*`, `shadow-pop`, `.lf-glass`, `.lf-glass-deep`) — frosted translucent panels with backdrop-blur, subtle light borders, and layered soft shadows; flat opaque surfaces and raw hex are prohibited. Icons: Material Symbols via `<Icon name="…"/>` — never emojis (except country flags in the language switcher, DESIGN.md's one exception).
+- **/DESIGN.md is AUTHORITATIVE** (LittleFounders Liquid Glass). Tokens live in `tailwind.config.js` + `src/index.css` CSS vars — never add values those files/DESIGN.md don't define. Type ONLY via the closed `lf-*` scale (`lf-display-xl`…`lf-caption`, Inter + Sora). Build UI with the kit in `src/components/ui/` (Button, Icon, Card, IconChip, Dropdown, ThemeToggle, ProgressBar, Badge, StatCard) — no per-view restyling. Elevation ONLY via the liquid-glass set (`shadow-glass*`, `shadow-pop`, `.lf-glass`, `.lf-glass-deep`) — frosted translucent panels with backdrop-blur, subtle light borders, and layered soft shadows; flat opaque surfaces and raw hex are prohibited. Icons: Material Symbols via `<Icon name="…"/>` — never emojis, no exceptions. Country flags (language switcher) are real SVGs via `<LocaleFlag locale="…"/>` (`components/ui/LocaleFlag.tsx`), not emoji: Windows ships no glyphs at all for the regional-indicator emoji pairs a flag emoji is made of, so the old emoji carve-out rendered as boxes or nothing on every non-macOS platform.
 - **No native pickers**: never `<select>`, `<input type="date">`, etc. as a choice control — always `Dropdown` or a purpose-built component (`ThemeToggle`).
 - **Action Color Contract (/DESIGN.md §Colors) is NON-NEGOTIABLE**: every button/action's color is chosen by what it DOES, not by taste — `primary`/`accent` variant = the ONE main CTA (indigo fill), `secondary` (alternative/lower emphasis, outlined), `success` (positive completion), `danger` (destructive/irreversible). Indigo (`primary` token) is for links/focus/info. `delight` (violet) and `warning` are status/celebration only, never button fills.
 - **COMPOSITION FIDELITY (/DESIGN.md §0):** build from **/DESIGN.md §Screen Recipes** — they are the single composition source (there is no mockup directory). Deviating without human sign-off is a design bug; if a recipe is ambiguous, fix the recipe in the same commit.
@@ -11246,9 +11247,9 @@ export default tseslint.config(
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap"
       rel="stylesheet"
     />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..700,0..1,0&display=block"
-      rel="stylesheet"
+    <!--
+      Material Symbols Outlined is self-hosted (src/index.css @font-face),
+      not loaded from Google Fonts. Every icon in the product depends on
 ```
 
 ### frontend/package.json
@@ -11783,21 +11784,6 @@ const OPEN_PREFERENCES_EVENT = 'lf:open-cookie-preferences';
 ### frontend/src/components/backgrounds/GeometricBackground.tsx
 
 ```
-import React from 'react';
-
-/**
- * Clean animated geometric background with flowing curves and scattered circles.
- * Minimalist composition: massive background layers, organic curves, dispersed circles.
- */
-export const GeometricBackground: React.FC<{ className?: string }> = ({ className }) => {
-  return (
-    <div className={`absolute inset-0 overflow-visible ${className ?? ''}`} aria-hidden="true">
-      <style>{`
-        .geo-float-1 { animation: geoFloat1 7.2s ease-in-out infinite; }
-        .geo-float-2 { animation: geoFloat2 8.5s ease-in-out infinite; animation-delay: 0.5s; }
-        .geo-float-3 { animation: geoFloat3 6.8s ease-in-out infinite; animation-delay: 1s; }
-        .geo-float-4 { animation: geoFloat4 9s ease-in-out infinite; animation-delay: 1.5s; }
-        .geo-float-5 { animation: geoFloat5 7.5s ease-in-out infinite; animation-delay: 0.8s; }
 ```
 
 ### frontend/src/components/characters/DinaCharacter.tsx
@@ -12180,6 +12166,26 @@ export function LoadingOverlay({ label }: LoadingOverlayProps) {
       )}
 ```
 
+### frontend/src/components/ui/LocaleFlag.tsx
+
+```
+import { useId, type ReactNode, type ReactElement } from 'react';
+import type { Locale } from '@/i18n';
+import { cn } from '@/lib/utils';
+
+/*
+ * Real vector flags, not emoji. Windows ships NO glyphs at all for the
+ * regional-indicator emoji pairs that make up a flag emoji (Segoe UI Emoji
+ * deliberately omits them) — every browser on Windows, Linux, Android and
+ * ChromeOS therefore renders a blank box, two letters in a box, or nothing,
+ * for exactly the flags the language switcher depends on to be readable at a
+ * glance. An SVG has no font dependency: the browser's own vector rasterizer
+ * draws it identically on every OS. This replaces the one emoji-icon
+ * exception DESIGN.md used to carve out for the language switcher.
+ */
+
+```
+
 ### frontend/src/components/ui/LottieIcon.tsx
 
 ```
@@ -12345,6 +12351,7 @@ interface TrendChartProps {
 ```
 export { Button } from './Button';
 export { Icon } from './Icon';
+export { LocaleFlag } from './LocaleFlag';
 export { Dropdown } from './Dropdown';
 export type { DropdownOption } from './Dropdown';
 export { OptionGroup } from './OptionGroup';
@@ -12357,7 +12364,6 @@ export { ProgressBar } from './ProgressBar';
 export { Badge } from './Badge';
 export { LottieIcon } from './LottieIcon';
 export { LoadingOverlay } from './LoadingOverlay';
-export { StatCard } from './StatCard';
 ```
 
 ### frontend/src/guided-voice/GuidedStage.tsx
@@ -12629,14 +12635,14 @@ import { beforeAll, describe, expect, it } from 'vitest';
     "families": "Families",
     "faq": "FAQ",
     "cta": "Start free",
-    "loginCta": "I already have an account"
+    "signupCta": "Sign up"
   },
   "hero": {
-    "titleLead": "Money",
-    "titleHighlight": "made into an adventure",
-    "subtitle": "Financial skills, disguised as play.",
+    "titleLead": "Financial learning",
+    "titleHighlight": "for the digital economy and smart investing",
+    "subtitle": "Help your family build a healthy relationship with money through a safe, modern, and 100% guided digital environment.",
     "ctaPrimary": "Start free",
-    "ctaSecondary": "How it works",
+    "ctaSecondary": "I already have an account",
     "ctaStarting": "Starting…",
 ```
 
@@ -12869,14 +12875,14 @@ import { beforeAll, describe, expect, it } from 'vitest';
     "families": "Familias",
     "faq": "Preguntas frecuentes",
     "cta": "Empieza gratis",
-    "loginCta": "Ya tengo cuenta"
+    "signupCta": "Regístrate"
   },
   "hero": {
-    "titleLead": "El dinero",
-    "titleHighlight": "convertido en aventura",
-    "subtitle": "Educación financiera disfrazada de juego.",
+    "titleLead": "Aprendizaje Financiero",
+    "titleHighlight": "para la era de la economía digital y las inversiones inteligentes",
+    "subtitle": "Ayuda a tu familia a construir una relación saludable con el dinero a través de un entorno digital seguro, moderno y 100% guiado.",
     "ctaPrimary": "Empieza gratis",
-    "ctaSecondary": "Cómo funciona",
+    "ctaSecondary": "Ya tengo cuenta",
     "ctaStarting": "Comenzando…",
 ```
 
@@ -13129,14 +13135,14 @@ import enErrors from './en-US/errors.json';
     "families": "Famílias",
     "faq": "Perguntas frequentes",
     "cta": "Comece grátis",
-    "loginCta": "Já tenho conta"
+    "signupCta": "Cadastre-se"
   },
   "hero": {
-    "titleLead": "O dinheiro",
-    "titleHighlight": "vira uma aventura",
-    "subtitle": "Educação financeira disfarçada de brincadeira.",
+    "titleLead": "Aprendizado Financeiro",
+    "titleHighlight": "para a era da economia digital e dos investimentos inteligentes",
+    "subtitle": "Ajude sua família a construir uma relação saudável com o dinheiro em um ambiente digital seguro, moderno e 100% guiado.",
     "ctaPrimary": "Comece grátis",
-    "ctaSecondary": "Como funciona",
+    "ctaSecondary": "Já tenho conta",
     "ctaStarting": "Iniciando…",
 ```
 
@@ -13228,16 +13234,16 @@ import enErrors from './en-US/errors.json';
 @tailwind utilities;
 
 /*
- * THE ATMOSPHERE CHANNEL (/DESIGN.md §Lumen → Light).
+ * Material Symbols Outlined, self-hosted (frontend/AGENTS.md, DESIGN.md).
  *
- * Four values describing the light the Tutor's island is standing in. They are
- * REGISTERED rather than plain custom properties for one reason: a registered
- * property has a type, and a typed property can be TRANSITIONED. The scene's
- * lights lerp over ~600 ms when the learner changes the time of day
- * (`tutor-scene/SceneLighting.tsx`), and an unregistered variable would snap the
- * whole HUD to the new hour a third of a second before the island got there.
- *
- * They are written ONCE per backdrop change, by the stage root, from the same
+ * This used to be a Google Fonts <link> in index.html. That is a third-party
+ * request to fonts.gstatic.com on every first load, and it is exactly the
+ * kind of request privacy content blockers (1Blocker, AdGuard, Wipr — common
+ * on iOS Safari, where they run as first-class Safari extensions) and
+ * school/corporate network filters block by default, several of which flag
+ * Google Fonts specifically as a cross-site tracking surface. When that
+ * request never completes, EVERY icon in the product has no font to
+ * substitute a glyph for its ligature name, and the browser paints the raw
 ```
 
 ### frontend/src/lesson-engine/core/MarkdownLite.tsx
@@ -19833,7 +19839,7 @@ import { LOCALES, type Locale } from '@/i18n';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { playPlatformSound } from '@/lib/sound';
-import { Badge, Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
+import { Badge, Button, Dropdown, Icon, LocaleFlag, ThemeToggle, type DropdownOption } from '@/components/ui';
 import { Avatar } from '@/components/Avatar';
 import { cn } from '@/lib/utils';
 import { NAV_ITEMS, isUnlocked, type NavItem } from './navConfig';
@@ -20690,7 +20696,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
 import { LOCALES, type Locale } from '@/i18n';
-import { Button, Card, Dropdown, Icon, IconChip, type DropdownOption } from '@/components/ui';
+import { Button, Card, Dropdown, Icon, IconChip, LocaleFlag, type DropdownOption } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { UserListItem, type ListedUser } from './UserListItem';
@@ -20767,17 +20773,17 @@ import { useLayoutEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LOCALES, type Locale } from '@/i18n';
-import { Dropdown, ThemeToggle, type DropdownOption } from '@/components/ui';
-
-const LOCALE_FLAGS: Record<Locale, string> = {
-  'en-US': '🇺🇸',
-  'es-MX': '🇲🇽',
-  'pt-BR': '🇧🇷',
-};
+import { Dropdown, LocaleFlag, ThemeToggle, type DropdownOption } from '@/components/ui';
 
 /*
  * Auth pages — full-viewport background image (B&W blurred, color on hover),
  * 2-column split layout (DESIGN.md §Screen Recipes → Auth). Image covers both
+ * sides as a unified backdrop; the grid overlays text left, form right.
+ * Utility row (logo, language, theme) floats above the image.
+ */
+export function AuthLayout() {
+  const { t, i18n } = useTranslation();
+  const location = useLocation();
 ```
 
 ### frontend/src/routes/auth/AuthShell.tsx
@@ -21077,7 +21083,7 @@ const LESSON_MOMENTS = [
 }
 
 /*
- * ── Hero character scene — Motion Graphics stage ──────────────────────────
+ * ── Hero diorama — pre-rendered 3D stage ──────────────────────────────────
 ```
 
 ### frontend/src/routes/marketing/Landing.tsx
@@ -21089,10 +21095,10 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { trackMarketingGoal } from '@/lib/analytics';
 import { APP_HOME } from '@/routes/app/navConfig';
-import { Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
-import { CharacterActor } from '@/components/characters/control/CharacterActor';
-import { GeometricBackground } from '@/components/backgrounds/GeometricBackground';
+import { Button, Card, Icon, IconChip, LottieIcon, Reveal } from '@/components/ui';
+import { useTheme } from '@/theme/useTheme';
 import { TechnologyGraph } from './TechnologyGraph';
+import { useAlphaVideoSupport, usePrefersReducedMotion } from './alphaVideo';
 import './Landing.css';
 
 /* DESIGN.md §Screen Recipes → Landing. This is a marketing narrative, not a
@@ -21139,7 +21145,7 @@ import { useTranslation } from 'react-i18next';
 import { LOCALES, type Locale } from '@/i18n';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
-import { Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
+import { Button, Dropdown, Icon, LocaleFlag, ThemeToggle, type DropdownOption } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { CookiePreferencesButton } from '@/components/CookieConsentBanner';
 
@@ -21153,21 +21159,21 @@ const NAV_LINKS = [
 ### frontend/src/routes/marketing/TechnologyGraph.css
 
 ```
+/*
+ * Theme tokens, scoped to this component. The design system's `--lf-inverse`
+ * family is DELIBERATELY identical in light and dark everywhere else in the
+ * app (index.css: "like the hero band") — footers, the cookie banner, the
+ * auth split screen all depend on that permanence. This hero graph used to
+ * borrow those same fixed-dark tokens directly, which is why it looked
+ * identical in both themes instead of following the toggle like every other
+ * surface. Rather than touch the global tokens (and risk every OTHER
+ * permanently-dark surface in the product), this defines its own local pair
+ * that resolves to real light-mode colors by default and is overridden,
+ * value-for-value, to the exact previous hardcoded numbers under `.dark` —
+ * so dark mode is byte-identical to before, and light mode is a real light
+ * surface with dark ink, not a smaller dark card floating on a light page.
+ */
 .lf-atlas {
-  position: relative;
-  width: 100%;
-  min-height: max(820px, calc(100svh - 64px));
-  overflow: hidden;
-  background: rgb(var(--lf-inverse));
-  color: rgb(var(--lf-on-inverse));
-  isolation: isolate;
-}
-
-.lf-atlas-compact { min-height: 620px; }
-.lf-atlas__canvas, .lf-atlas__backdrop { position: absolute; inset: 0; width: 100%; height: 100%; }
-.lf-atlas__canvas { z-index: 1; cursor: grab; touch-action: pan-y; transform: perspective(1400px) rotateX(7deg) rotateY(-5deg) scale(1.04); transform-origin: 58% 50%; }
-.lf-atlas__canvas:active { cursor: grabbing; }
-.lf-atlas__backdrop {
 ```
 
 ### frontend/src/routes/marketing/TechnologyGraph.tsx
@@ -21175,6 +21181,8 @@ const NAV_LINKS = [
 ```
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/theme/useTheme';
+import { Icon } from '@/components/ui/Icon';
 import './TechnologyGraph.css';
 
 type ConceptKey =
@@ -21186,8 +21194,6 @@ type ConceptKey =
 type Tone = 'primary' | 'delight' | 'success' | 'on';
 
 interface AtlasNode {
-  id: number;
-  x: number;
 ```
 
 ### frontend/src/routes/marketing/__tests__/LegalPage.test.tsx
@@ -21208,6 +21214,26 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
 
 describe('LegalPage', () => {
   it('renders Terms & Conditions with all clauses and metadata', () => {
+```
+
+### frontend/src/routes/marketing/alphaVideo.ts
+
+```
+import { useEffect, useState } from 'react';
+
+/*
+ * CAN THIS BROWSER PLAY A VIDEO WITH A TRANSPARENT BACKGROUND?
+ *
+ * The Landing diorama is a cut-out — it sits over the section's own background
+ * and over two blurred glow blobs whose position depends on the viewport width,
+ * so its transparency cannot be baked into an opaque rectangle at any single
+ * size. It genuinely needs an alpha channel.
+ *
+ * The only alpha-video codec we can produce off macOS is VP9-in-WebM. Chromium
+ * and Firefox honour its alpha channel; WebKit plays the same file and IGNORES
+ * the alpha, compositing the cut-out onto opaque black — a black rectangle
+ * where the island should be, which is a far worse outcome than no animation.
+ * (Apple's own guidance for Safari is HEVC-with-alpha, which needs an Apple
 ```
 
 ### frontend/src/routes/onboarding/OnboardingPage.tsx
