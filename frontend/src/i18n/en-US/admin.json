@@ -700,6 +700,7 @@
       "realtime": "Live (Realtime)",
       "automatic": "Automatic refresh",
       "degraded": "Fallback refresh active",
+      "realtimeFailed": "Live updates unavailable",
       "connectionLost": "Realtime connection lost",
       "unavailableTitle": "Live status unavailable",
       "unavailableNote": "The monitor will keep trying. Historical runs remain available in Run History.",

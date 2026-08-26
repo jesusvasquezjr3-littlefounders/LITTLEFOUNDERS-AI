@@ -2,6 +2,58 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## The admin Live Monitor was losing Realtime permanently, and the only symptom was a test warning (2026-08-26)
+
+**What was reported.** A full test run printed one unhandled rejection, `cannot
+add postgres_changes callbacks for realtime:generation-live after subscribe()`,
+from `LiveStats.tsx`. It had been flagged as noise in the same area as an
+already-known flake.
+
+**It was not noise.** Three behaviours of `@supabase/realtime-js`, verified
+against the installed copy rather than assumed: `channel(topic)` returns the
+EXISTING channel when the topic is already registered; `.on()` on a channel that
+has already been subscribed throws; and the topic stays registered after that
+throw. `removeChannel` is async and was never awaited. The client is a module
+singleton, so its registry outlives any one mount.
+
+`LiveStats` used the fixed topic `generation-live`. So the SECOND lifecycle of
+the admin Generation page - a remount, a StrictMode double-mount, or the
+component's own retry after `CHANNEL_ERROR` - threw. And because the throw lands
+mid-chain, the local `channel` variable was never assigned, so the cleanup had
+nothing to remove, so the topic stayed registered and every later attempt threw
+as well. **It latched.** Realtime was gone for the rest of the browser session,
+the retry path could not heal it because the retry was itself the collision, and
+the surface said nothing: it fell back to 4s Core polling and displayed
+"Automatic refresh", which is the ordinary healthy-looking state.
+
+**The fix is by construction, not by timing.** Every attempt derives its own
+topic from a module-scoped counter, so the collision cannot occur rather than
+merely being unlikely; a per-instance counter would repeat across mounts and
+reintroduce it. The channel reference is assigned before anything in the chain
+can throw, so cleanup can always tear it down. Removal is awaited before
+re-subscribing. `void subscribe()` became a wrapper that catches, and the
+failure now has its own transport state, `realtimeFailed`, in all three
+locales - `!realtimeConnected` could not carry it, because that is also the
+state while connecting and the permanent state anywhere the Supabase variables
+are not deployed.
+
+**The icon was nearly the next defect.** The new transport state was first given
+`bolt_slash`, which is not a Material Symbols ligature; `Icon` would have
+silently substituted a question mark on the panel whose job is reporting status.
+Measured in-browser with the same range-based test `Icon.tsx` makes:
+`sync_problem` lays out at 40px on a 40px grid, `bolt_slash` at 280px. Changed
+to `sync_problem`.
+
+**Why it read as intermittent.** `AdminGenerationPage.test.tsx` never mocked
+`@/lib/supabaseRealtime`. Vite loads `.env` in test mode, so on a machine with
+working Supabase variables that suite built a REAL client and opened a REAL
+websocket to the project; on CI, where those variables are absent, the client
+came back null and the Realtime path was skipped entirely. Same suite, two code
+paths, chosen by a file that is not in git. It is now mocked there, and Realtime
+behaviour is covered deliberately in `LiveStats.realtime.test.tsx` against a
+fake reproducing the registry semantics - confirmed to FAIL against the previous
+code with the original error and pass against the fix.
+
 ## /how-it-works answers four questions, and its own CTA had to stop contradicting one of them (2026-08-26)
 
 **What the owner asked for.** A rebuild of the page around "how do we do it, why
@@ -4066,6 +4118,10 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-26 | **A Supabase channel TOPIC is a key in a registry that outlives the component, so every subscribe attempt derives a fresh one from a module-scoped counter.** Channel reference assigned before the chain can throw; removal awaited before re-subscribing; `void subscribe()` replaced by a wrapper that catches. | `channel(topic)` returns the existing channel, `.on()` after `subscribe()` throws, and the topic survives the throw - all three verified against the installed @supabase/realtime-js. With a fixed topic the throw landed mid-chain, so the reference was never assigned, so cleanup removed nothing, so the topic stayed and every later attempt threw: the admin Live Monitor lost Realtime for the whole browser session and its own retry path was the collision. A unique topic makes it impossible by construction instead of relying on teardown finishing in time. |
+| 2026-08-26 | **An accelerator that FAILS needs its own state; `!connected` is not one.** New `realtimeFailed` transport label in all three locales, distinct from connecting, from Core-polling fallback, and from Supabase simply not being configured. | The defect was invisible for exactly this reason. Realtime dying dropped the panel to 4s polling showing "Automatic refresh" - the normal state - so an operator watching a live generation had no way to know the push transport was gone. §1.14: failure must be distinguishable from emptiness, and this is the surface whose entire job is telling someone what is happening. |
+| 2026-08-26 | **`.env` is loaded in TEST mode, so a suite that does not mock an env-gated client silently takes a different code path per machine.** `AdminGenerationPage.test.tsx` now mocks `@/lib/supabaseRealtime`; Realtime behaviour is covered against a purpose-built fake instead. | Unmocked, that file built a real Supabase client from the developer's `.env` and opened a real websocket to the project, while on CI the variables are absent, the client came back null, and the Realtime path never ran at all. That is what made the failure look intermittent: it was not one flaky test, it was two different tests wearing the same name. |
+| 2026-08-26 | **An icon name is a claim to verify, not a guess - `Icon` degrades an unknown ligature to a question mark, silently.** `sync_problem` chosen after measuring; `bolt_slash` does not exist. | The first draft of the new transport state used `bolt_slash`. Nothing would have failed: no type error, no test, no lint - the status panel would simply have shown a question mark where it reports whether live updates are working. Measured in-browser with the same range test `Icon.tsx` uses: `sync_problem` 40px on a 40px grid, `bolt_slash` 280px. |
 | 2026-08-26 | **An asset's ASPECT RATIO is a responsiveness decision, and one wide composition is not a cheaper version of several square ones.** The four mentors on /how-it-works are four square stills, each trimmed to its own ink and re-padded, laid out 2x2 on a phone and 4-across on a desktop. | The same four were captured first as one 1400x562 banner. Nothing was wrong with the render; the SHAPE was wrong. A 2.5:1 asset in a single column puts each mentor at roughly 90px tall at 375px, which §1.11 calls a bug outright, and no CSS fixes it because the four are baked into one image. Splitting also removed the four video decoders the animated version would have cost: the float is CSS, at 186 KB total. |
 | 2026-08-26 | **A CTA's DESTINATION is part of the copy around it. "Start without an account" over a button to /signup is a defect, not a mismatch of tone.** `marketing/PrimaryCta.tsx` extracted out of Landing; both marketing pages share it, and a test pins that the /how-it-works button is a guest-start button carrying `data-cta`. | The block the owner approved promises no account is needed; the page then asked for one. It could not be fixed by changing the href, because starting without an account is `startGuestSession()` plus a navigation and `/onboarding` is behind `RequireAuth`. Duplicating the handler instead of sharing it would eventually have left one page firing the `guest_start` conversion and the other silently not - the acquisition number would have looked like a traffic story. |
 | 2026-08-26 | **A `fullPage` screenshot is not evidence about a page, and a scroll-walk that samples the document height ONCE is not evidence either.** Verification on marketing routes now stitches per-viewport captures, and the reveal walk re-reads `document.body.scrollHeight` every step. | Both instruments reported defects that did not exist. `fullPage` showed the closing block empty while a DOM probe found it at opacity 1 with its text; it was compositing layers that had never been on screen. Separately, the walk fixed its bound before lazy images and the atlas canvas had grown the document, stopped half way, and photographed three whole blocks at opacity 0. Reading either as a page defect would have cost a fix to code that was already correct. |

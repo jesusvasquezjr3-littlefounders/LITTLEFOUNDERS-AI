@@ -700,6 +700,7 @@
       "realtime": "En vivo (Realtime)",
       "automatic": "Actualización automática",
       "degraded": "Actualización de respaldo activa",
+      "realtimeFailed": "Actualización en vivo no disponible",
       "connectionLost": "Conexión en tiempo real perdida",
       "unavailableTitle": "Estado en vivo no disponible",
       "unavailableNote": "El monitor seguirá intentando. El historial de ejecuciones continúa disponible.",

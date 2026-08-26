@@ -20,6 +20,22 @@ vi.mock('@xyflow/react', () => ({
 vi.mock('@xyflow/react/dist/style.css', () => ({}));
 
 /*
+ * A UNIT TEST MUST NOT REACH REAL INFRASTRUCTURE, and without this mock this
+ * one did. `getSupabaseClient()` reads VITE_SUPABASE_URL / _ANON_KEY, Vite
+ * loads `.env` in test mode too, so on any machine with a working `.env` this
+ * file built a real Supabase client and opened a real websocket to the
+ * project - while on CI, where those variables are absent, the client came
+ * back null and the whole Realtime path was skipped. Same suite, two different
+ * code paths, decided by a file that is not in git: that is what made the
+ * failure here look intermittent.
+ *
+ * Realtime behaviour is covered deliberately, against a fake that reproduces
+ * the library's channel-registry semantics, in
+ * routes/admin/__tests__/LiveStats.realtime.test.tsx.
+ */
+vi.mock('@/lib/supabaseRealtime', () => ({ getSupabaseClient: () => null }));
+
+/*
  * /admin/generation dashboard tests. Mocks useAdminData and api calls to
  * exercise the three tabs: Live Monitor, Run History, and Analytics.
  */

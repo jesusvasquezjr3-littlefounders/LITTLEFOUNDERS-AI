@@ -1239,17 +1239,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## /how-it-works answers four questions, and its own CTA had to stop contradicting one of them (2026-08-26)
+## The admin Live Monitor was losing Realtime permanently, and the only symptom was a test warning (2026-08-26)
 
-**What the owner asked for.** A rebuild of the page around "how do we do it, why
-this way, what makes us different, why should you open an account" - brief,
-punchy, marketing first, not a technical tour. Seven blocks were proposed as a
-table; the owner approved 1, 2, 4, 6 and 7, rejecting the fourteen pedagogical
-principles and the safety/trust block. The page now runs: the concept atlas with
-its title, "We do not give lessons. We give decisions.", "Four mentors who
-answer.", "Start without an account.", and "Make it yours."
+**What was reported.** A full test run printed one unhandled rejection, `cannot
+add postgres_changes callbacks for realtime:generation-live after subscribe()`,
+from `LiveStats.tsx`. It had been flagged as noise in the same area as an
+already-known flake.
 
-**Four portraits, not one line-up.** The mentor block was captured first as a
+**It was not noise.** Three behaviours of `@supabase/realtime-js`, verified
+against the installed copy rather than assumed: `channel(topic)` returns the
+EXISTING channel when the topic is already registered; `.on()` on a channel that
+has already been subscribed throws; and the topic stays registered after that
 ```
 
 ### agent/README.md
@@ -15387,21 +15387,21 @@ import { failedFromI18nKey, formatPct } from './generationI18n';
 ### frontend/src/routes/admin/LiveStats.tsx
 
 ```
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/auth/AuthContext';
-import { api } from '@/lib/api';
-import { Card, Dropdown, Icon, ProgressBar, StatCard, type DropdownOption } from '@/components/ui';
-import { cn } from '@/lib/utils';
-import { getSupabaseClient } from '@/lib/supabaseRealtime';
-import { formatPct } from './generationI18n';
-import { processedSlots, resolveGenerationKind, stagesForKind, type LiveGenerationStatus, type LiveRunHeartbeat } from './generationTypes';
-
-/*
- * Live Monitor data flow:
- *   1. Core hydrates the current state and polls as the reliable baseline.
- *   2. Supabase Realtime accelerates updates when it is configured and healthy.
- *   3. Realtime failure never hides a heartbeat that Core can still provide.
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "@/auth/AuthContext";
+import { api } from "@/lib/api";
+import {
+  Card,
+  Dropdown,
+  Icon,
+  ProgressBar,
+  StatCard,
+  type DropdownOption,
+} from "@/components/ui";
+import { cn } from "@/lib/utils";
+import { getSupabaseClient } from "@/lib/supabaseRealtime";
+import { formatPct } from "./generationI18n";
 ```
 
 ### frontend/src/routes/admin/PipelineFlow.tsx
@@ -15622,6 +15622,26 @@ const USERS = [
     userId: '11111111-1111-4111-8111-111111111111',
     displayName: 'Admin User',
     username: 'admin_user',
+```
+
+### frontend/src/routes/admin/__tests__/LiveStats.realtime.test.tsx
+
+```
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
+import { LiveStats } from "../LiveStats";
+
+/*
+ * REGRESSION COVER FOR A LATCHING REALTIME FAILURE.
+ *
+ * `supabase.channel(topic)` returns the EXISTING channel when that topic is
+ * already registered, and `.on('postgres_changes', ...)` on a channel that has
+ * already been subscribed THROWS. The client is a module singleton
+ * (lib/supabaseRealtime.ts), so its registry outlives any one mount of this
+ * component - and LiveStats used the fixed topic 'generation-live'.
+ *
+ * The second mount therefore threw. Because the throw landed mid-chain the
+ * channel reference was never assigned, so the cleanup had nothing to remove,
 ```
 
 ### frontend/src/routes/admin/__tests__/LiveStats.test.tsx

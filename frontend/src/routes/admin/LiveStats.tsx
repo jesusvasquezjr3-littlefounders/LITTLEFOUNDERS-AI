@@ -23,6 +23,16 @@ import { processedSlots, resolveGenerationKind, stagesForKind, type LiveGenerati
 const POLL_INTERVAL_MS = 4_000;
 const STALE_MS = 2 * 60 * 1000;
 const REAUTH_INTERVAL_MS = 10 * 60 * 1000;
+const REALTIME_RETRY_MS = 3_000;
+
+/*
+ * Monotonic and MODULE-scoped, because the Supabase client it feeds is a
+ * module singleton (lib/supabaseRealtime.ts) whose channel registry is keyed
+ * by topic and outlives any one mount. A counter held per component instance
+ * would restart at the same value on the next mount and reintroduce exactly
+ * the collision this exists to prevent.
+ */
+let realtimeTopicSeq = 0;
 
 interface LiveStatsProps {
   onHeartbeat: (hb: LiveRunHeartbeat | null) => void;
@@ -85,6 +95,15 @@ export function LiveStats({ onHeartbeat, className }: LiveStatsProps) {
   const [pollingReady, setPollingReady] = useState(false);
   const [pollError, setPollError] = useState<string | null>(null);
   const [realtimeConnected, setRealtimeConnected] = useState(false);
+  /*
+   * Distinct from `!realtimeConnected`, which is ALSO the state while
+   * connecting and the permanent state wherever the Supabase env vars are not
+   * deployed. This one means the subscription actively THREW. Core polling
+   * still carries the numbers, so what is on screen stays correct - but the
+   * accelerator is gone, and an operator who cannot see that is flying blind
+   * on the one surface whose job is telling them what is happening (§1.14).
+   */
+  const [realtimeFailed, setRealtimeFailed] = useState(false);
   const staleTimersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());
 
   const compact = new Intl.NumberFormat(i18n.resolvedLanguage, { notation: 'compact' });
@@ -166,12 +185,67 @@ export function LiveStats({ onHeartbeat, className }: LiveStatsProps) {
     let channel: ReturnType<typeof supabase.channel> | null = null;
     let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
+    function scheduleRetry() {
+      if (cancelled) return;
+      if (retryTimer) clearTimeout(retryTimer);
+      retryTimer = setTimeout(() => {
+        if (cancelled) return;
+        void resubscribe();
+      }, REALTIME_RETRY_MS);
+    }
+
+    // Removal is AWAITED. `removeChannel` unsubscribes asynchronously and only
+    // drops the topic from the client's registry once it resolves, so
+    // re-subscribing straight after it races its own teardown.
+    async function resubscribe() {
+      const previous = channel;
+      channel = null;
+      if (previous) {
+        try {
+          await supabase!.removeChannel(previous);
+        } catch {
+          /* Tearing down a channel that is already gone is not a failure. */
+        }
+      }
+      if (cancelled) return;
+      await attempt();
+    }
+
     async function subscribe() {
+      /*
+       * EVERY ATTEMPT GETS ITS OWN TOPIC. This is the fix, not a precaution.
+       *
+       * `supabase.channel(topic)` returns the EXISTING channel when that topic
+       * is already registered, and `.on('postgres_changes', ...)` on a channel
+       * that has already been subscribed THROWS. The client is a module
+       * singleton, so any second lifecycle of this component - a remount, a
+       * StrictMode double-mount, or this component's own retry - re-entered
+       * here with 'generation-live' still in the registry.
+       *
+       * It failed as a LATCH rather than a blip: the throw lands mid-chain, so
+       * `channel` was never assigned, so the cleanup had nothing to remove, so
+       * the topic stayed registered and every later attempt threw as well. The
+       * admin Live Monitor lost its push transport for the rest of the browser
+       * session and showed the ordinary 4s polling state while doing it.
+       *
+       * All three behaviours verified against the installed
+       * @supabase/realtime-js: same instance returned for a repeated topic,
+       * `.on()` throws, topic still registered afterwards. A unique topic makes
+       * the collision impossible by construction rather than relying on
+       * teardown having finished in time.
+       */
       const token = await getToken();
       if (!token || cancelled) return;
       await supabase!.realtime.setAuth(token);
-      channel = supabase!
-        .channel('generation-live')
+      if (cancelled) return;
+
+      realtimeTopicSeq += 1;
+      // Assigned BEFORE anything in the chain can throw, so the cleanup can
+      // always tear it down. Assigning the result of the whole
+      // `.on().subscribe()` chain leaks the channel on any throw inside it.
+      const next = supabase!.channel(`generation-live-${realtimeTopicSeq}`);
+      channel = next;
+      next
         .on('postgres_changes', { event: '*', schema: 'public', table: 'generation_runs_live' }, (payload) => {
           if (cancelled) return;
           if (payload.eventType === 'DELETE') {
@@ -182,24 +256,38 @@ export function LiveStats({ onHeartbeat, className }: LiveStatsProps) {
           applyRealtimeRun(mapRow(payload.new as Record<string, unknown>));
         })
         .subscribe((status) => {
+          if (cancelled) return;
           if (status === 'SUBSCRIBED') {
             setRealtimeConnected(true);
+            setRealtimeFailed(false);
             return;
           }
           if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
             setRealtimeConnected(false);
-            if (retryTimer) clearTimeout(retryTimer);
-            retryTimer = setTimeout(() => {
-              if (cancelled) return;
-              if (channel) supabase!.removeChannel(channel);
-              channel = null;
-              void subscribe();
-            }, 3_000);
+            scheduleRetry();
           }
         });
     }
 
-    void subscribe();
+    /*
+     * A bare `void subscribe()` turns any throw in there into an UNHANDLED
+     * REJECTION, which is how this defect stayed hidden: the browser logs it
+     * and the component carries on looking healthy. Realtime is an accelerator,
+     * so falling back to Core polling is the right behaviour - but it has to be
+     * a REPORTED failure rather than an absence (§1.14), and it has to keep
+     * trying.
+     */
+    async function attempt() {
+      try {
+        await subscribe();
+      } catch {
+        setRealtimeConnected(false);
+        setRealtimeFailed(true);
+        scheduleRetry();
+      }
+    }
+
+    void attempt();
     const reauth = setInterval(() => {
       void (async () => {
         const fresh = await getToken();
@@ -213,7 +301,9 @@ export function LiveStats({ onHeartbeat, className }: LiveStatsProps) {
       setRealtimeConnected(false);
       clearInterval(reauth);
       if (retryTimer) clearTimeout(retryTimer);
-      if (channel) supabase.removeChannel(channel);
+      // `.catch` because this is fire-and-forget teardown: an un-awaited
+      // rejection here is the same class of bug the subscribe path just had.
+      if (channel) void supabase.removeChannel(channel).catch(() => {});
     };
   }, [applyRealtimeRun, getToken, removeRun]);
 
@@ -229,8 +319,13 @@ export function LiveStats({ onHeartbeat, className }: LiveStatsProps) {
     onHeartbeat(heartbeat);
   }, [heartbeat, onHeartbeat]);
 
-  const transportKey = realtimeConnected ? 'realtime' : pollError ? 'degraded' : pollingReady ? 'automatic' : 'polling';
-  const transportIcon = realtimeConnected ? 'bolt' : pollError ? 'cloud_off' : pollingReady ? 'sync' : 'progress_activity';
+  const transportKey = realtimeConnected ? 'realtime' : pollError ? 'degraded' : realtimeFailed ? 'realtimeFailed' : pollingReady ? 'automatic' : 'polling';
+  // `sync_problem`, not `bolt_slash`: the latter is not a Material Symbols
+  // ligature, and `Icon` silently substitutes a question mark for one that
+  // does not resolve. Measured in-browser with the same range test Icon.tsx
+  // makes - `sync_problem` lays out at 40px on a 40px grid, `bolt_slash` at
+  // 280px.
+  const transportIcon = realtimeConnected ? 'bolt' : pollError ? 'cloud_off' : realtimeFailed ? 'sync_problem' : pollingReady ? 'sync' : 'progress_activity';
   const runOptions: DropdownOption<string>[] = runs.map((run) => ({
     value: run.runId,
     label: `${run.courseSlug} · ${run.runId}`,
