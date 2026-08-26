@@ -77,9 +77,14 @@ export function HowItWorks() {
 
             <Reveal delay={80} className="lf-hiw-choice">
               {/* Zara asks it. She is the mentor who already hands the learner a
-                  decision during onboarding, so the block is in her voice. */}
+                  decision during onboarding, so the block is in her voice.
+
+                  HER OWN ASSET, not the mentor grid's portrait. She is posed
+                  turned toward the card with an open presenting hand, which is
+                  wrong for a line-up of four mentors standing evenly - the two
+                  images look similar and are not interchangeable. */}
               <img
-                src="/marketing/mentor-zara.webp"
+                src="/marketing/zara-presents.webp"
                 alt=""
                 aria-hidden="true"
                 width={800}
@@ -194,7 +199,14 @@ export function HowItWorks() {
               full-width image on a phone. */}
           <Card
             hero
-            className="mx-auto grid max-w-4xl items-center gap-8 overflow-hidden lg:grid-cols-[0.95fr_1.05fr]"
+            // No `max-w-4xl`: the Landing's final CTA card is governed by
+              // `max-w-container` alone, and capping this one at 56rem made it
+              // 240px narrower on any desktop while matching below 768px, where
+              // the container is the smaller constraint. The two closing cards
+              // are the same component in the same role and must measure the
+              // same. Columns are the MIRROR of the Landing's, because the
+              // photo is on the other side.
+              className="grid items-center gap-8 overflow-hidden lg:grid-cols-[0.95fr_1.05fr]"
           >
             <img
               src="/marketing/pexels-kid-saving-7118210.jpg"
