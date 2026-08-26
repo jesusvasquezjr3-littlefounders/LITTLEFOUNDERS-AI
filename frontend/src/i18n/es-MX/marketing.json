@@ -23,24 +23,23 @@
     "intro": "No esperes a que tropiecen con la vida real. Prepáralos hoy con las herramientas de la era digital.",
     "source": "Fuente: S&P Global FinLit Survey"
   },
+  "legacy": {
+    "heading": "El mejor activo para el futuro de tus hijos.",
+    "body": "No les dejes solo una herencia; dales la capacidad de construirla. Transformamos la preocupación financiera del mañana en decisiones inteligentes desde hoy."
+  },
   "journey": {
     "heading": "Aprender con mentores, no con profesores.",
     "intro": "Nuestros personajes acompañan a tu familia en cada paso, transformando conceptos económicos abstractos en decisiones de la vida real."
   },
   "family": {
-    "title": "También llega a casa",
-    "body": "Una lección hoy. Una conversación real esta noche.",
-    "imageAlt": "Un niño cuenta monedas junto a su frasco de ahorro",
-    "values": {
-      "short": "A su ritmo",
-      "handsOn": "Práctico",
-      "growing": "Confianza real"
-    }
+    "heading": "El futuro de tu familia no depende de la suerte, depende de la preparación.",
+    "body": "¿Estás listo para darles la ventaja que tú no tuviste?"
   },
   "finalCta": {
-    "title": "Una moneda. Una gran aventura.",
+    "title": "Transforma su futuro ahora",
     "body": "Gratis para empezar. Gratis para quedarse.",
-    "imageAlt": "Una niña coloca una moneda en una alcancía"
+    "imageAlt": "Una niña coloca una moneda en una alcancía",
+    "cta": "Comenzar el viaje hoy"
   },
   "howItWorks": {
     "title": "Entra la curiosidad. Sale la confianza.",

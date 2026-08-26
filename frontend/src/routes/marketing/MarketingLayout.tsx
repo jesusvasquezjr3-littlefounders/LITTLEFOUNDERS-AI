@@ -128,7 +128,11 @@ export function MarketingLayout() {
       </main>
 
       {/* Footer — full-bleed inverse band (/DESIGN.md §Layout → Section bands) */}
-      <footer className="mt-24 bg-inverse pb-8 pt-16 text-on-inverse">
+      {/* No top margin. The 96px it used to carry showed the page's own base
+          colour between the last section and the footer, which read as a stray
+          white strip rather than as spacing: every section already carries its
+          own vertical padding, and the footer carries `pt-16`. */}
+      <footer className="bg-inverse pb-8 pt-16 text-on-inverse">
         <div className="mx-auto grid max-w-container gap-10 px-5 md:grid-cols-3 md:px-8">
           <div>
             <img
@@ -162,14 +166,22 @@ export function MarketingLayout() {
               </li>
             </ul>
           </div>
-          <div>
+          {/* `min-w-0` on the column and `break-all` on the address, because an
+              email is one unbreakable word and this column is the narrowest it
+              ever gets exactly where the footer becomes three columns. At the
+              768px breakpoint the column is 208px and the address needs 241px:
+              an `inline-flex` will not shrink below its content, so it spilled
+              0.89px past the viewport and the whole page scrolled sideways by a
+              pixel, which /AGENTS.md §1.11 forbids outright. A grid item's
+              default `min-width: auto` is what let it push rather than wrap. */}
+          <div className="min-w-0">
             <h2 className="lf-title">{t('marketing.footer.contactLabel')}</h2>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="lf-body mt-3 inline-flex min-h-11 items-center gap-2 rounded-sm text-on-inverse-muted transition-colors hover:text-on-inverse focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-inverse"
+              className="lf-body mt-3 inline-flex min-h-11 max-w-full items-center gap-2 rounded-sm text-on-inverse-muted transition-colors hover:text-on-inverse focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-inverse"
             >
-              <Icon name="mail" className="text-xl" />
-              {CONTACT_EMAIL}
+              <Icon name="mail" className="shrink-0 text-xl" />
+              <span className="break-all">{CONTACT_EMAIL}</span>
             </a>
           </div>
         </div>

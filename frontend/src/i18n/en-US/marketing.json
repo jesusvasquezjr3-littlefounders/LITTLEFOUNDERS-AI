@@ -23,24 +23,23 @@
     "intro": "Do not wait for them to stumble into real life. Prepare them today with the tools of the digital era.",
     "source": "Source: S&P Global FinLit Survey"
   },
+  "legacy": {
+    "heading": "The best asset for your children’s future.",
+    "body": "Do not leave them an inheritance alone; give them the ability to build one. We turn tomorrow’s financial worry into smart decisions starting today."
+  },
   "journey": {
     "heading": "Learn from mentors, not teachers.",
     "intro": "Our characters guide your family every step of the way, turning abstract money concepts into real-life decisions."
   },
   "family": {
-    "title": "It comes home too",
-    "body": "One lesson today. A real conversation tonight.",
-    "imageAlt": "A child counts coins beside a savings jar",
-    "values": {
-      "short": "At their pace",
-      "handsOn": "Hands-on",
-      "growing": "Real confidence"
-    }
+    "heading": "Your family’s future does not depend on luck, it depends on preparation.",
+    "body": "Are you ready to give them the advantage you never had?"
   },
   "finalCta": {
-    "title": "One coin. One big adventure.",
+    "title": "Transform their future now",
     "body": "Free to start. Free to stay.",
-    "imageAlt": "A child puts a coin into a piggy bank"
+    "imageAlt": "A child puts a coin into a piggy bank",
+    "cta": "Start the journey today"
   },
   "howItWorks": {
     "title": "Curiosity in. Confidence out.",

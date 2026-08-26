@@ -4,7 +4,6 @@ Photos from [Pexels](https://www.pexels.com), used under the Pexels license (fre
 
 | File | Source |
 |---|---|
-| `pexels-kid-saving-7118210.jpg` | https://www.pexels.com/photo/7118210/ |
 | `pexels-kid-piggybank-12955547.jpg` | https://www.pexels.com/photo/12955547/ |
 | `pexels-learning-group.jpg` | https://www.pexels.com/photo/children-collaborating-in-a-classroom-setting-34526413/ |
 | `pexels-classroom-learning.jpg` | https://www.pexels.com/photo/children-learning-in-classroom-setting-31152359/ |

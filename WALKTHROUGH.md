@@ -2,6 +2,63 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## The Landing's lower half became compositions, and a pixel of sideways scroll turned out not to be where it looked (2026-08-26)
+
+**What the owner asked for, in order.** The card composition beside the "67% of
+adults" statistic was invisible on a phone. Then: a free-fall composition in the
+empty slot below it, Liruf and Zara falling, later Dina added above them, later
+still speed lines behind them and the group centred as one object. Then a copy
+block under it. Then a tab shape carrying the band into the page below, with Rho
+diving out of it. Then the section after that reduced to a single centred
+statement, and the final CTA relabelled.
+
+**The card deck was `hidden lg:block`.** Nothing in it needed a wide viewport:
+every card is positioned and sized in PERCENTAGES of the stack, so it is
+resolution-independent and simply gets smaller. It is capped at `max-w-[17rem]`
+below sm because at a single-column width the 4:3 deck is 836px tall and takes
+the band past a full viewport on its own.
+
+**The free-fall clip loops for free.** Zara and Liruf play Meshy's `Fall1`,
+which is authored as a closed cycle: measured, its wrap costs 16.26 against
+16.33 for an ordinary 1/24 s step, so the seam IS an ordinary step and the real
+secondary motion survives. Dina has no clip at all - one static 2 M-triangle
+mesh - so her float is authored as exactly one sine cycle across the loop, which
+closes by construction. Her orientation is not hand-tuned either: `__aimFrom`
+applies the minimal rotation that reproduces, under the composition's camera,
+the view she was chosen from on a contact sheet.
+
+**Two measurement bugs, both the same shape.** Laying the cast out in world axes
+put everyone off the top of the frame, because with the camera pitched steeply
+upward a world-space offset in Y is mostly a move toward the lens; composition
+moved to a camera-space helper. And `recentre()` measured with
+`Box3.setFromObject`, which is WORLD-space, on an actor already hanging from a
+transformed pivot - so aiming Dina moved Zara and Liruf and the overlap report
+changed for a pair nobody had touched. The centre is now measured once, at load,
+with nothing above it transformed.
+
+**The speed lines are CSS, and that is a compression decision.** Baking streaks
+across most of the frame destroys the one property that makes this asset 510 KB
+instead of four megabytes: 90% of it never changes. As DOM they cost no bytes,
+scale to any viewport, and move on `transform`/`opacity` alone.
+
+**Centring the group meant centring the INK, not the boxes.** The render carries
+transparent sky - the cast occupies 4.5% to 84.5% of the frame's height - and
+`justify-center` centres boxes, so the artwork sat 22px low while every number
+said it was centred. Both bands are taken back out with negative margins in
+PERCENT, which resolve against the containing block's inline size and therefore
+track the artwork at every viewport.
+
+**`Skeleton.pose()` cost three attempts.** Rho renders six pixels tall after
+calling it, while `__project` still reports him filling the frame. See the row
+below.
+
+**And the 1px of horizontal scroll was not the canvas.** It had been attributed
+to the technology graph's canvas because its rect measured 821px in a 768px
+viewport; following the ancestor chain showed `.lf-atlas` already clips it. The
+real cause was the footer's contact email, an unbreakable 241px word in a 208px
+grid column. Swept across 22 widths afterwards rather than the five that had
+produced the wrong answer the first time.
+
 ## The Landing diorama became a video, and a copy edit turned out to cost audio (2026-08-25)
 
 **The owner's ask, in three steps.** Render the diorama on the Landing's
@@ -3956,6 +4013,9 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-26 | **`Skeleton.pose()` is not a safe way back to the bind pose, and the failure is invisible to every matrix-based check.** Poses are built by snapshotting each bone's bind quaternion at load and composing deltas onto the copy. | Rho's export carries a 0.01 scale on the node above the rig, and `pose()` rebuilds each bone from its inverse bind matrix in world space and decomposes back to local - a round trip that scale does not survive. He rendered SIX PIXELS TALL while `__project` still reported him filling the frame, because the projection reads matrices and the renderer reads the skinned result, and only one of them had been ruined. This is the same class as the 2026-08-25 `quaternion.identity()` lesson and the general rule is now twice paid for: never ASK a rig to reconstruct its rest state, COPY the rest state before touching it and restore from the copy. |
+| 2026-08-26 | **A composition is centred on its INK, never on its box, and the correction belongs in percent.** The free-fall artwork's transparent bands (4.5% of height above, 15.5% below) are removed with negative margins so `justify-center` centres what the eye sees. | Flex centring works on boxes, and this render carries sky the file still pays for, so the group was centred while the artwork sat 22px low and the copy beneath it started a sixth of a picture below where the picture appears to end. Every number said centred; only a measurement of the INK disagreed. The margins are PERCENT because a percentage margin resolves against the containing block's inline size, and that block is exactly as wide as the artwork - so one declaration is correct at every viewport, where a pixel value is correct at one breakpoint and wrong at the rest. |
+| 2026-08-26 | **An element's bounding rect is not evidence that it overflows: follow the ancestor chain for a clipping context first.** The Landing's 1px of horizontal scroll at 768px was the footer's contact email, not the technology graph's canvas it had been attributed to. | The canvas measures 821px inside a 768px viewport and looks exactly like a culprit, but `.lf-atlas` already carries `overflow-x: hidden`, and a clipped element cannot extend an ancestor's `scrollWidth`. The real cause was a grid item's default `min-width: auto` letting an unbreakable 241px email push a 208px column instead of wrapping - which only happens in the narrow window where the footer becomes three columns. Also a lesson about sampling: the first pass checked five widths, concluded "only 768", and missed that 769 overflowed too. The sweep now runs 22 widths and asserts `scrollWidth <= clientWidth` at each. |
 | 2026-08-25 | **A marketing still and the Tutor's runtime are the SAME asset under opposite constraints, and whatever a capture borrows has to be given back in the same session.** The Landing diorama is captured from the `/glb/` artist sources on the `high` tier at 2400x1800 and downsampled 2:1; `frontend/public/scenes/` holds the RUNTIME builds again, and `quality.ts` is back to `anisotropy: 8`. | Owner rule, stated twice: max quality is for these renders ONLY, and the Tutor has an obligatory frame budget. The failure mode is asymmetric and that is the point. Shipping the runtime build into a still bakes a frame-budget compromise into a picture that has no frames; leaving the runtime RAISED after a capture charges every learner, on every session, for one marketing image. The second had already happened here - `high` was sitting at `anisotropy: 16` and 66 MB of source exports were standing in for the runtime .glb inside `public/`, which Vite copies wholesale into `dist/`, so they were one build away from being deployed. Anything borrowed for a capture is a LOAN: write down what you moved before you move it, and check `git status` for it at the end. |
 | 2026-08-25 | **An animated image cannot buy frame rate, because the format has no motion compensation - the Landing diorama is a VP9-alpha `<video>` chosen by a decode probe, with a max-quality still as the floor.** New `routes/marketing/alphaVideo.ts`. | Animated WebP and GIF re-encode the whole changed rectangle as a fresh image every frame, and here that rectangle is 59% of the picture: 13 fps cost 2.33 MB and 24 fps would have cost ~4 MB. That is a property of the container, not a setting, and Lottie is not an escape - it is a VECTOR format, so a textured 3D render can only enter it as embedded PNGs, heavier than the WebP AND composited on the CPU per frame. VP9-in-WebM is 572 KB for 42 frames at 24 fps and decodes in hardware, and its frame 0 is measurably closer to the lossless render (1.14/255) than the q92 WebP still (2.46). The probe exists because the clip is a CUT-OUT whose transparency cannot be baked into a rectangle - the glow blobs behind it move with viewport width - and WebKit plays a VP9-alpha WebM while IGNORING its alpha, which paints a black rectangle where the island should be. `canPlayType` answers about container and codec, so both browsers say yes; the only honest question is asked by decoding a 583-byte, 16x16, fully transparent frame and reading whether it stayed transparent. Every failure path, including the timeout, answers `false` and shows the still. |
 | 2026-08-25 | **Editing a VOICED line is not a copy edit, it is a paid regeneration - and the guard that catches it has no partial state, so the wording and the audio move together or not at all.** Four en-US narration lines are deliberately held at the text their recorded clips actually say, against `frontend/AGENTS.md`'s em-dash prohibition, until `oracle/scripts/pregenerate-guided-voice.ts` is re-run. | An em-dash cleanup elsewhere in the same working tree rewrote `onboarding.name` and `placement.welcome`/`quiz`/`adjust`, which orphaned four clips already synthesised, paid for and hosted in Depot: `speak()` refuses a clip whose recorded text no longer matches the subtitle, so those four characters had gone silent in en-US and nothing said so except a test. Three invariants then cannot hold at once - the copy protocol forbids the dash, the manifest must cover every cast key in every locale, and every entry's text must equal the current copy - and the only resolution that satisfies all three costs money and is the owner's call. Holding the four lines is not introducing a violation: it is leaving them exactly as they already ship, rather than trading a prose nit for four mute characters or a red suite. The general shape: a string with an audio recording behind it is coupled to a paid pipeline, and the copy rules that apply to silent text cannot be applied to it unilaterally. |

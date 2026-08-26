@@ -23,24 +23,23 @@
     "intro": "Não espere que tropecem na vida real. Prepare-os hoje com as ferramentas da era digital.",
     "source": "Fonte: S&P Global FinLit Survey"
   },
+  "legacy": {
+    "heading": "O melhor ativo para o futuro dos seus filhos.",
+    "body": "Não deixe para eles apenas uma herança; dê a eles a capacidade de construí-la. Transformamos a preocupação financeira de amanhã em decisões inteligentes desde hoje."
+  },
   "journey": {
     "heading": "Aprender com mentores, não com professores.",
     "intro": "Nossos personagens acompanham sua família em cada passo, transformando conceitos econômicos abstratos em decisões da vida real."
   },
   "family": {
-    "title": "Chega em casa também",
-    "body": "Uma lição hoje. Uma conversa de verdade à noite.",
-    "imageAlt": "Uma criança contando moedas ao lado de um cofrinho",
-    "values": {
-      "short": "No seu ritmo",
-      "handsOn": "Na prática",
-      "growing": "Confiança real"
-    }
+    "heading": "O futuro da sua família não depende de sorte, depende de preparo.",
+    "body": "Você está pronto para dar a eles a vantagem que você não teve?"
   },
   "finalCta": {
-    "title": "Uma moeda. Uma grande aventura.",
+    "title": "Transforme o futuro deles agora",
     "body": "Grátis para começar. Grátis para sempre.",
-    "imageAlt": "Uma criança colocando uma moeda no cofrinho"
+    "imageAlt": "Uma criança colocando uma moeda no cofrinho",
+    "cta": "Comece a jornada hoje"
   },
   "howItWorks": {
     "title": "Curiosidade entra. Confiança sai.",

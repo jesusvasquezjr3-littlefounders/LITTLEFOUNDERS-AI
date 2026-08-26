@@ -421,7 +421,7 @@
   height: 0.55rem;
   width: 2.6rem;
   border-radius: 9999px;
-  background: rgb(var(--lf-content) / 0.18);
+  background: rgb(var(--lf-content) / 0.32);
 }
 
 /*
@@ -580,28 +580,225 @@
  * happen to agree today are two numbers that stop agreeing the first time
  * somebody edits one of them. Sharing the class makes the match structural.
  *
- * The floors sit about 9% above what the band's own content measures at the
- * widest point of each range (471px below sm, 501px below lg, 632px above it),
+ * The floors sit a little above what the band's own content measures at the
+ * TALLEST point of each range (723px below sm, 837px below lg, and above it the SLOT rather than the band, whose
+ * composition plus copy measures 697px against the band's 632px),
  * so the band gains a little air at every breakpoint AND stays the taller of
  * the two — if content ever outgrew the floor, the band would push past the
  * slot and the pair would visibly separate. Three steps rather than one
- * because the natural height is not monotonic: the card stack only appears at
- * lg, and narrow text wraps taller than wide text, so a single value generous
- * enough for desktop would leave a dead half-screen on a phone, which
- * /AGENTS.md §1.11 rules out in as many words.
+ * because the natural height is not monotonic, and note the direction: the
+ * band is TALLER on a phone than on a desktop, because below lg it stacks the
+ * card composition under the text instead of beside it. A single value would
+ * therefore either crop the phone or leave a dead half-screen on the desktop,
+ * which /AGENTS.md §1.11 rules out in as many words.
  */
 .lf-band-slot {
-  min-height: 32rem;
+  min-height: 47rem;
 }
 
 @media (min-width: 40rem) {
   .lf-band-slot {
-    min-height: 34rem;
+    min-height: 53rem;
   }
 }
 
 @media (min-width: 64rem) {
   .lf-band-slot {
-    min-height: 43rem;
+    min-height: 45rem;
   }
+}
+
+/*
+ * The free-fall composition. `max-height: 100%` matters: the slot it sits in is
+ * taller on a phone than on a desktop (the band above stacks its card deck
+ * under the text below lg), so the artwork has to be able to yield to the
+ * shorter of the two constraints rather than assume width is always the binding
+ * one. No drop shadow, deliberately - these three are in open sky, and a shadow
+ * would put an invisible floor under them.
+ */
+.lf-fall-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  margin-inline: auto;
+  object-fit: contain;
+  /*
+   * THE BOX IS NOT THE PICTURE, AND THE PICTURE IS WHAT GETS CENTRED.
+   *
+   * Measured off the render's own projection, the cast occupies 4.5% to 84.5%
+   * of the frame's height: the rest is transparent sky the file still carries.
+   * Flex centring works on BOXES, so with those bands inside the box the group
+   * was centred while the visible artwork sat 22px low, and anything placed
+   * after it started a sixth of a picture below where the picture appears to
+   * end. Both bands are therefore taken back out with negative margins, which
+   * leaves a box that hugs the ink - so `justify-center` on the section centres
+   * what the eye actually sees, and the copy sits directly under the feet.
+   *
+   * PERCENT, not pixels: a percentage margin resolves against the containing
+   * block's inline size, and that block is exactly as wide as the artwork, so
+   * -3.4% and -11.6% of width are 4.5% and 15.5% of HEIGHT at every viewport.
+   * A pixel value would be right at one breakpoint and wrong at the rest.
+   */
+  margin-top: -3.4%;
+  margin-bottom: -11.6%;
+}
+
+/*
+ * ── Fall speed lines ──────────────────────────────────────────────────────
+ *
+ * The travel distance is a CUSTOM PROPERTY, not a percentage, because a
+ * percentage in `translate` resolves against the ELEMENT's own size and these
+ * elements are short lines - `translateY(-100%)` would move a 4rem streak by
+ * 4rem and never cross the band. It is set per breakpoint to a little more
+ * than `.lf-band-slot`'s own height at that breakpoint, so every line sweeps
+ * the full section and exits before it is recycled.
+ */
+.lf-fall-vfx {
+  --lf-fall-travel: 58rem;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+@media (min-width: 40rem) {
+  .lf-fall-vfx {
+    --lf-fall-travel: 64rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .lf-fall-vfx {
+    --lf-fall-travel: 54rem;
+  }
+}
+
+.lf-fall-vfx > span {
+  position: absolute;
+  top: 100%;
+  width: 3px;
+  height: 14%;
+  border-radius: 9999px;
+  /* Faded at both ends so a line reads as a streak of motion rather than as a
+     ruled rule. `--lf-content` and not a fixed colour: it inverts with the
+     theme, so one declaration is legible on the light band AND the dark one. */
+  background: linear-gradient(to top, transparent, rgb(var(--lf-content) / 0.32), transparent);
+  animation-name: lf-fall-streak;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+@keyframes lf-fall-streak {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, calc(-1 * var(--lf-fall-travel)), 0);
+  }
+}
+
+/* Placement, length, weight and cadence, one line at a time. Spread unevenly
+   and at different speeds on purpose: an even comb reads as a pattern, and a
+   pattern reads as a background rather than as rushing air. */
+.lf-fall-vfx > span:nth-child(1)  { left: 6%;  height: 18%; animation-duration: 3.4s; animation-delay: -0.2s; }
+.lf-fall-vfx > span:nth-child(2)  { left: 13%; height: 10%; width: 2px; animation-duration: 4.6s; animation-delay: -2.1s; }
+.lf-fall-vfx > span:nth-child(3)  { left: 19%; height: 24%; width: 4px;   animation-duration: 2.8s; animation-delay: -1.4s; background: linear-gradient(to top, transparent, rgb(var(--lf-primary) / 0.5), transparent); }
+.lf-fall-vfx > span:nth-child(4)  { left: 27%; height: 12%; animation-duration: 5.2s; animation-delay: -3.6s; }
+.lf-fall-vfx > span:nth-child(5)  { left: 33%; height: 20%; width: 2px; animation-duration: 3.1s; animation-delay: -0.9s; }
+.lf-fall-vfx > span:nth-child(6)  { left: 41%; height: 15%; animation-duration: 4.1s; animation-delay: -2.7s; }
+.lf-fall-vfx > span:nth-child(7)  { left: 47%; height: 27%; width: 4px;   animation-duration: 2.5s; animation-delay: -1.8s; background: linear-gradient(to top, transparent, rgb(var(--lf-accent) / 0.46), transparent); }
+.lf-fall-vfx > span:nth-child(8)  { left: 54%; height: 11%; width: 2px; animation-duration: 5.6s; animation-delay: -0.4s; }
+.lf-fall-vfx > span:nth-child(9)  { left: 61%; height: 22%; animation-duration: 3.3s; animation-delay: -2.9s; }
+.lf-fall-vfx > span:nth-child(10) { left: 68%; height: 16%; animation-duration: 4.4s; animation-delay: -1.1s; }
+.lf-fall-vfx > span:nth-child(11) { left: 74%; height: 25%; width: 4px;   animation-duration: 2.9s; animation-delay: -3.2s; background: linear-gradient(to top, transparent, rgb(var(--lf-primary) / 0.44), transparent); }
+.lf-fall-vfx > span:nth-child(12) { left: 81%; height: 13%; width: 2px; animation-duration: 5.0s; animation-delay: -0.7s; }
+.lf-fall-vfx > span:nth-child(13) { left: 88%; height: 19%; animation-duration: 3.7s; animation-delay: -2.4s; }
+.lf-fall-vfx > span:nth-child(14) { left: 94%; height: 9%;  animation-duration: 4.9s; animation-delay: -1.6s; }
+
+/* index.css has no blanket reduce rule - every animated class opts out for
+   itself, so this one does too. The lines stay, still, as faint texture. */
+@media (prefers-reduced-motion: reduce) {
+  .lf-fall-vfx > span {
+    animation: none;
+    transform: translate3d(0, calc(-0.5 * var(--lf-fall-travel)), 0);
+  }
+}
+
+/*
+ * ── The band's tab into the page below ────────────────────────────────────
+ *
+ * `preserveAspectRatio="none"` lets one 1440-wide viewBox stretch to any
+ * viewport, which is why the height is a token here and not baked into the
+ * path: the curve keeps its shape while the strip gets shorter on a phone.
+ * `vector-effect: non-scaling-stroke` is what keeps the edge a hairline
+ * through that stretch - without it the stroke is scaled by the same factor
+ * as the geometry and thickens to several pixels on a wide screen.
+ */
+.lf-band-tongue {
+  position: relative;
+  /* Above the section that follows, which is opaque and would otherwise paint
+     over the part of Rho that hangs below the tab. */
+  z-index: 1;
+  height: 9rem;
+  /* The svg is an inline element; without this its baseline leaves a gap of
+     descender space under the strip, which shows as a seam of the wrong
+     colour between this and the section beneath. */
+  line-height: 0;
+}
+
+@media (min-width: 40rem) {
+  .lf-band-tongue {
+    height: 12rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .lf-band-tongue {
+    height: 16rem;
+  }
+}
+
+.lf-band-tongue svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.lf-band-tongue__fill {
+  fill: rgb(var(--lf-band));
+}
+
+.lf-band-tongue__edge {
+  fill: none;
+  stroke: rgb(var(--lf-outline));
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+/*
+ * Rho, straddling the tab's tip.
+ *
+ * Sized as a PERCENTAGE OF THE TAB rather than in rem, so one declaration
+ * tracks all three tab heights instead of needing its own set of breakpoints:
+ * at 118% he is a little taller than the tab is deep, and `bottom: -26%` hangs
+ * that surplus below the tip, which is what makes him read as coming OUT of
+ * the band rather than as sitting inside a panel. `width: auto` lets his own
+ * 454x750 aspect decide the rest.
+ */
+.lf-band-tongue__diver {
+  position: absolute;
+  /* Sits INSIDE the tab rather than hanging out of the bottom of it: the tab is
+     the surface he is diving through, and a figure whose legs cross its lower
+     edge reads as pasted over the section beneath instead of coming out of the
+     band. Sized as a percentage of the tab so one declaration tracks all three
+     of its heights; `width: auto` lets his own 430x858 aspect decide the rest. */
+  bottom: 7%;
+  left: 50%;
+  height: 92%;
+  width: auto;
+  transform: translateX(-50%);
+  pointer-events: none;
 }
