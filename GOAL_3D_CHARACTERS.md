@@ -128,8 +128,26 @@ Every line here is checkable by running something or looking at something.
       stance and proportions (§5 of `/AGENTS.md`).
 - [ ] Contact sheets for all four characters, reviewed by the owner.
 
-**Gamification / VFX**
-- [ ] Defined once §6 decision 3 is answered, then filled in here before build.
+**Gamification / VFX** — DONE 2026-08-27
+
+- [x] **Reactions come from the POSE LIBRARY, not a second table.** `director.ts`
+      carries its own inline list of emotion/action pairs, which is exactly the
+      "second system" §6 decision 3 said not to build now that there are 100
+      documented poses. Every director event names pose IDs; a gate asserts each
+      one resolves.
+- [x] **XP animates rather than appears.** The header chip and the results card
+      count up to their new value instead of jumping. Reduced motion lands on
+      the final number immediately — that is the modifier, never a second path.
+- [x] **Combo feedback inside the lesson.** A run of correct answers is
+      acknowledged when it happens, not only in the header total.
+      *Constraint (DESIGN.md motion recipe 8 → `public/lottie/README.md`):*
+      `streak.lottie` is the DAY streak and `gold-coin.lottie` is Gold. Neither
+      may be used for an in-lesson combo or for XP.
+- [x] **A VFX beat on the moments that earn one** — a perfect answer and a combo
+      milestone. One-shot, token-timed, reduced-motion safe, and named in
+      DESIGN.md motion recipe 7 rather than left as a loose tween.
+- [x] Verified by LOOKING, at 375 and 1280, both themes, and by the 57-fixture
+      audit still reporting zero regressions.
 
 **Always**
 - [ ] Every root gate green, three-locale i18n parity, docs updated in the same
@@ -324,8 +342,34 @@ Sizing that bust took three wrong answers, all of them proportions assumed
 rather than measured; `TUTOR_3D.md` §6.3 carries the table that settled it —
 Rho's head is 46% of his height and Zara's is 19%.
 
-### Still open for §3.4
+## §10 §3.4 — gamification and VFX (2026-08-27)
 
-Gamification and VFX: combo/streak feedback, XP that animates rather than
-appears, and character reactions tied to answer quality. The reactions now have
-100 poses and a working 3D surface to reach for.
+Built on what already existed rather than beside it, which was the whole point
+of §6 decision 3.
+
+- **The director names poses.** Its inline table of emotion/action pairs is
+  gone; every event names IDs from the 100-entry catalog, and a test asserts
+  each resolves for every character. A wrong answer is now provably a
+  `feedback` pose and provably never a celebration.
+- **`core/combo.ts`** states when a run is worth naming (from two) and when it
+  earns the extra beat (every third). Pure, six tests, including the one that
+  matters: a wrong answer never carries a combo, because the streak has not been
+  recomputed when its feedback renders.
+- **`CountUp`/`useCountTo`** — one counter, two documented behaviours. The
+  results screen's private copy of the same rAF loop is gone.
+- **`.lf-burst`** — one ring, one shot, not drawn at all under reduced motion.
+
+Measured on screen, in a real lesson: "2 in a row!", then "3 in a row!" with two
+bursts live, the flame chip popping on each increment, the XP chip counting to
+30, and the reacting character celebrating INSIDE the feedback banner.
+
+Getting that last one on screen needed the z-stack rethought — header 30, layer
+20, footer 10 — because one canvas cannot be both above and below the same
+element, and at z-1 the banner painted over its own character.
+
+### Still open
+
+- `speaking` has no expression in 3D (the mouth does not move). Fixing it means
+  correcting `mouthCardTint` for the dark `auto` rig first (TUTOR_3D.md §6.1).
+- A real mid-range DEVICE frame measurement. Everything so far is a software
+  rasteriser bound, which is honest but pessimistic.

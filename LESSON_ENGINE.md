@@ -531,6 +531,39 @@ placeholder that registers with it, and ONE overlay canvas draws each into its
 own screen rectangle through the renderer's scissor. Slots off screen are not
 drawn at all. See `TUTOR_3D.md` §6.2.
 
+### §9.2 Gamification — reactions, combo, counters (2026-08-27)
+
+**Reactions name POSES.** `core/director.ts` used to carry its own inline table
+of emotion/action pairs — a second vocabulary beside the 100-entry pose library,
+free to drift from it with no gate to notice. Every director event now names
+pose IDs from the catalog, and `director.test.ts` asserts each one exists and
+resolves for every character, including the quadruped. Changing how "a right
+answer" looks is now a change to the catalog, reviewed in the pose lab, rather
+than an edit in two places that were supposed to agree.
+
+**The combo is a stated rule, not two conditions in JSX.** `core/combo.ts`:
+a run is named from two, and every third answer in the run adds the `.lf-burst`
+beat. Wrong answers never carry a combo — the session's streak is not
+recomputed when feedback renders, so a wrong answer arrives while the count
+still holds the run it just ended, and congratulating there would put "5 in a
+row!" in the same banner as "not quite" (P3).
+
+**Counters arrive.** The header XP chip counts from its previous value; the
+results cards count from zero. One implementation (`components/ui/CountUp`),
+two documented behaviours; the results screen's own copy of the loop is gone.
+
+*Constraint:* `public/lottie/README.md` binds `streak.lottie` to the DAY streak
+and `gold-coin.lottie` to Gold. An in-lesson combo is a different statistic and
+XP is not Gold, so both use Material icons rather than those files.
+
+**The z-stack is part of the design.** Header z-30 → character layer z-20 →
+feedback footer z-10. One canvas cannot be both above and below the same
+element: a character scrolling up the column must vanish behind the progress
+bar, and the reacting character is drawn INTO the feedback banner, so the
+banner's background has to sit below the canvas. At z-10 above the layer the
+banner simply painted over it and the most emotional beat in a lesson had no
+character at all.
+
 **Presence is a named scale, not a pixel size.** `presence` on
 `CharacterActor3D` takes `inline` | `talk` | `scene` | `cast`, and each step
 fixes a box at both breakpoints, a framing (bust or full body) and a fill. A

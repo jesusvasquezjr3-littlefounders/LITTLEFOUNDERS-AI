@@ -1412,6 +1412,46 @@
   }
 
   /*
+   * COMBO BURST — the one VFX in a lesson (DESIGN.md motion recipe 7).
+   *
+   * A ring that expands and fades once, behind whatever just earned it: a
+   * perfect answer, a combo milestone. It is a RING and not confetti on
+   * purpose — confetti is a screen full of independently animated nodes on the
+   * mid-range phones §1.0 exists for, and this is two composited properties on
+   * one element that leaves nothing behind.
+   *
+   * One-shot, token-timed, and it never moves layout: `position: absolute` with
+   * `pointer-events: none`, so it cannot cover a tap target on a 44 px control.
+   */
+  .lf-burst {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    pointer-events: none;
+    border: 2px solid currentColor;
+    animation: lf-burst calc(var(--lf-dur-slow) * 1.2) var(--lf-ease) both;
+  }
+  @keyframes lf-burst {
+    from {
+      opacity: 0.55;
+      transform: scale(0.35);
+    }
+    to {
+      opacity: 0;
+      transform: scale(2.1);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    /* No pulse, and no lingering ring either: the beat is simply not drawn. */
+    .lf-burst {
+      display: none;
+    }
+  }
+
+  /*
    * SETTLE — how anything on the immersive layer arrives (/DESIGN.md §Lumen →
    * Motion).
    *

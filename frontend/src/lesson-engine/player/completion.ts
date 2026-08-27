@@ -3,7 +3,7 @@
 // /learn/lessons/:id/complete response — day-streak facts included so the
 // player can run the v1-style streak celebration without a second fetch.
 
-import { useEffect, useRef, useState } from 'react'
+import { useCountTo } from '@/components/ui/CountUp'
 
 export interface ServerCompletion {
   /** THIS run's score/pass (0012) — not a lifetime best. */
@@ -23,27 +23,16 @@ export interface ServerCompletion {
   next_lesson_id: string | null
 }
 
-/** rAF ease-out-cubic counter (v1's useCountUp). Respects reduced motion by jumping straight to the target. */
+/**
+ * The results screen's REVEAL counter: zero to the final value, once.
+ *
+ * It delegates to `useCountTo`, which is the same loop the live XP chip in the
+ * header runs. It used to be its own copy — same easing, same reduced-motion
+ * check, written twice — and two counters written twice are two counters that
+ * eventually behave differently for no reason anybody wrote down.
+ */
 export function useCountUp(target: number, durationMs = 900): number {
-  const [value, setValue] = useState(0)
-  const rafRef = useRef(0)
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setValue(target)
-      return
-    }
-    const start = performance.now()
-    const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / durationMs)
-      setValue(Math.round(target * (1 - Math.pow(1 - p, 3))))
-      if (p < 1) rafRef.current = requestAnimationFrame(tick)
-    }
-    rafRef.current = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(rafRef.current)
-  }, [target, durationMs])
-
-  return value
+  return useCountTo(target, { durationMs, from: 'zero' })
 }
 
 /** mm:ss for the results Time card — never shows an estimate as real time (v1 rule). */

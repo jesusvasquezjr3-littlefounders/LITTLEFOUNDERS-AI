@@ -259,5 +259,7 @@
   },
   "audio": {
     "replay": "Ouvir de novo"
-  }
+  },
+  "combo_one": "{{count}} seguida!",
+  "combo_other": "{{count}} seguidas!"
 }

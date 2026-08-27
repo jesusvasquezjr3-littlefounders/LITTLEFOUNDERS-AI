@@ -7,7 +7,7 @@ import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { trackInsight } from '@/lib/insights'
 import { cn } from '@/lib/utils'
-import { Button, Icon, ProgressBar, LottieIcon } from '@/components/ui'
+import { Button, Icon, ProgressBar, LottieIcon, CountUp } from '@/components/ui'
 import CharacterActor3D from '@/components/characters/control/CharacterActor3D'
 import { CharacterLayerProvider } from '@/tutor-scene/CharacterLayer'
 import type { CharacterId } from '@/components/characters/control/types'
@@ -20,6 +20,7 @@ import {
   progressPct,
 } from '../core/session'
 import { createDirector, type CharacterReaction } from '../core/director'
+import { comboBeat } from '../core/combo'
 import { glowsAndGrows } from '../core/glowsGrows'
 import { SceneAnchor } from '../core/primitives'
 import { getRegistryEntry } from '../registry'
@@ -304,7 +305,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
   return (
     <Shell>
       {/* Sticky glass header */}
-      <header className="lf-glass sticky top-0 z-10 shadow-glass-sm">
+      <header className="lf-glass sticky top-0 z-30 shadow-glass-sm">
         <div className="mx-auto flex max-w-[720px] items-center gap-3 px-4 py-3 md:px-0">
           <button
             type="button"
@@ -324,14 +325,27 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
             </span>
           ) : null}
           {state.streak >= 2 ? (
-            <span className="lf-pop flex items-center gap-1 rounded-full bg-warning-soft px-3 py-1 lf-label text-warning-strong">
+            /*
+             * `key` on the streak replays the pop on EVERY increment. Without
+             * it the chip animates once, when it first appears at two, and a
+             * run of six looks exactly like a run of two.
+             *
+             * The flame is an Icon, not `streak.lottie`: that file is the DAY
+             * streak and `public/lottie/README.md` forbids reusing it for
+             * another statistic. An in-lesson combo is a different number.
+             */
+            <span
+              key={state.streak}
+              className="lf-pop relative flex items-center gap-1 rounded-full bg-warning-soft px-3 py-1 lf-label text-warning-strong"
+            >
+              {comboBeat(state.streak, true).burst ? <span className="lf-burst" aria-hidden="true" /> : null}
               <Icon name="local_fire_department" fill className="text-[18px]" />
               <span className="lf-number">{state.streak}</span>
             </span>
           ) : null}
           <span className="flex items-center gap-1 rounded-full bg-primary-soft px-3 py-1 lf-label text-primary">
             <Icon name="bolt" fill className="text-[18px]" />
-            <span className="lf-number">{earnedXp(doc, state)}</span>
+            <CountUp value={earnedXp(doc, state)} className="lf-number" />
           </span>
         </div>
       </header>
@@ -441,6 +455,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
             segment={segment}
             segIndex={state.index}
             reaction={reaction}
+            streak={state.streak}
             done={Boolean(segState?.done)}
             lessonId={lessonId}
             onRetry={() => {
@@ -517,12 +532,26 @@ function Shell({ children }: { children: React.ReactNode }) {
     <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-base">
       {/*
        * ONE canvas for every character in the lesson, drawn into the screen
-       * rectangle of each placeholder (see CharacterLayer). It sits ABOVE the
-       * cards a character stands on and BELOW the sticky header and footer,
-       * which are z-10 — a character scrolling under the progress bar must
-       * disappear behind it, not over it.
+       * rectangle of each placeholder (see CharacterLayer).
+       *
+       * THE STACK IS THE WHOLE DESIGN HERE, because one canvas cannot be both
+       * above and below the same element:
+       *
+       *   z-30  the sticky header — a character scrolling up the column must
+       *         disappear BEHIND the progress bar, not over it.
+       *   z-20  the character layer.
+       *   z-10  the feedback footer — its reacting character is drawn INTO the
+       *         banner, so the banner's background has to sit below the canvas.
+       *         At z-10 above the layer the banner simply painted over it, and
+       *         the most emotional beat in a lesson had no character at all.
+       *
+       * The footer's own controls are therefore below the canvas too. They do
+       * not overlap the character's rectangle, and the layer is
+       * `pointer-events: none`, so a tap still reaches the button underneath —
+       * but a future control placed UNDER a character would be drawn over, and
+       * that is the trade this stack makes.
        */}
-      <CharacterLayerProvider className="z-[1]">{children}</CharacterLayerProvider>
+      <CharacterLayerProvider className="z-20">{children}</CharacterLayerProvider>
     </div>,
     document.body,
   )
@@ -623,6 +652,7 @@ function FeedbackBanner({
   segment,
   segIndex,
   reaction,
+  streak,
   done,
   lessonId,
   onRetry,
@@ -632,12 +662,14 @@ function FeedbackBanner({
   segment: SegmentBase
   segIndex: number
   reaction: Reaction | null
+  streak: number
   done: boolean
   lessonId?: string
   onRetry: () => void
   onNext: () => void
 }) {
   const { t } = useTranslation()
+  const beat = comboBeat(streak, verdict.correct)
   const tierStyles = {
     perfect: 'bg-success-soft',
     great: 'bg-success-soft',
@@ -697,7 +729,14 @@ function FeedbackBanner({
 
   return (
     <div className={cn('lf-pop shadow-pop', tierStyles)} role="status">
-      <div className="mx-auto flex max-w-[720px] items-start gap-3 px-4 py-4 md:px-0">
+      {/*
+       * WRAPS ON MOBILE. The reacting character now shares this row, and at
+       * 375 px a character, a message and two buttons competing for one line
+       * left the message about 150 px wide: "Well done!" broke over two lines
+       * and the score collided with the button. The actions drop to their own
+       * line instead, which is also the thumb-reachable place for them.
+       */}
+      <div className="mx-auto flex max-w-[720px] flex-wrap items-start gap-3 px-4 py-4 md:flex-nowrap md:px-0">
         {reaction ? (
           /*
            * The reacting character is on MOBILE too now. It used to be
@@ -710,11 +749,35 @@ function FeedbackBanner({
             emotion={reaction.emotion}
             action={reaction.action}
             actionKey={reaction.key}
-            presence="talk"
+            /*
+             * `inline` and not `talk`: the banner is a message with a reacting
+             * character beside it, not a character speaking. At 375 px the
+             * larger step ate the width the message needs.
+             */
+            presence="inline"
             className="shrink-0"
           />
         ) : null}
-        <div className="min-w-0 flex-1 space-y-1.5">
+        <div className="min-w-[11rem] flex-1 space-y-1.5">
+          {/*
+           * THE COMBO, SAID OUT LOUD, at the moment it happens.
+           *
+           * A run of right answers was already tracked and already changed a
+           * number in the header. Nothing told the learner it was a RUN. This
+           * is the one line that does, and it appears only while the run is
+           * alive — a combo callout on a wrong answer would be the engine
+           * congratulating someone for a streak it just ended.
+           */}
+          {beat.show ? (
+            <p
+              key={streak}
+              className="lf-pop relative inline-flex items-center gap-1.5 rounded-full bg-warning-soft px-3 py-1 lf-label text-warning-strong"
+            >
+              {beat.burst ? <span className="lf-burst" aria-hidden="true" /> : null}
+              <Icon name="local_fire_department" fill className="text-[18px]" />
+              {t('lesson.combo', { count: streak })}
+            </p>
+          ) : null}
           <p className={cn('flex items-center gap-2 lf-title', tierText)}>
             <Icon name={tierIcon} fill className="text-[22px]" />
             {t(`lesson.feedback.${verdict.tier}.v${variant}`)}
@@ -733,7 +796,7 @@ function FeedbackBanner({
             </div>
           ) : null}
         </div>
-        <div className="flex shrink-0 flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+        <div className="flex w-full shrink-0 flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center">
           {!passed && verdict.allowRetry && !done ? (
             // Failed with tries left: make "Intentar de nuevo" the primary action
             // and demote advancing to a quiet skip link, so the kid doesn't

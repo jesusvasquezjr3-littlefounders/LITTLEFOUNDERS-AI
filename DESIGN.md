@@ -1307,6 +1307,19 @@ System recipes, tokens only (`--lf-ease`, `--lf-dur-*` with deliberate exception
    may loop only while a celebration overlay (results screen) is up and stop
    with it. Timed exercises use the GentleTimerBar's linear width tween only.
    Reduced-motion: rig animations disable entirely (emotion change remains).
+   **`.lf-burst`** is the one VFX: a ring that expands and fades ONCE behind a
+   combo milestone (every third answer in a run, `core/combo.ts`). A ring and
+   not confetti on purpose — confetti is a screenful of independently animated
+   nodes on the mid-range phones §1.0 exists for, and this is two composited
+   properties on one element that leaves nothing behind. `position: absolute`
+   and `pointer-events: none`, so it can never cover a 44 px tap target. Under
+   reduced motion it is not drawn at all: a ring frozen at half scale is a
+   graphical artefact, not a quieter celebration.
+   **Counters arrive rather than appear** — `CountUp`/`useCountTo`
+   (`components/ui`). One implementation, two documented behaviours: a LIVE
+   number counts from its previous value (the header XP chip) and a REVEAL
+   counts from zero once (the results cards). Reduced motion lands on the final
+   value immediately, as a modifier and never as a second path.
 8. **Lottie Animations** — strict usage and state conditions (Activated vs Not Activated)
    for streak, coins, time, etc., are governed exclusively by `frontend/public/lottie/README.md`.
    No new animations or visual states can be introduced without updating that document.

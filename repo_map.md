@@ -15688,6 +15688,26 @@ interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'typ
 
 ```
 
+### frontend/src/components/ui/CountUp.tsx
+
+```
+import { useEffect, useRef, useState } from 'react'
+
+/*
+ * A number that ARRIVES rather than appears.
+ *
+ * XP is the number a learner is playing for, and until now it changed the way a
+ * variable changes: 40 became 50 between two frames and nothing said that ten of
+ * those had just been earned. Counting is the cheapest gamification there is —
+ * no new asset, no new screen — and it turns a value into an EVENT.
+ *
+ * ONE implementation, TWO behaviours, because the product genuinely needs both
+ * and they are easy to confuse:
+ *
+ *   from: 'previous'  a LIVE number. 40 -> 50 counts the ten that were earned,
+ *                     and the very first value is shown at rest, because a
+```
+
 ### frontend/src/components/ui/DateField.tsx
 
 ```
@@ -16026,6 +16046,26 @@ interface TrendChartProps {
   points: TrendPoint[];
   /** Accessible description of what the series measures. */
   ariaLabel: string;
+```
+
+### frontend/src/components/ui/__tests__/CountUp.test.tsx
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { act, render, screen } from '@testing-library/react'
+import { CountUp } from '../CountUp'
+
+/*
+ * The counter is the whole of "XP animates rather than appears", so what it
+ * must never do is more interesting than what it does: it must never show a
+ * number that is not on its way to the true one, and it must never spend an
+ * animation on a value nobody just earned.
+ */
+
+let matches = false
+let now = 0
+const frames: FrameRequestCallback[] = []
+
 ```
 
 ### frontend/src/components/ui/__tests__/DateField.test.tsx
@@ -16988,24 +17028,84 @@ import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 ```
 
+### frontend/src/lesson-engine/core/combo.test.ts
+
+```
+import { describe, expect, it } from 'vitest'
+import { COMBO_FLOOR, COMBO_MILESTONE, comboBeat } from './combo'
+
+describe('comboBeat', () => {
+  it('says nothing about a single right answer', () => {
+    // One correct answer is an answer. Calling it a run devalues the word.
+    expect(comboBeat(1, true)).toEqual({ show: false, burst: false })
+  })
+
+  it('names the run from the floor up', () => {
+    expect(comboBeat(COMBO_FLOOR, true).show).toBe(true)
+    expect(comboBeat(COMBO_FLOOR + 1, true).show).toBe(true)
+  })
+
+  it('NEVER carries a combo on a wrong answer', () => {
+```
+
+### frontend/src/lesson-engine/core/combo.ts
+
+```
+/*
+ * WHEN A RUN OF RIGHT ANSWERS IS WORTH SAYING SOMETHING ABOUT.
+ *
+ * The session has counted consecutive first-try correct answers since v1, and
+ * the header has shown the number since v1. Nothing ever told the learner it
+ * was a RUN — the number simply changed, which is how a variable behaves and
+ * not how a reward behaves.
+ *
+ * The rule lives here, as a pure function, rather than as two conditions inside
+ * JSX, because "when does the product celebrate" is a product decision that
+ * deserves to be stated once and tested rather than read off a template in two
+ * places that have to agree.
+ */
+
+/** A run is worth naming from here up. Two is a run; one is an answer. */
+```
+
+### frontend/src/lesson-engine/core/director.test.ts
+
+```
+import { describe, expect, it } from 'vitest'
+import { CHARACTER_IDS } from '@/components/characters/control/types'
+import { poseById, resolvePose } from '@/tutor-scene/poseLibrary'
+import { DIRECTOR_POSE_IDS, createDirector, type DirectorEvent } from './director'
+
+/*
+ * The director names POSES now, instead of restating emotion/action pairs
+ * beside the 100-entry catalog. That removes a second vocabulary and adds one
+ * failure mode in its place: a named pose that does not exist. These are the
+ * gate for that, and for the rules the director has always had to keep.
+ */
+
+const EVENTS: DirectorEvent[] = [
+  'lesson_start',
+  'correct',
+```
+
 ### frontend/src/lesson-engine/core/director.ts
 
 ```
-// The director — maps session events to character reactions (LESSON_ENGINE.md §9).
-// Wrong answers get ENCOURAGING reactions, never mocking (P3). Rotation avoids
-// two identical consecutive reactions.
-
-import type {
-  CharacterAction,
-  CharacterEmotion,
-  CharacterId,
-} from '@/components/characters/control/types'
-
-export type DirectorEvent =
-  | 'lesson_start'
-  | 'correct'
-  | 'perfect'
-  | 'almost'
+/*
+ * The director — maps session events to character reactions
+ * (LESSON_ENGINE.md §9). Wrong answers get ENCOURAGING reactions, never
+ * mocking (P3). Rotation avoids two identical consecutive reactions.
+ *
+ * EVERY REACTION NAMES A POSE, and that is the point of this file now. It used
+ * to carry its own inline table of emotion/action pairs — a second vocabulary
+ * beside the 100-entry pose library, drifting from it, with no gate to notice.
+ * GOAL_3D_CHARACTERS.md §6 decision 3 asked for gamification that REUSES the
+ * library rather than adding a system beside it, and a director that names
+ * `feedback.correct` instead of restating `{ happy, nod }` is what that means
+ * in practice: the pose is documented once, reviewed once in the pose lab, and
+ * changing how "a right answer" looks is a change to the catalog rather than a
+ * change in two places that were supposed to agree.
+ */
 ```
 
 ### frontend/src/lesson-engine/core/glowsGrows.test.ts
@@ -18333,7 +18433,7 @@ import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { trackInsight } from '@/lib/insights'
 import { cn } from '@/lib/utils'
-import { Button, Icon, ProgressBar, LottieIcon } from '@/components/ui'
+import { Button, Icon, ProgressBar, LottieIcon, CountUp } from '@/components/ui'
 import CharacterActor3D from '@/components/characters/control/CharacterActor3D'
 import { CharacterLayerProvider } from '@/tutor-scene/CharacterLayer'
 import type { CharacterId } from '@/components/characters/control/types'
@@ -18369,7 +18469,7 @@ const SPARKS = [
 // /learn/lessons/:id/complete response — day-streak facts included so the
 // player can run the v1-style streak celebration without a second fetch.
 
-import { useEffect, useRef, useState } from 'react'
+import { useCountTo } from '@/components/ui/CountUp'
 
 export interface ServerCompletion {
   /** THIS run's score/pass (0012) — not a lifetime best. */

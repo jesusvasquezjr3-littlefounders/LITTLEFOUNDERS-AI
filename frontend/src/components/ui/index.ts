@@ -22,3 +22,4 @@ export { Table } from './Table';
 export type { TableColumn } from './Table';
 export { TrendChart } from './TrendChart';
 export type { TrendPoint } from './TrendChart';
+export { CountUp } from './CountUp';
