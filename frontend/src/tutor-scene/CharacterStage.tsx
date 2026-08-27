@@ -1,12 +1,16 @@
 import { Suspense, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useThree } from '@react-three/fiber';
+import { Vector3 } from 'three';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
 import { Character3D } from './Character3D';
-import { ContactShadow } from './ContactShadow';
 import { FlatGroundProvider } from './ground';
 import { SceneCanvas, type SceneStats } from './SceneCanvas';
 import { SceneLighting } from './SceneLighting';
-import { CHARACTER_MEASUREMENTS } from './measurements';
+import { CHARACTER_ASSETS, characterScale } from './assets';
+import { modelBounds } from './modelBounds';
+import { useSceneModel } from './useSceneModel';
+import { framingDistance } from './framing';
+import type { QualitySettings } from './quality';
 
 /*
  * ONE CHARACTER, NO WORLD.
@@ -28,6 +32,13 @@ import { CHARACTER_MEASUREMENTS } from './measurements';
  * emotion and action vocabulary it already shares with the 2D rig, and the
  * adaptive quality governor inside `SceneCanvas` - a lesson runs on the same
  * mid-range phones the Tutor does, and it has less budget to spend, not more.
+ *
+ * THE CONTACT SHADOW IS NOT OURS TO DRAW. `Character3D` already renders one,
+ * sized from the footprint it measured off the model. This surface used to add
+ * a second one sized from the character's HEIGHT: two coplanar planes, the
+ * outer of them wrong for the quadruped. A caller that genuinely needs no
+ * shadow gets an opt-out on `Character3D`, where the measurement lives - not a
+ * second shadow here.
  */
 
 export interface CharacterStageProps {
@@ -45,48 +56,103 @@ export interface CharacterStageProps {
    * a portrait at one size reads as a speck at the other.
    */
   fill?: number;
-  /** A lesson avatar has no floor to cast onto; a lab tile reads better with one. */
-  shadow?: boolean;
   className?: string;
   onStats?: (stats: SceneStats) => void;
+  /**
+   * Index into the viseme atlas. Supplying it is what turns the lip-sync card
+   * ON: a stage with nothing driving visemes renders no card, so the character
+   * keeps its own painted mouth instead of a static one pasted over it.
+   *
+   * THE DEBT THIS CARRIES A DUE DATE FOR (/AGENTS.md §1.14): the moment a
+   * lesson does drive visemes, the card comes back, and under this surface's
+   * dark `auto` rig its tint is under-corrected - it reads as a pale rectangle
+   * because `mouthCardTint` corrects for the light rig's irradiance while the
+   * face around the card is also shaded by geometry the flat card is not. Fix
+   * that before wiring a viseme driver here, not after.
+   */
+  viseme?: number;
   /** Rendered over the canvas, e.g. a name plate in the lab. */
   overlay?: ReactNode;
 }
 
-/*
- * The camera is derived from the character's own height rather than fixed,
- * because the cast is not one size: Zara is 1.61 m and Dina 1.9 m, and a
- * hard-coded distance frames one of them and crops the other. `measurements.ts`
- * is the same source `standingSpots` and the marketing captures read.
- */
-export function stageCamera(id: CharacterId, fill: number): { position: [number, number, number]; fov: number } {
-  const height = CHARACTER_MEASUREMENTS[id].targetHeightM;
-  const fov = 30;
-  // The vertical extent a perspective camera sees at distance d is
-  // 2 * d * tan(fov/2); solving for the distance that makes the character
-  // occupy `fill` of it keeps framing identical across the cast.
-  const visible = height / Math.max(0.05, Math.min(1, fill));
-  const distance = visible / (2 * Math.tan((fov * Math.PI) / 360));
-  // Eye level, not floor level: aiming at the feet puts the head against the
-  // top edge and wastes the frame on ground nobody drew.
-  return { position: [0, height * 0.55, distance], fov };
-}
+const FOV = 30;
 
 /*
- * AIM. `SceneCanvas` takes a camera POSITION and nothing else, and R3F's default
- * camera looks at the origin - so a camera lifted to eye height tilts DOWN at
- * the floor and pushes the head off the top of the frame. The first render of
- * the pose lab cropped Zara at the shoulders for exactly that reason.
+ * FRAMING, FROM THE MODEL BOX AND THE CONTAINER SHAPE.
  *
- * Lives inside the Canvas because `useThree` only exists there, and re-aims on
- * every change because the height it aims at is per character.
+ * Three separate things were wrong with framing by `targetHeightM`, and only
+ * the first was visible on the character it was tuned against.
+ *
+ * 1. `SceneCanvas` takes a camera POSITION and nothing else, and the R3F
+ *    default camera looks at the origin - so a camera lifted to eye height
+ *    tilts DOWN at the floor. The lab first render cropped Zara at the
+ *    shoulders exactly that way.
+ *
+ * 2. HEIGHT is the wrong measure. Dina is 1.9 m by the same number that makes
+ *    Rho 1.7 m, but she is a quadruped whose mass is low and long: aiming at a
+ *    fraction of her height points above most of her and pins her feet to the
+ *    bottom edge. The MEASURED vertical centre is right for every rig without a
+ *    per-character constant anybody has to maintain.
+ *
+ * 3. A character is framed by its SILHOUETTE against a container of a given
+ *    shape, not by one extent against a square. That arithmetic lives in
+ *    `framing.ts`, where it can be tested against both body plans; this
+ *    component's job is to MEASURE and to point the camera.
+ *
+ * The box comes from `modelBounds`, NOT `Box3.setFromObject`. `useSceneModel`
+ * shares one Object3D per character, so on a remount the shared object is still
+ * parented to the outgoing scaled group and the world-space call returns metres
+ * that are then scaled a second time - the defect that put the contact shadow
+ * of Dina 221 m across and her feet 12 m under the island. `modelBounds`
+ * composes LOCAL matrices down from the root and reads nothing above it, so it
+ * is correct by construction rather than by being called at the right moment.
  */
-function AimAt({ y }: { y: number }) {
+function Framing({
+  id,
+  fill,
+  rotation,
+  settings,
+}: {
+  id: CharacterId;
+  fill: number;
+  rotation: number;
+  settings: QualitySettings;
+}) {
   const camera = useThree((state) => state.camera);
+  // Subscribing to `size` is what re-frames on a resize or an orientation
+  // change; reading `camera.aspect` alone would freeze the first layout in.
+  const size = useThree((state) => state.size);
+
+  const asset = CHARACTER_ASSETS[id];
+  // The SAME settings `Character3D` loads under, so both read one cache entry
+  // instead of decoding the model twice down different KTX2 paths.
+  const { scene } = useSceneModel(asset.url, settings);
+  const scale = useMemo(() => characterScale(asset), [asset]);
+
+  const measured = useMemo(() => {
+    const box = modelBounds(scene);
+    if (box.isEmpty()) return null;
+    const extent = box.getSize(new Vector3()).multiplyScalar(scale);
+    // Feet rest on y = 0 in the scene, so the model own origin offset has to
+    // come out of the centre before it can serve as an aim point.
+    const centreY = (box.getCenter(new Vector3()).y - box.min.y) * scale;
+    return { extent, centreY };
+  }, [scene, scale]);
+
   useEffect(() => {
-    camera.lookAt(0, y, 0);
+    if (!measured) return;
+    const distance = framingDistance(measured.extent, {
+      fill,
+      rotation,
+      aspect: size.width / Math.max(1, size.height),
+      fov: FOV,
+    });
+    camera.position.set(0, measured.centreY, distance);
+    camera.lookAt(0, measured.centreY, 0);
+    if ('fov' in camera) (camera as { fov: number }).fov = FOV;
     camera.updateProjectionMatrix();
-  }, [camera, y]);
+  }, [camera, measured, fill, rotation, size.width, size.height]);
+
   return null;
 }
 
@@ -97,7 +163,7 @@ export function CharacterStage({
   actionKey,
   rotation = 0,
   fill = 0.78,
-  shadow = false,
+  viseme,
   className,
   onStats,
   overlay,
@@ -105,31 +171,57 @@ export function CharacterStage({
   // `SceneCanvas` owns the governor and hands the resolved tier down; every
   // consumer of `settings` below is inside the canvas, so it is state rather
   // than a prop we could have computed here.
-  const [settings, setSettings] = useState<Parameters<typeof Character3D>[0]['settings'] | null>(null);
-  const camera = useMemo(() => stageCamera(id, fill), [id, fill]);
+  const [settings, setSettings] = useState<QualitySettings | null>(null);
+
+  /*
+   * NO SHADOW MAP ON THIS SURFACE, AND IT COSTS NOTHING TO LOSE.
+   *
+   * A shadow map is a second full draw of every caster. On the island that buys
+   * something: the ground receives it, and moving the sun is most of what
+   * separates dawn from dusk. Here there is no ground - `FlatGroundProvider` is
+   * a sampler, not geometry - and the shadow under a character is
+   * `ContactShadow`, a painted plane that does not read the map. So the pass
+   * rendered Zara's 50,000 triangles a second time to produce no visible pixel.
+   * Measured in the pose lab, per frame, with the pass and without it:
+   * Zara 100,122 -> 50,123 and 5 -> 4 draw calls, Dina 99,998 -> 50,001,
+   * Rho 6,284 -> 3,204, Liruf 6,268 -> 3,136.
+   *
+   * That is the difference between one lesson avatar costing a whole Tutor
+   * scene and costing a fifth of one, on the same mid-range phones (/AGENTS.md
+   * §1.0). The override is on the copy handed DOWN, so the canvas governor that
+   * resolved the tier is untouched and the diorama keeps its shadows.
+   */
+  const stageSettings = useMemo(
+    () => (settings ? { ...settings, shadows: false } : null),
+    [settings],
+  );
 
   return (
     <div className={className}>
-      <SceneCanvas className="h-full w-full" camera={camera} onStats={onStats} onSettings={setSettings}>
-        {settings && (
+      <SceneCanvas className="h-full w-full" onStats={onStats} onSettings={setSettings}>
+        {stageSettings && (
           <>
             {/* `auto` resolves against the app theme. A lesson has no time of day. */}
-            <AimAt y={CHARACTER_MEASUREMENTS[id].targetHeightM * 0.55} />
-            <SceneLighting settings={settings} backdrop="auto" />
+            <SceneLighting settings={stageSettings} backdrop="auto" />
             {/* The stage has no island, so the floor is the origin plane. See
                 FlatGroundProvider: this is a statement about this surface, not
-                a workaround for the diorama's "no ground means a bug" rule. */}
+                a workaround for the "no ground means a placement bug" rule the
+                diorama depends on. */}
             <FlatGroundProvider>
+              {/* Framing SUSPENDS - it reads the same model - so it belongs
+                  inside the boundary, beside the character it measures. */}
               <Suspense fallback={null}>
-              <Character3D
-                id={id}
-                settings={settings}
-                emotion={emotion}
-                action={action}
-                actionKey={actionKey}
-                rotation={rotation}
-              />
-              {shadow && <ContactShadow radius={CHARACTER_MEASUREMENTS[id].targetHeightM * 0.35} />}
+                <Framing id={id} fill={fill} rotation={rotation} settings={stageSettings} />
+                <Character3D
+                  id={id}
+                  settings={stageSettings}
+                  emotion={emotion}
+                  action={action}
+                  actionKey={actionKey}
+                  rotation={rotation}
+                  viseme={viseme ?? 0}
+                  mouth={viseme !== undefined}
+                />
               </Suspense>
             </FlatGroundProvider>
           </>

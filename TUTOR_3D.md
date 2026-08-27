@@ -909,6 +909,43 @@ assumed.
   build: `WebGLRenderer` appears in the `TutorScene-*` chunk (≈287 kB gzip) and
   NOT in `index-*`.
 
+### §6.1 `CharacterStage` — one character, no world (2026-08-27)
+
+The character-only surface the Lesson Engine and the pose lab both compose
+from: `SceneCanvas` + `SceneLighting` + `Character3D`, no diorama, no camera
+director, no time of day. Three decisions in it are load-bearing.
+
+**Framing is MEASURED, never declared.** `framing.ts` solves for the distance at
+which the character occupies its share of the frame, twice — once against the
+frame's height and once against its width — and takes the larger, because the
+nearer solution is always the one that crops. The inputs come from
+`modelBounds` (§5.1), so they are parent-independent. Framing to a character's
+declared `targetHeightM` looked right on all three bipeds and put the quadruped's
+feet hard against the bottom edge: Dina is 1.9 m by the number that makes Rho
+1.7 m, but her mass is low and long, so a fraction of her height aims above most
+of her. The aim point is the measured vertical centre and the fill is the
+measured silhouette.
+
+**No shadow map on this surface.** A shadow map is a second full draw of every
+caster (§6). The island earns it — the ground receives it, and moving the sun is
+most of what separates dawn from dusk. Here nothing receives it:
+`FlatGroundProvider` is a sampler, not geometry, and the shadow under a
+character is `ContactShadow`, a painted plane that never reads the map. Measured
+in the pose lab, per frame, with the pass and without: Zara 100,122 → 50,123,
+Dina 99,998 → 50,001, Rho 6,284 → 3,204, Liruf 6,268 → 3,136. The override is
+applied to the settings handed DOWN, so the canvas governor is untouched and the
+diorama keeps its shadows.
+
+**The lip-sync card is OPT-IN here** (`Character3D` gained `mouth`, defaulting to
+`true`, so the Tutor is unchanged). The card is worth its draw call exactly when
+something drives `viseme`; a surface that never speaks was getting a static
+closed mouth pasted over Zara's own painted one, and because the card is unlit
+while the face around it is not, that paste read as a pale rectangle — the §3.1a
+defect under a light nobody had photographed, the dark `auto` rig being dimmer
+than any of the island's hours. **The debt this creates has a due date:** wiring
+a viseme driver into a lesson brings the card back, so `mouthCardTint` has to be
+corrected for `AUTO_DARK` BEFORE that, not after.
+
 ## §7 HANDOFF — what the next session needs Blender for
 
 Ordered by value. Items 1–2 are the reason this handoff exists.

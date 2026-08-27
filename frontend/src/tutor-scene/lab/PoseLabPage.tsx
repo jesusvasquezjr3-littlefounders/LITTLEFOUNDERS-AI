@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { CHARACTER_IDS, type CharacterId } from '@/components/characters/control/types';
 import { CharacterStage } from '../CharacterStage';
 import { POSES, posesByCategory, type Pose, type PoseCategory } from '../poseLibrary';
@@ -34,11 +35,37 @@ const CATEGORY_ORDER: PoseCategory[] = [
   'marketing',
 ];
 
+/*
+ * THE LAB IS DEEP-LINKABLE, and that is not a convenience.
+ *
+ * A pose is reviewed by looking at it, which means a review is a conversation
+ * about a specific pose on a specific character — "greet.bow reads as a stumble
+ * on Liruf". Without a URL for that, the reviewer has to describe a click path.
+ * It is also what lets the contact-sheet capture address every combination
+ * without driving the UI, so the sheets in a review are of the same surface a
+ * human opens rather than of a second one built to be photographed.
+ */
+function readParams(params: URLSearchParams): { character: CharacterId; poseId: string } {
+  const character = CHARACTER_IDS.find((id) => id === params.get('character')) ?? 'zara';
+  const poseId = POSES.find((p) => p.id === params.get('pose'))?.id ?? POSES[0]!.id;
+  return { character, poseId };
+}
+
 export function PoseLabPage() {
-  const [character, setCharacter] = useState<CharacterId>('zara');
-  const [poseId, setPoseId] = useState<string>(POSES[0]!.id);
+  const [params, setParams] = useSearchParams();
+  // Read ONCE, through the lazy initialiser: the URL seeds the lab, and after
+  // that the lab owns the state and writes back to the URL. Reading it on every
+  // render would fight the `setParams` below for control of the same value.
+  const [character, setCharacter] = useState<CharacterId>(() => readParams(params).character);
+  const [poseId, setPoseId] = useState<string>(() => readParams(params).poseId);
   const [replay, setReplay] = useState(0);
   const [stats, setStats] = useState<SceneStats | null>(null);
+
+  // The URL trails the state rather than driving it: `replace` keeps fifty-seven
+  // steps through the catalog from burying the page you arrived from.
+  useEffect(() => {
+    setParams({ character, pose: poseId }, { replace: true });
+  }, [character, poseId, setParams]);
 
   const grouped = useMemo(() => posesByCategory(), []);
   const pose = useMemo(() => POSES.find((p) => p.id === poseId) ?? POSES[0]!, [poseId]);
@@ -88,7 +115,6 @@ export function PoseLabPage() {
             action={pose.action}
             actionKey={replay}
             rotation={pose.rotation ?? 0}
-            shadow
             fill={0.72}
             className="aspect-[4/5] w-full overflow-hidden rounded-lg bg-surface-sunken sm:aspect-square"
             onStats={setStats}
@@ -107,7 +133,7 @@ export function PoseLabPage() {
             {/* The budget is code (`budget.ts`); this is the number a reviewer
                 actually needs while judging whether a pose is affordable. */}
             {stats && (
-              <span className="lf-caption text-content-muted">
+              <span data-scene-stats className="lf-caption text-content-muted">
                 {stats.triangles.toLocaleString()} tris · {stats.drawCalls} draw call{stats.drawCalls === 1 ? '' : 's'} · {Math.round(stats.fps)} fps · {stats.tier}
               </span>
             )}

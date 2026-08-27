@@ -80,6 +80,19 @@ export interface Character3DProps {
    * opinion — every test, and `/dev/scene-lab` — gets today's behaviour.
    */
   backdrop?: SceneBackdropId;
+  /**
+   * Whether to render the lip-sync card at all. Defaults to TRUE, so the Tutor
+   * is untouched.
+   *
+   * The card is the seam lip-sync plugs into, and it is worth its draw call
+   * exactly when something drives `viseme`. A surface that never speaks gets a
+   * STATIC closed mouth pasted over the character's own painted one - and
+   * because the card is unlit while the face around it is not, that paste reads
+   * as a pale rectangle rather than as a mouth. Measured on `CharacterStage`
+   * under the dark `auto` rig, which is dimmer than any of the island's hours
+   * and is therefore a light the tint has never been looked at under.
+   */
+  mouth?: boolean;
 }
 
 /** Distinct irrational-ish multipliers keep two characters from breathing in sync. */
@@ -95,6 +108,7 @@ export function Character3D({
   actionKey = 0,
   viseme = 0,
   backdrop = 'auto',
+  mouth = true,
 }: Character3DProps) {
   const asset: CharacterAsset = CHARACTER_ASSETS[id];
   const { scene } = useSceneModel(asset.url, settings);
@@ -364,7 +378,7 @@ export function Character3D({
         <primitive object={scene} />
         {/* Only the characters whose card has been fitted carry one; the rest
             keep their painted mouth rather than get a generic one bolted on. */}
-        {hasMouthCard(id) ? (
+        {mouth && hasMouthCard(id) ? (
           <MouthCard
             id={id}
             scene={scene}

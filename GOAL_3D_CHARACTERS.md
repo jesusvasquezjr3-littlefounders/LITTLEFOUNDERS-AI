@@ -5,7 +5,8 @@
 > and the conflict is surfaced rather than resolved silently (§1.0.1).
 >
 > Status: **IN PROGRESS.** Decisions answered 2026-08-27 (§6). §3.3 the
-> pose lab and the character-only stage are DONE; §3.2 the library is at
+> pose lab and the character-only stage are DONE and the stage has been
+> reviewed on all four characters by looking at it; §3.2 the library is at
 > 57 entries; §3.1 and §3.4 are next.
 
 ---
@@ -131,6 +132,10 @@ recommended. Built as `tutor-scene/CharacterStage.tsx`: `SceneCanvas` +
 The framing is derived from each character's own `targetHeightM`, because a
 fixed distance frames a 1.61 m human and crops a 1.9 m dinosaur.
 
+*(§6.1 note, 2026-08-27: the framing described in decision 1 was rebuilt. It is
+now derived from the model's MEASURED box rather than from `targetHeightM` —
+see §8.)*
+
 **2. What is a pose?** The owner's definition: *a concrete action a character
 performs, documented, reusable anywhere on the platform.* So the catalog carries
 the NAME, the INTENT and the parameters, and resolves to the emotion/action
@@ -156,17 +161,52 @@ Sequence: **the lab first** (§3.3) — done — then §3.2 to its full size, th
 
 ## §8 Done so far (2026-08-27)
 
-- `CharacterStage` — one character, no world. Verified: all four render, each
-  on its own contact shadow, correctly proportioned, Dina included.
+- `CharacterStage` — one character, no world. Verified by LOOKING at all four,
+  headless, in the pose lab: each is fully framed with air above and below,
+  correctly proportioned, on its own contact shadow.
 - `FlatGroundProvider` — the stage has no island, so its floor is the origin
   plane. Kept in the PROVIDER rather than as a flag on `Character3D`, so the
   diorama's "no ground means a placement bug" reading survives untouched.
 - `poseLibrary.ts` — 57 documented poses across eight categories, with a gate
   asserting every one resolves for every character and that `loop` is only
   claimed where BOTH renderers honour it.
-- `/dev/pose-lab` — every pose, on every character, played and looked at.
+- `/dev/pose-lab` — every pose, on every character, played and looked at. Now
+  DEEP-LINKABLE (`?character=&pose=`), so a review is a URL rather than a click
+  path, and so the contact sheets photograph the surface a human opens rather
+  than a second one built to be photographed.
+- `framing.ts` + 9 tests — the framing arithmetic as a pure module, in the shape
+  `composition.ts` established, tested against BOTH body plans.
 
-**Known and not fixed:** Dina and Liruf sit tight against the bottom of the lab
-frame. The aim point is a fraction of HEIGHT, which is the wrong measure for a
-quadruped whose mass is low and long. Cosmetic in a dev surface; it matters the
-moment the same framing is used in a lesson.
+### What looking at it actually found
+
+Three defects, none of which any test was failing on:
+
+1. **The framing was wrong for the quadruped, and the fix was not a constant.**
+   Aiming at a fraction of declared HEIGHT pinned Dina and Liruf to the bottom
+   edge. Framing now solves for the measured silhouette against the container's
+   real aspect (`framing.ts`, `TUTOR_3D.md` §6.1). *Recorded here on the day it
+   was found as "cosmetic in a dev surface"; it stopped being cosmetic the
+   moment the same stage was headed for a lesson, which is why it was fixed
+   before §3.1 rather than after.*
+2. **A shadow-map pass that nothing received.** It drew every character a second
+   time for no visible pixel: Zara 100,122 → 50,123 triangles per frame,
+   5 → 3 draw calls once the unused lip-sync card went with it. On a surface
+   headed for a lesson on a mid-range phone, that is the difference between one
+   avatar costing a whole Tutor scene and costing a fifth of one (§1.0).
+3. **A pale rectangle where Zara's mouth is.** The unlit lip-sync card
+   (`TUTOR_3D.md` §3.1a) under the dark `auto` rig — a light the tint had never
+   been photographed under. The card is now opt-in and off here, so she keeps
+   her own painted mouth, and the tint debt is written down with a due date.
+
+### Open, for the owner to decide — a pose-review finding, not a bug
+
+`celebrate` throws the head so far back that the FACE IS LOST, on both body
+plans: Zara looks at the ceiling with her arms up, Dina's muzzle points straight
+up and her eyes leave frame. It is the shared gesture, not the quadruped driver.
+It matters because `celebrate.lesson` and `celebrate.levelup` are the results
+screen, and a character celebrating AT the learner reads better than one
+celebrating away from them.
+
+Not changed unilaterally: `celebrate` is an authored clip the Tutor also plays,
+so re-authoring it through `scripts/author-clips.py` is a decision with a blast
+radius beyond this goal. Contact sheets are attached to the session.
