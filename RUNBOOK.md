@@ -299,6 +299,40 @@ hard way:
   marked `[data-lab-chrome]`; a measurement that counts it is measuring the
   ruler.
 
+## Regenerating `database/types/database.ts` after a migration
+
+The file is GENERATED and must never be hand-edited. `npm run db:types` in
+`database/` introspects the LOCAL stack, not production, so the canonical path
+is to bring the local database up to the same migration and generate from there:
+
+```bash
+npm --prefix database run db:up      # Docker
+npm --prefix database run db:reset   # applies every migration, twice-safe
+npm --prefix database run db:types   # writes types/database.ts
+```
+
+Requires Docker and the Supabase CLI on PATH. Neither existed on the machine
+that wrote `0049`, which is why the file sat stale from 2026-08-26 to whenever
+this is next run.
+
+**Generating from production instead** is possible but usually is not: Railway
+services are private by default, so a laptop cannot reach the Postgres port
+without a TCP proxy. If one exists:
+
+```bash
+npx --yes supabase gen types --lang typescript   --db-url "postgresql://postgres:<PASSWORD>@<HOST>:<PORT>/postgres"   --schema public > database/types/database.ts
+```
+
+The password and host come from the Railway `db` service variables. Note that
+the CLI special-cases `127.0.0.1`/`localhost` URLs and demands its own
+`supabase start` stack, which is why `local-stack.sh db-url` prints `0.0.0.0`.
+
+**How stale types actually bite.** They do not break a build: nothing imports
+the affected row type today, which is why `0049` shipped green with the file
+still declaring a dropped column. They bite the first time someone writes code
+against the generated shape and trusts it. Treat regeneration as part of the
+migration, not as tidying afterwards.
+
 ## Pushing when `gh`'s token cannot (2026-08-27)
 
 **Symptom, in two flavours.** An OAuth token with `repo` but not `workflow`
