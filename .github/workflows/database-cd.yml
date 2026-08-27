@@ -53,10 +53,20 @@ jobs:
           chmod 600 ~/.ssh/railway_key
           # Railway's SSH proxy host is ephemeral per session, so there is no
           # fixed host key to pin and a fresh runner has none cached.
+          # LogLevel ERROR is NOT optional here, and vault-backup.yml not having
+          # it is why: that workflow only pipes a dump and never reads stdout.
+          # `railway-migrate.sh` PARSES stdout, and ssh prints "Warning:
+          # Permanently added 'ssh.railway.com' ..." on a runner with no cached
+          # host key. The script merges that into psql's output and reads the
+          # warning as a query result - recorded in its own source, observed on
+          # 2026-08-21 as `FAIL: unexpected remote ledger state: Warning: ...`.
+          # tutor-deploy.yml, the proven migrate path, silences it at the
+          # source. So does this now.
           cat <<'CONFIG' >> ~/.ssh/config
           Host *
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
+            LogLevel ERROR
           CONFIG
           chmod 600 ~/.ssh/config
 
@@ -67,7 +77,15 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_SSH_KEY_PATH: /home/runner/.ssh/railway_key
-        run: bash database/scripts/railway-migrate.sh --dry-run | tee probe.txt
+        run: |
+          # `pipefail` because `tee` returns 0 whatever the script did. Without
+          # it a FAILED probe produced an empty probe.txt, the gate correctly
+          # answered "the dry-run did not complete", and the workflow reported
+          # SUCCESS having learned nothing - a broken probe wearing the same
+          # green tick as a healthy refusal (/AGENTS.md §1.14: failure must be
+          # distinguishable from emptiness). Observed on run #1.
+          set -euo pipefail
+          bash database/scripts/railway-migrate.sh --dry-run | tee probe.txt
 
       - name: May this run apply on its own?
         id: gate

@@ -59,10 +59,20 @@ jobs:
           chmod 600 ~/.ssh/railway_backup_key
           # Railway's SSH proxy host is ephemeral per session, so there is no
           # fixed host key worth pinning and a fresh runner has none cached.
+          # LogLevel ERROR is NOT optional here, and vault-backup.yml not having
+          # it is why: that workflow only pipes a dump and never reads stdout.
+          # `railway-migrate.sh` PARSES stdout, and ssh prints "Warning:
+          # Permanently added 'ssh.railway.com' ..." on a runner with no cached
+          # host key. The script merges that into psql's output and reads the
+          # warning as a query result - recorded in its own source, observed on
+          # 2026-08-21 as `FAIL: unexpected remote ledger state: Warning: ...`.
+          # tutor-deploy.yml, the proven migrate path, silences it at the
+          # source. So does this now.
           cat <<'CONFIG' >> ~/.ssh/config
           Host *
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
+            LogLevel ERROR
           CONFIG
           chmod 600 ~/.ssh/config
 
