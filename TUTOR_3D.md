@@ -1028,6 +1028,17 @@ rectangle. Rectangles are read from the DOM EVERY FRAME, so scrolling and
 reflow are followed without a React pass, and a slot whose rectangle is off
 screen is skipped entirely.
 
+**THE OVERLAY MUST BE INERT, and a class on the wrapper is not enough.** R3F
+writes `pointer-events: auto` INLINE on its own container, which beats a
+`pointer-events: none` inherited from above — so this canvas became the topmost
+element over every control in the Lesson Engine and the product stopped
+responding to a real pointer. `SceneCanvas` now takes `interactive`, defaulting
+to true so the Tutor (which IS driven by tapping the stage) is untouched, and
+the layer passes `false`: the flag adds the class AND an inline style, because
+only an inline value wins against an inline value. /AGENTS.md §1.14 carries the
+verification lesson, which is the more expensive half — every audit had driven
+the app with `element.click()`, which does no hit-testing.
+
 **MEASURED**, at 390x844 with dpr 2, worst case (the whole cast on the intro
 screen): **106,224 triangles per frame, 12 draw calls, 1 WebGL context** — 48%
 of the documented `maxTrianglesPerFrame` (220,000). A typical segment with two

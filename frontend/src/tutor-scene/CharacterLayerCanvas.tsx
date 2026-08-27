@@ -84,7 +84,19 @@ export function CharacterLayerCanvas({
   }, [stageSettings, onDrawing]);
 
   return (
-    <SceneCanvas className="h-full w-full" onStats={onStats} onSettings={setSettings}>
+    <SceneCanvas
+      className="h-full w-full"
+      onStats={onStats}
+      onSettings={setSettings}
+      /*
+       * NON-INTERACTIVE, and this is load-bearing rather than tidy. This canvas
+       * is a full-viewport overlay above the lesson's own content; if it can be
+       * hit-tested it becomes the topmost element over every button in the
+       * product. It did, and the Lesson Engine stopped responding to a real
+       * pointer while every synthetic-click audit stayed green.
+       */
+      interactive={false}
+    >
       {stageSettings && <LayerScene slots={slots} slotsRef={slotsRef} settings={stageSettings} />}
     </SceneCanvas>
   );

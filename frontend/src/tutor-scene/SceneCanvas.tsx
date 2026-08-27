@@ -29,6 +29,19 @@ export interface SceneCanvasProps {
    * the default, so a child camera silently renders from the origin instead.
    */
   camera?: { position?: [number, number, number]; fov?: number };
+  /**
+   * Whether this canvas may receive pointer events. Defaults to TRUE, so the
+   * Tutor — which is driven by tapping the stage — is untouched.
+   *
+   * SET IT FALSE FOR ANY CANVAS THAT OVERLAYS THE PAGE, and know that a CSS
+   * class on an ancestor is NOT enough. React Three Fiber writes
+   * `pointer-events: auto` INLINE on its own container, which beats an
+   * inherited `pointer-events: none` from a wrapper — so the character layer's
+   * full-viewport canvas sat at z-20 and became the topmost element over every
+   * control in the Lesson Engine. `document.elementFromPoint` on the "Start
+   * lesson" button returned CANVAS, and the button did nothing.
+   */
+  interactive?: boolean;
 }
 
 /*
@@ -112,7 +125,7 @@ function useSceneActive(ref: React.RefObject<HTMLElement>): boolean {
   return onScreen && foreground;
 }
 
-export function SceneCanvas({ children, className, onStats, onSettings, camera }: SceneCanvasProps) {
+export function SceneCanvas({ children, className, onStats, onSettings, camera, interactive = true }: SceneCanvasProps) {
   const { t } = useTranslation();
   const hostRef = useRef<HTMLDivElement>(null);
   const active = useSceneActive(hostRef);
@@ -177,10 +190,19 @@ export function SceneCanvas({ children, className, onStats, onSettings, camera }
    * A phone rotating to portrait is the same event.
    */
   return (
-    <div ref={hostRef} className={cn('relative min-w-0 [&_canvas]:max-w-full', className)}>
+    <div
+      ref={hostRef}
+      className={cn('relative min-w-0 [&_canvas]:max-w-full', !interactive && 'pointer-events-none', className)}
+    >
       <Canvas
         key={contextEpoch}
         camera={camera ?? { position: [3, 2, 4], fov: 45 }}
+        /*
+         * Passed as an inline STYLE, not a class: R3F sets
+         * `pointer-events: auto` inline on this same element, and only another
+         * inline value wins. See `interactive` above.
+         */
+        style={interactive ? undefined : { pointerEvents: 'none' }}
         // dpr is the single biggest fill-rate lever: [floor, ceiling]. The
         // ceiling moves with the tier, so a struggling device renders fewer
         // pixels rather than losing scene content.

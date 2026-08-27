@@ -192,7 +192,6 @@ frontend/
         __tests__/
       stage/
         __tests__/
-goal/
 oracle/
   scripts/
     fixtures/
@@ -25539,6 +25538,26 @@ import type { CharacterAction, CharacterEmotion, CharacterId } from '@/component
  * that wiring RAG and TTS is passing props rather than reaching into the scene:
 ```
 
+### frontend/src/tutor-scene/__tests__/CharacterLayer.test.tsx
+
+```
+import { describe, expect, it, vi } from 'vitest'
+import { render } from '@testing-library/react'
+import { CharacterLayerProvider, CharacterSlot } from '../CharacterLayer'
+
+/*
+ * THE DEFECT THIS PINS SHIPPED TO PRODUCTION AND KILLED THE LESSON ENGINE.
+ *
+ * The character layer is a FULL-VIEWPORT overlay above the lesson's own
+ * content. React Three Fiber writes `pointer-events: auto` INLINE on its own
+ * container, which beats a `pointer-events: none` class inherited from a
+ * wrapper — so the canvas became the topmost element over every control in the
+ * product. `document.elementFromPoint` on "Start lesson" returned CANVAS and
+ * the button did nothing.
+ *
+ * Every audit stayed green because they all drove the app with
+```
+
 ### frontend/src/tutor-scene/__tests__/TutorStage.test.tsx
 
 ```
@@ -27817,26 +27836,6 @@ export default defineConfig({
   server: {
     port: 5173,
   },
-```
-
-### goal/financial-education-images-100.md
-
-```
-# GOAL — Terminar al 100% las imágenes del curso `financial-education`
-
-> Generas las imágenes con TU PROPIO sistema de generación (la suscripción de
-> ChatGPT/Codex), NUNCA con Prism (`picturegen/`) ni con DashScope. Esa regla
-> viene de una decisión explícita del owner y se explica en la sección 1. Si
-> en algún punto un comando de este documento pareciera pedirte llamar a
-> DashScope, DETENTE — es un error del documento, no una instrucción real.
-
-> Este documento reemplaza cualquier versión anterior de este brief que
-> hayas visto (incluida una versión previa, incorrecta, de ESTE MISMO
-> archivo, que asumía por error que ibas a usar `npm run images:backfill` →
-> Prism → DashScope. Esa versión estaba mal. Ignórala si la recuerdas de
-> algún lado).
-
----
 ```
 
 ### oracle/AGENTS.md
