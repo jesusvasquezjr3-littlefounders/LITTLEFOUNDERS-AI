@@ -299,6 +299,41 @@ hard way:
   marked `[data-lab-chrome]`; a measurement that counts it is measuring the
   ruler.
 
+## Pushing when `gh`'s token cannot (2026-08-27)
+
+**Symptom, in two flavours.** An OAuth token with `repo` but not `workflow`
+refuses any push whose commits touch `.github/workflows/`:
+
+```
+! [remote rejected] main -> main
+  refusing to allow an OAuth App to create or update workflow
+  `.github/workflows/database-cd.yml` without `workflow` scope
+```
+
+A fine-grained PAT without repository access refuses everything, with a less
+helpful message: `remote: Write access to repository not granted` (403) on push,
+and HTTP 404 on every `gh api` call including plain repository metadata.
+
+**What works regardless.** `git@github.com:` over SSH, which does not involve
+the `gh` token at all. `ssh -T git@github.com` answering "Hi <user>! You've
+successfully authenticated" is the check worth running first - it takes a second
+and tells you which half of the problem you have.
+
+`origin` is now the SSH URL, matching what `gh auth status` already reports as
+the configured protocol for git operations.
+
+**What SSH does NOT give back: the GitHub API.** `gh run list`, `gh run view`
+and everything else under `/actions` still 404 while the token lacks repository
+access, so CI and CD results cannot be read from here. Verify the effects
+instead - `git ls-remote` for what actually landed, the production `/health`
+and a live probe of whatever the release changed - and say plainly that the
+workflow results were not observed rather than assuming them from a successful
+push.
+
+**To restore full access,** the token needs repository Contents: read and write
+(to push) plus Workflows: read and write (to touch `.github/workflows/`), and
+Actions: read if `gh run` is wanted.
+
 ## Deploying the family/kid accounts release (prepared 2026-08-26, NOT yet deployed)
 
 Everything below was written while building the release; none of it has been
