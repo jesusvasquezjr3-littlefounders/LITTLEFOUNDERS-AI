@@ -1079,6 +1079,26 @@ colors:
 | **superadmin** | Super-user: changes roles and access permissions. Only grantable to `@littlefounders.ai` emails. |
 ```
 
+### GOAL_3D_CHARACTERS.md
+
+```
+# GOAL — 3D characters in the Lesson Engine, a reusable pose library, and Lesson Engine gamification
+
+> Owner request, 2026-08-27. Authority: this document defines SCOPE and
+> ACCEPTANCE for the work; on any conflict with an invariant, `/AGENTS.md` wins
+> and the conflict is surfaced rather than resolved silently (§1.0.1).
+>
+> Status: **DRAFT — three decisions outstanding (§6). Not started.**
+
+---
+
+## §1 Why
+
+User testing found the 3D characters read as more useful than the 2D ones for
+practical explanation. The 3D cast already exists, is already rigged, and
+already speaks the same emotion/action vocabulary as the 2D layer — it is
+```
+
 ### INSIGHTS.md
 
 ```
@@ -13839,13 +13859,13 @@ export default defineConfig({
 
 | Topic | Authoritative doc | Section |
 |---|---|---|
+| 3D characters outside the diorama, the pose library, Lesson Engine gamification | [GOAL_3D_CHARACTERS.md](GOAL_3D_CHARACTERS.md) | Scope + acceptance for the 2026-08-27 request. Draft: three decisions outstanding |
 | Operating rules, invariants, gates | /AGENTS.md (== /CLAUDE.md) | §0–§8 |
 | Roles & permissions | /AGENTS.md | §1.3–§1.4 |
 | Child safety & minor PII | /AGENTS.md | §1.9 |
 | Service map, ports, codenames | /AGENTS.md | §1.5 |
 | API envelope & conventions | /AGENTS.md §1.6 + agent/core/CONVENTIONS.md | — |
 | Naming | /AGENTS.md §1.7 + GLOSSARY.md | — |
-| i18n rules | /AGENTS.md §1.8; parity gate: agent/tools/check-i18n.sh | — |
 ```
 
 ### email-server/AGENTS.md
