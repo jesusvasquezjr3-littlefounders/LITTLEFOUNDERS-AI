@@ -103,6 +103,19 @@ export function auditSite(site) {
       if (hidden) problems.push(`${page.path} is marked indexable but sits under the noindex prefix "${hidden}".`);
     }
 
+    /*
+     * `lastmod` has to be a real, past date. It first derived itself from a
+     * file's mtime, which a fresh git clone resets to the checkout time — so
+     * every deploy silently claimed every page had changed that day. A crawler
+     * that catches lastmod lying stops reading it at all, which costs us the
+     * field on the day a page genuinely does change.
+     */
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(page.lastmod ?? '')) {
+      problems.push(`${page.path} has no valid lastmod (want YYYY-MM-DD, got ${JSON.stringify(page.lastmod)}).`);
+    } else if (page.lastmod > new Date().toISOString().slice(0, 10)) {
+      problems.push(`${page.path} has a lastmod in the future (${page.lastmod}).`);
+    }
+
     if (page.index && !page.agentSummary) {
       problems.push(`${page.path} is indexable but has no agentSummary, so it is absent from llms.txt.`);
     }

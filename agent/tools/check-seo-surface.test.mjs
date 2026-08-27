@@ -47,7 +47,7 @@ function fixture(overrides = {}) {
       languageNames: table,
       ogLocale: table,
     },
-    PAGES: [{ path: '/', index: true, agentSummary: 'The home page.', meta }],
+    PAGES: [{ path: '/', index: true, lastmod: '2026-08-26', agentSummary: 'The home page.', meta }],
     ELEVATOR: table,
     CARD_LINE: table,
     CARD_KICKER: table,
@@ -76,7 +76,7 @@ test('catches a page the sitemap advertises and robots.txt forbids', () => {
   // The own-goal: told to index a URL it may never fetch, a crawler can see
   // neither the content nor a noindex, and lists a bare title forever.
   const broken = fixture();
-  broken.PAGES.push({ path: '/admin/reports', index: true, agentSummary: 'x', meta: broken.PAGES[0].meta });
+  broken.PAGES.push({ path: '/admin/reports', index: true, lastmod: '2026-08-26', agentSummary: 'x', meta: broken.PAGES[0].meta });
   assert.match(auditSite(broken).join('\n'), /robots\.txt disallows "\/admin"/);
 });
 
@@ -90,6 +90,28 @@ test('catches a description too short to survive as a snippet', () => {
   const broken = fixture();
   broken.PAGES[0].meta['pt-BR'].description = 'Curto demais.';
   assert.match(auditSite(broken).join('\n'), /description is 13 chars/);
+});
+
+test('catches a lastmod that is missing or malformed', () => {
+  /*
+   * The rule exists because the automatic version was WRONG: derived from a
+   * file mtime, which a fresh clone resets, so every deploy claimed every page
+   * had changed that day. A hand date that is right beats an automatic one
+   * that is not — but only if something checks it is a date at all.
+   */
+  const broken = fixture();
+  delete broken.PAGES[0].lastmod;
+  assert.match(auditSite(broken).join('\n'), /has no valid lastmod/);
+
+  const malformed = fixture();
+  malformed.PAGES[0].lastmod = '26/08/2026';
+  assert.match(auditSite(malformed).join('\n'), /has no valid lastmod/);
+});
+
+test('catches a lastmod in the future, which is how the mtime bug would look', () => {
+  const broken = fixture();
+  broken.PAGES[0].lastmod = '2099-01-01';
+  assert.match(auditSite(broken).join('\n'), /lastmod in the future/);
 });
 
 test('catches a locale left behind', () => {

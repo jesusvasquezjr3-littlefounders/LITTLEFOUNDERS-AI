@@ -24,7 +24,7 @@
  * wrongly indexed private route. It is also loud — the script exits non-zero.
  */
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -364,13 +364,15 @@ function renderRobots() {
 
 /* ── sitemap.xml ───────────────────────────────────────────────────────── */
 
-function renderSitemap(lastmod) {
+function renderSitemap() {
   const urls = indexablePages()
     .map((page) =>
       [
         '  <url>',
         `    <loc>${absolute(page.path)}</loc>`,
-        `    <lastmod>${lastmod}</lastmod>`,
+        // Per page, declared by hand in site.mjs. See the note above PAGES for
+        // why this is not derived from a file's mtime.
+        `    <lastmod>${page.lastmod}</lastmod>`,
         `    <changefreq>${page.changefreq}</changefreq>`,
         `    <priority>${page.priority}</priority>`,
         '  </url>',
@@ -486,27 +488,9 @@ function main() {
     written += 1;
   }
 
-  /*
-   * `lastmod` is when the CONTENT last changed, not when the build ran.
-   *
-   * Stamping "now" on every deploy is the standard way to make the field
-   * worthless: a crawler that sees every URL claim to have changed on every
-   * unrelated deploy learns to ignore lastmod entirely, and then it cannot
-   * help on the day something really does change. The newest mtime of the two
-   * files the copy actually lives in is a truthful proxy and costs two stats.
-   */
-  const lastmod = new Date(
-    Math.max(
-      statSync(join(HERE, 'site.mjs')).mtimeMs,
-      statSync(join(FRONTEND, `src/i18n/${locale}/marketing.json`)).mtimeMs,
-    ),
-  )
-    .toISOString()
-    .slice(0, 10);
-
   writeFileSync(join(DIST, 'site.webmanifest'), renderManifest());
   writeFileSync(join(DIST, 'robots.txt'), renderRobots());
-  writeFileSync(join(DIST, 'sitemap.xml'), renderSitemap(lastmod));
+  writeFileSync(join(DIST, 'sitemap.xml'), renderSitemap());
   writeFileSync(join(DIST, 'llms.txt'), renderLlmsTxt(locale));
 
   // llms-full.txt is the same brief plus the page copy, for agents that prefer

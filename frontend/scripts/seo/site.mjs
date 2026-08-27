@@ -122,11 +122,27 @@ export const CARD_KICKER = {
  *
  * `priority` and `changefreq` are hints, not instructions — search engines are
  * free to ignore them, and the ordering is what actually communicates intent.
+ *
+ * `lastmod` is WRITTEN BY HAND, and that is the point. It first derived itself
+ * from the mtime of the files a page's copy lives in, which looked truthful and
+ * was not: git stores no mtimes, so a fresh clone stamps every file with the
+ * clone time — verified 2026-08-27, where a README untouched for months came
+ * back dated to the minute of the checkout. Vercel clones on every build, so
+ * the field was claiming that every page had changed today, on every unrelated
+ * deploy. That is precisely how lastmod becomes worthless: a crawler that sees
+ * it lie learns to ignore it, and then it cannot help on the day something
+ * really does change.
+ *
+ * So: bump the date when the page's CONTENT changes for a reader. Not when the
+ * build runs, not when a title is reworded. Six pages, changed rarely — a hand
+ * date that is right beats an automatic one that is wrong. `seo:check` refuses
+ * a malformed or future date.
  */
 export const PAGES = [
   {
     path: '/',
     index: true,
+    lastmod: '2026-08-26',
     priority: '1.0',
     changefreq: 'weekly',
     /** Included in llms.txt so an agent knows what the page is for. */
@@ -155,6 +171,7 @@ export const PAGES = [
   {
     path: '/how-it-works',
     index: true,
+    lastmod: '2026-08-26',
     priority: '0.9',
     changefreq: 'monthly',
     agentSummary:
@@ -183,6 +200,7 @@ export const PAGES = [
   {
     path: '/families',
     index: false, // Placeholder page — see the note above PAGES.
+    lastmod: '2026-08-26',
     priority: '0.4',
     changefreq: 'monthly',
     agentSummary: null,
@@ -195,6 +213,7 @@ export const PAGES = [
   {
     path: '/faq',
     index: false, // Placeholder page — see the note above PAGES.
+    lastmod: '2026-08-26',
     priority: '0.4',
     changefreq: 'monthly',
     agentSummary: null,
@@ -207,6 +226,7 @@ export const PAGES = [
   {
     path: '/legal/terms',
     index: true,
+    lastmod: '2026-08-11',
     priority: '0.3',
     changefreq: 'yearly',
     agentSummary: 'Terms and conditions of use.',
@@ -219,6 +239,7 @@ export const PAGES = [
   {
     path: '/legal/privacy',
     index: true,
+    lastmod: '2026-08-11',
     priority: '0.3',
     changefreq: 'yearly',
     agentSummary: 'Privacy notice, including how children’s data is handled.',
