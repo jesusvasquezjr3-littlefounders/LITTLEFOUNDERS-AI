@@ -2,6 +2,24 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## A database CD, part B: the bounded automation (2026-08-27)
+
+`database-cd.yml` runs after `database CI` succeeds on main. It reads the
+production ledger read-only, asks `gate-auto-apply.mjs` whether the pending
+batch is entirely additive, and only then takes a fresh dump and applies. A
+refusal is a successful run that did nothing: failing would page someone every
+time a contraction waits for its release, and a job that cries wolf is a job
+people disable.
+
+`--confirm-production` appears exactly once in that file, behind the gate. The
+verify step re-runs the dry-run to confirm nothing is still pending and then
+checks Core's `/health`, because a migration that leaves the API unable to
+serve is not one that succeeded, whatever the exit code said.
+
+**What it will do on the next push:** nothing. `0049` is pending and is a
+contraction, so the gate refuses and prints which migration is waiting and for
+what. That is the correct first behaviour, and there is a test asserting it.
+
 ## A database CD, part A: classify, verify, and stop lying about production state (2026-08-27)
 
 **What the analysis found.** `railway-migrate.sh` was already good - a
@@ -4324,6 +4342,9 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-27 | **`database CD` exists, and its scope is the entire design: additive migrations only.** 38 of 49 migrations qualify; the other 11 stay on the manual path. | An additive migration cannot break anything already deployed, so a human remembering to apply it buys nothing. A contraction applied early takes the column away while an older service still names it - the mistake made by hand a day earlier - and `0049` deletes stored personal data irreversibly, which deserves a person who has read the dry-run. Automating the safe majority is what makes it reasonable to keep insisting on a human for the rest. |
+| 2026-08-27 | **One contraction blocks the WHOLE batch, rather than applying the additive ones up to it.** | The migrator applies in filename order and a half-applied batch is a state nobody planned for or tested. Stopping leaves production in a state that exists in the ledger and in the repository; a partial apply leaves it in one that exists nowhere. |
+| 2026-08-27 | **The auto-apply decision refuses by default and lives in one tested file, not in YAML.** Nine self-tests, including one asserting the real tree's pending `0049` blocks it. | Every non-obvious path answers false: a dry-run without its completion line (the list cannot be trusted), a pending file absent from the checkout (ledger and repository disagree), no phase header, a declaration contradicted by the SQL. A decision spread across workflow steps cannot be run locally and therefore cannot be shown to refuse; this one can. |
 | 2026-08-27 | **An APPLIED migration is immutable down to its comments, and the phase gate enforces that by asking nothing of it.** Only files above the ledger high-water mark carry `-- @phase:`; below it the classification is derived. | The first version of this work stamped a header onto all 49 files. `railway-migrate.sh` verifies every applied migration by SHA-256 of the whole file, so all 48 in production would have failed `migration drift detected` on the next run and the migrator would have been unusable. Caught by diffing the working-tree hash against HEAD before committing, not in production. §1.3 already said "never edit an applied migration"; what was new is that a COMMENT counts. |
 | 2026-08-27 | **The migrator now ends each applied migration with `NOTIFY pgrst, 'reload schema'`, inside the transaction.** | Postgres delivers a NOTIFY at COMMIT, so a failed migration reloads nothing and a successful one reloads exactly once. Without it PostgREST serves a schema cache from before the change - ROADMAP records `0048` adding `courses.in_progress` and the column staying invisible through the API until someone ran this by hand. Finishing the DDL is not finishing the migration. |
 | 2026-08-27 | **The pre-migration dump lives in the workflow, not in `railway-migrate.sh`.** | The script's own comment says `railway ssh` exits 0 even when the REMOTE command fails, which is why every call in it is sentinel-verified. A `pg_dump` added without that discipline would report a restore point that was never taken - immediately before the one operation in this repository that can destroy a column. The workflow reuses `vault-backup.yml`'s commands, where `test -s` on the pulled file is what actually proves the dump exists. |

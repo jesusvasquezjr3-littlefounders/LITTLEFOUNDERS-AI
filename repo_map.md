@@ -394,6 +394,26 @@ on:
 
 ```
 
+### .github/workflows/database-cd.yml
+
+```
+name: database CD
+
+# APPLIES ADDITIVE MIGRATIONS TO PRODUCTION. NOTHING ELSE, EVER.
+#
+# The scope is the whole design. Of the 49 migrations in this repository, 38 are
+# purely additive: they add or widen, and nothing already deployed can break on
+# them, so applying one before or after the code that uses it is equally safe.
+# Those are worth automating, because the alternative is a human remembering.
+#
+# The other 11 remove or narrow something a running deploy could still be using.
+# Applying one of those early takes the column away while an older service still
+# names it and PostgREST rejects every write that does — which is exactly the
+# mistake made by hand on 2026-08-26. Those are NOT automated here and must not
+# be: `0049` deletes stored personal data irreversibly, and that deserves a
+# person who has read the dry-run.
+```
+
 ### .github/workflows/database-ci.yml
 
 ```
@@ -1261,17 +1281,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## A database CD, part A: classify, verify, and stop lying about production state (2026-08-27)
+## A database CD, part B: the bounded automation (2026-08-27)
 
-**What the analysis found.** `railway-migrate.sh` was already good - a
-`schema_migrations` ledger with a SHA-256 per file, drift detection, idempotent
-skips, one transaction per migration, a real `--dry-run`, `--confirm-production`
-required to mutate. It was not the problem. Three other things were:
+`database-cd.yml` runs after `database CI` succeeds on main. It reads the
+production ledger read-only, asks `gate-auto-apply.mjs` whether the pending
+batch is entirely additive, and only then takes a fresh dump and applies. A
+refusal is a successful run that did nothing: failing would page someone every
+time a contraction waits for its release, and a job that cries wolf is a job
+people disable.
 
-  1. **It never issued `NOTIFY pgrst, 'reload schema'`.** ROADMAP already
-     records the `0048` incident where that had to be run by hand or PostgREST
-     kept serving a schema cache without the new column. A migrator that leaves
-     the API serving a stale shape has not finished applying the migration.
+`--confirm-production` appears exactly once in that file, behind the gate. The
+verify step re-runs the dry-run to confirm nothing is still pending and then
 ```
 
 ### agent/README.md
@@ -8927,7 +8947,7 @@ BEGIN
   "license": "UNLICENSED",
   "engines": { "node": "24.x" },
   "scripts": {
-    "test": "node scripts/check-migrations.mjs && node scripts/check-migration-phase.mjs && node --test scripts/check-migration-phase.test.mjs && node scripts/railway-migrate.test.mjs",
+    "test": "node scripts/check-migrations.mjs && node scripts/check-migration-phase.mjs && node --test scripts/check-migration-phase.test.mjs scripts/gate-auto-apply.test.mjs && node scripts/railway-migrate.test.mjs",
     "db:sync": "bash scripts/sync-supabase.sh",
     "db:up": "bash scripts/local-stack.sh up",
     "db:down": "bash scripts/local-stack.sh down",
