@@ -68,6 +68,56 @@ function findAll(bones: Map<string, Bone>, prefix: string): Bone[] {
     .map(([, bone]) => bone);
 }
 
+/*
+ * THE REST POSE OF A SHARED MODEL, CAPTURED ONCE AND ONLY ONCE.
+ *
+ * `useSceneModel` hands out ONE Object3D per character, deliberately - the
+ * model is downloaded, decoded and uploaded to the GPU a single time. So when a
+ * character remounts, the bones it comes back to are not the ones it was
+ * authored with: they are wherever the OUTGOING instance left them, which after
+ * a clamped one-shot is the last frame of that gesture.
+ *
+ * `bindRig` captures `bone.quaternion` as the rest orientation every procedural
+ * offset is applied relative to. Capturing that from a drifted skeleton bakes
+ * the drift in as the new rest, and the next gesture composes on top of it.
+ * MEASURED: stepping the pose lab through sixteen poses and returning to the
+ * first one did not return to the first POSE - Dina came back with her head
+ * cocked and her body twisted, and by the fortieth she was a ball with no face.
+ * It compounds, so the first mount is always right and every screenshot and
+ * every test exercises exactly that one.
+ *
+ * The fix is to remember what the model looked like when it was LOADED, and to
+ * restore that before capturing. The snapshot covers every bone rather than the
+ * bound slots alone, because clips and drivers reach bones the slot set does
+ * not name - fingers, individual tail segments, ears.
+ *
+ * A WeakMap keyed on the model root: the entry dies with the cached model, and
+ * nothing has to be told when that happens.
+ */
+const REST_POSE = new WeakMap<Object3D, Map<Bone, Quaternion>>();
+
+function restoreRestPose(root: Object3D): void {
+  const known = REST_POSE.get(root);
+  if (known) {
+    for (const [bone, quaternion] of known) bone.quaternion.copy(quaternion);
+    return;
+  }
+  // FIRST bind of this model: the bones are as loaded, so this IS the rest
+  // pose. Recording it here is what makes the first mount byte-identical to
+  // what it was before this existed, and every later mount identical to the
+  // first.
+  const snapshot = new Map<Bone, Quaternion>();
+  root.traverse((node) => {
+    if ((node as Bone).isBone) snapshot.set(node as Bone, (node as Bone).quaternion.clone());
+  });
+  REST_POSE.set(root, snapshot);
+}
+
+/** Test seam: forget a model's remembered rest pose. */
+export function forgetRestPose(root: Object3D): void {
+  REST_POSE.delete(root);
+}
+
 /**
  * Binds a rig. Must be called AFTER the authored clip has been evaluated into
  * a pose — the captured base orientations are what every procedural offset is
@@ -75,6 +125,10 @@ function findAll(bones: Map<string, Bone>, prefix: string): Bone[] {
  * each action fight the character's resting posture.
  */
 export function bindRig(root: Object3D): Rig {
+  // Before anything is measured: put the shared skeleton back where it was
+  // loaded, so the base captured below is the model's rest pose and not the
+  // previous instance's last frame. See REST_POSE above.
+  restoreRestPose(root);
   const bones = collectBones(root);
   const quadruped = bones.has('tail') || bones.has('frontleg');
 

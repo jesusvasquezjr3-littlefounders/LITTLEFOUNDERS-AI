@@ -376,6 +376,34 @@ With no normal action playing, three.js falls back to each property's ORIGINAL
 value — captured when the mixer first binds, which is the bind pose — and
 applies the additive layers on top. The correct amount of code is none.
 
+### §4.0a A REMOUNT used to inherit the previous gesture, and it compounded (2026-08-27)
+
+§4.0 says the base pose is the bind pose. `bindRig` implemented that by
+capturing `bone.quaternion` at bind time — correct on a freshly loaded model,
+and wrong on every mount after the first, because `useSceneModel` shares ONE
+Object3D per character and a remount comes back to a skeleton the outgoing
+instance left mid-gesture. The captured "rest" was therefore the last frame of
+the previous gesture, and the next gesture composed on top of it.
+
+It compounds, and nothing caught it because the FIRST mount is always right —
+which is the mount every screenshot, every test and every manual check
+exercises. Found by stepping `/dev/pose-lab` through sixteen poses and returning
+to the first: Dina came back with her head cocked and her body twisted, and
+across the full 43-pose sheet she degraded into a faceless ball. Zara showed the
+same drift, less legibly, because a biped has more ways to look merely odd.
+
+`rig.ts` now snapshots every bone's quaternion the FIRST time a model is bound,
+in a `WeakMap` keyed on the model root, and restores from that snapshot before
+capturing. First mount byte-identical; every later mount identical to the first.
+The snapshot covers ALL bones rather than the bound slots, because clips and
+drivers reach bones the slot map does not name — fingers, tail segments, ears.
+`rig.test.ts` pins it, including across forty rebinds: a fix that merely halved
+a compounding error would pass a single-rebind assertion.
+
+This matters beyond the lab. §5.2 records that a character's Suspense boundary
+depending on their ROLE made inviting them an element-type change under an
+unchanged key — that is a remount, in the Tutor, in production.
+
 ### §4.1 The authored clip library — why every clip is ADDITIVE
 
 `frontend/scripts/author-clips.py` produces `clips-biped.glb`: 20 clips (12

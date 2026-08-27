@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CHARACTER_IDS, type CharacterId } from '@/components/characters/control/types';
 import { CharacterStage } from '../CharacterStage';
-import { POSES, posesByCategory, type Pose, type PoseCategory } from '../poseLibrary';
+import { POSES, distinctPoseCount, posesByCategory, type Pose, type PoseCategory } from '../poseLibrary';
 import type { SceneStats } from '../SceneCanvas';
 
 /*
@@ -84,7 +84,8 @@ export function PoseLabPage() {
       <header>
         <h1 className="lf-display text-content">Pose lab</h1>
         <p className="lf-body text-content-muted">
-          {POSES.length} poses · {CHARACTER_IDS.length} characters · every entry playable by every one of them
+          {POSES.length} poses · {distinctPoseCount()} distinct renders · {CHARACTER_IDS.length} characters ·
+          every entry playable by every one of them
         </p>
       </header>
 

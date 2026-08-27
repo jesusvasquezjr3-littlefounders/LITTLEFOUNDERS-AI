@@ -6,7 +6,15 @@ import {
 } from '@/components/characters/control/types';
 import { LOOPABLE_ACTIONS } from '@/components/characters/control/types';
 import { LOOPING_ACTIONS } from './characterActions';
-import { POSES, POSE_IDS, poseById, posesByCategory, resolvePose } from './poseLibrary';
+import {
+  POSES,
+  POSE_IDS,
+  distinctPoseCount,
+  poseById,
+  poseSignature,
+  posesByCategory,
+  resolvePose,
+} from './poseLibrary';
 
 /*
  * The pose library is CONTENT, and content that names a thing which does not
@@ -15,8 +23,38 @@ import { POSES, POSE_IDS, poseById, posesByCategory, resolvePose } from './poseL
  */
 
 describe('pose library', () => {
-  it('carries at least 50 poses — the size the library was commissioned at', () => {
+  it('carries 50-100 poses — the size the library was commissioned at', () => {
     expect(POSES.length).toBeGreaterThanOrEqual(50);
+    expect(POSES.length).toBeLessThanOrEqual(100);
+  });
+
+  it('COUNTS DISTINCT RENDERS, not names — the catalog must not grow by renaming', () => {
+    /*
+     * /AGENTS.md §1.14: "make a coverage metric count DISTINCTNESS, not
+     * presence". The library reached 100 rows by adding poses on emotion and
+     * action pairs nothing used yet, not by relabelling the ones it had. If a
+     * later batch is aliases, `POSES.length` climbs and this number does not,
+     * and the lab header shows both side by side so the difference is visible
+     * to whoever is reviewing rather than buried in a test.
+     */
+    expect(distinctPoseCount()).toBeGreaterThanOrEqual(75);
+  });
+
+  it('lets no single render carry more than three intents', () => {
+    /*
+     * Two intents on one render is the catalog working: `greet.hello` and
+     * `transition.exit` are both a happy wave and content is right to address
+     * them separately. Six would mean the render is doing the work of a
+     * category and nobody choosing between those names is choosing anything.
+     */
+    const perSignature = new Map<string, string[]>();
+    for (const pose of POSES) {
+      const key = poseSignature(pose);
+      perSignature.set(key, [...(perSignature.get(key) ?? []), pose.id]);
+    }
+    for (const [signature, ids] of perSignature) {
+      expect(ids.length, `${signature}: ${ids.join(', ')}`).toBeLessThanOrEqual(3);
+    }
   });
 
   it('has no duplicate ids, because an id is how content addresses a pose', () => {

@@ -5,9 +5,9 @@
 > and the conflict is surfaced rather than resolved silently (§1.0.1).
 >
 > Status: **IN PROGRESS.** Decisions answered 2026-08-27 (§6). §3.3 the
-> pose lab and the character-only stage are DONE and the stage has been
-> reviewed on all four characters by looking at it; §3.2 the library is at
-> 57 entries; §3.1 and §3.4 are next.
+> pose lab and the character-only stage are DONE and reviewed on all four
+> characters by looking at them; §3.2 is DONE at 100 poses / 80 distinct
+> renders, contact-sheeted for all four; §3.1 and §3.4 are next.
 
 ---
 
@@ -167,9 +167,22 @@ Sequence: **the lab first** (§3.3) — done — then §3.2 to its full size, th
 - `FlatGroundProvider` — the stage has no island, so its floor is the origin
   plane. Kept in the PROVIDER rather than as a flag on `Character3D`, so the
   diorama's "no ground means a placement bug" reading survives untouched.
-- `poseLibrary.ts` — 57 documented poses across eight categories, with a gate
-  asserting every one resolves for every character and that `loop` is only
-  claimed where BOTH renderers honour it.
+- `poseLibrary.ts` — **100 documented poses** across eight categories, the top
+  of the range asked for. The 43 added on 2026-08-27 all sit on emotion/action
+  pairs nothing used yet, or on a genuinely different rotation: the catalog grew
+  by ADDING, never by relabelling. Gates assert every pose resolves for every
+  character, that `loop` is only claimed where BOTH renderers honour it, and
+  the two below.
+- **A distinctness metric, because the count had to mean something.**
+  `distinctPoseCount()` reports how many visually distinct renders the catalog
+  can produce — 80, against 100 names — and the lab header shows both side by
+  side. /AGENTS.md §1.14 was written after a coverage metric counted PRESENCE
+  and read 100% while every lesson opened with the same picture. Two intents on
+  one render is the catalog working (`greet.hello` and `transition.exit` are
+  both a happy wave); a test caps it at three, so a later batch of aliases moves
+  `POSES.length` and not the number anyone is looking at.
+- **Contact sheets for all four characters**, 43 poses each, captured headless
+  through the lab's own URL.
 - `/dev/pose-lab` — every pose, on every character, played and looked at. Now
   DEEP-LINKABLE (`?character=&pose=`), so a review is a URL rather than a click
   path, and so the contact sheets photograph the surface a human opens rather
@@ -197,6 +210,26 @@ Three defects, none of which any test was failing on:
    (`TUTOR_3D.md` §3.1a) under the dark `auto` rig — a light the tint had never
    been photographed under. The card is now opt-in and off here, so she keeps
    her own painted mouth, and the tint debt is written down with a due date.
+
+### The fourth defect, and the expensive one
+
+**A remount inherited the previous gesture, and it compounded.** `useSceneModel`
+shares ONE Object3D per character; `bindRig` captured `bone.quaternion` at bind
+time as the rest orientation every procedural offset is relative to. On a
+remount those bones are wherever the outgoing instance left them, so the drift
+was baked in as the new rest and the next gesture composed on top of it.
+
+Found by looking: stepping the lab through sixteen poses and returning to the
+first did not return to the first POSE. Across the full 43-pose sheet Dina
+degraded into a faceless ball. Nothing caught it because the FIRST mount is
+always right, and the first mount is what every screenshot and every test
+exercises.
+
+Fixed in `rig.ts` by snapshotting the loaded rest pose once per model and
+restoring before capture, pinned by `rig.test.ts` across forty rebinds. It
+reaches the Tutor too: `TUTOR_3D.md` §5.2 records a Suspense boundary that made
+inviting a character a remount, in production. The class is now written into
+/AGENTS.md §1.14 beside its measurement sibling.
 
 ### Open, for the owner to decide — a pose-review finding, not a bug
 
