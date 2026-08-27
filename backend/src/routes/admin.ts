@@ -395,8 +395,8 @@ export function adminRouter(): Router {
     const resolved = resolveRange(range);
     ok(res, {
       period: parsed.data.period,
-      from: new Date(resolved.startMs).toISOString().slice(0, 10),
-      to: new Date(resolved.endMs).toISOString().slice(0, 10),
+      from: resolved.from,
+      to: resolved.to,
       ...overview,
     });
   });
@@ -418,12 +418,19 @@ export function adminRouter(): Router {
       fail(res, 503, PULSE_UNCONFIGURED, 'Plausible is not configured on this deployment');
       return;
     }
-    const rows = await getPlausibleBreakdown(range, parsed.data.dimension, parsed.data.limit, filters.filters);
-    if (!rows) {
+    const breakdown = await getPlausibleBreakdown(range, parsed.data.dimension, parsed.data.limit, filters.filters);
+    if (!breakdown) {
       fail(res, 502, UPSTREAM_FAILED, 'Plausible did not answer');
       return;
     }
-    ok(res, { period: parsed.data.period, dimension: parsed.data.dimension, rows });
+    // `imports` travels with the rows so a card can say "historical traffic
+    // excluded" instead of leaving the reader to explain a shortfall.
+    ok(res, {
+      period: parsed.data.period,
+      dimension: parsed.data.dimension,
+      rows: breakdown.rows,
+      imports: breakdown.imports,
+    });
   });
 
   /*
@@ -678,8 +685,8 @@ export function adminRouter(): Router {
     const resolved = resolveRange(range);
     ok(res, {
       period: parsed.data.period,
-      from: new Date(resolved.startMs).toISOString().slice(0, 10),
-      to: new Date(resolved.endMs).toISOString().slice(0, 10),
+      from: resolved.from,
+      to: resolved.to,
       ...stats,
     });
   });
@@ -731,8 +738,8 @@ export function adminRouter(): Router {
     const resolved = resolveRange(range);
     ok(res, {
       period: parsed.data.period,
-      from: new Date(resolved.startMs).toISOString().slice(0, 10),
-      to: new Date(resolved.endMs).toISOString().slice(0, 10),
+      from: resolved.from,
+      to: resolved.to,
       series,
     });
   });
@@ -773,8 +780,8 @@ export function adminRouter(): Router {
     }
 
     const resolved = resolveRange(range);
-    const from = new Date(resolved.startMs).toISOString().slice(0, 10);
-    const to = new Date(resolved.endMs).toISOString().slice(0, 10);
+    const from = resolved.from;
+    const to = resolved.to;
     const meta = {
       title: 'LittleFounders — behaviour',
       window: `${from} to ${to}`,

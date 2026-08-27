@@ -25,6 +25,9 @@ const DATA: PlausibleReportData = {
   ],
   breakdowns: { page: [{ label: '/', visitors: 40, pageviews: 56, bounceRate: 41, visitDuration: 90 }] },
   appliedFilters: [],
+  imports: { importsIncluded: true, importsSkipReason: null, importsWarning: null, queried: ['2026-07-16', '2026-08-14'] },
+  breakdownsWithoutImports: [],
+  rangeDrift: null,
 };
 
 describe('renderAnalyticsReportPdf', () => {

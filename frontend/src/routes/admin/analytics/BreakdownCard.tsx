@@ -109,7 +109,23 @@ export function BreakdownCard({
         data.data.rows.length === 0 ? (
           <PanelNote icon="hourglass_disabled" text={t('admin.analytics.breakdowns.empty')} />
         ) : (
-          <Table columns={columns} rows={data.data.rows} rowKey={(r) => r.label} />
+          <>
+            <Table columns={columns} rows={data.data.rows} rowKey={(r) => r.label} />
+            {/*
+              Sits WITH the table it qualifies, not in a footnote.
+              These rows cover natively tracked visits only whenever the
+              acquisition filter makes historical imported data unusable, so
+              they do not sum to the headline. Left unexplained, that shortfall
+              reads as a tracking gap — which is exactly the conclusion an
+              outside reviewer drew from it on 2026-08-25.
+            */}
+            {!data.data.imports.importsIncluded && (
+              <p className="lf-caption flex items-start gap-1.5 text-content-muted">
+                <Icon name="info" className="!text-[14px] shrink-0 translate-y-0.5" aria-hidden />
+                {t('admin.analytics.breakdowns.nativeOnly')}
+              </p>
+            )}
+          </>
         )
       ) : (
         <PanelNote icon="progress_activity" spin text={t('admin.loading')} />

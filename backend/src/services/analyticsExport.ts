@@ -58,6 +58,53 @@ function metricRows(report: PlausibleReportData): MetricRow[] {
 const PROVENANCE_NOTE =
   'Figures cover consented public marketing traffic only. Internal traffic exclusions apply from the moment each was added and do not change earlier data.';
 
+/*
+ * ── Provenance that answers the questions a reader would otherwise guess ──
+ *
+ * An outside reviewer read three of these exports on 2026-08-25 and reached
+ * two confident, wrong conclusions from what the files did NOT say: that
+ * dimensional tracking had been switched on in late July (it had not — the
+ * acquisition filter excludes imported history from those breakdowns), and
+ * that bounce/duration measurement began in March (it did not — imported rows
+ * carry no session metrics at any date). Both answers were in Plausible's
+ * response and neither reached the file.
+ *
+ * So the caveats now travel WITH the numbers. A caveat a reader has to go and
+ * ask for is a caveat that becomes a wrong conclusion in someone's slide deck.
+ */
+export function importCaveats(report: PlausibleReportData): string[] {
+  const notes: string[] = [];
+
+  if (report.rangeDrift) {
+    const { askedFor, answeredFor } = report.rangeDrift;
+    notes.push(
+      `WINDOW MISMATCH — figures were requested for ${askedFor[0]} to ${askedFor[1]} but the analytics API answered for ${answeredFor[0]} to ${answeredFor[1]}. Treat every number in this file as describing the second window, and report this.`,
+    );
+  }
+
+  if (!report.imports.importsIncluded) {
+    notes.push(
+      `Headline totals EXCLUDE historical imported (GA4) traffic${
+        report.imports.importsSkipReason ? ` — reason: ${report.imports.importsSkipReason}` : ''
+      }.`,
+    );
+  }
+
+  if (report.breakdownsWithoutImports.length) {
+    notes.push(
+      `These breakdowns cover natively tracked visits only and exclude historical imported (GA4) traffic, so they will not sum to the headline visitor total: ${report.breakdownsWithoutImports
+        .map((d) => DIMENSION_TITLES[d])
+        .join(', ')}. This is a property of how imported data is stored — it cannot be filtered by page — and not a gap in tracking.`,
+    );
+  }
+
+  notes.push(
+    'Bounce rate and visit duration are measured on natively tracked visits only; imported historical traffic carries no session metrics and contributes none.',
+  );
+
+  return notes;
+}
+
 // ── CSV ─────────────────────────────────────────────────────────────────────
 
 const CSV_COLUMNS = ['section', 'key', 'label', 'visitors', 'pageviews', 'bounce_rate_pct', 'visit_duration_s'] as const;
@@ -84,6 +131,10 @@ export function renderAnalyticsReportCsv(report: PlausibleReportData): string {
   lines.push(['meta', 'to', report.to, '', '', '', '']);
   lines.push(['meta', 'filters', report.appliedFilters.join(' AND ') || 'none', '', '', '', '']);
   lines.push(['meta', 'note', PROVENANCE_NOTE, '', '', '', '']);
+  lines.push(['meta', 'imports_included', String(report.imports.importsIncluded), '', '', '', '']);
+  for (const [i, caveat] of importCaveats(report).entries()) {
+    lines.push(['meta', `caveat_${i + 1}`, caveat, '', '', '', '']);
+  }
 
   lines.push([
     'summary',
@@ -206,12 +257,24 @@ export async function renderAnalyticsReportXlsx(report: PlausibleReportData): Pr
   summary.getRow(headerAt).commit();
 
   row += 1;
-  summary.mergeCells(`A${row}:D${row}`);
-  const note = summary.getCell(`A${row}`);
-  note.value = PROVENANCE_NOTE;
-  note.font = { size: 9, italic: true, color: { argb: BRAND.muted } };
-  note.alignment = { wrapText: true, vertical: 'top' };
-  summary.getRow(row).height = 30;
+  // The standing note, then whatever is true of THIS pull. A window mismatch
+  // is coloured as a warning because it invalidates the sheet rather than
+  // qualifying it.
+  for (const [index, text] of [PROVENANCE_NOTE, ...importCaveats(report)].entries()) {
+    summary.mergeCells(`A${row}:D${row}`);
+    const cell = summary.getCell(`A${row}`);
+    cell.value = text;
+    const isDrift = text.startsWith('WINDOW MISMATCH');
+    cell.font = {
+      size: 9,
+      italic: !isDrift,
+      bold: isDrift,
+      color: { argb: isDrift ? 'FFB45309' : BRAND.muted },
+    };
+    cell.alignment = { wrapText: true, vertical: 'top' };
+    summary.getRow(row).height = index === 0 ? 30 : 26;
+    row += 1;
+  }
   autoWidth(summary, [26, 18, 18, 14]);
 
   // ── Daily trend ───────────────────────────────────────────────────────────

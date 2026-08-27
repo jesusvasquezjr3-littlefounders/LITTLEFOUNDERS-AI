@@ -383,7 +383,8 @@
       "chartSummaryAria": "Summary for the selected analytics range",
       "signalsAria": "Web analytics signals",
       "comparedWith": "Compared with {{window}}",
-      "trendLegend": "{{days}}-day average"
+      "trendLegend": "{{days}}-day average",
+      "nativeOnlyMetrics": "Bounce rate and visit duration cover natively tracked visits only; imported historical traffic carries no session metrics."
     },
     "behavior": {
       "title": "Behavioral (adult surfaces)",
@@ -463,7 +464,8 @@
         "entry_page": "Entry pages",
         "exit_page": "Exit pages",
         "utm_campaign": "Campaigns"
-      }
+      },
+      "nativeOnly": "Natively tracked visits only — historical imported traffic cannot be broken down this way, so these rows will not add up to the visitor total."
     },
     "geo": {
       "sectionTitle": "Audience geography",
@@ -569,6 +571,10 @@
       "none": "No internal traffic is excluded yet, so staff visits are still counted in these figures. Add this device under Internal traffic below. Exclusions apply from the moment they are added and cannot change data already recorded.",
       "partial": "Part of this window predates the first exclusion ({{date}}), so the earlier days still include staff visits. Later data is filtered.",
       "covered": "Internal traffic has been excluded since {{date}}. Data recorded before that date still includes staff visits."
+    },
+    "rangeDrift": {
+      "title": "These figures cover a different window",
+      "body": "The window shown is {{asked}}, but the analytics API answered for {{answered}}. Treat every figure below as describing the second window, and report this."
     }
   },
   "emails": {

@@ -383,7 +383,8 @@
       "chartSummaryAria": "Resumo do intervalo analítico selecionado",
       "signalsAria": "Sinais de analytics da web",
       "comparedWith": "Comparado com {{window}}",
-      "trendLegend": "Média de {{days}} dias"
+      "trendLegend": "Média de {{days}} dias",
+      "nativeOnlyMetrics": "A taxa de rejeição e a duração cobrem apenas visitas medidas nativamente; o tráfego histórico importado não fornece métricas de sessão."
     },
     "behavior": {
       "title": "Comportamento (superfícies adultas)",
@@ -463,7 +464,8 @@
         "entry_page": "Páginas de entrada",
         "exit_page": "Páginas de saída",
         "utm_campaign": "Campanhas"
-      }
+      },
+      "nativeOnly": "Apenas visitas medidas nativamente — o tráfego histórico importado não pode ser detalhado assim, então estas linhas não somarão o total de visitantes."
     },
     "geo": {
       "sectionTitle": "Geografia da audiência",
@@ -569,6 +571,10 @@
       "none": "Ainda não há tráfego interno excluído, então as visitas da equipe continuam contando nestes números. Adicione este dispositivo em Tráfego interno, abaixo. As exclusões valem a partir do momento em que são adicionadas e não alteram dados já registrados.",
       "partial": "Parte desta janela é anterior à primeira exclusão ({{date}}), então os primeiros dias ainda incluem visitas da equipe. Os dados posteriores estão filtrados.",
       "covered": "O tráfego interno é excluído desde {{date}}. Os dados registrados antes dessa data ainda incluem visitas da equipe."
+    },
+    "rangeDrift": {
+      "title": "Estes números cobrem outra janela",
+      "body": "A janela exibida é {{asked}}, mas a API de análise respondeu por {{answered}}. Trate cada número abaixo como descrevendo a segunda janela e reporte isto."
     }
   },
   "emails": {

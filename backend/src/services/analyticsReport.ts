@@ -55,6 +55,20 @@ interface ReportStrings {
   periods: Record<PlausibleReportData['period'], string>;
   /** Section headings, localised for the same reason as `periods`. */
   dimensions: Record<PlausibleDimensionKey, string>;
+  /*
+   * Provenance caveats, localised for the same reason as `periods`.
+   *
+   * They exist because an outside reviewer read three of these exports and
+   * inferred two tracking failures that were not failures — the answers were
+   * in the analytics API's own response and never reached the document.
+   * `noImportsIn` takes the affected section names, `windowMismatch` the two
+   * windows.
+   */
+  caveats: string;
+  noImportsHeadline: string;
+  noImportsIn: (sections: string) => string;
+  sessionMetricsNative: string;
+  windowMismatch: (asked: string, answered: string) => string;
 }
 
 const STRINGS: Record<ReportLocale, ReportStrings> = {
@@ -70,6 +84,11 @@ const STRINGS: Record<ReportLocale, ReportStrings> = {
     dailyTotals: 'Daily totals in the series', peakDay: 'Peak visitor day',
     periods: { day: 'Today', '7d': 'Last 7 days', '30d': 'Last 30 days', month: 'This month', '6mo': 'Last 6 months', '12mo': 'Last 12 months', year: 'This year', all: 'All time', custom: 'Custom range' },
     dimensions: { page: 'Top pages', source: 'Top sources', referrer: 'Top referrers', channel: 'Channels', country: 'Countries', region: 'Regions', device: 'Devices', browser: 'Browsers', os: 'Operating systems', entry_page: 'Entry pages', exit_page: 'Exit pages', utm_source: 'UTM sources', utm_medium: 'UTM mediums', utm_campaign: 'UTM campaigns' },
+    caveats: 'How to read these figures',
+    noImportsHeadline: 'Headline totals exclude historical imported traffic.',
+    noImportsIn: (sections) => `These sections cover natively tracked visits only and will not sum to the headline total: ${sections}. Imported history cannot be broken down by page — this is not a gap in tracking.`,
+    sessionMetricsNative: 'Bounce rate and visit duration are measured on natively tracked visits only; imported historical traffic carries no session metrics.',
+    windowMismatch: (asked, answered) => `Window mismatch: requested ${asked}, but the analytics API answered for ${answered}. Read every figure as describing the second window and report this.`,
   },
   'es-MX': {
     title: 'Reporte de analítica', generated: 'Generado', source: 'Fuente: Plausible vía Pulse',
@@ -83,6 +102,11 @@ const STRINGS: Record<ReportLocale, ReportStrings> = {
     dailyTotals: 'Totales diarios de la serie', peakDay: 'Día pico de visitantes',
     periods: { day: 'Hoy', '7d': 'Últimos 7 días', '30d': 'Últimos 30 días', month: 'Este mes', '6mo': 'Últimos 6 meses', '12mo': 'Últimos 12 meses', year: 'Este año', all: 'Todo el tiempo', custom: 'Rango personalizado' },
     dimensions: { page: 'Páginas principales', source: 'Fuentes principales', referrer: 'Referencias principales', channel: 'Canales', country: 'Países', region: 'Regiones', device: 'Dispositivos', browser: 'Navegadores', os: 'Sistemas operativos', entry_page: 'Páginas de entrada', exit_page: 'Páginas de salida', utm_source: 'Fuentes UTM', utm_medium: 'Medios UTM', utm_campaign: 'Campañas UTM' },
+    caveats: 'Cómo leer estas cifras',
+    noImportsHeadline: 'Los totales principales excluyen el tráfico histórico importado.',
+    noImportsIn: (sections) => `Estas secciones cubren únicamente visitas medidas de forma nativa y no sumarán el total principal: ${sections}. El histórico importado no se puede desglosar por página — no es una falla de medición.`,
+    sessionMetricsNative: 'La tasa de rebote y la duración se miden solo sobre visitas nativas; el tráfico histórico importado no aporta métricas de sesión.',
+    windowMismatch: (asked, answered) => `Ventana discordante: se solicitó ${asked}, pero la API de analítica respondió por ${answered}. Lee cada cifra como si describiera la segunda ventana y reporta esto.`,
   },
   'pt-BR': {
     title: 'Relatório de análise', generated: 'Gerado', source: 'Fonte: Plausible via Pulse',
@@ -96,6 +120,11 @@ const STRINGS: Record<ReportLocale, ReportStrings> = {
     dailyTotals: 'Totais diários da série', peakDay: 'Dia de pico de visitantes',
     periods: { day: 'Hoje', '7d': 'Últimos 7 dias', '30d': 'Últimos 30 dias', month: 'Este mês', '6mo': 'Últimos 6 meses', '12mo': 'Últimos 12 meses', year: 'Este ano', all: 'Todo o período', custom: 'Intervalo personalizado' },
     dimensions: { page: 'Páginas principais', source: 'Fontes principais', referrer: 'Referências principais', channel: 'Canais', country: 'Países', region: 'Regiões', device: 'Dispositivos', browser: 'Navegadores', os: 'Sistemas operacionais', entry_page: 'Páginas de entrada', exit_page: 'Páginas de saída', utm_source: 'Fontes UTM', utm_medium: 'Meios UTM', utm_campaign: 'Campanhas UTM' },
+    caveats: 'Como ler estes números',
+    noImportsHeadline: 'Os totais principais excluem o tráfego histórico importado.',
+    noImportsIn: (sections) => `Estas seções cobrem apenas visitas medidas nativamente e não somarão o total principal: ${sections}. O histórico importado não pode ser detalhado por página — não é uma falha de medição.`,
+    sessionMetricsNative: 'A taxa de rejeição e a duração são medidas apenas em visitas nativas; o tráfego histórico importado não fornece métricas de sessão.',
+    windowMismatch: (asked, answered) => `Janela divergente: solicitou-se ${asked}, mas a API de análise respondeu por ${answered}. Leia cada número como descrevendo a segunda janela e reporte isto.`,
   },
 };
 
@@ -137,6 +166,7 @@ const DELIGHT = '#8b5cf6'; // --lf-delight, violet-500 (decorative only)
 const INK = '#0f172a'; // --lf-content, slate-900
 const MUTED = '#475569'; // --lf-content-muted, slate-600
 const RULE = '#e2e8f0'; // --lf-outline, slate-200
+const WARNING = '#b45309'; // --lf-warning-strong, amber-700
 const SOFT_ACCENT = '#eef2ff'; // --lf-accent-soft, indigo-50
 const SOFT_SURFACE = '#f1f5f9'; // --lf-surface-sunken, slate-100
 const SUCCESS = '#047857'; // --lf-success-strong, emerald-700
@@ -547,6 +577,56 @@ function drawBreakdownSection(doc: PDFKit.PDFDocument, ctx: ReportContext, title
   doc.y += 14;
 }
 
+/**
+ * The caveats block — what these numbers do and do not cover.
+ *
+ * Placed at the END, after every table it qualifies, because a reader who has
+ * seen a breakdown that does not add up to the headline needs the explanation
+ * to be somewhere they will still be reading. The alternative — leaving it
+ * out — produced two confident and entirely wrong conclusions in an outside
+ * review on 2026-08-25, both of which named tracking failures that never
+ * happened (WALKTHROUGH, 2026-08-27).
+ */
+function drawCaveats(doc: PDFKit.PDFDocument, ctx: ReportContext, data: PlausibleReportData): void {
+  const lines: { text: string; warn: boolean }[] = [];
+
+  if (data.rangeDrift) {
+    const { askedFor, answeredFor } = data.rangeDrift;
+    lines.push({
+      text: ctx.s.windowMismatch(
+        `${formatDate(ctx, askedFor[0])} ${ctx.s.to} ${formatDate(ctx, askedFor[1])}`,
+        `${formatDate(ctx, answeredFor[0])} ${ctx.s.to} ${formatDate(ctx, answeredFor[1])}`,
+      ),
+      warn: true,
+    });
+  }
+  if (!data.imports.importsIncluded) lines.push({ text: ctx.s.noImportsHeadline, warn: false });
+  if (data.breakdownsWithoutImports.length) {
+    lines.push({
+      text: ctx.s.noImportsIn(data.breakdownsWithoutImports.map((d) => ctx.s.dimensions[d]).join(', ')),
+      warn: false,
+    });
+  }
+  lines.push({ text: ctx.s.sessionMetricsNative, warn: false });
+
+  // Keep the block whole: a caveat split across a page break reads as two
+  // half-sentences, and the warning line must never be the orphan.
+  const estimated = 26 + lines.length * 26;
+  if (doc.y + estimated > doc.page.height - BOTTOM_MARGIN) doc.addPage();
+
+  doc.font('Helvetica-Bold').fontSize(11).fillColor(INK).text(toLatin1(ctx.s.caveats), MARGIN, doc.y);
+  doc.y += 6;
+
+  for (const line of lines) {
+    doc
+      .font(line.warn ? 'Helvetica-Bold' : 'Helvetica')
+      .fontSize(8)
+      .fillColor(line.warn ? WARNING : MUTED)
+      .text(`•  ${toLatin1(line.text)}`, MARGIN, doc.y, { width: contentWidth(doc) });
+    doc.y += 4;
+  }
+}
+
 /** Footer pass over the buffered pages — needs the final page count. */
 function drawFooters(doc: PDFKit.PDFDocument, ctx: ReportContext): void {
   const range = doc.bufferedPageRange();
@@ -604,6 +684,7 @@ export function renderAnalyticsReportPdf(
       for (const [dimension, rows] of Object.entries(data.breakdowns) as [PlausibleDimensionKey, PlausibleBreakdownRow[]][]) {
         drawBreakdownSection(doc, ctx, ctx.s.dimensions[dimension], rows);
       }
+      drawCaveats(doc, ctx, data);
       drawFooters(doc, ctx);
       doc.end();
     } catch (err) {

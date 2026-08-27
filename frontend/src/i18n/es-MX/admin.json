@@ -383,7 +383,8 @@
       "chartSummaryAria": "Resumen del rango analítico seleccionado",
       "signalsAria": "Señales de analítica web",
       "comparedWith": "Comparado con {{window}}",
-      "trendLegend": "Promedio de {{days}} días"
+      "trendLegend": "Promedio de {{days}} días",
+      "nativeOnlyMetrics": "La tasa de rebote y la duración cubren solo visitas medidas de forma nativa; el tráfico histórico importado no aporta métricas de sesión."
     },
     "behavior": {
       "title": "Comportamiento (superficies adultas)",
@@ -463,7 +464,8 @@
         "entry_page": "Páginas de entrada",
         "exit_page": "Páginas de salida",
         "utm_campaign": "Campañas"
-      }
+      },
+      "nativeOnly": "Solo visitas medidas de forma nativa — el tráfico histórico importado no se puede desglosar así, por lo que estas filas no sumarán el total de visitantes."
     },
     "geo": {
       "sectionTitle": "Geografía de la audiencia",
@@ -569,6 +571,10 @@
       "none": "Todavía no se excluye tráfico interno, así que las visitas del equipo siguen contando en estas cifras. Agrega este dispositivo en Tráfico interno, abajo. Las exclusiones aplican desde el momento en que se agregan y no modifican datos ya registrados.",
       "partial": "Parte de esta ventana es anterior a la primera exclusión ({{date}}), así que los primeros días todavía incluyen visitas del equipo. Los datos posteriores sí están filtrados.",
       "covered": "El tráfico interno se excluye desde el {{date}}. Los datos registrados antes de esa fecha todavía incluyen visitas del equipo."
+    },
+    "rangeDrift": {
+      "title": "Estas cifras cubren otra ventana",
+      "body": "La ventana mostrada es {{asked}}, pero la API de analítica respondió por {{answered}}. Toma cada cifra de abajo como si describiera la segunda ventana, y reporta esto."
     }
   },
   "emails": {

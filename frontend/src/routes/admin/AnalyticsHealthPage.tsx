@@ -240,6 +240,28 @@ export function AnalyticsHealthPage() {
           )}
         </div>
 
+        {/*
+          A window mismatch invalidates every figure below it, so it is stated
+          before them and never merged into the quiet provenance caption.
+
+          This is normally invisible — the server sends resolved dates and
+          Plausible echoes them back unchanged. It exists because for two weeks
+          it was NOT invisible: the server sent the shorthand `6mo`, Plausible
+          answered for February through July, and the chart padded all of
+          August with zeros and reported a traffic collapse that had not
+          happened (RUNBOOK, 2026-08-27). Nothing on screen could have told an
+          operator that. Now something can.
+        */}
+        {overview.state === 'ready' && overview.data.rangeDrift && (
+          <UnavailableCard
+            title={t('admin.analytics.rangeDrift.title')}
+            body={t('admin.analytics.rangeDrift.body', {
+              asked: `${overview.data.rangeDrift.askedFor[0]} – ${overview.data.rangeDrift.askedFor[1]}`,
+              answered: `${overview.data.rangeDrift.answeredFor[0]} – ${overview.data.rangeDrift.answeredFor[1]}`,
+            })}
+          />
+        )}
+
         {overview.state === 'error' ? (
           <UnavailableCard
             title={t('admin.analytics.unavailableTitle')}
@@ -284,6 +306,18 @@ export function AnalyticsHealthPage() {
             )}
             {/* How far the internal-traffic exclusion actually reaches. */}
             <ExclusionCoverageNote windowStart={overview.state === 'ready' ? overview.data.from : null} />
+            {/*
+              Bounce rate and visit duration are measured on natively tracked
+              visits only — imported history carries no session metrics at any
+              date. Two of the four KPIs above therefore describe a different
+              population than the other two, which is worth one sentence rather
+              than another wrong theory about when measurement started.
+            */}
+            {overview.state === 'ready' && !overview.data.imports.importsIncluded && (
+              <p className="lf-caption -mt-1 text-content-faint">
+                {t('admin.analytics.web.nativeOnlyMetrics')}
+              </p>
+            )}
             {webSignals && (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label={t('admin.analytics.web.signalsAria')}>
                 <SignalCard icon="today" label={t('admin.analytics.web.dailyAverage')} value={nf.format(Math.round(webSignals.dailyVisitors))} />

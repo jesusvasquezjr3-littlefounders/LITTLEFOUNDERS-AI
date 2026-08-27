@@ -14,10 +14,47 @@ import { z } from 'zod';
  * (RUNBOOK.md § Pulse).
  */
 
+/**
+ * A timezone Node can actually resolve.
+ *
+ * An unknown IANA name makes `Intl.DateTimeFormat` THROW rather than fall
+ * back, and it would throw inside range resolution — i.e. on every analytics
+ * read, long after boot, as a 502 with no hint of the cause. Validating the
+ * value where the rest of the Pulse env is validated turns that into a
+ * startup-shaped error naming the variable.
+ */
+function isResolvableTimeZone(value: string): boolean {
+  try {
+    new Intl.DateTimeFormat('en-CA', { timeZone: value });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const PulseEnv = z.object({
   PLAUSIBLE_URL: z.url().optional(),
   PLAUSIBLE_API_KEY: z.string().min(10).optional(),
   PLAUSIBLE_SITE_ID: z.string().min(1).optional(),
+  /*
+   * The timezone the Plausible SITE is configured in — not the server's.
+   *
+   * Plausible evaluates every date it is given in the site's timezone, so
+   * "today" there and "today" in UTC are different days for six hours out of
+   * every twenty-four. Resolving our windows in UTC put the tail of every
+   * range one day ahead of the data, which `fillDailySeries` then rendered as
+   * a zero-traffic today, permanently (RUNBOOK 2026-08-27).
+   *
+   * Default verified against production on 2026-08-27: Plausible echoed
+   * `-06:00` for every resolved range. Override it here if the site's own
+   * setting is ever changed — the drift guard in `getPlausibleOverview` is
+   * what will tell you it happened.
+   */
+  PLAUSIBLE_SITE_TIMEZONE: z
+    .string()
+    .min(1)
+    .default('America/Mexico_City')
+    .refine(isResolvableTimeZone, { message: 'PLAUSIBLE_SITE_TIMEZONE must be a valid IANA timezone name' }),
   UMAMI_URL: z.url().optional(),
   UMAMI_USERNAME: z.string().min(1).optional(),
   UMAMI_PASSWORD: z.string().min(1).optional(),
@@ -84,96 +121,143 @@ export type AnalyticsRange = { kind: 'preset'; period: PlausiblePeriod } | { kin
 const DAY_MS = 24 * 60 * 60 * 1_000;
 
 /**
- * Sentinel start for "all time" when a downstream API needs a concrete
- * timestamp (Umami takes startAt/endAt, it has no all-time shorthand). It
- * predates the platform, so it means "everything that exists".
+ * Sentinel start for "all time" when a downstream API needs a concrete date
+ * (Umami takes startAt/endAt, it has no all-time shorthand). It predates the
+ * platform, so it means "everything that exists".
  */
-const ALL_TIME_START_MS = Date.UTC(2020, 0, 1);
+const ALL_TIME_START = '2020-01-01';
 
 function dayKey(ms: number): string {
   return new Date(ms).toISOString().slice(0, 10);
 }
 
-function startOfUtcDay(ms: number): number {
-  const d = new Date(ms);
-  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+/* Calendar arithmetic on `YYYY-MM-DD` strings, anchored at UTC midnight.
+ * Only whole days and whole months are ever added, so no DST transition can
+ * shift a boundary: the strings are labels for calendar days, not instants. */
+function dayMs(day: string): number {
+  return Date.parse(`${day}T00:00:00Z`);
 }
 
-function startOfUtcMonth(ms: number, monthsBack = 0): number {
-  const d = new Date(ms);
-  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth() - monthsBack, 1);
+function addDays(day: string, delta: number): string {
+  return dayKey(dayMs(day) + delta * DAY_MS);
+}
+
+function firstOfMonth(day: string, monthsBack = 0): string {
+  const d = new Date(dayMs(day));
+  return dayKey(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() - monthsBack, 1));
+}
+
+/** Inclusive day count, so a single-day range is 1 and not 0. */
+function daysBetween(from: string, to: string): number {
+  return Math.round((dayMs(to) - dayMs(from)) / DAY_MS) + 1;
+}
+
+/**
+ * Today's calendar date in a given timezone.
+ *
+ * `en-CA` is used purely because it formats as `YYYY-MM-DD`; no locale is
+ * being asserted about the user.
+ */
+export function todayInZone(timeZone: string, now: number = Date.now()): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date(now));
 }
 
 export interface ResolvedRange {
-  /** Value handed to Plausible's `date_range`. */
-  dateRange: string | [string, string];
-  /** Inclusive day bounds, UTC — what Umami and the comparison window use. */
+  /**
+   * ALWAYS an explicit inclusive [from, to] pair, never a preset shorthand.
+   * See resolveRange for why this is load-bearing.
+   */
+  dateRange: [string, string];
+  /** The same bounds as calendar days — what the UI and every export print. */
+  from: string;
+  to: string;
+  /** Inclusive instant bounds, UTC — what Umami's startAt/endAt use. */
   startMs: number;
   endMs: number;
   /** The equally long window immediately before this one, or null when there isn't one. */
   previous: [string, string] | null;
-  /** Stable cache-key fragment. */
+  /** True for the `all` preset, whose leading emptiness must not be drawn. */
+  allTime: boolean;
+  /** Stable cache-key fragment — includes the RESOLVED dates, not just the label. */
   key: string;
 }
 
 /**
  * Resolve a selection to everything the readers need.
  *
- * Two things this fixes. First, the behavioural card used to translate `month`
- * to "the last 30 days" while Plausible read it as "since the 1st", so the two
- * halves of the same screen silently described different windows. One resolver
- * now feeds both. Second, it produces the previous-period window, which is
- * what turns a number into a direction.
+ * WHY THIS NEVER HANDS PLAUSIBLE A PRESET STRING, which it used to do:
  *
- * Bounds are computed in UTC. Plausible evaluates its own shorthands in the
- * SITE's timezone, so on a non-UTC site the comparison window can differ from
- * the headline window by up to a day at the edges; the headline itself stays
- * exactly what Plausible's dashboard shows, which is the number an operator
- * will cross-check.
+ * Passing `"6mo"` through verbatim looked like the safest possible choice —
+ * the console would agree with Plausible's own dashboard for the same
+ * selection, which is the number an operator cross-checks. It was the bug.
+ * Plausible resolves `6mo` as the last six COMPLETE calendar months, ending
+ * on the last day of last month, in the SITE's timezone. This resolver
+ * computed its own bounds, in UTC, running to today. Nothing reconciled them,
+ * so for six months of every year the two disagreed about a whole month —
+ * and `fillDailySeries` dutifully padded the difference with zeros, reporting
+ * "nobody came in August" for a window Plausible had never been asked about.
+ * Measured in production 2026-08-27: every preset except `day` disagreed.
+ *
+ * So one system resolves the window and BOTH use it. Plausible echoes an
+ * explicit range back unchanged (verified), which also gives the drift guard
+ * in `getPlausibleOverview` something exact to assert against. Two follow-on
+ * defects close with it: the previous-period window is derived from the same
+ * dates and can no longer overlap the current one (`6mo` used to compare
+ * February against itself), and the dates the exports print as provenance are
+ * now the dates the figures actually came from.
+ *
+ * The trade is deliberate and worth stating: for `6mo`, `12mo` and `year` the
+ * console no longer matches Plausible's own dashboard, because we include the
+ * current month and Plausible does not. Ours is the reading an operator
+ * means by "last 6 months", and it is labelled with its real dates either way.
  */
-export function resolveRange(range: AnalyticsRange, now: number = Date.now()): ResolvedRange {
-  const today = startOfUtcDay(now);
-  const endMs = today + DAY_MS - 1;
+export function resolveRange(
+  range: AnalyticsRange,
+  now: number = Date.now(),
+  timeZone: string = getPulseConfig().PLAUSIBLE_SITE_TIMEZONE,
+): ResolvedRange {
+  const today = todayInZone(timeZone, now);
 
-  if (range.kind === 'custom') {
-    const startMs = Date.parse(`${range.from}T00:00:00Z`);
-    const customEnd = Date.parse(`${range.to}T00:00:00Z`) + DAY_MS - 1;
-    const lengthMs = customEnd + 1 - startMs;
-    return {
-      dateRange: [range.from, range.to],
-      startMs,
-      endMs: customEnd,
-      previous: [dayKey(startMs - lengthMs), dayKey(startMs - DAY_MS)],
-      key: `custom:${range.from}:${range.to}`,
-    };
-  }
-
-  const startMs = (() => {
+  const [from, to, allTime] = ((): [string, string, boolean] => {
+    if (range.kind === 'custom') return [range.from, range.to, false];
     switch (range.period) {
       case 'day':
-        return today;
+        return [today, today, false];
       case '7d':
-        return today - 6 * DAY_MS;
+        return [addDays(today, -6), today, false];
       case '30d':
-        return today - 29 * DAY_MS;
+        return [addDays(today, -29), today, false];
       case 'month':
-        return startOfUtcMonth(now);
+        return [firstOfMonth(today), today, false];
       case '6mo':
-        return startOfUtcMonth(now, 5);
+        return [firstOfMonth(today, 5), today, false];
       case '12mo':
-        return startOfUtcMonth(now, 11);
+        return [firstOfMonth(today, 11), today, false];
       case 'year':
-        return Date.UTC(new Date(now).getUTCFullYear(), 0, 1);
+        return [`${today.slice(0, 4)}-01-01`, today, false];
       case 'all':
-        return ALL_TIME_START_MS;
+        return [ALL_TIME_START, today, true];
     }
   })();
 
-  // "All time" has no comparable window before it — say so instead of inventing one.
-  const previous: [string, string] | null =
-    range.period === 'all' ? null : [dayKey(startMs - (endMs + 1 - startMs)), dayKey(startMs - DAY_MS)];
+  const length = daysBetween(from, to);
 
-  return { dateRange: range.period, startMs, endMs, previous, key: range.period };
+  return {
+    dateRange: [from, to],
+    from,
+    to,
+    startMs: dayMs(from),
+    endMs: dayMs(to) + DAY_MS - 1,
+    // "All time" has no comparable window before it — say so instead of inventing one.
+    previous: allTime ? null : [addDays(from, -length), addDays(from, -1)],
+    allTime,
+    key: range.kind === 'custom' ? `custom:${from}:${to}` : `${range.period}:${from}:${to}`,
+  };
 }
 
 /** Parse the wire form (`period` + optional `from`/`to`) into a range, or null if invalid. */
@@ -238,6 +322,12 @@ export interface PlausibleAggregate {
   visit_duration: number;
 }
 
+/** A window mismatch between what we asked for and what the upstream answered. */
+export interface RangeDrift {
+  askedFor: [string, string];
+  answeredFor: [string, string];
+}
+
 export interface PlausibleOverview {
   aggregate: PlausibleAggregate;
   timeseries: { date: string; visitors: number; pageviews: number }[];
@@ -248,6 +338,10 @@ export interface PlausibleOverview {
    * which would render as a dramatic and entirely fictional decline.
    */
   previous: (PlausibleAggregate & { from: string; to: string }) | null;
+  /** Whether GA4-imported history is inside these figures — see PlausibleMeta. */
+  imports: PlausibleMeta;
+  /** Non-null only when Plausible answered for a window we did not ask for. */
+  rangeDrift: RangeDrift | null;
 }
 
 export interface PlausibleBreakdownRow {
@@ -256,6 +350,17 @@ export interface PlausibleBreakdownRow {
   pageviews: number;
   bounceRate: number;
   visitDuration: number;
+}
+
+/**
+ * Rows plus the provenance that makes them readable.
+ *
+ * The rows alone were the bug: a breakdown summing to 48 under a headline of
+ * 1,120 is not wrong, it is INCOMPLETE, and only `imports` can say which.
+ */
+export interface PlausibleBreakdown {
+  rows: PlausibleBreakdownRow[];
+  imports: PlausibleMeta;
 }
 
 export function plausibleConfigured(cfg: PulseConfig): boolean {
@@ -293,20 +398,129 @@ function filterCacheKey(filters?: PlausibleFilter[]): string {
  * day it shipped: 539 stored pageviews → 110 in scope, 57 visitors → 48.
  */
 const MARKETING_ROOTS = ['how-it-works', 'families', 'faq', 'legal'] as const;
-export const ACQUISITION_SCOPE: PlausibleLogicalFilter = [
-  'or',
-  [
-    ['is', 'event:page', ['/', ...MARKETING_ROOTS.map((r) => `/${r}`)]],
-    ['matches', 'event:page', [`^/(${MARKETING_ROOTS.join('|')})/.*$`]],
-  ],
-];
+
+const SCOPE_PAGES = ['/', ...MARKETING_ROOTS.map((r) => `/${r}`)];
+const SCOPE_PATTERN = `^/(${MARKETING_ROOTS.join('|')})/.*$`;
+
+/** The allowlist expressed against ONE page-valued dimension. */
+function pageScopeOn(dimension: string): PlausibleLogicalFilter {
+  return [
+    'or',
+    [
+      ['is', dimension, SCOPE_PAGES],
+      ['matches', dimension, [SCOPE_PATTERN]],
+    ],
+  ];
+}
+
+export const ACQUISITION_SCOPE: PlausibleLogicalFilter = pageScopeOn('event:page');
+
+/*
+ * Session-level page dimensions need the scope applied to THEMSELVES.
+ *
+ * `ACQUISITION_SCOPE` filters `event:page` — the page a pageview happened on.
+ * `visit:entry_page` and `visit:exit_page` describe where a SESSION started
+ * and ended, and a session qualifies for an event-level filter as soon as any
+ * one of its events matches. So a visitor who landed on `/`, signed in and
+ * worked in the console satisfied the scope and then reported an entry or
+ * exit page of `/admin/analytics` — out-of-boundary paths surfacing in a
+ * report that states it covers public marketing traffic only.
+ *
+ * Found by an outside reader of the exports on 2026-08-25, four days after
+ * the read-time correction shipped and was recorded as verified: the
+ * verification measured `event:page` and generalised to "zero out-of-boundary
+ * rows", which was true of the one dimension it looked at and false of two
+ * others. Measured before this fix, over twelve months: 7 of 11 entry-page
+ * rows and 11 of 17 exit-page rows were out of boundary, `/admin/roles` and
+ * `/admin/generation` among them. Both read zero after it.
+ */
+const SESSION_PAGE_DIMENSIONS: Partial<Record<PlausibleDimensionKey, string>> = {
+  entry_page: 'visit:entry_page',
+  exit_page: 'visit:exit_page',
+};
+
+/** The scope clauses a breakdown of `dimensionKey` needs beyond the always-on one. */
+export function dimensionScope(dimensionKey: PlausibleDimensionKey): PlausibleQueryFilter[] {
+  const sessionDimension = SESSION_PAGE_DIMENSIONS[dimensionKey];
+  return sessionDimension ? [pageScopeOn(sessionDimension)] : [];
+}
 
 /** Combine the always-on scope with whatever the caller asked for. */
 export function scoped(filters?: PlausibleQueryFilter[]): PlausibleQueryFilter[] {
   return filters?.length ? [ACQUISITION_SCOPE, ...filters] : [ACQUISITION_SCOPE];
 }
 
-async function plausibleQuery(cfg: PulseConfig, body: Record<string, unknown>): Promise<unknown | null> {
+/**
+ * What Plausible said ABOUT its own answer, as opposed to the answer.
+ *
+ * `pulse.ts` used to parse `results` and drop everything else on the floor,
+ * which is how a partial answer came to be rendered as a complete one: our
+ * always-on `event:page` filter cannot be applied to GA4-imported data (it is
+ * stored pre-aggregated per dimension), so Plausible drops twelve months of
+ * imported history from every non-page breakdown — and says so, in `meta`, on
+ * every single response. An outside reader saw source/country/device summing
+ * to 48 under a headline of 1,120 and reasonably concluded that dimensional
+ * tracking had only been switched on in late July. Nothing had been switched
+ * on or off. We were throwing the explanation away on arrival.
+ *
+ * §1.14: a caller that reads, modifies and presents a value must be able to
+ * tell "this is everything" from "this is what I could get".
+ */
+export interface PlausibleMeta {
+  /** False when GA4-imported history is missing from these numbers. */
+  importsIncluded: boolean;
+  /** Plausible's machine-readable reason, e.g. `unsupported_query`, `out_of_range`. */
+  importsSkipReason: string | null;
+  /** Plausible's own sentence about it, worth showing verbatim. */
+  importsWarning: string | null;
+  /** The window Plausible says it answered for — the drift guard's evidence. */
+  queried: [string, string] | null;
+}
+
+const PlausibleEnvelope = z.object({
+  results: z.array(z.object({ dimensions: z.array(z.union([z.string(), z.number()])), metrics: z.array(z.number()) })),
+  meta: z
+    .object({
+      imports_included: z.boolean().optional(),
+      imports_skip_reason: z.string().optional(),
+      imports_warning: z.string().optional(),
+    })
+    .optional(),
+  query: z.object({ date_range: z.array(z.string()).optional() }).optional(),
+});
+
+export interface PlausibleAnswer {
+  results: { dimensions: (string | number)[]; metrics: number[] }[];
+  meta: PlausibleMeta;
+}
+
+function readMeta(parsed: z.infer<typeof PlausibleEnvelope>): PlausibleMeta {
+  const range = parsed.query?.date_range;
+  return {
+    // Absent means "not applicable to this query" — never silently "yes".
+    importsIncluded: parsed.meta?.imports_included ?? false,
+    importsSkipReason: parsed.meta?.imports_skip_reason ?? null,
+    importsWarning: parsed.meta?.imports_warning ?? null,
+    queried:
+      range && range.length === 2 && range[0] && range[1]
+        ? [range[0].slice(0, 10), range[1].slice(0, 10)]
+        : null,
+  };
+}
+
+/** The widest (i.e. most cautious) reading of several answers that make up one panel. */
+function mergeMeta(parts: (PlausibleMeta | null | undefined)[]): PlausibleMeta {
+  const present = parts.filter((p): p is PlausibleMeta => Boolean(p));
+  const skipped = present.find((p) => !p.importsIncluded);
+  return {
+    importsIncluded: present.length > 0 && !skipped,
+    importsSkipReason: skipped?.importsSkipReason ?? null,
+    importsWarning: skipped?.importsWarning ?? null,
+    queried: present.find((p) => p.queried)?.queried ?? null,
+  };
+}
+
+async function plausibleQuery(cfg: PulseConfig, body: Record<string, unknown>): Promise<PlausibleAnswer | null> {
   const res = await fetch(`${cfg.PLAUSIBLE_URL}/api/v2/query`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${cfg.PLAUSIBLE_API_KEY}`, 'Content-Type': 'application/json' },
@@ -326,12 +540,10 @@ async function plausibleQuery(cfg: PulseConfig, body: Record<string, unknown>): 
     }),
   });
   if (!res.ok) return null;
-  return res.json();
+  const parsed = PlausibleEnvelope.safeParse(await res.json());
+  if (!parsed.success) return null;
+  return { results: parsed.data.results, meta: readMeta(parsed.data) };
 }
-
-const PlausibleResults = z.object({
-  results: z.array(z.object({ dimensions: z.array(z.union([z.string(), z.number()])), metrics: z.array(z.number()) })),
-});
 
 function toAggregate(metrics: number[] | undefined): PlausibleAggregate {
   const m = metrics ?? [0, 0, 0, 0];
@@ -358,14 +570,23 @@ function toAggregate(metrics: number[] | undefined): PlausibleAggregate {
  * `all` fills only from the first day that HAS data: years of leading zeros
  * from before the site existed mean nothing, and the gap that matters is
  * always the recent one.
+ *
+ * PRECONDITION, and the whole reason this function became dangerous: the
+ * window handed in must be the window the UPSTREAM ANSWERED FOR, not the one
+ * the caller hoped for. Padding is honest only when a missing day means "no
+ * traffic that day"; if it can also mean "never asked", the same zero carries
+ * two meanings and the reader cannot tell them apart. That is exactly what
+ * happened while presets were passed to Plausible verbatim — see resolveRange.
+ * `resolveRange` now emits explicit dates and `getPlausibleOverview` asserts
+ * Plausible echoed them back, so a missing day has one meaning again.
  */
 export function fillDailySeries(
   rows: { date: string; visitors: number; pageviews: number }[],
-  resolved: Pick<ResolvedRange, 'startMs' | 'endMs' | 'dateRange'>,
+  resolved: Pick<ResolvedRange, 'startMs' | 'endMs' | 'allTime'>,
 ): { date: string; visitors: number; pageviews: number }[] {
   const byDay = new Map(rows.map((r) => [r.date, r]));
 
-  const allTime = resolved.dateRange === 'all';
+  const allTime = resolved.allTime;
   const firstWithData = rows.length ? Date.parse(`${rows[0]?.date}T00:00:00Z`) : Number.NaN;
   const from =
     allTime && Number.isFinite(firstWithData) ? Math.max(resolved.startMs, firstWithData) : resolved.startMs;
@@ -396,6 +617,27 @@ export function fillDailySeries(
   return [...out.values()].sort((a, b) => a.date.localeCompare(b.date));
 }
 
+/**
+ * The window we ASKED for against the window Plausible says it ANSWERED for.
+ *
+ * With explicit dates these are identical — verified in production, and that
+ * is the point: an assertion that is normally a no-op is exactly what catches
+ * the day it stops being one (a site timezone change, an API semantics change,
+ * a future refactor that reintroduces a shorthand). The defect this replaces
+ * ran undetected for weeks because nothing ever compared the two.
+ *
+ * Reported, never silently corrected: if the two disagree, the numbers are
+ * for some other window and the operator needs to know that, not be shown a
+ * quietly relabelled chart.
+ */
+function detectRangeDrift(resolved: ResolvedRange, meta: PlausibleMeta): RangeDrift | null {
+  if (!meta.queried) return null;
+  const [askedFrom, askedTo] = resolved.dateRange;
+  const [gotFrom, gotTo] = meta.queried;
+  if (askedFrom === gotFrom && askedTo === gotTo) return null;
+  return { askedFor: [askedFrom, askedTo], answeredFor: [gotFrom, gotTo] };
+}
+
 /** Aggregate + per-day timeseries + previous-period comparison. Null on any upstream failure. */
 export function getPlausibleOverview(range: AnalyticsRange, filters?: PlausibleFilter[]): Promise<PlausibleOverview | null> {
   const cfg = getPulseConfig();
@@ -415,26 +657,18 @@ export function getPlausibleOverview(range: AnalyticsRange, filters?: PlausibleF
         : Promise.resolve(null),
     ]);
     if (!agg || !series) return null;
-    const aggParsed = PlausibleResults.safeParse(agg);
-    const seriesParsed = PlausibleResults.safeParse(series);
-    if (!aggParsed.success || !seriesParsed.success) return null;
 
     // A failed comparison degrades to "no comparison shown" and never blocks
     // the headline numbers, which are the reason the page exists.
-    const priorParsed = prior ? PlausibleResults.safeParse(prior) : null;
     const previous =
-      resolved.previous && priorParsed?.success
-        ? {
-            ...toAggregate(priorParsed.data.results[0]?.metrics),
-            from: resolved.previous[0],
-            to: resolved.previous[1],
-          }
+      resolved.previous && prior
+        ? { ...toAggregate(prior.results[0]?.metrics), from: resolved.previous[0], to: resolved.previous[1] }
         : null;
 
     return {
-      aggregate: toAggregate(aggParsed.data.results[0]?.metrics),
+      aggregate: toAggregate(agg.results[0]?.metrics),
       timeseries: fillDailySeries(
-        seriesParsed.data.results.map((r) => ({
+        series.results.map((r) => ({
           date: String(r.dimensions[0] ?? ''),
           visitors: r.metrics[0] ?? 0,
           pageviews: r.metrics[1] ?? 0,
@@ -442,6 +676,8 @@ export function getPlausibleOverview(range: AnalyticsRange, filters?: PlausibleF
         resolved,
       ),
       previous,
+      imports: mergeMeta([agg.meta, series.meta, prior?.meta]),
+      rangeDrift: detectRangeDrift(resolved, agg.meta) ?? detectRangeDrift(resolved, series.meta),
     };
   });
 }
@@ -452,12 +688,15 @@ export function getPlausibleBreakdown(
   dimensionKey: PlausibleDimensionKey,
   limit: number,
   filters?: PlausibleFilter[],
-): Promise<PlausibleBreakdownRow[] | null> {
+): Promise<PlausibleBreakdown | null> {
   const cfg = getPulseConfig();
   const resolved = resolveRange(range);
   const key = `plausible:breakdown:${resolved.key}:${dimensionKey}:${limit}:${filterCacheKey(filters)}`;
   return cached(key, async () => {
     const dimension = PLAUSIBLE_DIMENSIONS[dimensionKey];
+    // The session-page dimensions need the allowlist restated against
+    // themselves; every other dimension is fully covered by the always-on one.
+    const scopeClauses = dimensionScope(dimensionKey);
     const query = (metrics: string[]): Record<string, unknown> => {
       const body: Record<string, unknown> = {
         metrics,
@@ -466,7 +705,8 @@ export function getPlausibleBreakdown(
         order_by: [[metrics[0], 'desc']], // metrics[0] is always 'visitors' — always sortable
         pagination: { limit },
       };
-      if (filters?.length) body.filters = filters;
+      const combined = [...scopeClauses, ...(filters ?? [])];
+      if (combined.length) body.filters = combined;
       return body;
     };
     // Plausible Stats API v2 rejects some metric/dimension combos with a 400 — most
@@ -481,18 +721,19 @@ export function getPlausibleBreakdown(
       ['visitors'],
     ];
     for (const metrics of metricSets) {
-      const raw = await plausibleQuery(cfg, query(metrics));
-      if (!raw) continue;
-      const parsed = PlausibleResults.safeParse(raw);
-      if (!parsed.success) continue;
+      const answer = await plausibleQuery(cfg, query(metrics));
+      if (!answer) continue;
       const at = (name: string): number => metrics.indexOf(name);
-      return parsed.data.results.map((r) => ({
-        label: String(r.dimensions[0] ?? ''),
-        visitors: r.metrics[at('visitors')] ?? 0,
-        pageviews: at('pageviews') >= 0 ? (r.metrics[at('pageviews')] ?? 0) : 0,
-        bounceRate: at('bounce_rate') >= 0 ? (r.metrics[at('bounce_rate')] ?? 0) : 0,
-        visitDuration: at('visit_duration') >= 0 ? (r.metrics[at('visit_duration')] ?? 0) : 0,
-      }));
+      return {
+        rows: answer.results.map((r) => ({
+          label: String(r.dimensions[0] ?? ''),
+          visitors: r.metrics[at('visitors')] ?? 0,
+          pageviews: at('pageviews') >= 0 ? (r.metrics[at('pageviews')] ?? 0) : 0,
+          bounceRate: at('bounce_rate') >= 0 ? (r.metrics[at('bounce_rate')] ?? 0) : 0,
+          visitDuration: at('visit_duration') >= 0 ? (r.metrics[at('visit_duration')] ?? 0) : 0,
+        })),
+        imports: answer.meta,
+      };
     }
     return null;
   });
@@ -530,6 +771,17 @@ export interface PlausibleReportData {
   previous: { visitors: number; pageviews: number; bounceRate: number; visitDuration: number; from: string; to: string } | null;
   timeseries: { date: string; visitors: number; pageviews: number }[];
   breakdowns: Partial<Record<PlausibleDimensionKey, PlausibleBreakdownRow[]>>;
+  /** Whether the headline figures include GA4-imported history. */
+  imports: PlausibleMeta;
+  /**
+   * The dimensions whose rows EXCLUDE imported history, so every export can
+   * say so beside the affected table instead of letting a reader infer a
+   * tracking gap from an unexplained shortfall. This is the finding that cost
+   * an outside reviewer a whole section of wrong conclusions.
+   */
+  breakdownsWithoutImports: PlausibleDimensionKey[];
+  /** Non-null only when Plausible answered for a window we did not ask for. */
+  rangeDrift: RangeDrift | null;
 }
 
 /*
@@ -591,15 +843,21 @@ export async function getPlausibleReportData(
   ]);
   if (!overview) return null;
   const breakdowns: PlausibleReportData['breakdowns'] = {};
+  const breakdownsWithoutImports: PlausibleDimensionKey[] = [];
   for (const [i, dim] of dims.entries()) {
-    const rows = breakdownLists[i];
-    if (!rows) return null;
-    breakdowns[dim] = rows;
+    const breakdown = breakdownLists[i];
+    if (!breakdown) return null;
+    breakdowns[dim] = breakdown.rows;
+    if (!breakdown.imports.importsIncluded) breakdownsWithoutImports.push(dim);
   }
   return {
     period: range.kind === 'custom' ? 'custom' : range.period,
-    from: new Date(resolved.startMs).toISOString().slice(0, 10),
-    to: new Date(resolved.endMs).toISOString().slice(0, 10),
+    // The dates the figures ACTUALLY cover. They used to be this service's
+    // own assumption about a preset while Plausible answered for something
+    // else, which made the provenance line the export exists to provide the
+    // least trustworthy line in the file.
+    from: resolved.from,
+    to: resolved.to,
     audience,
     generatedAt: new Date().toISOString(),
     appliedFilters: describeFilters(filters),
@@ -621,6 +879,9 @@ export async function getPlausibleReportData(
       : null,
     timeseries: overview.timeseries,
     breakdowns,
+    imports: overview.imports,
+    breakdownsWithoutImports,
+    rangeDrift: overview.rangeDrift,
   };
 }
 

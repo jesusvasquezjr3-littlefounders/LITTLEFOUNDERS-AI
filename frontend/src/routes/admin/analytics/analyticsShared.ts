@@ -156,6 +156,29 @@ export interface Aggregate {
   visit_duration: number;
 }
 
+/*
+ * What the analytics API said ABOUT its answer, as opposed to the answer.
+ *
+ * Core used to parse the rows and discard this. That is how a breakdown
+ * covering 48 visitors came to be displayed under a headline of 1,120 with
+ * nothing on screen to explain the gap — and how an outside reader of the
+ * exports concluded, reasonably and wrongly, that dimensional tracking had
+ * been switched on late (WALKTHROUGH, 2026-08-27).
+ */
+export interface ImportsMeta {
+  /** False when historical imported (GA4) traffic is missing from these figures. */
+  importsIncluded: boolean;
+  importsSkipReason: string | null;
+  importsWarning: string | null;
+  queried: [string, string] | null;
+}
+
+/** The upstream answered for a window we did not ask for. Should always be null. */
+export interface RangeDrift {
+  askedFor: [string, string];
+  answeredFor: [string, string];
+}
+
 export interface OverviewData {
   period: Period;
   /** Resolved window bounds. The UI states these, not the label it asked for. */
@@ -165,6 +188,9 @@ export interface OverviewData {
   timeseries: { date: string; visitors: number; pageviews: number }[];
   /** Null when there is nothing to compare against, or the comparison read failed. */
   previous: (Aggregate & { from: string; to: string }) | null;
+  imports: ImportsMeta;
+  /** Non-null means the figures describe a different window than the one shown. */
+  rangeDrift: RangeDrift | null;
 }
 
 /*
@@ -287,6 +313,7 @@ export interface BreakdownData {
   period: string;
   dimension: string;
   rows: BreakdownRow[];
+  imports: ImportsMeta;
 }
 
 /**

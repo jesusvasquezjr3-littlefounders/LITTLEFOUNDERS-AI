@@ -35,6 +35,9 @@ const REPORT: PlausibleReportData = {
     ],
     country: [{ label: 'MX', visitors: 120, pageviews: 340, bounceRate: 41.5, visitDuration: 95 }],
   },
+  imports: { importsIncluded: true, importsSkipReason: null, importsWarning: null, queried: ['2026-07-15', '2026-08-13'] },
+  breakdownsWithoutImports: [],
+  rangeDrift: null,
 };
 
 describe('resolveRange', () => {

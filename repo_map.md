@@ -189,6 +189,7 @@ frontend/
         __tests__/
       stage/
         __tests__/
+goal/
 oracle/
   scripts/
     fixtures/
@@ -6501,7 +6502,13 @@ export default tseslint.config(
 
 ```
 import { describe, expect, it } from 'vitest';
-import { ACQUISITION_SCOPE, scoped, type PlausibleQueryFilter } from '../services/pulse.js';
+import {
+  ACQUISITION_SCOPE,
+  PLAUSIBLE_DIMENSION_KEYS,
+  dimensionScope,
+  scoped,
+  type PlausibleQueryFilter,
+} from '../services/pulse.js';
 
 /*
  * The stored Plausible history predates the autoCapturePageviews fix and
@@ -6509,12 +6516,6 @@ import { ACQUISITION_SCOPE, scoped, type PlausibleQueryFilter } from '../service
  * permitted. Plausible cannot delete by filter, so the correction is applied
  * at read time — which means these predicates ARE the correction, and a
  * regression here silently republishes contaminated numbers.
- */
-
-/** Mirrors the reference implementation of the filter Plausible evaluates. */
-function inScope(path: string): boolean {
-  const [, clauses] = ACQUISITION_SCOPE;
-  return clauses.some((clause) => {
 ```
 
 ### backend/src/__tests__/admin-emails.test.ts
@@ -6615,6 +6616,26 @@ import { jsonResponse, mintToken } from './helpers.js';
  */
 
 const ADMIN_ID = '22222222-2222-4222-8222-222222222222';
+```
+
+### backend/src/__tests__/analytics-range-integrity.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  PLAUSIBLE_PERIODS,
+  fillDailySeries,
+  getPlausibleBreakdown,
+  getPlausibleOverview,
+  resetPulseForTests,
+  resolveRange,
+  todayInZone,
+  type PlausiblePeriod,
+} from '../services/pulse.js';
+import { jsonResponse } from './helpers.js';
+
+/*
+ * The window this console reports on, asserted against the window the upstream
 ```
 
 ### backend/src/__tests__/analytics-report-pdf.test.ts
@@ -19389,6 +19410,26 @@ const WorldChoropleth = lazy(() =>
 );
 ```
 
+### frontend/src/routes/admin/analytics/AnalyticsNoticesLab.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { Card, Icon } from '@/components/ui';
+
+/*
+ * `/dev/analytics-notices` — the provenance notices, rendered without an
+ * admin session.
+ *
+ * These three notices only appear when the analytics API reports something
+ * unusual: a window mismatch, or a breakdown that excludes imported history.
+ * That makes them the hardest part of /admin/analytics to look at, and they
+ * are the part where being wrong is most expensive — each one exists to stop
+ * a reader inventing an explanation for a number that surprised them.
+ *
+ * They exist at all because an outside reviewer read three of our exports on
+ * 2026-08-25 and reported two tracking failures that had never happened. The
+```
+
 ### frontend/src/routes/admin/analytics/AnalyticsTrendChart.test.tsx
 
 ```
@@ -27388,6 +27429,26 @@ export default defineConfig({
   server: {
     port: 5173,
   },
+```
+
+### goal/financial-education-images-100.md
+
+```
+# GOAL — Terminar al 100% las imágenes del curso `financial-education`
+
+> Generas las imágenes con TU PROPIO sistema de generación (la suscripción de
+> ChatGPT/Codex), NUNCA con Prism (`picturegen/`) ni con DashScope. Esa regla
+> viene de una decisión explícita del owner y se explica en la sección 1. Si
+> en algún punto un comando de este documento pareciera pedirte llamar a
+> DashScope, DETENTE — es un error del documento, no una instrucción real.
+
+> Este documento reemplaza cualquier versión anterior de este brief que
+> hayas visto (incluida una versión previa, incorrecta, de ESTE MISMO
+> archivo, que asumía por error que ibas a usar `npm run images:backfill` →
+> Prism → DashScope. Esa versión estaba mal. Ignórala si la recuerdas de
+> algún lado).
+
+---
 ```
 
 ### oracle/AGENTS.md
