@@ -928,7 +928,7 @@ name: Vault drift probe
 
 > **SYNC RULE:** `AGENTS.md` and `CLAUDE.md` are **byte-identical**. Any edit to one MUST be mirrored to the other in the same commit. Enforced by `agent/tools/check-docs-sync.sh` (run via `npm run docs:check`) and CI.
 >
-> **Last updated:** 2026-07-31 · **Language:** all project documentation is written in English.
+> **Last updated:** 2026-08-27 · **Language:** all project documentation is written in English.
 
 ---
 
@@ -948,7 +948,7 @@ name: Vault drift probe
 
 > **SYNC RULE:** `AGENTS.md` and `CLAUDE.md` are **byte-identical**. Any edit to one MUST be mirrored to the other in the same commit. Enforced by `agent/tools/check-docs-sync.sh` (run via `npm run docs:check`) and CI.
 >
-> **Last updated:** 2026-07-31 · **Language:** all project documentation is written in English.
+> **Last updated:** 2026-08-27 · **Language:** all project documentation is written in English.
 
 ---
 

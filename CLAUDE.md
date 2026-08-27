@@ -2,7 +2,7 @@
 
 > **SYNC RULE:** `AGENTS.md` and `CLAUDE.md` are **byte-identical**. Any edit to one MUST be mirrored to the other in the same commit. Enforced by `agent/tools/check-docs-sync.sh` (run via `npm run docs:check`) and CI.
 >
-> **Last updated:** 2026-07-31 · **Language:** all project documentation is written in English.
+> **Last updated:** 2026-08-27 · **Language:** all project documentation is written in English.
 
 ---
 
@@ -15,6 +15,7 @@
 5. **Scope** — confirm the task against the active sprint in `ROADMAP.md`.
 6. **Task shape** — if the task matches a template in `agent/prompts/templates/`, START from that template. Do not re-derive the procedure.
 7. **Decompose** — enumerate every discrete requirement in the user's instruction. You will re-check each one before declaring the task done (§1.12).
+8. **Reach** — if the change adds, renames or removes a public page, or alters what the product IS (a course, an audience, a language, the headline claim), it also belongs in `frontend/scripts/seo/site.mjs` in the SAME commit (§1.15). Skipping it does not break a build; it makes the change invisible to search, to every shared link, and to every AI assistant.
 
 ---
 
@@ -207,6 +208,28 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 - **A Surface That OPTS OUT Of A System Must Be TOLD What The System Decided:** an element excluded from a global mechanism — a light rig, a theme, a locale, a permission model — does not fall back to "no answer"; it silently keeps the DEFAULT one, forever, and looks correct in exactly the condition the default was chosen for. The Tutor's mouth card is on an unlit material because every lit material renders its map solid black (root cause still unfound), so it kept full daylight albedo while the island moved through dawn, dusk and night around it: at Dusk the speaker's mouth photographed as a cream-white rectangle across an orange-lit face, reading as tape, on one of the two characters the camera closes in on BECAUSE they articulate. The opt-out was known and written down; what was missing was passing the system's answer in by hand. Corollaries: an opt-out is a debt with a due date, so record what it stops receiving beside the reason it exists; make the hand-applied value RELATIVE to the default so the untouched case is provably byte-identical rather than merely close; and when the value crosses an encoding boundary, convert it — writing a linear ratio into a slot the renderer reads as sRGB applies it twice, which fixed dusk and turned night's mouth into a BLACK rectangle, the same defect wearing the other colour. It was caught by a screenshot and not by its own unit test, which is the general case here: a defect in a value that is only wrong under a condition nobody photographs is invisible to every gate.
 - **Liveness Must Not Depend On Optional Infrastructure:** `GET /health` is mounted above the rate limiter and every optional dependency, and services open their listener BEFORE connecting to anything optional. A service that cannot serve `/health` fails its platform healthcheck, so coupling it to Redis turned a degraded limiter into a total outage — and awaiting a client that retries its initial connect forever (node-redis does) meant the listener never opened at all, leaving the process alive, unhealthy, and never restarted.
 
+### §1.15 Discoverability & positioning — NON-NEGOTIABLE
+
+**A change that alters what the platform IS, or which pages exist, is not shipped until the outside world can see it.** The public surface is declared in ONE place — `frontend/scripts/seo/site.mjs` — and it is the only thing that is true for a reader who never runs our JavaScript. That reader is the majority: **every social unfurler** (WhatsApp, LinkedIn, Facebook, X, Slack, iMessage) and **almost every AI crawler** read the raw document and nothing else. On 2026-08-27 the entire site answered them with the same 1,080-byte empty shell, and the cost was not a ranking — it was that a shared link showed a grey URL and an assistant asked how to teach a child about money had no content to find.
+
+**What obliges an edit to `site.mjs`, in the same commit:**
+
+| The change | What goes stale if you skip it |
+|---|---|
+| A public page added, renamed, removed, or promoted out of placeholder | The sitemap advertises a 404, or a real page is never discovered. `npm run seo:check` fails the build on a disagreement with the app's own route list |
+| The value proposition, the audience, or the headline claim changes | `PAGES[].meta` titles and descriptions keep selling the old product in search results and in every shared link |
+| A course, subject or age range added or dropped | `SUBJECTS` and `ELEVATOR` keep describing a catalogue we no longer have — and these are what an AI assistant reads out of `llms.txt` and the `Course` structured data when a parent asks it for a recommendation |
+| A language added or dropped | `SITE.locales` and `languageNames` decide whether an assistant tells a Spanish-speaking parent this product speaks their language at all |
+| The positioning line on the share card changes | `npm run seo:cards` (in `frontend/`) must be re-run — the card is a template, not an exported image, and a stale one misrepresents the product to everyone who sees a shared link |
+| Page content meaningfully changes for a reader | `PAGES[].lastmod`, by hand. It is not derived from a file's mtime: git stores no mtimes, so a fresh clone stamps the build time and the field starts lying on every deploy |
+| The domain, or its DNS zone, changes | Search-console ownership lives in a DNS record no deploy can recreate — see DEPLOYMENT.md §1. Losing it un-verifies BOTH consoles silently |
+
+**GEO is not a separate discipline here, it is the same file.** What an answer engine repeats about us comes from `ELEVATOR`, `SUBJECTS`, `MENTORS` and the schema.org graph — so the marketing rule in `site.mjs` is load-bearing rather than stylistic: **never name a vendor, model, framework or internal service in public copy**, describe the product by what a child DOES in it, and claim no number without a source. Structured data carries no rating, review count or user total we cannot evidence — invented review markup is both a Google manual-action risk and a lie told to a parent choosing something for their child.
+
+**Two gates, and they check different things.** `npm run seo:check` validates the declaration; `npm run seo:live` asks production the way a crawler would, and only that one proves the CDN actually delivered it. They have disagreed. Run the live one after any frontend deploy that touches the public surface.
+
+**Failing direction, by construction:** anything not declared in `site.mjs` falls through to `app-shell.html`, which is `noindex`. A route nobody deliberately positioned stays out of the index rather than being excluded by somebody remembering to exclude it — so the cost of forgetting is invisibility, never a lesson or a profile competing with the marketing site in a result page.
+
 ---
 
 ## §2 Companion-document manifest
@@ -326,6 +349,8 @@ All of these must pass, in every service you touched:
 | Incident / recovery procedure learned | `RUNBOOK.md` |
 | New public marketing route | `frontend/src/lib/analytics.tsx` (`MARKETING_PREFIXES`) **and** `backend/src/services/pulse.ts` (`MARKETING_ROOTS`) — the tracker records it, the read-time scope reports it; `npm run paths:check` enforces the pair |
 | New/changed public marketing route, title, description or share copy | `frontend/scripts/seo/site.mjs` — it is the single source for `<head>`, robots.txt, sitemap.xml, llms.txt and the share cards; `npm run seo:check` enforces it against the app's own route list. Changing a card line also means `npm run seo:cards` (frontend) to rebuild the images |
+| Change to what the product IS — a course, subject, age range, language, or the headline claim | `frontend/scripts/seo/site.mjs` (`ELEVATOR`, `SUBJECTS`, `SITE.locales`, `PAGES[].meta`) in the SAME commit — these are what search results, shared links and AI assistants repeat about us (§1.15). Bump `PAGES[].lastmod` by hand when a page's content changed for a reader |
+| Domain or DNS-zone change | `DEPLOYMENT.md` §1 records the records no deploy can recreate — the Search Console CNAME above all, whose loss un-verifies both consoles silently |
 | New/changed Tutor behaviour, prompt, context field or content-ladder rule | `/ORACLE.md` (authoritative) + `oracle/AGENTS.md`; a new field reaching the model ALSO needs `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` |
 | New/changed KartRush deploy, embed allow-list or platform coupling | that repository's `docs/21-DEPLOYMENT.md` (authoritative) + this file §1.5 + `DEPLOYMENT.md` §1 |
 | Change to legal document (any locale) | Mirror to ALL three `/LEGAL/*.md` files + sync `frontend/src/i18n/*/marketing.json` in same commit (§1.8) |
