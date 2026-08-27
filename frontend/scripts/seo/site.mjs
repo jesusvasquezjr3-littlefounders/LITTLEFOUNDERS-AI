@@ -75,6 +75,17 @@ export const SITE = {
    * and no tag is emitted, which is better than an empty one that verifies
    * nothing and looks like it should.
    *
+   * BOTH ARE DELIBERATELY EMPTY, and this is not a pending task.
+   *
+   * Ownership was proved on 2026-08-27 with a Google-issued CNAME in Vercel
+   * DNS, and Bing was imported from Search Console. DNS cannot be dropped by a
+   * deploy or by a refactor of the `<head>`; a meta tag can be dropped by
+   * both, silently. Filling these as a second method would add something to
+   * keep in sync while protecting against nothing DNS does not already cover.
+   *
+   * Fill them only if the DNS record is ever given up. The trade then is the
+   * one above, in the other direction.
+   *
    * Google:  Search Console → Add property → HTML tag → copy the `content` value
    * Bing:    Bing Webmaster Tools → Add site → Meta tag → copy the `content` value
    */

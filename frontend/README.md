@@ -53,13 +53,29 @@ npm run seo:cards --prefix frontend
 It drives headless Chrome over the DevTools Protocol and writes all three
 locales at 1200x630. Set `CHROME_PATH` if Chrome is somewhere unusual.
 
-### The one step that cannot be done from code
+### Search-console ownership lives in DNS — done, and easy to break
 
-Ownership of the site has to be proved once, by a human, in each console:
-Google Search Console and Bing Webmaster Tools. Paste the token each gives you
-into `SITE.verification` in `site.mjs` and redeploy — until then neither
-console will show which queries surface the site or whether the sitemap was
-read. Submit `https://littlefounders.ai/sitemap.xml` in both once verified.
+**Done 2026-08-27.** Google Search Console was verified with a Google-issued
+**CNAME record in Vercel DNS**, and Bing Webmaster Tools was then imported from
+Search Console rather than verified separately. `sitemap.xml` is submitted in
+both, and indexing was requested for `/` and `/how-it-works`.
+
+`SITE.verification` in `site.mjs` is therefore deliberately `null` and should
+stay that way. DNS is the most durable proof available: it cannot be dropped by
+a deploy, a build change or a refactor of the `<head>`, all of which can drop a
+meta tag. A second method is a second thing to keep in sync and protects
+against nothing DNS does not already cover.
+
+**The cost of that choice, which is the part worth remembering:** ownership now
+depends on a DNS record that nothing in this repo can see. Delete it, or lose
+it in a DNS migration, and BOTH consoles un-verify — silently, with the first
+symptom being that the data quietly stops arriving. It is listed in
+`DEPLOYMENT.md` §1 beside the other records a domain move has to carry across.
+
+Two things to expect in the coverage report, so they are not chased as bugs:
+`/families` and `/faq` appear as **excluded by `noindex`** (deliberate — see
+`site.mjs`), and new URLs sit in **"Discovered — currently not indexed"** for
+weeks on a domain with no authority yet. Neither is fixable in code.
 
 ## Icon font is self-hosted, not loaded from Google Fonts
 

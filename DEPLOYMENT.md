@@ -31,6 +31,17 @@ hops. **Domain convention: `<service>-b2c.littlefounders.ai`** (suffix). DNS is
 managed in Vercel's zone (nameservers `ns1/2.vercel-dns.com`); a Railway custom
 domain emits a CNAME + a `_railway-verify` TXT to add there.
 
+**Records in that zone that a deploy cannot recreate — do not delete them, and
+carry them across any DNS migration.** These have no representation in this
+repository, so nothing here will fail if they go missing; the symptom is a
+capability quietly ceasing to work.
+
+| Record | What it holds up | How it fails |
+|---|---|---|
+| Google-issued **CNAME** for Search Console (added 2026-08-27) | Ownership of the Search Console property, and of Bing Webmaster Tools, which was **imported from** Search Console rather than verified separately | Delete it and BOTH consoles un-verify silently. No error anywhere — search performance data simply stops arriving, and nobody notices until somebody goes looking for it. `SITE.verification` in `frontend/scripts/seo/site.mjs` is deliberately empty because DNS is the durable proof; if the record is ever given up, fill that slot in the same change |
+| SES DKIM / domain auth (§ email) | Deliverability of every transactional mail | Mail starts landing in spam rather than bouncing, so it looks like an engagement problem |
+| `_railway-verify` TXT + service CNAMEs | Each public Railway service domain | The service keeps running; only its public hostname stops resolving |
+
 ---
 
 ## §2 Deployment isolation — NON-NEGOTIABLE
