@@ -1281,17 +1281,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## A database CD, part B: the bounded automation (2026-08-27)
+## Migration `0049` is applied; production is at 49/49 (2026-08-27)
 
-`database-cd.yml` runs after `database CI` succeeds on main. It reads the
-production ledger read-only, asks `gate-auto-apply.mjs` whether the pending
-batch is entirely additive, and only then takes a fresh dump and applies. A
-refusal is a successful run that did nothing: failing would page someone every
-time a contraction waits for its release, and a job that cries wolf is a job
-people disable.
+`Tutor deploy (operator) #29`, dispatched by hand with `step: migrate` on
+`6273ac0e`, succeeded in 4m 15s. The code that stopped sending `address` shipped
+first (`9b75bab7`), which is the order that matters: dropping the column while an
+older Core still named it would have made PostgREST reject every
+parent-verification insert.
 
-`--confirm-production` appears exactly once in that file, behind the gate. The
-verify step re-runs the dry-run to confirm nothing is still pending and then
+**First run through the hardened path.** A pre-flight dump taken immediately
+before rather than up to twelve hours earlier, the phase report printed before
+the dry-run, and `NOTIFY pgrst, 'reload schema'` inside the apply transaction -
 ```
 
 ### agent/README.md

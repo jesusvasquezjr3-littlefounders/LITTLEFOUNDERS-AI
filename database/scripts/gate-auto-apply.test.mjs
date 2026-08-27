@@ -7,7 +7,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -106,21 +106,41 @@ test('no input at all refuses rather than throwing', () => {
   assert.match(r.reason, /no dry-run output/);
 });
 
-test('the real tree: 0049 is pending and MUST block auto-apply', () => {
-  // The live case at the time of writing. If this ever flips to true without
-  // 0049 being applied, the classifier has regressed.
-  const dir = fileURLToPath(new URL('../migrations', import.meta.url));
-  const probe = mkdtempSync(join(tmpdir(), 'lf-real-'));
-  try {
-    const f = join(probe, 'p.txt');
-    writeFileSync(f, `pending 0049_drop_parent_verification_address.sql${OK}`);
-    const out = execFileSync(process.execPath, [GATE, f], {
-      env: { ...process.env, MIGRATIONS_DIR: dir },
-      encoding: 'utf8',
-    });
-    assert.match(out, /apply=false/);
-    assert.match(out, /contract/);
-  } finally {
-    rmSync(probe, { recursive: true, force: true });
-  }
+test('a pending contraction blocks auto-apply, whichever migration it is', () => {
+  /*
+   * `0049` was the live case when this was written and was applied on
+   * 2026-08-27. The fixture is synthetic now, and deliberately so: pointing at
+   * a real APPLIED migration would be pointing at an impossible state, since a
+   * pending file is by definition unapplied and therefore carries a header.
+   * The property under test is permanent regardless of which migration is
+   * waiting.
+   */
+  const r = run({ migrations: { '0060_x.sql': CONTRACT }, dryRun: `pending 0060_x.sql${OK}` });
+  assert.equal(r.apply, 'false');
+  assert.match(r.reason, /contract/);
+});
+
+test('THE TWO CLASSIFIERS AGREE, because one guards authoring and the other guards production', () => {
+  /*
+   * `check-migration-phase.mjs` and `gate-auto-apply.mjs` keep SEPARATE copies
+   * of the contraction patterns on purpose: one is the authoring gate, the
+   * other is the safety decision, and a shared import could change both at
+   * once without anyone noticing. The comment in gate-auto-apply.mjs claims the
+   * self-tests assert they agree — this is that assertion, and it did not exist
+   * until the claim was checked.
+   *
+   * If they ever diverge, a migration could pass authoring as additive and then
+   * be refused by the CD, or worse, the reverse.
+   */
+  const list = (file) => {
+    const src = readFileSync(fileURLToPath(new URL(file, import.meta.url)), 'utf8');
+    const block = /const CONTRACTIONS = \[([\s\S]*?)\n\];/.exec(src);
+    assert.ok(block, `${file}: no CONTRACTIONS array found`);
+    // Compare the patterns and their reasons, ignoring whitespace and comments.
+    return block[1]
+      .split('\n')
+      .map((l) => l.replace(/\s+/g, ' ').trim())
+      .filter((l) => l.length > 0 && !l.startsWith('//'));
+  };
+  assert.deepEqual(list('./gate-auto-apply.mjs'), list('./check-migration-phase.mjs'));
 });

@@ -104,13 +104,14 @@ test('a contract migration with no @after-release is rejected', () => {
 });
 
 test('an UNAPPLIED contraction may not hide behind "historical"', () => {
-  // 0049 is above the high-water mark, so it has to name the release that
-  // removed the last reader. "historical" is only true of what already shipped.
+  // Above the high-water mark, so it has to name the release that removed
+  // the last reader. "historical" is only true of what already shipped.
+  // (0049 itself was applied on 2026-08-27 and is no longer a fixture.)
   const sql =
     '-- @phase: contract\n' +
     '-- @after-release: historical (applied before this convention existed)\n' +
     'ALTER TABLE public.t DROP COLUMN c;\n';
-  const r = run({ '0049_x.sql': sql });
+  const r = run({ '0060_x.sql': sql });
   assert.equal(r.code, 1);
   assert.match(r.out, /must name the release/);
 });
@@ -120,12 +121,12 @@ test('an unapplied contraction that names its release passes, and is REPORTED', 
     '-- @phase: contract\n' +
     '-- @after-release: 9b75bab7 (Core stopped sending the field)\n' +
     'ALTER TABLE public.t DROP COLUMN c;\n';
-  const r = run({ '0049_x.sql': sql });
+  const r = run({ '0060_x.sql': sql });
   assert.equal(r.code, 0, r.out);
   // Passing quietly would defeat the point: an operator about to dispatch a
   // migration needs to see which of them cannot go before a deploy.
   assert.match(r.out, /must NOT be applied before their release is live/);
-  assert.match(r.out, /0049_x\.sql/);
+  assert.match(r.out, /0060_x\.sql/);
 });
 
 test('the real migration tree passes its own gate', () => {

@@ -2,6 +2,41 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Migration `0049` is applied; production is at 49/49 (2026-08-27)
+
+`Tutor deploy (operator) #29`, dispatched by hand with `step: migrate` on
+`6273ac0e`, succeeded in 4m 15s. The code that stopped sending `address` shipped
+first (`9b75bab7`), which is the order that matters: dropping the column while an
+older Core still named it would have made PostgREST reject every
+parent-verification insert.
+
+**First run through the hardened path.** A pre-flight dump taken immediately
+before rather than up to twelve hours earlier, the phase report printed before
+the dry-run, and `NOTIFY pgrst, 'reload schema'` inside the apply transaction -
+which matters more here than on an additive migration, because a PostgREST still
+serving a cache that offers a dropped column is worse than one missing a new one.
+
+**What was inferred rather than observed.** The ledger being at 49 comes from the
+run exiting 0 and the migrator asserting a current ledger as its last act, not
+from a read-only probe. The independent confirmation is `vault-drift.yml`, which
+has not had a successful run yet.
+
+**Three artefacts moved with it**, all of them gate-enforced so forgetting one
+turns CI red rather than going unnoticed: ROADMAP's high-water mark and its
+pending-delta sentence, `APPLIED_THROUGH` in the phase gate, and the gate
+self-tests whose fixtures used `0049` as their "above the mark" example - those
+now use a synthetic number, because pointing a test at a real APPLIED migration
+as though it were pending is pointing at an impossible state.
+
+**A claim in a comment that turned out not to exist.** `gate-auto-apply.mjs`
+says its self-tests assert that its contraction patterns agree with
+`check-migration-phase.mjs`'s copy. They did not. The two files keep separate
+copies on purpose - one guards authoring, the other guards production, and a
+shared import could change both at once without anyone noticing - so the
+assertion is real work, and it is written now. If they diverge, a migration
+could pass authoring as additive and then be refused by the CD, or worse, the
+reverse.
+
 ## A database CD, part B: the bounded automation (2026-08-27)
 
 `database-cd.yml` runs after `database CI` succeeds on main. It reads the
@@ -4342,6 +4377,7 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-27 | **A comment claiming a test exists is not a test.** `gate-auto-apply.mjs` said its self-tests assert its contraction patterns match `check-migration-phase.mjs`'s copy; they did not, and now they do. | The two files keep separate copies deliberately, so that one changing does not silently change the other - which only helps if something notices when they diverge. A migration could otherwise pass the authoring gate as additive and be refused by the CD, or the reverse, which is the dangerous direction. The claim was written in the same commit as the file and was false the moment it was written. |
 | 2026-08-27 | **A workflow that PARSES a remote command's stdout needs `LogLevel ERROR` in its SSH config; one that only pipes bytes does not.** Both new database workflows copied `vault-backup.yml`, which lacks it, and `Vault drift probe #1` went red. | ssh prints `Warning: Permanently added 'ssh.railway.com' ...` on a runner with no cached host key. `railway-migrate.sh` merges that into psql's output and reads the warning as a query result - its own source records exactly that, observed 2026-08-21 as `FAIL: unexpected remote ledger state: Warning: ...`. `tutor-deploy.yml`, the proven migrate path, silences it at the source; vault-backup does not need to because it never reads what comes back. Copying the wrong one of two working examples is its own failure mode. |
 | 2026-08-27 | **`database CD` reported SUCCESS on a run whose probe had failed, and that is the more serious of the two defects.** `set -euo pipefail` added to the probe step. | `tee` returns 0 whatever the script did, so a failed dry-run left an empty `probe.txt`; the gate then correctly answered "the dry-run did not complete" and refused, and the workflow finished green in 17s. A broken probe wearing the same tick as a healthy refusal is §1.14 exactly - failure must be distinguishable from emptiness - and it is worse here than a red run, because the whole point of this workflow is to be believed when it says it looked. |
 | 2026-08-27 | **`database CD` exists, and its scope is the entire design: additive migrations only.** 38 of 49 migrations qualify; the other 11 stay on the manual path. | An additive migration cannot break anything already deployed, so a human remembering to apply it buys nothing. A contraction applied early takes the column away while an older service still names it - the mistake made by hand a day earlier - and `0049` deletes stored personal data irreversibly, which deserves a person who has read the dry-run. Automating the safe majority is what makes it reasonable to keep insisting on a human for the rest. |

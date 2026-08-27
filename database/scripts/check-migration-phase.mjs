@@ -79,7 +79,7 @@ const CONTRACTIONS = [
  *
  * Raise this when ROADMAP's `production at **NN/NN**` mark moves.
  */
-const APPLIED_THROUGH = 48;
+const APPLIED_THROUGH = 49;
 const HISTORICAL = 'historical (applied before this convention existed)';
 
 let failed = false;
