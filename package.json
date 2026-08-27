@@ -16,6 +16,7 @@
     "i18n:check": "bash agent/tools/check-i18n.sh",
     "paths:check": "node agent/tools/check-marketing-paths.mjs",
     "seo:check": "node agent/tools/check-seo-surface.mjs",
+    "seo:live": "node agent/tools/check-seo-live.mjs",
     "provider:check": "node agent/tools/check-provider-parity.mjs",
     "deps:check": "bash agent/tools/check-dep-drift.sh",
     "git:diff-check": "bash agent/tools/check-clean-tree.sh",
