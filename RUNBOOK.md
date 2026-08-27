@@ -396,6 +396,23 @@ verified locally and the one most likely to surprise:
 - Delete a throwaway child and confirm the cascade actually removed the profile,
   the role and the guardian link (`select` all three by that user id).
 
+**3b. AFTER the migration succeeds, three things must move together or the
+repository starts lying about production.** All three are checked by gates, so
+forgetting one turns CI red rather than going unnoticed:
+
+  - `ROADMAP.md`: the high-water mark `production at **48/48**` becomes
+    `**49/49**`, and the `unapplied deltas \`0049\`-\`0049\` are PENDING`
+    sentence goes. `repo-consistency.test.mjs` asserts the mark accounts for
+    every migration in the repo, so leaving it stale fails `repo gates`.
+  - `database/scripts/check-migration-phase.mjs`: `APPLIED_THROUGH` 48 -> 49.
+    Otherwise the gate keeps reporting `0049` as a pending contraction forever,
+    and `database CD` keeps refusing batches that are actually fine.
+  - `database/types/database.ts`: regenerate (step 2). It still lists the
+    dropped `address` column.
+
+Do them in one commit, with the run's output pasted into the ROADMAP sentence
+the way `0047` and `0048` recorded theirs.
+
 **4. Check the age screen on the real signup.** A date of birth is now required
 and screened at 13; under-age answers `403 AGE_RESTRICTED`. Confirm an adult
 signup still completes end to end, including the confirmation email, since the
