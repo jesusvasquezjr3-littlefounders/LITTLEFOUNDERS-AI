@@ -1287,16 +1287,16 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Closing the family/kid release: one number read, one file rebuilt, one gate that opened a day late (2026-08-27)
+## The reports were wrong about their own window, and the site was invisible (2026-08-27)
 
-The three items RUNBOOK.md left open after `0049` was applied. Two closed
-cleanly. The third found a defect.
+Two pieces of work, both starting from the same discovery: a thing that looked
+fine from inside was measured from outside and was not.
 
-**The ledger is now observed.** `vault-drift.yml` had never passed since it was
-written - its only run failed before `6273ac0e` silenced ssh's host-key warning
-into the stdout the migrator parses. Dispatched by hand on a tree carrying that
-fix, it came back green in 1m 9s and read 49 receipts with zero pending. The
-sentence in ROADMAP that honestly said "inferred" now says what was measured.
+**A teammate's analytics audit was right that something was broken, and wrong
+about all four causes.** The report said the 6-month view showed zero traffic
+for every day of August while the 30-day view, pulled a minute later, showed
+real data for the same dates. Reproduced against production Plausible from
+inside Core and root-caused to three defects, every one of them ours.
 
 ```
 

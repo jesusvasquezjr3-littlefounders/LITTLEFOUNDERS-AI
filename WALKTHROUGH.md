@@ -2,6 +2,73 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## The reports were wrong about their own window, and the site was invisible (2026-08-27)
+
+Two pieces of work, both starting from the same discovery: a thing that looked
+fine from inside was measured from outside and was not.
+
+**A teammate's analytics audit was right that something was broken, and wrong
+about all four causes.** The report said the 6-month view showed zero traffic
+for every day of August while the 30-day view, pulled a minute later, showed
+real data for the same dates. Reproduced against production Plausible from
+inside Core and root-caused to three defects, every one of them ours.
+
+`resolveRange()` computed its window locally in UTC, then handed Plausible the
+literal preset string and let Plausible resolve it independently, in the site's
+timezone, by different rules. `6mo` there means the last six COMPLETE calendar
+months, ending 31 July; Core believed the window ran to today; `fillDailySeries`
+padded the difference with zeros and reported a collapse that had not happened.
+**Every preset except `day` disagreed.** The comparison window, derived from the
+same wrong start, put February on both sides of its own delta, and the exports
+printed a provenance line naming a window the figures had not come from.
+
+Second, `pulse.ts` parsed `results` off every Plausible response and discarded
+`meta` — including the field saying it had dropped twelve months of imported
+history from a breakdown, and why. That is how a 48-visitor breakdown came to
+sit under a 1,120-visitor headline with nothing on screen to explain it, and how
+a careful outside reader concluded that dimensional tracking had been switched on
+late and that bounce measurement began in March. Neither happened.
+
+Third, the read-time acquisition scope filters `event:page`, but entry and exit
+pages are SESSION dimensions — so `/admin/roles` and `/admin/generation` were
+still surfacing inside a report headed "public marketing traffic only". 7 of 11
+entry rows and 11 of 17 exit rows out of boundary; zero after. ROADMAP had
+recorded that boundary as verified, and it had been — for the one dimension the
+verification measured.
+
+**The drop in visits itself is real, and it is the correction arriving.** Through
+14 August the site drew 96 visitors at 71% Direct and 77% Desktop; after the
+staff-IP exclusions of the 14th and 19th and the `navigator.webdriver` filter of
+the 13th, two remain, both mobile. The desktop-Direct population — the shape of
+staff and automation — is simply gone. Two genuinely external hits landed after
+the change, which is what proves the pipeline still works.
+
+**Then the same question was asked of the marketing site, and the answer was
+worse.** Every URL on littlefounders.ai returned the same 1,080-byte shell:
+`<title>LittleFounders</title>`, no description, no Open Graph, no canonical, no
+structured data, an empty `#root`, and no `robots.txt` or `sitemap.xml` anywhere
+on the domain. Not a ranking problem — an existence one. Social unfurlers never
+run JavaScript, so every link anyone had ever shared appeared as a bare grey
+URL; AI crawlers overwhelmingly do not either, so to an assistant asked how to
+teach a child about money the site had no content at all.
+
+Fixed at build time rather than in React, because a tag that appears after
+hydration reaches none of those readers. `frontend/scripts/seo/site.mjs` is now
+the single source for the public surface, and the build emits per-route HTML with
+a full head and a static content shell assembled from the same i18n bundle the
+app renders — one source, so it cannot drift into serving crawlers something
+different from people. Alongside it: robots.txt with 17 AI crawlers explicitly
+allowed, sitemap.xml, llms.txt, a manifest, and share cards rebuilt from our own
+wordmark and mentor art for no spend. The SPA fallback is now a separate
+`noindex` shell, so a route nobody deliberately positioned stays out of the index
+by construction.
+
+Both pieces are deployed and verified against production, not against reasoning:
+`npm run seo:live` reported every check broken before the deploy and all of them
+passing after, and the analytics fix was confirmed by running the DEPLOYED code
+inside Core — 6mo now spans 2026-03-01 to today, August has 27 days and 48
+visitors where it had none, and entry/exit pages report zero out-of-boundary rows.
+
 ## Closing the family/kid release: one number read, one file rebuilt, one gate that opened a day late (2026-08-27)
 
 The three items RUNBOOK.md left open after `0049` was applied. Two closed
@@ -4703,6 +4770,11 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 ## Known Issues
 
+- **Search Console and Bing Webmaster ownership is unverified (owner action, 2026-08-27)** — neither console can be claimed from code. Until someone proves ownership and pastes the token into `SITE.verification` in `frontend/scripts/seo/site.mjs`, nothing reports which queries surface the site, which pages were rejected, or whether the sitemap was ever read. Submit `https://littlefounders.ai/sitemap.xml` in both once verified. This is the single highest-value remaining step and it takes minutes.
+- **`/families` and `/faq` are placeholders and deliberately `noindex` (open, 2026-08-27)** — indexing thin pages alongside real ones drags the domain's quality signal down and spends the crawl budget of a site nobody has heard of yet. The day either carries real content, flip `index: true` in `site.mjs` and it enters the sitemap automatically.
+- **The marketing site serves three languages from one URL per page (open, 2026-08-27)** — locale is detected in the browser, so a crawler with no `Accept-Language` gets en-US and that is what gets indexed. Real multilingual SEO needs distinct URLs per locale (`/es/...`) plus `hreflang`; the copy for all three already exists in `site.mjs`, so the remaining work is routing. Given that Mexico is 58% of measured traffic, this is worth more than it looks. Deliberately not attempted as part of an SEO pass — it is a routing change and deserves its own decision.
+- **The backend test tree is excluded from type-checking (open, 2026-08-27)** — `backend/tsconfig.json` sets `exclude: ["src/__tests__"]`, so `npm run type-check` never reads a fixture and Vitest transpiles without checking types. A fixture can therefore drift from the type it declares and only fail at runtime, which is exactly what happened when `PlausibleReportData` gained three required fields. Turning it on surfaces a pre-existing backlog (supertest Buffer variance, genuine drift in `lessonDocument.test.ts`, implicit-any indexing in `admin.test.ts`), so it was flagged rather than folded into an unrelated change.
+- **Bounce rate and visit duration are native-only on any long range (by design, documented 2026-08-27)** — GA4-imported rows carry no session metrics at any date, so on a window containing imported history two of the four headline KPIs describe a different population than the other two. The console and every export now say so; there is nothing to fix, but a reader who does not see the note will draw the wrong conclusion, which is precisely what happened in the 25 August audit.
 - **Tutor scene assets are readable from production (RESOLVED 2026-08-17)** — Depot public objects now send CORS headers, so `GLTFLoader` can read them. Verified from the `https://littlefounders.ai` origin in script, not with curl: curl does not enforce CORS and passed nine times while the page was broken.
 - **`diorama-b` stood its whole cast in the pond (RESOLVED 2026-08-17)** — walkability is now a baked per-island mask (`npm run assets:walkmask`) applied as a hard gate in `findStandingSpots`, with `npm run verify:placement` as the regression gate. A new diorama must have its mask baked and committed before it ships; `assets:walkmask` is NOT part of `assets:3d`.
 - **Two reported placement defects did not exist (RETRACTED 2026-08-17)** — "the companion stands on a boulder" was a low-resolution crop in which the boulders sit between him and the camera, and "Dina overhangs the rim by 44 cm" assumed a sampling ring she is not placed on (measured: 4 cm of clearance, now 49 cm). Both had reached a committed doc and a published report before the headless harness existed to check them. Kept here because the failure mode — trusting a reading of an image as if it were a measurement — is the same one that produced the real find.

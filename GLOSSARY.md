@@ -116,6 +116,16 @@ English needs no article and hides the problem, which is exactly why it has to
 be written here rather than inferred per string: a translator working from
 en-US has nothing to go on. When adding copy in any locale, read this table.
 
+## Discoverability terms (spec: frontend/README.md)
+
+- **Acquisition scope** — the always-on allowlist of public marketing paths that every analytics read is filtered through. It defines what counts as public acquisition traffic, and it exists at read time because contaminated history cannot be deleted from either tracker.
+- **Range drift** — a disagreement between the window we asked an upstream for and the window it says it answered for. Reported, never silently corrected: figures for the wrong window must be labelled, not relabelled.
+- **Prerendered page** — a real HTML file written at build time for one route, carrying a full `<head>` and a static content shell. What everything that does not run JavaScript actually reads.
+- **App shell** — `app-shell.html`, the `noindex` document every unmatched URL is rewritten to. Being out of the index is the default; only declared pages opt in.
+- **Share card** — the 1200x630 image a link unfurls to on WhatsApp, LinkedIn, Slack and X. Built from our own wordmark and mentor art by `npm run seo:cards`, never stock or generated imagery.
+- **Open Graph** — the metadata protocol (Facebook, 2010) every social surface reads to build that card. Lives in the `<head>` and is invisible to anything added after hydration.
+- **`llms.txt`** — a curated markdown brief at a fixed path, written for a language model rather than a crawler, so an assistant can learn what LittleFounders is in one request.
+
 ## Lesson Engine terms (spec: /LESSON_ENGINE.md)
 
 | Term | Definition |

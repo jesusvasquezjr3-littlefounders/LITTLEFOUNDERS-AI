@@ -921,10 +921,44 @@ Run it through `bash database/scripts/local-stack.sh psql` (args pass through) l
 **Umami had the identical defect (same day).** Its tracker auto-tracks by default too, so the `!isAdminPath(pathname)` gate likewise only decided whether to add the tag. Production held 88 `/admin/*` pageviews — **31.5%** of all path-level pageviews over twelve months, across all eleven admin routes. Fixed the same way: `data-auto-track="false"` plus an explicit `umami.track()` per approved navigation. The tracker is deferred, so the first call is bound to the script's `load` event — calling directly on the mount that creates the tag drops the landing pageview, which is the one acquisition reporting most needs.
 
 **Correcting the history that was already stored.** The bad events cannot be deleted (neither vendor supports delete-by-filter), so the correction is applied at READ time and the two tools differ in how far it reaches:
-- **Plausible** — `plausibleQuery()` in `backend/src/services/pulse.ts` now ANDs an always-on `ACQUISITION_SCOPE` allowlist into every request, mirroring `isMarketingPath`. It is applied at that one choke point so no call site can omit it. Verified against production: twelve months of top pages returns only `/`, `/families`, `/how-it-works`, `/faq`, `/legal/*` — zero out-of-boundary rows, GA4 imports included. Adding a marketing route means updating the frontend gate AND this list.
+- **Plausible** — `plausibleQuery()` in `backend/src/services/pulse.ts` now ANDs an always-on `ACQUISITION_SCOPE` allowlist into every request, mirroring `isMarketingPath`. It is applied at that one choke point so no call site can omit it. Verified against production: twelve months of top pages returns only `/`, `/families`, `/how-it-works`, `/faq`, `/legal/*` — zero out-of-boundary rows, GA4 imports included. Adding a marketing route means updating the frontend gate AND this list. **That verification measured `event:page` only, and the sentence above said "zero out-of-boundary rows" until 2026-08-27, which was false of two other dimensions — see "An analytics report is confidently wrong about its own window" below.**
 - **Umami** — its API has no negation filter, so the aggregate cannot be scoped. `pageviews` could be corrected by subtraction but `visits`/`bounces`/`totaltime` could not (one visitor may span both), and correcting only the summable metric would leave the payload internally inconsistent. So `getUmamiStats` reports `outOfBoundaryPageviews` alongside the totals and the caller decides. `null` means the breakdown could not be read — it is NOT zero and must never be rendered as "clean".
 - **Data Intel** — needs no backfill: `is_staff` is a join against `user_roles` evaluated at query time, so every historical query is already filtered (measured over 90 days: 3,539 events excluded, 383 kept).
 
+
+## An analytics report is confidently wrong about its own window (failure mode closed 2026-08-27)
+
+**Symptom:** a long-range report shows **zero traffic for every day of the current month** while a shorter-range report, pulled from the same console a minute later, shows real data for those same dates. A milder version of the same fault: "today" renders as a zero-traffic day on *every* range, permanently. Reported from outside as "the site has had no visitors since the 15th".
+
+**Do not act on it as a traffic collapse.** It presents exactly like one, and the first instinct — checking whether the tracker broke — is the wrong branch. Separate the two before anything else: ask for the same window as **explicit dates** instead of a preset. If the data reappears, this is a reporting defect, not a traffic one.
+
+**Cause:** `resolveRange()` computed its window locally, in UTC, then handed Plausible the literal preset string (`"6mo"`) and let Plausible resolve it independently, in the SITE's timezone, by different rules. Plausible reads `6mo` as the last six **complete calendar months** and stops at the end of last month; Core believed the window ran to today. `fillDailySeries()` then padded every day Core expected and Plausible never returned — turning "never asked" into a confident `0 visitors`. Measured across the whole preset set on 2026-08-27: **every preset except `day` disagreed.** `7d`/`30d` were one timezone-day out; `month`/`year` returned windows running into the future.
+
+That is /AGENTS.md §1.14 exactly — failure collapsed into emptiness — and the irony is that `fillDailySeries` was written to prevent it. Its own comment says a flat line at zero says the true thing where a missing line says nothing. Given a range the upstream was never asked about, it does the opposite.
+
+**Two defects travel with it.** The comparison window is derived from the same wrong start, so `6mo` compared February against a window that *began* on 1 February — the same month on both sides of its own delta. And the CSV/XLSX/PDF exports print `from`/`to` from Core's assumption, so the provenance line those files exist to provide named a window the figures had not come from.
+
+**Diagnose** (read-only, from inside Core — Plausible is on Railway private networking and reachable from nowhere else):
+
+```bash
+railway ssh --service littlefounders-backend "sh -c 'node -e \"
+  const p = await import(\\\"/app/dist/services/pulse.js\\\");
+  for (const period of p.PLAUSIBLE_PERIODS)
+    console.log(period, JSON.stringify(p.resolveRange({kind:\\\"preset\\\",period}).dateRange));
+\"'"
+```
+
+Every line must be an explicit `["YYYY-MM-DD","YYYY-MM-DD"]` pair ending on **today in the site's timezone**. A bare preset string there is this defect returning. Then confirm the upstream agrees: `getPlausibleOverview` returns `rangeDrift`, which is `null` when Plausible echoed back the window we sent and names both windows when it did not.
+
+**Fix (2026-08-27):** `resolveRange()` resolves every preset to explicit dates in the site's timezone (`PLAUSIBLE_SITE_TIMEZONE`, default `America/Mexico_City`, validated at parse so a bad zone fails loudly instead of throwing on every read). One system decides the window and both use it. A drift guard compares what we sent against the `query.date_range` Plausible echoes back and **reports** a mismatch on the panel rather than relabelling the chart.
+
+**Prevention:** never pass an upstream's own shorthand through and assume it means what you mean. Agreeing with a vendor's dashboard label is worth nothing if the two of you are describing different windows. The gate that was missing: every range test used `custom` ranges — explicit dates, correct by construction — so the suite asserted only that Core agreed with itself. `backend/src/__tests__/analytics-range-integrity.test.ts` now exercises every preset.
+
+### Two companions found in the same investigation
+
+**A breakdown that does not add up to the headline.** Source, country, device and channel summing to 48 visitors under a headline of 1,120 is not wrong, it is **incomplete**: the always-on `event:page` allowlist cannot be applied to GA4-imported data (imports are stored pre-aggregated per dimension), so Plausible drops twelve months of imported history from every non-page breakdown — and says so, in `meta.imports_skip_reason: "unsupported_query"`, on every response. `pulse.ts` parsed `results` and discarded the rest. An outside reviewer read the exports and concluded that dimensional tracking had been switched on late, and separately that bounce/duration measurement began in March; neither happened. Imports status now travels with every payload and is stated on the affected cards and in all three export formats. **Bounce rate and visit duration are native-only at any date** — imported rows carry no session metrics, so on a long range two of the four KPIs describe a different population than the other two.
+
+**`/admin/*` still surfacing in a "public traffic" report.** The read-time scope filters `event:page`; `visit:entry_page` and `visit:exit_page` are SESSION dimensions, and a session satisfies an event-level filter as soon as any one of its events does. So a visitor who landed on `/` and then opened the staff console reported an entry page of `/admin/analytics`. Measured over twelve months before the fix: **7 of 11 entry-page rows and 11 of 17 exit-page rows out of boundary**, `/admin/roles` and `/admin/generation` among them; zero after. The allowlist is now restated against those two dimensions from one shared definition. The lesson for the next verification: **"verified" names the thing that was measured, not the family it belongs to** — the 2026-08-14 note above generalised one dimension to fourteen and was wrong about two.
 
 ## Staff-IP exclusion suggestions can be VPN exit nodes — do not approve blindly (2026-08-14)
 

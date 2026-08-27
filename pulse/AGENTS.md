@@ -119,6 +119,10 @@ The rule: **the predicate that authorises the mount must be the only thing that 
 
 Reads of stored history are scoped at query time — see the RUNBOOK entry for what that does and does not reach per tool.
 
+**A filter written against one dimension does not cover another dimension holding the same kind of value.** The read-time allowlist filters `event:page` — the page a pageview happened on. `visit:entry_page` and `visit:exit_page` describe where a SESSION began and ended, and a session satisfies an event-level filter as soon as any one of its events does; so a visitor who landed on `/` and then opened the staff console reported an entry page of `/admin/analytics` inside a report headed "public marketing traffic only". Measured over twelve months on 2026-08-27, before the fix: 7 of 11 entry-page rows and 11 of 17 exit-page rows out of boundary. The allowlist is now restated against both dimensions from one shared definition (`dimensionScope()` in `backend/src/services/pulse.ts`), and `acquisition-scope.test.ts` asserts the two expressions admit exactly the same paths. Adding a page-valued dimension to the console means adding it there too.
+
+**What the upstream says about its answer is part of the answer.** Plausible drops GA4-imported history from any breakdown the acquisition filter cannot be applied to, and reports it in `meta.imports_skip_reason`. That field now travels to the console cards and into every export, because a breakdown covering 48 visitors under a headline of 1,120 is not wrong — it is incomplete, and only that field can say which.
+
 
 ## Conversion goals — the boundary applies to events too
 

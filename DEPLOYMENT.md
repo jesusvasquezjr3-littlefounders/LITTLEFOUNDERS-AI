@@ -74,6 +74,14 @@ prevented at two levels:
    only builds that subtree and reads `frontend/vercel.json` from it. (If the Root
    Directory is ever blank, Vercel builds the repo root and the SPA rewrite is
    missed → deep-link 404s. See `RUNBOOK.md`.)
+   **The SPA rewrite points at `/app-shell.html`, not `/index.html`** (changed
+   2026-08-27). `index.html` is now the prerendered HOME PAGE and must be
+   reachable as itself; the shell every unmatched URL falls through to is a
+   separate file carrying `noindex`, so a product route can never enter search
+   results. Vercel checks the filesystem BEFORE applying rewrites, which is what
+   lets `/how-it-works`, `/robots.txt` and `/sitemap.xml` resolve to their own
+   generated files — behaviour we do not control, so `npm run seo:live` asserts
+   it against production after a frontend deploy rather than assuming it.
 
 ---
 

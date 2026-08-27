@@ -18,6 +18,7 @@
 | Repairing PUBLISHED lesson content without provider spend (the `speech_hash` constraint, the zero-spend gate, edit ops) | agent/tools/content/README.md | all |
 | Transactional email (engine, delivery, deploy) | email-server/AGENTS.md · email-server/README.md · database/DEPLOYMENT.md (GoTrue wiring) | — |
 | Analytics, observability, system health, GA4 import | pulse/AGENTS.md (pins, upgrade, §1.9 boundary) · pulse/README.md (services, env, GA4 runbook) | — |
+| SEO, discoverability, share cards, robots/sitemap/llms.txt, page titles & descriptions | frontend/README.md ("How the internet sees this site") · frontend/scripts/seo/site.mjs (the surface itself, authoritative) | — |
 | First-party learning/usage telemetry, kid consent, /admin/insights | /INSIGHTS.md | all |
 | Insights rollup refresh + retention prune (nightly) | .github/workflows/insights-maintenance.yml + /INSIGHTS.md | §6 |
 | Auth email templates + language selector | frontend/public/email-templates/README.md | all |
