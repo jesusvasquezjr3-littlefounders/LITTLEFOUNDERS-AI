@@ -18,16 +18,20 @@ import CharacterActor, { type CharacterActorProps } from './CharacterActor'
  * provider the placeholder simply renders the 2D character, so a caller that
  * forgets the provider gets a working character rather than an empty box.
  *
- * TWO PROPS ARE NOT EXPRESSED IN 3D, and neither is dropped silently:
+ * `speaking` IS expressed, as ARTICULATION rather than lip-sync. Neither rig
+ * has a jaw bone, and the viseme card is fitted for only two of the four
+ * characters, so a speaking character moves its head and chest on a syllabic
+ * cadence — which reads as talking at every size a lesson uses, including the
+ * 80 px avatar where a moving mouth would be four pixels. `applySpeaking` in
+ * `characterActions.ts` carries the reasoning; real lip-sync stays the Tutor's
+ * viseme path, where the geometry for it exists.
+ *
+ * ONE PROP IS NOT EXPRESSED IN 3D, and it is not dropped silently:
  *
  *   bubble   — falls back to the 2D actor entirely. The bubble is drawn inside
  *              each character's own SVG, with its own tail and type ramp; a
  *              hand-rolled DOM copy floating over a canvas would be a different
  *              component wearing the same name.
- *   speaking — there is no viseme driver in a lesson yet and the lip-sync card
- *              is off (see CharacterStage). The character is present and
- *              animated, but its mouth does not move while it talks. Tracked in
- *              GOAL_3D_CHARACTERS.md as the one behaviour the swap costs.
  *
  * `enableMouseTracking` is 2D-only by nature — the SVG pupils follow a cursor,
  * and the 3D characters never had it. `loop` is honoured by the 3D layer's own
@@ -109,7 +113,7 @@ export const CAST_STAGE_HEIGHT_M = 1.9 / 0.86
 export function CharacterActor3D(
   props: CharacterActorProps & { presence?: CharacterPresence; stageHeightM?: number },
 ) {
-  const { character, emotion, action, bubble, size = 'md', className, actionKey, presence } = props
+  const { character, emotion, action, bubble, size = 'md', className, actionKey, presence, speaking } = props
   const spec = presence ? PRESENCE[presence] : null
 
   // A bubble is a 2D affordance. Asking for one gets the 2D character, whole,
@@ -122,6 +126,7 @@ export function CharacterActor3D(
       emotion={emotion}
       action={action}
       actionKey={actionKey}
+      speaking={speaking}
       fill={spec ? spec.fill : SIZE_FILL[size]}
       crop={spec?.crop}
       stageHeightM={spec?.stage ? CAST_STAGE_HEIGHT_M : props.stageHeightM}

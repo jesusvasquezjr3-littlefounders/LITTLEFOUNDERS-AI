@@ -1315,6 +1315,10 @@ System recipes, tokens only (`--lf-ease`, `--lf-dur-*` with deliberate exception
    and `pointer-events: none`, so it can never cover a 44 px tap target. Under
    reduced motion it is not drawn at all: a ring frozen at half scale is a
    graphical artefact, not a quieter celebration.
+   **A speaking character articulates** — `applySpeaking` adds a syllabic head
+   cadence for the character whose line is being read (`TUTOR_3D.md` §6.4). It
+   stops for `prefers-reduced-motion` and NOT for the low performance tier: it
+   identifies who is talking, which is information rather than decoration.
    **Counters arrive rather than appear** — `CountUp`/`useCountTo`
    (`components/ui`). One implementation, two documented behaviours: a LIVE
    number counts from its previous value (the header XP chip) and a REVEAL

@@ -367,9 +367,39 @@ Getting that last one on screen needed the z-stack rethought — header 30, laye
 20, footer 10 — because one canvas cannot be both above and below the same
 element, and at z-1 the banner painted over its own character.
 
+## §11 `speaking` — closed, and not the way it was planned (2026-08-27)
+
+The debt said: fix `mouthCardTint` for the dark rig, then wire a viseme driver.
+Investigating it changed the answer, and the investigation is the useful part.
+
+**The viseme card cannot carry this.** It is fitted for TWO of the four
+characters — liruf and dina are dinosaurs whose mouths defeat a rectangular
+decal — so it would animate half the cast and leave the other half inert. And
+neither rig has a jaw bone: there is nothing to open. Wiring it into lessons
+would also drag its unresolved lighting debt onto the one surface every learner
+sees. I spent real effort on the root cause of that debt (why a lit material
+renders the card black) and did not find it; it remains open and recorded.
+
+**So `speaking` is ARTICULATION**: a syllabic head cadence with a slower yaw and
+a trace of chest, on all four characters, composed on top of whatever emotion
+and action are playing and capped by `limitFaceLift` so a talking character can
+never talk its own face out of frame. Measured live: the speaker's head swings
+10.4 deg of pitch against 3.9 deg with it off. Real lip-sync stays the Tutor's
+viseme path, where the geometry for it exists.
+
+**The defect the work surfaced.** The cadence appeared not to run at all, and
+raising its amplitude fivefold changed nothing. Not a wiring bug: a probe showed
+`speaking=true` reaching the character with `ambient=false tier=low`. The gate
+was `ambientMotion`, which folds an ACCESSIBILITY instruction into a PERFORMANCE
+tier — so it would have silenced "who is talking" on exactly the cheap phones
+§1.0 is about. `QualitySettings.reducedMotion` now carries the instruction on
+its own and the cadence stops only for that.
+
 ### Still open
 
-- `speaking` has no expression in 3D (the mouth does not move). Fixing it means
-  correcting `mouthCardTint` for the dark `auto` rig first (TUTOR_3D.md §6.1).
-- A real mid-range DEVICE frame measurement. Everything so far is a software
-  rasteriser bound, which is honest but pessimistic.
+- **The mouth card's lighting debt** (TUTOR_3D.md §6.1): under a dark `auto`
+  rig its tint is under-corrected. It bites only when something drives visemes,
+  which today is the Tutor alone. Root cause of the underlying "lit material
+  renders the card black" is still unfound.
+- **A real mid-range DEVICE frame measurement.** Everything so far is a software
+  rasteriser bound — honest, but pessimistic, and not proof.

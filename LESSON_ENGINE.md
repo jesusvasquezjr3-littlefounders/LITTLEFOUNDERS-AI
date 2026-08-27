@@ -571,11 +571,16 @@ call site says what the character IS on that screen. The proportions, and why a
 small box gets a bust rather than a whole figure, are in `DESIGN.md` under the
 Lesson recipe.
 
-**What the swap costs, stated plainly.** `speaking` has no expression in 3D yet:
-the character is present and animated, but its mouth does not move while it
-talks, because nothing drives visemes in a lesson and the lip-sync card is off
-(`TUTOR_3D.md` §6.1). `bubble` falls back to the 2D actor whole. Both are
-tracked in `GOAL_3D_CHARACTERS.md`.
+**`speaking` is expressed as ARTICULATION.** A speaking character moves its head
+and chest on a syllabic cadence — all four of them, including the quadruped.
+It is not lip-sync: neither rig has a jaw bone and the viseme card is fitted for
+only two of the cast, so real lip-sync stays the Tutor's path where the geometry
+for it exists. `TUTOR_3D.md` §6.4 carries the reasoning, the measurements and
+the gate (`reducedMotion`, not `ambientMotion` — the signal must survive a cheap
+phone).
+
+**What the swap still costs.** `bubble` falls back to the 2D actor whole; no
+Lesson Engine surface passes one. Tracked in `GOAL_3D_CHARACTERS.md`.
 
 - Every action is one-shot (auto-returns to `idle`); `celebrate`/`dance` may loop
   while the celebration overlay is up, but stop with it. All rig animation is

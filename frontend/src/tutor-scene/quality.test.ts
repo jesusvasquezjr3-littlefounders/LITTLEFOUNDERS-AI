@@ -114,3 +114,28 @@ describe('the HUD material on the tier ladder', () => {
     expect(QUALITY_SETTINGS.low.lumenBlur).toBe(false);
   });
 });
+
+describe('reducedMotion is separate from ambientMotion', () => {
+  it('marks the ACCESSIBILITY instruction, at every tier', () => {
+    /*
+     * `ambientMotion` folds the accessibility instruction into a performance
+     * tier: it is false on `low` AND false under reduced motion, so a consumer
+     * reading it cannot tell "this phone is slow" from "this person asked for
+     * less motion". Decoration is right to stop for either. Motion that carries
+     * INFORMATION — which character is currently speaking — should stop only
+     * for the instruction.
+     */
+    for (const tier of ['low', 'medium', 'high'] as const) {
+      expect(resolveSettings(tier, false).reducedMotion, tier).toBe(false)
+      expect(resolveSettings(tier, true).reducedMotion, tier).toBe(true)
+    }
+  })
+
+  it('still stops ambient motion for BOTH reasons', () => {
+    // The separation must not quietly re-enable the breathing idle on a phone
+    // that cannot afford it, or for a user who asked for stillness.
+    expect(resolveSettings('low', false).ambientMotion).toBe(false)
+    expect(resolveSettings('high', true).ambientMotion).toBe(false)
+    expect(resolveSettings('high', false).ambientMotion).toBe(true)
+  })
+})

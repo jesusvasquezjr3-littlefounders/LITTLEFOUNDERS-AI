@@ -1097,6 +1097,51 @@ three wrong answers, and each was a proportion assumed rather than measured.
    plans. `boneOrigin` in `modelBounds.ts` reads the bone the same
    parent-independent way the box is read (§5.1).
 
+### §6.4 `speaking` is ARTICULATION, not lip-sync (2026-08-27)
+
+The 2D control surface has had `speaking` since v1: each character's SVG runs a
+mouth-flap while a line is read. Moving the Lesson Engine to 3D dropped it, and
+a character standing perfectly still while its own words appear reads as a
+picture rather than as a character.
+
+**Why not the viseme card.** Two reasons, and either alone is enough. Neither
+rig has a JAW bone — verified in both exports: zara carries `Head`, `head_end`,
+`headfront`; dina carries `head`, `headend`. And the card is fitted for only
+TWO of the four characters: liruf and dina are dinosaurs whose mouths defeat a
+rectangular decal (§7.1). Wiring it into lessons would animate half the cast,
+leave the other half inert, and carry the card's unresolved lighting debt
+(§6.1) onto the surface every learner sees.
+
+**What runs instead.** `applySpeaking` adds a syllabic cadence to the head, with
+a slower yaw so it is not a metronome and a trace of chest. It composes on top
+of whatever emotion and action are playing, and it runs BEFORE `limitFaceLift`,
+so a talking character can never talk its own face out of frame. Measured live
+in a lesson: the speaker's head swings 10.4 deg of pitch against 3.9 deg with
+the cadence off.
+
+Amplitude is sized by what READS, not by what is physically demure. At two
+degrees the chin of a 96 px avatar travels about a pixel and the cadence is
+invisible exactly where most of the cast lives; four degrees of peak pitch moves
+it a few. Six degrees is the ceiling, because `nod` is a gesture in its own
+right and this must never be mistaken for one.
+
+**It is gated on `reducedMotion`, NOT on `ambientMotion`,** and that distinction
+needed a new field. `ambientMotion` folds an accessibility instruction into a
+performance tier — it is false on `low` AND false under `prefers-reduced-motion`
+— so a consumer reading it cannot tell "this phone is slow" from "this person
+asked for less motion". Decoration is right to stop for either; motion that
+carries INFORMATION should stop only for the instruction. Silencing "who is
+talking" on a cheap device removes the signal exactly where most learners are,
+to save two quaternion multiplies a frame. `QualitySettings.reducedMotion` now
+carries the instruction on its own, at every tier.
+
+*This is how the defect was found, and it is worth recording:* the cadence
+appeared not to run at all. Raising its amplitude fivefold changed nothing. It
+was not a wiring bug — a probe showed `speaking=true` reaching the character
+with `ambient=false tier=low`, because SwiftShader is slow enough that the
+governor demotes. The gate was wrong, and the same gate would have silenced the
+feature on exactly the phones §1.0 is about.
+
 ## §7 HANDOFF — what the next session needs Blender for
 
 Ordered by value. Items 1–2 are the reason this handoff exists.

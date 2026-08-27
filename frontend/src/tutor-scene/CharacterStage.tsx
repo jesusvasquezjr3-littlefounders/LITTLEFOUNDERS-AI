@@ -71,6 +71,8 @@ export interface CharacterStageProps {
    * that before wiring a viseme driver here, not after.
    */
   viseme?: number;
+  /** The character is talking right now — see `applySpeaking`. */
+  speaking?: boolean;
   /** Rendered over the canvas, e.g. a name plate in the lab. */
   overlay?: ReactNode;
 }
@@ -164,6 +166,7 @@ export function CharacterStage({
   rotation = 0,
   fill = 0.78,
   viseme,
+  speaking = false,
   className,
   onStats,
   overlay,
@@ -219,6 +222,7 @@ export function CharacterStage({
                   action={action}
                   actionKey={actionKey}
                   rotation={rotation}
+                  speaking={speaking}
                   viseme={viseme ?? 0}
                   mouth={viseme !== undefined}
                 />

@@ -38,6 +38,20 @@ export interface QualitySettings {
    */
   ambientMotion: boolean;
   /**
+   * The user asked for less motion, as an accessibility instruction.
+   *
+   * Separate from `ambientMotion` on purpose, and the separation was earned:
+   * that flag folds the accessibility instruction INTO a performance tier, so a
+   * consumer reading it cannot tell "this phone is slow" from "this person gets
+   * motion sickness". The two deserve different answers. Decoration — the
+   * breathing idle — is right to stop for either. Motion that carries
+   * INFORMATION, like which character is currently speaking, should stop only
+   * for the accessibility instruction: silencing it on a cheap device removes
+   * the signal exactly where most learners are, and it costs two quaternion
+   * multiplies a frame.
+   */
+  reducedMotion: boolean;
+  /**
    * Whether the HUD's material keeps its `backdrop-filter` (/DESIGN.md §Lumen).
    *
    * The only setting here that costs the COMPOSITOR rather than the renderer,
@@ -78,9 +92,9 @@ export interface QualitySettings {
 }
 
 export const QUALITY_SETTINGS: Readonly<Record<QualityTier, QualitySettings>> = Object.freeze({
-  low: { tier: 'low', maxPixelRatio: 1, antialias: false, shadows: false, anisotropy: 1, ambientMotion: false, lumenBlur: false, renderScale: 1 },
-  medium: { tier: 'medium', maxPixelRatio: 1.5, antialias: true, shadows: false, anisotropy: 4, ambientMotion: true, lumenBlur: true, renderScale: 1 },
-  high: { tier: 'high', maxPixelRatio: 2, antialias: true, shadows: true, anisotropy: 8, ambientMotion: true, lumenBlur: true, renderScale: 1 },
+  low: { tier: 'low', reducedMotion: false, maxPixelRatio: 1, antialias: false, shadows: false, anisotropy: 1, ambientMotion: false, lumenBlur: false, renderScale: 1 },
+  medium: { tier: 'medium', reducedMotion: false, maxPixelRatio: 1.5, antialias: true, shadows: false, anisotropy: 4, ambientMotion: true, lumenBlur: true, renderScale: 1 },
+  high: { tier: 'high', reducedMotion: false, maxPixelRatio: 2, antialias: true, shadows: true, anisotropy: 8, ambientMotion: true, lumenBlur: true, renderScale: 1 },
 });
 
 /**
@@ -161,7 +175,7 @@ export function resolveSettings(
 ): QualitySettings {
   const base = QUALITY_SETTINGS[tier];
   const scaled = renderScale === 1 ? base : { ...base, renderScale };
-  return prefersReducedMotion ? { ...scaled, ambientMotion: false } : scaled;
+  return prefersReducedMotion ? { ...scaled, ambientMotion: false, reducedMotion: true } : scaled;
 }
 
 /** The steps below `low`, in order. The floor is deliberately not zero. */

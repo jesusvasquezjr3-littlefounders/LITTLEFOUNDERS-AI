@@ -18,6 +18,7 @@ import {
   LOOPING_ACTIONS,
   applyCharacterFrame,
   applyEmotionPosture,
+  applySpeaking,
   arc,
   limitFaceLift,
 } from './characterActions';
@@ -123,6 +124,19 @@ export interface Character3DProps {
    * under the one nobody photographed.
    */
   shadow?: boolean;
+  /**
+   * The character is TALKING right now.
+   *
+   * Articulation, not lip-sync — neither rig has a jaw. See `applySpeaking`.
+   *
+   * Gated on `reducedMotion` and NOT on `ambientMotion`, which is the one
+   * design decision in this prop. `ambientMotion` also goes false on the LOW
+   * performance tier, and this is not decoration: it is how a learner knows
+   * which character owns the line being read. Dropping it on a slow phone would
+   * remove the signal exactly where most learners are, to save two quaternion
+   * multiplies a frame. It stops for the accessibility instruction alone.
+   */
+  speaking?: boolean;
 }
 
 /** Distinct irrational-ish multipliers keep two characters from breathing in sync. */
@@ -141,6 +155,7 @@ export function Character3D({
   mouth = true,
   instanced = false,
   shadow = true,
+  speaking = false,
 }: Character3DProps) {
   const asset: CharacterAsset = CHARACTER_ASSETS[id];
   const { scene: shared } = useSceneModel(asset.url, settings);
@@ -358,10 +373,13 @@ export function Character3D({
       if (!emotionClip) {
         applyEmotionPosture(bones, emotion, state.clock.elapsedTime + PHASE[id]);
       }
+      if (speaking && !settings.reducedMotion) {
+        applySpeaking(bones, state.clock.elapsedTime + PHASE[id]);
+      }
       /*
        * LAST, because it judges the FINISHED pose. The backward lean that hides
-       * a face is composed from the rest stance, the emotion layer and the
-       * action, and no one of them is wrong on its own — see `limitFaceLift`.
+       * a face is composed from the rest stance, the emotion layer, the action
+       * and now the speaking cadence — no one of them is wrong on its own.
        */
       limitFaceLift(bones);
       /*
@@ -401,8 +419,11 @@ export function Character3D({
         lift: 0,
       });
       actionLift.current = lift * asset.targetHeightM;
+      if (speaking && !settings.reducedMotion) {
+        applySpeaking(bones, state.clock.elapsedTime + PHASE[id]);
+      }
       // Same rule on the procedural path: the quadruped composes an emotion
-      // posture and an action driver onto the same joints.
+      // posture, an action driver and the speaking cadence onto the same joints.
       limitFaceLift(bones);
     }
     if (!settings.ambientMotion) {

@@ -72,6 +72,8 @@ export interface CharacterSlotSpec {
    * then size.
    */
   crop?: 'full' | 'bust';
+  /** The character is talking right now — see `applySpeaking`. */
+  speaking?: boolean;
 }
 
 export interface Slot extends CharacterSlotSpec {
@@ -125,7 +127,8 @@ export function CharacterLayerProvider({
       existing.actionKey !== slot.actionKey ||
       existing.fill !== slot.fill ||
       existing.stageHeightM !== slot.stageHeightM ||
-      existing.crop !== slot.crop
+      existing.crop !== slot.crop ||
+      existing.speaking !== slot.speaking
     ) {
       setVersion((n) => n + 1);
     }
@@ -167,6 +170,7 @@ export function CharacterSlot({
   fill,
   stageHeightM,
   crop,
+  speaking,
   className,
 }: CharacterSlotSpec & { className?: string }) {
   const registry = useContext(LayerContext);
@@ -176,9 +180,9 @@ export function CharacterSlot({
   useEffect(() => {
     const element = ref.current;
     if (!registry || !element) return;
-    registry.register(key, { key, element, character, emotion, action, actionKey, fill, stageHeightM, crop });
+    registry.register(key, { key, element, character, emotion, action, actionKey, fill, stageHeightM, crop, speaking });
     return () => registry.release(key);
-  }, [registry, key, character, emotion, action, actionKey, fill, stageHeightM, crop]);
+  }, [registry, key, character, emotion, action, actionKey, fill, stageHeightM, crop, speaking]);
 
   /*
    * Outside a provider, or before the canvas is drawing, this IS the 2D
@@ -196,6 +200,7 @@ export function CharacterSlot({
           emotion={emotion}
           action={action}
           actionKey={actionKey}
+          speaking={speaking}
           size="fill"
         />
       ) : null}

@@ -26598,6 +26598,26 @@ import {
  * shot, instead of each shot reinventing it.
 ```
 
+### frontend/src/tutor-scene/speaking.test.ts
+
+```
+import { describe, expect, it } from 'vitest'
+import { Bone, Object3D, Quaternion } from 'three'
+import { bindRig, forgetRestPose } from './rig'
+import { applySpeaking, limitFaceLift } from './characterActions'
+
+/*
+ * `speaking` is the one behaviour the 2D-to-3D swap owed. It is ARTICULATION,
+ * not lip-sync: neither rig has a jaw bone and the viseme card is fitted for
+ * only two of the four characters. These pin the properties that make a
+ * head-and-chest cadence safe to run every frame of every lesson.
+ */
+
+function rigOf(names: string[]) {
+  const root = new Object3D()
+  let parent: Object3D = root
+```
+
 ### frontend/src/tutor-scene/standingSpots.test.ts
 
 ```

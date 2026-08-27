@@ -144,6 +144,7 @@ function SlotCharacter({
         emotion={slot.emotion ?? 'neutral'}
         action={slot.action ?? 'idle'}
         actionKey={slot.actionKey}
+        speaking={slot.speaking}
         instanced
         /* Nothing drives visemes in a lesson yet, so the lip-sync card would
            paste a static closed mouth over the model's own painted one. */

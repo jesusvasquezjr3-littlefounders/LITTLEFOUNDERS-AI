@@ -358,6 +358,72 @@ const EMOTION_POSTURE: Record<CharacterEmotion, (rig: Rig, t: number) => void> =
 
 
 /*
+ * SPEAKING — the character that is TALKING should look like it.
+ *
+ * The 2D control surface has had `speaking` since v1: each character's SVG runs
+ * a mouth-flap while a line is being read. Swapping the Lesson Engine to 3D
+ * dropped that, and a character standing perfectly still while its own words
+ * appear is the surface reading as a picture rather than as a character.
+ *
+ * THIS IS ARTICULATION, NOT LIP-SYNC, and the distinction is the whole design:
+ *
+ *   - Neither rig has a JAW bone. Verified in both exports: zara carries
+ *     `Head`, `head_end`, `headfront`; dina carries `head`, `headend`. There is
+ *     nothing to open.
+ *   - Real lip-sync is the Tutor's viseme card, and that card is fitted for
+ *     only TWO of the four characters — liruf and dina are dinosaurs whose
+ *     mouths defeat a rectangular decal (TUTOR_3D.md §7.1). Wiring it into
+ *     lessons would animate half the cast and leave the other half inert, and
+ *     it would carry the card's unresolved lighting debt (§6.1) onto the one
+ *     surface every learner sees.
+ *   - The head and neck DO carry speech. A speaker's head moves with their
+ *     cadence, and that reads as talking at every size a lesson uses — including
+ *     the 80 px avatar where a moving mouth would be four pixels.
+ *
+ * So all four characters articulate, and lip-sync stays where the geometry for
+ * it exists. Amplitudes are small on purpose: this composes ON TOP of whatever
+ * emotion and action are already playing, and a gesture it fights would read as
+ * a glitch rather than as speech.
+ */
+
+/*
+ * Radians. Peak head pitch, about four degrees.
+ *
+ * Sized by what READS rather than by what is physically demure. A lesson draws
+ * characters from 80 px to 224 px; at two degrees the chin of a 96 px avatar
+ * travels barely a pixel and the cadence is invisible exactly where most of the
+ * cast lives. Four degrees moves it a few pixels — present without becoming a
+ * nod, which is a different gesture the vocabulary already has.
+ */
+const SPEAK_PITCH = 0.07;
+/** Radians. A slow yaw so the rhythm is not a metronome. */
+const SPEAK_YAW = 0.03;
+/** Roughly syllabic. Faster reads as a nervous twitch, slower as a nod. */
+const SPEAK_HZ = 3.4;
+
+/**
+ * Applies a speaking cadence on top of the frame's pose.
+ *
+ * Call AFTER the emotion and the action, and BEFORE `limitFaceLift` — the cap
+ * has to judge the finished pose, this included.
+ *
+ * @param level 0..1, so a caller can fade it in and out rather than snapping.
+ */
+export function applySpeaking(rig: Rig, time: number, level = 1): void {
+  const amount = Math.max(0, Math.min(1, level));
+  if (amount <= 0) return;
+  /*
+   * Two frequencies that do not share a period, so the motion never settles
+   * into a visible loop the way a single sine does. `Math.abs` on the pitch
+   * makes it a series of downward beats rather than a symmetric wobble, which
+   * is what a jaw would do if there were one.
+   */
+  const beat = Math.abs(Math.sin(time * Math.PI * SPEAK_HZ));
+  turn(rig, rig.head, -SPEAK_PITCH * amount * (beat - 0.5) * 2, Math.sin(time * 1.7) * SPEAK_YAW * amount, 0);
+  turn(rig, rig.chest, -SPEAK_PITCH * 0.3 * amount * (beat - 0.5), 0, 0);
+}
+
+/*
  * THE LEARNER MUST BE ABLE TO SEE THE FACE.
  *
  * This is a product rule, and it is enforced here because NO SINGLE LAYER can
