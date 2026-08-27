@@ -270,6 +270,7 @@ All of these must pass, in every service you touched:
 - [ ] `npm run secrets:check` (root) — no credential patterns in tracked files
 - [ ] Frontend changes: `npm run i18n:check` (root) — 3-locale key parity + hardcoded-string scan
 - [ ] `npm run paths:check` (root) — the acquisition surface agrees across `frontend/` and `backend/`
+- [ ] `npm run seo:check` (root) — the public surface: every page titled and described in all three locales, nothing both sitemapped and robots-blocked, and search's route list agrees with the app's
 - [ ] `npm run tools:test` (root) — the repo’s OWN gates. This is the one that is easy to skip because the individual `*:check` scripts all pass without it: it also asserts repo CONSISTENCY, including that `ROADMAP.md` accounts for every migration in `database/migrations/` (high-water mark plus any declared `unapplied deltas` range). Adding a migration without declaring it pending is green locally on every other gate and red in CI.
 - [ ] `npm run provider:check` (root) — Forge and Oracle agree on the DeepSeek/Qwen base URLs and model names
 - [ ] Tutor 3D clip/rig changes: `npm run verify:rig` (frontend) — every clip keeps every character in its own stance and proportions
@@ -322,6 +323,7 @@ All of these must pass, in every service you touched:
 | Any edit to this file | Mirror to `CLAUDE.md` byte-identically |
 | Incident / recovery procedure learned | `RUNBOOK.md` |
 | New public marketing route | `frontend/src/lib/analytics.tsx` (`MARKETING_PREFIXES`) **and** `backend/src/services/pulse.ts` (`MARKETING_ROOTS`) — the tracker records it, the read-time scope reports it; `npm run paths:check` enforces the pair |
+| New/changed public marketing route, title, description or share copy | `frontend/scripts/seo/site.mjs` — it is the single source for `<head>`, robots.txt, sitemap.xml, llms.txt and the share cards; `npm run seo:check` enforces it against the app's own route list. Changing a card line also means `npm run seo:cards` (frontend) to rebuild the images |
 | New/changed Tutor behaviour, prompt, context field or content-ladder rule | `/ORACLE.md` (authoritative) + `oracle/AGENTS.md`; a new field reaching the model ALSO needs `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` |
 | New/changed KartRush deploy, embed allow-list or platform coupling | that repository's `docs/21-DEPLOYMENT.md` (authoritative) + this file §1.5 + `DEPLOYMENT.md` §1 |
 | Change to legal document (any locale) | Mirror to ALL three `/LEGAL/*.md` files + sync `frontend/src/i18n/*/marketing.json` in same commit (§1.8) |

@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>LittleFounders share card</title>
+<!--
+  The share card, as source rather than as a mystery PNG.
+
+  WHY IT IS A TEMPLATE AND NOT A GENERATED IMAGE
+
+  The card that shipped before this one was a stock-style photo of two children
+  at a laptop. It carried no wordmark, no product name and no promise — so a
+  link shared into a WhatsApp family group showed a picture that could have
+  advertised anything. Worse, the laptop screen in it was full of AI-garbled
+  fake text ("Hii !!o Liisi!"), which is a credibility problem the moment
+  anyone looks closely.
+
+  This is built from assets we already own — the real wordmark and the four
+  mentor busts — so it costs nothing to regenerate, it can never invent text,
+  and when the positioning line changes the card changes with it.
+
+  A share card is read at about 500px wide in a feed and often on a phone, so
+  everything here is sized to survive being halved: one short line, high
+  contrast, no paragraph.
+
+  REGENERATE (see frontend/README.md): serve `frontend/` over http, open this
+  file with ?locale=es-MX, screenshot at exactly 1200x630, save to
+  frontend/public/og/og-card-<en|es|pt>.png.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@700;800&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+
+  body {
+    position: relative;
+    font-family: Inter, system-ui, sans-serif;
+    /* Indigo #4f46e5 is the brand accent (DESIGN.md); the card goes dark so it
+       separates from the white cards around it in a feed. */
+    background: radial-gradient(120% 140% at 8% 0%, #312e81 0%, #1e1b4b 42%, #0b1120 100%);
+    color: #fff;
+  }
+
+  /* A faint grid, to keep a large flat field from looking like a fallback. */
+  body::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(80% 80% at 20% 20%, #000 0%, transparent 75%);
+  }
+
+  .glow {
+    position: absolute;
+    right: -140px; bottom: -220px;
+    width: 760px; height: 760px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(99,102,241,.55) 0%, rgba(99,102,241,0) 62%);
+  }
+
+  .card {
+    position: relative;
+    height: 100%;
+    padding: 62px 68px 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* align-self is load-bearing: the card is a column flexbox, whose default
+     `align-items: stretch` blows an <img> up to the full container width and
+     drove the wordmark straight through the domain label. */
+  .wordmark { height: 66px; width: auto; display: block; align-self: flex-start; }
+
+  .kicker {
+    margin-top: 34px;
+    font-size: 23px;
+    font-weight: 600;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: #a5b4fc;
+  }
+
+  h1 {
+    margin-top: 18px;
+    max-width: 760px;
+    font-family: Sora, Inter, sans-serif;
+    font-weight: 800;
+    font-size: 64px;
+    line-height: 1.06;
+    letter-spacing: -.022em;
+    text-wrap: balance;
+  }
+
+  .rule {
+    margin-top: 30px;
+    width: 132px; height: 7px; border-radius: 4px;
+    background: linear-gradient(90deg, #fbbf24, #f472b6 52%, #818cf8);
+  }
+
+  .langs {
+    position: absolute;
+    left: 68px; bottom: 52px;
+    display: flex; gap: 14px; align-items: center;
+    font-size: 21px; font-weight: 500; color: #c7d2fe;
+  }
+  .langs span { opacity: .55; }
+
+  .cast {
+    position: absolute;
+    right: 52px; bottom: 46px;
+    display: flex; align-items: flex-end;
+  }
+  .cast img {
+    width: 208px; height: 208px;
+    object-fit: contain;
+    filter: drop-shadow(0 26px 34px rgba(0,0,0,.45));
+  }
+  /* Overlap so four busts read as a group rather than a row of stickers. */
+  .cast img + img { margin-left: -42px; }
+  .cast img:nth-child(1) { width: 176px; height: 176px; }
+  .cast img:nth-child(4) { width: 186px; height: 186px; }
+
+  .domain {
+    position: absolute;
+    right: 68px; top: 66px;
+    font-size: 22px; font-weight: 500; color: #a5b4fc; letter-spacing: .01em;
+  }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="card">
+    <img class="wordmark" src="../../public/logo-main-trimmed.png" alt="LittleFounders" />
+    <p class="kicker" id="kicker">Financial learning for families</p>
+    <h1 id="line">Kids learn money by deciding, not by watching.</h1>
+    <div class="rule"></div>
+  </div>
+
+  <p class="domain">littlefounders.ai</p>
+
+  <div class="langs">
+    <span>ES</span><span>·</span><span>EN</span><span>·</span><span>PT</span>
+  </div>
+
+  <div class="cast">
+    <img src="../../public/marketing/mentor-zara-bust.webp" alt="" />
+    <img src="../../public/marketing/mentor-liruf-bust.webp" alt="" />
+    <img src="../../public/marketing/mentor-rho-bust.webp" alt="" />
+    <img src="../../public/marketing/mentor-dina-bust.webp" alt="" />
+  </div>
+
+<script type="module">
+  // Copy comes from site.mjs so the card and the meta tags can never disagree
+  // about what LittleFounders claims to be.
+  const { CARD_LINE, CARD_KICKER } = await import('./site.mjs');
+  const locale = new URLSearchParams(location.search).get('locale') || 'en-US';
+  document.getElementById('line').textContent = CARD_LINE[locale] ?? CARD_LINE['en-US'];
+  document.getElementById('kicker').textContent = CARD_KICKER[locale] ?? CARD_KICKER['en-US'];
+  document.documentElement.lang = locale;
+  document.body.dataset.ready = 'true';
+</script>
+</body>
+</html>

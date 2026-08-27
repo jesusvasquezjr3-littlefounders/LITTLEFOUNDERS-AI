@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && node scripts/seo/build-seo.mjs",
     "preview": "vite preview",
     "predev": "node scripts/copy-3d-decoders.mjs",
     "prebuild": "node scripts/copy-3d-decoders.mjs",
@@ -26,7 +26,8 @@
     "verify:rig": "node scripts/verify-rig.mjs",
     "verify:placement": "tsx scripts/verify-placement.ts",
     "assets:walkmask": "tsx scripts/generate-walkmask.ts",
-    "publish:scenes": "node scripts/publish-scenes.mjs"
+    "publish:scenes": "node scripts/publish-scenes.mjs",
+    "seo:cards": "node scripts/seo/render-cards.mjs"
   },
   "dependencies": {
     "@dicebear/collection": "^9.4.2",

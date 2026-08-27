@@ -120,12 +120,14 @@ frontend/
     lottie/
     marketing/
       atlas/
+    og/
     sounds/
       auth/
       edu/
       ui/
   scripts/
     lib/
+    seo/
   src/
     __tests__/
     auth/
@@ -14851,7 +14853,7 @@ export default tseslint.config(
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && node scripts/seo/build-seo.mjs",
     "preview": "vite preview",
     "predev": "node scripts/copy-3d-decoders.mjs",
     "prebuild": "node scripts/copy-3d-decoders.mjs",
@@ -15066,6 +15068,26 @@ Photos from [Pexels](https://www.pexels.com), used under the Pexels license (fre
  * harness that confidently certified a slightly different island.
  */
 import {
+```
+
+### frontend/scripts/seo/og-card.html
+
+```
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>LittleFounders share card</title>
+<!--
+  The share card, as source rather than as a mystery PNG.
+
+  WHY IT IS A TEMPLATE AND NOT A GENERATED IMAGE
+
+  The card that shipped before this one was a stock-style photo of two children
+  at a laptop. It carried no wordmark, no product name and no promise — so a
+  link shared into a WhatsApp family group showed a picture that could have
+  advertised anything. Worse, the laptop screen in it was full of AI-garbled
+  fake text ("Hii !!o Liisi!"), which is a credibility problem the moment
 ```
 
 ### frontend/scripts/verify-placement.ts
@@ -27407,7 +27429,12 @@ export default {
 ```
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/app-shell.html"
+    }
+  ]
 }
 ```
 

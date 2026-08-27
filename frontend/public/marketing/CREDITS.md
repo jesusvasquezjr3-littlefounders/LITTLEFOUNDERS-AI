@@ -35,6 +35,6 @@ Photos from [Pexels](https://www.pexels.com), used under the Pexels license (fre
 | `atlas/6274956.jpg` | https://www.pexels.com/photo/a-mother-reading-a-book-to-her-daughter-6274956/ |
 | `atlas/4609073.jpg` | https://www.pexels.com/photo/a-mother-and-her-children-reading-a-book-together-at-home-4609073/ |
 
-`/logo-main.png`, `/Hero-Families.webp`, favicons and `og-image.png` are LittleFounders brand assets (recovered from the v1 `main` branch).
+`/logo-main.png`, `/Hero-Families.webp` and the favicons are LittleFounders brand assets (recovered from the v1 `main` branch). The social share cards in `/og/` are generated from `scripts/seo/og-card.html` by `npm run seo:cards` — they are built from the wordmark and the mentor busts, so they carry no third-party imagery. They replaced `og-image.png`, a stock-style photo that named neither the product nor its promise and whose on-screen text was AI-garbled nonsense.
 
 `/logo-main-trimmed.png` is a derivative of `/logo-main.png`: the source canvas is 8000×4500 with the wordmark occupying only its central ~23% (huge transparent margins), which made the logo look tiny in the header/footer no matter the CSS height. Trimmed to the alpha-channel content bounding box (+40px padding) via Pillow — `frontend/public/logo-main.png` bbox `(1034, 1605, 6966, 2621)`. Use the trimmed file in UI; keep the original as the untouched brand source.
