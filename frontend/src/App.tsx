@@ -64,6 +64,7 @@ const LessonViewPage = lazy(() => import('@/lesson-engine/lab/LessonViewPage'));
  * the lesson lab, and additionally because `three` is a large chunk that must
  * never be pulled into a production entry bundle by a stray import. */
 const SceneLabPage = lazy(() => import('@/tutor-scene/lab/SceneLabPage'));
+const PoseLabPage = lazy(() => import('@/tutor-scene/lab/PoseLabPage'));
 
 /* Dev-only visual QA for the Tutor's product surfaces (personalize, offer,
  * conversation) against fixtures — the §1.11 both-breakpoints check without
@@ -133,6 +134,18 @@ export function App() {
               element={
                 <Suspense fallback={null}>
                   <SceneLabPage />
+                </Suspense>
+              }
+            />
+          ) : null}
+          {/* The pose library, reviewed by LOOKING at it. DEV-only for the same
+              reason scene-lab is: it is an authoring surface, not a product one. */}
+          {import.meta.env.DEV ? (
+            <Route
+              path="dev/pose-lab"
+              element={
+                <Suspense fallback={null}>
+                  <PoseLabPage />
                 </Suspense>
               }
             />

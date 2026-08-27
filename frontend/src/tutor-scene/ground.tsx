@@ -61,6 +61,31 @@ export function GroundProvider({ children }: { children: ReactNode }) {
   return <GroundContext.Provider value={value}>{children}</GroundContext.Provider>;
 }
 
+/*
+ * A STAGE WITH NO SCENERY. The floor is the origin plane, and that is a FACT
+ * about this surface rather than a missing measurement.
+ *
+ * `GroundProvider` returns `null` when a raycast finds nothing, and
+ * `Character3D` renders nothing in response - both deliberate, because inside
+ * the diorama a character with no ground under them is a placement bug and
+ * hiding it behind an invisible plane is exactly what §1.14 forbids.
+ *
+ * `CharacterStage` has no island by design. Reusing the diorama's provider
+ * there would make every character invisible for a reason that does not apply,
+ * so the stage says what is true instead: the ground is y = 0, everywhere.
+ * The distinction is kept in the PROVIDER rather than as a flag on
+ * `Character3D`, so the "no ground means a bug" reading survives untouched
+ * wherever there really is scenery.
+ */
+export function FlatGroundProvider({ children }: { children: ReactNode }) {
+  const ground = useRef<Object3D | null>(null);
+  const value = useMemo(
+    () => ({ sampleGround: () => 0, setGround: () => {}, groundRef: ground }),
+    [],
+  );
+  return <GroundContext.Provider value={value}>{children}</GroundContext.Provider>;
+}
+
 export function useGround(): GroundSampler {
   const context = useContext(GroundContext);
   if (!context) throw new Error('useGround must be used within a GroundProvider');

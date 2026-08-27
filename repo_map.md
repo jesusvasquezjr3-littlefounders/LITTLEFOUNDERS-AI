@@ -1088,15 +1088,15 @@ colors:
 > ACCEPTANCE for the work; on any conflict with an invariant, `/AGENTS.md` wins
 > and the conflict is surfaced rather than resolved silently (§1.0.1).
 >
-> Status: **DRAFT — three decisions outstanding (§6). Not started.**
+> Status: **IN PROGRESS.** Decisions answered 2026-08-27 (§6). §3.3 the
+> pose lab and the character-only stage are DONE; §3.2 the library is at
+> 57 entries; §3.1 and §3.4 are next.
 
 ---
 
 ## §1 Why
 
 User testing found the 3D characters read as more useful than the 2D ones for
-practical explanation. The 3D cast already exists, is already rigged, and
-already speaks the same emotion/action vocabulary as the 2D layer — it is
 ```
 
 ### INSIGHTS.md
@@ -25157,6 +25157,26 @@ import {
   ACTION_SECONDS,
 ```
 
+### frontend/src/tutor-scene/CharacterStage.tsx
+
+```
+import { Suspense, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useThree } from '@react-three/fiber';
+import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
+import { Character3D } from './Character3D';
+import { ContactShadow } from './ContactShadow';
+import { FlatGroundProvider } from './ground';
+import { SceneCanvas, type SceneStats } from './SceneCanvas';
+import { SceneLighting } from './SceneLighting';
+import { CHARACTER_MEASUREMENTS } from './measurements';
+
+/*
+ * ONE CHARACTER, NO WORLD.
+ *
+ * The 3D cast has only ever been reachable from inside the Tutor's diorama -
+ * an island, a walkability mask, a camera director, a time-of-day light rig.
+```
+
 ### frontend/src/tutor-scene/ContactShadow.tsx
 
 ```
@@ -25957,6 +25977,26 @@ import { clampIntoView, type ViewportBox } from './culling';
  * corner. Measured on a live stage: caption (54, 31, 266, 68) against chip
 ```
 
+### frontend/src/tutor-scene/lab/PoseLabPage.tsx
+
+```
+import { useMemo, useState } from 'react';
+import { CHARACTER_IDS, type CharacterId } from '@/components/characters/control/types';
+import { CharacterStage } from '../CharacterStage';
+import { POSES, posesByCategory, type Pose, type PoseCategory } from '../poseLibrary';
+import type { SceneStats } from '../SceneCanvas';
+
+/*
+ * THE POSE LAB — every pose, on every character, looked at.
+ *
+ * This exists because of a specific precedent in this codebase: an
+ * armature-space retarget was built, verified numerically correct on the
+ * authoring rig at 2e-6, and was still visibly wrong on Rho. Numbers agreed and
+ * the screen did not. A pose library reviewed by reading a table would repeat
+ * that, at fifty-seven times the scale.
+ *
+```
+
 ### frontend/src/tutor-scene/lab/SceneLabPage.tsx
 
 ```
@@ -26155,6 +26195,46 @@ import { mouthCardTint, resolveBackdrop, SCENE_BACKDROP_IDS } from './backdrops'
  * constant somebody would have to re-check by eye every time a palette moves.
  */
 
+```
+
+### frontend/src/tutor-scene/poseLibrary.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import {
+  CHARACTER_ACTIONS,
+  CHARACTER_EMOTIONS,
+  CHARACTER_IDS,
+} from '@/components/characters/control/types';
+import { LOOPABLE_ACTIONS } from '@/components/characters/control/types';
+import { LOOPING_ACTIONS } from './characterActions';
+import { POSES, POSE_IDS, poseById, posesByCategory, resolvePose } from './poseLibrary';
+
+/*
+ * The pose library is CONTENT, and content that names a thing which does not
+ * exist fails at the moment a learner sees it rather than at build time. These
+ * assertions are what make a row in that catalog a promise the code can keep.
+ */
+```
+
+### frontend/src/tutor-scene/poseLibrary.ts
+
+```
+import type {
+  CharacterAction,
+  CharacterEmotion,
+  CharacterId,
+} from '@/components/characters/control/types';
+
+/*
+ * THE POSE LIBRARY — every concrete thing a character can be asked to do,
+ * named once, documented, and reusable from the Lesson Engine, the Tutor,
+ * marketing captures and anything built later.
+ *
+ * WHY A CATALOG AND NOT A COMBINATION. The primitives are 7 emotions and 12
+ * actions, which multiply to 84 pairs. Most of those pairs are meaningless
+ * ("surprised" + "bow") and a few are the entire product ("proud" + "celebrate"
+ * after a correct answer). Enumerating the grid would produce 84 rows nobody
 ```
 
 ### frontend/src/tutor-scene/quality.test.ts

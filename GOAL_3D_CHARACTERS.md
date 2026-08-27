@@ -4,7 +4,9 @@
 > ACCEPTANCE for the work; on any conflict with an invariant, `/AGENTS.md` wins
 > and the conflict is surfaced rather than resolved silently (§1.0.1).
 >
-> Status: **DRAFT — three decisions outstanding (§6). Not started.**
+> Status: **IN PROGRESS.** Decisions answered 2026-08-27 (§6). §3.3 the
+> pose lab and the character-only stage are DONE; §3.2 the library is at
+> 57 entries; §3.1 and §3.4 are next.
 
 ---
 
@@ -40,11 +42,17 @@ Established by reading the code, not assumed:
    built, verified correct on the authoring rig (2e-6), and still helped Liruf
    while hurting Rho. Rho's arms are physically too short to pass his own crown,
    so his `celebrate` is a DIFFERENT pose rather than a scaled one.
-3. **Dina is a quadruped on a 27-joint rig with different bone names**, excluded
-   by rig kind rather than by hoping the names miss.
+3. **Dina is a quadruped on a 27-joint rig with different bone names.** She is
+   excluded from the shared CLIP library by rig kind - but NOT from the
+   vocabulary: `characterActions.ts` carries a QUADRUPED driver table typed
+   `Record<CharacterAction, ...>`, all twelve actions expressed through head,
+   chest, ears and tail. *This document's first draft said she should be
+   excluded from poses needing hands. That was wrong and the pose library was
+   written the other way.*
 
 Any pose library that assumes one clip serves four characters is wrong before it
-is written.
+is written - and any that assumes the quadruped cannot participate is wrong for
+the opposite reason.
 
 ## §3 Scope
 
@@ -115,29 +123,27 @@ Every line here is checkable by running something or looking at something.
 - [ ] Every root gate green, three-locale i18n parity, docs updated in the same
       commit (§8).
 
-## §6 Decisions outstanding — these change the work materially
+## §6 Decisions — answered 2026-08-27
 
-**1. Where does the 3D character render, and at what cost?**
-The Lesson Engine shows one narrator at a time inside a strip. Options: one
-persistent WebGL canvas reused across segments (cheapest, most plumbing), a
-canvas per actor (simplest, multiplies cost), or pre-rendered sprite sheets from
-the 3D rig (near-zero runtime cost, loses live expression).
-**Recommendation: one persistent canvas**, with the measurement in §5 deciding
-whether it survives contact with a mid-range phone.
+**1. Where does the 3D character render?** ONE persistent canvas, as
+recommended. Built as `tutor-scene/CharacterStage.tsx`: `SceneCanvas` +
+`SceneLighting` + `Character3D`, no diorama, no camera director, no time of day.
+The framing is derived from each character's own `targetHeightM`, because a
+fixed distance frames a 1.61 m human and crops a 1.9 m dinosaur.
 
-**2. What is a "pose" in the library — a clip, or a composition?**
-50–100 authored clips is a large authoring effort with a real file-size cost on
-a phone. Many entries could instead be COMPOSITIONS of existing clips plus
-parameters (amplitude, speed, mirroring, a held frame). Recommendation:
-compositions where they read well, authored clips where they do not — and the
-lab is what decides which is which.
+**2. What is a pose?** The owner's definition: *a concrete action a character
+performs, documented, reusable anywhere on the platform.* So the catalog carries
+the NAME, the INTENT and the parameters, and resolves to the emotion/action
+vocabulary both rigs already speak. Adding a pose costs a row and a review, not
+an authored clip and a download. Where the rig genuinely cannot express
+something, the answer is a new clip through `scripts/author-clips.py` and a row
+pointing at it — never a row pretending.
 
-**3. What does "more gamification" mean concretely?**
-This is the item where guessing is most expensive. Candidates: combo/streak
-feedback inside a lesson, XP that animates rather than appears, character
-reactions tied to answer quality, particle/impact VFX on correct answers,
-progress that feels earned between segments. **Pick two or three to do
-properly** rather than six done thinly.
+**3. Gamification.** Proceed with the candidates, with UI/UX improvement as the
+general direction. Concretely, and to be filled into §5 before building:
+combo/streak feedback inside a lesson, XP that animates rather than appears, and
+character reactions tied to answer quality — the three that reuse the pose
+library rather than adding a second system.
 
 ## §7 Sizing, honestly
 
@@ -145,5 +151,22 @@ This is multi-session work. §3.1 and §3.3 are a session each; §3.2 is the
 largest and is bounded by authoring and review, not by code; §3.4 depends
 entirely on §6.3.
 
-Sequence proposed: **the lab first** (§3.3), because it is what makes every
-later pose reviewable, then §3.1, then §3.2, then §3.4.
+Sequence: **the lab first** (§3.3) — done — then §3.2 to its full size, then
+§3.1, then §3.4.
+
+## §8 Done so far (2026-08-27)
+
+- `CharacterStage` — one character, no world. Verified: all four render, each
+  on its own contact shadow, correctly proportioned, Dina included.
+- `FlatGroundProvider` — the stage has no island, so its floor is the origin
+  plane. Kept in the PROVIDER rather than as a flag on `Character3D`, so the
+  diorama's "no ground means a placement bug" reading survives untouched.
+- `poseLibrary.ts` — 57 documented poses across eight categories, with a gate
+  asserting every one resolves for every character and that `loop` is only
+  claimed where BOTH renderers honour it.
+- `/dev/pose-lab` — every pose, on every character, played and looked at.
+
+**Known and not fixed:** Dina and Liruf sit tight against the bottom of the lab
+frame. The aim point is a fraction of HEIGHT, which is the wrong measure for a
+quadruped whose mass is low and long. Cosmetic in a dev surface; it matters the
+moment the same framing is used in a lesson.
