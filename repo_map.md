@@ -874,6 +874,26 @@ name: Vault backup
 # separate, dedicated backup volume.
 ```
 
+### .github/workflows/vault-drift.yml
+
+```
+name: Vault drift probe
+
+# IS PRODUCTION'S SCHEMA WHERE THE REPOSITORY THINKS IT IS?
+#
+# Until now that question was answered by a paragraph in ROADMAP.md, and
+# RUNBOOK.md already records what that costs: "This sentence said PENDING until
+# 2026-08-23, two days after the migration ran, in the document an operator
+# reads before a migration handoff." A prose claim about production state goes
+# stale silently and is read as truth precisely when it matters.
+#
+# This is READ-ONLY. It runs `railway-migrate.sh --dry-run`, which inspects the
+# remote ledger and lists pending files and never creates a ledger, never
+# applies SQL, and is not given `--confirm-production`. It cannot change
+# anything. Its whole job is to make the answer a machine fact with a timestamp.
+#
+```
+
 ### AGENTS.md
 
 ```
@@ -1241,17 +1261,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-08-27) — the auth / family release is IN PRODUCTION; migration `0049` is not
+## A database CD, part A: classify, verify, and stop lying about production state (2026-08-27)
 
-**Pushed and deployed.** `1ee581a9..4f724871`, sixteen commits. Every CD that
-carries code succeeded on `9b75bab7`: backend, frontend, coursegen, picturegen,
-dataintel, audiogen, filebase, parent-id-check. `4f724871` is documentation only
-and correctly triggered nothing but `repo gates`.
+**What the analysis found.** `railway-migrate.sh` was already good - a
+`schema_migrations` ledger with a SHA-256 per file, drift detection, idempotent
+skips, one transaction per migration, a real `--dry-run`, `--confirm-production`
+required to mutate. It was not the problem. Three other things were:
 
-**Verified against production, not against the workflow's own green tick.**
-
-  - `GET /health` on Core: `{"service":"backend","version":"0.1.0","status":"ok"}`.
-  - The release's own change is live: `POST /api/v1/auth/signup` without a
+  1. **It never issued `NOTIFY pgrst, 'reload schema'`.** ROADMAP already
+     records the `0048` incident where that had to be run by hand or PostgREST
+     kept serving a schema cache without the new column. A migrator that leaves
+     the API serving a stale shape has not finished applying the migration.
 ```
 
 ### agent/README.md
@@ -8879,6 +8899,12 @@ BEGIN
 ### database/migrations/0049_drop_parent_verification_address.sql
 
 ```
+-- @phase: contract
+-- @after-release: 9b75bab7 (Core stopped sending `address`)
+--   Removes or narrows something an older deploy could still be
+--   using (drops a column), so it MUST NOT be applied
+--   until the code that stopped depending on it is live. Applied
+--   first, PostgREST rejects writes that still name the old shape.
 -- 0049_drop_parent_verification_address.sql — remove a home address that
 -- nothing ever verified.
 --
@@ -8888,12 +8914,6 @@ BEGIN
 -- Traced through the whole stack before writing this: Core required it
 -- (`z.string().trim().min(1).max(240)`) and persisted it, but never forwarded
 -- it — `parent-id-check/` has no occurrence of the word, and Guardian's verdict
--- is exactly four checks, `documentReadable`, `nameMatch`, `birthDateMatch`,
--- `notExpired`. Nothing in the platform ever read the column back.
---
--- So it was write-only PII, collected as `required` on a screen whose most
--- prominent element is a promise about what we do not keep, and it sat in a
--- table whose stated contract excluded it. /AGENTS.md §1.9 asks for minimal
 ```
 
 ### database/package.json
@@ -8907,7 +8927,7 @@ BEGIN
   "license": "UNLICENSED",
   "engines": { "node": "24.x" },
   "scripts": {
-    "test": "node scripts/check-migrations.mjs && node scripts/railway-migrate.test.mjs",
+    "test": "node scripts/check-migrations.mjs && node scripts/check-migration-phase.mjs && node --test scripts/check-migration-phase.test.mjs && node scripts/railway-migrate.test.mjs",
     "db:sync": "bash scripts/sync-supabase.sh",
     "db:up": "bash scripts/local-stack.sh up",
     "db:down": "bash scripts/local-stack.sh down",

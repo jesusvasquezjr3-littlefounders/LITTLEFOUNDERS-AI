@@ -1,3 +1,9 @@
+-- @phase: contract
+-- @after-release: 9b75bab7 (Core stopped sending `address`)
+--   Removes or narrows something an older deploy could still be
+--   using (drops a column), so it MUST NOT be applied
+--   until the code that stopped depending on it is live. Applied
+--   first, PostgREST rejects writes that still name the old shape.
 -- 0049_drop_parent_verification_address.sql — remove a home address that
 -- nothing ever verified.
 --

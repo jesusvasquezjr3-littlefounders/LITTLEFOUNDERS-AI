@@ -209,10 +209,45 @@ jobs:
             || echo "could not re-read status"
 
       # ── MIGRATE — mutates the production database ────────────────────────
+      #
+      # A PRE-FLIGHT DUMP, TAKEN NOW. `vault-backup.yml` runs daily at 08:00
+      # UTC, so a migration at 20:00 was separated from its most recent restore
+      # point by up to twelve hours of real family data. That is the wrong
+      # exposure for the one operation in this repository that can destroy a
+      # column, and it costs one pg_dump to remove.
+      #
+      # These are `vault-backup.yml`'s own commands, deliberately: `railway ssh`
+      # exits 0 even when the REMOTE command fails, so the `test -s` on the
+      # pulled file is what actually proves a dump exists. A restore point
+      # reported but not taken is the worst possible lie to tell immediately
+      # before a destructive migration.
+      - name: Pre-migration dump
+        if: inputs.step == 'migrate'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          set -euo pipefail
+          TS=$(date -u +%Y%m%d-%H%M%S)
+          FILE="pre-migration-${TS}.dump"
+
+          railway ssh --service db -i ~/.ssh/railway_key --             pg_dump -U supabase_admin -d postgres -Fc -f /tmp/premig.dump
+          railway ssh --service db -i ~/.ssh/railway_key --             cat /tmp/premig.dump > "$FILE"
+          test -s "$FILE"
+
+          cat "$FILE" | railway ssh --service filebase -i ~/.ssh/railway_key --             sh -c "cat > /data/backups/$FILE"
+          railway ssh --service db -i ~/.ssh/railway_key -- rm -f /tmp/premig.dump
+          echo "Restore point: /data/backups/$FILE ($(wc -c < "$FILE") bytes)"
+
       - name: Apply pending migrations
         if: inputs.step == 'migrate'
         run: |
           set -euo pipefail
+          # A contraction applied before its release is live is the failure
+          # mode this gate exists for: the column goes while an older deploy
+          # still names it, and PostgREST rejects every write that does.
+          echo "== Phase declarations, and which pending migrations are contractions =="
+          node database/scripts/check-migration-phase.mjs
+          echo ""
           echo "== Dry run first: the pending list must be exactly what is expected =="
           bash database/scripts/railway-migrate.sh --dry-run
           echo ""

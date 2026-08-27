@@ -1,0 +1,104 @@
+name: Vault drift probe
+
+# IS PRODUCTION'S SCHEMA WHERE THE REPOSITORY THINKS IT IS?
+#
+# Until now that question was answered by a paragraph in ROADMAP.md, and
+# RUNBOOK.md already records what that costs: "This sentence said PENDING until
+# 2026-08-23, two days after the migration ran, in the document an operator
+# reads before a migration handoff." A prose claim about production state goes
+# stale silently and is read as truth precisely when it matters.
+#
+# This is READ-ONLY. It runs `railway-migrate.sh --dry-run`, which inspects the
+# remote ledger and lists pending files and never creates a ledger, never
+# applies SQL, and is not given `--confirm-production`. It cannot change
+# anything. Its whole job is to make the answer a machine fact with a timestamp.
+#
+# It runs on a schedule AND on any push that touches migrations, because those
+# are the two moments the answer changes: the repository gains a migration, or
+# somebody applies one.
+
+on:
+  schedule:
+    # 07:30 UTC — half an hour before the daily backup, so the morning report
+    # reads "here is the drift" before "here is the restore point", which is
+    # the order an operator wants them in.
+    - cron: '30 7 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'database/migrations/**'
+      - 'database/scripts/railway-migrate.sh'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      # The static half needs no credentials at all, so it runs first and its
+      # verdict is never blocked by a Railway outage.
+      - name: Phase declarations agree with the SQL
+        run: node database/scripts/check-migration-phase.mjs
+
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli@5.43.1
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_backup_key
+          chmod 600 ~/.ssh/railway_backup_key
+          # Railway's SSH proxy host is ephemeral per session, so there is no
+          # fixed host key worth pinning and a fresh runner has none cached.
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+          CONFIG
+          chmod 600 ~/.ssh/config
+
+      - name: Read the production ledger
+        id: probe
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_SSH_KEY_PATH: /home/runner/.ssh/railway_backup_key
+        run: |
+          set -euo pipefail
+          # --dry-run only. No --confirm-production anywhere in this workflow.
+          bash database/scripts/railway-migrate.sh --dry-run | tee probe.txt
+
+          PENDING=$(grep -c '^pending ' probe.txt || true)
+          echo "pending=$PENDING" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Vault drift probe"
+            echo ""
+            echo "Pending migrations: **$PENDING**"
+            echo ""
+            echo '```'
+            cat probe.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # DRIFT IS A HARD FAILURE, PENDING IS NOT.
+      #
+      # `railway-migrate.sh` already exits non-zero on a checksum mismatch
+      # ("migration drift detected"), which means a file in the repository has
+      # been edited after it was applied — an applied migration is immutable
+      # (/AGENTS.md §1.3) and the fix is a delta, never an edit. That is a
+      # broken invariant and should page someone.
+      #
+      # Migrations merely PENDING are the normal state between a merge and a
+      # deploy, and failing on them would train everyone to ignore this job.
+      - name: Report
+        run: |
+          echo "Pending: ${{ steps.probe.outputs.pending }}"
+          echo "Drift would have failed the previous step; reaching here means the ledger agrees with the repository."

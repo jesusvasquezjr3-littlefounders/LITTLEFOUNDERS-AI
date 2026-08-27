@@ -2,6 +2,57 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## A database CD, part A: classify, verify, and stop lying about production state (2026-08-27)
+
+**What the analysis found.** `railway-migrate.sh` was already good - a
+`schema_migrations` ledger with a SHA-256 per file, drift detection, idempotent
+skips, one transaction per migration, a real `--dry-run`, `--confirm-production`
+required to mutate. It was not the problem. Three other things were:
+
+  1. **It never issued `NOTIFY pgrst, 'reload schema'`.** ROADMAP already
+     records the `0048` incident where that had to be run by hand or PostgREST
+     kept serving a schema cache without the new column. A migrator that leaves
+     the API serving a stale shape has not finished applying the migration.
+  2. **No restore point closer than the daily 08:00 UTC dump**, so a migration
+     at 20:00 sat twelve hours from its most recent backup - for the one
+     operation here that can destroy a column.
+  3. **Nothing distinguished a migration that is safe before the code from one
+     that is only safe after it**, which is precisely the mistake made a day
+     earlier on `0049`.
+
+**Counted before designing.** Of 49 migrations, 38 are purely additive and 11
+remove or narrow something. The ordering hazard applies to about a fifth, and it
+is mechanically detectable - which is what makes automating the rest safe.
+
+**What shipped (part A).** `-- @phase: expand|contract` on unapplied migrations,
+with `-- @after-release:` naming what made a contraction safe; a gate that
+re-derives the classification from the SQL and fails a file that declares
+`expand` while dropping a column; ten self-tests that run the gate against
+known-bad fixtures; `NOTIFY pgrst` inside the apply transaction; a pre-migration
+dump in the workflow; and `vault-drift.yml`, a read-only probe on a schedule and
+on any push touching migrations.
+
+The drift probe replaces a paragraph. RUNBOOK already recorded what the prose
+cost: "This sentence said PENDING until 2026-08-23, two days after the migration
+ran, in the document an operator reads before a migration handoff."
+
+**THE MISTAKE THIS PASS ALMOST SHIPPED.** The first version stamped the phase
+header onto all 49 files. `railway-migrate.sh` verifies each applied migration
+by SHA-256 of the whole file, so all 48 already in production would have failed
+`migration drift detected` on the very next run - the migrator would have been
+unusable, and the failure would have surfaced in production at the worst
+possible moment. It was caught by diffing the working tree hash against HEAD
+before committing. An applied migration is immutable down to its comments, and
+the gate now enforces that by asking nothing of anything at or below the
+high-water mark.
+
+**Where the pre-migration dump lives, and why not in the script.** In the
+workflow, beside `vault-backup.yml`'s proven commands. The script's own comment
+warns that `railway ssh` exits 0 even when the remote command fails, which is
+why every call in it is sentinel-verified; a `pg_dump` bolted on without that
+discipline would report a restore point that does not exist - the worst possible
+lie to tell immediately before a destructive migration.
+
 ## Current State (2026-08-27) — the auth / family release is IN PRODUCTION; migration `0049` is not
 
 **Pushed and deployed.** `1ee581a9..4f724871`, sixteen commits. Every CD that
@@ -4273,6 +4324,10 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-27 | **An APPLIED migration is immutable down to its comments, and the phase gate enforces that by asking nothing of it.** Only files above the ledger high-water mark carry `-- @phase:`; below it the classification is derived. | The first version of this work stamped a header onto all 49 files. `railway-migrate.sh` verifies every applied migration by SHA-256 of the whole file, so all 48 in production would have failed `migration drift detected` on the next run and the migrator would have been unusable. Caught by diffing the working-tree hash against HEAD before committing, not in production. §1.3 already said "never edit an applied migration"; what was new is that a COMMENT counts. |
+| 2026-08-27 | **The migrator now ends each applied migration with `NOTIFY pgrst, 'reload schema'`, inside the transaction.** | Postgres delivers a NOTIFY at COMMIT, so a failed migration reloads nothing and a successful one reloads exactly once. Without it PostgREST serves a schema cache from before the change - ROADMAP records `0048` adding `courses.in_progress` and the column staying invisible through the API until someone ran this by hand. Finishing the DDL is not finishing the migration. |
+| 2026-08-27 | **The pre-migration dump lives in the workflow, not in `railway-migrate.sh`.** | The script's own comment says `railway ssh` exits 0 even when the REMOTE command fails, which is why every call in it is sentinel-verified. A `pg_dump` added without that discipline would report a restore point that was never taken - immediately before the one operation in this repository that can destroy a column. The workflow reuses `vault-backup.yml`'s commands, where `test -s` on the pulled file is what actually proves the dump exists. |
+| 2026-08-27 | **"Is production current?" is now a machine fact with a timestamp (`vault-drift.yml`), not a sentence.** Read-only `--dry-run` on a schedule and on any push touching migrations; drift fails, merely-pending does not. | The previous answer lived in a ROADMAP paragraph, and RUNBOOK already recorded the cost: it "said PENDING until 2026-08-23, two days after the migration ran, in the document an operator reads before a migration handoff." Pending is the normal state between a merge and a deploy, so failing on it would train everyone to ignore the job; drift means an applied migration was edited, which is a broken invariant. |
 | 2026-08-27 | **A green CD run is not evidence that a release works; production answering correctly is.** Core `/health`, a signup missing `birthDate`, an under-13 signup, the new assets by content-type, and three pages photographed live were all checked after the deploy. | Every workflow reported success, and the useful question is a different one: does the code that is actually running do the new thing. The under-13 probe is the sharp one - it returns 403 `AGE_RESTRICTED` and creates nothing, which is the behaviour the release exists for, and no amount of green CI would have shown it. The deleted `auth-bg.jpg` still answered 200, and only comparing it against a path that never existed showed both were the SPA fallback rather than a stale asset. |
 | 2026-08-26 | **Correction, before it could be acted on: a column-dropping migration ships AFTER the code, not before.** RUNBOOK.md said the reverse for this release; it now states code first with the reasoning. | Only one direction survives the window where the two halves disagree. Code first: Core stops sending `address`, the column is still there and `NOT NULL DEFAULT ''`, inserts land with an empty string, nothing breaks. Migration first: the column is gone while the old Core still names it, and PostgREST rejects an insert naming a column absent from its schema cache - so every parent verification would have 502'd for the length of the window. The original note justified itself with "new rows land in a column the release exists to remove", which is true and costs nothing, against an outage that costs the deploy. |
 | 2026-08-26 | **Ten children per guardian, checked before anything is created.** `KID_LIMIT_REACHED`, counted from the same verified links `/kids` reads. | Not a product opinion about family size - ten is far past any real one - but a bound on what a single compromised or automated `parent` session can mint. Every child is a real `auth.users` row and a real learner the platform generates and stores content for, so an unbounded creation endpoint is an unbounded bill (§1.0). Raising an eleventh by hand is easy; noticing ten thousand after the invoice is not. |

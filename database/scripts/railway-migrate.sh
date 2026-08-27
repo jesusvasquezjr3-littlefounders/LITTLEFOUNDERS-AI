@@ -318,6 +318,16 @@ COMMIT;"
   fi
 fi
 
+# THE PRE-MIGRATION DUMP IS NOT TAKEN HERE, DELIBERATELY.
+#
+# It belongs in the workflow that calls this script, next to the proven backup
+# commands and the key they use (`.github/workflows/vault-backup.yml`), for a
+# reason this file already knows about: `railway ssh` exits 0 even when the
+# REMOTE command fails (see the note above `remote_sql`), which is why every
+# call here is wrapped in sentinel verification. A `pg_dump` bolted on without
+# that discipline would report a restore point that does not exist - the worst
+# possible lie to tell right before a destructive migration.
+
 for migration in "${MIGRATION_FILES[@]}"; do
   filename="$(filename_for "$migration")"
   number="$(number_for "$migration")"
@@ -345,9 +355,17 @@ for migration in "${MIGRATION_FILES[@]}"; do
     continue
   fi
 
+  # NOTIFY IS INSIDE THE TRANSACTION ON PURPOSE. Postgres delivers a NOTIFY at
+  # COMMIT, so a migration that fails never reloads anything, and one that
+  # succeeds reloads exactly once. Without it PostgREST keeps serving a schema
+  # cache from before the change: migration 0048 added `courses.in_progress`
+  # and the column stayed invisible through the API until someone ran this by
+  # hand (ROADMAP.md records the incident). A migrator that leaves the API
+  # serving a stale shape has not finished applying the migration.
   sql="BEGIN;
 $(sed -n '1,$p' "$migration")
 INSERT INTO public.schema_migrations (filename, checksum) VALUES ('$filename', '$checksum');
+NOTIFY pgrst, 'reload schema';
 COMMIT;"
   remote_sql "$sql" "apply $filename" >/dev/null
   echo "applied $filename"
