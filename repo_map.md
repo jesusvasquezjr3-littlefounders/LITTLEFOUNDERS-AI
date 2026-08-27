@@ -12,9 +12,12 @@
 agent/
   core/
     checklists/
+  handoff/
+    checkpoints/
   prompts/
     templates/
   tools/
+    content/
   workflows/
 audiogen/
   scripts/
@@ -1281,17 +1284,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Migration `0049` is applied; production is at 49/49 (2026-08-27)
+## Closing the family/kid release: one number read, one file rebuilt, one gate that opened a day late (2026-08-27)
 
-`Tutor deploy (operator) #29`, dispatched by hand with `step: migrate` on
-`6273ac0e`, succeeded in 4m 15s. The code that stopped sending `address` shipped
-first (`9b75bab7`), which is the order that matters: dropping the column while an
-older Core still named it would have made PostgREST reject every
-parent-verification insert.
+The three items RUNBOOK.md left open after `0049` was applied. Two closed
+cleanly. The third found a defect.
 
-**First run through the hardened path.** A pre-flight dump taken immediately
-before rather than up to twelve hours earlier, the phase report printed before
-the dry-run, and `NOTIFY pgrst, 'reload schema'` inside the apply transaction -
+**The ledger is now observed.** `vault-drift.yml` had never passed since it was
+written - its only run failed before `6273ac0e` silenced ssh's host-key warning
+into the stdout the migrator parses. Dispatched by hand on a tree carrying that
+fix, it came back green in 1m 9s and read 49 receipts with zero pending. The
+sentence in ROADMAP that honestly said "inferred" now says what was measured.
+
 ```
 
 ### agent/README.md
@@ -1430,6 +1433,3426 @@ Review in this order — an invariant violation ends the review immediately.
 - [ ] Sad paths handled (validation, auth, not-found) and tested.
 - [ ] No `any` without justification; strict TS holds.
 - [ ] Async correctness: no floating promises, timeouts on external IO.
+```
+
+### agent/handoff/PROGRESS-2026-08-19.md
+
+```
+# Image dedup progress — snapshot 2026-08-19
+
+Codex worked the image-deduplication brief (`codex-image-session.md`) from
+2026-08-17 through 2026-08-19, then paused on hitting its weekly usage limit.
+This file is the verified state at the moment of the handover to a new agent.
+
+## Verified against live production (not self-reported)
+
+- **988/988 published lessons pass the zero-spend gate** — no narrated text
+  changed anywhere, three locales stay in lockstep.
+- **Zero provider spend**: 0 new `picture_assets`, 0 new `speech_assets` since
+  2026-08-16. No Prism, no DashScope, no TTS.
+- **Zero archived lessons touched** (the 220 cut lessons are untouched).
+- Format: random samples confirm real WebP (not mislabelled PNG), consistent
+  1328×1328, average ~78 KB — in line with the pre-existing corpus.
+```
+
+### agent/handoff/checkpoints/format-conversion-2026-08-17.json
+
+```
+{
+  "status": "complete",
+  "operation": "PNG to WebP transcode only; no image regeneration",
+  "quality": 82,
+  "converted_assets": 47,
+  "affected_lessons": 18,
+  "total_before_bytes": 39440292,
+  "total_after_bytes": 1201458,
+  "lessons": [
+    {
+      "order": 1,
+      "lesson_id": "5d7711fa-2c40-4984-9d96-3086c72f205b",
+      "slug": "mi-primer-deseo",
+      "images": [
+        {
+```
+
+### agent/handoff/checkpoints/order-0001.json
+
+```
+{
+  "order": 1,
+  "lesson_id": "5d7711fa-2c40-4984-9d96-3086c72f205b",
+  "slug": "mi-primer-deseo",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/a73941102433289c247c4e86840002c445ead0fb5b236b0bbba5ee465894d760.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/94ce7eaa0e6af318bd0b3f802d59d0975f2a04b5320f1d582cf7cebd452a23ca.webp",
+      "slots": [
+        "s3-sort-buckets.payload.items[0].image_url",
+        "s5-yes-no-cases.payload.cases[0].image_url"
+      ],
+      "subject": "concha brillante",
+```
+
+### agent/handoff/checkpoints/order-0002.json
+
+```
+{
+  "order": 2,
+  "lesson_id": "56dec5fb-a12f-4121-b7dd-d4220c3217be",
+  "slug": "por-que-lo-quiero",
+  "status": "complete",
+  "images": [],
+  "note": "work-order.json declares shared_images=0; no production write required"
+}
+```
+
+### agent/handoff/checkpoints/order-0003.json
+
+```
+{
+  "order": 3,
+  "lesson_id": "cbaaa13f-9308-4069-a8cf-4a05b2006e3a",
+  "slug": "mi-lista-de-deseos",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/aa9f9fe8e6056321d5c34a084bfcdf3d026de47c42cf548ecb001c195db7f4a2.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/abffbe2bd405bf76e5e1172961367efcb52fe6f05f67902c2e5f5862c7e3ead8.webp",
+      "slots": [
+        "s2-key-ideas.payload.ideas[0].image_url"
+      ],
+      "subject": "bicicleta",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/9c68d3718db8856c31b4b385375df863e8a8393e647c18d5f05dcbd1f6a15b03.png",
+```
+
+### agent/handoff/checkpoints/order-0004.json
+
+```
+{
+  "order": 4,
+  "lesson_id": "68ca2aa8-01b3-46d1-9b64-a3d7a585b5df",
+  "slug": "dos-islenos-dos-deseos",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/31c17922888c32ccc5fd2a9d76d5fbe6bb66bb1ba35f04d62b5125447de7f7d3.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/1a92623f4f928414838681069920a9aadef04b0e6b837046fb39ee53859e0981.webp",
+      "slots": [
+        "s2-order.payload.items[0].image_url",
+        "s5-picture.payload.options[0].image_url"
+      ],
+      "subject": "mango",
+```
+
+### agent/handoff/checkpoints/order-0005.json
+
+```
+{
+  "order": 5,
+  "lesson_id": "ebc5b69b-08ca-41a5-a2d2-8ccc8a24ff52",
+  "slug": "a-cada-quien-lo-suyo",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/4a89cf5307c3a255054d6197c3b0c9a5262b966c2bba2c73a60bd42d414ab202.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/b8dd5ee2462e8d6d4ac3bdcbe5da1cda446e632d716919c8f6e5e62b7589eaed.webp",
+      "slots": [
+        "s8-would.payload.b.image_url"
+      ],
+      "subject": "semillas",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/a63b5c340f9ab9cfc7a49f6484c021a6aa089856aca0d1301d22c2af19c76324.png",
+```
+
+### agent/handoff/checkpoints/order-0006.json
+
+```
+{
+  "order": 6,
+  "lesson_id": "af55925c-c918-42fd-bc5d-c481e4a9ab59",
+  "slug": "mismo-deseo-distinta-razon",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/a73941102433289c247c4e86840002c445ead0fb5b236b0bbba5ee465894d760.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/9e5a2cbdf4e097208cde31b9784eeaf06f05a2500d6bdced7841297b4ee8ea0f.webp",
+      "slots": [
+        "s0-historia.payload.items[0].image_url"
+      ],
+      "subject": "concha marina",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/d9df1156aff02c9a3380d97c1976ff9ccf647d840722f1e0c3fd9516710925b4.png",
+```
+
+### agent/handoff/checkpoints/order-0007.json
+
+```
+{
+  "order": 7,
+  "lesson_id": "dfc83c35-41fe-41d1-b578-75745478485c",
+  "slug": "respeto-por-lo-que-otros-quieren",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0008.json
+
+```
+{
+  "order": 8,
+  "lesson_id": "dae569ec-ad7d-4c07-a2a7-9c232a659baa",
+  "slug": "no-puedo-llevarme-todo",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0009.json
+
+```
+{
+  "order": 9,
+  "lesson_id": "093391d4-356e-4032-80cf-b67d4b137ef7",
+  "slug": "lo-que-dejo-para-despues",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/8f4acecba22c3868338d5c9621452e0555ff500941fccf5ba37f8d5bb4ee1ea4.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/f1e9d3ef1cae34429aaa644590307488cf1b532b1b85b407bd9c7a3abb7715f1.webp",
+      "slots": [
+        "s3-key-ideas.payload.ideas[1].image_url"
+      ],
+      "subject": "reloj de arena",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/3bd3bd9d1b612b140429d834bd1f9d6ae5ea26ed1b944ebb24d1868377da5c13.png",
+```
+
+### agent/handoff/checkpoints/order-0010.json
+
+```
+{
+  "order": 10,
+  "lesson_id": "ca16c54b-c016-4458-96ec-ac3282afec7c",
+  "slug": "elegir-sin-tristeza",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0011.json
+
+```
+{
+  "order": 11,
+  "lesson_id": "c9462daa-1165-4cf3-9029-347973e7fd72",
+  "slug": "te-doy-esto-por-eso",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/c194a73d1b4f07ab4aeaec273530940187446beee0547fabcc8bbc3c8b7df9ae.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/23eedf616e0c0e6bd9ea6e97172201ef3eb4f3edd86fbde8a8702e8d95a0609f.webp",
+      "slots": [
+        "s3-key-ideas.payload.ideas[1].image_url"
+      ],
+      "subject": "trueque: pluma y fruta",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/845264c08345c3783ba35b3500ed2b5cd17ecd13e2305f85ed56482e528dedc4.png",
+```
+
+### agent/handoff/checkpoints/order-0012.json
+
+```
+{
+  "order": 12,
+  "lesson_id": "b9ede17f-6199-41a1-90d7-a3a1154fe566",
+  "slug": "identifico-un-trueque",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0013.json
+
+```
+{
+  "order": 13,
+  "lesson_id": "a824efe8-36a5-4c7d-9d54-8605fb10ef5c",
+  "slug": "armo-mi-propio-trueque",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0014.json
+
+```
+{
+  "order": 14,
+  "lesson_id": "962673a6-4338-4ca3-b8fd-1f674ca60456",
+  "slug": "mi-primer-cambio-feliz",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0015.json
+
+```
+{
+  "order": 15,
+  "lesson_id": "82c1ba32-3879-4f48-9ab5-f389bcbac6b2",
+  "slug": "los-dos-quedan-contentos",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0016.json
+
+```
+{
+  "order": 16,
+  "lesson_id": "d43af980-0456-49ac-8447-e3a395d16d0b",
+  "slug": "elijo-el-trueque-justo",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0017.json
+
+```
+{
+  "order": 17,
+  "lesson_id": "5137590a-91fa-4749-8520-97168b9519cf",
+  "slug": "propongo-un-trueque-justo",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0018.json
+
+```
+{
+  "order": 18,
+  "lesson_id": "8f2ebfea-728f-4f31-9079-52fa8efaae17",
+  "slug": "nadie-quiere-mi-concha",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0019.json
+
+```
+{
+  "order": 19,
+  "lesson_id": "b21cbfb7-bf66-4b39-b376-04127299479c",
+  "slug": "busco-a-alguien-mas",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/47d89b5d26953fe191a2fda3c0922700f8ccded66642d0dae6cd4f0aaf25e613.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/b6d623267ddfc86a28942e9931257dc7f0e38faf4751ec5263491b66ca64acf5.webp",
+      "slots": [
+        "s4-picture-choice.payload.options[2].image_url"
+      ],
+      "subject": "tres piedras lisas",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/d34e90fb545ee0e6e7218a88a85f3b5bc956327bd2d6189e2b30b62bc6abf164.png",
+```
+
+### agent/handoff/checkpoints/order-0020.json
+
+```
+{
+  "order": 20,
+  "lesson_id": "dfcee4f5-992e-43d4-9085-a99d5ae1d99d",
+  "slug": "muchos-pasos-para-un-trueque",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0021.json
+
+```
+{
+  "order": 21,
+  "lesson_id": "3c7f1084-35ce-454d-8af9-63dbc54bf418",
+  "slug": "el-trueque-cansa",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0022.json
+
+```
+{
+  "order": 22,
+  "lesson_id": "6d0f49d4-4007-42ba-a999-c71dfc7aaa9b",
+  "slug": "abro-el-cofre-de-deseos",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/5aef386fc837299624da2f3e9578480a7d0547347ada11d4746236ec11657d8c.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/2e235cd11250840c75609ef2846450211ccd0a71337c817717d1615cbad39a38.webp",
+      "slots": [
+        "s3-zara-desire.payload.options[1].image_url"
+      ],
+      "subject": "caracol brillante",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/3ec7a65fd0a6316f17ffd5f3561fd8f17279e8f431e53fe8165f20accc136c5f.png",
+```
+
+### agent/handoff/checkpoints/order-0023.json
+
+```
+{
+  "order": 23,
+  "lesson_id": "42a8f4f2-62ba-4c67-a8fa-f30c1f941252",
+  "slug": "recuerdo-mi-trueque-favorito",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/c194a73d1b4f07ab4aeaec273530940187446beee0547fabcc8bbc3c8b7df9ae.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/7410393957be893461eb79d8c45de796d70192dae146218ed13b829271554fc7.webp",
+      "slots": [
+        "s2-repaso-palabras.payload.ideas[2].image_url"
+      ],
+      "subject": "trueque: concha y piedra",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/0e3e43aa7eda2c9030e9512ee50a68769e57a40ea29be14debb01e599bcd2304.png",
+```
+
+### agent/handoff/checkpoints/order-0024.json
+
+```
+{
+  "order": 24,
+  "lesson_id": "4dc65cc2-cfe8-4b64-a650-679df1bb4bd9",
+  "slug": "elijo-el-trueque-mas-justo-del-cofre",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0025.json
+
+```
+{
+  "order": 25,
+  "lesson_id": "f74ace08-c385-41c6-a426-2b12ec27fbdf",
+  "slug": "cierro-el-cofre-listo-para-seguir",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/f8ba41f32ed8eb61df4ab935ee20d25b12b488bfbc1200e6eabf2941657eff29.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/dee14a0b5637f730badc865c2010c6b4324c882d4ad7c5fca6011f28e45e95d1.webp",
+      "slots": [
+        "s7-clasifica-deseeos-tiene.payload.items[1].image_url"
+      ],
+      "subject": "pluma de colores",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/6cbaa6e2d72da4b9793593005e9ff7a064ae7e82080797c7a93fdd15acee5286.png",
+```
+
+### agent/handoff/checkpoints/order-0026.json
+
+```
+{
+  "order": 26,
+  "lesson_id": "5027dc82-c705-49ac-a7b4-3dc4cccb3a7f",
+  "slug": "deseo-y-trueque-en-la-misma-escena",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0027.json
+
+```
+{
+  "order": 27,
+  "lesson_id": "918560a5-d010-4102-bb1f-f1107b920d38",
+  "slug": "dos-islenos-dos-trueques-distintos",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/4def5acb3b24d2fe1189c625a0e880772124756278c5d99508cb82475f868657.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/8bf6d6b7809e1548079d85e72fd8eef2cce74b73cc41ed07c4ffc46d9da889d5.webp",
+      "slots": [
+        "s5-deseos-vs-posesiones.payload.items[0].image_url"
+      ],
+      "subject": "collar de caracoles",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/4dadbc564da0377830ac20cc08a8e7144cee7679207d9f68625c2ea35bb02dc5.png",
+```
+
+### agent/handoff/checkpoints/order-0028.json
+
+```
+{
+  "order": 28,
+  "lesson_id": "55388034-3e3f-4d51-ab17-8710abb72cd1",
+  "slug": "armo-un-trueque-justo-para-mi-deseo",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/c194a73d1b4f07ab4aeaec273530940187446beee0547fabcc8bbc3c8b7df9ae.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/55ea549324576f377c73ae6a5ac8f790f2f53d6514611a2a3a06d3119e0bd435.webp",
+      "slots": [
+        "s4-repaso-ideas.payload.ideas[1].image_url"
+      ],
+      "subject": "trueque: concha y pluma",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/7888899dd839cf7fc3b4cdfec13ef5da3f13961060495833505577efcb9e2e2d.png",
+```
+
+### agent/handoff/checkpoints/order-0029.json
+
+```
+{
+  "order": 29,
+  "lesson_id": "05843b9e-abd5-4a94-8268-e4e19bca0044",
+  "slug": "y-si-todos-aceptaran-lo-mismo",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/bc229bd51c697197b67941c5e2b1d91ef9fd05b667cb7b55fdcd410969e91ac0.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/f27dd52e1723f8df6fe1826d456e6bd3cfeb985dfa01063ddac63d78508b0338.webp",
+      "slots": [
+        "s6-elige-concha.payload.options[0].image_url"
+      ],
+      "subject": "concha",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/1933951fb90b42d994f89a6d88358eee75e41fd4bc24f818c29bba94ff2c8552.png",
+```
+
+### agent/handoff/checkpoints/order-0030.json
+
+```
+{
+  "order": 30,
+  "lesson_id": "9b4cee1d-81b7-4f7b-af47-6778e7055d06",
+  "slug": "elijo-lo-que-todos-quieren",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0031.json
+
+```
+{
+  "order": 31,
+  "lesson_id": "af42f99f-1c16-4c8a-87d5-dd7b18efeddf",
+  "slug": "comparo-antes-y-despues",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0032.json
+
+```
+{
+  "order": 32,
+  "lesson_id": "01ec61df-2e89-4a25-8707-53a859ba8eb4",
+  "slug": "mi-idea-para-la-isla",
+  "status": "complete",
+  "generation": "No shared image replacement required by work-order.json",
+  "images": [],
+  "locales_written": []
+}
+```
+
+### agent/handoff/checkpoints/order-0033.json
+
+```
+{
+  "order": 33,
+  "lesson_id": "1c8139ae-cf1d-49be-9eab-057f2e7ee9bf",
+  "slug": "las-conchas-especiales",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/a73941102433289c247c4e86840002c445ead0fb5b236b0bbba5ee465894d760.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/e8af420964eebe987b8db47d7fadd87439bc14ad04e2396b23a516b7faf1deab.webp",
+      "slots": [
+        "s5-isleno-curioso.payload.options[0].image_url",
+        "s8-limpieza-cofre.payload.items[0].image_url"
+      ],
+      "subject": "concha brillante",
+```
+
+### agent/handoff/checkpoints/order-0034.json
+
+```
+{
+  "order": 34,
+  "lesson_id": "0156eca8-550d-4c47-8f6e-5c8da82c04b4",
+  "slug": "de-lo-antiguo-a-lo-nuevo",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/bc229bd51c697197b67941c5e2b1d91ef9fd05b667cb7b55fdcd410969e91ac0.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/af878df69e05bee449820d3591875b7e800723c2b3addf7946722535f3b363a6.webp",
+      "slots": [
+        "s5-pick.payload.options[0].image_url",
+        "s8-odd.payload.items[0].image_url"
+      ],
+      "subject": "concha",
+```
+
+### agent/handoff/checkpoints/order-0035.json
+
+```
+{
+  "order": 35,
+  "lesson_id": "2046dbb0-01b4-4942-bc96-040fb0740b0a",
+  "slug": "cuento-mi-descubrimiento",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/bc229bd51c697197b67941c5e2b1d91ef9fd05b667cb7b55fdcd410969e91ac0.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/b289bf894de716bbe4676ce835e4e737af534c8adfd1a27779c093e7b1d182a7.webp",
+      "slots": [
+        "s5-picture.payload.options[0].image_url",
+        "s7-match.payload.left[0].image_url"
+      ],
+      "subject": "caracol",
+```
+
+### agent/handoff/checkpoints/order-0036.json
+
+```
+{
+  "order": 36,
+  "lesson_id": "e8e3d73e-693b-467a-b8e2-5e9ebc5aaded",
+  "slug": "la-moneda-no-se-rompe",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/bc229bd51c697197b67941c5e2b1d91ef9fd05b667cb7b55fdcd410969e91ac0.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/4f53fc3780ddf9713a7a13a8ec700dbc800f077399ec484665eef05631406c42.webp",
+      "slots": [
+        "s5-tesoro-duradero.payload.options[0].image_url",
+        "s9-rapido-monedas.payload.items[1].image_url",
+        "s9-rapido-monedas.payload.items[4].image_url",
+        "s9-rapido-monedas.payload.items[7].image_url",
+```
+
+### agent/handoff/checkpoints/order-0037.json
+
+```
+{
+  "order": 37,
+  "lesson_id": "7b92c78f-c78c-4fa1-8a88-f9b5fb51cfcd",
+  "slug": "tres-razones-para-monedas",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/c492c4a63d4cbadbbfec24609b8ba5f609517db35c034519b1a7914e8cc78377.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/401cb5ada42e73cfe3499b3d6702bc2e0541389b7c39508e80330644e427c584.webp","slots":["s8-clasificar-objetos.payload.items[1].image_url"],"subject":"grupo de conchas","format":"image/webp","bytes":42280},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/a61277b69c27a9974b1d319a4ace3c867c502f0f1ef5bb694864be602a55970b.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/29a87e89c79360e6edeaeb84b1913cac871deb89cbd7975fd2b4baf895defcbb.webp","slots":["s8-clasificar-objetos.payload.items[2].image_url"],"subject":"grupo de semillas","format":"image/webp","bytes":30444},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/47d89b5d26953fe191a2fda3c0922700f8ccded66642d0dae6cd4f0aaf25e613.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/dfbcd7817de8eb8597e9d5432e2691ff7b6a68e12fbb9acd696ca9a0d018a696.webp","slots":["s8-clasificar-objetos.payload.items[3].image_url"],"subject":"grupo de piedras","format":"image/webp","bytes":25122}
+  ],
+  "locales_written":["es-MX","en-US","pt-BR"]
+}
+```
+
+### agent/handoff/checkpoints/order-0038.json
+
+```
+{"order":38,"lesson_id":"b220a28b-8415-424a-b6ba-955904ea6276","slug":"ya-no-busco-tanto","status":"complete","shared_images_replaced":0,"generation":"No image replacement required; production unchanged","locales_written":[]}
+```
+
+### agent/handoff/checkpoints/order-0039.json
+
+```
+{"order":39,"lesson_id":"bf38d0a3-3a97-4681-88b9-c34b3abb3a6b","slug":"cualquiera-acepta-monedas","status":"complete","shared_images_replaced":0,"generation":"No image replacement required; production unchanged","locales_written":[]}
+```
+
+### agent/handoff/checkpoints/order-0040.json
+
+```
+{"order":40,"lesson_id":"df854a1b-5a72-421d-ac46-5b948a1225ea","slug":"comparo-el-antes-y-el-ahora","status":"complete","shared_images_replaced":0,"generation":"No image replacement required; production unchanged","locales_written":[]}
+```
+
+### agent/handoff/checkpoints/order-0041.json
+
+```
+{
+  "order":41,
+  "lesson_id":"990fe67b-7c2e-4592-b0ec-761e5b8c7461",
+  "slug":"no-puedo-morder-una-moneda",
+  "status":"complete",
+  "generation":"Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images":[
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/82445c8e0cdb5938540a3e928c73bac8b1a932b07f47578f2543dd83dfd2cedd.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/8e718d5c64272f3761416431143425b03b26dcd7f0fddfd949ebc76004ea50f4.webp","slots":["s5-cual-comer.payload.options[0].image_url","s7-cestas.payload.items[0].image_url"],"subject":"manzana","format":"image/webp","bytes":21618},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/72a65634a5be4a3d34ca02980c5530b664b627cbe91b1c327cc14d074bbdbb45.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/ad9b82bd744d43267738da0d84717ab046b35f3e9906e85715918b00aec50a8f.webp","slots":["s5-cual-comer.payload.options[1].image_url","s7-cestas.payload.items[2].image_url","s9-intruso.image_url"],"subject":"moneda simple","format":"image/webp","bytes":63178},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/c62745e9db768627064ac0488c7d5f9bf26ddd0565bc31bfb16604a51be9ca64.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/ef854d7797d3eb357a12b7a90cea6d7b09ef9d20875421c816fc5d114e521e12.webp","slots":["s7-cestas.payload.items[1].image_url"],"subject":"bloque de juguete","format":"image/webp","bytes":17516},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/db70c091f173e60c7333da0dcd876541d145e146fab3d1d7b3318aa4df5d41d5.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/61b189fc412b8f29288be84ac9869e1dfdaa3a0134883901774013bfd315aca6.webp","slots":["s5-cual-comer.payload.options[2].image_url"],"subject":"pelota","format":"image/webp","bytes":26176}
+  ],
+  "locales_written":["es-MX","en-US","pt-BR"]
+}
+```
+
+### agent/handoff/checkpoints/order-0042.json
+
+```
+{"order":42,"lesson_id":"a8bfe829-a59f-47b8-a2ac-5f5f48ea4cf1","slug":"si-uno-no-confia","status":"complete","shared_images_replaced":0,"generation":"No image replacement required; production unchanged","locales_written":[]}
+```
+
+### agent/handoff/checkpoints/order-0043.json
+
+```
+{"order":43,"lesson_id":"115ae1e2-8151-48a0-ac00-070f733a0171","slug":"isla-del-trueque-repaso","status":"complete","shared_images_replaced":0,"generation":"No image replacement required; production unchanged","locales_written":[]}
+```
+
+### agent/handoff/checkpoints/order-0044.json
+
+```
+{
+  "order":44,
+  "lesson_id":"9cfa4fcc-c260-4a4b-bc65-2c949a209a69",
+  "slug":"por-que-confiamos-en-la-moneda",
+  "status":"complete",
+  "generation":"Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images":[
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/00b69c86f254de3f2f27ea16faa040b8890b7446d287acd98bb050fcd4c79d9a.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/c1a8f2500f4ce6921bd905e6b548db0bdfc67b2160243f78fb295899b49d0114.webp","slots":["s2-objeto-dinero.payload.options[0].image_url"],"subject":"grupo de conchas","format":"image/webp","bytes":42542},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/86dd0a6c1853c8668f3a623e9f8f3f9921c334af878996f46ac3cc1af8951b5c.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/2575b2d6c18bfb9c127e23875bca420de97d49305873515dc50d8de36a3dbc80.webp","slots":["s2-objeto-dinero.payload.options[3].image_url"],"subject":"plátano","format":"image/webp","bytes":19414}
+  ],
+  "locales_written":["es-MX","en-US","pt-BR"]
+}
+```
+
+### agent/handoff/checkpoints/order-0045.json
+
+```
+{
+  "order":45,
+  "lesson_id":"5f2e1a2a-bee6-4cf8-8cd9-846a2472d85a",
+  "slug":"elijo-la-mejor-razon-para-usar-monedas",
+  "status":"complete",
+  "generation":"Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images":[
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/cf8a3d532bcf0826d8b76f7183a85ed4d45924fc2ba09307a6155ca333682305.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/43d7181821de4613ac10eff39bfb580912afae5f77bda5c485139a787d5f5626.webp","slots":["s4-picture.payload.options[2].image_url","s5-sort.payload.items[2].image_url"],"subject":"moneda simple","format":"image/webp","bytes":18618},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/82445c8e0cdb5938540a3e928c73bac8b1a932b07f47578f2543dd83dfd2cedd.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/729a32fcdd06b8dbac80a050d7c726e860bda4b80f5df149d5c5d582a74dfe3b.webp","slots":["s5-sort.payload.items[0].image_url"],"subject":"manzana","format":"image/webp","bytes":21790},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/db70c091f173e60c7333da0dcd876541d145e146fab3d1d7b3318aa4df5d41d5.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/499d54ac3b77f20ab8b617d8f501f89824562d814edffb9cfd7475fec08cbb9b.webp","slots":["s5-sort.payload.items[1].image_url"],"subject":"pelota","format":"image/webp","bytes":29174},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/bc229bd51c697197b67941c5e2b1d91ef9fd05b667cb7b55fdcd410969e91ac0.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/e28b3e4c36e675ef6275426ba2ef4c1287170b987e72e23f61a47db77db6c6c8.webp","slots":["s5-sort.payload.items[3].image_url"],"subject":"concha rota","format":"image/webp","bytes":22424},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/72a65634a5be4a3d34ca02980c5530b664b627cbe91b1c327cc14d074bbdbb45.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/43d7181821de4613ac10eff39bfb580912afae5f77bda5c485139a787d5f5626.webp","slots":["s5-sort.payload.items[2].image_url"],"subject":"moneda simple","format":"image/webp","bytes":18618}
+  ],
+  "locales_written":["es-MX","en-US","pt-BR"]
+}
+```
+
+### agent/handoff/checkpoints/order-0054.json
+
+```
+{
+  "order": 54,
+  "lesson_id": "8218e921-8088-4477-818d-a21d6fc346fa",
+  "slug": "el-billete-de-cincuenta",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/446feb941dc739d67ba722201db2b3de0a4d8e653ae62dba2c565a2b5ef36196.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/3ba8d065c94208408fd24a09f9d87fdcf83ee88f67b96f7510435b8623854035.webp",
+      "slots": ["s2-picture-choice-20.payload.options[3].image_url"],
+      "subject": "concha brillante",
+      "format": "image/webp",
+      "bytes": 52698,
+      "dimensions": "1328x1328"
+```
+
+### agent/handoff/checkpoints/order-0065.json
+
+```
+{
+  "order": 65,
+  "lesson_id": "70d5037d-69da-41d9-ac66-32a689adc32d",
+  "slug": "reconozco-mis-monedas-del-cofre",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/e3926b1724d13885f129a098f31353cf22237a1a8b258de9c2b0e35b10f79626.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/34a2a24a4b1d49cc1a8bb728148ff652608349d3da4788cd5628b431d5011475.webp",
+      "slots": ["s3-picture-choice-no-es-dinero.payload.options[1].image_url"],
+      "subject": "piedra brillante",
+      "format": "image/webp",
+      "bytes": 28654,
+      "dimensions": "1328x1328"
+```
+
+### agent/handoff/checkpoints/order-0068.json
+
+```
+{
+  "order": 68,
+  "lesson_id": "b2f4ca49-a090-4529-9c6a-efac431dc56b",
+  "slug": "confio-y-reconozco-mis-monedas",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/446feb941dc739d67ba722201db2b3de0a4d8e653ae62dba2c565a2b5ef36196.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/080890f8a6981d2af260545e97f221c7bf9ece809b73071c0ee2ac6d4b7762d8.webp",
+      "slots": ["s7-billetes-zara.payload.left[2].image_url"],
+      "subject": "concha brillante",
+      "format": "image/webp",
+      "bytes": 62548,
+      "dimensions": "1328x1328"
+```
+
+### agent/handoff/checkpoints/order-0072.json
+
+```
+{
+  "order": 72,
+  "lesson_id": "67199bde-ebb3-4c0d-8736-3a5b7ca8e9dd",
+  "slug": "reviso-el-precio-no-el-tamano",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/87044a0ced5312da8b2813fc6f62ec3fe71648497e66f55eacdcb9be87d67f63.webp",
+      "slots": ["s1-recuerdo-leccion.image_url"],
+      "subject": "playa al amanecer con roca, concha y gema",
+      "format": "image/webp",
+      "bytes": 26272,
+      "dimensions": "1328x1328"
+```
+
+### agent/handoff/checkpoints/order-0074.json
+
+```
+{
+  "order": 74,
+  "lesson_id": "99226604-76b6-4283-9de2-9af11ce179ef",
+  "slug": "la-fruta-suelta",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/d80a1e684164edfbaca74a6510ca9141b9273af4bc918c1c1a6245f8720064c5.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/0074f160a8b27df2d0019d1d01029bc6daa7f3561c515ae78db7009107854382.webp",
+      "slots": ["s1-recupera.image_url"],
+      "subject": "playa con fruta pequeña y piedra grande",
+      "format": "image/webp",
+      "bytes": 309890,
+      "dimensions": "1328x1328"
+```
+
+### agent/handoff/checkpoints/order-0075.json
+
+```
+{
+  "order": 75,
+  "lesson_id": "e553c75d-ce58-4929-b058-ca7fdee5b120",
+  "slug": "encuentro-lo-barato",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/72b6547ddc7c97a358e39a407d72c82b738b2893a3823aab0b136cc6a8b9d8ff.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/da9ca98cee921990a73a3e04ab706abc97a51d868a12dc77a6c1ec1078b24ae2.webp","slots":["s3-picture-choice-cheapest.payload.options[0].image_url"],"subject":"manzana","format":"image/webp","bytes":23716,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/9044ce8a73770c4115e0ee0b196b55f7c5307043e43bef281e456410ebc6eaad.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/fce01f706162644a8ff7b988be5a24c559d00fade99e1ead1529405dc0a5f78b.webp","slots":["s3-picture-choice-cheapest.payload.options[1].image_url","s4-needs-wants-low-cost.payload.items[0].image_url"],"subject":"caramelo","format":"image/webp","bytes":26570,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/5334b320599b8f3f8e65e511f4ca6a5bf935b5d2e89cbf2e23b448824e8bd458.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/b580ebfac61b8af3468e1d682b116ae79c267ada4d17756c7962081bfe2537fa.webp","slots":["s3-picture-choice-cheapest.payload.options[2].image_url"],"subject":"juguete de madera","format":"image/webp","bytes":14556,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/86dd0a6c1853c8668f3a623e9f8f3f9921c334af878996f46ac3cc1af8951b5c.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/840e50d5a78c1237ffae8e9ba1d258efcafc5910442cdef874708d9d43ce0ddf.webp","slots":["s3-picture-choice-cheapest.payload.options[3].image_url","s4-needs-wants-low-cost.payload.items[1].image_url"],"subject":"plátano","format":"image/webp","bytes":22618,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/3a854e893cccc285ca18965f20087bde21be45cab25e7d09ba8ec65d6bbcf5d4.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/249d246735f0c9546061883ab9fd9012e068a4ec6f0b7446c5eea6a94d63a6d4.webp","slots":["s4-needs-wants-low-cost.payload.items[2].image_url"],"subject":"sombrero","format":"image/webp","bytes":32286,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/8509debd8cf1c1326766d33e5c6c1c77fa111bb013d86194c9c46d4ecbce6c10.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/817237d749d847ecf0ffb269d718e5c372d6bb0c84ea97c38432423c426f0646.webp","slots":["s4-needs-wants-low-cost.payload.items[3].image_url"],"subject":"pelota","format":"image/webp","bytes":37296,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/edbcba3bb36faacfa49a6275390bcc7e88ec484be205c36eeedf5a971267d2ba.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/3d2218e6b4d41461e28380228eea952a5aa87dc0e247fc9e6887954ff8791068.webp","slots":["s4-needs-wants-low-cost.payload.items[4].image_url"],"subject":"galleta","format":"image/webp","bytes":30910,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/3a34810ffec5d911f40f132498a95836719b115bf414efd7774eb406256a4232.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/0c94ef5625edcf511715d13ae8cccbdb1ef21ea3f6126ddd924acb6feffb1660.webp","slots":["s4-needs-wants-low-cost.payload.items[5].image_url"],"subject":"flor","format":"image/webp","bytes":34834,"dimensions":"1328x1328"}
+```
+
+### agent/handoff/checkpoints/order-0077.json
+
+```
+{
+  "order": 77,
+  "lesson_id": "a04eabc1-ba25-460b-9424-edba8d7fde36",
+  "slug": "compro-algo-barato",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/10777b19501b61c99afbaf3af4bfbba3c641d2304283ff2deddd7008e5814f82.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/06002bbb510f9680575b0a548fca4da2a6e717c8ac5fd2ac34b1aa88ff3bb3c4.webp",
+      "slots": ["s1-dialogue.image_url"],
+      "subject": "mesa de mercado con fruta y monedas",
+      "format": "image/webp",
+      "bytes": 31656,
+      "dimensions": "1328x1328"
+```
+
+### agent/handoff/checkpoints/order-0078.json
+
+```
+{
+  "order": 78,
+  "lesson_id": "a2baabad-9f0f-40c8-9aa9-2f639dafab86",
+  "slug": "el-juguete-especial",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/72b6547ddc7c97a358e39a407d72c82b738b2893a3823aab0b136cc6a8b9d8ff.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/4e08ee4015beff858bd768e79963b8e4b11ea8af7f485ee258b081a4260fd05e.webp","slots":["s8-clasificar.payload.items[0].image_url"],"subject":"manzana verde","format":"image/webp","bytes":27486,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/9044ce8a73770c4115e0ee0b196b55f7c5307043e43bef281e456410ebc6eaad.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/9926e7c3725ff8f39fbda349178558efb82a6d8a72e9becdfcaa90e19286c2b1.webp","slots":["s8-clasificar.payload.items[1].image_url"],"subject":"caramelo envuelto","format":"image/webp","bytes":23778,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/1be0d86b4f182f2deee9d1e553f180be5f90f9f170a772f9bf940019c21d8342.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/5f4b7ced00044a4d96a667b973e662eca5c84d1cb3f99ed33e06a407322f7824.webp","slots":["s8-clasificar.payload.items[3].image_url"],"subject":"mochila escolar","format":"image/webp","bytes":36110,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/2ea98ecf28ffaee3d63ff95fc384897a829355d47c1f2c6985d5935708674a32.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/58f74420fde00153bc77bb810e55ac6860ea11306e7449a7905c6ce14b337275.webp","slots":["s8-clasificar.payload.items[4].image_url"],"subject":"libro de cuentos","format":"image/webp","bytes":9620,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/5334b320599b8f3f8e65e511f4ca6a5bf935b5d2e89cbf2e23b448824e8bd458.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/c75be068364ccf9885efc86ad555f6f9cacbafb62c170135a6572ecffe86ca13.webp","slots":["s8-clasificar.payload.items[5].image_url"],"subject":"tren de juguete de madera","format":"image/webp","bytes":25352,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/986162cd36287fdbafd925477de5c585d9c357404086c732df794d9f2a9f073d.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/83761d140fec4b253637b86dd26ebbe9fc061e8150c1edc48146ce4595c3dade.webp","slots":["s8-clasificar.payload.items[6].image_url"],"subject":"lápiz amarillo","format":"image/webp","bytes":26542,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/edbcba3bb36faacfa49a6275390bcc7e88ec484be205c36eeedf5a971267d2ba.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/e6a8307178691fca1a8cfec7070ef36c76ca6c1197e044949e2ecdf1924cdec5.webp","slots":["s8-clasificar.payload.items[7].image_url"],"subject":"galleta con estrella","format":"image/webp","bytes":45296,"dimensions":"1328x1328"}
+  ],
+```
+
+### agent/handoff/checkpoints/order-0080.json
+
+```
+{
+  "order": 80,
+  "lesson_id": "b65a0f11-643f-4091-b905-0543646f74ec",
+  "slug": "me-alcanza-o-no",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/969cc5657f5a8683d50de4ad77d4ff6ec6623f0a5f5fd14a4b4d0b1ef49bda2a.webp",
+      "slots": ["s5-dialogo-tienda.image_url"],
+      "subject": "tienda con barco y monedas",
+      "format": "image/webp",
+      "bytes": 24494,
+      "dimensions": "1328x1328"
+```
+
+### agent/handoff/checkpoints/order-0081.json
+
+```
+{
+  "order": 81,
+  "lesson_id": "22f8ca87-9ec1-4987-bdc5-7efecf7311c1",
+  "slug": "ahorro-un-poco-mas",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/84aef9d9e878ffee5b39f6f175278ef8dac3db2447f82a3d7defe4850c416fe4.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/72f236a097eed85f0ba5a7842770b108252639db93bc1d261455c85bd72f49e7.webp","slots":["s7-imagen-mas-caro.payload.options[0].image_url"],"subject":"caramelo envuelto","format":"image/webp","bytes":28518,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/833854475774b2d4e2fe960288f6e3e8087252ea74ca6e01283b6de8e13c8e35.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/fe9129d574dd6a91b85a51945794f1a2568d28d0750018c756ed77deb9fcaf22.webp","slots":["s7-imagen-mas-caro.payload.options[1].image_url"],"subject":"llavero con estrella","format":"image/webp","bytes":15722,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}
+```
+
+### agent/handoff/checkpoints/order-0084.json
+
+```
+{
+  "order": 84,
+  "lesson_id": "ba237916-162d-453e-b0fc-60a489456427",
+  "slug": "elijo-donde-comprar",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/e9234341b2aa308a3ee4bbde1fa6593aabfaaee36347f20c996b37c5f3a36d63.webp","slots":["s1-recall-ordering.image_url"],"subject":"mesa con canica, pelota y yoyó","format":"image/webp","bytes":34576,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/bd279ee260d0b289e0c32c2d2a44f51869414c08d90341d521a51ef77c8de571.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/467811b5393d5bed4632137dc2592834f3b15ae15e8072e670f73559c57185f0.webp","slots":["s5-pick-cheaper.payload.offers[0].image_url"],"subject":"puesto con sol","format":"image/webp","bytes":29336,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/e3b51799b2c6a37395b0919392b7542da363e4c6e624e40f84df8059d42eb938.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/58519df3a8d74d7f6d7b9acfd1e15acda8b47a1e2fe2fc7618d4683a4fdc0c20.webp","slots":["s5-pick-cheaper.payload.offers[1].image_url"],"subject":"puesto con luna","format":"image/webp","bytes":25136,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}
+```
+
+### agent/handoff/checkpoints/order-0088.json
+
+```
+{
+  "order": 88,
+  "lesson_id": "953ea1d1-ab58-401c-97d9-7b16434cd63b",
+  "slug": "reconozco-todo-el-dinero",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/446feb941dc739d67ba722201db2b3de0a4d8e653ae62dba2c565a2b5ef36196.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/83bee4dcdbbc53d80a2bda56fafb265d4db188e225a43c15bcce11213360ec32.webp","slots":["s7-intruso-dinero.payload.items[2].image_url"],"subject":"concha espiral de colores","format":"image/webp","bytes":44020,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/9c45af72b6dc9d771e2e997407565e99a76bc1f887940c66e92b2314bb1f6156.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/a9948e72b28706fd37845d94e3dee2edf8043ff8d7f39f12f4039af981c27c4f.webp","slots":["s8-carrito-dina-20.payload.items[0].image_url"],"subject":"manzana roja","format":"image/webp","bytes":21262,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/84872af8b7edb051b4463482f61ef1e02e6d847b20daf516cd0fcd8c9f2a14ec.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/0013d614e8f792f6537d7ad6629d294ff1b8f01ca8a83b2aca94c6272aab2c27.webp","slots":["s8-carrito-dina-20.payload.items[2].image_url"],"subject":"pelota redonda de paneles coral, amarillo y azul","format":"image/webp","bytes":37584,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"],
+  "production_verified": {
+    "published_lessons": 988,
+```
+
+### agent/handoff/checkpoints/order-0089.json
+
+```
+{
+  "order": 89,
+  "lesson_id": "2aebf42a-c88d-4948-9912-33d849f169c4",
+  "slug": "armo-un-trueque-justo-final",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/048c03e65f6d6965af62bd87ad95559975fdd21263284bcf89d5181697553119.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/33cf1c6e5e5e51fbc991a5b2326663c7455cb091d2b7932588447b35568634b8.webp","slots":["s5-necesidades-deseos.payload.items[0].image_url"],"subject":"vaso con agua azul y gotas","format":"image/webp","bytes":39410,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/0ec2bb23d9e30c598c3af952fcf2eacaa5327b4157e4b8ff6d05a177e61d4000.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/d604b080c0f6fc33f8eebefc60de464b82145a7c4a589238e791b4b0d614f246.webp","slots":["s5-necesidades-deseos.payload.items[1].image_url"],"subject":"cuenco con arroz, maíz, chícharos y verduras","format":"image/webp","bytes":57118,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/cd54492196f72129853ec7c7b3471077dffdaae8591d875898fb7fb9092e5bbd.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/14bb2b5f707e94aa15a310a8a2d6aed8971707113cad5778e458ca57de037b87.webp","slots":["s5-necesidades-deseos.payload.items[2].image_url"],"subject":"collar ovalado de flores de colores","format":"image/webp","bytes":30938,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"],
+  "production_verified": {
+    "published_lessons": 988,
+```
+
+### agent/handoff/checkpoints/order-0090.json
+
+```
+{
+  "order": 90,
+  "lesson_id": "b3e209ea-cda1-41cf-af56-8cb6b4dbd3c5",
+  "slug": "zarpo-hacia-el-bosque",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/048c03e65f6d6965af62bd87ad95559975fdd21263284bcf89d5181697553119.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/ea19b42c7f04f5a71607550c02cab969b9251723b41e253363a1cdec440121aa.webp","slots":["s3-necesidades-deseos.payload.items[0].image_url"],"subject":"botella de agua azul con gotas","format":"image/webp","bytes":25788,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/8509debd8cf1c1326766d33e5c6c1c77fa111bb013d86194c9c46d4ecbce6c10.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/7c0fcd0649125da5c212e6722ab934df9c7c495af376fc03578705365dc2d52b.webp","slots":["s3-necesidades-deseos.payload.items[1].image_url"],"subject":"pelota de paneles azul, amarillo, verde y coral","format":"image/webp","bytes":30720,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/4933a9f4d6c7a253afb6446761b3548ce53c3159c8311fb0e838e014b397faf6.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/b59235ffdb4f373c2f8f1583224bed84fe7e7e0c3d0fa3bf661b18d2938a1b00.webp","slots":["s3-necesidades-deseos.payload.items[2].image_url"],"subject":"frasco azul de medicina con etiqueta blanca sin marcas","format":"image/webp","bytes":17706,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/9044ce8a73770c4115e0ee0b196b55f7c5307043e43bef281e456410ebc6eaad.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/5d3d534e264e657410d84ab1a5157c146b3865e30becbf9cbbb59973a87b9c63.webp","slots":["s3-necesidades-deseos.payload.items[3].image_url"],"subject":"caramelo envuelto coral con banda amarilla y azul","format":"image/webp","bytes":31170,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"],
+  "production_verified": {"published_lessons":988,"document_rows":2964,"urls_verified_as_webp":4,"png_urls":0,"images_serving_more_than_one_lesson":298}
+```
+
+### agent/handoff/checkpoints/order-0091.json
+
+```
+{
+  "order": 91,
+  "lesson_id": "d3af00dc-cc0b-46d3-92c3-76f22579da51",
+  "slug": "recuerdo-precios-baratos-y-caros",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/e88a981029506ecaa2055a5c759044faf96df78e3058d30f5cbc023da6a14e6a.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/8b3062b65285040efadd95358b379b4edfcde948e917e0838bb76dc407f4539a.webp","slots":["s8-match-pairs.payload.left[2].image_url"],"subject":"hoja de lija plegada naranja","format":"image/webp","bytes":26936,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"],
+  "production_verified": {"published_lessons":988,"document_rows":2964,"urls_verified_as_webp":1,"png_urls":0,"images_serving_more_than_one_lesson":297}
+}
+```
+
+### agent/handoff/checkpoints/order-0093.json
+
+```
+{
+  "order": 93,
+  "lesson_id": "8872ac59-cac8-4273-925b-2fe5020f41f2",
+  "slug": "comparo-precios-y-cuento-mi-tesoro",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [{"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/8a65c93d8e400634cbc139a933e55fd66ff52ff687619f3feb77ca22c6ec9980.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/4937c978deb709fa9da65a77cf674f65dc75ec1ddd7332061426ccdbdc1debe6.webp","slots":["s7-fair-trade.payload.offer_a.image_url"],"subject":"dos monedas doradas con anillos coral y marcas geométricas azules","format":"image/webp","bytes":36852,"dimensions":"1328x1328"}],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"],
+  "production_verified": {"published_lessons":988,"document_rows":2964,"urls_verified_as_webp":1,"png_urls":0,"images_serving_more_than_one_lesson":296}
+}
+```
+
+### agent/handoff/checkpoints/order-0094.json
+
+```
+{
+  "order": 94,
+  "lesson_id": "8fd6fafd-57c3-40f2-b7ee-b9e089127fe5",
+  "slug": "armo-el-trueque-mas-justo-de-todos",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/1a0f83a8fe484a3f8dfd44c251ceab884713d4da2b361add869d9eb2933bdd2e.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/7c89586028f854c2e23193869ab2217638f2579f0aff5a9c4bd2517e6b15f3a3.webp","slots":["s1-dialogo.image_url"],"subject":"mapa plegado y brújula","format":"image/webp","bytes":52434,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/8db7cc0111e5edb8fe3c1d6ac727f26f1d28bf2f0417cb6395abfe754aebbc7f.webp","slots":["s5-escucha.image_url"],"subject":"pescado azul junto a textiles doblados","format":"image/webp","bytes":36584,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"],
+  "production_verified": {"published_lessons":988,"document_rows":2964,"urls_verified_as_webp":2,"png_urls":0,"images_serving_more_than_one_lesson":296}
+}
+```
+
+### agent/handoff/checkpoints/order-0096.json
+
+```
+{
+  "order": 96,
+  "lesson_id": "bc495950-c149-4c74-b0ad-f02e9e4915e9",
+  "slug": "recordamos-el-primer-deseo-del-viaje",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, flattened to white, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/4a89cf5307c3a255054d6197c3b0c9a5262b966c2bba2c73a60bd42d414ab202.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/14ed2fe61abe54722481200b1e1b9cd5e51e6ebc0931e8d17f9a07018a5eded6.webp","slots":["s8-sort.payload.items[1].image_url"],"subject":"tres semillas de colores","format":"image/webp","bytes":42500,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/e3926b1724d13885f129a098f31353cf22237a1a8b258de9c2b0e35b10f79626.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/bea00db6b6f125b2d0039b4b995b9843d5c0995d1ffeedb0eb3d14a7f60a9bdc.webp","slots":["s8-sort.payload.items[2].image_url"],"subject":"piedra facetada azul con detalles coral y amarillos","format":"image/webp","bytes":35132,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/1cec85db8d5584443d315223b6dd46d893e0b67438067db8e65c9cf07d40509a.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/0789066c8a9836115eececcc9a49d6f4bad25fcd00bcceebdee2cfe5f59df346.webp","slots":["s8-sort.payload.items[3].image_url"],"subject":"fruta tropical coral con hojas verdes","format":"image/webp","bytes":67204,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/5334b320599b8f3f8e65e511f4ca6a5bf935b5d2e89cbf2e23b448824e8bd458.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/6035001316dcd01f7a0816f31e652ff9f32dc0d1758faf0371ab1008c342b81b.webp","slots":["s8-sort.payload.items[4].image_url"],"subject":"barquito de juguete de madera","format":"image/webp","bytes":29478,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}
+```
+
+### agent/handoff/checkpoints/order-0098.json
+
+```
+{
+  "order": 98,
+  "lesson_id": "62d34d4f-ee98-45c1-8377-dab4eca4777b",
+  "slug": "reconocemos-los-billetes-del-capitan",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, flattened to white, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/057f84a6c08be2a059912df69aa6ba3e5abf78bc74d995fe8888a92516cfea87.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/7cc2aa57809ad2d478ab62d686b8960b89577587371d94c09210dbf1d1922c7d.webp","slots":["s1-dina-recuerda.image_url"],"subject":"abanico de cuatro billetes de colores sin marcas","format":"image/webp","bytes":46376,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/d03275c4a7be582a4527e7c8cc62f1d256916bf9b823055a7af5ae4da77edfe4.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/0637e4533080eaae035991a50c593a076fa3f56e9ff0c207db3ba1b2cf04adb3.webp","slots":["s3-zara-billetes.payload.art.image_url"],"subject":"cofre abierto con monedas de colores","format":"image/webp","bytes":47834,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}
+```
+
+### agent/handoff/checkpoints/order-0100.json
+
+```
+{
+  "order": 100,
+  "lesson_id": "33d73df4-0000-4042-8fbf-ab61fe68ce58",
+  "slug": "la-isla-de-los-precios-escondidos",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, flattened to white, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/083ca8d1b05e43a9ed8fdd82ced2ddf8d5777d55ec441689b20f3c2f242d8066.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/f74f3eac1936810ca93b120486acbf8ebbf979d037f9271a5e6321fe5a929351.webp","slots":["s05-objeto-barato.payload.options[0].image_url"],"subject":"collar de conchas ovalado","format":"image/webp","bytes":55546,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/803b97c1c515aa115f80d84dc4b040974966723a11be919af9cad3648ae054c6.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/dcaaa4c695d8aa64cdc65ff4b97f9446416371caf079083a9df9b2680d38b9ed.webp","slots":["s05-objeto-barato.payload.options[1].image_url"],"subject":"silbato de madera con cordón azul","format":"image/webp","bytes":38188,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/9b5b540e750b5f2bcf40ece7437e3f6d420182f8bf5131e5b1ccc1e989c6889a.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/a2f35256202cac6975b7ecdec273a97051b2e2c77b3db4ee15746f2f516fda53.webp","slots":["s07-trueque-peces.payload.offer_b.image_url"],"subject":"red de pesca enrollada azul con amarres coral y amarillo","format":"image/webp","bytes":89250,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}
+```
+
+### agent/handoff/checkpoints/order-0102.json
+
+```
+{
+  "order": 102,
+  "lesson_id": "901db47b-a717-4e2f-96ce-557c1b2de304",
+  "slug": "arreglamos-el-cambio-de-la-trampa",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, flattened to white, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/381b334381596cd3bc2957ef4d52e56a0b448f527a54d014606578923225efc8.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/11eee9ec32e430706a23564a09a16423c45ee10d4b54187520ee9597683522d2.webp","slots":["s3-prices.payload.left[1].image_url"],"subject":"collar corto de cuentas geométricas","format":"image/webp","bytes":31328,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/1cec85db8d5584443d315223b6dd46d893e0b67438067db8e65c9cf07d40509a.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/9a0e302a637fd5746f8bbfc9520013f8c283a4d8c4bf034d231e164cd7e70055.webp","slots":["s3-prices.payload.left[3].image_url"],"subject":"grupo de tres frutas tropicales","format":"image/webp","bytes":54240,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}
+```
+
+### agent/handoff/checkpoints/order-0104.json
+
+```
+{
+  "order": 104,
+  "lesson_id": "a00cdf9b-d0f6-41fd-ae47-6c645bdbbf68",
+  "slug": "elegimos-el-lugar-de-la-casa-de-cambios",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, flattened to white, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [{"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/29230a00a8deea8575f9304392063d8d2ff27bc7f0a4f63ec84dfd8674c1d9d1.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/5523afe77d2f37d400d06a9cc0301ffe937bfe9722101632dceee40a3b3a6cdc.webp","slots":["s2-trueque-cocos-platanos.payload.offer_b.image_url"],"subject":"racimo de tres plátanos amarillos","format":"image/webp","bytes":30970,"dimensions":"1328x1328"}],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}
+```
+
+### agent/handoff/checkpoints/order-0105.json
+
+```
+{
+  "order": 105,
+  "lesson_id": "5973785a-4179-4b3d-9c1d-492b1809c1ec",
+  "slug": "juntamos-monedas-para-construir",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, flattened to white, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/9c1ff665179535b9d88bf53d36e7cf8b360c5c6db019f2ca8a0358fb1345ccdb.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/74b38e08233b31c7a054db624e19e0d2ee74aeed36d305cb5269de8e67430e6e.webp","slots":["s8-compra-materiales.payload.items[0].image_url"],"subject":"dos tablas de madera apiladas","format":"image/webp","bytes":34222,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/316a15b9ad796b295529f48eb6e761a8d17ee8a243864bd0980afaf0949c593b.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/1463fe0ade25aaac6e08d922aeddadfab3783548912c04dce53b5ce78a576e7e.webp","slots":["s8-compra-materiales.payload.items[1].image_url"],"subject":"pila de tres clavos plateados","format":"image/webp","bytes":29720,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/f1c0ef1de4c5ab9b77447d7483e6d66aa049d519bc7b5751b1cc08af0daaa79b.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/1dc167049b0a68e935c9f0ade2830c4a541858c74cb64518e79b391f9da5df8f.webp","slots":["s8-compra-materiales.payload.items[2].image_url"],"subject":"bote de pintura azul con brocha","format":"image/webp","bytes":30500,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}
+```
+
+### agent/handoff/checkpoints/order-0107.json
+
+```
+{
+  "order": 107,
+  "lesson_id": "644f5045-0a3d-468c-b68d-5b70e125fc22",
+  "slug": "inauguramos-la-casa-de-cambios",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, flattened to white, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [{"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/057f84a6c08be2a059912df69aa6ba3e5abf78bc74d995fe8888a92516cfea87.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/bfa3c355886fed8dc516c074861440ac6e0def293f7bc0799e9ebc4b8b7e5ed6.webp","slots":["s1-dialogo.image_url"],"subject":"collar de conchas con cuentas coral y centro amarillo","format":"image/webp","bytes":35366,"dimensions":"1328x1328"}],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}
+```
+
+### agent/handoff/checkpoints/order-0111.json
+
+```
+{
+  "order": 111,
+  "lesson_id": "4eff9cff-a5fc-4045-a224-40853805d46b",
+  "slug": "abrimos-el-tesoro-final",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, flattened to white, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/4def5acb3b24d2fe1189c625a0e880772124756278c5d99508cb82475f868657.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/9f06bce3f48f6b970a61c72edd551f56eb31d9698156f47ff7dc2532056f93fc.webp","slots":["s4-cual-cuesta-menos.payload.options[0].image_url"],"subject":"collar de caracoles en cuentas verdes y coral","format":"image/webp","bytes":50680,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/fbeec9fe0c92b1c9ef6ae756302ae1528e0912ff4c2dcd7ef7d285972c7106dd.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/7713b7620db8c485d1f883cdaf420eec3286b2d4f1c718ed2ba86688025500ed.webp","slots":["s9-simbolo-que-no-encaja.payload.items[2].image_url"],"subject":"fruta, moneda y tela doblada como intercambio directo","format":"image/webp","bytes":40192,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}
+```
+
+### agent/handoff/checkpoints/order-0115.json
+
+```
+{
+  "order": 115,
+  "lesson_id": "205d7670-98a0-4677-8583-6aa73567c2b2",
+  "slug": "cual-accion-cuesta-esfuerzo",
+  "status": "completed",
+  "generated_images": 23,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"bce89aadc0bee4c4703d2af2fa37b3987fea5f6377cfa6d46ca48425d25b271e.webp","slot":"s1-dialogue.image_url","new":"3128e67e6d8762c9a72e8c40f13d98cbddeeabbdbcb611ec5b1739c17366f024.webp"},
+    {"old":"12249ae42f6bd5228b0871db787ba297b2bbef953786e12f3c7ce529f2800ad0.webp","slot":"s2-concept.image_url","new":"027788ef307cdf4fd3ec871ee63864cc5c6586ed824656e62aaa356219cc64c4.webp"},
+    {"old":"1161e744196d75f0b05877e67270d9270b0b1d51749fd5b8f085bd36a768c76c.webp","slot":"s2-concept.payload.cards[0].image_url","new":"22f11a7f496a2d50fd2ed39ae3acdca0f4f381139af468f5987c91b52d9fed9f.webp"},
+    {"old":"4faeee51e43c79adecf4947bf6822255769f57367dcbfd9be267aed3bc035e16.webp","slot":"s2-concept.payload.cards[1].image_url","new":"a3e33562a4df2f3e2cbc989982550fe37d51eecfbda0da6077290bd97d39284c.webp"},
+```
+
+### agent/handoff/checkpoints/order-0116.json
+
+```
+{
+  "order": 116,
+  "lesson_id": "ebfeb5ac-07ab-44f9-a625-f27f5e9a28ee",
+  "slug": "me-canso-un-poquito",
+  "status": "completed",
+  "generated_images": 4,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"d80a1e684164edfbaca74a6510ca9141b9273af4bc918c1c1a6245f8720064c5.webp","slot":"s7.image_url","new":"94f10e3ef8c15aa858b0973753a5b07ad4e3b34fc3685083b249dc4804d3323d.webp"},
+    {"old":"b5f3897c6e63e4a7acd9c179976d0be1f20ecadebec3d6f19e095f772e42e5b7.webp","slot":"s9.payload.items[0].image_url","new":"5fb5e27e6674cc13cface1c267c781a3beb89cc417265a079e83807b5a081849.webp"},
+    {"old":"5a28616d9ba215d82dc94a164e908c00c5809c2c57700df20a24776aa3597ff5.webp","slot":"s9.payload.items[2].image_url","new":"72839c33e8a68834795361e173fd0492b5985e16c17c0967e6891a585211a38b.webp"},
+    {"old":"500a90f895a3f1553db344dc13b0b1b052b5b4c9fa030636c290cfec332cedc2.webp","slot":"s9.payload.items[3].image_url","new":"d2ae079f9b32e5a4070a45271d463f716ee03f3aff07e67f4b824d4a9294bba7.webp"}
+```
+
+### agent/handoff/checkpoints/order-0117.json
+
+```
+{
+  "order": 117,
+  "lesson_id": "837b1697-d4d9-41e3-b25a-28783e225236",
+  "slug": "tareas-que-ayudan-en-casa",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"3ffe04bc92067d4570d0c2a508cd66e2a8869a2e0bad5513bcb4c301a116f6af.webp","slot":"s3-needs-wants.payload.items[4].image_url","new":"f9ca30c4b420c527f6c7ec6c4a8ea67085bb64b89f2b810383c9762774fe5edf.webp"},
+    {"old":"16fc03bc5b3bf7cce1decad787fda00379ade70d2bf0c359207a8a7277fe4905.webp","slot":"s4-odd-one-out.payload.items[0].image_url","new":"159772809277e25be80ce6bf272c7ca5e0a2a3a4935db3eb034e7618975013d6.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0118.json
+
+```
+{
+  "order": 118,
+  "lesson_id": "47073782-3e2b-47c9-8931-30e996ccc162",
+  "slug": "cargar-lena-o-regar-una-flor",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"8d9c9436474568b29e15693325731299c6cb8a60f9de14d62560695a6021bfdd.webp","slot":"s8-tap.payload.items[6].image_url","new":"c24e210039294cf8caf837e01d5510c8869392b8fbe95112cef6da7cf28ab98f.webp"},
+    {"old":"b5f3897c6e63e4a7acd9c179976d0be1f20ecadebec3d6f19e095f772e42e5b7.webp","slot":"s8-tap.payload.items[8].image_url","new":"94d69173ada63ebdcd376d6a0860e71903649203ada548c1988d444c872b7bb0.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0119.json
+
+```
+{
+  "order": 119,
+  "lesson_id": "dd74b072-9cda-4524-8ec4-0089c4184a59",
+  "slug": "ningun-trabajo-es-menos",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"bc551d6fe23be96aaa5e11dae8759667e1bf367f9d5700c5d669f37cf3d275e6.webp","slot":"s4-odd-one-out.payload.items[1].image_url","new":"4ad2ffddba8ff819503215eca42b11b4f79515aca2e5e04c61da25564eedfa3a.webp"},
+    {"old":"4a9d1ebc5b3aeb763d21a0c2451725d74a4e8e9350249d7e9a492c4686529af8.webp","slot":"s6-sort-buckets.payload.items[2].image_url","new":"05da8bfb5805f86702a88d43c57a8d2a4716a9f68ca677ff14718d10b613f15b.webp"},
+    {"old":"008ba33545131fdf7599327a71049a319ceebe1b12a8e6074beef96a67b47c7e.webp","slot":"s6-sort-buckets.payload.items[3].image_url","new":"082bb6a2ec0b664e2ec579a0b31fc34a98a40e73d10617ba221e3e07e6b53f4c.webp"}
+  ]
+```
+
+### agent/handoff/checkpoints/order-0120.json
+
+```
+{
+  "order": 120,
+  "lesson_id": "14eb5627-f2b9-4bba-a23c-e483146f3962",
+  "slug": "elijo-segun-mi-energia",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"3ce828e7dbfd46939d5549c9824ef4c2b7beba2b4122680c0f9a78199205c839.webp","slot":"s6-clasifica.payload.items[3].image_url","new":"15256404c15827161c03ee6a72dc031eccc8c20bfee6d5af6033be4b094e7a6b.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0121.json
+
+```
+{"order":121,"lesson_id":"e7d8886b-b5e1-435e-8d78-3f0b57e2115b","slug":"quien-trabaja-en-equipo","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0122.json
+
+```
+{"order":122,"lesson_id":"9f4c4361-2889-46a8-8143-224dc8ddd370","slug":"cada-quien-su-parte","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0123.json
+
+```
+{"order":123,"lesson_id":"6ac55f0d-b647-4867-a1e7-27e263d37c5e","slug":"armamos-un-equipo","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0124.json
+
+```
+{
+  "order": 124,
+  "lesson_id": "1bef2a56-ec62-440a-baea-d568cde30599",
+  "slug": "el-camino-a-medias",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"96f871d0dac9b5164bb1e80f62d83d2c777d8c33834fe5c66a28d851dd9ddc08.webp","slot":"s5-elegir-camino.payload.options[0].image_url","new":"8f6da881d7c11d0a51d26bcb607b2adcdc9556fd4d5f13e944b166b54b539d05.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0125.json
+
+```
+{
+  "order": 125,
+  "lesson_id": "e6528c2e-58d7-4277-8997-9f64acb9710f",
+  "slug": "regreso-a-terminar",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"106497687997c8ab8c6b7285b089760f3afc77605070abef32cbadf4d250e858.webp","slot":"s4-quehaceres.payload.items[0].image_url","new":"01a11c5c8646d932e65103c31bbdd4a4f8a928854c156f799ee2522bc7562fa1.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0126.json
+
+```
+{"order":126,"lesson_id":"2ca7e9eb-e45d-4c59-91af-70e8c7d293e5","slug":"lo-logre-yo-solo","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0127.json
+
+```
+{"order":127,"lesson_id":"208e16fb-8b41-46f9-84a0-7974a6183bcc","slug":"caras-de-orgullo","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0128.json
+
+```
+{"order":128,"lesson_id":"46e1df19-ad00-4c8a-9530-f8e8e7d71fa0","slug":"celebro-mi-esfuerzo","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0129.json
+
+```
+{"order":129,"lesson_id":"2e3a1faf-d34d-47f0-9b77-9884ca042b99","slug":"semillas-de-esfuerzo-repaso","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0130.json
+
+```
+{"order":130,"lesson_id":"38414fe5-91b3-4e7f-a4a5-b378b401fc4c","slug":"recuerdo-mi-primer-esfuerzo","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0131.json
+
+```
+{
+  "order": 131,
+  "lesson_id": "49dd2326-8c2b-4fe5-9fb4-da4a40821a6b",
+  "slug": "recuerdo-una-tarea-de-equipo",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"bd48f0914097bdb4fc0167c0d4b234100db9bcf61d47b85cc20615bca2df60fe.webp","slot":"s3-clasifica-esfuerzo.payload.items[1].image_url","new":"472ee62752f301aa32ed1bee99cc3e1c76f263324e5d8f162a1b5d04d1ed4da3.webp"},
+    {"old":"9b6d8b5ff6d822a9b6ca5eaa1abf2fdbf1f2ab98fcf1bd5dc1afde56ba13c2ec.webp","slot":"s3-clasifica-esfuerzo.payload.items[2].image_url","new":"84c9fc8936770bd53f7d75398c2255c076bd01ce8454dd73182186b9804ba8fa.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0132.json
+
+```
+{
+  "order": 132,
+  "lesson_id": "3efd3019-c12d-40f1-854a-b63488041f42",
+  "slug": "cierro-el-cofre-de-las-semillas",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"3ffe04bc92067d4570d0c2a508cd66e2a8869a2e0bad5513bcb4c301a116f6af.webp","slot":"s3-acciones-esfuerzo.payload.items[0].image_url","new":"8beeda72dba693dd5226edd8aab4edf93909d94cbb042d77e7a9dc779e544815.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0133.json
+
+```
+{"order":133,"lesson_id":"59e9d9b3-c7cf-430d-8166-84741060b325","slug":"el-trueque-justo-y-el-trabajo-en-equipo","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0134.json
+
+```
+{"order":134,"lesson_id":"a9c58e4b-311a-4046-b99c-8be87c0d2afa","slug":"ambos-quedan-contentos","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0135.json
+
+```
+{
+  "order": 135,
+  "lesson_id": "e6bfcdbe-e643-4c18-97f6-997d6addd8d0",
+  "slug": "termino-mi-parte-del-trato",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp","slot":"s1-dialogo.image_url","new":"54ba1f7edfd7f6f1361e04c50c445d8a059eac28ab3b5d097c61816f8e95b6e0.webp"},
+    {"old":"a8bb2954bfd438b312d49cb3ff10cf4c6f94a4e987c85b2d8d6acf8ffb3a5e77.webp","slot":"s5-emparejar.payload.left[0].image_url","new":"9eacd3bd7faed9d6e2832a9376dd15e0b599a68370b292360ad5451805e76142.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0136.json
+
+```
+{"order":136,"lesson_id":"519a2457-8ef4-47a5-b3cd-69f7ccf8be93","slug":"mi-esfuerzo-tambien-es-justo","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0137.json
+
+```
+{"order":137,"lesson_id":"199ce072-c15c-49d9-803b-6668a5ba52f1","slug":"la-primera-chambita","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0138.json
+
+```
+{
+  "order": 138,
+  "lesson_id": "9fb0aac9-f9f1-4cba-b3d7-17260c468e15",
+  "slug": "elijo-mi-primera-chambita",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"a9433d6778701ae0ff24c6cf02e26fa63653ca8617b125e7bdcbeb6027c6a0d0.webp","slot":"s1-escena-bosque.payload.art.image_url","new":"f3517e982c40f10f81f191e15a8116b081fcb5a96312b869f080e7d01b30ee3c.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0139.json
+
+```
+{"order":139,"lesson_id":"9323ecf1-c7b3-4f7f-9488-d5f0ab5334c1","slug":"chambitas-dentro-de-la-cabana","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0140.json
+
+```
+{"order":140,"lesson_id":"4c736eec-7d86-4ddf-9a53-341403a2cbf6","slug":"cumplo-una-chambita-de-casa","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0141.json
+
+```
+{
+  "order": 141,
+  "lesson_id": "a4695090-621a-4cec-ba40-f351df731863",
+  "slug": "chambitas-seguras-para-vecinos",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"16fc03bc5b3bf7cce1decad787fda00379ade70d2bf0c359207a8a7277fe4905.webp","slot":"s9-cual-no-es-segura.payload.items[0].image_url","new":"1672a505751029ac27ffe5eb5563deb4eb36fdb61327f18062b17b6d590b6332.webp"},
+    {"old":"8d9c9436474568b29e15693325731299c6cb8a60f9de14d62560695a6021bfdd.webp","slot":"s9-cual-no-es-segura.payload.items[3].image_url","new":"537319a46b07d2f1561e28eb83308fb3b1c2f9d7f649845ab5f07dc25020a8c9.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0142.json
+
+```
+{"order":142,"lesson_id":"fbbc07af-fbb0-4cb4-aa89-a0ecbecf84d0","slug":"ayudo-a-un-vecino-del-bosque","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0143.json
+
+```
+{
+  "order": 143,
+  "lesson_id": "e5c12245-91fd-456d-a97c-cfb0dd390c7b",
+  "slug": "chambita-chica-recompensa-chica",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp","slot":"s4-story-dialogue.image_url","new":"fa342d50bbf24e78ff06896e51cdff4ebadcf71408139b0950775ae6d041af20.webp"},
+    {"old":"4a9d1ebc5b3aeb763d21a0c2451725d74a4e8e9350249d7e9a492c4686529af8.webp","slot":"s6-picture-choice.payload.options[0].image_url","new":"ede0937417f6ea7abdb9e7fbdfdf58a330797c9a776ae7e551b10a89e72f50df.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0144.json
+
+```
+{
+  "order": 144,
+  "lesson_id": "3d06d215-6736-415f-b031-8851aa875aeb",
+  "slug": "chambita-grande-recompensa-grande",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp","slot":"s2-story.image_url","new":"88a079db4c39b9794c13cd37172b55246acf7af7a14a1b532207249c528ce38e.webp"},
+    {"old":"7a645bff23abf0eac3936c4c92b7795d02a5f67fe8c96e7d51445819abfa0c03.webp","slot":"s4-picture-choice.payload.options[0].image_url","new":"2d0285c237a7b7a5b93f12e0c9a7758084832e34b64ea7cce01a39ce4f1b13c6.webp"},
+    {"old":"9b6d8b5ff6d822a9b6ca5eaa1abf2fdbf1f2ab98fcf1bd5dc1afde56ba13c2ec.webp","slot":"s4-picture-choice.payload.options[1].image_url","new":"853759625ee34e3a6d06040acf98f033a11e654ba6cdc12b82f6391477415023.webp"}
+  ]
+```
+
+### agent/handoff/checkpoints/order-0145.json
+
+```
+{"order":145,"lesson_id":"2cb06a19-98d9-427a-8c13-91168b24b57f","slug":"comparo-chambita-y-recompensa","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0146.json
+
+```
+{
+  "order": 146,
+  "lesson_id": "16a9edf6-4896-48ef-8457-84732b01b950",
+  "slug": "el-tablon-de-chambitas",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old": "268d977f5891fb12cc24f1f6f16e2170688160dff06428bb08b9ad3eed9fc79a.webp", "slot": "s1-intro.image_url", "new": "5aec1d2aaa4776b2dec1d290f56176ea2ecea75abf75ababe57bc1a814abd566.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0147.json
+
+```
+{
+  "order": 147,
+  "lesson_id": "cf89f204-82df-4961-8c23-0917e733bec5",
+  "slug": "cuanto-tiempo-tengo-hoy",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old": "afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp", "slot": "s1-intro.image_url", "new": "ab3ce74fc6f80a35e1bfdc8d249f883d1828196332f545382b41ad4b89c36847.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0148.json
+
+```
+{
+  "order": 148,
+  "lesson_id": "bd685d25-8578-4aac-8b85-366a71e6aa21",
+  "slug": "decido-mi-chambita-de-hoy",
+  "status": "no_shared_images",
+  "generated_images": 0,
+  "replacements": [],
+  "note": "Confirmed work-order shared_images=0; no production write."
+}
+```
+
+### agent/handoff/checkpoints/order-0149.json
+
+```
+{
+  "order": 149,
+  "lesson_id": "afab66fa-550b-43ef-8e5a-13721e054b31",
+  "slug": "termino-mi-chambita",
+  "status": "no_shared_images",
+  "generated_images": 0,
+  "replacements": [],
+  "note": "Confirmed work-order shared_images=0; no production write."
+}
+```
+
+### agent/handoff/checkpoints/order-0150.json
+
+```
+{
+  "order": 150,
+  "lesson_id": "859372e0-c84f-422e-98e9-eb94ddcbb8d8",
+  "slug": "recibo-mi-recompensa",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old": "106497687997c8ab8c6b7285b089760f3afc77605070abef32cbadf4d250e858.webp", "slot": "s7-tareas-rho.payload.items[1].image_url", "new": "1d675ce00ae79d319fc8abcf876b1cd073dec638d0f59b70f0ea958e2fb53e3a.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0151.json
+
+```
+{
+  "order": 151,
+  "lesson_id": "13ae8c8d-73ff-44de-9f90-09db937427d0",
+  "slug": "ordeno-el-ciclo-de-la-chambita",
+  "status": "completed",
+  "generated_images": 6,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old": "3ffe04bc92067d4570d0c2a508cd66e2a8869a2e0bad5513bcb4c301a116f6af.webp", "slot": "s5-orden.payload.items[1].image_url", "new": "1c2a34b44a26be6b5b83568887be73e434d8edf81aa84d4c8246580621bafb02.webp"},
+    {"old": "16fc03bc5b3bf7cce1decad787fda00379ade70d2bf0c359207a8a7277fe4905.webp", "slot": "s8-empareja.payload.left[0].image_url", "new": "ee6e1dfe90885a0144bded29863041576be0e80942b51cb01755fd6d757968ea.webp"},
+    {"old": "bc551d6fe23be96aaa5e11dae8759667e1bf367f9d5700c5d669f37cf3d275e6.webp", "slot": "s8-empareja.payload.left[1].image_url", "new": "5ae23b673a6b112664bad3d30a004ceba50802ba306011f08f1d84f5580dc01f.webp"},
+    {"old": "bd48f0914097bdb4fc0167c0d4b234100db9bcf61d47b85cc20615bca2df60fe.webp", "slot": "s8-empareja.payload.left[2].image_url", "new": "53f0e18716d4dea193be5ef9502ebaff72cefd51266561e8bfd7ba39371efddc.webp"},
+```
+
+### agent/handoff/checkpoints/order-0152.json
+
+```
+{
+  "order": 152,
+  "lesson_id": "1fd9384d-6fb9-49ee-a485-def55ed0a3c6",
+  "slug": "recuerdo-mi-primera-chambita-del-bosque",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old": "bc551d6fe23be96aaa5e11dae8759667e1bf367f9d5700c5d669f37cf3d275e6.webp", "slot": "s3-no-es-chambita.payload.items[0].image_url", "new": "ec78c811ada2e511582a857b5cdefdba309127ef6ea5c75d6ec4e39c722e8885.webp"},
+    {"old": "7a645bff23abf0eac3936c4c92b7795d02a5f67fe8c96e7d51445819abfa0c03.webp", "slot": "s6-mayor-recompensa.payload.options[0].image_url", "new": "83570dd61f1a90b17bfd158b066d8298b1f43324c54dab36780ca3abd49b0526.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0153.json
+
+```
+{
+  "order": 153,
+  "lesson_id": "bcda793a-0c6e-4372-a4b4-1a9fdf801714",
+  "slug": "cierro-el-cofre-de-chambitas",
+  "status": "no_shared_images",
+  "generated_images": 0,
+  "replacements": [],
+  "note": "Confirmed work-order shared_images=0; no production write."
+}
+```
+
+### agent/handoff/checkpoints/order-0154.json
+
+```
+{
+  "order": 154,
+  "lesson_id": "491e6f11-8fea-4136-b86b-9c5a8cce55d3",
+  "slug": "mas-esfuerzo-mas-monedas",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old": "053228f9a7ce1505a94d72d62d23135e533571aaa0d85852db6e84f999ac8de4.webp", "slot": "s1-recall.image_url", "new": "bc2d3eaf744960848bf4cbc926dcd5e84e509630bf364fd478da1536bf5e5193.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0155.json
+
+```
+{
+  "order": 155,
+  "lesson_id": "ef12f583-0c65-4e50-91f8-6e374c1bf95e",
+  "slug": "por-que-uso-monedas-para-pagar-chambitas",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old": "afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp", "slot": "s2.image_url", "new": "d09b94fc115faf12f0d3afb3cd9fea7bca0d329080ac5c77ad167e1dbb8da943.webp"},
+    {"old": "16fc03bc5b3bf7cce1decad787fda00379ade70d2bf0c359207a8a7277fe4905.webp", "slot": "s5.payload.left[0].image_url", "new": "1571ae1b528c0103cfdaee7171b843b9c6cf8eed48bb0647083b2abdce28ac48.webp"},
+    {"old": "bd48f0914097bdb4fc0167c0d4b234100db9bcf61d47b85cc20615bca2df60fe.webp", "slot": "s5.payload.left[1].image_url", "new": "9f25c7c05777a9d43efd5e87d3afb80e70a5221652cec163ed91afe93a9ed27d.webp"}
+  ]
+```
+
+### agent/handoff/checkpoints/order-0156.json
+
+```
+{
+  "order": 156,
+  "lesson_id": "5604426e-b074-47de-8497-0c74c98e1e81",
+  "slug": "elijo-mi-chambita-con-todo-lo-aprendido",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old": "afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp", "slot": "s3-dialogo-dina-liruf.image_url", "new": "1b1116ca75c53c0c883fa14c39f668f8467eca978b8285044a468ebf75b6de10.webp"},
+    {"old": "2c5d644b5c22b610797108d8c92bdbc2a189e529a39f7391ffb8cc4d265d29f4.webp", "slot": "s7-clasificar-esfuerzo.payload.items[0].image_url", "new": "90c5b22ac8e3283dce28f87d29158bb6bf1bffb8d871012c2db4c8e32a7b520f.webp"},
+    {"old": "bc551d6fe23be96aaa5e11dae8759667e1bf367f9d5700c5d669f37cf3d275e6.webp", "slot": "s7-clasificar-esfuerzo.payload.items[2].image_url", "new": "4ba4c81825065400bd5f60ee5ccf0269aec97d9cefcd448abdbf633e552f210b.webp"}
+  ]
+```
+
+### agent/handoff/checkpoints/order-0157.json
+
+```
+{
+  "order": 157,
+  "lesson_id": "b1470f12-2658-4254-9e69-14d207e1530f",
+  "slug": "mis-primeras-monedas-ganadas",
+  "status": "no_shared_images",
+  "generated_images": 0,
+  "replacements": [],
+  "note": "Confirmed work-order shared_images=0; no production write."
+}
+```
+
+### agent/handoff/checkpoints/order-0158.json
+
+```
+{
+  "order": 158,
+  "lesson_id": "1a5439a3-c7c5-4784-a4f4-751459daf17a",
+  "slug": "ganado-o-regalado",
+  "status": "no_shared_images",
+  "generated_images": 0,
+  "replacements": [],
+  "note": "Confirmed work-order shared_images=0; no production write."
+}
+```
+
+### agent/handoff/checkpoints/order-0159.json
+
+```
+{
+  "order": 159,
+  "lesson_id": "b86f5e78-0a4e-4a1e-9cae-70fc59e31c3a",
+  "slug": "cuento-mis-monedas-ganadas",
+  "status": "no_shared_images",
+  "generated_images": 0,
+  "replacements": [],
+  "note": "Confirmed work-order shared_images=0; no production write."
+}
+```
+
+### agent/handoff/checkpoints/order-0160.json
+
+```
+{
+  "order": 160,
+  "lesson_id": "c977ca67-22a1-4f01-9347-cf5a4142e695",
+  "slug": "mi-cofre-de-ganancias",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old": "026b956bfc83b5664feb016c3cc57c6e49464e33972a9384bbe1258041ee832.webp", "slot": "s2-cuenta-monedas.payload.scene[0].image_url", "new": "bc931cbcc5c40502ef63698aa4b1986221d0471ed0136527b89083e2291ca78e.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0161.json
+
+```
+{"order":161,"lesson_id":"e467e412-f5a7-4f59-a52a-d3c77bff4ab3","slug":"sumo-dos-chambitas","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"c8eb2212162fb7a95cd99b94b293c224b384df6e2c4cc6969d8fc91252c66af2.webp","slot":"s2-dialogue.image_url","new":"3ac9eb13a202565b6d433892ff44b54ad7485d7a240c46e9dabfb0982584f494.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0162.json
+
+```
+{"order":162,"lesson_id":"7ff6417b-d459-4186-85be-e51cd380a6e1","slug":"sumo-tres-chambitas","status":"completed","generated_images":3,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"16fc03bc5b3bf7cce1decad787fda00379ade70d2bf0c359207a8a7277fe4905.webp","slot":"s6-match-pairs.payload.left[0].image_url","new":"b0f9ab4ba5f091d128421e8059fedb6c38c1f0727e447de2e34f3bc8ca2da2ae.webp"},{"old":"bc551d6fe23be96aaa5e11dae8759667e1bf367f9d5700c5d669f37cf3d275e6.webp","slot":"s6-match-pairs.payload.left[1].image_url","new":"d916c250b16b7001efc81cb2d3667f619a2c325a8460c73f8232b93426e3c5ea.webp"},{"old":"d5e4079f283618e9251202ee6c256e4f966131d2e96b40438c55df834523220b.webp","slot":"s1-dialogue.image_url","new":"fd7146045bcb21d48b38db61b781b6ad7bfbb31cac10135aa61ea9ec271ac7f8.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0163.json
+
+```
+{"order":163,"lesson_id":"2be2a46e-8d31-4790-98a7-5dfd4401b258","slug":"cual-dia-gane-mas","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0164.json
+
+```
+{"order":164,"lesson_id":"03c64909-845a-430d-bdd6-0f4e61950718","slug":"mi-total-del-dia","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp","slot":"s3-story-dialogue.image_url","new":"a2ddbef08f948a332d98aee9e5aada7b9be1e31e3224a0e08fbe8a5465787827.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0165.json
+
+```
+{"order":165,"lesson_id":"147f282b-8750-41ca-b94d-4ec85036787d","slug":"lo-que-gane-ayer-y-hoy","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0166.json
+
+```
+{"order":166,"lesson_id":"837fca5c-1033-43b0-b2e0-4573d9fcd227","slug":"tres-dias-de-chambitas","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0167.json
+
+```
+{"order":167,"lesson_id":"17d2f3c6-6369-4a57-a9a5-1345837dc958","slug":"mi-cofre-va-creciendo","status":"completed","generated_images":3,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"4faeee51e43c79adecf4947bf6822255769f57367dcbfd9be267aed3bc035e16.webp","slot":"dialogue-ayer.image_url","new":"cecee29785240795428e32438075d9287912f57684891e6164d72d62ed86945b.webp"},{"old":"7a4799b25f8ed079519daa3a9b797c4ba5329d404752477664afeb468ca00fc0.webp","slot":"num-input-flores.image_url","new":"c6b3c1a3fe1f982e883789cc015ed9f1e364a4f4f3433423532d1fdc2827631a.webp"},{"old":"97d9eb5439bb4d4f8eaa76392e10287005f2b4088c18dacf2da46806a8192d4e.webp","slot":"coin-fruto-dorado.image_url","new":"a451c31dfeaf6dd3c88fb044e80008965d220172b7a84e97acf1e1d46a2d418d.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0168.json
+
+```
+{"order":168,"lesson_id":"c73c3d09-25d3-4b63-acbf-ac6f7205a54a","slug":"mi-total-de-la-semana","status":"completed","generated_images":2,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"ecf92f67908ec2926b625604534333d11985cffc25236e7f60171527b69f30de.webp","slot":"s1-dialogue.image_url","new":"1c7a1507cbf5f8dbaffb654889d8cb839a8811bae54fd885de62c253ab238701.webp"},{"old":"67b06ad47c4aa0824957b3ff06d00479065f747c69b6a8dbb0c9fcdfe89112ab.webp","slot":"s2-count.payload.scene[0].image_url; s2-count.payload.ask_image_url","new":"855cd3c07cd70b3030909af6f10351e7390c4d31e8065461005a9a119cd78414.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0169.json
+
+```
+{"order":169,"lesson_id":"5902a9e0-e782-4614-b504-f6175a6441d6","slug":"comparo-dias-distintos","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0170.json
+
+```
+{"order":170,"lesson_id":"701d01fc-7036-4c4e-9a86-982746a430de","slug":"no-pasa-nada-si-gano-menos","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0171.json
+
+```
+{"order":171,"lesson_id":"25ce50cb-d23c-44ec-a15a-9527156eebb0","slug":"cada-dia-es-distinto","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0172.json
+
+```
+{"order":172,"lesson_id":"d1cb4be8-aea6-4508-856a-1cfd64a3d5e3","slug":"cuento-las-marcas","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0173.json
+
+```
+{"order":173,"lesson_id":"796ec701-93a7-4007-9531-d388f31654f3","slug":"armo-mi-propio-registro","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0174.json
+
+```
+{"order":174,"lesson_id":"4cd45d6a-bf88-47f2-ae0b-8f32d73b111f","slug":"leo-mi-registro-de-la-semana","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0175.json
+
+```
+{"order":175,"lesson_id":"96aa8bee-b172-4d40-9048-4ca59b099d8a","slug":"siete-dias-de-chambitas","status":"completed","generated_images":4,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"ca898c82193afee4a4fc32bf90042d35847e71ace024b9408eb3235f90e21721.webp","slot":"s6-suma-semanal.image_url","new":"f4fca392791285a59e5a983856d2ee2d4f87b3507a632abde62d20722bd26a97.webp"},{"old":"9c40ebee1676a6c3167b8c449239e35384ad646d655abf7940f31d315072ad70.webp","slot":"s7-comprar-silbato.image_url","new":"330691b291b05734fcce9d0925023c7f5e8b3475ee70cb7ac7608935dd118106.webp"},{"old":"7674c2d1719ccc79af77fe5c2d680da46afbd1e9f527da557f100b936e4476dd.webp","slot":"s10-celebracion.image_url","new":"2647b48eb7b423150b6103d56f008697f421d62ca562841c78ccfcb52051a0a7.webp"},{"old":"329ed2bca57f1900f516400939b89a86e1e83419f4e2579decd85862bc20d348.webp","slot":"s1-recuerda-suma-diaria.image_url","new":"64bd8b356943b0a512c3b72ba3e371b804e80795267ab85cd74ea1188a994741.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0176.json
+
+```
+{"order":176,"lesson_id":"a5ac7eca-7ad0-40ab-85bd-bb93ecfa1944","slug":"sumo-toda-mi-semana","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0177.json
+
+```
+{"order":177,"lesson_id":"cb7b7104-6695-4d3c-8ef9-cc608a43ada4","slug":"comparo-mi-semana-con-la-de-un-amigo","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"7e0a2571b30a3c0f8f1f12838a1313d5c56124d982cc24fe7db4ac9a0697cfa4.webp","slot":"s1-dialogue.image_url","new":"765ce1ee0d9299fc5de0824dde0afbd868d90200d53d251cb9bb15cd5d63569d.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0178.json
+
+```
+{"order":178,"lesson_id":"c1db6b4b-22b4-4a4c-af33-5f2aca6365db","slug":"bosque-de-la-abundancia-repaso","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0179.json
+
+```
+{"order":179,"lesson_id":"988ba0fd-ba2d-467f-8bc2-3c7d457a89bb","slug":"recuerdo-mis-primeras-monedas-ganadas","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0180.json
+
+```
+{"order":180,"lesson_id":"380ddf53-f222-4cac-8b82-4fca521c1fc4","slug":"sumo-monedas-recordadas","status":"completed","generated_images":3,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"bce89aadc0bee4c4703d2af2fa37b3987fea5f6377cfa6d46ca48425d25b271e.webp","slot":"s2-zara-pide-ayuda.image_url","new":"0eada00bdd44d4371bd94704d7512676190ea13a1430b084df9f59350c0cdea4.webp"},{"old":"1161e744196d75f0b05877e67270d9270b0b1d51749fd5b8f085bd36a768c76c.webp","slot":"s4-suma-dina.image_url","new":"269dd72ae8636c8bfd3321d088db13b843497ebf5476da9792576e7ede02bfa0.webp"},{"old":"12249ae42f6bd5228b0871db787ba297b2bbef953786e12f3c7ce529f2800ad0.webp","slot":"s3-juntar-moneda-8.image_url","new":"3b48b15492a185982f4d2b8c451ea60272ba7efbcc334bebd81f9aad5caca070.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0181.json
+
+```
+{"order":181,"lesson_id":"80e25e1f-c0f0-42d1-97dc-a43111e71840","slug":"comparo-dos-semanas-recordadas","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0182.json
+
+```
+{"order":182,"lesson_id":"ac469675-9730-4733-9d75-f5db844bf57d","slug":"cierro-el-cofre-de-la-cosecha","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"67b06ad47c4aa0824957b3ff06d00479065f747c69b6a8dbb0c9fcdfe89112ab.webp","slot":"s4-contar.payload.scene[0].image_url; scene[1].image_url; ask_image_url","new":"252d9ec5d5e5ffa1fadd87ad29d52fff09e05aa390b7d8df21b6adeb1930aa8a.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0183.json
+
+```
+{"order":183,"lesson_id":"28ce4894-2971-42a5-bdf5-71fd79b6e720","slug":"cumplo-y-cuento-a-la-vez","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0184.json
+
+```
+{"order":184,"lesson_id":"58253e81-11db-4a65-9816-26f633c29852","slug":"junto-mis-ganancias-como-en-el-archipielago","status":"completed","generated_images":3,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"3ce828e7dbfd46939d5549c9824ef4c2b7beba2b4122680c0f9a78199205c839.webp","slot":"s6-match.payload.left[0].image_url","new":"99fbdefa4e73f29a272e782f0df7591086a962e16b0fb0018bbf892fc21c5300.webp"},{"old":"bc551d6fe23be96aaa5e11dae8759667e1bf367f9d5700c5d669f37cf3d275e6.webp","slot":"s6-match.payload.left[1].image_url","new":"226f6b4f11ff2723e0156f940a15ca715bb8dd58c557395b5a4187e4a066a396.webp"},{"old":"bd48f0914097bdb4fc0167c0d4b234100db9bcf61d47b85cc20615bca2df60fe.webp","slot":"s6-match.payload.left[2].image_url","new":"abba9e61e2224d23d29f5586cf1366921f19a4ab23c3a4788ede0dfba127a1ed.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0185.json
+
+```
+{"order":185,"lesson_id":"06d7d7c6-6c85-45ce-b9ad-36f324dcc14b","slug":"dos-chambitas-un-solo-total","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0186.json
+
+```
+{
+  "order": 186,
+  "lesson_id": "2f71570b-5e23-4216-83f0-82e5ac2dd57a",
+  "slug": "mi-semana-completa-de-cosecha",
+  "status": "completed",
+  "generated_images": 7,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"fb0e00359c7d7f2ff602bd35065c6e8a0f02d93f1bf5225e4acf17eba37fe5b3.webp","slot":"s1-dialogue-recap.image_url","new":"b784b5c4165a159ccf2ce263e263dafb0d6402dcddfe9b4afd0e5cef89c4c890.webp"},
+    {"old":"8329c76bd53391b5c10bfa73bc0a9b16b8343a9314015baefbd3325663dba4de.webp","slot":"s3-coin-count.image_url","new":"7dffd551e31161c9adc4780de07d868db728495ec0ccd5bb5ca135e01df50ca2.webp"},
+    {"old":"f61077ab5d040fe22a96f30c666ba4e1c17dea4c69df66c0c97e95a52666ad0e.webp","slot":"s5-best-decision.image_url","new":"081bbb7c74bbc3b0f2f7fb6b7528685ebd1ba03db1760f70ce98470373d4495c.webp"},
+    {"old":"b22d060bb458790e5012dc6623786ec2e660b6407dcc09513b00701b0073ce50.webp","slot":"s6-number-input.image_url","new":"99352447a0c2d40586e6e12784e87f5be1583de0d6237f4c9fb04c66e4910830.webp"},
+```
+
+### agent/handoff/checkpoints/order-0187.json
+
+```
+{"order":187,"lesson_id":"8b38a15e-80b0-4bac-8037-5954a233cf21","slug":"lo-que-se-me-da-bien","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0188.json
+
+```
+{"order":188,"lesson_id":"9cbbdfb1-c9dd-4abe-bc57-1fc40224016d","slug":"cada-quien-su-talento","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0189.json
+
+```
+{
+  "order": 189,
+  "lesson_id": "04f73495-c9be-4696-9c01-7fb28c2caa4a",
+  "slug": "mi-talento-puede-ser-trabajo",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp","slot":"s1-intro.image_url","new":"7ed561cd8d1932e487f5a4c371bcbd425652a604544ea1ba660de8a8ee9c9c00.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0190.json
+
+```
+{
+  "order": 190,
+  "lesson_id": "294707a2-d889-40d7-822a-e288c323b11b",
+  "slug": "a-quien-ayudo-hoy",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"ee047817fc2a7beaad1d407d79003eb489bf95ec07c73cd8035327898b5fdc7a.webp","slot":"s1-dina-recuerda.image_url","new":"b4043cd1441cc44b675101e4e53c351320b88cfa68fd063f403b9dc69c751c6d.webp"},
+    {"old":"2f6d8fdbf9fd215248c335fbcda891a055377b0fb87884ce525b980d3f199689.webp","slot":"s2-puente-roto.payload.art.image_url","new":"d3c808b337ff30ee5bdf47badffa1fb472a9ae508901c0db1d13a4415e293022.webp"},
+    {"old":"79ce7b150898c4ce5e458e9ef92831389c0193429be7aa428cad3c2829c22d81.webp","slot":"s4-eavesdrop-ayudar.image_url","new":"24fe17598062f1726439fc5f9db1f0830d9ef186d4bdfa57ba6d5a3ed0932ddb.webp"}
+  ]
+```
+
+### agent/handoff/checkpoints/order-0191.json
+
+```
+{
+  "order": 191,
+  "lesson_id": "1df6041c-18f3-479f-8449-15e1c788401a",
+  "slug": "empareja-trabajo-y-ayuda",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"6e90153f72b634278d625760fe422395fd3c81ed2498d7aab8053d4a4bb3be78.webp","slot":"s3-emparejar-chambitas.payload.left[1].image_url; s9-clasificar-ayuda.payload.items[2].image_url","new":"1d9b3181ebdb4648a61701a4d80325d15f52620396bc8f6bad8bea13e441071c.webp"},
+    {"old":"30da14a36c3559b575d7a5f88dbed7220e53437d768f78273d71cf26e7988a19.webp","slot":"s3-emparejar-chambitas.payload.left[2].image_url; s9-clasificar-ayuda.payload.items[5].image_url","new":"f6dae3078509656895a811f265a67d599893b68311a1f3c4fd241b0aedf0cb8d.webp"},
+    {"old":"ff96e47f4ca9a8aec6c57447da6a340ccd2834588a05a2893232af6c73eaf99e.webp","slot":"s9-clasificar-ayuda.payload.items[4].image_url","new":"be4e5462abe22700e8ab04fceabe4fca36588be27b48040f99cde2c96d640059.webp"}
+  ]
+```
+
+### agent/handoff/checkpoints/order-0192.json
+
+```
+{"order":192,"lesson_id":"0c021cb6-c490-41fa-811d-73a5bffba824","slug":"gracias-por-tu-ayuda","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0193.json
+
+```
+{
+  "order": 193,
+  "lesson_id": "f6698a8b-e4ac-4a13-9f51-eac69d6b56f4",
+  "slug": "agradezco-y-cobro",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"3a34810ffec5d911f40f132498a95836719b115bf414efd7774eb406256a4232.webp","slot":"s2-picture-choice.payload.options[1].image_url","new":"b73ed3e04fd8933e356041d8d4e591c9c04de69d5c7d4b458a65c51b4b220fb5.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0194.json
+
+```
+{
+  "order": 194,
+  "lesson_id": "7d3ba2e3-44ff-4422-85c1-30d90a486ee2",
+  "slug": "el-bosque-necesita-de-todos",
+  "status": "completed",
+  "generated_images": 6,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"9c489b7b0eb190019a9d47a0942aec9fb347e05b443513d8480b248cc6344d26.webp","slot":"s2-match.payload.left[0].image_url","new":"e997bbc48d757deda73e785b8ba49b51b91d190d3eadcf4a57fbe3fb72ff0b5c.webp"},
+    {"old":"185bb72aa0e6e6e302a51c17c0cc0e80484681a013619f5742649324e97041a1.webp","slot":"s2-match.payload.left[2].image_url","new":"867f76fdab8cacc7f15efc22946fd2ddbf2bc5f06ee256c0f273997f0b202a64.webp"},
+    {"old":"658d3ebe6a489f7c77d6a46074b3ad3d83f40e1538a17a45d1942b3a844d7a23.webp","slot":"s7-clasifica.payload.items[0].image_url","new":"38b91a5b8967b389941590ed10be05b3812b7bae7824530a8b31b2b9d0b9929d.webp"},
+    {"old":"1338681b24acc88afe0a7247533eb7916af26a0e0c87f6a5737570e379df4ef0.webp","slot":"s7-clasifica.payload.items[2].image_url","new":"bd887020d2cc4947478d9dafd32fefc643e0f78b4dadf9ef5ec3fd37b33a5f41.webp"},
+```
+
+### agent/handoff/checkpoints/order-0195.json
+
+```
+{
+  "order": 195,
+  "lesson_id": "cabac7ba-82fc-4c4a-847a-049cf115665b",
+  "slug": "por-que-me-gustaria-esa-chambita",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [{"old":"452fb7bd50de64512845075849b85851d2d383bde4f808392fb253649181a3ff.webp","slot":"s8-hechos-y-opiniones.image_url","new":"f6bc88ae8f218289ccb15bf5805965c6c7ba9789b5547f7ff9393aec9a6d0966.webp"}]
+}
+```
+
+### agent/handoff/checkpoints/order-0196.json
+
+```
+{
+  "order": 196,
+  "lesson_id": "3372df5a-7598-4184-bd87-15f211269716",
+  "slug": "imagino-mi-dia-de-trabajo",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"1338681b24acc88afe0a7247533eb7916af26a0e0c87f6a5737570e379df4ef0.webp","slot":"s6-picture-choice.payload.options[1].image_url","new":"564b736f3b100218e77e5c6385fe5cee6ad0d6bec01f1d8d9e05bcd18e6c646f.webp"},
+    {"old":"9c489b7b0eb190019a9d47a0942aec9fb347e05b443513d8480b248cc6344d26.webp","slot":"s6-picture-choice.payload.options[2].image_url","new":"175fac4e4b038a1a4e03a0d8c093195a044d0b76163f7d3b387e6ae53190c786.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0197.json
+
+```
+{
+  "order": 197,
+  "lesson_id": "7653c3fc-d557-4cfe-a346-dac6df3149b2",
+  "slug": "mi-sueno-de-oficio",
+  "status": "completed",
+  "generated_images": 5,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"500a90f895a3f1553db344dc13b0b1b052b5b4c9fa030636c290cfec332cedc2.webp","slot":"s2-pasos-liruf.payload.items[2].image_url","new":"386d280cc7f059c76d80c468b308a9a77ad2caa0f022c9b22803d8b7a948d069.webp"},
+    {"old":"359463a79903f582d130843805211594e5a37a1e683ce616298319fce63a116a.webp","slot":"s4-oficios-del-bosque.payload.options[0].image_url","new":"45b9956fefb529de6eb4d40bcb48af49d48c6f4288470b893902ac677641a299.webp"},
+    {"old":"1338681b24acc88afe0a7247533eb7916af26a0e0c87f6a5737570e379df4ef0.webp","slot":"s4-oficios-del-bosque.payload.options[1].image_url","new":"604adb370dbf0296bfad5d4a68da904ee4e3c8f25e0a3a3b1578f630704046f3.webp"},
+    {"old":"c8b7d10dcd9f82557a5b6df868c925900937020e81d79f18882f81ce0383944a.webp","slot":"s4-oficios-del-bosque.payload.options[2].image_url","new":"27d98cbcc5f68f2f4b2e689a2b180ab5d01a2fa3632ab5440569755b4ec777cf.webp"},
+```
+
+### agent/handoff/checkpoints/order-0198.json
+
+```
+{"order":198,"lesson_id":"4f2ccb3c-df5a-44b6-ab76-ac9e5b89d326","slug":"recuerdo-mi-primera-chambita","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0199.json
+
+```
+{"order":199,"lesson_id":"fdad7981-63a9-46b6-933e-588cba5cd8d8","slug":"sumo-todas-mis-ganancias","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0200.json
+
+```
+{
+  "order": 200,
+  "lesson_id": "5f71ee04-1ac7-491c-bb37-d81d8508c802",
+  "slug": "elijo-mi-oficio-final",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [{"old":"daa76fad94b930e698184d68fb358618600fafe2240cbe719aea5a2e2fa79d1e.webp","slot":"s1-story.image_url","new":"3aeacece2534a5ce367504ccb017f7b185017a106cc418f1885990a52c1e737c.webp"}]
+}
+```
+
+### agent/handoff/checkpoints/order-0201.json
+
+```
+{
+  "order": 201,
+  "lesson_id": "fe88cab3-8702-418e-af5d-489b9e435e17",
+  "slug": "navego-hacia-la-aldea-del-ahorro",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [{"old":"fbabc7f40c19c0872ef3f06510047edf1efede563b0b11be1e168ca55ad670ef.webp","slot":"s2-oficio-elegido.payload.options[1].image_url","new":"db1db6df5624cf4a1cdcaf3ee2db491540ddad6b7e6f1e4348c4abe891198dd0.webp"}]
+}
+```
+
+### agent/handoff/checkpoints/order-0202.json
+
+```
+{
+  "order": 202,
+  "lesson_id": "79f548c7-5bfe-45b6-8952-1aba6d1d1367",
+  "slug": "recuerdo-a-quien-ayude",
+  "status": "completed",
+  "generated_images": 4,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"359463a79903f582d130843805211594e5a37a1e683ce616298319fce63a116a.webp","slot":"s6-sort-buckets.payload.items[0].image_url","new":"57273b97656571175efa5034978db6ff2669547a67d191ccc0dcd5bd1e416543.webp"},
+    {"old":"9c489b7b0eb190019a9d47a0942aec9fb347e05b443513d8480b248cc6344d26.webp","slot":"s6-sort-buckets.payload.items[1].image_url","new":"ebc4aeaf97c2b30e4686e28839ecd24664bafe2228f73c9c5214479bc071a6c1.webp"},
+    {"old":"1338681b24acc88afe0a7247533eb7916af26a0e0c87f6a5737570e379df4ef0.webp","slot":"s6-sort-buckets.payload.items[2].image_url","new":"b0f26eedf91a1193760ff95e1c22a7bd284cc4d4b803b4ec1eb3a84b83030dce.webp"},
+    {"old":"c8b7d10dcd9f82557a5b6df868c925900937020e81d79f18882f81ce0383944a.webp","slot":"s6-sort-buckets.payload.items[3].image_url","new":"00c2742cfed51ff9ad78b895b870a64102af07abb1120f6d6a1a38f63ca5e6c4.webp"}
+```
+
+### agent/handoff/checkpoints/order-0203.json
+
+```
+{"order":203,"lesson_id":"8f540b60-b115-4cf5-86f7-667210b25898","slug":"ayudar-en-equipo-y-ganar-juntos","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0204.json
+
+```
+{
+  "order": 204,
+  "lesson_id": "f6067774-05dc-4a05-995a-a17538d9884d",
+  "slug": "mi-semana-de-ganancias-ayudo-a-otros",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [{"old":"2c5d644b5c22b610797108d8c92bdbc2a189e529a39f7391ffb8cc4d265d29f4.webp","slot":"s2-empareja-chambitas.payload.left[1].image_url","new":"fddc51795d814a386800f0ce5b9d552c56d4c4d06a04ac0b6643ccf71fd6a2bc.webp"}]
+}
+```
+
+### agent/handoff/checkpoints/order-0205.json
+
+```
+{"order":205,"lesson_id":"c36ad3f9-dc2f-4fbf-a363-eecfa2f458b9","slug":"el-dinero-tambien-agradece","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0206.json
+
+```
+{"order":206,"lesson_id":"478b1ecb-b6dd-465a-9eb3-7e86bff8a141","slug":"cierro-el-circulo-con-todo-lo-aprendido","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0207.json
+
+```
+{"order":207,"lesson_id":"82227d37-2358-4239-8d90-f56973e1cb34","slug":"el-mensajero-del-festival","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0208.json
+
+```
+{"order":208,"lesson_id":"7629e3db-62f8-40bc-86e0-9c5d9cd8f679","slug":"elegimos-nuestras-tareas-del-festival","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0209.json
+
+```
+{
+  "order": 209,
+  "lesson_id": "730bf108-f4f4-461b-94c1-f7f7ea734d49",
+  "slug": "formamos-el-equipo-del-festival",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"633a2f0e1b430a2575418457c5383dd2f579e21508f84786db2badb8c1f48402.webp","slot":"s2-elegir-tarea-liruf.payload.options[1].image_url","new":"06b21ae8ea658ee46b37f836dd0d0de5f59319da99bda74879efd16a45199b7e.webp"},
+    {"old":"3ffe04bc92067d4570d0c2a508cd66e2a8869a2e0bad5513bcb4c301a116f6af.webp","slot":"s2-elegir-tarea-liruf.payload.options[2].image_url","new":"ae82a506be8b756a866307093110260fe42961fc36b4c012c19b69c6646d2b64.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0210.json
+
+```
+{
+  "order": 210,
+  "lesson_id": "2c987e16-6565-4068-bd19-d85690548f30",
+  "slug": "el-tablon-se-llena-de-chambitas",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"3ffe04bc92067d4570d0c2a508cd66e2a8869a2e0bad5513bcb4c301a116f6af.webp","slot":"s5-diferente.payload.items[0].image_url","new":"374a16d3c875cca4298db1fab1a4e3209ce109177549203f0d3969464f9fab3e.webp"},
+    {"old":"bd48f0914097bdb4fc0167c0d4b234100db9bcf61d47b85cc20615bca2df60fe.webp","slot":"s5-diferente.payload.items[2].image_url","new":"e75002eeb6078f628d18df510efa8ee9720a05b740e8e6c6d2ead509b8d133fd.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0211.json
+
+```
+{"order":211,"lesson_id":"53cd5dcc-00c8-42bc-8bf6-053e48da3b52","slug":"pido-permiso-para-el-festival","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0212.json
+
+```
+{
+  "order": 212,
+  "lesson_id": "1f262e74-e701-47b7-abb3-57984e002573",
+  "slug": "elijo-mi-chambita-del-festival",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [{"old":"c7b26df58622eb429bb5f0983f5054d4e4a8eb3a6e0dd10f2904e816c0fe20c9.webp","slot":"s8-dialogo.image_url","new":"ef159e863f5bdcff4c28f211ff9ab9b08163a04f42a28a3432bf5d42a27d3634.webp"}]
+}
+```
+
+### agent/handoff/checkpoints/order-0213.json
+
+```
+{
+  "order": 213,
+  "lesson_id": "b253ab41-c849-4f6a-b008-0b0e2569bfde",
+  "slug": "cumplo-mi-chambita-del-festival",
+  "status": "completed",
+  "generated_images": 4,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"c02e148d3d67a63294d2b64097b02de582d390b807ad5d80f14df6c382803f5b.webp","slot":"s7-emparejar-recompensa.payload.left[1].image_url","new":"01466fef72bc439f9ecc955eabf1abace2918125227cf06a8b9c89965a656220.webp"},
+    {"old":"bc551d6fe23be96aaa5e11dae8759667e1bf367f9d5700c5d669f37cf3d275e6.webp","slot":"s7-emparejar-recompensa.payload.left[2].image_url","new":"b077a7ccdcd3388603eda1b03f9e67ea24f6857c4569504248545630af42596f.webp"},
+    {"old":"803b97c1c515aa115f80d84dc4b040974966723a11be919af9cad3648ae054c6.webp","slot":"s8-reparte.payload.jars[0].image_url","new":"8b7d66cd699601613ec1a6b2862bcc005cde1ed310a124fcc6da0bce4312ea7e.webp"},
+    {"old":"f85b88c0671c08f902736730b49879da87eabad62d27a8b4803a627b14d4e9ae.webp","slot":"s8-reparte.payload.jars[1].image_url","new":"2f0330ceb01ee6cc09dcaf09a6c7ad84849f48638a03f3f48d3be628723633ce.webp"}
+```
+
+### agent/handoff/checkpoints/order-0214.json
+
+```
+{"order":214,"lesson_id":"a5cd0b29-fd24-435f-8f67-1ae2135c23b3","slug":"sumo-mis-monedas-del-festival","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0215.json
+
+```
+{"order":215,"lesson_id":"b5c76d48-6282-4cee-933f-7ef90250a95f","slug":"comparo-mi-cosecha-de-hoy-y-de-ayer","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0216.json
+
+```
+{
+  "order": 216,
+  "lesson_id": "3f9b4355-c25b-4a33-92ee-47cce3374549",
+  "slug": "junto-varios-dias-de-festival",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"b7fb777efd98f9d27e203bdbc300ad71b4833a38dca06e9fe6ddf551d72b97fa.webp","slot":"s4-suma-dias-festival.image_url","new":"46c0f24716b37789f8395a3c86b5d5dcad72afb167bb8489b9152f55ae072926.webp"},
+    {"old":"5b9f31f48919de1a888d5232b7434f2704d8d7712c2567f994de39a05092ca9f.webp","slot":"s6-collar-flores.image_url","new":"074714644aeb1f1df188650cc1bfd7d292965535ec0635332bc8217d368fb204.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0217.json
+
+```
+{
+  "order": 217,
+  "lesson_id": "19ff1f55-fa01-4738-8043-6ea24cb16622",
+  "slug": "cada-oficio-tiene-su-puesto",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"1338681b24acc88afe0a7247533eb7916af26a0e0c87f6a5737570e379df4ef0.webp","slot":"s4-empareja.payload.left[0].image_url","new":"a8026e93e1f017428d9c4953d4b3926de5064f715a851997c9830c5e261282b9.webp"},
+    {"old":"185bb72aa0e6e6e302a51c17c0cc0e80484681a013619f5742649324e97041a1.webp","slot":"s4-empareja.payload.left[1].image_url","new":"6825ad4cb725d7b889decfcaa4a1954da6da87392ae3f6a4e65fc8c2c05d6c59.webp"},
+    {"old":"c8b7d10dcd9f82557a5b6df868c925900937020e81d79f18882f81ce0383944a.webp","slot":"s4-empareja.payload.left[2].image_url","new":"7b3526744b9fda4cf69b1dfaab780bd55d285b1c138f8a4020710ffb7fa53f0c.webp"}
+  ]
+```
+
+### agent/handoff/checkpoints/order-0218.json
+
+```
+{
+  "order": 218,
+  "lesson_id": "8a4198a3-b9b6-49a8-8aa2-699062a572ca",
+  "slug": "elijo-que-oficio-probar-en-el-festival",
+  "status": "completed",
+  "generated_images": 5,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"1338681b24acc88afe0a7247533eb7916af26a0e0c87f6a5737570e379df4ef0.webp","slot":"s2-match-pairs.payload.left[0].image_url; s5-sort-buckets.payload.items[5].image_url","new":"a588dc2a6dbe4aa16e77fdced69647fa7a704239349d418ffba7a5ff19cfc9a8.webp"},
+    {"old":"9c489b7b0eb190019a9d47a0942aec9fb347e05b443513d8480b248cc6344d26.webp","slot":"s2-match-pairs.payload.left[2].image_url; s5-sort-buckets.payload.items[3].image_url","new":"cdcf01c1d876460a658c4b35328761e1d528435e82e7b0adaf1613a632d108b1.webp"},
+    {"old":"359463a79903f582d130843805211594e5a37a1e683ce616298319fce63a116a.webp","slot":"s5-sort-buckets.payload.items[0].image_url","new":"1e13204fe36abfc51dfb387de5409b114ac8733d66740894d7b58f6f13dec12c.webp"},
+    {"old":"185bb72aa0e6e6e302a51c17c0cc0e80484681a013619f5742649324e97041a1.webp","slot":"s5-sort-buckets.payload.items[2].image_url","new":"add587a150cb3a230d0b45777ea4de429d6c56cec243f0cdf210fab9ce385e9f.webp"},
+```
+
+### agent/handoff/checkpoints/order-0219.json
+
+```
+{
+  "order": 219,
+  "lesson_id": "dfacbfe6-a436-4068-8afd-062e4da48986",
+  "slug": "mi-comunidad-del-festival",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"ee047817fc2a7beaad1d407d79003eb489bf95ec07c73cd8035327898b5fdc7a.webp","slot":"s1-dialogo.image_url","new":"d49e0409007dd7ed0731e3124e852d9edef142506b14b1bb0123b1a3bbfb2094.webp"},
+    {"old":"da07265a001452b70ca7cb4c973385a681e8271339a8337059b45ac193cc027d.webp","slot":"s2-elegir-oficio.payload.options[0].image_url","new":"1a2c1918c56e93c95b1fe7f2cd03b287fcd823588b6931fa1d6f9f7a6aaa8f10.webp"},
+    {"old":"70e871daafc299be42f5f748e9339f09f5747c5ca43c1a2420eafdddc2872feb.webp","slot":"s2-elegir-oficio.payload.options[1].image_url","new":"ef1912ef99c291d02f1c26d66f56af725a777c164f348cc95009a1e3dda5f0cd.webp"}
+  ]
+```
+
+### agent/handoff/checkpoints/order-0220.json
+
+```
+{
+  "order": 220,
+  "lesson_id": "15d955b3-52c5-47f7-87eb-f625a9be3f73",
+  "slug": "el-equipo-arma-el-escenario",
+  "status": "completed",
+  "generated_images": 4,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"9c1ff665179535b9d88bf53d36e7cf8b360c5c6db019f2ca8a0358fb1345ccdb.webp","slot":"s7-budget-fit.payload.items[0].image_url","new":"a14c1460ac975229bb6b3fc44909e7538ad6186d50b3e0ca5522e6c874ab60b5.webp"},
+    {"old":"f1c0ef1de4c5ab9b77447d7483e6d66aa049d519bc7b5751b1cc08af0daaa79.webp","slot":"s7-budget-fit.payload.items[1].image_url","new":"fb91a2ea1ad9e456ef9ef10253ff5ae249839247707c9293903d3f83c0b7408d.webp"},
+    {"old":"316a15b9ad796b295529f48eb6e761a8d17ee8a243864bd0980afaf0949c593b.webp","slot":"s7-budget-fit.payload.items[2].image_url","new":"8f5a59330293a346e723cbf96ad91a0a1513547c6fe5cc191d7f1c0349783e5b.webp"},
+    {"old":"898dc7edecd61c4ace2195840a14c0a914d1e51742d18b621241b9b77f1d5790.webp","slot":"s7-budget-fit.payload.items[4].image_url","new":"b82536156b47226034f49b6268c768070152ba36fa73b6d649b97ffc885d394e.webp"}
+```
+
+### agent/handoff/checkpoints/order-0221.json
+
+```
+{"order":221,"lesson_id":"7f8a0c1f-bf86-460a-a8b1-6808174cc9c7","slug":"cada-chambita-suma-al-escenario","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0222.json
+
+```
+{"order":222,"lesson_id":"6cbcdc86-9349-4663-ba06-ba2c3f100141","slug":"el-escenario-esta-listo","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0223.json
+
+```
+{
+  "order": 223,
+  "lesson_id": "1f2d66e9-11b0-489a-a989-bbbbfef57ef2",
+  "slug": "recordamos-todo-el-viaje-del-bosque",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"3ffe04bc92067d4570d0c2a508cd66e2a8869a2e0bad5513bcb4c301a116f6af.webp","slot":"s3-rho-chambitas.payload.left[0].image_url","new":"6cd76f87e50cc85a22b61e4a7a990b6a0206353c33cc702a3cb6f0dfd377fdf9.webp"},
+    {"old":"8d9c9436474568b29e15693325731299c6cb8a60f9de14d62560695a6021bfdd.webp","slot":"s3-rho-chambitas.payload.left[2].image_url","new":"9d366b686a814a1994270fa8efaa9f8cfd32f474ca4a4eb2246ad76f885ff51c.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0224.json
+
+```
+{"order":224,"lesson_id":"a755ceff-598d-4b24-8e93-4e710a87c521","slug":"del-archipielago-al-bosque","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0225.json
+
+```
+{"order":225,"lesson_id":"54eb404c-4b16-46e0-b2cd-04f362a36e1e","slug":"bailamos-con-nuestras-ganancias","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0226.json
+
+```
+{
+  "order": 226,
+  "lesson_id": "a4f4bcee-e521-42b0-bc66-41bd1e9ff90c",
+  "slug": "no-gasto-todo-hoy",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [{"old":"aec2d2d11573f14dea3c9a6d035bcac0238ac2da1ae892443962d53d1fc83119.webp","slot":"s6-best-decision-zara-limonada.image_url","new":"f071e31cd8c502d7475ff7e59b73b990f38e1076fbffa3c668a305a9d5c5fa7b.webp"}]
+}
+```
+
+### agent/handoff/checkpoints/order-0227.json
+
+```
+{"order":227,"lesson_id":"1105838f-c7cc-4876-8d3a-ccec6f780597","slug":"gastar-hoy-o-guardar","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0228.json
+
+```
+{"order":228,"lesson_id":"32166bff-9cc4-482c-ab61-42426aead0a6","slug":"para-que-guardo","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0229.json
+
+```
+{"order":229,"lesson_id":"040eacfa-4e93-4561-bf07-6e52027c117e","slug":"guardo-mi-primera-moneda","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0230.json
+
+```
+{
+  "order": 230,
+  "lesson_id": "f20da015-e9ce-4a2f-aa33-86a567062025",
+  "slug": "mi-sueno-en-el-valle",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"9a131ba5f31b435dad359d5539a38a4f0881862dac496d7c3cb523b31dd54ecc.webp","slot":"s4-picture-choice.payload.options[0].image_url","new":"805ec10e6d6ef0a16876c0f4a3c0549de99454e6c9965058b024f2d4d1bffa9b.webp"},
+    {"old":"8509debd8cf1c1326766d33e5c6c1c77fa111bb013d86194c9c46d4ecbce6c10.webp","slot":"s4-picture-choice.payload.options[1].image_url","new":"24356c5f39f65172538c10a97edbf0bcf24e9e754e5f7dd707a0bace0eafc944.webp"}
+  ]
+}
+```
+
+### agent/handoff/checkpoints/order-0231.json
+
+```
+{
+  "order": 231,
+  "lesson_id": "d4738352-7bd2-4a8c-aee0-3798816ccc6a",
+  "slug": "cuanto-cuesta-mi-sueno",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"9a131ba5f31b435dad359d5539a38a4f0881862dac496d7c3cb523b31dd54ecc.webp","slot":"s2-recuerda-sueno.payload.options[0].image_url","new":"ad8d3eb303fab6a89b07391b3474b10d27aa32254a8df8efde1188487d2997f5.webp"},
+    {"old":"77e9797fac9195fae03b8a343fad548450fb0a9ef8e27252cbd52d78954500ee.webp","slot":"s2-recuerda-sueno.payload.options[1].image_url","new":"46be025279ed22082d423ccda460b4402159056e53816d28508abf4680c1486a.webp"},
+    {"old":"8509debd8cf1c1326766d33e5c6c1c77fa111bb013d86194c9c46d4ecbce6c10.webp","slot":"s2-recuerda-sueno.payload.options[2].image_url","new":"a89b1658914cfecb4aaddc164267beab124968c82a03a247e17c0f718e4274a1.webp"}
+  ]
+```
+
+### agent/handoff/checkpoints/order-0232.json
+
+```
+{
+  "order": 232,
+  "lesson_id": "0681d5f3-ea97-4002-b4a4-9a692d5bef10",
+  "slug": "elijo-mi-propia-meta",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"8509debd8cf1c1326766d33e5c6c1c77fa111bb013d86194c9c46d4ecbce6c10.webp","slot":"s2-match.payload.left[0].image_url","new":"edc45c4e27a61eee20def8dbe81d0398e5ef5d1ee8f542308a8a80f7b8a5b51a.webp"},
+    {"old":"77e9797fac9195fae03b8a343fad548450fb0a9ef8e27252cbd52d78954500ee.webp","slot":"s2-match.payload.left[1].image_url","new":"a356ade3e55437fe692507a318853dc9a99cd4c3a80032a8da7234b73f2c561f.webp"},
+    {"old":"4da87953bbea024b0ff376cc027f4ab1113e4eb38bcd56a1b346d49b28c8aa60.webp","slot":"s2-match.payload.left[2].image_url","new":"72cdeb73b49c8c477c1039ba981766e398d0c4f4c614f1f16491dff27192d8e8.webp"}
+  ]
+```
+
+### agent/handoff/checkpoints/order-0233.json
+
+```
+{
+  "order": 233,
+  "lesson_id": "fc4d8688-0575-4cc2-a510-b2ae082c4701",
+  "slug": "dibujo-mi-sueno",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"8509debd8cf1c1326766d33e5c6c1c77fa111bb013d86194c9c46d4ecbce6c10.webp","slot":"s2-meta-rho.payload.options[0].image_url","new":"dd6aff551f768e7d9269f74dab579c32ef95b3f2d636eb1fe3603116b9b4765d.webp"},
+    {"old":"77e9797fac9195fae03b8a343fad548450fb0a9ef8e27252cbd52d78954500ee.webp","slot":"s2-meta-rho.payload.options[1].image_url","new":"ed0ef7d55fdacf4cb6a59d66c59e0cde88fad2768f1ea30236fd86a24c0f82cd.webp"},
+    {"old":"e6a0d4ec4191bfc2a16f525d01859dcbc383ef833585a805713bd7a2d9791d5a.webp","slot":"s5-pasos-zara.payload.items[1].image_url","new":"ac3ab55d16383972edcb91a9935dfb8382f894e2769f997f9707d63aaf329806.webp"}
+  ]
+```
+
+### agent/handoff/checkpoints/order-0234.json
+
+```
+{"order":234,"lesson_id":"6b026f63-8e29-4768-910d-dd811b6b1cfc","slug":"cual-frasco-elijo","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0235.json
+
+```
+{
+  "order": 235,
+  "lesson_id": "d8b17b62-37b9-438a-bc6d-6329f0f40546",
+  "slug": "le-pongo-nombre-a-mi-frasco",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [{"old":"4762fb0049cf4a25a01e579ccdcf9b27b14b54c2c91da8a37cc7a590f6562d38.webp","slot":"s1-intro.image_url","new":"58d3fe2eead320483f38ded6210106aa84e49850504cfbd971e0438010455be9.webp"}]
+}
+```
+
+### agent/handoff/checkpoints/order-0236.json
+
+```
+{"order":236,"lesson_id":"7a644870-c218-4209-a0b1-e688ff456baa","slug":"mi-frasco-esta-listo","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"d9a35b25a143fc758ac8f5c3056ab578a2c826a0e37e440bbe598212ea53f0bf.webp","slot":"s4-elegir.payload.options[0].image_url","new":"81b3e4a1d50409bd1a844c3505b5199a6167224f8f5d3aafec2c342d9e93a253.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0237.json
+
+```
+{"order":237,"lesson_id":"4bd4356a-eb03-4172-9f34-f3774a9d2ff3","slug":"una-moneda-mas-cerca","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0238.json
+
+```
+{"order":238,"lesson_id":"3681ab1f-cf68-4369-8a19-62a58316de71","slug":"monedas-chicas-tambien-cuentan","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"80882b3c896c752a0a68b81ca234146b980994d374fb287b226b29034c8a0937.webp","slot":"s1-recuerdo.image_url","new":"44cef7ecb1d7e6d19308f03864d0e4184e3b041d56e7c187cebef1a0ca737a82.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0239.json
+
+```
+{"order":239,"lesson_id":"67c08800-7672-44bf-affe-9f9622de20a1","slug":"cuento-mi-frasco","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0240.json
+
+```
+{"order":240,"lesson_id":"ca639af0-6164-4c6e-9030-b819e8049b1f","slug":"mi-frasco-crece-poquito-a-poquito","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0241.json
+
+```
+{"order":241,"lesson_id":"4b435940-8b13-448f-98b3-b99531e54846","slug":"lo-pienso-un-momento","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"3732f23754341c4558569a31250664edeb23464ae7d948a46ba6427c937e8244.webp","slot":"s1-liruf-pregunta.image_url","new":"b7784e567699e0858d4004ab600061da6654977b041b74e7c9608a8383152a8a.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0242.json
+
+```
+{"order":242,"lesson_id":"85cafa18-19b1-491d-a01e-280711c2cb22","slug":"decido-con-calma","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0243.json
+
+```
+{"order":243,"lesson_id":"37150221-2686-4031-b8e1-fa1229fd435c","slug":"rho-decide-esperar","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"9a131ba5f31b435dad359d5539a38a4f0881862dac496d7c3cb523b31dd54ecc.webp","slot":"s6-picture-choice.payload.options[0].image_url","new":"cc1a853a4f6875ee3b049cd310b9c88546d6543e1dab9615a7cbde1a14fc3eec.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0244.json
+
+```
+{"order":244,"lesson_id":"edbdab24-6aba-4568-8904-41d272d22d54","slug":"comparo-esperar-y-no-esperar","status":"no_shared_images","generated_images":0,"replacements":[],"note":"Confirmed work-order shared_images=0; no production write."}
+```
+
+### agent/handoff/checkpoints/order-0245.json
+
+```
+{"order":245,"lesson_id":"a42cf7ad-45bd-4a2c-897b-2772391339f8","slug":"elijo-esperar-hoy","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"eb365d21be986e7fb47850192023971361063c235185fc324f44cc32a13c2070.webp","slot":"s8-preferir.payload.a.image_url","new":"a28add4411bf6ccf29268d060db902b5df08eef72e1529c0f55eba79f0c46eaa.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0246.json
+
+```
+{"order":246,"lesson_id":"5c7f74d1-bc46-48c2-9806-314d5d6a05c6","slug":"el-frasco-de-los-suenos-repaso","status":"completed","generated_images":3,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp","slot":"s7-historia-rho.image_url","new":"ae83282e8571eb8c9375468eec12b912fb5bf65ae141a074a3842a41e3b9d6ec.webp"},{"old":"eb365d21be986e7fb47850192023971361063c235185fc324f44cc32a13c2070.webp","slot":"s6-frasco-ahorrar-gastar.payload.items[0].image_url","new":"ba0eb38fe5865a9977ae2ff5f443d59deafee7dbd08045926c76bd54b7d6569a.webp"},{"old":"2343eb36ad2fd899f26cc454c4a89115b1eeb4c4bcba6e715c78cea90682ac8b.webp","slot":"s6-frasco-ahorrar-gastar.payload.items[4].image_url","new":"c7e9a25959638269d93ac3fc265f083529af75aed402fb24a896efe0dd105d04.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0247.json
+
+```
+{"order":247,"lesson_id":"6398ec0a-2bb4-4e8d-ab81-3b694ad57653","slug":"recuerdo-por-que-guardo","status":"completed","generated_images":2,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"d9a35b25a143fc758ac8f5c3056ab578a2c826a0e37e440bbe598212ea53f0bf.webp","slot":"s7-objeto-no-funciona.payload.items[0].image_url","new":"12a210aca333bdafb9ff1e92fbbde97a554f5f00b0ccd3a933034fd9870782ae.webp"},{"old":"7dd5a400a04026c709135a3afc8b1e733a6ae3fd9f1312a5054524b1a6064055.webp","slot":"s7-objeto-no-funciona.payload.items[1].image_url","new":"535b09307f29021509204e62b3b000ecb1aa7c29307967a3551c5974335e0fdd.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0248.json
+
+```
+{"order":248,"lesson_id":"d5436200-b1e3-4a40-9e2e-6599d6242c37","slug":"recuerdo-mi-meta-del-valle","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"8509debd8cf1c1326766d33e5c6c1c77fa111bb013d86194c9c46d4ecbce6c10.webp","slot":"s3-elegir-frasco.payload.options[1].image_url","new":"24aa2161b33e7111585227944501267317fa4ffbaaa3a765b98c4ea8c7e8e90e.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0249.json
+
+```
+{"order":249,"lesson_id":"bf3bd5eb-2a87-48ff-8cc6-3de22adb60c1","slug":"elijo-el-mejor-momento-para-esperar","status":"completed","generated_images":6,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"032c8cf0f0bfbd840ed7e0439562f9aec271cf8c918fd0df3e5aae7ab00fa50d.webp","slot":"s4-mejor-decision.image_url","new":"186f75fda2d62e2e4a34d6e5208f85faeb3524556d47c30dcfd5d3187abee52c.webp"},{"old":"711758d28b16f8841a00111447ac5b9cae0d6dcacb4b61782d20b23daaaf9340.webp","slot":"s5-emparejar.payload.left[0].image_url","new":"83cd7bb8d8eb199f513659f5a0c3be6c726a0c9552f1765c2126be930ea90031.webp"},{"old":"8e777a30e265370df3fb96296dff7ea837e483354902cf3c4e3507ba068f0bc7.webp","slot":"s5-emparejar.payload.left[1].image_url","new":"ff6eb5484555213ed0cf2ef1e35ba7f33087a3e40389612343f8bc6a59ad8828.webp"},{"old":"ce33db5437a17a54fcca5d7b0d06b48ca470d82ec4865a45fca2961fcc9ef81c.webp","slot":"s5-emparejar.payload.left[2].image_url","new":"d3b49221874c2c8f6c9e19ddab830e5e1356764175492aea5ee351a83681098a.webp"},{"old":"8f4acecba22c3868338d5c9621452e0555ff500941fccf5ba37f8d5bb4ee1ea4.webp","slot":"s5-emparejar.payload.left[3].image_url","new":"c1981392a95d506f6e1c921201c77ab0655851f269b8e2aa38550cb3015f87d0.webp"},{"old":"415ae59ece42be1a82826d4cfabf091b0161c06fd791255768faf1c188d2a821.webp","slot":"s8-historia-zara.image_url","new":"aad5821b92ed052ed66d12a952a4f40cfe012ec61d6c4321bd9a54fec901c279.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0250.json
+
+```
+{"order":250,"lesson_id":"e4d820de-407a-43e5-afec-4abac55f359e","slug":"cierro-el-cofre-del-frasco","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0251.json
+
+```
+{"order":251,"lesson_id":"abded6f0-b155-45dd-8e0a-4ee367b95be4","slug":"de-ganar-a-guardar","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0252.json
+
+```
+{"order":252,"lesson_id":"17728cef-cc0c-48e6-905e-682da027b039","slug":"cuanto-necesito-para-mi-sueno","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0253.json
+
+```
+{"order":253,"lesson_id":"fb2b888a-7e50-4477-aca5-36ce2e4f45c3","slug":"cada-moneda-ganada-tambien-cuenta","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0254.json
+
+```
+{"order":254,"lesson_id":"d9088d57-668c-4fc7-b1f7-f06292c10e7a","slug":"guardo-lo-que-gane-con-esfuerzo","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0255.json
+
+```
+{"order":255,"lesson_id":"2b884988-65df-4d32-9791-2f2286b22a3b","slug":"comparo-dos-recompensas","status":"completed","generated_images":2,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"84aef9d9e878ffee5b39f6f175278ef8dac3db2447f82a3d7defe4850c416fe4.webp","slot":"s3-cual-es-mas-grande.payload.options[0].image_url","new":"8b7e48e5eee3afdea6b7054764a08c81b28f7346f1a539cf8496f6440307ae9d.webp"},{"old":"9a131ba5f31b435dad359d5539a38a4f0881862dac496d7c3cb523b31dd54ecc.webp","slot":"s3-cual-es-mas-grande.payload.options[1].image_url","new":"56e3d5453562e3350d75bff828b366e98c31a7ea1b3f137d767ad4b321349fa1.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0256.json
+
+```
+{"order":256,"lesson_id":"24576506-d6a2-4678-a960-d3e63e632938","slug":"cuanto-vale-esperar","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"f7b290ad2772bf2c5c8028cf49cfefd5c714a5b121f86c10f7c3d549fd0c96df.webp","slot":"s6-decision.image_url","new":"db4de91a1123ee07b6aa77ab46a6bc181624367fe42b399e787ca3eaa5af554c.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0257.json
+
+```
+{"order":257,"lesson_id":"d8d00f7f-1e06-47d2-82e1-ce953b75e13d","slug":"elijo-mi-camino","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0258.json
+
+```
+{"order":258,"lesson_id":"c4104ac2-b2e5-49eb-9a42-f40804655ac2","slug":"cuantos-dias-faltan","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0259.json
+
+```
+{"order":259,"lesson_id":"252c8245-ba6e-42ca-b5c5-878d0de51be4","slug":"tacho-los-dias","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0260.json
+
+```
+{"order":260,"lesson_id":"f8b976eb-9b4a-4b65-8b2b-2d61ff19a09d","slug":"cuento-hacia-atras","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0261.json
+
+```
+{"order":261,"lesson_id":"5075253c-6647-4e64-af37-26f886440358","slug":"ya-casi-llega-el-dia","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0262.json
+
+```
+{"order":262,"lesson_id":"46d70499-86b9-414d-8b53-799ee9a913f5","slug":"guardo-lo-mismo-cada-semana","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0263.json
+
+```
+{"order":263,"lesson_id":"663f5302-302b-4507-9cf0-18d22929ecf6","slug":"elijo-mi-plan-semanal","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0264.json
+
+```
+{"order":264,"lesson_id":"4e0dbfa9-983c-44dc-8ba2-c6bdf136692d","slug":"dos-semanas-de-ahorro","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0265.json
+
+```
+{"order":265,"lesson_id":"66376f5a-6079-4618-8f22-fb43cd9c5703","slug":"mi-plan-esta-funcionando","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0266.json
+
+```
+{"order":266,"lesson_id":"61df5946-1f23-4ef9-b766-f68f87c2398d","slug":"mi-meta-y-mi-ahorro-semanal","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"24c460d9289b9e586999341241c22b79ec3d6f7fce9a147b15e58b92bf4aa16d.webp","slot":"s1-dina-recuerda.image_url","new":"4dbb87cc4af133643b6f7e454503267d92a4dffb9f03e2e3649ce4a7990faa8d.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0267.json
+
+```
+{"order":267,"lesson_id":"9d0e0ed0-13da-4ac2-96e4-2683dd6a5a74","slug":"si-guardo-mas-semanas-son-menos","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0268.json
+
+```
+{"order":268,"lesson_id":"5f20c6a9-2f39-4e57-b013-956bdbc28e44","slug":"llegue-a-la-mitad","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0269.json
+
+```
+{"order":269,"lesson_id":"5271fa02-b881-429d-b03d-1aa749edb1f1","slug":"comparto-mi-progreso","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0270.json
+
+```
+{"order":270,"lesson_id":"3a158117-037c-4c02-a5f4-6c033947e7cf","slug":"celebro-y-sigo-adelante","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"ee047817fc2a7beaad1d407d79003eb489bf95ec07c73cd8035327898b5fdc7a.webp","slot":"s1-story.image_url","new":"4aed5ccf4997e794c0d77233d2de91b6bfd524b3b617e5840ea03b2f68dfdd20.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0271.json
+
+```
+{"order":271,"lesson_id":"bf601c4b-721f-4cf9-ae5c-3d628c741455","slug":"ya-no-quiero-lo-mismo","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"079d781592667367c64ab4031dbac2f7a608d47f1685c8b5812480bbda61d3e3.webp","slot":"s2-dialogue.image_url","new":"fe068d9a749b9375c1544470fef88db0be9f4bc2b6eaa3931b45d765a7709f5e.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0272.json
+
+```
+{"order":272,"lesson_id":"ead253ed-de58-4a0b-be2f-dfcdab712b2b","slug":"puedo-empezar-de-nuevo","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0273.json
+
+```
+{"order":273,"lesson_id":"3b7f4688-7a56-4044-94d0-7ed682678e1c","slug":"elijo-mi-nueva-meta","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0274.json
+
+```
+{"order":274,"lesson_id":"4ac07829-db4d-4704-9935-9eb2793eba9b","slug":"paciencia-de-tortuga-repaso","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0275.json
+
+```
+{"order":275,"lesson_id":"a28a76fa-7fb5-4e6b-9f0e-798571170146","slug":"recuerdo-la-tortuga-sabia","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0276.json
+
+```
+{"order":276,"lesson_id":"bbeeee38-38f4-4492-9bba-c59c4b3f50c9","slug":"recuerdo-mi-plan-semanal","status":"completed","generated_images":4,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"84aef9d9e878ffee5b39f6f175278ef8dac3db2447f82a3d7defe4850c416fe4.webp","slot":"s8-sort-buckets.payload.items[0].image_url","new":"112b55816a8aeed0468989767f295b0c50a3752cb931de480654bb0a03b0afa4.webp"},{"old":"82104e8264f7f35f31c764ffb1f384f8493f30f81f633343df9d90b23a623493.webp","slot":"s8-sort-buckets.payload.items[1].image_url","new":"f0ad7200dd54ebf4467c6edefdc11b40ee15f76b5ef0dd5750cb6aea26de0665.webp"},{"old":"72b6547ddc7c97a358e39a407d72c82b738b2893a3823aab0b136cc6a8b9d8ff.webp","slot":"s8-sort-buckets.payload.items[2].image_url","new":"c861281243853c08c8ecb5248a5ed25d1df6640396d207f10499ec9e7b8f555f.webp"},{"old":"77e9797fac9195fae03b8a343fad548450fb0a9ef8e27252cbd52d78954500ee.webp","slot":"s8-sort-buckets.payload.items[3].image_url","new":"4a81a4fb032b4e1c23fcf45c1418e32f9c6d25b3deed1488591e801b9f6e0dff.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0277.json
+
+```
+{"order":277,"lesson_id":"61a9abab-c44b-4d8e-ae27-a2d6764cf1c1","slug":"calculo-semanas-recordadas","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"9ad5080ccc269382cff5a63d7b06c96cb16088853bb2e107d5d1f0ef8c89a53a.webp","slot":"s4-deseos-dina.payload.items[0].image_url","new":"c17ffd7ca54588e0eacc4fa70a2a7e601b43d5c1b093aeb100a3649451e9b5f4.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0278.json
+
+```
+{"order":278,"lesson_id":"8a955f87-21a3-468a-ac27-e7686860350f","slug":"cierro-el-cofre-de-la-paciencia","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0279.json
+
+```
+{"order":279,"lesson_id":"e212c3d9-cd01-42f7-b559-0662e456aebc","slug":"espero-en-vez-de-gastar-ya","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"3ffe04bc92067d4570d0c2a508cd66e2a8869a2e0bad5513bcb4c301a116f6af.webp","slot":"s6-chambitas.payload.items[2].image_url","new":"cc30fb1f4439a6ec39fedf53b56a2a4f7061bdf8bf720b7fff313dad34e5466d.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0280.json
+
+```
+{"order":280,"lesson_id":"9a09d0b9-b28e-46c7-806c-48e44430395b","slug":"mi-plan-es-como-una-chambita-semanal","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0281.json
+
+```
+{"order":281,"lesson_id":"9e6529b3-5fe2-4a97-8e18-c4b0a44273a3","slug":"cuento-semanas-y-recompensas","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0282.json
+
+```
+{"order":282,"lesson_id":"ed5713df-794e-4507-959d-f6b1213d36c8","slug":"mi-paciencia-vale-una-moneda-mas","status":"no_shared_images","generated_images":0,"production_locales_written":[],"replacements":[],"note":"No shared image URLs in work-order.json; no replacement required."}
+```
+
+### agent/handoff/checkpoints/order-0283.json
+
+```
+{"order":283,"lesson_id":"bdb71412-2c2f-4cf0-8876-ef8532ef7889","slug":"el-frasco-o-el-suelo","status":"completed","generated_images":3,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"531bdec2c3260c34841810f9bd1cfcf2735f06e641912912a893fd4f255bc563.webp","slot":"s1-retrieval-dialogue.image_url","new":"0273f9978ac305f22cc1ad58947444725565b7f8eb62eace785a4c7b9deb19cb.webp"},{"old":"af47e49c98aa93700d6e5b766d139c8d3bed144a8ae9300b729c379ef1055964.webp","slot":"s7-match-pairs.payload.left[0].image_url","new":"2b44a32f2407b479c19a2f80bbf14adc2df32b14d6e5872f6a7afed9436e0630.webp"},{"old":"790ee6ba9f8d251c0e5bdde6d72966b305eed4a55f49996dd2f236d5f6180290.webp","slot":"s7-match-pairs.payload.left[3].image_url","new":"5afbdcc6a3a5e96e94fb235aa70bf3cbc2538d3403063488330a47335118dec8.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0284.json
+
+```
+{"order":284,"lesson_id":"da5a5713-6b02-458d-a033-601e6cf6bc93","slug":"elijo-el-mejor-lugar","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"6a22d92b85a45f3fec6a2305686c9395bc4394bcf885edcb463d3bff8ce08b8d.webp","slot":"s4-uno-diferente.payload.items[0].image_url","new":"e225742a5dfc81413dd1d0cf48cb09059577d56dda7ea103ec17f41745bc4d72.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0285.json
+
+```
+{"order":285,"lesson_id":"fd4c8dc6-e9cd-4362-be31-8f38381f755e","slug":"cierro-bien-mi-frasco","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"b4686c8d19a3c45bde9bf2de384ff2e8b6aa93a3b21484628b6efade9a8b066e.webp","slot":"s2-picture-choice.payload.options[2].image_url","new":"7f8b88b3254235a4f622325ccb2f97f6b10b410b853d556587109be9150f8f1a.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0286.json
+
+```
+{"order":286,"lesson_id":"1345b5d1-d523-4f3b-9046-ef520a6e7f3f","slug":"que-pasa-si-no-lo-cuido","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"8993598cbdbd3a8cfed819ef60339cbb401ef6fbab13edf484795fec4167471b.webp","slot":"s6-clasifica-gestos.payload.items[1].image_url","new":"294b7e228386dee97dd0f138b8f4e8ac6558102d73ffd315555e4401c10f6696.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0287.json
+
+```
+{"order":287,"lesson_id":"3b72257b-0828-4297-9201-49bfacb85cfe","slug":"le-cuento-a-mi-familia","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0288.json
+
+```
+{"order":288,"lesson_id":"1b2c81e9-c509-4663-99f4-9c6f6a5a2fda","slug":"mi-familia-me-anima","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0289.json
+
+```
+{"order":289,"lesson_id":"ebcb460c-9854-49c7-8c6b-7bbc1c20c059","slug":"como-me-siento-si-pierdo-algo","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0290.json
+
+```
+{"order":290,"lesson_id":"19d56c18-9f83-4ad2-83d2-c1be2fabd0b2","slug":"cuido-mejor-la-proxima-vez","status":"completed","generated_images":2,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"7dba81a6995ce87edc3a67f90b3767c3affe95cb436616230a4d8c903db63242.webp","slot":"s4-picture.payload.options[0].image_url","new":"13187bae5db9861321220fbb662fa69d5b1f29dbb5f06b534786654ea9c5c4b6.webp"},{"old":"ce33db5437a17a54fcca5d7b0d06b48ca470d82ec4865a45fca2961fcc9ef81c.webp","slot":"s4-picture.payload.options[2].image_url","new":"7d7e7067d99cf2207a40a3c9f091ae30fcc9a8982cdce826ac0cd0d32bebb1b6.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0291.json
+
+```
+{"order":291,"lesson_id":"d6d340fd-481f-4637-a6fc-f94b033798ba","slug":"busco-con-un-adulto","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"288fa984306447e08040da289ab98565ea3c5712fbbf2e475da79d5a052ed9f4.webp","slot":"s5-elige-lugar-seguro.payload.options[2].image_url","new":"ed823c16f472b2e0f0190a0376257d0ff83374b299469432b832c1301105fd59.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0292.json
+
+```
+{"order":292,"lesson_id":"62bf6f8e-9c42-4666-855c-b322c8318f49","slug":"comparo-lugares-de-mi-casa","status":"completed","generated_images":3,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"d42aebb59105bc6a140ccb05da99a901250fd18f76c20c9b5e745aaa18b0e4ff.webp","slot":"s7-pic.payload.options[2].image_url","new":"80c4d6359b14d52ddfb07730e48736e9b0d9ec0c97e04a7be6b4e8071b2f6542.webp"},{"old":"6a22d92b85a45f3fec6a2305686c9395bc4394bcf885edcb463d3bff8ce08b8d.webp","slot":"s7-pic.payload.options[0].image_url","new":"e47fd74ea92920fd140693eadac42f90614983793cf9d533ca8180382786003b.webp"},{"old":"bb77afc4d041bdfd4d1b402face8f93250674eba9bb46a7844fc903abd572e72.webp","slot":"s7-pic.payload.options[3].image_url","new":"5d4cb5314f9b02530c7b3f9a5681230b51feced733847b512f54c0ed52d5e9c5.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0293.json
+
+```
+{"order":293,"lesson_id":"d2ab59a0-a287-4090-b084-6ab2a1b4b007","slug":"mi-lugar-secreto-y-seguro","status":"completed","generated_images":3,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"1bd6daa8845553e70f11df06f26e4fd59e8bb50a9129b7057bb7133e8bbab55d.webp","slot":"s3-clasifica-lugares.payload.items[2].image_url","new":"a1e419e562e2a13fae0126feefdf710678ba54ab79928e667b936b2d2b78534b.webp"},{"old":"59cd392a89f4dd07995dd163c1546b0198a1c8feaffc9c96485fce4b5f147ef0.webp","slot":"s3-clasifica-lugares.payload.items[0].image_url","new":"e380db49031567d42ff45e07b80fa7d1cae5b49230eea932939fbe2cfe9acecb.webp"},{"old":"288fa984306447e08040da289ab98565ea3c5712fbbf2e475da79d5a052ed9f4.webp","slot":"s3-clasifica-lugares.payload.items[3].image_url","new":"39e06ed906182e98073832740f85c4ab96bcebe24f174a8b96a4ad302ba9afdb.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0294.json
+
+```
+{"order":294,"lesson_id":"e551ef2c-8029-4235-afc2-5edbd8ae23ae","slug":"mi-dia-de-revision","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0295.json
+
+```
+{"order":295,"lesson_id":"22a8a2af-7fda-4ce8-8037-e3c4f7b7bbec","slug":"cuento-mi-frasco-cada-semana","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0296.json
+
+```
+{"order":296,"lesson_id":"50097edd-d792-4b33-814a-b2828aac8cc7","slug":"lugares-seguros-repaso","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0297.json
+
+```
+{"order":297,"lesson_id":"bf70349b-6bc9-4380-94d4-f45226f9fcd2","slug":"recuerdo-donde-guardo-mis-monedas","status":"completed","generated_images":3,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"f13e9e8d93a3b7f851ddd2d158af12b4f6ecb3a0299fef74de9670075453e55c.webp","slot":"s3-clasificar-lugares.payload.items[4].image_url","new":"8986a352bf21f3f5c25e5176e0223adaeb6bd79298e1e270606d156e3602ef28.webp"},{"old":"4f4d7576eaade9b4ce09f5a9684614b0f0a4463c48118e017d3b765024b0bdb7.webp","slot":"s3-clasificar-lugares.payload.items[2].image_url","new":"acaccc678e72b22ac979822d74506d12592220c00c6d3aebb59c03dada37604d.webp"},{"old":"790ee6ba9f8d251c0e5bdde6d72966b305eed4a55f49996dd2f236d5f6180290.webp","slot":"s3-clasificar-lugares.payload.items[0].image_url","new":"e33f69daf20043295027487078d71eed736a519a540ea05d886264e527b2685c.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0298.json
+
+```
+{"order":298,"lesson_id":"bb1f7def-cfad-4704-a066-8a3fe3f6614c","slug":"elijo-la-mejor-reaccion-si-pierdo-una-moneda","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0299.json
+
+```
+{"order":299,"lesson_id":"ba7aab71-ea5d-4ab6-9029-753f5d401474","slug":"cierro-el-cofre-de-lugares-seguros","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0300.json
+
+```
+{"order":300,"lesson_id":"ea76f939-0378-4caf-9bce-b9498a980efd","slug":"elijo-y-cuido-mi-frasco","status":"completed","generated_images":2,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"d42aebb59105bc6a140ccb05da99a901250fd18f76c20c9b5e745aaa18b0e4ff.webp","slot":"s6-sort-buckets.payload.items[1].image_url","new":"e2b053e76bb466039a23263c1bca99bdded1f9885cd2f0514d57c9dd24ea3929.webp"},{"old":"bb77afc4d041bdfd4d1b402face8f93250674eba9bb46a7844fc903abd572e72.webp","slot":"s6-sort-buckets.payload.items[2].image_url","new":"34582923dcd27d71e50c3115acba44944ea8e696d37052dd24003e9afbbcd68f.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0301.json
+
+```
+{"order":301,"lesson_id":"497ffbbe-aeb1-4dc8-a9d2-dd3acd2ebab7","slug":"celebro-y-guardo-a-la-vez","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0302.json
+
+```
+{"order":302,"lesson_id":"093b8665-3f9f-4b90-8341-21ebc439f841","slug":"mi-frasco-seguro-y-feliz","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0303.json
+
+```
+{"order":303,"lesson_id":"4f75a2d7-6ef5-4abe-a2b8-a417ef19c670","slug":"para-que-sirve-cada-frasco","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0304.json
+
+```
+{"order":304,"lesson_id":"5cd4f334-bca2-47ff-b70a-8c8c8820500a","slug":"reparto-mis-primeras-monedas","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0305.json
+
+```
+{"order":305,"lesson_id":"db352472-379f-4340-9f01-74464a96958c","slug":"guardo-mas-esta-semana","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"c8eb2212162fb7a95cd99b94b293c224b384df6e2c4cc6969d8fc91252c66af2.webp","slot":"s2-dial.image_url","new":"ebf659dd897eee018e0e74a5bbdeba89fe2f607b9740f594a2ab108cc551dc2e.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0306.json
+
+```
+{"order":306,"lesson_id":"9997c95e-5849-4fd9-9d18-564fe59e29e9","slug":"gasto-un-poco-hoy","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0307.json
+
+```
+{"order":307,"lesson_id":"b6df7c37-d3ec-42b9-9379-9d58947ba8d8","slug":"divido-mis-monedas-a-mi-manera","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0308.json
+
+```
+{"order":308,"lesson_id":"e846a201-449f-4d1a-b901-b77f7b681465","slug":"cumplo-un-paso-a-la-vez","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0309.json
+
+```
+{"order":309,"lesson_id":"a5cf7d71-2ce7-4cde-bbc0-00fdc0e040fc","slug":"sumo-todos-mis-pasos","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"d80a1e684164edfbaca74a6510ca9141b9273af4bc918c1c1a6245f8720064c5.webp","slot":"s1-dialogo-pasos.image_url","new":"ecd10a79e31d39f7da467bca796439d7ee4639af7bf029893eebef38c19ee9f2.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0310.json
+
+```
+{"order":310,"lesson_id":"0626b93f-ee57-4140-bf4a-f277363d009f","slug":"una-meta-de-toda-la-familia","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0311.json
+
+```
+{"order":311,"lesson_id":"472a43cb-77b6-4f64-b387-6e9778520533","slug":"sumamos-en-familia","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0312.json
+
+```
+{"order":312,"lesson_id":"8412ed0e-ab76-4a48-a52a-c9cb34ca92fc","slug":"celebramos-la-meta-familiar","status":"completed","generated_images":2,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp","slot":"s6-conversacion.image_url","new":"9bb3de97aac81bc13bc789c1a5bf10a4a08e08f06757b98164781330bf951f53.webp"},{"old":"daa76fad94b930e698184d68fb358618600fafe2240cbe719aea5a2e2fa79d1e.webp","slot":"s1-recordando.image_url","new":"dcdf94704ff2c51bf0f729b8c602a20f3d3afe7610c019575e18627dae206d73.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0313.json
+
+```
+{"order":313,"lesson_id":"5716c0db-ad76-4deb-83d4-7b33694a5403","slug":"dos-metas-al-mismo-tiempo","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"079d781592667367c64ab4031dbac2f7a608d47f1685c8b5812480bbda61d3e3.webp","slot":"s2-story.image_url","new":"9c70c89a8cde4987132d151da237def31a656be9bd5c148a4c3857c953360ff3.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0314.json
+
+```
+{"order":314,"lesson_id":"ad324e49-8dc0-4603-ad1d-11e4b7c51968","slug":"cual-me-importa-mas","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0315.json
+
+```
+{"order":315,"lesson_id":"84cfa544-3d50-47f0-b00a-7dcecaa04536","slug":"cual-cuesta-menos-esperar","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0316.json
+
+```
+{"order":316,"lesson_id":"fdf2a75c-a5df-4bc8-bd4b-99abb29db163","slug":"elijo-mi-meta-prioritaria","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0317.json
+
+```
+{"order":317,"lesson_id":"68e1d1ac-84ce-4728-b38f-723bb24c7b01","slug":"recuerdo-mi-primer-frasco","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"711758d28b16f8841a00111447ac5b9cae0d6dcacb4b61782d20b23daaaf9340.webp","slot":"s4-match-concepts.payload.left[0].image_url","new":"8eb5815b5956a9bec63dd04b9a962e6d813efcff6e3ec881639be23328fe24e1.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0318.json
+
+```
+{"order":318,"lesson_id":"b34edb72-0c08-473b-959d-dae891815a98","slug":"divido-mi-ultimo-cofre","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0319.json
+
+```
+{"order":319,"lesson_id":"210b482e-b1c7-40ff-8a12-78dcd12ab775","slug":"recuerdo-una-meta-familiar","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0320.json
+
+```
+{"order":320,"lesson_id":"4733bd7c-bdd7-448d-8db1-7ac3308bc870","slug":"divido-monedas-recordadas","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0321.json
+
+```
+{"order":321,"lesson_id":"03f3ff70-ad8b-4574-9a84-913fa5f78854","slug":"mi-sueno-y-mis-pasos-pequenos","status":"completed","generated_images":4,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"8e777a30e265370df3fb96296dff7ea837e483354902cf3c4e3507ba068f0bc7.webp","slot":"s10-emparejar.payload.left[0].image_url","new":"a98b9c15d415ef1d58c7544404aa953f0254193951e3e027c770663e7a476c69.webp"},{"old":"c8eb2212162fb7a95cd99b94b293c224b384df6e2c4cc6969d8fc91252c66af2.webp","slot":"s1-dialogo.image_url","new":"90e3a6cdeb98397121b244c204340cd1dfe9cfa12011250d227072c05ad5c317.webp"},{"old":"71fa0ae6af3c7359e6458549e9dd6c1fe05b8744c016296b8c8b3788686f4d18.webp","slot":"s10-emparejar.payload.left[2].image_url","new":"32bc36860197660e3c4f5687926ed48a02614ebe9e3f91d10dfd2b6cb80a446e.webp"},{"old":"e6a0d4ec4191bfc2a16f525d01859dcbc383ef833585a805713bd7a2d9791d5a.webp","slot":"s9-pasos.payload.items[1].image_url","new":"2664d6fded3dfd95395c901b095b9f49c2ad1bd7eefedb8087658f73149c09a4.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0322.json
+
+```
+{"order":322,"lesson_id":"267f2029-bd73-4ed3-afe3-b17808fb4a32","slug":"calculo-semanas-para-una-meta-grande","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0323.json
+
+```
+{"order":323,"lesson_id":"9e8da5bb-71d1-43cc-aaa2-be9d78c57027","slug":"mis-ganancias-del-bosque-ayudan-a-mi-meta","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0324.json
+
+```
+{"order":324,"lesson_id":"f5779776-db82-4118-992c-4148f6a52839","slug":"armo-mi-meta-grande-con-todo-lo-aprendido","status":"completed","generated_images":2,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"9044ce8a73770c4115e0ee0b196b55f7c5307043e43bef281e456410ebc6eaad.webp","slot":"piggy-split-dina-10.payload.jars[1].image_url","new":"5fe9fe313e1d46480c21bf44b3e9d6493d9df440344141ee12c1cb80ba547ca8.webp"},{"old":"910c821dc024bf5f56a416ddddf2de70b447a5082462fad5dbcc6642ab00c881.webp","slot":"best-decision-caramelo.image_url","new":"ee555c793b301b117b59e7b70b07aab04d26f6827e3f203a7835a19ebf3a529b.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0325.json
+
+```
+{"order":325,"lesson_id":"99ee0210-c4a4-4d2f-a9cb-060961c8104b","slug":"la-aldea-anuncia-su-sueno","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"67b06ad47c4aa0824957b3ff06d00479065f747c69b6a8dbb0c9fcdfe89112ab.webp","slot":"s4-rho-cuenta-monedas.payload.scene[0].image_url","new":"6002ad5571a4c4c4d98ec7b61daa9dbc0da12049f1fb75dc38b1cd977151db30.webp"},{"old":"67b06ad47c4aa0824957b3ff06d00479065f747c69b6a8dbb0c9fcdfe89112ab.webp","slot":"s4-rho-cuenta-monedas.payload.scene[1].image_url","new":"6002ad5571a4c4c4d98ec7b61daa9dbc0da12049f1fb75dc38b1cd977151db30.webp"},{"old":"67b06ad47c4aa0824957b3ff06d00479065f747c69b6a8dbb0c9fcdfe89112ab.webp","slot":"s4-rho-cuenta-monedas.payload.scene[2].image_url","new":"6002ad5571a4c4c4d98ec7b61daa9dbc0da12049f1fb75dc38b1cd977151db30.webp"},{"old":"67b06ad47c4aa0824957b3ff06d00479065f747c69b6a8dbb0c9fcdfe89112ab.webp","slot":"s4-rho-cuenta-monedas.payload.ask_image_url","new":"6002ad5571a4c4c4d98ec7b61daa9dbc0da12049f1fb75dc38b1cd977151db30.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0326.json
+
+```
+{"order":326,"lesson_id":"b4b41c0a-df9e-41e6-8c27-d87ab19ddb6c","slug":"recordamos-nuestros-propios-suenos","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0327.json
+
+```
+{"order":327,"lesson_id":"1a63f02f-28e4-4cf6-8738-467bcfd44a37","slug":"elegimos-apoyar-el-sueno-de-todos","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0328.json
+
+```
+{"order":328,"lesson_id":"1ad08611-394d-45b3-aded-d89fad8e59ab","slug":"unimos-nuestros-suenos","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0329.json
+
+```
+{"order":329,"lesson_id":"7d45bd19-4f8d-42f7-8ea4-e72cf34c69f5","slug":"espero-igual-que-la-tortuga","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0330.json
+
+```
+{"order":330,"lesson_id":"4248244a-6b94-4c4e-b741-c76475417d3b","slug":"cada-semana-nos-acercamos-mas","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"2343eb36ad2fd899f26cc454c4a89115b1eeb4c4bcba6e715c78cea90682ac8b.webp","slot":"s9-ordena-pasos.payload.items[1].image_url","new":"4f6279477855f5b9b69bdcd6e8b366c48be61f3e888ae15e454e35ccd829b178.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0331.json
+
+```
+{"order":331,"lesson_id":"9767ab5e-1498-434a-85b1-7be37dcce881","slug":"calculamos-las-semanas-que-faltan-juntos","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0332.json
+
+```
+{"order":332,"lesson_id":"ead26957-bac5-4b62-97f8-c3029027cf46","slug":"elegimos-el-lugar-seguro-de-la-aldea","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"8993598cbdbd3a8cfed819ef60339cbb401ef6fbab13edf484795fec4167471b.webp","slot":"s5-needs-wants-cosas-del-frasco.payload.items[0].image_url","new":"a39b006f6c819365d9f0f8566d5c95156fe7f6e216e6348bcd05daa823adbcc4.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0333.json
+
+```
+{"order":333,"lesson_id":"4ec98472-5e0b-44eb-9139-1d71019c658e","slug":"si-se-pierde-una-moneda-de-todos","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"80882b3c896c752a0a68b81ca234146b980994d374fb287b226b29034c8a0937.webp","slot":"s4-eavesdrop.image_url","new":"7928a9e0e50a3a0cf9802b791ff2934cc3c0110d6c6e7a873613a4bfb7d0d73b.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0334.json
+
+```
+{"order":334,"lesson_id":"c2cda511-f4a9-43d6-aa11-6fece191dac9","slug":"dos-frascos-para-la-aldea","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0335.json
+
+```
+{"order":335,"lesson_id":"abb9c60f-8afe-4abf-aa92-781d47d28393","slug":"divido-mis-monedas-para-el-proyecto","status":"completed","generated_images":2,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"77e9797fac9195fae03b8a343fad548450fb0a9ef8e27252cbd52d78954500ee.webp","slot":"s4-reparto.payload.jars[1].image_url","new":"ca88d4c08823743eb9338fd2024b2ff74f818526cb97e8ebed44af1fbaa3c844.webp"},{"old":"c5366e1792e02ef6dc9b063f1d143a9288ea16b74b6b79f12a8c13da4e678d63.webp","slot":"s4-reparto.payload.jars[0].image_url","new":"129110818180606e999c23c34739ba904352e163b51345bb238b3d7cef976098.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0336.json
+
+```
+{"order":336,"lesson_id":"20f6ef60-3c55-4478-a2ea-dbcf5cb6603f","slug":"la-aldea-suma-todas-las-aportaciones","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0337.json
+
+```
+{"order":337,"lesson_id":"bcd57a21-7c67-4030-92b5-66fa07db43aa","slug":"un-paso-a-la-vez-para-la-aldea","status":"no_shared_images","generated_images":0,"production_locales_written":[],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"replacements":[],"note":"No shared image slots in work-order."}
+```
+
+### agent/handoff/checkpoints/order-0338.json
+
+```
+{"order":338,"lesson_id":"1c800390-d1cd-401a-b1ff-c0e8ce957454","slug":"sumamos-pasos-de-toda-la-aldea","status":"completed","generated_images":1,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"20c7392ece7d93699d0cb12029187f5da7a9e16172d3ecdea6ccd2e016608e01.webp","slot":"s4-piggy-split.payload.jars[1].image_url","new":"323076975425438267bdbad843beadc05121d3c1b08aa7951028ee600c091c4c.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0339.json
+
+```
+{"order":339,"lesson_id":"6ef0e44a-56e6-4696-a552-2fbd09a0d02e","slug":"terminamos-el-proyecto-de-la-aldea","status":"completed","generated_images":2,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"032c8cf0f0bfbd840ed7e0439562f9aec271cf8c918fd0df3e5aae7ab00fa50d.webp","slot":"s7-decision-zara.image_url","new":"49572f201d0ba11fc0f6ce5f7023dda0b26164a4c78bf3c6cc40b5ec193ee559.webp"},{"old":"c3d5d078cc0d61f4d0226f24c8931686180470278c2ad5f50b5fed2432677618.webp","slot":"s9-ordenar-pasos.payload.items[2].image_url","new":"0aa1f8b794ede09c810bfed8293520a4f3ddcd0ebefff8da601e03c01839121b.webp"}]}
+```
+
+### agent/handoff/checkpoints/order-0340.json
+
+```
+{"order":340,"lesson_id":"8497f547-8b1c-42c2-88c2-53c79e749928","slug":"recordamos-el-archipielago-y-el-bosque","status":"completed","generated_images":2,"production_locales_written":["es-MX","en-US","pt-BR"],"gate":{"pass":1,"failApply":0,"failGate":0,"escalated":0},"format":"image/webp","dimensions":"1328x1328","replacements":[{"old":"bd48f0914097bdb4fc0167c0d4b234100db9bcf61d47b85cc20615bca2df60fe.webp","slot":"s2-match-pairs.payload.left[0].image_url","new":"67583d9967abfb40e6c361459d18d9908cd89f11beb6e79a3d432f15e1f4242c.webp"},{"old":"95fcbdb4ddac6388e28dead87d3a0e2292246111530993f4c5fdc159d4c3a0ea.webp","slot":"s9-order-steps.payload.items[4].image_url","new":"84a99fbb9ee87bdde0159a428767ec8c8a04b04db1900c661d7494d23346368a.webp"}]}
+```
+
+### agent/handoff/codex-image-session.md
+
+```
+# Codex session brief — lesson image assets
+
+**Written 2026-08-16, after the catalogue repair.** Every number here was measured
+against the 988 lessons that are live in production right now, not against the
+pre-repair catalogue. The raw data is `image-inventory.json` beside this file.
+
+---
+
+## 1. What you are walking into
+
+The catalogue was just audited and repaired at zero provider cost: 1,208 lessons
+became **988 published, 220 archived**, and 444 documents were rewritten. Content
+defects — wrong answer keys, internal contradictions, arithmetic errors, icons that
+gave the answer away, and **720 dead image URLs** pointing at `placehold.co`,
+`example.com` and a hallucinated `assets.rho.ai` — are fixed and verified live.
+```
+
+### agent/handoff/image-inventory.json
+
+```
+{
+  "live_lessons": 988,
+  "total_image_slots": 5172,
+  "distinct_images": 4121,
+  "images_serving_more_than_one_lesson": 332,
+  "lessons_touched_by_a_shared_image": 470,
+  "redundant_slot_uses": 1051,
+  "lessons_with_zero_art": 37,
+  "image_critical_segments_with_no_picture": 142,
+  "top_offenders": [
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp",
+      "lessons": 52
+    },
+    {
+```
+
+### agent/handoff/remaining-work.json
+
+```
+[
+ {
+  "order": 41,
+  "lesson_id": "990fe67b-7c2e-4592-b0ec-761e5b8c7461",
+  "slug": "no-puedo-morder-una-moneda",
+  "adventure": "archipielago-del-trueque",
+  "saga": "nace-el-dinero",
+  "still_shared_urls": [
+   "https://media-b2c.littlefounders.ai/files/lesson-images/72a65634a5be4a3d34ca02980c5530b664b627cbe91b1c327cc14d074bbdbb45.webp"
+  ]
+ },
+ {
+  "order": 343,
+  "lesson_id": "3dcd643e-9dd6-44a1-aa55-f3b5cd66a006",
+  "slug": "el-juguete-brillante",
+```
+
+### agent/handoff/work-order.json
+
+```
+[
+ {
+  "order": 1,
+  "lesson_id": "5d7711fa-2c40-4984-9d96-3086c72f205b",
+  "slug": "mi-primer-deseo",
+  "adventure": "archipielago-del-trueque",
+  "saga": "islas-de-los-deseos",
+  "topic": "cosas-que-quiero",
+  "shared_images": 5,
+  "urls": [
+   "https://media-b2c.littlefounders.ai/files/lesson-images/a73941102433289c247c4e86840002c445ead0fb5b236b0bbba5ee465894d760.webp",
+   "https://media-b2c.littlefounders.ai/files/lesson-images/c62745e9db768627064ac0488c7d5f9bf26ddd0565bc31bfb16604a51be9ca64.webp",
+   "https://media-b2c.littlefounders.ai/files/lesson-images/f8ba41f32ed8eb61df4ab935ee20d25b12b488bfbc1200e6eabf2941657eff29.webp",
+   "https://media-b2c.littlefounders.ai/files/lesson-images/98b4db7b72b82d36f3e5f93e0dca4fcd657a1c3bb864b6506034d4a4ff677c46.webp",
+   "https://media-b2c.littlefounders.ai/files/lesson-images/2fb79b7a4794bbe5961a79612e3976660e8c14fd797285ad3bc98f5ef00c58a0.webp"
 ```
 
 ### agent/prompts/templates/bugfix.md
@@ -1667,6 +5090,66 @@ PATTERNS=(
   'ghp_[A-Za-z0-9]{20,}'
   'AKIA[0-9A-Z]{16}'
   'xox[baprs]-[A-Za-z0-9-]{10,}'
+```
+
+### agent/tools/content/README.md
+
+```
+# agent/tools/content — repair published lessons without paying a provider
+
+Built during the 2026-08-16 catalogue rescue, which rewrote 444 published lessons
+and archived 220 for **$0 in provider spend** (verified: zero new `picture_assets`,
+zero new `speech_assets`). Keep these if you ever touch published lesson content
+again — the constraint they encode has not gone away.
+
+## The constraint
+
+`speech_assets.speech_hash` is sha256 over the NARRATED TEXT (migration `0015`).
+Unchanged narration is a guaranteed cache hit; **one new narrated sentence is a paid
+DashScope call**. Narrated fields are `prompt_md`, `explanation_md`, `hints[]`, the
+story-family bodies, and the option roll-up of the seven choice types (`quiz_mcq`,
+`picture_choice`, `best_decision`, `confidence_quiz`, `odd_one_out`, `yes_no_cases`,
+`would_you_rather`) — editing ONE option label re-records all of them.
+```
+
+### agent/tools/content/applyOps.ts
+
+```
+/*
+ * Deterministic repair-op applier.
+ *
+ * Agents emit small, auditable EDIT OPS instead of whole rewritten documents.
+ * This file turns (original 3-locale record + ops) into repaired documents and
+ * runs them through the zero-TTS gate. Fields nobody named are copied through
+ * untouched by construction, so an agent cannot silently mangle a document it
+ * was only meant to nudge.
+ */
+import { readFileSync, readdirSync, writeFileSync, mkdirSync } from 'node:fs';
+import { join } from 'node:path';
+import { checkRepair } from './gate.js';
+
+const LOCALES = ['es-MX', 'en-US', 'pt-BR'] as const;
+type Locale = (typeof LOCALES)[number];
+```
+
+### agent/tools/content/gate.ts
+
+```
+/*
+ * ZERO-TTS REPAIR GATE.
+ *
+ * A repaired lesson document is ACCEPTED only if every narratable unit of text
+ * it contains ALREADY EXISTED in the original document. `speech_assets.speech_hash`
+ * is sha256 over the narration TEXT (migration 0015), so an unchanged text is a
+ * guaranteed cache hit and costs nothing; a single new narrated sentence is a
+ * paid DashScope call. The definition of "narratable" is imported from Echo's
+ * own production extractor — never reimplemented here, so the two cannot drift.
+ */
+import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { join, basename } from 'node:path';
+// Echo's PRODUCTION extractor, imported rather than reimplemented so the gate's
+// idea of "narrated" can never drift from what actually gets synthesised.
+import { extractNarratables } from '../../../audiogen/src/narrate/extractNarratables.js';
 ```
 
 ### agent/tools/new-service.sh
@@ -3180,6 +6663,7 @@ import { jsonResponse, mintToken } from './helpers.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
+import { yearsOld } from '../routes/auth.js';
 import { authRateLimiter } from '../middleware/rateLimit.js';
 import { jsonResponse, mintToken } from './helpers.js';
 
@@ -3191,7 +6675,6 @@ const SESSION = {
 };
 
 afterEach(() => vi.unstubAllGlobals());
-
 ```
 
 ### backend/src/__tests__/behavior-analytics.test.ts

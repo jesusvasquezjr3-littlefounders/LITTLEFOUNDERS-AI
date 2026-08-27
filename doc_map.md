@@ -15,6 +15,7 @@
 | i18n rules | /AGENTS.md §1.8; parity gate: agent/tools/check-i18n.sh | — |
 | Secrets | /AGENTS.md §1.10 + RUNBOOK.md (leak response); test-fixture placeholder convention: agent/core/CONVENTIONS.md | — |
 | Repo-wide CI gates (docs sync, secrets, i18n parity — no path filter) | .github/workflows/repo-gates.yml | all |
+| Repairing PUBLISHED lesson content without provider spend (the `speech_hash` constraint, the zero-spend gate, edit ops) | agent/tools/content/README.md | all |
 | Transactional email (engine, delivery, deploy) | email-server/AGENTS.md · email-server/README.md · database/DEPLOYMENT.md (GoTrue wiring) | — |
 | Analytics, observability, system health, GA4 import | pulse/AGENTS.md (pins, upgrade, §1.9 boundary) · pulse/README.md (services, env, GA4 runbook) | — |
 | First-party learning/usage telemetry, kid consent, /admin/insights | /INSIGHTS.md | all |

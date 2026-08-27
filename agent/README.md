@@ -22,9 +22,29 @@ Templates and workflows carry **pointers with section anchors, never copied text
 agent/
 ├── core/                 # canonical context + conventions + boundaries + checklists
 ├── tools/                # runnable bash gates and generators (no dependencies)
+│   └── content/          # repair PUBLISHED lesson content without paying a provider
 ├── prompts/templates/    # task templates: inputs + "Read first" pointers + steps + acceptance
-└── workflows/            # multi-step procedures chaining templates + tools
+├── workflows/            # multi-step procedures chaining templates + tools
+└── handoff/              # receipts from long content runs: work orders + per-order checkpoints
 ```
+
+**`tools/content/` is the exception to "tools have no dependencies".** It is the
+only tool directory that reads and writes PUBLISHED lesson documents, and the
+constraint it exists to encode is a billing one: `speech_assets.speech_hash` is
+sha256 over the NARRATED text (migration `0015`), so unchanged narration is a
+guaranteed cache hit and one new narrated sentence is a paid DashScope call.
+`gate.ts` refuses any repair that would spend money, importing Echo's own
+`extractNarratables` so its idea of "narrated" cannot drift from what actually
+gets synthesised; `applyOps.ts` takes edit OPERATIONS rather than rewritten
+documents, so a field nobody named cannot be damaged. Read
+`tools/content/README.md` before touching published content — it is authoritative
+on which fields are free to rewrite and which are not.
+
+**`handoff/` holds receipts, not instructions.** One checkpoint JSON per content
+order, plus the work orders and inventories that produced them. They record what
+a long run actually did, which is the only way a run that spans sessions or
+machines can be resumed or audited. Nothing reads them at build time; they are
+never authoritative over a document in §1.1.
 
 **Starting a task:** find a matching template in `prompts/templates/` → fill its inputs → follow its "Read first" pointers → execute steps → verify acceptance criteria → run the pre-commit gates.
 

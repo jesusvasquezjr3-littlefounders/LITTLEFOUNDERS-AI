@@ -2,6 +2,87 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Closing the family/kid release: one number read, one file rebuilt, one gate that opened a day late (2026-08-27)
+
+The three items RUNBOOK.md left open after `0049` was applied. Two closed
+cleanly. The third found a defect.
+
+**The ledger is now observed.** `vault-drift.yml` had never passed since it was
+written - its only run failed before `6273ac0e` silenced ssh's host-key warning
+into the stdout the migrator parses. Dispatched by hand on a tree carrying that
+fix, it came back green in 1m 9s and read 49 receipts with zero pending. The
+sentence in ROADMAP that honestly said "inferred" now says what was measured.
+
+**`database/types/database.ts` was not stale. It was EMPTY.** Zero bytes on
+disk against 72,812 in `HEAD`, uncommitted. `db:types` is
+`supabase gen types ... > types/database.ts`, and the shell opens that redirect
+BEFORE the command runs - so a generation that fails does not leave the previous
+file alone, it truncates it. Regenerated against a local stack replayed through
+`0049`, the file is 85,267 bytes.
+
+Nothing in the codebase imports these types; every query shape in
+`supabaseRest.ts` is hand-written. That is why three migrations of drift AND a
+total truncation were both invisible to every gate. A generated file nobody
+imports is not untidy, it is a REFERENCE, and a wrong reference costs nothing
+until somebody believes it - which is the worst possible moment to find out.
+
+**The age screen opened up to a full day late.** `yearsOld` computed
+`(now - born) / (365.25 days)`. An average year cannot express a boundary a
+CALENDAR defines: 365.25 days is longer than three years in four, so the
+computed age lagged the real birthday. A child born 2013-08-27, evaluated on
+their thirteenth birthday, came out at `12.999316` at 00:00 UTC and `13.000114`
+at 07:00 - the same child refused in the morning and admitted after breakfast.
+Swept across 1460 consecutive birthdays it refused 1095, 75.0%.
+
+It never admitted an under-13. The drift ran conservative in every case checked,
+and that is exactly why it lasted: it cost signups, not safety, and a refused
+signup does not page anybody (§1.0.5 - lost revenue is the quiet one of the four).
+
+**It had a test, and the test could not have failed.** The fixture was
+`9 * 365.25 * 24 * 3600 * 1000` - the same expression the implementation divided
+by. A test written in the units of the code under test agrees with the bug by
+construction; a nine-year-old also sits four years from the boundary, so it
+would have passed against any arithmetic at all. The class, not the instance: a
+boundary fixture must be derived from the DOMAIN the boundary lives in.
+
+`yearsOld` now counts completed calendar years in UTC and is exported, so two
+1460-day sweeps test it directly; both fail against the old implementation.
+Verified live by reading `/app/dist/routes/auth.js` out of the running Core
+container - the only three occurrences of `365.25` left in production are inside
+the comment explaining why it is gone.
+
+**The child-account smoke test ran, against the same GoTrue BUILD but not the
+same instance.** Production serves `v2.189.0` and the pinned local stack runs
+the identical image, with neither carrying any of GoTrue's optional
+email-validation settings - which makes `.invalid` a question about the BINARY,
+answerable without touching production. It is accepted; username sign-in,
+passphrase rotation and the full delete cascade all behave.
+
+One correction to RUNBOOK from that run: `email_confirm: true` is NOT what
+prevents the confirmation mail - a control user created without it sent no mail
+either, because the admin create path never mails. What the flag buys is the
+only thing that makes the account usable at all. The control could not sign in,
+answering `EMAIL_NOT_CONFIRMED`, and never could have, because the confirmation
+would be posted to an address RFC 2606 guarantees can never receive it. Remove
+that flag and every child is created permanently locked out, behind a `201`.
+
+**What is still blocked, and it is not a task.** Production has ZERO `parent`
+and ZERO `kid` - 31 `universal`, 2 `superadmin`, no guardian links, no parent
+verifications. The only route to `parent` uploads a photo of a real government
+ID to Guardian. So the end-to-end run needs a real adult with a real document,
+and until one exists the family feature is deployed and reachable by nobody.
+
+**A process failure worth more than the bug.** `git commit` without `-a` commits
+the whole INDEX, not the paths handed to `git add`. 317 files staged before this
+session - the content-repair pipeline recovered on 2026-08-24 - rode into
+`5a4d2508` under a message about types and the ledger, and the session summary
+stated the opposite. `repo gates` passed on that commit with them tracked, so
+`secrets:check` did cover them and nothing leaked. They are documented in the
+commit that follows rather than rewritten out of a published `main`: a force-push
+is a BOUNDARIES action and the only gain would be cosmetic. Check `git diff
+--cached --name-only` before committing, not the `git add` line.
+
+
 ## Migration `0049` is applied; production is at 49/49 (2026-08-27)
 
 `Tutor deploy (operator) #29`, dispatched by hand with `step: migrate` on
@@ -16,10 +97,13 @@ the dry-run, and `NOTIFY pgrst, 'reload schema'` inside the apply transaction -
 which matters more here than on an additive migration, because a PostgREST still
 serving a cache that offers a dropped column is worse than one missing a new one.
 
-**What was inferred rather than observed.** The ledger being at 49 comes from the
-run exiting 0 and the migrator asserting a current ledger as its last act, not
-from a read-only probe. The independent confirmation is `vault-drift.yml`, which
-has not had a successful run yet.
+**What was inferred rather than observed — SETTLED 2026-08-27.** The ledger being
+at 49 came from the run exiting 0 and the migrator asserting a current ledger as
+its last act, not from a read-only probe. `vault-drift.yml` has now had that
+successful run (33049310312): `Remote migration ledger has 49 receipt(s)`,
+`skip 0049_drop_parent_verification_address.sql (recorded)`, `Pending: 0`, no
+checksum drift. The exit code and the ledger were always two different claims;
+the second one has now been read.
 
 **Three artefacts moved with it**, all of them gate-enforced so forgetting one
 turns CI red rather than going unnoticed: ROADMAP's high-water mark and its
