@@ -191,7 +191,6 @@ frontend/
         __tests__/
       stage/
         __tests__/
-goal/
 oracle/
   scripts/
     fixtures/
@@ -27456,26 +27455,6 @@ export default defineConfig({
   server: {
     port: 5173,
   },
-```
-
-### goal/financial-education-images-100.md
-
-```
-# GOAL — Terminar al 100% las imágenes del curso `financial-education`
-
-> Generas las imágenes con TU PROPIO sistema de generación (la suscripción de
-> ChatGPT/Codex), NUNCA con Prism (`picturegen/`) ni con DashScope. Esa regla
-> viene de una decisión explícita del owner y se explica en la sección 1. Si
-> en algún punto un comando de este documento pareciera pedirte llamar a
-> DashScope, DETENTE — es un error del documento, no una instrucción real.
-
-> Este documento reemplaza cualquier versión anterior de este brief que
-> hayas visto (incluida una versión previa, incorrecta, de ESTE MISMO
-> archivo, que asumía por error que ibas a usar `npm run images:backfill` →
-> Prism → DashScope. Esa versión estaba mal. Ignórala si la recuerdas de
-> algún lado).
-
----
 ```
 
 ### oracle/AGENTS.md

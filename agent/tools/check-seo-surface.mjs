@@ -15,7 +15,7 @@
  * Run: npm run seo:check      Tested by: check-seo-surface.test.mjs
  */
 
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { readFileSync } from 'node:fs';
 
@@ -143,7 +143,12 @@ export function auditRoutes(site, analyticsSource) {
 }
 
 async function main() {
-  const site = await import(SITE_MODULE);
+// pathToFileURL, never a bare absolute path: Node's ESM loader takes a URL,
+// and on Windows `C:\...` parses as the scheme `c:` -> ERR_UNSUPPORTED_ESM_URL_SCHEME.
+// Same family as the `fileURLToPath, never URL.pathname` note in
+// database/scripts/check-migrations.mjs, and the reason database/ `npm test`
+// could not pass on Windows until 2026-08-23 (RUNBOOK.md).
+  const site = await import(pathToFileURL(SITE_MODULE).href);
   const problems = [...auditSite(site), ...auditRoutes(site, readFileSync(ANALYTICS, 'utf8'))];
 
   if (problems.length === 0) {

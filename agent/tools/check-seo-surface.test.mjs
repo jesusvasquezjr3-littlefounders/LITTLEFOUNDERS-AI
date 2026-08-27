@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { auditSite, auditRoutes } from './check-seo-surface.mjs';
 
@@ -17,7 +17,12 @@ import { auditSite, auditRoutes } from './check-seo-surface.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '../..');
 
-const site = await import(resolve(ROOT, 'frontend/scripts/seo/site.mjs'));
+// pathToFileURL, never a bare absolute path: Node's ESM loader takes a URL,
+// and on Windows `C:\...` parses as the scheme `c:` -> ERR_UNSUPPORTED_ESM_URL_SCHEME.
+// Same family as the `fileURLToPath, never URL.pathname` note in
+// database/scripts/check-migrations.mjs, and the reason database/ `npm test`
+// could not pass on Windows until 2026-08-23 (RUNBOOK.md).
+const site = await import(pathToFileURL(resolve(ROOT, 'frontend/scripts/seo/site.mjs')).href);
 
 /** A minimal valid site, so each test can break exactly one thing. */
 function fixture(overrides = {}) {
