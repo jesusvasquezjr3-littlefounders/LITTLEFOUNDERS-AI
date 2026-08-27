@@ -2,6 +2,50 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## The Lesson Engine is 3D in production, and what that deploy was and was not verified against (2026-08-27)
+
+Seven commits, frontend and documentation only, **zero migrations** — so no
+database step and no expand/contract ordering to get right. Pushed to `main`;
+Vercel builds from the `frontend` root on push.
+
+**What shipped.** Every character in the Lesson Engine is now the 3D model,
+drawn by ONE shared canvas that renders each into the screen rectangle of its
+own DOM placeholder (`TUTOR_3D.md` §6.2). A named presence scale replaced
+per-call-site pixel boxes, and small avatars are framed as a BUST, which is what
+made the characters read as present rather than as thumbnails (§6.3). Gamified:
+reactions now name poses from the 100-entry catalog rather than a second inline
+table, a combo is stated once in `core/combo.ts`, XP counts rather than jumps,
+and one ring-shaped VFX marks a milestone. `speaking` is expressed as
+articulation, all four characters (§6.4). Along the way: a remount that
+inherited the previous gesture and compounded, a shadow pass nothing received, a
+face that leaned out of frame on the results screen, a contact shadow with no
+ground under it, and a quality gate that would have silenced "who is talking" on
+the cheapest phones.
+
+**VERIFIED AGAINST PRODUCTION.** The build is live — production's CSS bundle
+changed hash and now serves `.lf-burst`, which exists only in this deploy.
+`npm run seo:live` passes: six pages, robots, sitemap, llms.txt, manifest and
+the share card all served correctly. The home page loads with zero console
+errors and zero failed requests.
+
+**NOT VERIFIED AGAINST PRODUCTION, and this is the honest part.** No production
+LESSON was opened. A lesson is behind the guest onboarding flow, whose second
+step asks for a NAME — entering personal data into a production form is not
+something an automated check may do. So the one thing a local run cannot prove
+is still unproven: that in production the character models load from Depot
+(`VITE_SCENE_ASSET_BASE`) rather than from `public/scenes`. The evidence says it
+will — the Tutor has served those exact four `.glb` files from that exact bucket
+since 2026-08-23, and the lesson resolves them through the same
+`CHARACTER_ASSETS[id].url` — but evidence is not proof, and this is precisely
+the class of thing §1.0 says to go and check rather than reason about.
+
+**So the deploy carries one open check, and it costs about a minute:** open a
+lesson on a real phone. It closes two things at once — that the models load in
+production, and the only frame-rate number this work still lacks. Everything
+measured so far (106,224 triangles per frame worst case, 48% of the documented
+220,000 budget) comes from a headless software rasteriser: honest, pessimistic,
+and not a device.
+
 ## The reports were wrong about their own window, and the site was invisible (2026-08-27)
 
 Two pieces of work, both starting from the same discovery: a thing that looked
