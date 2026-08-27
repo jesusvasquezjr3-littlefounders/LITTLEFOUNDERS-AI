@@ -47,8 +47,42 @@ const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
  */
 const MIN_SIGNUP_AGE_YEARS = 13;
 
-function yearsOld(isoDate: string, now: number): number {
-  return (now - Date.parse(isoDate)) / (365.25 * 24 * 3600 * 1000);
+/*
+ * COMPLETED CALENDAR YEARS, in UTC — not elapsed milliseconds over an average
+ * year.
+ *
+ * The previous implementation was `(now - born) / (365.25 days)`, and an
+ * AVERAGE year cannot express a boundary that a CALENDAR defines. 365.25 is
+ * longer than three years out of four, so the computed age lags the real
+ * birthday and the gate opens LATE — by a fraction of a day when the window
+ * holds four leap days, by more than a full day when it holds three, and it
+ * shifts from year to year as that alignment moves.
+ *
+ * Measured on the old code before it was replaced: a child born 2013-08-27,
+ * evaluated on 2026-08-27 — their thirteenth birthday — computed as 12.999316
+ * at 00:00 UTC and 13.000114 at 07:00 UTC. Same child, same day, refused in
+ * the morning and admitted after breakfast. Sweeping 1461 consecutive days,
+ * the person turning exactly 13 that day was refused on 1095 of the 1460 that
+ * have a thirteenth birthday at all - 75.0%.
+ *
+ * It never let an under-13 through — the drift only ever ran conservative —
+ * and that is exactly why it survived: it cost signups, not safety, and a
+ * refused signup does not page anybody. The one test covering this gate built
+ * its fixture date with `9 * 365.25 * 24 * 3600 * 1000`, the same expression
+ * as the implementation, so it agreed with the bug by construction. A test
+ * written in the units of the code under test can only ever confirm it.
+ */
+export function yearsOld(isoDate: string, now: number): number {
+  const bornMs = Date.parse(isoDate);
+  if (Number.isNaN(bornMs)) return Number.NaN;
+  const born = new Date(bornMs);
+  const at = new Date(now);
+  let years = at.getUTCFullYear() - born.getUTCFullYear();
+  const monthDelta = at.getUTCMonth() - born.getUTCMonth();
+  if (monthDelta < 0 || (monthDelta === 0 && at.getUTCDate() < born.getUTCDate())) {
+    years -= 1;
+  }
+  return years;
 }
 
 const SignupBody = z.object({

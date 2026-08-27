@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
+import { yearsOld } from '../routes/auth.js';
 import { authRateLimiter } from '../middleware/rateLimit.js';
 import { jsonResponse, mintToken } from './helpers.js';
 
@@ -67,6 +68,74 @@ describe('POST /api/v1/auth/signup', () => {
     expect(res.body.error.code).toBe('AGE_RESTRICTED');
     // Nothing was created: the address never reached GoTrue.
     expect(spy).not.toHaveBeenCalled();
+  });
+
+  /*
+   * THE BOUNDARY IS A CALENDAR DATE, SO THE FIXTURE MUST BE ONE.
+   *
+   * The test above builds its date with `9 * 365.25 * 24 * 3600 * 1000` - the
+   * same expression the implementation used to divide by. A nine-year-old is
+   * four years from the boundary so it passed anyway, but it could never have
+   * failed: written in the units of the code under test, it agreed with the bug
+   * by construction. That is the reason this gate is exercised HERE, against
+   * `yearsOld` directly, with dates built by UTC calendar arithmetic.
+   *
+   * The sweep is 1461 days - four years, so every leap-day alignment of a
+   * thirteen-year window is covered - and each is evaluated at 00:00 UTC, the
+   * first instant of the birthday and the hardest case. Against the previous
+   * `/ (365.25 days)` implementation the first of these fails on 1095 of the
+   * 1460 days it asserts on - 75.0% - while the second passes on every one,
+   * because the drift only ever ran conservative.
+   */
+  const utcDay = (y: number, m: number, d: number) => Date.UTC(y, m, d);
+  const isoOf = (ms: number) => new Date(ms).toISOString().slice(0, 10);
+  const SWEEP_DAYS = 1461;
+
+  /*
+   * "Thirteen years before this date" does not exist for 29 February: the year
+   * thirteen back is never a leap year, and `Date.UTC(y, 1, 29)` silently rolls
+   * to 1 March rather than refusing. Asserting on the rolled date would test the
+   * claim that somebody born 1 March turns 13 on 29 February, which is false -
+   * the first draft of this sweep did exactly that and the implementation was
+   * right to disagree. Returns null for the days that have no counterpart.
+   */
+  const bornExactly = (yearsBefore: number, now: number, dayOffset = 0): string | null => {
+    const at = new Date(now);
+    const ms = utcDay(at.getUTCFullYear() - yearsBefore, at.getUTCMonth(), at.getUTCDate() + dayOffset);
+    const born = new Date(ms);
+    const intended = new Date(utcDay(at.getUTCFullYear(), at.getUTCMonth(), at.getUTCDate() + dayOffset));
+    if (born.getUTCMonth() !== intended.getUTCMonth() || born.getUTCDate() !== intended.getUTCDate()) return null;
+    return isoOf(ms);
+  };
+
+  it('counts a thirteenth birthday as 13 from its first instant, for four years of alignments', () => {
+    const wrong: string[] = [];
+    for (let i = 0; i < SWEEP_DAYS; i += 1) {
+      const now = utcDay(2026, 0, 1) + i * 86_400_000;
+      const born = bornExactly(13, now);
+      if (born === null) continue;
+      if (yearsOld(born, now) !== 13) wrong.push(`${born} at ${isoOf(now)} -> ${yearsOld(born, now)}`);
+    }
+    expect(wrong).toEqual([]);
+  });
+
+  it('still counts 12 on the day before, so no under-13 is ever admitted', () => {
+    const wrong: string[] = [];
+    for (let i = 0; i < SWEEP_DAYS; i += 1) {
+      const now = utcDay(2026, 0, 1) + i * 86_400_000;
+      const born = bornExactly(13, now, 1);
+      if (born === null) continue;
+      if (yearsOld(born, now) !== 12) wrong.push(`${born} at ${isoOf(now)} -> ${yearsOld(born, now)}`);
+    }
+    expect(wrong).toEqual([]);
+  });
+
+  it('does not drift with the hour of the day', () => {
+    const born = '2013-08-27';
+    for (const hour of [0, 3, 6, 9, 12, 18, 23]) {
+      expect(yearsOld(born, utcDay(2026, 7, 27) + hour * 3_600_000)).toBe(13);
+      expect(yearsOld(born, utcDay(2026, 7, 26) + hour * 3_600_000)).toBe(12);
+    }
   });
 
   it('requires a date of birth at all', async () => {

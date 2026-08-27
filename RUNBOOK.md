@@ -429,8 +429,58 @@ REFERENCE for whoever writes the next query, which means the damage is deferred
 to the first person who trusts them - the worst moment to find out.
 
 **3. Smoke-test the child-account creation path against the real GoTrue, before
-telling anyone the feature exists.** This is the one thing that could not be
-verified locally and the one most likely to surprise:
+telling anyone the feature exists. RUN 2026-08-27 — against GoTrue `v2.189.0`,
+which is the SAME BUILD production serves, but NOT against the production
+instance. Read the gap at the end of this step before trusting it.**
+
+Production runs `v2.189.0` (`GET /auth/v1/health` on `auth-b2c`); the pinned
+local stack runs the identical image, and neither carries any of GoTrue's
+optional email-validation or blocklist settings. That makes the `.invalid`
+question — the one thing here that is about GoTrue's BINARY rather than about
+our data — answerable without touching production, which is why it was answered
+that way. What was run, through the real Core against the real GoTrue, with a
+throwaway child that was deleted at the end:
+
+  - **`@kids.littlefounders.invalid` is ACCEPTED.** `POST /api/v1/family/kids`
+    returned `201` and `auth.users.email` reads
+    `smoke_throwaway@kids.littlefounders.invalid`. No fallback domain is needed.
+  - **No mail is attempted** — `confirmation_sent_at` is NULL and the
+    confirmation token is empty.
+  - **But `email_confirm: true` is not what prevents the mail, and this section
+    used to say it was.** A control user created through the same admin endpoint
+    WITHOUT `email_confirm` also sent no mail: the GoTrue admin create path never
+    mails. What `email_confirm: true` actually buys is the only thing that makes
+    the account usable — the control user could not sign in at all, answering
+    `EMAIL_NOT_CONFIRMED`, and it never could have, because the confirmation
+    would be posted to an address that by RFC 2606 can never receive it. Drop
+    that flag and every child account is created permanently locked out, with a
+    `201` on the way in. It is load-bearing, not hygiene.
+  - **Sign-in by USERNAME works** (`smoke_throwaway`), and so does the
+    `.invalid` address, so the disambiguation on `@` behaves both ways.
+  - **Passphrase rotation works**, and is a real rotation: the old passphrase
+    then answers `INVALID_CREDENTIALS` and the new one returns a session.
+  - **The delete cascade is complete.** After `DELETE /family/kids/:id`, the
+    `auth.users` row, both `user_roles` rows, the `guardian_links` row and the
+    `profiles` row are all gone — `0 | 0 | 0 | 0`. A child carries `kid` AND
+    `universal`, which is the normal shape (the seeded `kid` fixture matches);
+    a single-row lookup on `user_roles` will throw.
+  - **The audit trail is there**: `family.kid_created`,
+    `family.kid_passphrase_rotated`, `family.kid_delete.requested`,
+    `family.kid_deleted`.
+
+**The gap, stated plainly.** Production has NO `parent` and NO `kid` — 31
+`universal` and 2 `superadmin`, zero `guardian_links`, zero
+`parent_verifications`. The only route to `parent` is
+`POST /api/v1/verification/parent`, which uploads a photo of a real government
+ID to Guardian, so the end-to-end run in production needs a real adult with a
+real document and cannot be automated or delegated. What that leaves untested
+against the production INSTANCE is production's data and configuration, not
+GoTrue's behaviour: the one config difference found is `GOTRUE_MAILER_AUTOCONFIRM`
+(`true` locally, `false` in production), and it does not touch the admin create
+path used here. Do the run below once there is a verified parent; until then the
+feature is shipped and reachable by nobody.
+
+The original checklist, for that run:
 
 - Create a child from `/family` and confirm the account appears. The address
   Core sends is `<username>@kids.littlefounders.invalid`. `.invalid` is reserved
@@ -464,10 +514,36 @@ forgetting one turns CI red rather than going unnoticed:
 Do them in one commit, with the run's output pasted into the ROADMAP sentence
 the way `0047` and `0048` recorded theirs.
 
-**4. Check the age screen on the real signup.** A date of birth is now required
-and screened at 13; under-age answers `403 AGE_RESTRICTED`. Confirm an adult
-signup still completes end to end, including the confirmation email, since the
-request body changed shape.
+**4. Check the age screen on the real signup. RUN 2026-08-27, and it found a
+defect — fixed in the same session.** A date of birth is now required and
+screened at 13; under-age answers `403 AGE_RESTRICTED`. A missing date answers
+`400 VALIDATION_ERROR`, an adult completes, and a nine-year-old is refused —
+all three confirmed through the real route.
+
+**The defect.** The screen computed age as `(now - born) / (365.25 days)`. An
+average year cannot express a boundary a CALENDAR defines: 365.25 days is longer
+than three years in four, so the computed age lagged the real birthday and the
+gate opened LATE. A child born 2013-08-27, evaluated on their thirteenth
+birthday, computed as `12.999316` at 00:00 UTC and `13.000114` at 07:00 — the
+same child refused in the morning and admitted after breakfast. Swept across
+1460 consecutive birthdays it refused 1095 of them, 75.0%.
+
+It never admitted an under-13; the drift ran conservative in every case checked.
+That is precisely why it survived: it cost signups, not safety, and a refused
+signup does not page anybody. It also had a test, which built its fixture with
+`9 * 365.25 * 24 * 3600 * 1000` — the same expression the implementation divided
+by. **A test written in the units of the code under test agrees with the bug by
+construction**, and a nine-year-old sits four years from the boundary, so it
+would have passed no matter how wrong the arithmetic was.
+
+`yearsOld` now counts completed calendar years in UTC, and is exported so the
+boundary is swept directly rather than through HTTP. Two things learned writing
+those sweeps, both worth keeping: fake timers and `supertest` do not compose —
+the request never settles — so a date-boundary sweep belongs in a unit test, not
+an HTTP one; and `Date.UTC(y, 1, 29)` for a non-leap year SILENTLY ROLLS to
+1 March instead of refusing, so a naive "thirteen years before this date" fixture
+quietly asserts that someone born 1 March turns 13 on 29 February. The
+implementation was right to disagree with the first draft of the test.
 
 **What has NO rollback but is bounded.** A child account created against a
 GoTrue that later rejects the domain simply cannot be created - nothing is left
