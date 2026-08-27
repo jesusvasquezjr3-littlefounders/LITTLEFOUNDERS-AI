@@ -1066,6 +1066,37 @@ pixel height share a scale, which is what keeps 1.61 m Zara visibly shorter than
 1.9 m Dina in a cast row; `fill` alone normalises everyone to the same size,
 which is right for a lone avatar and throws the cast portrait away.
 
+### §6.3 A bust crop has to be sized by the HEAD, and the head measured (2026-08-27)
+
+Presence in a small box is mostly framing: a 96 px full-body avatar gives the
+face twenty-five pixels. So slots take `crop: 'bust'`. Getting it right took
+three wrong answers, and each was a proportion assumed rather than measured.
+
+1. **A fraction of total HEIGHT, anchored at the crown.** Fine on Zara. On Dina
+   it framed the top 46% of a quadruped whose face is at the FRONT of her box,
+   and the slot rendered as the smooth orange dome of her skull.
+2. **Aiming at the head BONE** — right idea, still too close: the camera solved
+   for a region and said nothing about ending up INSIDE the model. Dina is
+   1.92 m tall and 2.83 m DEEP, so the camera landed past her shoulder and
+   inside her muzzle: a flat orange square. The distance is now also at least
+   half the depth plus clearance.
+3. **A fixed multiple of height for the frame SIZE.** This cast does not share a
+   proportion. Measured, in scene metres, the gap between the `head` bone and
+   the top of the box — which IS the head:
+
+   | | height | width | depth | head bone | head size |
+   |---|---|---|---|---|---|
+   | zara | 1.61 | 0.83 | 0.45 | 1.30 | 0.31 |
+   | rho | 1.70 | 0.82 | 0.81 | 0.91 | **0.79** |
+   | liruf | 1.65 | 0.71 | 1.70 | 0.97 | 0.68 |
+   | dina | 1.92 | 0.95 | 2.83 | 1.18 | 0.74 |
+
+   Rho's head is 46% of his height and Zara's is 19%. A bust is therefore
+   `1.9 x the measured head`, aimed a third of a head above the bone, and
+   "head and shoulders" resolves to the same PICTURE on four different body
+   plans. `boneOrigin` in `modelBounds.ts` reads the bone the same
+   parent-independent way the box is read (§5.1).
+
 ## §7 HANDOFF — what the next session needs Blender for
 
 Ordered by value. Items 1–2 are the reason this handoff exists.

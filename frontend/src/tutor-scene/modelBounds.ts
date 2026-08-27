@@ -134,3 +134,36 @@ export function modelFooting(model: Object3D, scale: number): ModelFooting {
     footprint: (Math.max(size.x, size.z) * scale) / 2,
   };
 }
+
+/**
+ * Where a named bone sits in the MODEL's own space, or null if it has no such
+ * bone.
+ *
+ * Same discipline as `modelBounds` above and for the same reason: it composes
+ * LOCAL matrices down from the model root and reads nothing above it, so the
+ * answer does not change with what the model happens to be parented to.
+ *
+ * This exists because a bounding box does not know where a FACE is. Framing a
+ * bust as "the top of the box" is a biped assumption: it lands on Zara's head
+ * and on the top of Dina's SKULL, because a quadruped's face is at the front of
+ * the box, not the top of it. Both rigs carry a `head` bone, so the honest aim
+ * point is to go and read it.
+ */
+export function boneOrigin(model: Object3D, name: string): Vector3 | null {
+  const wanted = name.toLowerCase();
+  let found: Vector3 | null = null;
+
+  const visit = (node: Object3D, parentMatrix: Matrix4) => {
+    if (found) return;
+    if (node.matrixAutoUpdate) node.updateMatrix();
+    const matrix = new Matrix4().multiplyMatrices(parentMatrix, node.matrix);
+    if (node.name.toLowerCase() === wanted) {
+      found = new Vector3().setFromMatrixPosition(matrix);
+      return;
+    }
+    for (const child of node.children) visit(child, matrix);
+  };
+
+  visit(model, new Matrix4());
+  return found;
+}

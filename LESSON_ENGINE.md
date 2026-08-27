@@ -531,6 +531,13 @@ placeholder that registers with it, and ONE overlay canvas draws each into its
 own screen rectangle through the renderer's scissor. Slots off screen are not
 drawn at all. See `TUTOR_3D.md` §6.2.
 
+**Presence is a named scale, not a pixel size.** `presence` on
+`CharacterActor3D` takes `inline` | `talk` | `scene` | `cast`, and each step
+fixes a box at both breakpoints, a framing (bust or full body) and a fill. A
+call site says what the character IS on that screen. The proportions, and why a
+small box gets a bust rather than a whole figure, are in `DESIGN.md` under the
+Lesson recipe.
+
 **What the swap costs, stated plainly.** `speaking` has no expression in 3D yet:
 the character is present and animated, but its mouth does not move while it
 talks, because nothing drives visemes in a lesson and the lip-sync card is off

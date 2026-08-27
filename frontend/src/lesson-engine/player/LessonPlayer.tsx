@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { trackInsight } from '@/lib/insights'
 import { cn } from '@/lib/utils'
 import { Button, Icon, ProgressBar, LottieIcon } from '@/components/ui'
-import CharacterActor3D, { CAST_STAGE_HEIGHT_M } from '@/components/characters/control/CharacterActor3D'
+import CharacterActor3D from '@/components/characters/control/CharacterActor3D'
 import { CharacterLayerProvider } from '@/tutor-scene/CharacterLayer'
 import type { CharacterId } from '@/components/characters/control/types'
 import type { Grader, LessonDocument, SegmentBase, Verdict } from '../core/types'
@@ -366,17 +366,23 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
         <div key={segment.id} className="lf-pop space-y-5 md:my-auto">
           {/* Narrator strip */}
           {segment.narrator ? (
-            // Avatar shrinks on mobile (56px) so the speech bubble keeps a
-            // readable width at 375px instead of squeezing the prompt to
-            // 2-3 words per line (§1.11). Full 96px from sm: up.
-            <div className="flex items-end gap-2 sm:gap-3">
-              <div className="h-14 w-14 shrink-0 sm:h-24 sm:w-24">
-                <CharacterActor3D
-                  character={segment.narrator.character}
-                  emotion={segment.narrator.emotion ?? 'neutral'}
-                  size="fill"
-                />
-              </div>
+            /*
+             * A GRID, not a flex guess: one column sized by the presence scale
+             * and one that takes the rest, so the speech card's width is a
+             * consequence of a stated proportion instead of whatever was left.
+             *
+             * The avatar used to shrink to 56 px on mobile to keep the bubble
+             * readable. It is now 112 px and the bubble is still readable,
+             * because the character is framed as a BUST: the old box spent its
+             * pixels on legs. See the presence scale.
+             */
+            <div className="grid grid-cols-[auto_1fr] items-end gap-2 sm:gap-3">
+              <CharacterActor3D
+                character={segment.narrator.character}
+                emotion={segment.narrator.emotion ?? 'neutral'}
+                presence="talk"
+                className="shrink-0"
+              />
               <div className="lf-slab flex min-w-0 flex-1 items-start gap-2 rounded-lg rounded-bl-sm px-4 py-3">
                 <MarkdownLite text={segment.prompt_md} className="lf-title min-w-0 flex-1 text-content" />
                 <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} lessonId={lessonId} preview={preview} />
@@ -580,8 +586,7 @@ function IntroScreen({
               character={c}
               emotion="happy"
               action={i === 0 ? 'wave' : 'idle'}
-              size="lg"
-              stageHeightM={CAST_STAGE_HEIGHT_M}
+              presence="cast"
             />
           ))}
         </div>
@@ -694,13 +699,19 @@ function FeedbackBanner({
     <div className={cn('lf-pop shadow-pop', tierStyles)} role="status">
       <div className="mx-auto flex max-w-[720px] items-start gap-3 px-4 py-4 md:px-0">
         {reaction ? (
+          /*
+           * The reacting character is on MOBILE too now. It used to be
+           * `hidden sm:block`, so the single most emotional moment in a lesson
+           * — the answer landing — had no character at all on the viewport
+           * where most learners are.
+           */
           <CharacterActor3D
             character={reaction.character}
             emotion={reaction.emotion}
             action={reaction.action}
             actionKey={reaction.key}
-            size="sm"
-            className="hidden shrink-0 sm:block"
+            presence="talk"
+            className="shrink-0"
           />
         ) : null}
         <div className="min-w-0 flex-1 space-y-1.5">
@@ -798,8 +809,7 @@ function ResultsScreen({
             emotion={passed ? 'proud' : 'encouraging'}
             action={passed ? 'celebrate' : 'wave'}
             loop={passed}
-            size="md"
-            stageHeightM={CAST_STAGE_HEIGHT_M}
+            presence="cast"
           />
         ))}
       </div>

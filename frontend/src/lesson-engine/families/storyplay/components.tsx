@@ -78,7 +78,7 @@ export function StoryBranch({ segment, disabled, onFinish, verdict }: ExercisePr
       <div className="space-y-4">
         {current.character ? (
           <div className="flex justify-center">
-            <CharacterActor3D character={current.character} emotion={current.emotion ?? 'neutral'} size="sm" />
+            <CharacterActor3D character={current.character} emotion={current.emotion ?? 'neutral'} presence="inline" />
           </div>
         ) : null}
         <SunkenWell>
@@ -207,7 +207,7 @@ export function DialogueChoice({ segment, disabled, onFinish, verdict }: Exercis
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <CharacterActor3D character={persona.character} emotion="happy" size="sm" />
+        <CharacterActor3D character={persona.character} emotion="happy" presence="inline" />
         <div className="min-w-0">
           {persona.name ? <p className="lf-title text-content">{persona.name}</p> : null}
           <MarkdownLite text={persona.role_md} className="lf-caption text-content-muted" />

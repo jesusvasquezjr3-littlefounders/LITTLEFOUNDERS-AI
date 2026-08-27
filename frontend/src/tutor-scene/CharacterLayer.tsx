@@ -61,6 +61,17 @@ export interface CharacterSlotSpec {
    * true relative sizes on a common baseline.
    */
   stageHeightM?: number;
+  /*
+   * How much of the character the frame holds.
+   *
+   * `full` is the whole figure. `bust` is head and shoulders, and it exists
+   * because our characters are framed head to toe while Duolingo's read as
+   * present at the same pixel size: at a 96 px avatar a full-body crop leaves a
+   * 25 px face, which is a smudge with a colour. The same box holding a bust
+   * reads as a character looking at you. Presence is mostly FRAMING, and only
+   * then size.
+   */
+  crop?: 'full' | 'bust';
 }
 
 export interface Slot extends CharacterSlotSpec {
@@ -113,7 +124,8 @@ export function CharacterLayerProvider({
       existing.action !== slot.action ||
       existing.actionKey !== slot.actionKey ||
       existing.fill !== slot.fill ||
-      existing.stageHeightM !== slot.stageHeightM
+      existing.stageHeightM !== slot.stageHeightM ||
+      existing.crop !== slot.crop
     ) {
       setVersion((n) => n + 1);
     }
@@ -154,6 +166,7 @@ export function CharacterSlot({
   actionKey,
   fill,
   stageHeightM,
+  crop,
   className,
 }: CharacterSlotSpec & { className?: string }) {
   const registry = useContext(LayerContext);
@@ -163,9 +176,9 @@ export function CharacterSlot({
   useEffect(() => {
     const element = ref.current;
     if (!registry || !element) return;
-    registry.register(key, { key, element, character, emotion, action, actionKey, fill, stageHeightM });
+    registry.register(key, { key, element, character, emotion, action, actionKey, fill, stageHeightM, crop });
     return () => registry.release(key);
-  }, [registry, key, character, emotion, action, actionKey, fill, stageHeightM]);
+  }, [registry, key, character, emotion, action, actionKey, fill, stageHeightM, crop]);
 
   /*
    * Outside a provider, or before the canvas is drawing, this IS the 2D

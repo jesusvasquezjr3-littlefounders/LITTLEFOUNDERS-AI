@@ -1616,6 +1616,40 @@ ONLY from `lesson-engine/core/primitives.tsx` (OptionCard, TokenChip,
 SunkenWell, BigIconTile, NumberPad, KidSlider, GentleTimerBar) so all 50+
 types stay uniform; interactions are tap-first, ≥44px, no drag-and-drop.
 
+**Character presence scale** (owner direction, 2026-08-27 — the characters were
+too small to be the presence a lesson needs). Every character in a lesson is the
+3D model (`LESSON_ENGINE.md` §9.1), and a call site picks what the character IS
+on that screen rather than a pixel size. Four steps, each defined at BOTH
+breakpoints because §1.11 makes both non-negotiable:
+
+| step | box (mobile → desktop) | framing | used for |
+|---|---|---|---|
+| `inline` | 80 → 96 px | bust | a voice in a list: one transcript line, a chip |
+| `talk` | 112 → 144 px | bust | the character SPEAKING: narrator strip, feedback |
+| `scene` | 176 → 224 px | full body | the character IS the subject: a story beat |
+| `cast` | 128×160 → 176×208 px | full body, shared stage | the company, at the open and the close |
+
+Two rules make the scale work and both were learned by looking:
+
+- **A small box gets a BUST, not a whole figure.** A 96 px full-body avatar
+  spends seventy of those pixels on legs and leaves the face twenty-five. The
+  same box holding head-and-shoulders reads as a character looking at the
+  learner. Presence is mostly FRAMING and only then size — which is why the
+  narrator avatar grew from 56 px to 112 px on mobile without the speech card
+  losing its readable width.
+- **A row shares a stage.** `cast` frames a fixed world height with the feet on
+  the bottom edge, so members stand at their TRUE relative sizes on one baseline
+  — 1.61 m Zara visibly shorter than 1.92 m Dina. Framing each to its own box
+  makes everyone the same size, which is right for a lone avatar and throws a
+  group portrait away.
+
+The narrator strip is a `grid-cols-[auto_1fr]`: the character column is sized by
+the scale and the speech card takes the rest, so the card's width is a
+consequence of a stated proportion rather than of whatever was left over. The
+feedback banner shows its reacting character on MOBILE too — it used to be
+`hidden sm:block`, so the most emotional moment in a lesson had no character at
+all on the viewport where most learners are.
+
 **Tutor (`/tutor`)** — added 2026-08-21, and the ABSENCE of this entry is why
 it exists. §0 makes building outside a recipe a design bug. There was no Tutor
 recipe, so the Tutor was assembled out of the nearest thing that had one —

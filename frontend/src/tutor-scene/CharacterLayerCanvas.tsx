@@ -6,7 +6,7 @@ import { FlatGroundProvider } from './ground';
 import { SceneCanvas, type SceneStats } from './SceneCanvas';
 import { SceneLighting } from './SceneLighting';
 import { CHARACTER_ASSETS, characterScale } from './assets';
-import { modelBounds } from './modelBounds';
+import { boneOrigin, modelBounds } from './modelBounds';
 import { useSceneModel } from './useSceneModel';
 import { framingDistance } from './framing';
 import type { QualitySettings } from './quality';
@@ -20,11 +20,37 @@ import type { Slot } from './CharacterLayer';
 
 const FOV = 30;
 
+/*
+ * A BUST IS SIZED BY THE HEAD, and the head has to be measured because this
+ * cast does not share a proportion. The gap between the `head` bone and the top
+ * of the box IS the head — MEASURED, in scene metres:
+ *
+ *   zara  0.31   of a 1.61 m figure   (near-human proportions)
+ *   rho   0.79   of 1.70              (a huge stylised head)
+ *   liruf 0.68   of 1.65
+ *   dina  0.74   of 1.92              (a quadruped, face at the FRONT)
+ *
+ * Framing a fixed fraction of total HEIGHT therefore lands somewhere different
+ * on each of them: 46% from the crown gave Zara a portrait and filled Dina's
+ * slot with the smooth orange dome of her own skull. Multiplying the measured
+ * head instead means "head and shoulders" resolves to the same PICTURE on four
+ * different body plans.
+ */
+const BUST_HEAD_SPANS = 1.9;
+/** Where the head sits in that frame: above centre, the way a portrait sits. */
+const BUST_HEAD_LIFT = 0.35;
+/** Air between the camera and the front of the model, in metres. */
+const BUST_CLEARANCE_M = 0.45;
+/** Fallback frame, as a share of height, for a rig with no `head` bone. */
+const BUST_FALLBACK_SHARE = 0.46;
+
 interface Measured {
   height: number;
   width: number;
   depth: number;
   centreY: number;
+  /** Height of the head bone above the feet, or null on a rig without one. */
+  headY: number | null;
 }
 
 interface Live {
@@ -93,6 +119,7 @@ function SlotCharacter({
     if (box.isEmpty()) return null;
     const scale = characterScale(asset);
     const size = box.getSize(new Vector3()).multiplyScalar(scale);
+    const head = boneOrigin(scene, 'head');
     return {
       height: size.y,
       width: size.x,
@@ -100,6 +127,7 @@ function SlotCharacter({
       // Feet rest on y = 0, so the model's own origin offset comes out before
       // the centre can serve as an aim point.
       centreY: (box.getCenter(new Vector3()).y - box.min.y) * scale,
+      headY: head ? (head.y - box.min.y) * scale : null,
     };
   }, [scene, asset]);
 
@@ -219,6 +247,45 @@ function LayerScene({
          */
         distance = slot.stageHeightM / (2 * Math.tan((FOV * Math.PI) / 360));
         aim = slot.stageHeightM / 2;
+      } else if (slot.crop === 'bust') {
+        /*
+         * HEAD AND SHOULDERS, anchored to the TOP of the character rather than
+         * to its centre. The frame holds the upper `BUST_SHARE` of the figure,
+         * so the face lands at a readable size in a small box instead of a
+         * full-body silhouette whose head is a quarter of an inch.
+         *
+         * The width term uses a fraction of the model's full width: the
+         * shoulders are narrower than the arms-out silhouette the full-body
+         * framing has to allow for, and on the quadruped the head IS most of
+         * her width, which is why the fraction is generous rather than tight.
+         */
+        const { height: full, headY } = entry.measured;
+        // The head bone to the crown: the head itself. See BUST_HEAD_SPANS.
+        const head = headY === null ? null : Math.max(0.05, full - headY);
+        const height = head === null ? full * BUST_FALLBACK_SHARE : head * BUST_HEAD_SPANS;
+        const share = Math.max(0.05, Math.min(1, slot.fill ?? 0.9));
+        const halfFov = Math.tan((FOV * Math.PI) / 360);
+        distance = Math.max(
+          height / share / (2 * halfFov),
+          /*
+           * AND OUTSIDE THE CHARACTER. A tight crop solves for the distance
+           * that makes a region fill the frame, and says nothing about whether
+           * the camera ends up INSIDE the model. Dina is 1.9 m tall and 2.83 m
+           * deep, so her bust framing put the camera 1.70 m out — past her
+           * shoulder and inside her muzzle, and the slot rendered as a flat
+           * orange square. Half the depth clears the front of the model and the
+           * margin keeps the near plane off its skin.
+           */
+          entry.measured.depth / 2 + BUST_CLEARANCE_M,
+        );
+        /*
+         * AIM AT THE HEAD BONE, not at a fraction of the box. Both rigs carry
+         * one, and it is the only aim point that means the same thing on a
+         * standing human and on a quadruped whose face is at the FRONT of her
+         * box rather than the top of it: framing Dina's "upper 46%" pointed at
+         * her skull and filled the slot with a smooth orange dome.
+         */
+        aim = headY === null ? full - height / 2 : headY + (head ?? 0) * BUST_HEAD_LIFT;
       } else {
         distance = framingDistance(
           { x: entry.measured.width, y: entry.measured.height, z: entry.measured.depth },

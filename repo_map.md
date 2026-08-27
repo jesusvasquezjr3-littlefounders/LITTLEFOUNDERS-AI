@@ -18334,7 +18334,7 @@ import { useTranslation } from 'react-i18next'
 import { trackInsight } from '@/lib/insights'
 import { cn } from '@/lib/utils'
 import { Button, Icon, ProgressBar, LottieIcon } from '@/components/ui'
-import CharacterActor3D, { CAST_STAGE_HEIGHT_M } from '@/components/characters/control/CharacterActor3D'
+import CharacterActor3D from '@/components/characters/control/CharacterActor3D'
 import { CharacterLayerProvider } from '@/tutor-scene/CharacterLayer'
 import type { CharacterId } from '@/components/characters/control/types'
 import type { Grader, LessonDocument, SegmentBase, Verdict } from '../core/types'
@@ -25229,7 +25229,7 @@ import { FlatGroundProvider } from './ground';
 import { SceneCanvas, type SceneStats } from './SceneCanvas';
 import { SceneLighting } from './SceneLighting';
 import { CHARACTER_ASSETS, characterScale } from './assets';
-import { modelBounds } from './modelBounds';
+import { boneOrigin, modelBounds } from './modelBounds';
 import { useSceneModel } from './useSceneModel';
 import { framingDistance } from './framing';
 import type { QualitySettings } from './quality';

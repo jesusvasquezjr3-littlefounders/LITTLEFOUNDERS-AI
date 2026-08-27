@@ -85,14 +85,14 @@ export function StoryDialogue({ segment, disabled, onContentDone }: ExerciseProp
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col items-center gap-3 md:flex-row md:items-end md:gap-4">
+      <div className="flex flex-col items-center gap-3 md:flex-row md:items-center md:gap-4">
         <CharacterActor3D
           character={line.character}
           emotion={line.emotion ?? 'neutral'}
           action={line.action ?? 'idle'}
           actionKey={index}
           speaking={!finished}
-          size="md"
+          presence="scene"
           className="shrink-0"
         />
         {/* Speech card — tapping it also advances (≥44px target). */}
@@ -177,7 +177,7 @@ export function StoryScene({ segment, onContentDone }: ExerciseProps) {
             character={payload.character}
             emotion={payload.emotion ?? 'neutral'}
             action={payload.action ?? 'idle'}
-            size="lg"
+            presence="scene"
           />
         ) : null}
         {/* The AI illustration is commissioned as a WIDE establishing scene
@@ -480,7 +480,7 @@ export function Eavesdrop({ segment, disabled, onContentDone }: ExerciseProps) {
               emotion={line.emotion ?? 'neutral'}
               action="idle"
               speaking={!finished && lineIndex === revealed - 1}
-              size="sm"
+              presence="inline"
               className="shrink-0"
             />
             <div className="lf-slab min-h-12 flex-1 rounded-lg rounded-bl-sm p-3">

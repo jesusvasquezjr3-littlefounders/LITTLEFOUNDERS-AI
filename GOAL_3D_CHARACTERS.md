@@ -291,6 +291,39 @@ contact shadow with no ground under it).
   so overlapping them would clip square. They stand side by side instead, at
   true relative heights on a common baseline — which the 2D row could not do.
 
+### Verified 100% 3D, by walking it rather than by grepping it
+
+The owner asked to be sure before moving on. Static: nine render sites in the
+engine, all `CharacterActor3D`, and no 2D character component referenced from
+`lesson-engine/` at all. Dynamic, which is the answer that counts — every one of
+the **57 segment-type fixtures** opened and inspected, in dark AND light:
+
+    fixtures audited        57
+    CHARACTERS RENDERED 2D   0
+    fixtures with no character on the first screen   0
+    console errors           0
+
+Plus a 220-step walk of the showcase: all four characters, every screen carrying
+one, one canvas throughout, zero errors. The 2D component still renders when
+there is NO 3D layer above the slot — a cold chunk, a device without WebGL, and
+every jsdom test — which is the fallback working, not a leftover.
+
+### Presence — the characters are the scenography now (owner, 2026-08-27)
+
+"Demasiado pequeños... mayor protagonismo en la escenografía." Two things were
+wrong and only one of them was size: our characters were framed head to toe in
+every box, so a 96 px avatar gave the face 25 px while Duolingo's fills the same
+box with a head. `presence` is now a named four-step scale (`inline` / `talk` /
+`scene` / `cast`) defined at both breakpoints in `DESIGN.md`'s Lesson recipe,
+small boxes get a BUST crop, the narrator strip is a stated two-column grid
+instead of a flex guess, and the feedback banner shows its character on mobile —
+it used to be `hidden sm:block`, so a lesson's most emotional beat had no
+character at all on the viewport most learners use.
+
+Sizing that bust took three wrong answers, all of them proportions assumed
+rather than measured; `TUTOR_3D.md` §6.3 carries the table that settled it —
+Rho's head is 46% of his height and Zara's is 19%.
+
 ### Still open for §3.4
 
 Gamification and VFX: combo/streak feedback, XP that animates rather than
