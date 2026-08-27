@@ -304,15 +304,35 @@ hard way:
 Everything below was written while building the release; none of it has been
 run against production, and the order matters.
 
-**1. Apply migration `0049_drop_parent_verification_address.sql` BEFORE the code
-that stops sending the field.** It is `DROP COLUMN IF EXISTS`, idempotent, and
-it DESTROYS the stored home addresses - that is the intent (they were write-only
-PII nothing verified), but it is irreversible, so take the verified backup
-first, the same way any other schema change here does.
+**1. Ship the CODE first, then apply migration
+`0049_drop_parent_verification_address.sql`. This is the opposite of what this
+section said when it was first written, and getting it backwards would have
+broken parent verification in production.**
 
-The column is `NOT NULL DEFAULT ''`, so old code writing without it would still
-have worked; the reverse order is nevertheless wrong, because it would leave a
-window where new rows land in a column the release exists to remove.
+The reasoning that matters is which direction survives a window where the two
+halves disagree:
+
+  - code first: Core stops sending `address`, the column is still there and is
+    `NOT NULL DEFAULT ''`, so inserts land with an empty string. Nothing breaks.
+    The migration then drops a column nothing writes.
+  - migration first: the column is gone while the OLD Core is still sending it,
+    and PostgREST rejects an insert naming a column that is not in its schema
+    cache. `insertParentVerification` returns null, the route answers 502, and
+    every parent verification fails for the length of the window.
+
+There is no rolling-deploy hazard either way here, because the migration is a
+separate MANUAL step (below) rather than part of the code deploy.
+
+It is `DROP COLUMN IF EXISTS`, idempotent, and it DESTROYS the stored home
+addresses - that is the intent (they were write-only PII nothing verified), but
+it is irreversible, so take the verified backup first, the same way any other
+schema change here does.
+
+**How the migration is actually applied.** There is NO database CD. It runs
+through the `tutor-deploy.yml` workflow, dispatched by hand with `step: migrate`
+(which does its own `--dry-run` first). A push deploys code only; nothing about
+pushing applies a migration, so this step will not happen unless someone
+triggers it.
 
 **2. Regenerate `database/types/database.ts`.** It still lists
 `parent_verifications.address` and was NOT hand-edited, because it is generated.
