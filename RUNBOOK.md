@@ -299,6 +299,29 @@ hard way:
   marked `[data-lab-chrome]`; a measurement that counts it is measuring the
   ruler.
 
+## `await import()` of an absolute path dies on Windows (2026-08-27)
+
+**Symptom.** `ERR_UNSUPPORTED_ESM_URL_SCHEME: Only URLs with a scheme in:
+file, data, and node are supported by the default ESM loader. On Windows,
+absolute paths must be valid file:// URLs. Received protocol 'c:'`
+
+Node's ESM loader takes a URL, and a Windows absolute path parses as the
+scheme `c:`. A dynamic import written and tested on macOS or Linux works
+there and fails on every Windows machine - which is the machine this project
+is developed on.
+
+**Fix.** `await import(pathToFileURL(absPath).href)`.
+
+Hit by the three SEO tools on 2026-08-27 (`check-seo-surface.mjs`, its test,
+and `check-seo-live.mjs`), which turned `seo:check` and `tools:test` red on a
+fresh pull while being green on the machine that wrote them.
+
+**Same family, already recorded:** the `fileURLToPath, never URL.pathname`
+note at the top of `database/scripts/check-migrations.mjs`, and the reason
+`npm test` in `database/` could not pass on Windows until 2026-08-23. When a
+tool resolves a path and then hands it to something that wants a URL, convert
+it explicitly.
+
 ## Regenerating `database/types/database.ts` after a migration
 
 The file is GENERATED and must never be hand-edited. `npm run db:types` in
