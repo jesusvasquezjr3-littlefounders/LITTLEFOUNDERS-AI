@@ -2,6 +2,47 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## The Lesson Engine shipped unusable, and four kinds of green audit said otherwise (2026-08-27)
+
+**Symptom, reported by the owner:** "Empezar leccion NO FUNCIONA." Not slow —
+dead. Nothing in a lesson responded to a tap.
+
+**Cause.** The character layer is a full-viewport canvas at z-20 above the
+lesson's own content. Its wrapper carries `pointer-events-none` and
+`pointer-events` is inherited — but React Three Fiber writes
+`pointer-events: auto` INLINE on its own container, and an inline value beats an
+inherited one. The canvas was therefore hit-testable and topmost over every
+control in the product. Measured: `document.elementFromPoint` at the centre of
+"Start lesson" returned CANVAS, and a real `Input.dispatchMouseEvent` left the
+screen unchanged.
+
+**Fix.** `SceneCanvas` takes `interactive`, defaulting to true so the Tutor —
+which is driven by tapping the stage — is untouched. The layer passes `false`,
+which sets the class AND an inline `pointer-events: none`, because only an
+inline value wins against an inline value.
+
+**Why every gate missed it, which is the expensive part.** 57 fixtures opened in
+two themes. A 220-step walk of the showcase. 1,305 tests. Four screenshot passes
+at both breakpoints. All green, on a product where nothing was clickable —
+because every one of them drove the app with `element.click()`, which dispatches
+straight at the node and does NO hit-testing. They reached past the exact thing
+a user could not get past.
+
+So the verification changed, not only the code. The engine is now walked with
+REAL mouse events at real coordinates, and every control on every screen is
+hit-tested with `elementFromPoint`: 120 screens at 1280x900 and at 375x812 in
+both themes returned 0 unreachable controls, 0 characters rendered in 2D, 1
+canvas, 0 console errors and no tap target under the 44 px floor. The class is
+now /AGENTS.md §1.14: a synthetic click cannot prove a control is reachable, a
+full-viewport overlay is guilty until proven inert, and the proof belongs on the
+element rather than on an ancestor.
+
+**Still owner-side, and unchanged by this fix:** no production LESSON has been
+opened from here. A lesson sits behind guest onboarding, whose second step asks
+for a name, and entering personal data into a production form is not something
+an automated check may do. Opening one closes both this fix's confirmation and
+the device frame-rate number.
+
 ## The Lesson Engine is 3D in production, and what that deploy was and was not verified against (2026-08-27)
 
 Seven commits, frontend and documentation only, **zero migrations** — so no
