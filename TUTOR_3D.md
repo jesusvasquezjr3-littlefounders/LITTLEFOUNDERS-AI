@@ -404,6 +404,43 @@ This matters beyond the lab. §5.2 records that a character's Suspense boundary
 depending on their ROLE made inviting them an element-type change under an
 unchanged key — that is a remount, in the Tutor, in production.
 
+### §4.0b The learner must be able to see the FACE (2026-08-27)
+
+A character's backward lean is composed from three sources that never see each
+other: the character's own rest stance, the emotion layer, and the action. Each
+is reasonable alone, and their SUM is what a viewer sees.
+
+Measured on the live skeleton, chest + neck + head against the rest pose:
+
+| pose | emotion + action | face lift | reads as |
+|---|---|---|---|
+| `ambient.idle` | neutral + idle | 0 | the baseline |
+| `ambient.idle.happy` | happy + idle | 14.5 deg | fine |
+| `marketing.proud` | proud + idle | 28.2 deg | fine |
+| `marketing.banner` | neutral + celebrate | 30.5 deg | fine — joyful, face clear |
+| `celebrate.lesson` | proud + celebrate | **59.7 deg** | chin at the camera, face gone |
+
+`celebrate.lesson` and `celebrate.levelup` are the results screen, and they LOOP
+— Zara and Rho held that pose for the entire screen. Dina never came close: her
+quadruped driver lifts the head 12.6 deg and reads as looking up in delight.
+
+`limitFaceLift` (`characterActions.ts`) caps the cumulative backward pitch of
+chest + neck + head at `MAX_FACE_LIFT` = 0.58 rad (33.2 deg), applied AFTER the
+frame's pose is fully composed, on both the clip-driven and the procedural path.
+The correction is proportional, so the shape of the gesture survives, and it is
+measured as a delta from each bone's rest orientation in `rig.base` — never from
+a world transform (§5.1). `celebrate.lesson` went 59.7 -> 32.5 deg;
+`marketing.banner` stayed at 30.5, unchanged to the digit.
+
+**Why a cap rather than a re-authored clip.** Re-authoring `celebrate` fixes one
+composition out of the 7 x 12 the vocabulary allows, and the next pairing that
+loses the face is the same bug found the same way — by somebody happening to
+look at it. The cap states the invariant once and holds for pairings added later
+by content rather than by code. `characterActions.test.ts` pins that a pose
+under the limit is left BYTE-identical, that the correction is proportional,
+that a forward lean never buys budget for a backward one, and that 120
+consecutive calls change nothing after the first.
+
 ### §4.1 The authored clip library — why every clip is ADDITIVE
 
 `frontend/scripts/author-clips.py` produces `clips-biped.glb`: 20 clips (12

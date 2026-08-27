@@ -356,6 +356,94 @@ const EMOTION_POSTURE: Record<CharacterEmotion, (rig: Rig, t: number) => void> =
   },
 };
 
+
+/*
+ * THE LEARNER MUST BE ABLE TO SEE THE FACE.
+ *
+ * This is a product rule, and it is enforced here because NO SINGLE LAYER can
+ * enforce it. A character's backward lean is composed from three independent
+ * sources that never see each other: the character's own rest stance, an
+ * authored emotion clip, and an authored or procedural action. Each is
+ * reasonable alone. `celebrate` leans back about 30 degrees, which reads as joy;
+ * `proud` adds another 28; together they put Zara's chin at the camera and her
+ * face at the ceiling, held for the whole loop, on the results screen of a
+ * finished lesson. MEASURED against the rest pose, chest + neck + head:
+ * `marketing.banner` (neutral + celebrate) -30.5 deg and the face reads
+ * perfectly; `celebrate.lesson` (proud + celebrate) -59.7 deg and the face is
+ * gone. The limit below sits between them, so every pose that already read well
+ * is untouched and only the compositions that lose the face are pulled back.
+ *
+ * WHY A CAP AND NOT A RE-AUTHORED CLIP. Re-authoring `celebrate` fixes one
+ * composition of two; the next emotion paired with the next clip is the same
+ * bug again, discovered the same way — by somebody happening to look. A cap
+ * states the invariant once and holds for every pairing, including the ones
+ * added later by content rather than by code.
+ *
+ * The correction is proportional, so the SHAPE of the gesture survives: a
+ * celebration still throws the head back, just not past the point where the
+ * character stops facing the learner. And it is measured as a delta from each
+ * bone's REST orientation (`rig.base`), never from a world transform, for the
+ * reason `modelBounds.ts` exists.
+ */
+
+/** Radians. Between the -30.5 that reads well and the -59.7 that does not. */
+export const MAX_FACE_LIFT = 0.58;
+
+/**
+ * Signed twist of `delta` about X, in radians.
+ *
+ * Negative is FACE-LIFTING on every rig in the cast — verified by measuring the
+ * live skeleton, not assumed: Zara's head sits at +33.7 deg at rest and drops
+ * toward 0 as she leans back, and the quadruped driver expresses her look-up
+ * with a negative head rotation too.
+ */
+function twistX(delta: Quaternion): number {
+  const angle = 2 * Math.atan2(delta.x, delta.w);
+  if (angle > Math.PI) return angle - 2 * Math.PI;
+  if (angle < -Math.PI) return angle + 2 * Math.PI;
+  return angle;
+}
+
+const liftDelta = new Quaternion();
+const liftCorrection = new Quaternion();
+
+/**
+ * Pulls the head chain forward until the face is visible again.
+ *
+ * Returns the total face lift BEFORE correction, in radians, so a caller (or a
+ * test) can see how close a pose runs to the limit. Call it after the pose for
+ * the frame is fully composed — it reads what is there and does not care which
+ * layer put it there, which is the entire point.
+ */
+export function limitFaceLift(rig: Rig, max: number = MAX_FACE_LIFT): number {
+  const chain = [rig.chest, rig.neck, rig.head].filter(
+    (bone): bone is Bone => bone !== undefined && rig.base.has(bone),
+  );
+  if (chain.length === 0) return 0;
+
+  const twists = chain.map((bone) => {
+    liftDelta.copy(rig.base.get(bone)!).invert().multiply(bone.quaternion);
+    return twistX(liftDelta);
+  });
+  // Only the lifting parts count. A bone leaning FORWARD during a bow must not
+  // buy budget for another bone to lean further back.
+  const lift = twists.reduce((sum, twist) => sum + Math.min(twist, 0), 0);
+  // Math.abs, not -lift: negating a zero sum yields -0, which is a surprising
+  // thing to hand back from a function whose result is a magnitude.
+  if (-lift <= max) return Math.abs(lift);
+
+  const keep = max / -lift;
+  chain.forEach((bone, index) => {
+    const twist = twists[index] as number;
+    if (twist >= 0) return;
+    // A rotation about X, built directly: no Vector3 axis to allocate or share.
+    const half = (twist * (keep - 1)) / 2;
+    liftCorrection.set(Math.sin(half), 0, 0, Math.cos(half));
+    bone.quaternion.multiply(liftCorrection);
+  });
+  return Math.abs(lift);
+}
+
 /**
  * Applies an emotion posture and an action to a rig for one frame.
  * Returns the vertical lift the caller should apply to the whole character.

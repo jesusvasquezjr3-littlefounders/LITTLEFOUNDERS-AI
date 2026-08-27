@@ -231,15 +231,25 @@ reaches the Tutor too: `TUTOR_3D.md` §5.2 records a Suspense boundary that made
 inviting a character a remount, in production. The class is now written into
 /AGENTS.md §1.14 beside its measurement sibling.
 
-### Open, for the owner to decide — a pose-review finding, not a bug
+### The `celebrate` finding — investigated and CLOSED
 
-`celebrate` throws the head so far back that the FACE IS LOST, on both body
-plans: Zara looks at the ceiling with her arms up, Dina's muzzle points straight
-up and her eyes leave frame. It is the shared gesture, not the quadruped driver.
-It matters because `celebrate.lesson` and `celebrate.levelup` are the results
-screen, and a character celebrating AT the learner reads better than one
-celebrating away from them.
+Recorded earlier as "for the owner to decide". Investigating it first corrected
+two things I had got wrong:
 
-Not changed unilaterally: `celebrate` is an authored clip the Tutor also plays,
-so re-authoring it through `scripts/author-clips.py` is a decision with a blast
-radius beyond this goal. Contact sheets are attached to the session.
+- **Dina was never affected.** Her bad `celebrate` was the remount bug above.
+  Post-fix, on a single mount, she lifts her head 12.6 deg and reads as
+  delighted. The finding applies to the clip-driven bipeds only.
+- **The clip is not the culprit either.** The authored `celebrate` head track is
+  only -14 deg, and `emotion.proud` -8. What loses the face is their SUM with
+  the character's own rest stance: 59.7 deg of cumulative backward pitch,
+  against 30.5 for the same clip under a neutral emotion, which reads perfectly.
+
+So the fix is not in a clip and not in an emotion — it is the product rule
+neither of them can know: **the learner must be able to see the face.**
+`limitFaceLift` caps the cumulative lift of chest + neck + head after the pose is
+composed, proportionally, on both the clip-driven and procedural paths.
+`celebrate.lesson` 59.7 -> 32.5 deg; every pose already under the cap is left
+byte-identical, verified by test and by re-measuring `marketing.banner` at an
+unchanged 30.5. See `TUTOR_3D.md` §4.0b.
+
+Verified by looking, on all three bipeds and the quadruped.

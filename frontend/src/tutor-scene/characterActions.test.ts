@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { Bone, Object3D, Quaternion } from 'three';
 import { bindRig, resetRig } from './rig';
-import { applyCharacterFrame, ACTION_SECONDS, CLIP_LIFT, arc } from './characterActions';
+import {
+  applyCharacterFrame,
+  ACTION_SECONDS,
+  CLIP_LIFT,
+  arc,
+  limitFaceLift,
+  MAX_FACE_LIFT,
+} from './characterActions';
 import { CHARACTER_ACTIONS, CHARACTER_EMOTIONS } from '@/components/characters/control/types';
 
 /*
@@ -188,5 +195,140 @@ describe('CLIP_LIFT', () => {
     expect(arc(0)).toBeCloseTo(0, 6);
     expect(arc(1)).toBeCloseTo(0, 6);
     expect(arc(0.5)).toBeCloseTo(1, 6);
+  });
+});
+
+/*
+ * THE LEARNER MUST BE ABLE TO SEE THE FACE.
+ *
+ * Measured on the live skeleton, chest + neck + head against the rest pose:
+ * `marketing.banner` (neutral + celebrate) lifts the face 30.5 degrees and
+ * reads perfectly; `celebrate.lesson` (proud + celebrate) lifted it 59.7, put
+ * Zara's chin at the camera, and held it there for the whole loop — on the
+ * results screen of a finished lesson. Neither layer is wrong alone, which is
+ * why the rule cannot live in either of them.
+ */
+describe('limitFaceLift', () => {
+  /** Rotates a bone about X, the way a lean does, on top of its rest pose. */
+  function pitch(bone: Bone, radians: number): void {
+    const twist = new Quaternion().setFromAxisAngle({ x: 1, y: 0, z: 0 } as never, radians);
+    bone.quaternion.multiply(twist);
+  }
+
+  function bipedRig() {
+    const root = buildBiped();
+    const rig = bindRig(root);
+    const chest = root.getObjectByName('Spine02') as Bone;
+    const neck = root.getObjectByName('neck') as Bone;
+    const head = root.getObjectByName('Head') as Bone;
+    return { rig, chest, neck, head };
+  }
+
+  it('LEAVES A POSE UNDER THE LIMIT EXACTLY ALONE', () => {
+    /*
+     * The most important assertion here. A cap that quietly re-poses every
+     * character would be a much bigger change than the defect it fixes, and it
+     * would be invisible — everyone would just think the cast looked slightly
+     * different. Byte-identical, not approximately identical.
+     */
+    const { rig, chest, head } = bipedRig();
+    pitch(chest, -0.2);
+    pitch(head, -0.25);
+    const chestBefore = chest.quaternion.clone();
+    const headBefore = head.quaternion.clone();
+
+    const lift = limitFaceLift(rig);
+
+    expect(lift).toBeCloseTo(0.45, 6);
+    expect(chest.quaternion.equals(chestBefore)).toBe(true);
+    expect(head.quaternion.equals(headBefore)).toBe(true);
+  });
+
+  it('pulls an over-lifted pose back to exactly the limit', () => {
+    const { rig, chest, neck, head } = bipedRig();
+    pitch(chest, -0.42);
+    pitch(neck, -0.04);
+    pitch(head, -0.58);
+
+    const before = limitFaceLift(rig);
+    expect(before).toBeCloseTo(1.04, 6);
+
+    // Re-measuring is what the next frame does, so this is the real check.
+    expect(limitFaceLift(rig)).toBeCloseTo(MAX_FACE_LIFT, 5);
+  });
+
+  it('keeps the SHAPE of the gesture — every bone is scaled by the same factor', () => {
+    // Clamping one joint to soak up the whole excess would fix the number and
+    // break the pose: a celebration would end up with a bent neck on a
+    // straight back.
+    const { rig, chest, head } = bipedRig();
+    pitch(chest, -0.3);
+    pitch(head, -0.9);
+
+    limitFaceLift(rig);
+
+    const restChest = rig.base.get(chest)!;
+    const restHead = rig.base.get(head)!;
+    const chestNow = restChest.clone().invert().multiply(chest.quaternion);
+    const headNow = restHead.clone().invert().multiply(head.quaternion);
+    const chestAngle = 2 * Math.atan2(chestNow.x, chestNow.w);
+    const headAngle = 2 * Math.atan2(headNow.x, headNow.w);
+    // The original ratio was 0.3 : 0.9, so it must still be 1 : 3.
+    expect(headAngle / chestAngle).toBeCloseTo(3, 4);
+  });
+
+  it('is IDEMPOTENT — a second call on the same frame changes nothing', () => {
+    /*
+     * This runs once per frame, forever. Every compounding defect in this
+     * codebase looked fine the first time: the remount that inherited the
+     * previous gesture, the rig base captured from a drifted skeleton. A cap
+     * that shaved a few degrees off every frame would bow the character over
+     * in about a second.
+     */
+    const { rig, chest, head } = bipedRig();
+    pitch(chest, -0.5);
+    pitch(head, -0.7);
+    limitFaceLift(rig);
+    const chestSettled = chest.quaternion.clone();
+    const headSettled = head.quaternion.clone();
+
+    for (let i = 0; i < 120; i += 1) limitFaceLift(rig);
+
+    expect(chest.quaternion.angleTo(chestSettled)).toBeLessThan(1e-9);
+    expect(head.quaternion.angleTo(headSettled)).toBeLessThan(1e-9);
+  });
+
+  it('never touches a forward lean — a bow is a real gesture', () => {
+    const { rig, chest, head } = bipedRig();
+    pitch(chest, 0.9);
+    pitch(head, 0.6);
+    const chestBefore = chest.quaternion.clone();
+    const headBefore = head.quaternion.clone();
+
+    expect(limitFaceLift(rig)).toBe(0);
+    expect(chest.quaternion.equals(chestBefore)).toBe(true);
+    expect(head.quaternion.equals(headBefore)).toBe(true);
+  });
+
+  it('a forward-leaning bone does not buy budget for a backward-leaning one', () => {
+    // Summing signed twists would let a deep bow at the chest pay for a head
+    // thrown all the way back, which is a stranger pose than either.
+    const { rig, chest, head } = bipedRig();
+    pitch(chest, 1.0);
+    pitch(head, -0.9);
+
+    expect(limitFaceLift(rig)).toBeCloseTo(0.9, 6);
+    expect(limitFaceLift(rig)).toBeCloseTo(MAX_FACE_LIFT, 5);
+  });
+
+  it('works on the quadruped, which has no neck slot', () => {
+    const root = buildQuadruped();
+    const rig = bindRig(root);
+    expect(rig.kind).toBe('quadruped');
+    const head = root.getObjectByName('head') as Bone;
+    pitch(head, -1.2);
+
+    expect(limitFaceLift(rig)).toBeCloseTo(1.2, 6);
+    expect(limitFaceLift(rig)).toBeCloseTo(MAX_FACE_LIFT, 5);
   });
 });

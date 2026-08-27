@@ -18,6 +18,7 @@ import {
   applyCharacterFrame,
   applyEmotionPosture,
   arc,
+  limitFaceLift,
 } from './characterActions';
 import { useClipLibrary } from './useClipLibrary';
 import {
@@ -312,6 +313,12 @@ export function Character3D({
         applyEmotionPosture(bones, emotion, state.clock.elapsedTime + PHASE[id]);
       }
       /*
+       * LAST, because it judges the FINISHED pose. The backward lean that hides
+       * a face is composed from the rest stance, the emotion layer and the
+       * action, and no one of them is wrong on its own — see `limitFaceLift`.
+       */
+      limitFaceLift(bones);
+      /*
        * TRAVEL IS NOT IN THE CLIP. A clip can only express leaving the ground
        * as a hips translation in the authoring rig's units — an absolute value
        * shared between skeletons, which is the defect this whole layer exists
@@ -348,6 +355,9 @@ export function Character3D({
         lift: 0,
       });
       actionLift.current = lift * asset.targetHeightM;
+      // Same rule on the procedural path: the quadruped composes an emotion
+      // posture and an action driver onto the same joints.
+      limitFaceLift(bones);
     }
     if (!settings.ambientMotion) {
       // Reduced motion or the low tier: hold the pose, perfectly still —
