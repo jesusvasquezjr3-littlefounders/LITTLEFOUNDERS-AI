@@ -1,0 +1,14 @@
+{
+  "order": 100,
+  "lesson_id": "33d73df4-0000-4042-8fbf-ab61fe68ce58",
+  "slug": "la-isla-de-los-precios-escondidos",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, flattened to white, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/083ca8d1b05e43a9ed8fdd82ced2ddf8d5777d55ec441689b20f3c2f242d8066.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/f74f3eac1936810ca93b120486acbf8ebbf979d037f9271a5e6321fe5a929351.webp","slots":["s05-objeto-barato.payload.options[0].image_url"],"subject":"collar de conchas ovalado","format":"image/webp","bytes":55546,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/803b97c1c515aa115f80d84dc4b040974966723a11be919af9cad3648ae054c6.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/dcaaa4c695d8aa64cdc65ff4b97f9446416371caf079083a9df9b2680d38b9ed.webp","slots":["s05-objeto-barato.payload.options[1].image_url"],"subject":"silbato de madera con cordón azul","format":"image/webp","bytes":38188,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/9b5b540e750b5f2bcf40ece7437e3f6d420182f8bf5131e5b1ccc1e989c6889a.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/a2f35256202cac6975b7ecdec273a97051b2e2c77b3db4ee15746f2f516fda53.webp","slots":["s07-trueque-peces.payload.offer_b.image_url"],"subject":"red de pesca enrollada azul con amarres coral y amarillo","format":"image/webp","bytes":89250,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}

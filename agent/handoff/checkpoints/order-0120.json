@@ -1,0 +1,14 @@
+{
+  "order": 120,
+  "lesson_id": "14eb5627-f2b9-4bba-a23c-e483146f3962",
+  "slug": "elijo-segun-mi-energia",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"3ce828e7dbfd46939d5549c9824ef4c2b7beba2b4122680c0f9a78199205c839.webp","slot":"s6-clasifica.payload.items[3].image_url","new":"15256404c15827161c03ee6a72dc031eccc8c20bfee6d5af6033be4b094e7a6b.webp"}
+  ]
+}

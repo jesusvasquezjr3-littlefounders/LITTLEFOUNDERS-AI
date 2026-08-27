@@ -1,0 +1,20 @@
+{
+  "order": 68,
+  "lesson_id": "b2f4ca49-a090-4529-9c6a-efac431dc56b",
+  "slug": "confio-y-reconozco-mis-monedas",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/446feb941dc739d67ba722201db2b3de0a4d8e653ae62dba2c565a2b5ef36196.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/080890f8a6981d2af260545e97f221c7bf9ece809b73071c0ee2ac6d4b7762d8.webp",
+      "slots": ["s7-billetes-zara.payload.left[2].image_url"],
+      "subject": "concha brillante",
+      "format": "image/webp",
+      "bytes": 62548,
+      "dimensions": "1328x1328"
+    }
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}

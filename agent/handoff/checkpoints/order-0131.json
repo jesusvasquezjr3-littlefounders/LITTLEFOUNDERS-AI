@@ -1,0 +1,15 @@
+{
+  "order": 131,
+  "lesson_id": "49dd2326-8c2b-4fe5-9fb4-da4a40821a6b",
+  "slug": "recuerdo-una-tarea-de-equipo",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"bd48f0914097bdb4fc0167c0d4b234100db9bcf61d47b85cc20615bca2df60fe.webp","slot":"s3-clasifica-esfuerzo.payload.items[1].image_url","new":"472ee62752f301aa32ed1bee99cc3e1c76f263324e5d8f162a1b5d04d1ed4da3.webp"},
+    {"old":"9b6d8b5ff6d822a9b6ca5eaa1abf2fdbf1f2ab98fcf1bd5dc1afde56ba13c2ec.webp","slot":"s3-clasifica-esfuerzo.payload.items[2].image_url","new":"84c9fc8936770bd53f7d75398c2255c076bd01ce8454dd73182186b9804ba8fa.webp"}
+  ]
+}

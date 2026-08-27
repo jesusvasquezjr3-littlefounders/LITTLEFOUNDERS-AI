@@ -1,0 +1,17 @@
+{
+  "order": 116,
+  "lesson_id": "ebfeb5ac-07ab-44f9-a625-f27f5e9a28ee",
+  "slug": "me-canso-un-poquito",
+  "status": "completed",
+  "generated_images": 4,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"d80a1e684164edfbaca74a6510ca9141b9273af4bc918c1c1a6245f8720064c5.webp","slot":"s7.image_url","new":"94f10e3ef8c15aa858b0973753a5b07ad4e3b34fc3685083b249dc4804d3323d.webp"},
+    {"old":"b5f3897c6e63e4a7acd9c179976d0be1f20ecadebec3d6f19e095f772e42e5b7.webp","slot":"s9.payload.items[0].image_url","new":"5fb5e27e6674cc13cface1c267c781a3beb89cc417265a079e83807b5a081849.webp"},
+    {"old":"5a28616d9ba215d82dc94a164e908c00c5809c2c57700df20a24776aa3597ff5.webp","slot":"s9.payload.items[2].image_url","new":"72839c33e8a68834795361e173fd0492b5985e16c17c0967e6891a585211a38b.webp"},
+    {"old":"500a90f895a3f1553db344dc13b0b1b052b5b4c9fa030636c290cfec332cedc2.webp","slot":"s9.payload.items[3].image_url","new":"d2ae079f9b32e5a4070a45271d463f716ee03f3aff07e67f4b824d4a9294bba7.webp"}
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "order": 117,
+  "lesson_id": "837b1697-d4d9-41e3-b25a-28783e225236",
+  "slug": "tareas-que-ayudan-en-casa",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"3ffe04bc92067d4570d0c2a508cd66e2a8869a2e0bad5513bcb4c301a116f6af.webp","slot":"s3-needs-wants.payload.items[4].image_url","new":"f9ca30c4b420c527f6c7ec6c4a8ea67085bb64b89f2b810383c9762774fe5edf.webp"},
+    {"old":"16fc03bc5b3bf7cce1decad787fda00379ade70d2bf0c359207a8a7277fe4905.webp","slot":"s4-odd-one-out.payload.items[0].image_url","new":"159772809277e25be80ce6bf272c7ca5e0a2a3a4935db3eb034e7618975013d6.webp"}
+  ]
+}

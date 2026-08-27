@@ -1,0 +1,14 @@
+{
+  "order": 125,
+  "lesson_id": "e6528c2e-58d7-4277-8997-9f64acb9710f",
+  "slug": "regreso-a-terminar",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"106497687997c8ab8c6b7285b089760f3afc77605070abef32cbadf4d250e858.webp","slot":"s4-quehaceres.payload.items[0].image_url","new":"01a11c5c8646d932e65103c31bbdd4a4f8a928854c156f799ee2522bc7562fa1.webp"}
+  ]
+}

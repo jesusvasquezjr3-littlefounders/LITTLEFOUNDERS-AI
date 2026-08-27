@@ -1,0 +1,12 @@
+{
+  "order": 235,
+  "lesson_id": "d8b17b62-37b9-438a-bc6d-6329f0f40546",
+  "slug": "le-pongo-nombre-a-mi-frasco",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [{"old":"4762fb0049cf4a25a01e579ccdcf9b27b14b54c2c91da8a37cc7a590f6562d38.webp","slot":"s1-intro.image_url","new":"58d3fe2eead320483f38ded6210106aa84e49850504cfbd971e0438010455be9.webp"}]
+}

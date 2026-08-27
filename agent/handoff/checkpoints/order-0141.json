@@ -1,0 +1,15 @@
+{
+  "order": 141,
+  "lesson_id": "a4695090-621a-4cec-ba40-f351df731863",
+  "slug": "chambitas-seguras-para-vecinos",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"16fc03bc5b3bf7cce1decad787fda00379ade70d2bf0c359207a8a7277fe4905.webp","slot":"s9-cual-no-es-segura.payload.items[0].image_url","new":"1672a505751029ac27ffe5eb5563deb4eb36fdb61327f18062b17b6d590b6332.webp"},
+    {"old":"8d9c9436474568b29e15693325731299c6cb8a60f9de14d62560695a6021bfdd.webp","slot":"s9-cual-no-es-segura.payload.items[3].image_url","new":"537319a46b07d2f1561e28eb83308fb3b1c2f9d7f649845ab5f07dc25020a8c9.webp"}
+  ]
+}

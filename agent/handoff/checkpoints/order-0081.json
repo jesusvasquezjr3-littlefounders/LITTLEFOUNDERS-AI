@@ -1,0 +1,13 @@
+{
+  "order": 81,
+  "lesson_id": "22f8ca87-9ec1-4987-bdc5-7efecf7311c1",
+  "slug": "ahorro-un-poco-mas",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/84aef9d9e878ffee5b39f6f175278ef8dac3db2447f82a3d7defe4850c416fe4.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/72f236a097eed85f0ba5a7842770b108252639db93bc1d261455c85bd72f49e7.webp","slots":["s7-imagen-mas-caro.payload.options[0].image_url"],"subject":"caramelo envuelto","format":"image/webp","bytes":28518,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/833854475774b2d4e2fe960288f6e3e8087252ea74ca6e01283b6de8e13c8e35.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/fe9129d574dd6a91b85a51945794f1a2568d28d0750018c756ed77deb9fcaf22.webp","slots":["s7-imagen-mas-caro.payload.options[1].image_url"],"subject":"llavero con estrella","format":"image/webp","bytes":15722,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}

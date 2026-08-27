@@ -1,0 +1,10 @@
+{
+  "order": 107,
+  "lesson_id": "644f5045-0a3d-468c-b68d-5b70e125fc22",
+  "slug": "inauguramos-la-casa-de-cambios",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, flattened to white, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [{"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/057f84a6c08be2a059912df69aa6ba3e5abf78bc74d995fe8888a92516cfea87.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/bfa3c355886fed8dc516c074861440ac6e0def293f7bc0799e9ebc4b8b7e5ed6.webp","slots":["s1-dialogo.image_url"],"subject":"collar de conchas con cuentas coral y centro amarillo","format":"image/webp","bytes":35366,"dimensions":"1328x1328"}],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}

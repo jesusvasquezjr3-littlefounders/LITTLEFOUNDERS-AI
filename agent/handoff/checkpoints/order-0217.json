@@ -1,0 +1,16 @@
+{
+  "order": 217,
+  "lesson_id": "19ff1f55-fa01-4738-8043-6ea24cb16622",
+  "slug": "cada-oficio-tiene-su-puesto",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"1338681b24acc88afe0a7247533eb7916af26a0e0c87f6a5737570e379df4ef0.webp","slot":"s4-empareja.payload.left[0].image_url","new":"a8026e93e1f017428d9c4953d4b3926de5064f715a851997c9830c5e261282b9.webp"},
+    {"old":"185bb72aa0e6e6e302a51c17c0cc0e80484681a013619f5742649324e97041a1.webp","slot":"s4-empareja.payload.left[1].image_url","new":"6825ad4cb725d7b889decfcaa4a1954da6da87392ae3f6a4e65fc8c2c05d6c59.webp"},
+    {"old":"c8b7d10dcd9f82557a5b6df868c925900937020e81d79f18882f81ce0383944a.webp","slot":"s4-empareja.payload.left[2].image_url","new":"7b3526744b9fda4cf69b1dfaab780bd55d285b1c138f8a4020710ffb7fa53f0c.webp"}
+  ]
+}

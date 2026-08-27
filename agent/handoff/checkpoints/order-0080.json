@@ -1,0 +1,20 @@
+{
+  "order": 80,
+  "lesson_id": "b65a0f11-643f-4091-b905-0543646f74ec",
+  "slug": "me-alcanza-o-no",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/969cc5657f5a8683d50de4ad77d4ff6ec6623f0a5f5fd14a4b4d0b1ef49bda2a.webp",
+      "slots": ["s5-dialogo-tienda.image_url"],
+      "subject": "tienda con barco y monedas",
+      "format": "image/webp",
+      "bytes": 24494,
+      "dimensions": "1328x1328"
+    }
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}

@@ -1,0 +1,18 @@
+{
+  "order": 218,
+  "lesson_id": "8a4198a3-b9b6-49a8-8aa2-699062a572ca",
+  "slug": "elijo-que-oficio-probar-en-el-festival",
+  "status": "completed",
+  "generated_images": 5,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"1338681b24acc88afe0a7247533eb7916af26a0e0c87f6a5737570e379df4ef0.webp","slot":"s2-match-pairs.payload.left[0].image_url; s5-sort-buckets.payload.items[5].image_url","new":"a588dc2a6dbe4aa16e77fdced69647fa7a704239349d418ffba7a5ff19cfc9a8.webp"},
+    {"old":"9c489b7b0eb190019a9d47a0942aec9fb347e05b443513d8480b248cc6344d26.webp","slot":"s2-match-pairs.payload.left[2].image_url; s5-sort-buckets.payload.items[3].image_url","new":"cdcf01c1d876460a658c4b35328761e1d528435e82e7b0adaf1613a632d108b1.webp"},
+    {"old":"359463a79903f582d130843805211594e5a37a1e683ce616298319fce63a116a.webp","slot":"s5-sort-buckets.payload.items[0].image_url","new":"1e13204fe36abfc51dfb387de5409b114ac8733d66740894d7b58f6f13dec12c.webp"},
+    {"old":"185bb72aa0e6e6e302a51c17c0cc0e80484681a013619f5742649324e97041a1.webp","slot":"s5-sort-buckets.payload.items[2].image_url","new":"add587a150cb3a230d0b45777ea4de429d6c56cec243f0cdf210fab9ce385e9f.webp"},
+    {"old":"658d3ebe6a489f7c77d6a46074b3ad3d83f40e1538a17a45d1942b3a844d7a23.webp","slot":"s5-sort-buckets.payload.items[4].image_url","new":"966945d7cf6bfa8c8218ed1358c87dc2375aed9112e364a44cc6b743c17dd00a.webp"}
+  ]
+}

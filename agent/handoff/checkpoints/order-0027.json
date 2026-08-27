@@ -1,0 +1,36 @@
+{
+  "order": 27,
+  "lesson_id": "918560a5-d010-4102-bb1f-f1107b920d38",
+  "slug": "dos-islenos-dos-trueques-distintos",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/4def5acb3b24d2fe1189c625a0e880772124756278c5d99508cb82475f868657.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/8bf6d6b7809e1548079d85e72fd8eef2cce74b73cc41ed07c4ffc46d9da889d5.webp",
+      "slots": [
+        "s5-deseos-vs-posesiones.payload.items[0].image_url"
+      ],
+      "subject": "collar de caracoles",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/4dadbc564da0377830ac20cc08a8e7144cee7679207d9f68625c2ea35bb02dc5.png",
+      "format": "image/webp",
+      "bytes": 23320
+    },
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/4916fd4b6ac2093b0593090b582df40e32a56515baf2dd709406ddd1f9411858.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/732420418b81b9cc9b7f0379b71972085ac48ab3b88694e5fa6c88432fe93676.webp",
+      "slots": [
+        "s5-deseos-vs-posesiones.payload.items[3].image_url"
+      ],
+      "subject": "pluma de loro",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/8ae2a26b84071489e297e1fc2bd2abf8d0c4d1638f08ae5475a30d8c425c6da0.png",
+      "format": "image/webp",
+      "bytes": 24724
+    }
+  ],
+  "locales_written": [
+    "es-MX",
+    "en-US",
+    "pt-BR"
+  ]
+}

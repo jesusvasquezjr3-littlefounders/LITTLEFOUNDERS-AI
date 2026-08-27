@@ -1,0 +1,16 @@
+{
+  "order": 190,
+  "lesson_id": "294707a2-d889-40d7-822a-e288c323b11b",
+  "slug": "a-quien-ayudo-hoy",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"ee047817fc2a7beaad1d407d79003eb489bf95ec07c73cd8035327898b5fdc7a.webp","slot":"s1-dina-recuerda.image_url","new":"b4043cd1441cc44b675101e4e53c351320b88cfa68fd063f403b9dc69c751c6d.webp"},
+    {"old":"2f6d8fdbf9fd215248c335fbcda891a055377b0fb87884ce525b980d3f199689.webp","slot":"s2-puente-roto.payload.art.image_url","new":"d3c808b337ff30ee5bdf47badffa1fb472a9ae508901c0db1d13a4415e293022.webp"},
+    {"old":"79ce7b150898c4ce5e458e9ef92831389c0193429be7aa428cad3c2829c22d81.webp","slot":"s4-eavesdrop-ayudar.image_url","new":"24fe17598062f1726439fc5f9db1f0830d9ef186d4bdfa57ba6d5a3ed0932ddb.webp"}
+  ]
+}

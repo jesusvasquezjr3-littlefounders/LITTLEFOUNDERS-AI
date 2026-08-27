@@ -1,0 +1,13 @@
+{
+  "order": 91,
+  "lesson_id": "d3af00dc-cc0b-46d3-92c3-76f22579da51",
+  "slug": "recuerdo-precios-baratos-y-caros",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/e88a981029506ecaa2055a5c759044faf96df78e3058d30f5cbc023da6a14e6a.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/8b3062b65285040efadd95358b379b4edfcde948e917e0838bb76dc407f4539a.webp","slots":["s8-match-pairs.payload.left[2].image_url"],"subject":"hoja de lija plegada naranja","format":"image/webp","bytes":26936,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"],
+  "production_verified": {"published_lessons":988,"document_rows":2964,"urls_verified_as_webp":1,"png_urls":0,"images_serving_more_than_one_lesson":297}
+}

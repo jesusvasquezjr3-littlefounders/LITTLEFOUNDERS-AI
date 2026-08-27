@@ -1,0 +1,21 @@
+{
+  "order": 89,
+  "lesson_id": "2aebf42a-c88d-4948-9912-33d849f169c4",
+  "slug": "armo-un-trueque-justo-final",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/048c03e65f6d6965af62bd87ad95559975fdd21263284bcf89d5181697553119.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/33cf1c6e5e5e51fbc991a5b2326663c7455cb091d2b7932588447b35568634b8.webp","slots":["s5-necesidades-deseos.payload.items[0].image_url"],"subject":"vaso con agua azul y gotas","format":"image/webp","bytes":39410,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/0ec2bb23d9e30c598c3af952fcf2eacaa5327b4157e4b8ff6d05a177e61d4000.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/d604b080c0f6fc33f8eebefc60de464b82145a7c4a589238e791b4b0d614f246.webp","slots":["s5-necesidades-deseos.payload.items[1].image_url"],"subject":"cuenco con arroz, maíz, chícharos y verduras","format":"image/webp","bytes":57118,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/cd54492196f72129853ec7c7b3471077dffdaae8591d875898fb7fb9092e5bbd.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/14bb2b5f707e94aa15a310a8a2d6aed8971707113cad5778e458ca57de037b87.webp","slots":["s5-necesidades-deseos.payload.items[2].image_url"],"subject":"collar ovalado de flores de colores","format":"image/webp","bytes":30938,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"],
+  "production_verified": {
+    "published_lessons": 988,
+    "document_rows": 2964,
+    "urls_verified_as_webp": 3,
+    "png_urls": 0,
+    "images_serving_more_than_one_lesson": 298
+  }
+}

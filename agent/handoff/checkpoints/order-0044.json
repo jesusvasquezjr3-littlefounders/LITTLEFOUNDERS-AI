@@ -1,0 +1,12 @@
+{
+  "order":44,
+  "lesson_id":"9cfa4fcc-c260-4a4b-bc65-2c949a209a69",
+  "slug":"por-que-confiamos-en-la-moneda",
+  "status":"complete",
+  "generation":"Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images":[
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/00b69c86f254de3f2f27ea16faa040b8890b7446d287acd98bb050fcd4c79d9a.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/c1a8f2500f4ce6921bd905e6b548db0bdfc67b2160243f78fb295899b49d0114.webp","slots":["s2-objeto-dinero.payload.options[0].image_url"],"subject":"grupo de conchas","format":"image/webp","bytes":42542},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/86dd0a6c1853c8668f3a623e9f8f3f9921c334af878996f46ac3cc1af8951b5c.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/2575b2d6c18bfb9c127e23875bca420de97d49305873515dc50d8de36a3dbc80.webp","slots":["s2-objeto-dinero.payload.options[3].image_url"],"subject":"plátano","format":"image/webp","bytes":19414}
+  ],
+  "locales_written":["es-MX","en-US","pt-BR"]
+}

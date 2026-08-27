@@ -1,0 +1,19 @@
+{
+  "order": 194,
+  "lesson_id": "7d3ba2e3-44ff-4422-85c1-30d90a486ee2",
+  "slug": "el-bosque-necesita-de-todos",
+  "status": "completed",
+  "generated_images": 6,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"9c489b7b0eb190019a9d47a0942aec9fb347e05b443513d8480b248cc6344d26.webp","slot":"s2-match.payload.left[0].image_url","new":"e997bbc48d757deda73e785b8ba49b51b91d190d3eadcf4a57fbe3fb72ff0b5c.webp"},
+    {"old":"185bb72aa0e6e6e302a51c17c0cc0e80484681a013619f5742649324e97041a1.webp","slot":"s2-match.payload.left[2].image_url","new":"867f76fdab8cacc7f15efc22946fd2ddbf2bc5f06ee256c0f273997f0b202a64.webp"},
+    {"old":"658d3ebe6a489f7c77d6a46074b3ad3d83f40e1538a17a45d1942b3a844d7a23.webp","slot":"s7-clasifica.payload.items[0].image_url","new":"38b91a5b8967b389941590ed10be05b3812b7bae7824530a8b31b2b9d0b9929d.webp"},
+    {"old":"1338681b24acc88afe0a7247533eb7916af26a0e0c87f6a5737570e379df4ef0.webp","slot":"s7-clasifica.payload.items[2].image_url","new":"bd887020d2cc4947478d9dafd32fefc643e0f78b4dadf9ef5ec3fd37b33a5f41.webp"},
+    {"old":"e3c1b28ca9ae32e554af065d9c6e51e6cf1dc4f4ebdecdc848131239d1c017f6.webp","slot":"s9-medico.payload.options[1].image_url","new":"0066ff1e7461121c88b296804e752d862837f068168e7e481f7805511fbbf562.webp"},
+    {"old":"111a8a2a63cb4c1722160068a542a2bffa63ec15228df3ed0a28ac903f4395ae.webp","slot":"s9-medico.payload.options[2].image_url","new":"a59eeb294376a0bf62d2b78a00fcc833126839c109ed1c6fa417e92c48f0379f.webp"}
+  ]
+}

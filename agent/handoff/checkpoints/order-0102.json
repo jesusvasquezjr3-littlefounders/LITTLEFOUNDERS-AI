@@ -1,0 +1,13 @@
+{
+  "order": 102,
+  "lesson_id": "901db47b-a717-4e2f-96ce-557c1b2de304",
+  "slug": "arreglamos-el-cambio-de-la-trampa",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, flattened to white, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/381b334381596cd3bc2957ef4d52e56a0b448f527a54d014606578923225efc8.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/11eee9ec32e430706a23564a09a16423c45ee10d4b54187520ee9597683522d2.webp","slots":["s3-prices.payload.left[1].image_url"],"subject":"collar corto de cuentas geométricas","format":"image/webp","bytes":31328,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/1cec85db8d5584443d315223b6dd46d893e0b67438067db8e65c9cf07d40509a.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/9a0e302a637fd5746f8bbfc9520013f8c283a4d8c4bf034d231e164cd7e70055.webp","slots":["s3-prices.payload.left[3].image_url"],"subject":"grupo de tres frutas tropicales","format":"image/webp","bytes":54240,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}

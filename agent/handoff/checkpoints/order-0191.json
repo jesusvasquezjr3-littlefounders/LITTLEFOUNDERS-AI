@@ -1,0 +1,16 @@
+{
+  "order": 191,
+  "lesson_id": "1df6041c-18f3-479f-8449-15e1c788401a",
+  "slug": "empareja-trabajo-y-ayuda",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"6e90153f72b634278d625760fe422395fd3c81ed2498d7aab8053d4a4bb3be78.webp","slot":"s3-emparejar-chambitas.payload.left[1].image_url; s9-clasificar-ayuda.payload.items[2].image_url","new":"1d9b3181ebdb4648a61701a4d80325d15f52620396bc8f6bad8bea13e441071c.webp"},
+    {"old":"30da14a36c3559b575d7a5f88dbed7220e53437d768f78273d71cf26e7988a19.webp","slot":"s3-emparejar-chambitas.payload.left[2].image_url; s9-clasificar-ayuda.payload.items[5].image_url","new":"f6dae3078509656895a811f265a67d599893b68311a1f3c4fd241b0aedf0cb8d.webp"},
+    {"old":"ff96e47f4ca9a8aec6c57447da6a340ccd2834588a05a2893232af6c73eaf99e.webp","slot":"s9-clasificar-ayuda.payload.items[4].image_url","new":"be4e5462abe22700e8ab04fceabe4fca36588be27b48040f99cde2c96d640059.webp"}
+  ]
+}

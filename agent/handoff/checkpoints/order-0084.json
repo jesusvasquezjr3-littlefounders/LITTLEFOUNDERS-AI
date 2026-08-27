@@ -1,0 +1,14 @@
+{
+  "order": 84,
+  "lesson_id": "ba237916-162d-453e-b0fc-60a489456427",
+  "slug": "elijo-donde-comprar",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/e9234341b2aa308a3ee4bbde1fa6593aabfaaee36347f20c996b37c5f3a36d63.webp","slots":["s1-recall-ordering.image_url"],"subject":"mesa con canica, pelota y yoyó","format":"image/webp","bytes":34576,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/bd279ee260d0b289e0c32c2d2a44f51869414c08d90341d521a51ef77c8de571.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/467811b5393d5bed4632137dc2592834f3b15ae15e8072e670f73559c57185f0.webp","slots":["s5-pick-cheaper.payload.offers[0].image_url"],"subject":"puesto con sol","format":"image/webp","bytes":29336,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/e3b51799b2c6a37395b0919392b7542da363e4c6e624e40f84df8059d42eb938.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/58519df3a8d74d7f6d7b9acfd1e15acda8b47a1e2fe2fc7618d4683a4fdc0c20.webp","slots":["s5-pick-cheaper.payload.offers[1].image_url"],"subject":"puesto con luna","format":"image/webp","bytes":25136,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}

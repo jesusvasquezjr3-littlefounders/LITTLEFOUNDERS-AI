@@ -403,12 +403,30 @@ through the `tutor-deploy.yml` workflow, dispatched by hand with `step: migrate`
 pushing applies a migration, so this step will not happen unless someone
 triggers it.
 
-**2. Regenerate `database/types/database.ts`.** It still lists
-`parent_verifications.address` and was NOT hand-edited, because it is generated.
-`npm run db:types` needs Docker and the Supabase CLI, neither of which was
-available on the machine this was built on. Nothing consumes that entry today -
-the insert shape in `supabaseRest.ts` is hand-written - so the suites are green
-either way, but the file is stale until this runs.
+**2. Regenerate `database/types/database.ts`. DONE 2026-08-27.** It is
+generated, never hand-edited, and it had gone stale at `0046`: it still listed
+`parent_verifications.address` and knew nothing of the Oracle tables or
+`courses.in_progress`. Regenerated against a full local stack (`db:up`,
+`db:reset` through `0049`, `db:types`), it grew 72,812 -> 85,267 bytes;
+`parent_verifications.address` is gone and the only surviving `address` entries
+are `analytics_staff_ip_sightings.address` (an `inet`) and Courier's
+`to_address`, both correct.
+
+**Two things that cost time here, so they do not cost it twice.**
+
+`db:types` is `supabase gen types ... > types/database.ts`. The shell creates
+that redirect BEFORE the command runs, so a failed generation does not leave the
+old file alone - it leaves a ZERO-BYTE one. That is exactly what the machine
+this was built on was carrying: the file measured 0 bytes on disk while `HEAD`
+still held 72,812, an uncommitted truncation that no gate could see, because
+nothing in the codebase imports these types. Generate to a temporary path and
+copy it in once it is non-empty; never redirect straight onto the tracked file.
+
+And nothing importing them is the reason this file can rot silently: the insert
+shapes in `supabaseRest.ts` are hand-written, so every suite stays green against
+a schema description that is a year of migrations behind. The types are a
+REFERENCE for whoever writes the next query, which means the damage is deferred
+to the first person who trusts them - the worst moment to find out.
 
 **3. Smoke-test the child-account creation path against the real GoTrue, before
 telling anyone the feature exists.** This is the one thing that could not be
@@ -441,8 +459,7 @@ forgetting one turns CI red rather than going unnoticed:
   - `database/scripts/check-migration-phase.mjs`: `APPLIED_THROUGH` 48 -> 49.
     Otherwise the gate keeps reporting `0049` as a pending contraction forever,
     and `database CD` keeps refusing batches that are actually fine.
-  - `database/types/database.ts`: regenerate (step 2). It still lists the
-    dropped `address` column.
+  - `database/types/database.ts`: regenerate (step 2). DONE 2026-08-27.
 
 Do them in one commit, with the run's output pasted into the ROADMAP sentence
 the way `0047` and `0048` recorded theirs.

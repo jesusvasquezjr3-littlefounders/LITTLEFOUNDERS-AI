@@ -1,0 +1,15 @@
+{
+  "order": 96,
+  "lesson_id": "bc495950-c149-4c74-b0ad-f02e9e4915e9",
+  "slug": "recordamos-el-primer-deseo-del-viaje",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, flattened to white, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/4a89cf5307c3a255054d6197c3b0c9a5262b966c2bba2c73a60bd42d414ab202.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/14ed2fe61abe54722481200b1e1b9cd5e51e6ebc0931e8d17f9a07018a5eded6.webp","slots":["s8-sort.payload.items[1].image_url"],"subject":"tres semillas de colores","format":"image/webp","bytes":42500,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/e3926b1724d13885f129a098f31353cf22237a1a8b258de9c2b0e35b10f79626.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/bea00db6b6f125b2d0039b4b995b9843d5c0995d1ffeedb0eb3d14a7f60a9bdc.webp","slots":["s8-sort.payload.items[2].image_url"],"subject":"piedra facetada azul con detalles coral y amarillos","format":"image/webp","bytes":35132,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/1cec85db8d5584443d315223b6dd46d893e0b67438067db8e65c9cf07d40509a.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/0789066c8a9836115eececcc9a49d6f4bad25fcd00bcceebdee2cfe5f59df346.webp","slots":["s8-sort.payload.items[3].image_url"],"subject":"fruta tropical coral con hojas verdes","format":"image/webp","bytes":67204,"dimensions":"1328x1328"},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/5334b320599b8f3f8e65e511f4ca6a5bf935b5d2e89cbf2e23b448824e8bd458.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/6035001316dcd01f7a0816f31e652ff9f32dc0d1758faf0371ab1008c342b81b.webp","slots":["s8-sort.payload.items[4].image_url"],"subject":"barquito de juguete de madera","format":"image/webp","bytes":29478,"dimensions":"1328x1328"}
+  ],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"]
+}

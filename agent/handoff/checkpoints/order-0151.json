@@ -1,0 +1,19 @@
+{
+  "order": 151,
+  "lesson_id": "13ae8c8d-73ff-44de-9f90-09db937427d0",
+  "slug": "ordeno-el-ciclo-de-la-chambita",
+  "status": "completed",
+  "generated_images": 6,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old": "3ffe04bc92067d4570d0c2a508cd66e2a8869a2e0bad5513bcb4c301a116f6af.webp", "slot": "s5-orden.payload.items[1].image_url", "new": "1c2a34b44a26be6b5b83568887be73e434d8edf81aa84d4c8246580621bafb02.webp"},
+    {"old": "16fc03bc5b3bf7cce1decad787fda00379ade70d2bf0c359207a8a7277fe4905.webp", "slot": "s8-empareja.payload.left[0].image_url", "new": "ee6e1dfe90885a0144bded29863041576be0e80942b51cb01755fd6d757968ea.webp"},
+    {"old": "bc551d6fe23be96aaa5e11dae8759667e1bf367f9d5700c5d669f37cf3d275e6.webp", "slot": "s8-empareja.payload.left[1].image_url", "new": "5ae23b673a6b112664bad3d30a004ceba50802ba306011f08f1d84f5580dc01f.webp"},
+    {"old": "bd48f0914097bdb4fc0167c0d4b234100db9bcf61d47b85cc20615bca2df60fe.webp", "slot": "s8-empareja.payload.left[2].image_url", "new": "53f0e18716d4dea193be5ef9502ebaff72cefd51266561e8bfd7ba39371efddc.webp"},
+    {"old": "2661db56e8cfb6ddd2dbf2676007af35cfbc5df5ea25f80980005f6b54a907f6.webp", "slot": "s6-dialogo.image_url", "new": "48ed565aa7fdbbe28981c1069341b953c23e4b478f4d9bd3b4c054ba27369903.webp"},
+    {"old": "1a077fe4e2fbc3769336d36dbdb6c6ac924b3c292fff4cd309d979af3fd194ea.webp", "slot": "s7-monedas.image_url", "new": "b66d0ba8e6ea903b051e7da727ba18896b42da9d85c5f0255b693500de2882e4.webp"}
+  ]
+}

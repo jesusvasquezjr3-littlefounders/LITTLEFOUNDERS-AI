@@ -1,0 +1,14 @@
+{
+  "order":41,
+  "lesson_id":"990fe67b-7c2e-4592-b0ec-761e5b8c7461",
+  "slug":"no-puedo-morder-una-moneda",
+  "status":"complete",
+  "generation":"Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images":[
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/82445c8e0cdb5938540a3e928c73bac8b1a932b07f47578f2543dd83dfd2cedd.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/8e718d5c64272f3761416431143425b03b26dcd7f0fddfd949ebc76004ea50f4.webp","slots":["s5-cual-comer.payload.options[0].image_url","s7-cestas.payload.items[0].image_url"],"subject":"manzana","format":"image/webp","bytes":21618},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/72a65634a5be4a3d34ca02980c5530b664b627cbe91b1c327cc14d074bbdbb45.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/ad9b82bd744d43267738da0d84717ab046b35f3e9906e85715918b00aec50a8f.webp","slots":["s5-cual-comer.payload.options[1].image_url","s7-cestas.payload.items[2].image_url","s9-intruso.image_url"],"subject":"moneda simple","format":"image/webp","bytes":63178},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/c62745e9db768627064ac0488c7d5f9bf26ddd0565bc31bfb16604a51be9ca64.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/ef854d7797d3eb357a12b7a90cea6d7b09ef9d20875421c816fc5d114e521e12.webp","slots":["s7-cestas.payload.items[1].image_url"],"subject":"bloque de juguete","format":"image/webp","bytes":17516},
+    {"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/db70c091f173e60c7333da0dcd876541d145e146fab3d1d7b3318aa4df5d41d5.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/61b189fc412b8f29288be84ac9869e1dfdaa3a0134883901774013bfd315aca6.webp","slots":["s5-cual-comer.payload.options[2].image_url"],"subject":"pelota","format":"image/webp","bytes":26176}
+  ],
+  "locales_written":["es-MX","en-US","pt-BR"]
+}

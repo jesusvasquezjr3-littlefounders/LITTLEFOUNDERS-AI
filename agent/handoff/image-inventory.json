@@ -1,0 +1,4637 @@
+{
+  "live_lessons": 988,
+  "total_image_slots": 5172,
+  "distinct_images": 4121,
+  "images_serving_more_than_one_lesson": 332,
+  "lessons_touched_by_a_shared_image": 470,
+  "redundant_slot_uses": 1051,
+  "lessons_with_zero_art": 37,
+  "image_critical_segments_with_no_picture": 142,
+  "top_offenders": [
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp",
+      "lessons": 52
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/49b0347552d5a520ec1f6528279ede02859aaba884cd0fb09327cd1c40fa0847.webp",
+      "lessons": 38
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/048c03e65f6d6965af62bd87ad95559975fdd21263284bcf89d5181697553119.webp",
+      "lessons": 28
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/8509debd8cf1c1326766d33e5c6c1c77fa111bb013d86194c9c46d4ecbce6c10.webp",
+      "lessons": 19
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/72b6547ddc7c97a358e39a407d72c82b738b2893a3823aab0b136cc6a8b9d8ff.webp",
+      "lessons": 18
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/a9dad70a9570bb16111989edfcf3206013fb555a89630049335098b5e28a686b.webp",
+      "lessons": 16
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/3ffe04bc92067d4570d0c2a508cd66e2a8869a2e0bad5513bcb4c301a116f6af.webp",
+      "lessons": 16
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/40849996fcdba2f3bf6b9e32f24122bae373329eb6c4958caea05f8fe885ed03.webp",
+      "lessons": 13
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/27b11718ecf03ccadb37b354b7f12e202e2410cef23e6c82e8710d21b0c6feb9.webp",
+      "lessons": 13
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/37f69958c2fe57f3cfb58b18125c267629a4a4878a7be87c100404433ac760f4.webp",
+      "lessons": 13
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/06255158bc699a503b412429b463249bbe15b6e75773eb7a56e9956389f2f337.webp",
+      "lessons": 12
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/1cec85db8d5584443d315223b6dd46d893e0b67438067db8e65c9cf07d40509a.webp",
+      "lessons": 12
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/84aef9d9e878ffee5b39f6f175278ef8dac3db2447f82a3d7defe4850c416fe4.webp",
+      "lessons": 11
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/363c2d7c4aa3e2e48ff0743711e60f30bb2fd281f1e91ee7e1a75c8bb129e2d6.webp",
+      "lessons": 10
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/75e4a32b66de69330036b63969bcabdc6fe6a5866b6ff49769c0913e341ea880.webp",
+      "lessons": 10
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/4a89cf5307c3a255054d6197c3b0c9a5262b966c2bba2c73a60bd42d414ab202.webp",
+      "lessons": 10
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/16fc03bc5b3bf7cce1decad787fda00379ade70d2bf0c359207a8a7277fe4905.webp",
+      "lessons": 9
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/dd48ab4e5a9844cc8ae6aaffabae719317c6ea044af8e0b62f4a429a45839002.webp",
+      "lessons": 8
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/9c1ff665179535b9d88bf53d36e7cf8b360c5c6db019f2ca8a0358fb1345ccdb.webp",
+      "lessons": 8
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/28fa701c032c1c6fe654ba8de3ba39981b55a2746c93c072c4a5c239daf5a1c4.webp",
+      "lessons": 8
+    }
+  ],
+  "reuse_histogram": {
+    "2": 185,
+    "3": 53,
+    "4": 37,
+    "5": 17,
+    "6": 12,
+    "7": 7,
+    "8": 4,
+    "9": 1,
+    "10+": 16
+  },
+  "shared": [
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp",
+      "lessons": 52,
+      "lesson_ids": [
+        "03c64909-845a-430d-bdd6-0f4e61950718",
+        "04f73495-c9be-4696-9c01-7fb28c2caa4a",
+        "09d7e2d3-f80e-4f5e-9dde-f56675048770",
+        "0a0b0425-dd0f-4236-a392-4b1f8b443203",
+        "0c6a3a1e-5023-4732-a3d9-42875cfaa6b7",
+        "173ee2f2-9e34-45a4-b1e0-4c6e3012cc0b",
+        "182410b0-b97f-4e8e-ab7c-9e791203b714",
+        "1ad50d99-a2b8-4396-840e-a4da49a5db72",
+        "293ca943-a7b4-49b5-9335-6249cef6266f",
+        "2c47ef07-b4a9-44be-8904-8097861f459d",
+        "3d06d215-6736-415f-b031-8851aa875aeb",
+        "41977ec5-f470-4627-ac56-f2528e7ef006",
+        "4205753d-fd88-4d58-9b94-973a1f71f46d",
+        "42dd59f3-ead1-40bc-b4cd-7e1c7d9a6d68",
+        "485d8bcb-720a-41d4-874b-39ac5407eb12",
+        "546672eb-2187-4748-b275-491513301c89",
+        "5604426e-b074-47de-8497-0c74c98e1e81",
+        "5883b3ef-cd35-4d95-a85b-d1dff3577e95",
+        "5c7f74d1-bc46-48c2-9806-314d5d6a05c6",
+        "5d45542b-7120-4cab-8b42-c501bb22f233",
+        "62b4d33b-202a-4af9-a9c3-639e7c75e16d",
+        "62b63139-5afc-4c88-b10e-fb81243bbc41",
+        "65b365fa-2c9b-4a1d-b311-33db02301a2b",
+        "67199bde-ebb3-4c0d-8736-3a5b7ca8e9dd",
+        "697abdb2-2806-4023-8bc1-600563dc175b",
+        "773d330e-7449-429c-ba57-888da10e66de",
+        "77cd59ff-6e0e-48b1-8eb6-2aedfc7061c3",
+        "8412ed0e-ab76-4a48-a52a-c9cb34ca92fc",
+        "87ff68c5-4e48-46a9-b91c-b602ab73f534",
+        "88c606bd-935e-428d-b7f2-5d222cfaa766",
+        "8fd6fafd-57c3-40f2-b7ee-b9e089127fe5",
+        "a431b2ad-8b2b-4cfb-b81a-5f02898ad05c",
+        "a864ed74-853c-47a1-a8de-e3c38f5fe073",
+        "a967c218-06c3-40e3-ae94-8c0d007d1494",
+        "aa20444b-5c0e-4d84-bbb8-acd12f6447a8",
+        "afe9ca53-3cf8-4ef6-a681-ddb094c779f0",
+        "b65a0f11-643f-4091-b905-0543646f74ec",
+        "b99f9184-1c9e-4d56-8b0d-e930989734c9",
+        "ba237916-162d-453e-b0fc-60a489456427",
+        "c3256696-effa-4c04-bcf2-ed4e97aa86e6",
+        "c53f3b66-6e23-4a9b-bf85-8bb4b5234af6",
+        "cf50b869-267f-487d-abb3-090a27d8d049",
+        "cf89f204-82df-4961-8c23-0917e733bec5",
+        "d80452a1-ddf6-429d-af62-6334e0c6fb5a",
+        "e535b175-0952-4eed-912e-e95ded2332ef",
+        "e5c12245-91fd-456d-a97c-cfb0dd390c7b",
+        "e6bfcdbe-e643-4c18-97f6-997d6addd8d0",
+        "ebde18c0-31a2-420c-b276-c85b83d107ea",
+        "ef12f583-0c65-4e50-91f8-6e374c1bf95e",
+        "f69c5e40-7b2d-4976-a04c-aa521a94546c",
+        "fe5cb40f-d1a1-4ea5-9adf-f49eefb21e0b",
+        "ffb4c064-6396-4232-a1c9-73d99550827f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/49b0347552d5a520ec1f6528279ede02859aaba884cd0fb09327cd1c40fa0847.webp",
+      "lessons": 38,
+      "lesson_ids": [
+        "0b1ec5cb-529f-4806-b1e7-b61f86d02a28",
+        "0d50be06-c51f-4a36-9388-fe820c881e38",
+        "113f6d25-7841-412e-b5a6-88f03c9e002c",
+        "14fdb332-21f2-4804-a240-156ae923996a",
+        "177ea0d7-8728-4b06-9adb-5912fadeabd4",
+        "1e964264-623f-40a9-a3c7-c44191d6ce1f",
+        "27ac9f8c-782d-489c-b81f-c2b824984972",
+        "295d68ab-769a-4c62-845e-b327f8ac1330",
+        "2f32da25-77c0-4748-b8e9-15078578cfe9",
+        "2fa86810-cbe7-407d-a625-09f2fdbe89dd",
+        "3dcd643e-9dd6-44a1-aa55-f3b5cd66a006",
+        "52bc6c5b-e96b-42f0-914b-4773a9271fff",
+        "53b3be95-514c-4fac-a676-40aeb4c47cc8",
+        "5c7c1540-9a35-49ea-b1b9-dac70e0b112a",
+        "5eb2c2ab-43d2-4205-8869-6a05b1a8b547",
+        "640c81fd-4816-4caa-90b2-ce3b6e8ac612",
+        "6477fe1d-897c-4e9f-a105-3209d300e546",
+        "66050754-34b5-4399-93cf-8bc837d6aac6",
+        "775f6d50-475e-48bd-8e4c-bb4ad2be1bc3",
+        "7bbe245c-e741-489e-9f28-bb6743bac39d",
+        "7f62e9d5-8383-4fb3-b761-03bc034ac563",
+        "8bb91de6-acbe-4690-a97d-3e84645524e3",
+        "8fa0f7e3-04c8-4c21-8dde-b49ae17633ec",
+        "952e2e93-85dd-469a-a264-0960345be246",
+        "95daae1d-1837-450d-9ea5-4a2dfc314836",
+        "a5982335-9792-431f-8d5a-e69c6b86add7",
+        "ad54aba3-1b87-4cba-826d-31ad9c9f2f3c",
+        "b2164c47-d71a-400b-b7ec-3aacab7e5d91",
+        "b9270089-0da4-417a-8f74-1bc1b9cabcc6",
+        "b99f9184-1c9e-4d56-8b0d-e930989734c9",
+        "bf5a5c8a-40a6-40af-b604-8601c356b4d6",
+        "cbe2b287-0a10-434d-b29f-09a72afbd9e5",
+        "dec6eac3-1666-4b67-93a4-e545abecb127",
+        "df52fe33-282c-4842-bc72-d90b07812df8",
+        "dfe912df-726c-4572-be4c-89d29872e1cc",
+        "f16fadbe-6508-4270-9c0b-a51360c794cc",
+        "ff798f1b-1397-48eb-86c9-cb51c2a91f59",
+        "ffb4c064-6396-4232-a1c9-73d99550827f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/048c03e65f6d6965af62bd87ad95559975fdd21263284bcf89d5181697553119.webp",
+      "lessons": 28,
+      "lesson_ids": [
+        "0b1ec5cb-529f-4806-b1e7-b61f86d02a28",
+        "0d50be06-c51f-4a36-9388-fe820c881e38",
+        "12328833-3f65-4581-948f-7c26285c14b6",
+        "177ea0d7-8728-4b06-9adb-5912fadeabd4",
+        "20327d21-18a1-44e3-9c50-05b4f66d83ba",
+        "27ac9f8c-782d-489c-b81f-c2b824984972",
+        "2aebf42a-c88d-4948-9912-33d849f169c4",
+        "2f32da25-77c0-4748-b8e9-15078578cfe9",
+        "32342391-4914-4c5a-be23-3283da660883",
+        "3dcd643e-9dd6-44a1-aa55-f3b5cd66a006",
+        "485d8bcb-720a-41d4-874b-39ac5407eb12",
+        "4a903ba8-0b81-42d4-b833-f87527f2f3cd",
+        "5c7c1540-9a35-49ea-b1b9-dac70e0b112a",
+        "5eb2c2ab-43d2-4205-8869-6a05b1a8b547",
+        "640c81fd-4816-4caa-90b2-ce3b6e8ac612",
+        "6fe1f2b8-d066-462d-8e63-ccb9b92b0526",
+        "8bb91de6-acbe-4690-a97d-3e84645524e3",
+        "9063be17-adb4-4dc7-8d36-a02c80bf103e",
+        "95daae1d-1837-450d-9ea5-4a2dfc314836",
+        "b2164c47-d71a-400b-b7ec-3aacab7e5d91",
+        "b3e209ea-cda1-41cf-af56-8cb6b4dbd3c5",
+        "b9270089-0da4-417a-8f74-1bc1b9cabcc6",
+        "b99f9184-1c9e-4d56-8b0d-e930989734c9",
+        "bf5a5c8a-40a6-40af-b604-8601c356b4d6",
+        "cbe2b287-0a10-434d-b29f-09a72afbd9e5",
+        "ebde18c0-31a2-420c-b276-c85b83d107ea",
+        "fb207d8b-5b55-46b0-86c8-8e5e71d91b75",
+        "ffb4c064-6396-4232-a1c9-73d99550827f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/8509debd8cf1c1326766d33e5c6c1c77fa111bb013d86194c9c46d4ecbce6c10.webp",
+      "lessons": 19,
+      "lesson_ids": [
+        "0681d5f3-ea97-4002-b4a4-9a692d5bef10",
+        "12328833-3f65-4581-948f-7c26285c14b6",
+        "177ea0d7-8728-4b06-9adb-5912fadeabd4",
+        "27ac9f8c-782d-489c-b81f-c2b824984972",
+        "5c7c1540-9a35-49ea-b1b9-dac70e0b112a",
+        "7f62e9d5-8383-4fb3-b761-03bc034ac563",
+        "952e2e93-85dd-469a-a264-0960345be246",
+        "ad54aba3-1b87-4cba-826d-31ad9c9f2f3c",
+        "b2164c47-d71a-400b-b7ec-3aacab7e5d91",
+        "b3e209ea-cda1-41cf-af56-8cb6b4dbd3c5",
+        "b9270089-0da4-417a-8f74-1bc1b9cabcc6",
+        "cbe2b287-0a10-434d-b29f-09a72afbd9e5",
+        "d4738352-7bd2-4a8c-aee0-3798816ccc6a",
+        "d5436200-b1e3-4a40-9e2e-6599d6242c37",
+        "e553c75d-ce58-4929-b058-ca7fdee5b120",
+        "f20da015-e9ce-4a2f-aa33-86a567062025",
+        "f7e1cb56-55e3-4686-b394-d0e07c9a5e9f",
+        "fc4d8688-0575-4cc2-a510-b2ae082c4701",
+        "ffb4c064-6396-4232-a1c9-73d99550827f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/72b6547ddc7c97a358e39a407d72c82b738b2893a3823aab0b136cc6a8b9d8ff.webp",
+      "lessons": 18,
+      "lesson_ids": [
+        "116973ec-8519-421e-85e9-184c786e062a",
+        "1e964264-623f-40a9-a3c7-c44191d6ce1f",
+        "2fa86810-cbe7-407d-a625-09f2fdbe89dd",
+        "3dcd643e-9dd6-44a1-aa55-f3b5cd66a006",
+        "5eb2c2ab-43d2-4205-8869-6a05b1a8b547",
+        "640c81fd-4816-4caa-90b2-ce3b6e8ac612",
+        "746b4d27-d202-4884-a170-d10d1a52b552",
+        "79dc3ce8-624d-4a3a-9aa7-f29907a34bb6",
+        "8fa0f7e3-04c8-4c21-8dde-b49ae17633ec",
+        "a2baabad-9f0f-40c8-9aa9-2f639dafab86",
+        "a5982335-9792-431f-8d5a-e69c6b86add7",
+        "b9270089-0da4-417a-8f74-1bc1b9cabcc6",
+        "bbeeee38-38f4-4492-9bba-c59c4b3f50c9",
+        "bf5a5c8a-40a6-40af-b604-8601c356b4d6",
+        "cf4eb85a-8520-4ded-acb6-552ab323572f",
+        "dec6eac3-1666-4b67-93a4-e545abecb127",
+        "e553c75d-ce58-4929-b058-ca7fdee5b120",
+        "ff798f1b-1397-48eb-86c9-cb51c2a91f59"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/a9dad70a9570bb16111989edfcf3206013fb555a89630049335098b5e28a686b.webp",
+      "lessons": 16,
+      "lesson_ids": [
+        "113f6d25-7841-412e-b5a6-88f03c9e002c",
+        "14fdb332-21f2-4804-a240-156ae923996a",
+        "295d68ab-769a-4c62-845e-b327f8ac1330",
+        "2fa86810-cbe7-407d-a625-09f2fdbe89dd",
+        "431d5542-fc0a-45ed-afec-3187dfb4d265",
+        "52bc6c5b-e96b-42f0-914b-4773a9271fff",
+        "53b3be95-514c-4fac-a676-40aeb4c47cc8",
+        "6477fe1d-897c-4e9f-a105-3209d300e546",
+        "775f6d50-475e-48bd-8e4c-bb4ad2be1bc3",
+        "7f62e9d5-8383-4fb3-b761-03bc034ac563",
+        "8fa0f7e3-04c8-4c21-8dde-b49ae17633ec",
+        "bf5a5c8a-40a6-40af-b604-8601c356b4d6",
+        "cf4eb85a-8520-4ded-acb6-552ab323572f",
+        "df52fe33-282c-4842-bc72-d90b07812df8",
+        "f16fadbe-6508-4270-9c0b-a51360c794cc",
+        "ffb4c064-6396-4232-a1c9-73d99550827f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/3ffe04bc92067d4570d0c2a508cd66e2a8869a2e0bad5513bcb4c301a116f6af.webp",
+      "lessons": 16,
+      "lesson_ids": [
+        "13ae8c8d-73ff-44de-9f90-09db937427d0",
+        "1f2d66e9-11b0-489a-a989-bbbbfef57ef2",
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "287b6f33-ada0-4f12-a9ae-da5f26a8b988",
+        "2c987e16-6565-4068-bd19-d85690548f30",
+        "37764ea2-4738-4f50-bac4-f16dccd51ea4",
+        "3a8bfe39-f7dd-4a9a-a9e3-c29e0249ad6c",
+        "3efd3019-c12d-40f1-854a-b63488041f42",
+        "54ed8bee-1deb-4a81-b53d-48a4d4d4290e",
+        "730bf108-f4f4-461b-94c1-f7f7ea734d49",
+        "837b1697-d4d9-41e3-b25a-28783e225236",
+        "9e770b73-3073-407e-8f67-c568004edaab",
+        "b2ea2041-887a-465c-99c3-2deed9e3eff3",
+        "c7cf3203-b9f2-4010-badf-060cbc00d453",
+        "d3e8d7f9-2a22-4aa8-abbb-c027223b4348",
+        "e212c3d9-cd01-42f7-b559-0662e456aebc"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/40849996fcdba2f3bf6b9e32f24122bae373329eb6c4958caea05f8fe885ed03.webp",
+      "lessons": 13,
+      "lesson_ids": [
+        "0d50be06-c51f-4a36-9388-fe820c881e38",
+        "0e0ff352-4830-4de1-b030-7715a0e6c99b",
+        "27ac9f8c-782d-489c-b81f-c2b824984972",
+        "60dd57d8-6af7-464a-b128-1d72d311b815",
+        "640c81fd-4816-4caa-90b2-ce3b6e8ac612",
+        "746b4d27-d202-4884-a170-d10d1a52b552",
+        "7f62e9d5-8383-4fb3-b761-03bc034ac563",
+        "8bb91de6-acbe-4690-a97d-3e84645524e3",
+        "ad54aba3-1b87-4cba-826d-31ad9c9f2f3c",
+        "bc3ff1f0-0b59-4336-a4e9-2c3dfdbc1277",
+        "dec6eac3-1666-4b67-93a4-e545abecb127",
+        "ebde18c0-31a2-420c-b276-c85b83d107ea",
+        "ecc2dc63-5464-4dfb-af25-64cf5c6b18ca"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/27b11718ecf03ccadb37b354b7f12e202e2410cef23e6c82e8710d21b0c6feb9.webp",
+      "lessons": 13,
+      "lesson_ids": [
+        "0e0ff352-4830-4de1-b030-7715a0e6c99b",
+        "246804de-9f5c-4fe0-84ae-83bf90924293",
+        "295d68ab-769a-4c62-845e-b327f8ac1330",
+        "33ad61e9-ad7e-4eb8-827e-91acc29d13ab",
+        "431d5542-fc0a-45ed-afec-3187dfb4d265",
+        "4a903ba8-0b81-42d4-b833-f87527f2f3cd",
+        "5eb2c2ab-43d2-4205-8869-6a05b1a8b547",
+        "87431970-fbd0-4013-9049-44448e081800",
+        "a5982335-9792-431f-8d5a-e69c6b86add7",
+        "ad54aba3-1b87-4cba-826d-31ad9c9f2f3c",
+        "e2970b21-d10c-4648-a882-99b6a0dd9c24",
+        "e439a1a5-a752-4ecc-84fb-91160d418f71",
+        "f80bb04b-cbdc-4df5-81cd-a2f15db4f275"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/37f69958c2fe57f3cfb58b18125c267629a4a4878a7be87c100404433ac760f4.webp",
+      "lessons": 13,
+      "lesson_ids": [
+        "0e0ff352-4830-4de1-b030-7715a0e6c99b",
+        "246804de-9f5c-4fe0-84ae-83bf90924293",
+        "295d68ab-769a-4c62-845e-b327f8ac1330",
+        "33ad61e9-ad7e-4eb8-827e-91acc29d13ab",
+        "431d5542-fc0a-45ed-afec-3187dfb4d265",
+        "4a903ba8-0b81-42d4-b833-f87527f2f3cd",
+        "5eb2c2ab-43d2-4205-8869-6a05b1a8b547",
+        "87431970-fbd0-4013-9049-44448e081800",
+        "a5982335-9792-431f-8d5a-e69c6b86add7",
+        "ad54aba3-1b87-4cba-826d-31ad9c9f2f3c",
+        "e2970b21-d10c-4648-a882-99b6a0dd9c24",
+        "e439a1a5-a752-4ecc-84fb-91160d418f71",
+        "f80bb04b-cbdc-4df5-81cd-a2f15db4f275"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/06255158bc699a503b412429b463249bbe15b6e75773eb7a56e9956389f2f337.webp",
+      "lessons": 12,
+      "lesson_ids": [
+        "0d50be06-c51f-4a36-9388-fe820c881e38",
+        "177ea0d7-8728-4b06-9adb-5912fadeabd4",
+        "295d68ab-769a-4c62-845e-b327f8ac1330",
+        "2fa86810-cbe7-407d-a625-09f2fdbe89dd",
+        "3dcd643e-9dd6-44a1-aa55-f3b5cd66a006",
+        "4bef7da8-6337-42f6-8074-c14ae6ed9e0c",
+        "60dd57d8-6af7-464a-b128-1d72d311b815",
+        "746b4d27-d202-4884-a170-d10d1a52b552",
+        "79dc3ce8-624d-4a3a-9aa7-f29907a34bb6",
+        "a5982335-9792-431f-8d5a-e69c6b86add7",
+        "ad54aba3-1b87-4cba-826d-31ad9c9f2f3c",
+        "bf5a5c8a-40a6-40af-b604-8601c356b4d6"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/1cec85db8d5584443d315223b6dd46d893e0b67438067db8e65c9cf07d40509a.webp",
+      "lessons": 12,
+      "lesson_ids": [
+        "12328833-3f65-4581-948f-7c26285c14b6",
+        "295d68ab-769a-4c62-845e-b327f8ac1330",
+        "2f32da25-77c0-4748-b8e9-15078578cfe9",
+        "32342391-4914-4c5a-be23-3283da660883",
+        "53b3be95-514c-4fac-a676-40aeb4c47cc8",
+        "6477fe1d-897c-4e9f-a105-3209d300e546",
+        "901db47b-a717-4e2f-96ce-557c1b2de304",
+        "9063be17-adb4-4dc7-8d36-a02c80bf103e",
+        "a2bfc099-de98-4209-b9a2-394fcd92b01d",
+        "a5982335-9792-431f-8d5a-e69c6b86add7",
+        "b2164c47-d71a-400b-b7ec-3aacab7e5d91",
+        "bc495950-c149-4c74-b0ad-f02e9e4915e9"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/84aef9d9e878ffee5b39f6f175278ef8dac3db2447f82a3d7defe4850c416fe4.webp",
+      "lessons": 11,
+      "lesson_ids": [
+        "22f8ca87-9ec1-4987-bdc5-7efecf7311c1",
+        "295d68ab-769a-4c62-845e-b327f8ac1330",
+        "2b884988-65df-4d32-9791-2f2286b22a3b",
+        "5c7c1540-9a35-49ea-b1b9-dac70e0b112a",
+        "640c81fd-4816-4caa-90b2-ce3b6e8ac612",
+        "897c0727-fc76-4863-862e-5b18199256c4",
+        "bbeeee38-38f4-4492-9bba-c59c4b3f50c9",
+        "dec6eac3-1666-4b67-93a4-e545abecb127",
+        "df52fe33-282c-4842-bc72-d90b07812df8",
+        "ebde18c0-31a2-420c-b276-c85b83d107ea",
+        "f16fadbe-6508-4270-9c0b-a51360c794cc"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/363c2d7c4aa3e2e48ff0743711e60f30bb2fd281f1e91ee7e1a75c8bb129e2d6.webp",
+      "lessons": 10,
+      "lesson_ids": [
+        "08227535-5ebd-46fd-a7a0-43140a7e9c44",
+        "2ac7bd4f-8e8a-4223-8a23-60d883d15cf9",
+        "3fb390c6-3086-4b55-954f-aa27fcbf8eb7",
+        "432a0746-718a-4c44-be77-a3d78dc423ed",
+        "79dc3ce8-624d-4a3a-9aa7-f29907a34bb6",
+        "81e5e368-9a7f-4fc1-be7d-89a6827b1e9c",
+        "978311a0-98b9-47d7-a9bb-99c11054e8a2",
+        "b52c2ffa-61d1-445c-84ec-bbb9c1a9361e",
+        "d7e95050-c597-4352-bbe6-8ad30bdcfca4",
+        "fb207d8b-5b55-46b0-86c8-8e5e71d91b75"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/75e4a32b66de69330036b63969bcabdc6fe6a5866b6ff49769c0913e341ea880.webp",
+      "lessons": 10,
+      "lesson_ids": [
+        "08227535-5ebd-46fd-a7a0-43140a7e9c44",
+        "0b1ec5cb-529f-4806-b1e7-b61f86d02a28",
+        "14fdb332-21f2-4804-a240-156ae923996a",
+        "246804de-9f5c-4fe0-84ae-83bf90924293",
+        "3fb390c6-3086-4b55-954f-aa27fcbf8eb7",
+        "431d5542-fc0a-45ed-afec-3187dfb4d265",
+        "485d8bcb-720a-41d4-874b-39ac5407eb12",
+        "bc3ff1f0-0b59-4336-a4e9-2c3dfdbc1277",
+        "e2970b21-d10c-4648-a882-99b6a0dd9c24",
+        "e3efa4f6-29b2-46e3-a289-fb1669c4244f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/4a89cf5307c3a255054d6197c3b0c9a5262b966c2bba2c73a60bd42d414ab202.webp",
+      "lessons": 10,
+      "lesson_ids": [
+        "15f36afe-2a02-4de2-8ad6-c1b41aa20a35",
+        "1e55d3e9-c751-445e-bddb-391f6f2bd4c9",
+        "20327d21-18a1-44e3-9c50-05b4f66d83ba",
+        "387ae550-d18d-4d31-88f5-899ffed8f1f3",
+        "3a7a7765-8950-42f3-bdb9-9d2de4a854f3",
+        "440e4163-cdac-4f17-aaec-acd6c7fa0a8d",
+        "8107c299-7ad6-48ed-a65a-5bcf837b5ada",
+        "bc495950-c149-4c74-b0ad-f02e9e4915e9",
+        "ebc5b69b-08ca-41a5-a2d2-8ccc8a24ff52",
+        "fe5cb40f-d1a1-4ea5-9adf-f49eefb21e0b"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/16fc03bc5b3bf7cce1decad787fda00379ade70d2bf0c359207a8a7277fe4905.webp",
+      "lessons": 9,
+      "lesson_ids": [
+        "13ae8c8d-73ff-44de-9f90-09db937427d0",
+        "59224cf1-2653-4b10-b22f-e69c9be24c0b",
+        "62b4d33b-202a-4af9-a9c3-639e7c75e16d",
+        "7f60b77e-30c1-45b4-ad25-a3bdc8132cc3",
+        "7ff6417b-d459-4186-85be-e51cd380a6e1",
+        "837b1697-d4d9-41e3-b25a-28783e225236",
+        "a4695090-621a-4cec-ba40-f351df731863",
+        "cea5d601-8e4d-4cc4-8098-418fd1c9c225",
+        "ef12f583-0c65-4e50-91f8-6e374c1bf95e"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/dd48ab4e5a9844cc8ae6aaffabae719317c6ea044af8e0b62f4a429a45839002.webp",
+      "lessons": 8,
+      "lesson_ids": [
+        "08227535-5ebd-46fd-a7a0-43140a7e9c44",
+        "0b1cdf8b-de33-4912-b3a2-382dac10347a",
+        "14fdb332-21f2-4804-a240-156ae923996a",
+        "5d611003-5698-4f2d-8c52-70485aaeaae8",
+        "63b69643-97e4-4f29-bb0b-2ae214175c82",
+        "77ae4b7d-9026-4650-9136-e293d6e9e9bb",
+        "d0b052e2-6c6f-4509-9f81-8a71bf880bfd",
+        "e3efa4f6-29b2-46e3-a289-fb1669c4244f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/9c1ff665179535b9d88bf53d36e7cf8b360c5c6db019f2ca8a0358fb1345ccdb.webp",
+      "lessons": 8,
+      "lesson_ids": [
+        "15d955b3-52c5-47f7-87eb-f625a9be3f73",
+        "1b3eea69-b612-4672-82e8-dc670460599f",
+        "5973785a-4179-4b3d-9c1d-492b1809c1ec",
+        "8c73ec77-f4b2-4466-b6af-7fd78a8a3f02",
+        "e439a1a5-a752-4ecc-84fb-91160d418f71",
+        "f0b86b5f-7772-4eb0-b2b2-83ccedf01620",
+        "f1671f7b-1f44-43f8-8be2-73157650fd42",
+        "ff7222c1-e22e-4971-af87-4772912ee374"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/28fa701c032c1c6fe654ba8de3ba39981b55a2746c93c072c4a5c239daf5a1c4.webp",
+      "lessons": 8,
+      "lesson_ids": [
+        "2ac7bd4f-8e8a-4223-8a23-60d883d15cf9",
+        "3fb390c6-3086-4b55-954f-aa27fcbf8eb7",
+        "432a0746-718a-4c44-be77-a3d78dc423ed",
+        "4d1fefaa-6fe4-41dd-89d1-18f845ae96e6",
+        "81e5e368-9a7f-4fc1-be7d-89a6827b1e9c",
+        "9683188e-5817-43dd-8e80-676c146d6608",
+        "978311a0-98b9-47d7-a9bb-99c11054e8a2",
+        "fb207d8b-5b55-46b0-86c8-8e5e71d91b75"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/68f63b24e88e1c82d998b62a0ea2e43533509a23bbc556900adaedcbcbc620a6.webp",
+      "lessons": 8,
+      "lesson_ids": [
+        "3b7f7d08-9fc1-4f66-8794-8815d53d601c",
+        "52bc6c5b-e96b-42f0-914b-4773a9271fff",
+        "775f6d50-475e-48bd-8e4c-bb4ad2be1bc3",
+        "952e2e93-85dd-469a-a264-0960345be246",
+        "95daae1d-1837-450d-9ea5-4a2dfc314836",
+        "a5982335-9792-431f-8d5a-e69c6b86add7",
+        "cf4eb85a-8520-4ded-acb6-552ab323572f",
+        "df52fe33-282c-4842-bc72-d90b07812df8"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/f85b88c0671c08f902736730b49879da87eabad62d27a8b4803a627b14d4e9ae.webp",
+      "lessons": 7,
+      "lesson_ids": [
+        "0b1ec5cb-529f-4806-b1e7-b61f86d02a28",
+        "640c81fd-4816-4caa-90b2-ce3b6e8ac612",
+        "6fe1f2b8-d066-462d-8e63-ccb9b92b0526",
+        "b2164c47-d71a-400b-b7ec-3aacab7e5d91",
+        "b253ab41-c849-4f6a-b008-0b0e2569bfde",
+        "df52fe33-282c-4842-bc72-d90b07812df8",
+        "e439a1a5-a752-4ecc-84fb-91160d418f71"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/64430da5f91ed8b6b863e069feaee1baf8f9a6e9ea3f9d8e9c1cf839d4a3de59.webp",
+      "lessons": 7,
+      "lesson_ids": [
+        "113f6d25-7841-412e-b5a6-88f03c9e002c",
+        "14fdb332-21f2-4804-a240-156ae923996a",
+        "53b3be95-514c-4fac-a676-40aeb4c47cc8",
+        "775f6d50-475e-48bd-8e4c-bb4ad2be1bc3",
+        "b2164c47-d71a-400b-b7ec-3aacab7e5d91",
+        "bf5a5c8a-40a6-40af-b604-8601c356b4d6",
+        "cbe2b287-0a10-434d-b29f-09a72afbd9e5"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/803b97c1c515aa115f80d84dc4b040974966723a11be919af9cad3648ae054c6.webp",
+      "lessons": 7,
+      "lesson_ids": [
+        "116973ec-8519-421e-85e9-184c786e062a",
+        "33d73df4-0000-4042-8fbf-ab61fe68ce58",
+        "7f62e9d5-8383-4fb3-b761-03bc034ac563",
+        "897c0727-fc76-4863-862e-5b18199256c4",
+        "9063be17-adb4-4dc7-8d36-a02c80bf103e",
+        "b253ab41-c849-4f6a-b008-0b0e2569bfde",
+        "b9270089-0da4-417a-8f74-1bc1b9cabcc6"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/bc551d6fe23be96aaa5e11dae8759667e1bf367f9d5700c5d669f37cf3d275e6.webp",
+      "lessons": 7,
+      "lesson_ids": [
+        "13ae8c8d-73ff-44de-9f90-09db937427d0",
+        "1fd9384d-6fb9-49ee-a485-def55ed0a3c6",
+        "5604426e-b074-47de-8497-0c74c98e1e81",
+        "58253e81-11db-4a65-9816-26f633c29852",
+        "7ff6417b-d459-4186-85be-e51cd380a6e1",
+        "b253ab41-c849-4f6a-b008-0b0e2569bfde",
+        "dd74b072-9cda-4524-8ec4-0089c4184a59"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/f1c0ef1de4c5ab9b77447d7483e6d66aa049d519bc7b5751b1cc08af0daaa79b.webp",
+      "lessons": 7,
+      "lesson_ids": [
+        "15d955b3-52c5-47f7-87eb-f625a9be3f73",
+        "22945a7d-fc5e-4024-9127-33912321177f",
+        "5973785a-4179-4b3d-9c1d-492b1809c1ec",
+        "8c73ec77-f4b2-4466-b6af-7fd78a8a3f02",
+        "e439a1a5-a752-4ecc-84fb-91160d418f71",
+        "f0b86b5f-7772-4eb0-b2b2-83ccedf01620",
+        "f1671f7b-1f44-43f8-8be2-73157650fd42"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/083ca8d1b05e43a9ed8fdd82ced2ddf8d5777d55ec441689b20f3c2f242d8066.webp",
+      "lessons": 7,
+      "lesson_ids": [
+        "27ac9f8c-782d-489c-b81f-c2b824984972",
+        "33d73df4-0000-4042-8fbf-ab61fe68ce58",
+        "450e1233-e30f-4ec3-a250-08e2ca47a9e1",
+        "4a903ba8-0b81-42d4-b833-f87527f2f3cd",
+        "6d0f49d4-4007-42ba-a999-c71dfc7aaa9b",
+        "7bbe245c-e741-489e-9f28-bb6743bac39d",
+        "8bb91de6-acbe-4690-a97d-3e84645524e3"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/9044ce8a73770c4115e0ee0b196b55f7c5307043e43bef281e456410ebc6eaad.webp",
+      "lessons": 7,
+      "lesson_ids": [
+        "2f32da25-77c0-4748-b8e9-15078578cfe9",
+        "68ea153a-295e-4cc9-a8c5-b19e8d0b505e",
+        "a2baabad-9f0f-40c8-9aa9-2f639dafab86",
+        "b3e209ea-cda1-41cf-af56-8cb6b4dbd3c5",
+        "b9270089-0da4-417a-8f74-1bc1b9cabcc6",
+        "e553c75d-ce58-4929-b058-ca7fdee5b120",
+        "f5779776-db82-4118-992c-4148f6a52839"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/77e9797fac9195fae03b8a343fad548450fb0a9ef8e27252cbd52d78954500ee.webp",
+      "lessons": 6,
+      "lesson_ids": [
+        "0681d5f3-ea97-4002-b4a4-9a692d5bef10",
+        "abb9c60f-8afe-4abf-aa92-781d47d28393",
+        "bbeeee38-38f4-4492-9bba-c59c4b3f50c9",
+        "cbaaa13f-9308-4069-a8cf-4a05b2006e3a",
+        "d4738352-7bd2-4a8c-aee0-3798816ccc6a",
+        "fc4d8688-0575-4cc2-a510-b2ae082c4701"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/0ec2bb23d9e30c598c3af952fcf2eacaa5327b4157e4b8ff6d05a177e61d4000.webp",
+      "lessons": 6,
+      "lesson_ids": [
+        "0d50be06-c51f-4a36-9388-fe820c881e38",
+        "27ac9f8c-782d-489c-b81f-c2b824984972",
+        "2aebf42a-c88d-4948-9912-33d849f169c4",
+        "32342391-4914-4c5a-be23-3283da660883",
+        "773d330e-7449-429c-ba57-888da10e66de",
+        "ebde18c0-31a2-420c-b276-c85b83d107ea"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/cfa506ae6a1f10c22165c7f537f00d3a44d27c801949199e6c789d77a1c0c3bd.webp",
+      "lessons": 6,
+      "lesson_ids": [
+        "0ea4012b-bad5-4ae0-94e1-3dea425711e5",
+        "440e4163-cdac-4f17-aaec-acd6c7fa0a8d",
+        "508f3cdf-2eda-4ae6-a0ed-3fd2bc4944fd",
+        "5adcfd90-c1f1-4aab-ae4e-7afb96782bba",
+        "74885b0c-d01c-420e-b9ea-65078c118189",
+        "cea5d601-8e4d-4cc4-8098-418fd1c9c225"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/86dd0a6c1853c8668f3a623e9f8f3f9921c334af878996f46ac3cc1af8951b5c.webp",
+      "lessons": 6,
+      "lesson_ids": [
+        "116973ec-8519-421e-85e9-184c786e062a",
+        "9cfa4fcc-c260-4a4b-bc65-2c949a209a69",
+        "b9270089-0da4-417a-8f74-1bc1b9cabcc6",
+        "e553c75d-ce58-4929-b058-ca7fdee5b120",
+        "fd117a25-7386-4970-85f2-ad9549eaf35f",
+        "ff798f1b-1397-48eb-86c9-cb51c2a91f59"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/bd48f0914097bdb4fc0167c0d4b234100db9bcf61d47b85cc20615bca2df60fe.webp",
+      "lessons": 6,
+      "lesson_ids": [
+        "13ae8c8d-73ff-44de-9f90-09db937427d0",
+        "2c987e16-6565-4068-bd19-d85690548f30",
+        "49dd2326-8c2b-4fe5-9fb4-da4a40821a6b",
+        "58253e81-11db-4a65-9816-26f633c29852",
+        "8497f547-8b1c-42c2-88c2-53c79e749928",
+        "ef12f583-0c65-4e50-91f8-6e374c1bf95e"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/c5366e1792e02ef6dc9b063f1d143a9288ea16b74b6b79f12a8c13da4e678d63.webp",
+      "lessons": 6,
+      "lesson_ids": [
+        "14c094c6-cd63-48c3-b754-fc0b5bef5222",
+        "3a7a7765-8950-42f3-bdb9-9d2de4a854f3",
+        "4b59fa8b-3fce-4cc3-b1e1-d1451ab04f35",
+        "abb9c60f-8afe-4abf-aa92-781d47d28393",
+        "dbc211a0-570f-4269-8283-ce40bde3509d",
+        "fe5cb40f-d1a1-4ea5-9adf-f49eefb21e0b"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/316a15b9ad796b295529f48eb6e761a8d17ee8a243864bd0980afaf0949c593b.webp",
+      "lessons": 6,
+      "lesson_ids": [
+        "15d955b3-52c5-47f7-87eb-f625a9be3f73",
+        "5973785a-4179-4b3d-9c1d-492b1809c1ec",
+        "8c73ec77-f4b2-4466-b6af-7fd78a8a3f02",
+        "e439a1a5-a752-4ecc-84fb-91160d418f71",
+        "f0b86b5f-7772-4eb0-b2b2-83ccedf01620",
+        "ff7222c1-e22e-4971-af87-4772912ee374"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/1338681b24acc88afe0a7247533eb7916af26a0e0c87f6a5737570e379df4ef0.webp",
+      "lessons": 6,
+      "lesson_ids": [
+        "19ff1f55-fa01-4738-8043-6ea24cb16622",
+        "3372df5a-7598-4184-bd87-15f211269716",
+        "7653c3fc-d557-4cfe-a346-dac6df3149b2",
+        "79f548c7-5bfe-45b6-8952-1aba6d1d1367",
+        "7d3ba2e3-44ff-4422-85c1-30d90a486ee2",
+        "8a4198a3-b9b6-49a8-8aa2-699062a572ca"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/f701dcb728d1103107ed3be9f7eb29558970a872641019532cd92b9cb4105639.webp",
+      "lessons": 6,
+      "lesson_ids": [
+        "1b3eea69-b612-4672-82e8-dc670460599f",
+        "20327d21-18a1-44e3-9c50-05b4f66d83ba",
+        "2f71570b-5e23-4216-83f0-82e5ac2dd57a",
+        "5300ea39-186d-4814-b86f-66c054e5b967",
+        "f0b86b5f-7772-4eb0-b2b2-83ccedf01620",
+        "f7e1cb56-55e3-4686-b394-d0e07c9a5e9f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/d80a1e684164edfbaca74a6510ca9141b9273af4bc918c1c1a6245f8720064c5.webp",
+      "lessons": 6,
+      "lesson_ids": [
+        "367480d8-4866-46f7-8462-bca1f7dac6a4",
+        "7fa0ed16-6321-48eb-823f-16b3ad7e576d",
+        "99226604-76b6-4283-9de2-9af11ce179ef",
+        "a5cf7d71-2ce7-4cde-bbc0-00fdc0e040fc",
+        "e2ab628f-9996-42a5-b67e-ff66694a3a69",
+        "ebfeb5ac-07ab-44f9-a625-f27f5e9a28ee"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/7dd5a400a04026c709135a3afc8b1e733a6ae3fd9f1312a5054524b1a6064055.webp",
+      "lessons": 6,
+      "lesson_ids": [
+        "6398ec0a-2bb4-4e8d-ab81-3b694ad57653",
+        "8b1f1453-3fea-4426-b868-d23c64fbca6e",
+        "9018599f-8afd-4691-8134-e89d2dc52ef4",
+        "99cc0a3e-1bf0-4b62-a2b3-ad577faeaf3e",
+        "a59c2fdd-8b2a-4334-9867-13ba310b8b72",
+        "e1993259-52dd-4326-905d-968b5b1d318f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/82104e8264f7f35f31c764ffb1f384f8493f30f81f633343df9d90b23a623493.webp",
+      "lessons": 6,
+      "lesson_ids": [
+        "7f62e9d5-8383-4fb3-b761-03bc034ac563",
+        "897c0727-fc76-4863-862e-5b18199256c4",
+        "b6ec4e5d-90b5-48db-a33e-83c4f47c63d0",
+        "bbeeee38-38f4-4492-9bba-c59c4b3f50c9",
+        "f7e1cb56-55e3-4686-b394-d0e07c9a5e9f",
+        "ffb4c064-6396-4232-a1c9-73d99550827f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/bc229bd51c697197b67941c5e2b1d91ef9fd05b667cb7b55fdcd410969e91ac0.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "0156eca8-550d-4c47-8f6e-5c8da82c04b4",
+        "05843b9e-abd5-4a94-8268-e4e19bca0044",
+        "2046dbb0-01b4-4942-bc96-040fb0740b0a",
+        "5f2e1a2a-bee6-4cf8-8cd9-846a2472d85a",
+        "e8e3d73e-693b-467a-b8e2-5e9ebc5aaded"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/8e777a30e265370df3fb96296dff7ea837e483354902cf3c4e3507ba068f0bc7.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "03f3ff70-ad8b-4574-9a84-913fa5f78854",
+        "546672eb-2187-4748-b275-491513301c89",
+        "bda4afe9-f95d-4f5b-8314-384649736fbe",
+        "bf3bd5eb-2a87-48ff-8cc6-3de22adb60c1",
+        "d769af48-4733-44ec-9529-f4d88fc93f6b"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/953bc3771371870714602c44ca999554781d39a1f626cfb766bf55c031a6d44a.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "0419677d-63f7-4fdd-8f32-80abcd671683",
+        "15f36afe-2a02-4de2-8ad6-c1b41aa20a35",
+        "c7c204c9-457d-4c8a-92dc-ed05bf4d1cef",
+        "defeb812-d2df-4a1d-ad8a-d980f3594e94",
+        "eb3c75ab-18c4-4605-b559-264a7dc20719"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/ee047817fc2a7beaad1d407d79003eb489bf95ec07c73cd8035327898b5fdc7a.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "07c18022-8d5b-420e-a148-77ffb6096c70",
+        "294707a2-d889-40d7-822a-e288c323b11b",
+        "29caddff-0dd1-4fbc-a161-e9e9cc33f78d",
+        "3a158117-037c-4c02-a5f4-6c033947e7cf",
+        "dfacbfe6-a436-4068-8afd-062e4da48986"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/aee566237100478fc02a49107df318ed06185fc1e93f0bf331c4f1ed6e9ab1b9.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "15f36afe-2a02-4de2-8ad6-c1b41aa20a35",
+        "5883b3ef-cd35-4d95-a85b-d1dff3577e95",
+        "ac7e4756-2f93-439a-8797-e16e0ec2b02a",
+        "eb3c75ab-18c4-4605-b559-264a7dc20719",
+        "f7e1cb56-55e3-4686-b394-d0e07c9a5e9f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/aa86e8f43b522b95211fa58d79167e31d4264acf714a85c2874c169a85b2fbed.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "1b3eea69-b612-4672-82e8-dc670460599f",
+        "22945a7d-fc5e-4024-9127-33912321177f",
+        "8c73ec77-f4b2-4466-b6af-7fd78a8a3f02",
+        "dfe3388a-baf2-4a6b-a05f-ba6023c93e19",
+        "f1671f7b-1f44-43f8-8be2-73157650fd42"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/30da14a36c3559b575d7a5f88dbed7220e53437d768f78273d71cf26e7988a19.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "1df6041c-18f3-479f-8449-15e1c788401a",
+        "287b6f33-ada0-4f12-a9ae-da5f26a8b988",
+        "3a7a7765-8950-42f3-bdb9-9d2de4a854f3",
+        "40fd4a29-cf71-46c6-bcd7-8ee34218c3f5",
+        "5d75313a-bf07-4974-ac0e-e220b4549274"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/ff96e47f4ca9a8aec6c57447da6a340ccd2834588a05a2893232af6c73eaf99e.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "1df6041c-18f3-479f-8449-15e1c788401a",
+        "88e2fd17-50a9-413b-984d-09208108631b",
+        "8c6f7e3c-965b-405a-bef7-7bd80532dadf",
+        "c7cf3203-b9f2-4010-badf-060cbc00d453",
+        "d3e8d7f9-2a22-4aa8-abbb-c027223b4348"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/bce89aadc0bee4c4703d2af2fa37b3987fea5f6377cfa6d46ca48425d25b271e.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "380ddf53-f222-4cac-8b82-4fca521c1fc4",
+        "5dfbede2-0957-44c3-8419-a3ef90ea0fe2",
+        "750dd238-9d02-4d05-b9d8-432c1c82fbe5",
+        "8405f635-bb28-4bcb-9a63-2351aa3fd582"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/daa76fad94b930e698184d68fb358618600fafe2240cbe719aea5a2e2fa79d1e.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "209bf6b7-8093-4b8a-bed7-898345fbfb26",
+        "5f71ee04-1ac7-491c-bb37-d81d8508c802",
+        "6ae1f6e8-4253-46e6-85cd-2709cfe743dd",
+        "8412ed0e-ab76-4a48-a52a-c9cb34ca92fc",
+        "aff27b77-78fd-4504-8ad6-3051c52bc82f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/c328989e1a86bbaae5dc7c30bb29b70f7e001a4bcd83c1b0fd64df47f43d581f.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "246804de-9f5c-4fe0-84ae-83bf90924293",
+        "604f8ef6-554c-41df-ae7f-e434a5bbd8c1",
+        "91190e23-058a-4320-8608-1eaca9556399",
+        "c0d0d438-fa24-40c3-9466-2263c1f52e6b",
+        "e2970b21-d10c-4648-a882-99b6a0dd9c24"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/5334b320599b8f3f8e65e511f4ca6a5bf935b5d2e89cbf2e23b448824e8bd458.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "27ac9f8c-782d-489c-b81f-c2b824984972",
+        "66050754-34b5-4399-93cf-8bc837d6aac6",
+        "a2baabad-9f0f-40c8-9aa9-2f639dafab86",
+        "bc495950-c149-4c74-b0ad-f02e9e4915e9",
+        "e553c75d-ce58-4929-b058-ca7fdee5b120"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/9a131ba5f31b435dad359d5539a38a4f0881862dac496d7c3cb523b31dd54ecc.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "2b884988-65df-4d32-9791-2f2286b22a3b",
+        "37150221-2686-4031-b8e1-fa1229fd435c",
+        "773d330e-7449-429c-ba57-888da10e66de",
+        "d4738352-7bd2-4a8c-aee0-3798816ccc6a",
+        "f20da015-e9ce-4a2f-aa33-86a567062025"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/56fae3ff5ebcb3db00a9cf5dc73ea1d3da95a4337bacc707b211a0a2c2c40524.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "2f32da25-77c0-4748-b8e9-15078578cfe9",
+        "952e2e93-85dd-469a-a264-0960345be246",
+        "95daae1d-1837-450d-9ea5-4a2dfc314836",
+        "b99f9184-1c9e-4d56-8b0d-e930989734c9",
+        "f16fadbe-6508-4270-9c0b-a51360c794cc"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/d03275c4a7be582a4527e7c8cc62f1d256916bf9b823055a7af5ae4da77edfe4.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "2fd6f3a8-5158-4075-af81-4c3457ba5ae5",
+        "35ca6421-4060-428c-8f12-baba59be8b4e",
+        "446e132b-e080-4209-a439-a8ccc33135c0",
+        "62d34d4f-ee98-45c1-8377-dab4eca4777b",
+        "70914466-7787-4630-8b95-53cdb81854fc"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/523cefece6fbd5180b3d43ede30a3f674d79334e60d1018de032a5e4be6db8d4.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "4b59fa8b-3fce-4cc3-b1e1-d1451ab04f35",
+        "5883b3ef-cd35-4d95-a85b-d1dff3577e95",
+        "ac7e4756-2f93-439a-8797-e16e0ec2b02a",
+        "c7c204c9-457d-4c8a-92dc-ed05bf4d1cef",
+        "f7e1cb56-55e3-4686-b394-d0e07c9a5e9f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/986162cd36287fdbafd925477de5c585d9c357404086c732df794d9f2a9f073d.webp",
+      "lessons": 5,
+      "lesson_ids": [
+        "952e2e93-85dd-469a-a264-0960345be246",
+        "a2baabad-9f0f-40c8-9aa9-2f639dafab86",
+        "a5982335-9792-431f-8d5a-e69c6b86add7",
+        "b6ec4e5d-90b5-48db-a33e-83c4f47c63d0",
+        "f16fadbe-6508-4270-9c0b-a51360c794cc"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/c8eb2212162fb7a95cd99b94b293c224b384df6e2c4cc6969d8fc91252c66af2.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "03f3ff70-ad8b-4574-9a84-913fa5f78854",
+        "884dbc95-efbb-4a45-975a-a82533b512fb",
+        "db352472-379f-4340-9f01-74464a96958c",
+        "e467e412-f5a7-4f59-a52a-d3c77bff4ab3"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/4da87953bbea024b0ff376cc027f4ab1113e4eb38bcd56a1b346d49b28c8aa60.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "0681d5f3-ea97-4002-b4a4-9a692d5bef10",
+        "952e2e93-85dd-469a-a264-0960345be246",
+        "cbaaa13f-9308-4069-a8cf-4a05b2006e3a",
+        "ecc2dc63-5464-4dfb-af25-64cf5c6b18ca"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/afc6e95d3c772a1c4c8db50d6534bbcd2691db034f0789a5f905f4c3f24c0a7d.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "09d7e2d3-f80e-4f5e-9dde-f56675048770",
+        "1ab49353-7466-4594-a799-455c14e2d82c",
+        "45db0832-5074-47ed-9b37-c49efffdf6cc",
+        "d12779b1-e9ba-4bc3-9973-1faf6e708602"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/2e6f7de2886e73df3dc33199906b782f1d34951cef02302691c19c5d152a706c.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "09f0fa3f-37e2-46b1-a690-8769f7ad794f",
+        "4d1fefaa-6fe4-41dd-89d1-18f845ae96e6",
+        "b9270089-0da4-417a-8f74-1bc1b9cabcc6",
+        "fd117a25-7386-4970-85f2-ad9549eaf35f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/98089e10f7ec4cf58c5fb4ac08fcd8c51a6e11440a55a43c4321a92da4aad8bf.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "09f0fa3f-37e2-46b1-a690-8769f7ad794f",
+        "3a8ba7e6-3823-477d-ad69-9032aee78335",
+        "ba7cdf43-8bb4-41d3-8451-867d4b29c51d",
+        "c7c204c9-457d-4c8a-92dc-ed05bf4d1cef"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/81fecff7e55d6bda611011ff1bbea9fc1eebfff83a0e74e1f7ced9f94c0cab6e.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "0b1cdf8b-de33-4912-b3a2-382dac10347a",
+        "2ac7bd4f-8e8a-4223-8a23-60d883d15cf9",
+        "333b8e28-a7c6-46bf-b080-bb55c1322780",
+        "7fe312f1-95b1-4fe4-a97a-c5c80a0f937e"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/95fcbdb4ddac6388e28dead87d3a0e2292246111530993f4c5fdc159d4c3a0ea.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "0bb39b50-34d6-47a5-96f1-2a8cb5628b1d",
+        "62b63139-5afc-4c88-b10e-fb81243bbc41",
+        "813873a3-923f-4ec5-a45d-eb6b1b486fd2",
+        "8497f547-8b1c-42c2-88c2-53c79e749928"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/a07dc842f963c347cf733129b91d7bab281e2347e8f33afe6c731a30b68e7b64.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "0e0ff352-4830-4de1-b030-7715a0e6c99b",
+        "33ad61e9-ad7e-4eb8-827e-91acc29d13ab",
+        "ad54aba3-1b87-4cba-826d-31ad9c9f2f3c",
+        "f80bb04b-cbdc-4df5-81cd-a2f15db4f275"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/8d9c9436474568b29e15693325731299c6cb8a60f9de14d62560695a6021bfdd.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "0ea4012b-bad5-4ae0-94e1-3dea425711e5",
+        "1f2d66e9-11b0-489a-a989-bbbbfef57ef2",
+        "47073782-3e2b-47c9-8931-30e996ccc162",
+        "a4695090-621a-4cec-ba40-f351df731863"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/b6c52963a8395b787a12bbbc027711e6743e12e178b44cb71b519ef629e79370.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "113f6d25-7841-412e-b5a6-88f03c9e002c",
+        "4a903ba8-0b81-42d4-b833-f87527f2f3cd",
+        "952e2e93-85dd-469a-a264-0960345be246",
+        "a2bfc099-de98-4209-b9a2-394fcd92b01d"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/0e4196a3c8b2ed6da78330571c57ba6aa151e9d38cfad4f08fce8849597c34a0.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "116f5278-4403-4095-acc1-9e1e9d825301",
+        "1b37b549-5170-4def-9025-df19f4db689e",
+        "8107c299-7ad6-48ed-a65a-5bcf837b5ada",
+        "a87487b7-8ec2-4833-ba9b-14aa53c375c9"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/edbcba3bb36faacfa49a6275390bcc7e88ec484be205c36eeedf5a971267d2ba.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "12328833-3f65-4581-948f-7c26285c14b6",
+        "60dd57d8-6af7-464a-b128-1d72d311b815",
+        "a2baabad-9f0f-40c8-9aa9-2f639dafab86",
+        "e553c75d-ce58-4929-b058-ca7fdee5b120"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/a50f11ea0aebc53a3a3bee53096297ad214fdd3676b5b7d2067e8db8c3186a07.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "194c6530-9fd7-4a63-8c92-9ecc09de1475",
+        "546672eb-2187-4748-b275-491513301c89",
+        "d769af48-4733-44ec-9529-f4d88fc93f6b",
+        "f0b86b5f-7772-4eb0-b2b2-83ccedf01620"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/185bb72aa0e6e6e302a51c17c0cc0e80484681a013619f5742649324e97041a1.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "19ff1f55-fa01-4738-8043-6ea24cb16622",
+        "7653c3fc-d557-4cfe-a346-dac6df3149b2",
+        "7d3ba2e3-44ff-4422-85c1-30d90a486ee2",
+        "8a4198a3-b9b6-49a8-8aa2-699062a572ca"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/c8b7d10dcd9f82557a5b6df868c925900937020e81d79f18882f81ce0383944a.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "19ff1f55-fa01-4738-8043-6ea24cb16622",
+        "6ae1f6e8-4253-46e6-85cd-2709cfe743dd",
+        "7653c3fc-d557-4cfe-a346-dac6df3149b2",
+        "79f548c7-5bfe-45b6-8952-1aba6d1d1367"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/ecf92f67908ec2926b625604534333d11985cffc25236e7f60171527b69f30de.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "1b4c0d82-2192-4f17-ac00-11f56f8f24f5",
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "a30ed10b-a976-4311-8919-7388e1e94db7",
+        "c73c3d09-25d3-4b63-acbf-ac6f7205a54a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/a73941102433289c247c4e86840002c445ead0fb5b236b0bbba5ee465894d760.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "1c8139ae-cf1d-49be-9eab-057f2e7ee9bf",
+        "5d7711fa-2c40-4984-9d96-3086c72f205b",
+        "68ca2aa8-01b3-46d1-9b64-a3d7a585b5df",
+        "af55925c-c918-42fd-bc5d-c481e4a9ab59"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/84872af8b7edb051b4463482f61ef1e02e6d847b20daf516cd0fcd8c9f2a14ec.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "1e964264-623f-40a9-a3c7-c44191d6ce1f",
+        "8bb91de6-acbe-4690-a97d-3e84645524e3",
+        "953ea1d1-ab58-401c-97d9-7b16434cd63b",
+        "f16fadbe-6508-4270-9c0b-a51360c794cc"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/72a65634a5be4a3d34ca02980c5530b664b627cbe91b1c327cc14d074bbdbb45.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "2046dbb0-01b4-4942-bc96-040fb0740b0a",
+        "5f2e1a2a-bee6-4cf8-8cd9-846a2472d85a",
+        "990fe67b-7c2e-4592-b0ec-761e5b8c7461",
+        "e8e3d73e-693b-467a-b8e2-5e9ebc5aaded"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/c3866210f8a81a4a48ca34d64c6a8e765a01f37d62fa3179529ca1e4c1eab27e.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "209bf6b7-8093-4b8a-bed7-898345fbfb26",
+        "8405f635-bb28-4bcb-9a63-2351aa3fd582",
+        "884dbc95-efbb-4a45-975a-a82533b512fb",
+        "a68fee22-06bd-4e98-b991-5c26d2fb3fb5"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/833854475774b2d4e2fe960288f6e3e8087252ea74ca6e01283b6de8e13c8e35.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "22f8ca87-9ec1-4987-bdc5-7efecf7311c1",
+        "49278e33-f30b-4366-8ae9-f4823d4c2316",
+        "7f62e9d5-8383-4fb3-b761-03bc034ac563",
+        "aaddb186-1a78-4248-8be1-e3c46c29deca"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/c792b14ccc320e2cc531b8d3b78d2a4f8f82b3c9fe8ac9543f2557bfd50d70e1.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "246804de-9f5c-4fe0-84ae-83bf90924293",
+        "604f8ef6-554c-41df-ae7f-e434a5bbd8c1",
+        "91190e23-058a-4320-8608-1eaca9556399",
+        "c0d0d438-fa24-40c3-9466-2263c1f52e6b"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/2c6d3493e60ccaa9b252d16c244500bfda38cebd6cb6aa10a2ca757ac5a3eff6.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "27ac9f8c-782d-489c-b81f-c2b824984972",
+        "a5982335-9792-431f-8d5a-e69c6b86add7",
+        "cbe2b287-0a10-434d-b29f-09a72afbd9e5",
+        "ffb4c064-6396-4232-a1c9-73d99550827f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/af47e49c98aa93700d6e5b766d139c8d3bed144a8ae9300b729c379ef1055964.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "29caddff-0dd1-4fbc-a161-e9e9cc33f78d",
+        "41977ec5-f470-4627-ac56-f2528e7ef006",
+        "aba249cd-4f67-489e-be9c-2b35626dee11",
+        "bdb71412-2c2f-4cf0-8876-ef8532ef7889"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/9c489b7b0eb190019a9d47a0942aec9fb347e05b443513d8480b248cc6344d26.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "3372df5a-7598-4184-bd87-15f211269716",
+        "79f548c7-5bfe-45b6-8952-1aba6d1d1367",
+        "7d3ba2e3-44ff-4422-85c1-30d90a486ee2",
+        "8a4198a3-b9b6-49a8-8aa2-699062a572ca"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/5fe9b2068d0695df6b71c52bc60c00e45b34e104aca8cd3de41b0500251eef45.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "3c1bdd57-3289-473b-a6ad-d49da34719fd",
+        "74885b0c-d01c-420e-b9ea-65078c118189",
+        "cea5d601-8e4d-4cc4-8098-418fd1c9c225",
+        "d3e8d7f9-2a22-4aa8-abbb-c027223b4348"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/9b6d8b5ff6d822a9b6ca5eaa1abf2fdbf1f2ab98fcf1bd5dc1afde56ba13c2ec.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "3d06d215-6736-415f-b031-8851aa875aeb",
+        "49dd2326-8c2b-4fe5-9fb4-da4a40821a6b",
+        "77e7ea76-016c-44dd-aff9-fbddd866d9f8",
+        "efbf0dce-61ce-495c-90d1-7ca3106419a9"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/3a854e893cccc285ca18965f20087bde21be45cab25e7d09ba8ec65d6bbcf5d4.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "3fb390c6-3086-4b55-954f-aa27fcbf8eb7",
+        "584d5c70-7675-43f5-b7c2-38eb91e2c7ae",
+        "7f62e9d5-8383-4fb3-b761-03bc034ac563",
+        "e553c75d-ce58-4929-b058-ca7fdee5b120"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/c194a73d1b4f07ab4aeaec273530940187446beee0547fabcc8bbc3c8b7df9ae.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "42a8f4f2-62ba-4c67-a8fa-f30c1f941252",
+        "55388034-3e3f-4d51-ab17-8710abb72cd1",
+        "76e08e68-fd2d-4220-84c5-821376661e0d",
+        "c9462daa-1165-4cf3-9029-347973e7fd72"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/73e5d9f01c1db091900eabd5ae4db2a5ce860336bbef40c41b97f4c402b160b9.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "432a0746-718a-4c44-be77-a3d78dc423ed",
+        "978311a0-98b9-47d7-a9bb-99c11054e8a2",
+        "e9b849b6-b6af-4aeb-ae6c-1bc6e8a247e8",
+        "fb207d8b-5b55-46b0-86c8-8e5e71d91b75"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/1a0f83a8fe484a3f8dfd44c251ceab884713d4da2b361add869d9eb2933bdd2e.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "4f81554f-7fba-49bc-b98f-e1de75e0b68a",
+        "54ef381f-78e3-4cb0-8ea4-bea46294c7fc",
+        "8fd6fafd-57c3-40f2-b7ee-b9e089127fe5",
+        "a172f582-1676-445b-91a6-8a909ae9bf13"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/e231baae491662f1c9e0406add693d89c5200fb2a80269faf26755672a275115.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "5300ea39-186d-4814-b86f-66c054e5b967",
+        "d1f94c22-0be5-4c1a-bca9-26897c73087e",
+        "de723b50-ec5e-4ceb-8f34-8ae618dadd23",
+        "f0b86b5f-7772-4eb0-b2b2-83ccedf01620"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/fc6f015b658e08b542dd644b9f823485943770bc986913e81aeb1c5fa327324d.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "5d0de9f7-b7ca-47a6-a2ec-68703cfd10f2",
+        "9683188e-5817-43dd-8e80-676c146d6608",
+        "979e82e3-4bdd-4b85-8fca-c8cf52974a2b",
+        "d6a0d04a-4dfc-4916-acc9-06bb3dc48b64"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/0da07e9069134426c39a06a92a4b371e91bdc05df4efbacf432a21a11184939b.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "604f8ef6-554c-41df-ae7f-e434a5bbd8c1",
+        "91190e23-058a-4320-8608-1eaca9556399",
+        "c0d0d438-fa24-40c3-9466-2263c1f52e6b",
+        "d6558e5b-7130-435a-99b2-55ad7ad6f543"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/065b37b2d8dd75acf8e84182646650a3d385b08fd5af22924f3563bfafef749b.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "6477fe1d-897c-4e9f-a105-3209d300e546",
+        "7bbe245c-e741-489e-9f28-bb6743bac39d",
+        "9063be17-adb4-4dc7-8d36-a02c80bf103e",
+        "dec6eac3-1666-4b67-93a4-e545abecb127"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/10777b19501b61c99afbaf3af4bfbba3c641d2304283ff2deddd7008e5814f82.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "77ae4b7d-9026-4650-9136-e293d6e9e9bb",
+        "83a1a780-804d-4e79-a613-40423fe92804",
+        "9d9a9765-3c74-4b04-b102-44774600acd5",
+        "a04eabc1-ba25-460b-9424-edba8d7fde36"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/9b415c3e4d6845f2914140d55082809efe66eed6d2ac69e763c6073e0dd96345.webp",
+      "lessons": 4,
+      "lesson_ids": [
+        "8c73ec77-f4b2-4466-b6af-7fd78a8a3f02",
+        "b865b829-d899-4eaf-b8c8-3f5df40496a9",
+        "dcc6cf45-ed63-497c-85e6-3a570cc751d0",
+        "e439a1a5-a752-4ecc-84fb-91160d418f71"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/c492c4a63d4cbadbbfec24609b8ba5f609517db35c034519b1a7914e8cc78377.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "0156eca8-550d-4c47-8f6e-5c8da82c04b4",
+        "1c8139ae-cf1d-49be-9eab-057f2e7ee9bf",
+        "7b92c78f-c78c-4fa1-8a88-f9b5fb51cfcd"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/a61277b69c27a9974b1d319a4ace3c867c502f0f1ef5bb694864be602a55970b.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "0156eca8-550d-4c47-8f6e-5c8da82c04b4",
+        "1c8139ae-cf1d-49be-9eab-057f2e7ee9bf",
+        "7b92c78f-c78c-4fa1-8a88-f9b5fb51cfcd"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/3de1533b737482a163c8ea32438aa88bd1b5470a134d6ffc7d86f843585b942a.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "0156eca8-550d-4c47-8f6e-5c8da82c04b4",
+        "2046dbb0-01b4-4942-bc96-040fb0740b0a",
+        "e8e3d73e-693b-467a-b8e2-5e9ebc5aaded"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/71fa0ae6af3c7359e6458549e9dd6c1fe05b8744c016296b8c8b3788686f4d18.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "03f3ff70-ad8b-4574-9a84-913fa5f78854",
+        "a431b2ad-8b2b-4cfb-b81a-5f02898ad05c",
+        "c94ed5c2-ad9f-4580-8a8f-c6ecd29bdce9"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/982952124f93e260c06e73642d6b418012d04049c251d8adb398269bc4e0ee38.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "08227535-5ebd-46fd-a7a0-43140a7e9c44",
+        "485d8bcb-720a-41d4-874b-39ac5407eb12",
+        "bc3ff1f0-0b59-4336-a4e9-2c3dfdbc1277"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/381b334381596cd3bc2957ef4d52e56a0b448f527a54d014606578923225efc8.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "09f0fa3f-37e2-46b1-a690-8769f7ad794f",
+        "901db47b-a717-4e2f-96ce-557c1b2de304",
+        "9063be17-adb4-4dc7-8d36-a02c80bf103e"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/7a5518bb15f27ebb5b918f9e84405481317cd165f904231c2313d2f4dac0c036.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "0b1ec5cb-529f-4806-b1e7-b61f86d02a28",
+        "d7e95050-c597-4352-bbe6-8ad30bdcfca4",
+        "dfe912df-726c-4572-be4c-89d29872e1cc"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/dc6a1d607b58e64dffbdf17190d7a58c6e501cc575bea36de76c2c991bcb1289.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "0b71af18-b04d-47d5-b577-53aa52d74c92",
+        "ac7e4756-2f93-439a-8797-e16e0ec2b02a",
+        "c3ab6806-237d-4388-a545-4648c1e5d41e"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/0a1be7271e1537459650c77276a2b64c8ceaf4281ecddc1181f37766dfbdf873.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "0d50be06-c51f-4a36-9388-fe820c881e38",
+        "27ac9f8c-782d-489c-b81f-c2b824984972",
+        "ebde18c0-31a2-420c-b276-c85b83d107ea"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/7a645bff23abf0eac3936c4c92b7795d02a5f67fe8c96e7d51445819abfa0c03.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "0ea4012b-bad5-4ae0-94e1-3dea425711e5",
+        "1fd9384d-6fb9-49ee-a485-def55ed0a3c6",
+        "3d06d215-6736-415f-b031-8851aa875aeb"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/46d54c49b14ef118d134f267bf31d2cd6ad7fdbb5ba9123877eb8ab791957d43.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "116973ec-8519-421e-85e9-184c786e062a",
+        "a2bfc099-de98-4209-b9a2-394fcd92b01d",
+        "b9270089-0da4-417a-8f74-1bc1b9cabcc6"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/48f3f03883d7b11addfab2ed955b4d97287a088cf560ca4cd72cb0ddaf3d8129.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "121363e7-d363-4ad5-8cce-f3d85ce9750a",
+        "1b3eea69-b612-4672-82e8-dc670460599f",
+        "7c95a0bc-3c6c-4b41-829b-7cd766e03ef4"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/711758d28b16f8841a00111447ac5b9cae0d6dcacb4b61782d20b23daaaf9340.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "14fdb332-21f2-4804-a240-156ae923996a",
+        "68e1d1ac-84ce-4728-b38f-723bb24c7b01",
+        "bf3bd5eb-2a87-48ff-8cc6-3de22adb60c1"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/fe8dc33f3f6894ae6a1617676ba0052f7f3cf31db7c2251636119e1a3bbeadc0.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "15f36afe-2a02-4de2-8ad6-c1b41aa20a35",
+        "387ae550-d18d-4d31-88f5-899ffed8f1f3",
+        "f7e1cb56-55e3-4686-b394-d0e07c9a5e9f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/a245daf8bb8d21d3e8488ab1a352f2223b328ea82abbb15d62931e461f39337d.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "194c6530-9fd7-4a63-8c92-9ecc09de1475",
+        "59224cf1-2653-4b10-b22f-e69c9be24c0b",
+        "aaddb186-1a78-4248-8be1-e3c46c29deca"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/c62745e9db768627064ac0488c7d5f9bf26ddd0565bc31bfb16604a51be9ca64.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "2046dbb0-01b4-4942-bc96-040fb0740b0a",
+        "5d7711fa-2c40-4984-9d96-3086c72f205b",
+        "990fe67b-7c2e-4592-b0ec-761e5b8c7461"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/af3bdee0ac600b8397ee6587fae77bc451ecf06e902ffe1ebd090184e02e424f.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "232ec275-ecb7-4cdd-9811-cb7a10c1208f",
+        "440e4163-cdac-4f17-aaec-acd6c7fa0a8d",
+        "8f845a0b-b20d-4d41-9be7-82cf5978ccca"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/0772cdfcb13d1072a58c4f3c1d3319a3df0e03064134030adf59991faf2e5670.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "246804de-9f5c-4fe0-84ae-83bf90924293",
+        "3fb390c6-3086-4b55-954f-aa27fcbf8eb7",
+        "e3efa4f6-29b2-46e3-a289-fb1669c4244f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/da07265a001452b70ca7cb4c973385a681e8271339a8337059b45ac193cc027d.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "2a9d3f9a-bc41-44bf-8554-beda85458925",
+        "387ae550-d18d-4d31-88f5-899ffed8f1f3",
+        "dfacbfe6-a436-4068-8afd-062e4da48986"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/1bd6daa8845553e70f11df06f26e4fd59e8bb50a9129b7057bb7133e8bbab55d.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "35ca6421-4060-428c-8f12-baba59be8b4e",
+        "be6096f7-7fa8-403f-8724-8d75e628e9f5",
+        "d2ab59a0-a287-4090-b084-6ab2a1b4b007"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/80882b3c896c752a0a68b81ca234146b980994d374fb287b226b29034c8a0937.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "3681ab1f-cf68-4369-8a19-62a58316de71",
+        "4ec98472-5e0b-44eb-9139-1d71019c658e",
+        "54d7e3cb-b401-45f2-befd-40c8b940afec"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/9c45af72b6dc9d771e2e997407565e99a76bc1f887940c66e92b2314bb1f6156.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "3b7f7d08-9fc1-4f66-8794-8815d53d601c",
+        "953ea1d1-ab58-401c-97d9-7b16434cd63b",
+        "dec6eac3-1666-4b67-93a4-e545abecb127"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/23de3d75782df514c03b4d6ff7331e11aa90a9d52125d3817819b95da4d0158e.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "3dcd643e-9dd6-44a1-aa55-f3b5cd66a006",
+        "8bb91de6-acbe-4690-a97d-3e84645524e3",
+        "d7e95050-c597-4352-bbe6-8ad30bdcfca4"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/556ffcfaee77ac4e4e0d6f7a76e31953e8f2c5e5f4b899d605e93b3b1f525835.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "3ed0180d-f723-4fbe-afc5-0f541f3fb31b",
+        "7977e3d5-8ac0-46b3-bdc2-a0a3df7caf9b",
+        "9985f0ef-eb20-4fd1-8160-abfca6d39911"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/d42aebb59105bc6a140ccb05da99a901250fd18f76c20c9b5e745aaa18b0e4ff.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "41977ec5-f470-4627-ac56-f2528e7ef006",
+        "62bf6f8e-9c42-4666-855c-b322c8318f49",
+        "ea76f939-0378-4caf-9bce-b9498a980efd"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/0e5b13d2e8276b3fcaa6118a8dd477be102f95ba71096cb42bff8da23f74096d.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "432a0746-718a-4c44-be77-a3d78dc423ed",
+        "bc3ff1f0-0b59-4336-a4e9-2c3dfdbc1277",
+        "dcc6cf45-ed63-497c-85e6-3a570cc751d0"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/d923d4bbfed7982eb0b39516c102a157341c97e184188aa059307f17f651264f.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "440e4163-cdac-4f17-aaec-acd6c7fa0a8d",
+        "4e297ba3-8501-460b-961f-60bde779dec6",
+        "9985f0ef-eb20-4fd1-8160-abfca6d39911"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/bf14673998a49db1d8e3276e18c82f6aec64bc48e6f7bcb6cae0e9af0b949e59.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "485d8bcb-720a-41d4-874b-39ac5407eb12",
+        "9c8ebb37-d20c-4a15-b9f3-afc3a34942b5",
+        "baf1fb24-8844-4894-96f5-ee5598bc165a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/656fbf39f799717f6bf644785e6642238302852838ededb6d6a5d2997dd511e5.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "4b59fa8b-3fce-4cc3-b1e1-d1451ab04f35",
+        "ac7e4756-2f93-439a-8797-e16e0ec2b02a",
+        "f7e1cb56-55e3-4686-b394-d0e07c9a5e9f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/a6d53936d3f9512fbc314f5c680612d1bafeeac19dccb68ede8d0839d5eafe63.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "52bc6c5b-e96b-42f0-914b-4773a9271fff",
+        "e9b849b6-b6af-4aeb-ae6c-1bc6e8a247e8",
+        "ffb4c064-6396-4232-a1c9-73d99550827f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/c714dbccf7d93665a35aca795ab36c83a270f1bef641889b965bbb4d1d92277c.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "5300ea39-186d-4814-b86f-66c054e5b967",
+        "773d330e-7449-429c-ba57-888da10e66de",
+        "81e5e368-9a7f-4fc1-be7d-89a6827b1e9c"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/defa0c382a994d15763ee7e564334c15f3ddd96c65843558471d54b703de4282.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "53b3be95-514c-4fac-a676-40aeb4c47cc8",
+        "b6ec4e5d-90b5-48db-a33e-83c4f47c63d0",
+        "f16fadbe-6508-4270-9c0b-a51360c794cc"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/106497687997c8ab8c6b7285b089760f3afc77605070abef32cbadf4d250e858.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "54ed8bee-1deb-4a81-b53d-48a4d4d4290e",
+        "859372e0-c84f-422e-98e9-eb94ddcbb8d8",
+        "e6528c2e-58d7-4277-8997-9f64acb9710f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/e3926b1724d13885f129a098f31353cf22237a1a8b258de9c2b0e35b10f79626.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "55388034-3e3f-4d51-ab17-8710abb72cd1",
+        "70d5037d-69da-41d9-ac66-32a689adc32d",
+        "bc495950-c149-4c74-b0ad-f02e9e4915e9"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/633a2f0e1b430a2575418457c5383dd2f579e21508f84786db2badb8c1f48402.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "5883b3ef-cd35-4d95-a85b-d1dff3577e95",
+        "730bf108-f4f4-461b-94c1-f7f7ea734d49",
+        "ab80fd4f-080c-4835-890a-314b4de1083f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/979305b6697c684e7663217c628a8668aaf9987d6075d356c5bf572427fc1ec8.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "5d0de9f7-b7ca-47a6-a2ec-68703cfd10f2",
+        "979e82e3-4bdd-4b85-8fca-c8cf52974a2b",
+        "d6a0d04a-4dfc-4916-acc9-06bb3dc48b64"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/1276314ad1ecfe3de1f5a0370231f02b11ae76460e4680e592a2fe8321ea7c7d.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "66e47a18-ea11-4975-8e56-794eb8bfb2e7",
+        "c1ab3906-2c6c-41f0-a03b-511239c6401a",
+        "c48aa109-190d-4a4f-8764-da0b23174c82"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/4933a9f4d6c7a253afb6446761b3548ce53c3159c8311fb0e838e014b397faf6.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "6fe1f2b8-d066-462d-8e63-ccb9b92b0526",
+        "b3e209ea-cda1-41cf-af56-8cb6b4dbd3c5",
+        "cbe2b287-0a10-434d-b29f-09a72afbd9e5"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/359463a79903f582d130843805211594e5a37a1e683ce616298319fce63a116a.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "7653c3fc-d557-4cfe-a346-dac6df3149b2",
+        "79f548c7-5bfe-45b6-8952-1aba6d1d1367",
+        "8a4198a3-b9b6-49a8-8aa2-699062a572ca"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/9238347471e664d97acdd79ed4b1c062e918ec8b1ef06480ae72cb31d146d50e.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "784bb77f-ee0d-4452-b04c-07fa49a767be",
+        "e1619e11-cebb-47fe-9c94-85f5753a47b1",
+        "e83bde07-cfa9-4354-9ba6-4fb2dac2c071"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/435dbd81a58545e2bf7f175813a916487a46f2f6dcfdcffaedb102f0c601ff0b.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "7d5ff586-ea44-435c-9b45-96c1853a46cf",
+        "ad828038-f557-42d2-80d7-ba722f2202d9",
+        "dbc211a0-570f-4269-8283-ce40bde3509d"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/8f3cd3d3213d373f3b3c774ea9176a9a493737086b299fcb3660fcdacd31c40f.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "7d5ff586-ea44-435c-9b45-96c1853a46cf",
+        "a68fee22-06bd-4e98-b991-5c26d2fb3fb5",
+        "fe5cb40f-d1a1-4ea5-9adf-f49eefb21e0b"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/446feb941dc739d67ba722201db2b3de0a4d8e653ae62dba2c565a2b5ef36196.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "8218e921-8088-4477-818d-a21d6fc346fa",
+        "953ea1d1-ab58-401c-97d9-7b16434cd63b",
+        "b2f4ca49-a090-4529-9c6a-efac431dc56b"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/4035a6c79c8c6896b705c0d32e91d1d07beb81ed76cd03462153831a418d80f6.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "840bfdf6-56c4-4e76-8483-10dff179db7f",
+        "a68fee22-06bd-4e98-b991-5c26d2fb3fb5",
+        "fe5cb40f-d1a1-4ea5-9adf-f49eefb21e0b"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/062229ad7b9573bf8941661b553012eec2316917176d6a8d4ab3040604cf72d1.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "841e910b-4a8c-4125-9340-a7233a9b458c",
+        "a68fee22-06bd-4e98-b991-5c26d2fb3fb5",
+        "c87eb8d8-482d-4206-8144-6a34d1d3cd2e"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/c2219b8abf45a7ce99138660e8126e3250a0b1c39bb3ffcb6a551e5e0dc4f66f.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "87e47655-381b-4f42-bea0-e429185cbd09",
+        "b2ea2041-887a-465c-99c3-2deed9e3eff3",
+        "c48aa109-190d-4a4f-8764-da0b23174c82"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/cd8456a8b240e3c19a220a1542306bb3ea353a12303b5524c625ce06b13cc839.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "8f845a0b-b20d-4d41-9be7-82cf5978ccca",
+        "a59c2fdd-8b2a-4334-9867-13ba310b8b72",
+        "a68fee22-06bd-4e98-b991-5c26d2fb3fb5"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/f3d21112d011e51be35fb8ca45dfb81f25c73e12efa9546299df8201ca7d2614.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "95daae1d-1837-450d-9ea5-4a2dfc314836",
+        "b2164c47-d71a-400b-b7ec-3aacab7e5d91",
+        "b99f9184-1c9e-4d56-8b0d-e930989734c9"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/87d120c6391d63144d5c866e1c9f4f78c93f475fb50fd779c821fb4523e71cd5.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "9683188e-5817-43dd-8e80-676c146d6608",
+        "b9e3b09f-0adb-4f9d-a0f5-314102b3c99f",
+        "c937fad4-8dfb-4ac9-9ea6-11a9968ef2cc"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/ead07f654ac79d48ce314962960b22eed64d3e2d4dba802936c9a821ccd8f6ae.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "9683188e-5817-43dd-8e80-676c146d6608",
+        "b9e3b09f-0adb-4f9d-a0f5-314102b3c99f",
+        "c937fad4-8dfb-4ac9-9ea6-11a9968ef2cc"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/67b06ad47c4aa0824957b3ff06d00479065f747c69b6a8dbb0c9fcdfe89112ab.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "99ee0210-c4a4-4d2f-a9cb-060961c8104b",
+        "ac469675-9730-4733-9d75-f5db844bf57d",
+        "c73c3d09-25d3-4b63-acbf-ac6f7205a54a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/63485ca672b63060448b883a1c73acb71d8f00e047e59cb7cdab87054496ebf4.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "a2bfc099-de98-4209-b9a2-394fcd92b01d",
+        "d7e95050-c597-4352-bbe6-8ad30bdcfca4",
+        "fc1df3fc-1ee1-4ca4-8c22-2e034d6f9dc2"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/109fe88a7ac3cecf89cb101c3689c1084f4375f4f40754b7e22b399c51d2dd1d.webp",
+      "lessons": 3,
+      "lesson_ids": [
+        "a52a8d95-99fb-419e-b911-96dddacca0f0",
+        "d6a0d04a-4dfc-4916-acc9-06bb3dc48b64",
+        "d80452a1-ddf6-429d-af62-6334e0c6fb5a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/531bdec2c3260c34841810f9bd1cfcf2735f06e641912912a893fd4f255bc563.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "00bbf0c6-be8e-4d87-a4eb-886531223911",
+        "bdb71412-2c2f-4cf0-8876-ef8532ef7889"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/22a6c0480257bf0122cccda57c4cea7faaaa7e60989d135c11351d2acafee067.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "0156eca8-550d-4c47-8f6e-5c8da82c04b4",
+        "05843b9e-abd5-4a94-8268-e4e19bca0044"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/fd7db39d826a38c364a1fd443fc1685a4b943736236b37927f5a1df441f87db9.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "01b362ba-9ad4-4804-87b4-4baa02e46d70",
+        "76e08e68-fd2d-4220-84c5-821376661e0d"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/e6a0d4ec4191bfc2a16f525d01859dcbc383ef833585a805713bd7a2d9791d5a.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "03f3ff70-ad8b-4574-9a84-913fa5f78854",
+        "fc4d8688-0575-4cc2-a510-b2ae082c4701"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/3234b09bd5862fe4ba30f7d197e8a8588fda9445a9fdad139c51c25cc9245718.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "08227535-5ebd-46fd-a7a0-43140a7e9c44",
+        "79dc3ce8-624d-4a3a-9aa7-f29907a34bb6"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/ab1b778660f5a7cd8e4b5ecb6ce345bf2e542012b5c3b6163329810ce0c59e4a.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "08227535-5ebd-46fd-a7a0-43140a7e9c44",
+        "5e8ed43b-075f-4555-8e8e-d586d39f443a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/8f4acecba22c3868338d5c9621452e0555ff500941fccf5ba37f8d5bb4ee1ea4.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "093391d4-356e-4032-80cf-b67d4b137ef7",
+        "bf3bd5eb-2a87-48ff-8cc6-3de22adb60c1"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/96be1243f333fc9113368fc6dac346267249925e0cd2770a3fafd045586b2dd8.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "0a0b0425-dd0f-4236-a392-4b1f8b443203",
+        "169037fb-033f-46b6-ac9d-59f3e6ad13a3"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/3c7b07916b9e548be4295becc78c28522194f3e32adcfa73a4f3378b9e7ff80a.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "0b1cdf8b-de33-4912-b3a2-382dac10347a",
+        "6ae1f6e8-4253-46e6-85cd-2709cfe743dd"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/d696df33cab1a49fd6dcf32e91cf44f95ed4a2ac6168e391a0f8b58b041fd283.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "0b4f5d51-b482-4eaf-a55b-e3ebad66fe55",
+        "b8e138c2-d450-47d6-8a12-840a0df24a2e"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/323c8d5a505e6e4ed7f9bbddcc8108a2707588197de248e7b6c6181488ce2894.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "0b4f5d51-b482-4eaf-a55b-e3ebad66fe55",
+        "de723b50-ec5e-4ceb-8f34-8ae618dadd23"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/00b69c86f254de3f2f27ea16faa040b8890b7446d287acd98bb050fcd4c79d9a.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "0bb39b50-34d6-47a5-96f1-2a8cb5628b1d",
+        "9cfa4fcc-c260-4a4b-bc65-2c949a209a69"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/dd11ae7e3f6d3eb2078e268e9f66c384fe66a694cf643bfd7d5a61db4c3baaa4.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "0c6a3a1e-5023-4732-a3d9-42875cfaa6b7",
+        "1cd92fbc-47f6-4468-9f5a-95ea4742c9ec"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/01a8d49503b92dda549c45ed8649490d3cf3bcc5d0f553ab988b89dd252f9fdc.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "0de89462-750b-440e-a4bd-8b8a8fa1726d",
+        "cb6629b0-3e80-4e07-a1af-20756e098b8b"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/7dba81a6995ce87edc3a67f90b3767c3affe95cb436616230a4d8c903db63242.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "0e0ff352-4830-4de1-b030-7715a0e6c99b",
+        "19d56c18-9f83-4ad2-83d2-c1be2fabd0b2"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/e22b584f324845ca629d2739c226b207a6364375fbd55995b700bd8ca6dc1cb5.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "0e0ff352-4830-4de1-b030-7715a0e6c99b",
+        "432a0746-718a-4c44-be77-a3d78dc423ed"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/b9457d3e0fc3607e93b01102ce6916c8efae94f062890c48ca973d7206a0252a.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "116973ec-8519-421e-85e9-184c786e062a",
+        "fd117a25-7386-4970-85f2-ad9549eaf35f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/4560c19e7b4641c5aa72a2e7be7516d96123f680e2a13c0d6fa1a5a7a254488c.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "116973ec-8519-421e-85e9-184c786e062a",
+        "bf5a5c8a-40a6-40af-b604-8601c356b4d6"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/2f6d8fdbf9fd215248c335fbcda891a055377b0fb87884ce525b980d3f199689.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "116f5278-4403-4095-acc1-9e1e9d825301",
+        "294707a2-d889-40d7-822a-e288c323b11b"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/a6cf3983efff94ca7092ef2dda4fa4afc084595997359783752a848958f5ce1f.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "117b4c76-6850-446a-94bf-d1a4c4f468a3",
+        "bc3ff1f0-0b59-4336-a4e9-2c3dfdbc1277"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/b451873ed6be954d53f22492802c6f08d4dff994b9eba477498aa249870cd0a8.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "121363e7-d363-4ad5-8cce-f3d85ce9750a",
+        "65b365fa-2c9b-4a1d-b311-33db02301a2b"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/f7b290ad2772bf2c5c8028cf49cfefd5c714a5b121f86c10f7c3d549fd0c96df.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "121363e7-d363-4ad5-8cce-f3d85ce9750a",
+        "24576506-d6a2-4678-a960-d3e63e632938"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/8993598cbdbd3a8cfed819ef60339cbb401ef6fbab13edf484795fec4167471b.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "1345b5d1-d523-4f3b-9046-ef520a6e7f3f",
+        "ead26957-bac5-4b62-97f8-c3029027cf46"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/2661db56e8cfb6ddd2dbf2676007af35cfbc5df5ea25f80980005f6b54a907f6.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "13ae8c8d-73ff-44de-9f90-09db937427d0",
+        "205d7670-98a0-4677-8583-6aa73567c2b2"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/1a077fe4e2fbc3769336d36dbdb6c6ac924b3c292fff4cd309d979af3fd194ea.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "13ae8c8d-73ff-44de-9f90-09db937427d0",
+        "205d7670-98a0-4677-8583-6aa73567c2b2"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/53ec6df5cf691d07d763aff12df3201c28893a04c01867eac20f71e01b16fb3f.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "149b951b-ed73-43ca-a0e8-20053f74f9e9",
+        "81448946-ce9c-4130-adb3-b87888cde4cc"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/3cba4cf1e8cbbbc4fa4bcf1cd0a0b358ff903e8fff832eee55fd1fe3e67f2118.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "149b951b-ed73-43ca-a0e8-20053f74f9e9",
+        "81448946-ce9c-4130-adb3-b87888cde4cc"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/898dc7edecd61c4ace2195840a14c0a914d1e51742d18b621241b9b77f1d5790.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "14c094c6-cd63-48c3-b754-fc0b5bef5222",
+        "15d955b3-52c5-47f7-87eb-f625a9be3f73"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/3ce828e7dbfd46939d5549c9824ef4c2b7beba2b4122680c0f9a78199205c839.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "14eb5627-f2b9-4bba-a23c-e483146f3962",
+        "58253e81-11db-4a65-9816-26f633c29852"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/268d977f5891fb12cc24f1f6f16e2170688160dff06428bb08b9ad3eed9fc79a.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "16a9edf6-4896-48ef-8457-84732b01b950",
+        "a2bfc099-de98-4209-b9a2-394fcd92b01d"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/74a5cb0691efa6117419bdac5500dc918fcebe05a3e4ee7627e82d735c4db060.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "16b30d8e-11fa-4f5d-b20c-7b772ab46da6",
+        "d7e95050-c597-4352-bbe6-8ad30bdcfca4"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/401e1fcd8e6348d0d9b4dee096fa233866f334f7e02d2bca51ae1680e2acf64a.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "16b30d8e-11fa-4f5d-b20c-7b772ab46da6",
+        "3c1bdd57-3289-473b-a6ad-d49da34719fd"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/66b5f5686d10fea089dd785fdd7e8b9ffd385ece6f6428fdc984de47e5e12b3b.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "16b30d8e-11fa-4f5d-b20c-7b772ab46da6",
+        "841e910b-4a8c-4125-9340-a7233a9b458c"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/fa2dd0112786f8556cf08fa0d83e5228eacc2d4ff4c5459876fee53b4c168e82.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "177ea0d7-8728-4b06-9adb-5912fadeabd4",
+        "640c81fd-4816-4caa-90b2-ce3b6e8ac612"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/4faeee51e43c79adecf4947bf6822255769f57367dcbfd9be267aed3bc035e16.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "17d2f3c6-6369-4a57-a9a5-1345837dc958",
+        "205d7670-98a0-4677-8583-6aa73567c2b2"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/7a4799b25f8ed079519daa3a9b797c4ba5329d404752477664afeb468ca00fc0.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "17d2f3c6-6369-4a57-a9a5-1345837dc958",
+        "205d7670-98a0-4677-8583-6aa73567c2b2"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/97d9eb5439bb4d4f8eaa76392e10287005f2b4088c18dacf2da46806a8192d4e.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "17d2f3c6-6369-4a57-a9a5-1345837dc958",
+        "205d7670-98a0-4677-8583-6aa73567c2b2"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/82881b81c8c1f46d0621d90a7ed2cc50f825a7f1c5e45b2c2ec658c4a85a7ff3.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "19209916-0a0c-4622-81d5-273c2c2b095a",
+        "c255ee68-dfab-4786-855f-3bb050bf3939"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/8b1dfff311585b0c685a878467435e940bdd88cfd610ef2bdc1c7413a9606acb.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "194c6530-9fd7-4a63-8c92-9ecc09de1475",
+        "baf1fb24-8844-4894-96f5-ee5598bc165a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/ce33db5437a17a54fcca5d7b0d06b48ca470d82ec4865a45fca2961fcc9ef81c.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "19d56c18-9f83-4ad2-83d2-c1be2fabd0b2",
+        "bf3bd5eb-2a87-48ff-8cc6-3de22adb60c1"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/8d67699b2aeb9cb1d721e9009f1bdd90e11667501dd8a0cea95b638a1871a52e.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "1b37b549-5170-4def-9025-df19f4db689e",
+        "8e7611ed-b7cd-4af9-97a4-3e2a09d60b73"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/96f871d0dac9b5164bb1e80f62d83d2c777d8c33834fe5c66a28d851dd9ddc08.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "1bef2a56-ec62-440a-baea-d568cde30599",
+        "542d0e00-4868-46e8-a5b7-53aa7d77c7d6"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/20c7392ece7d93699d0cb12029187f5da7a9e16172d3ecdea6ccd2e016608e01.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "1c800390-d1cd-401a-b1ff-c0e8ce957454",
+        "c87eb8d8-482d-4206-8144-6a34d1d3cd2e"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/cf8a3d532bcf0826d8b76f7183a85ed4d45924fc2ba09307a6155ca333682305.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "1c8139ae-cf1d-49be-9eab-057f2e7ee9bf",
+        "5f2e1a2a-bee6-4cf8-8cd9-846a2472d85a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/6e90153f72b634278d625760fe422395fd3c81ed2498d7aab8053d4a4bb3be78.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "1df6041c-18f3-479f-8449-15e1c788401a",
+        "a68fee22-06bd-4e98-b991-5c26d2fb3fb5"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/c7b26df58622eb429bb5f0983f5054d4e4a8eb3a6e0dd10f2904e816c0fe20c9.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "1f262e74-e701-47b7-abb3-57984e002573",
+        "eeb240f5-6980-488a-9f40-ccc8256d82bc"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/1161e744196d75f0b05877e67270d9270b0b1d51749fd5b8f085bd36a768c76c.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "380ddf53-f222-4cac-8b82-4fca521c1fc4"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/12249ae42f6bd5228b0871db787ba297b2bbef953786e12f3c7ce529f2800ad0.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "380ddf53-f222-4cac-8b82-4fca521c1fc4"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/ca898c82193afee4a4fc32bf90042d35847e71ace024b9408eb3235f90e21721.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "96aa8bee-b172-4d40-9048-4ca59b099d8a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/9c40ebee1676a6c3167b8c449239e35384ad646d655abf7940f31d315072ad70.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "96aa8bee-b172-4d40-9048-4ca59b099d8a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/7674c2d1719ccc79af77fe5c2d680da46afbd1e9f527da557f100b936e4476dd.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "96aa8bee-b172-4d40-9048-4ca59b099d8a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/b7fb777efd98f9d27e203bdbc300ad71b4833a38dca06e9fe6ddf551d72b97fa.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "3f9b4355-c25b-4a33-92ee-47cce3374549"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/329ed2bca57f1900f516400939b89a86e1e83419f4e2579decd85862bc20d348.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "96aa8bee-b172-4d40-9048-4ca59b099d8a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/fb0e00359c7d7f2ff602bd35065c6e8a0f02d93f1bf5225e4acf17eba37fe5b3.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "2f71570b-5e23-4216-83f0-82e5ac2dd57a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/8329c76bd53391b5c10bfa73bc0a9b16b8343a9314015baefbd3325663dba4de.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "2f71570b-5e23-4216-83f0-82e5ac2dd57a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/f61077ab5d040fe22a96f30c666ba4e1c17dea4c69df66c0c97e95a52666ad0e.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "2f71570b-5e23-4216-83f0-82e5ac2dd57a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/b22d060bb458790e5012dc6623786ec2e660b6407dcc09513b00701b0073ce50.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "2f71570b-5e23-4216-83f0-82e5ac2dd57a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/5b9f31f48919de1a888d5232b7434f2704d8d7712c2567f994de39a05092ca9f.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "3f9b4355-c25b-4a33-92ee-47cce3374549"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/a0341d88112f38128bdb8837d6469a29a08b1f0efd2bec5065382f6765547a15.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "2f71570b-5e23-4216-83f0-82e5ac2dd57a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/25c98eff090c3580a538dd919f2706ad0eb29ecd1bda4098748e71c1fb52fbd6.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "2f71570b-5e23-4216-83f0-82e5ac2dd57a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/7e0a2571b30a3c0f8f1f12838a1313d5c56124d982cc24fe7db4ac9a0697cfa4.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "205d7670-98a0-4677-8583-6aa73567c2b2",
+        "cb7b7104-6695-4d3c-8ef9-cc608a43ada4"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/79ce7b150898c4ce5e458e9ef92831389c0193429be7aa428cad3c2829c22d81.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "20e2934b-4fce-4ea6-8eba-472ffd4b1445",
+        "294707a2-d889-40d7-822a-e288c323b11b"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/a34664bf134bc4c469eef67904e8408d71a325d08709484ac690e48f23a92f12.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "232ec275-ecb7-4cdd-9811-cb7a10c1208f",
+        "eee8c587-f831-4ef8-82ca-687397e08744"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/a9433d6778701ae0ff24c6cf02e26fa63653ca8617b125e7bdcbeb6027c6a0d0.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "246804de-9f5c-4fe0-84ae-83bf90924293",
+        "9fb0aac9-f9f1-4cba-b3d7-17260c468e15"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/6d48c0ab565415df1448fc057ffebf39c8e27cbdb7b65a143df45ec78980c89c.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "246804de-9f5c-4fe0-84ae-83bf90924293",
+        "333b8e28-a7c6-46bf-b080-bb55c1322780"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/b8ad073587bdb98e7f7654af149d727595c08c83f234193f29877ef41691282a.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "246804de-9f5c-4fe0-84ae-83bf90924293",
+        "79dc3ce8-624d-4a3a-9aa7-f29907a34bb6"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/edc05826437a9bdff33b2aed0efc83073e690a99157fee26c4a236d3e04da409.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "287b6f33-ada0-4f12-a9ae-da5f26a8b988",
+        "74885b0c-d01c-420e-b9ea-65078c118189"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/5a28616d9ba215d82dc94a164e908c00c5809c2c57700df20a24776aa3597ff5.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "28813031-cf0a-4495-b50c-55ec4c0174cd",
+        "ebfeb5ac-07ab-44f9-a625-f27f5e9a28ee"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/0e91711d3161d160d92d28d6f62cf465b5538a93c45026d9dc2fc82b28b34e96.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "293de39a-217a-4979-8bc1-ad23cc832e2d",
+        "776f50f5-ecea-4066-836c-c0d29b5dfa97"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/ed72c1738162c08bb7348721b0ebd72225b66d1141bf00248d6a0789c6ee21ce.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "295d68ab-769a-4c62-845e-b327f8ac1330",
+        "773d330e-7449-429c-ba57-888da10e66de"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/b4686c8d19a3c45bde9bf2de384ff2e8b6aa93a3b21484628b6efade9a8b066e.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "29caddff-0dd1-4fbc-a161-e9e9cc33f78d",
+        "fd4c8dc6-e9cd-4362-be31-8f38381f755e"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/5b1b9089531b754038194faa97a440bfdcf1c2dd01add8a7de0e7e5187ced11f.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "29ecd2b9-9c6a-4884-b74c-26fc33bb3b4b",
+        "6cb8a2f5-650b-4295-9a85-340548c0f765"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/e95e92cb66061856c2869ed879d40bf8e050035291b5867d05cd9c3b4d035e4c.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "2a4a6226-7a12-43e3-aa01-34e882be0f71",
+        "9c8ebb37-d20c-4a15-b9f3-afc3a34942b5"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/70e871daafc299be42f5f748e9339f09f5747c5ca43c1a2420eafdddc2872feb.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "2a9d3f9a-bc41-44bf-8554-beda85458925",
+        "dfacbfe6-a436-4068-8afd-062e4da48986"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/a1944657efc1c5fb0bf2bfefddc94820b9c3de13d0328d61885442a23b4877a2.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "2a9d3f9a-bc41-44bf-8554-beda85458925",
+        "773d330e-7449-429c-ba57-888da10e66de"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/8e486ce72c242231fed45975aee9993f1f7caea21d268f918cbe38ccae9f89dc.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "2a9d3f9a-bc41-44bf-8554-beda85458925",
+        "67e6fdfa-cc71-4f96-a6fc-074bae87beb5"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/665c588034b72bb915c942556d8c8db9603f58f55dc2883d6b32b00e07cc666e.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "2a9d3f9a-bc41-44bf-8554-beda85458925",
+        "8768a3c3-1e50-480a-a128-9d6b40a2beb8"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/5f7359e4ffad61b1884bdd81d9bd0481bf944cf8667e096e139b2857c5e66f7d.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "2ac7bd4f-8e8a-4223-8a23-60d883d15cf9",
+        "d7e95050-c597-4352-bbe6-8ad30bdcfca4"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/cd54492196f72129853ec7c7b3471077dffdaae8591d875898fb7fb9092e5bbd.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "2aebf42a-c88d-4948-9912-33d849f169c4",
+        "7fed9b3f-aef4-4922-ba9a-2e5e72d27ce5"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/28bc5183ee664a1b17c411891b12fa6016cdbe5ea2269abb5970ba7cadd614ec.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "2b2e68f1-7422-4383-a862-9e7181b048c1",
+        "3b7f7d08-9fc1-4f66-8794-8815d53d601c"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/d791135f6a26508df7d8ddc9e6cb5ae4b123501732a6aee867b5f614e4858168.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "2f6a0fe5-238c-445e-b90f-dadf34c80363",
+        "d6558e5b-7130-435a-99b2-55ad7ad6f543"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/e8df14215de3d9660207c5be5c717ee065d5427613de7baea5446a6f171dfdeb.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "2f6a0fe5-238c-445e-b90f-dadf34c80363",
+        "eee8c587-f831-4ef8-82ca-687397e08744"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/415ae59ece42be1a82826d4cfabf091b0161c06fd791255768faf1c188d2a821.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "2fa86810-cbe7-407d-a625-09f2fdbe89dd",
+        "bf3bd5eb-2a87-48ff-8cc6-3de22adb60c1"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/f1b76df62b738d545adfb4bd9b7fbcccc40bb7cb006b4922fe631e7e60b34875.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "32342391-4914-4c5a-be23-3283da660883",
+        "dcc6cf45-ed63-497c-85e6-3a570cc751d0"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/aec2d2d11573f14dea3c9a6d035bcac0238ac2da1ae892443962d53d1fc83119.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "32342391-4914-4c5a-be23-3283da660883",
+        "a4f4bcee-e521-42b0-bc66-41bd1e9ff90c"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/9b5b540e750b5f2bcf40ece7437e3f6d420182f8bf5131e5b1ccc1e989c6889a.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "33d73df4-0000-4042-8fbf-ab61fe68ce58",
+        "ebc5b69b-08ca-41a5-a2d2-8ccc8a24ff52"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/1be0d86b4f182f2deee9d1e553f180be5f90f9f170a772f9bf940019c21d8342.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "35ca6421-4060-428c-8f12-baba59be8b4e",
+        "a2baabad-9f0f-40c8-9aa9-2f639dafab86"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/bee9115d34fb8e62c12d3760a9fcf83f42dc9c48cd089777ebd354cb99850a89.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "3614c2bd-9cac-4800-b411-370a5859a364",
+        "a68fee22-06bd-4e98-b991-5c26d2fb3fb5"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/f45d9e2918861b4183fe49630fbe34e9f7b62d1480523c406e75e81914d89a33.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "37764ea2-4738-4f50-bac4-f16dccd51ea4",
+        "54ed8bee-1deb-4a81-b53d-48a4d4d4290e"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/f584f71a727e49947af04fc946163b7138e04882c78a6b4adfd1e5be15811a26.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "387ae550-d18d-4d31-88f5-899ffed8f1f3",
+        "9683188e-5817-43dd-8e80-676c146d6608"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/ebec14565d0ed328352a9f342ed6ba9e7fa0df9623b9d3797d7f3aa87097ec34.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "38cab7a7-175f-4688-b5f7-291a7e2436f8",
+        "77e7ea76-016c-44dd-aff9-fbddd866d9f8"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/893c433baa2d3b40e4dc346fba9c0dee74575d3fd20f3a7736a81dec0fa6dfb4.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "3c1bdd57-3289-473b-a6ad-d49da34719fd",
+        "b865b829-d899-4eaf-b8c8-3f5df40496a9"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/1bd6a3e334f4a96f281b61fe9fad9b070cebbece2f156ef92af0c02c327afd1b.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "3df0d254-c482-4863-93c6-8a4a7cf68830",
+        "ab5574ec-cd99-45e7-b90b-dc1bfce951f4"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/f13e9e8d93a3b7f851ddd2d158af12b4f6ecb3a0299fef74de9670075453e55c.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "41977ec5-f470-4627-ac56-f2528e7ef006",
+        "bf70349b-6bc9-4380-94d4-f45226f9fcd2"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/2343eb36ad2fd899f26cc454c4a89115b1eeb4c4bcba6e715c78cea90682ac8b.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "4248244a-6b94-4c4e-b741-c76475417d3b",
+        "5c7f74d1-bc46-48c2-9806-314d5d6a05c6"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/b5f3897c6e63e4a7acd9c179976d0be1f20ecadebec3d6f19e095f772e42e5b7.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "47073782-3e2b-47c9-8931-30e996ccc162",
+        "ebfeb5ac-07ab-44f9-a625-f27f5e9a28ee"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/053228f9a7ce1505a94d72d62d23135e533571aaa0d85852db6e84f999ac8de4.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "491e6f11-8fea-4136-b86b-9c5a8cce55d3",
+        "a87487b7-8ec2-4833-ba9b-14aa53c375c9"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/89cc4232e1d2897f0a47ea49dfb533606cf2235f73b5e003386f9db51c388838.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "4a903ba8-0b81-42d4-b833-f87527f2f3cd",
+        "bf5a5c8a-40a6-40af-b604-8601c356b4d6"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/3732f23754341c4558569a31250664edeb23464ae7d948a46ba6427c937e8244.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "4b435940-8b13-448f-98b3-b99531e54846",
+        "985ee513-75e1-4767-a5a2-2bb6465ab8d7"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/4def5acb3b24d2fe1189c625a0e880772124756278c5d99508cb82475f868657.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "4eff9cff-a5fc-4045-a224-40853805d46b",
+        "918560a5-d010-4102-bb1f-f1107b920d38"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/fbeec9fe0c92b1c9ef6ae756302ae1528e0912ff4c2dcd7ef7d285972c7106dd.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "4eff9cff-a5fc-4045-a224-40853805d46b",
+        "75362c99-a2ba-4610-9088-21ef454daf23"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/4cf3cc8673a3017458b3276bd8eb7e15e2f2845c1a52fe1442b17dd5c2cf9bb0.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "54d7e3cb-b401-45f2-befd-40c8b940afec",
+        "d7f799bd-a0ae-483a-a5cd-81033a510b7d"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/8a65c93d8e400634cbc139a933e55fd66ff52ff687619f3feb77ca22c6ec9980.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "54ef381f-78e3-4cb0-8ea4-bea46294c7fc",
+        "8872ac59-cac8-4273-925b-2fe5020f41f2"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/4916fd4b6ac2093b0593090b582df40e32a56515baf2dd709406ddd1f9411858.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "55388034-3e3f-4d51-ab17-8710abb72cd1",
+        "918560a5-d010-4102-bb1f-f1107b920d38"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/2c5d644b5c22b610797108d8c92bdbc2a189e529a39f7391ffb8cc4d265d29f4.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "5604426e-b074-47de-8497-0c74c98e1e81",
+        "f6067774-05dc-4a05-995a-a17538d9884d"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/079d781592667367c64ab4031dbac2f7a608d47f1685c8b5812480bbda61d3e3.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "5716c0db-ad76-4deb-83d4-7b33694a5403",
+        "bf601c4b-721f-4cf9-ae5c-3d628c741455"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/021f4214c9605cd86975ff7ce44fb3dd931ad75658c9742a3a187c01bb312282.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "5883b3ef-cd35-4d95-a85b-d1dff3577e95",
+        "eb3c75ab-18c4-4605-b559-264a7dc20719"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/eb365d21be986e7fb47850192023971361063c235185fc324f44cc32a13c2070.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "5c7f74d1-bc46-48c2-9806-314d5d6a05c6",
+        "a42cf7ad-45bd-4a2c-897b-2772391339f8"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/da1be846ca39d73b8fcc0f54b04e639bc8bc19d775d6094ee275857b64204d0a.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "5d75313a-bf07-4974-ac0e-e220b4549274",
+        "cea5d601-8e4d-4cc4-8098-418fd1c9c225"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/525c25e7a74bbff2ee8845b2b04aa2190484a16ec72bfb740adfc328f47e2088.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "5d75313a-bf07-4974-ac0e-e220b4549274",
+        "841e910b-4a8c-4125-9340-a7233a9b458c"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/f8ba41f32ed8eb61df4ab935ee20d25b12b488bfbc1200e6eabf2941657eff29.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "5d7711fa-2c40-4984-9d96-3086c72f205b",
+        "f74ace08-c385-41c6-a426-2b12ec27fbdf"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/98b4db7b72b82d36f3e5f93e0dca4fcd657a1c3bb864b6506034d4a4ff677c46.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "5d7711fa-2c40-4984-9d96-3086c72f205b",
+        "68ca2aa8-01b3-46d1-9b64-a3d7a585b5df"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/2fb79b7a4794bbe5961a79612e3976660e8c14fd797285ad3bc98f5ef00c58a0.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "5d7711fa-2c40-4984-9d96-3086c72f205b",
+        "c9462daa-1165-4cf3-9029-347973e7fd72"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/a8bb2954bfd438b312d49cb3ff10cf4c6f94a4e987c85b2d8d6acf8ffb3a5e77.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "5ea350c1-a192-4b94-a2dc-7c4f620993f8",
+        "e6bfcdbe-e643-4c18-97f6-997d6addd8d0"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/8c1397b0c06893b6401b84c00fb4b9baefe35b4943197939e32e1635f764748a.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "5eb2c2ab-43d2-4205-8869-6a05b1a8b547",
+        "d7e95050-c597-4352-bbe6-8ad30bdcfca4"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/82445c8e0cdb5938540a3e928c73bac8b1a932b07f47578f2543dd83dfd2cedd.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "5f2e1a2a-bee6-4cf8-8cd9-846a2472d85a",
+        "990fe67b-7c2e-4592-b0ec-761e5b8c7461"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/db70c091f173e60c7333da0dcd876541d145e146fab3d1d7b3318aa4df5d41d5.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "5f2e1a2a-bee6-4cf8-8cd9-846a2472d85a",
+        "990fe67b-7c2e-4592-b0ec-761e5b8c7461"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/2ea98ecf28ffaee3d63ff95fc384897a829355d47c1f2c6985d5935708674a32.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "60dd57d8-6af7-464a-b128-1d72d311b815",
+        "a2baabad-9f0f-40c8-9aa9-2f639dafab86"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/9ad5080ccc269382cff5a63d7b06c96cb16088853bb2e107d5d1f0ef8c89a53a.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "61a9abab-c44b-4d8e-ae27-a2d6764cf1c1",
+        "8aae849d-5991-48fa-a086-e778e46703ff"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/24c460d9289b9e586999341241c22b79ec3d6f7fce9a147b15e58b92bf4aa16d.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "61df5946-1f23-4ef9-b766-f68f87c2398d",
+        "79643704-102b-4cd2-9dda-2fbd7b19bc91"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/e12223e5736616eacb16f61907052b2deea3a89bb8fcf8be0deb9506785af77e.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "624af79d-2f2e-4ef9-b78f-955b8e96819b",
+        "c8325812-ccba-414d-9dc8-93a117fab5a4"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/ae04d055886470467d91ece279482710e1ef6f382d1a0bd6053037a0da5d7292.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "62b63139-5afc-4c88-b10e-fb81243bbc41",
+        "dec90617-a905-4229-b8dd-5fb25afd58cf"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/fcb9ed4513d46fb96b1c3f089964491ae4bb799f540a2f015acdc840e947856b.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "62b63139-5afc-4c88-b10e-fb81243bbc41",
+        "ad828038-f557-42d2-80d7-ba722f2202d9"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/6a22d92b85a45f3fec6a2305686c9395bc4394bcf885edcb463d3bff8ce08b8d.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "62bf6f8e-9c42-4666-855c-b322c8318f49",
+        "da5a5713-6b02-458d-a033-601e6cf6bc93"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/bb77afc4d041bdfd4d1b402face8f93250674eba9bb46a7844fc903abd572e72.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "62bf6f8e-9c42-4666-855c-b322c8318f49",
+        "ea76f939-0378-4caf-9bce-b9498a980efd"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/057f84a6c08be2a059912df69aa6ba3e5abf78bc74d995fe8888a92516cfea87.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "62d34d4f-ee98-45c1-8377-dab4eca4777b",
+        "644f5045-0a3d-468c-b68d-5b70e125fc22"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/d9a35b25a143fc758ac8f5c3056ab578a2c826a0e37e440bbe598212ea53f0bf.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "6398ec0a-2bb4-4e8d-ab81-3b694ad57653",
+        "7a644870-c218-4209-a0b1-e688ff456baa"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/910c821dc024bf5f56a416ddddf2de70b447a5082462fad5dbcc6642ab00c881.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "6595cc23-35bc-445f-a37d-3468b0ae7cb3",
+        "f5779776-db82-4118-992c-4148f6a52839"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/5aef386fc837299624da2f3e9578480a7d0547347ada11d4746236ec11657d8c.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "66050754-34b5-4399-93cf-8bc837d6aac6",
+        "6d0f49d4-4007-42ba-a999-c71dfc7aaa9b"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/624f1d023f702a06dda89817c05652fea7c3deaacb662d845f3161f68561c938.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "67e6fdfa-cc71-4f96-a6fc-074bae87beb5",
+        "8768a3c3-1e50-480a-a128-9d6b40a2beb8"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/c02e148d3d67a63294d2b64097b02de582d390b807ad5d80f14df6c382803f5b.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "67e6fdfa-cc71-4f96-a6fc-074bae87beb5",
+        "b253ab41-c849-4f6a-b008-0b0e2569bfde"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/31c17922888c32ccc5fd2a9d76d5fbe6bb66bb1ba35f04d62b5125447de7f7d3.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "68ca2aa8-01b3-46d1-9b64-a3d7a585b5df",
+        "f74ace08-c385-41c6-a426-2b12ec27fbdf"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/4144971e245a4a1bdcf09c2a4f02723fdd71c719cb106d4ceaee52dbd08c0dac.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "6ae1f6e8-4253-46e6-85cd-2709cfe743dd",
+        "92243308-6f61-4a5a-ad15-f0e66443c1c8"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/032c8cf0f0bfbd840ed7e0439562f9aec271cf8c918fd0df3e5aae7ab00fa50d.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "6ef0e44a-56e6-4696-a552-2fbd09a0d02e",
+        "bf3bd5eb-2a87-48ff-8cc6-3de22adb60c1"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/c3d5d078cc0d61f4d0226f24c8931686180470278c2ad5f50b5fed2432677618.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "6ef0e44a-56e6-4696-a552-2fbd09a0d02e",
+        "813873a3-923f-4ec5-a45d-eb6b1b486fd2"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/aa9f9fe8e6056321d5c34a084bfcdf3d026de47c42cf548ecb001c195db7f4a2.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "6fe1f2b8-d066-462d-8e63-ccb9b92b0526",
+        "cbaaa13f-9308-4069-a8cf-4a05b2006e3a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/f370ec50add4ed3aab337449a281f1ecba9642c17102924ec4d69a53cc94cad3.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "70d5037d-69da-41d9-ac66-32a689adc32d",
+        "fba03ac6-f203-45b7-b82f-f6c17a2cd6ff"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/500a90f895a3f1553db344dc13b0b1b052b5b4c9fa030636c290cfec332cedc2.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "7653c3fc-d557-4cfe-a346-dac6df3149b2",
+        "ebfeb5ac-07ab-44f9-a625-f27f5e9a28ee"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/f2b21af0c57110ea804b2b724452b919f91d576bc8c4601732d6d2a9c03fa0ee.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "773d330e-7449-429c-ba57-888da10e66de",
+        "dfe912df-726c-4572-be4c-89d29872e1cc"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/cf908a65d31285b120b454b07d29ae614c14ce56838a70286869f1513cc1813e.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "78f6627d-5fd7-4258-80b2-ee5a83457f99",
+        "f34340f3-506d-4586-a6a3-4ca4b3ad2875"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/8cc7787483e82b8a0cd65713a4721db7ee0cd6a07da1785b7e2e7b3ae6e20eba.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "79dc3ce8-624d-4a3a-9aa7-f29907a34bb6",
+        "cbe2b287-0a10-434d-b29f-09a72afbd9e5"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/0d0dbbd083fd2089829c29a3d951627f48925acf075d0ce83f2b192f8da86fd4.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "79dc3ce8-624d-4a3a-9aa7-f29907a34bb6",
+        "eee8c587-f831-4ef8-82ca-687397e08744"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/47d89b5d26953fe191a2fda3c0922700f8ccded66642d0dae6cd4f0aaf25e613.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "7b92c78f-c78c-4fa1-8a88-f9b5fb51cfcd",
+        "b21cbfb7-bf66-4b39-b376-04127299479c"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/658d3ebe6a489f7c77d6a46074b3ad3d83f40e1538a17a45d1942b3a844d7a23.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "7d3ba2e3-44ff-4422-85c1-30d90a486ee2",
+        "8a4198a3-b9b6-49a8-8aa2-699062a572ca"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/e3c1b28ca9ae32e554af065d9c6e51e6cf1dc4f4ebdecdc848131239d1c017f6.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "7d3ba2e3-44ff-4422-85c1-30d90a486ee2",
+        "fe5cb40f-d1a1-4ea5-9adf-f49eefb21e0b"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/111a8a2a63cb4c1722160068a542a2bffa63ec15228df3ed0a28ac903f4395ae.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "7d3ba2e3-44ff-4422-85c1-30d90a486ee2",
+        "a864ed74-853c-47a1-a8de-e3c38f5fe073"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/d5e4079f283618e9251202ee6c256e4f966131d2e96b40438c55df834523220b.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "7ff6417b-d459-4186-85be-e51cd380a6e1",
+        "f69c5e40-7b2d-4976-a04c-aa521a94546c"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/229f7cf4b078732c5c5fc2db1cb6a86e0cba223e262972b5407bd24183976d21.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "8107c299-7ad6-48ed-a65a-5bcf837b5ada",
+        "dbc211a0-570f-4269-8283-ce40bde3509d"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/5743066b24910abb52c2853a64b5d685cace665627ea2066ae8326275b1ab75d.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "8107c299-7ad6-48ed-a65a-5bcf837b5ada",
+        "8f845a0b-b20d-4d41-9be7-82cf5978ccca"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/ab649dc1a150c7b03d7e1ac99a70e136fd8ae6b01c5fab1bfb13c08223034027.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "840bfdf6-56c4-4e76-8483-10dff179db7f",
+        "8f845a0b-b20d-4d41-9be7-82cf5978ccca"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/3d28ffe43fe42b6f280677cee21a74dbc0d79028085d5d3fa3acc6922ef1dbff.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "840bfdf6-56c4-4e76-8483-10dff179db7f",
+        "9bcd086e-7b2a-46f0-aa88-4d3c1f3cdfd0"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/e1da642478ec3221ad076f37a6c2b252be3b25d7b005a22b74210818ccd61fbe.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "8b1f1453-3fea-4426-b868-d23c64fbca6e",
+        "979e82e3-4bdd-4b85-8fca-c8cf52974a2b"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/09ddb8c4b43a925922410d33b42cfe96751cdf4f1f924102b066122274264bf5.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "8b1f1453-3fea-4426-b868-d23c64fbca6e",
+        "c9462daa-1165-4cf3-9029-347973e7fd72"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/008ba33545131fdf7599327a71049a319ceebe1b12a8e6074beef96a67b47c7e.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "8c6f7e3c-965b-405a-bef7-7bd80532dadf",
+        "dd74b072-9cda-4524-8ec4-0089c4184a59"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/556cd98b27a1939aad8679a120565a6e8d4e1bf72210a1bbbe084ac997e1af29.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "8d76a6fd-f84b-438c-9282-d6200fa0c5dd",
+        "c1ab3906-2c6c-41f0-a03b-511239c6401a"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/080a3c2e3cf64e16335ef1f163fae3a41e0a264206267ad698bda9e39257b55b.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "978311a0-98b9-47d7-a9bb-99c11054e8a2",
+        "fb207d8b-5b55-46b0-86c8-8e5e71d91b75"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/512879afc74e13865278a65228f8abccd8dd1eff10bf132220b32403e49c7056.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "979e82e3-4bdd-4b85-8fca-c8cf52974a2b",
+        "d6a0d04a-4dfc-4916-acc9-06bb3dc48b64"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/bd279ee260d0b289e0c32c2d2a44f51869414c08d90341d521a51ef77c8de571.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "9c91a14a-f505-47c0-9b1b-7e20d5621cc1",
+        "ba237916-162d-453e-b0fc-60a489456427"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/e3b51799b2c6a37395b0919392b7542da363e4c6e624e40f84df8059d42eb938.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "9c91a14a-f505-47c0-9b1b-7e20d5621cc1",
+        "ba237916-162d-453e-b0fc-60a489456427"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/e1fa2a363f196184dc3eee1d4813e1eb185e7ee0198c0724490dd300f5bcd4ce.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "9e770b73-3073-407e-8f67-c568004edaab",
+        "cea5d601-8e4d-4cc4-8098-418fd1c9c225"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/29230a00a8deea8575f9304392063d8d2ff27bc7f0a4f63ec84dfd8674c1d9d1.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "a00cdf9b-d0f6-41fd-ae47-6c645bdbbf68",
+        "ffb4c064-6396-4232-a1c9-73d99550827f"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/a8eedeb84b599f1cf4fb3dc6a6c3db692475cb9e9ab731043a08e01cbeb13ab0.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "a431b2ad-8b2b-4cfb-b81a-5f02898ad05c",
+        "c94ed5c2-ad9f-4580-8a8f-c6ecd29bdce9"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/7bbea001458516d6f70aaca22ff98fd6e33791be9182d35192fee17c4a559e25.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "a431b2ad-8b2b-4cfb-b81a-5f02898ad05c",
+        "c94ed5c2-ad9f-4580-8a8f-c6ecd29bdce9"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/6136f7cc3ff096cba1c924e2051e694793f1da0d507b001f8d14325c2fe6e146.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "a52a8d95-99fb-419e-b911-96dddacca0f0",
+        "d6a0d04a-4dfc-4916-acc9-06bb3dc48b64"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/026b956bfc83b5664feb016c3cc57c6e49464e33972a9384bbe1258041ee8329.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "a6f4cdd9-426a-48af-8570-51bb115d8c65",
+        "c977ca67-22a1-4f01-9347-cf5a4142e695"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/4762fb0049cf4a25a01e579ccdcf9b27b14b54c2c91da8a37cc7a590f6562d38.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "a8f8b396-f4ba-4d39-8a9c-2b0a89f63da4",
+        "d8b17b62-37b9-438a-bc6d-6329f0f40546"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/77356a0bc9b5ee49a54b06d33f729df4c57f7436b69b2804e8f094947e9f5dbe.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "a94dca6a-eb30-47c7-a94a-8b3d70d00ffd",
+        "ff798f1b-1397-48eb-86c9-cb51c2a91f59"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/578293843641dfd046888d64ca1c16e9469de1a475b5b2cafc2084a66211af23.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "ab5574ec-cd99-45e7-b90b-dc1bfce951f4",
+        "ff7222c1-e22e-4971-af87-4772912ee374"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/4f4d7576eaade9b4ce09f5a9684614b0f0a4463c48118e017d3b765024b0bdb7.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "aba249cd-4f67-489e-be9c-2b35626dee11",
+        "bf70349b-6bc9-4380-94d4-f45226f9fcd2"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/59cd392a89f4dd07995dd163c1546b0198a1c8feaffc9c96485fce4b5f147ef0.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "aba249cd-4f67-489e-be9c-2b35626dee11",
+        "d2ab59a0-a287-4090-b084-6ab2a1b4b007"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/9560b23a00a26d137d3de667d4c7b1b08f62fb733eb9b0816d55f5cfa09e27ab.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "b52c2ffa-61d1-445c-84ec-bbb9c1a9361e",
+        "e9b849b6-b6af-4aeb-ae6c-1bc6e8a247e8"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/6bc171acc92331b20249cabece25c81bcdf728310f26e11a3cfbf1b2e6a8e3c4.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "b6d17764-5a73-419e-8a35-7efc23acfda8",
+        "defeb812-d2df-4a1d-ad8a-d980f3594e94"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/452fb7bd50de64512845075849b85851d2d383bde4f808392fb253649181a3ff.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "b6d17764-5a73-419e-8a35-7efc23acfda8",
+        "cabac7ba-82fc-4c4a-847a-049cf115665b"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/c648958affb2230798daf97512fbd196b43513ba4a0046e045c3326861e3f19a.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "b6ec4e5d-90b5-48db-a33e-83c4f47c63d0",
+        "d7f799bd-a0ae-483a-a5cd-81033a510b7d"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/1ccd2faf04f12f086f77268b5a0a140c513ff7b0043baebcf13c9e014071387e.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "b9270089-0da4-417a-8f74-1bc1b9cabcc6",
+        "cbe2b287-0a10-434d-b29f-09a72afbd9e5"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/a11daa496f35f6797c35e93b060694f4e6c9246ab204eae03f74279461270fc3.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "ba6b53b3-438f-47de-88ec-ed236e096208",
+        "defeb812-d2df-4a1d-ad8a-d980f3594e94"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/790ee6ba9f8d251c0e5bdde6d72966b305eed4a55f49996dd2f236d5f6180290.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "bdb71412-2c2f-4cf0-8876-ef8532ef7889",
+        "bf70349b-6bc9-4380-94d4-f45226f9fcd2"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/1862e3757c85508e7ad8832ede3e44173997b05b4a131256d944bc925251e0d4.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "cbe2b287-0a10-434d-b29f-09a72afbd9e5",
+        "fb207d8b-5b55-46b0-86c8-8e5e71d91b75"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/5f59729e3d82b0153f48c14eb3d565aca9bd0a143f88b4c8566bc51038d9b10e.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "d1f94c22-0be5-4c1a-bca9-26897c73087e",
+        "d6558e5b-7130-435a-99b2-55ad7ad6f543"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/288fa984306447e08040da289ab98565ea3c5712fbbf2e475da79d5a052ed9f4.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "d2ab59a0-a287-4090-b084-6ab2a1b4b007",
+        "d6d340fd-481f-4637-a6fc-f94b033798ba"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/e88a981029506ecaa2055a5c759044faf96df78e3058d30f5cbc023da6a14e6a.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "d3af00dc-cc0b-46d3-92c3-76f22579da51",
+        "e439a1a5-a752-4ecc-84fb-91160d418f71"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/4a9d1ebc5b3aeb763d21a0c2451725d74a4e8e9350249d7e9a492c4686529af8.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "dd74b072-9cda-4524-8ec4-0089c4184a59",
+        "e5c12245-91fd-456d-a97c-cfb0dd390c7b"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/3a34810ffec5d911f40f132498a95836719b115bf414efd7774eb406256a4232.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "e553c75d-ce58-4929-b058-ca7fdee5b120",
+        "f6698a8b-e4ac-4a13-9f51-eac69d6b56f4"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/fbabc7f40c19c0872ef3f06510047edf1efede563b0b11be1e168ca55ad670ef.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "f40a762e-377c-4e9f-bfcc-4e8f2cf38ff2",
+        "fe88cab3-8702-418e-af5d-489b9e435e17"
+      ]
+    },
+    {
+      "url": "https://media-b2c.littlefounders.ai/files/lesson-images/18f14b8f9215f514fe0b4c26f7ea3fa76fd1ddacd5213a14888c51d2a8d70ff0.webp",
+      "lessons": 2,
+      "lesson_ids": [
+        "f7e1cb56-55e3-4686-b394-d0e07c9a5e9f",
+        "fe5cb40f-d1a1-4ea5-9adf-f49eefb21e0b"
+      ]
+    }
+  ],
+  "no_art": [
+    {
+      "lesson_id": "18e61445-5e18-4da9-a26f-da492782c608",
+      "slug": "el-billete-de-cien",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "1dace150-7532-4d32-8928-ecadc26af8eb",
+      "slug": "recordar-en-orden",
+      "adventure": "cosmos-del-manana"
+    },
+    {
+      "lesson_id": "1f632dc8-c74c-4e43-abce-d47e9a4d507b",
+      "slug": "pago-el-tesoro-exacto",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "259ec386-cf19-40f5-9e05-f61e1475d3e7",
+      "slug": "mi-primer-billete",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "3b7f4688-7a56-4044-94d0-7ed682678e1c",
+      "slug": "elijo-mi-nueva-meta",
+      "adventure": "aldea-del-ahorro"
+    },
+    {
+      "lesson_id": "3c7f1084-35ce-454d-8af9-63dbc54bf418",
+      "slug": "el-trueque-cansa",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "4dc65cc2-cfe8-4b64-a650-679df1bb4bd9",
+      "slug": "elijo-el-trueque-mas-justo-del-cofre",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "5027dc82-c705-49ac-a7b4-3dc4cccb3a7f",
+      "slug": "deseo-y-trueque-en-la-misma-escena",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "5137590a-91fa-4749-8520-97168b9519cf",
+      "slug": "propongo-un-trueque-justo",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "5fcc80ef-0e8a-46e3-a5fc-41cfc3749750",
+      "slug": "la-moneda-de-cinco-pesos",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "68ef9dc4-d965-4402-9587-9a152d1c074a",
+      "slug": "mas-de-una-forma-de-juntar",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "6cf5708e-cb41-4e1b-ba74-0251ebc2ea3a",
+      "slug": "diez-vale-mas-que-cinco",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "6d1a2abf-1e7f-4907-873f-baaa5fc6c154",
+      "slug": "el-tamano-no-decide",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "6fbda0c4-a0ec-41bf-ac1d-50ac5039beed",
+      "slug": "la-cuenta-regresiva",
+      "adventure": "cosmos-del-manana"
+    },
+    {
+      "lesson_id": "7c14a3e0-9720-4478-9bdd-1514a081fcf4",
+      "slug": "ordeno-todo-el-tesoro-del-cofre",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "82c1ba32-3879-4f48-9ab5-f389bcbac6b2",
+      "slug": "los-dos-quedan-contentos",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "9201730b-8ce0-4d70-8697-185d9e1a17a8",
+      "slug": "una-botella-en-el-mar",
+      "adventure": "faro-de-la-confianza"
+    },
+    {
+      "lesson_id": "9323ecf1-c7b3-4f7f-9488-d5f0ab5334c1",
+      "slug": "chambitas-dentro-de-la-cabana",
+      "adventure": "bosque-de-la-abundancia"
+    },
+    {
+      "lesson_id": "9ac83747-d6d4-4262-bbf7-da2b6f20fff3",
+      "slug": "el-mapa-del-capitan-fantasma",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "9dce1ad7-b9a0-49fe-8abc-fc93cfc76a3b",
+      "slug": "el-billete-de-doscientos",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "a373c6be-72ce-41e0-b9c5-6f7c83436d52",
+      "slug": "partes-del-invento",
+      "adventure": "taller-de-los-inventores"
+    },
+    {
+      "lesson_id": "a646dc6c-5c39-4fea-a301-c1c060d9d5f0",
+      "slug": "suenos-de-otros-founders",
+      "adventure": "cosmos-del-manana"
+    },
+    {
+      "lesson_id": "a824efe8-36a5-4c7d-9d54-8605fb10ef5c",
+      "slug": "armo-mi-propio-trueque",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "b4f01930-21c0-4ab9-b8d9-b48004acca2e",
+      "slug": "mi-primer-usuario",
+      "adventure": "taller-de-los-inventores"
+    },
+    {
+      "lesson_id": "b9ede17f-6199-41a1-90d7-a3a1154fe566",
+      "slug": "identifico-un-trueque",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "bb1f7def-cfad-4704-a066-8a3fe3f6614c",
+      "slug": "elijo-la-mejor-reaccion-si-pierdo-una-moneda",
+      "adventure": "aldea-del-ahorro"
+    },
+    {
+      "lesson_id": "bc3ab584-8860-4c90-92d5-a48ab41d68fc",
+      "slug": "que-idea-ayuda-mas",
+      "adventure": "taller-de-los-inventores"
+    },
+    {
+      "lesson_id": "ca16c54b-c016-4458-96ec-ac3282afec7c",
+      "slug": "elegir-sin-tristeza",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "d43af980-0456-49ac-8447-e3a395d16d0b",
+      "slug": "elijo-el-trueque-justo",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "d61aedbf-d4ad-47f4-ab28-7c82698b1f7d",
+      "slug": "privado-o-publico",
+      "adventure": "faro-de-la-confianza"
+    },
+    {
+      "lesson_id": "d7c175bd-b286-44db-9b34-02fe4b1c5251",
+      "slug": "junto-tres-monedas",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "dae569ec-ad7d-4c07-a2a7-9c232a659baa",
+      "slug": "no-puedo-llevarme-todo",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "dfc83c35-41fe-41d1-b578-75745478485c",
+      "slug": "respeto-por-lo-que-otros-quieren",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "f2e7b73a-decc-461c-8cc6-48bbfcca252f",
+      "slug": "ordeno-mis-monedas-chiquitas",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "f7fc23dc-57e5-4501-9e4c-8b4ee01056f1",
+      "slug": "ajusto-una-lista-recordada",
+      "adventure": "mercado-de-los-colores"
+    },
+    {
+      "lesson_id": "fc3c94b0-3cc9-4b9b-97d6-b308bba0e748",
+      "slug": "junto-monedas-recordadas",
+      "adventure": "archipielago-del-trueque"
+    },
+    {
+      "lesson_id": "fe0d9150-d955-4c8e-ad51-0672da3be615",
+      "slug": "cual-me-conviene-mas",
+      "adventure": "archipielago-del-trueque"
+    }
+  ],
+  "image_critical_missing": [
+    {
+      "lesson_id": "012d4c20-6b3f-40c2-8dcd-4cd867aee7f0",
+      "slug": "el-primer-mapa-estelar",
+      "adventure": "cosmos-del-manana",
+      "segment_id": "s3-picture-choice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "05175215-9a88-4097-9808-1c235fd8432f",
+      "slug": "el-billete-de-veinte",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s3-picture",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "071a1477-24a9-46b5-8342-b5a7c250f852",
+      "slug": "detectamos-un-cambio-injusto-del-capitan",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s2-compare-prices",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "093b8665-3f9f-4b90-8341-21ebc439f841",
+      "slug": "mi-frasco-seguro-y-feliz",
+      "adventure": "aldea-del-ahorro",
+      "segment_id": "s2-elige-moneda-2",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "0a0b0425-dd0f-4236-a392-4b1f8b443203",
+      "slug": "senales-de-cuidado",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s10-choice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "0a6e8bd7-ecd3-47de-8d4a-635c41e7fc9a",
+      "slug": "notar-lo-incomodo",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s7-picture-choice",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "0c5ad681-e9ec-4700-b055-f98b372e04db",
+      "slug": "la-etiqueta-del-precio",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s5-sandia",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "0c5b4e6e-58f7-4dc2-9f18-baecd83e3317",
+      "slug": "comprar-para-mi-invento",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s5-cinta",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "0ce73407-fb6a-4b12-9966-683d26471201",
+      "slug": "el-mercado-y-sus-precios-repaso",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s6-elige-mangos",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "0e2aa1ef-4933-439b-bced-7a04084c2792",
+      "slug": "ordenamos-el-tesoro-encontrado",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s2-picture",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "0e3efe26-ef98-4771-9ef4-fedc8d45e40a",
+      "slug": "el-viaje-no-termina-aqui",
+      "adventure": "cosmos-del-manana",
+      "segment_id": "s5-liruf-escenas",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "0e6a2fac-61a4-4d75-b574-dd0c1e8753ff",
+      "slug": "una-forma-de-agradecer",
+      "adventure": "jardin-compartido",
+      "segment_id": "s7-imagen-de-gratitud",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "1235aa05-369c-4c0f-b570-c58390179580",
+      "slug": "practicar-el-entrelazado",
+      "adventure": "faro-de-la-confianza",
+      "segment_id": "s8-picture-choice",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "182410b0-b97f-4e8e-ab7c-9e791203b714",
+      "slug": "la-frase-que-convence",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s8-picchoice",
+      "type": "picture_choice",
+      "xp": 20
+    },
+    {
+      "lesson_id": "192ce3be-f5ab-4fcf-847a-8ccec7676d17",
+      "slug": "elijo-el-precio-mas-conveniente",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s2-elige-barato",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "1a5439a3-c7c5-4784-a4f4-751459daf17a",
+      "slug": "ganado-o-regalado",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s2-pic-choice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "1ad50d99-a2b8-4396-840e-a4da49a5db72",
+      "slug": "casi-compro-sin-mirar",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s2-leer-etiqueta",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "1b2c81e9-c509-4663-99f4-9c6f6a5a2fda",
+      "slug": "mi-familia-me-anima",
+      "adventure": "aldea-del-ahorro",
+      "segment_id": "s3-liruf-support",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "1b335970-a7d4-4995-91e8-aedb6777639e",
+      "slug": "el-cofre-se-abre",
+      "adventure": "cosmos-del-manana",
+      "segment_id": "s3-picchoice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "1b3eea69-b612-4672-82e8-dc670460599f",
+      "slug": "mis-materiales-para-la-mision",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s7-picture-choice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "208e16fb-8b41-46f9-84a0-7974a6183bcc",
+      "slug": "caras-de-orgullo",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s5-cara-de-rho",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "209bf6b7-8093-4b8a-bed7-898345fbfb26",
+      "slug": "como-me-siento-al-dar",
+      "adventure": "jardin-compartido",
+      "segment_id": "s8-cara-compartir",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "22945a7d-fc5e-4024-9127-33912321177f",
+      "slug": "mi-reto-entrelazado",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s2-coin-id",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "22b92add-e952-4463-807e-7e77cf5ca7c9",
+      "slug": "comparo-el-precio-con-mis-monedas",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s2-read-price",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "252c8245-ba6e-42ca-b5c5-878d0de51be4",
+      "slug": "tacho-los-dias",
+      "adventure": "aldea-del-ahorro",
+      "segment_id": "s6-calendario-correcto",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "28ce4894-2971-42a5-bdf5-71fd79b6e720",
+      "slug": "cumplo-y-cuento-a-la-vez",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s8-picture-choice",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "293de39a-217a-4979-8bc1-ad23cc832e2d",
+      "slug": "decidir-rapido-y-bien",
+      "adventure": "cosmos-del-manana",
+      "segment_id": "s5-pelota-monedas",
+      "type": "picture_choice",
+      "xp": 20
+    },
+    {
+      "lesson_id": "29b4b087-d453-435d-bf05-224a26b518d7",
+      "slug": "comparar-precios-de-material",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s7-toca-mas-barata",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "2c987e16-6565-4068-bd19-d85690548f30",
+      "slug": "el-tablon-se-llena-de-chambitas",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s6-sillas",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "2ca7e9eb-e45d-4c59-91af-70e8c7d293e5",
+      "slug": "lo-logre-yo-solo",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s8-imagen",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "2f32da25-77c0-4748-b8e9-15078578cfe9",
+      "slug": "cubro-mi-lista-con-lo-que-ahorre",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s6-picture-choice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "2f9fe106-c036-46dc-b139-0927b3f63a66",
+      "slug": "pagar-el-material",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s6-elige-la-imagen",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "3607f5a2-33f3-4a11-b3d7-5081f892d3ec",
+      "slug": "armo-mi-combinacion-final",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s6-recuerdos-de-zara",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "39276b59-972f-4b76-8246-bdd3376dac28",
+      "slug": "el-pescado-mas-grande-del-mundo",
+      "adventure": "faro-de-la-confianza",
+      "segment_id": "s5-limonada-visual",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "3a8ba7e6-3823-477d-ad69-9032aee78335",
+      "slug": "pensar-en-el-otro",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s9-paraguas-luz",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "3a8bfe39-f7dd-4a9a-a9e3-c29e0249ad6c",
+      "slug": "que-puedo-dar-yo",
+      "adventure": "jardin-compartido",
+      "segment_id": "s6-mara",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "3b72257b-0828-4297-9201-49bfacb85cfe",
+      "slug": "le-cuento-a-mi-familia",
+      "adventure": "aldea-del-ahorro",
+      "segment_id": "s10-picture-choice",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "3c2c0245-bc2b-48fa-a5e1-7d2b65ae0444",
+      "slug": "el-cofre-se-abre",
+      "adventure": "jardin-compartido",
+      "segment_id": "s7-picture-jardin",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "3dc51a0b-bc45-4d11-a144-1fd1b062fbed",
+      "slug": "armo-mi-lista-corta",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s9-pic-choice",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "3df0d254-c482-4863-93c6-8a4a7cf68830",
+      "slug": "el-cofre-se-abre",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s3-problem",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "3f9b4355-c25b-4a33-92ee-47cce3374549",
+      "slug": "junto-varios-dias-de-festival",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s7-registro-palitos",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "4503473a-7b07-440c-9be1-125f04683478",
+      "slug": "mi-pausa-para-la-gran-mision",
+      "adventure": "faro-de-la-confianza",
+      "segment_id": "s7-catalejos",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "46e1df19-ad00-4c8a-9530-f8e8e7d71fa0",
+      "slug": "celebro-mi-esfuerzo",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s8-picture",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "472a43cb-77b6-4f64-b387-6e9778520533",
+      "slug": "sumamos-en-familia",
+      "adventure": "aldea-del-ahorro",
+      "segment_id": "s8-pic",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "49dd2326-8c2b-4fe5-9fb4-da4a40821a6b",
+      "slug": "recuerdo-una-tarea-de-equipo",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s2-elegir-imagen-equipo",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "4b022538-fac3-4116-8c63-f6bf3500d6ab",
+      "slug": "mi-agradecimiento-en-la-fiesta",
+      "adventure": "jardin-compartido",
+      "segment_id": "s8-elegir-imagen",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "4b435940-8b13-448f-98b3-b99531e54846",
+      "slug": "lo-pienso-un-momento",
+      "adventure": "aldea-del-ahorro",
+      "segment_id": "s9-imagen-pensar",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "4c736eec-7d86-4ddf-9a53-341403a2cbf6",
+      "slug": "cumplo-una-chambita-de-casa",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s7-picture",
+      "type": "picture_choice",
+      "xp": 8
+    },
+    {
+      "lesson_id": "4dc65cc2-cfe8-4b64-a650-679df1bb4bd9",
+      "slug": "elijo-el-trueque-mas-justo-del-cofre",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s5-picture-choice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "4ec98472-5e0b-44eb-9139-1d71019c658e",
+      "slug": "si-se-pierde-una-moneda-de-todos",
+      "adventure": "aldea-del-ahorro",
+      "segment_id": "s2-elegir-accion",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "51e51124-cb5f-4a2f-afab-5c2698bcd607",
+      "slug": "ni-muy-caro-ni-muy-barato-otra-vez",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s4-low-price",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "53cd5dcc-00c8-42bc-8bf6-053e48da3b52",
+      "slug": "pido-permiso-para-el-festival",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s3-picture-choice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "5ea350c1-a192-4b94-a2dc-7c4f620993f8",
+      "slug": "hablar-con-quien-no-ayudo",
+      "adventure": "jardin-compartido",
+      "segment_id": "s2-imagen-amable",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "624af79d-2f2e-4ef9-b78f-955b8e96819b",
+      "slug": "nadie-compra",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s9-picchoice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "62d34d4f-ee98-45c1-8377-dab4eca4777b",
+      "slug": "reconocemos-los-billetes-del-capitan",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s4-elige-billete-50",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "6398ec0a-2bb4-4e8d-ab81-3b694ad57653",
+      "slug": "recuerdo-por-que-guardo",
+      "adventure": "aldea-del-ahorro",
+      "segment_id": "s6-monedas-8",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "65d454ee-72c9-465d-941b-03a5ff78537f",
+      "slug": "atascado-con-mi-meta",
+      "adventure": "cosmos-del-manana",
+      "segment_id": "s5-imagen-ayuda",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "66638b25-89b2-4eaf-9d51-befdd39f3806",
+      "slug": "el-segundo-mapa-estelar",
+      "adventure": "cosmos-del-manana",
+      "segment_id": "s5-elegir-trabajo",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "66a1bb1b-fb00-48cd-b41c-440f0ae7aa8a",
+      "slug": "esto-es-barato-o-caro",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s4-picture-choice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "66f93119-a131-400b-965b-3629aec7e521",
+      "slug": "cual-cuesta-menos",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s2-elegir-puesto",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "6ac55f0d-b647-4867-a1e7-27e263d37c5e",
+      "slug": "armamos-un-equipo",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s6-imagen",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "6cf5708e-cb41-4e1b-ba74-0251ebc2ea3a",
+      "slug": "diez-vale-mas-que-cinco",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s2-pick-ten",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "6d1a2abf-1e7f-4907-873f-baaa5fc6c154",
+      "slug": "el-tamano-no-decide",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s2-dina-pick",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "6d1a2abf-1e7f-4907-873f-baaa5fc6c154",
+      "slug": "el-tamano-no-decide",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s3-rho-compare",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "775cef1f-3438-4fed-ae91-dae3091c25da",
+      "slug": "cuento-mi-sorpresa",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s8-picture-choice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "775f6d50-475e-48bd-8e4c-bb4ad2be1bc3",
+      "slug": "cambio-por-algo-mas-barato",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s6-elegir-fruta",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "776f50f5-ecea-4066-836c-c0d29b5dfa97",
+      "slug": "cuando-conviene-cooperar",
+      "adventure": "jardin-compartido",
+      "segment_id": "s9-elegir-mejor-forma",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "7a321105-ea99-474b-a68e-6fb714a7d085",
+      "slug": "mi-reto-entrelazado",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s7-picture-choice",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "7d45bd19-4f8d-42f7-8ea4-e72cf34c69f5",
+      "slug": "espero-igual-que-la-tortuga",
+      "adventure": "aldea-del-ahorro",
+      "segment_id": "s3-celebracion-progreso",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "7ebc669b-8a87-40a1-9e23-073366109542",
+      "slug": "el-cofre-del-faro-otra-vez",
+      "adventure": "faro-de-la-confianza",
+      "segment_id": "s4-paquete",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "7f8a0c1f-bf86-460a-a8b1-6808174cc9c7",
+      "slug": "cada-chambita-suma-al-escenario",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s4-imagen-equipo",
+      "type": "picture_choice",
+      "xp": 8
+    },
+    {
+      "lesson_id": "7ff6417b-d459-4186-85be-e51cd380a6e1",
+      "slug": "sumo-tres-chambitas",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s9-flash-match",
+      "type": "flash_match",
+      "xp": 20
+    },
+    {
+      "lesson_id": "8116abf9-9f01-41c7-b8a6-6e4fac12d647",
+      "slug": "monedas-y-billetes-juntos",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s2-picture-choice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "82227d37-2358-4239-8d90-f56973e1cb34",
+      "slug": "el-mensajero-del-festival",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s2-escena-playa",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "82c1ba32-3879-4f48-9ab5-f389bcbac6b2",
+      "slug": "los-dos-quedan-contentos",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s4-picture-choice",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "837b1697-d4d9-41e3-b25a-28783e225236",
+      "slug": "tareas-que-ayudan-en-casa",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s5-picture-choice",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "83a1a780-804d-4e79-a613-40423fe92804",
+      "slug": "el-cofre-se-abre",
+      "adventure": "faro-de-la-confianza",
+      "segment_id": "s9-picture-choice",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "83f14f29-c78e-435d-923f-6ee3016d433c",
+      "slug": "ideas-para-seguir-practicando",
+      "adventure": "cosmos-del-manana",
+      "segment_id": "s9-picture-choice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "840bfdf6-56c4-4e76-8483-10dff179db7f",
+      "slug": "a-quien-le-pido-permiso",
+      "adventure": "faro-de-la-confianza",
+      "segment_id": "s2-tablet",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "85cafa18-19b1-491d-a01e-280711c2cb22",
+      "slug": "decido-con-calma",
+      "adventure": "aldea-del-ahorro",
+      "segment_id": "s6-identificar-impulso",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "87431970-fbd0-4013-9049-44448e081800",
+      "slug": "cual-puesto-cobra-menos",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s7-lowest-tag",
+      "type": "picture_choice",
+      "xp": 7
+    },
+    {
+      "lesson_id": "87ff68c5-4e48-46a9-b91c-b602ab73f534",
+      "slug": "parecido-pero-no-igual",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s4-picture",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "8c73ec77-f4b2-4466-b6af-7fd78a8a3f02",
+      "slug": "la-tienda-de-materiales",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s5-etiqueta-madera",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "8e7611ed-b7cd-4af9-97a4-3e2a09d60b73",
+      "slug": "sumar-material-por-material",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s7-carritos",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "8fd6fafd-57c3-40f2-b7ee-b9e089127fe5",
+      "slug": "armo-el-trueque-mas-justo-de-todos",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s3-escoge",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "9081f1e5-44e4-4aaa-86da-ffb8a0e15a84",
+      "slug": "mi-alegria-de-dar",
+      "adventure": "jardin-compartido",
+      "segment_id": "s8-picture",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "91190e23-058a-4320-8608-1eaca9556399",
+      "slug": "un-cartel-claro",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s2-picture-choice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "952e2e93-85dd-469a-a264-0960345be246",
+      "slug": "sigo-mi-lista",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s7-picture-choice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "953ea1d1-ab58-401c-97d9-7b16434cd63b",
+      "slug": "reconozco-todo-el-dinero",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s5-billete-20",
+      "type": "picture_choice",
+      "xp": 8
+    },
+    {
+      "lesson_id": "979e82e3-4bdd-4b85-8fca-c8cf52974a2b",
+      "slug": "los-tres-pasos",
+      "adventure": "faro-de-la-confianza",
+      "segment_id": "s8-picture-choice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "9cbbdfb1-c9dd-4abe-bc57-1fc40224016d",
+      "slug": "cada-quien-su-talento",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s8-picture",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "9dce1ad7-b9a0-49fe-8abc-fc93cfc76a3b",
+      "slug": "el-billete-de-doscientos",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s2-find-100",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "9f4c4361-2889-46a8-8143-224dc8ddd370",
+      "slug": "cada-quien-su-parte",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s2-mas-esfuerzo",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "a30ed10b-a976-4311-8919-7388e1e94db7",
+      "slug": "como-se-parece-al-jardin",
+      "adventure": "jardin-compartido",
+      "segment_id": "s6-escenas",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "a4f4bcee-e521-42b0-bc66-41bd1e9ff90c",
+      "slug": "no-gasto-todo-hoy",
+      "adventure": "aldea-del-ahorro",
+      "segment_id": "s5-picture-choice-dina-guarda-moneda",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "a6a6508a-fec4-403f-8cc5-eca1815a664f",
+      "slug": "mi-primer-paso-de-graduacion",
+      "adventure": "cosmos-del-manana",
+      "segment_id": "s4-barata",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "a6f4cdd9-426a-48af-8570-51bb115d8c65",
+      "slug": "reviso-mi-bolsa-completa",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s7-imagen-correcta",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "a824efe8-36a5-4c7d-9d54-8605fb10ef5c",
+      "slug": "armo-mi-propio-trueque",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s4-elegir-trueque",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "ab80fd4f-080c-4835-890a-314b4de1083f",
+      "slug": "tres-formas-en-el-jardin",
+      "adventure": "jardin-compartido",
+      "segment_id": "s5-picture-choice-tiempo",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "abfa5f00-c79b-4a82-bb87-a169b6fad879",
+      "slug": "no-juzgo-por-tamano",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s4-pares",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "b2f4ca49-a090-4529-9c6a-efac431dc56b",
+      "slug": "confio-y-reconozco-mis-monedas",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s6-dulce-liruf",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "b5c76d48-6282-4cee-933f-7ef90250a95f",
+      "slug": "comparo-mi-cosecha-de-hoy-y-de-ayer",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s6-picture-choice",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "b865b829-d899-4eaf-b8c8-3f5df40496a9",
+      "slug": "revisar-antes-de-seguir",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s2-find-loose-screw",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "b9ede17f-6199-41a1-90d7-a3a1154fe566",
+      "slug": "identifico-un-trueque",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s2-picture-choice-trueque",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "ba237916-162d-453e-b0fc-60a489456427",
+      "slug": "elijo-donde-comprar",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s7-pick-whistle",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "ba6b53b3-438f-47de-88ec-ed236e096208",
+      "slug": "lo-que-falta",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s10-picture",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "ba70fbbb-9dca-440e-9b75-b9a0f88878c6",
+      "slug": "cual-billete-uso",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s3-elige-cien",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "c255ee68-dfab-4786-855f-3bb050bf3939",
+      "slug": "mi-recorrido-completo-del-faro",
+      "adventure": "faro-de-la-confianza",
+      "segment_id": "s7-banco-seguro",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "c4104ac2-b2e5-49eb-9a42-f40804655ac2",
+      "slug": "cuantos-dias-faltan",
+      "adventure": "aldea-del-ahorro",
+      "segment_id": "s9-calendario-ilustrado",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "c581b276-cc99-4da5-9911-144a38925f50",
+      "slug": "practicar-la-pausa",
+      "adventure": "faro-de-la-confianza",
+      "segment_id": "s8-imagen-pausa",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "c937fad4-8dfb-4ac9-9ea6-11a9968ef2cc",
+      "slug": "recuerdo-pensar-antes-de-comprar",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s4-mochila-escuela",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "ca639af0-6164-4c6e-9030-b819e8049b1f",
+      "slug": "mi-frasco-crece-poquito-a-poquito",
+      "adventure": "aldea-del-ahorro",
+      "segment_id": "s8-picture-choice",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "cb7b7104-6695-4d3c-8ef9-cc608a43ada4",
+      "slug": "comparo-mi-semana-con-la-de-un-amigo",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s8-picture",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "ccd1f692-0606-4cd5-bae1-1d9654ba5d25",
+      "slug": "la-sensacion-rara",
+      "adventure": "faro-de-la-confianza",
+      "segment_id": "s6-picture",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "cd600178-9d54-410d-a4b7-c42df798af9a",
+      "slug": "la-moneda-de-dos-pesos",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s2-naranja-1",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "cd600178-9d54-410d-a4b7-c42df798af9a",
+      "slug": "la-moneda-de-dos-pesos",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s6-galleta-2",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "ce272965-e7ff-4bcb-b184-cb57118e9c3a",
+      "slug": "funciona-o-no",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s9-picture",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "d1cb4be8-aea6-4508-856a-1cfd64a3d5e3",
+      "slug": "cuento-las-marcas",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s2-toca-hojas",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "d3af00dc-cc0b-46d3-92c3-76f22579da51",
+      "slug": "recuerdo-precios-baratos-y-caros",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s6-picture-choice",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "d7c175bd-b286-44db-9b34-02fe4b1c5251",
+      "slug": "junto-tres-monedas",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s5-dibujo14",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "db7a0aa1-256e-42fa-90b9-90d0cb69f6b0",
+      "slug": "el-cliente-paga-de-mas",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s8-picture",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "db8e14ff-7cc8-4314-8ea9-e87b9d88931d",
+      "slug": "defender-mi-precio",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s4-picture",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "dcc6cf45-ed63-497c-85e6-3a570cc751d0",
+      "slug": "comparar-antes-de-comprar-repaso",
+      "adventure": "cosmos-del-manana",
+      "segment_id": "s5-naranjas-zara",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "dec6eac3-1666-4b67-93a4-e545abecb127",
+      "slug": "practico-pensar-antes-de-comprar",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s7-picture",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "defeb812-d2df-4a1d-ad8a-d980f3594e94",
+      "slug": "el-plano-del-inventor",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s4-picture-choice-good-plan",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "dfc83c35-41fe-41d1-b578-75745478485c",
+      "slug": "respeto-por-lo-que-otros-quieren",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s8-imagen",
+      "type": "picture_choice",
+      "xp": 8
+    },
+    {
+      "lesson_id": "e3590041-51aa-43b5-877f-fb286cd1d0e3",
+      "slug": "resistir-el-apuro",
+      "adventure": "faro-de-la-confianza",
+      "segment_id": "s4-elegir-anuncio-urgencia",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "e6b95741-936f-47ee-b734-b533a94df9ea",
+      "slug": "clasifico-por-precio",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s2-picture",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "e6bfcdbe-e643-4c18-97f6-997d6addd8d0",
+      "slug": "termino-mi-parte-del-trato",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s4-cargar-agua",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "ebcb460c-9854-49c7-8c6b-7bbc1c20c059",
+      "slug": "como-me-siento-si-pierdo-algo",
+      "adventure": "aldea-del-ahorro",
+      "segment_id": "s2-perdida-accidental",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "ebfeb5ac-07ab-44f9-a625-f27f5e9a28ee",
+      "slug": "me-canso-un-poquito",
+      "adventure": "bosque-de-la-abundancia",
+      "segment_id": "s2",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "f0caff84-d426-4998-8d4b-b9fcaf8f3713",
+      "slug": "pago-confiado-con-mi-tesoro",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s4-pic",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "f2e7b73a-decc-461c-8cc6-48bbfcca252f",
+      "slug": "ordeno-mis-monedas-chiquitas",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s2-elige-5",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "f4ab830a-7ed3-4bca-87bf-b6112052004d",
+      "slug": "unir-los-dos-mundos",
+      "adventure": "taller-de-los-inventores",
+      "segment_id": "s2-pick-coin",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "f69c5e40-7b2d-4976-a04c-aa521a94546c",
+      "slug": "las-ganas-de-pedirlo-ya",
+      "adventure": "faro-de-la-confianza",
+      "segment_id": "s2-picture-choice",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "f6c57165-27a7-4153-a7ab-6dcd8772182d",
+      "slug": "cierro-el-cofre-de-precios",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s5-muneca-barata",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "f74ace08-c385-41c6-a426-2b12ec27fbdf",
+      "slug": "cierro-el-cofre-listo-para-seguir",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s4-elegir-trueque-justo",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "f7bd01ef-5d70-460d-99b5-02465b73f427",
+      "slug": "dar-todo-el-frasco",
+      "adventure": "jardin-compartido",
+      "segment_id": "s10-imagen-equilibrio",
+      "type": "picture_choice",
+      "xp": 15
+    },
+    {
+      "lesson_id": "fb2b888a-7e50-4477-aca5-36ce2e4f45c3",
+      "slug": "cada-moneda-ganada-tambien-cuenta",
+      "adventure": "aldea-del-ahorro",
+      "segment_id": "s5-frasco-suficiente",
+      "type": "picture_choice",
+      "xp": 5
+    },
+    {
+      "lesson_id": "fca602a5-318c-48c9-b123-dd8f7eb3458c",
+      "slug": "escucho-el-consejo",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s7-a-quien-pedir-consejo",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "fd117a25-7386-4970-85f2-ad9549eaf35f",
+      "slug": "recuerdo-comparar-dos-puestos",
+      "adventure": "mercado-de-los-colores",
+      "segment_id": "s3-elige-barato",
+      "type": "picture_choice",
+      "xp": 10
+    },
+    {
+      "lesson_id": "fe0d9150-d955-4c8e-ad51-0672da3be615",
+      "slug": "cual-me-conviene-mas",
+      "adventure": "archipielago-del-trueque",
+      "segment_id": "s5-monedas-enganosas",
+      "type": "picture_choice",
+      "xp": 15
+    }
+  ]
+}

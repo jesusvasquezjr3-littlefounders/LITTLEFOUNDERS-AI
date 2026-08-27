@@ -1,0 +1,11 @@
+{
+  "order": 93,
+  "lesson_id": "8872ac59-cac8-4273-925b-2fe5020f41f2",
+  "slug": "comparo-precios-y-cuento-mi-tesoro",
+  "status": "complete",
+  "generation": "Codex built-in image generation; normalized 1328x1328, transcodeToWebp quality 82, no Prism, DashScope or picture_assets write",
+  "images": [{"old_url":"https://media-b2c.littlefounders.ai/files/lesson-images/8a65c93d8e400634cbc139a933e55fd66ff52ff687619f3feb77ca22c6ec9980.webp","new_url":"https://media-b2c.littlefounders.ai/files/lesson-images/4937c978deb709fa9da65a77cf674f65dc75ec1ddd7332061426ccdbdc1debe6.webp","slots":["s7-fair-trade.payload.offer_a.image_url"],"subject":"dos monedas doradas con anillos coral y marcas geométricas azules","format":"image/webp","bytes":36852,"dimensions":"1328x1328"}],
+  "gate": "pass",
+  "locales_written": ["es-MX", "en-US", "pt-BR"],
+  "production_verified": {"published_lessons":988,"document_rows":2964,"urls_verified_as_webp":1,"png_urls":0,"images_serving_more_than_one_lesson":296}
+}

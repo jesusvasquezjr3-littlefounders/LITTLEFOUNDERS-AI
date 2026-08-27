@@ -1,0 +1,12 @@
+{
+  "order": 195,
+  "lesson_id": "cabac7ba-82fc-4c4a-847a-049cf115665b",
+  "slug": "por-que-me-gustaria-esa-chambita",
+  "status": "completed",
+  "generated_images": 1,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [{"old":"452fb7bd50de64512845075849b85851d2d383bde4f808392fb253649181a3ff.webp","slot":"s8-hechos-y-opiniones.image_url","new":"f6bc88ae8f218289ccb15bf5805965c6c7ba9789b5547f7ff9393aec9a6d0966.webp"}]
+}

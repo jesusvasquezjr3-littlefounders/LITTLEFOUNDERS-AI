@@ -1,0 +1,15 @@
+{
+  "order": 135,
+  "lesson_id": "e6bfcdbe-e643-4c18-97f6-997d6addd8d0",
+  "slug": "termino-mi-parte-del-trato",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"afc63db702a0c46466b11eac364df953bb0b7e0aaaf378290115c846c0f60749.webp","slot":"s1-dialogo.image_url","new":"54ba1f7edfd7f6f1361e04c50c445d8a059eac28ab3b5d097c61816f8e95b6e0.webp"},
+    {"old":"a8bb2954bfd438b312d49cb3ff10cf4c6f94a4e987c85b2d8d6acf8ffb3a5e77.webp","slot":"s5-emparejar.payload.left[0].image_url","new":"9eacd3bd7faed9d6e2832a9376dd15e0b599a68370b292360ad5451805e76142.webp"}
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "order": 119,
+  "lesson_id": "dd74b072-9cda-4524-8ec4-0089c4184a59",
+  "slug": "ningun-trabajo-es-menos",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"bc551d6fe23be96aaa5e11dae8759667e1bf367f9d5700c5d669f37cf3d275e6.webp","slot":"s4-odd-one-out.payload.items[1].image_url","new":"4ad2ffddba8ff819503215eca42b11b4f79515aca2e5e04c61da25564eedfa3a.webp"},
+    {"old":"4a9d1ebc5b3aeb763d21a0c2451725d74a4e8e9350249d7e9a492c4686529af8.webp","slot":"s6-sort-buckets.payload.items[2].image_url","new":"05da8bfb5805f86702a88d43c57a8d2a4716a9f68ca677ff14718d10b613f15b.webp"},
+    {"old":"008ba33545131fdf7599327a71049a319ceebe1b12a8e6074beef96a67b47c7e.webp","slot":"s6-sort-buckets.payload.items[3].image_url","new":"082bb6a2ec0b664e2ec579a0b31fc34a98a40e73d10617ba221e3e07e6b53f4c.webp"}
+  ]
+}

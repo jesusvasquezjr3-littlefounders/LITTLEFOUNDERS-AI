@@ -1,0 +1,25 @@
+{
+  "order": 23,
+  "lesson_id": "42a8f4f2-62ba-4c67-a8fa-f30c1f941252",
+  "slug": "recuerdo-mi-trueque-favorito",
+  "status": "complete",
+  "generation": "Codex built-in image generation; no Prism, DashScope or picture_assets write",
+  "images": [
+    {
+      "old_url": "https://media-b2c.littlefounders.ai/files/lesson-images/c194a73d1b4f07ab4aeaec273530940187446beee0547fabcc8bbc3c8b7df9ae.webp",
+      "new_url": "https://media-b2c.littlefounders.ai/files/lesson-images/7410393957be893461eb79d8c45de796d70192dae146218ed13b829271554fc7.webp",
+      "slots": [
+        "s2-repaso-palabras.payload.ideas[2].image_url"
+      ],
+      "subject": "trueque: concha y piedra",
+      "source_png_url": "https://media-b2c.littlefounders.ai/files/lesson-images/0e3e43aa7eda2c9030e9512ee50a68769e57a40ea29be14debb01e599bcd2304.png",
+      "format": "image/webp",
+      "bytes": 15042
+    }
+  ],
+  "locales_written": [
+    "es-MX",
+    "en-US",
+    "pt-BR"
+  ]
+}

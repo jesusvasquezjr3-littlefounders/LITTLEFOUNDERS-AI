@@ -1,0 +1,16 @@
+{
+  "order": 232,
+  "lesson_id": "0681d5f3-ea97-4002-b4a4-9a692d5bef10",
+  "slug": "elijo-mi-propia-meta",
+  "status": "completed",
+  "generated_images": 3,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"8509debd8cf1c1326766d33e5c6c1c77fa111bb013d86194c9c46d4ecbce6c10.webp","slot":"s2-match.payload.left[0].image_url","new":"edc45c4e27a61eee20def8dbe81d0398e5ef5d1ee8f542308a8a80f7b8a5b51a.webp"},
+    {"old":"77e9797fac9195fae03b8a343fad548450fb0a9ef8e27252cbd52d78954500ee.webp","slot":"s2-match.payload.left[1].image_url","new":"a356ade3e55437fe692507a318853dc9a99cd4c3a80032a8da7234b73f2c561f.webp"},
+    {"old":"4da87953bbea024b0ff376cc027f4ab1113e4eb38bcd56a1b346d49b28c8aa60.webp","slot":"s2-match.payload.left[2].image_url","new":"72cdeb73b49c8c477c1039ba981766e398d0c4f4c614f1f16491dff27192d8e8.webp"}
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "order": 223,
+  "lesson_id": "1f2d66e9-11b0-489a-a989-bbbbfef57ef2",
+  "slug": "recordamos-todo-el-viaje-del-bosque",
+  "status": "completed",
+  "generated_images": 2,
+  "production_locales_written": ["es-MX", "en-US", "pt-BR"],
+  "gate": {"pass": 1, "failApply": 0, "failGate": 0, "escalated": 0},
+  "format": "image/webp",
+  "dimensions": "1328x1328",
+  "replacements": [
+    {"old":"3ffe04bc92067d4570d0c2a508cd66e2a8869a2e0bad5513bcb4c301a116f6af.webp","slot":"s3-rho-chambitas.payload.left[0].image_url","new":"6cd76f87e50cc85a22b61e4a7a990b6a0206353c33cc702a3cb6f0dfd377fdf9.webp"},
+    {"old":"8d9c9436474568b29e15693325731299c6cb8a60f9de14d62560695a6021bfdd.webp","slot":"s3-rho-chambitas.payload.left[2].image_url","new":"9d366b686a814a1994270fa8efaa9f8cfd32f474ca4a4eb2246ad76f885ff51c.webp"}
+  ]
+}

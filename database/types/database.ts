@@ -489,6 +489,7 @@ export type Database = {
           created_at: string
           description: Json
           id: string
+          in_progress: boolean
           position: number
           requires: Json
           slug: string
@@ -501,6 +502,7 @@ export type Database = {
           created_at?: string
           description?: Json
           id?: string
+          in_progress?: boolean
           position?: number
           requires?: Json
           slug: string
@@ -513,6 +515,7 @@ export type Database = {
           created_at?: string
           description?: Json
           id?: string
+          in_progress?: boolean
           position?: number
           requires?: Json
           slug?: string
@@ -1473,7 +1476,6 @@ export type Database = {
       }
       parent_verifications: {
         Row: {
-          address: string
           birth_date: string
           checks: Json
           created_at: string
@@ -1487,7 +1489,6 @@ export type Database = {
           verified_at: string
         }
         Insert: {
-          address?: string
           birth_date: string
           checks?: Json
           created_at?: string
@@ -1501,7 +1502,6 @@ export type Database = {
           verified_at?: string
         }
         Update: {
-          address?: string
           birth_date?: string
           checks?: Json
           created_at?: string
@@ -1899,6 +1899,434 @@ export type Database = {
           },
         ]
       }
+      tutor_packs: {
+        Row: {
+          created_at: string
+          id: string
+          locale: string
+          pack: Json
+          released_at: string | null
+          released_by: string | null
+          skill_key: string
+          status: string
+          tier: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          locale: string
+          pack: Json
+          released_at?: string | null
+          released_by?: string | null
+          skill_key: string
+          status?: string
+          tier: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          locale?: string
+          pack?: Json
+          released_at?: string | null
+          released_by?: string | null
+          skill_key?: string
+          status?: string
+          tier?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutor_packs_released_by_fkey"
+            columns: ["released_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      tutor_preferences: {
+        Row: {
+          adaptations: string[]
+          backdrop: string
+          character: string
+          companion: string | null
+          diorama: string
+          nickname: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          adaptations?: string[]
+          backdrop?: string
+          character?: string
+          companion?: string | null
+          diorama?: string
+          nickname?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          adaptations?: string[]
+          backdrop?: string
+          character?: string
+          companion?: string | null
+          diorama?: string
+          nickname?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutor_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      tutor_safety_flags: {
+        Row: {
+          category: string
+          created_at: string
+          handled: string
+          id: string
+          session_id: string
+          severity: string
+          turn_seq: number | null
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          handled: string
+          id?: string
+          session_id: string
+          severity: string
+          turn_seq?: number | null
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          handled?: string
+          id?: string
+          session_id?: string
+          severity?: string
+          turn_seq?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutor_safety_flags_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "tutor_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tutor_safety_flags_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      tutor_segments: {
+        Row: {
+          answer: Json | null
+          attempts: number
+          created_at: string
+          id: string
+          key_verified: boolean
+          lesson_id: string | null
+          origin: string
+          payload: Json
+          provenance: Json
+          review_status: string | null
+          score: number | null
+          segment_type: string
+          seq: number
+          session_id: string
+          xp_awarded: number
+        }
+        Insert: {
+          answer?: Json | null
+          attempts?: number
+          created_at?: string
+          id?: string
+          key_verified?: boolean
+          lesson_id?: string | null
+          origin: string
+          payload: Json
+          provenance?: Json
+          review_status?: string | null
+          score?: number | null
+          segment_type: string
+          seq: number
+          session_id: string
+          xp_awarded?: number
+        }
+        Update: {
+          answer?: Json | null
+          attempts?: number
+          created_at?: string
+          id?: string
+          key_verified?: boolean
+          lesson_id?: string | null
+          origin?: string
+          payload?: Json
+          provenance?: Json
+          review_status?: string | null
+          score?: number | null
+          segment_type?: string
+          seq?: number
+          session_id?: string
+          xp_awarded?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutor_segments_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["lesson_id"]
+          },
+          {
+            foreignKeyName: "tutor_segments_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tutor_segments_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "tutor_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tutor_sessions: {
+        Row: {
+          character: string
+          close_reason: string | null
+          companion: string | null
+          consent_id: string | null
+          cost_usd: number
+          course_id: string | null
+          diorama: string
+          ended_at: string | null
+          id: string
+          intent: string
+          locale: string
+          purge_after: string
+          segment_count: number
+          skill_key: string | null
+          started_at: string
+          tier: number
+          topic_id: string | null
+          turn_count: number
+          user_id: string
+          voice_used: boolean
+          xp_awarded: number
+        }
+        Insert: {
+          character: string
+          close_reason?: string | null
+          companion?: string | null
+          consent_id?: string | null
+          cost_usd?: number
+          course_id?: string | null
+          diorama: string
+          ended_at?: string | null
+          id?: string
+          intent: string
+          locale: string
+          purge_after?: string
+          segment_count?: number
+          skill_key?: string | null
+          started_at?: string
+          tier: number
+          topic_id?: string | null
+          turn_count?: number
+          user_id: string
+          voice_used?: boolean
+          xp_awarded?: number
+        }
+        Update: {
+          character?: string
+          close_reason?: string | null
+          companion?: string | null
+          consent_id?: string | null
+          cost_usd?: number
+          course_id?: string | null
+          diorama?: string
+          ended_at?: string | null
+          id?: string
+          intent?: string
+          locale?: string
+          purge_after?: string
+          segment_count?: number
+          skill_key?: string | null
+          started_at?: string
+          tier?: number
+          topic_id?: string | null
+          turn_count?: number
+          user_id?: string
+          voice_used?: boolean
+          xp_awarded?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutor_sessions_consent_id_fkey"
+            columns: ["consent_id"]
+            isOneToOne: false
+            referencedRelation: "tutor_voice_consent"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tutor_sessions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tutor_sessions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["course_id"]
+          },
+          {
+            foreignKeyName: "tutor_sessions_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tutor_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      tutor_turns: {
+        Row: {
+          action: string | null
+          audio_path: string | null
+          created_at: string
+          emotion: string | null
+          id: string
+          moderation: Json
+          seq: number
+          session_id: string
+          source: string
+          speaker: string
+          text: string
+        }
+        Insert: {
+          action?: string | null
+          audio_path?: string | null
+          created_at?: string
+          emotion?: string | null
+          id?: string
+          moderation?: Json
+          seq: number
+          session_id: string
+          source?: string
+          speaker: string
+          text: string
+        }
+        Update: {
+          action?: string | null
+          audio_path?: string | null
+          created_at?: string
+          emotion?: string | null
+          id?: string
+          moderation?: Json
+          seq?: number
+          session_id?: string
+          source?: string
+          speaker?: string
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutor_turns_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "tutor_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tutor_voice_consent: {
+        Row: {
+          consent_text: string
+          granted_at: string
+          granted_by: string
+          id: string
+          locale: string
+          revoked_at: string | null
+          revoked_by: string | null
+          scope: string
+          user_id: string
+        }
+        Insert: {
+          consent_text: string
+          granted_at?: string
+          granted_by: string
+          id?: string
+          locale: string
+          revoked_at?: string | null
+          revoked_by?: string | null
+          scope?: string
+          user_id: string
+        }
+        Update: {
+          consent_text?: string
+          granted_at?: string
+          granted_by?: string
+          id?: string
+          locale?: string
+          revoked_at?: string | null
+          revoked_by?: string | null
+          scope?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutor_voice_consent_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tutor_voice_consent_revoked_by_fkey"
+            columns: ["revoked_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tutor_voice_consent_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           granted_at: string
@@ -2165,6 +2593,7 @@ export type Database = {
       dataintel_users_sync: {
         Row: {
           created_at: string | null
+          is_staff: boolean | null
           lessons_completed: number | null
           locale: string | null
           longest_streak: number | null
@@ -2387,8 +2816,19 @@ export type Database = {
           course_title: Json
         }[]
       }
+      has_active_tutor_voice_consent: {
+        Args: { p_user_id: string }
+        Returns: boolean
+      }
       is_blocked: { Args: { a: string; b: string }; Returns: boolean }
       is_verified_guardian_of: { Args: { kid: string }; Returns: boolean }
+      purge_expired_tutor_sessions: {
+        Args: { p_limit?: number }
+        Returns: {
+          audio_paths: string[]
+          session_id: string
+        }[]
+      }
       record_staff_ip_sighting: {
         Args: { p_address: unknown; p_user_id: string }
         Returns: undefined
