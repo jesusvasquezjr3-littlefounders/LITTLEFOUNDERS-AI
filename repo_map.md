@@ -1241,17 +1241,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## The `kid` role finally has a way to exist (2026-08-26)
+## Current State (2026-08-27) — the auth / family release is IN PRODUCTION; migration `0049` is not
 
-**The gap.** Guardian verification granted `parent`, `/family` listed children,
-and nothing in the product could create one: `backend/src/routes/family.ts` had
-`GET /kids` and two consent toggles, no POST, and `FamilyPage.tsx` only
-rendered a list. §1.3 requires a kid to hold a verified guardian link, §1.4 puts
-"manage a family / kid accounts" on `parent`, and `/LEGAL/TERMINOSyCONDICIONES
-.md` already describes a Cuenta CHILD "vinculada obligatoriamente" to a Cuenta
-TUTOR. The terms promised a feature with no code path. `ROADMAP.md` named it and
-it had not been started.
+**Pushed and deployed.** `1ee581a9..4f724871`, sixteen commits. Every CD that
+carries code succeeded on `9b75bab7`: backend, frontend, coursegen, picturegen,
+dataintel, audiogen, filebase, parent-id-check. `4f724871` is documentation only
+and correctly triggered nothing but `repo gates`.
 
+**Verified against production, not against the workflow's own green tick.**
+
+  - `GET /health` on Core: `{"service":"backend","version":"0.1.0","status":"ok"}`.
+  - The release's own change is live: `POST /api/v1/auth/signup` without a
 ```
 
 ### agent/README.md

@@ -2,6 +2,57 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-27) — the auth / family release is IN PRODUCTION; migration `0049` is not
+
+**Pushed and deployed.** `1ee581a9..4f724871`, sixteen commits. Every CD that
+carries code succeeded on `9b75bab7`: backend, frontend, coursegen, picturegen,
+dataintel, audiogen, filebase, parent-id-check. `4f724871` is documentation only
+and correctly triggered nothing but `repo gates`.
+
+**Verified against production, not against the workflow's own green tick.**
+
+  - `GET /health` on Core: `{"service":"backend","version":"0.1.0","status":"ok"}`.
+  - The release's own change is live: `POST /api/v1/auth/signup` without a
+    `birthDate` now answers `VALIDATION_ERROR`, which that body would not have
+    produced before this release.
+  - The age screen works end to end: a birth date nine years back answers
+    **403 `AGE_RESTRICTED`**, and creates nothing, because the check runs before
+    GoTrue is reached.
+  - The frontend carries the new assets - `mentor-zara-bust.webp` (28,634
+    bytes) and `zara-presents.webp` (41,248) both 200 as `image/webp`, and the
+    deleted `auth-bg.jpg` is gone: it returns the SPA fallback, byte-identical
+    to a path that never existed, which is how a stale asset was ruled out
+    rather than assumed.
+  - /login, /signup and /how-it-works photographed live at 375 and 1280: the
+    single-column auth composition with its mentor bust, three numeric date
+    segments, no native picker anywhere, `body` on `base` in light. The Google
+    button appears here and does not locally, because the provider list comes
+    from Core.
+
+**`0049` IS NOT APPLIED, and that is the correct state right now.** There is no
+database CD; migrations run through `tutor-deploy.yml`, dispatched by hand with
+`step: migrate`. Production is currently in the safe half of the release: Core
+no longer sends `address`, the column is still present and `NOT NULL DEFAULT ''`,
+so verification inserts land with an empty string and nothing fails. Applying
+the drop is a separate, deliberate step - and it must NOT be done before the
+code, which is now satisfied. ROADMAP declares `0049`-`0049` pending; the
+procedure and its smoke tests are in RUNBOOK.md.
+
+**What CI caught that eight local gates did not.** The first push turned
+`repo gates` red: `repo-consistency.test.mjs` asserts ROADMAP accounts for every
+migration in the repo, and found 49 files against a stated 48/48 with no pending
+range. `npm run tools:test` is the repo's own gate suite and was not in
+AGENTS.md §5 - every individual `*:check` passes without it - so the checklist
+being followed had no step that could have caught it. It is in §5 now, in both
+files, with the failure mode spelled out.
+
+**Still owner action, and unchanged by this deploy.** Applying `0049`;
+regenerating `database/types/database.ts` (generated, deliberately not
+hand-edited, still lists `address`); and the child-account smoke tests against
+the real GoTrue - above all whether the pinned version accepts the synthetic
+`@kids.littlefounders.invalid` address, which is the one thing in this release
+that could not be verified anywhere but production.
+
 ## The `kid` role finally has a way to exist (2026-08-26)
 
 **The gap.** Guardian verification granted `parent`, `/family` listed children,
@@ -4222,6 +4273,7 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-27 | **A green CD run is not evidence that a release works; production answering correctly is.** Core `/health`, a signup missing `birthDate`, an under-13 signup, the new assets by content-type, and three pages photographed live were all checked after the deploy. | Every workflow reported success, and the useful question is a different one: does the code that is actually running do the new thing. The under-13 probe is the sharp one - it returns 403 `AGE_RESTRICTED` and creates nothing, which is the behaviour the release exists for, and no amount of green CI would have shown it. The deleted `auth-bg.jpg` still answered 200, and only comparing it against a path that never existed showed both were the SPA fallback rather than a stale asset. |
 | 2026-08-26 | **Correction, before it could be acted on: a column-dropping migration ships AFTER the code, not before.** RUNBOOK.md said the reverse for this release; it now states code first with the reasoning. | Only one direction survives the window where the two halves disagree. Code first: Core stops sending `address`, the column is still there and `NOT NULL DEFAULT ''`, inserts land with an empty string, nothing breaks. Migration first: the column is gone while the old Core still names it, and PostgREST rejects an insert naming a column absent from its schema cache - so every parent verification would have 502'd for the length of the window. The original note justified itself with "new rows land in a column the release exists to remove", which is true and costs nothing, against an outage that costs the deploy. |
 | 2026-08-26 | **Ten children per guardian, checked before anything is created.** `KID_LIMIT_REACHED`, counted from the same verified links `/kids` reads. | Not a product opinion about family size - ten is far past any real one - but a bound on what a single compromised or automated `parent` session can mint. Every child is a real `auth.users` row and a real learner the platform generates and stores content for, so an unbounded creation endpoint is an unbounded bill (§1.0). Raising an eleventh by hand is easy; noticing ten thousand after the invoice is not. |
 | 2026-08-26 | **A child's USERNAME is immutable, and the UI says so rather than hiding the field.** `PATCH /family/kids/:kidId` accepts a display name and a birth date and nothing else. | Their `auth.users` address is DERIVED from the handle so sign-in can reproduce it without a second stored copy. Renaming one without the other strands the account behind an identifier nothing can rebuild. Hiding the field would leave a parent wondering; refusing it with a reason does not. |
