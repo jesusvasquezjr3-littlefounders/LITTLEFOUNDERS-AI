@@ -299,6 +299,58 @@ hard way:
   marked `[data-lab-chrome]`; a measurement that counts it is measuring the
   ruler.
 
+## Deploying the family/kid accounts release (prepared 2026-08-26, NOT yet deployed)
+
+Everything below was written while building the release; none of it has been
+run against production, and the order matters.
+
+**1. Apply migration `0049_drop_parent_verification_address.sql` BEFORE the code
+that stops sending the field.** It is `DROP COLUMN IF EXISTS`, idempotent, and
+it DESTROYS the stored home addresses - that is the intent (they were write-only
+PII nothing verified), but it is irreversible, so take the verified backup
+first, the same way any other schema change here does.
+
+The column is `NOT NULL DEFAULT ''`, so old code writing without it would still
+have worked; the reverse order is nevertheless wrong, because it would leave a
+window where new rows land in a column the release exists to remove.
+
+**2. Regenerate `database/types/database.ts`.** It still lists
+`parent_verifications.address` and was NOT hand-edited, because it is generated.
+`npm run db:types` needs Docker and the Supabase CLI, neither of which was
+available on the machine this was built on. Nothing consumes that entry today -
+the insert shape in `supabaseRest.ts` is hand-written - so the suites are green
+either way, but the file is stale until this runs.
+
+**3. Smoke-test the child-account creation path against the real GoTrue, before
+telling anyone the feature exists.** This is the one thing that could not be
+verified locally and the one most likely to surprise:
+
+- Create a child from `/family` and confirm the account appears. The address
+  Core sends is `<username>@kids.littlefounders.invalid`. `.invalid` is reserved
+  by RFC 2606 and cannot resolve, which is exactly why it was chosen - but our
+  pinned GoTrue version has never been asked to accept one here. If it refuses,
+  the failure surfaces as GoTrue's own message through the envelope; the fix is
+  a different reserved domain, not a real one.
+- Confirm NO mail is attempted for that address (check Courier's logs and the
+  Haraka `log_delivery` entries). `email_confirm: true` is what should prevent
+  it.
+- Sign in as the child with the USERNAME on `/login`, on a phone. This is the
+  path a nine-year-old walks, and it is the one with no email fallback if it
+  breaks.
+- Rotate the passphrase from `/family` and sign in again with the new one.
+- Delete a throwaway child and confirm the cascade actually removed the profile,
+  the role and the guardian link (`select` all three by that user id).
+
+**4. Check the age screen on the real signup.** A date of birth is now required
+and screened at 13; under-age answers `403 AGE_RESTRICTED`. Confirm an adult
+signup still completes end to end, including the confirmation email, since the
+request body changed shape.
+
+**What has NO rollback but is bounded.** A child account created against a
+GoTrue that later rejects the domain simply cannot be created - nothing is left
+half-made, because the route deletes the auth user if the guardian link fails
+and refuses the username before creating anything.
+
 ## Rollback to v1 (historical — v2 is in production as of 2026-07-17)
 
 v1 is no longer live and no longer on `main` (superseded by the `feat: total v2 rewrite` squash commit, 2026-07-17). To inspect or resurrect it: `git log main --diff-filter=D` finds the squash commit; v1's actual last state is the parent of that commit. There is no automatic rollback — reverting to v1 in production would mean redeploying its old Render/Railway/Vercel config from that commit by hand, which no longer matches the current Railway project (`littlefounders-b2c`) or Vercel project settings (Root Directory now `frontend`). Treat this as "possible but non-trivial," not a one-command undo.

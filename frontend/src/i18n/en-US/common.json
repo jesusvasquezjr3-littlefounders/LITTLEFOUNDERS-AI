@@ -74,6 +74,20 @@
       "dayLabel": "Day",
       "monthLabel": "Month",
       "yearLabel": "Year"
+    },
+    "manageKid": {
+      "manage": "Manage",
+      "rename": "Change their name",
+      "renameCta": "Save",
+      "rotate": "Change their passphrase",
+      "rotateCta": "Save the new passphrase",
+      "rotateDone": "Done. Tell them the new passphrase.",
+      "remove": "Remove this account",
+      "removeWarning": "This deletes {{name}} and everything they have done: their progress, their streak and their conversations. It cannot be undone.",
+      "removeConfirm": "Type {{username}} to confirm",
+      "removeCta": "Remove permanently",
+      "cancel": "Cancel",
+      "usernameFixed": "The username cannot be changed. It is how they sign in."
     }
   },
   "cookies": {

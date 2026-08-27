@@ -28,6 +28,9 @@ interface StubOptions {
   /** Existing roles for the CALLER. */
   roles?: string[];
   usernameTaken?: boolean;
+  /** Kids this parent already has, for the per-family cap. */
+  existingKids?: number;
+  linkedKidId?: string;
   linkFails?: boolean;
   createStatus?: number;
   calls?: string[];
@@ -50,6 +53,15 @@ function stub(opts: StubOptions = {}) {
 
       if (url.includes('/rest/v1/user_roles?user_id=eq.') && method === 'GET') {
         return Promise.resolve(jsonResponse(200, (opts.roles ?? ['parent']).map((role) => ({ role }))));
+      }
+      if (url.includes('/rest/v1/guardian_links?parent_user_id=eq.') && method === 'GET') {
+        const n = opts.existingKids ?? 0;
+        const rows = Array.from({ length: n }, (_, i) => ({
+          parent_user_id: 'p',
+          kid_user_id: i === 0 && opts.linkedKidId ? opts.linkedKidId : randomUUID(),
+          verification_status: 'verified',
+        }));
+        return Promise.resolve(jsonResponse(200, rows));
       }
       if (url.includes('/rest/v1/profiles?username=eq.')) {
         return Promise.resolve(jsonResponse(200, opts.usernameTaken ? [{ user_id: randomUUID() }] : []));
@@ -98,7 +110,9 @@ describe('POST /api/v1/family/kids', () => {
     expect(res.status).toBe(201);
     expect(res.body.data.kid).toMatchObject({ userId: KID_ID, username: 'sofia_2016' });
 
-    const order = calls.filter((c) => /admin\/users|guardian_links|user_roles\?on_conflict/.test(c));
+    // POST only. The per-family cap now READS guardian_links first, and a
+    // filter that matched both would put the read where the write belongs.
+    const order = calls.filter((c) => /^POST .*(admin\/users|guardian_links|user_roles\?on_conflict)/.test(c));
     const created = order.findIndex((c) => c.includes('admin/users'));
     const linked = order.findIndex((c) => c.includes('guardian_links'));
     const granted = order.findIndex((c) => c.includes('user_roles?on_conflict'));
@@ -171,5 +185,83 @@ describe('POST /api/v1/family/kids', () => {
     expect(serialized).not.toContain('Sofía');
     expect(serialized).not.toContain('2016-04-09');
     expect(serialized).not.toContain('sofia_2016');
+  });
+
+  it('refuses past the per-family ceiling, before creating anything', async () => {
+    const calls = stub({ existingKids: 10 });
+    const res = await post();
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('KID_LIMIT_REACHED');
+    // Not a product opinion about family size: a bound on what one compromised
+    // parent session can mint, since every child is a real account the platform
+    // then generates and stores content for (§1.0).
+    expect(calls.some((c) => c.includes('admin/users'))).toBe(false);
+  });
+});
+
+describe('managing an existing child', () => {
+  const KID_ID_2 = randomUUID();
+
+  function managed(extra: StubOptions = {}) {
+    return stub({ existingKids: 1, linkedKidId: KID_ID_2, ...extra });
+  }
+
+  it('404s for a child that is not this caller’s', async () => {
+    managed();
+    const other = randomUUID();
+    for (const req of [
+      request(createApp()).patch(`/api/v1/family/kids/${other}`).send({ displayName: 'X' }),
+      request(createApp()).post(`/api/v1/family/kids/${other}/passphrase`).send({ passphrase: 'longenough1' }),
+      request(createApp()).delete(`/api/v1/family/kids/${other}`),
+    ]) {
+      const res = await req.set('Authorization', `Bearer ${mintToken({ sub: randomUUID() })}`);
+      // 404 and not 403: asking about someone else's child must not reveal
+      // whether that child exists.
+      expect(res.status).toBe(404);
+    }
+  });
+
+  it('renames a child but REFUSES to rename their username', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    managed({ writes });
+    const res = await request(createApp())
+      .patch(`/api/v1/family/kids/${KID_ID_2}`)
+      .set('Authorization', `Bearer ${mintToken({ sub: randomUUID() })}`)
+      .send({ displayName: 'Sofía Ren', username: 'nuevo_handle' });
+    expect(res.status).toBe(200);
+    const patch = writes.find((w) => w.url.includes('/profiles?user_id=eq.') && w.method === 'PATCH');
+    // The auth address is DERIVED from the username, so renaming the handle
+    // alone would strand the account at sign-in.
+    expect(Object.keys(patch?.body as Record<string, unknown>)).not.toContain('username');
+    expect((patch?.body as Record<string, unknown>).display_name).toBe('Sofía Ren');
+  });
+
+  it('rotates the passphrase without ever writing it down', async () => {
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    managed({ writes });
+    const res = await request(createApp())
+      .post(`/api/v1/family/kids/${KID_ID_2}/passphrase`)
+      .set('Authorization', `Bearer ${mintToken({ sub: randomUUID() })}`)
+      .send({ passphrase: 'una-frase-nueva-y-larga' });
+    expect(res.status).toBe(200);
+    const audit = writes.filter((w) => w.url.includes('audit_logs'));
+    expect(audit.length).toBeGreaterThan(0);
+    // audit_logs is append-only and staff-readable.
+    expect(JSON.stringify(audit)).not.toContain('una-frase-nueva-y-larga');
+  });
+
+  it('deletes the account and audits the attempt BEFORE it can fail', async () => {
+    const calls = managed();
+    const res = await request(createApp())
+      .delete(`/api/v1/family/kids/${KID_ID_2}`)
+      .set('Authorization', `Bearer ${mintToken({ sub: randomUUID() })}`);
+    expect(res.status).toBe(200);
+    const audits = calls.filter((c) => c.includes('audit_logs'));
+    const del = calls.findIndex((c) => c === `DELETE /auth/v1/admin/users/${KID_ID_2}`);
+    const firstAudit = calls.findIndex((c) => c.includes('audit_logs'));
+    expect(audits.length).toBeGreaterThanOrEqual(2);
+    // Afterwards there is no row left to name, and a mid-way failure would
+    // otherwise leave no trace that it was attempted.
+    expect(firstAudit).toBeLessThan(del);
   });
 });

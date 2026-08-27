@@ -34,6 +34,7 @@
     "PLACEMENT_REQUIRED": "Complete this course's placement quiz first.",
     "PLACEMENT_ALREADY_COMPLETE": "Placement was already completed for this course.",
     "USERNAME_IN_USE": "That username is taken. Try another one.",
-    "AGE_RESTRICTED": "An adult has to create this account."
+    "AGE_RESTRICTED": "An adult has to create this account.",
+    "KID_LIMIT_REACHED": "This account already has the maximum number of children."
   }
 }

@@ -34,6 +34,7 @@
     "PLACEMENT_REQUIRED": "Completa primero el quiz de ubicación de este curso.",
     "PLACEMENT_ALREADY_COMPLETE": "El quiz de ubicación ya se había completado para este curso.",
     "USERNAME_IN_USE": "Ese usuario ya está ocupado. Prueba con otro.",
-    "AGE_RESTRICTED": "Esta cuenta la tiene que crear un adulto."
+    "AGE_RESTRICTED": "Esta cuenta la tiene que crear un adulto.",
+    "KID_LIMIT_REACHED": "Esta cuenta ya tiene el máximo de hijos."
   }
 }

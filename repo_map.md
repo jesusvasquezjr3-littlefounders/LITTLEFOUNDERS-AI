@@ -4138,7 +4138,7 @@ import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { assembleCourseTree } from '../services/courseTree.js';
-import { adminCreateUser, adminDeleteUser } from '../services/gotrue.js';
+import { adminCreateUser, adminDeleteUser, adminUpdateUserPassword } from '../services/gotrue.js';
 import {
   getConsentsForKids,
   getRolesForGate,
@@ -20057,12 +20057,12 @@ import { Card, Icon, LoadingOverlay } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { VoiceConsentControl } from '@/tutor/VoiceConsentControl';
 import { AddKidCard, type CreatedKid } from './AddKidCard';
+import { ManageKidPanel } from './ManageKidPanel';
 
 /*
  * /family — the parent dashboard's front door (parent-role gated in App.tsx;
  * navConfig renders it LOCKED for everyone else). Lists the caller's VERIFIED
  * kids (Core re-checks guardian_links on every request) and opens each kid's
- * territory. Parent visibility is a product invariant (§1.9) — this is that
 ```
 
 ### frontend/src/routes/app/family/KidTerritoryPage.tsx
@@ -20105,6 +20105,26 @@ import type { SessionTranscript } from '@/tutor/types';
  * that invariant becoming a surface. It shows the FULL transcript — not a
 ```
 
+### frontend/src/routes/app/family/ManageKidPanel.tsx
+
+```
+import { useState, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Button, Icon } from '@/components/ui';
+import { Field } from '@/components/ui/Field';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+
+/*
+ * MANAGING AN EXISTING CHILD: rename, rotate the passphrase, remove.
+ *
+ * The username is deliberately absent and says so out loud. The child's
+ * `auth.users` address is DERIVED from their handle, so renaming it here alone
+ * would strand the account at sign-in - Core refuses it too, and this panel
+ * explains the refusal rather than hiding a field and letting a parent wonder.
+```
+
 ### frontend/src/routes/app/family/__tests__/AddKidCard.test.tsx
 
 ```
@@ -20123,6 +20143,26 @@ import { AddKidCard } from '../AddKidCard';
  */
 
 const { mockApi, mockGetToken } = vi.hoisted(() => ({
+```
+
+### frontend/src/routes/app/family/__tests__/ManageKidPanel.test.tsx
+
+```
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { ManageKidPanel } from '../ManageKidPanel';
+
+/*
+ * Managing an existing child. The two properties worth pinning are both about
+ * refusing to do something:
+ *
+ *  - the username is never offered for editing, because the child's auth
+ *    address is derived from it and renaming the handle alone would strand the
+ *    account at sign-in;
+ *  - removal cannot be reached without typing that username, because a hard
+ *    delete of a minor's whole record is not something a person should be able
+ *    to trigger by muscle memory.
+ */
 ```
 
 ### frontend/src/routes/app/learn/AdventureBanner.tsx

@@ -139,10 +139,40 @@ export function adminCreateUser(input: {
 }
 
 /*
- * Undo, for the window between "auth user exists" and "the family link that
- * makes it legitimate exists". §1.3 says a kid row without a verified guardian
- * link is a bug rather than a state, so if the link cannot be written the user
- * must not survive the request.
+ * Rotate a child's passphrase. Service role, because the person doing it is the
+ * PARENT and not the account holder: the child never had the old one to prove
+ * they know it, and asking a parent to sign in as their child to change it
+ * would teach exactly the wrong habit.
+ *
+ * Core's route is what enforces that the caller is that child's verified
+ * guardian; this function trusts its caller by design and is therefore never
+ * reachable from a browser.
+ */
+export function adminUpdateUserPassword(userId: string, password: string): Promise<GotrueResult<GotrueUser>> {
+  const { SUPABASE_SERVICE_ROLE_KEY } = getConfig();
+  return gotrue(`/admin/users/${encodeURIComponent(userId)}`, {
+    method: 'PUT',
+    headers: {
+      apikey: SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ password }),
+  });
+}
+
+/*
+ * Delete an account outright. Two callers, both deliberate: the rollback for
+ * the window between "auth user exists" and "the family link that makes it
+ * legitimate exists" (§1.3 - a kid row without a verified link is a bug rather
+ * than a state, so the user must not survive a failure to link it), and a
+ * parent removing their child.
+ *
+ * This is a HARD delete and the cascade is the point: `auth.users` is
+ * referenced ON DELETE CASCADE by profiles, user_roles, guardian_links and the
+ * learning tables, so removing a child removes the child's data rather than
+ * hiding it. Erasing a minor's record when their guardian asks is the whole
+ * obligation; a soft flag would leave it all in place.
  */
 export function adminDeleteUser(userId: string): Promise<GotrueResult<Record<string, never>>> {
   const { SUPABASE_SERVICE_ROLE_KEY } = getConfig();

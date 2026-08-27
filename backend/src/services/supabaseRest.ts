@@ -905,6 +905,24 @@ export async function patchKidProfile(
 }
 
 /*
+ * The whitelisted profile fields a guardian may change on a child. NOT the
+ * username: the child's `auth.users` address is DERIVED from it, so renaming
+ * the handle without renaming the address would strand the account behind an
+ * identifier nothing can reproduce at sign-in.
+ */
+export async function patchKidProfileFields(
+  kidUserId: string,
+  patch: { display_name?: string; birth_date?: string | null },
+): Promise<boolean> {
+  const res = await rest<unknown>(`/profiles?user_id=eq.${eu(kidUserId)}`, serviceToken(), {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify(patch),
+  });
+  return res !== null;
+}
+
+/*
  * Answers the question the DB's unique index would otherwise answer with a
  * 409 AFTER an auth user had already been created. Checked before anything is
  * written, so the common "that name is taken" case never leaves a half-made

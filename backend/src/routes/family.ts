@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { assembleCourseTree } from '../services/courseTree.js';
-import { adminCreateUser, adminDeleteUser } from '../services/gotrue.js';
+import { adminCreateUser, adminDeleteUser, adminUpdateUserPassword } from '../services/gotrue.js';
 import {
   getConsentsForKids,
   getRolesForGate,
@@ -26,6 +26,7 @@ import {
   insertAuditLog,
   insertVerifiedGuardianLink,
   patchKidProfile,
+  patchKidProfileFields,
   usernameExists,
 } from '../services/supabaseRest.js';
 
@@ -55,6 +56,17 @@ export const KID_EMAIL_DOMAIN = 'kids.littlefounders.invalid';
 export function kidEmail(username: string): string {
   return `${username}@${KID_EMAIL_DOMAIN}`;
 }
+
+/*
+ * A CEILING ON CHILDREN PER GUARDIAN. Not a product opinion about family size -
+ * ten is far past any real one - but a bound on what a single compromised or
+ * automated `parent` session can mint. Every child is a real `auth.users` row
+ * and a real learner the platform will generate and store content for, so an
+ * unbounded creation endpoint is an unbounded bill (/AGENTS.md §1.0). A parent
+ * who genuinely needs an eleventh can be raised by hand; nobody can quietly
+ * create ten thousand.
+ */
+const MAX_KIDS_PER_PARENT = 10;
 
 const NOT_FOUND = 'NOT_FOUND';
 const DATA_UNAVAILABLE = 'DATA_UNAVAILABLE';
@@ -130,6 +142,14 @@ export function familyRouter(): Router {
     const { displayName, username, passphrase, locale } = parsed.data;
     const birthDate = parsed.data.birthDate ?? null;
 
+    // Counted from the VERIFIED links, which is the same source /kids reads, so
+    // the cap can never disagree with what the parent sees.
+    const existing = await getVerifiedKidLinks(parent.id);
+    if (existing === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load family links');
+    if (existing.length >= MAX_KIDS_PER_PARENT) {
+      return fail(res, 409, 'KID_LIMIT_REACHED', 'This account already has the maximum number of children');
+    }
+
     const taken = await usernameExists(username);
     if (taken === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not check the username');
     if (taken) return fail(res, 409, 'USERNAME_IN_USE', 'That username is already taken');
@@ -174,6 +194,91 @@ export function familyRouter(): Router {
     await insertAuditLog(parent.id, 'family.kid_created', kidId, {});
 
     return ok(res, { kid: { userId: kidId, displayName, username } }, 201);
+  });
+
+
+  /*
+   * MANAGING AN EXISTING CHILD. Every one of these re-verifies the guardian
+   * link for THIS caller before touching anything - the router's parent gate
+   * says the caller is A parent, never that they are THIS child's parent.
+   */
+  async function guardKid(req: { params: Record<string, string | undefined> }, res: Parameters<typeof fail>[0]): Promise<string | null> {
+    const parsed = z.string().uuid().safeParse(req.params.kidId);
+    if (!parsed.success) {
+      fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+      return null;
+    }
+    const parent = authedUser(res);
+    const links = await getVerifiedKidLinks(parent.id);
+    if (links === null) {
+      fail(res, 502, DATA_UNAVAILABLE, 'Could not load family links');
+      return null;
+    }
+    if (!links.some((l) => l.kid_user_id === parsed.data)) {
+      // 404, not 403: a parent asking about someone else's child learns
+      // nothing about whether that child exists.
+      fail(res, 404, NOT_FOUND, 'No such child for this account');
+      return null;
+    }
+    return parsed.data;
+  }
+
+  const UpdateKid = z.object({
+    displayName: z.string().trim().min(1).max(80).optional(),
+    birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+  });
+
+  router.patch('/kids/:kidId', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const parsed = UpdateKid.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the child account details');
+    // The USERNAME is deliberately absent: the child's auth address is derived
+    // from it, so renaming the handle alone would strand the account.
+    const patch: { display_name?: string; birth_date?: string | null } = {};
+    if (parsed.data.displayName !== undefined) patch.display_name = parsed.data.displayName;
+    if (parsed.data.birthDate !== undefined) patch.birth_date = parsed.data.birthDate;
+    if (Object.keys(patch).length === 0) return fail(res, 400, 'VALIDATION_ERROR', 'Nothing to change');
+
+    const ok_ = await patchKidProfileFields(kidId, patch);
+    if (!ok_) return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the child profile');
+    await insertAuditLog(authedUser(res).id, 'family.kid_updated', kidId, { fields: Object.keys(patch) });
+    return ok(res, { kid: { userId: kidId, displayName: parsed.data.displayName ?? null } });
+  });
+
+  router.post('/kids/:kidId/passphrase', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+    const parsed = z.object({ passphrase: z.string().min(8).max(72) }).safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'The passphrase must be at least 8 characters');
+
+    const updated = await adminUpdateUserPassword(kidId, parsed.data.passphrase);
+    if (updated.error) {
+      return fail(res, updated.error.status >= 500 ? 502 : 400, updated.error.code, updated.error.message);
+    }
+    // Records THAT it changed and by whom. Never the value, and never the old
+    // one: audit_logs is append-only and readable by staff.
+    await insertAuditLog(authedUser(res).id, 'family.kid_passphrase_rotated', kidId, {});
+    return ok(res, { rotated: true });
+  });
+
+  router.delete('/kids/:kidId', async (req, res) => {
+    const kidId = await guardKid(req, res);
+    if (!kidId) return res;
+
+    // Audited BEFORE the delete, because afterwards there is no row to name and
+    // a failure mid-way would otherwise leave no trace that it was attempted.
+    await insertAuditLog(authedUser(res).id, 'family.kid_delete.requested', kidId, {});
+    const removed = await adminDeleteUser(kidId);
+    if (removed.error) {
+      return fail(res, removed.error.status >= 500 ? 502 : 400, removed.error.code, removed.error.message);
+    }
+    // Hard delete, and the cascade is the point: profiles, user_roles,
+    // guardian_links and the learning rows all reference auth.users ON DELETE
+    // CASCADE, so a guardian asking for their child to be removed gets the
+    // child's data removed rather than hidden behind a flag.
+    await insertAuditLog(authedUser(res).id, 'family.kid_deleted', kidId, {});
+    return ok(res, { deleted: true });
   });
 
   /*

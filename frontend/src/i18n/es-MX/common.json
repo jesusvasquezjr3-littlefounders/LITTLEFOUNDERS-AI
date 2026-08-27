@@ -74,6 +74,20 @@
       "dayLabel": "Día",
       "monthLabel": "Mes",
       "yearLabel": "Año"
+    },
+    "manageKid": {
+      "manage": "Administrar",
+      "rename": "Cambiar su nombre",
+      "renameCta": "Guardar",
+      "rotate": "Cambiar su contraseña",
+      "rotateCta": "Guardar la nueva contraseña",
+      "rotateDone": "Listo. Dile cuál es su nueva contraseña.",
+      "remove": "Eliminar esta cuenta",
+      "removeWarning": "Esto borra a {{name}} y todo lo que ha hecho: su avance, su racha y sus conversaciones. No se puede deshacer.",
+      "removeConfirm": "Escribe {{username}} para confirmar",
+      "removeCta": "Eliminar para siempre",
+      "cancel": "Cancelar",
+      "usernameFixed": "El usuario no se puede cambiar. Es con lo que entra."
     }
   },
   "cookies": {

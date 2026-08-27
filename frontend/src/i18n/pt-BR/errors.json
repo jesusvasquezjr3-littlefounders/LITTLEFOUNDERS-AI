@@ -34,6 +34,7 @@
     "PLACEMENT_REQUIRED": "Conclua primeiro o teste de nivelamento deste curso.",
     "PLACEMENT_ALREADY_COMPLETE": "O teste de nivelamento já havia sido concluído para este curso.",
     "USERNAME_IN_USE": "Esse usuário já existe. Tente outro.",
-    "AGE_RESTRICTED": "Esta conta precisa ser criada por um adulto."
+    "AGE_RESTRICTED": "Esta conta precisa ser criada por um adulto.",
+    "KID_LIMIT_REACHED": "Esta conta já tem o máximo de filhos."
   }
 }

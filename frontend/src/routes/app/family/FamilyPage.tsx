@@ -7,6 +7,7 @@ import { Card, Icon, LoadingOverlay } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { VoiceConsentControl } from '@/tutor/VoiceConsentControl';
 import { AddKidCard, type CreatedKid } from './AddKidCard';
+import { ManageKidPanel } from './ManageKidPanel';
 
 /*
  * /family — the parent dashboard's front door (parent-role gated in App.tsx;
@@ -71,6 +72,22 @@ export function FamilyPage() {
 
   function onKidCreated(kid: CreatedKid) {
     setState((prev) => (prev.status === 'ready' ? { ...prev, kids: [...prev.kids, kid] } : prev));
+  }
+
+  // Both apply the server's outcome to the list in place. A refetch would be a
+  // second round trip that can answer before the write has propagated.
+  function onKidRenamed(userId: string, displayName: string) {
+    setState((prev) =>
+      prev.status === 'ready'
+        ? { ...prev, kids: prev.kids.map((k) => (k.userId === userId ? { ...k, displayName } : k)) }
+        : prev,
+    );
+  }
+
+  function onKidRemoved(userId: string) {
+    setState((prev) =>
+      prev.status === 'ready' ? { ...prev, kids: prev.kids.filter((k) => k.userId !== userId) } : prev,
+    );
   }
 
   if (state.status === 'loading') return <LoadingOverlay label={t('family.loading')} />;
@@ -142,6 +159,7 @@ export function FamilyPage() {
                 token={token}
                 kidName={kid.displayName ?? kid.username ?? ''}
               />
+              <ManageKidPanel kid={kid} onRenamed={onKidRenamed} onRemoved={onKidRemoved} />
               <Link
                 to={`/family/${kid.userId}/tutor`}
                 className="lf-caption flex min-h-11 items-center gap-2 border-t border-outline/50 px-4 py-2.5 font-bold text-primary transition-[background-color] duration-150 hover:bg-surface-sunken/50"

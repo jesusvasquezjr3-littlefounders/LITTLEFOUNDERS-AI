@@ -216,8 +216,15 @@ Next, in Jesús's stated order of interest:
   `/login` accepts a username as well as an email (disambiguated on `@`, which
   `profiles.username` cannot contain) so a child can sign in without a mailbox.
   Collected: first name, username, passphrase, optional birth date. Never: an
-  email, a surname or an address. Not yet built: editing or removing a child,
-  and rotating their passphrase.
+  email, a surname or an address. Managing an existing child is in too: rename,
+  rotate the passphrase, and remove (a HARD delete, gated behind typing the
+  child's username, because `auth.users` cascades to their profile, role, link
+  and learning rows and erasing a minor's record when their guardian asks is the
+  obligation). Capped at 10 children per guardian - a bound on what one
+  compromised parent session can mint, not a view on family size. A child's
+  USERNAME is deliberately immutable: their auth address is derived from it.
+  **Deploy steps and the smoke tests that could not be run locally are in
+  RUNBOOK.md, "Deploying the family/kid accounts release".**
 - **Admin Generation Dashboard v2 (2026-07-27 — Phase 1 + 2 shipped):**
   - ✅ Phase 1 (backend + coursegen): Live telemetry (0018), `liveTelemetry.ts`, Core endpoints `/admin/generation/live` + `/admin/generation/analytics`.
   - ✅ Phase 2 (frontend): React Flow interactive canvas (`PipelineFlow.tsx`), live stats panel with 2s polling (`LiveStats.tsx`), cross-run analytics charts (`AnalyticsCharts.tsx`), three-tab layout (Live Monitor / Run History / Analytics) in `/admin/generation`. i18n in 3 locales.
