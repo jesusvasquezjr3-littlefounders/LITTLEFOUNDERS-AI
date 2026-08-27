@@ -134,6 +134,7 @@ frontend/
     components/
       characters/
         control/
+          __tests__/
       course/
       ui/
         __tests__/
@@ -1089,14 +1090,14 @@ colors:
 > and the conflict is surfaced rather than resolved silently (§1.0.1).
 >
 > Status: **IN PROGRESS.** Decisions answered 2026-08-27 (§6). §3.3 the
-> pose lab and the character-only stage are DONE; §3.2 the library is at
-> 57 entries; §3.1 and §3.4 are next.
+> pose lab and the character-only stage are DONE and reviewed on all four
+> characters by looking at them; §3.2 is DONE at 100 poses / 80 distinct
+> renders, contact-sheeted for all four; §3.1 is DONE — the WHOLE Lesson Engine
+> renders 3D, owner instruction 2026-08-27; §3.4 is next.
 
 ---
 
 ## §1 Why
-
-User testing found the 3D characters read as more useful than the 2D ones for
 ```
 
 ### INSIGHTS.md
@@ -15507,6 +15508,46 @@ import {
 import './rig.css'
 ```
 
+### frontend/src/components/characters/control/CharacterActor3D.tsx
+
+```
+import { cn } from '@/lib/utils'
+import { CharacterSlot } from '@/tutor-scene/CharacterLayer'
+import CharacterActor, { type CharacterActorProps } from './CharacterActor'
+
+/*
+ * THE SAME CONTROL SURFACE, DRAWN IN 3D.
+ *
+ * Identical props to `CharacterActor`, so switching a surface is a one-line
+ * change and every caller keeps working. The 2D component is not replaced,
+ * deprecated at the file level, or moved — it is still the only thing that
+ * draws a speech bubble, it is still what stands in while the 3D layer loads,
+ * and it is still what every surface outside the Lesson Engine uses.
+ *
+ * THIS DOES NOT OWN A CANVAS. It renders a placeholder that registers with the
+ * `CharacterLayerProvider` above it, and one shared canvas draws every
+```
+
+### frontend/src/components/characters/control/__tests__/CharacterActor3D.test.tsx
+
+```
+import { describe, expect, it } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import CharacterActor3D from '../CharacterActor3D'
+import { CharacterSlot } from '@/tutor-scene/CharacterLayer'
+import { LOOPABLE_ACTIONS, type CharacterAction } from '../types'
+import { LOOPING_ACTIONS } from '@/tutor-scene/characterActions'
+
+/*
+ * The Lesson Engine now draws every character in 3D. These pin the promises
+ * that swap made, and every one of them is a promise about what happens when
+ * the 3D is NOT there — which is the state a learner meets on a cold chunk, a
+ * device with no WebGL, and every one of these tests.
+ */
+
+describe('CharacterActor3D', () => {
+```
+
 ### frontend/src/components/characters/control/rig.css
 
 ```
@@ -17961,7 +18002,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Button, Icon } from '@/components/ui'
-import { CharacterActor } from '@/components/characters/control/CharacterActor'
+import CharacterActor3D from '@/components/characters/control/CharacterActor3D'
 import { narrationUnitId, useNarration } from '../../player/narration'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
@@ -18072,7 +18113,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Button, Icon } from '@/components/ui'
-import { CharacterActor } from '@/components/characters/control/CharacterActor'
+import CharacterActor3D from '@/components/characters/control/CharacterActor3D'
 import type { CharacterEmotion, CharacterId } from '@/components/characters/control/types'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
@@ -18293,11 +18334,11 @@ import { useTranslation } from 'react-i18next'
 import { trackInsight } from '@/lib/insights'
 import { cn } from '@/lib/utils'
 import { Button, Icon, ProgressBar, LottieIcon } from '@/components/ui'
-import CharacterActor from '@/components/characters/control/CharacterActor'
+import CharacterActor3D, { CAST_STAGE_HEIGHT_M } from '@/components/characters/control/CharacterActor3D'
+import { CharacterLayerProvider } from '@/tutor-scene/CharacterLayer'
 import type { CharacterId } from '@/components/characters/control/types'
 import type { Grader, LessonDocument, SegmentBase, Verdict } from '../core/types'
 import {
-  createSessionReducer,
 ```
 
 ### frontend/src/lesson-engine/player/StreakCelebration.tsx
@@ -25142,8 +25183,9 @@ import {
 ```
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { AnimationMixer, Group, LoopOnce, LoopRepeat, type AnimationAction } from 'three';
+import { AnimationMixer, Group, LoopOnce, LoopRepeat, type AnimationAction, type Object3D } from 'three';
 import { useSceneModel } from './useSceneModel';
+import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { modelFooting } from './modelBounds';
 import { characterScale, CHARACTER_ASSETS, SCENE_ASSET_BASE, type CharacterAsset } from './assets';
 import { MouthCard, hasMouthCard } from './MouthCard';
@@ -25152,9 +25194,48 @@ import type { QualitySettings } from './quality';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
 import { useGround } from './ground';
 import { ContactShadow } from './ContactShadow';
-import { bindRig, resetRig, type Rig, type RigKind } from './rig';
+import { bindRig, resetRig, rigKindOf, type Rig } from './rig';
 import {
-  ACTION_SECONDS,
+```
+
+### frontend/src/tutor-scene/CharacterLayer.tsx
+
+```
+import {
+  Suspense,
+  createContext,
+  lazy,
+  useCallback,
+  useContext,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
+import { cn } from '@/lib/utils';
+import CharacterActor from '@/components/characters/control/CharacterActor';
+```
+
+### frontend/src/tutor-scene/CharacterLayerCanvas.tsx
+
+```
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
+import { PerspectiveCamera, Vector3, type Group } from 'three';
+import { Character3D } from './Character3D';
+import { FlatGroundProvider } from './ground';
+import { SceneCanvas, type SceneStats } from './SceneCanvas';
+import { SceneLighting } from './SceneLighting';
+import { CHARACTER_ASSETS, characterScale } from './assets';
+import { modelBounds } from './modelBounds';
+import { useSceneModel } from './useSceneModel';
+import { framingDistance } from './framing';
+import type { QualitySettings } from './quality';
+import type { Slot } from './CharacterLayer';
+
+/*
 ```
 
 ### frontend/src/tutor-scene/CharacterStage.tsx
@@ -25162,19 +25243,19 @@ import {
 ```
 import { Suspense, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useThree } from '@react-three/fiber';
+import { Vector3 } from 'three';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
 import { Character3D } from './Character3D';
-import { ContactShadow } from './ContactShadow';
 import { FlatGroundProvider } from './ground';
 import { SceneCanvas, type SceneStats } from './SceneCanvas';
 import { SceneLighting } from './SceneLighting';
-import { CHARACTER_MEASUREMENTS } from './measurements';
+import { CHARACTER_ASSETS, characterScale } from './assets';
+import { modelBounds } from './modelBounds';
+import { useSceneModel } from './useSceneModel';
+import { framingDistance } from './framing';
+import type { QualitySettings } from './quality';
 
 /*
- * ONE CHARACTER, NO WORLD.
- *
- * The 3D cast has only ever been reachable from inside the Tutor's diorama -
- * an island, a walkability mask, a camera director, a time-of-day light rig.
 ```
 
 ### frontend/src/tutor-scene/ContactShadow.tsx
@@ -25643,18 +25724,18 @@ import type { CharacterId } from '@/components/characters/control/types';
 import { describe, expect, it } from 'vitest';
 import { Bone, Object3D, Quaternion } from 'three';
 import { bindRig, resetRig } from './rig';
-import { applyCharacterFrame, ACTION_SECONDS, CLIP_LIFT, arc } from './characterActions';
+import {
+  applyCharacterFrame,
+  ACTION_SECONDS,
+  CLIP_LIFT,
+  arc,
+  limitFaceLift,
+  MAX_FACE_LIFT,
+} from './characterActions';
 import { CHARACTER_ACTIONS, CHARACTER_EMOTIONS } from '@/components/characters/control/types';
 
 /*
  * Builds the exact 24-joint biped skeleton the character exports ship, so the
- * tests exercise the real bone names rather than an idealised rig.
- */
-function buildBiped(): Object3D {
-  const root = new Object3D();
-  const names = [
-    'Hips', 'LeftUpLeg', 'LeftLeg', 'LeftFoot', 'LeftToeBase',
-    'RightUpLeg', 'RightLeg', 'RightFoot', 'RightToeBase',
 ```
 
 ### frontend/src/tutor-scene/characterActions.ts
@@ -25897,6 +25978,46 @@ import { Box3, Sphere, Vector3, type Object3D, type PerspectiveCamera } from 'th
  * pads it: over-framing is the safe failure when you do not yet know what you
 ```
 
+### frontend/src/tutor-scene/framing.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { framingDistance, silhouetteWidth, type ModelExtent } from './framing';
+
+/*
+ * These are the two shapes the cast actually contains, measured off the shipped
+ * exports rather than invented: a standing human who is far taller than wide,
+ * and a quadruped who is the other way round. Every assertion below exists
+ * because framing by declared HEIGHT got the second one wrong while looking
+ * perfect on the first.
+ */
+const HUMAN: ModelExtent = { x: 0.62, y: 1.61, z: 0.34 };
+const QUADRUPED: ModelExtent = { x: 1.24, y: 0.78, z: 1.9 };
+
+const SQUARE = { fill: 0.78, rotation: 0, aspect: 1, fov: 30 };
+
+```
+
+### frontend/src/tutor-scene/framing.ts
+
+```
+/*
+ * WHERE THE CAMERA STANDS TO FRAME ONE CHARACTER.
+ *
+ * Pure arithmetic, deliberately, and separated from `CharacterStage` for the
+ * same reason `composition.ts` is separate from the camera director: the part
+ * that can be wrong in a way nobody photographs is the arithmetic, and the only
+ * thing that keeps it honest is a test that states what each term is for.
+ *
+ * The inputs are MEASURED off the model (`modelBounds`), never declared. A
+ * declared height is what put a quadruped's feet against the bottom edge:
+ * `measurements.ts` calls Dina 1.9 m by the same number that makes Rho 1.7 m,
+ * but she is low and long, and framing to a fraction of that number aims above
+ * most of her.
+ */
+
+```
+
 ### frontend/src/tutor-scene/governor.test.ts
 
 ```
@@ -25980,10 +26101,11 @@ import { clampIntoView, type ViewportBox } from './culling';
 ### frontend/src/tutor-scene/lab/PoseLabPage.tsx
 
 ```
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { CHARACTER_IDS, type CharacterId } from '@/components/characters/control/types';
 import { CharacterStage } from '../CharacterStage';
-import { POSES, posesByCategory, type Pose, type PoseCategory } from '../poseLibrary';
+import { POSES, distinctPoseCount, posesByCategory, type Pose, type PoseCategory } from '../poseLibrary';
 import type { SceneStats } from '../SceneCanvas';
 
 /*
@@ -25994,7 +26116,6 @@ import type { SceneStats } from '../SceneCanvas';
  * authoring rig at 2e-6, and was still visibly wrong on Rho. Numbers agreed and
  * the screen did not. A pose library reviewed by reading a table would repeat
  * that, at fifty-seven times the scale.
- *
 ```
 
 ### frontend/src/tutor-scene/lab/SceneLabPage.tsx
@@ -26208,13 +26329,13 @@ import {
 } from '@/components/characters/control/types';
 import { LOOPABLE_ACTIONS } from '@/components/characters/control/types';
 import { LOOPING_ACTIONS } from './characterActions';
-import { POSES, POSE_IDS, poseById, posesByCategory, resolvePose } from './poseLibrary';
-
-/*
- * The pose library is CONTENT, and content that names a thing which does not
- * exist fails at the moment a learner sees it rather than at build time. These
- * assertions are what make a row in that catalog a promise the code can keep.
- */
+import {
+  POSES,
+  POSE_IDS,
+  distinctPoseCount,
+  poseById,
+  poseSignature,
+  posesByCategory,
 ```
 
 ### frontend/src/tutor-scene/poseLibrary.ts
@@ -26275,6 +26396,26 @@ function probe(overrides: Partial<DeviceProbe> = {}): DeviceProbe {
  *   2. MEASURED FRAME TIME (`useAdaptiveQuality`) — the actual authority. A
  *      device that reports 8 cores and then renders at 22fps IS a low-tier
  *      device, whatever it claimed.
+```
+
+### frontend/src/tutor-scene/rig.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { Bone, Object3D } from 'three';
+import { bindRig, forgetRestPose, resetRig } from './rig';
+
+/*
+ * THE DEFECT THESE PIN.
+ *
+ * `useSceneModel` hands out ONE Object3D per character, so a remount comes back
+ * to a skeleton the OUTGOING instance left mid-gesture. `bindRig` captures
+ * `bone.quaternion` as the rest orientation every procedural offset is applied
+ * relative to, so capturing it from a drifted skeleton bakes that drift in as
+ * the new rest - and the next gesture composes on top of it.
+ *
+ * It compounds, and it is invisible to every screenshot, because the FIRST
+ * mount is always correct. It was found by stepping the pose lab through
 ```
 
 ### frontend/src/tutor-scene/rig.ts

@@ -8,7 +8,8 @@ import { useTranslation } from 'react-i18next'
 import { trackInsight } from '@/lib/insights'
 import { cn } from '@/lib/utils'
 import { Button, Icon, ProgressBar, LottieIcon } from '@/components/ui'
-import CharacterActor from '@/components/characters/control/CharacterActor'
+import CharacterActor3D, { CAST_STAGE_HEIGHT_M } from '@/components/characters/control/CharacterActor3D'
+import { CharacterLayerProvider } from '@/tutor-scene/CharacterLayer'
 import type { CharacterId } from '@/components/characters/control/types'
 import type { Grader, LessonDocument, SegmentBase, Verdict } from '../core/types'
 import {
@@ -370,7 +371,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
             // 2-3 words per line (§1.11). Full 96px from sm: up.
             <div className="flex items-end gap-2 sm:gap-3">
               <div className="h-14 w-14 shrink-0 sm:h-24 sm:w-24">
-                <CharacterActor
+                <CharacterActor3D
                   character={segment.narrator.character}
                   emotion={segment.narrator.emotion ?? 'neutral'}
                   size="fill"
@@ -508,7 +509,14 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
 function Shell({ children }: { children: React.ReactNode }) {
   return createPortal(
     <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-base">
-      {children}
+      {/*
+       * ONE canvas for every character in the lesson, drawn into the screen
+       * rectangle of each placeholder (see CharacterLayer). It sits ABOVE the
+       * cards a character stands on and BELOW the sticky header and footer,
+       * which are z-10 — a character scrolling under the progress bar must
+       * disappear behind it, not over it.
+       */}
+      <CharacterLayerProvider className="z-[1]">{children}</CharacterLayerProvider>
     </div>,
     document.body,
   )
@@ -565,15 +573,15 @@ function IntroScreen({
         </button>
       </div>
       <div className="flex flex-1 flex-col items-center justify-center gap-6 pb-16 text-center">
-        <div className="flex items-end justify-center">
+        <div className="flex items-end justify-center gap-1 sm:gap-2">
           {doc.meta.cast.map((c, i) => (
-            <CharacterActor
+            <CharacterActor3D
               key={c}
               character={c}
               emotion="happy"
               action={i === 0 ? 'wave' : 'idle'}
-              size={i === 0 ? 'lg' : 'md'}
-              className={cn(i > 0 && '-ml-6')}
+              size="lg"
+              stageHeightM={CAST_STAGE_HEIGHT_M}
             />
           ))}
         </div>
@@ -686,7 +694,7 @@ function FeedbackBanner({
     <div className={cn('lf-pop shadow-pop', tierStyles)} role="status">
       <div className="mx-auto flex max-w-[720px] items-start gap-3 px-4 py-4 md:px-0">
         {reaction ? (
-          <CharacterActor
+          <CharacterActor3D
             character={reaction.character}
             emotion={reaction.emotion}
             action={reaction.action}
@@ -782,16 +790,16 @@ function ResultsScreen({
 
   return (
     <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col items-center justify-center gap-6 px-5 py-10 text-center md:px-0">
-      <div className="flex items-end justify-center">
+      <div className="flex items-end justify-center gap-1 sm:gap-2">
         {doc.meta.cast.map((c) => (
-          <CharacterActor
+          <CharacterActor3D
             key={c}
             character={c}
             emotion={passed ? 'proud' : 'encouraging'}
             action={passed ? 'celebrate' : 'wave'}
             loop={passed}
             size="md"
-            className="-ml-4 first:ml-0"
+            stageHeightM={CAST_STAGE_HEIGHT_M}
           />
         ))}
       </div>

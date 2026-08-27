@@ -515,6 +515,28 @@ type CharacterAction  = 'idle' | 'jump' | 'hop' | 'wave' | 'point' | 'celebrate'
   Per-character transform origins are provided as CSS vars by the actor. Head and
   pupil groups are RAF-owned by the characters' own tracking loops — the rig NEVER
   animates those nodes.
+### §9.1 The Lesson Engine draws its characters in 3D (2026-08-27)
+
+Owner decision: **every** character in the Lesson Engine is the 3D model, not
+half of them. `CharacterActor3D` takes the same props as `CharacterActor` above,
+so a surface switches with a one-line change, and the 2D component is neither
+deleted nor deprecated at the file level — it is what every surface OUTSIDE the
+engine still uses, and it is what stands in below.
+
+**One canvas for the whole lesson.** A dialogue transcript grows an avatar per
+line, so a canvas per character would be ten WebGL contexts on one screen;
+browsers cap contexts around sixteen and silently drop the oldest.
+`CharacterLayerProvider` wraps the lesson shell, every character renders an empty
+placeholder that registers with it, and ONE overlay canvas draws each into its
+own screen rectangle through the renderer's scissor. Slots off screen are not
+drawn at all. See `TUTOR_3D.md` §6.2.
+
+**What the swap costs, stated plainly.** `speaking` has no expression in 3D yet:
+the character is present and animated, but its mouth does not move while it
+talks, because nothing drives visemes in a lesson and the lip-sync card is off
+(`TUTOR_3D.md` §6.1). `bubble` falls back to the 2D actor whole. Both are
+tracked in `GOAL_3D_CHARACTERS.md`.
+
 - Every action is one-shot (auto-returns to `idle`); `celebrate`/`dance` may loop
   while the celebration overlay is up, but stop with it. All rig animation is
   `prefers-reduced-motion` safe (falls back to emotion change only).

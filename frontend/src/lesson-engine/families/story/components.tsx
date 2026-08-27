@@ -9,7 +9,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Button, Icon } from '@/components/ui'
-import { CharacterActor } from '@/components/characters/control/CharacterActor'
+import CharacterActor3D from '@/components/characters/control/CharacterActor3D'
 import { narrationUnitId, useNarration } from '../../player/narration'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
@@ -86,7 +86,7 @@ export function StoryDialogue({ segment, disabled, onContentDone }: ExerciseProp
   return (
     <div className="space-y-4">
       <div className="flex flex-col items-center gap-3 md:flex-row md:items-end md:gap-4">
-        <CharacterActor
+        <CharacterActor3D
           character={line.character}
           emotion={line.emotion ?? 'neutral'}
           action={line.action ?? 'idle'}
@@ -173,7 +173,7 @@ export function StoryScene({ segment, onContentDone }: ExerciseProps) {
     <div className={cn('rounded-xl p-6 md:p-8', BACKDROP_CLASSES[payload.backdrop])}>
       <div className="flex flex-col items-center gap-4 text-center">
         {payload.character ? (
-          <CharacterActor
+          <CharacterActor3D
             character={payload.character}
             emotion={payload.emotion ?? 'neutral'}
             action={payload.action ?? 'idle'}
@@ -475,7 +475,7 @@ export function Eavesdrop({ segment, disabled, onContentDone }: ExerciseProps) {
       <ul className="space-y-3" aria-live="polite">
         {lines.slice(0, revealed).map((line, lineIndex) => (
           <li key={lineIndex} className="flex items-end gap-3">
-            <CharacterActor
+            <CharacterActor3D
               character={line.character}
               emotion={line.emotion ?? 'neutral'}
               action="idle"

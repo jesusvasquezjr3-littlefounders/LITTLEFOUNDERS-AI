@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { AnimationMixer, Group, LoopOnce, LoopRepeat, type AnimationAction } from 'three';
+import { AnimationMixer, Group, LoopOnce, LoopRepeat, type AnimationAction, type Object3D } from 'three';
 import { useSceneModel } from './useSceneModel';
+import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { modelFooting } from './modelBounds';
 import { characterScale, CHARACTER_ASSETS, SCENE_ASSET_BASE, type CharacterAsset } from './assets';
 import { MouthCard, hasMouthCard } from './MouthCard';
@@ -10,7 +11,7 @@ import type { QualitySettings } from './quality';
 import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types';
 import { useGround } from './ground';
 import { ContactShadow } from './ContactShadow';
-import { bindRig, resetRig, type Rig, type RigKind } from './rig';
+import { bindRig, resetRig, rigKindOf, type Rig } from './rig';
 import {
   ACTION_SECONDS,
   CLIP_LIFT,
@@ -94,6 +95,34 @@ export interface Character3DProps {
    * and is therefore a light the tint has never been looked at under.
    */
   mouth?: boolean;
+  /**
+   * Give this component its OWN copy of the skeleton.
+   *
+   * `useSceneModel` hands out one Object3D per character on purpose, and that
+   * is right for the Tutor, where each character appears exactly once. A lesson
+   * is different: a dialogue transcript shows the same speaker on line 1 and
+   * line 3, and one Object3D cannot be in two places holding two poses. The
+   * clone shares GEOMETRY and MATERIALS — the expensive parts, already on the
+   * GPU — and duplicates only the node hierarchy and the skeleton, which is 24
+   * bone matrices.
+   *
+   * Defaults to false, so the Tutor keeps the shared instance it was built on.
+   */
+  instanced?: boolean;
+  /**
+   * Draw the contact shadow under the character. Defaults to TRUE, so the Tutor
+   * is untouched.
+   *
+   * A contact shadow grounds a figure ON SOMETHING — that is its whole job, and
+   * on the island it does it. A lesson page is not a floor. Worse, the shadow
+   * plane is sized from the footprint and is LARGER than a tightly cropped
+   * avatar's frame, so what reaches the screen is not a blob under the feet but
+   * the middle band of its gradient, clipped square by the slot. Invisible on a
+   * dark page and a hard-edged grey rectangle on a light one: exactly the class
+   * /AGENTS.md §1.14 names, where a value tuned under one condition is wrong
+   * under the one nobody photographed.
+   */
+  shadow?: boolean;
 }
 
 /** Distinct irrational-ish multipliers keep two characters from breathing in sync. */
@@ -110,9 +139,20 @@ export function Character3D({
   viseme = 0,
   backdrop = 'auto',
   mouth = true,
+  instanced = false,
+  shadow = true,
 }: Character3DProps) {
   const asset: CharacterAsset = CHARACTER_ASSETS[id];
-  const { scene } = useSceneModel(asset.url, settings);
+  const { scene: shared } = useSceneModel(asset.url, settings);
+  /*
+   * The clone is per COMPONENT INSTANCE, which is what makes two slots showing
+   * the same character independent. It is derived from the cached load, so
+   * there is no second download and no second GPU upload.
+   */
+  const scene = useMemo(
+    () => (instanced ? (cloneSkinned(shared) as Object3D) : shared),
+    [shared, instanced],
+  );
   const inner = useRef<Group>(null);
 
   const scale = useMemo(() => characterScale(asset), [asset]);
@@ -191,11 +231,17 @@ export function Character3D({
    * like a biped. Dina would then be handed clips authored for a skeleton she
    * does not have.
    */
-  const [rigKind, setRigKind] = useState<RigKind | null>(null);
+  /*
+   * THE RIG KIND IS DERIVED, NOT STORED.
+   *
+   * It used to be state set from the effect below, which lags the model by one
+   * render. That is invisible in the Tutor — a character's element never changes
+   * identity there — and wrong in a lesson, where a single narrator slot shows
+   * one character on this segment and another on the next. See `rigKindOf`.
+   */
+  const rigKind = useMemo(() => rigKindOf(scene), [scene]);
   useEffect(() => {
-    const bound = bindRig(scene);
-    rig.current = bound;
-    setRigKind(bound.kind);
+    rig.current = bindRig(scene);
     return () => {
       rig.current = null;
     };
@@ -381,9 +427,11 @@ export function Character3D({
     <group position={[position[0], 0, position[2]]} rotation={[0, rotation, 0]}>
       {/* Anchored to the SURFACE, not to the bobbing group — a shadow that
           rises and falls with the breathing idle would detach from the floor. */}
-      <group position={[0, surfaceY ?? 0, 0]}>
-        <ContactShadow radius={footprint * 1.15} />
-      </group>
+      {shadow && (
+        <group position={[0, surfaceY ?? 0, 0]}>
+          <ContactShadow radius={footprint * 1.15} />
+        </group>
+      )}
       <group ref={inner} position={[0, groundY, 0]} scale={scale}>
         <primitive object={scene} />
         {/* Only the characters whose card has been fitted carry one; the rest

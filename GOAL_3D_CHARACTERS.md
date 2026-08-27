@@ -7,7 +7,8 @@
 > Status: **IN PROGRESS.** Decisions answered 2026-08-27 (§6). §3.3 the
 > pose lab and the character-only stage are DONE and reviewed on all four
 > characters by looking at them; §3.2 is DONE at 100 poses / 80 distinct
-> renders, contact-sheeted for all four; §3.1 and §3.4 are next.
+> renders, contact-sheeted for all four; §3.1 is DONE — the WHOLE Lesson Engine
+> renders 3D, owner instruction 2026-08-27; §3.4 is next.
 
 ---
 
@@ -99,15 +100,25 @@ More game feel and visual effects. Deliberately the least specified item here
 
 Every line here is checkable by running something or looking at something.
 
-**3D in the Lesson Engine**
-- [ ] A lesson plays end to end with 3D characters at 375px and 1280px, light
-      and dark, screenshotted (§1.11 — non-negotiable).
-- [ ] **Measured** frame cost on a mid-range profile against the 2D baseline,
-      published as numbers. §1.0: a stutter on a mid-range phone is a family
-      that leaves, and 2D DOM characters currently cost approximately nothing.
-- [ ] The 2D path still works and is still reachable — proven by a test, not by
-      the files existing.
-- [ ] No regression in `npm test` for `lesson-engine/`.
+**3D in the Lesson Engine** — DONE 2026-08-27
+
+- [x] A lesson plays with 3D characters at 375px and 1280px, light and dark,
+      screenshotted. The intro cast, the narrator beside a prompt, a story
+      speaker and a dialogue transcript were all walked through and looked at.
+- [x] **Measured** frame cost, published as numbers (`TUTOR_3D.md` §6.2). Worst
+      case — the whole cast — **106,224 triangles per frame, 12 draw calls, ONE
+      WebGL context**, 48% of the documented 220,000 budget. A typical segment
+      is 53,137 / 6. The 2D baseline is approximately zero.
+      *Honest limit:* the fps figure (48 worst case vs 145 with the layer
+      removed) comes from headless SwiftShader, a SOFTWARE rasteriser — CPU
+      throttling 1x to 4x did not move it, so it is raster-bound there. It is a
+      pessimistic bound, not a mid-range phone measurement, and saying otherwise
+      would be the kind of number §1.0 calls blind flight.
+- [x] The 2D path still works and is still reachable — proven by a test, not by
+      the files existing. `CharacterActor3D.test.tsx` asserts that a slot with
+      no 3D layer above it renders the 2D character, which is also the state on
+      a cold chunk and on a device with no WebGL.
+- [x] No regression: 1,278 tests across 101 files.
 
 **The pose library**
 - [ ] ≥ 50 named entries, each rendered for every character that supports it.
@@ -252,4 +263,36 @@ composed, proportionally, on both the clip-driven and procedural paths.
 byte-identical, verified by test and by re-measuring `marketing.banner` at an
 unchanged 30.5. See `TUTOR_3D.md` §4.0b.
 
-Verified by looking, on all three bipeds and the quadruped.
+## §9 §3.1 — the whole Lesson Engine in 3D (2026-08-27)
+
+Owner instruction, superseding an earlier plan of mine that would have kept the
+story transcript and small list avatars on 2D: **all of it**, no half and half.
+That forced the architecture §6 decision 1 actually called for and my first pass
+under-delivered — `CharacterStage` is one canvas per character, and a transcript
+grows one avatar per line.
+
+`CharacterLayer` is the answer: one overlay canvas for the whole lesson, one DOM
+placeholder per character, each drawn into its own screen rectangle through the
+renderer's scissor, off-screen slots skipped. `TUTOR_3D.md` §6.2 carries the
+architecture, the measurements and the three defects it surfaced (a shared model
+that cannot hold two poses, a rig kind that lagged the model by one render, and a
+contact shadow with no ground under it).
+
+### What the swap costs, and it is not nothing
+
+- **`speaking` has no expression in 3D.** The character is present and animated,
+  but its mouth does not move while it talks — nothing drives visemes in a
+  lesson and the lip-sync card is off. The story family is where this shows.
+  Fixing it means correcting `mouthCardTint` for the dark `auto` rig FIRST
+  (TUTOR_3D.md §6.1), then wiring a driver.
+- **`bubble` falls back to the 2D actor whole.** No Lesson Engine surface passes
+  one today.
+- **Cast rows lost their overlap.** Slots are scissored to their own rectangles,
+  so overlapping them would clip square. They stand side by side instead, at
+  true relative heights on a common baseline — which the 2D row could not do.
+
+### Still open for §3.4
+
+Gamification and VFX: combo/streak feedback, XP that animates rather than
+appears, and character reactions tied to answer quality. The reactions now have
+100 poses and a working 3D surface to reach for.

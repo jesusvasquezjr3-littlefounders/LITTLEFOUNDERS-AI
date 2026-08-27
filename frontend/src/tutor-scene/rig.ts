@@ -124,13 +124,31 @@ export function forgetRestPose(root: Object3D): void {
  * applied relative to, so capturing them from the bind pose instead would make
  * each action fight the character's resting posture.
  */
+/**
+ * Which kind of rig this model carries, derived from the model ALONE.
+ *
+ * Exported and pure because the answer must be available during RENDER. It used
+ * to be React state set from `bindRig` in an effect, which lags the model by one
+ * render — invisible in the Tutor, where a character's element never changes
+ * identity, and a real defect in a lesson, where ONE narrator slot shows dina on
+ * this segment and liruf on the next. For that one render the component held
+ * "biped" while already holding Dina's skeleton, so the shared biped clip
+ * library was played on a 27-joint quadruped: 23 `THREE.PropertyBinding: No
+ * target node found for track: LeftUpLeg.quaternion` warnings, and a gesture
+ * silently dropped on the floor.
+ */
+export function rigKindOf(root: Object3D): RigKind {
+  const bones = collectBones(root);
+  return bones.has('tail') || bones.has('frontleg') ? 'quadruped' : 'biped';
+}
+
 export function bindRig(root: Object3D): Rig {
   // Before anything is measured: put the shared skeleton back where it was
   // loaded, so the base captured below is the model's rest pose and not the
   // previous instance's last frame. See REST_POSE above.
   restoreRestPose(root);
   const bones = collectBones(root);
-  const quadruped = bones.has('tail') || bones.has('frontleg');
+  const quadruped = rigKindOf(root) === 'quadruped';
 
   const rig: Rig = quadruped
     ? {

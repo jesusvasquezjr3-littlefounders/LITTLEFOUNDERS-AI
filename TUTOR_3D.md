@@ -1011,6 +1011,61 @@ than any of the island's hours. **The debt this creates has a due date:** wiring
 a viseme driver into a lesson brings the card back, so `mouthCardTint` has to be
 corrected for `AUTO_DARK` BEFORE that, not after.
 
+### §6.2 `CharacterLayer` — one canvas, many characters (2026-08-27)
+
+The Lesson Engine draws characters everywhere, including one per line of a
+dialogue transcript that GROWS as the learner reveals it. One canvas per
+character would be ten WebGL contexts on a single screen.
+
+So there is exactly one: a fixed, transparent overlay across the viewport.
+Each character renders an empty DOM placeholder that registers with the
+provider, and the frame loop draws each into that placeholder's screen
+rectangle, with its own camera, through `setViewport`/`setScissor`. Ten avatars
+cost ten DRAWS, not ten CONTEXTS. Priority-1 `useFrame` takes rendering from
+R3F; every character is hidden and made visible only for its own pass, so lights
+and the ground provider are shared and no character can appear in another's
+rectangle. Rectangles are read from the DOM EVERY FRAME, so scrolling and
+reflow are followed without a React pass, and a slot whose rectangle is off
+screen is skipped entirely.
+
+**MEASURED**, at 390x844 with dpr 2, worst case (the whole cast on the intro
+screen): **106,224 triangles per frame, 12 draw calls, 1 WebGL context** — 48%
+of the documented `maxTrianglesPerFrame` (220,000). A typical segment with two
+characters is 53,137 / 6; a single character 50,003 / 3. The 2D baseline is
+approximately zero GPU cost. Under headless SwiftShader the worst case holds
+48 fps against 145 with the layer removed; **that is a software-rasteriser
+bound, not a phone measurement** — CPU throttling from 1x to 4x did not move it,
+which says the cost there is raster, not CPU. A real mid-range device number
+still needs a real device.
+
+Three things the layer needed that the diorama never did:
+
+- **`instanced` on `Character3D`.** `useSceneModel` hands out one Object3D per
+  character, which is right where each appears once. A transcript shows the same
+  speaker on lines 1 and 3, and one object cannot hold two poses. The clone
+  shares geometry and materials and duplicates the skeleton — 24 bone matrices.
+- **The rig kind DERIVED, not stored.** It was React state set from `bindRig` in
+  an effect, which lags the model by one render. Invisible in the Tutor, where a
+  character's element never changes identity; a defect in a lesson, where ONE
+  narrator slot shows dina on this segment and liruf on the next. For that render
+  the component held "biped" while already holding Dina's 27-joint skeleton, so
+  the shared biped library was played on her: 23 `PropertyBinding: No target node
+  found for track: LeftUpLeg.quaternion` warnings and a gesture dropped on the
+  floor. `rigKindOf` is now pure and read during render.
+- **`shadow` opt-out on `Character3D`.** A contact shadow grounds a figure ON
+  something; a lesson page is not a floor. The shadow plane is sized from the
+  footprint and is LARGER than a tightly cropped avatar's frame, so what reached
+  the screen was not a blob under the feet but the middle band of its gradient,
+  clipped square by the slot: invisible on a dark page and a hard-edged grey
+  rectangle on a light one. §1.14's class again, found by looking at the light
+  theme.
+
+`stageHeightM` on a slot frames a FIXED world height with the feet on the bottom
+edge instead of framing the character's own box. Slots that share it and share a
+pixel height share a scale, which is what keeps 1.61 m Zara visibly shorter than
+1.9 m Dina in a cast row; `fill` alone normalises everyone to the same size,
+which is right for a lone avatar and throws the cast portrait away.
+
 ## §7 HANDOFF — what the next session needs Blender for
 
 Ordered by value. Items 1–2 are the reason this handoff exists.
