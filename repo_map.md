@@ -1308,17 +1308,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## The reports were wrong about their own window, and the site was invisible (2026-08-27)
+## The Lesson Engine is 3D in production, and what that deploy was and was not verified against (2026-08-27)
 
-Two pieces of work, both starting from the same discovery: a thing that looked
-fine from inside was measured from outside and was not.
+Seven commits, frontend and documentation only, **zero migrations** — so no
+database step and no expand/contract ordering to get right. Pushed to `main`;
+Vercel builds from the `frontend` root on push.
 
-**A teammate's analytics audit was right that something was broken, and wrong
-about all four causes.** The report said the 6-month view showed zero traffic
-for every day of August while the 30-day view, pulled a minute later, showed
-real data for the same dates. Reproduced against production Plausible from
-inside Core and root-caused to three defects, every one of them ours.
-
+**What shipped.** Every character in the Lesson Engine is now the 3D model,
+drawn by ONE shared canvas that renders each into the screen rectangle of its
+own DOM placeholder (`TUTOR_3D.md` §6.2). A named presence scale replaced
+per-call-site pixel boxes, and small avatars are framed as a BUST, which is what
+made the characters read as present rather than as thumbnails (§6.3). Gamified:
 ```
 
 ### agent/README.md
