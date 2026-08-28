@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { ok, fail } from '../lib/http.js';
 import { getConfig } from '../env.js';
 import { moderationReadiness } from '../safety/moderation.js';
-import { modelConfigured } from '../model/provider.js';
+import { modelConfigured, modelReachable } from '../model/provider.js';
 import { getVoiceProvider } from '../voice/index.js';
 import { pregeneratedCount, pregeneratedGeneratedAt } from '../voice/pregenerated.js';
 import { PlacementIntakeInputSchema, runPlacementIntake } from '../tutor/placementIntake.js';
@@ -64,14 +64,21 @@ export function runtimeRouter(liveSessions: () => number): Router {
     }
   });
 
-  router.post('/preflight', (req, res) => {
+  router.post('/preflight', async (req, res) => {
     const parsed = PreflightBody.safeParse(req.body);
     if (!parsed.success) {
       return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid body');
     }
 
     const moderation = moderationReadiness(parsed.data.isMinor);
-    const model = modelConfigured();
+    /*
+     * PROBED, not merely configured (model/provider.ts). The 2026-08-24
+     * outage was a key that existed pointing at an account with no balance:
+     * preflight said yes, and every turn then failed. The probe is cached a
+     * minute and only DEFINITIVE refusals (401/402/403) say no, so this stays
+     * cheap and never flaps on a transient.
+     */
+    const model = (await modelReachable()) === 'ok';
     const voice = getVoiceProvider().available;
 
     // The model is the only hard requirement. Voice is an enhancement

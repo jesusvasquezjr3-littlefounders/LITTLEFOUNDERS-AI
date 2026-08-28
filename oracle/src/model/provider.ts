@@ -164,3 +164,66 @@ export async function complete(
 export function modelConfigured(): boolean {
   return Boolean(getConfig().MODEL_API_KEY);
 }
+
+/*
+ * THE PROBE, because "a key string exists" is not "the model answers".
+ *
+ * On 2026-08-24 the shared DeepSeek account ran out of balance and the tutor
+ * was down in production — but `modelConfigured()` only checks that a key is
+ * SET, so preflight said "canStart", Core minted a token, the stage loaded,
+ * and every single turn then failed. A learner was invited into a session
+ * that could not speak. The probe closes exactly that class: a real (tiny)
+ * completion, cached for a minute, whose DEFINITIVE refusals — 401 bad key,
+ * 402 no balance, 403 forbidden — turn the start button off honestly.
+ *
+ * Deliberately biased toward availability everywhere else: a timeout or a 5xx
+ * is a transient the next turn may survive, and flapping the whole tutor off
+ * for sixty seconds on one slow response would trade a rare honest failure
+ * for a common false outage. Cost: at most one ~10-token call per minute per
+ * instance, and none at all while nobody asks.
+ */
+export type ModelProbeResult = 'ok' | 'unconfigured' | 'blocked';
+
+const PROBE_TTL_MS = 60_000;
+const PROBE_TIMEOUT_MS = 5_000;
+let probeCache: { at: number; result: ModelProbeResult } | null = null;
+
+export async function modelReachable(): Promise<ModelProbeResult> {
+  const config = getConfig();
+  if (!config.MODEL_API_KEY) return 'unconfigured';
+  const now = Date.now();
+  if (probeCache && now - probeCache.at < PROBE_TTL_MS) return probeCache.result;
+
+  let result: ModelProbeResult = 'ok';
+  try {
+    const response = await withTimeout(
+      fetch(`${config.MODEL_API_BASE}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${config.MODEL_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: config.MODEL_NAME,
+          messages: [{ role: 'user', content: 'ping' }],
+          max_tokens: 1,
+        }),
+      }),
+      PROBE_TIMEOUT_MS,
+      'model probe',
+    );
+    if (response.status === 401 || response.status === 402 || response.status === 403) {
+      console.error(`[oracle] model probe refused (${response.status}) — sessions cannot start`);
+      result = 'blocked';
+    }
+  } catch {
+    // Transient. See the availability-bias note above.
+  }
+  probeCache = { at: now, result };
+  return result;
+}
+
+/** Tests only: the cache would otherwise leak a verdict across test files. */
+export function resetModelProbe(): void {
+  probeCache = null;
+}

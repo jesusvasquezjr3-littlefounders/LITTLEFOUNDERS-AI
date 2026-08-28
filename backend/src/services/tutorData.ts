@@ -398,6 +398,59 @@ export interface TutorSegmentRow {
   created_at: string;
 }
 
+/*
+ * THE REVIEW QUEUE READER (/ORACLE.md §7.3, closed 2026-08-28).
+ *
+ * Live-generated segments have been SAMPLED into `review_status='pending'`
+ * since migration 0047 — and nothing read the column. §15.2 item 6 called it
+ * out: post-hoc human review is one of the eight compensating controls that
+ * make live generation acceptable for a minor without a human in the loop,
+ * it is asserted to counsel in /LEGAL/AI_TUTOR_LEGAL_REVIEW.md §5, and a
+ * control that exists only as an unread flag is a control that does not
+ * exist. These two functions, plus the /admin/tutor/review-queue surface,
+ * are the reader.
+ */
+export interface TutorReviewRow {
+  id: string;
+  session_id: string;
+  seq: number;
+  origin: string;
+  segment_type: string;
+  payload: Record<string, unknown>;
+  provenance: Record<string, unknown>;
+  score: number | null;
+  review_status: string;
+  created_at: string;
+}
+
+/** Oldest first: the queue is a backlog, and the oldest exposure ages worst. */
+export async function listTutorReviewQueue(limit = 100): Promise<TutorReviewRow[] | null> {
+  return serviceRest<TutorReviewRow[]>(
+    `/tutor_segments?review_status=eq.pending` +
+      `&select=id,session_id,seq,origin,segment_type,payload,provenance,score,review_status,created_at` +
+      `&order=created_at.asc&limit=${Math.min(limit, 200)}`,
+  );
+}
+
+/**
+ * One verdict, and only on a row still pending — a decision already made is
+ * not silently overwritten by a second reviewer's stale tab.
+ */
+export async function setTutorReviewStatus(
+  segmentId: string,
+  status: 'approved' | 'rejected',
+): Promise<boolean> {
+  const res = await serviceRest<unknown>(
+    `/tutor_segments?id=eq.${eu(segmentId)}&review_status=eq.pending`,
+    {
+      method: 'PATCH',
+      headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify({ review_status: status }),
+    },
+  );
+  return res !== null;
+}
+
 export async function insertTutorSegment(input: {
   sessionId: string;
   seq: number;

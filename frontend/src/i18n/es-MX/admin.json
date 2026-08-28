@@ -107,8 +107,21 @@
     "tabs": {
       "aria": "Vistas de contenido",
       "courses": "Cursos",
-      "lessons": "Cola de revisión de lecciones"
+      "lessons": "Cola de revisión de lecciones",
+      "tutor": "Revisión del Tutor en vivo"
     }
+  },
+  "tutorReview": {
+    "heading": "Actividades del tutor en vivo",
+    "note": "Actividades que el tutor generó en vivo para un aprendiz, muestreadas para revisión humana posterior. Ya pasaron las validaciones deterministas y el juez independiente; esta revisión es la que detecta un defecto sistemático antes de que llegue al aprendiz mil.",
+    "empty": "No hay nada muestreado para revisión por ahora.",
+    "queueCount": "{{count}} actividades esperando revisión",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "servedAt": "Servida el {{date}}",
+    "score": "Puntaje del aprendiz: {{score}}",
+    "unanswered": "Sin responder",
+    "showJson": "Ver JSON completo de la actividad"
   },
   "users": {
     "title": "Usuarios",

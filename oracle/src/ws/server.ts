@@ -68,6 +68,15 @@ interface Live {
   assembly: { mimeType: string; parts: string[]; chars: number } | null;
   microphone: boolean;
   closing: boolean;
+  /**
+   * Consecutive transcript writes that Core did not confirm. `persistTurn`
+   * has always RETURNED whether the record was kept "so the caller can count
+   * failures and close the session if the record is systematically not being
+   * kept" — and both call sites discarded the boolean. Now the counting the
+   * comment promised exists: a session whose record is not being written is a
+   * different product from the one we promised a guardian, and it ends.
+   */
+  persistFailures: number;
   heartbeat: NodeJS.Timeout;
   /** Last pong seen. A socket that stops answering pings is dead, not idle. */
   lastPongAtMs: number;
@@ -213,6 +222,26 @@ function send(socket: WebSocket, message: ServerMessage): void {
   if (socket.readyState === socket.OPEN) socket.send(JSON.stringify(message));
 }
 
+/** After this many consecutive unconfirmed transcript writes, the session ends. */
+const PERSIST_FAILURE_LIMIT = 5;
+
+function notePersist(live: Live, recorded: boolean): void {
+  if (recorded) {
+    live.persistFailures = 0;
+    return;
+  }
+  live.persistFailures += 1;
+  if (live.persistFailures >= PERSIST_FAILURE_LIMIT && !live.closing) {
+    // A conversation nobody can replay and no guardian can read is not the
+    // product we promised. Ending it is the honest move, and `finish` still
+    // TRIES the close write — Core coming back mid-failure records the end.
+    console.error(
+      `[oracle] ${live.persistFailures} consecutive transcript writes unconfirmed — closing the session`,
+    );
+    void finish(live, 'error');
+  }
+}
+
 function tokenFrom(request: IncomingMessage): string | null {
   // Query string rather than a header: browsers cannot set headers on a
   // WebSocket handshake. The token is single-use and expires in a minute
@@ -310,6 +339,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
     assembly: null,
     microphone,
     closing: false,
+    persistFailures: 0,
     heartbeat: setInterval(() => {
       if (socket.readyState !== socket.OPEN) return;
       const now = Date.now();
@@ -699,7 +729,7 @@ async function handleLearnerTurn(
           speaker: 'learner',
           text,
           source: 'stt',
-        });
+        }).then((recorded) => notePersist(live, recorded));
         await deliver(live, await live.orchestrator.consentRevoked(Date.now()));
         return;
       }
@@ -717,7 +747,7 @@ async function handleLearnerTurn(
     // 'stt' is the wire's only learner-source value today, typed or spoken —
     // widening that vocabulary is a Core schema change, not a caller choice.
     source: 'stt',
-  });
+  }).then((recorded) => notePersist(live, recorded));
 
   // `Date.now()` here rather than the caller's stamp: for an audio turn the
   // claim happened before a transcription that may have taken a second, and
@@ -778,7 +808,7 @@ async function deliver(live: Live, outcome: TurnOutcome | null): Promise<void> {
       audioPath: audioUrl,
       source: emission.source,
       moderation: emission.moderation,
-    });
+    }).then((recorded) => notePersist(live, recorded));
   });
 
   if (safety) {

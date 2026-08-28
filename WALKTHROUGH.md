@@ -25,6 +25,18 @@ token); (3) cross-session memory may enter the model context via the documented
 §4.1 three-part process; (4) spend authorized for pregenerating the 144
 scripted clips and for speculative TTS concurrent with the judge.
 
+**Increment 5 made production honest** (same day): preflight now PROBES the
+model (a cached tiny completion; a definitive 401/402/403 disables the start
+button — the 2026-08-24 outage class where a key existed over an empty
+balance and every turn failed after "canStart: true"); `persistTurn` failures
+are finally COUNTED (5 consecutive unconfirmed transcript writes end the
+session — the boolean the function always returned and both call sites
+discarded); and the §15.2-item-6 gap is CLOSED: the live-content review queue
+has a reader (`/api/v1/admin/tutor/review-queue` + the "Tutor Live Review"
+tab on /admin/content), verdicts land only on still-pending rows, and
+Oracle's dead `LIVE_REVIEW_SAMPLE_RATE` was removed in favour of Core's real
+one. Owner-side remainder: a named person who reads the queue.
+
 **Increment 4 rebuilt the experience** (same day): desktop is a docked
 full-height Lumen panel (owner sign-off — conversation, activity, composer,
 minutes, start-over and finish in one ordered column beside a stage that keeps

@@ -205,12 +205,14 @@ const Env = z.object({
   VOICE_TIMEOUT_MS: z.coerce.number().int().positive().default(15_000),
   CORE_TIMEOUT_MS: z.coerce.number().int().positive().default(8_000),
 
-  /**
-   * Fraction of live-generated segments queued for post-hoc human review
-   * (/ORACLE.md §7.3). Zero is a valid deployment choice and a bad one; it is
-   * not the default.
+  /*
+   * `LIVE_REVIEW_SAMPLE_RATE` used to live here and was DEAD CONFIG — read by
+   * nothing in this service. The sampling has always been Core's
+   * (`TUTOR_LIVE_REVIEW_SAMPLE_RATE`, applied where segments are persisted),
+   * and a knob that exists but controls nothing is worse than no knob: it
+   * convinces an operator the fraction is set when it is not. Removed
+   * 2026-08-28; set the rate in Core.
    */
-  LIVE_REVIEW_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(0.15),
 });
 
 export type Config = Readonly<z.infer<typeof Env>>;

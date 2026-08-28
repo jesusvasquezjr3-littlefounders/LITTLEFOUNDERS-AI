@@ -107,7 +107,8 @@
     "tabs": {
       "aria": "Content views",
       "courses": "Courses",
-      "lessons": "Lesson Review Queue"
+      "lessons": "Lesson Review Queue",
+      "tutor": "Tutor Live Review"
     }
   },
   "users": {
@@ -196,6 +197,18 @@
       "serverTruth": "Counted from the server-side record, not from the browser: the client-side signup funnel missed {{count}} of these accounts, so a rate computed from it would have been wrong.",
       "sourcesAgree": "The server-side record and the client funnel agree for this window."
     }
+  },
+  "tutorReview": {
+    "heading": "Live tutor activities",
+    "note": "Activities the tutor generated live for a learner, sampled for human review after the fact. They already passed the deterministic gates and the independent judge; this review is what catches a systematic defect before it reaches the thousandth learner.",
+    "empty": "Nothing sampled for review right now.",
+    "queueCount": "{{count}} activities awaiting review",
+    "approve": "Approve",
+    "reject": "Reject",
+    "servedAt": "Served {{date}}",
+    "score": "Learner score: {{score}}",
+    "unanswered": "Not answered",
+    "showJson": "Show full activity JSON"
   },
   "moderation": {
     "heading": "Review queue",

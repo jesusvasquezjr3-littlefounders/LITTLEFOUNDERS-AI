@@ -1340,22 +1340,26 @@ open, deliberately, because it is an availability control (§1.14).
    model timeout produces a scripted safe line and a kind close, never a
    hang), so the shape of a bad day is degraded, not broken.
 
-6. **The post-hoc human review of live content has no reader, and no reader
-   means no reviewer.** §7.3 lists sampling as one of eight guards that make
-   live generation acceptable for a minor without a human in the loop. The
-   sampling is real — segments are flagged `review_status='pending'` and
-   indexed for it — but nothing anywhere reads that column, `/admin/content`
-   reviews lessons rather than tutor segments, and Oracle's own
-   `LIVE_REVIEW_SAMPLE_RATE` is dead config. So the flagged segments are
-   invisible to every human, forever. **Before a real cohort: an admin queue
-   that lists them, and a named person who reads it.** This one is different in
-   kind from the other five — they are operational headroom we chose not to
-   build yet, and this is a §1.9 compensating control that was written down as
-   existing. Found by the documentation audit of 2026-08-23.
+6. **The post-hoc human review of live content has no reader — CLOSED
+   2026-08-28.** §7.3 lists sampling as one of eight guards that make live
+   generation acceptable for a minor without a human in the loop, and from
+   2026-08-23 to 2026-08-28 the sampling wrote flags nothing read: segments
+   were marked `review_status='pending'` and indexed for it, `/admin/content`
+   reviewed lessons rather than tutor segments, and Oracle's
+   `LIVE_REVIEW_SAMPLE_RATE` was dead config. The reader now exists:
+   `GET /api/v1/admin/tutor/review-queue` lists the pending segments oldest
+   first (payload, provenance, learner score), the "Tutor Live Review" tab on
+   `/admin/content` renders it with approve/reject, and a verdict only lands
+   on a row still pending so two reviewers cannot silently overwrite each
+   other. The dead Oracle env var was REMOVED (the real rate is Core's
+   `TUTOR_LIVE_REVIEW_SAMPLE_RATE`, applied where segments persist). Proven by
+   `backend/src/__tests__/admin.test.ts` → "the tutor live-content review
+   queue". **What remains owner-side: a named person who reads it.**
 
 None of the first five is a defect in what was built; they are the difference
 between a product that is correct and a service that has been operated. The
-sixth is a defect: a control this document asserted and the code does not have.
+sixth WAS a defect — a control this document asserted and the code did not
+have — and it is the one now closed.
 
 ---
 

@@ -31,6 +31,7 @@ import {
   readAnonAcquisition,
 } from '../services/audience.js';
 import { renderAnalyticsReportPdf, REPORT_LOCALES, type ReportLocale } from '../services/analyticsReport.js';
+import { listTutorReviewQueue, setTutorReviewStatus } from '../services/tutorData.js';
 import {
   renderAnalyticsReportCsv,
   renderAnalyticsReportXlsx,
@@ -1113,6 +1114,33 @@ export function adminRouter(): Router {
     const done = await setLessonStatus(lessonId.data, status.data, authedUser(res).id);
     if (!done) return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the lesson');
     ok(res, { id: lessonId.data, status: status.data });
+  });
+
+  // ── Tutor live-content review queue (/ORACLE.md §7.3) ─────────────────────
+  /*
+   * The post-hoc human review of LIVE-generated tutor activities. Segments
+   * are sampled into `review_status='pending'` at persist time (this file's
+   * sibling `tutorLadder`/`persistAndServe` path); this is the READER that
+   * §15.2 admitted did not exist — the sampling protects nobody until a
+   * human sees what it sampled. The payload includes the answer key: the
+   * reviewer is staff, and judging an exercise without its answer is judging
+   * half of it.
+   */
+  router.get('/tutor/review-queue', async (_req, res) => {
+    const segments = await listTutorReviewQueue();
+    if (!segments) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the tutor review queue');
+    ok(res, { segments, total: segments.length });
+  });
+
+  router.post('/tutor/review-queue/:segmentId/status', async (req, res) => {
+    const segmentId = z.string().uuid().safeParse(req.params.segmentId);
+    const status = z.enum(['approved', 'rejected']).safeParse((req.body as { status?: unknown })?.status);
+    if (!segmentId.success || !status.success) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'segmentId must be a uuid and status approved|rejected');
+    }
+    const done = await setTutorReviewStatus(segmentId.data, status.data);
+    if (!done) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the review');
+    ok(res, { id: segmentId.data, status: status.data });
   });
 
   // ── Audit log ──────────────────────────────────────────────────────────────

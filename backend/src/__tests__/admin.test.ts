@@ -512,6 +512,70 @@ describe('GET /api/v1/admin/moderation', () => {
   });
 });
 
+describe('the tutor live-content review queue (/ORACLE.md §7.3)', () => {
+  const SEGMENT_ID = '77777777-7777-4777-8777-777777777777';
+  const PENDING_ROW = {
+    id: SEGMENT_ID,
+    session_id: '88888888-8888-4888-8888-888888888888',
+    seq: 0,
+    origin: 'live',
+    segment_type: 'quiz_mcq',
+    payload: { id: 'seg-1', type: 'quiz_mcq', prompt_md: '¿Cuánto juntas en 4 semanas?' },
+    provenance: { model: 'test', tier: 3 },
+    score: 100,
+    review_status: 'pending',
+    created_at: '2026-08-27T10:00:00Z',
+  };
+
+  function stubTutorReview(capture: { url: string; method: string; body?: string }[] = []) {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        capture.push({ url, method: init?.method ?? 'GET', body: init?.body as string | undefined });
+        if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'admin' }]));
+        if (url.includes('/rest/v1/tutor_segments')) {
+          if (init?.method === 'PATCH') return Promise.resolve(new Response(null, { status: 204 }));
+          return Promise.resolve(jsonResponse(200, [PENDING_ROW]));
+        }
+        return Promise.resolve(jsonResponse(200, []));
+      }),
+    );
+  }
+
+  it('lists the sampled segments — the reader §15.2 admitted did not exist', async () => {
+    stubTutorReview();
+    const res = await request(createApp()).get('/api/v1/admin/tutor/review-queue').set('Authorization', authed());
+    expect(res.status).toBe(200);
+    expect(res.body.data.total).toBe(1);
+    expect(res.body.data.segments[0]).toMatchObject({ id: SEGMENT_ID, origin: 'live', segment_type: 'quiz_mcq' });
+  });
+
+  it('records a verdict, and only against a row still pending', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stubTutorReview(calls);
+    const res = await request(createApp())
+      .post(`/api/v1/admin/tutor/review-queue/${SEGMENT_ID}/status`)
+      .set('Authorization', authed())
+      .send({ status: 'rejected' });
+    expect(res.status).toBe(200);
+    const patch = calls.find((c) => c.method === 'PATCH');
+    // The pending guard is in the URL: a second reviewer's stale tab cannot
+    // silently overwrite a decision already made.
+    expect(patch?.url).toContain('review_status=eq.pending');
+    expect(patch?.body).toContain('"rejected"');
+  });
+
+  it('refuses an invented status', async () => {
+    stubTutorReview();
+    const res = await request(createApp())
+      .post(`/api/v1/admin/tutor/review-queue/${SEGMENT_ID}/status`)
+      .set('Authorization', authed())
+      .send({ status: 'published' });
+    expect(res.status).toBe(400);
+  });
+});
+
 describe('GET /api/v1/admin/audit', () => {
   it('returns audit entries newest-first', async () => {
     stubData('admin');

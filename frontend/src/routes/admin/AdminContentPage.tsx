@@ -61,8 +61,23 @@ interface LessonDetail extends ReviewLesson {
 const TABS = [
   { key: 'courses', icon: 'menu_book' },
   { key: 'lessons', icon: 'shield' },
+  { key: 'tutor', icon: 'smart_toy' },
 ] as const;
 type Tab = (typeof TABS)[number]['key'];
+
+/** One live-generated tutor activity sampled for post-hoc review (/ORACLE.md §7.3). */
+interface TutorReviewSegment {
+  id: string;
+  session_id: string;
+  seq: number;
+  origin: string;
+  segment_type: string;
+  payload: Record<string, unknown>;
+  provenance: Record<string, unknown>;
+  score: number | null;
+  review_status: string;
+  created_at: string;
+}
 
 const STATUS_FILTERS = ['published', 'draft', 'review', 'archived'] as const;
 
@@ -549,6 +564,7 @@ export function AdminContentPage() {
   const { t, i18n } = useTranslation();
   const contentData = useAdminData<{ courses: Course[]; summary: ContentSummary }>('/admin/content');
   const moderationData = useAdminData<{ lessons: ReviewLesson[]; total: number }>('/admin/moderation');
+  const tutorReviewData = useAdminData<{ segments: TutorReviewSegment[]; total: number }>('/admin/tutor/review-queue');
   const mutate = useAdminMutation();
   const [busy, setBusy] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -564,6 +580,8 @@ export function AdminContentPage() {
   const summary = content?.summary;
   const reviewLessons = moderationData.data.state === 'ready' ? moderationData.data.data.lessons : [];
   const reviewTotal = moderationData.data.state === 'ready' ? moderationData.data.data.total : null;
+  const tutorSegments = tutorReviewData.data.state === 'ready' ? tutorReviewData.data.data.segments : [];
+  const tutorReviewTotal = tutorReviewData.data.state === 'ready' ? tutorReviewData.data.data.total : null;
   const nf = new Intl.NumberFormat(i18n.resolvedLanguage);
 
   const filteredCourses = useMemo(() => {
@@ -584,6 +602,20 @@ export function AdminContentPage() {
       return false;
     }
     await contentData.reload();
+    setBusy(null);
+    return true;
+  }
+
+  async function decideTutorSegment(id: string, status: 'approved' | 'rejected'): Promise<boolean> {
+    setBusy(id);
+    setActionError(null);
+    const res = await mutate(`/admin/tutor/review-queue/${id}/status`, { status });
+    if (res.error) {
+      setActionError(t(`errors.api.${res.error.code}`, { defaultValue: t('admin.content.actionFailed') }));
+      setBusy(null);
+      return false;
+    }
+    await tutorReviewData.reload();
     setBusy(null);
     return true;
   }
@@ -652,7 +684,7 @@ export function AdminContentPage() {
 
         <nav className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-xl border border-outline/40 bg-surface-sunken p-1 shadow-sm" role="tablist" aria-label={t('admin.content.tabs.aria')}>
           {TABS.map(({ key, icon }) => {
-            const count = key === 'lessons' ? reviewTotal : null;
+            const count = key === 'lessons' ? reviewTotal : key === 'tutor' ? tutorReviewTotal : null;
             return (
               <button key={key} type="button" role="tab" aria-selected={tab === key} onClick={() => setTab(key)} className={cn('flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-4 py-2 lf-label font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary', tab === key ? 'bg-surface text-content shadow-glass-sm' : 'text-content-muted hover:text-content')}>
                 <Icon name={icon} className="!text-[18px]" />
@@ -695,6 +727,89 @@ export function AdminContentPage() {
               <p className="lf-caption mt-1 max-w-3xl text-content-muted">{t('admin.moderation.note')}</p>
             </div>
             {moderationData.data.state === 'error' ? <Unavailable code={moderationData.data.code} /> : moderationData.data.state === 'ready' ? reviewLessons.length === 0 ? <AdminEmpty icon="task_alt" message={t('admin.moderation.empty')} /> : <ul className="flex flex-col gap-3">{reviewLessons.map((lesson) => <li key={lesson.id}><Card className="flex flex-col gap-3 p-4 sm:p-5"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><p className="truncate lf-label font-bold text-content">{lesson.title}</p><StatusBadge status={lesson.status} /></div><p className="lf-caption mt-1 text-content-muted">{lesson.courseTitle} / {lesson.topicTitle}</p></div><AdminAction tone="neutral" icon="visibility" onClick={() => { setLessonLocale('es-MX'); setLessonDetailId(lesson.id); }}>{t('admin.moderation.preview')}</AdminAction></div><div className="flex flex-wrap gap-2"><Badge className="bg-surface-sunken text-content-muted">{lesson.subject}</Badge><Badge className="bg-surface-sunken text-content-muted">{t('admin.content.locales')}: {lesson.locales.length}</Badge></div></Card></li>)}</ul> : <AdminEmpty icon="hourglass_empty" message={t('admin.loading')} />}
+          </section>
+        )}
+        {tab === 'tutor' && (
+          <section className="flex flex-col gap-4">
+            <div>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="lf-title font-bold text-content">{t('admin.tutorReview.heading')}</h2>
+                {tutorReviewTotal !== null && tutorReviewTotal > 0 && (
+                  <Badge className="bg-warning-soft text-warning-strong">
+                    {t('admin.tutorReview.queueCount', { count: tutorReviewTotal })}
+                  </Badge>
+                )}
+              </div>
+              <p className="lf-caption mt-1 max-w-3xl text-content-muted">{t('admin.tutorReview.note')}</p>
+            </div>
+            {tutorReviewData.data.state === 'error' ? (
+              <Unavailable code={tutorReviewData.data.code} />
+            ) : tutorReviewData.data.state === 'ready' ? (
+              tutorSegments.length === 0 ? (
+                <AdminEmpty icon="task_alt" message={t('admin.tutorReview.empty')} />
+              ) : (
+                <ul className="flex flex-col gap-3">
+                  {tutorSegments.map((segment) => {
+                    const prompt = asText(segment.payload['prompt_md']);
+                    return (
+                      <li key={segment.id}>
+                        <Card className="flex flex-col gap-3 p-4 sm:p-5">
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <Badge className="bg-surface-sunken text-content-muted">{segment.segment_type}</Badge>
+                                <span className="lf-caption text-content-muted">
+                                  {t('admin.tutorReview.servedAt', {
+                                    date: new Intl.DateTimeFormat(i18n.resolvedLanguage, {
+                                      dateStyle: 'medium',
+                                      timeStyle: 'short',
+                                    }).format(new Date(segment.created_at)),
+                                  })}
+                                </span>
+                                <span className="lf-caption text-content-muted">
+                                  {segment.score !== null
+                                    ? t('admin.tutorReview.score', { score: segment.score })
+                                    : t('admin.tutorReview.unanswered')}
+                                </span>
+                              </div>
+                              {prompt && <p className="lf-body mt-2 text-content">{prompt}</p>}
+                            </div>
+                            <div className="flex shrink-0 gap-2">
+                              <AdminAction
+                                tone="success"
+                                icon="task_alt"
+                                disabled={busy === segment.id}
+                                onClick={() => void decideTutorSegment(segment.id, 'approved')}
+                              >
+                                {t('admin.tutorReview.approve')}
+                              </AdminAction>
+                              <AdminAction
+                                tone="danger"
+                                icon="block"
+                                disabled={busy === segment.id}
+                                onClick={() => void decideTutorSegment(segment.id, 'rejected')}
+                              >
+                                {t('admin.tutorReview.reject')}
+                              </AdminAction>
+                            </div>
+                          </div>
+                          <details>
+                            <summary className="lf-caption cursor-pointer text-content-muted">
+                              {t('admin.tutorReview.showJson')}
+                            </summary>
+                            <pre className="mt-2 max-h-80 overflow-auto rounded-md bg-surface-sunken p-3 text-xs text-content">
+                              {JSON.stringify({ payload: segment.payload, provenance: segment.provenance }, null, 2)}
+                            </pre>
+                          </details>
+                        </Card>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )
+            ) : (
+              <AdminEmpty icon="hourglass_empty" message={t('admin.loading')} />
+            )}
           </section>
         )}
       </div>
