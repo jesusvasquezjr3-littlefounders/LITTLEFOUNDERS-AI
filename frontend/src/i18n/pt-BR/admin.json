@@ -619,7 +619,9 @@
       "byReferrer": "Veio de",
       "byDevice": "Dispositivo",
       "byLocale": "Idioma",
-      "noCampaigns": "Nenhum visitante desta janela chegou com etiqueta de campanha. É uma lacuna de marketing, não de dados — nenhum link que compartilhamos leva parâmetros UTM ainda."
+      "noCampaigns": "Nenhum visitante desta janela chegou com etiqueta de campanha. É uma lacuna de marketing, não de dados — nenhum link que compartilhamos leva parâmetros UTM ainda.",
+      "includeStaff": "Incluir sessões da equipe",
+      "staffHidden": "As sessões da equipe estão ocultas. Este não é o quadro completo — eram a maior parte do volume."
     }
   },
   "emails": {

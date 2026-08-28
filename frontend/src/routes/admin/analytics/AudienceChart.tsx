@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import type { AudienceSeriesPoint } from './analyticsShared';
@@ -42,11 +43,39 @@ export function AudienceChart({ series }: { series: AudienceSeriesPoint[] }) {
   const { t, i18n } = useTranslation();
   const nf = new Intl.NumberFormat(i18n.resolvedLanguage);
 
+  /*
+   * Staff are IN by default, and the toggle is opt-out rather than opt-in.
+   *
+   * Which way round this defaults is the whole ethics of the control. Staff
+   * are ~90% of volume on a pre-launch product, so a chart that hides them by
+   * default is a chart that flatters — an operator would read a real audience
+   * that does not exist. But left permanently in, they dwarf the two bands the
+   * chart is actually FOR: at the production scale this was built against, 75
+   * staff sessions on one day render four anonymous ones as a sliver.
+   *
+   * So: the honest number is what loads, and looking closer is one click that
+   * says out loud what it removed.
+   */
+  const [includeStaff, setIncludeStaff] = useState(true);
+
   const label = (key: string) => t(`admin.analytics.audience.bands.${key}`);
-  const empty = series.every((p) => p.anonymous + p.registered + p.staff === 0);
+  const bands = includeStaff ? BANDS : BANDS.filter((b) => b.key !== 'staff');
+  const empty = series.every(
+    (p) => p.anonymous + p.registered + (includeStaff ? p.staff : 0) === 0,
+  );
 
   return (
     <div className="flex flex-col gap-3">
+      <label className="flex w-fit cursor-pointer items-center gap-2">
+        <input
+          type="checkbox"
+          checked={includeStaff}
+          onChange={(e) => setIncludeStaff(e.target.checked)}
+          className="size-4 accent-[rgb(var(--lf-primary))]"
+        />
+        <span className="lf-caption text-content-muted">{t('admin.analytics.audience.includeStaff')}</span>
+      </label>
+
       <div className="h-[260px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={series} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
@@ -94,14 +123,14 @@ export function AudienceChart({ series }: { series: AudienceSeriesPoint[] }) {
               a bar that grows on every poll makes a value harder to read, not
               easier.
             */}
-            {BANDS.map((band, index) => (
+            {bands.map((band, index) => (
               <Bar
                 key={band.key}
                 dataKey={band.key}
                 stackId="audience"
                 fill={band.token}
                 isAnimationActive={false}
-                radius={index === BANDS.length - 1 ? [3, 3, 0, 0] : undefined}
+                radius={index === bands.length - 1 ? [3, 3, 0, 0] : undefined}
                 maxBarSize={26}
               />
             ))}
@@ -115,6 +144,12 @@ export function AudienceChart({ series }: { series: AudienceSeriesPoint[] }) {
         wrong in exactly that way before (/AGENTS.md §1.14).
       */}
       {empty && <p className="lf-caption text-content-muted">{t('admin.analytics.audience.emptyWindow')}</p>}
+
+      {/* Says what was removed, so a smaller chart can never be mistaken for a
+          smaller reality. */}
+      {!includeStaff && (
+        <p className="lf-caption text-warning-strong">{t('admin.analytics.audience.staffHidden')}</p>
+      )}
 
       {/*
         The table is not an extra: the colour trio sits in the 6-8 CVD band,

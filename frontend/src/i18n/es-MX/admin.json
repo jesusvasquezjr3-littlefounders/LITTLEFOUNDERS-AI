@@ -619,7 +619,9 @@
       "byReferrer": "Llegó desde",
       "byDevice": "Dispositivo",
       "byLocale": "Idioma",
-      "noCampaigns": "Ningún visitante de esta ventana llegó con etiqueta de campaña. Es un hueco de marketing, no de datos — ningún link que hayamos compartido lleva parámetros UTM todavía."
+      "noCampaigns": "Ningún visitante de esta ventana llegó con etiqueta de campaña. Es un hueco de marketing, no de datos — ningún link que hayamos compartido lleva parámetros UTM todavía.",
+      "includeStaff": "Incluir sesiones del staff",
+      "staffHidden": "Las sesiones del staff están ocultas. Esto no es el cuadro completo — eran la mayor parte del volumen."
     }
   },
   "emails": {

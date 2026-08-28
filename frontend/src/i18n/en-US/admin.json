@@ -619,7 +619,9 @@
       "byReferrer": "Came from",
       "byDevice": "Device",
       "byLocale": "Language",
-      "noCampaigns": "No visitor in this window arrived with a campaign tag. That is a marketing gap, not a data gap — no link we have shared carries UTM parameters yet."
+      "noCampaigns": "No visitor in this window arrived with a campaign tag. That is a marketing gap, not a data gap — no link we have shared carries UTM parameters yet.",
+      "includeStaff": "Include staff sessions",
+      "staffHidden": "Staff sessions are hidden. This is not the whole picture — they were most of the volume."
     }
   },
   "emails": {

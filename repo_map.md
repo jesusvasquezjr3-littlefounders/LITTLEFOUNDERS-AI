@@ -19734,9 +19734,30 @@ import {
   YAxis,
 ```
 
+### frontend/src/routes/admin/analytics/AudienceChart.test.tsx
+
+```
+import type { ReactNode } from 'react';
+import { describe, expect, it, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { AudienceChart } from './AudienceChart';
+import type { AudienceSeriesPoint } from './analyticsShared';
+
+/*
+ * Recharts is mocked, following AnalyticsTrendChart.test.tsx. Its
+ * ResponsiveContainer needs a ResizeObserver jsdom does not provide, and it
+ * measures zero here anyway — so the bars are verified in a real browser
+ * (/dev/audience-lab) and the logic is verified here. `Bar` renders a marker
+ * so the tests can still assert WHICH series were drawn.
+ */
+vi.mock('recharts', () => ({
+  ResponsiveContainer: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+```
+
 ### frontend/src/routes/admin/analytics/AudienceChart.tsx
 
 ```
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import type { AudienceSeriesPoint } from './analyticsShared';
@@ -19751,7 +19772,26 @@ import type { AudienceSeriesPoint } from './analyticsShared';
  * (measured 2026-08-28: 3,963 staff events against 275 anonymous and 179
  * registered). Drawn as seven roles the answer is invisible — every real line
  * flattens into the axis under the staff bar. Three bands keep it readable and
- * keep the staff share honestly on screen rather than silently filtered out,
+```
+
+### frontend/src/routes/admin/analytics/AudienceLab.tsx
+
+```
+import { AudienceChart } from './AudienceChart';
+import type { AudienceSeriesPoint } from './analyticsShared';
+
+/*
+ * `/dev/audience-lab` — the audience chart, without an admin session.
+ *
+ * The chart it renders is the one genuinely new visual on /admin/analytics,
+ * and it lives behind authentication, which makes it the hardest thing on the
+ * page to look at and therefore the easiest to ship broken. Same reasoning as
+ * `/dev/analytics-notices`: DEV-only, no route or byte of it reaches
+ * production (App.tsx gates it on import.meta.env.DEV).
+ *
+ * THE FIXTURE IS REAL PRODUCTION DATA, read on 2026-08-28. That matters more
+ * than it looks: invented numbers are always tidy, and the shape this chart
+ * has to survive is the real one — a staff bar an order of magnitude taller
 ```
 
 ### frontend/src/routes/admin/analytics/AudienceSection.tsx
