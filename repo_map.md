@@ -126,6 +126,7 @@ frontend/
       edu/
       ui/
   scripts/
+    lesson-engine/
     lib/
     seo/
   src/
@@ -1307,17 +1308,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## The Lesson Engine is 3D in production, and what that deploy was and was not verified against (2026-08-27)
+## The Lesson Engine shipped unusable, and four kinds of green audit said otherwise (2026-08-27)
 
-Seven commits, frontend and documentation only, **zero migrations** — so no
-database step and no expand/contract ordering to get right. Pushed to `main`;
-Vercel builds from the `frontend` root on push.
+**Symptom, reported by the owner:** "Empezar leccion NO FUNCIONA." Not slow —
+dead. Nothing in a lesson responded to a tap.
 
-**What shipped.** Every character in the Lesson Engine is now the 3D model,
-drawn by ONE shared canvas that renders each into the screen rectangle of its
-own DOM placeholder (`TUTOR_3D.md` §6.2). A named presence scale replaced
-per-call-site pixel boxes, and small avatars are framed as a BUST, which is what
-made the characters read as present rather than as thumbnails (§6.3). Gamified:
+**Cause.** The character layer is a full-viewport canvas at z-20 above the
+lesson's own content. Its wrapper carries `pointer-events-none` and
+`pointer-events` is inherited — but React Three Fiber writes
+`pointer-events: auto` INLINE on its own container, and an inline value beats an
+inherited one. The canvas was therefore hit-testable and topmost over every
+control in the product. Measured: `document.elementFromPoint` at the centre of
 ```
 
 ### agent/README.md

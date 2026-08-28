@@ -15,6 +15,26 @@ npm run build   # type-check + production build
 
 Stack: React 18 + Vite + TypeScript + Tailwind (darkMode class) + react-router 6 + i18next (en-US / es-MX / pt-BR).
 
+## Verifying the Lesson Engine the way a person uses it
+
+```bash
+npm run verify:lesson-engine                 # 1280x900, dark
+npm run verify:lesson-engine -- --mobile     # 375x812
+npm run verify:lesson-engine -- --light
+npm run verify:lesson-engine -- --only quiz_mcq,fill_blank
+```
+
+Opens every segment-type fixture in `/dev/lesson-lab` and plays it with **real pointer
+and keyboard events**, hit-testing every control with `elementFromPoint`. It starts Vite
+itself and needs only Chrome (set `CHROME_PATH` if it is somewhere unusual, or
+`LESSON_LAB_URL` to reuse a dev server that is already running).
+
+It gates the class of defect that shipped on 2026-08-26 — a full-viewport canvas that
+swallowed every click while 1,305 unit tests stayed green, because unit tests and
+`element.click()` both reach past the thing a user has to get past. It reports, but does
+not gate, how many segments reach a verdict: that number measures the driver, not the
+engine. See [/LESSON_ENGINE.md](../LESSON_ENGINE.md) §10.1 and [/AGENTS.md](../AGENTS.md) §1.14.
+
 ## SPA routing on Vercel
 
 This is a client-side-routed SPA (React Router) with **no server-rendered routes** — `vercel.json` rewrites every path to `/index.html` so a direct load or refresh on e.g. `/faq` or `/legal/terms` doesn't 404; React Router then resolves the path client-side. Any new top-level route needs no extra Vercel config — the catch-all already covers it.

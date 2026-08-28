@@ -4648,7 +4648,16 @@ driver mistakes that each looked exactly like a product defect. The engine was
 right every time, including every time it refused to grade an incomplete answer.
 Written up as an invariant in /AGENTS.md §1.14 and in the decision log below.
 
-Still open, both cosmetic and pre-existing: the two sub-44px tap targets above.
+Now reproducible as `npm run verify:lesson-engine` (frontend), which gates
+reachability, start, 3D-only, one WebGL context and a clean console — and reports,
+without gating, how many segments reach a verdict, because that number measures the
+driver. First full green run: 57/57 reachable, 57/57 start, 0 in 2D, 1 WebGL context,
+0 console errors, 0 failed requests, 42 verdicts and 50 results screens in a single
+pass. See /LESSON_ENGINE.md §10.1.
+
+Still open, cosmetic and pre-existing: the glossary chip is **27px** tall wherever it
+appears ("break even", "emergency fund", "holds" — one component, not three defects)
+and "Skip for now" is 31-32px, both under the 44px tap-target floor.
 
 ## Decision Log
 

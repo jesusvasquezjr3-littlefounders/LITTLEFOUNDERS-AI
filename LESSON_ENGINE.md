@@ -635,6 +635,53 @@ Lesson Engine surface passes one. Tracked in `GOAL_3D_CHARACTERS.md`.
   button and "Compartilhar" sat on top of it. Nothing but the switch could have shown
   that.
 
+### §10.1 `npm run verify:lesson-engine` — the lab, driven by a machine (2026-08-27)
+
+`frontend/scripts/verify-lesson-engine.mjs` opens every fixture in the lab and plays it
+with **real pointer and keyboard events** (`Input.dispatchMouseEvent`,
+`Input.dispatchKeyEvent`), hit-testing every visible control with `elementFromPoint` —
+retried after scrolling it into view, because the lesson shell scrolls and so does a
+person. It starts Vite itself (the lab is a DEV-only route) and needs nothing but
+Chrome; `LESSON_LAB_URL` points it at an already-running server instead.
+
+```
+npm run verify:lesson-engine                    1280x900, dark
+npm run verify:lesson-engine -- --mobile        375x812
+npm run verify:lesson-engine -- --light         light theme
+npm run verify:lesson-engine -- --only quiz_mcq,fill_blank
+npm run verify:lesson-engine -- --strict        also require a verdict per fixture
+```
+
+**What it gates:** every control reachable, "Start lesson" advances, no character
+renders in 2D, one WebGL context, no console error, no failed request. That set is not
+arbitrary — it is the class of defect that shipped on 2026-08-26, when R3F's inline
+`pointer-events: auto` made the character layer the topmost element over the entire
+product and 1,305 unit tests, 57 fixtures and four screenshot passes all stayed green
+because every one of them drove the app with `element.click()`, which does no
+hit-testing.
+
+**What it deliberately does NOT gate: how many segments reach a verdict.** That number
+measures the DRIVER. Reordering its answer models moved it from 41 to 39 while swapping
+which types passed, and the first audit's headline finding — 33 of 57 types never
+produce a verdict — turned out to be six ungraded CONTENT types plus nine harness
+defects, and **zero engine defects** (/AGENTS.md §1.14). The number is printed on every
+run; `--strict` is for a deliberate deep run by someone who will read §1.14 before
+believing a failure.
+
+**Answering is three models, not one** (`scripts/lesson-engine/answer-models.mjs`), and
+the engine's own submission gate decides when an answer is complete: `order` (each
+control once, and answer any picker that only appears once a cell is tapped), `pair` (an
+item, then a destination in a different container — and the first UNRESOLVED item, since
+clicking a matched chip unmatches it), and `bank` (the first control repeatedly, for a
+surface that consumes controls or accumulates a total). Ranges are answered from the
+keyboard: assigning `.value` is something React tolerates and the engine does not accept.
+Controls that reveal (Hint, a glossary chip whose ligature is literally `help`) or
+discard (Reset) an answer are excluded by construction.
+
+Grading itself is covered where it belongs — `registry.test.tsx` asserts every graded
+type has a grader, that graders never throw and clamp scores, and that every fixture
+round-trips through its own grader.
+
 ## §11 Extension protocol — adding type #57 without breaking production
 
 1. **Justify** — prove no existing type covers the mechanic (else extend a payload,

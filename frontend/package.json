@@ -25,6 +25,7 @@
     "assets:clips": "blender --background --python scripts/author-clips.py",
     "verify:rig": "node scripts/verify-rig.mjs",
     "verify:placement": "tsx scripts/verify-placement.ts",
+    "verify:lesson-engine": "node scripts/verify-lesson-engine.mjs",
     "assets:walkmask": "tsx scripts/generate-walkmask.ts",
     "publish:scenes": "node scripts/publish-scenes.mjs",
     "seo:cards": "node scripts/seo/render-cards.mjs"
