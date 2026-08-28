@@ -1415,6 +1415,22 @@ for containers. Sharp corners prohibited.
   series, `primary` stroke with a restrained `primary` area fill, quiet axes,
   a data tooltip, and a touch-capable range brush. Never add fixed range tabs
   when the brush provides direct range control.
+- **Categorical stacked bar** (console-only) — for a count split across a SMALL
+  CLOSED SET of categories over time, where the split is the question and the
+  total alone would hide it. Recharts, like the interactive area chart, and
+  bound by three rules. **(1) At most three series**, from `primary`,
+  `success`, `warning` in that order — a fourth category folds into an "other"
+  band or the chart becomes a different one. That trio is not a taste call: it
+  was checked for colour-vision separation, and the obvious pairing of two
+  brand hues (`primary` + `delight`) FAILS at ΔE 11.4 for normal vision, let
+  alone for protanopia. **(2) Identity is never carried by colour alone** — the
+  trio sits in the 6-8 CVD band, so a legend is always present and a table view
+  is always available beneath the chart. **(3) Status hues are admissible here
+  ONLY where the status meaning and the category meaning coincide** (a band the
+  reader must discount is genuinely a `warning`); anywhere else, reduce to one
+  series and use the area chart. Quiet axes, no animation — a bar that regrows
+  on every poll makes a value harder to read, not easier. First built for
+  `/admin/analytics` § Audience.
 - **Characters** — Dina, Liruf, Dr. Rho, Zara Vex (canonical; no new mascots
   without sign-off).
 

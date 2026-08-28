@@ -184,7 +184,18 @@
     "copyId": "Copiar ID",
     "copied": "¡Copiado!",
     "viewDetail": "Ver detalle",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "funnel": {
+      "title": "Visitantes que se hicieron cuenta",
+      "subtitle": "Llegadas anónimas frente a registros reales, últimos {{days}} días.",
+      "anonymous": "Visitantes anónimos",
+      "registered": "Cuentas creadas",
+      "rate": "Se hicieron cuenta",
+      "noData": "sin datos",
+      "barAria": "{{accounts}} cuentas creadas de {{visitors}} visitantes anónimos",
+      "serverTruth": "Contado desde el registro del servidor, no desde el navegador: el embudo del cliente no vio {{count}} de estas cuentas, así que una tasa calculada con él habría estado mal.",
+      "sourcesAgree": "El registro del servidor y el embudo del navegador coinciden en esta ventana."
+    }
   },
   "moderation": {
     "heading": "Cola de revisión",
@@ -575,6 +586,40 @@
     "rangeDrift": {
       "title": "Estas cifras cubren otra ventana",
       "body": "La ventana mostrada es {{asked}}, pero la API de analítica respondió por {{answered}}. Toma cada cifra de abajo como si describiera la segunda ventana, y reporta esto."
+    },
+    "audience": {
+      "title": "Audiencia — datos propios",
+      "source": "Eventos de primera parte · cada sesión, con su rol",
+      "chartTitle": "Sesiones diarias, por quién estuvo aquí",
+      "chartSub": "El staff se muestra en vez de filtrarse: en un producto prelanzamiento somos casi todo el volumen, y esconderlo adornaría la gráfica en lugar de explicarla.",
+      "bands": {
+        "anonymous": "Anónimos",
+        "registered": "Registrados",
+        "staff": "Staff"
+      },
+      "externalShare": "Que no somos nosotros",
+      "noData": "sin datos",
+      "emptyWindow": "No se registraron sesiones en esta ventana. Es un cero medido, no una lectura fallida.",
+      "showTable": "Ver los números como tabla",
+      "day": "Día",
+      "convertedShort": "{{count}} convirtió",
+      "integrityTitle": "Hasta dónde se puede confiar en el embudo de registro",
+      "unobservedBadge": "{{count}} cuentas no observadas",
+      "accountsCreated": "Cuentas realmente creadas",
+      "signupObserved": "Registros que vio el embudo",
+      "observedShare": "Observado",
+      "integrityGap": "Existen cuentas que el embudo del navegador nunca registró. El embudo sólo dispara para quien aceptó cookies opcionales y mantuvo la pestaña abierta, así que tómalo como piso — la cifra del servidor, a la izquierda, es la verdad.",
+      "integrityClean": "El embudo del navegador dio cuenta de cada registro de esta ventana.",
+      "acquisitionTitle": "Visitantes anónimos, y si volvieron",
+      "acquisitionSub": "Una fila por visitante que llegó sin cuenta, con dónde aterrizó y si alguna vez creó una.",
+      "visitors": "Visitantes",
+      "converted": "Se hicieron cuenta",
+      "conversionRate": "Conversión",
+      "byLandingRoute": "Página de entrada",
+      "byReferrer": "Llegó desde",
+      "byDevice": "Dispositivo",
+      "byLocale": "Idioma",
+      "noCampaigns": "Ningún visitante de esta ventana llegó con etiqueta de campaña. Es un hueco de marketing, no de datos — ningún link que hayamos compartido lleva parámetros UTM todavía."
     }
   },
   "emails": {

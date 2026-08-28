@@ -34,6 +34,41 @@ export function isCompleteSelection(selection: PeriodSelection): boolean {
   return selection.period !== 'custom' || Boolean(selection.from && selection.to);
 }
 
+/**
+ * A day count for the first-party views, which read Postgres directly and know
+ * nothing of Plausible's `date_range` vocabulary.
+ *
+ * ONE selection drives both halves of the page. Deriving a second window from
+ * a second control is how a console ends up with two sections that disagree
+ * about what "last 30 days" means — which this one has already done once, and
+ * which cost a week of believing a traffic collapse that had not happened.
+ *
+ * `all` maps to two years rather than to infinity: the first event ever
+ * recorded is 2026-08-03, so a longer window only adds empty days, and an
+ * unbounded scan is a query nobody meant to run.
+ */
+export function daysForSelection(selection: PeriodSelection): number {
+  if (selection.period === 'custom' && selection.from && selection.to) {
+    const from = Date.parse(`${selection.from}T00:00:00Z`);
+    const to = Date.parse(`${selection.to}T00:00:00Z`);
+    if (Number.isFinite(from) && Number.isFinite(to) && to >= from) {
+      return Math.min(365, Math.max(1, Math.round((to - from) / 86_400_000) + 1));
+    }
+    return 30;
+  }
+  switch (selection.period) {
+    case 'day': return 1;
+    case '7d': return 7;
+    case '30d': return 30;
+    case 'month': return new Date().getUTCDate();
+    case '6mo': return 182;
+    case '12mo': return 365;
+    case 'year': return Math.max(1, Math.ceil((Date.now() - Date.UTC(new Date().getUTCFullYear(), 0, 1)) / 86_400_000));
+    case 'all': return 365;
+    default: return 30;
+  }
+}
+
 /** The `period=…` fragment, already serialized — what child cards receive. */
 export type PeriodQuery = string;
 
@@ -314,6 +349,72 @@ export interface BreakdownData {
   dimension: string;
   rows: BreakdownRow[];
   imports: ImportsMeta;
+}
+
+
+/*
+ * ── Audience (first-party) ─────────────────────────────────────────────────
+ *
+ * Separate from the Plausible types above because the two answer different
+ * questions and must never be silently merged. Plausible measures ANONYMOUS,
+ * CONSENTED, MARKETING-ONLY visitors; this measures every session the product
+ * itself recorded, including signed-in ones, with the role attached — which is
+ * the only thing that can separate staff from real people retroactively.
+ */
+export interface AudienceSeriesPoint {
+  date: string;
+  anonymous: number;
+  registered: number;
+  staff: number;
+}
+
+export interface AudienceData {
+  days: number;
+  series: AudienceSeriesPoint[];
+  totals: { anonymous: number; registered: number; staff: number };
+  /** Share of sessions that were NOT staff. Null when there were none. */
+  externalShare: number | null;
+}
+
+/**
+ * The server-side record set beside what the client stream claims.
+ *
+ * `observedShare` is null — never 1 — on a window with no registrations, so a
+ * quiet week cannot render as "we observed everything".
+ */
+export interface FunnelIntegrityData {
+  days: number;
+  entries: { day: string; accounts_created: number; signup_start: number; signup_submit: number; signup_complete: number; unobserved: number }[];
+  accountsCreated: number;
+  signupComplete: number;
+  unobserved: number;
+  observedShare: number | null;
+}
+
+export interface AcquisitionBreakdownRow {
+  label: string;
+  visitors: number;
+  converted: number;
+}
+
+export interface AcquisitionData {
+  days: number;
+  visitors: number;
+  converted: number;
+  /** Null when nobody arrived — never a fabricated 0%. */
+  conversionRate: number | null;
+  byReferrer: AcquisitionBreakdownRow[];
+  byLandingRoute: AcquisitionBreakdownRow[];
+  byDevice: AcquisitionBreakdownRow[];
+  byLocale: AcquisitionBreakdownRow[];
+  /** Every visitor arrived with no campaign tag: a marketing gap, not a data gap. */
+  noCampaignsTagged: boolean;
+}
+
+export interface RegistrationsData {
+  days: number;
+  entries: { day: string; role: string; registrations: number }[];
+  total: number;
 }
 
 /**

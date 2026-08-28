@@ -193,6 +193,7 @@ frontend/
         __tests__/
       stage/
         __tests__/
+goal/
 oracle/
   scripts/
     fixtures/
@@ -6701,6 +6702,26 @@ import { jsonResponse, mintToken } from './helpers.js';
  */
 ```
 
+### backend/src/__tests__/audience.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  bandForRole,
+  readAudience,
+  readAnonAcquisition,
+  readRegistrations,
+  readSignupFunnelIntegrity,
+} from '../services/audience.js';
+
+/*
+ * The audience readers, and specifically the places they refuse to invent a
+ * number.
+ *
+ * This whole service exists because of one production measurement: 31 accounts
+ * exist and the client-emitted funnel has reported `signup_complete` ZERO
+```
+
 ### backend/src/__tests__/auth.test.ts
 
 ```
@@ -7935,6 +7956,26 @@ import type { PlausibleBreakdownRow, PlausibleDimensionKey, PlausibleReportData 
  * date formatters hardwired, which meant a Spanish-speaking operator exported
  * a document reading "Aug 14, 2026" and "1,234" to send to Spanish-speaking
  * stakeholders — the one artefact that leaves the building was the only
+```
+
+### backend/src/services/audience.ts
+
+```
+import { z } from 'zod';
+import { serviceRest } from './supabaseRest.js';
+
+/*
+ * Who is out there, and how many of them became real accounts.
+ *
+ * WHY THIS IS A SEPARATE SERVICE FROM insights.ts
+ *
+ * `insights.ts` reads the client-emitted, consent-gated event stream. This one
+ * reads it too — but it also reads the SERVER-SIDE record of what actually
+ * happened, and the whole value is in keeping the two apart and then setting
+ * them side by side.
+ *
+ * The reason, measured in production on 2026-08-28: 31 accounts exist, and
+ * `signup_complete` has fired ZERO times across every single day any of them
 ```
 
 ### backend/src/services/botDetection.ts
@@ -12461,6 +12502,26 @@ BEGIN
 -- Traced through the whole stack before writing this: Core required it
 -- (`z.string().trim().min(1).max(240)`) and persisted it, but never forwarded
 -- it — `parent-id-check/` has no occurrence of the word, and Guardian's verdict
+```
+
+### database/migrations/0050_audience_insights.sql
+
+```
+-- @phase: expand
+--   Adds read-only views over tables that already exist. Nothing is dropped,
+--   narrowed or rewritten, so it is safe to apply before or after the code.
+-- 0050_audience_insights.sql — who is actually out there, and how many of them
+-- became real accounts.
+--
+-- WHY THESE EXIST
+--
+-- On 2026-08-28 the console could answer "how many lessons were completed" in
+-- four different ways and could not answer "how many people signed up last
+-- week" at all. Every existing insights view is built on `learning_events`,
+-- which is a CONSENT-GATED, CLIENT-EMITTED stream: an anonymous visitor who
+-- declines optional cookies emits nothing, and a browser that closes mid-flush
+-- loses the tail. Measured in production the same day: 16 accounts were
+-- created after instrumentation began, and `signup_complete` had fired ZERO
 ```
 
 ### database/package.json
@@ -19101,6 +19162,7 @@ import { useTranslation } from 'react-i18next';
 import { Badge, Card, Icon, StatCard, Table, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { AdminAction, AdminDialog, AdminEmpty, AdminPage, RoleChip, Unavailable, useAdminData } from './adminShared';
+import { UsersFunnelCard } from './UsersFunnelCard';
 import { SignupTimeline } from './SignupTimeline';
 
 interface User {
@@ -19110,7 +19172,6 @@ interface User {
   locale: string;
   createdAt: string;
   birthDate: string | null;
-  roles: string[];
 ```
 
 ### frontend/src/routes/admin/AlertBanner.tsx
@@ -19167,10 +19228,10 @@ import {
   filtersToQuery,
   isCompleteSelection,
   periodQuery as buildPeriodQuery,
+  daysForSelection,
   SECONDARY_BREAKDOWN_CARDS,
   type AnalyticsFilter,
   type BehaviorData,
-  type BehaviorSeriesData,
 ```
 
 ### frontend/src/routes/admin/CoachTab.tsx
@@ -19311,6 +19372,26 @@ import { failedFromI18nKey, formatFixed } from './generationI18n';
  */
 
 interface SlotDetail {
+```
+
+### frontend/src/routes/admin/UsersFunnelCard.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { Card, Icon } from '@/components/ui';
+import { useAdminData } from './adminShared';
+import type { AcquisitionData, FunnelIntegrityData } from './analytics/analyticsShared';
+
+/*
+ * The people who are NOT in the users table.
+ *
+ * Everything else on this page counts accounts, which makes the page an
+ * accurate answer to a question nobody asked. The interesting number for a
+ * pre-launch product is the ratio: how many strangers arrived, and how many of
+ * them ever became one of the rows below.
+ *
+ * Both halves come from data that already existed and that nothing read.
+ * `anon_visitors` has been recording landing route, referrer, device and
 ```
 
 ### frontend/src/routes/admin/__tests__/AdminContentPage.test.tsx
@@ -19651,6 +19732,46 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+```
+
+### frontend/src/routes/admin/analytics/AudienceChart.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import type { AudienceSeriesPoint } from './analyticsShared';
+
+/*
+ * Daily sessions on the platform, split by who was here.
+ *
+ * WHY THREE BANDS AND NOT SEVEN ROLES
+ *
+ * The question this chart exists to answer is "was anyone here who was not
+ * us", and on a pre-launch product staff are ~90% of all event volume
+ * (measured 2026-08-28: 3,963 staff events against 275 anonymous and 179
+ * registered). Drawn as seven roles the answer is invisible — every real line
+ * flattens into the axis under the staff bar. Three bands keep it readable and
+ * keep the staff share honestly on screen rather than silently filtered out,
+```
+
+### frontend/src/routes/admin/analytics/AudienceSection.tsx
+
+```
+import { useTranslation } from 'react-i18next';
+import { Badge, Card, Icon, StatCard } from '@/components/ui';
+import { useAdminData } from '../adminShared';
+import { AudienceChart } from './AudienceChart';
+import type { AcquisitionData, AudienceData, FunnelIntegrityData } from './analyticsShared';
+
+/*
+ * Who was actually here, from our OWN data rather than from the marketing
+ * tracker — and how far that data can be trusted.
+ *
+ * WHY THIS SECTION EXISTS AT ALL
+ *
+ * The console could answer "how many lessons were completed" four ways and
+ * could not answer "did anyone who is not us visit last week". Everything it
+ * showed came from Plausible, which by design sees only ANONYMOUS, CONSENTED
 ```
 
 ### frontend/src/routes/admin/analytics/BehaviorBreakdownCard.test.tsx
@@ -27837,6 +27958,26 @@ export default defineConfig({
   server: {
     port: 5173,
   },
+```
+
+### goal/financial-education-images-100.md
+
+```
+# GOAL — Terminar al 100% las imágenes del curso `financial-education`
+
+> Generas las imágenes con TU PROPIO sistema de generación (la suscripción de
+> ChatGPT/Codex), NUNCA con Prism (`picturegen/`) ni con DashScope. Esa regla
+> viene de una decisión explícita del owner y se explica en la sección 1. Si
+> en algún punto un comando de este documento pareciera pedirte llamar a
+> DashScope, DETENTE — es un error del documento, no una instrucción real.
+
+> Este documento reemplaza cualquier versión anterior de este brief que
+> hayas visto (incluida una versión previa, incorrecta, de ESTE MISMO
+> archivo, que asumía por error que ibas a usar `npm run images:backfill` →
+> Prism → DashScope. Esa versión estaba mal. Ignórala si la recuerdas de
+> algún lado).
+
+---
 ```
 
 ### oracle/AGENTS.md

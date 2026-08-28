@@ -24,6 +24,12 @@ import {
   RECORDABLE_EVENTS,
   ROUTE_CLASSES,
 } from '../services/insights.js';
+import {
+  readAudience,
+  readRegistrations,
+  readSignupFunnelIntegrity,
+  readAnonAcquisition,
+} from '../services/audience.js';
 import { renderAnalyticsReportPdf, REPORT_LOCALES, type ReportLocale } from '../services/analyticsReport.js';
 import {
   renderAnalyticsReportCsv,
@@ -233,6 +239,15 @@ const InsightsActivityQuerySchema = z.object({
 
 const InsightsFamiliesQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(500).default(100),
+});
+
+/*
+ * Windows for the audience surface. 365 is the same ceiling the other insights
+ * routes use; the default is 30 because that is the window an operator reads
+ * without thinking about it.
+ */
+const AudienceQuerySchema = z.object({
+  days: z.coerce.number().int().min(1).max(365).default(30),
 });
 
 const InsightsCohortQuerySchema = z.object({
@@ -1198,6 +1213,50 @@ export function adminRouter(): Router {
     // additive — summing `entries[].users` counts one learner once per
     // dimension combination.
     ok(res, { days: q.data.days, entries: rows, users });
+  });
+
+  /*
+   * ── Audience ────────────────────────────────────────────────────────────
+   *
+   * Four routes that answer "who is out there", and one of them exists to say
+   * how far the other three can be trusted.
+   *
+   * `/audience` and `/acquisition` read the consent-gated client stream.
+   * `/registrations` reads the server-side record, which no cookie banner can
+   * suppress. `/funnel-integrity` sets them side by side, because on
+   * 2026-08-28 the stream reported zero completed signups across 31 real
+   * accounts and nothing in the console could have told an operator that.
+   */
+  router.get('/insights/audience', async (req, res) => {
+    const q = AudienceQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days 1-365');
+    const summary = await readAudience(q.data.days);
+    if (summary === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Audience view unreachable');
+    ok(res, { days: q.data.days, ...summary });
+  });
+
+  router.get('/insights/registrations', async (req, res) => {
+    const q = AudienceQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days 1-365');
+    const entries = await readRegistrations(q.data.days);
+    if (entries === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Registrations view unreachable');
+    ok(res, { days: q.data.days, entries, total: entries.reduce((t, e) => t + e.registrations, 0) });
+  });
+
+  router.get('/insights/funnel-integrity', async (req, res) => {
+    const q = AudienceQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days 1-365');
+    const integrity = await readSignupFunnelIntegrity(q.data.days);
+    if (integrity === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Funnel integrity view unreachable');
+    ok(res, { days: q.data.days, ...integrity });
+  });
+
+  router.get('/insights/acquisition', async (req, res) => {
+    const q = AudienceQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days 1-365');
+    const summary = await readAnonAcquisition(q.data.days);
+    if (summary === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Acquisition view unreachable');
+    ok(res, { days: q.data.days, ...summary });
   });
 
   router.get('/insights/cohorts', async (req, res) => {

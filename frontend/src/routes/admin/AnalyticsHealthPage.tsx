@@ -9,6 +9,7 @@ import {
   filtersToQuery,
   isCompleteSelection,
   periodQuery as buildPeriodQuery,
+  daysForSelection,
   SECONDARY_BREAKDOWN_CARDS,
   type AnalyticsFilter,
   type BehaviorData,
@@ -26,6 +27,7 @@ import { ReportExportCard } from './analytics/ReportExportCard';
 import { ExclusionsCard } from './analytics/ExclusionsCard';
 import { ExclusionCoverageNote } from './analytics/ExclusionCoverageNote';
 import { PeriodPicker } from './analytics/PeriodPicker';
+import { AudienceSection } from './analytics/AudienceSection';
 import { AnalyticsGeoMap } from './analytics/AnalyticsGeoMap';
 import { AnalyticsTrendChart } from './analytics/AnalyticsTrendChart';
 
@@ -48,6 +50,14 @@ export function AnalyticsHealthPage() {
   // An incomplete custom range must not be sent: it would resolve to some
   // other window and be labelled as the one the operator was still typing.
   const periodQuery = buildPeriodQuery(isCompleteSelection(selection) ? selection : { period: '30d' });
+
+  /*
+   * The first-party views take a day count rather than a preset, because they
+   * read Postgres directly instead of Plausible's date_range vocabulary. ONE
+   * selection still drives both, so the two halves of this page can never
+   * describe different windows — a defect this console has already had once.
+   */
+  const audienceDays = daysForSelection(isCompleteSelection(selection) ? selection : { period: '30d' });
 
   const addFilter = useCallback((dimension: DimensionKey, value: string) => {
     setFilters((fs) =>
@@ -221,6 +231,16 @@ export function AnalyticsHealthPage() {
 
       {/* ── Segment filters ── */}
       <FilterBar filters={filters} onAdd={addFilter} onRemove={removeFilter} />
+
+      {/*
+        First-party audience FIRST, and deliberately above the Plausible block.
+        Plausible answers a narrower question than it appears to — anonymous,
+        consented, marketing pages only — so an operator who reads it first
+        forms a picture the section below then has to correct. Our own event
+        stream sees every session with the role attached, which is the only
+        thing that separates staff from real people retroactively.
+      */}
+      <AudienceSection days={audienceDays} />
 
       {/* ── Web analytics (Plausible) ─────────────────── */}
       <section aria-labelledby="admin-web-analytics" className="flex flex-col gap-4">

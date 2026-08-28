@@ -184,7 +184,18 @@
     "copyId": "Copy ID",
     "copied": "Copied!",
     "viewDetail": "View detail",
-    "close": "Close"
+    "close": "Close",
+    "funnel": {
+      "title": "Visitors who became accounts",
+      "subtitle": "Anonymous arrivals against real registrations, last {{days}} days.",
+      "anonymous": "Anonymous visitors",
+      "registered": "Accounts created",
+      "rate": "Became an account",
+      "noData": "no data",
+      "barAria": "{{accounts}} accounts created from {{visitors}} anonymous visitors",
+      "serverTruth": "Counted from the server-side record, not from the browser: the client-side signup funnel missed {{count}} of these accounts, so a rate computed from it would have been wrong.",
+      "sourcesAgree": "The server-side record and the client funnel agree for this window."
+    }
   },
   "moderation": {
     "heading": "Review queue",
@@ -575,6 +586,40 @@
     "rangeDrift": {
       "title": "These figures cover a different window",
       "body": "The window shown is {{asked}}, but the analytics API answered for {{answered}}. Treat every figure below as describing the second window, and report this."
+    },
+    "audience": {
+      "title": "Audience — our own data",
+      "source": "First-party events · every session, with the role attached",
+      "chartTitle": "Daily sessions, by who was here",
+      "chartSub": "Staff are shown rather than filtered out: on a pre-launch product they are most of the volume, and hiding them would flatter the chart instead of explaining it.",
+      "bands": {
+        "anonymous": "Anonymous",
+        "registered": "Registered",
+        "staff": "Staff"
+      },
+      "externalShare": "Not us",
+      "noData": "no data",
+      "emptyWindow": "No sessions recorded in this window. This is a measured zero, not a failed read.",
+      "showTable": "Show the numbers as a table",
+      "day": "Day",
+      "convertedShort": "{{count}} converted",
+      "integrityTitle": "How far the signup funnel can be trusted",
+      "unobservedBadge": "{{count}} accounts unobserved",
+      "accountsCreated": "Accounts actually created",
+      "signupObserved": "Signups the funnel saw",
+      "observedShare": "Observed",
+      "integrityGap": "Accounts exist that the client-side funnel never recorded. The funnel only fires for visitors who accepted optional cookies and kept the tab open, so treat it as a floor — the server-side count on the left is the truth.",
+      "integrityClean": "The client funnel accounted for every registration in this window.",
+      "acquisitionTitle": "Anonymous visitors, and whether they came back",
+      "acquisitionSub": "One row per visitor who arrived without an account, with where they landed and whether they ever created one.",
+      "visitors": "Visitors",
+      "converted": "Became accounts",
+      "conversionRate": "Conversion",
+      "byLandingRoute": "Landing page",
+      "byReferrer": "Came from",
+      "byDevice": "Device",
+      "byLocale": "Language",
+      "noCampaigns": "No visitor in this window arrived with a campaign tag. That is a marketing gap, not a data gap — no link we have shared carries UTM parameters yet."
     }
   },
   "emails": {

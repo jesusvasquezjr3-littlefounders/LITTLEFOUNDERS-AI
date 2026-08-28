@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Badge, Card, Icon, StatCard, Table, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { AdminAction, AdminDialog, AdminEmpty, AdminPage, RoleChip, Unavailable, useAdminData } from './adminShared';
+import { UsersFunnelCard } from './UsersFunnelCard';
 import { SignupTimeline } from './SignupTimeline';
 
 interface User {
@@ -183,6 +184,13 @@ export function AdminUsersPage() {
             />
           </div>
         )}
+
+        {/*
+          The people who are NOT in the table below. Every other number on this
+          page counts accounts, which answers a question nobody asked on a
+          product whose whole problem is whether strangers ever become one.
+        */}
+        <UsersFunnelCard />
 
         {/* ── Stats Distribution Bar ── */}
         {stats && (
