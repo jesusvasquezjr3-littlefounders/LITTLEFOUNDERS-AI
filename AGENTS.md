@@ -304,6 +304,7 @@ All of these must pass, in every service you touched:
 - [ ] Tutor 3D clip/rig changes: `npm run verify:rig` (frontend) — every clip keeps every character in its own stance and proportions
 - [ ] Tutor 3D placement/island changes: `npm run verify:placement` (frontend) — every character stands on walkable ground, inside the rim
 - [ ] Lesson Engine or character-layer changes: `npm run verify:lesson-engine` (frontend) — every segment type played with REAL pointer events; it gates reachability, start, 3D-only, one WebGL context and a clean console. It does NOT gate how many segments reach a verdict, because that number measures the DRIVER (§1.14) — `--strict` opts into it for a deliberate deep run
+- [ ] Tutor HUD/layout changes: `npm run verify:tutor-ui` (frontend) — the conversing phase at desktop light en-US, desktop dark es-MX and mobile es-MX, every visible control hit-tested with `elementFromPoint` (the §1.14 synthetic-click lesson applied to the Tutor's own stack of canvas, caption, panel and dock), plus the edit affordance driven with real mouse events
 - [ ] Tutor runtime changes: `npm run verify:tutor` (oracle) — the model context rejects every unlisted field, and the injection canary corpus still fails to escape
 - [ ] Files added/moved/deleted: `npm run repo:map` (root) — regenerate the map
 - [ ] Docs updated per the stewardship table (§8)

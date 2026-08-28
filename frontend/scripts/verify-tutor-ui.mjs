@@ -1,0 +1,205 @@
+/*
+ * THE TUTOR'S HUD, VERIFIED THE WAY A PERSON USES IT.
+ *
+ *   npm run verify:tutor-ui
+ *
+ * Drives /dev/tutor-lab's conversing phase at three configurations — desktop
+ * light en-US, desktop dark es-MX, mobile light es-MX — and hit-tests EVERY
+ * visible product control with `elementFromPoint`, exactly as
+ * verify-lesson-engine does and for exactly the same reason: a synthetic
+ * `element.click()` does no hit-testing, so an overlay can swallow every
+ * control while every other kind of audit stays green (/AGENTS.md §1.14 —
+ * that is how the Lesson Engine shipped unusable).
+ *
+ * What this gates:
+ *   every control reachable    the character layer, the caption, the docked
+ *                              panel and the dock all stack over one canvas;
+ *                              any of them can occlude a control.
+ *   the edit affordance works  driven with REAL mouse events: pressing the
+ *                              pencil on the last learner message must fill
+ *                              the composer.
+ *   explain-differently policy hidden while an activity is up (the learner
+ *                              has a task), by design — asserted, not skipped.
+ *   no console errors          a thrown render is invisible in a screenshot.
+ *
+ * The lab's own instrument panel is collapsed before measuring: it is dev
+ * chrome floating over the product, and a harness that measures its own
+ * occlusion reports the product as broken (§1.14, the harness-defect class).
+ */
+import { spawn } from 'node:child_process'
+import { mkdirSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { setTimeout as sleep } from 'node:timers/promises'
+import { fileURLToPath } from 'node:url'
+
+import { launchBrowser, openPage } from './lesson-engine/browser.mjs'
+
+const HERE = fileURLToPath(new URL('.', import.meta.url))
+const VITE_BIN = join(HERE, '..', 'node_modules', 'vite', 'bin', 'vite.js')
+const OUT = join(tmpdir(), 'lf-verify-tutor-ui')
+mkdirSync(OUT, { recursive: true })
+
+async function startDevServer() {
+  if (process.env.TUTOR_LAB_URL) return { url: process.env.TUTOR_LAB_URL, stop: () => {} }
+  const child = spawn(process.execPath, [VITE_BIN, '--host', '127.0.0.1'], {
+    cwd: join(HERE, '..'),
+    stdio: ['ignore', 'pipe', 'pipe'],
+  })
+  const url = await new Promise((resolve, reject) => {
+    let output = ''
+    const timer = setTimeout(() => reject(new Error(`Vite never printed a URL:\n${output}`)), 90_000)
+    const read = (chunk) => {
+      output += chunk.toString()
+      // Vite colours its banner; strip the escape codes or the URL is never
+      // matched (same note as verify-lesson-engine's server starter).
+      const plain = output.replace(/\[[0-9;]*m/g, '')
+      const match = plain.match(/http:\/\/127\.0\.0\.1:(\d+)\//)
+      if (match) {
+        clearTimeout(timer)
+        resolve(`http://127.0.0.1:${match[1]}`)
+      }
+    }
+    child.stdout.on('data', read)
+    child.stderr.on('data', read)
+  })
+  return { url, stop: () => child.kill() }
+}
+
+/* Every visible product control, hit-tested the way a finger reaches one. */
+const SWEEP =
+  '(() => { const out = [];' +
+  ' for (const b of document.querySelectorAll("button:not([disabled]),a[href],input:not([disabled])")) {' +
+  '   if (b.closest("[data-lab-chrome]")) continue;' +
+  '   if (b.closest("[inert]") || b.inert) continue;' +
+  '   const r = b.getBoundingClientRect();' +
+  '   if (r.width < 4 || r.height < 4) continue;' +
+  '   if (r.right < 0 || r.left > innerWidth || r.bottom < 0 || r.top > innerHeight) continue;' +
+  '   const x = r.left + r.width / 2, y = r.top + r.height / 2;' +
+  '   if (y < 0 || y > innerHeight) continue;' +
+  '   const t = document.elementFromPoint(x, y);' +
+  '   const ok = t === b || b.contains(t) || (t && t.closest("button,a,label,input") === b);' +
+  '   out.push({ name: (b.getAttribute("aria-label") || b.textContent || b.placeholder || b.tagName).trim().slice(0, 40),' +
+  '     reaches: ok, topmost: t ? t.tagName + "." + String(t.className).slice(0, 30) : "null" }); }' +
+  ' return out })()'
+
+async function realClick(page, x, y) {
+  await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y })
+  await page.send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: 1 })
+  await page.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', clickCount: 1 })
+}
+
+const centerOf = (selectorExpr) =>
+  `(() => { const b = ${selectorExpr}; if (!b) return null; const r = b.getBoundingClientRect();` +
+  ` return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) } })()`
+
+const switchCoords = (label) =>
+  `(() => { const b = [...document.querySelectorAll('[data-lab-chrome] button')]` +
+  `.find((n) => n.textContent.trim() === ${JSON.stringify(label)});` +
+  ` if (!b) return null; const r = b.getBoundingClientRect();` +
+  ` return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) } })()`
+
+async function pressSwitch(page, label) {
+  const at = await page.evaluate(switchCoords(label))
+  if (!at) throw new Error(`lab switch "${label}" not found`)
+  await realClick(page, at.x, at.y)
+}
+
+async function waitFor(page, expression, ms, what) {
+  const until = Date.now() + ms
+  while (Date.now() < until) {
+    if (await page.evaluate(expression)) return
+    await sleep(400)
+  }
+  throw new Error(`timed out waiting for ${what}`)
+}
+
+async function shoot(page, name) {
+  const { data } = await page.send('Page.captureScreenshot', { format: 'png' })
+  writeFileSync(join(OUT, `${name}.png`), Buffer.from(data, 'base64'))
+}
+
+const server = await startDevServer()
+console.log(`verify:tutor-ui — dev server at ${server.url}, screenshots in ${OUT}`)
+const { child, browser } = await launchBrowser(join(tmpdir(), `lf-tutor-ui-${Date.now()}`))
+let failures = 0
+
+try {
+  for (const [tag, viewport, locale] of [
+    ['desktop-en', { width: 1280, height: 900, dark: false }, 'en-US'],
+    ['desktop-es-dark', { width: 1280, height: 900, dark: true }, 'es-MX'],
+    ['mobile-es', { width: 375, height: 812, dark: false }, 'es-MX'],
+  ]) {
+    const page = await openPage(browser, viewport)
+    await page.send('Page.navigate', { url: `${server.url}/dev/tutor-lab` })
+    await waitFor(page, '!!document.querySelector("[data-lab-chrome]")', 60_000, 'lab chrome')
+    const open = await page.evaluate(switchCoords('conversing'))
+    if (!open) await pressSwitch(page, 'lab')
+    await waitFor(page, 'document.body.innerText.includes("stage ready")', 90_000, 'stage ready')
+    await pressSwitch(page, locale)
+    await sleep(400)
+    await pressSwitch(page, 'conversing')
+    await sleep(2500)
+    await pressSwitch(page, 'hide')
+    await sleep(300)
+
+    const controls = await page.evaluate(SWEEP)
+    const unreachable = controls.filter((c) => !c.reaches)
+    console.log(`[${tag}] ${controls.length} controls, ${unreachable.length} unreachable`)
+    for (const c of unreachable) {
+      failures += 1
+      console.log(`  UNREACHABLE: "${c.name}" — topmost ${c.topmost}`)
+    }
+    await shoot(page, `tutor-ui-${tag}`)
+
+    if (tag === 'desktop-en') {
+      const activityUp = await page.evaluate(
+        `!!document.querySelector('[data-plate-body]') && /Check|Comprobar/.test(document.body.innerText)`,
+      )
+      const chip = await page.evaluate(
+        centerOf(`[...document.querySelectorAll('button')].find((b) => b.textContent.includes('another way'))`),
+      )
+      if (activityUp) {
+        console.log(`  explain-differently hidden while an activity is up (by design): ${chip === null}`)
+        if (chip !== null) failures += 1
+      } else if (!chip) {
+        failures += 1
+        console.log('  MISSING: explain-differently chip')
+      } else {
+        await realClick(page, chip.x, chip.y)
+        await sleep(600)
+        const landed = await page.evaluate(
+          `document.body.innerText.includes('Can you explain it another way?')`,
+        )
+        console.log(`  explain-differently click lands in the log: ${landed}`)
+        if (!landed) failures += 1
+      }
+
+      const pencil = await page.evaluate(
+        centerOf(`document.querySelector('button[aria-label="Rephrase this message"]')`),
+      )
+      if (!pencil) {
+        failures += 1
+        console.log('  MISSING: edit affordance on the last learner message')
+      } else {
+        await realClick(page, pencil.x, pencil.y)
+        await sleep(300)
+        const filled = await page.evaluate(
+          `(() => { const i = [...document.querySelectorAll('input')].find((n) => n.placeholder && n.placeholder.includes('Rephrase')); return i ? i.value.length > 0 : false })()`,
+        )
+        console.log(`  edit affordance fills the composer: ${filled}`)
+        if (!filled) failures += 1
+      }
+    }
+    if (page.errors.length > 0) {
+      failures += page.errors.length
+      console.log(`  [${tag}] console errors:`, page.errors.slice(0, 5))
+    }
+  }
+} finally {
+  child.kill()
+  server.stop()
+}
+
+console.log(failures === 0 ? 'verify:tutor-ui OK — every control reachable, affordances live.' : `verify:tutor-ui FAILED: ${failures}`)
+process.exitCode = failures === 0 ? 0 : 1

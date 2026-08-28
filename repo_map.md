@@ -1205,7 +1205,7 @@ primary register.
 ### ROADMAP.md
 
 ```
-# ROADMAP.md — Architecture & Sprint Plan
+﻿# ROADMAP.md — Architecture & Sprint Plan
 
 > Authority: second only to /AGENTS.md. Architecture decisions recorded here; the running log lives in WALKTHROUGH.md.
 
@@ -1309,17 +1309,17 @@ untracked by default; a skill the team wants versioned gets a scoped
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## The Lesson Engine shipped unusable, and four kinds of green audit said otherwise (2026-08-27)
+## Tutor v2 — the owner rejected the shipped Tutor, and four decisions reopened its design (2026-08-28)
 
-**Symptom, reported by the owner:** "Empezar leccion NO FUNCIONA." Not slow —
-dead. Nothing in a lesson responded to a tap.
+**The verdict, owner's words:** the shipped Tutor is below MVP — slow,
+disorganized, unintuitive, not adaptive, narration effectively non-functional,
+no way to restart or interrupt, and it does not teach live off what the learner
+says. The session goal is a finished product, and `feat/tutor-v2` is the branch.
 
-**Cause.** The character layer is a full-viewport canvas at z-20 above the
-lesson's own content. Its wrapper carries `pointer-events-none` and
-`pointer-events` is inherited — but React Three Fiber writes
-`pointer-events: auto` INLINE on its own container, and an inline value beats an
-inherited one. The canvas was therefore hit-testable and topmost over every
-control in the product. Measured: `document.elementFromPoint` at the centre of
+**Exploration confirmed the complaints as mechanisms**, not impressions: a
+voice turn was 5 sequential network hops with nothing shown until all of them
+finished; `speech.pregenerated.json` is empty (0/144), so even the scripted
+greeting paid and waited; `awaitingReply` had no timeout; skill states were
 ```
 
 ### agent/README.md
@@ -12542,6 +12542,26 @@ BEGIN
 -- declines optional cookies emits nothing, and a browser that closes mid-flush
 -- loses the tail. Measured in production the same day: 16 accounts were
 -- created after instrumentation began, and `signup_complete` had fired ZERO
+```
+
+### database/migrations/0051_tutor_session_summary.sql
+
+```
+-- 0051_tutor_session_summary.sql
+-- (Authored as 0050 on feat/tutor-v2; renumbered on rebase — a concurrent
+-- session shipped 0050_audience_insights.sql to main first.)
+--
+-- Cross-session memory for the Tutor (/ORACLE.md §4.1, owner sign-off
+-- 2026-08-28): each closed session gets a STRICT DIGEST — catalog topic,
+-- skill keys, a closed outcome vocabulary, two bounded counters — computed by
+-- Core at close time from rows it already holds. NEVER a transcript, never a
+-- learner's words: the digest is what the next session's model context is
+-- allowed to see (oracle/src/context/schema.ts PreviousSessionSchema), and
+-- everything in it is data the model context already carried in some form.
+--
+-- A column on tutor_sessions rather than a table: the digest is 1:1 with a
+-- session, dies with the session's row, and is therefore swept by the same
+-- 90-day retention job with no new moving parts (backend tutorRetention.ts
 ```
 
 ### database/package.json
@@ -27089,7 +27109,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/ui';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from './hud/HudPlate';
-import { LessonPlate, type LessonPlateDetent } from './hud/LessonPlate';
+import { LessonPlate, useDesktopPlate, type LessonPlateDetent } from './hud/LessonPlate';
 import { WorldChip } from './hud/WorldChip';
 import { SpeechCaption } from './SpeechCaption';
 import { TutorFace } from './TutorFace';
@@ -27213,11 +27233,11 @@ import {
   getOffers,
   getPreferences,
   getTranscript,
+  resumeSession,
   savePreferences,
   startSession,
   type StartSessionInput,
 } from './tutorApi';
-import { micBlockedForOffers, micBlockedReason, narrowBlockedReason, primaryOpening } from './mic';
 ```
 
 ### frontend/src/tutor/TutorFace.tsx
@@ -27244,6 +27264,7 @@ import { cn } from '@/lib/utils';
 
 ```
 import { useEffect, useRef } from 'react';
+import { Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useScrollEdges } from './hud/useScrollEdges';
 
@@ -27257,7 +27278,6 @@ import { useScrollEdges } from './hud/useScrollEdges';
  * The bubble was the character's 2D head beside the line it was saying right
  * now, mounted on the lesson plate. It existed for two stated reasons, and both
  * of them moved rather than died (/DESIGN.md §Lumen → *One line, one printing,
- * two channels*):
 ```
 
 ### frontend/src/tutor/VoiceConsentControl.tsx
@@ -27473,11 +27493,11 @@ import { HudPlate } from './HudPlate';
 /*
  * The surface a live lesson runs on, floating over the island.
  *
- * THIS IS NOT A RAIL, AND THE DISTINCTION IS THE WHOLE POINT. The version the
- * owner rejected put the 3D stage in one half of a `lg:grid-cols-[1fr_1fr]`
- * split and the lesson in the other, and the complaint was about the
- * SILHOUETTE: a near-opaque slab down a third of the screen reads as a
- * dashboard whatever is drawn beside it. Narrowing that slab to 400 px does not
+ * ON DESKTOP IT IS A DOCKED FULL-HEIGHT PANEL (owner sign-off 2026-08-28,
+ * superseding two earlier positions in turn). The 2026-08-21 build put the
+ * stage in one half of a `lg:grid-cols-[1fr_1fr]` split and was rejected for
+ * its SILHOUETTE — a near-opaque slab down half the screen reads as a
+ * dashboard. The correction floated a content-fitted 420 px plate in the
 ```
 
 ### frontend/src/tutor/hud/MicOrb.tsx
@@ -28458,6 +28478,26 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
  *
 ```
 
+### oracle/src/__tests__/model-probe.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { modelReachable, resetModelProbe } from '../model/provider.js';
+
+/*
+ * The preflight probe (/ORACLE.md §14). Exists because of a measured outage:
+ * on 2026-08-24 the shared DeepSeek account ran out of balance, and because
+ * readiness only checked that a key STRING existed, preflight said yes and
+ * every turn then failed in front of the learner. The probe's contract:
+ * definitive refusals block, transients do not, and it costs at most one tiny
+ * call a minute.
+ */
+
+let fetchMock: ReturnType<typeof vi.fn>;
+
+beforeEach(async () => {
+```
+
 ### oracle/src/__tests__/orchestrator.test.ts
 
 ```
@@ -28496,6 +28536,26 @@ vi.mock('../model/provider.js', async () => {
 });
 vi.mock('../safety/moderation.js', async () => {
   const actual = await vi.importActual<typeof import('../safety/moderation.js')>('../safety/moderation.js');
+```
+
+### oracle/src/__tests__/plan.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import {
+  buildPlan,
+  noteConversationTurn,
+  OFFER_ADAPTATION_THRESHOLD,
+  planState,
+  recordGrade,
+  STUCK_THRESHOLD,
+  stuckInstruction,
+} from '../tutor/plan.js';
+import { PlanStateSchema } from '../context/schema.js';
+
+/*
+ * The lesson plan is the difference between a lesson and a playlist
+ * (/ORACLE.md §9.3), and everything about it is deterministic — which is what
 ```
 
 ### oracle/src/__tests__/privacy-contract-docs.test.ts
@@ -28669,13 +28729,13 @@ import {
   CHARACTER_IDS,
   INTENTS,
   LOCALES,
+  PreviousSessionSchema,
   SkillStateSchema,
 } from '../context/schema.js';
 
 /*
  * Oracle talks to Core, and to nothing else that holds a learner's data.
  *
- * Oracle has NO database credentials, by design. Every fact about a learner
 ```
 
 ### oracle/src/depot/client.ts
@@ -28826,7 +28886,7 @@ import { z } from 'zod';
 import { ok, fail } from '../lib/http.js';
 import { getConfig } from '../env.js';
 import { moderationReadiness } from '../safety/moderation.js';
-import { modelConfigured } from '../model/provider.js';
+import { modelConfigured, modelReachable } from '../model/provider.js';
 import { getVoiceProvider } from '../voice/index.js';
 import { pregeneratedCount, pregeneratedGeneratedAt } from '../voice/pregenerated.js';
 import { PlacementIntakeInputSchema, runPlacementIntake } from '../tutor/placementIntake.js';
@@ -28980,20 +29040,20 @@ process.env.VOICE_PROVIDER ??= 'none';
 
 ```
 import { getConfig } from '../env.js';
-import { sealContext, type TutorContext } from '../context/schema.js';
+import { sealContext, type SkillState, type TutorContext } from '../context/schema.js';
+import {
+  buildPlan,
+  noteConversationTurn,
+  planState,
+  recordGrade,
+  stuckInstruction,
+  type LessonPlan,
+} from './plan.js';
 import { classifyLearnerInput, type SafetyCategory } from '../safety/classifier.js';
 import { fenceUntrusted } from '../safety/untrusted.js';
 import { moderateTutorOutput } from '../safety/moderation.js';
-import { complete, ModelUnavailableError } from '../model/provider.js';
+import { complete, CompletionAbortedError, ModelUnavailableError } from '../model/provider.js';
 import { evaluateBudget, WRAP_UP_INSTRUCTION, type BudgetVerdict } from '../session/budget.js';
-import { buildContextMessage, TUTOR_SYSTEM_PROMPT } from './prompt.js';
-import { parseTurn, type TutorTurn } from './turnSchema.js';
-import {
-  closingResponse,
-  greetingResponse,
-  moderationBlockedResponse,
-  modelDownResponse,
-  safetyResponse,
 ```
 
 ### oracle/src/tutor/placementIntake.ts
@@ -29014,6 +29074,26 @@ import {
  * actually credited with is established by deterministically-graded answers to
  * pre-authored probes. A model that hallucinates here, or one talked into
  * saying 1.0 by the learner's own text, moves one question and changes nothing
+```
+
+### oracle/src/tutor/plan.ts
+
+```
+import type { Adaptation, PlanState, TutorIntent } from '../context/schema.js';
+import { ADAPTATIONS, PLAN_STEPS } from '../context/schema.js';
+
+/*
+ * The lesson plan — the spine that makes a session a LESSON rather than a
+ * playlist of replies (/ORACLE.md §9.3).
+ *
+ * Everything here is deterministic and server-owned, on purpose. The model is
+ * good at PERFORMING a step — explaining warmly, choosing an example, writing
+ * a check-in question — and bad at remembering which step it is on, because
+ * its only memory is a transcript it re-reads under a token budget. Before
+ * this file existed, "adaptivity" was one sentence in the system prompt asking
+ * the model to notice when a learner was stuck twice; nothing counted, so
+ * nothing noticed. Now the counting is arithmetic here, and the model is told
+ * the state instead of being asked to reconstruct it.
 ```
 
 ### oracle/src/tutor/prompt.ts
