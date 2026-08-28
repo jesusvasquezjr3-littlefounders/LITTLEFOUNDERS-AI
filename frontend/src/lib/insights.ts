@@ -81,7 +81,7 @@ const MAX_BATCH = 25;
  */
 let sessionId: string | null = null;
 let ordinal = 0;
-let ambient: { device?: Device; locale?: 'en-US' | 'es-MX' | 'pt-BR' } = {};
+let ambient: { device?: Device; locale?: 'en-US' | 'es-MX' | 'pt-BR'; referrerClass?: ReferrerClass } = {};
 /** Anonymous (pre-signup) mode: identity is the first-party cookie. */
 let anonMode = false;
 let anonContext: VisitorContext | null = null;
@@ -113,11 +113,37 @@ function stampEvent(event: InsightEvent, fields: InsightFields): QueuedEvent {
 }
 
 /** Ambient dimensions applied to every subsequent event. */
+/**
+ * Stamp device, locale and referrer onto every event this session emits.
+ *
+ * MUST be called for AUTHENTICATED sessions too, not only anonymous ones.
+ * Until 2026-08-28 only `startAnonymousTracking` called it, so 93% of stored
+ * events carried no device and no locale and 100% carried no referrer —
+ * measured in production, and it meant the console could not answer "do
+ * parents use a phone or a laptop" for the half of the product that is behind
+ * a login. Every breakdown by device was silently computed on the anonymous
+ * 7% while being labelled as the whole.
+ *
+ * `referrerClass` comes from the landing snapshot when there is one (so a
+ * visitor who arrived from search and then signed in keeps `search` rather
+ * than becoming `internal` at the moment they authenticate), and from a live
+ * classification otherwise.
+ */
 export function setInsightsContext(ctx: { locale?: string }): void {
+  const visitor = (() => {
+    try {
+      return collectVisitorContext(ctx.locale);
+    } catch {
+      // sessionStorage unavailable (Safari private mode): a missing referrer
+      // is a worse answer than no answer, but it must never break tracking.
+      return null;
+    }
+  })();
   ambient = {
     device: detectDevice(),
     locale:
       ctx.locale === 'en-US' || ctx.locale === 'es-MX' || ctx.locale === 'pt-BR' ? ctx.locale : undefined,
+    referrerClass: visitor?.referrerClass,
   };
 }
 

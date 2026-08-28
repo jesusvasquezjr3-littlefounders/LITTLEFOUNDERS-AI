@@ -38,6 +38,16 @@ const REPORT: PlausibleReportData = {
   imports: { importsIncluded: true, importsSkipReason: null, importsWarning: null, queried: ['2026-07-15', '2026-08-13'] },
   breakdownsWithoutImports: [],
   rangeDrift: null,
+  firstParty: {
+    sessions: { anonymous: 40, registered: 12, staff: 300 },
+    externalShare: 52 / 352,
+    accountsCreated: 31,
+    signupObserved: 0,
+    unobserved: 31,
+    anonymousVisitors: 26,
+    anonymousConverted: 1,
+    conversionRate: 1 / 26,
+  },
 };
 
 describe('resolveRange', () => {
@@ -210,5 +220,58 @@ describe('export routes', () => {
     // Out-of-range falls back to the documented default rather than erroring
     // the whole download; the file is still produced and still honest.
     expect(bad.status).toBe(200);
+  });
+});
+
+describe('exports carry OUR OWN audience, not only Plausible', () => {
+  /*
+   * A PDF or a spreadsheet is what leaves the building: it gets forwarded,
+   * quoted and acted on months later with no chance to ask what it covered.
+   * Plausible sees only anonymous, consented visitors on marketing pages, and
+   * an export that says so nowhere is an export that will be over-read.
+   */
+  it('emits a firstparty section with the server-side account count', () => {
+    const csv = renderAnalyticsReportCsv(REPORT);
+    expect(csv).toContain('firstparty,sessions_anonymous,40');
+    expect(csv).toContain('firstparty,sessions_staff,300');
+    expect(csv).toContain('firstparty,accounts_created,31');
+    expect(csv).toContain('firstparty,signups_observed_by_client_funnel,0');
+    expect(csv).toContain('firstparty,accounts_unobserved,31');
+  });
+
+  it('explains the gap in words rather than leaving two numbers to reconcile', () => {
+    const csv = renderAnalyticsReportCsv(REPORT);
+    expect(csv).toMatch(/firstparty,note,.*server-side record and is authoritative/);
+  });
+
+  it('says "no data", never 0%, when a rate has no denominator', () => {
+    const csv = renderAnalyticsReportCsv({
+      ...REPORT,
+      firstParty: { ...REPORT.firstParty!, conversionRate: null, externalShare: null },
+    });
+    expect(csv).toContain('firstparty,conversion_rate,no data');
+    expect(csv).toContain('firstparty,external_share,no data');
+  });
+
+  it('reports UNREAD as unavailable, which is not the same as zero', () => {
+    // The distinction the whole audience surface exists to preserve. Rendering
+    // zeros here would assert that nobody visited and nobody registered.
+    const csv = renderAnalyticsReportCsv({ ...REPORT, firstParty: null });
+    expect(csv).toContain('firstparty,status,');
+    expect(csv).toMatch(/unavailable.*NOT zero/);
+    expect(csv).not.toContain('firstparty,accounts_created,0');
+  });
+
+  it('omits the gap note when there is no gap', () => {
+    const csv = renderAnalyticsReportCsv({
+      ...REPORT,
+      firstParty: { ...REPORT.firstParty!, signupObserved: 31, unobserved: 0 },
+    });
+    expect(csv).not.toMatch(/firstparty,note,/);
+  });
+
+  it('gives the workbook its own audience sheet', async () => {
+    const buffer = await renderAnalyticsReportXlsx(REPORT);
+    expect(buffer.byteLength).toBeGreaterThan(0);
   });
 });

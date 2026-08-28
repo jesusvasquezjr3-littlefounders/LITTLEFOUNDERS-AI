@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import {
   announceSessionStart,
@@ -9,6 +10,7 @@ import {
   flushInsightsOnHide,
   rebaseSessionStart,
   resetInsights,
+  setInsightsContext,
   trackInsight,
   type InsightRouteClass,
 } from './insights';
@@ -38,6 +40,7 @@ const FLUSH_MS = 60_000;
 export function useInsightsBeacon(): void {
   const { session, meLoaded, analyticsEnabled, getToken } = useAuth();
   const location = useLocation();
+  const { i18n } = useTranslation();
   const startedAtRef = useRef<number>(Date.now());
   const lastRouteClassRef = useRef<InsightRouteClass | null>(null);
 
@@ -52,6 +55,17 @@ export function useInsightsBeacon(): void {
     }
     configureInsights({ enabled: analyticsEnabled, getToken });
     if (!analyticsEnabled) return;
+
+    /*
+     * Device, locale and referrer for an AUTHENTICATED session.
+     *
+     * This line is why 93% of stored events had no device and 100% had no
+     * referrer: `setInsightsContext` was only ever called from the anonymous
+     * path, so every signed-in session — most of the product — emitted
+     * dimensionless rows. Called after `configureInsights` so the ambient
+     * fields are in place before `announceSessionStart` emits the first event.
+     */
+    setInsightsContext({ locale: i18n.resolvedLanguage });
 
     startedAtRef.current = Date.now();
     announceSessionStart();
@@ -90,7 +104,7 @@ export function useInsightsBeacon(): void {
       // on StrictMode's probe mount — resetting would wipe the queue and the
       // session dedup mid-session. The !ready branch above owns teardown.
     };
-  }, [ready, analyticsEnabled, getToken]);
+  }, [ready, analyticsEnabled, getToken, i18n.resolvedLanguage]);
 
   useEffect(() => {
     if (!ready || !analyticsEnabled) return;

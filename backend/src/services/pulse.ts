@@ -782,6 +782,36 @@ export interface PlausibleReportData {
   breakdownsWithoutImports: PlausibleDimensionKey[];
   /** Non-null only when Plausible answered for a window we did not ask for. */
   rangeDrift: RangeDrift | null;
+  /*
+   * OUR OWN measurement of the same window, or null when it could not be read.
+   *
+   * Every other field here comes from Plausible, which by design sees only
+   * anonymous, consented visitors on marketing pages. An export carrying only
+   * that is not wrong, but it is systematically narrower than a reader
+   * assumes — on this product it omitted the staff share, every signed-in
+   * session, and the fact that 31 accounts existed while the client funnel had
+   * observed none of them.
+   *
+   * Null is a real state and must render as "could not be read", never as
+   * zeros: the point of putting it in the export is that a reader can tell the
+   * two apart.
+   */
+  firstParty: FirstPartyReport | null;
+}
+
+/** First-party audience figures, carried into every export format. */
+export interface FirstPartyReport {
+  sessions: { anonymous: number; registered: number; staff: number };
+  /** Share of sessions that were not staff, or null when there were none. */
+  externalShare: number | null;
+  accountsCreated: number;
+  signupObserved: number;
+  /** Accounts the consent-gated client funnel never recorded. */
+  unobserved: number;
+  anonymousVisitors: number;
+  anonymousConverted: number;
+  /** Null when nobody arrived — never a fabricated 0%. */
+  conversionRate: number | null;
 }
 
 /*
@@ -882,6 +912,13 @@ export async function getPlausibleReportData(
     imports: overview.imports,
     breakdownsWithoutImports,
     rangeDrift: overview.rangeDrift,
+    /*
+     * Filled by the caller (routes/admin.ts loadReport), not here: this
+     * function's job is Plausible, and reaching into the first-party views
+     * from inside it would make a Plausible read fail whenever Postgres was
+     * slow. Null means "not attached"; the exports render that as unread.
+     */
+    firstParty: null,
   };
 }
 

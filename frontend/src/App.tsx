@@ -72,6 +72,7 @@ const PoseLabPage = lazy(() => import('@/tutor-scene/lab/PoseLabPage'));
 const TutorLabPage = lazy(() => import('@/tutor/lab/TutorLabPage'));
 const LearnLabPage = lazy(() => import('@/routes/app/learn/lab/LearnLabPage'));
 const AnalyticsNoticesLab = lazy(() => import('@/routes/admin/analytics/AnalyticsNoticesLab'));
+const AudienceLab = lazy(() => import('@/routes/admin/analytics/AudienceLab'));
 
 /* The Tutor's 3D stage. Lazy is MANDATORY, not an optimisation: `three` plus the
  * scene code is a large chunk, and a static import would put it in the entry
@@ -156,6 +157,16 @@ export function App() {
               element={
                 <Suspense fallback={null}>
                   <LearnLabPage />
+                </Suspense>
+              }
+            />
+          ) : null}
+          {import.meta.env.DEV ? (
+            <Route
+              path="dev/audience-lab"
+              element={
+                <Suspense fallback={null}>
+                  <AudienceLab />
                 </Suspense>
               }
             />

@@ -298,6 +298,7 @@ All of these must pass, in every service you touched:
 - [ ] `npm run paths:check` (root) — the acquisition surface agrees across `frontend/` and `backend/`
 - [ ] `npm run seo:check` (root) — the public surface: every page titled and described in all three locales, nothing both sitemapped and robots-blocked, and search's route list agrees with the app's
 - [ ] Frontend deploys: `npm run seo:live` (root) — what production ACTUALLY serves a crawler. `seo:check` validates the declaration; only this proves the CDN delivered it, and the two have disagreed
+- [ ] Frontend deploys that change a public page: `npm run seo:indexnow` (root) — tells Bing, Yandex, Naver and Seznam the page changed instead of waiting to be crawled. Fails SOFT by design (a slow search engine must never fail a deploy); Google does not participate and is covered by the sitemap
 - [ ] `npm run tools:test` (root) — the repo’s OWN gates. This is the one that is easy to skip because the individual `*:check` scripts all pass without it: it also asserts repo CONSISTENCY, including that `ROADMAP.md` accounts for every migration in `database/migrations/` (high-water mark plus any declared `unapplied deltas` range). Adding a migration without declaring it pending is green locally on every other gate and red in CI.
 - [ ] `npm run provider:check` (root) — Forge and Oracle agree on the DeepSeek/Qwen base URLs and model names
 - [ ] Tutor 3D clip/rig changes: `npm run verify:rig` (frontend) — every clip keeps every character in its own stance and proportions

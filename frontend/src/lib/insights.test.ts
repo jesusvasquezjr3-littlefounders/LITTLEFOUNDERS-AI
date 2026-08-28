@@ -7,6 +7,7 @@ import {
   flushInsights,
   rebaseSessionStart,
   resetInsights,
+  setInsightsContext,
   startAnonymousTracking,
   trackInsight,
 } from './insights';
@@ -256,5 +257,43 @@ describe('insights: review regressions', () => {
     await flushInsights();
     const thirdBody = apiMock.mock.calls[0]?.[1]?.body as Record<string, unknown>;
     expect(thirdBody.visitor).toBeUndefined();
+  });
+});
+
+describe('ambient dimensions reach AUTHENTICATED events, not only anonymous ones', () => {
+  /*
+   * The regression this pins: `setInsightsContext` was called only from
+   * `startAnonymousTracking`, so every signed-in session emitted rows with no
+   * device, no locale and no referrer. Measured in production 2026-08-28 —
+   * 93% of stored events had no device, 100% had no referrer — which meant
+   * every "breakdown by device" was computed on the anonymous 7% and labelled
+   * as the whole. A/B verified: remove the `setInsightsContext` call from
+   * useInsightsBeacon and the first test here fails.
+   */
+  it('stamps device, locale and referrer onto a queued event', async () => {
+    setInsightsContext({ locale: 'es-MX' });
+    configureInsights({ enabled: true, getToken });
+    trackInsight('nav_view', { routeClass: 'learn' });
+    await flushInsights();
+
+    expect(apiMock).toHaveBeenCalledTimes(1);
+    const body = apiMock.mock.calls[0]?.[1]?.body as { events: Record<string, unknown>[] } | undefined;
+    const event = body?.events?.[0];
+    expect(event?.device).toBeDefined();
+    expect(event?.locale).toBe('es-MX');
+    expect(event).toHaveProperty('referrerClass');
+  });
+
+  it('lets an explicit field win over the ambient one', async () => {
+    // Ambient is a DEFAULT, never an override: a caller that knows better has
+    // to be able to say so, or the context becomes a way to silently discard
+    // the more accurate value.
+    setInsightsContext({ locale: 'en-US' });
+    configureInsights({ enabled: true, getToken });
+    trackInsight('nav_view', { routeClass: 'learn', locale: 'pt-BR' });
+    await flushInsights();
+
+    const body = apiMock.mock.calls[0]?.[1]?.body as { events: Record<string, unknown>[] } | undefined;
+    expect(body?.events?.[0]?.locale).toBe('pt-BR');
   });
 });
