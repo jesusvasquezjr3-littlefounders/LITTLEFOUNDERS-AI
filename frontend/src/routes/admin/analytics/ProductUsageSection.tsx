@@ -42,7 +42,9 @@ export function ProductUsageSection({ days }: { days: number }) {
 
   /** Surfaces reached, summed across the window. */
   const surfaces = useMemo(() => {
-    if (activity.state !== 'ready') return [];
+    // Shape-checked, not assumed: a partial payload must not take the page
+    // down. See the same note in UsersFunnelCard.
+    if (activity.state !== 'ready' || !Array.isArray(activity.data?.entries)) return [];
     const map = new Map<string, { label: string; events: number; sessions: number }>();
     for (const row of activity.data.entries) {
       // A null route_class is not a surface — `session_heartbeat` carries none
@@ -59,7 +61,7 @@ export function ProductUsageSection({ days }: { days: number }) {
 
   /** Which events have fired at all, and which never have. */
   const eventHealth = useMemo(() => {
-    if (activity.state !== 'ready') return null;
+    if (activity.state !== 'ready' || !Array.isArray(activity.data?.entries)) return null;
     const seen = new Map<string, number>();
     for (const row of activity.data.entries) seen.set(row.event, (seen.get(row.event) ?? 0) + row.events);
     const firing = INSTRUMENTED_EVENTS.filter((e) => (seen.get(e) ?? 0) > 0)
@@ -71,7 +73,7 @@ export function ProductUsageSection({ days }: { days: number }) {
 
   /** Session depth, as a distribution rather than a mean. */
   const depth = useMemo(() => {
-    if (sessions.state !== 'ready' || sessions.data.entries.length === 0) return null;
+    if (sessions.state !== 'ready' || !Array.isArray(sessions.data?.entries) || sessions.data.entries.length === 0) return null;
     const rows = sessions.data.entries.filter((r) => bandOf(r.role) !== 'staff');
     if (rows.length === 0) return null;
     const sorted = [...rows].sort((a, b) => a.events - b.events);
@@ -212,7 +214,7 @@ export function ProductUsageSection({ days }: { days: number }) {
       )}
 
       {/* ── Who reaches what ───────────────────────────────────── */}
-      {adoption.state === 'ready' && adoption.data.entries.length > 0 && (
+      {adoption.state === 'ready' && Array.isArray(adoption.data?.entries) && adoption.data.entries.length > 0 && (
         <Card className="flex flex-col gap-3 p-5 shadow-glass">
           <div className="flex flex-col gap-1">
             <h3 className="lf-title text-content">{t('admin.analytics.usage.adoptionTitle')}</h3>

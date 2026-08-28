@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Card, Icon } from '@/components/ui';
 import { useAdminData } from './adminShared';
-import type { AcquisitionData, FunnelIntegrityData } from './analytics/analyticsShared';
+import type { AcquisitionData, FunnelIntegrityData, RegistrationsData } from './analytics/analyticsShared';
 
 /*
  * The people who are NOT in the users table.
@@ -30,11 +30,29 @@ export function UsersFunnelCard({ days = 90 }: { days?: number }) {
 
   const { data: acquisition } = useAdminData<AcquisitionData>(`/admin/insights/acquisition?days=${days}`);
   const { data: integrity } = useAdminData<FunnelIntegrityData>(`/admin/insights/funnel-integrity?days=${days}`);
+  /*
+   * Registrations carry the ROLE split, which nothing else does — funnel
+   * integrity has the daily total but not who those accounts were. Degenerate
+   * today (production is all `universal`) and the reason it is here anyway is
+   * that the day families launch, "who registered" is the first question, and
+   * a panel that has to be built at that moment gets built in a hurry.
+   */
+  const { data: registrations } = useAdminData<RegistrationsData>(`/admin/insights/registrations?days=${days}`);
 
   if (acquisition.state !== 'ready' || integrity.state !== 'ready') return null;
 
-  const visitors = acquisition.data.visitors;
-  const accounts = integrity.data.accountsCreated;
+  /*
+   * Shape-checked, not assumed.
+   *
+   * A card that trusts its payload takes the WHOLE page down when the payload
+   * is partial — and the users directory is not an acceptable casualty of a
+   * supplementary panel failing. Caught by AdminUsersPage.test.tsx, whose api
+   * mock answers unknown paths with `{}`: exactly the shape a degraded or
+   * older Core would return.
+   */
+  const visitors = acquisition.data?.visitors;
+  const accounts = integrity.data?.accountsCreated;
+  if (typeof visitors !== 'number' || typeof accounts !== 'number') return null;
   /*
    * Accounts per visitor, against the SERVER-SIDE account count rather than
    * against the funnel's own `converted` field — the two disagree, and the
@@ -81,9 +99,27 @@ export function UsersFunnelCard({ days = 90 }: { days?: number }) {
         />
       </div>
 
+      {/* Who those accounts were, when there is more than one kind. */}
+      {registrations.state === 'ready' && (registrations.data?.entries?.length ?? 0) > 0 && (
+        <div className="flex flex-wrap gap-x-4 gap-y-1">
+          {Object.entries(
+            (registrations.data.entries ?? []).reduce<Record<string, number>>((acc, row) => {
+              acc[row.role] = (acc[row.role] ?? 0) + row.registrations;
+              return acc;
+            }, {}),
+          )
+            .sort((a, b) => b[1] - a[1])
+            .map(([role, count]) => (
+              <span key={role} className="lf-caption text-content-muted">
+                <span className="lf-number text-content">{nf.format(count)}</span> {role}
+              </span>
+            ))}
+        </div>
+      )}
+
       <p className="lf-caption flex items-start gap-1.5 text-content-muted">
         <Icon name="info" className="!text-[14px] shrink-0 translate-y-0.5" aria-hidden />
-        {integrity.data.unobserved > 0
+        {(integrity.data?.unobserved ?? 0) > 0
           ? t('admin.users.funnel.serverTruth', { count: integrity.data.unobserved })
           : t('admin.users.funnel.sourcesAgree')}
       </p>

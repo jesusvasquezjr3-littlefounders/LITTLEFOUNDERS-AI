@@ -88,19 +88,19 @@ export function AudienceSection({ days }: { days: number }) {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           icon={<Icon name="visibility" className="!text-[24px]" />}
-          value={audience.state === 'ready' ? nf.format(audience.data.totals.anonymous) : '…'}
+          value={audience.state === 'ready' ? nf.format(audience.data?.totals?.anonymous ?? 0) : '…'}
           label={t('admin.analytics.audience.bands.anonymous')}
           tone="primary"
         />
         <StatCard
           icon={<Icon name="how_to_reg" className="!text-[24px]" />}
-          value={audience.state === 'ready' ? nf.format(audience.data.totals.registered) : '…'}
+          value={audience.state === 'ready' ? nf.format(audience.data?.totals?.registered ?? 0) : '…'}
           label={t('admin.analytics.audience.bands.registered')}
           tone="secondary"
         />
         <StatCard
           icon={<Icon name="shield_person" className="!text-[24px]" />}
-          value={audience.state === 'ready' ? nf.format(audience.data.totals.staff) : '…'}
+          value={audience.state === 'ready' ? nf.format(audience.data?.totals?.staff ?? 0) : '…'}
           label={t('admin.analytics.audience.bands.staff')}
           tone="accent"
         />
@@ -108,7 +108,7 @@ export function AudienceSection({ days }: { days: number }) {
           icon={<Icon name="groups" className="!text-[24px]" />}
           value={
             audience.state === 'ready'
-              ? (pct(audience.data.externalShare, locale) ?? t('admin.analytics.audience.noData'))
+              ? (pct(audience.data?.externalShare ?? null, locale) ?? t('admin.analytics.audience.noData'))
               : '…'
           }
           label={t('admin.analytics.audience.externalShare')}
@@ -121,7 +121,7 @@ export function AudienceSection({ days }: { days: number }) {
           <h3 className="lf-title text-content">{t('admin.analytics.audience.chartTitle')}</h3>
           <p className="lf-caption text-content-muted">{t('admin.analytics.audience.chartSub')}</p>
         </div>
-        {audience.state === 'ready' ? (
+        {audience.state === 'ready' && audience.data?.series ? (
           <AudienceChart series={audience.data.series} />
         ) : (
           <p className="lf-caption py-8 text-center text-content-muted">
@@ -131,7 +131,7 @@ export function AudienceSection({ days }: { days: number }) {
       </Card>
 
       {/* ── How far the client funnel can be trusted ───────────── */}
-      {integrity.state === 'ready' && (
+      {integrity.state === 'ready' && typeof integrity.data?.accountsCreated === 'number' && (
         <Card className="flex flex-col gap-3 p-5 shadow-glass">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="lf-title text-content">{t('admin.analytics.audience.integrityTitle')}</h3>
@@ -172,7 +172,7 @@ export function AudienceSection({ days }: { days: number }) {
       )}
 
       {/* ── Anonymous visitors, and whether they ever came back ── */}
-      {acquisition.state === 'ready' && (
+      {acquisition.state === 'ready' && typeof acquisition.data?.visitors === 'number' && (
         <Card className="flex flex-col gap-4 p-5 shadow-glass">
           <div className="flex flex-col gap-1">
             <h3 className="lf-title text-content">{t('admin.analytics.audience.acquisitionTitle')}</h3>
