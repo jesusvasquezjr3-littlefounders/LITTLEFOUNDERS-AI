@@ -95,6 +95,14 @@ export const ClientMessageSchema = z.discriminatedUnion('type', [
       segmentId: z.uuid(),
       score: z.number().int().min(0).max(100),
       correct: z.boolean(),
+      /**
+       * v3: Core's signed grade receipt, relayed verbatim from the grade
+       * response. Verified server-side (session/gradeEcho.ts); only a valid
+       * echo feeds the strategy controller, because the score alone is
+       * client-reported and must not steer the pedagogy.
+       */
+      echo: z.string().max(2_048).optional(),
+      attemptNumber: z.number().int().min(1).max(3).optional(),
     })
     .strict(),
   z
@@ -142,6 +150,13 @@ export type ServerMessage =
       audioUrl: string | null;
       /** What the tutor intends next, so the UI can prepare the panel. */
       next: 'ask' | 'segment' | 'close';
+      /**
+       * v3 turn policy: how long the client should let the learner think
+       * before any gentle nudge, chosen per pedagogical strategy (thinking
+       * time is sacred in a Socratic beat; fluency wants pace). Absent while
+       * the v3 brain is dormant — the client then keeps its own default.
+       */
+      policy?: { idleNudgeMs: number };
     }
   | {
       /**

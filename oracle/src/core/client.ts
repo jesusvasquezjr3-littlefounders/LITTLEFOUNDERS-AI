@@ -35,6 +35,39 @@ export type CloseReason =
   | 'safety_stop'
   | 'error';
 
+/**
+ * One entry of the v3 session plan (Core's pedagogy/sessionPlan.ts). All of
+ * it is server-derived catalog data: KC ids/keys, our localized objective and
+ * remediation hints, numbers. Nothing a learner wrote.
+ */
+const SessionPlanEntrySchema = z
+  .object({
+    kcId: z.uuid(),
+    kcKey: z.string().min(1).max(96),
+    skillKey: z.string().min(1).max(128).nullable(),
+    reason: z.enum(['review_due', 'frontier']),
+    pKnown: z.number().min(0).max(1),
+    targetDifficulty: z.number().int().min(1).max(5),
+    objective: z.string().max(400),
+    prereqKcIds: z.array(z.uuid()).max(16),
+    misconceptions: z
+      .array(z.object({ code: z.string().min(1).max(96), hint: z.string().max(400) }).strict())
+      .max(8),
+  })
+  .strict();
+
+const KcStateSchema = z
+  .object({
+    kcId: z.uuid(),
+    kcKey: z.string().min(1).max(96),
+    pKnown: z.number().min(0).max(1),
+    attempts: z.number().int().nonnegative(),
+  })
+  .strict();
+
+export type SessionPlanEntry = z.infer<typeof SessionPlanEntrySchema>;
+export type KcState = z.infer<typeof KcStateSchema>;
+
 /** What Core hands back when Oracle opens a session it was given a token for. */
 const SessionContextSchema = z
   .object({
@@ -67,6 +100,14 @@ const SessionContextSchema = z
      * refused handshake; the sealed context defaults it to empty.
      */
     previousSessions: z.array(PreviousSessionSchema).max(3).optional(),
+    /**
+     * The v3 brain (migration 0052). OPTIONAL AND NULLABLE on the wire, and
+     * that is the whole deployment story: while 0052 is unapplied, unseeded,
+     * or TUTOR_V3_BRAIN is off, Core sends null (or nothing) and Oracle's
+     * controller stays dormant — exactly v2 behaviour.
+     */
+    sessionPlan: z.array(SessionPlanEntrySchema).max(8).nullable().optional(),
+    kcStates: z.array(KcStateSchema).max(40).nullable().optional(),
     /** True when this learner is a minor: forces the model moderation pass. */
     isMinor: z.boolean(),
     /** Whether an active guardian voice consent exists RIGHT NOW. */
@@ -240,6 +281,10 @@ export interface RequestSegmentInput {
   difficulty: number;
   framing: string;
   rationale: string;
+  /** v3: the KC this activity gathers evidence for — Core stamps provenance. */
+  kcId?: string | null;
+  /** v3: the controller strategy in force when it was requested. */
+  strategy?: string | null;
 }
 
 /**
@@ -282,6 +327,8 @@ export async function verifyGeneratedSegment(input: {
   sessionId: string;
   segment: Record<string, unknown>;
   provenance: Record<string, unknown>;
+  kcId?: string | null;
+  strategy?: string | null;
 }): Promise<ServedSegment | null> {
   try {
     const body = await coreFetch('/tutor/internal/segments/verify', {
@@ -294,6 +341,55 @@ export async function verifyGeneratedSegment(input: {
       return null;
     }
     const parsed = Envelope(ServedSegmentSchema).safeParse(body);
+    if (!parsed.success || parsed.data.error || !parsed.data.data) return null;
+    return parsed.data.data;
+  } catch {
+    return null;
+  }
+}
+
+const VoiceCheckResultSchema = z
+  .object({
+    checkable: z.boolean(),
+    recognized: z.boolean(),
+    value: z.number().optional(),
+    correct: z.boolean().optional(),
+    score: z.number().int().min(0).max(100).optional(),
+    misconceptionCode: z.string().nullable().optional(),
+    pKnownAfter: z.number().min(0).max(1).nullable().optional(),
+  })
+  .strict();
+
+export type VoiceCheckResult = z.infer<typeof VoiceCheckResultSchema>;
+
+/**
+ * v3: deterministic verification of a SPOKEN answer against the open
+ * activity's stored key. Core normalizes the words to a number and runs the
+ * real grader; the LLM never judges correctness (/ORACLE.md, Tutor v3).
+ *
+ * `null` means the call failed — the caller proceeds as a plain conversation
+ * turn, which is also what `recognized: false` means. Neither is ever a
+ * wrong answer.
+ */
+export async function voiceCheck(input: {
+  sessionId: string;
+  segmentId: string;
+  utterance: string;
+  strategy?: string | null;
+}): Promise<VoiceCheckResult | null> {
+  try {
+    const body = await coreFetch(
+      `/tutor/internal/segments/${encodeURIComponent(input.segmentId)}/voice-check`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          sessionId: input.sessionId,
+          utterance: input.utterance,
+          ...(input.strategy ? { strategy: input.strategy } : {}),
+        }),
+      },
+    );
+    const parsed = Envelope(VoiceCheckResultSchema).safeParse(body);
     if (!parsed.success || parsed.data.error || !parsed.data.data) return null;
     return parsed.data.data;
   } catch {

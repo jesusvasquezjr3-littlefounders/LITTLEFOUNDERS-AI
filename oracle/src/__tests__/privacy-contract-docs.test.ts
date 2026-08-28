@@ -50,6 +50,7 @@ const SPELLINGS: Record<string, readonly string[]> = {
   turnHistory: ['`turnHistory`', "This session's turns"],
   planState: ['`planState`', 'Lesson plan state'],
   previousSessions: ['`previousSessions`', 'Previous-session digests'],
+  pedagogy: ['`pedagogy`', 'Pedagogy state'],
 };
 
 const schemaKeys = Object.keys(TutorContextSchema.shape).sort();
@@ -77,7 +78,7 @@ describe('the privacy contract documents enumerate exactly what the schema permi
     });
   }
 
-  it('is eleven fields, and a change to that number is a decision', () => {
+  it('is twelve fields, and a change to that number is a decision', () => {
     /*
      * Deliberately a hard-coded number. Widening what reaches a third-party
      * model about a child is exactly the change that should not pass quietly:
@@ -90,6 +91,13 @@ describe('the privacy contract documents enumerate exactly what the schema permi
      * (strict prior-session digests — topic/skills/outcome/counters, never a
      * transcript). Both went through exactly this review: §4.1 rows, legal
      * §2.2 items 10-11, and this list, in one commit.
+     *
+     * Went 11 → 12 later the same day (owner sign-off, Tutor v3): `pedagogy`
+     * — the strategy controller's projection (closed strategy/mode enums, a
+     * scaffolding level, one kc-catalog objective sentence, and at most one
+     * catalogued misconception hint whose detection is arithmetic, never a
+     * learner's words). §4.1 row, legal §2.2 item 12, and this list, in one
+     * commit.
      */
     expect(schemaKeys).toEqual([
       'adaptations',
@@ -98,6 +106,7 @@ describe('the privacy contract documents enumerate exactly what the schema permi
       'intent',
       'locale',
       'nickname',
+      'pedagogy',
       'planState',
       'previousSessions',
       'skillStates',

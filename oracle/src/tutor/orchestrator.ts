@@ -8,6 +8,7 @@ import {
   stuckInstruction,
   type LessonPlan,
 } from './plan.js';
+import { IDLE_NUDGE_MS, PedagogicalController, type PedagogyEvent } from './controller.js';
 import { classifyLearnerInput, type SafetyCategory } from '../safety/classifier.js';
 import { fenceUntrusted } from '../safety/untrusted.js';
 import { moderateTutorOutput } from '../safety/moderation.js';
@@ -117,6 +118,17 @@ export class TutorOrchestrator {
   /** The lesson's spine — deterministic, server-owned (tutor/plan.ts). */
   private readonly plan: LessonPlan;
   /**
+   * The v3 strategy controller (tutor/controller.ts). Dormant (inactive) when
+   * Core sent no session plan — v2 behaviour exactly. When active it decides
+   * HOW each beat is taught while plan.ts keeps deciding WHICH beat.
+   */
+  private readonly controller: PedagogicalController;
+  /**
+   * The one currently-open activity a spoken answer could be checked against:
+   * set when a voice-checkable segment is served, cleared when it grades.
+   */
+  private openCheckableSegment: string | null = null;
+  /**
    * The session's LIVE copy of the skill estimates. The handshake snapshot
    * used to be frozen for the whole session, so the model was told "very
    * little evidence" about a skill the learner had just demonstrated four
@@ -140,6 +152,42 @@ export class TutorOrchestrator {
     this.adaptations = [...session.adaptations] as TutorContext['adaptations'];
     this.plan = buildPlan(session.intent, session.courseContext, session.skillKey ?? null);
     this.skillStates = session.skillStates.slice(0, 12).map((s) => ({ ...s }));
+    this.controller = new PedagogicalController(session.sessionPlan ?? []);
+  }
+
+  /** Whether the v3 brain is steering this session. */
+  get pedagogyActive(): boolean {
+    return this.controller.active;
+  }
+
+  /** The KC the next served activity should be stamped with, or null. */
+  get activeKcId(): string | null {
+    return this.controller.active ? this.controller.activeKcId : null;
+  }
+
+  /** The strategy in force, for provenance stamps and telemetry. */
+  get activeStrategy(): string | null {
+    return this.controller.active ? this.controller.currentStrategy : null;
+  }
+
+  /** Per-strategy client idle-nudge budget, or null while the brain is off. */
+  get idleNudgeMs(): number | null {
+    return this.controller.active ? IDLE_NUDGE_MS[this.controller.currentStrategy] : null;
+  }
+
+  /** The controller's difficulty band for the next activity, or null. */
+  get activeDifficulty(): 1 | 2 | 3 | 4 | 5 | null {
+    return this.controller.active ? this.controller.targetDifficulty : null;
+  }
+
+  /** The active KC's content-pool skill key, when the catalog mapped one. */
+  get activeSkillKey(): string | null {
+    return this.controller.active ? this.controller.activeSkillKey : null;
+  }
+
+  /** The open activity a spoken answer could be deterministically checked against. */
+  get checkableSegmentId(): string | null {
+    return this.openCheckableSegment;
   }
 
   get turnCount(): number {
@@ -210,10 +258,21 @@ export class TutorOrchestrator {
     return this.history.filter((h) => h.speaker === 'tutor').slice(-6).map((h) => h.text);
   }
 
+  /** Segment types whose answer is one number a spoken reply could carry. */
+  private static readonly CHECKABLE_TYPES = new Set([
+    'number_input',
+    'count_objects',
+    'estimate_slider',
+    'money_tray',
+  ]);
+
   /** An activity went out. Remembered by id, so a grade can be matched to it. */
-  noteSegmentServed(segmentId: string, skillKey: string): void {
+  noteSegmentServed(segmentId: string, skillKey: string, segmentType?: string): void {
     this.segmentCount += 1;
     this.servedSegmentSkills.set(segmentId, skillKey);
+    if (segmentType && TutorOrchestrator.CHECKABLE_TYPES.has(segmentType)) {
+      this.openCheckableSegment = segmentId;
+    }
   }
 
   /** Whether this session actually served the segment a grade claims to be for. */
@@ -261,13 +320,32 @@ export class TutorOrchestrator {
     correct: boolean,
     nowMs: number,
     signal?: AbortSignal,
+    pedagogy?: { misconceptionCode: string | null; attemptNumber?: number } | null,
   ): Promise<TurnOutcome | null> {
     const skillKey = this.servedSegmentSkills.get(segmentId) ?? 'unknown';
     this.nudgeSkillEstimate(skillKey, correct);
     // The stuck instruction reads the counter recordGrade is about to bump,
     // so the order is: count the miss, then ask what it now amounts to.
     recordGrade(this.plan, skillKey, correct);
-    const extra = correct ? null : stuckInstruction(this.plan, skillKey);
+    if (this.openCheckableSegment === segmentId) this.openCheckableSegment = null;
+
+    /*
+     * THE CONTROLLER SUPERSEDES THE STUCK COUNTER when it is active: the same
+     * event feeds it (with the misconception diagnosis when the signed grade
+     * echo carried one), and ITS instruction — REMEDIATE with the catalogued
+     * hint, RESCUE, PROBE into a prerequisite — replaces the generic
+     * change-the-style line. Inactive controller = exactly the v2 path.
+     */
+    const extra = this.strategyInstruction(
+      {
+        kind: 'activity_result',
+        correct,
+        misconceptionCode: pedagogy?.misconceptionCode ?? null,
+        attemptNumber: pedagogy?.attemptNumber ?? 1,
+      },
+      nowMs,
+      correct ? null : () => stuckInstruction(this.plan, skillKey),
+    );
 
     const summary = correct
       ? `The learner completed the activity and scored ${score} out of 100.`
@@ -277,6 +355,57 @@ export class TutorOrchestrator {
       nowMs,
       { isSystemPrompted: true, signal },
     );
+  }
+
+  /**
+   * A spoken answer was deterministically checked by Core (voice-check). The
+   * same pedagogical event stream as a graded widget, minus XP — the tutor
+   * reacts to a verdict the model never made.
+   */
+  async handleVoiceCheckResult(
+    segmentId: string,
+    result: { correct: boolean; misconceptionCode: string | null },
+    utterance: string,
+    nowMs: number,
+    signal?: AbortSignal,
+  ): Promise<TurnOutcome | null> {
+    // The learner's line enters the working history exactly as an ordinary
+    // turn would — fenced first, so it stays data — or the model would answer
+    // a verdict about words it never saw.
+    const fenced = fenceUntrusted(utterance, getConfig().TURN_MAX_INPUT_CHARS);
+    if (fenced.cleaned !== '') this.history.push({ speaker: 'learner', text: fenced.cleaned });
+
+    const skillKey = this.servedSegmentSkills.get(segmentId) ?? 'unknown';
+    this.nudgeSkillEstimate(skillKey, result.correct);
+    recordGrade(this.plan, skillKey, result.correct);
+    if (this.openCheckableSegment === segmentId) this.openCheckableSegment = null;
+
+    const extra = this.strategyInstruction(
+      { kind: 'voice_result', correct: result.correct, misconceptionCode: result.misconceptionCode },
+      nowMs,
+      result.correct ? null : () => stuckInstruction(this.plan, skillKey),
+    );
+
+    const summary = result.correct
+      ? 'The learner just answered the current activity OUT LOUD, and their spoken answer was verified as CORRECT.'
+      : 'The learner just answered the current activity OUT LOUD, and their spoken answer was verified as INCORRECT.';
+    return this.produce(
+      `${summary} React as their tutor — acknowledge the spoken answer naturally, never mention any verification.${extra ? `\n\n${extra}` : ''}`,
+      nowMs,
+      { isSystemPrompted: true, signal },
+    );
+  }
+
+  /** The controller's instruction when active; the legacy fallback otherwise. */
+  private strategyInstruction(
+    event: PedagogyEvent,
+    nowMs: number,
+    legacy: (() => string | null) | null,
+  ): string | null {
+    if (this.controller.active) {
+      return this.controller.decide(event, nowMs).instruction;
+    }
+    return legacy ? legacy() : null;
   }
 
   /**
@@ -424,6 +553,9 @@ export class TutorOrchestrator {
       turnHistory: this.history.slice(-20),
       planState: planState(this.plan),
       previousSessions: (this.session.previousSessions ?? []).slice(0, 3),
+      // The v3 controller's strict projection; null while the brain is off,
+      // which renders exactly the v2 context (§4.1 row + legal §2.2 item 12).
+      pedagogy: this.controller.active ? this.controller.state() : null,
     });
   }
 

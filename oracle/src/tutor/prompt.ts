@@ -179,6 +179,26 @@ export function buildContextMessage(context: TutorContext): string {
   }
 
   /*
+   * THE V3 CONTROLLER'S STATE (/ORACLE.md, Tutor v3). Like the plan: stated
+   * as fact, chosen by the SERVER. The model performs the strategy; it never
+   * picks one, and the misconception hint is OUR catalogued wording about a
+   * wrong idea detected by arithmetic — never anything the learner said.
+   */
+  if (context.pedagogy) {
+    const p = context.pedagogy;
+    lines.push(
+      '',
+      `The teaching focus right now: ${p.kcObjective}`,
+      `Mode: ${PEDAGOGY_MODE_WORDS[p.mode]} Active strategy: ${p.strategy} (support level ${p.scaffolding} of 3).`,
+    );
+    if (p.misconceptionHint) {
+      lines.push(
+        `A specific wrong idea has been detected. Our guidance for it: "${p.misconceptionHint}"`,
+      );
+    }
+  }
+
+  /*
    * WHAT CAME BEFORE — digests, never transcripts (/ORACLE.md §4.1, owner
    * sign-off 2026-08-28). Enough for continuity ("last time we worked on…");
    * nothing anyone said, ever.
@@ -249,6 +269,13 @@ const PLAN_STEP_GUIDANCE: Record<string, string> = {
     'check understanding. Ask them to USE the idea or explain it back in their own words. Do not ask whether they understood.',
   stretch:
     'stretch. One step further: a twist, a harder case, or a connection to something bigger. Keep it playful — this step is a bonus, not a test.',
+};
+
+const PEDAGOGY_MODE_WORDS: Record<string, string> = {
+  new: 'learning something new.',
+  review: 'bringing back something learned before — present it fresh, never as a memory test.',
+  remediation: 'repairing one specific wrong idea before anything new.',
+  probe: 'gently checking an earlier idea that may be shaky — curiosity, never a step backwards.',
 };
 
 const OUTCOME_WORDS: Record<string, string> = {

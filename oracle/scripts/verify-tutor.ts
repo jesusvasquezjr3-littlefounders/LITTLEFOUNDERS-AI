@@ -50,6 +50,7 @@ const VALID_CONTEXT = {
   turnHistory: [],
   planState: null,
   previousSessions: [],
+  pedagogy: null,
 };
 
 /*

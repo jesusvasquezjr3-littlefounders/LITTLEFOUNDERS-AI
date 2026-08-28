@@ -91,6 +91,51 @@ export const TurnSchema = z
 export const PLAN_STEPS = ['warmup', 'explain', 'practice', 'check', 'stretch'] as const;
 
 /**
+ * The closed strategy vocabulary of the v3 pedagogical controller
+ * (/ORACLE.md, Tutor v3; blueprint §9.2). The CONTROLLER picks one per turn
+ * from mastery bands and events — the model only performs it.
+ */
+export const STRATEGIES = [
+  'DIRECT',
+  'WORKED',
+  'FADED',
+  'SOCRATIC',
+  'FLUENCY',
+  'SPACED',
+  'PROBE',
+  'REMEDIATE',
+  'RESCUE',
+  'ELABORATE',
+  'TRANSFER',
+  'CELEBRATE',
+] as const;
+
+/**
+ * The v3 pedagogy state, as the model is allowed to see it (/ORACLE.md §4.1,
+ * owner decision 2026-08-28 — the Tutor v3 blueprint adoption).
+ *
+ * SERVER-DERIVED, same privacy class as `planState`: the strategy and mode
+ * are closed enums the controller chose; `kcObjective` and
+ * `misconceptionHint` are OUR catalog text (kc.objective and
+ * misconception.remediation_hint from migration 0052, localized), bounded,
+ * and never learner text by construction — the misconception was DETECTED by
+ * arithmetic against the item's own numbers, and what travels is our
+ * catalogued wording about the wrong idea, not anything the learner said.
+ */
+export const PedagogyStateSchema = z
+  .object({
+    strategy: z.enum(STRATEGIES),
+    /** 0 = none … 3 = maximum support. The controller's scaffolding level. */
+    scaffolding: z.number().int().min(0).max(3),
+    /** One objective sentence from OUR kc catalog, localized. */
+    kcObjective: z.string().min(1).max(200),
+    mode: z.enum(['review', 'new', 'remediation', 'probe']),
+    /** OUR catalogued remediation wording, or null when nothing is diagnosed. */
+    misconceptionHint: z.string().min(1).max(240).nullable(),
+  })
+  .strict();
+
+/**
  * The lesson plan's state, as the model is allowed to see it.
  *
  * SERVER-DERIVED, carrying no learner data the other fields do not already
@@ -166,11 +211,19 @@ export const TutorContextSchema = z
      * Owner sign-off 2026-08-28; §4.1 row + legal §2.2 item 11.
      */
     previousSessions: z.array(PreviousSessionSchema).max(3),
+    /**
+     * The v3 controller's state for THIS turn. Null while the v3 brain is
+     * off, unseeded, or the session has no plan — the model then teaches as
+     * v2 did. §4.1 row + legal §2.2 item 12.
+     */
+    pedagogy: PedagogyStateSchema.nullable(),
   })
   .strict();
 
 export type TutorContext = z.infer<typeof TutorContextSchema>;
 export type PlanState = z.infer<typeof PlanStateSchema>;
+export type PedagogyState = z.infer<typeof PedagogyStateSchema>;
+export type Strategy = (typeof STRATEGIES)[number];
 export type PreviousSession = z.infer<typeof PreviousSessionSchema>;
 export type SkillState = z.infer<typeof SkillStateSchema>;
 export type TutorIntent = (typeof INTENTS)[number];

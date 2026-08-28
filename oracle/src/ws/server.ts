@@ -10,8 +10,10 @@ import {
   persistTurn,
   requestSegment,
   verifyGeneratedSegment,
+  voiceCheck,
   type SessionContext,
 } from '../core/client.js';
+import { verifyGradeEcho } from '../session/gradeEcho.js';
 import { getVoiceProvider } from '../voice/index.js';
 import { newSpeechScope, speakLine, type SpeechScope } from '../voice/speech.js';
 import { generateSegment } from '../content/generate.js';
@@ -526,6 +528,28 @@ async function onMessage(live: Live, raw: string): Promise<void> {
         });
         return;
       }
+      /*
+       * THE SIGNED ECHO (v3). Core's grade response hands the client a signed
+       * receipt; only a VALID one whose segmentId matches may feed the
+       * strategy controller — the bare score still only colors the reaction,
+       * exactly as in v2. An invalid echo is logged and ignored rather than
+       * refused: the reaction turn is harmless, the steering is what the
+       * signature protects.
+       */
+      let pedagogy: { misconceptionCode: string | null; attemptNumber?: number } | null = null;
+      if (message.data.echo) {
+        const verdict = verifyGradeEcho(message.data.echo);
+        if (verdict.ok && verdict.payload.segmentId === message.data.segmentId) {
+          pedagogy = {
+            misconceptionCode: verdict.payload.misconceptionCode,
+            attemptNumber: message.data.attemptNumber ?? 1,
+          };
+        } else {
+          console.warn(
+            `[oracle] discarded grade echo (${verdict.ok ? 'segment mismatch' : verdict.reason}) for session ${live.session.sessionId}`,
+          );
+        }
+      }
       const claim = claimTurn(live, Date.now());
       if (claim !== 'ok') return refuseTurn(live, claim);
       live.abort = new AbortController();
@@ -539,6 +563,7 @@ async function onMessage(live: Live, raw: string): Promise<void> {
             message.data.correct,
             Date.now(),
             live.abort.signal,
+            pedagogy,
           ),
         );
       } finally {
@@ -749,6 +774,38 @@ async function handleLearnerTurn(
     source: 'stt',
   }).then((recorded) => notePersist(live, recorded));
 
+  /*
+   * v3 VOICE-CHECK: when an activity with a single numeric answer is open and
+   * the learner's short utterance plausibly carries a number, Core verifies it
+   * DETERMINISTICALLY against the stored key before any model call. A
+   * recognized answer produces a verdict-driven reaction turn; anything else —
+   * unparseable, uncheckable, or the call failing — falls through to the
+   * ordinary conversation path, because unparseable is never wrong (§1.14).
+   * Edits are excluded: a rephrasing is conversation by definition.
+   */
+  const checkable = live.orchestrator.checkableSegmentId;
+  if (!opts.edit && checkable !== null && text.length <= 120) {
+    const result = await voiceCheck({
+      sessionId: live.session.sessionId,
+      segmentId: checkable,
+      utterance: text,
+      strategy: live.orchestrator.activeStrategy,
+    });
+    if (result?.recognized === true && typeof result.correct === 'boolean') {
+      await deliver(
+        live,
+        await live.orchestrator.handleVoiceCheckResult(
+          checkable,
+          { correct: result.correct, misconceptionCode: result.misconceptionCode ?? null },
+          text,
+          Date.now(),
+          signal,
+        ),
+      );
+      return;
+    }
+  }
+
   // `Date.now()` here rather than the caller's stamp: for an audio turn the
   // claim happened before a transcription that may have taken a second, and
   // the budget should be measured against when the tutor actually answers.
@@ -784,6 +841,7 @@ async function deliver(live: Live, outcome: TurnOutcome | null): Promise<void> {
    * being made, which removes the entire synthesis-and-store leg from the
    * silence after they speak.
    */
+  const idleNudgeMs = live.orchestrator.idleNudgeMs;
   send(live.socket, {
     type: 'turn',
     seq: emission.seq,
@@ -792,6 +850,8 @@ async function deliver(live: Live, outcome: TurnOutcome | null): Promise<void> {
     action: emission.turn.action,
     audioUrl: null,
     next: emission.turn.next,
+    // v3 turn policy: per-strategy thinking time. Absent while dormant.
+    ...(idleNudgeMs !== null ? { policy: { idleNudgeMs } } : {}),
   });
 
   void emission.audio.then((audioUrl) => {
@@ -858,7 +918,27 @@ async function serveSegment(
    * either half saying no means the panel does not fill — never that something
    * generic appears in it.
    */
-  let served = await requestSegment({ sessionId: live.session.sessionId, ...requestInput });
+  /*
+   * v3 OVERRIDES: the model DESCRIBES the activity it wants; the controller
+   * DECIDES the pedagogy around it. When the brain is active, the difficulty
+   * band comes from the controller (never rising after a failure — the model
+   * cannot undo that guardrail by asking), the served content pool prefers
+   * the active KC's mapped skill key, and the KC id + strategy ride along so
+   * Core stamps provenance and the grade joins back to the right posterior.
+   */
+  const kcId = live.orchestrator.activeKcId;
+  const strategy = live.orchestrator.activeStrategy;
+  const difficulty = live.orchestrator.activeDifficulty ?? requestInput.difficulty;
+  const skillKey = live.orchestrator.activeSkillKey ?? requestInput.skillKey;
+
+  let served = await requestSegment({
+    sessionId: live.session.sessionId,
+    ...requestInput,
+    skillKey,
+    difficulty,
+    ...(kcId ? { kcId } : {}),
+    ...(strategy ? { strategy } : {}),
+  });
 
   if (served !== null && 'needsGeneration' in served) {
     const candidate = await generateSegment({
@@ -876,6 +956,8 @@ async function serveSegment(
           sessionId: live.session.sessionId,
           segment: candidate.segment,
           provenance: candidate.provenance,
+          ...(kcId ? { kcId } : {}),
+          ...(strategy ? { strategy } : {}),
         })
       : null;
   }
@@ -891,7 +973,11 @@ async function serveSegment(
     return;
   }
 
-  live.orchestrator.noteSegmentServed(served.segmentId, requestInput.skillKey);
+  live.orchestrator.noteSegmentServed(
+    served.segmentId,
+    skillKey,
+    typeof served.segment.type === 'string' ? served.segment.type : undefined,
+  );
   send(live.socket, {
     type: 'segment',
     segmentId: served.segmentId,

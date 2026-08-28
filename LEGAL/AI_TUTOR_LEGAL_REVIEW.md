@@ -95,6 +95,19 @@ constraint.
     computed deterministically by our own server at session close — never by
     a model — is stored on the session row, and is deleted with it by the
     same 90-day retention sweep (§3).
+12. **Pedagogy state** (`pedagogy`) — **added 2026-08-28, owner sign-off
+    (Tutor v3).** The teaching controller's state for the current turn: a
+    strategy name from a closed list of twelve, a support level from 0 to 3,
+    a mode word from a closed list of four, one objective sentence taken from
+    our own curriculum catalog, and — when a systematic wrong idea was
+    detected — our own catalogued guidance sentence about that wrong idea.
+    The detection is arithmetic performed by our own server against the
+    exercise's own numbers (the learner's answer is compared to what each
+    catalogued wrong idea would produce); **what travels is our authored
+    text about the idea, never the learner's answer and never their words.**
+    It contains no learner-derived data the other items do not already
+    contain, and it is absent entirely while the v3 teaching engine is
+    switched off.
 
 ### §2.2b The placement intake — a second, narrower disclosure (added 2026-08-24)
 
