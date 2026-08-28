@@ -8,6 +8,7 @@ import {
   getOffers,
   getPreferences,
   getTranscript,
+  resumeSession,
   savePreferences,
   startSession,
   type StartSessionInput,
@@ -349,15 +350,60 @@ export function TutorExperience() {
    * it goes to `unavailable` — the honest "the tutor cannot be reached" state
    * that already exists for a failed preferences read.
    */
+  /*
+   * A DROPPED CONNECTION GETS ONE QUIET REPAIR before any of that (owner
+   * sign-off 2026-08-28). Oracle parks the conversation for a grace window and
+   * Core mints a fresh single-use token, so a sleeping phone or a flaky café
+   * network costs a beat, not the session. Auto-resumed at most ONCE per
+   * session: a link that keeps dropping deserves the honest ending, not a
+   * reconnect loop. Only a genuine CONNECTION_LOST qualifies — a server that
+   * said goodbye (`closedReason`), refused the token, or exhausted the budget
+   * has already told us what happened, and re-dialling would argue with it.
+   */
+  const [resuming, setResuming] = useState(false);
+  const resumeAttemptedRef = useRef<string | null>(null);
+
   useEffect(() => {
     if (phase !== 'conversing') return;
     const ended =
       socket.closedReason !== null || socket.connection === 'closed' || socket.connection === 'failed';
-    if (!ended) return;
+    if (!ended || resuming) return;
+
+    const droppedNotRefused =
+      socket.closedReason === null &&
+      (socket.error === null || socket.error.code === 'CONNECTION_LOST');
+    if (
+      droppedNotRefused &&
+      session &&
+      token &&
+      socket.history.length > 0 &&
+      resumeAttemptedRef.current !== session.sessionId
+    ) {
+      resumeAttemptedRef.current = session.sessionId;
+      setResuming(true);
+      void resumeSession(token, session.sessionId).then((result) => {
+        setResuming(false);
+        if (result.data) {
+          const fresh = result.data;
+          // A new socketUrl is all it takes: the hook resets and re-dials, and
+          // the server replays the transcript into the fresh connection.
+          setSession((prev) =>
+            prev && prev.sessionId === fresh.sessionId
+              ? { ...prev, socketUrl: fresh.socketUrl, socketExpiresAt: fresh.socketExpiresAt }
+              : prev,
+          );
+          return;
+        }
+        // The park expired or the resume was refused. The conversation that
+        // did happen still gets its goodbye.
+        setPhase('closing');
+      });
+      return;
+    }
 
     const heldAConversation = socket.history.length > 0;
     setPhase(heldAConversation ? 'closing' : 'unavailable');
-  }, [phase, socket.closedReason, socket.connection, socket.history.length]);
+  }, [phase, socket.closedReason, socket.connection, socket.history.length, socket.error, resuming, session, token]);
 
   /*
    * What the cast and the place actually are, right now.
@@ -630,6 +676,7 @@ export function TutorExperience() {
           speaking,
           awaitingReply,
           onAwaitReply: () => setAwaitingReply(true),
+          resuming,
           onExit: () => {
             socket.endSession();
             setPhase('closing');

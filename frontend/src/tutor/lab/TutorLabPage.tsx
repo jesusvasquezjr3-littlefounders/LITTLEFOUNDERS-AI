@@ -491,6 +491,8 @@ export default function TutorLabPage() {
     speaking,
     awaitingReply,
     onAwaitReply: () => setAwaitingReply(true),
+    // There is no wire here, so there is nothing to resume.
+    resuming: false,
     onExit: () => {
       socket.endSession();
       setSurface('closing');

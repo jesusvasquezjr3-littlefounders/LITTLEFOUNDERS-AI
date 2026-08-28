@@ -767,6 +767,39 @@ export function tutorRouter(): Router {
     return ok(res, { sessions: sessions.map(summarizeSession) });
   });
 
+  /**
+   * A fresh single-use socket token for a session whose connection dropped
+   * (/ORACLE.md §3.2 resume, owner sign-off 2026-08-28). Oracle parks the
+   * dropped orchestrator for a grace window; this is the other half — the
+   * ONLY way a browser gets back in, because the original token was burned on
+   * first use by design.
+   *
+   * Owner only, deliberately narrower than the transcript route: a guardian
+   * may READ a child's finished conversation, but a live microphone-bearing
+   * socket belongs to the learner alone. No daily-cap check — resuming is not
+   * a new session. No preflight — Oracle answers for itself at the handshake,
+   * and a resume racing a degraded Oracle should fail at the socket with a
+   * named close code rather than be guessed at here.
+   */
+  router.post('/sessions/:id/resume', async (req, res) => {
+    const sessionId = z.string().uuid().safeParse(req.params.id);
+    if (!sessionId.success) return fail(res, 400, VALIDATION, 'Invalid session id');
+    const user = authedUser(res);
+
+    const session = await getTutorSession(sessionId.data);
+    if (!session) return fail(res, 404, NOT_FOUND, 'No such session');
+    if (session.user_id !== user.id) return fail(res, 403, 'FORBIDDEN', 'This is not your session');
+    if (session.ended_at !== null) {
+      // The park expired, or the session closed cleanly. Either way there is
+      // nothing to re-attach to, and minting a token for a closed session
+      // would only buy the learner a SESSION_NOT_FOUND at the socket.
+      return fail(res, 409, 'SESSION_CLOSED', 'This session has already ended');
+    }
+
+    const { url, expiresAt } = tutorSocketUrl(session.id, user.id);
+    return ok(res, { sessionId: session.id, socketUrl: url, socketExpiresAt: expiresAt });
+  });
+
   /** A full transcript, for replay (/ORACLE.md §12). Owner or verified guardian. */
   router.get('/sessions/:id', async (req, res) => {
     const sessionId = z.string().uuid().safeParse(req.params.id);

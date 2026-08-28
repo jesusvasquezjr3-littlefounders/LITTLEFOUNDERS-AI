@@ -281,6 +281,12 @@ beforeEach(() => {
 afterEach(async () => {
   const { nonceLedger } = await import('../session/token.js');
   nonceLedger.clear();
+  // A socket closed without a farewell PARKS its session for resume, and the
+  // tests share a session id — sweep the park (after letting the server's own
+  // close event land) so no test inherits another's conversation.
+  await new Promise((r) => setTimeout(r, 120));
+  const { finalizeAllParked } = await import('../ws/server.js');
+  finalizeAllParked();
 });
 
 describe('every learner-visible string the model authored is moderated', () => {

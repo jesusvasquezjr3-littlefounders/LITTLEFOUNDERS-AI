@@ -173,6 +173,7 @@
     "micDenied": "The microphone is blocked in your browser. You can still type.",
     "finish": "Finish",
     "wrappingUp": "Wrapping up",
+    "reconnecting": "Reconnecting to your tutor…",
     "minutesLeft": "{{count}} min left",
     "gettingToKnowYou": "Still getting to know you",
     "yesPlease": "Yes please",

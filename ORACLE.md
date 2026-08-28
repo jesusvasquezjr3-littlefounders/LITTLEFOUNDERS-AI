@@ -270,6 +270,21 @@ session token" rather than "malformed"), burns the token's nonce on first use,
 checks the token's user against the session's, and refuses the socket outright
 for a minor with no active guardian consent.
 
+**Resume — owner sign-off 2026-08-28.** A socket that drops UNCLEANLY no longer
+ends the session: Oracle parks the orchestrator (history, budget clock, paid
+speech memo) in-process for `SESSION_RESUME_GRACE_MS` (default 90 s), and Core
+offers `POST /api/v1/tutor/sessions/:id/resume` — owner only, still-open
+sessions only — which mints a FRESH token on the same single-use terms. The
+re-attaching handshake re-runs every gate above, then redraws instead of
+replaying: a `history` frame with the transcript, the on-screen turn re-sent as
+text with no audio, no second greeting. An unclaimed park is finalized as
+`learner_left`. The client auto-resumes at most ONCE per session and says
+"reconnecting" while it does; a server-refused socket (expired, budget, consent)
+is never re-dialled. The park shares the nonce ledger's single-replica
+constraint (§16). Proven by `live-session.test.ts` → "a dropped session can be
+resumed on a fresh token" (all three tests) and `backend/src/__tests__/tutor.test.ts`
+→ "POST /api/v1/tutor/sessions/:id/resume".
+
 ### §3.3 Inworld sits behind an interface, from day one
 
 The owner's stated intent is to replace Inworld with self-hosted STT/TTS once

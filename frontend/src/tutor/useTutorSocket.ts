@@ -253,6 +253,12 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
         case 'thinking':
           setThinking(true);
           break;
+        case 'history':
+          // A resumed session redrawing the transcript the reconnect reset.
+          // REPLACES rather than appends: the server's copy is the authority
+          // on what was said before this socket existed.
+          setHistory(message.turns.map((t) => ({ speaker: t.speaker, text: t.text, seq: t.seq })));
+          break;
         case 'transcript':
           setHistory((prev) => [...prev, { speaker: 'learner', text: message.text, seq: -1 }]);
           break;

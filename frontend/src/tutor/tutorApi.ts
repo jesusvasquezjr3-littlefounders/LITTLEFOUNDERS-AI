@@ -50,6 +50,21 @@ export function startSession(token: string, input: StartSessionInput): Promise<A
   return api<StartedSession>('/tutor/sessions', { method: 'POST', body: input, token });
 }
 
+export interface ResumedSession {
+  sessionId: string;
+  socketUrl: string;
+  socketExpiresAt: string;
+}
+
+/**
+ * A fresh single-use socket URL for a session whose connection dropped. Oracle
+ * parks the conversation for a grace window; `409 SESSION_CLOSED` means the
+ * window passed and there is nothing to go back to.
+ */
+export function resumeSession(token: string, sessionId: string): Promise<ApiResult<ResumedSession>> {
+  return api<ResumedSession>(`/tutor/sessions/${sessionId}/resume`, { method: 'POST', body: {}, token });
+}
+
 export function listSessions(token: string): Promise<ApiResult<{ sessions: SessionSummary[] }>> {
   return api<{ sessions: SessionSummary[] }>('/tutor/sessions', { token });
 }

@@ -187,6 +187,16 @@ const Env = z.object({
    * when a turn arrives, so in practice it held it forever.
    */
   SESSION_IDLE_TIMEOUT_MS: z.coerce.number().int().positive().default(10 * 60_000),
+  /**
+   * How long a session survives its socket dropping uncleanly (owner sign-off
+   * 2026-08-28, amending the old no-reconnect rule). The orchestrator — with
+   * its history, its budget clock and its paid speech memo — is PARKED
+   * in-process for this window; Core can mint a fresh single-use token for the
+   * same session and the browser re-attaches to the conversation it left. The
+   * park lives in this process's memory, so it shares the SINGLE-REPLICA
+   * constraint the token nonce ledger already imposes (/ORACLE.md §16).
+   */
+  SESSION_RESUME_GRACE_MS: z.coerce.number().int().positive().default(90_000),
   /** Per-turn learner input cap, in characters (§5 bounds). */
   TURN_MAX_INPUT_CHARS: z.coerce.number().int().positive().default(600),
 

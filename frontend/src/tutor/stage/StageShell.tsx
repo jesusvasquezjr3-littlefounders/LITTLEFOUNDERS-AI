@@ -1027,6 +1027,12 @@ export interface ConversationLayerProps extends StageLayerCommonProps {
   awaitingReply: boolean;
   /** The learner just sent something. Starts the wait above. */
   onAwaitReply: () => void;
+  /**
+   * True while a dropped connection is being resumed with a fresh token. The
+   * layer says so in place, because a silent gap between "the socket died" and
+   * "the conversation came back" reads as the tutor freezing mid-sentence.
+   */
+  resuming: boolean;
   /** End the session. The close is a camera move, not a screen. */
   onExit: () => void;
 }

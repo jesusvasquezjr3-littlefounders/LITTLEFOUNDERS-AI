@@ -104,6 +104,75 @@ const CONSENT_RECHECK_EVERY_TURNS = 5;
 
 const HEARTBEAT_INTERVAL_MS = 30_000;
 
+/*
+ * DROPPED SESSIONS, PARKED FOR RESUME (owner sign-off 2026-08-28).
+ *
+ * A socket that dies without a farewell used to end the session on the spot —
+ * a sleeping phone, a proxy timeout or a stairwell cost the whole
+ * conversation. Now the orchestrator (history, budget clock, paid speech memo)
+ * is parked here for SESSION_RESUME_GRACE_MS. Core mints a FRESH single-use
+ * token for the same session (`POST /api/v1/tutor/sessions/:id/resume`, owner
+ * only) and the handshake below re-attaches instead of starting over: every
+ * gate re-runs — signature, replay, user match, judge readiness, consent — so
+ * a resumed socket is exactly as authenticated as a first one.
+ *
+ * The park is THIS PROCESS'S MEMORY, exactly like the token nonce ledger, so
+ * it adds nothing new to the single-replica constraint — it rides it. A parked
+ * session that nobody reclaims is finalized as `learner_left`, which is what
+ * happened.
+ */
+interface ParkedSession {
+  orchestrator: TutorOrchestrator;
+  speech: SpeechScope;
+  lastTurnAtMs: number;
+  timer: NodeJS.Timeout;
+}
+
+const parkedSessions = new Map<string, ParkedSession>();
+
+function parkSession(sessionId: string, live: Live): void {
+  // A stale park for the same session (two sockets raced) is finalized first —
+  // two parked orchestrators for one session would both write a close later.
+  finalizeParked(sessionId);
+  const entry: ParkedSession = {
+    orchestrator: live.orchestrator,
+    speech: live.speech,
+    lastTurnAtMs: live.lastTurnAtMs,
+    timer: setTimeout(() => finalizeParked(sessionId), getConfig().SESSION_RESUME_GRACE_MS),
+  };
+  entry.timer.unref();
+  parkedSessions.set(sessionId, entry);
+}
+
+function takeParked(sessionId: string): ParkedSession | null {
+  const entry = parkedSessions.get(sessionId);
+  if (!entry) return null;
+  clearTimeout(entry.timer);
+  parkedSessions.delete(sessionId);
+  return entry;
+}
+
+/** The park expired (or the process is shutting down): the session really ended. */
+function finalizeParked(sessionId: string): void {
+  const entry = parkedSessions.get(sessionId);
+  if (!entry) return;
+  clearTimeout(entry.timer);
+  parkedSessions.delete(sessionId);
+  entry.speech.memo.clear();
+  void closeSession({
+    sessionId,
+    closeReason: 'learner_left',
+    turnCount: entry.orchestrator.turnCount,
+    segmentCount: entry.orchestrator.servedSegments,
+    costUsd: entry.orchestrator.totalCostUsd,
+  });
+}
+
+/** Every parked session, finalized. Called on shutdown so no close is lost. */
+export function finalizeAllParked(): void {
+  for (const sessionId of [...parkedSessions.keys()]) finalizeParked(sessionId);
+}
+
 /**
  * Claims this socket's single turn slot, or says why not.
  *
@@ -224,13 +293,18 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
   const minorVoiceAllowed = getConfig().TUTOR_VOICE_FOR_MINORS;
   const microphone = voice && (!session.isMinor || (session.voiceConsent && minorVoiceAllowed));
 
-  const speech = newSpeechScope(session);
+  // A parked orchestrator for this session means this socket is a RESUME:
+  // same history, same budget clock, same paid-speech memo. Every gate above
+  // already re-ran against a fresh token and a fresh Core context.
+  const resumed = takeParked(session.sessionId);
+  const speech = resumed?.speech ?? newSpeechScope(session);
   const live: Live = {
     socket,
     session,
-    orchestrator: new TutorOrchestrator(session, Date.now(), (turn) => speakLine(turn.say, speech)),
+    orchestrator:
+      resumed?.orchestrator ?? new TutorOrchestrator(session, Date.now(), (turn) => speakLine(turn.say, speech)),
     speech,
-    lastTurnAtMs: 0,
+    lastTurnAtMs: resumed?.lastTurnAtMs ?? 0,
     inFlight: false,
     abort: null,
     assembly: null,
@@ -288,20 +362,58 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
 
   socket.on('close', () => {
     clearInterval(live.heartbeat);
-    live.speech.memo.clear();
     if (!live.closing) {
-      // The socket died without a farewell. Record it as `learner_left`, which
-      // is true, rather than as `completed`, which would quietly inflate every
-      // completion metric the product has.
-      void closeSession({
-        sessionId: session.sessionId,
-        closeReason: 'learner_left',
-        turnCount: live.orchestrator.turnCount,
-        segmentCount: live.orchestrator.servedSegments,
-        costUsd: live.orchestrator.totalCostUsd,
-      });
+      // The socket died without a farewell. The session is PARKED, not ended:
+      // a sleeping phone or a proxy timeout should cost the connection, never
+      // the conversation. If nobody resumes inside the grace window, the park
+      // finalizes it as `learner_left` — which is what will then be true —
+      // and only then is the speech memo dropped.
+      parkSession(session.sessionId, live);
+    } else {
+      live.speech.memo.clear();
     }
   });
+
+  if (resumed) {
+    /*
+     * A re-attach redraws the conversation instead of greeting again: the
+     * transcript so far, then the turn that was on screen when the connection
+     * dropped — text only, `audioUrl` null and no `turn_audio`, because
+     * replaying the clip into a learner who has already heard it reads as a
+     * stutter. The final tutor entry carries the re-sent turn's real seq so
+     * the caption and the log never print the same line twice.
+     */
+    const snapshot = live.orchestrator.resumeSnapshot;
+    const lastSeq = snapshot.lastTurn?.seq ?? 0;
+    let tutorLinesLeft = snapshot.turns.filter((t) => t.speaker === 'tutor').length;
+    send(socket, {
+      type: 'history',
+      turns: snapshot.turns.map((t) => {
+        if (t.speaker !== 'tutor') return { ...t, seq: -1 };
+        tutorLinesLeft -= 1;
+        return { ...t, seq: tutorLinesLeft === 0 ? lastSeq : 0 };
+      }),
+    });
+    if (snapshot.lastTurn) {
+      send(socket, {
+        type: 'turn',
+        seq: snapshot.lastTurn.seq,
+        say: snapshot.lastTurn.turn.say,
+        emotion: snapshot.lastTurn.turn.emotion,
+        action: snapshot.lastTurn.turn.action,
+        audioUrl: null,
+        next: snapshot.lastTurn.turn.next === 'close' ? 'ask' : snapshot.lastTurn.turn.next,
+      });
+    }
+    const budget = live.orchestrator.budgetAt(Date.now());
+    send(socket, {
+      type: 'state',
+      budget: budget.state,
+      remainingMs: budget.remainingMs,
+      turnCount: live.orchestrator.turnCount,
+    });
+    return;
+  }
 
   // The opening line. Deliberately after `ready`: the client waits for the 3D
   // stage's own onReady before it plays anything, and handing over speech
@@ -771,5 +883,8 @@ export function closeAllSockets(wss: WebSocketServer): void {
   for (const client of wss.clients) {
     client.close(CLOSE_CODES.NORMAL, 'server shutting down');
   }
+  // Parked sessions have no socket to close, but they DO have a close to
+  // record — a shutdown must not orphan them into sessions that never ended.
+  finalizeAllParked();
   wss.close();
 }

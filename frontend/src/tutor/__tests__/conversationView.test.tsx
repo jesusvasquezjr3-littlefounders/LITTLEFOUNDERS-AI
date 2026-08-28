@@ -88,6 +88,7 @@ function conversation(socket: TutorSocket, ready: boolean) {
       speaking={false}
       awaitingReply={false}
       onAwaitReply={vi.fn()}
+      resuming={false}
       onExit={vi.fn()}
     />
   );

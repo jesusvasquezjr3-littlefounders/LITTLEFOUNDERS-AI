@@ -104,6 +104,7 @@ export class TutorOrchestrator {
   private segmentCount = 0;
   private adaptations: TutorContext['adaptations'];
   private stopped = false;
+  private lastTurn: { turn: TutorTurn; seq: number } | null = null;
 
   constructor(
     private readonly session: SessionContext,
@@ -152,6 +153,21 @@ export class TutorOrchestrator {
   /** The budget verdict right now, for callers outside a turn (keepalive). */
   budgetAt(nowMs: number): BudgetVerdict {
     return this.currentBudget(nowMs);
+  }
+
+  /**
+   * What a re-attaching socket needs to redraw the conversation: the whole
+   * transcript so far, and the turn that was on screen when the connection
+   * dropped. Copies, so a caller cannot reach the live history.
+   */
+  get resumeSnapshot(): {
+    turns: { speaker: 'learner' | 'tutor'; text: string }[];
+    lastTurn: { turn: TutorTurn; seq: number } | null;
+  } {
+    return {
+      turns: this.history.map((h) => ({ speaker: h.speaker, text: h.text })),
+      lastTurn: this.lastTurn,
+    };
   }
 
   get servedSegments(): number {
@@ -496,6 +512,7 @@ export class TutorOrchestrator {
 
     // `this.seq` was already advanced at entry, where the slot was reserved.
     this.history.push({ speaker: 'tutor', text: turn.say });
+    this.lastTurn = { turn, seq: this.seq };
 
     const afterBudget = this.currentBudget(nowMs);
     const closeReason =
@@ -550,6 +567,7 @@ export class TutorOrchestrator {
   ): Promise<TurnOutcome> {
     this.history.push({ speaker: 'tutor', text: turn.say });
     this.seq += 1;
+    this.lastTurn = { turn, seq: this.seq };
     // Not awaited: a scripted line's text is ready NOW, and its audio (usually
     // the pre-generated manifest) follows in its own frame like any other.
     const audio = this.speak(turn);

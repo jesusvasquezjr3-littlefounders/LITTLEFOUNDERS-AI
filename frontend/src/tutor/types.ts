@@ -111,6 +111,11 @@ export type ServerMessage =
     }
   | { type: 'turn_audio'; seq: number; audioUrl: string | null }
   | { type: 'thinking' }
+  | {
+      /** The conversation so far — sent only when a dropped session resumes. */
+      type: 'history';
+      turns: { speaker: 'learner' | 'tutor'; text: string; seq: number }[];
+    }
   | { type: 'transcript'; text: string }
   | {
       type: 'segment';

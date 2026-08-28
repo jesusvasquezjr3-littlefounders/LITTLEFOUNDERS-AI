@@ -251,6 +251,9 @@ beforeAll(async () => {
   process.env.JUDGE_API_BASE = `http://127.0.0.1:${portOf(modelServer)}`;
   process.env.MODEL_API_KEY = 'test-model-key-0123';
   process.env.JUDGE_API_KEY = 'test-judge-key-0123';
+  // Short enough that the park-expiry test runs in seconds, long enough that
+  // the re-attach test cannot lose the race to it.
+  process.env.SESSION_RESUME_GRACE_MS = '1500';
 
   const { resetConfigCache } = await import('../env.js');
   resetConfigCache();
@@ -278,6 +281,18 @@ afterAll(async () => {
 afterEach(async () => {
   const { nonceLedger } = await import('../session/token.js');
   nonceLedger.clear();
+  // Tests share one session id, and a socket closed without a farewell PARKS
+  // its orchestrator — which the next test's handshake would then resume.
+  // Finalizing between tests keeps each one a first visit. The beat first:
+  // the server's own close event races this hook, and a park created after
+  // the sweep leaks into the next test as a mysterious resume.
+  await new Promise((r) => setTimeout(r, 120));
+  const { finalizeAllParked } = await import('../ws/server.js');
+  finalizeAllParked();
+  // And let the finalize's own fire-and-forget close call LAND before the
+  // next test resets the journal — otherwise it lands after the reset and
+  // reads as a mystery close inside that test.
+  await new Promise((r) => setTimeout(r, 120));
 });
 
 /** A freshly minted, valid socket URL. */
@@ -550,6 +565,86 @@ describe('the turn pipeline is split, acknowledged, and interruptible', () => {
     expect(socket.readyState).toBe(WebSocket.OPEN);
 
     socket.close();
+  });
+});
+
+describe('a dropped session can be resumed on a fresh token', () => {
+  it('parks the conversation and re-attaches it — history, last turn, no second greeting', async () => {
+    freshJournal();
+    const first = open(await socketUrl());
+    await collect(first.socket, (m) => m.some((x) => x.type === 'turn'));
+
+    // One real exchange, so the park has a conversation worth keeping.
+    const answered = collect(first.socket, (m) => m.some((x) => x.type === 'turn'));
+    first.socket.send(JSON.stringify({ type: 'learner_text', text: 'quiero ahorrar para una bici' }));
+    const reply = (await answered).find((m) => m.type === 'turn') as { say: string; seq: number };
+
+    // The connection DIES — no close frame, no farewell. A sleeping phone.
+    first.socket.terminate();
+    await first.closed();
+    await new Promise((r) => setTimeout(r, 100));
+
+    // The session is parked, not closed: Core has recorded nothing yet.
+    expect(journal.closes).toHaveLength(0);
+
+    // A FRESH single-use token for the SAME session — what Core's resume
+    // endpoint mints — re-attaches instead of starting over.
+    const second = open(await socketUrl());
+    const rejoined = await collect(second.socket, (m) => m.some((x) => x.type === 'state'));
+
+    const history = rejoined.find((m) => m.type === 'history') as {
+      turns: { speaker: string; text: string; seq: number }[];
+    };
+    expect(history).toBeDefined();
+    // Greeting, learner line, reply — the whole conversation came back.
+    expect(history.turns.length).toBeGreaterThanOrEqual(3);
+    expect(history.turns.some((t) => t.speaker === 'learner' && t.text.includes('bici'))).toBe(true);
+
+    // The turn that was on screen is re-sent as text (no audio replay), and
+    // it is the SAME turn — same words, same seq — not a new greeting.
+    const redrawn = rejoined.find((m) => m.type === 'turn') as { say: string; seq: number; audioUrl: unknown };
+    expect(redrawn.say).toBe(reply.say);
+    expect(redrawn.seq).toBe(reply.seq);
+    expect(redrawn.audioUrl).toBeNull();
+    // The history's final tutor entry carries that same seq, so the caption
+    // and the log cannot print the line twice.
+    expect(history.turns.at(-1)).toMatchObject({ speaker: 'tutor', seq: reply.seq });
+
+    // The resumed session is fully alive: it can end properly.
+    const ending = collect(second.socket, (m) => m.some((x) => x.type === 'closed'));
+    second.socket.send(JSON.stringify({ type: 'end_session' }));
+    await ending;
+    expect(journal.closes.at(-1)).toMatchObject({ closeReason: 'completed' });
+  });
+
+  it('finalizes an unclaimed park as learner_left when the grace window passes', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    socket.terminate();
+    await closed();
+
+    // Inside the window: still nothing recorded, the door is open.
+    await new Promise((r) => setTimeout(r, 300));
+    expect(journal.closes).toHaveLength(0);
+
+    // The window passes with nobody coming back. THAT is a learner leaving.
+    await new Promise((r) => setTimeout(r, 1_700));
+    expect(journal.closes.at(-1)).toMatchObject({ closeReason: 'learner_left' });
+  });
+
+  it('still burns each token once — the resume token is new, the old one stays dead', async () => {
+    freshJournal();
+    const url = await socketUrl();
+    const first = open(url);
+    await collect(first.socket, (m) => m.some((x) => x.type === 'turn'));
+    first.socket.terminate();
+    await first.closed();
+
+    // Re-dialling the ORIGINAL url is a replay, parked session or not.
+    const replayed = open(url);
+    expect(await replayed.closed()).toBe(4001);
   });
 });
 

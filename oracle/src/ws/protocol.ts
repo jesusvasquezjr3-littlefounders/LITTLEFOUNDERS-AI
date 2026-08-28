@@ -148,6 +148,18 @@ export type ServerMessage =
       type: 'thinking';
     }
   | {
+      /**
+       * The conversation so far, sent ONLY when a dropped session re-attaches
+       * (/ORACLE.md §3.2 resume). The client's per-socket state was reset by
+       * the reconnect; this refills the transcript so the learner returns to
+       * the conversation they left, not to a blank one. The final tutor entry
+       * carries the real seq of the re-sent `turn` frame so the caption and
+       * the log never print the same line twice.
+       */
+      type: 'history';
+      turns: { speaker: 'learner' | 'tutor'; text: string; seq: number }[];
+    }
+  | {
       type: 'transcript';
       /** What we heard the learner say — shown so they can correct a misheard turn. */
       text: string;

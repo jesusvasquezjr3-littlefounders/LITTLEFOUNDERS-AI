@@ -108,6 +108,7 @@ export function ConversationView({
   speaking,
   awaitingReply,
   onAwaitReply,
+  resuming,
   onExit,
 }: ConversationViewProps) {
   const { t } = useTranslation();
@@ -589,6 +590,18 @@ export function ConversationView({
         {awaitingReply && (
           <p className="shrink-0 lf-caption text-content-muted" role="status">
             {t('tutor.mic.thinking')}
+          </p>
+        )}
+
+        {/*
+          A dropped connection being quietly repaired. Said in place, because
+          the alternative the learner experiences is the tutor freezing
+          mid-sentence with no explanation — and the repair usually wins the
+          race against their patience only if they know it is running.
+        */}
+        {resuming && (
+          <p className="shrink-0 lf-caption text-content-muted" role="status">
+            {t('tutor.conversation.reconnecting')}
           </p>
         )}
 

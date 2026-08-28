@@ -342,6 +342,47 @@ describe('POST /api/v1/tutor/sessions — the microphone gate', () => {
   });
 });
 
+describe('POST /api/v1/tutor/sessions/:id/resume', () => {
+  it('mints a FRESH single-use socket URL for the owner of a still-open session', async () => {
+    stub();
+
+    const response = await request(createApp())
+      .post(`/api/v1/tutor/sessions/${SESSION}/resume`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({});
+
+    expect(response.status).toBe(200);
+    const url: string = response.body.data.socketUrl;
+    expect(url).toContain('/ws/tutor?token=');
+    expect(decodeURIComponent(url.split('token=')[1] ?? '').startsWith('v1.')).toBe(true);
+    expect(response.body.data.sessionId).toBe(SESSION);
+  });
+
+  it('refuses a session that already ended — the park expired, nothing to go back to', async () => {
+    stub({ session: [{ ...SESSION_ROW, ended_at: '2026-08-21T10:30:00Z', close_reason: 'learner_left' }] });
+
+    const response = await request(createApp())
+      .post(`/api/v1/tutor/sessions/${SESSION}/resume`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({});
+
+    expect(response.status).toBe(409);
+    expect(response.body.error.code).toBe('SESSION_CLOSED');
+  });
+
+  it('refuses anyone but the owner — a guardian may read a transcript, never hold the microphone', async () => {
+    stub({ guardianLinks: [{ kid_user_id: KID }] });
+
+    const response = await request(createApp())
+      .post(`/api/v1/tutor/sessions/${SESSION}/resume`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+      .send({});
+
+    expect(response.status).toBe(403);
+    expect(response.body.error.code).toBe('FORBIDDEN');
+  });
+});
+
 describe('consent', () => {
   it('lets ONLY a verified guardian grant it', async () => {
     stub({ guardianLinks: [] });

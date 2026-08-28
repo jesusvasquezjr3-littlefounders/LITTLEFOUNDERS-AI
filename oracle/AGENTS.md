@@ -312,9 +312,19 @@ everything passes the blocked half perfectly and destroys the product.
 7. **The session token is not a JWT and Oracle rejects one by name.** If the
    client sends a Supabase JWT the log says exactly that, because "malformed"
    would send whoever wired it looking at their JSON encoding instead.
-8. **There is no reconnect, deliberately.** The token is single-use and expires
-   in sixty seconds, and a session that silently resumed would replay a
-   greeting into the middle of a lesson.
+8. **Reconnect is RESUME, and it is never silent** (amended 2026-08-28, owner
+   sign-off — this rule previously said "no reconnect, deliberately"). A
+   dropped socket parks its orchestrator in-process for
+   `SESSION_RESUME_GRACE_MS`; Core mints a FRESH single-use token
+   (`POST /api/v1/tutor/sessions/:id/resume`, owner only) and the handshake
+   re-attaches: every gate re-runs, the transcript is replayed in a `history`
+   frame, the on-screen turn is re-sent as TEXT ONLY, and the greeting is
+   never repeated. The two original objections still hold and are still
+   honored: each token remains single-use (a replayed URL is dead, parked
+   session or not — pinned by a test), and nothing resumes silently (the
+   client says "reconnecting" and the server redraws rather than replays).
+   The park is process memory, like the nonce ledger: one more thing that
+   holds Oracle at a SINGLE replica.
 9. **Never log a learner's utterance.** Not at debug level, not temporarily.
    Safety flags record a category and a severity and never the words — a flag
    is a signal to a human, not a second unregulated copy of what a distressed
