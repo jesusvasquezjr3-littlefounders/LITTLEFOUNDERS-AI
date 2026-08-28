@@ -53,6 +53,18 @@ export interface WeakSkillOffer {
 
 export interface TutorOffers {
   locale: string;
+  /**
+   * The learner's latest closed conversation, digested — the "continue where
+   * you left off" opening. Null until a session has closed with a digest.
+   */
+  lastSession: {
+    topic: string | null;
+    courseId: string | null;
+    topicId: string | null;
+    skillKey: string | null;
+    outcome: 'completed' | 'left' | 'stopped';
+    daysAgo: number;
+  } | null;
   /** True when personalization could not be read — the UI says so honestly. */
   intelDegraded: boolean;
   /** Whether Oracle can serve at all right now. */

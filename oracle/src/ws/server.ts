@@ -479,6 +479,23 @@ async function onMessage(live: Live, raw: string): Promise<void> {
       return;
 
     case 'segment_graded': {
+      /*
+       * THE GRADE MUST NAME AN ACTIVITY THIS SESSION SERVED. The id used to be
+       * validated for shape and then dropped, so any well-formed uuid bought a
+       * model turn and a glowing reaction to an activity that never existed.
+       * XP was never at stake (Core grades server-side on its own surface) —
+       * what was at stake is the tutor's picture of the learner, and the plan
+       * that now moves on it. Checked BEFORE the claim: a refusal this cheap
+       * should not spend the turn slot.
+       */
+      if (!live.orchestrator.wasServed(message.data.segmentId)) {
+        send(live.socket, {
+          type: 'error',
+          code: 'UNKNOWN_SEGMENT',
+          message: 'That activity is not part of this session.',
+        });
+        return;
+      }
       const claim = claimTurn(live, Date.now());
       if (claim !== 'ok') return refuseTurn(live, claim);
       live.abort = new AbortController();
@@ -487,6 +504,7 @@ async function onMessage(live: Live, raw: string): Promise<void> {
         await deliver(
           live,
           await live.orchestrator.handleSegmentResult(
+            message.data.segmentId,
             message.data.score,
             message.data.correct,
             Date.now(),
@@ -808,7 +826,7 @@ async function serveSegment(
     return;
   }
 
-  live.orchestrator.noteSegmentServed();
+  live.orchestrator.noteSegmentServed(served.segmentId, requestInput.skillKey);
   send(live.socket, {
     type: 'segment',
     segmentId: served.segmentId,

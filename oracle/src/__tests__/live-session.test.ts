@@ -142,14 +142,18 @@ function startFakeModel(): Promise<Server> {
       if (!isJudge && body.includes('cuentamelotodomuydespacio')) {
         await new Promise((r) => setTimeout(r, 1_500));
       }
+      // A learner asking to practise gets a turn that requests an activity.
+      const wantsActivity = !isJudge && body.includes('quieropracticarya');
       const content = isJudge
         ? JSON.stringify({ safe: true })
         : JSON.stringify({
-            say: '¡Buena pregunta! ¿Cuánto crees que juntarías?',
+            say: wantsActivity ? '¡Vamos a intentarlo!' : '¡Buena pregunta! ¿Cuánto crees que juntarías?',
             emotion: 'happy',
             action: 'nod',
-            next: 'ask',
-            segmentRequest: null,
+            next: wantsActivity ? 'segment' : 'ask',
+            segmentRequest: wantsActivity
+              ? { skillKey: 'money.saving', difficulty: 2, framing: 'Prueba esto.', rationale: 'practice' }
+              : null,
             offerAdaptation: null,
           });
       res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -389,10 +393,18 @@ describe('a real live session over a real websocket', () => {
     const { socket } = open(await socketUrl());
     await collect(socket, (m) => m.some((x) => x.type === 'turn'));
 
-    // The client reports a graded result; the tutor reacts to the actual score.
+    // The tutor requests an activity; the ladder serves it with a real id.
+    const servedAt = collect(socket, (m) => m.some((x) => x.type === 'segment'));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quieropracticarya' }));
+    const served = (await servedAt).find((m) => m.type === 'segment') as { segmentId: string };
+    expect(served.segmentId).toBe(SEGMENT_ID);
+
+    // The client reports a graded result FOR THAT SEGMENT; the tutor reacts
+    // to the actual score. (The per-turn floor applies between turns.)
+    await new Promise((r) => setTimeout(r, 750));
     const reacted = collect(socket, (m) => m.some((x) => x.type === 'turn'));
     socket.send(
-      JSON.stringify({ type: 'segment_graded', segmentId: SEGMENT_ID, score: 100, correct: true }),
+      JSON.stringify({ type: 'segment_graded', segmentId: served.segmentId, score: 100, correct: true }),
     );
     const reaction = (await reacted).find((m) => m.type === 'turn');
     expect(reaction).toBeDefined();
@@ -400,6 +412,24 @@ describe('a real live session over a real websocket', () => {
     // The model was told the outcome, so it can praise the thinking rather
     // than read the number out.
     expect(modelJournal.bodies.join('\n')).toContain('scored 100');
+
+    socket.close();
+  });
+
+  it('refuses a grade for an activity this session never served', async () => {
+    freshJournal();
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    const before = modelJournal.bodies.length;
+
+    const refused = collect(socket, (m) => m.some((x) => x.type === 'error'));
+    socket.send(
+      JSON.stringify({ type: 'segment_graded', segmentId: SEGMENT_ID, score: 100, correct: true }),
+    );
+    expect((await refused).find((m) => m.type === 'error')).toMatchObject({ code: 'UNKNOWN_SEGMENT' });
+    // A fabricated id used to buy a model turn and a glowing reaction to an
+    // activity that never existed. Now it buys nothing.
+    expect(modelJournal.bodies).toHaveLength(before);
 
     socket.close();
   });

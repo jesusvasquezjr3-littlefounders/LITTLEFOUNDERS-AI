@@ -25,6 +25,24 @@ token); (3) cross-session memory may enter the model context via the documented
 §4.1 three-part process; (4) spend authorized for pregenerating the 144
 scripted clips and for speculative TTS concurrent with the judge.
 
+**Increment 3 made it a teacher** (same day): a deterministic lesson-plan
+state machine (`oracle/src/tutor/plan.ts` — closed step vocabulary, per-skill
+failure counters, style rotation on stuck, an OFFER of an adaptation at three
+misses), a server-side join on `segment_graded` (a fabricated id now buys an
+`UNKNOWN_SEGMENT` refusal instead of a model turn), in-session skill-estimate
+nudges so the context stops describing a learner as unevidenced on a skill
+they just demonstrated, and cross-session memory: Core writes a strict digest
+at close (`tutor_sessions.summary`, migration `0051`, PENDING), serves the
+last three as `previousSessions`, and the offers screen leads with "continue
+where you left off". The sealed context went 9 → 11 fields through the full
+documented process — §4.1 rows, legal §2.2 items 10–11,
+`privacy-contract-docs.test.ts` — in one commit.
+
+**Increment 2 made connections survivable** (same day): /ORACLE.md §3.2
+resume — Oracle parks a dropped session 90 s, Core mints a fresh single-use
+token, the handshake re-attaches and redraws (history frame, no re-greeting),
+the client auto-resumes once and says so.
+
 **Increment 1 landed the turn pipeline** (/ORACLE.md §6 addendum,
 `oracle/AGENTS.md` §2.8): split text/audio delivery, speculative synthesis,
 server-authoritative `thinking`, a real `interrupt` that aborts the model call,

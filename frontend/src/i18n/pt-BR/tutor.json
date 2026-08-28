@@ -143,6 +143,10 @@
   "offers": {
     "voiceNeedsConsent": "Uma pessoa adulta precisa ligar o microfone para você. Enquanto isso dá para escrever.",
     "voiceUnavailable": "Falar em voz alta não está disponível. Dá para escrever.",
+    "continue": {
+      "title": "Continuar com {{topic}}",
+      "body": "Retomamos de onde paramos."
+    },
     "courseTopic": {
       "title": "Meus cursos",
       "body": "Algo de um curso que você já faz."

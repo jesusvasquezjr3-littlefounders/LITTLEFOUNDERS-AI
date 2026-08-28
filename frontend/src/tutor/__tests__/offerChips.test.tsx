@@ -39,6 +39,7 @@ class SilentAudio {
 
 const OFFERS: TutorOffers = {
   locale: 'en-US',
+  lastSession: null,
   intelDegraded: false,
   canStart: true,
   startBlockedBy: null,
@@ -128,6 +129,30 @@ describe('the openings', () => {
     expect(name).toContain('Ahorro con meta');
     expect(name).not.toContain('financial-education/');
     expect(chip?.textContent).not.toContain('financial-education/');
+  });
+
+  it('leads with "continue where you left off" when a digest exists — and the FAQ yields its slot', () => {
+    const { container, onStart } = renderChips({
+      lastSession: {
+        topic: 'Ahorro',
+        courseId: '55555555-5555-4555-8555-555555555555',
+        topicId: null,
+        skillKey: 'money.saving',
+        outcome: 'left',
+        daysAgo: 1,
+      },
+    });
+
+    // Continuity first, and still four chips: the curated question stood down.
+    expect(openings(container)).toEqual(['continue', 'course_topic', 'weak_skill', 'open']);
+
+    const chip = container.querySelector<HTMLButtonElement>('[data-opening="continue"]');
+    expect(chip?.getAttribute('aria-label')).toContain('Ahorro');
+    chip?.click();
+    // Reopens the SAME ground: the ids the digest kept, as a course_topic start.
+    expect(onStart).toHaveBeenCalledWith(
+      expect.objectContaining({ intent: 'course_topic', courseId: '55555555-5555-4555-8555-555555555555' }),
+    );
   });
 
   it('offers a short diagnostic when there is nothing to practise yet', () => {

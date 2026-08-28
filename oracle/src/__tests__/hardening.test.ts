@@ -351,26 +351,62 @@ describe('every learner-visible string the model authored is moderated', () => {
 
 describe('one turn at a time, on every path that reaches the model', () => {
   it('refuses a burst of segment_graded instead of buying a completion for each', async () => {
+    /*
+     * Two gates now stand in front of this frame, and the burst must be
+     * bounded by both. A grade naming a segment the session never served is
+     * refused BEFORE the turn slot — zero completions, not one. A grade
+     * naming a REAL segment still buys at most one completion however many
+     * frames share the read buffer, which is the original regression.
+     */
     const socket = await openReady();
     const before = counts.model;
 
-    // The attack: ~90 bytes each, all inside one read buffer. Before the fix
-    // every one of these started its own completion, because the 700 ms floor
-    // lived in a function this path never entered and the turn cap was counted
-    // after the call rather than before it.
-    const burst = 40;
-    for (let i = 0; i < burst; i += 1) {
+    const fabricated = 40;
+    for (let i = 0; i < fabricated; i += 1) {
       socket.send(JSON.stringify({ type: 'segment_graded', segmentId: SEGMENT_ID, score: 50, correct: false }));
     }
+    const refusedAll = await collect(
+      socket,
+      (m) => m.filter((x) => x.type === 'error' && x.code === 'UNKNOWN_SEGMENT').length >= fabricated,
+    );
+    expect(refusedAll.filter((m) => m.code === 'UNKNOWN_SEGMENT')).toHaveLength(fabricated);
+    expect(counts.model - before).toBe(0);
 
-    const messages = await collect(socket, (m) => m.filter((x) => x.type === 'error').length >= burst - 2);
+    // Now a REAL activity: the tutor requests one, the session serves it…
+    nextTurn = {
+      ...cleanTurn(),
+      next: 'segment',
+      segmentRequest: {
+        skillKey: 'saving.goal',
+        difficulty: 2,
+        framing: 'Vamos a probarlo juntos.',
+        rationale: 'practice',
+      },
+    };
+    const servedAt = collect(socket, (m) => m.some((x) => x.type === 'segment'));
+    socket.send(JSON.stringify({ type: 'learner_text', text: '¿Qué sigue?' }));
+    const servedId = ((await servedAt).find((m) => m.type === 'segment') as { segmentId: string }).segmentId;
+    nextTurn = cleanTurn();
+    const mid = counts.model;
+
+    // …and a burst against ITS id still buys one completion, not thirty.
+    await new Promise((r) => setTimeout(r, 750));
+    const burst = 30;
+    for (let i = 0; i < burst; i += 1) {
+      socket.send(JSON.stringify({ type: 'segment_graded', segmentId: servedId, score: 50, correct: false }));
+    }
+    const messages = await collect(
+      socket,
+      (m) => m.filter((x) => x.type === 'error' && x.code === 'RATE_LIMITED').length >= burst - 2,
+    );
     socket.close();
 
     const refusals = messages.filter((m) => m.type === 'error' && m.code === 'RATE_LIMITED');
     expect(refusals.length).toBeGreaterThanOrEqual(burst - 2);
-    // One turn produced, not forty. The judge runs per turn, so this bounds
-    // both upstream calls at once.
-    expect(counts.model - before).toBeLessThanOrEqual(2);
+    // One turn produced, not thirty. The judge runs per turn, so this bounds
+    // both upstream calls at once. (The fake model counts author+judge calls
+    // in one counter, hence the small allowance.)
+    expect(counts.model - mid).toBeLessThanOrEqual(3);
   });
 
   it('does not pay for transcription on frames it is going to refuse', async () => {

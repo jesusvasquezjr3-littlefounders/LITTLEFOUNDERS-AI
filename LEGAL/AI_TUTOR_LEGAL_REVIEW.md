@@ -76,6 +76,25 @@ constraint.
    inserted, because the value of an enumerated allow-list is that it is
    exhaustive, and counsel is entitled to know that one entry was found missing
    when it was checked field-by-field against the code.
+10. **Lesson plan state** (`planState`) — **added 2026-08-28, owner sign-off.**
+    A projection of the session's teaching plan, computed by our own server:
+    an objective sentence composed from our published course/topic titles and
+    a closed intent vocabulary, a closed list of step names with an index, and
+    counters over skill identifiers item 4 already discloses. It contains no
+    learner-derived data the other items do not already contain; it exists so
+    the model is told which step of the lesson it is performing instead of
+    guessing from the transcript.
+11. **Previous-session digests** (`previousSessions`) — **added 2026-08-28,
+    owner sign-off.** Up to three prior conversations, each reduced to: the
+    published topic title (or nothing), at most five skill identifiers, one of
+    three outcome words (`completed`, `left`, `stopped`), a count of
+    activities attempted and passed, and how many days ago it happened. This
+    is a deliberate, narrow exception to item 8's "never a previous
+    session's": **no transcript text, no learner words, and nothing a
+    sentence could be reconstructed from ever travels.** The digest is
+    computed deterministically by our own server at session close — never by
+    a model — is stored on the session row, and is deleted with it by the
+    same 90-day retention sweep (§3).
 
 ### §2.2b The placement intake — a second, narrower disclosure (added 2026-08-24)
 

@@ -143,6 +143,10 @@
   "offers": {
     "voiceNeedsConsent": "Una persona adulta tiene que activarte el micrófono. Mientras tanto puedes escribir.",
     "voiceUnavailable": "Hablar en voz alta no está disponible. Puedes escribir.",
+    "continue": {
+      "title": "Seguir con {{topic}}",
+      "body": "Retomamos justo donde lo dejamos."
+    },
     "courseTopic": {
       "title": "Mis cursos",
       "body": "Algo de un curso que ya llevas."

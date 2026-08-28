@@ -6,6 +6,7 @@ import {
   CHARACTER_IDS,
   INTENTS,
   LOCALES,
+  PreviousSessionSchema,
   SkillStateSchema,
 } from '../context/schema.js';
 
@@ -57,6 +58,15 @@ const SessionContextSchema = z
       })
       .nullable(),
     skillStates: z.array(SkillStateSchema),
+    /** The skill this session was opened about, when it was opened about one. */
+    skillKey: z.string().min(1).max(128).nullable().optional(),
+    /**
+     * Up to three prior conversations as strict digests (/ORACLE.md §4.1,
+     * owner sign-off 2026-08-28). OPTIONAL on the wire so an Oracle deployed
+     * ahead of Core degrades to a tutor with no memory rather than to a
+     * refused handshake; the sealed context defaults it to empty.
+     */
+    previousSessions: z.array(PreviousSessionSchema).max(3).optional(),
     /** True when this learner is a minor: forces the model moderation pass. */
     isMinor: z.boolean(),
     /** Whether an active guardian voice consent exists RIGHT NOW. */

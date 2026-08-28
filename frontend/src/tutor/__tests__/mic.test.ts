@@ -15,6 +15,7 @@ import type { TutorOffers } from '../types';
 
 const OFFERS: TutorOffers = {
   locale: 'en-US',
+  lastSession: null,
   intelDegraded: false,
   canStart: true,
   startBlockedBy: null,

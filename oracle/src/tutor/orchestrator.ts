@@ -1,5 +1,13 @@
 import { getConfig } from '../env.js';
-import { sealContext, type TutorContext } from '../context/schema.js';
+import { sealContext, type SkillState, type TutorContext } from '../context/schema.js';
+import {
+  buildPlan,
+  noteConversationTurn,
+  planState,
+  recordGrade,
+  stuckInstruction,
+  type LessonPlan,
+} from './plan.js';
 import { classifyLearnerInput, type SafetyCategory } from '../safety/classifier.js';
 import { fenceUntrusted } from '../safety/untrusted.js';
 import { moderateTutorOutput } from '../safety/moderation.js';
@@ -105,6 +113,22 @@ export class TutorOrchestrator {
   private adaptations: TutorContext['adaptations'];
   private stopped = false;
   private lastTurn: { turn: TutorTurn; seq: number } | null = null;
+  /** The lesson's spine — deterministic, server-owned (tutor/plan.ts). */
+  private readonly plan: LessonPlan;
+  /**
+   * The session's LIVE copy of the skill estimates. The handshake snapshot
+   * used to be frozen for the whole session, so the model was told "very
+   * little evidence" about a skill the learner had just demonstrated four
+   * times. Nudged locally per graded result; Core keeps the authoritative
+   * record through its own grading endpoint, so nothing here is persisted.
+   */
+  private readonly skillStates: SkillState[];
+  /**
+   * Every activity THIS session actually served, by id. `segment_graded` must
+   * name one of these — the score is client-reported (it echoes Core's own
+   * grading), and a fabricated id was previously accepted without question.
+   */
+  private readonly servedSegmentSkills = new Map<string, string>();
 
   constructor(
     private readonly session: SessionContext,
@@ -113,6 +137,8 @@ export class TutorOrchestrator {
     private readonly synthesize: Synthesizer,
   ) {
     this.adaptations = [...session.adaptations] as TutorContext['adaptations'];
+    this.plan = buildPlan(session.intent, session.courseContext, session.skillKey ?? null);
+    this.skillStates = session.skillStates.slice(0, 12).map((s) => ({ ...s }));
   }
 
   get turnCount(): number {
@@ -183,8 +209,15 @@ export class TutorOrchestrator {
     return this.history.filter((h) => h.speaker === 'tutor').slice(-6).map((h) => h.text);
   }
 
-  noteSegmentServed(): void {
+  /** An activity went out. Remembered by id, so a grade can be matched to it. */
+  noteSegmentServed(segmentId: string, skillKey: string): void {
     this.segmentCount += 1;
+    this.servedSegmentSkills.set(segmentId, skillKey);
+  }
+
+  /** Whether this session actually served the segment a grade claims to be for. */
+  wasServed(segmentId: string): boolean {
+    return this.servedSegmentSkills.has(segmentId);
   }
 
   /** The learner accepted an offered adaptation. Applied only on acceptance (§11). */
@@ -214,21 +247,62 @@ export class TutorOrchestrator {
     );
   }
 
-  /** A graded activity came back; the tutor reacts to the actual result. */
+  /**
+   * A graded activity came back; the tutor reacts to the actual result — and
+   * the PLAN moves. The grade feeds three deterministic things before any
+   * model call: the failure counter that decides "stuck", the live skill
+   * estimate the context message reads, and the step pointer. The caller has
+   * already verified `segmentId` names an activity this session served.
+   */
   async handleSegmentResult(
+    segmentId: string,
     score: number,
     correct: boolean,
     nowMs: number,
     signal?: AbortSignal,
   ): Promise<TurnOutcome | null> {
+    const skillKey = this.servedSegmentSkills.get(segmentId) ?? 'unknown';
+    this.nudgeSkillEstimate(skillKey, correct);
+    // The stuck instruction reads the counter recordGrade is about to bump,
+    // so the order is: count the miss, then ask what it now amounts to.
+    recordGrade(this.plan, skillKey, correct);
+    const extra = correct ? null : stuckInstruction(this.plan, skillKey);
+
     const summary = correct
       ? `The learner completed the activity and scored ${score} out of 100.`
       : `The learner did not pass the activity; they scored ${score} out of 100.`;
     return this.produce(
-      `${summary} React to that as their tutor: say what was good about their thinking first, then help with what is still missing. Do not read the number out loud.`,
+      `${summary} React to that as their tutor: say what was good about their thinking first, then help with what is still missing. Do not read the number out loud.${extra ? `\n\n${extra}` : ''}`,
       nowMs,
       { isSystemPrompted: true, signal },
     );
+  }
+
+  /**
+   * The in-session nudge. Small and bounded on purpose: the authoritative
+   * estimate is Data Intel's, rebuilt from Core's graded rows offline. This
+   * exists so the CONTEXT MESSAGE stops describing a learner as unevidenced
+   * on a skill they demonstrated ninety seconds ago.
+   */
+  private nudgeSkillEstimate(skillKey: string, correct: boolean): void {
+    const existing = this.skillStates.find((s) => s.skillKey === skillKey);
+    if (existing) {
+      const delta = correct ? 0.08 : -0.08;
+      existing.masteryProbability = Math.min(0.95, Math.max(0.05, existing.masteryProbability + delta));
+      existing.uncertainty = Math.max(0.05, existing.uncertainty * 0.9);
+      existing.evidenceCount += 1;
+      return;
+    }
+    if (this.skillStates.length < 12 && skillKey !== 'unknown') {
+      this.skillStates.push({
+        skillKey,
+        masteryProbability: correct ? 0.6 : 0.4,
+        uncertainty: 0.5,
+        evidenceCount: 1,
+        recommendedAction: correct ? 'continue' : 'practice',
+        reasonCode: 'observed_this_session',
+      });
+    }
   }
 
   /**
@@ -281,7 +355,11 @@ export class TutorOrchestrator {
     }
 
     this.history.push({ speaker: 'learner', text: fenced.cleaned });
-    return this.produce(fenced.block, nowMs, { nonce: fenced.nonce, signal });
+    const outcome = await this.produce(fenced.block, nowMs, { nonce: fenced.nonce, signal });
+    // A completed exchange moves the plan's talk-only steps along; an aborted
+    // one does not — a question the tutor never answered was not an exchange.
+    if (outcome !== null) noteConversationTurn(this.plan);
+    return outcome;
   }
 
   /** Ends the session in character. */
@@ -307,11 +385,14 @@ export class TutorOrchestrator {
       intent: this.session.intent,
       adaptations: this.adaptations,
       courseContext: this.session.courseContext,
-      skillStates: this.session.skillStates.slice(0, 12),
+      // The LIVE copy, nudged per graded result — not the handshake snapshot.
+      skillStates: this.skillStates.slice(0, 12),
       // Last 20 exchanges. Truncation is not just a token budget: a long
       // history is also a long window in which an earlier injection attempt
       // could keep influencing later turns.
       turnHistory: this.history.slice(-20),
+      planState: planState(this.plan),
+      previousSessions: (this.session.previousSessions ?? []).slice(0, 3),
     });
   }
 

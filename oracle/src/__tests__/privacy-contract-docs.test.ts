@@ -48,6 +48,8 @@ const SPELLINGS: Record<string, readonly string[]> = {
   courseContext: ['`courseContext`', 'Course context'],
   skillStates: ['`skillStates`', 'Derived skill state'],
   turnHistory: ['`turnHistory`', "This session's turns"],
+  planState: ['`planState`', 'Lesson plan state'],
+  previousSessions: ['`previousSessions`', 'Previous-session digests'],
 };
 
 const schemaKeys = Object.keys(TutorContextSchema.shape).sort();
@@ -75,13 +77,19 @@ describe('the privacy contract documents enumerate exactly what the schema permi
     });
   }
 
-  it('is nine fields, and a change to that number is a decision', () => {
+  it('is eleven fields, and a change to that number is a decision', () => {
     /*
      * Deliberately a hard-coded number. Widening what reaches a third-party
      * model about a child is exactly the change that should not pass quietly:
-     * this fails on the tenth field and the person adding it has to come here,
+     * this fails on the next field and the person adding it has to come here,
      * read why, and update /ORACLE.md §4.1, the legal brief §2.2, and this
      * line — which is the review the number exists to force.
+     *
+     * Went 9 → 11 on 2026-08-28 (owner sign-off): `planState` (server-derived
+     * lesson-plan projection, no new learner data) and `previousSessions`
+     * (strict prior-session digests — topic/skills/outcome/counters, never a
+     * transcript). Both went through exactly this review: §4.1 rows, legal
+     * §2.2 items 10-11, and this list, in one commit.
      */
     expect(schemaKeys).toEqual([
       'adaptations',
@@ -90,6 +98,8 @@ describe('the privacy contract documents enumerate exactly what the schema permi
       'intent',
       'locale',
       'nickname',
+      'planState',
+      'previousSessions',
       'skillStates',
       'tier',
       'turnHistory',

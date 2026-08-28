@@ -87,6 +87,56 @@ export const TurnSchema = z
   })
   .strict();
 
+/** The closed step vocabulary of a lesson plan (/ORACLE.md §9.3). */
+export const PLAN_STEPS = ['warmup', 'explain', 'practice', 'check', 'stretch'] as const;
+
+/**
+ * The lesson plan's state, as the model is allowed to see it.
+ *
+ * SERVER-DERIVED, carrying no learner data the other fields do not already
+ * carry: the objective is composed from our own course/topic titles and the
+ * closed intent vocabulary, the steps are a closed enum, and the stuck fields
+ * name a skill key that `skillStates` already names. It exists so the model's
+ * teaching has a spine the SERVER owns — which step we are on, what has been
+ * tried — instead of a vibe reconstructed from the transcript every turn.
+ */
+export const PlanStateSchema = z
+  .object({
+    /** Composed from catalog titles + closed vocab. Never learner text. */
+    objective: z.string().min(1).max(200),
+    steps: z.array(z.enum(PLAN_STEPS)).min(1).max(8),
+    stepIndex: z.number().int().min(0).max(7),
+    /** The skill the learner keeps missing, when there is one. */
+    stuckSkillKey: z.string().min(1).max(128).nullable(),
+    stuckCount: z.number().int().min(0).max(10),
+    /** Explanation styles already tried against the stuck skill. */
+    stylesTried: z.array(z.enum(ADAPTATIONS)).max(ADAPTATIONS.length),
+  })
+  .strict();
+
+/**
+ * One prior conversation, as a strictly-shaped digest (/ORACLE.md §4.1,
+ * owner sign-off 2026-08-28).
+ *
+ * This is the ONE deliberate exception to "never a previous session's data",
+ * and its shape is what makes the exception narrow: no transcript, no learner
+ * words, no dates — a catalog topic title, skill keys `skillStates` already
+ * exposes, a closed outcome vocabulary, two bounded counters and a day count.
+ * Enough for "last time we worked on saving and the division kept tripping
+ * you"; not enough to reconstruct a single sentence anyone said.
+ */
+export const PreviousSessionSchema = z
+  .object({
+    /** Course/topic title from OUR catalog, or null for an open chat. */
+    topic: z.string().min(1).max(160).nullable(),
+    skillKeys: z.array(z.string().min(1).max(128)).max(5),
+    outcome: z.enum(['completed', 'left', 'stopped']),
+    gradedCorrect: z.number().int().min(0).max(50),
+    gradedTotal: z.number().int().min(0).max(50),
+    daysAgo: z.number().int().min(0).max(90),
+  })
+  .strict();
+
 /**
  * The complete model context. Nothing else reaches a third-party model.
  *
@@ -106,12 +156,22 @@ export const TutorContextSchema = z
     adaptations: z.array(z.enum(ADAPTATIONS)).max(ADAPTATIONS.length),
     courseContext: CourseContextSchema.nullable(),
     skillStates: z.array(SkillStateSchema).max(12),
-    /** THIS session only, truncated. Never a prior session's transcript. */
+    /** THIS session only, truncated. Never a prior session's TRANSCRIPT. */
     turnHistory: z.array(TurnSchema).max(40),
+    /** The server-owned lesson plan projection. Null before one exists. */
+    planState: PlanStateSchema.nullable(),
+    /**
+     * Up to three prior conversations as strict digests — topic, skills,
+     * outcome, counters. NEVER their transcripts (see PreviousSessionSchema).
+     * Owner sign-off 2026-08-28; §4.1 row + legal §2.2 item 11.
+     */
+    previousSessions: z.array(PreviousSessionSchema).max(3),
   })
   .strict();
 
 export type TutorContext = z.infer<typeof TutorContextSchema>;
+export type PlanState = z.infer<typeof PlanStateSchema>;
+export type PreviousSession = z.infer<typeof PreviousSessionSchema>;
 export type SkillState = z.infer<typeof SkillStateSchema>;
 export type TutorIntent = (typeof INTENTS)[number];
 export type Adaptation = (typeof ADAPTATIONS)[number];

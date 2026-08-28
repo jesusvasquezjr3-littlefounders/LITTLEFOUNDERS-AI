@@ -143,6 +143,10 @@
   "offers": {
     "voiceNeedsConsent": "A grown-up needs to turn the microphone on for you. You can still type.",
     "voiceUnavailable": "Talking out loud isn't available. You can still type.",
+    "continue": {
+      "title": "Keep going with {{topic}}",
+      "body": "Pick up right where we left off."
+    },
     "courseTopic": {
       "title": "My courses",
       "body": "Something from a course you're taking."

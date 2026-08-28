@@ -154,6 +154,50 @@ export function buildContextMessage(context: TutorContext): string {
 
   lines.push('', `Why they are here: ${INTENT_INSTRUCTIONS[context.intent]}`);
 
+  /*
+   * THE PLAN, stated as state rather than aspiration. The model performs the
+   * current step; the SERVER decides which step that is (tutor/plan.ts), so
+   * "where are we in this lesson" is arithmetic instead of something
+   * reconstructed from the transcript under a token budget every turn.
+   */
+  if (context.planState) {
+    const plan = context.planState;
+    const step = plan.steps[plan.stepIndex] ?? 'explain';
+    lines.push(
+      '',
+      `The lesson plan for this session: ${plan.objective}`,
+      `You are on step ${plan.stepIndex + 1} of ${plan.steps.length}: ${PLAN_STEP_GUIDANCE[step]}`,
+    );
+    if (plan.stuckSkillKey) {
+      lines.push(
+        `The learner is currently stuck on "${plan.stuckSkillKey}" (missed ${plan.stuckCount} times).` +
+          (plan.stylesTried.length > 0
+            ? ` Already tried: ${plan.stylesTried.map((s) => s.replace(/_/g, ' ')).join(', ')}. Try something different.`
+            : ''),
+      );
+    }
+  }
+
+  /*
+   * WHAT CAME BEFORE — digests, never transcripts (/ORACLE.md §4.1, owner
+   * sign-off 2026-08-28). Enough for continuity ("last time we worked on…");
+   * nothing anyone said, ever.
+   */
+  if (context.previousSessions.length > 0) {
+    lines.push('', 'Their previous conversations with you (digests only — you do not remember the words):');
+    for (const prior of context.previousSessions) {
+      const when = prior.daysAgo === 0 ? 'earlier today' : prior.daysAgo === 1 ? 'yesterday' : `${prior.daysAgo} days ago`;
+      const what = prior.topic ?? (prior.skillKeys.length > 0 ? prior.skillKeys.join(', ') : 'an open chat');
+      const results =
+        prior.gradedTotal > 0 ? `; activities ${prior.gradedCorrect}/${prior.gradedTotal} correct` : '';
+      lines.push(`- ${when}: ${what} (${OUTCOME_WORDS[prior.outcome]}${results})`);
+    }
+    lines.push(
+      'You may refer to these naturally ("last time we looked at…"), and you must never',
+      'quote, invent or claim to remember anything specific that was said.',
+    );
+  }
+
   if (context.skillStates.length > 0) {
     lines.push(
       '',
@@ -192,6 +236,25 @@ const ADAPTATION_INSTRUCTIONS: Record<string, string> = {
   less_text: 'Say less. Aim for one or two short sentences per turn.',
   more_visual: 'Prefer activities with pictures and objects over ones with words and numbers.',
   repeat_before_advancing: 'Revisit the previous idea briefly before introducing the next one.',
+};
+
+const PLAN_STEP_GUIDANCE: Record<string, string> = {
+  warmup:
+    'warm up. One light, friendly question that gets them talking about the subject — no teaching yet, no activity yet.',
+  explain:
+    'explain. Teach ONE idea with a concrete example and small invented numbers, then ask a question that uses it.',
+  practice:
+    'practice. The learner should DO something now — when their reply shows they are ready, use next="segment" to request an activity on the skill in play.',
+  check:
+    'check understanding. Ask them to USE the idea or explain it back in their own words. Do not ask whether they understood.',
+  stretch:
+    'stretch. One step further: a twist, a harder case, or a connection to something bigger. Keep it playful — this step is a bonus, not a test.',
+};
+
+const OUTCOME_WORDS: Record<string, string> = {
+  completed: 'finished properly',
+  left: 'ended early',
+  stopped: 'ended early',
 };
 
 const INTENT_INSTRUCTIONS: Record<string, string> = {

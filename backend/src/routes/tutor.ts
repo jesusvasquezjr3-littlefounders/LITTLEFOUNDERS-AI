@@ -30,14 +30,19 @@ import {
   insertSafetyFlag,
   insertTutorSegment,
   insertTutorTurn,
+  listRecentSummaries,
   listSafetyFlags,
   listTutorSegments,
   listTutorSessions,
   listTutorTurns,
   recordSegmentResult,
   revokeVoiceConsent,
+  setSessionSummary,
   tutorXpSince,
   upsertTutorPreferences,
+  type SessionSummaryDigest,
+  type TutorSegmentRow,
+  type TutorSessionRow,
 } from '../services/tutorData.js';
 import {
   LIVE_TYPE_ALLOWLIST,
@@ -216,6 +221,22 @@ function internalRouter(): Router {
         ? await resolveCourseContext(session.course_id, session.topic_id, session.locale)
         : null;
 
+    /*
+     * The memory digests (/ORACLE.md §4.1, 2026-08-28). Only the fields
+     * Oracle's PreviousSessionSchema names travel; the internal course/topic
+     * ids the digest also stores stay here. A failed read degrades to a tutor
+     * with no memory — never to a refused session.
+     */
+    const recent = await listRecentSummaries(session.user_id, session.id);
+    const previousSessions = (recent ?? []).map((row) => ({
+      topic: row.summary.topic,
+      skillKeys: row.summary.skillKeys.slice(0, 5),
+      outcome: row.summary.outcome,
+      gradedCorrect: row.summary.gradedCorrect,
+      gradedTotal: row.summary.gradedTotal,
+      daysAgo: daysAgo(row.ended_at),
+    }));
+
     return ok(res, {
       sessionId: session.id,
       userId: session.user_id,
@@ -231,6 +252,8 @@ function internalRouter(): Router {
       intent: session.intent,
       adaptations: prefs.adaptations,
       courseContext,
+      skillKey: session.skill_key,
+      previousSessions,
       skillStates: (states ?? []).slice(0, 12).map((s) => ({
         skillKey: s.skillKey,
         masteryProbability: s.masteryProbability,
@@ -305,6 +328,29 @@ function internalRouter(): Router {
     // that dies after a graceful farewell must not rewrite `completed` into
     // `learner_left`.
     const closed = await closeTutorSession(parsed.data);
+
+    /*
+     * THE MEMORY DIGEST, written when a close actually landed (/ORACLE.md
+     * §4.1, 2026-08-28). Computed HERE, deterministically, from rows Core
+     * already holds — never by a model and never from transcript text,
+     * because this object is what the NEXT session's model context carries.
+     * Best-effort after the close: a failed digest costs continuity, not the
+     * session record.
+     */
+    if (closed) {
+      const session = await getTutorSession(parsed.data.sessionId);
+      if (session) {
+        const segments = await listTutorSegments(session.id);
+        const context =
+          session.course_id || session.topic_id
+            ? await resolveCourseContext(session.course_id, session.topic_id, session.locale)
+            : null;
+        await setSessionSummary(
+          session.id,
+          memoryDigest(session, segments, context?.topicTitle ?? context?.courseTitle ?? null),
+        );
+      }
+    }
     return ok(res, { closed });
   });
 
@@ -453,6 +499,51 @@ function internalRouter(): Router {
   });
 
   return router;
+}
+
+/**
+ * One closed session, digested for the next one's memory. Topic title,
+ * skill keys, a closed outcome, two counters — nothing anyone said.
+ */
+function memoryDigest(
+  session: TutorSessionRow,
+  segments: TutorSegmentRow[] | null,
+  topicTitle: string | null,
+): SessionSummaryDigest {
+  const skillKeys = new Set<string>();
+  if (session.skill_key) skillKeys.add(session.skill_key);
+  let gradedTotal = 0;
+  let gradedCorrect = 0;
+  for (const segment of segments ?? []) {
+    const provenance = segment.provenance ?? {};
+    const key = provenance['skill_key'] ?? provenance['skillKey'];
+    if (typeof key === 'string' && key) skillKeys.add(key);
+    if (segment.score !== null) {
+      gradedTotal += 1;
+      if (segment.score >= PASS_THRESHOLD) gradedCorrect += 1;
+    }
+  }
+  const reason = session.close_reason;
+  const outcome: SessionSummaryDigest['outcome'] =
+    reason === 'safety_stop'
+      ? 'stopped'
+      : reason === 'completed' || reason === 'soft_budget' || reason === 'hard_budget'
+        ? 'completed'
+        : 'left';
+  return {
+    topic: topicTitle,
+    courseId: session.course_id,
+    topicId: session.topic_id,
+    skillKeys: [...skillKeys].slice(0, 5),
+    outcome,
+    gradedCorrect: Math.min(gradedCorrect, 50),
+    gradedTotal: Math.min(gradedTotal, 50),
+  };
+}
+
+/** Days since an ISO timestamp, clamped to the retention window. */
+function daysAgo(iso: string, now = Date.now()): number {
+  return Math.max(0, Math.min(90, Math.floor((now - new Date(iso).getTime()) / 86_400_000)));
 }
 
 /** Hash a uuid into a small non-negative integer, for stable rotation. */
@@ -655,8 +746,27 @@ export function tutorRouter(): Router {
         .filter((s) => s.evidenceCount >= 3 && s.uncertainty <= 0.35)
         .slice(0, 3) ?? [];
 
+    /*
+     * CONTINUITY. The latest memory digest (see the close handler) becomes a
+     * "continue where you left off" opening — the ids it kept internally are
+     * exactly what a new session needs to reopen the same ground. Best-effort:
+     * no digest, no chip, and the offer screen is what it always was.
+     */
+    const recent = await listRecentSummaries(user.id);
+    const last = recent?.[0] ?? null;
+
     return ok(res, {
       locale,
+      lastSession: last
+        ? {
+            topic: last.summary.topic,
+            courseId: last.summary.courseId,
+            topicId: last.summary.topicId,
+            skillKey: last.summary.skillKeys[0] ?? null,
+            outcome: last.summary.outcome,
+            daysAgo: daysAgo(last.ended_at),
+          }
+        : null,
       intelDegraded: states === null,
       /** Whether Oracle can serve at all right now — the button is honest about it. */
       canStart: runtime.canStart,

@@ -27,6 +27,8 @@ function validContext(overrides: Partial<TutorContext> = {}): TutorContext {
     courseContext: null,
     skillStates: [],
     turnHistory: [],
+    planState: null,
+    previousSessions: [],
     ...overrides,
   };
 }
@@ -68,6 +70,27 @@ describe('the model context boundary', () => {
     for (const nick of ['Robi', 'Chío', 'João', 'Zeta_9', "O'Ryan", 'Ana-Lu']) {
       expect(NicknameSchema.safeParse(nick).success).toBe(true);
     }
+  });
+
+  it('accepts a memory digest, and refuses one smuggling transcript text', () => {
+    const digest = {
+      topic: 'Ahorro',
+      skillKeys: ['money.saving'],
+      outcome: 'completed' as const,
+      gradedCorrect: 2,
+      gradedTotal: 3,
+      daysAgo: 4,
+    };
+    expect(() => sealContext(validContext({ previousSessions: [digest] }))).not.toThrow();
+    // The exception to "this session only" is the digest's SHAPE. A field of
+    // prose — a transcript, a note, a quote — is exactly what it must reject.
+    expect(() =>
+      sealContext(
+        validContext({
+          previousSessions: [{ ...digest, transcript: 'el niño dijo…' } as never],
+        }),
+      ),
+    ).toThrow(/refusing to send an invalid model context/);
   });
 
   it('caps turn history so an old injection cannot ride along forever', () => {

@@ -675,6 +675,124 @@ describe('the internal surface', () => {
     expect(response.status).toBe(409);
   });
 
+  it('writes a memory digest at close — topic, skills, outcome, counters, and nothing anyone said', async () => {
+    const calls: { url: string; method: string; body?: string }[] = [];
+    stub({
+      calls,
+      session: [
+        {
+          ...SESSION_ROW,
+          skill_key: 'money.saving',
+          ended_at: '2026-08-21T10:30:00Z',
+          close_reason: 'completed',
+        },
+      ],
+      segments: [
+        {
+          id: SEGMENT,
+          session_id: SESSION,
+          seq: 0,
+          origin: 'catalog',
+          payload: MCQ_SEGMENT,
+          score: 100,
+          provenance: { skill_key: 'money.goals' },
+        },
+      ],
+    });
+
+    const response = await request(createApp())
+      .post(`/api/v1/tutor/internal/sessions/${SESSION}/close`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ sessionId: SESSION, closeReason: 'completed', turnCount: 8, segmentCount: 1, costUsd: 0.01 });
+
+    expect(response.status).toBe(200);
+    const write = calls.find(
+      (c) => c.method === 'PATCH' && c.url.includes('/tutor_sessions') && (c.body ?? '').includes('summary'),
+    );
+    expect(write).toBeDefined();
+    const digest = (JSON.parse(write?.body ?? '{}') as { summary: Record<string, unknown> }).summary;
+    expect(digest).toMatchObject({
+      outcome: 'completed',
+      gradedCorrect: 1,
+      gradedTotal: 1,
+    });
+    expect(digest.skillKeys).toEqual(expect.arrayContaining(['money.saving', 'money.goals']));
+    // The digest is what the NEXT session's model context carries, so no
+    // transcript-shaped field may ever appear in it.
+    expect(Object.keys(digest).sort()).toEqual([
+      'courseId',
+      'gradedCorrect',
+      'gradedTotal',
+      'outcome',
+      'skillKeys',
+      'topic',
+      'topicId',
+    ]);
+  });
+
+  it('hands Oracle the previous sessions as digests, shaped for the sealed context', async () => {
+    stub({
+      sessions: [
+        {
+          summary: {
+            topic: 'Ahorro',
+            courseId: '55555555-5555-4555-8555-555555555555',
+            topicId: null,
+            skillKeys: ['money.saving'],
+            outcome: 'completed',
+            gradedCorrect: 2,
+            gradedTotal: 3,
+          },
+          ended_at: new Date(Date.now() - 2 * 86_400_000).toISOString(),
+        },
+      ],
+    });
+
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+
+    expect(response.status).toBe(200);
+    const prior = response.body.data.previousSessions;
+    expect(prior).toHaveLength(1);
+    expect(prior[0]).toMatchObject({ topic: 'Ahorro', outcome: 'completed', daysAgo: 2 });
+    // The internal ids the digest stores do NOT travel to Oracle: the sealed
+    // schema would reject them, and Oracle has no use for them.
+    expect(prior[0].courseId).toBeUndefined();
+  });
+
+  it('offers "continue where you left off" from the latest digest', async () => {
+    stub({
+      sessions: [
+        {
+          summary: {
+            topic: 'Ahorro',
+            courseId: '55555555-5555-4555-8555-555555555555',
+            topicId: null,
+            skillKeys: ['money.saving'],
+            outcome: 'left',
+            gradedCorrect: 1,
+            gradedTotal: 2,
+          },
+          ended_at: new Date(Date.now() - 86_400_000).toISOString(),
+        },
+      ],
+    });
+
+    const response = await request(createApp())
+      .get('/api/v1/tutor/offers')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.lastSession).toMatchObject({
+      topic: 'Ahorro',
+      courseId: '55555555-5555-4555-8555-555555555555',
+      skillKey: 'money.saving',
+      outcome: 'left',
+      daysAgo: 1,
+    });
+  });
+
   it('rejects a generated segment whose own key does not score 100', async () => {
     stub();
 

@@ -253,6 +253,10 @@ export function labLocaleOf(raw: string): Locale {
 export function labOffers(locale: Locale): TutorOffers {
   return {
     locale,
+    // Null on purpose: the continuity chip REPLACES the FAQ chip when it
+    // exists, so the fullest four-chip set the comment above describes is the
+    // one without a digest. The chip itself is exercised by offerChips tests.
+    lastSession: null,
     intelDegraded: false,
     canStart: true,
     startBlockedBy: null,

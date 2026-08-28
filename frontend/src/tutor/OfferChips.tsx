@@ -239,6 +239,27 @@ export function OfferChips({
   const openings = useMemo<Opening[]>(() => {
     const list: Opening[] = [];
 
+    /*
+     * CONTINUITY FIRST (owner sign-off 2026-08-28). A learner who left
+     * mid-conversation yesterday should find the door they left through, not
+     * four fresh ones — the digest Core keeps at close carries the topic and
+     * the ids to reopen the same ground. Only when there IS somewhere to go
+     * back to; a completed open chat leaves nothing worth resuming.
+     */
+    const last = offers.lastSession;
+    if (last && (last.topic || last.skillKey)) {
+      const topic = last.topic ?? readableSkill(last.skillKey ?? '');
+      list.push({
+        id: 'continue',
+        icon: 'history',
+        label: t('tutor.offers.continue.title', { topic }),
+        spoken: t('tutor.offers.continue.body', { topic }),
+        input: last.courseId || last.topicId
+          ? { intent: 'course_topic', courseId: last.courseId, topicId: last.topicId }
+          : { intent: 'weak_skill', skillKey: last.skillKey },
+      });
+    }
+
     list.push({
       id: 'course_topic',
       icon: 'school',
@@ -282,7 +303,10 @@ export function OfferChips({
       });
     }
 
-    const faqId = offers.faqIds[0];
+    // The set stays at four. When continuity took a slot, the curated
+    // question yields — it is the least personal of the four, and five plates
+    // over a close-up stop being suggestions and become a menu.
+    const faqId = list.some((o) => o.id === 'continue') ? undefined : offers.faqIds[0];
     if (faqId) {
       list.push({
         id: `faq:${faqId}`,
@@ -306,7 +330,7 @@ export function OfferChips({
     }
 
     return list;
-  }, [offers.weakSkills, offers.faqIds, offers.canAskOpen, t]);
+  }, [offers.lastSession, offers.weakSkills, offers.faqIds, offers.canAskOpen, t]);
 
   /*
    * Voice is ON whenever it is possible, and the learner is never asked to tick

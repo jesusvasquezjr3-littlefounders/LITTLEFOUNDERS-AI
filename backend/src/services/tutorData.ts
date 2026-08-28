@@ -181,6 +181,26 @@ export interface TutorSessionRow {
   segment_count: number;
   xp_awarded: number;
   cost_usd: number;
+  /** The cross-session memory digest, written at close (migration 0051). */
+  summary: SessionSummaryDigest | null;
+}
+
+/**
+ * The digest one closed session leaves for the next (/ORACLE.md §4.1, owner
+ * sign-off 2026-08-28). STRICTLY topic/skills/outcome/counters — computing it
+ * from transcript text is forbidden, because this object is what the next
+ * session's model context is allowed to carry. The course/topic ids stay
+ * internal (the offers screen uses them to rebuild a "continue" opening);
+ * only the title and the skill keys ever reach a model.
+ */
+export interface SessionSummaryDigest {
+  topic: string | null;
+  courseId: string | null;
+  topicId: string | null;
+  skillKeys: string[];
+  outcome: 'completed' | 'left' | 'stopped';
+  gradedCorrect: number;
+  gradedTotal: number;
 }
 
 export interface CreateSessionInput {
@@ -250,6 +270,40 @@ export async function closeTutorSession(input: {
     }),
   });
   return res !== null;
+}
+
+/** Writes the memory digest onto a session that has already closed. */
+export async function setSessionSummary(
+  sessionId: string,
+  summary: SessionSummaryDigest,
+): Promise<boolean> {
+  const res = await serviceRest<unknown>(`/tutor_sessions?id=eq.${eu(sessionId)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({ summary }),
+  });
+  return res !== null;
+}
+
+/**
+ * The learner's most recent closed sessions THAT LEFT A DIGEST, newest first.
+ * Only what the memory feature needs travels out of here: the digest and when
+ * the session ended.
+ */
+export async function listRecentSummaries(
+  userId: string,
+  excludeSessionId: string | null = null,
+  limit = 3,
+): Promise<{ summary: SessionSummaryDigest; ended_at: string }[] | null> {
+  const exclude = excludeSessionId ? `&id=neq.${eu(excludeSessionId)}` : '';
+  const rows = await serviceRest<{ summary: SessionSummaryDigest | null; ended_at: string | null }[]>(
+    `/tutor_sessions?user_id=eq.${eu(userId)}&summary=not.is.null&ended_at=not.is.null${exclude}` +
+      `&select=summary,ended_at&order=ended_at.desc&limit=${Math.min(limit, 10)}`,
+  );
+  if (rows === null) return null;
+  return rows.filter((r): r is { summary: SessionSummaryDigest; ended_at: string } =>
+    Boolean(r.summary && r.ended_at),
+  );
 }
 
 /**
