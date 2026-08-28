@@ -3,7 +3,7 @@ import { sealContext, type TutorContext } from '../context/schema.js';
 import { classifyLearnerInput, type SafetyCategory } from '../safety/classifier.js';
 import { fenceUntrusted } from '../safety/untrusted.js';
 import { moderateTutorOutput } from '../safety/moderation.js';
-import { complete, ModelUnavailableError } from '../model/provider.js';
+import { complete, CompletionAbortedError, ModelUnavailableError } from '../model/provider.js';
 import { evaluateBudget, WRAP_UP_INSTRUCTION, type BudgetVerdict } from '../session/budget.js';
 import { buildContextMessage, TUTOR_SYSTEM_PROMPT } from './prompt.js';
 import { parseTurn, type TutorTurn } from './turnSchema.js';
@@ -37,6 +37,22 @@ import type { SessionContext } from '../core/client.js';
  *   speak       → synthesis is best-effort and last, so a voice outage costs
  *                 the sound and nothing else.
  *
+ * TWO LATENCY DECISIONS live here, and neither weakens the order above:
+ *
+ *   SPLIT DELIVERY — a turn's emission carries `audio` as a PROMISE. The text
+ *   ships to the learner the moment moderation passes; the voice follows when
+ *   synthesis and storage finish. Nothing unmoderated moves earlier: the text
+ *   frame still sits strictly after the moderation await.
+ *
+ *   SPECULATIVE SYNTHESIS (owner sign-off 2026-08-28) — for a model-authored
+ *   turn, synthesis starts CONCURRENTLY with the moderation judge. The audio
+ *   is delivered only on a pass; on a block it is discarded, still billed
+ *   (`speechCounts.discarded` makes the spend visible), and never referenced.
+ *   "Moderated whole, and only then SPOKEN" is about what reaches the child's
+ *   ear, and that gate is intact — the discarded clip reaches nobody. Blocked
+ *   turns are rare enough that paying for their synthesis buys roughly a
+ *   second off every ordinary turn.
+ *
  * This class is transport-agnostic: it knows nothing about websockets. The
  * server (ws/server.ts) owns the socket and calls `handleLearnerText`; the
  * orchestrator returns what should be emitted. That split is what makes the
@@ -47,8 +63,14 @@ export interface TurnEmission {
   turn: TutorTurn;
   seq: number;
   source: 'model' | 'scripted';
-  /** Populated when synthesis succeeded. */
-  audioUrl: string | null;
+  /**
+   * The turn's voice, still arriving. Resolves to a Depot URL, or to null
+   * when the turn stays captioned and silent. Never rejects — `speak()`
+   * swallows synthesis failures into null, because a lost voice costs the
+   * sound and not the lesson. The caller delivers the text immediately and
+   * the audio when this settles.
+   */
+  audio: Promise<string | null>;
   moderation: Record<string, unknown>;
 }
 
@@ -78,6 +100,7 @@ export class TutorOrchestrator {
   private voiceUsd = 0;
   private paidSyntheses = 0;
   private freeSyntheses = 0;
+  private discardedSyntheses = 0;
   private segmentCount = 0;
   private adaptations: TutorContext['adaptations'];
   private stopped = false;
@@ -115,9 +138,20 @@ export class TutorOrchestrator {
     return this.voiceUsd;
   }
 
-  /** Lines actually paid for, and lines served free from the manifest or cache. */
-  get speechCounts(): { paid: number; free: number } {
-    return { paid: this.paidSyntheses, free: this.freeSyntheses };
+  /**
+   * Lines actually paid for, lines served free from the manifest or cache, and
+   * speculative syntheses discarded because moderation blocked their turn —
+   * paid for and delivered to nobody. `discarded` staying near zero is what
+   * keeps the speculative gamble worth taking; a session where it climbs is a
+   * session worth reading.
+   */
+  get speechCounts(): { paid: number; free: number; discarded: number } {
+    return { paid: this.paidSyntheses, free: this.freeSyntheses, discarded: this.discardedSyntheses };
+  }
+
+  /** The budget verdict right now, for callers outside a turn (keepalive). */
+  budgetAt(nowMs: number): BudgetVerdict {
+    return this.currentBudget(nowMs);
   }
 
   get servedSegments(): number {
@@ -165,19 +199,30 @@ export class TutorOrchestrator {
   }
 
   /** A graded activity came back; the tutor reacts to the actual result. */
-  async handleSegmentResult(score: number, correct: boolean, nowMs: number): Promise<TurnOutcome> {
+  async handleSegmentResult(
+    score: number,
+    correct: boolean,
+    nowMs: number,
+    signal?: AbortSignal,
+  ): Promise<TurnOutcome | null> {
     const summary = correct
       ? `The learner completed the activity and scored ${score} out of 100.`
       : `The learner did not pass the activity; they scored ${score} out of 100.`;
     return this.produce(
       `${summary} React to that as their tutor: say what was good about their thinking first, then help with what is still missing. Do not read the number out loud.`,
       nowMs,
-      { isSystemPrompted: true },
+      { isSystemPrompted: true, signal },
     );
   }
 
-  /** The main path: the learner said something. */
-  async handleLearnerText(raw: string, nowMs: number): Promise<TurnOutcome> {
+  /**
+   * The main path: the learner said something.
+   *
+   * Returns null ONLY when the caller aborted mid-production (the learner
+   * interrupted): nothing is emitted, nothing is spoken, and the learner's own
+   * line stays in the history — they said it, and the next turn answers both.
+   */
+  async handleLearnerText(raw: string, nowMs: number, signal?: AbortSignal): Promise<TurnOutcome | null> {
     const config = getConfig();
     const budget = this.currentBudget(nowMs);
 
@@ -220,7 +265,7 @@ export class TutorOrchestrator {
     }
 
     this.history.push({ speaker: 'learner', text: fenced.cleaned });
-    return this.produce(fenced.block, nowMs, { nonce: fenced.nonce });
+    return this.produce(fenced.block, nowMs, { nonce: fenced.nonce, signal });
   }
 
   /** Ends the session in character. */
@@ -257,8 +302,8 @@ export class TutorOrchestrator {
   private async produce(
     userContent: string,
     nowMs: number,
-    opts: { nonce?: string; isSystemPrompted?: boolean } = {},
-  ): Promise<TurnOutcome> {
+    opts: { nonce?: string; isSystemPrompted?: boolean; signal?: AbortSignal } = {},
+  ): Promise<TurnOutcome | null> {
     const budget = this.currentBudget(nowMs);
 
     /*
@@ -334,7 +379,10 @@ export class TutorOrchestrator {
           });
         }
 
-        const result = await complete(messages, { temperature: attempt === 0 ? 0.6 : 0.2 });
+        const result = await complete(messages, {
+          temperature: attempt === 0 ? 0.6 : 0.2,
+          signal: opts.signal,
+        });
         this.modelUsd += estimateCostUsd(result.promptTokens, result.completionTokens);
 
         const parsed = parseTurn(result.text);
@@ -345,6 +393,13 @@ export class TutorOrchestrator {
         }
       }
     } catch (error) {
+      if (error instanceof CompletionAbortedError) {
+        // The learner cut in. The question is abandoned, so its answer is
+        // worth nothing: no emission, no scripted line, no synthesis. The
+        // reserved slot stays spent — the turn was started, and a cap that
+        // interruptions could refund would be a cap a burst can dodge.
+        return null;
+      }
       if (!(error instanceof ModelUnavailableError)) throw error;
       console.warn('[oracle] model unavailable:', error.message);
     }
@@ -388,36 +443,59 @@ export class TutorOrchestrator {
     const visibleText =
       turn.segmentRequest != null ? `${turn.say}\n\n${turn.segmentRequest.framing}` : turn.say;
 
-    const verdict =
-      source === 'model'
-        ? await moderateTutorOutput({
-            text: visibleText,
-            locale: this.session.locale,
-            tier: this.session.tier,
-            nonce: opts.nonce,
-            // A minor's session always requires the model pass. An adult's may
-            // run on the deterministic pass alone (/ORACLE.md §6).
-            requireModelPass: this.session.isMinor,
-          })
-        : ({ allowed: true } as const);
+    /*
+     * SPECULATIVE SYNTHESIS, concurrent with the judge (see the file header).
+     * Started only for a model-authored turn — a scripted line needs no judge,
+     * so it has nothing to overlap with. The clip is DELIVERED only on a pass;
+     * on a block it is discarded and counted, never referenced.
+     */
+    let audio: Promise<string | null>;
+    if (source === 'model') {
+      const speculative = this.speak(turn);
+      const verdict = await moderateTutorOutput({
+        text: visibleText,
+        locale: this.session.locale,
+        tier: this.session.tier,
+        nonce: opts.nonce,
+        // A minor's session always requires the model pass. An adult's may
+        // run on the deterministic pass alone (/ORACLE.md §6).
+        requireModelPass: this.session.isMinor,
+      });
 
-    if (!verdict.allowed) {
-      console.warn(`[oracle] blocked tutor turn (${verdict.reason}): ${verdict.detail}`);
-      safety = {
-        category: 'model_output_blocked' as SafetyCategory,
-        severity: verdict.reason === 'moderator_unavailable' ? 'medium' : 'high',
-        handled: 'turn_blocked',
-        turnSeq: this.seq,
-      };
-      moderationRecord = { allowed: false, reason: verdict.reason, detail: verdict.detail };
-      turn = moderationBlockedResponse(this.session.locale);
-      source = 'scripted';
+      if (!verdict.allowed) {
+        console.warn(`[oracle] blocked tutor turn (${verdict.reason}): ${verdict.detail}`);
+        safety = {
+          category: 'model_output_blocked' as SafetyCategory,
+          severity: verdict.reason === 'moderator_unavailable' ? 'medium' : 'high',
+          handled: 'turn_blocked',
+          turnSeq: this.seq,
+        };
+        moderationRecord = { allowed: false, reason: verdict.reason, detail: verdict.detail };
+        turn = moderationBlockedResponse(this.session.locale);
+        source = 'scripted';
+        // The blocked line's clip: paid for (speak() bills it when it settles)
+        // and delivered to nobody. Counted so the gamble stays visible.
+        this.discardedSyntheses += 1;
+        void speculative;
+        audio = this.speak(turn);
+      } else {
+        audio = speculative;
+      }
+    } else {
+      audio = this.speak(turn);
+    }
+
+    if (opts.signal?.aborted) {
+      // The learner cut in while the judge (or a slow synthesis start) was
+      // still working. Money is already spent either way; delivering the turn
+      // now would talk OVER the learner, which is the one outcome worse than
+      // the waste. The clip joins the discard count and nothing is emitted.
+      this.discardedSyntheses += 1;
+      return null;
     }
 
     // `this.seq` was already advanced at entry, where the slot was reserved.
     this.history.push({ speaker: 'tutor', text: turn.say });
-
-    const audioUrl = await this.speak(turn);
 
     const afterBudget = this.currentBudget(nowMs);
     const closeReason =
@@ -430,7 +508,7 @@ export class TutorOrchestrator {
           : null;
 
     return {
-      emission: { turn, seq: this.seq, source, audioUrl, moderation: moderationRecord },
+      emission: { turn, seq: this.seq, source, audio, moderation: moderationRecord },
       safety,
       budget: afterBudget,
       closeReason,
@@ -472,9 +550,11 @@ export class TutorOrchestrator {
   ): Promise<TurnOutcome> {
     this.history.push({ speaker: 'tutor', text: turn.say });
     this.seq += 1;
-    const audioUrl = await this.speak(turn);
+    // Not awaited: a scripted line's text is ready NOW, and its audio (usually
+    // the pre-generated manifest) follows in its own frame like any other.
+    const audio = this.speak(turn);
     return {
-      emission: { turn, seq: this.seq, source: 'scripted', audioUrl, moderation: { allowed: true, source: 'scripted' } },
+      emission: { turn, seq: this.seq, source: 'scripted', audio, moderation: { allowed: true, source: 'scripted' } },
       safety,
       budget,
       closeReason,

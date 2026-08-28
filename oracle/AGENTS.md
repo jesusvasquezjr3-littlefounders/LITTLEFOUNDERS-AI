@@ -161,9 +161,15 @@ paid call. It must never degrade to silence, and a test pins that.
 `socket.on('message')` dispatches fire-and-forget, so without a gate every
 frame already sitting in the read buffer starts its own upstream call at the
 same instant. **Every model-producing path — `learner_text`, `learner_audio`,
-`segment_graded` and the farewell — calls `claimTurn` BEFORE any paid work and
-releases it in a `finally`.** The 700 ms floor lives there too, waived only for
-the farewell, because nobody should be made to wait to leave.
+`learner_audio_commit`, `segment_graded` and the farewell — calls `claimTurn`
+BEFORE any paid work and releases it in a `finally`.** The 700 ms floor lives
+there too, waived only for the farewell, because nobody should be made to wait
+to leave. The streamed-clip frames (`learner_audio_begin`/`_chunk`) claim
+nothing because they buy nothing: they fill a bounded per-socket buffer, under
+the same total ceiling as the whole-clip frame, and only the COMMIT claims,
+transcribes and pays. `interrupt` claims nothing either — it aborts the
+in-flight production via the claiming handler's own AbortController and is a
+no-op outside one.
 
 It is a function rather than a check inlined in a handler, and that is the
 whole point. The floor used to sit inside `handleLearnerTurn`; `segment_graded`
@@ -177,6 +183,37 @@ The turn slot is also reserved at the top of `orchestrator.produce()` rather
 than counted at the bottom — counting after the call is what let a burst of
 frames all measure themselves against the same stale `seq` and all pass a cap
 none of them had reached. Regression tests: `src/__tests__/hardening.test.ts`.
+
+---
+
+### §2.8 The turn ships in two frames, and the wait is announced (2026-08-28)
+
+**Split delivery.** `deliver()` sends the moderated turn's TEXT immediately
+(`turn`, `audioUrl: null`) and the voice later (`turn_audio {seq, audioUrl}`),
+because a caption held hostage by synthesis-and-storage was most of the
+perceived latency. Two rules keep it honest: the `turn` frame still sits
+STRICTLY after the moderation await (/ORACLE.md §6 is untouched), and a CLOSING
+turn awaits its own audio before `finish()` — a goodbye whose clip arrives
+after the socket closed is a silent goodbye.
+
+**Speculative synthesis** (owner sign-off 2026-08-28): a model turn's TTS runs
+concurrently with the judge; a blocked turn's clip is discarded, billed, and
+counted (`speechCounts.discarded`). Delivery, not synthesis, is what moderation
+gates.
+
+**The wait is server-authoritative.** Every claiming handler sends `thinking`
+at the claim, so the client's spinner reflects the service that is actually
+working — and `interrupt` ends an in-flight production (AbortController through
+`complete()`), returning `null` from `produce()`: no emission, no scripted
+apology, the reserved slot stays spent. An aborted turn ends in a `state`
+frame, never in silence.
+
+**Liveness has two clocks** (`ws/server.ts` heartbeat): a socket that stops
+answering pings is terminated (dead TCP wearing an open readyState); a socket
+that pings but carries no learner frame for `SESSION_IDLE_TIMEOUT_MS` is
+closed politely as `learner_left` (keepalives prove the tab, not the person —
+and the hard budget alone never reaps an idle session, because it is only
+evaluated when a turn arrives).
 
 ## §3 Layout
 

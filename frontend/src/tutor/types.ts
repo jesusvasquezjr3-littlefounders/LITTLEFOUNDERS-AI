@@ -105,9 +105,12 @@ export type ServerMessage =
       say: string;
       emotion: CharacterEmotion;
       action: CharacterAction;
+      /** Null on delivery; the voice follows in `turn_audio` (split delivery). */
       audioUrl: string | null;
       next: 'ask' | 'segment' | 'close';
     }
+  | { type: 'turn_audio'; seq: number; audioUrl: string | null }
+  | { type: 'thinking' }
   | { type: 'transcript'; text: string }
   | {
       type: 'segment';
@@ -128,6 +131,10 @@ export type ServerMessage =
 export type ClientMessage =
   | { type: 'learner_text'; text: string }
   | { type: 'learner_audio'; audio: string; mimeType: string }
+  | { type: 'learner_audio_begin'; mimeType: string }
+  | { type: 'learner_audio_chunk'; audio: string }
+  | { type: 'learner_audio_commit' }
+  | { type: 'interrupt' }
   | { type: 'segment_graded'; segmentId: string; score: number; correct: boolean }
   | { type: 'adaptation_response'; adaptation: Adaptation; accepted: boolean }
   | { type: 'end_session' }

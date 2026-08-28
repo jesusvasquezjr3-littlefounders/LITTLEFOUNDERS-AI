@@ -138,6 +138,10 @@ function startFakeModel(): Promise<Server> {
       const body = await readBody(req);
       modelJournal.bodies.push(body);
       const isJudge = body.includes('child-safety reviewer');
+      // A deliberately slow completion, so a test can interrupt mid-thought.
+      if (!isJudge && body.includes('cuentamelotodomuydespacio')) {
+        await new Promise((r) => setTimeout(r, 1_500));
+      }
       const content = isJudge
         ? JSON.stringify({ safe: true })
         : JSON.stringify({
@@ -177,7 +181,9 @@ function collect(
   return new Promise((resolve, reject) => {
     const messages: Record<string, unknown>[] = [];
     const timer = setTimeout(
-      () => reject(new Error(`timed out with: ${JSON.stringify(messages.map((m) => m.type))}`)),
+      // Whole frames, not just types: an unexpected `error` frame's code is
+      // the difference between five minutes and an afternoon.
+      () => reject(new Error(`timed out with: ${JSON.stringify(messages)}`)),
       timeoutMs,
     );
     socket.on('message', (data) => {
@@ -426,6 +432,122 @@ describe('a real live session over a real websocket', () => {
     const errored = collect(socket, (m) => m.some((x) => x.type === 'error'));
     socket.send(JSON.stringify({ type: 'learner_audio', audio: 'AAAA', mimeType: 'audio/webm' }));
     expect((await errored).find((m) => m.type === 'error')).toMatchObject({ code: 'CONSENT_REQUIRED' });
+
+    socket.close();
+  });
+});
+
+describe('the turn pipeline is split, acknowledged, and interruptible', () => {
+  it('acknowledges a learner turn with `thinking`, then text, then its own audio frame', async () => {
+    freshJournal();
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    // The greeting's own `turn_audio` can straggle into this buffer, so the
+    // predicate demands the audio frame FOR the turn this test provokes.
+    const settled = collect(socket, (m) => {
+      const turn = m.find((x) => x.type === 'turn') as { seq?: number } | undefined;
+      return Boolean(turn) && m.some((x) => x.type === 'turn_audio' && x.seq === turn?.seq);
+    });
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quiero ahorrar para una bici' }));
+    const messages = await settled;
+
+    // The ORDER is the contract: the server says "working on it" before any
+    // upstream returns, ships the moderated text as soon as it exists, and
+    // the voice arrives in its own frame — never holding the text hostage.
+    const types = messages.map((m) => m.type);
+    const thinkingAt = types.indexOf('thinking');
+    const turnAt = types.indexOf('turn');
+    const audioAt = types.indexOf('turn_audio');
+    expect(thinkingAt).toBeGreaterThanOrEqual(0);
+    expect(turnAt).toBeGreaterThan(thinkingAt);
+    expect(audioAt).toBeGreaterThan(turnAt);
+
+    const turn = messages[turnAt] as { seq: number; audioUrl: unknown };
+    const audio = messages[audioAt] as { seq: number; audioUrl: unknown };
+    expect(turn.audioUrl).toBeNull();
+    // Matched by seq, and honest about silence: no voice provider is
+    // configured, so the clip resolves to null rather than never arriving.
+    expect(audio.seq).toBe(turn.seq);
+    expect(audio.audioUrl).toBeNull();
+
+    socket.close();
+  });
+
+  it('answers a keepalive ping with the real budget, not a placeholder', async () => {
+    freshJournal();
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const answered = collect(socket, (m) => m.some((x) => x.type === 'state'));
+    socket.send(JSON.stringify({ type: 'ping' }));
+    const state = (await answered).find((m) => m.type === 'state') as {
+      budget: string;
+      remainingMs: number;
+    };
+    expect(state.budget).toBe('running');
+    // The session just opened, so nearly the whole soft budget remains. The
+    // old handler reported 0 here, which read on screen as "no time left".
+    expect(state.remainingMs).toBeGreaterThan(60_000);
+
+    socket.close();
+  });
+
+  it('aborts an in-flight production when the learner interrupts', async () => {
+    freshJournal();
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    // The marker makes the fake model sit for 1.5 s; the interrupt lands well
+    // inside that window. What must come back is a state frame and NO turn.
+    const outcome = collect(socket, (m) => m.some((x) => x.type === 'state'), 4_000);
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'cuentamelotodomuydespacio' }));
+    await new Promise((r) => setTimeout(r, 300));
+    socket.send(JSON.stringify({ type: 'interrupt' }));
+    const messages = await outcome;
+
+    expect(messages.some((m) => m.type === 'thinking')).toBe(true);
+    expect(messages.some((m) => m.type === 'turn')).toBe(false);
+
+    // The session is alive and answers the next question normally. The wait
+    // is the per-turn floor: an interrupted turn still claimed its slot, so
+    // the recovery message must respect the same 700 ms everyone does.
+    await new Promise((r) => setTimeout(r, 750));
+    const recovered = collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'mejor dime cómo empiezo' }));
+    expect((await recovered).find((m) => m.type === 'turn')).toBeDefined();
+
+    socket.close();
+  });
+
+  it('treats an interrupt outside any turn as nothing at all', async () => {
+    freshJournal();
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    socket.send(JSON.stringify({ type: 'interrupt' }));
+    await new Promise((r) => setTimeout(r, 200));
+    expect(socket.readyState).toBe(WebSocket.OPEN);
+
+    socket.close();
+  });
+
+  it('holds the streamed-audio doors to the same gates as the whole clip', async () => {
+    freshJournal();
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    // No microphone in this session (no voice provider), so `begin` is
+    // refused with the same code the single-frame path uses…
+    const refused = collect(socket, (m) => m.some((x) => x.type === 'error'));
+    socket.send(JSON.stringify({ type: 'learner_audio_begin', mimeType: 'audio/webm' }));
+    expect((await refused).find((m) => m.type === 'error')).toMatchObject({ code: 'CONSENT_REQUIRED' });
+
+    // …and a chunk with no assembly open is a protocol error, not a crash.
+    const orphan = collect(socket, (m) => m.some((x) => x.type === 'error'));
+    socket.send(JSON.stringify({ type: 'learner_audio_chunk', audio: 'AAAA' }));
+    expect((await orphan).find((m) => m.type === 'error')).toMatchObject({ code: 'VALIDATION_ERROR' });
+    expect(socket.readyState).toBe(WebSocket.OPEN);
 
     socket.close();
   });

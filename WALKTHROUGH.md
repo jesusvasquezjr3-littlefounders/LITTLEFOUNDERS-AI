@@ -2,6 +2,38 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Tutor v2 — the owner rejected the shipped Tutor, and four decisions reopened its design (2026-08-28)
+
+**The verdict, owner's words:** the shipped Tutor is below MVP — slow,
+disorganized, unintuitive, not adaptive, narration effectively non-functional,
+no way to restart or interrupt, and it does not teach live off what the learner
+says. The session goal is a finished product, and `feat/tutor-v2` is the branch.
+
+**Exploration confirmed the complaints as mechanisms**, not impressions: a
+voice turn was 5 sequential network hops with nothing shown until all of them
+finished; `speech.pregenerated.json` is empty (0/144), so even the scripted
+greeting paid and waited; `awaitingReply` had no timeout; skill states were
+fetched once and never refreshed; `segment_graded.segmentId` was validated and
+discarded; interrupt was client-local; any dropped socket killed the session.
+
+**Four owner decisions, recorded 2026-08-28, each amending a documented
+position:** (1) desktop gets a docked side panel — conversation, activity and
+composer always visible beside the stage — amending /ORACLE.md §9/§10's
+all-in-world layout; (2) session RESUME is authorized, amending
+`oracle/AGENTS.md` §5.8's no-reconnect rule (grace window + fresh single-use
+token); (3) cross-session memory may enter the model context via the documented
+§4.1 three-part process; (4) spend authorized for pregenerating the 144
+scripted clips and for speculative TTS concurrent with the judge.
+
+**Increment 1 landed the turn pipeline** (/ORACLE.md §6 addendum,
+`oracle/AGENTS.md` §2.8): split text/audio delivery, speculative synthesis,
+server-authoritative `thinking`, a real `interrupt` that aborts the model call,
+streamed audio upload during the hold, keepalive pings answered with the real
+budget, pong-tracking and an idle reaper (`SESSION_IDLE_TIMEOUT_MS`). Oracle
+211 tests, frontend 1308, all gates green. Pregeneration still needs production
+Depot credentials — it is a deploy step, the script refuses to burn money into
+a void without them.
+
 ## The Lesson Engine shipped unusable, and four kinds of green audit said otherwise (2026-08-27)
 
 **Symptom, reported by the owner:** "Empezar leccion NO FUNCIONA." Not slow —

@@ -200,9 +200,61 @@ describe('output moderation', () => {
     const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
     const outcome = await orchestrator.handleLearnerText('cuéntame algo', Date.now());
 
-    expect(outcome.emission.source).toBe('scripted');
-    expect(outcome.emission.turn.say).not.toBe(GOOD_TURN.say);
-    expect(outcome.safety?.category).toBe('model_output_blocked');
+    expect(outcome?.emission.source).toBe('scripted');
+    expect(outcome?.emission.turn.say).not.toBe(GOOD_TURN.say);
+    expect(outcome?.safety?.category).toBe('model_output_blocked');
+  });
+
+  it('discards the speculative clip of a blocked turn — billed, counted, never delivered', async () => {
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(false));
+
+    const spoken: string[] = [];
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), async (turn) => {
+      spoken.push(turn.say);
+      return { url: `http://depot.test/${spoken.length}.mp3`, source: 'synthesized' as const, billedChars: turn.say.length };
+    });
+    const outcome = await orchestrator.handleLearnerText('cuéntame algo', Date.now());
+    const audioUrl = await outcome?.emission.audio;
+
+    // The blocked line WAS synthesized (concurrently with the judge) and its
+    // clip is not the one delivered: the emission's audio is the scripted
+    // replacement's, and the gamble is visible in the discard count.
+    expect(spoken[0]).toBe(GOOD_TURN.say);
+    expect(spoken).toHaveLength(2);
+    expect(audioUrl).toBe('http://depot.test/2.mp3');
+    expect(orchestrator.speechCounts.discarded).toBe(1);
+    // Both syntheses were paid for. Honesty over tidiness in the ledger.
+    expect(orchestrator.speechCounts.paid).toBe(2);
+  });
+
+  it('emits NOTHING when the learner interrupts mid-completion', async () => {
+    // A completion that never resolves on its own — it ends only when the
+    // signal it was handed aborts, exactly as a cancelled fetch does.
+    fetchMock.mockImplementationOnce(
+      (_url: string, init: { signal?: AbortSignal }) =>
+        new Promise((_, reject) => {
+          init.signal?.addEventListener('abort', () =>
+            reject(new DOMException('The operation was aborted.', 'AbortError')),
+          );
+        }),
+    );
+
+    const spoken: string[] = [];
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), async (turn) => {
+      spoken.push(turn.say);
+      return { url: null, source: 'unavailable' as const, billedChars: 0 };
+    });
+    const controller = new AbortController();
+    const inFlight = orchestrator.handleLearnerText('cuéntame un cuento largo', Date.now(), controller.signal);
+    controller.abort();
+    const result = await inFlight;
+
+    // No emission, no scripted apology, no synthesis. The slot stays spent —
+    // the turn was started — and the learner's line stays in history so the
+    // next turn answers both.
+    expect(result).toBeNull();
+    expect(spoken).toHaveLength(0);
+    expect(orchestrator.turnCount).toBe(1);
   });
 
   it('FAILS CLOSED when the judge is unreachable on a minor’s session', async () => {

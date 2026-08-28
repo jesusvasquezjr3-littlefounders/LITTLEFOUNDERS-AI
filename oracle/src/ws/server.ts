@@ -17,7 +17,7 @@ import { newSpeechScope, speakLine, type SpeechScope } from '../voice/speech.js'
 import { generateSegment } from '../content/generate.js';
 import { moderationReadiness } from '../safety/moderation.js';
 import { TutorOrchestrator, type TurnOutcome } from '../tutor/orchestrator.js';
-import { CLOSE_CODES, ClientMessageSchema, type ServerMessage } from './protocol.js';
+import { CLOSE_CODES, ClientMessageSchema, MAX_AUDIO_B64_CHARS, type ServerMessage } from './protocol.js';
 
 /*
  * The one browser-facing socket (/AGENTS.md §1.5 Oracle exception).
@@ -53,9 +53,31 @@ interface Live {
    * inside one millisecond, so they all see the same `lastTurnAtMs`.
    */
   inFlight: boolean;
+  /**
+   * Cancels the production currently in flight, when there is one. Set by the
+   * claiming handler, cleared in its finally, fired by an `interrupt` frame.
+   * Firing it outside a turn does nothing — there is nothing to cancel.
+   */
+  abort: AbortController | null;
+  /**
+   * A streamed audio clip being assembled while the learner holds the button
+   * (`learner_audio_begin`/`_chunk`/`_commit`). `chars` is the running base64
+   * total, enforced against the SAME ceiling as the whole-clip frame so the
+   * chunk path cannot carry what the single frame would refuse.
+   */
+  assembly: { mimeType: string; parts: string[]; chars: number } | null;
   microphone: boolean;
   closing: boolean;
   heartbeat: NodeJS.Timeout;
+  /** Last pong seen. A socket that stops answering pings is dead, not idle. */
+  lastPongAtMs: number;
+  /**
+   * Last frame that was the LEARNER doing something — anything except `ping`.
+   * Keepalives prove the tab is open, not that anyone is in front of it, and
+   * an abandoned open tab must not hold a session (and its orchestrator, and
+   * its transcript) in memory until the hard budget notices.
+   */
+  lastActivityAtMs: number;
 }
 
 /** Minimum gap between learner turns. Not a rate limit — a sanity floor. */
@@ -79,6 +101,8 @@ const MIN_TURN_GAP_MS = 700;
  */
 const CONSENT_RECHECK_MINOR_MIC_TURNS = 1;
 const CONSENT_RECHECK_EVERY_TURNS = 5;
+
+const HEARTBEAT_INTERVAL_MS = 30_000;
 
 /**
  * Claims this socket's single turn slot, or says why not.
@@ -208,12 +232,40 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
     speech,
     lastTurnAtMs: 0,
     inFlight: false,
+    abort: null,
+    assembly: null,
     microphone,
     closing: false,
     heartbeat: setInterval(() => {
-      if (socket.readyState === socket.OPEN) socket.ping();
-    }, 30_000),
+      if (socket.readyState !== socket.OPEN) return;
+      const now = Date.now();
+      /*
+       * LIVENESS AND IDLENESS ARE DIFFERENT DEATHS, checked from one clock.
+       *
+       * A socket that has not answered a ping in two-and-a-half intervals is a
+       * dead TCP connection wearing an open readyState — terminate it, so the
+       * close handler runs now rather than whenever the OS notices. A socket
+       * that answers pings but has carried no learner frame for the idle
+       * window is an abandoned tab — close it POLITELY, so the same handler
+       * records `learner_left`, which is what happened.
+       */
+      if (now - live.lastPongAtMs > HEARTBEAT_INTERVAL_MS * 2.5) {
+        socket.terminate();
+        return;
+      }
+      if (now - live.lastActivityAtMs > getConfig().SESSION_IDLE_TIMEOUT_MS && !live.inFlight) {
+        socket.close(CLOSE_CODES.NORMAL, 'idle');
+        return;
+      }
+      socket.ping();
+    }, HEARTBEAT_INTERVAL_MS),
+    lastPongAtMs: Date.now(),
+    lastActivityAtMs: Date.now(),
   };
+
+  socket.on('pong', () => {
+    live.lastPongAtMs = Date.now();
+  });
 
   send(socket, {
     type: 'ready',
@@ -272,14 +324,27 @@ async function onMessage(live: Live, raw: string): Promise<void> {
     return;
   }
 
+  // A ping proves the tab is open; every other frame proves a person is in it.
+  if (message.data.type !== 'ping') live.lastActivityAtMs = Date.now();
+
   switch (message.data.type) {
-    case 'ping':
+    case 'ping': {
+      // The real budget, not a placeholder: this is the keepalive's second
+      // job, keeping the on-screen "minutes left" honest between turns.
+      const budget = live.orchestrator.budgetAt(Date.now());
       send(live.socket, {
         type: 'state',
-        budget: 'running',
-        remainingMs: 0,
+        budget: budget.state,
+        remainingMs: budget.remainingMs,
         turnCount: live.orchestrator.turnCount,
       });
+      return;
+    }
+
+    case 'interrupt':
+      // Free and idempotent: outside an in-flight production there is nothing
+      // to cancel and nothing to answer. The client already went quiet locally.
+      if (live.inFlight) live.abort?.abort();
       return;
 
     case 'end_session': {
@@ -304,12 +369,20 @@ async function onMessage(live: Live, raw: string): Promise<void> {
     case 'segment_graded': {
       const claim = claimTurn(live, Date.now());
       if (claim !== 'ok') return refuseTurn(live, claim);
+      live.abort = new AbortController();
+      send(live.socket, { type: 'thinking' });
       try {
         await deliver(
           live,
-          await live.orchestrator.handleSegmentResult(message.data.score, message.data.correct, Date.now()),
+          await live.orchestrator.handleSegmentResult(
+            message.data.score,
+            message.data.correct,
+            Date.now(),
+            live.abort.signal,
+          ),
         );
       } finally {
+        live.abort = null;
         releaseTurn(live);
       }
       return;
@@ -318,15 +391,29 @@ async function onMessage(live: Live, raw: string): Promise<void> {
     case 'learner_text': {
       const claim = claimTurn(live, Date.now());
       if (claim !== 'ok') return refuseTurn(live, claim);
+      live.abort = new AbortController();
+      send(live.socket, { type: 'thinking' });
       try {
-        await handleLearnerTurn(live, message.data.text);
+        await handleLearnerTurn(live, message.data.text, live.abort.signal);
       } finally {
+        live.abort = null;
         releaseTurn(live);
       }
       return;
     }
 
-    case 'learner_audio': {
+    case 'learner_audio':
+      await handleAudioClip(live, message.data.audio, message.data.mimeType);
+      return;
+
+    /*
+     * THE STREAMED CLIP. Chunks arrive while the learner is still holding the
+     * button — no turn is claimed and nothing is billed until the commit, so
+     * the assembly is bounded memory (the same ceiling as the whole-clip
+     * frame) and nothing else. A new `begin` resets whatever was abandoned: a
+     * mis-tap simply never commits, and the next hold starts clean.
+     */
+    case 'learner_audio_begin':
       if (!live.microphone) {
         send(live.socket, {
           type: 'error',
@@ -335,36 +422,88 @@ async function onMessage(live: Live, raw: string): Promise<void> {
         });
         return;
       }
-      /*
-       * CLAIMED BEFORE `transcribe`, which is the whole point.
-       *
-       * Transcription is a billed third-party call carrying up to ~1.1 MB of
-       * audio, and it used to run before any gate: the floor sat in the callee,
-       * so every frame was transcribed and paid for and only the survivor
-       * produced a turn. A hundred frames bought a hundred transcriptions and
-       * discarded ninety-nine.
-       */
-      const claim = claimTurn(live, Date.now());
-      if (claim !== 'ok') return refuseTurn(live, claim);
-      try {
-        const text = await transcribe(message.data.audio, message.data.mimeType, live.session);
-        if (text === null || text.trim() === '') {
-          send(live.socket, { type: 'error', code: 'STT_FAILED', message: 'I did not catch that.' });
-          return;
-        }
-        // Echoed back so the learner can see what we heard. A misheard turn that
-        // the learner cannot see is a tutor answering a question nobody asked.
-        send(live.socket, { type: 'transcript', text });
-        await handleLearnerTurn(live, text);
-      } finally {
-        releaseTurn(live);
+      live.assembly = { mimeType: message.data.mimeType, parts: [], chars: 0 };
+      return;
+
+    case 'learner_audio_chunk': {
+      const assembly = live.assembly;
+      if (!assembly) {
+        send(live.socket, {
+          type: 'error',
+          code: 'VALIDATION_ERROR',
+          message: 'No audio upload in progress.',
+        });
+        return;
       }
+      if (assembly.chars + message.data.audio.length > MAX_AUDIO_B64_CHARS) {
+        // The same refusal the single frame gets, at the same total. The
+        // assembly is dropped whole: a clip we cannot accept in full is not
+        // worth transcribing in part.
+        live.assembly = null;
+        send(live.socket, { type: 'error', code: 'AUDIO_TOO_LONG', message: 'That was too long.' });
+        return;
+      }
+      assembly.parts.push(message.data.audio);
+      assembly.chars += message.data.audio.length;
+      return;
+    }
+
+    case 'learner_audio_commit': {
+      const assembly = live.assembly;
+      live.assembly = null;
+      if (!assembly || assembly.parts.length === 0) {
+        send(live.socket, {
+          type: 'error',
+          code: 'VALIDATION_ERROR',
+          message: 'No audio upload in progress.',
+        });
+        return;
+      }
+      await handleAudioClip(live, assembly.parts.join(''), assembly.mimeType);
       return;
     }
   }
 }
 
-async function handleLearnerTurn(live: Live, text: string): Promise<void> {
+/**
+ * One recorded clip, however it arrived — a single frame or a committed
+ * stream. Claimed BEFORE `transcribe`, which is the whole point: transcription
+ * is a billed third-party call carrying up to ~1.1 MB of audio, and it used to
+ * run before any gate, so a burst of frames bought a burst of transcriptions
+ * and discarded all but one.
+ */
+async function handleAudioClip(live: Live, base64: string, mimeType: string): Promise<void> {
+  if (!live.microphone) {
+    send(live.socket, {
+      type: 'error',
+      code: 'CONSENT_REQUIRED',
+      message: 'The microphone is not enabled for this session.',
+    });
+    return;
+  }
+  const claim = claimTurn(live, Date.now());
+  if (claim !== 'ok') return refuseTurn(live, claim);
+  live.abort = new AbortController();
+  // Sent before transcription, deliberately: the wait the learner feels
+  // starts the moment they release the button, not when STT returns.
+  send(live.socket, { type: 'thinking' });
+  try {
+    const text = await transcribe(base64, mimeType, live.session);
+    if (text === null || text.trim() === '') {
+      send(live.socket, { type: 'error', code: 'STT_FAILED', message: 'I did not catch that.' });
+      return;
+    }
+    // Echoed back so the learner can see what we heard. A misheard turn that
+    // the learner cannot see is a tutor answering a question nobody asked.
+    send(live.socket, { type: 'transcript', text });
+    await handleLearnerTurn(live, text, live.abort.signal);
+  } finally {
+    live.abort = null;
+    releaseTurn(live);
+  }
+}
+
+async function handleLearnerTurn(live: Live, text: string, signal?: AbortSignal): Promise<void> {
   // The floor and the single-flight slot are the CALLER's, claimed before any
   // paid work — including the transcription that precedes an audio turn. This
   // function must not re-check the floor: `claimTurn` has already stamped
@@ -423,32 +562,58 @@ async function handleLearnerTurn(live: Live, text: string): Promise<void> {
   // `Date.now()` here rather than the caller's stamp: for an audio turn the
   // claim happened before a transcription that may have taken a second, and
   // the budget should be measured against when the tutor actually answers.
-  await deliver(live, await live.orchestrator.handleLearnerText(text, Date.now()));
+  await deliver(live, await live.orchestrator.handleLearnerText(text, Date.now(), signal));
 }
 
-async function deliver(live: Live, outcome: TurnOutcome): Promise<void> {
+async function deliver(live: Live, outcome: TurnOutcome | null): Promise<void> {
+  if (outcome === null) {
+    // An interrupted production. Nothing to say — but the client's thinking
+    // state must end on a server frame, not on a guess, so the budget frame
+    // still goes out.
+    const budget = live.orchestrator.budgetAt(Date.now());
+    send(live.socket, {
+      type: 'state',
+      budget: budget.state,
+      remainingMs: budget.remainingMs,
+      turnCount: live.orchestrator.turnCount,
+    });
+    return;
+  }
+
   const { emission, safety, budget, closeReason } = outcome;
 
+  /*
+   * SPLIT DELIVERY (/ORACLE.md §6 intact): the text of an already-moderated
+   * turn ships NOW; the voice follows in `turn_audio` when synthesis and
+   * storage settle. The learner reads the caption while the clip is still
+   * being made, which removes the entire synthesis-and-store leg from the
+   * silence after they speak.
+   */
   send(live.socket, {
     type: 'turn',
     seq: emission.seq,
     say: emission.turn.say,
     emotion: emission.turn.emotion,
     action: emission.turn.action,
-    audioUrl: emission.audioUrl,
+    audioUrl: null,
     next: emission.turn.next,
   });
 
-  void persistTurn({
-    sessionId: live.session.sessionId,
-    seq: emission.seq,
-    speaker: 'tutor',
-    text: emission.turn.say,
-    emotion: emission.turn.emotion,
-    action: emission.turn.action,
-    audioPath: emission.audioUrl,
-    source: emission.source,
-    moderation: emission.moderation,
+  void emission.audio.then((audioUrl) => {
+    send(live.socket, { type: 'turn_audio', seq: emission.seq, audioUrl });
+    // The transcript row waits for the clip so it records where the audio
+    // actually lives; the write was always fire-and-forget.
+    void persistTurn({
+      sessionId: live.session.sessionId,
+      seq: emission.seq,
+      speaker: 'tutor',
+      text: emission.turn.say,
+      emotion: emission.turn.emotion,
+      action: emission.turn.action,
+      audioPath: audioUrl,
+      source: emission.source,
+      moderation: emission.moderation,
+    });
   });
 
   if (safety) {
@@ -476,7 +641,14 @@ async function deliver(live: Live, outcome: TurnOutcome): Promise<void> {
     turnCount: live.orchestrator.turnCount,
   });
 
-  if (closeReason) await finish(live, closeReason === 'turn_cap' ? 'hard_budget' : closeReason);
+  if (closeReason) {
+    // A closing turn waits for its own voice: `finish` closes the socket, and
+    // a goodbye whose audio frame arrives after the close is a silent goodbye.
+    // This is the ONE turn that still pays the synthesis wait, and it is the
+    // turn where nobody is waiting to speak next.
+    await emission.audio;
+    await finish(live, closeReason === 'turn_cap' ? 'hard_budget' : closeReason);
+  }
 }
 
 async function serveSegment(
@@ -557,7 +729,7 @@ async function finish(
   console.log(
     `[oracle] session closed (${reason}) — turns=${live.orchestrator.turnCount} ` +
       `model=$${live.orchestrator.modelCostUsd.toFixed(5)} voice=$${live.orchestrator.voiceCostUsd.toFixed(5)} ` +
-      `speech paid=${speech.paid} free=${speech.free}`,
+      `speech paid=${speech.paid} free=${speech.free} discarded=${speech.discarded}`,
   );
 
   await closeSession({

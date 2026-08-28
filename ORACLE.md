@@ -538,6 +538,28 @@ may not.
 Moderation failure is **fail-closed**: a moderation service that does not answer
 means the turn is not spoken. A safe scripted line covers the gap.
 
+**Two latency decisions inside this rule — owner sign-off 2026-08-28.** Both
+change WHEN work happens, never what the child can receive unmoderated:
+
+1. **Split delivery.** The turn's TEXT ships the moment moderation passes
+   (`turn` frame, `audioUrl: null`); the voice follows in its own `turn_audio`
+   frame when synthesis and storage settle. The caption never waits on the
+   clip. Proven by `live-session.test.ts` → "acknowledges a learner turn with
+   `thinking`, then text, then its own audio frame".
+2. **Speculative synthesis.** For a model-authored turn, TTS runs CONCURRENTLY
+   with the judge. The clip is delivered only on a pass; on a block it is
+   discarded — paid for, counted in the session ledger as `discarded`, and
+   referenced by nothing. "Only then spoken" is about the child's ear, and
+   that gate is intact: a discarded clip reaches nobody. Proven by
+   `orchestrator.test.ts` → "discards the speculative clip of a blocked turn".
+
+The same sign-off added the server-side `thinking` acknowledgement (the wait is
+announced by the service doing the waiting, not inferred), the `interrupt`
+frame (a learner cutting in aborts the in-flight model call instead of paying
+for a reply nobody wants), and the streamed audio upload
+(`learner_audio_begin`/`_chunk`/`_commit` — the clip uploads while the button
+is still held, under the same total ceiling as the whole-clip frame).
+
 ---
 
 ## §7 Content — the three-tier ladder

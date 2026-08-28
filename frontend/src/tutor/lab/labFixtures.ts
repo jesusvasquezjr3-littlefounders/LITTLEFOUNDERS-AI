@@ -644,6 +644,14 @@ export function useLabSocket(
       setHistory((prev) => [...prev, { speaker: 'learner', text: trimmed, seq: -1 }]);
     },
     sendAudio: async () => {},
+    // The streamed upload and the interrupt are wire concerns, and there is no
+    // wire. `commitAudioStream` answers false so a caller falls back to
+    // `sendAudio`, which is equally nothing here.
+    streamAudioChunk: () => {},
+    commitAudioStream: () => false,
+    abandonAudioStream: () => {},
+    interrupt: () => {},
+    thinking: false,
     reportGrade: () => setSegment(null),
     answerAdaptation: () => setAdaptationOffer(null),
     endSession: () => setClosedReason('learner_ended'),

@@ -42,6 +42,22 @@ export class ModelUnavailableError extends Error {
   }
 }
 
+/**
+ * The caller cancelled the completion — a learner interrupted mid-thought.
+ *
+ * A separate class from `ModelUnavailableError` because the two demand
+ * opposite reactions: an unavailable model is worth a scripted apology, an
+ * abandoned question is worth nothing at all. Collapsing them would make every
+ * interruption read as an outage in the logs and cost a scripted line nobody
+ * asked for.
+ */
+export class CompletionAbortedError extends Error {
+  constructor() {
+    super('completion aborted by caller');
+    this.name = 'CompletionAbortedError';
+  }
+}
+
 interface ChatResponse {
   choices?: { message?: { content?: string } }[];
   usage?: { prompt_tokens?: number; completion_tokens?: number };
@@ -58,7 +74,7 @@ interface ChatResponse {
  */
 export async function complete(
   messages: ChatMessage[],
-  opts: { temperature?: number; maxTokens?: number } = {},
+  opts: { temperature?: number; maxTokens?: number; signal?: AbortSignal } = {},
 ): Promise<CompletionResult> {
   const config = getConfig();
   if (!config.MODEL_API_KEY) {
@@ -70,6 +86,7 @@ export async function complete(
     response = await withTimeout(
       fetch(`${config.MODEL_API_BASE}/chat/completions`, {
         method: 'POST',
+        signal: opts.signal,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${config.MODEL_API_KEY}`,
@@ -117,6 +134,9 @@ export async function complete(
       'pedagogical model',
     );
   } catch (error) {
+    // The signal is the authority on WHY the fetch threw: an aborted fetch
+    // rejects with the same DOMException family as several transport faults.
+    if (opts.signal?.aborted) throw new CompletionAbortedError();
     throw new ModelUnavailableError(error instanceof Error ? error.message : 'model transport failed');
   }
 

@@ -160,6 +160,15 @@ export interface MicrophoneOptions {
    * turn should pass it.
    */
   onAutoRelease?: (clip: Blob | null) => void;
+  /**
+   * Called with each recorded chunk AS IT IS PRODUCED, mid-hold — the feed for
+   * the streamed upload, so the clip is already at the server when the button
+   * is released. The chunks are the same Blobs the final clip is assembled
+   * from; a caller that streams them still receives the whole clip at stop,
+   * and decides there whether to commit the stream or fall back to sending it
+   * whole. `mimeType` is the RECORDER's (a slice's own `type` can be empty).
+   */
+  onChunk?: (chunk: Blob, mimeType: string) => void;
 }
 
 export function useMicrophone(enabled: boolean, options: MicrophoneOptions = {}): Microphone {
@@ -186,6 +195,8 @@ export function useMicrophone(enabled: boolean, options: MicrophoneOptions = {})
   const stopRef = useRef<() => Promise<Blob | null>>(async () => null);
   const onAutoReleaseRef = useRef(options.onAutoRelease);
   onAutoReleaseRef.current = options.onAutoRelease;
+  const onChunkRef = useRef(options.onChunk);
+  onChunkRef.current = options.onChunk;
 
   const subscribe = useCallback((listener: MicLevelListener) => {
     const listeners = listenersRef.current;
@@ -256,6 +267,7 @@ export function useMicrophone(enabled: boolean, options: MicrophoneOptions = {})
       if (event.data.size > 0) {
         chunksRef.current.push(event.data);
         holdBytesRef.current += event.data.size;
+        onChunkRef.current?.(event.data, recorder.mimeType || 'audio/webm');
       }
     };
     // The timeslice is the whole point: without it `ondataavailable` fires once,

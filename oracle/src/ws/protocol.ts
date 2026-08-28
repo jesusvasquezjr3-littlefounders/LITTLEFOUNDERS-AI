@@ -15,14 +15,30 @@ import { ACTIONS, EMOTIONS } from '../tutor/turnSchema.js';
  * output on the way out would be theatre. What we DO validate is the model's
  * output (tutor/turnSchema.ts), because that is not ours either.
  *
- * The audio frame carries base64 inside a JSON message rather than using a
- * binary frame. Slightly wasteful and worth it: one code path, one parser, one
+ * The audio frames carry base64 inside JSON messages rather than using binary
+ * frames. Slightly wasteful and worth it: one code path, one parser, one
  * place where an oversized payload is rejected, and no ambiguity about which
  * session a stray binary frame belonged to.
+ *
+ * AUDIO ARRIVES TWO WAYS, and the second exists for latency, not convenience.
+ * `learner_audio` is one whole clip in one frame — the original path, kept so
+ * a client that recorded before deciding to send still has a shape to send.
+ * `learner_audio_begin` / `_chunk` / `_commit` stream the SAME bytes while the
+ * learner is still holding the button, so by the time they release, the upload
+ * has already happened and transcription starts immediately. The caps are
+ * identical across both paths: a clip that would be rejected whole is rejected
+ * in pieces, at the same total.
  */
 
-/** Hard ceiling on one inbound audio chunk (~1.5 MB of base64 ≈ 1.1 MB audio). */
+/** Hard ceiling on one inbound audio clip (~1.5 MB of base64 ≈ 1.1 MB audio). */
 export const MAX_AUDIO_B64_CHARS = 1_500_000;
+
+/**
+ * Ceiling on one streamed chunk. A chunk is ~250 ms of Opus (a few KB); this
+ * is two orders of magnitude of headroom, small enough that a client cannot
+ * use the chunk path to smuggle a frame the whole-clip path would refuse.
+ */
+export const MAX_AUDIO_CHUNK_B64_CHARS = 400_000;
 
 export const ClientMessageSchema = z.discriminatedUnion('type', [
   z
@@ -39,6 +55,26 @@ export const ClientMessageSchema = z.discriminatedUnion('type', [
       mimeType: z.string().min(1).max(120),
     })
     .strict(),
+  z
+    .object({
+      type: z.literal('learner_audio_begin'),
+      mimeType: z.string().min(1).max(120),
+    })
+    .strict(),
+  z
+    .object({
+      type: z.literal('learner_audio_chunk'),
+      audio: z.string().min(1).max(MAX_AUDIO_CHUNK_B64_CHARS),
+    })
+    .strict(),
+  z.object({ type: z.literal('learner_audio_commit') }).strict(),
+  /**
+   * The learner cut in while the tutor was thinking. Aborts the in-flight
+   * production (model call and synthesis) so the reply to a question the
+   * learner has already abandoned is neither paid for nor delivered. Idempotent
+   * and free: outside an in-flight turn it does nothing.
+   */
+  z.object({ type: z.literal('interrupt') }).strict(),
   z
     .object({
       type: z.literal('segment_graded'),
@@ -83,10 +119,33 @@ export type ServerMessage =
       say: string;
       emotion: (typeof EMOTIONS)[number];
       action: (typeof ACTIONS)[number];
-      /** Depot URL for the tutor's audio, or null in a silent session. */
+      /**
+       * Null on delivery. The turn's text ships the moment moderation passes;
+       * the audio follows in its own `turn_audio` frame when synthesis and
+       * storage finish, so the caption never waits on the voice. The field
+       * stays on this frame so a turn's shape is complete in one place.
+       */
       audioUrl: string | null;
       /** What the tutor intends next, so the UI can prepare the panel. */
       next: 'ask' | 'segment' | 'close';
+    }
+  | {
+      /**
+       * The voice for an already-delivered turn. `audioUrl` null means the
+       * turn stays captioned and silent — sent even then, so a client waiting
+       * on a clip knows to stop waiting rather than spinning.
+       */
+      type: 'turn_audio';
+      seq: number;
+      audioUrl: string | null;
+    }
+  | {
+      /**
+       * The server accepted the learner's turn and is producing a reply.
+       * Sent at the moment the turn slot is claimed, so the "thinking"
+       * performance is authoritative rather than inferred client-side.
+       */
+      type: 'thinking';
     }
   | {
       type: 'transcript';

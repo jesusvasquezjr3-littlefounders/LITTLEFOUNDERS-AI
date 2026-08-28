@@ -467,13 +467,32 @@ export function TutorExperience() {
     setAwaitingReply(false);
   }, [turnSeq]);
 
+  /*
+   * The server's own word ends the wait too, in both directions. `thinking`
+   * arriving confirms the optimistic spinner; an error frame (a failed
+   * transcription, a refused turn) clears `socket.thinking`, and without this
+   * mirror the local flag would keep the orb spinning at a turn the server has
+   * already given up on — the stuck state the owner reported.
+   */
+  useEffect(() => {
+    if (!socket.thinking && socket.error !== null) setAwaitingReply(false);
+  }, [socket.thinking, socket.error]);
+
   const handleClip = useCallback(
     (clip: Blob | null) => {
       // Null is a mis-tap the hook already dropped. Marking that as "waiting"
-      // would leave the orb thinking about a turn that was never sent.
-      if (!clip) return;
+      // would leave the orb thinking about a turn that was never sent — and
+      // whatever chunks streamed ahead are walked away from, uncommitted.
+      if (!clip) {
+        socket.abandonAudioStream();
+        return;
+      }
       setAwaitingReply(true);
-      void socket.sendAudio(clip);
+      // The clip usually finished uploading DURING the hold (the chunk
+      // stream); the commit is then one tiny frame and transcription starts
+      // immediately. The whole-clip send is the fallback for a hold the
+      // stream never opened for (a recorder with no timeslices, say).
+      if (!socket.commitAudioStream()) void socket.sendAudio(clip);
     },
     [socket],
   );
@@ -486,9 +505,14 @@ export function TutorExperience() {
    * holds a MediaStream and a MediaRecorder, and a second instance is a second
    * live recording indicator with no owner. Enabled only while a conversation
    * can actually carry audio, so no other phase can open a stream.
+   *
+   * `onChunk` feeds the streamed upload: each quarter-second of audio leaves
+   * for the server while the learner is still talking, so releasing the button
+   * costs a commit frame instead of a whole-clip upload.
    */
   const microphone = useMicrophone(phase === 'conversing' && socket.microphone, {
     onAutoRelease: handleClip,
+    onChunk: socket.streamAudioChunk,
   });
 
   /*
@@ -681,7 +705,14 @@ export function TutorExperience() {
     idleCopy: micPlan.idleKey ? t(micPlan.idleKey) : undefined,
     denied: microphone.permission === 'denied',
     onClip: handleClip,
-    onInterrupt: () => setInterruptedSeq(turnSeq),
+    onInterrupt: () => {
+      // Local squelch AND a server-side abort: the clip stops here, and the
+      // production in flight (model call, synthesis) stops costing money for
+      // a reply the learner has already talked past.
+      setInterruptedSeq(turnSeq);
+      setAwaitingReply(false);
+      socket.interrupt();
+    },
   };
 
   /*

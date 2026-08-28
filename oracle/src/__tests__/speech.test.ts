@@ -317,7 +317,7 @@ describe('voice cost reaches the session ledger', () => {
     await paid.greet(Date.now());
     expect(paid.voiceCostUsd).toBeGreaterThan(0);
     expect(paid.totalCostUsd).toBe(paid.voiceCostUsd);
-    expect(paid.speechCounts).toEqual({ paid: 1, free: 0 });
+    expect(paid.speechCounts).toEqual({ paid: 1, free: 0, discarded: 0 });
 
     const free = new TutorOrchestrator(SESSION, Date.now(), async () => ({
       url: 'http://depot.test/files/tutor-speech-shared/a.mp3',
@@ -328,6 +328,6 @@ describe('voice cost reaches the session ledger', () => {
     // The whole point, in one assertion: the greeting is spoken and costs nil.
     expect(free.voiceCostUsd).toBe(0);
     expect(free.totalCostUsd).toBe(0);
-    expect(free.speechCounts).toEqual({ paid: 0, free: 1 });
+    expect(free.speechCounts).toEqual({ paid: 0, free: 1, discarded: 0 });
   });
 });

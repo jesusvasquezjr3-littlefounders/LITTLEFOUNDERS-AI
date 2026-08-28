@@ -100,8 +100,27 @@ export interface TutorSocket {
   adaptationOffer: Adaptation | null;
   closedReason: string | null;
   error: { code: string; message: string } | null;
+  /**
+   * The server said it is producing a reply. Authoritative — set by the
+   * `thinking` frame the moment the turn slot is claimed, cleared by the turn
+   * arriving (or by an error, or by the learner interrupting). The UI's own
+   * optimistic spinner covers only the send→ack gap.
+   */
+  thinking: boolean;
   sendText: (text: string) => void;
   sendAudio: (audio: Blob) => Promise<void>;
+  /**
+   * Streamed upload, for sending the clip WHILE the learner still holds the
+   * button. Chunks auto-open the stream; `commitAudioStream` seals it and
+   * starts transcription server-side, returning false when no stream was ever
+   * opened (the caller then falls back to `sendAudio`). `abandonAudioStream`
+   * walks away from a mis-tap — the server resets on the next begin.
+   */
+  streamAudioChunk: (chunk: Blob, mimeType: string) => void;
+  commitAudioStream: () => boolean;
+  abandonAudioStream: () => void;
+  /** The learner cut in: stop the in-flight production server-side too. */
+  interrupt: () => void;
   reportGrade: (segmentId: string, score: number, correct: boolean) => void;
   answerAdaptation: (adaptation: Adaptation, accepted: boolean) => void;
   endSession: () => void;
@@ -134,6 +153,14 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
   const [adaptationOffer, setAdaptationOffer] = useState<Adaptation | null>(null);
   const [closedReason, setClosedReason] = useState<string | null>(null);
   const [error, setError] = useState<TutorSocket['error']>(null);
+  const [thinking, setThinking] = useState(false);
+  /**
+   * The streamed-upload state, all refs: chunk encoding is async, so sends are
+   * SERIALIZED on one promise chain — chunk N+1 must never overtake chunk N on
+   * the wire just because it base64-encoded faster.
+   */
+  const streamOpenRef = useRef(false);
+  const streamChainRef = useRef<Promise<void>>(Promise.resolve());
 
   useEffect(() => {
     /*
@@ -163,6 +190,9 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     setAdaptationOffer(null);
     setClosedReason(null);
     setError(null);
+    setThinking(false);
+    streamOpenRef.current = false;
+    streamChainRef.current = Promise.resolve();
     setConnection('connecting');
 
     if (!socketUrl) return;
@@ -171,6 +201,18 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     socketRef.current = socket;
 
     socket.onopen = () => setConnection('open');
+
+    /*
+     * KEEPALIVE, at last — `ping` sat in the protocol union unsent, so any
+     * proxy or sleeping phone that dropped an idle connection ended the
+     * session. It also carries the honest budget back, keeping the on-screen
+     * "minutes left" moving between turns.
+     */
+    const keepalive = window.setInterval(() => {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ type: 'ping' } satisfies ClientMessage));
+      }
+    }, 45_000);
 
     socket.onmessage = (event) => {
       let message: ServerMessage;
@@ -198,6 +240,18 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
           // A new turn clears the previous error banner: the tutor recovering
           // is the signal that whatever went wrong is over.
           setError(null);
+          setThinking(false);
+          break;
+        case 'turn_audio':
+          // The voice catching up with its own turn. A stale seq is a clip for
+          // a line the conversation has already moved past — dropped, so a slow
+          // synthesis can never talk over a newer turn.
+          setTurn((prev) =>
+            prev && prev.seq === message.seq ? { ...prev, audioUrl: message.audioUrl } : prev,
+          );
+          break;
+        case 'thinking':
+          setThinking(true);
           break;
         case 'transcript':
           setHistory((prev) => [...prev, { speaker: 'learner', text: message.text, seq: -1 }]);
@@ -221,9 +275,13 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
           break;
         case 'closed':
           setClosedReason(message.reason);
+          setThinking(false);
           break;
         case 'error':
           setError({ code: message.code, message: message.message });
+          // An error frame ends whatever wait it interrupted: a spinner that
+          // outlives its turn is the stuck state this flag exists to prevent.
+          setThinking(false);
           if (message.code === 'CONSENT_REVOKED') setMicrophone(false);
           break;
       }
@@ -258,6 +316,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     };
 
     return () => {
+      window.clearInterval(keepalive);
       socket.onmessage = null;
       socket.onerror = null;
       socket.onclose = null;
@@ -295,6 +354,48 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     [send],
   );
 
+  /*
+   * The streamed upload. Each chunk is enqueued on ONE promise chain so wire
+   * order matches recording order regardless of how long each base64 encode
+   * takes — and the commit rides the same chain, so it can never overtake the
+   * bytes it seals.
+   */
+  const streamAudioChunk = useCallback(
+    (chunk: Blob, mimeType: string) => {
+      if (!streamOpenRef.current) {
+        streamOpenRef.current = true;
+        streamChainRef.current = streamChainRef.current.then(() => {
+          send({ type: 'learner_audio_begin', mimeType: mimeType || 'audio/webm' });
+        });
+      }
+      streamChainRef.current = streamChainRef.current.then(async () => {
+        const base64 = await blobToBase64(chunk);
+        send({ type: 'learner_audio_chunk', audio: base64 });
+      });
+    },
+    [send],
+  );
+
+  const commitAudioStream = useCallback(() => {
+    if (!streamOpenRef.current) return false;
+    streamOpenRef.current = false;
+    streamChainRef.current = streamChainRef.current.then(() => {
+      send({ type: 'learner_audio_commit' });
+    });
+    return true;
+  }, [send]);
+
+  const abandonAudioStream = useCallback(() => {
+    // A mis-tap. Nothing to send: the server resets an uncommitted assembly on
+    // the next begin, and never transcribes what was never committed.
+    streamOpenRef.current = false;
+  }, []);
+
+  const interrupt = useCallback(() => {
+    setThinking(false);
+    send({ type: 'interrupt' });
+  }, [send]);
+
   const reportGrade = useCallback(
     (segmentId: string, score: number, correct: boolean) => {
       // The panel clears as soon as the result is reported: the tutor's next
@@ -328,8 +429,13 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     adaptationOffer,
     closedReason,
     error,
+    thinking,
     sendText,
     sendAudio,
+    streamAudioChunk,
+    commitAudioStream,
+    abandonAudioStream,
+    interrupt,
     reportGrade,
     answerAdaptation,
     endSession,

@@ -177,6 +177,16 @@ const Env = z.object({
   SESSION_SOFT_BUDGET_MS: z.coerce.number().int().positive().default(15 * 60_000),
   SESSION_HARD_BUDGET_MS: z.coerce.number().int().positive().default(25 * 60_000),
   SESSION_MAX_TURNS: z.coerce.number().int().positive().default(120),
+  /**
+   * How long a session may carry NO learner frame (keepalive pings excluded)
+   * before it is closed as abandoned. Generous on purpose: a child slowly
+   * working an activity sends nothing while they think, and reaping them
+   * mid-thought is worse than holding an orchestrator in memory a few minutes
+   * longer. What this bounds is the abandoned open tab, which previously held
+   * its session until the hard budget — and the hard budget is only evaluated
+   * when a turn arrives, so in practice it held it forever.
+   */
+  SESSION_IDLE_TIMEOUT_MS: z.coerce.number().int().positive().default(10 * 60_000),
   /** Per-turn learner input cap, in characters (§5 bounds). */
   TURN_MAX_INPUT_CHARS: z.coerce.number().int().positive().default(600),
 
