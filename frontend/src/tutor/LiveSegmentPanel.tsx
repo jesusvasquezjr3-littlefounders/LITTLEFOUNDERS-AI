@@ -7,6 +7,8 @@ import type { SegmentBase, Verdict } from '@/lesson-engine/core/types';
 import { HudPlate } from './hud/HudPlate';
 import { useScrollEdges } from './hud/useScrollEdges';
 import { gradeSegment } from './tutorApi';
+import { runTrayDemo, TRAY_TYPES } from './trayDemo';
+import type { TrayDemoStep } from './types';
 import type { LiveSegmentState } from './useTutorSocket';
 
 /*
@@ -52,7 +54,17 @@ import type { LiveSegmentState } from './useTutorSocket';
 export interface LiveSegmentPanelProps {
   live: LiveSegmentState;
   token: string;
-  onGraded: (segmentId: string, score: number, correct: boolean) => void;
+  onGraded: (
+    segmentId: string,
+    score: number,
+    correct: boolean,
+    pedagogy?: { echo: string; attemptNumber: number },
+  ) => void;
+  /**
+   * v3: a demonstration the tutor performs on the OPEN tray while speaking.
+   * `seq` is the turn that carried it, so the same steps never replay.
+   */
+  demo?: { seq: number; steps: TrayDemoStep[] } | null;
   /**
    * Sizing from the plate. It is expected to be `flex-auto min-h-0`: this panel
    * is the ONE child of the lesson plate's column that owns the free height and
@@ -63,7 +75,7 @@ export interface LiveSegmentPanelProps {
 
 const MAX_ATTEMPTS = 2;
 
-export function LiveSegmentPanel({ live, token, onGraded, className }: LiveSegmentPanelProps) {
+export function LiveSegmentPanel({ live, token, onGraded, demo, className }: LiveSegmentPanelProps) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState<unknown>(undefined);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
@@ -71,9 +83,44 @@ export function LiveSegmentPanel({ live, token, onGraded, className }: LiveSegme
   const [checking, setChecking] = useState(false);
   const [failed, setFailed] = useState(false);
   const [xpAwarded, setXpAwarded] = useState<number | null>(null);
+  /** v3: input is locked while the tutor's hands are on the tray. */
+  const [demoRunning, setDemoRunning] = useState(false);
 
   const segment = live.segment as unknown as SegmentBase;
   const entry = REGISTRY[segment.type];
+
+  /*
+   * THE TUTOR'S HANDS (v3). A `demonstrate` turn animates the SAME controlled
+   * draft a real tap changes — the driver appends/removes picked coins on a
+   * timer, the renderer shows each move, and the learner's input is locked
+   * until the tutor hands the tray back. A demo for a segment that is not a
+   * tray, or for one already graded, is ignored fail-safe.
+   */
+  const draftRef = useRef<unknown>(undefined);
+  draftRef.current = draft;
+  const lastDemoSeq = useRef<number>(-1);
+  useEffect(() => {
+    if (!demo || demo.seq === lastDemoSeq.current) return;
+    if (!TRAY_TYPES.has(segment.type) || verdict?.correct === true) return;
+    lastDemoSeq.current = demo.seq;
+    const denominations = (segment.payload as { denominations?: unknown }).denominations;
+    if (!Array.isArray(denominations)) return;
+    const abort = new AbortController();
+    setDemoRunning(true);
+    void runTrayDemo(
+      demo.steps,
+      denominations.filter((d): d is number => typeof d === 'number'),
+      {
+        getPicked: () => {
+          const current = draftRef.current as { picked?: unknown } | undefined;
+          return Array.isArray(current?.picked) ? (current.picked as number[]) : [];
+        },
+        setPicked: (picked) => setDraft({ picked }),
+      },
+      { signal: abort.signal },
+    ).finally(() => setDemoRunning(false));
+    return () => abort.abort();
+  }, [demo, segment, verdict]);
 
   // The answers are the one scrolling box on the plate, so they are the one box
   // that has to SAY it scrolls. See `useScrollEdges`.
@@ -117,7 +164,12 @@ export function LiveSegmentPanel({ live, token, onGraded, className }: LiveSegme
 
       const done = result.data.verdict.correct || attempt >= MAX_ATTEMPTS;
       if (done) {
-        onGraded(live.segmentId, result.data.verdict.score, result.data.verdict.correct);
+        // v3: relay Core's signed pedagogy receipt with the grade report, so
+        // Oracle's strategy controller can trust the event it steers on.
+        const pedagogy = result.data.pedagogy
+          ? { echo: result.data.pedagogy.echo, attemptNumber: attempt }
+          : undefined;
+        onGraded(live.segmentId, result.data.verdict.score, result.data.verdict.correct, pedagogy);
       } else {
         setAttempt((n) => n + 1);
       }
@@ -136,7 +188,7 @@ export function LiveSegmentPanel({ live, token, onGraded, className }: LiveSegme
   }
 
   const Component = entry.component;
-  const locked = checking || verdict?.correct === true || attempt > MAX_ATTEMPTS;
+  const locked = checking || demoRunning || verdict?.correct === true || attempt > MAX_ATTEMPTS;
 
   return (
     /*

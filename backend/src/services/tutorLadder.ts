@@ -33,6 +33,11 @@ export const LIVE_TYPE_ALLOWLIST = new Set<string>([
   'sort_buckets',
   'match_pairs',
   'fill_blank',
+  // Money manipulatives (Tutor v3): self-contained payloads — the grader
+  // checks the tray sum against the payload's own numbers, so re-execution
+  // is composing an exact tray (submissionFromKey), pure arithmetic.
+  'coin_count',
+  'make_change',
   // Ungraded story types: safe to generate because there is no key to get wrong.
   'story_dialogue',
   'key_ideas',
@@ -285,6 +290,13 @@ export function verifyGeneratedSegment(segment: SegmentBase, tier: number): Veri
     if (pattern.test(prose)) failures.push(`tier ${tier} vocabulary violation: ${String(pattern)}`);
   }
 
+  // A tray whose own denominations cannot reach its own target is unwinnable
+  // by construction — a CONTENT failure, not merely an unverifiable key. A
+  // learner handed one cannot be right no matter what they do.
+  if ((segment.type === 'coin_count' || segment.type === 'make_change') && submissionFromKey(segment) === undefined) {
+    failures.push('tray target is unreachable from its own denominations');
+  }
+
   // ── key re-execution ──
   const keyVerified = reExecuteKey(segment, failures);
 
@@ -410,9 +422,73 @@ export function submissionFromKey(segment: SegmentBase): unknown {
       }
       return { gaps };
     }
+    /*
+     * The money trays have EMPTY keys on purpose — the grader checks the tray
+     * sum against the payload's own numbers. Re-execution therefore means
+     * COMPOSING a tray that reaches the target exactly from the payload's own
+     * denominations. `undefined` (target unreachable) fails the verification,
+     * which is correct: a tray exercise whose denominations cannot reach its
+     * own target is unwinnable by construction and must never be served.
+     */
+    case 'coin_count': {
+      const payload = segment.payload as { denominations?: unknown; target?: unknown };
+      const picked = composeExactTray(payload.denominations, payload.target);
+      return picked === null ? undefined : { picked };
+    }
+    case 'make_change': {
+      const payload = segment.payload as { denominations?: unknown; price?: unknown; paid_with?: unknown };
+      const target =
+        typeof payload.price === 'number' && typeof payload.paid_with === 'number'
+          ? payload.paid_with - payload.price
+          : undefined;
+      const picked = composeExactTray(payload.denominations, target);
+      return picked === null ? undefined : { picked };
+    }
     default:
       return undefined;
   }
+}
+
+/**
+ * An EXACT composition of `target` from `denominations`, or null.
+ *
+ * Greedy fails legitimate cases (denominations [3,4] cannot reach 6 greedily),
+ * so this is a small coin-change DP in integer cents, bounded so a hostile
+ * payload cannot buy CPU: amounts beyond 200,000 cents or compositions beyond
+ * 200 pieces refuse rather than search.
+ */
+export function composeExactTray(denominations: unknown, target: unknown): number[] | null {
+  if (!Array.isArray(denominations) || typeof target !== 'number' || !Number.isFinite(target)) return null;
+  const denoms = denominations.filter((d): d is number => typeof d === 'number' && d > 0);
+  if (denoms.length === 0 || target <= 0) return null;
+
+  const toCents = (v: number): number => Math.round(v * 100);
+  const targetCents = toCents(target);
+  if (targetCents <= 0 || targetCents > 200_000) return null;
+  const denomCents = denoms.map(toCents).filter((d) => d > 0);
+  if (Math.ceil(targetCents / Math.min(...denomCents)) > 200) return null;
+
+  // parent[i] = the denomination (cents) used to reach amount i, or -1.
+  const parent = new Int32Array(targetCents + 1).fill(-1);
+  parent[0] = 0;
+  for (let amount = 1; amount <= targetCents; amount += 1) {
+    for (const d of denomCents) {
+      if (d <= amount && parent[amount - d] !== -1) {
+        parent[amount] = d;
+        break;
+      }
+    }
+  }
+  if (parent[targetCents] === -1) return null;
+
+  const picked: number[] = [];
+  for (let amount = targetCents; amount > 0; ) {
+    const d = parent[amount] ?? -1;
+    if (d <= 0) return null;
+    picked.push(d / 100);
+    amount -= d;
+  }
+  return picked;
 }
 
 /** The client-safe view of a candidate. The key never leaves this process. */

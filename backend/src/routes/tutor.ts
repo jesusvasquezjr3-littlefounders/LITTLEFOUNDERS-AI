@@ -55,6 +55,7 @@ import {
 } from '../services/tutorLadder.js';
 import { purgeExpiredTutorSessions } from '../services/tutorRetention.js';
 import { buildSessionPlan } from '../services/pedagogy/sessionPlan.js';
+import { buildTutorMap } from '../services/pedagogy/tutorMap.js';
 import { recordAttempt, type AttemptOutcome } from '../services/pedagogy/recordAttempt.js';
 import { normalizeSpokenNumber } from '../services/pedagogy/normalizeSpoken.js';
 import { GRADERS, KEYLESS_GRADERS } from '../lesson-contract/registry.js';
@@ -555,8 +556,25 @@ function internalRouter(): Router {
     })
     .strict();
 
-  /** Types whose submission is a single numeric value — the voice-checkable set. */
-  const VOICE_CHECK_TYPES = new Set(['number_input', 'count_objects', 'estimate_slider', 'money_tray']);
+  /**
+   * The voice-checkable set. The first three take a `{value}` submission and
+   * run through their real grader; the money trays are special-cased — the
+   * SPOKEN answer to a tray is the amount ("son tres pesos"), not a list of
+   * coins, so the verdict is exact arithmetic against the payload's own
+   * numbers (target, or paid_with − price), which is the same source the
+   * grader itself reads.
+   */
+  const VOICE_CHECK_TYPES = new Set(['number_input', 'count_objects', 'estimate_slider', 'coin_count', 'make_change']);
+  const TRAY_TYPES = new Set(['coin_count', 'make_change']);
+
+  const trayExpected = (segment: SegmentBase): number | null => {
+    const payload = segment.payload as { target?: unknown; price?: unknown; paid_with?: unknown };
+    if (typeof payload.target === 'number') return payload.target;
+    if (typeof payload.price === 'number' && typeof payload.paid_with === 'number') {
+      return payload.paid_with - payload.price;
+    }
+    return null;
+  };
 
   router.post('/segments/:segmentId/voice-check', async (req, res) => {
     const segmentId = z.string().uuid().safeParse(req.params.segmentId);
@@ -573,7 +591,10 @@ function internalRouter(): Router {
     if (session.ended_at !== null) return fail(res, 409, 'SESSION_CLOSED', 'This session has already ended');
 
     const segment = row.payload as unknown as SegmentBase;
-    if (!VOICE_CHECK_TYPES.has(segment.type) || row.answer === null) {
+    const isTray = TRAY_TYPES.has(segment.type);
+    // Trays carry an EMPTY key by design (self-contained payloads); the other
+    // checkable types need their stored key to grade at all.
+    if (!VOICE_CHECK_TYPES.has(segment.type) || (!isTray && row.answer === null)) {
       return ok(res, { checkable: false, recognized: false });
     }
 
@@ -581,16 +602,22 @@ function internalRouter(): Router {
     if (value === null) return ok(res, { checkable: true, recognized: false });
 
     const withKey: SegmentBase = { ...segment, answer: row.answer ?? undefined };
-    const grader = GRADERS[segment.type];
-    if (!grader) return ok(res, { checkable: false, recognized: false });
-
-    let outcome: { score: number };
-    try {
-      outcome = grader(withKey, { value });
-    } catch {
-      return ok(res, { checkable: true, recognized: false });
+    let score: number;
+    if (isTray) {
+      const expected = trayExpected(segment);
+      if (expected === null) return ok(res, { checkable: false, recognized: false });
+      score = Math.abs(value - expected) <= 0.005 ? 100 : 0;
+    } else {
+      const grader = GRADERS[segment.type];
+      if (!grader) return ok(res, { checkable: false, recognized: false });
+      let outcome: { score: number };
+      try {
+        outcome = grader(withKey, { value });
+      } catch {
+        return ok(res, { checkable: true, recognized: false });
+      }
+      score = Math.max(0, Math.min(100, Math.round(outcome.score)));
     }
-    const score = Math.max(0, Math.min(100, Math.round(outcome.score)));
 
     const provenance = row.provenance ?? {};
     const kcId = typeof provenance.kc_id === 'string' ? provenance.kc_id : null;
@@ -843,6 +870,27 @@ export function tutorRouter(): Router {
       nickname: prefs.nickname,
       adaptations: prefs.adaptations,
     });
+  });
+
+  // ── The learning map (Tutor v3) ───────────────────────────────────────────
+
+  /**
+   * The KC graph as this learner sees it — the SAME graph the session planner
+   * traverses, so the map and the tutor can never disagree about "where were
+   * we". 502 on an upstream failure (§1.14: a missing map is not an empty
+   * one); an unseeded graph yields an empty map, which the client says
+   * honestly.
+   */
+  router.get('/map', async (_req, res) => {
+    const user = authedUser(res);
+    if (!getConfig().TUTOR_V3_BRAIN) return ok(res, { nodes: [], edges: [], continueTarget: null, review: { count: 0 } });
+
+    const profile = await profileOf(user.accessToken, user.id);
+    if (!profile) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read profile');
+
+    const map = await buildTutorMap(user.id, tierForBirthDate(profile.birth_date), normalizeLocale(profile.locale));
+    if (map === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the learning map');
+    return ok(res, map);
   });
 
   // ── The offer screen (/ORACLE.md §9.2) ────────────────────────────────────

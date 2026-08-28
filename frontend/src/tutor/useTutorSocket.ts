@@ -28,6 +28,10 @@ export interface TutorTurnState {
   action: CharacterAction;
   audioUrl: string | null;
   next: 'ask' | 'segment' | 'close';
+  /** v3: per-strategy thinking time before any gentle nudge. */
+  policy: { idleNudgeMs: number } | null;
+  /** v3: tray demonstration steps to animate concurrently with the speech. */
+  demonstrate: import('./types').TrayDemoStep[] | null;
 }
 
 export interface LiveSegmentState {
@@ -127,7 +131,12 @@ export interface TutorSocket {
    * persisted transcript keeps everything, append-only.
    */
   editLast: (text: string) => void;
-  reportGrade: (segmentId: string, score: number, correct: boolean) => void;
+  reportGrade: (
+    segmentId: string,
+    score: number,
+    correct: boolean,
+    pedagogy?: { echo: string; attemptNumber: number },
+  ) => void;
   answerAdaptation: (adaptation: Adaptation, accepted: boolean) => void;
   endSession: () => void;
 }
@@ -241,6 +250,8 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
             action: message.action,
             audioUrl: message.audioUrl,
             next: message.next,
+            policy: message.policy ?? null,
+            demonstrate: message.demonstrate ?? null,
           });
           setHistory((prev) => [...prev, { speaker: 'tutor', text: message.say, seq: message.seq }]);
           // A new turn clears the previous error banner: the tutor recovering
@@ -426,12 +437,19 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
   );
 
   const reportGrade = useCallback(
-    (segmentId: string, score: number, correct: boolean) => {
+    (segmentId: string, score: number, correct: boolean, pedagogy?: { echo: string; attemptNumber: number }) => {
       // The panel clears as soon as the result is reported: the tutor's next
       // turn is a reaction to it, and leaving the answered activity on screen
       // makes the character look like they are talking about nothing.
       setSegment(null);
-      send({ type: 'segment_graded', segmentId, score, correct });
+      send({
+        type: 'segment_graded',
+        segmentId,
+        score,
+        correct,
+        // v3: the signed receipt, relayed verbatim — Oracle verifies it.
+        ...(pedagogy ? { echo: pedagogy.echo, attemptNumber: pedagogy.attemptNumber } : {}),
+      });
     },
     [send],
   );

@@ -122,6 +122,10 @@ export type ServerMessage =
       /** Null on delivery; the voice follows in `turn_audio` (split delivery). */
       audioUrl: string | null;
       next: 'ask' | 'segment' | 'close';
+      /** v3: per-strategy thinking time before any gentle nudge. */
+      policy?: { idleNudgeMs: number };
+      /** v3: demonstration steps the tutor performs on the open money tray. */
+      demonstrate?: TrayDemoStep[];
     }
   | { type: 'turn_audio'; seq: number; audioUrl: string | null }
   | { type: 'thinking' }
@@ -145,6 +149,13 @@ export type ServerMessage =
   | { type: 'closed'; reason: string }
   | { type: 'error'; code: string; message: string };
 
+/** v3: one closed step of a tray demonstration (mirrors Oracle's DemoStepSchema). */
+export interface TrayDemoStep {
+  kind: 'add' | 'remove' | 'pause';
+  denomination?: number;
+  ms?: number;
+}
+
 // ── Wire messages, outbound ─────────────────────────────────────────────────
 
 export type ClientMessage =
@@ -155,7 +166,15 @@ export type ClientMessage =
   | { type: 'learner_audio_chunk'; audio: string }
   | { type: 'learner_audio_commit' }
   | { type: 'interrupt' }
-  | { type: 'segment_graded'; segmentId: string; score: number; correct: boolean }
+  | {
+      type: 'segment_graded';
+      segmentId: string;
+      score: number;
+      correct: boolean;
+      /** v3: Core's signed grade receipt, relayed verbatim — see GradeResponse.pedagogy.echo. */
+      echo?: string;
+      attemptNumber?: number;
+    }
   | { type: 'adaptation_response'; adaptation: Adaptation; accepted: boolean }
   | { type: 'end_session' }
   | { type: 'ping' };

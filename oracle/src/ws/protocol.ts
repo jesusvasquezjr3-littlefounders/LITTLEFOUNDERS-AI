@@ -157,6 +157,12 @@ export type ServerMessage =
        * the v3 brain is dormant — the client then keeps its own default.
        */
       policy?: { idleNudgeMs: number };
+      /**
+       * v3: demonstration steps over the OPEN money-tray activity, validated
+       * by the closed turn schema. The client animates them concurrently with
+       * the speech and drops any denomination the payload lacks.
+       */
+      demonstrate?: Array<{ kind: 'add' | 'remove' | 'pause'; denomination?: number; ms?: number }>;
     }
   | {
       /**

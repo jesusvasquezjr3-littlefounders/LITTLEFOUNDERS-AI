@@ -65,8 +65,13 @@ export function operandsFromSegment(segment: SegmentBase): Record<string, number
 function numericSubmission(submission: unknown): number | null {
   if (typeof submission === 'number' && Number.isFinite(submission)) return submission;
   if (typeof submission === 'object' && submission !== null) {
-    const v = (submission as Record<string, unknown>).value;
+    const record = submission as Record<string, unknown>;
+    const v = record.value;
     if (typeof v === 'number' && Number.isFinite(v)) return v;
+    // Tray submissions: the number the learner "answered" is the tray sum.
+    if (Array.isArray(record.picked) && record.picked.every((p) => typeof p === 'number')) {
+      return (record.picked as number[]).reduce((acc, p) => acc + p, 0);
+    }
   }
   return null;
 }
@@ -74,7 +79,14 @@ function numericSubmission(submission: unknown): number | null {
 function numericExpected(segment: SegmentBase): number | null {
   const key = segment.answer as Record<string, unknown> | undefined;
   const v = key?.value ?? key?.target;
-  return typeof v === 'number' && Number.isFinite(v) ? v : null;
+  if (typeof v === 'number' && Number.isFinite(v)) return v;
+  // Self-contained tray types: the expected value lives in the payload.
+  const payload = segment.payload as Record<string, unknown>;
+  if (typeof payload.target === 'number') return payload.target;
+  if (typeof payload.price === 'number' && typeof payload.paid_with === 'number') {
+    return payload.paid_with - payload.price;
+  }
+  return null;
 }
 
 /** Tags the authored item attached to the chosen option, when recoverable. */

@@ -4,6 +4,7 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 import { jsonResponse, mintToken } from './helpers.js';
 import { buildSessionPlan, difficultyFor } from '../services/pedagogy/sessionPlan.js';
+import { buildTutorMap, deriveNodeState } from '../services/pedagogy/tutorMap.js';
 
 /*
  * The v3 brain's Core wiring: the session plan on the internal context, the
@@ -220,6 +221,36 @@ describe('buildSessionPlan', () => {
     expect(difficultyFor(0.75)).toBe(3);
     expect(difficultyFor(0.6)).toBe(2);
     expect(difficultyFor(0.3)).toBe(1);
+  });
+});
+
+describe('the learning map', () => {
+  it('deriveNodeState covers the five states, review outranking mastery', () => {
+    expect(deriveNodeState({ pKnown: 0.9, attempts: 5, reviewDue: true, prereqsMet: true })).toBe('needs_review');
+    expect(deriveNodeState({ pKnown: 0.9, attempts: 5, reviewDue: false, prereqsMet: true })).toBe('mastered');
+    expect(deriveNodeState({ pKnown: 0.9, attempts: 1, reviewDue: false, prereqsMet: true })).toBe('in_progress');
+    expect(deriveNodeState({ pKnown: 0.2, attempts: 0, reviewDue: false, prereqsMet: false })).toBe('locked');
+    expect(deriveNodeState({ pKnown: 0.2, attempts: 0, reviewDue: false, prereqsMet: true })).toBe('available');
+  });
+
+  it('locks the dependent while its prerequisite is unmastered, and CONTINUE follows the planner', async () => {
+    stub();
+    const map = await buildTutorMap(KID, 2, 'es-MX');
+    expect(map).not.toBeNull();
+    const change = map!.nodes.find((n) => n.kcKey === 'money.make-change-counting-up');
+    expect(change?.state).toBe('locked');
+    const count = map!.nodes.find((n) => n.kcKey === 'money.count-mixed-coins');
+    expect(count?.state).toBe('available');
+    expect(count?.title).toBe('Contar dinero mezclado');
+    expect(map!.continueTarget?.kcKey).toBe('money.count-mixed-coins');
+    expect(map!.edges).toContainEqual({ from: 'money.count-mixed-coins', to: 'money.make-change-counting-up' });
+  });
+
+  it('a mastered prerequisite opens the dependent on the map too', async () => {
+    stub({ mastery: [{ kc_id: KC_COUNT, p_known: 0.9, attempts: 5, correct: 5, params_override: null }] });
+    const map = await buildTutorMap(KID, 2, 'es-MX');
+    expect(map!.nodes.find((n) => n.kcKey === 'money.count-mixed-coins')?.state).toBe('mastered');
+    expect(map!.nodes.find((n) => n.kcKey === 'money.make-change-counting-up')?.state).toBe('available');
   });
 });
 

@@ -709,6 +709,8 @@ export function ConversationView({
             live={socket.segment}
             token={token}
             onGraded={socket.reportGrade}
+            // v3: a turn may carry tray-demonstration steps for the open activity.
+            demo={turn?.demonstrate ? { seq: turn.seq, steps: turn.demonstrate } : null}
             // The one child of the column that takes the free height and scrolls.
             className="min-h-0 flex-auto"
           />

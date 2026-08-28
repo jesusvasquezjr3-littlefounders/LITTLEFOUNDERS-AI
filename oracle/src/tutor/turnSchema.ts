@@ -90,6 +90,24 @@ export const SegmentRequestSchema = z
   })
   .strict();
 
+/**
+ * One step of an on-screen demonstration over the OPEN money-tray activity
+ * (Tutor v3, /ORACLE.md). Closed vocabulary in the §5 sense: verbs from a
+ * three-item enum, denominations as bare numbers the client validates against
+ * the segment's own payload, pauses clamped. There is no free text and no
+ * target outside the widget — an injection that reaches this field can add a
+ * coin to a tray, and nothing else.
+ */
+export const DemoStepSchema = z
+  .object({
+    kind: z.enum(['add', 'remove', 'pause']),
+    /** The denomination to add/remove; the client drops values the payload lacks. */
+    denomination: z.number().positive().max(10_000).optional(),
+    /** For 'pause': milliseconds, clamped client-side. */
+    ms: z.number().int().min(100).max(2_000).optional(),
+  })
+  .strict();
+
 export const TutorTurnSchema = z
   .object({
     /**
@@ -113,15 +131,27 @@ export const TutorTurnSchema = z
       .enum(['slower_pacing', 'more_examples', 'less_text', 'more_visual', 'repeat_before_advancing'])
       .nullable()
       .optional(),
+    /**
+     * "Mira, si agrego esta moneda…" — the tutor MOVES the open manipulative
+     * while speaking (Tutor v3). Valid only while an activity is on screen;
+     * the client runs the steps against the live tray and aborts them on an
+     * interrupt, exactly like speech.
+     */
+    demonstrate: z.array(DemoStepSchema).min(1).max(8).nullable().optional(),
   })
   .strict()
   .refine((turn) => turn.next !== 'segment' || turn.segmentRequest != null, {
     message: 'next="segment" requires a segmentRequest',
     path: ['segmentRequest'],
+  })
+  .refine((turn) => turn.demonstrate == null || turn.next !== 'segment', {
+    message: 'demonstrate applies to the OPEN activity — not to one being requested',
+    path: ['demonstrate'],
   });
 
 export type TutorTurn = z.infer<typeof TutorTurnSchema>;
 export type SegmentRequest = z.infer<typeof SegmentRequestSchema>;
+export type DemoStep = z.infer<typeof DemoStepSchema>;
 
 export type TurnParse =
   | { ok: true; turn: TutorTurn }

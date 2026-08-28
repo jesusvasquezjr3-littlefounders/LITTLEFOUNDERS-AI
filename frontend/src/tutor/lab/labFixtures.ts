@@ -311,6 +311,8 @@ export function labTurn(locale: Locale): TutorTurnState {
     action: 'nod',
     audioUrl: null,
     next: 'segment',
+    policy: null,
+    demonstrate: null,
   };
 }
 

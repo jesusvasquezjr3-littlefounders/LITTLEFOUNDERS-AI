@@ -263,7 +263,8 @@ export class TutorOrchestrator {
     'number_input',
     'count_objects',
     'estimate_slider',
-    'money_tray',
+    'coin_count',
+    'make_change',
   ]);
 
   /** An activity went out. Remembered by id, so a grade can be matched to it. */

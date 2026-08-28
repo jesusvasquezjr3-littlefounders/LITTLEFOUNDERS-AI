@@ -53,7 +53,7 @@ const TUTOR_LINE = 'A goal is easier to reach when you can see it.';
 function makeSocket(overrides: Partial<TutorSocket> = {}): TutorSocket {
   return {
     connection: 'open',
-    turn: { seq: 1, text: TUTOR_LINE, emotion: 'happy', action: 'nod', audioUrl: null, next: 'ask' },
+    turn: { seq: 1, text: TUTOR_LINE, emotion: 'happy', action: 'nod', audioUrl: null, next: 'ask', policy: null, demonstrate: null },
     history: [{ speaker: 'tutor', text: TUTOR_LINE, seq: 1 }],
     segment: null,
     budget: 'running',

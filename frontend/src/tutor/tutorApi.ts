@@ -91,6 +91,20 @@ export interface GradeResponse {
   /** False when the server could not re-derive the key — it teaches, it does not pay. */
   scoresXp: boolean;
   dailyXpCap: number;
+  /**
+   * v3: the pedagogy join. `echo` is Core's SIGNED grade receipt — the client
+   * relays it verbatim inside `segment_graded` so Oracle's strategy
+   * controller can trust the event; the other fields are display-grade.
+   * Null while the v3 brain is off or the segment carried no KC.
+   */
+  pedagogy: {
+    kcId: string;
+    correct: boolean;
+    pKnownAfter: number;
+    misconceptionCode: string | null;
+    reviewDueAt: string;
+    echo: string;
+  } | null;
 }
 
 export function gradeSegment(

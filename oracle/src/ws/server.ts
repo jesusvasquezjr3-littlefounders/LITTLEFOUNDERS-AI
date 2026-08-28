@@ -852,6 +852,8 @@ async function deliver(live: Live, outcome: TurnOutcome | null): Promise<void> {
     next: emission.turn.next,
     // v3 turn policy: per-strategy thinking time. Absent while dormant.
     ...(idleNudgeMs !== null ? { policy: { idleNudgeMs } } : {}),
+    // v3: tray demonstration steps, already schema-validated with the turn.
+    ...(emission.turn.demonstrate ? { demonstrate: emission.turn.demonstrate } : {}),
   });
 
   void emission.audio.then((audioUrl) => {
