@@ -30,6 +30,9 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 // database/scripts/check-migrations.mjs, and the reason database/ `npm test`
 // could not pass on Windows until 2026-08-23 (RUNBOOK.md).
 const site = await import(pathToFileURL(resolve(HERE, '../../frontend/scripts/seo/site.mjs')).href);
+// Same loader rule as above. The key is imported rather than hard-coded so the
+// file this checks for and the file the build writes can never disagree.
+const indexnow = await import(pathToFileURL(resolve(HERE, '../../frontend/scripts/seo/indexnow.mjs')).href);
 
 const ORIGIN = (process.argv[2] ?? site.SITE.origin).replace(/\/$/, '');
 
