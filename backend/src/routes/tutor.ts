@@ -54,6 +54,9 @@ import {
   type LadderCandidate,
 } from '../services/tutorLadder.js';
 import { purgeExpiredTutorSessions } from '../services/tutorRetention.js';
+import { buildSessionPlan } from '../services/pedagogy/sessionPlan.js';
+import { recordAttempt, type AttemptOutcome } from '../services/pedagogy/recordAttempt.js';
+import { normalizeSpokenNumber } from '../services/pedagogy/normalizeSpoken.js';
 import { GRADERS, KEYLESS_GRADERS } from '../lesson-contract/registry.js';
 import type { SegmentBase } from '../lesson-contract/core/types.js';
 import { verdictFrom } from '../lesson-contract/core/types.js';
@@ -228,6 +231,18 @@ function internalRouter(): Router {
      * with no memory — never to a refused session.
      */
     const recent = await listRecentSummaries(session.user_id, session.id);
+
+    /*
+     * THE V3 BRAIN (migration 0052). The session plan (review debt + ZPD
+     * frontier) and the per-KC posteriors are computed HERE, once, on the
+     * decision clock — never inside a voice turn. Degrades to null while the
+     * migration is unapplied, the seed is empty, or the flag is off, and a
+     * null here is exactly what tells Oracle to behave as v2.
+     */
+    const pedagogyPlan = getConfig().TUTOR_V3_BRAIN
+      ? await buildSessionPlan(session.user_id, session.tier, session.locale)
+      : null;
+
     const previousSessions = (recent ?? []).map((row) => ({
       topic: row.summary.topic,
       skillKeys: row.summary.skillKeys.slice(0, 5),
@@ -265,6 +280,8 @@ function internalRouter(): Router {
       isMinor,
       voiceConsent: consent !== null,
       intelDegraded,
+      sessionPlan: pedagogyPlan?.plan ?? null,
+      kcStates: pedagogyPlan?.kcStates ?? null,
     });
   });
 
@@ -396,6 +413,20 @@ function internalRouter(): Router {
     difficulty: z.number().int().min(1).max(5),
     framing: z.string().min(1).max(240),
     rationale: z.string().min(1).max(400),
+    /** v3: which knowledge component this segment gathers evidence for. */
+    kcId: z.string().uuid().nullish(),
+    /** v3: the controller strategy in force when it was requested. */
+    strategy: z.string().max(16).nullish(),
+  });
+
+  /** Provenance stamp for the v3 evidence join — grading reads these back. */
+  const stampPedagogy = (
+    provenance: Record<string, unknown>,
+    data: { kcId?: string | null; strategy?: string | null },
+  ): Record<string, unknown> => ({
+    ...provenance,
+    ...(data.kcId ? { kc_id: data.kcId } : {}),
+    ...(data.strategy ? { strategy: data.strategy } : {}),
   });
 
   /**
@@ -452,6 +483,7 @@ function internalRouter(): Router {
       });
     }
 
+    candidate.provenance = stampPedagogy(candidate.provenance, parsed.data);
     return persistAndServe(res, session.id, nextSeq, candidate, session.tier);
   });
 
@@ -459,6 +491,8 @@ function internalRouter(): Router {
     sessionId: z.string().uuid(),
     segment: z.record(z.string(), z.unknown()),
     provenance: z.record(z.string(), z.unknown()),
+    kcId: z.string().uuid().nullish(),
+    strategy: z.string().max(16).nullish(),
   });
 
   /**
@@ -491,11 +525,100 @@ function internalRouter(): Router {
         lessonId: null,
         segment,
         answer: (segment.answer as Record<string, unknown> | undefined) ?? null,
-        provenance: { ...parsed.data.provenance, tier: 3, verification: verification.failures },
+        provenance: stampPedagogy(
+          { ...parsed.data.provenance, tier: 3, verification: verification.failures },
+          parsed.data,
+        ),
       },
       session.tier,
       verification.keyVerified,
     );
+  });
+
+  /**
+   * v3 voice-check: a spoken answer, verified DETERMINISTICALLY (/ORACLE.md).
+   *
+   * Oracle calls this when the learner's turn plausibly contains an answer to
+   * the open segment. Core normalizes the utterance to a number, runs the REAL
+   * grader against the stored key, and records the evidence — no XP (XP stays
+   * on the graded widget path), no model judgment anywhere.
+   *
+   * `recognized: false` is a first-class answer meaning "no number could be
+   * read out of this", and the caller MUST treat it as a plain conversation
+   * turn. Child speech through STT is noisy; unparseable is never wrong.
+   */
+  const VoiceCheckBody = z
+    .object({
+      sessionId: z.string().uuid(),
+      utterance: z.string().min(1).max(500),
+      strategy: z.string().max(16).nullish(),
+    })
+    .strict();
+
+  /** Types whose submission is a single numeric value — the voice-checkable set. */
+  const VOICE_CHECK_TYPES = new Set(['number_input', 'count_objects', 'estimate_slider', 'money_tray']);
+
+  router.post('/segments/:segmentId/voice-check', async (req, res) => {
+    const segmentId = z.string().uuid().safeParse(req.params.segmentId);
+    if (!segmentId.success) return fail(res, 400, VALIDATION, 'Invalid segment id');
+    const parsed = VoiceCheckBody.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid body');
+
+    const row = await getTutorSegment(segmentId.data);
+    if (!row) return fail(res, 404, NOT_FOUND, 'No such segment');
+    if (row.session_id !== parsed.data.sessionId) return fail(res, 403, 'FORBIDDEN', 'Segment is not in this session');
+
+    const session = await getTutorSession(row.session_id);
+    if (!session) return fail(res, 404, NOT_FOUND, 'No such session');
+    if (session.ended_at !== null) return fail(res, 409, 'SESSION_CLOSED', 'This session has already ended');
+
+    const segment = row.payload as unknown as SegmentBase;
+    if (!VOICE_CHECK_TYPES.has(segment.type) || row.answer === null) {
+      return ok(res, { checkable: false, recognized: false });
+    }
+
+    const value = normalizeSpokenNumber(parsed.data.utterance, session.locale);
+    if (value === null) return ok(res, { checkable: true, recognized: false });
+
+    const withKey: SegmentBase = { ...segment, answer: row.answer ?? undefined };
+    const grader = GRADERS[segment.type];
+    if (!grader) return ok(res, { checkable: false, recognized: false });
+
+    let outcome: { score: number };
+    try {
+      outcome = grader(withKey, { value });
+    } catch {
+      return ok(res, { checkable: true, recognized: false });
+    }
+    const score = Math.max(0, Math.min(100, Math.round(outcome.score)));
+
+    const provenance = row.provenance ?? {};
+    const kcId = typeof provenance.kc_id === 'string' ? provenance.kc_id : null;
+    let pedagogy: AttemptOutcome | null = null;
+    if (kcId && getConfig().TUTOR_V3_BRAIN) {
+      pedagogy = await recordAttempt({
+        userId: session.user_id,
+        sessionId: session.id,
+        segmentId: row.id,
+        kcId,
+        segment: withKey,
+        submission: { value },
+        score,
+        attemptNumber: Math.max(1, row.attempts + 1),
+        source: 'voice_check',
+        strategy: parsed.data.strategy ?? null,
+      });
+    }
+
+    return ok(res, {
+      checkable: true,
+      recognized: true,
+      value,
+      correct: score >= PASS_THRESHOLD,
+      score,
+      misconceptionCode: pedagogy?.misconceptionCode ?? null,
+      pKnownAfter: pedagogy?.pKnownAfter ?? null,
+    });
   });
 
   return router;
@@ -1046,11 +1169,52 @@ export function tutorRouter(): Router {
     if (!recorded) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the result');
     if (xp > 0) await addSessionXp(session.id, xp);
 
+    /*
+     * THE V3 EVIDENCE JOIN. When the segment was served for a knowledge
+     * component (provenance.kc_id, stamped at serve time), this grade is also
+     * pedagogy: misconception diagnosis, BKT update, FSRS review — all on the
+     * grade clock, never the voice turn. Best-effort AFTER the grade landed:
+     * a pedagogy failure is logged loudly inside recordAttempt and costs
+     * adaptation quality, never the learner's score or XP.
+     *
+     * The signed `echo` rides back through the client into Oracle's
+     * segment_graded frame — that signature is what stops a client from
+     * fabricating pedagogy events (it could already fabricate its own score;
+     * it must not be able to steer the strategy machine too).
+     */
+    const provenance = row.provenance ?? {};
+    const kcId = typeof provenance.kc_id === 'string' ? provenance.kc_id : null;
+    let pedagogy: AttemptOutcome | null = null;
+    if (kcId && getConfig().TUTOR_V3_BRAIN) {
+      pedagogy = await recordAttempt({
+        userId: user.id,
+        sessionId: row.session_id,
+        segmentId: row.id,
+        kcId,
+        segment: withKey,
+        submission: parsed.data.answer,
+        score,
+        attemptNumber: parsed.data.attemptNumber,
+        source: 'segment_grade',
+        strategy: typeof provenance.strategy === 'string' ? provenance.strategy : null,
+      });
+    }
+
     return ok(res, {
       verdict,
       xpAwarded: xp,
       scoresXp: row.key_verified,
       dailyXpCap: MAX_TUTOR_XP_PER_DAY,
+      pedagogy: pedagogy
+        ? {
+            kcId: pedagogy.kcId,
+            correct: pedagogy.correct,
+            pKnownAfter: pedagogy.pKnownAfter,
+            misconceptionCode: pedagogy.misconceptionCode,
+            reviewDueAt: pedagogy.reviewDueAt,
+            echo: pedagogy.echo,
+          }
+        : null,
     });
   });
 

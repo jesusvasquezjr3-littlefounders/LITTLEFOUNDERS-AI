@@ -69,7 +69,7 @@ export function normalizeSpokenNumber(utterance: string, locale: string): number
 
   // 1) Digit forms: "3.50", "3,50", "42", and "4 2" spoken digit-by-digit.
   const digitMatch = /(\d+(?:[.,]\d{1,2})?)/.exec(cleaned);
-  if (digitMatch) {
+  if (digitMatch?.[1] !== undefined) {
     const raw = digitMatch[1].replace(',', '.');
     const value = Number(raw);
     if (Number.isFinite(value)) {
@@ -81,7 +81,7 @@ export function normalizeSpokenNumber(utterance: string, locale: string): number
 
   // 2) Word forms — a small state machine. Numbers accumulate into `acc`;
   // a currency word banks the accumulated number as whole units or cents.
-  const units = UNITS[locale] ?? UNITS['en-US'];
+  const units: Record<string, number> = UNITS[locale] ?? UNITS['en-US'] ?? {};
   const words = cleaned.split(' ');
 
   let acc = 0;

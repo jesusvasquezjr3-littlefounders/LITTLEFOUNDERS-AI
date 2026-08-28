@@ -173,6 +173,7 @@ the only way it learns anything about a learner.
 | GET | `/consent/:userId` | The mid-session consent re-check. Answers `{active}` and nothing else. Distinct from the public `GET /consent/:kidUserId`, which is guardian-authenticated and also reports the policy |
 | POST | `/segments` | Ladder tiers 1 and 2 (/ORACLE.md §7). A miss returns `needsGeneration` rather than an error, because a miss is the normal state — tier 3 is Oracle's to author and Core's to verify |
 | POST | `/segments/verify` | Re-executes an Oracle-authored segment against the REAL graders, which live here. The service that invented a segment is never the service that certifies it; only a `key_verified` segment can pay XP |
+| POST | `/segments/:segmentId/voice-check` | v3: a spoken answer, verified DETERMINISTICALLY. Core normalizes the utterance to a number (three locales), runs the real grader against the stored key, records the evidence (BKT + FSRS + misconception, no XP). `recognized: false` means "no number could be read" and the caller treats it as a plain conversation turn — unparseable is never wrong (§1.14) |
 | POST | `/retention/purge` | The nightly 90-day sweep (`.github/workflows/tutor-retention.yml`). Deletes the rows AND the audio in Depot, and answers 502 rather than success when the database cannot be reached — an unreachable database is how a 90-day promise quietly becomes forever (§1.14) |
 
 

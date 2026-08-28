@@ -54,6 +54,17 @@ const Env = z.object({
   // review (/ORACLE.md §7.3). Zero is a valid deployment choice and a bad one.
   TUTOR_LIVE_REVIEW_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(0.15),
 
+  // The Tutor v3 pedagogical brain (KC graph + BKT + FSRS + session plan,
+  // migration 0052). On by default WITH graceful degradation: while 0052 is
+  // unapplied or unseeded every read comes back null/empty, the session
+  // context simply omits the pedagogy fields, and Oracle behaves exactly as
+  // v2. The switch exists to turn the brain off deliberately, not to make
+  // deploys safe — the degradation does that.
+  TUTOR_V3_BRAIN: z
+    .string()
+    .default('true')
+    .transform((v) => v !== 'false' && v !== '0' && v !== 'off'),
+
   // Redis para Rate Limiting distribuido
   REDIS_URL: z.string().url().default('redis://localhost:6379'),
 });
