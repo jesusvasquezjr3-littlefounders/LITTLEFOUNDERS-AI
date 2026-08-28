@@ -1,3 +1,7 @@
+-- @phase: expand
+--   Adds a nullable jsonb column to a table that already exists. Nothing is
+--   dropped, narrowed or rewritten, so it is safe to apply before or after
+--   the code that starts writing to it.
 -- 0051_tutor_session_summary.sql
 -- (Authored as 0050 on feat/tutor-v2; renumbered on rebase — a concurrent
 -- session shipped 0050_audience_insights.sql to main first.)
