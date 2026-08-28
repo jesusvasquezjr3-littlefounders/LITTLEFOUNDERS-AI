@@ -55,6 +55,15 @@ function metricRows(report: PlausibleReportData): MetricRow[] {
   ];
 }
 
+/*
+ * Stated wherever the gap is non-zero, in every format. The number alone
+ * invites the wrong reading — an operator seeing "signups observed: 0" beside
+ * "accounts created: 31" needs to be told which of the two is the measurement
+ * and which is the instrument.
+ */
+const FIRST_PARTY_GAP_NOTE =
+  'Accounts created is the server-side record and is authoritative. The client signup funnel only fires for visitors who accepted optional cookies and kept the tab open, so treat its count as a floor.';
+
 const PROVENANCE_NOTE =
   'Figures cover consented public marketing traffic only. Internal traffic exclusions apply from the moment each was added and do not change earlier data.';
 
@@ -155,6 +164,36 @@ export function renderAnalyticsReportCsv(report: PlausibleReportData): string {
       String(report.previous.bounceRate),
       String(report.previous.visitDuration),
     ]);
+  }
+
+  /*
+   * OUR OWN figures, as their own section.
+   *
+   * Emitted as `firstparty` rows rather than folded into `summary`, because
+   * they are not the same measurement: `summary` is Plausible (anonymous,
+   * consented, marketing pages only) and this is every session the product
+   * recorded, with the role attached. Adding them together would produce a
+   * number that is true of nothing.
+   *
+   * When the block is absent it says so explicitly — a reader must be able to
+   * tell "we could not read this" from "these were zero".
+   */
+  if (report.firstParty) {
+    const fp = report.firstParty;
+    const row = (key: string, value: string) => lines.push(['firstparty', key, value, '', '', '', '']);
+    row('sessions_anonymous', String(fp.sessions.anonymous));
+    row('sessions_registered', String(fp.sessions.registered));
+    row('sessions_staff', String(fp.sessions.staff));
+    row('external_share', fp.externalShare === null ? 'no data' : fp.externalShare.toFixed(4));
+    row('accounts_created', String(fp.accountsCreated));
+    row('signups_observed_by_client_funnel', String(fp.signupObserved));
+    row('accounts_unobserved', String(fp.unobserved));
+    row('anonymous_visitors', String(fp.anonymousVisitors));
+    row('anonymous_converted', String(fp.anonymousConverted));
+    row('conversion_rate', fp.conversionRate === null ? 'no data' : fp.conversionRate.toFixed(4));
+    if (fp.unobserved > 0) row('note', FIRST_PARTY_GAP_NOTE);
+  } else {
+    lines.push(['firstparty', 'status', 'unavailable — first-party views could not be read; this is NOT zero', '', '', '', '']);
   }
 
   for (const point of report.timeseries) {
@@ -276,6 +315,45 @@ export async function renderAnalyticsReportXlsx(report: PlausibleReportData): Pr
     row += 1;
   }
   autoWidth(summary, [26, 18, 18, 14]);
+
+  /*
+   * ── Our own audience ─────────────────────────────────────────────────────
+   *
+   * Its own sheet, before the trend, because it answers the question a reader
+   * opens the file with — who was here — and because it must not be mistaken
+   * for the Plausible figures on the Summary sheet. Those cover anonymous,
+   * consented visitors on marketing pages; these cover every session the
+   * product recorded, with the role attached. They are not addable.
+   */
+  const own = workbook.addWorksheet('Audience (first-party)', { views: [{ showGridLines: false }] });
+  headerRow(own, 1, ['Measure', 'Value', 'Notes']);
+  if (report.firstParty) {
+    const fp = report.firstParty;
+    const rows: [string, string | number, string][] = [
+      ['Anonymous sessions', fp.sessions.anonymous, 'Visitors with no account'],
+      ['Registered sessions', fp.sessions.registered, 'Signed-in, non-staff'],
+      ['Staff sessions', fp.sessions.staff, 'Shown, not filtered — usually most of the volume pre-launch'],
+      ['Share that was not staff', fp.externalShare === null ? 'no data' : `${(fp.externalShare * 100).toFixed(1)}%`, fp.externalShare === null ? 'No sessions in this window' : ''],
+      ['Accounts created', fp.accountsCreated, 'Server-side record — authoritative'],
+      ['Signups the client funnel saw', fp.signupObserved, 'Consent-gated; a floor, not a count'],
+      ['Accounts unobserved', fp.unobserved, fp.unobserved > 0 ? FIRST_PARTY_GAP_NOTE : ''],
+      ['Anonymous visitors', fp.anonymousVisitors, 'Arrived without an account'],
+      ['Became accounts', fp.anonymousConverted, ''],
+      ['Conversion', fp.conversionRate === null ? 'no data' : `${(fp.conversionRate * 100).toFixed(1)}%`, fp.conversionRate === null ? 'Nobody arrived — not 0%' : ''],
+    ];
+    rows.forEach(([measure, value, note], index) => {
+      const row = own.getRow(index + 2);
+      row.values = [measure, value, note];
+      row.getCell(3).alignment = { wrapText: true, vertical: 'top' };
+      if (note) row.height = 30;
+    });
+  } else {
+    const row = own.getRow(2);
+    row.values = ['Unavailable', '', 'The first-party views could not be read when this report was generated. This is NOT zero.'];
+    row.getCell(3).alignment = { wrapText: true, vertical: 'top' };
+    row.height = 30;
+  }
+  autoWidth(own, [30, 16, 62]);
 
   // ── Daily trend ───────────────────────────────────────────────────────────
   const trend = workbook.addWorksheet('Daily trend', { views: [{ state: 'frozen', ySplit: 1 }] });

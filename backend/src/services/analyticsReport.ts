@@ -21,6 +21,11 @@ export const REPORT_LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
 export type ReportLocale = (typeof REPORT_LOCALES)[number];
 
 interface ReportStrings {
+  /* Our own audience block — see drawOwnAudience. */
+  ownTitle: string; ownSub: string;
+  ownAnon: string; ownReg: string; ownStaff: string; ownExternal: string;
+  ownAccounts: string; ownObserved: string; ownVisitors: string; ownConverted: string;
+  ownNoData: string; ownUnavailable: string; ownGap: string;
   title: string;
   generated: string;
   source: string;
@@ -73,6 +78,11 @@ interface ReportStrings {
 
 const STRINGS: Record<ReportLocale, ReportStrings> = {
   'en-US': {
+    ownTitle: 'Our own audience', ownSub: 'Every session the product recorded — not only consented marketing visitors',
+    ownAnon: 'Anonymous sessions', ownReg: 'Registered sessions', ownStaff: 'Staff sessions', ownExternal: 'Not staff',
+    ownAccounts: 'Accounts created', ownObserved: 'Signups the funnel saw', ownVisitors: 'Anonymous visitors', ownConverted: 'Became accounts',
+    ownNoData: 'no data', ownUnavailable: 'The first-party views could not be read for this report. This is not zero.',
+    ownGap: 'Accounts created is the server-side record and is authoritative. The client signup funnel only fires for visitors who accepted optional cookies, so treat its count as a floor.',
     title: 'Analytics Report', generated: 'Generated', source: 'Source: Plausible via Pulse',
     visitors: 'Visitors', pageviews: 'Pageviews', bounceRate: 'Bounce rate', avgDuration: 'Avg visit duration',
     noComparison: 'no comparison', vsPrevious: 'vs previous', rank: '#', label: 'LABEL',
@@ -91,6 +101,11 @@ const STRINGS: Record<ReportLocale, ReportStrings> = {
     windowMismatch: (asked, answered) => `Window mismatch: requested ${asked}, but the analytics API answered for ${answered}. Read every figure as describing the second window and report this.`,
   },
   'es-MX': {
+    ownTitle: 'Nuestra propia audiencia', ownSub: 'Cada sesión que el producto registró — no sólo visitantes de marketing con consentimiento',
+    ownAnon: 'Sesiones anónimas', ownReg: 'Sesiones registradas', ownStaff: 'Sesiones del staff', ownExternal: 'Que no es staff',
+    ownAccounts: 'Cuentas creadas', ownObserved: 'Registros que vio el embudo', ownVisitors: 'Visitantes anónimos', ownConverted: 'Se hicieron cuenta',
+    ownNoData: 'sin datos', ownUnavailable: 'No se pudieron leer las vistas de primera parte para este reporte. Esto no es cero.',
+    ownGap: 'Cuentas creadas es el registro del servidor y es la autoridad. El embudo del navegador sólo dispara para quien aceptó cookies opcionales, así que su cifra es un piso.',
     title: 'Reporte de analítica', generated: 'Generado', source: 'Fuente: Plausible vía Pulse',
     visitors: 'Visitantes', pageviews: 'Páginas vistas', bounceRate: 'Tasa de rebote', avgDuration: 'Duración media',
     noComparison: 'sin comparación', vsPrevious: 'vs anterior', rank: '#', label: 'ETIQUETA',
@@ -109,6 +124,11 @@ const STRINGS: Record<ReportLocale, ReportStrings> = {
     windowMismatch: (asked, answered) => `Ventana discordante: se solicitó ${asked}, pero la API de analítica respondió por ${answered}. Lee cada cifra como si describiera la segunda ventana y reporta esto.`,
   },
   'pt-BR': {
+    ownTitle: 'Nosso próprio público', ownSub: 'Cada sessão que o produto registrou — não apenas visitantes de marketing com consentimento',
+    ownAnon: 'Sessões anônimas', ownReg: 'Sessões registradas', ownStaff: 'Sessões da equipe', ownExternal: 'Que não é equipe',
+    ownAccounts: 'Contas criadas', ownObserved: 'Cadastros que o funil viu', ownVisitors: 'Visitantes anônimos', ownConverted: 'Viraram contas',
+    ownNoData: 'sem dados', ownUnavailable: 'Não foi possível ler as visões de primeira parte para este relatório. Isto não é zero.',
+    ownGap: 'Contas criadas é o registro do servidor e é a autoridade. O funil do navegador só dispara para quem aceitou cookies opcionais, então seu número é um piso.',
     title: 'Relatório de análise', generated: 'Gerado', source: 'Fonte: Plausible via Pulse',
     visitors: 'Visitantes', pageviews: 'Visualizações', bounceRate: 'Taxa de rejeição', avgDuration: 'Duração média',
     noComparison: 'sem comparação', vsPrevious: 'vs anterior', rank: '#', label: 'RÓTULO',
@@ -587,6 +607,66 @@ function drawBreakdownSection(doc: PDFKit.PDFDocument, ctx: ReportContext, title
  * review on 2026-08-25, both of which named tracking failures that never
  * happened (WALKTHROUGH, 2026-08-27).
  */
+/*
+ * Our own audience, on the page that leaves the building.
+ *
+ * The rest of this report is Plausible: anonymous, consented visitors on
+ * marketing pages. That is a narrower measurement than any reader assumes, and
+ * a PDF is exactly where an unstated narrowing does its damage — it gets
+ * forwarded, quoted and acted on months later with no chance to ask.
+ *
+ * So the first-party figures travel with it, and the gap between accounts
+ * created and signups the funnel observed is printed in words rather than left
+ * as two numbers a reader has to reconcile.
+ */
+function drawOwnAudience(doc: PDFKit.PDFDocument, ctx: ReportContext, data: PlausibleReportData): void {
+  const fp = data.firstParty;
+  ensureRoom(doc, 150);
+  drawSectionTitle(doc, ctx.s.ownTitle, ctx.s.ownSub);
+
+  if (!fp) {
+    // Unread is not zero, and the report says which one this is.
+    doc.font('Helvetica').fontSize(9).fillColor(MUTED);
+    doc.text(toLatin1(ctx.s.ownUnavailable), doc.page.margins.left, doc.y, { width: contentWidth(doc) });
+    doc.moveDown(1);
+    return;
+  }
+
+  const pctOf = (v: number | null) => (v === null ? ctx.s.ownNoData : `${(v * 100).toFixed(1)}%`);
+  const cells: [string, string][] = [
+    [ctx.s.ownAnon, ctx.int.format(fp.sessions.anonymous)],
+    [ctx.s.ownReg, ctx.int.format(fp.sessions.registered)],
+    [ctx.s.ownStaff, ctx.int.format(fp.sessions.staff)],
+    [ctx.s.ownExternal, pctOf(fp.externalShare)],
+    [ctx.s.ownAccounts, ctx.int.format(fp.accountsCreated)],
+    [ctx.s.ownObserved, ctx.int.format(fp.signupObserved)],
+    [ctx.s.ownVisitors, ctx.int.format(fp.anonymousVisitors)],
+    [ctx.s.ownConverted, ctx.int.format(fp.anonymousConverted)],
+  ];
+
+  const width = contentWidth(doc);
+  const perRow = 4;
+  const cellW = width / perRow;
+  const top = doc.y;
+  cells.forEach(([label, value], index) => {
+    const col = index % perRow;
+    const row = Math.floor(index / perRow);
+    const x = doc.page.margins.left + col * cellW;
+    const y = top + row * 46;
+    doc.font('Helvetica-Bold').fontSize(15).fillColor(INK);
+    doc.text(toLatin1(value), x, y, { width: cellW - 8 });
+    doc.font('Helvetica').fontSize(8).fillColor(MUTED);
+    doc.text(toLatin1(label), x, y + 19, { width: cellW - 8 });
+  });
+  doc.y = top + Math.ceil(cells.length / perRow) * 46 + 4;
+
+  if (fp.unobserved > 0) {
+    doc.font('Helvetica').fontSize(8).fillColor(MUTED);
+    doc.text(toLatin1(ctx.s.ownGap), doc.page.margins.left, doc.y, { width });
+    doc.moveDown(0.8);
+  }
+}
+
 function drawCaveats(doc: PDFKit.PDFDocument, ctx: ReportContext, data: PlausibleReportData): void {
   const lines: { text: string; warn: boolean }[] = [];
 
@@ -681,6 +761,7 @@ export function renderAnalyticsReportPdf(
       drawKpiBlock(doc, ctx, data);
       drawTrendChart(doc, ctx, data);
       drawSnapshotBars(doc, ctx, data);
+      drawOwnAudience(doc, ctx, data);
       for (const [dimension, rows] of Object.entries(data.breakdowns) as [PlausibleDimensionKey, PlausibleBreakdownRow[]][]) {
         drawBreakdownSection(doc, ctx, ctx.s.dimensions[dimension], rows);
       }

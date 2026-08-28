@@ -28,6 +28,7 @@ import { ExclusionsCard } from './analytics/ExclusionsCard';
 import { ExclusionCoverageNote } from './analytics/ExclusionCoverageNote';
 import { PeriodPicker } from './analytics/PeriodPicker';
 import { AudienceSection } from './analytics/AudienceSection';
+import { ProductUsageSection } from './analytics/ProductUsageSection';
 import { AnalyticsGeoMap } from './analytics/AnalyticsGeoMap';
 import { AnalyticsTrendChart } from './analytics/AnalyticsTrendChart';
 
@@ -241,6 +242,13 @@ export function AnalyticsHealthPage() {
         thing that separates staff from real people retroactively.
       */}
       <AudienceSection days={audienceDays} />
+
+      {/*
+        What the product is used FOR, from three endpoints Core has served all
+        along that no screen had ever opened. Kept below Audience because "who
+        was here" has to be settled before "what did they do" means anything.
+      */}
+      <ProductUsageSection days={audienceDays} />
 
       {/* ── Web analytics (Plausible) ─────────────────── */}
       <section aria-labelledby="admin-web-analytics" className="flex flex-col gap-4">

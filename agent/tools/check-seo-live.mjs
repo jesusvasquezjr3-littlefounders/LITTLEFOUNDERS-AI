@@ -163,6 +163,13 @@ await checkFile('/sitemap.xml', { type: 'xml', must: site.indexablePages().map((
 await checkFile('/llms.txt', { type: 'text/plain', must: ['# LittleFounders'] });
 await checkFile('/site.webmanifest', { must: ['"name"'] });
 await checkShareCard();
+/*
+ * The IndexNow key file. Possession of it at this exact path is the ENTIRE
+ * authentication of the protocol — if it 404s, every submission is refused and
+ * the only symptom is that Bing keeps crawling on its own schedule, which
+ * looks exactly like IndexNow not helping much.
+ */
+await checkFile(`/${indexnow.INDEXNOW_KEY}.txt`, { type: 'text/plain', must: [indexnow.INDEXNOW_KEY] });
 await checkFallbackIsNoindex();
 
 console.log(notes.join('\n'));

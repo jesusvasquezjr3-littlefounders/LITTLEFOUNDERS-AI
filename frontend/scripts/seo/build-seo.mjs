@@ -32,6 +32,7 @@ import {
   SEARCH_CRAWLERS, AI_CRAWLERS, DISALLOWED_PREFIXES,
   absolute, indexablePages, metaFor,
 } from './site.mjs';
+import { writeKeyFile } from './indexnow.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FRONTEND = resolve(HERE, '../..');
@@ -488,6 +489,13 @@ function main() {
     written += 1;
   }
 
+  /*
+   * The IndexNow key file. Written by the build rather than kept in public/ so
+   * it can never be deployed without the key the submitter actually sends —
+   * the two come from the same module, so they cannot drift.
+   */
+  const keyFile = writeKeyFile(DIST);
+
   writeFileSync(join(DIST, 'site.webmanifest'), renderManifest());
   writeFileSync(join(DIST, 'robots.txt'), renderRobots());
   writeFileSync(join(DIST, 'sitemap.xml'), renderSitemap());
@@ -507,7 +515,7 @@ function main() {
 
   console.log(
     `seo: ${written} page(s) prerendered (${indexablePages().length} indexable), ` +
-      `robots.txt, sitemap.xml, llms.txt, llms-full.txt, site.webmanifest, app-shell.html`,
+      `robots.txt, sitemap.xml, llms.txt, llms-full.txt, site.webmanifest, app-shell.html, ${keyFile}`,
   );
 }
 

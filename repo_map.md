@@ -18795,12 +18795,12 @@ import {
   flushInsights,
   rebaseSessionStart,
   resetInsights,
+  setInsightsContext,
   startAnonymousTracking,
   trackInsight,
 } from './insights';
 
 vi.mock('./api', () => ({
-  BASE_URL: 'http://test-backend',
 ```
 
 ### frontend/src/lib/insights.ts
@@ -18888,6 +18888,7 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undef
 ```
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import {
   announceSessionStart,
@@ -18897,10 +18898,9 @@ import {
   flushInsightsOnHide,
   rebaseSessionStart,
   resetInsights,
+  setInsightsContext,
   trackInsight,
   type InsightRouteClass,
-} from './insights';
-
 ```
 
 ### frontend/src/lib/useMarketingBeacon.ts
@@ -19778,6 +19778,7 @@ import type { AudienceSeriesPoint } from './analyticsShared';
 
 ```
 import { AudienceChart } from './AudienceChart';
+import { INSTRUMENTED_EVENTS } from './usageShared';
 import type { AudienceSeriesPoint } from './analyticsShared';
 
 /*
@@ -19791,7 +19792,6 @@ import type { AudienceSeriesPoint } from './analyticsShared';
  *
  * THE FIXTURE IS REAL PRODUCTION DATA, read on 2026-08-28. That matters more
  * than it looks: invented numbers are always tidy, and the shape this chart
- * has to survive is the real one — a staff bar an order of magnitude taller
 ```
 
 ### frontend/src/routes/admin/analytics/AudienceSection.tsx
@@ -20012,6 +20012,26 @@ import { PERIODS, todayIso, type Period, type PeriodSelection } from './analytic
  *
  * A custom range only takes effect once BOTH ends are set: applying a
  * half-finished range would silently show a window nobody chose.
+```
+
+### frontend/src/routes/admin/analytics/ProductUsageSection.tsx
+
+```
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Badge, Card, Icon } from '@/components/ui';
+import { useAdminData } from '../adminShared';
+import { bandOf, INSTRUMENTED_EVENTS } from './usageShared';
+import type { ActivityData, AdoptionData, SessionDepthData } from './analyticsShared';
+
+/*
+ * What the product is actually used FOR, from three endpoints Core has served
+ * all along and no screen had ever opened.
+ *
+ * On 2026-08-28 nine `/admin/insights/*` routes had no consumer anywhere in
+ * the app. Three of them answer questions the dataintel console does not:
+ * which surfaces get reached, which roles reach them, and how deep a session
+ * goes. The rest were duplicated by the warehouse and are left alone rather
 ```
 
 ### frontend/src/routes/admin/analytics/ReportExportCard.test.tsx
@@ -23731,6 +23751,46 @@ export const REGIONS: RegionShape[] = [{"code":"ZW-BU","name":"Bulawayo","d":"M5
  * a country listed here, so it never promises detail it cannot draw.
  */
 export const COUNTRIES_WITH_REGIONS: ReadonlySet<string> = new Set(["AD","AE","AF","AG","AI","AL","AM","AO","AQ","AR","AS","AT","AU","AW","AX","AZ","BA","BB","BD","BE","BF","BG","BH","BI","BJ","BL","BM","BN","BO","BR","BS","BT","BW","BY","BZ","CA","CD","CF","CG","CH","CI","CK","CL","CM","CN","CO","CR","CU","CV","CW","CY","CZ","DE","DJ","DK","DM","DO","DZ","EC","EE","EG","EH","ER","ES","ET","FI","FJ","FK","FM","FO","FR","GA","GB","GD","GE","GG","GH","GI","GL","GM","GN","GQ","GR","GS","GT","GU","GW","GY","HK","HM","HN","HR","HT","HU","ID","IE","IL","IM","IN","IO","IQ","IR","IS","IT","JE","JM","JO","JP","KE","KG","KH","KI","KM","KN","KP","KR","KW","KY","KZ","LA","LB","LC","LI","LK","LR","LS","LT","LU","LV","LY","MA","MC","MD","ME","MF","MG","MH","MK","ML","MM","MN","MO","MP","MR","MS","MT","MU","MV","MW","MX","MY","MZ","NA","NC","NE","NF","NG","NI","NL","NO","NP","NR","NU","NZ","OM","PA","PE","PF","PG","PH","PK","PL","PM","PN","PS","PT","PW","PY","QA","RO","RS","RU","RW","SA","SB","SC","SD","SE","SG","SH","SI","SK","SL","SM","SN","SO","SR","SS","ST","SV","SY","SZ","TC","TD","TF","TG","TH","TJ","TK","TL","TM","TN","TO","TR","TT","TV","TW","TZ","UA","UG","UM","US","UY","UZ","VA","VC","VE","VG","VI","VN","VU","WF","WS","XK","YE","ZA","ZM","ZW"]);
+```
+
+### frontend/src/routes/admin/analytics/usageShared.test.ts
+
+```
+import { readFileSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { INSTRUMENTED_EVENTS, bandOf } from './usageShared';
+
+/*
+ * The instrumentation card's whole value is that it can name an event that has
+ * NEVER fired — which requires a list of what we expected, held apart from the
+ * data. A list held apart from the data is a list that can drift, and a short
+ * list makes the card silently clean: `signup_complete` would simply not
+ * appear, and the absence it exists to surface would be invisible again.
+ *
+ * So the copy is checked against the schema it copies, and against the
+ * server's own banding, rather than trusted.
+ */
+```
+
+### frontend/src/routes/admin/analytics/usageShared.ts
+
+```
+/*
+ * The closed event vocabulary, mirrored from the database CHECK constraint.
+ *
+ * WHY A COPY RATHER THAN A FETCH
+ *
+ * The point of this list is to say which members have NEVER fired, and a list
+ * derived from the data can only ever contain events that fired at least once.
+ * An instrument that reports absence has to know what it expected to see; if
+ * this came from the same query as the counts, `signup_complete` would simply
+ * not appear and the card would look clean.
+ *
+ * The cost is that this drifts if the constraint changes. That is what
+ * `usageShared.test.ts` is for: it reads `database/migrations/*.sql`, finds the
+ * LAST `learning_events_event_check`, and fails if the two disagree — so
+ * adding an event to the schema and forgetting this list is a red test, not a
 ```
 
 ### frontend/src/routes/admin/analytics/worldGeography.ts

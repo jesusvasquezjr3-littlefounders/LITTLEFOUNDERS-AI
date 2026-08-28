@@ -482,7 +482,44 @@ export function adminRouter(): Router {
       fail(res, 502, UPSTREAM_FAILED, 'Plausible did not answer');
       return null;
     }
-    return report;
+
+    /*
+     * Attach OUR OWN measurement of the same window.
+     *
+     * Everything above comes from Plausible, which sees only anonymous,
+     * consented visitors on marketing pages — so an export built from it alone
+     * is systematically narrower than a reader assumes. Read in parallel and
+     * degraded to `null` rather than to zeros: a report that could not read the
+     * first-party views must say so, because zeros here would assert that
+     * nobody visited and nobody registered, which is the exact confusion this
+     * whole surface exists to end.
+     */
+    const days = Math.max(
+      1,
+      Math.min(365, Math.round((Date.parse(`${report.to}T00:00:00Z`) - Date.parse(`${report.from}T00:00:00Z`)) / 86_400_000) + 1),
+    );
+    const [audience, integrity, acquisition] = await Promise.all([
+      readAudience(days),
+      readSignupFunnelIntegrity(days),
+      readAnonAcquisition(days),
+    ]);
+
+    return {
+      ...report,
+      firstParty:
+        audience && integrity && acquisition
+          ? {
+              sessions: audience.totals,
+              externalShare: audience.externalShare,
+              accountsCreated: integrity.accountsCreated,
+              signupObserved: integrity.signupComplete,
+              unobserved: integrity.unobserved,
+              anonymousVisitors: acquisition.visitors,
+              anonymousConverted: acquisition.converted,
+              conversionRate: acquisition.conversionRate,
+            }
+          : null,
+    };
   }
 
   /** Filename that says what is inside it: audience, real dates, generation day. */

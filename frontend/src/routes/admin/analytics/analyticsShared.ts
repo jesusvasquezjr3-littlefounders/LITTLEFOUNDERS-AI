@@ -417,6 +417,65 @@ export interface RegistrationsData {
   total: number;
 }
 
+
+/*
+ * ── Product usage (first-party) ────────────────────────────────────────────
+ *
+ * Shapes for three endpoints Core has served since the insights work and that
+ * no screen had ever consumed: `/insights/activity`, `/insights/adoption` and
+ * `/insights/sessions`. Nine such endpoints existed on 2026-08-28; these are
+ * the three whose answers are not already covered by the dataintel console.
+ */
+export interface ActivityRow {
+  day: string;
+  role: string;
+  event: string;
+  route_class: string | null;
+  device: string | null;
+  locale: string | null;
+  events: number;
+  users: number;
+  sessions: number;
+  total_value: number | null;
+}
+
+export interface ActivityData {
+  days: number;
+  entries: ActivityRow[];
+  users: { day: string; role: string; users: number }[];
+}
+
+export interface AdoptionRow {
+  role: string;
+  route_class: string | null;
+  events: number;
+  users: number;
+  sessions: number;
+  first_at: string | null;
+  last_at: string | null;
+}
+
+export interface AdoptionData {
+  entries: AdoptionRow[];
+}
+
+export interface SessionDepthRow {
+  session_id: string;
+  started_at: string;
+  role: string;
+  device: string | null;
+  locale: string | null;
+  events: number;
+  surfaces: number;
+  lessons_started: number;
+  visible_seconds: number | null;
+  reported_seconds: number | null;
+}
+
+export interface SessionDepthData {
+  entries: SessionDepthRow[];
+}
+
 /**
  * Base URL for the raw (non-envelope) export routes: report.pdf/.csv/.xlsx
  * need a manual fetch with the Bearer header, which a plain <a href> cannot

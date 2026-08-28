@@ -1,4 +1,5 @@
 import { AudienceChart } from './AudienceChart';
+import { INSTRUMENTED_EVENTS } from './usageShared';
 import type { AudienceSeriesPoint } from './analyticsShared';
 
 /*
@@ -70,8 +71,28 @@ export default function AudienceLab() {
         <AudienceChart series={REAL_SERIES} />
       </section>
 
+      {/*
+        The instrumentation card's list, rendered from the same constant the
+        real card uses. Its whole job is to make a SILENT event visible, so the
+        fixture deliberately shows the production truth: signup_submit and
+        signup_complete have never fired across 31 real accounts.
+      */}
+      <section className="flex flex-col gap-3" aria-label="Instrumentation health">
+        <h2 className="lf-title text-content">2 — Instrumentation health</h2>
+        <p className="lf-caption text-content-muted">
+          Of {INSTRUMENTED_EVENTS.length} instrumented events, these have never fired in production.
+        </p>
+        <ul className="flex flex-wrap gap-1.5">
+          {['signup_submit', 'signup_complete', 'lesson_complete', 'task_view', 'consent_grant'].map((e) => (
+            <li key={e}>
+              <span className="lf-caption rounded-md bg-surface-sunken px-2 py-0.5 text-content-muted">{e}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       <section className="flex flex-col gap-3" aria-label="Empty window">
-        <h2 className="lf-title text-content">2 — An empty window</h2>
+        <h2 className="lf-title text-content">3 — An empty window</h2>
         <p className="lf-caption text-content-muted">
           Must read as a measured zero, never as a failed load.
         </p>
