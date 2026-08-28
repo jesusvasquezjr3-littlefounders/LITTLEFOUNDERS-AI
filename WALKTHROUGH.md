@@ -4609,10 +4609,53 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 **Course platform live end-to-end (2026-07-12, spec `/COURSE_ENGINE.md`):** Vault 0007 replaces the provisional 0002 content domain with the REAL hierarchy — `courses→adventures→sagas→topics→lessons→lesson_documents(document + answer_keys)` + `lesson_segment_attempts` + `lesson_progress`; `lesson_documents` deliberately has ZERO client RLS policies (row-level RLS can't hide the answer_keys column — Core reads with service role and serves stripped documents); reset-from-zero ×2 verified, types regenerated, demo slice seeded (financial-education → 1 adventure → 2 sagas → 4 topics → 8 lessons ×3 locales). Core owns the learn API (`/api/v1/learn/*`): course tree with the SINGLE unlock-rule implementation (global lesson order; current = first non-passed; adventures gate on the previous one fully passed), stripped lesson serving by profile locale, **server-authoritative grading** (graders are parity-checked COPIES of the frontend's pure validators — `npm run contract:check` in backend AND coursegen guard drift; attempt caps + reveal gating enforced server-side; client attempt numbers ignored), and `/complete` that recomputes score/XP from recorded attempts and feeds `lesson_progress` + `learning_stats` (streak via updated_at proxy, documented limitation). Frontend: adventure-map course viewer (`/learn/:courseSlug`) with the 6 v1 world scenes ported as a data-driven, dark-aware, reduced-motion-safe scene registry (illustration-asset exemption like the characters), per-lesson wavy path nodes with server states, auto-scroll to current + floating "Ir a mi lección" pill; `/learn/lesson/:id` plays real lessons fullscreen through `coreGrader` (409 → terminal verdict). **New service `filebase/` (Depot, 4006)**: content-addressed media storage on a Railway volume (sha256 dedup, Range/ETag/immutable streaming, public reads for PII-free media, `x-internal-api-key` writes) + CI workflow. **Echo implemented** (TTS decision RESOLVED: qwen3-tts-flash via DashScope): narratable-unit extraction from LessonDocuments, WAV→mono-MP3 (`@breezystack/lamejs`), Depot upload, idempotent audio manifest patched into lesson_documents; batch narration is operator-opt-in. **Forge implemented, NOT executed** (paid runs are operator-triggered): catalog loader/validator, DeepSeek author (plan→write with deterministic plan-repair, corrective retries, per-segment salvage), 5 deterministic gates (contract Zod, Piaget forbidden-vocabulary per tier×locale, fact gate, arithmetic RE-EXECUTION of money answer keys, rationale/canon), independent Qwen judge with revise loop, structure-frozen localization es-MX→en-US/pt-BR, Gemini (nanobanana) image module with flood-fill background removal → Depot, publish-as-`review` (human publishes — blocking kid-safety gate), file checkpoint/resume, token/USD kill-switches, JSONL cost ledger. **Educación Financiera catalog complete: 768 blueprints** (8 adventures ×4 sagas ×6 topics ×4 lessons; tier1/tier2 vocabulary gates self-scanned clean; 32 fact anchors; `catalog:check` 0 errors). E2E browser-verified on the real stack: login → map (2/8 after playing) → lesson → Core verdicts (rationale on wrong, reveal gating) → complete (+40 XP, streak) → next lesson unlocked; ~375px AND ~1280px, light + dark. Tests: frontend 241, backend 99, coursegen 115, audiogen 45, filebase 24 (= 524) — all green; per-service dev scripts now load `.env` (`tsx watch --env-file-if-exists`). API keys (DeepSeek/Qwen) live ONLY in gitignored `.env` files.
 
+## Current State (2026-08-27) — Lesson Engine audited at full interaction, no engine defect found
+
+All 57 segment-type fixtures played with REAL pointer and keyboard events
+(`Input.dispatchMouseEvent`, `Input.dispatchKeyEvent`), every control hit-tested
+with `elementFromPoint` and retried after a scroll before being called
+unreachable. Never `element.click()` - that is what let a click-swallowing
+overlay ship through four green audits a day earlier.
+
+**Measured across three configurations** (1280x900 dark, 375x812 dark, 375x812
+light), identical in all three:
+
+```
+every control reachable:   57/57
+"Start lesson" advances:   57/57   (55 and 56 in two runs; both re-checked
+                                    green on an unloaded machine)
+characters rendered 2D:    0
+WebGL contexts:            1       (the other 3 canvases are 2D Lottie on the
+                                    results screen)
+console errors:            0
+failed network requests:   0
+tap targets under 44px:    2 distinct - "break even" glossary chip (27px)
+                                        and "Skip for now" (31-32px)
+```
+
+**Every one of the 57 types was played to a verdict or to the results screen in
+at least one measured run** (`union.mjs` over 13 run artifacts: 57 seen, 57
+answered, none never-answered). No single run reaches 57, and that is a property
+of the DRIVER, not the engine: reordering its answer models moved the count from
+41 to 39 while swapping which types passed. Thirteen types with bespoke
+interaction models - the matchers, the memory game, the timed round, the path
+builder, the reveal - were driven individually with their own model.
+
+**The audit found zero defects in the engine and nine in itself.** Its first
+report - 33 of 57 types never produce a verdict - was entirely harness: six are
+ungraded CONTENT types that cannot produce one by design, and the rest were
+driver mistakes that each looked exactly like a product defect. The engine was
+right every time, including every time it refused to grade an incomplete answer.
+Written up as an invariant in /AGENTS.md §1.14 and in the decision log below.
+
+Still open, both cosmetic and pre-existing: the two sub-44px tap targets above.
+
 ## Decision Log
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-08-27 | **A full-interaction audit of the Lesson Engine found ZERO defects in the engine, and nine in the audit.** All 57 segment types, driven with real pointer and keyboard events at 1280x900 and 375x812, in both themes: every control reachable, no console error, no failed request, no 2D character, one WebGL context. | The audit first reported that 33 of 57 types never produced a verdict, which would have been a catastrophic finding. Six of those are ungraded CONTENT types that cannot produce a verdict by design - the metric was wrong. The other 27 were driver mistakes, each of which looked exactly like a product defect: pressing the Hint bulb because it was "the last enabled footer button" whenever Check was correctly disabled; answering once where four blanks needed filling; setting a slider by assignment rather than by keyboard; pairing two items from the same column; pressing Reset and discarding the answer just built. The engine was right every time, including every time it refused to grade an incomplete answer. Recorded as an invariant in /AGENTS.md §1.14. |
+| 2026-08-27 | **Verifying an interaction means MODELLING it: four answer models, not one, and the product's own submission gate as the stopping condition.** `order` (each control once, and answer any picker that appears), `pair` (an item, then a destination in a different container), `bank` (the first control repeatedly, for consumable or accumulating surfaces), plus keyboard for ranges. | A generic driver that assumes one model does not fail loudly - it produces a plausible failure REPORT about the product. The gate is the only honest stopping condition because it is the thing that decides, and it also removes the guesswork: answer until it opens, stop the moment it does. The three lessons that generalise beyond this codebase: an advance that changes nothing means the screen wants to be used first; nothing to press is not nothing coming (`interest_peek` reveals its Done control after a two-second animation); and a driver that outlasts the thing it measures is itself a bug - three models over ten attempts across thirty screens ran half an hour on one fixture and reported nothing. |
 | 2026-08-27 | **The drift probe's failure WAS the missing `LogLevel ERROR`, and the intermediate call that it "probably was not" was wrong.** The log: `FAIL: unexpected remote ledger state: Warning: Permanently added 'ssh.railway.com' ... present|48|present`. | The reasoning that dismissed it was "16 seconds is too fast to have reached the SSH call, because installing the Railway CLI takes ~15s". The install took 3 seconds - it was cached on the runner. A timing estimate used as evidence against a hypothesis that the codebase had already documented, and the failure message contained the real answer (`present|48|present`) exactly as the migrator's own comment said it would. The fix was already pushed; the wrong call cost nothing but is worth recording, because "that seems too fast" is not a measurement. |
 | 2026-08-27 | **A comment claiming a test exists is not a test.** `gate-auto-apply.mjs` said its self-tests assert its contraction patterns match `check-migration-phase.mjs`'s copy; they did not, and now they do. | The two files keep separate copies deliberately, so that one changing does not silently change the other - which only helps if something notices when they diverge. A migration could otherwise pass the authoring gate as additive and be refused by the CD, or the reverse, which is the dangerous direction. The claim was written in the same commit as the file and was false the moment it was written. |
 | 2026-08-27 | **A workflow that PARSES a remote command's stdout needs `LogLevel ERROR` in its SSH config; one that only pipes bytes does not.** Both new database workflows copied `vault-backup.yml`, which lacks it, and `Vault drift probe #1` went red. | ssh prints `Warning: Permanently added 'ssh.railway.com' ...` on a runner with no cached host key. `railway-migrate.sh` merges that into psql's output and reads the warning as a query result - its own source records exactly that, observed 2026-08-21 as `FAIL: unexpected remote ledger state: Warning: ...`. `tutor-deploy.yml`, the proven migrate path, silences it at the source; vault-backup does not need to because it never reads what comes back. Copying the wrong one of two working examples is its own failure mode. |
