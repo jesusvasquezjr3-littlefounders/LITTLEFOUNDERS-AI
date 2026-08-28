@@ -48,6 +48,7 @@ const OFFERS: TutorOffers = {
   weakSkills: [
     {
       skillKey: 'financial-education/ahorro-con-meta',
+      title: null,
       courseId: null,
       topicId: null,
       recommendedAction: 'practice',

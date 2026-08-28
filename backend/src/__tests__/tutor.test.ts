@@ -169,6 +169,37 @@ describe('tierForBirthDate', () => {
   });
 });
 
+describe('GET /api/v1/tutor/preferences — the server-side picker marker', () => {
+  it('reports personalized=false while no row exists, true once one does', async () => {
+    stub({ preferences: [] });
+    const fresh = await request(createApp())
+      .get('/api/v1/tutor/preferences')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+    expect(fresh.body.data.personalized).toBe(false);
+
+    stub({
+      preferences: [
+        {
+          user_id: KID,
+          character: 'zara',
+          companion: null,
+          diorama: 'diorama-a',
+          backdrop: 'auto',
+          nickname: null,
+          adaptations: [],
+          updated_at: '2026-08-27T10:00:00Z',
+        },
+      ],
+    });
+    const returning = await request(createApp())
+      .get('/api/v1/tutor/preferences')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+    // A cleared browser used to re-open the picker forever; the row is the
+    // durable half of "you have been offered this".
+    expect(returning.body.data.personalized).toBe(true);
+  });
+});
+
 describe('POST /api/v1/tutor/sessions — the microphone gate', () => {
   it('refuses the microphone for a kid with NO guardian consent', async () => {
     const calls = stub({

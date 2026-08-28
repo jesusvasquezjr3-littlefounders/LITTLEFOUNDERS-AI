@@ -46,6 +46,8 @@ import { AdminIntelPage } from '@/routes/admin/AdminIntelPage';
 import { useInsightsBeacon } from '@/lib/useInsightsBeacon';
 import { useMarketingBeacon } from '@/lib/useMarketingBeacon';
 import { CookieConsentBanner } from '@/components/CookieConsentBanner';
+import { LoadingOverlay } from '@/components/ui';
+import { useTranslation } from 'react-i18next';
 
 import { AdminUsersPage } from '@/routes/admin/AdminUsersPage';
 import { AdminAuditPage } from '@/routes/admin/AdminAuditPage';
@@ -82,6 +84,22 @@ const TutorPage = lazy(() => import('@/routes/app/TutorPage'));
 
 /** Both staff roles share the console; Roles & Access narrows to superadmin. */
 const STAFF = ['admin', 'superadmin'];
+
+/*
+ * What a learner sees while the Tutor's chunk downloads. It used to be
+ * `fallback={null}` — a BLANK SCREEN for the length of the `three` download,
+ * which on a slow connection is seconds of apparently-broken product before
+ * the stage's own veil could even mount. The overlay paints the app surface
+ * and says loading, in the learner's language, from the first frame.
+ */
+function TutorChunkFallback() {
+  const { t } = useTranslation();
+  return (
+    <div className="fixed inset-0 z-40 grid place-items-center bg-surface">
+      <LoadingOverlay label={t('tutor.page.loading')} />
+    </div>
+  );
+}
 
 /*
  * First-party usage beacon (/INSIGHTS.md), mounted ONCE above BOTH route
@@ -383,7 +401,7 @@ export function App() {
             element={
               <RequireAuth>
                 <RequireOnboarded>
-                  <Suspense fallback={null}>
+                  <Suspense fallback={<TutorChunkFallback />}>
                     <TutorPage />
                   </Suspense>
                 </RequireOnboarded>

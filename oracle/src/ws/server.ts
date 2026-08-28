@@ -518,13 +518,16 @@ async function onMessage(live: Live, raw: string): Promise<void> {
       return;
     }
 
-    case 'learner_text': {
+    case 'learner_text':
+    case 'learner_edit': {
       const claim = claimTurn(live, Date.now());
       if (claim !== 'ok') return refuseTurn(live, claim);
       live.abort = new AbortController();
       send(live.socket, { type: 'thinking' });
       try {
-        await handleLearnerTurn(live, message.data.text, live.abort.signal);
+        await handleLearnerTurn(live, message.data.text, live.abort.signal, {
+          edit: message.data.type === 'learner_edit',
+        });
       } finally {
         live.abort = null;
         releaseTurn(live);
@@ -626,14 +629,19 @@ async function handleAudioClip(live: Live, base64: string, mimeType: string): Pr
     // Echoed back so the learner can see what we heard. A misheard turn that
     // the learner cannot see is a tutor answering a question nobody asked.
     send(live.socket, { type: 'transcript', text });
-    await handleLearnerTurn(live, text, live.abort.signal);
+    await handleLearnerTurn(live, text, live.abort.signal, { viaMicrophone: true });
   } finally {
     live.abort = null;
     releaseTurn(live);
   }
 }
 
-async function handleLearnerTurn(live: Live, text: string, signal?: AbortSignal): Promise<void> {
+async function handleLearnerTurn(
+  live: Live,
+  text: string,
+  signal?: AbortSignal,
+  opts: { viaMicrophone?: boolean; edit?: boolean } = {},
+): Promise<void> {
   // The floor and the single-flight slot are the CALLER's, claimed before any
   // paid work — including the transcription that precedes an audio turn. This
   // function must not re-check the floor: `claimTurn` has already stamped
@@ -675,6 +683,26 @@ async function handleLearnerTurn(live: Live, text: string, signal?: AbortSignal)
         code: 'CONSENT_REVOKED',
         message: 'The microphone was turned off. You can keep going by tapping.',
       });
+      if (opts.viaMicrophone) {
+        /*
+         * The words in flight came THROUGH the microphone a guardian just
+         * closed, so they are not produced against — the moment the revocation
+         * is observed is the moment that channel's content stops reaching a
+         * model. The utterance still enters the transcript (a guardian must be
+         * able to read what was said), and the tutor answers with the scripted
+         * line written for exactly this — which existed, was counted in the
+         * 144, and was never actually said until now.
+         */
+        void persistTurn({
+          sessionId: live.session.sessionId,
+          seq: live.orchestrator.turnCount,
+          speaker: 'learner',
+          text,
+          source: 'stt',
+        });
+        await deliver(live, await live.orchestrator.consentRevoked(Date.now()));
+        return;
+      }
     }
   }
 
@@ -686,13 +714,20 @@ async function handleLearnerTurn(live: Live, text: string, signal?: AbortSignal)
     seq: live.orchestrator.turnCount,
     speaker: 'learner',
     text,
+    // 'stt' is the wire's only learner-source value today, typed or spoken —
+    // widening that vocabulary is a Core schema change, not a caller choice.
     source: 'stt',
   });
 
   // `Date.now()` here rather than the caller's stamp: for an audio turn the
   // claim happened before a transcription that may have taken a second, and
   // the budget should be measured against when the tutor actually answers.
-  await deliver(live, await live.orchestrator.handleLearnerText(text, Date.now(), signal));
+  await deliver(
+    live,
+    opts.edit
+      ? await live.orchestrator.handleLearnerEdit(text, Date.now(), signal)
+      : await live.orchestrator.handleLearnerText(text, Date.now(), signal),
+  );
 }
 
 async function deliver(live: Live, outcome: TurnOutcome | null): Promise<void> {

@@ -491,8 +491,11 @@ export default function TutorLabPage() {
     speaking,
     awaitingReply,
     onAwaitReply: () => setAwaitingReply(true),
-    // There is no wire here, so there is nothing to resume.
+    // There is no wire here, so there is nothing to resume and no wait to
+    // outlive; the affordances still render, which is what the lab is for.
     resuming: false,
+    replyTimedOut: false,
+    onRestart: () => setSurface('introducing'),
     onExit: () => {
       socket.endSession();
       setSurface('closing');

@@ -265,6 +265,7 @@ export function labOffers(locale: Locale): TutorOffers {
     weakSkills: [
       {
         skillKey: LAB_SCRIPTS[locale].weakSkillKey,
+        title: null,
         courseId: null,
         topicId: null,
         recommendedAction: 'practice',
@@ -655,6 +656,17 @@ export function useLabSocket(
     commitAudioStream: () => false,
     abandonAudioStream: () => {},
     interrupt: () => {},
+    // The same local rewind the real hook performs; there is no wire to tell.
+    editLast: (text: string) => {
+      const trimmed = text.trim();
+      if (trimmed === '') return;
+      setHistory((prev) => {
+        const next = [...prev];
+        if (next.at(-1)?.speaker === 'tutor') next.pop();
+        if (next.at(-1)?.speaker === 'learner') next.pop();
+        return [...next, { speaker: 'learner', text: trimmed, seq: -1 }];
+      });
+    },
     thinking: false,
     reportGrade: () => setSegment(null),
     answerAdaptation: () => setAdaptationOffer(null),

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useScrollEdges } from './hud/useScrollEdges';
 
@@ -70,6 +71,15 @@ export interface TutorTranscriptProps {
   compact?: boolean;
   /** Accessible name for the log. */
   label?: string;
+  /**
+   * Rephrase the learner's LAST message. When set, the newest learner entry
+   * grows a small edit control that hands its text back to the composer —
+   * only the last, because the wire's edit verb rewinds exactly one exchange
+   * and an affordance the protocol cannot honour is a lie with an icon.
+   */
+  onEditLast?: (text: string) => void;
+  /** Accessible name for that control. Required whenever `onEditLast` is set. */
+  editLabel?: string;
   className?: string;
 }
 
@@ -86,6 +96,8 @@ export function TutorTranscript({
   spokenSeq = null,
   compact = false,
   label,
+  onEditLast,
+  editLabel,
   className,
 }: TutorTranscriptProps) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -116,6 +128,16 @@ export function TutorTranscript({
   }, [compact]);
 
   if (past.length === 0) return null;
+
+  // The one entry the edit affordance may attach to (see `onEditLast`).
+  // Hand-rolled reverse scan: the build targets ES2022, before findLastIndex.
+  let lastLearnerIndex = -1;
+  for (let i = past.length - 1; i >= 0; i -= 1) {
+    if (past[i]?.speaker === 'learner') {
+      lastLearnerIndex = i;
+      break;
+    }
+  }
 
   return (
     <div
@@ -160,19 +182,43 @@ export function TutorTranscript({
         aria-live="polite"
         aria-relevant="additions"
       >
-        {past.map((entry, index) => (
-          <p
-            key={`${entry.seq}-${index}`}
-            className={cn(
-              'lf-body max-w-[92%] rounded-md px-3 py-2',
-              entry.speaker === 'tutor'
-                ? 'bg-surface-sunken text-content'
-                : 'ml-auto bg-accent-soft text-content',
-            )}
-          >
-            {entry.text}
-          </p>
-        ))}
+        {past.map((entry, index) => {
+          const editable =
+            onEditLast !== undefined &&
+            entry.speaker === 'learner' &&
+            index === lastLearnerIndex;
+          return (
+            <div
+              key={`${entry.seq}-${index}`}
+              className={cn(
+                'flex max-w-[92%] items-end gap-1',
+                entry.speaker === 'learner' && 'ml-auto flex-row-reverse',
+              )}
+            >
+              <p
+                className={cn(
+                  'lf-body min-w-0 rounded-md px-3 py-2',
+                  entry.speaker === 'tutor'
+                    ? 'bg-surface-sunken text-content'
+                    : 'bg-accent-soft text-content',
+                )}
+              >
+                {entry.text}
+              </p>
+              {editable && (
+                <button
+                  type="button"
+                  onClick={() => onEditLast(entry.text)}
+                  aria-label={editLabel}
+                  title={editLabel}
+                  className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-content-muted transition-colors hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
+                  <Icon name="edit" className="!text-[16px]" />
+                </button>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

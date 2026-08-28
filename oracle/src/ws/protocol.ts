@@ -47,6 +47,20 @@ export const ClientMessageSchema = z.discriminatedUnion('type', [
       text: z.string().min(1).max(2_000),
     })
     .strict(),
+  /**
+   * The learner rephrased their LAST message instead of sending a new one —
+   * the "edit" affordance every chat product has and this one lacked. The
+   * previous learner line and the tutor's reply to it leave the working
+   * history (never the persisted transcript, which is append-only and
+   * guardian-readable), and the new text is produced exactly like a fresh
+   * turn: same fence, same classification, same claim, same floor.
+   */
+  z
+    .object({
+      type: z.literal('learner_edit'),
+      text: z.string().min(1).max(2_000),
+    })
+    .strict(),
   z
     .object({
       type: z.literal('learner_audio'),

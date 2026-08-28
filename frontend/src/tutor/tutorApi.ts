@@ -21,6 +21,11 @@ import type {
 
 export interface PreferencesResponse extends TutorPreferences {
   catalog: TutorCatalog;
+  /**
+   * Whether this learner has ever saved a preference — the server-side "has
+   * been offered the picker" marker (the picker's Done always saves).
+   */
+  personalized: boolean;
 }
 
 export function getPreferences(token: string): Promise<ApiResult<PreferencesResponse>> {

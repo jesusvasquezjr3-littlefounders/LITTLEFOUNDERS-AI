@@ -1729,22 +1729,24 @@ island the learner is already looking at rather than loading one of its own.
   sun along the arc when it is pressed, which is both what a sun does and one
   label instead of four. Picking a specific option directly is what the
   guaranteed list is for; the world gets the gesture, the list gets the menu.
-- **The lesson plate** — the ONE surface carrying a live exercise. **Desktop:
-  a FLOATING plate**, `plate-max` 420 px wide, height fitted to content up to
-  `plate-max-height` — which is a constant BAND of island above it
-  (`calc(100vh - 200px)`, so the top edge sits at 176 px on every screen) and no
-  longer a fraction of the viewport, corrected 2026-08-22 because `62vh`
-  reserved most of the screen exactly where there was least to spare and left
-  274 px of the exercise below the fold. It is inset `hud-inset` 24 px from the
-  bottom-right, with scene visible above, below, left and right of it.
+- **The lesson plate** — the ONE surface carrying the conversation and a live
+  exercise. **Desktop: a DOCKED FULL-HEIGHT PANEL** (owner sign-off 2026-08-28,
+  superseding the floating corner plate of 2026-08-22, which the owner rejected
+  on use: a content-fitted corner plate gave the transcript no stable home and
+  the screen read as disorganised). It is `inset-y-0 right-0`, width
+  `min(27.5rem, 34vw)`, square against the viewport edge and rounded toward the
+  island, holding — in order — the header row (minutes · start-over · finish),
+  status lines, the live activity, the "explain it another way" chip, the FULL
+  conversation log (never compacted at this breakpoint), and the composer.
+  What the 2026-08-21 rejection actually taught is KEPT: the material is Lumen
+  over a full-bleed canvas — never an opaque slab — and the island keeps
+  roughly two thirds of the width with the camera composing the character into
+  it (the panel publishes its rect on the `lesson` safe-area slot; the mic dock
+  steps left of the corner claim). The distinction from the rejected build is
+  the MATERIAL and the stage's primacy, not the panel's absence.
   **Its body is a COLUMN and does not scroll**: the question is pinned above,
   the action is pinned below, and what moves is the answers between them
-  (§Lumen → *Room to answer in*). It is explicitly **not** a
-  full-height edge-to-edge column, and shrinking such a column to 400 px does
-  not satisfy this: the rejected version's fault was the SILHOUETTE — a
-  near-opaque slab down a third of the screen — and a silhouette is a
-  perceptual fact that a `getBoundingClientRect()` measurement cannot argue
-  with. **Mobile: a bottom sheet** with the three `sheet-detents` — PEEK
+  (§Lumen → *Room to answer in*). **Mobile: a bottom sheet** with the three `sheet-detents` — PEEK
   (88 px, **where the sheet rests**), HALF (45vh, working), FULL (88vh,
   transcript opened), with the orb riding above whichever it is at. **PEEK is a
   SUMMARY ROW, not the top 88 px of the panel** (corrected 2026-08-21, after the

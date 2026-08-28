@@ -764,13 +764,20 @@ their head, and the 2D head articulating beside those words in the same caption
 plate is, for `liruf` and `dina`, the only working articulation channel (§2.2).
 The sentence is printed once: the lesson plate below carries the activity and
 the conversation record and never a second copy of the live line
-(/DESIGN.md §Lumen -> *One line, one printing, two channels*). The Lesson Engine runs on a **plate
-floating over the same island** — 420 px wide with scene visible on all four
-sides at 1280 px, a three-detent bottom sheet at 375 px — never a panel beside
-the stage and never a full-height column. The camera composes around the
-plate's published rect, so the character's on-screen height is the same with a
-segment and without one; a lesson that visibly shoves the tutor aside to make
-room for itself reads as two products sharing a screen.
+(/DESIGN.md §Lumen -> *One line, one printing, two channels*). The Lesson Engine
+runs on the same surface as the conversation — **at 1280 px a docked
+full-height Lumen panel on the right** (owner sign-off 2026-08-28, superseding
+the floating corner plate this section previously specified, which the owner
+rejected on use: the conversation had no stable home and the screen read as
+disorganised) holding the activity, the full conversation log, the composer,
+"explain it another way", start-over and finish in one ordered column; **at
+375 px a three-detent bottom sheet**, unchanged. The panel is translucent
+material over a full-bleed canvas, never an opaque slab, and the island keeps
+roughly two thirds of the width — which is what separates it from the
+2026-08-21 rejected split. The camera composes around the panel's published
+rect, so the character's on-screen height is the same with a segment and
+without one; a lesson that visibly shoves the tutor aside to make room for
+itself reads as two products sharing a screen.
 
 The tutor reacts to the actual result of each segment — that is what makes it a
 lesson rather than a playlist.
@@ -950,10 +957,11 @@ between breakpoints is the composition inside one frame:
   activity is announced on the sheet's own row and never raises it: measured at
   375x812, a sheet that opened itself to HALF left 227 px of island, which is
   the "minimizaste el escenario" complaint in portrait.
-- **1280 px** — a wider establishing shot with real island around a floating
-  420 px lesson plate, scene visible on all four sides of it. The extra width
-  is spent on the SCENE. It is not spent on a second panel, and it is not left
-  as margin.
+- **1280 px** — a wider establishing shot with real island beside the docked
+  conversation panel (`min(27.5rem, 34vw)` on the right — owner sign-off
+  2026-08-28). The extra width is spent on the SCENE and on giving the
+  conversation one ordered, permanent home. It is never left as margin, and
+  the panel is Lumen material over the canvas, never an opaque second page.
 
 Both widths, both themes, verified in-browser with screenshots before any of
 this is done — and per the standing instruction on this project, the 1280 px

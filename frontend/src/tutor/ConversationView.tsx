@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/ui';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from './hud/HudPlate';
-import { LessonPlate, type LessonPlateDetent } from './hud/LessonPlate';
+import { LessonPlate, useDesktopPlate, type LessonPlateDetent } from './hud/LessonPlate';
 import { WorldChip } from './hud/WorldChip';
 import { SpeechCaption } from './SpeechCaption';
 import { TutorFace } from './TutorFace';
@@ -109,13 +109,23 @@ export function ConversationView({
   awaitingReply,
   onAwaitReply,
   resuming,
+  replyTimedOut,
+  onRestart,
   onExit,
 }: ConversationViewProps) {
   const { t } = useTranslation();
   const safeArea = useSafeArea();
   const dock = useStageDock();
+  const desktop = useDesktopPlate();
 
   const [typed, setTyped] = useState('');
+  /**
+   * Whether the composer currently holds the learner's LAST message for
+   * rephrasing rather than a fresh one. Set by the transcript's edit
+   * affordance, cleared by sending or by emptying the field — an empty
+   * composer is a fresh composer, whatever put text in it earlier.
+   */
+  const [editing, setEditing] = useState(false);
   /*
    * PEEK IS WHERE THE SHEET RESTS, and this is the reversal the phone forced.
    *
@@ -205,9 +215,33 @@ export function ConversationView({
   const submitTyped = () => {
     const value = typed.trim();
     if (value === '' || ended) return;
-    sendText(value);
+    if (editing) {
+      socket.editLast(value);
+      setEditing(false);
+    } else {
+      sendText(value);
+    }
     setTyped('');
     // The wait is owned upstream, beside the orb that also displays it.
+    onAwaitReply();
+  };
+
+  /** The transcript's edit affordance: the last message returns to the composer. */
+  const beginEdit = useCallback((text: string) => {
+    setTyped(text);
+    setEditing(true);
+  }, []);
+
+  /**
+   * One tap that asks, in the learner's own language, for a different
+   * explanation. It is an ordinary learner turn through the full pipeline —
+   * fence, classifier, model, judge — not a protocol verb; what the chip buys
+   * is that a child who is lost does not have to compose the sentence that
+   * says so.
+   */
+  const askDifferently = () => {
+    if (ended) return;
+    sendText(t('tutor.conversation.explainDifferently'));
     onAwaitReply();
   };
 
@@ -380,6 +414,44 @@ export function ConversationView({
    * accessible name, which breaks voice control for the one control a child is
    * most likely to ask for out loud.
    */
+  /*
+   * THE COMPOSER, built once and mounted in one of two homes: inline in the
+   * docked panel on desktop, or portalled into the shell's dock beside the
+   * orb everywhere else. Typing is not the fallback — with no voice provider
+   * configured it is the ONLY channel — and it is the one field every
+   * /ORACLE.md §5 injection defence exists for, which is why the single line
+   * and the 2000 character cap are unchanged. While it holds a message being
+   * REPHRASED it says so, and emptying it clears that state.
+   */
+  const composer = (
+    <div className="lf-lumen lf-lumen-reading pointer-events-auto flex items-center rounded-md">
+      <div className="flex min-w-0 flex-1 items-center gap-1 rounded-[inherit] pl-4 pr-0.5">
+        <input
+          value={typed}
+          onChange={(event) => {
+            setTyped(event.target.value);
+            if (event.target.value === '') setEditing(false);
+          }}
+          onKeyDown={(event) => event.key === 'Enter' && submitTyped()}
+          maxLength={2000}
+          disabled={ended}
+          placeholder={t(editing ? 'tutor.conversation.editPlaceholder' : 'tutor.conversation.typePlaceholder')}
+          aria-label={t(editing ? 'tutor.conversation.editPlaceholder' : 'tutor.conversation.typePlaceholder')}
+          className="lf-body h-11 min-w-0 flex-1 bg-transparent text-content placeholder:text-content-muted focus:outline-none disabled:opacity-60"
+        />
+        <button
+          type="button"
+          onClick={submitTyped}
+          disabled={typed.trim() === '' || ended}
+          aria-label={t('tutor.conversation.send')}
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-md text-content transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-40"
+        >
+          <Icon name="send" />
+        </button>
+      </div>
+    </div>
+  );
+
   const adaptationAnswers = adaptation && (
     <div className="flex flex-wrap items-center justify-center gap-2">
       <HudPlate
@@ -545,19 +617,33 @@ export function ConversationView({
            * Finishing is a first-class turn, so it lives on the one surface
            * that is never culled and never scrolls away. The shell's way out
            * LEAVES the route; this ends the session, and the tutor gets to say
-           * goodbye (/ORACLE.md §9.5).
+           * goodbye (/ORACLE.md §9.5). Starting over sits beside it — the one
+           * chat affordance the owner named as missing — and on desktop the
+           * minutes ride here too, where the docked panel is the conversation's
+           * home (the sky rune stays for the stage).
            *
-           * A HudPlate rather than the design system's `Button`, and that is
-           * the material rather than a preference. `Button` is a `rounded-full`
-           * pill wearing `lf-gaming-btn` — Liquid Glass grammar, correct on a
-           * page and a capsule over a photographic frame here, which §Lumen
-           * calls the silhouette of a sticker. On a 375 px sheet it also cost
-           * 99 px of a 343 px row for one word; at `lf-action` inside a chip it
-           * costs 76.
+           * HudPlates rather than the design system's `Button`, and that is
+           * the material rather than a preference (§Lumen — a capsule over a
+           * photographic frame is the silhouette of a sticker).
            */
-          <HudPlate as="button" shape="chip" onClick={onExit} className="pointer-events-auto shrink-0">
-            <span className="lf-action">{t('tutor.conversation.finish')}</span>
-          </HudPlate>
+          <>
+            {desktop && budgetRune && (
+              <span className="lf-caption whitespace-nowrap text-content-muted">{budgetRune}</span>
+            )}
+            <HudPlate
+              as="button"
+              shape="chip"
+              onClick={onRestart}
+              aria-label={t('tutor.conversation.startOver')}
+              title={t('tutor.conversation.startOver')}
+              className="pointer-events-auto shrink-0"
+            >
+              <Icon name="refresh" className="!text-[18px]" />
+            </HudPlate>
+            <HudPlate as="button" shape="chip" onClick={onExit} className="pointer-events-auto shrink-0">
+              <span className="lf-action">{t('tutor.conversation.finish')}</span>
+            </HudPlate>
+          </>
         }
       >
         {/*
@@ -605,6 +691,19 @@ export function ConversationView({
           </p>
         )}
 
+        {/*
+          The wait ran out of patience before the server did. Honest and
+          actionable: the spinner has already stopped (upstream owns that), and
+          this says what to do instead of leaving a child staring at a tutor
+          who appears to have wandered off. If the reply does eventually land,
+          the arriving turn clears this with everything else.
+        */}
+        {replyTimedOut && (
+          <p className="shrink-0 lf-caption text-content-muted" role="status">
+            {t('tutor.conversation.replyTimeout')}
+          </p>
+        )}
+
         {socket.segment ? (
           <LiveSegmentPanel
             live={socket.segment}
@@ -638,12 +737,45 @@ export function ConversationView({
           live region, and the only place a learner ever sees what the
           microphone actually heard.
         */}
+        {/*
+          ONE TAP FOR "I DIDN'T GET THAT". Shown once the lesson is properly
+          under way and the tutor is between turns — never over an activity,
+          where the learner has a task, and never while a reply is in flight.
+        */}
+        {turn && turnSeq > 1 && !socket.segment && !awaitingReply && !ended && (
+          <HudPlate
+            as="button"
+            shape="chip"
+            onClick={askDifferently}
+            className="pointer-events-auto shrink-0 self-start"
+          >
+            <span className="lf-action">{t('tutor.conversation.explainDifferently')}</span>
+          </HudPlate>
+        )}
+
         <TutorTranscript
           history={socket.history}
           spokenSeq={turn ? turnSeq : null}
-          compact={socket.segment !== null}
+          /*
+            The docked panel has the height for both the activity and the
+            record, so the cap that protects a 375 px sheet's Check control
+            never applies there.
+          */
+          compact={socket.segment !== null && !desktop}
           label={t('tutor.conversation.transcriptLabel')}
+          onEditLast={ended ? undefined : beginEdit}
+          editLabel={t('tutor.conversation.editMessage')}
         />
+
+        {/*
+          ON DESKTOP THE COMPOSER LIVES IN THE PANEL — conversation, activity
+          and the way to answer, one ordered column (owner sign-off
+          2026-08-28). On a phone it stays in the shell's dock beside the orb,
+          where the sheet's footprint keeps it above the bottom edge. Absent
+          during an adaptation offer in both homes, for the same reason: a
+          yes-or-no already has both its answers on screen.
+        */}
+        {desktop && !adaptation && <div className="shrink-0">{composer}</div>}
       </LessonPlate>
 
       {/*
@@ -703,63 +835,18 @@ export function ConversationView({
 
       </DockSlot>
 
-      <DockSlot dock={dock} target={adaptation ? null : (dock?.below ?? null)}>
-        {/*
-          Typing is not the fallback. With no voice provider configured it is
-          the ONLY channel, so it is a permanent, full-width control rather than
-          something hidden behind an icon. It is also the one field every
-          /ORACLE.md §5 injection defence exists for, which is why the single
-          line and the 2000 character cap are unchanged.
-
-          IT IS ABSENT FOR THE LENGTH OF A YES-OR-NO, and that is the only
-          state it is ever absent in. An adaptation offer has exactly two
-          answers and both are already on screen as chips; a text field under
-          them is a third way to answer a closed question, and it costs 56 px
-          of the one screen the reviewer refused to show the owner. The
-          microphone stays — a learner may say "yes please" out loud — and the
-          field returns, with whatever was typed in it, the moment the question
-          is answered. This is a suppression at the PORTAL rather than of the
-          element, so React keeps its state.
-
-          Built from the stage material directly rather than from `HudPlate`,
-          whose measures are reading widths for labels: a composer capped at
-          22ch would be four words wide. It takes the READING density, because
-          a surface you type into is one you are looking at, and because the
-          placeholder is the one piece of muted text on this layer that has to
-          stay muted — a placeholder at full ink reads as a field that is
-          already filled.
-        */}
-        <div className="lf-lumen lf-lumen-reading pointer-events-auto flex items-center rounded-md">
-          <div className="flex min-w-0 flex-1 items-center gap-1 rounded-[inherit] pl-4 pr-0.5">
-            <input
-              value={typed}
-              onChange={(event) => setTyped(event.target.value)}
-              onKeyDown={(event) => event.key === 'Enter' && submitTyped()}
-              maxLength={2000}
-              disabled={ended}
-              placeholder={t('tutor.conversation.typePlaceholder')}
-              aria-label={t('tutor.conversation.typePlaceholder')}
-              className="lf-body h-11 min-w-0 flex-1 bg-transparent text-content placeholder:text-content-muted focus:outline-none disabled:opacity-60"
-            />
-            <button
-              type="button"
-              onClick={submitTyped}
-              disabled={typed.trim() === '' || ended}
-              aria-label={t('tutor.conversation.send')}
-              /*
-                Full ink, not muted. The placeholder beside it is the one piece
-                of muted text this layer is allowed (a placeholder at full ink
-                reads as a field that is already filled) — but the SEND control
-                is not text, it is the only way to answer the tutor by typing,
-                and it was reading as decoration at 3.6:1 over the island.
-              */
-              className="grid h-11 w-11 shrink-0 place-items-center rounded-md text-content transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-40"
-            >
-              <Icon name="send" />
-            </button>
-          </div>
-        </div>
-      </DockSlot>
+      {/*
+        The phone's home for the composer: the shell's dock, beside the orb.
+        Suppressed at the PORTAL for the length of a yes-or-no (both answers
+        are already on screen; a third way to answer a closed question costs
+        56 px of a small screen) — React keeps the field's state either way.
+        On desktop it is not rendered here at all; the docked panel holds it.
+      */}
+      {!desktop && (
+        <DockSlot dock={dock} target={adaptation ? null : (dock?.below ?? null)}>
+          {composer}
+        </DockSlot>
+      )}
     </>
   );
 }

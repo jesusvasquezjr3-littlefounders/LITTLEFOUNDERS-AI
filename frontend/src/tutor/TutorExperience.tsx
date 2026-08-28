@@ -227,17 +227,23 @@ export function TutorExperience() {
         return;
       }
 
-      const { catalog: served, ...prefs } = prefsResult.data;
+      const { catalog: served, personalized, ...prefs } = prefsResult.data;
       setPreferences(prefs);
       setCatalog(served);
       setOffers(offersResult.data);
       /*
-       * The picker opens on the first visit and never again. A nickname counts
-       * as proof they have been here, because they can only have typed one on
-       * this screen; the local marker covers the learner who skipped it, who
-       * used to be asked again forever.
+       * The picker opens on the first visit and never again — and the SERVER
+       * remembers now (`personalized`: a preferences row exists, which the
+       * picker's Done guarantees). The nickname and the localStorage marker
+       * stay as belt-and-braces: the local one covers the beat before the
+       * first save lands, and costs at worst one extra visit to a screen that
+       * is an invitation.
        */
-      setPhase(prefs.nickname !== null || hasSeenPicker(userIdRef.current) ? 'introducing' : 'personalizing');
+      setPhase(
+        prefs.nickname !== null || personalized || hasSeenPicker(userIdRef.current)
+          ? 'introducing'
+          : 'personalizing',
+      );
     })();
 
     return () => {
@@ -511,6 +517,7 @@ export function TutorExperience() {
    */
   useEffect(() => {
     setAwaitingReply(false);
+    setReplyTimedOut(false);
   }, [turnSeq]);
 
   /*
@@ -523,6 +530,26 @@ export function TutorExperience() {
   useEffect(() => {
     if (!socket.thinking && socket.error !== null) setAwaitingReply(false);
   }, [socket.thinking, socket.error]);
+
+  /*
+   * AND THE WAIT HAS A CEILING. `awaitingReply` had no timeout at all: a
+   * server that never answered left the orb spinning for the rest of the
+   * session, which is the exact "stuck forever" the owner reported. 25 s is
+   * past every upstream timeout Oracle enforces (model 20 s), so a wait that
+   * reaches it is not slow — something is wrong, and the honest move is to
+   * stop spinning and say what to do. If the reply lands late anyway, the
+   * arriving turn clears the notice like any other.
+   */
+  const [replyTimedOut, setReplyTimedOut] = useState(false);
+  useEffect(() => {
+    if (!awaitingReply) return;
+    setReplyTimedOut(false);
+    const timer = window.setTimeout(() => {
+      setAwaitingReply(false);
+      setReplyTimedOut(true);
+    }, 25_000);
+    return () => window.clearTimeout(timer);
+  }, [awaitingReply]);
 
   const handleClip = useCallback(
     (clip: Blob | null) => {
@@ -645,7 +672,11 @@ export function TutorExperience() {
           onDone: () => {
             // Recorded HERE rather than inside the picker, because this is the
             // only place that knows the press means "I have finished with this
-            // screen" rather than "I changed one thing".
+            // screen" rather than "I changed one thing". The empty save is the
+            // SERVER-SIDE half of the marker: it guarantees a preferences row
+            // exists, which is what `personalized` reads on the next visit —
+            // so a cleared browser no longer re-opens the picker forever.
+            persistPreferences({});
             rememberPicker(userIdRef.current);
             setPhase('introducing');
           },
@@ -677,6 +708,25 @@ export function TutorExperience() {
           awaitingReply,
           onAwaitReply: () => setAwaitingReply(true),
           resuming,
+          replyTimedOut,
+          onRestart: () => {
+            /*
+             * Start over: the tutor still gets its goodbye turn server-side
+             * (`end_session` produces a farewell into the closing session),
+             * but the learner is heading for a fresh start, so the phase goes
+             * straight to the openings. The offers are re-read because the
+             * daily session count just moved — a start button that has
+             * quietly stopped being available must say so, not fail.
+             */
+            socket.endSession();
+            setSession(null);
+            setPhase('introducing');
+            if (token) {
+              void getOffers(token).then((result) => {
+                if (result.data) setOffers(result.data);
+              });
+            }
+          },
           onExit: () => {
             socket.endSession();
             setPhase('closing');

@@ -25,6 +25,21 @@ token); (3) cross-session memory may enter the model context via the documented
 §4.1 three-part process; (4) spend authorized for pregenerating the 144
 scripted clips and for speculative TTS concurrent with the judge.
 
+**Increment 4 rebuilt the experience** (same day): desktop is a docked
+full-height Lumen panel (owner sign-off — conversation, activity, composer,
+minutes, start-over and finish in one ordered column beside a stage that keeps
+two thirds of the width; DESIGN.md Tutor recipe and ORACLE.md §9.3/§10 amended
+in the same commit). Chat affordances arrived: start over, edit-and-resend the
+last message (`learner_edit` rewinds one exchange in the working history,
+never in the append-only transcript), a one-tap "explain it another way", and
+a 25 s reply timeout that ends the previously-infinite spinner honestly. The
+blank-screen Suspense fallback became a branded loader; the picker marker
+moved server-side (`personalized` — a preferences row exists, no migration);
+the weak-skill chip shows Core-resolved titles instead of regex-carved slugs;
+and a mid-session consent revocation now SPEAKS its scripted line instead of
+emitting a bare error frame — with the revoked microphone's in-flight words
+kept out of the model.
+
 **Increment 3 made it a teacher** (same day): a deterministic lesson-plan
 state machine (`oracle/src/tutor/plan.ts` — closed step vocabulary, per-skill
 failure counters, style rotation on stuck, an OFFER of an adaptation at three

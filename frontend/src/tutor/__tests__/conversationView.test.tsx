@@ -70,6 +70,7 @@ function makeSocket(overrides: Partial<TutorSocket> = {}): TutorSocket {
     commitAudioStream: vi.fn(() => false),
     abandonAudioStream: vi.fn(),
     interrupt: vi.fn(),
+    editLast: vi.fn(),
     reportGrade: vi.fn(),
     answerAdaptation: vi.fn(),
     endSession: vi.fn(),
@@ -89,6 +90,8 @@ function conversation(socket: TutorSocket, ready: boolean) {
       awaitingReply={false}
       onAwaitReply={vi.fn()}
       resuming={false}
+      replyTimedOut={false}
+      onRestart={vi.fn()}
       onExit={vi.fn()}
     />
   );

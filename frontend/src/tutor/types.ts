@@ -45,6 +45,8 @@ export interface TutorCatalog {
 
 export interface WeakSkillOffer {
   skillKey: string;
+  /** The human title Core resolved for the flagged skill's topic, when it could. */
+  title: string | null;
   courseId: string | null;
   topicId: string | null;
   recommendedAction: 'remediate' | 'practice' | 'retrieve' | 'continue';
@@ -147,6 +149,7 @@ export type ServerMessage =
 
 export type ClientMessage =
   | { type: 'learner_text'; text: string }
+  | { type: 'learner_edit'; text: string }
   | { type: 'learner_audio'; audio: string; mimeType: string }
   | { type: 'learner_audio_begin'; mimeType: string }
   | { type: 'learner_audio_chunk'; audio: string }

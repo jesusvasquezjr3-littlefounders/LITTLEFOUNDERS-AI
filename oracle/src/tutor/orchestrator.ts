@@ -17,6 +17,7 @@ import { buildContextMessage, TUTOR_SYSTEM_PROMPT } from './prompt.js';
 import { parseTurn, type TutorTurn } from './turnSchema.js';
 import {
   closingResponse,
+  consentRevokedResponse,
   greetingResponse,
   moderationBlockedResponse,
   modelDownResponse,
@@ -360,6 +361,36 @@ export class TutorOrchestrator {
     // one does not — a question the tutor never answered was not an exchange.
     if (outcome !== null) noteConversationTurn(this.plan);
     return outcome;
+  }
+
+  /**
+   * The learner rephrased their last message. The pair it replaces — their
+   * line and the tutor's answer to it — leaves the WORKING history so the
+   * model answers the rephrasing rather than a conversation arguing with
+   * itself; the persisted transcript keeps everything, append-only, as a
+   * guardian-readable record must. Then it is an ordinary turn.
+   */
+  async handleLearnerEdit(raw: string, nowMs: number, signal?: AbortSignal): Promise<TurnOutcome | null> {
+    if (this.history.at(-1)?.speaker === 'tutor') this.history.pop();
+    if (this.history.at(-1)?.speaker === 'learner') this.history.pop();
+    return this.handleLearnerText(raw, nowMs, signal);
+  }
+
+  /**
+   * A guardian revoked the microphone mid-session, and the words in flight
+   * came THROUGH that microphone. They are not produced against: the scripted
+   * line — human-written, in character, already reviewed — explains what
+   * happened, and the session continues typed. This used to be a bare error
+   * frame, which left a written-and-recorded line (`consentRevokedResponse`)
+   * that the tutor never actually said.
+   */
+  async consentRevoked(nowMs: number): Promise<TurnOutcome> {
+    return this.scriptedOutcome(
+      consentRevokedResponse(this.session.locale),
+      this.currentBudget(nowMs),
+      null,
+      null,
+    );
   }
 
   /** Ends the session in character. */

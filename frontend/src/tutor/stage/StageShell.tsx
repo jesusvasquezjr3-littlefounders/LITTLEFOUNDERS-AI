@@ -1033,6 +1033,17 @@ export interface ConversationLayerProps extends StageLayerCommonProps {
    * "the conversation came back" reads as the tutor freezing mid-sentence.
    */
   resuming: boolean;
+  /**
+   * The reply outran the learner's patience (~25 s with no turn). The spinner
+   * has already been stopped upstream; the layer says what to do next.
+   */
+  replyTimedOut: boolean;
+  /**
+   * Start over: end this conversation and return to the openings. It counts
+   * against the daily session cap exactly as any fresh start does — restarting
+   * is starting, not a loophole.
+   */
+  onRestart: () => void;
   /** End the session. The close is a camera move, not a screen. */
   onExit: () => void;
 }

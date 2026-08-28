@@ -8,19 +8,19 @@ import { HudPlate } from './HudPlate';
 /*
  * The surface a live lesson runs on, floating over the island.
  *
- * THIS IS NOT A RAIL, AND THE DISTINCTION IS THE WHOLE POINT. The version the
- * owner rejected put the 3D stage in one half of a `lg:grid-cols-[1fr_1fr]`
- * split and the lesson in the other, and the complaint was about the
- * SILHOUETTE: a near-opaque slab down a third of the screen reads as a
- * dashboard whatever is drawn beside it. Narrowing that slab to 400 px does not
- * answer the complaint, because a full-height column is still a full-height
- * column. So on desktop this is a plate that FLOATS: `plate-max` 420 px wide,
- * fitted to its content up to `plate-max-height`, inset `hud-inset` 24 px from
- * the bottom-right, with island visible above it, below it, to its left and to
- * its right. Those four gaps are the design, not spacing — and since 2026-08-22
- * the top one is a DISTANCE rather than a percentage of the viewport, because a
- * fraction reserved most of the screen exactly where there was least to spare
- * (see `PLATE_MAX_HEIGHT`).
+ * ON DESKTOP IT IS A DOCKED FULL-HEIGHT PANEL (owner sign-off 2026-08-28,
+ * superseding two earlier positions in turn). The 2026-08-21 build put the
+ * stage in one half of a `lg:grid-cols-[1fr_1fr]` split and was rejected for
+ * its SILHOUETTE — a near-opaque slab down half the screen reads as a
+ * dashboard. The correction floated a content-fitted 420 px plate in the
+ * bottom-right corner, and the owner rejected THAT on use: the transcript
+ * lived folded away, the conversation had no stable home, and the screen read
+ * as disorganised. The docked panel keeps what the first rejection actually
+ * taught — the material stays Lumen over a full-bleed canvas, never an opaque
+ * slab, and the island keeps roughly two thirds of the width with the camera
+ * composing the character into it — while giving the conversation, the
+ * activity and the composer one permanent, ordered home on the breakpoint
+ * that has room for all three.
  *
  * ON A PHONE IT IS A BOTTOM SHEET, because 420 px of floating plate on a 375 px
  * screen is the whole screen. Three detents from /DESIGN.md's `sheet-detents`:
@@ -80,22 +80,6 @@ const SHEET_INSET_PX = 16;
 
 /** Below this the plate is a sheet. `lg`, the same breakpoint Tailwind uses. */
 const DESKTOP_QUERY = '(min-width: 1024px)';
-
-/**
- * The tallest the desktop plate may be — `layout.immersive.plate-max-height`.
- *
- * A CONSTANT BAND OF ISLAND ABOVE IT, not a fraction of the viewport, and the
- * change (2026-08-22) is a correction rather than a preference. The plate sits
- * `hud-inset` 24 px off the bottom, so `100vh - 200px` puts its top edge at
- * 176 px on every screen: the island is visible above it, below it, and on both
- * sides, which is what /DESIGN.md asks for, at the same distance whatever the
- * monitor. `62vh` asked for the same thing as a percentage and got 280 px of
- * empty island at 1280x800 and 250 px at 1280x720 — most reserved exactly where
- * there was least to spare, above a panel whose exercise ran past its bottom
- * edge. Written as a literal class rather than an arbitrary value built at
- * runtime, because Tailwind scans source text and never sees a template string.
- */
-const PLATE_MAX_HEIGHT = 'max-h-[calc(100vh-200px)]';
 
 /** A pointer has to travel this far before the gesture stops being a tap. */
 const DRAG_SLOP_PX = 4;
@@ -573,8 +557,11 @@ export function LessonPlate({
        * route. An inline style wins outright.
        */
       style={{
-        maxWidth: desktop ? 'min(420px, calc(100vw - 3rem))' : 'calc(100vw - 2rem)',
+        maxWidth: desktop ? 'min(27.5rem, 34vw)' : 'calc(100vw - 2rem)',
         height: desktop ? undefined : heights[detent],
+        // Docked panels do not float: square off the edge that meets the
+        // viewport, keep the radius on the side that meets the island.
+        ...(desktop ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 } : {}),
         ...(standDown ? { display: 'none' } : {}),
       }}
       // Out of the accessibility tree, and out of the tab order with it (the
@@ -584,21 +571,24 @@ export function LessonPlate({
       className={cn(
         'pointer-events-auto fixed z-30 flex w-full flex-col overflow-hidden',
         desktop
-          ? // Bottom-RIGHT, not bottom-centre: the character is composed into
-            // the free width on the left, which is the arrangement the owner
-            // described and the one the camera is already solving for.
-            //
-            // THE CEILING IS A BAND OF ISLAND, NOT A FRACTION OF THE VIEWPORT
-            // (/DESIGN.md `layout.immersive.plate-max-height`, changed
-            // 2026-08-22). `62vh` reserved 38% of the screen above the plate,
-            // which is generous on a tall monitor and ruinous on a laptop: the
-            // shorter the screen, the smaller the plate got, and the exercise
-            // was already the thing that did not fit. Measured at 1280x800 it
-            // left 280 px of empty island over a panel whose learner had to
-            // scroll to reach the answers. A constant band is the honest rule —
-            // the four gaps around the plate are the design, and a gap is a
-            // distance rather than a percentage.
-            `bottom-6 right-6 ${PLATE_MAX_HEIGHT}`
+          ? /*
+             * A DOCKED FULL-HEIGHT PANEL (owner sign-off 2026-08-28), replacing
+             * the floating bottom-right corner plate. The owner's feedback was
+             * that the floating plate — content-fitted, transcript folded, the
+             * conversation living in a corner — read as disorganised: on the
+             * one breakpoint with room for everything, the conversation, the
+             * activity and the composer should simply BE there, side by side
+             * with the stage. The island keeps ~66-70% of the width, the camera
+             * composes the character into it (this panel publishes its rect on
+             * the `lesson` safe-area slot exactly as the corner plate did), and
+             * the microphone dock already steps left of the corner claim
+             * (`StageShell` → `besidePlate`). What is deliberately KEPT from
+             * the rejected two-panel split's post-mortem: the panel is Lumen
+             * material over the island, never an opaque slab, and the stage is
+             * never squeezed into a half-width cell — the canvas stays
+             * full-bleed underneath.
+             */
+            'inset-y-0 right-0'
           : 'inset-x-0 bottom-4 mx-auto motion-safe:transition-[height] motion-safe:duration-300 motion-safe:ease-[var(--lf-ease)]',
         className,
       )}

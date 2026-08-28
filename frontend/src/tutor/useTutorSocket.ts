@@ -121,6 +121,12 @@ export interface TutorSocket {
   abandonAudioStream: () => void;
   /** The learner cut in: stop the in-flight production server-side too. */
   interrupt: () => void;
+  /**
+   * Rephrase the learner's LAST message. The working history drops the pair it
+   * replaces (their line and the tutor's answer) locally AND server-side; the
+   * persisted transcript keeps everything, append-only.
+   */
+  editLast: (text: string) => void;
   reportGrade: (segmentId: string, score: number, correct: boolean) => void;
   answerAdaptation: (adaptation: Adaptation, accepted: boolean) => void;
   endSession: () => void;
@@ -402,6 +408,23 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     send({ type: 'interrupt' });
   }, [send]);
 
+  const editLast = useCallback(
+    (text: string) => {
+      const trimmed = text.trim();
+      if (trimmed === '') return;
+      setHistory((prev) => {
+        // Mirror of the server's rewind: drop the trailing tutor reply (if
+        // one landed) and the learner line it answered, then echo the new one.
+        const next = [...prev];
+        if (next.at(-1)?.speaker === 'tutor') next.pop();
+        if (next.at(-1)?.speaker === 'learner') next.pop();
+        return [...next, { speaker: 'learner', text: trimmed, seq: -1 }];
+      });
+      send({ type: 'learner_edit', text: trimmed });
+    },
+    [send],
+  );
+
   const reportGrade = useCallback(
     (segmentId: string, score: number, correct: boolean) => {
       // The panel clears as soon as the result is reported: the tutor's next
@@ -442,6 +465,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     commitAudioStream,
     abandonAudioStream,
     interrupt,
+    editLast,
     reportGrade,
     answerAdaptation,
     endSession,

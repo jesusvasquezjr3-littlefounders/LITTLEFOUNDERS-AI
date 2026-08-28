@@ -416,6 +416,39 @@ describe('a real live session over a real websocket', () => {
     socket.close();
   });
 
+  it('lets the learner rephrase their last message — the working history rewinds one exchange', async () => {
+    freshJournal();
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const answered = collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quiero ahorrar para una bici' }));
+    await answered;
+
+    await new Promise((r) => setTimeout(r, 750));
+    const revised = collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    socket.send(JSON.stringify({ type: 'learner_edit', text: 'quiero ahorrar para una patineta' }));
+    expect((await revised).find((m) => m.type === 'turn')).toBeDefined();
+
+    // The model's LAST request carries the rephrasing and NOT the original
+    // pair it replaced: the tutor answers the new question, not a
+    // conversation arguing with itself.
+    const lastAuthorBody = [...modelJournal.bodies]
+      .reverse()
+      .find((b) => !b.includes('child-safety reviewer'));
+    expect(lastAuthorBody).toContain('patineta');
+    expect(lastAuthorBody).not.toContain('bici');
+
+    // The persisted transcript keeps BOTH learner lines — append-only, as a
+    // guardian-readable record must be.
+    await new Promise((r) => setTimeout(r, 150));
+    const learnerLines = journal.turns.filter((t) => t.speaker === 'learner');
+    expect(learnerLines.some((t) => t.text.includes('bici'))).toBe(true);
+    expect(learnerLines.some((t) => t.text.includes('patineta'))).toBe(true);
+
+    socket.close();
+  });
+
   it('refuses a grade for an activity this session never served', async () => {
     freshJournal();
     const { socket } = open(await socketUrl());

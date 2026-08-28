@@ -280,7 +280,9 @@ export function OfferChips({
      */
     const weak = offers.weakSkills[0];
     if (weak) {
-      const topic = readableSkill(weak.skillKey);
+      // Core resolves the topic's real title now; the slug regex survives only
+      // as the fallback for an entry Core could not resolve.
+      const topic = weak.title ?? readableSkill(weak.skillKey);
       list.push({
         id: 'weak_skill',
         icon: 'lightbulb',

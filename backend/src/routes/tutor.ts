@@ -657,6 +657,14 @@ export function tutorRouter(): Router {
       backdrop: prefs.backdrop,
       nickname: prefs.nickname,
       adaptations: prefs.adaptations,
+      /*
+       * Whether this learner has ever SAVED a preference — which, since the
+       * picker's Done now always persists, means "has been offered the
+       * picker". The client used to remember this in localStorage only, so a
+       * cleared browser re-opened the picker forever. The epoch sentinel is
+       * `getTutorPreferences`' own marker for "no row yet"; no schema change.
+       */
+      personalized: prefs.updated_at !== new Date(0).toISOString(),
       // The catalog travels WITH the preferences so the picker is driven by
       // the server, never by a hard-coded list in the client that drifts the
       // moment a diorama is added (/ORACLE.md §0 assumption 1).
@@ -755,6 +763,20 @@ export function tutorRouter(): Router {
     const recent = await listRecentSummaries(user.id);
     const last = recent?.[0] ?? null;
 
+    /*
+     * The flagged skill's HUMAN title, for the one chip that shows it. The
+     * client used to run the raw slug through a regex (`readableSkill`) and
+     * show "Ahorro con meta" carved out of "financial-education/ahorro-con-
+     * meta" — passable in Spanish, wrong the moment a slug and its title
+     * diverge. Resolved only for the first entry because only the first is
+     * ever rendered.
+     */
+    const flagged = weak[0];
+    const flaggedContext =
+      flagged && (flagged.courseId || flagged.topicId)
+        ? await resolveCourseContext(flagged.courseId, flagged.topicId, locale)
+        : null;
+
     return ok(res, {
       locale,
       lastSession: last
@@ -776,8 +798,10 @@ export function tutorRouter(): Router {
       microphoneBlockedBy: microphoneBlockedBy(isMinor, consent !== null, runtime),
       // The tutor offers, never diagnoses. The client renders these as
       // invitations, and declining is not recorded as a fact about anyone.
-      weakSkills: weak.map((s) => ({
+      weakSkills: weak.map((s, index) => ({
         skillKey: s.skillKey,
+        title:
+          index === 0 ? (flaggedContext?.topicTitle ?? flaggedContext?.courseTitle ?? null) : null,
         courseId: s.courseId,
         topicId: s.topicId,
         recommendedAction: s.recommendedAction,
