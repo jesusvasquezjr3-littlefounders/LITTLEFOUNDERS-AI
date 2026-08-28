@@ -59,8 +59,10 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 const auth = (req: request.Test) => req.set('Authorization', `Bearer ${token}`);
-const step = (body: unknown) => auth(request(createApp()).post(`/api/v1/placement/${COURSE_SLUG}/step`)).send(body);
-const commit = (body: unknown) => auth(request(createApp()).post(`/api/v1/placement/${COURSE_SLUG}/commit`)).send(body);
+// `unknown` because several tests post a deliberately malformed body; supertest's
+// .send() only accepts string | object.
+const step = (body: unknown) => auth(request(createApp()).post(`/api/v1/placement/${COURSE_SLUG}/step`)).send(body as string | object);
+const commit = (body: unknown) => auth(request(createApp()).post(`/api/v1/placement/${COURSE_SLUG}/commit`)).send(body as string | object);
 
 /** Walks the whole quiz, answering correctly for topics in `knows`. */
 async function playQuiz(knows: Set<string>, signals: Record<string, unknown> = {}) {

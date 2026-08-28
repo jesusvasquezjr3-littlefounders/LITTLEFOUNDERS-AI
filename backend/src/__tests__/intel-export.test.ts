@@ -63,12 +63,17 @@ afterEach(() => {
   resetExclusionsForTests();
 });
 
-function binary() {
-  return (res: NodeJS.ReadableStream, callback: (err: Error | null, body: Buffer) => void): void => {
+/*
+ * The STREAM form of supertest's `parse` union. Typed as the library's own
+ * parameter type rather than structurally, because TypeScript cannot narrow
+ * the `((str) => any) | ((res, cb) => void)` union from this signature alone.
+ */
+function binary(): Parameters<request.Test['parse']>[0] {
+  return ((res: NodeJS.ReadableStream, callback: (err: Error | null, body: Buffer) => void): void => {
     const chunks: Buffer[] = [];
     res.on('data', (chunk: Buffer) => chunks.push(chunk));
     res.on('end', () => callback(null, Buffer.concat(chunks)));
-  };
+  }) as unknown as Parameters<request.Test['parse']>[0];
 }
 
 describe('GET /api/v1/admin/intel-export.csv', () => {
@@ -152,7 +157,10 @@ describe('GET /api/v1/admin/intel-export.xlsx', () => {
     expect(res.headers['content-type']).toContain('spreadsheetml');
 
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(res.body as Buffer);
+    // ExcelJS types its own `Buffer` from an older @types/node where the class
+    // is not generic; Node 24 makes it `Buffer<ArrayBufferLike>`. Same bytes,
+    // incompatible declarations.
+    await workbook.xlsx.load(res.body as unknown as Parameters<typeof workbook.xlsx.load>[0]);
     const names = workbook.worksheets.map((sheet) => sheet.name);
     expect(names).toContain('About');
     expect(names).toContain('Engagement');

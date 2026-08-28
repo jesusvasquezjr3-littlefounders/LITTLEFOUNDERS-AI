@@ -6480,7 +6480,7 @@ export default tseslint.config(
     "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "lint": "eslint .",
 ```
 
@@ -6678,8 +6678,8 @@ import type { PlausibleReportData } from '../services/pulse.js';
  */
 
 const DATA: PlausibleReportData = {
-  audience: 'full',
-  period: '30d',
+  // Null on purpose: the PDF must render when the first-party views could not
+  // be read, and it must say "unavailable" rather than print zeros.
 ```
 
 ### backend/src/__tests__/analytics.test.ts
@@ -7029,9 +7029,9 @@ import { describe, expect, it } from 'vitest';
 import { findGradingSegment, gradedSegmentIds, pickLessonLocale, stripAnswers, xpBySegmentId } from '../services/lessonDocument.js';
 
 const rows = [
-  { lesson_id: 'l1', locale: 'en-US', schema_version: 1, document: { locale: 'en-US' }, answer_keys: {} },
-  { lesson_id: 'l1', locale: 'es-MX', schema_version: 1, document: { locale: 'es-MX' }, answer_keys: {} },
-  { lesson_id: 'l1', locale: 'pt-BR', schema_version: 1, document: { locale: 'pt-BR' }, answer_keys: {} },
+  { lesson_id: 'l1', locale: 'en-US', schema_version: 1, document: { locale: 'en-US' }, answer_keys: {}, audio: {}, updated_at: '2026-08-01T00:00:00Z' },
+  { lesson_id: 'l1', locale: 'es-MX', schema_version: 1, document: { locale: 'es-MX' }, answer_keys: {}, audio: {}, updated_at: '2026-08-01T00:00:00Z' },
+  { lesson_id: 'l1', locale: 'pt-BR', schema_version: 1, document: { locale: 'pt-BR' }, answer_keys: {}, audio: {}, updated_at: '2026-08-01T00:00:00Z' },
 ];
 
 describe('pickLessonLocale', () => {
@@ -8332,6 +8332,26 @@ process.env.TUTOR_SESSION_SECRET ??= 'test-tutor-session-secret-0123456789abcd';
   },
   "include": ["src"],
   "exclude": ["src/__tests__"]
+```
+
+### backend/tsconfig.test.json
+
+```
+{
+  /*
+   * Type-checking for the TEST tree.
+   *
+   * `backend/tsconfig.json` excluded `src/__tests__` outright, so no fixture
+   * was ever checked against the types it claimed. That is how a required
+   * field added to `PlausibleReportData` shipped with a report fixture that
+   * did not have it: green tests, green build, and a drift that only a runtime
+   * path would ever have surfaced.
+   *
+   * One setting is deliberately relaxed. `noUncheckedIndexedAccess` produces
+   * 42 `possibly undefined` errors, every one of them a test indexing its own
+   * in-memory fixture (`db.learning_events`) that it just populated two lines
+   * above. That is noise about the shape of the harness, not about the code —
+   * and a gate whose output is 90% noise is a gate people learn to skip.
 ```
 
 ### backend/vitest.config.ts

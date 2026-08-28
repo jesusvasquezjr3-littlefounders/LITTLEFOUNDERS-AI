@@ -86,7 +86,9 @@ function post(body: unknown = KID, sub = randomUUID()) {
   return request(createApp())
     .post('/api/v1/family/kids')
     .set('Authorization', `Bearer ${mintToken({ sub })}`)
-    .send(body);
+    // `body` is `unknown` because several tests deliberately post a malformed
+    // shape; supertest's .send() only accepts string | object.
+    .send(body as string | object);
 }
 
 describe('POST /api/v1/family/kids', () => {

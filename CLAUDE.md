@@ -288,7 +288,7 @@ Full catalog, ritual, and attribution rules: `TEAM_PROTOCOL.md`. Design skills r
 
 All of these must pass, in every service you touched:
 
-- [ ] `npm run type-check` — clean
+- [ ] `npm run type-check` — clean. **In `backend/` this checks the TEST tree too** (`tsconfig.test.json`), because excluding it is how a fixture drifts from the production type it claims: a required field added to `PlausibleReportData` shipped with a report fixture that lacked it, green on every other gate. That config must state `"exclude": []` — `extends` inherits the parent's exclusion, and without it the config written to check the tests excludes the tests and passes everything
 - [ ] `npm run lint` — clean
 - [ ] `npm test` — green, with tests added for new logic
 - [ ] `npm run build` — must pass green (verify CI in all services)

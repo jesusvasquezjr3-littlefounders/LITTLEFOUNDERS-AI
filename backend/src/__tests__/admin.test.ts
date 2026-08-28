@@ -265,8 +265,8 @@ function stubData(
           return Promise.resolve(jsonResponse(503, { message: 'upstream unavailable' }));
         }
         let total = 0;
-        if (url.includes('/courses')) total = overviewCounts.courses[decodeURIComponent(new URL(url).searchParams.get('status')?.replace('eq.', '') ?? '')] ?? 0;
-        if (url.includes('/lessons')) total = overviewCounts.lessons[decodeURIComponent(new URL(url).searchParams.get('status')?.replace('eq.', '') ?? '')] ?? 0;
+        if (url.includes('/courses')) total = (overviewCounts.courses as Record<string, number>)[decodeURIComponent(new URL(url).searchParams.get('status')?.replace('eq.', '') ?? '')] ?? 0;
+        if (url.includes('/lessons')) total = (overviewCounts.lessons as Record<string, number>)[decodeURIComponent(new URL(url).searchParams.get('status')?.replace('eq.', '') ?? '')] ?? 0;
         if (url.includes('/audit_logs')) total = overviewCounts.audit;
         return Promise.resolve(new Response('[]', { status: 200, headers: { 'Content-Range': `0-0/${total}` } }));
       }

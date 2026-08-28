@@ -11,6 +11,9 @@ import type { PlausibleReportData } from '../services/pulse.js';
  */
 
 const DATA: PlausibleReportData = {
+  // Null on purpose: the PDF must render when the first-party views could not
+  // be read, and it must say "unavailable" rather than print zeros.
+  firstParty: null,
   audience: 'full',
   period: '30d',
   from: '2026-07-16',

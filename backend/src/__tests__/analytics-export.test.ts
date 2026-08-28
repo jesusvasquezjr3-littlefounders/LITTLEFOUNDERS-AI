@@ -121,7 +121,10 @@ describe('XLSX export', () => {
     expect(buffer.subarray(0, 2).toString('latin1')).toBe('PK'); // a real zip container
 
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(buffer);
+// ExcelJS types its own `Buffer` from an older @types/node where the class
+    // is not generic; Node 24 makes it `Buffer<ArrayBufferLike>`. Same bytes,
+    // incompatible declarations — a library-typing friction, not a defect.
+    await workbook.xlsx.load(buffer as unknown as Parameters<typeof workbook.xlsx.load>[0]);
     const names = workbook.worksheets.map((sheet) => sheet.name);
     expect(names).toContain('Summary');
     expect(names).toContain('Daily trend');
@@ -141,7 +144,10 @@ describe('XLSX export', () => {
   it('prints an unavailable comparison as text, never as a zero change', async () => {
     const buffer = await renderAnalyticsReportXlsx({ ...REPORT, previous: null });
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(buffer);
+// ExcelJS types its own `Buffer` from an older @types/node where the class
+    // is not generic; Node 24 makes it `Buffer<ArrayBufferLike>`. Same bytes,
+    // incompatible declarations — a library-typing friction, not a defect.
+    await workbook.xlsx.load(buffer as unknown as Parameters<typeof workbook.xlsx.load>[0]);
     const flat = JSON.stringify(workbook.getWorksheet('Summary')?.getSheetValues());
     expect(flat).toContain('n/a');
     expect(flat).toContain('none available');

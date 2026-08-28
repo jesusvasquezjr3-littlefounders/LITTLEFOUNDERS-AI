@@ -1,0 +1,36 @@
+{
+  /*
+   * Type-checking for the TEST tree.
+   *
+   * `backend/tsconfig.json` excluded `src/__tests__` outright, so no fixture
+   * was ever checked against the types it claimed. That is how a required
+   * field added to `PlausibleReportData` shipped with a report fixture that
+   * did not have it: green tests, green build, and a drift that only a runtime
+   * path would ever have surfaced.
+   *
+   * One setting is deliberately relaxed. `noUncheckedIndexedAccess` produces
+   * 42 `possibly undefined` errors, every one of them a test indexing its own
+   * in-memory fixture (`db.learning_events`) that it just populated two lines
+   * above. That is noise about the shape of the harness, not about the code —
+   * and a gate whose output is 90% noise is a gate people learn to skip.
+   *
+   * Everything that catches DRIFT stays on: `strict`, so a fixture that no
+   * longer matches the production type it claims is a red build, which is the
+   * defect this file exists to catch.
+   */
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noUncheckedIndexedAccess": false,
+    "noEmit": true
+  },
+  "include": ["src"],
+  /*
+   * MUST be stated. `extends` INHERITS `exclude`, and the parent excludes
+   * `src/__tests__` — so without this line the config that exists to check the
+   * test tree excludes the test tree and reports zero errors on anything.
+   * Caught by A/B test: deleting a required field from a fixture left this
+   * green. A gate that silently passes everything is worse than no gate,
+   * because it is also believed.
+   */
+  "exclude": []
+}
