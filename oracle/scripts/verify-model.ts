@@ -159,6 +159,8 @@ async function main(): Promise<void> {
       courseContext: null,
       skillStates: [],
       turnHistory: [{ speaker: 'learner', text: '¿Qué significa de verdad ahorrar?' }],
+      planState: null,
+      previousSessions: [],
     });
     ok('sealContext accepted an ordinary context');
   } catch (error) {
