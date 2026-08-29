@@ -20,6 +20,7 @@ import { generateSegment } from '../content/generate.js';
 import { moderationReadiness } from '../safety/moderation.js';
 import { TutorOrchestrator, type TurnOutcome } from '../tutor/orchestrator.js';
 import { CLOSE_CODES, ClientMessageSchema, MAX_AUDIO_B64_CHARS, type ServerMessage } from './protocol.js';
+import { assembleClip, decodeChunk } from './audioAssembly.js';
 
 /*
  * The one browser-facing socket (/AGENTS.md §1.5 Oracle exception).
@@ -67,7 +68,15 @@ interface Live {
    * total, enforced against the SAME ceiling as the whole-clip frame so the
    * chunk path cannot carry what the single frame would refuse.
    */
-  assembly: { mimeType: string; parts: string[]; chars: number } | null;
+  /*
+    * A streamed upload, held as DECODED BYTES.
+    *
+    * It used to hold the base64 strings and join them at commit, which silently
+    * truncated every microphone turn to its first chunk — see the commit case
+    * below. Decoding on arrival makes the concatenation a byte operation, which
+    * is the only kind that is correct.
+    */
+  assembly: { mimeType: string; parts: Buffer[]; bytes: number; chars: number } | null;
   microphone: boolean;
   closing: boolean;
   /**
@@ -664,7 +673,7 @@ async function onMessage(live: Live, raw: string): Promise<void> {
     }
 
     case 'learner_audio':
-      await handleAudioClip(live, message.data.audio, message.data.mimeType);
+      await handleAudioClip(live, decodeChunk(message.data.audio), message.data.mimeType);
       return;
 
     /*
@@ -683,7 +692,7 @@ async function onMessage(live: Live, raw: string): Promise<void> {
         });
         return;
       }
-      live.assembly = { mimeType: message.data.mimeType, parts: [], chars: 0 };
+      live.assembly = { mimeType: message.data.mimeType, parts: [], bytes: 0, chars: 0 };
       return;
 
     case 'learner_audio_chunk': {
@@ -704,7 +713,14 @@ async function onMessage(live: Live, raw: string): Promise<void> {
         send(live.socket, { type: 'error', code: 'AUDIO_TOO_LONG', message: 'That was too long.' });
         return;
       }
-      assembly.parts.push(message.data.audio);
+      /*
+       * DECODE HERE, NOT AT COMMIT. Each frame carries its OWN complete base64
+       * document, padding included, so joining the strings puts `=` in the
+       * middle and every decoder stops there.
+       */
+      const bytes = decodeChunk(message.data.audio);
+      assembly.parts.push(bytes);
+      assembly.bytes += bytes.byteLength;
       assembly.chars += message.data.audio.length;
       return;
     }
@@ -720,7 +736,25 @@ async function onMessage(live: Live, raw: string): Promise<void> {
         });
         return;
       }
-      await handleAudioClip(live, assembly.parts.join(''), assembly.mimeType);
+      /*
+        * THE DEFECT THIS REPLACES — why the Tutor heard "Ah." when a learner
+        * asked "¿Qué es el interés compuesto?".
+        *
+        * This was `assembly.parts.join('')`: the parts are separately base64
+        * encoded frames, and concatenating base64 STRINGS is not the same
+        * operation as base64-encoding concatenated BYTES. Any chunk whose byte
+        * length is not a multiple of three ends in `=` padding, so joining puts
+        * padding in the middle of the document and every decoder stops there.
+        * Measured: two four-byte chunks joined this way decode to four bytes,
+        * not eight.
+        *
+        * MediaRecorder's first chunk is the container header plus a fraction of
+        * a second of audio, so what actually reached the transcriber was the
+        * first syllable of the sentence — for every microphone turn, on every
+        * browser, since streaming was introduced. Concatenating the decoded
+        * buffers is the whole fix.
+        */
+      await handleAudioClip(live, assembleClip(assembly.parts), assembly.mimeType);
       return;
     }
   }
@@ -733,7 +767,7 @@ async function onMessage(live: Live, raw: string): Promise<void> {
  * run before any gate, so a burst of frames bought a burst of transcriptions
  * and discarded all but one.
  */
-async function handleAudioClip(live: Live, base64: string, mimeType: string): Promise<void> {
+async function handleAudioClip(live: Live, audio: Buffer, mimeType: string): Promise<void> {
   if (!live.microphone) {
     send(live.socket, {
       type: 'error',
@@ -749,7 +783,7 @@ async function handleAudioClip(live: Live, base64: string, mimeType: string): Pr
   // starts the moment they release the button, not when STT returns.
   send(live.socket, { type: 'thinking' });
   try {
-    const text = await transcribe(base64, mimeType, live.session);
+    const text = await transcribe(audio, mimeType, live.session);
     if (text === null || text.trim() === '') {
       send(live.socket, { type: 'error', code: 'STT_FAILED', message: 'I did not catch that.' });
       return;
@@ -1126,7 +1160,7 @@ async function finish(
 }
 
 async function transcribe(
-  base64: string,
+  audio: Buffer,
   mimeType: string,
   session: SessionContext,
 ): Promise<string | null> {
@@ -1134,7 +1168,7 @@ async function transcribe(
   if (!provider.available) return null;
   try {
     const result = await provider.transcribe({
-      audio: Buffer.from(base64, 'base64'),
+      audio,
       mimeType,
       locale: session.locale,
     });
