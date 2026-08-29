@@ -672,17 +672,34 @@ describe('the tutor can see the activity on screen', () => {
     expect(body).toContain('pagar EXACTAMENTE');
   });
 
-  it('forgets it once graded, so the tutor never references a screen that moved on', async () => {
+  it('KEEPS it through the grade, because that is the turn that needs it most', async () => {
+    // The first version of this fix cleared on grade, and it was backwards:
+    // the turn reacting to a result is the one turn that must know what the
+    // learner just did. Observed with the clear in place — the learner ordered
+    // eight denominations by value and the tutor praised them for "juntar
+    // monedas", having been told nothing. A graded activity also does not
+    // vanish; it sits in the panel wearing its verdict.
     fetchMock.mockResolvedValue(modelReplies(GOOD_TURN));
     const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
     orchestrator.noteSegmentServed('seg-1', 'financial-education/x', 'coin_count', PROMPT);
-    await orchestrator.handleSegmentResult('seg-1', 100, Date.now());
 
     fetchMock.mockClear();
     fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
-    await orchestrator.handleLearnerText('y ahora?', Date.now());
+    await orchestrator.handleSegmentResult('seg-1', 100, Date.now());
 
-    expect(String(fetchMock.mock.calls[0]?.[1]?.body ?? '')).not.toContain('pagar EXACTAMENTE');
+    expect(String(fetchMock.mock.calls[0]?.[1]?.body ?? '')).toContain('pagar EXACTAMENTE');
+  });
+
+  it('is replaced when the next activity arrives, never stacked', async () => {
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    orchestrator.noteSegmentServed('seg-1', 'financial-education/x', 'coin_count', PROMPT);
+    orchestrator.noteSegmentServed('seg-2', 'financial-education/y', 'order_steps', 'Ordénalos del que vale menos al que vale más.');
+    await orchestrator.handleLearnerText('listo', Date.now());
+
+    const body = String(fetchMock.mock.calls[0]?.[1]?.body ?? '');
+    expect(body).toContain('Ordénalos');
+    expect(body).not.toContain('pagar EXACTAMENTE');
   });
 
   it('carries our catalog text and nothing the learner did', async () => {

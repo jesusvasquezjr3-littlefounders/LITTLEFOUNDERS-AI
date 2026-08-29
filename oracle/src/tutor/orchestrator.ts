@@ -333,10 +333,21 @@ export class TutorOrchestrator {
         : null;
   }
 
-  /** Cleared when the activity is graded — it is no longer on screen. */
-  private clearOpenActivity(): void {
-    this.openActivity = null;
-  }
+  /*
+   * DELIBERATELY NOT CLEARED ON GRADE.
+   *
+   * The first version cleared it the moment an activity was graded, and that
+   * is exactly backwards: the turn that reacts to a result is the one turn
+   * that most needs to know what the learner just did. Observed on 2026-08-29
+   * with the clear in place — the learner ordered eight denominations by
+   * value and the tutor congratulated them for "juntar monedas", because by
+   * then it had been told nothing at all.
+   *
+   * It is also wrong about the screen. A graded activity does not vanish; it
+   * stays in the panel wearing its verdict. So the activity survives until
+   * ANOTHER one replaces it (`noteSegmentServed` overwrites) or the session
+   * ends, which is exactly what the learner is looking at.
+   */
 
   /** Whether this session actually served the segment a grade claims to be for. */
   wasServed(segmentId: string): boolean {
@@ -391,7 +402,6 @@ export class TutorOrchestrator {
     // so the order is: count the miss, then ask what it now amounts to.
     recordGrade(this.plan, skillKey, correct);
     if (this.openCheckableSegment === segmentId) this.openCheckableSegment = null;
-    this.clearOpenActivity();
 
     /*
      * THE CONTROLLER SUPERSEDES THE STUCK COUNTER when it is active: the same
@@ -443,7 +453,6 @@ export class TutorOrchestrator {
     this.nudgeSkillEstimate(skillKey, result.correct);
     recordGrade(this.plan, skillKey, result.correct);
     if (this.openCheckableSegment === segmentId) this.openCheckableSegment = null;
-    this.clearOpenActivity();
 
     const extra = this.strategyInstruction(
       { kind: 'voice_result', correct: result.correct, misconceptionCode: result.misconceptionCode },
