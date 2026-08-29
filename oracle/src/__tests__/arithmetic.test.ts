@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { checkAnswer, numberAnswered, questionAsked } from '../tutor/arithmetic.js';
+import {
+  answersItsOwnQuestion,
+  checkAnswer,
+  numberAnswered,
+  questionAsked,
+} from '../tutor/arithmetic.js';
 
 /*
  * Correctness decided by computation, never by the model — the blueprint's
@@ -85,5 +90,36 @@ describe('the verdict', () => {
     expect(checkAnswer('Muy bien.', '25')).toBeNull();
     expect(checkAnswer('¿Cuánto es 20 más 5?', 'no sé')).toBeNull();
     expect(checkAnswer('¿Qué es un descuento?', '25')).toBeNull();
+  });
+});
+
+describe('a turn that asks and answers itself', () => {
+  /*
+   * The blueprint's §9.4, stated as a hard rule with a number: never give the
+   * final answer while asking. The shipped product did it — from the owner's
+   * session of 2026-08-28:
+   *
+   *   "...si una flor cuesta 5 pesos, ¿cuánto cuestan dos?"
+   *   "¡Diez pesos! Oye, Jason, ¿qué es lo que crees que cuesta diez pesos?"
+   */
+  it('catches the answer stated before the question', () => {
+    expect(answersItsOwnQuestion('El total es 15. ¿Cuánto es 10 más 5?')).toBe(true);
+  });
+
+  it('leaves an honest question alone', () => {
+    expect(answersItsOwnQuestion('¿Cuánto es 10 más 5?')).toBe(false);
+    expect(answersItsOwnQuestion('Imagina 10 monedas y 5 más. ¿Cuántas tienes?')).toBe(false);
+  });
+
+  it('does not count an OPERAND as the answer', () => {
+    // "15" appears in the lead-in and is also an operand. Seeing it says
+    // nothing about whether the answer was given away.
+    expect(answersItsOwnQuestion('Tenías 15 monedas. ¿Cuánto es 15 más 15?')).toBe(false);
+  });
+
+  it('judges only the FINAL question, because that is the shape lessons use', () => {
+    // The correction to the previous answer is not a give-away for the new
+    // question. Flagging this would fire on every good lesson.
+    expect(answersItsOwnQuestion('Casi, 10 más 3 es 13. ¿Y cuánto es 10 más 7?')).toBe(false);
   });
 });

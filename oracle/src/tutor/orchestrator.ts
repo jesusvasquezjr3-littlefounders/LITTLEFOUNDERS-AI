@@ -14,7 +14,7 @@ import {
   PedagogicalController,
   type PedagogyEvent,
 } from './controller.js';
-import { checkAnswer } from './arithmetic.js';
+import { answersItsOwnQuestion, checkAnswer } from './arithmetic.js';
 import { classifyLearnerInput, type SafetyCategory } from '../safety/classifier.js';
 import { fenceUntrusted } from '../safety/untrusted.js';
 import { moderateTutorOutput } from '../safety/moderation.js';
@@ -970,9 +970,20 @@ export class TutorOrchestrator {
               opts.isSystemPrompted === true ? '' : (this.history.at(-1)?.text ?? '');
             const falsePraise =
               spokenAnswer !== '' && praiseContradictsAnswer(parsed.turn.say, spokenAnswer);
+            /*
+             * §9.4 of the blueprint, stated as a hard rule: never give the
+             * final answer while asking. Detected by computing the question's
+             * answer and looking for it in the lead-in, which is exact where a
+             * classifier would be probabilistic.
+             */
+            const givesAwayAnswer = answersItsOwnQuestion(parsed.turn.say);
             if (violation !== null && attempt === 0) {
               turnCorrection = `used ${violation}, which this learner's age band must never hear. Say the same idea again for their age, using only whole numbers and things they can picture`;
               console.warn(`[oracle] tier ${this.session.tier} vocabulary slip (${violation}) — asking again`);
+            } else if (givesAwayAnswer && attempt === 0) {
+              turnCorrection =
+                'asked the learner a question and stated its answer in the same turn. Ask the question WITHOUT the answer — handing it to them removes the one act that does the teaching';
+              console.warn('[oracle] turn answered its own question — asking again');
             } else if (falsePraise && attempt === 0) {
               turnCorrection =
                 "congratulated the learner for an answer that was WRONG, and then stated the right one. Say \"casi\" instead, show the correct result and how to reach it, and do not tell them they are doing well at something they just got wrong";
@@ -992,6 +1003,9 @@ export class TutorOrchestrator {
               }
               if (falsePraise) {
                 console.warn('[oracle] praise of a wrong answer SURVIVED the retry — delivered');
+              }
+              if (givesAwayAnswer) {
+                console.warn('[oracle] self-answered question SURVIVED the retry — delivered');
               }
               turn = parsed.turn;
             }

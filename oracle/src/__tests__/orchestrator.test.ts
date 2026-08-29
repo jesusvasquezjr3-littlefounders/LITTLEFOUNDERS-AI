@@ -917,3 +917,39 @@ describe('correctness is computed, not asked for', () => {
     expect(String(fetchMock.mock.calls[0]?.[1]?.body ?? '')).not.toContain('VERIFIED BY THE SYSTEM');
   });
 });
+
+describe('a turn may not answer its own question', () => {
+  /*
+   * The blueprint's §9.4, and the shipped product broke it. From the owner's
+   * session of 2026-08-28:
+   *
+   *   "...si una flor cuesta 5 pesos, ¿cuánto cuestan dos?"
+   *   "¡Diez pesos! Oye, Jason, ¿qué es lo que crees que cuesta diez pesos?"
+   *
+   * Handing a child the answer removes the one act that does the teaching.
+   */
+  it('asks again when the answer is stated before the question', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'El total es 15. ¿Cuánto es 10 más 5?' }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: '¿Cuánto es 10 más 5?' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = await orchestrator.handleLearnerText('otra vez', Date.now());
+
+    expect(outcome.emission.turn.say).toBe('¿Cuánto es 10 más 5?');
+    expect(String(fetchMock.mock.calls[1]?.[1]?.body ?? '')).toContain('stated its answer');
+  });
+
+  it('leaves a correction followed by a new question alone', async () => {
+    // Every real lesson has this shape. Flagging it would retry half the turns.
+    const say = 'Casi, Robi. 10 más 3 es 13. ¿Y cuánto es 10 más 7?';
+    fetchMock.mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say })).mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = await orchestrator.handleLearnerText('20', Date.now());
+
+    expect(outcome.emission.turn.say).toBe(say);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+});

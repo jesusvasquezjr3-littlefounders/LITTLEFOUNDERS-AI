@@ -155,3 +155,44 @@ export function checkAnswer(tutorSaid: string, learnerReplied: string): Verdict 
   if (given === null) return null;
   return { correct: given === question.answer, expected: question.answer, given };
 }
+
+/**
+ * A TURN THAT ASKS AND ANSWERS ITSELF.
+ *
+ * The blueprint's §9.4 states it as a hard rule with a number attached: never
+ * give the final answer while asking, verified by an output classifier at ≥95%
+ * precision. It is the single most self-defeating thing a tutor can do — the
+ * child is handed the one act that would have done the teaching.
+ *
+ * The shipped product did it. From the owner's session of 2026-08-28:
+ *
+ *   "...si una flor cuesta 5 pesos, ¿cuánto cuestan dos?"
+ *   "¡Diez pesos! Oye, Jason, ¿qué es lo que crees que cuesta diez pesos?"
+ *
+ * Detected by COMPUTATION rather than by a classifier, which is both cheaper
+ * and exact: read the question the turn asks, compute its answer, and see
+ * whether the same turn already states it. `questionAsked` reads only the final
+ * question, so a turn that CORRECTS a previous answer and then asks a new one —
+ * "Casi, 10 más 3 es 13. ¿Y cuánto es 10 más 7?" — is judged on the new
+ * question only, which is the shape every real lesson uses.
+ */
+export function answersItsOwnQuestion(say: string): boolean {
+  const question = questionAsked(say);
+  if (question === null) return false;
+
+  // Only the text BEFORE the final question can give it away; anything after
+  // is part of the question itself.
+  const lastOpener = Math.max(say.lastIndexOf('¿'), 0);
+  const beforeQuestion = say.slice(0, lastOpener);
+
+  // The answer stated as a bare number is the give-away. `20 más 5` in the
+  // lead-in is the problem being set up, not its answer, so operands are not
+  // counted — only a standalone occurrence of the result.
+  const stated = new RegExp(`(?:^|[^\\d])${question.answer}(?![\\d])`).test(beforeQuestion);
+  if (!stated) return false;
+
+  // ...unless the number IS an operand of the question, in which case seeing it
+  // earlier says nothing. "¿Cuánto es 15 más 15?" answers 30; a 15 in the
+  // lead-in is not the answer.
+  return question.answer !== question.a && question.answer !== question.b;
+}
