@@ -894,14 +894,31 @@ export class TutorOrchestrator {
          * there is none, and telling a model it just failed when it did not is
          * how a first turn starts apologising.
          */
+        /*
+         * The correction comes FIRST and the shape reminder always comes LAST.
+         *
+         * They used to be alternatives, and that was a real cost: the reminder
+         * is what takes whitespace completions from 67% to 0%, so a repair
+         * attempt — which carried the correction INSTEAD — reintroduced them.
+         * Measured on 2026-08-29: three empty completions in one run, one of
+         * which was the retry for a tier-2 vocabulary slip, so the term reached
+         * an eight-year-old because the fix for it came back blank.
+         *
+         * A repair needs both: what to change, and the shape to answer in.
+         */
+        if (attempt === 1) {
+          messages.push({
+            role: 'user' as const,
+            content:
+              turnCorrection !== null
+                ? `Your previous reply ${turnCorrection}.`
+                : 'Your previous reply was not a valid JSON object in the required shape.',
+          });
+        }
         messages.push({
           role: 'user' as const,
           content:
-            attempt === 0
-              ? 'Reply with ONLY the JSON object described above. No prose, no markdown fence, no blank reply.'
-              : turnCorrection !== null
-                ? `Your previous reply ${turnCorrection}. Reply again with ONLY the JSON object.`
-                : 'Your previous reply was not a valid JSON object in the required shape. Reply again with ONLY the JSON object.',
+            'Reply with ONLY the JSON object described above. No prose, no markdown fence, no blank reply.',
         });
 
         try {
