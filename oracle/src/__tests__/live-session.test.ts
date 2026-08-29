@@ -356,6 +356,27 @@ describe('a real live session over a real websocket', () => {
     expect(journal.turns.some((t) => t.speaker === 'learner' && t.text.includes('bici'))).toBe(true);
     expect(journal.turns.some((t) => t.speaker === 'tutor' && t.source === 'model')).toBe(true);
 
+    /*
+     * EVERY ROW CLAIMS ITS OWN `seq`, AND THIS IS THE ASSERTION THAT MATTERED.
+     *
+     * `tutor_turns` is unique on `(session_id, seq)` and written with
+     * `resolution=ignore-duplicates`, so two rows claiming one number means the
+     * second is discarded IN SILENCE. The learner used to be numbered with
+     * `orchestrator.turnCount` (the counter before a turn's increment) and the
+     * tutor with `emission.seq` (the same counter after it), so every learner
+     * line collided with the tutor line before it. Every transcript in
+     * production was the tutor talking to itself, and the owner's written
+     * feedback to the Tutor was thrown away by the database on arrival.
+     *
+     * The two assertions above did NOT catch it and could not: the fake Core
+     * records every write it is handed, while the real one silently drops the
+     * loser of a conflict. The harness modelled the call and not the
+     * constraint (§1.14), so the only honest check is the property the
+     * constraint actually enforces — uniqueness.
+     */
+    const seqs = journal.turns.map((t) => t.seq);
+    expect(new Set(seqs).size, `duplicate seq in ${JSON.stringify(journal.turns)}`).toBe(seqs.length);
+
     // ── the farewell is a real turn, and the close is recorded ──
     const ending = collect(socket, (m) => m.some((x) => x.type === 'closed'));
     socket.send(JSON.stringify({ type: 'end_session' }));

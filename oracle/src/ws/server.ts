@@ -79,6 +79,26 @@ interface Live {
    * different product from the one we promised a guardian, and it ends.
    */
   persistFailures: number;
+  /**
+   * THE TRANSCRIPT'S OWN ROW COUNTER, and it must not be the model-turn seq.
+   *
+   * `tutor_turns` is unique on `(session_id, seq)` and written with
+   * `resolution=ignore-duplicates`, so two rows claiming one seq means the
+   * second is discarded IN SILENCE. That is exactly what shipped: the learner
+   * was persisted with `orchestrator.turnCount` (the counter BEFORE the turn's
+   * increment) and the tutor with `emission.seq` (the same counter AFTER it),
+   * so every learner line collided with the tutor line before it and was
+   * dropped. Every transcript in production is the tutor talking to itself —
+   * a guardian cannot read what their child said, which §1.9 makes an
+   * invariant, and the owner's own written feedback to the Tutor was thrown
+   * away by the database on arrival.
+   *
+   * The model-turn seq cannot simply be reused: it counts MODEL CALLS, it is
+   * on the wire (the client correlates `turn_audio` by it), and one model turn
+   * legitimately produces two transcript rows. So the transcript gets its own
+   * monotonic counter, incremented for every row, learner and tutor alike.
+   */
+  transcriptSeq: number;
   heartbeat: NodeJS.Timeout;
   /** Last pong seen. A socket that stops answering pings is dead, not idle. */
   lastPongAtMs: number;
@@ -137,6 +157,15 @@ interface ParkedSession {
   speech: SpeechScope;
   lastTurnAtMs: number;
   timer: NodeJS.Timeout;
+  /**
+   * Carried across the park, because the transcript's row numbers are unique
+   * per session and a resumed socket keeps writing into the SAME transcript.
+   * Restarting the count at zero would make every row after a reconnect
+   * collide with one already stored and be dropped by `ignore-duplicates` —
+   * the same silent deletion that lost every learner line, wearing a different
+   * hat.
+   */
+  transcriptSeq: number;
 }
 
 const parkedSessions = new Map<string, ParkedSession>();
@@ -149,6 +178,7 @@ function parkSession(sessionId: string, live: Live): void {
     orchestrator: live.orchestrator,
     speech: live.speech,
     lastTurnAtMs: live.lastTurnAtMs,
+    transcriptSeq: live.transcriptSeq,
     timer: setTimeout(() => finalizeParked(sessionId), getConfig().SESSION_RESUME_GRACE_MS),
   };
   entry.timer.unref();
@@ -226,6 +256,20 @@ function send(socket: WebSocket, message: ServerMessage): void {
 
 /** After this many consecutive unconfirmed transcript writes, the session ends. */
 const PERSIST_FAILURE_LIMIT = 5;
+
+/**
+ * The next row number in this session's transcript.
+ *
+ * Allocated EAGERLY by every caller, including the tutor's — whose write waits
+ * on synthesis inside `emission.audio.then(...)`. Allocating in there would
+ * number rows by the order audio happened to resolve rather than by the order
+ * the conversation happened, so a learner's next line could be numbered ahead
+ * of the tutor reply it was answering.
+ */
+function nextTranscriptSeq(live: Live): number {
+  live.transcriptSeq += 1;
+  return live.transcriptSeq;
+}
 
 function notePersist(live: Live, recorded: boolean): void {
   if (recorded) {
@@ -342,6 +386,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
     microphone,
     closing: false,
     persistFailures: 0,
+    transcriptSeq: resumed?.transcriptSeq ?? 0,
     heartbeat: setInterval(() => {
       if (socket.readyState !== socket.OPEN) return;
       const now = Date.now();
@@ -750,7 +795,7 @@ async function handleLearnerTurn(
          */
         void persistTurn({
           sessionId: live.session.sessionId,
-          seq: live.orchestrator.turnCount,
+          seq: nextTranscriptSeq(live),
           speaker: 'learner',
           text,
           source: 'stt',
@@ -766,7 +811,7 @@ async function handleLearnerTurn(
   // even if the tutor's reply never arrives.
   void persistTurn({
     sessionId: live.session.sessionId,
-    seq: live.orchestrator.turnCount,
+    seq: nextTranscriptSeq(live),
     speaker: 'learner',
     text,
     // 'stt' is the wire's only learner-source value today, typed or spoken —
@@ -859,13 +904,24 @@ async function deliver(live: Live, outcome: TurnOutcome | null): Promise<void> {
     ...(emission.turn.demonstrate ? { demonstrate: emission.turn.demonstrate } : {}),
   });
 
+  /*
+   * The row number is claimed HERE, not inside the callback below. The write
+   * itself still waits for synthesis so it can record where the audio lives,
+   * but numbering it there would order the transcript by whichever clip
+   * finished first — putting the learner's next line ahead of the tutor reply
+   * it was answering, in the record a guardian reads.
+   */
+  const tutorRowSeq = nextTranscriptSeq(live);
+
   void emission.audio.then((audioUrl) => {
     send(live.socket, { type: 'turn_audio', seq: emission.seq, audioUrl });
     // The transcript row waits for the clip so it records where the audio
-    // actually lives; the write was always fire-and-forget.
+    // actually lives; the write was always fire-and-forget. `seq` here is the
+    // TRANSCRIPT's row number, never the model-turn seq on the wire above —
+    // conflating the two is what silently deleted every learner line.
     void persistTurn({
       sessionId: live.session.sessionId,
-      seq: emission.seq,
+      seq: tutorRowSeq,
       speaker: 'tutor',
       text: emission.turn.say,
       emotion: emission.turn.emotion,
