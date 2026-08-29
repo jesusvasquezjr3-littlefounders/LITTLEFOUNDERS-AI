@@ -135,6 +135,10 @@ function rememberPicker(userId: string | undefined): void {
   }
 }
 
+/** How long to wait for the voice before calling a turn silent — the `turn`
+ * frame always arrives with a null URL and the audio follows separately. */
+const SILENCE_REPORT_DELAY_MS = 6_000;
+
 export function TutorExperience() {
   const { t } = useTranslation();
   const { getToken, session: authSession } = useAuth();
@@ -511,14 +515,24 @@ export function TutorExperience() {
   useEffect(() => {
     if (phase !== 'conversing' || turn == null) return;
     if (liveSpeechUrl !== null) return;
-    const because = !stageReady
-      ? 'the 3D stage has not reported a first frame (speech gate still closed)'
-      : interrupted
-        ? 'this turn was interrupted by the learner'
-        : turn.audioUrl == null
-          ? 'the server sent no audio URL for this turn (turn_audio missing, dropped, or null)'
-          : 'unknown — the gate is open and a URL exists, so playback is the suspect';
-    console.warn(`[tutor] turn ${turn.seq} is silent: ${because}`);
+    /*
+     * WAIT BEFORE CRYING WOLF. The `turn` frame carries `audioUrl: null` BY
+     * DESIGN — the voice follows in a separate `turn_audio` frame — so checking
+     * immediately reports every healthy turn as silent. The first version of
+     * this diagnostic did exactly that and sent the owner hunting a delivery
+     * bug that was not there.
+     */
+    const timer = window.setTimeout(() => {
+      const because = !stageReady
+        ? 'the 3D stage has not reported a first frame (speech gate still closed)'
+        : interrupted
+          ? 'this turn was interrupted by the learner'
+          : turn.audioUrl == null
+            ? 'no audio URL arrived for this turn within the grace period'
+            : 'unknown — the gate is open and a URL exists, so playback is the suspect';
+      console.warn(`[tutor] turn ${turn.seq} is silent: ${because}`);
+    }, SILENCE_REPORT_DELAY_MS);
+    return () => window.clearTimeout(timer);
   }, [phase, turn, liveSpeechUrl, stageReady, interrupted]);
 
   /*

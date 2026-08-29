@@ -25,6 +25,86 @@ export interface LipSyncOptions {
  * paused, audio silent, or Web Audio unavailable. A mouth that keeps moving
  * after the sound stops is worse than one that never moved.
  */
+
+/*
+ * ONE CONTEXT, ONE SOURCE NODE PER ELEMENT, AND NEITHER IS EVER THROWN AWAY.
+ *
+ * THE BUG THIS CLOSES — the reason the Tutor was silent in production for
+ * every learner, while the entire server side was provably healthy (all twelve
+ * enrolled voices synthesizing, Depot storing and serving, CORS open, and an
+ * `audio_path` on every tutor row in the owner's own sessions):
+ *
+ * `createMediaElementSource(el)` does not tap an element, it CAPTURES it. From
+ * that call onward the element's output goes into the audio graph and nowhere
+ * else, permanently — the binding survives the node, the context, and every
+ * remount. There is no API to undo it.
+ *
+ * The previous version built a NEW AudioContext on every run of the effect and
+ * called `context.close()` in its cleanup. So the first run captured the
+ * element, the first cleanup closed the context its capture lived in, and from
+ * then on the element's audio drained into a dead node. Every later run threw
+ *
+ *   InvalidStateError: HTMLMediaElement already connected previously to a
+ *   different MediaElementSourceNode
+ *
+ * which was caught and logged as "lip-sync could not attach" — a message about
+ * a MOUTH, for a defect that had already silenced the whole product. The
+ * comment beside it even said a failed connection is silence rather than a dead
+ * mouth. It was right, and the handler still just returned.
+ *
+ * So: one context for the page, one source per element, cached, and the
+ * capture is performed at most once. The context is never closed, because
+ * closing it is what silenced the element.
+ */
+let sharedContext: AudioContext | null = null;
+const capturedElements = new WeakMap<HTMLMediaElement, MediaElementAudioSourceNode>();
+
+function audioContextCtor(): typeof AudioContext | null {
+  if (typeof window === 'undefined') return null;
+  return (
+    window.AudioContext ??
+    (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext ??
+    null
+  );
+}
+
+/**
+ * The one source node for this element, creating it only the first time.
+ *
+ * Returns null when Web Audio is unavailable, or when the element was already
+ * captured by something else — a page loaded before this fix, say. Null means
+ * "do not lip-sync"; it must never mean "and also break the sound".
+ */
+function captureOnce(audio: HTMLMediaElement): {
+  context: AudioContext;
+  source: MediaElementAudioSourceNode;
+} | null {
+  const Ctor = audioContextCtor();
+  if (!Ctor) {
+    console.info('[tutor-scene] Web Audio unavailable — lip-sync disabled.');
+    return null;
+  }
+  sharedContext ??= new Ctor();
+  const context = sharedContext;
+
+  const existing = capturedElements.get(audio);
+  if (existing) return { context, source: existing };
+
+  try {
+    const source = context.createMediaElementSource(audio);
+    capturedElements.set(audio, source);
+    return { context, source };
+  } catch (error) {
+    /*
+     * The element belongs to a capture we do not own, so its audio is already
+     * routed somewhere we cannot reach. Nothing here can rescue it — but this
+     * code will not make it worse, and it must not pretend to work.
+     */
+    console.warn('[tutor-scene] this audio element was already captured by another audio graph', error);
+    return null;
+  }
+}
+
 export function useLipSync(audio: HTMLAudioElement | null, options: LipSyncOptions = {}): number {
   const { fftSize = 1024, gain = 2.4 } = options;
   const [viseme, setViseme] = useState(VISEME_CLOSED);
@@ -39,35 +119,17 @@ export function useLipSync(audio: HTMLAudioElement | null, options: LipSyncOptio
       return;
     }
 
-    const AudioContextCtor =
-      window.AudioContext ?? (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!AudioContextCtor) {
-      // No Web Audio: the character simply does not lip-sync. Everything else
-      // about the stage still works, which is the correct degradation.
-      console.info('[tutor-scene] Web Audio unavailable — lip-sync disabled.');
-      return;
-    }
+    const captured = captureOnce(audio);
+    if (!captured) return;
+    const { context, source } = captured;
 
-    const context = new AudioContextCtor();
     const analyser = context.createAnalyser();
     analyser.fftSize = fftSize;
     const samples = new Float32Array(analyser.fftSize);
 
-    let source: MediaElementAudioSourceNode;
-    try {
-      source = context.createMediaElementSource(audio);
-    } catch (error) {
-      /*
-       * An element can only be adopted by one AudioContext, ever. A second
-       * attempt throws, and swallowing it would leave the caller with a muted
-       * player and no idea why — createMediaElementSource ROUTES the audio
-       * through the graph, so a failed connection is silence, not just a dead
-       * mouth.
-       */
-      console.warn('[tutor-scene] lip-sync could not attach to this audio element', error);
-      void context.close();
-      return;
-    }
+    // Re-wire from scratch each run: the source may still be connected from a
+    // previous run, and a duplicated edge would double the signal.
+    source.disconnect();
     source.connect(analyser);
     // Keep the element audible: the analyser is a tap, not a sink.
     analyser.connect(context.destination);
@@ -111,9 +173,18 @@ export function useLipSync(audio: HTMLAudioElement | null, options: LipSyncOptio
     return () => {
       cancelAnimationFrame(frame);
       audio.removeEventListener('play', resume);
-      source.disconnect();
       analyser.disconnect();
-      void context.close();
+      /*
+       * THE ELEMENT MUST ALWAYS HAVE A PATH TO THE SPEAKERS.
+       *
+       * Its output is captured by `source` for the rest of this page's life, so
+       * leaving that node dangling is not "no lip-sync" — it is a permanently
+       * mute player. Tearing down the analyser therefore hands the audio
+       * straight to the destination instead. And the context is NOT closed:
+       * closing it is precisely what silenced the tutor in production.
+       */
+      source.disconnect();
+      source.connect(context.destination);
       setViseme(VISEME_CLOSED);
     };
   }, [audio, fftSize, gain]);
