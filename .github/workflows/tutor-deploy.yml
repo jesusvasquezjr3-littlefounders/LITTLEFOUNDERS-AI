@@ -38,6 +38,7 @@ on:
           - probe
           - migrate
           - seed-kc
+          - probe-models
           - provision
           - domain
           - verify
@@ -285,6 +286,42 @@ jobs:
           echo "Seeding the KC graph against $SUPABASE_URL"
           npm ci --prefix backend --no-audit --no-fund >/dev/null
           npm run --prefix backend seed:kc
+
+      # ── PROBE-MODELS — read-only, answers "then which model?" ────────────
+      #
+      # `provision`'s own model_name description states the requirement: Oracle
+      # needs a NON-reasoning model, because one that spends its completion
+      # budget on reasoning_content hands back an empty answer and the learner
+      # gets the scripted "my thoughts got tangled" line. Production was
+      # nevertheless running one — `deepseek-v4-flash`, measured on 2026-08-29
+      # spending 577 of 666 completion tokens thinking, returning empty content
+      # on two of four probes, and taking 38 s on a turn that needed its retry
+      # against a client that stops waiting at 25 s.
+      #
+      # The requirement was written down and violated for one reason: nobody
+      # could answer "then which one?" without guessing, and a wrong guess
+      # costs a deploy cycle and a tutor that cannot teach. This asks the
+      # provider — it lists what the account can reach and puts each candidate
+      # through one real turn — and CHANGES NOTHING. Adopting the answer stays
+      # a separate, deliberate `provision`.
+      - name: Probe candidate models
+        if: inputs.step == 'probe-models'
+        run: |
+          set -euo pipefail
+          read_var() {
+            railway variable list --service oracle --environment "$ENVIRONMENT" --json 2>/dev/null \
+              | jq -r --arg k "$1" '.[$k] // ""'
+          }
+          export MODEL_API_KEY="$(read_var MODEL_API_KEY)"
+          export MODEL_API_BASE="$(read_var MODEL_API_BASE)"
+          export MODEL_NAME="$(read_var MODEL_NAME)"
+          export INTERNAL_API_KEY="$(read_var INTERNAL_API_KEY)"
+          export TUTOR_SESSION_SECRET="$(read_var TUTOR_SESSION_SECRET)"
+          export CORE_URL="$(read_var CORE_URL)"
+          export CORE_INTERNAL_KEY="$(read_var CORE_INTERNAL_KEY)"
+          [ -n "$MODEL_API_KEY" ] || { echo "::error::oracle MODEL_API_KEY is empty"; exit 1; }
+          npm ci --prefix oracle --no-audit --no-fund >/dev/null
+          npm run --prefix oracle model:probe
 
       # ── PROVISION — creates the service and sets variables ───────────────
       #
