@@ -68,6 +68,13 @@ const MCQ_SEGMENT = {
 };
 
 interface StubOpts {
+  /** Catalog fixtures for the ladder. Absent means "no published content". */
+  courses?: unknown[];
+  topics?: unknown[];
+  lessons?: unknown[];
+  lessonDocuments?: unknown[];
+  kcs?: unknown[];
+  kcEdges?: unknown[];
   roles?: { role: string }[];
   profile?: unknown;
   consent?: unknown[];
@@ -114,6 +121,32 @@ function stub(opts: StubOpts = {}) {
           }),
         );
       }
+      /*
+       * THE CATALOG THE LADDER READS. Absent by default, so every existing
+       * test keeps describing a world with no published content — which is
+       * what they were written against. A test that wants tier 1 to succeed
+       * says so explicitly.
+       */
+      if (url.includes('/rest/v1/courses')) return Promise.resolve(jsonResponse(200, opts.courses ?? []));
+      if (url.includes('/rest/v1/topics')) {
+        /*
+         * The slug filter is HONOURED here, not ignored. A stub that returns
+         * the same topic for every query makes "this skill has no content"
+         * unreachable — which is the exact state the prerequisite fallback
+         * exists for, so the test for it would have passed against no code.
+         */
+        const want = /slug=eq\.([^&]+)/.exec(url)?.[1];
+        const rows = (opts.topics ?? []) as { slug?: string }[];
+        return Promise.resolve(
+          jsonResponse(200, want ? rows.filter((r) => r.slug === decodeURIComponent(want)) : rows),
+        );
+      }
+      if (url.includes('/rest/v1/lessons')) return Promise.resolve(jsonResponse(200, opts.lessons ?? []));
+      if (url.includes('/rest/v1/lesson_documents')) {
+        return Promise.resolve(jsonResponse(200, opts.lessonDocuments ?? []));
+      }
+      if (url.includes('/rest/v1/kc_edge')) return Promise.resolve(jsonResponse(200, opts.kcEdges ?? []));
+      if (url.includes('/rest/v1/kc?')) return Promise.resolve(jsonResponse(200, opts.kcs ?? []));
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, opts.roles ?? [{ role: 'kid' }]));
       if (url.includes('/rest/v1/profiles')) return Promise.resolve(jsonResponse(200, [opts.profile ?? KID_PROFILE]));
       if (url.includes('/rest/v1/tutor_voice_consent')) {
@@ -992,5 +1025,83 @@ describe('preferences', () => {
     expect(response.body.data.catalog.characters).toEqual(['dina', 'liruf', 'rho', 'zara']);
     // rho and zara have mouth cards; liruf and dina do not (/TUTOR_3D.md §3.1).
     expect(response.body.data.catalog.articulates).toEqual(['rho', 'zara']);
+  });
+});
+
+describe('serving an activity for a knowledge component nothing teaches', () => {
+  /*
+   * Five of the twenty-eight KCs have `skill_key` null ON PURPOSE — no
+   * published topic teaches them, and mapping one to an unrelated topic would
+   * serve confidently wrong content. Before the prerequisite walk, landing on
+   * one meant tier 1 and tier 2 both missed and the learner got "Esa actividad
+   * ya no está lista", which is the owner's original complaint. Observed live
+   * on 2026-08-29 the moment a conversation drifted onto goods-versus-services.
+   *
+   * This route had NO test for its ladder at all, which is how the hole
+   * shipped: every fixture described a world with no catalog, so "served
+   * nothing" always looked correct.
+   */
+  const UNMAPPED = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc1';
+  const PREREQ = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc0';
+
+  const catalog = {
+    // The insert of the served segment returns its row; without it the ladder
+    // succeeds and the route still answers 502.
+    segment: [{ id: 'dddddddd-dddd-4ddd-8ddd-ddddddddddd5' }],
+    courses: [{ id: 'dddddddd-dddd-4ddd-8ddd-ddddddddddd1', slug: 'financial-education' }],
+    topics: [{ id: 'dddddddd-dddd-4ddd-8ddd-ddddddddddd2', slug: 'cual-vale-mas', saga_id: 'dddddddd-dddd-4ddd-8ddd-ddddddddddd4', status: 'published' }],
+    lessons: [{ id: 'dddddddd-dddd-4ddd-8ddd-ddddddddddd3', topic_id: 'dddddddd-dddd-4ddd-8ddd-ddddddddddd2', position: 1, status: 'published' }],
+    lessonDocuments: [
+      {
+        lesson_id: 'dddddddd-dddd-4ddd-8ddd-ddddddddddd3',
+        locale: 'es-MX',
+        schema_version: 1,
+        audio: null,
+        updated_at: '2026-08-29T00:00:00.000Z',
+        document: { segments: [{ id: 'seg-a', type: 'quiz_mcq', difficulty: 2, prompt_md: '¿Cuál vale más?' }] },
+        answer_keys: { 'seg-a': { correct: 'a' } },
+      },
+    ],
+    kcs: [
+      { id: UNMAPPED, key: 'biz.goods-vs-services', skill_key: null },
+      { id: PREREQ, key: 'money.compare-amounts', skill_key: 'financial-education/cual-vale-mas' },
+    ],
+    kcEdges: [{ prerequisite_kc_id: PREREQ, dependent_kc_id: UNMAPPED }],
+  };
+
+  const body = {
+    sessionId: SESSION,
+    skillKey: 'financial-education/nothing-teaches-this',
+    difficulty: 2,
+    framing: 'Vamos a practicar.',
+    rationale: 'the learner asked for an exercise',
+    kcId: UNMAPPED,
+  };
+
+  it('falls back to a mapped PREREQUISITE instead of refusing', async () => {
+    stub(catalog);
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/segments')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(body);
+
+    expect(response.status).toBe(200);
+    // Not the "I have nothing" answer: real authored content, one edge back.
+    expect(response.body.data.needsGeneration).toBeUndefined();
+    expect(response.body.data.segment?.id).toBe('seg-a');
+  });
+
+  it('still asks for generation when no prerequisite has content either', async () => {
+    stub({ ...catalog, kcs: [{ id: UNMAPPED, key: 'biz.goods-vs-services', skill_key: null }], kcEdges: [] });
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/segments')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(body);
+
+    // The fallback must not become a way to always answer SOMETHING: with no
+    // mapped neighbour, tier 3 is still the honest next step.
+    expect(response.body.data.needsGeneration).toBe(true);
   });
 });

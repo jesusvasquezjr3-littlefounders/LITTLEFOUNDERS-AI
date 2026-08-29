@@ -53,6 +53,7 @@ import {
   verifyGeneratedSegment,
   type LadderCandidate,
 } from '../services/tutorLadder.js';
+import { getActiveKcs, getKcEdges } from '../services/pedagogy/kcData.js';
 import { purgeExpiredTutorSessions } from '../services/tutorRetention.js';
 import { buildSessionPlan } from '../services/pedagogy/sessionPlan.js';
 import { buildTutorMap } from '../services/pedagogy/tutorMap.js';
@@ -471,6 +472,58 @@ function internalRouter(): Router {
         difficulty: parsed.data.difficulty,
         excludeSegmentIds: alreadyServed,
       });
+    }
+
+    /*
+     * THE GRAPH EARNS ITS KEEP: A PREREQUISITE THAT DOES HAVE CONTENT.
+     *
+     * Five of the twenty-eight knowledge components have no published topic
+     * that teaches them — `kc.skill_key` is null on purpose, because mapping
+     * one to an unrelated topic would serve confidently wrong content. Before
+     * this, landing on one of those five meant tier 1 and tier 2 both missed,
+     * live generation was the only path left, and when it failed the learner
+     * got "Esa actividad ya no está lista" — observed on 2026-08-29 the moment
+     * a conversation drifted onto goods-versus-services.
+     *
+     * But a knowledge component that nothing teaches almost always has a
+     * PREREQUISITE that something does, and practising the prerequisite is a
+     * pedagogically sound answer to "I have nothing at your level" — it is
+     * what a human tutor does when the next step is not ready. So before
+     * falling through to generation, walk one edge back and try the mapped
+     * prerequisites of the KC this turn is about.
+     *
+     * ONE edge, not the transitive closure. Two steps back from what the tutor
+     * just said is no longer about the conversation the learner is in, and a
+     * recursive walk over a graph with cycles-by-mistake is a way to hang a
+     * request rather than answer it.
+     */
+    if (!candidate && parsed.data.kcId) {
+      const [edges, kcs] = await Promise.all([getKcEdges(), getActiveKcs()]);
+      if (edges && kcs) {
+        const byId = new Map(kcs.map((k) => [k.id, k]));
+        const prerequisiteKeys = edges
+          .filter((e) => e.dependent_kc_id === parsed.data.kcId)
+          .map((e) => byId.get(e.prerequisite_kc_id)?.skill_key)
+          .filter((k): k is string => typeof k === 'string' && k !== '');
+
+        for (const key of prerequisiteKeys) {
+          const fallbackSkill = await resolveSkill(key);
+          if (!fallbackSkill) continue;
+          candidate = await serveFromCatalog({
+            skill: fallbackSkill,
+            locale: session.locale,
+            difficulty: parsed.data.difficulty,
+            excludeSegmentIds: alreadyServed,
+            rotationSeed: hashSeed(session.id),
+          });
+          if (candidate) {
+            console.warn(
+              `[tutor] no content for the active KC; served its prerequisite ${key} instead`,
+            );
+            break;
+          }
+        }
+      }
     }
 
     if (!candidate) {
