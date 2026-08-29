@@ -493,6 +493,35 @@ export function TutorExperience() {
     phase === 'conversing' && stageReady && !interrupted ? (turn?.audioUrl ?? null) : null;
 
   /*
+   * WHY THE TUTOR IS SILENT, SAID OUT LOUD.
+   *
+   * A null `speechUrl` has four completely different causes and nothing
+   * distinguished them, so "the tutor has no voice" was one symptom for four
+   * bugs — and every one of them looks identical to a learner, because the
+   * line is captioned either way.
+   *
+   * On 2026-08-29 that cost a full debugging pass: the server side was proved
+   * healthy end to end (all twelve enrolled voices synthesize, Depot stores and
+   * serves them, CORS is open, and every tutor row in the owner's own sessions
+   * carries an `audio_path`), and the browser still played nothing, with no way
+   * to tell which gate had closed.
+   *
+   * Diagnostic only — it changes no behaviour and runs once per turn.
+   */
+  useEffect(() => {
+    if (phase !== 'conversing' || turn == null) return;
+    if (liveSpeechUrl !== null) return;
+    const because = !stageReady
+      ? 'the 3D stage has not reported a first frame (speech gate still closed)'
+      : interrupted
+        ? 'this turn was interrupted by the learner'
+        : turn.audioUrl == null
+          ? 'the server sent no audio URL for this turn (turn_audio missing, dropped, or null)'
+          : 'unknown — the gate is open and a URL exists, so playback is the suspect';
+    console.warn(`[tutor] turn ${turn.seq} is silent: ${because}`);
+  }, [phase, turn, liveSpeechUrl, stageReady, interrupted]);
+
+  /*
    * ONE AUDIO ELEMENT, TWO THINGS THAT CAN FILL IT.
    *
    * The stage owns exactly one `<audio>` and everything about it is driven by
