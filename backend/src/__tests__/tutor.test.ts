@@ -1105,3 +1105,33 @@ describe('serving an activity for a knowledge component nothing teaches', () => 
     expect(response.body.data.needsGeneration).toBe(true);
   });
 });
+
+describe('a tutor that admits it does not know which skill', () => {
+  /*
+   * In an open conversation there is no lesson plan and no skill state to copy
+   * a key from, so the model invented plausible ones — `making_change`,
+   * `matematicas/sumar-con-monedas` — naming nothing, matching nothing, and
+   * dropping every request to live generation. The prompt now offers the
+   * sentinel `unknown`, and the server decides instead of the guess.
+   */
+  const body = {
+    sessionId: SESSION,
+    skillKey: 'unknown',
+    difficulty: 2,
+    framing: 'Vamos a practicar.',
+    rationale: 'the learner asked for an exercise about giving change',
+  };
+
+  it('does not try to resolve the sentinel as a real skill', async () => {
+    const calls = stub();
+
+    await request(createApp())
+      .post('/api/v1/tutor/internal/segments')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(body);
+
+    // No lookup for a course called "unknown": the sentinel means "you pick",
+    // and a query for it would be a query for nothing.
+    expect(calls.some((c) => c.url.includes('slug=eq.unknown'))).toBe(false);
+  });
+});

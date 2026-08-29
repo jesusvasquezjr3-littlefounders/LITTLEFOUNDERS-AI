@@ -450,8 +450,19 @@ function internalRouter(): Router {
     const alreadyServed = served.map((s) => String((s.payload as { id?: unknown }).id ?? ''));
     const nextSeq = served.length;
 
-    const skill = await resolveSkill(parsed.data.skillKey);
-    if (!skill) {
+    /*
+     * `unknown` IS AN ANSWER, and a better one than a guess.
+     *
+     * In an open conversation the tutor has no lesson plan and no skill states
+     * to copy a key from, so it used to invent one — `making_change`,
+     * `matematicas/sumar-con-monedas`, plausible and naming nothing. The prompt
+     * now offers it this sentinel instead: say you do not know, and the system
+     * decides. Skipping the by-name tiers is not a loss, because a key that
+     * names nothing was never going to match them.
+     */
+    const namedSkill = parsed.data.skillKey === 'unknown' ? null : parsed.data.skillKey;
+    const skill = namedSkill === null ? null : await resolveSkill(namedSkill);
+    if (!skill && namedSkill !== null) {
       /*
        * A key that does not resolve is almost always one the MODEL invented.
        * The prompt never told it what a skillKey looks like, so it produced
@@ -481,8 +492,8 @@ function internalRouter(): Router {
       });
     }
     if (!candidate) {
-      candidate = await serveFromBank({
-        skillKey: parsed.data.skillKey,
+      candidate = namedSkill === null ? null : await serveFromBank({
+        skillKey: namedSkill,
         tier: session.tier,
         locale: session.locale,
         difficulty: parsed.data.difficulty,
@@ -567,7 +578,7 @@ function internalRouter(): Router {
     if (!candidate) {
       const map = await buildTutorMap(session.user_id, session.tier, session.locale);
       const frontierKey = map?.continueTarget?.skillKey ?? null;
-      if (frontierKey !== null && frontierKey !== parsed.data.skillKey) {
+      if (frontierKey !== null && frontierKey !== namedSkill) {
         const frontierSkill = await resolveSkill(frontierKey);
         if (frontierSkill) {
           candidate = await serveFromCatalog({

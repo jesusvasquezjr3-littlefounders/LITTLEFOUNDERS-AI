@@ -149,6 +149,24 @@ function flatten(s: string): string {
 }
 
 let problems = 0;
+/**
+ * Empty completions the provider returned, counted across the run.
+ *
+ * They never reach a learner — `produce()` retries and the second call
+ * answers — so they are invisible in the transcript and in every gate. They
+ * are not free: each one is a second paid call and a doubled wait, at roughly
+ * one per conversation on 2026-08-29. Counting them turns "it happens
+ * sometimes" into a number that can be watched, which is the difference
+ * between a known cost and a surprise on an invoice.
+ */
+let emptyCompletions = 0;
+const realWarn = console.warn.bind(console);
+console.warn = (...args: unknown[]): void => {
+  if (args.some((a) => typeof a === 'string' && a.includes('empty completion'))) {
+    emptyCompletions += 1;
+  }
+  realWarn(...(args as []));
+};
 function fault(label: string, detail: string): void {
   problems += 1;
   console.log(`  PROBLEM  ${label}`);
@@ -398,6 +416,10 @@ async function main(): Promise<void> {
 
   console.log('');
   console.log(`  cost across ${SCENARIOS.length} conversations: $${spent.toFixed(4)}`);
+  console.log(
+    `  empty completions the provider forced us to retry: ${emptyCompletions}` +
+      (emptyCompletions > 0 ? ' (absorbed — no learner saw one)' : ''),
+  );
   if (problems > 0) {
     console.log('');
     console.log(`tutor:converse — ${problems} problem(s) a person would notice.`);
