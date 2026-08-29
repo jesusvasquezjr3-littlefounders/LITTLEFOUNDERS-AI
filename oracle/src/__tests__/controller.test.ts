@@ -251,3 +251,70 @@ describe('per-strategy listening budgets', () => {
     }
   });
 });
+
+describe('the backward walk is a diagnosis, not a guess', () => {
+  /*
+   * The blueprint calls this the product's "wow" moment: walk the graph
+   * backwards and find the gap from two years ago rather than reteaching the
+   * step they just failed.
+   *
+   * It took `prereqKcIds[0]` — the FIRST prerequisite in array order, which is
+   * authoring order. So it probed whichever idea the curriculum happened to
+   * list first and called that a diagnosis. Core has been sending `kcStates`,
+   * this learner's mastery of every knowledge component, the whole time, and
+   * nothing read it — the same shape as `turnHistory`.
+   */
+  const STRONG = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1';
+  const WEAK = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2';
+  const UNSEEN = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb3';
+
+  function planWith(prereqs: string[]): SessionPlanEntry[] {
+    return [
+      {
+        kcId: KC_A,
+        kcKey: 'money.add-money',
+        skillKey: null,
+        reason: 'frontier',
+        pKnown: 0.7,
+        targetDifficulty: 3,
+        objective: 'sumar dinero',
+        prereqKcIds: prereqs,
+        misconceptions: [],
+      },
+    ];
+  }
+
+  /** Fails the entry once from a confident prior, which is what triggers PROBE. */
+  function failInto(controller: PedagogicalController): void {
+    controller.decide({ kind: 'activity_result', correct: false, misconceptionCode: null, attemptNumber: 1 }, 0);
+  }
+
+  it('probes the prerequisite with the LOWEST mastery, not the first listed', () => {
+    const controller = new PedagogicalController(planWith([STRONG, WEAK]), [
+      { kcId: STRONG, kcKey: 'a', pKnown: 0.9, attempts: 8 },
+      { kcId: WEAK, kcKey: 'b', pKnown: 0.2, attempts: 6 },
+    ]);
+    failInto(controller);
+    expect(controller.currentStrategy).toBe('PROBE');
+    expect(controller.activeKcId).toBe(WEAK);
+  });
+
+  it('treats a prerequisite with NO evidence as the weakest of all', () => {
+    // Never assessed is not the same as known, and it is exactly where a
+    // hidden gap survives — which is the reason to look backwards at all.
+    const controller = new PedagogicalController(planWith([STRONG, UNSEEN]), [
+      { kcId: STRONG, kcKey: 'a', pKnown: 0.9, attempts: 8 },
+      { kcId: UNSEEN, kcKey: 'c', pKnown: 0.4, attempts: 0 },
+    ]);
+    failInto(controller);
+    expect(controller.activeKcId).toBe(UNSEEN);
+  });
+
+  it('still works when Core sent no mastery at all', () => {
+    // An older Core, or a first session. Falling back to the first
+    // prerequisite is the old behaviour, and it must not crash.
+    const controller = new PedagogicalController(planWith([STRONG, WEAK]));
+    failInto(controller);
+    expect(controller.activeKcId).toBe(STRONG);
+  });
+});

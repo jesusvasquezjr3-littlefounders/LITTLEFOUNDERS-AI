@@ -197,7 +197,7 @@ export class TutorOrchestrator {
     this.adaptations = [...session.adaptations] as TutorContext['adaptations'];
     this.plan = buildPlan(session.intent, session.courseContext, session.skillKey ?? null);
     this.skillStates = session.skillStates.slice(0, 12).map((s) => ({ ...s }));
-    this.controller = new PedagogicalController(session.sessionPlan ?? []);
+    this.controller = new PedagogicalController(session.sessionPlan ?? [], session.kcStates ?? []);
   }
 
   /** Whether the v3 brain is steering this session. */

@@ -1,5 +1,5 @@
 import type { PedagogyState, Strategy } from '../context/schema.js';
-import type { SessionPlanEntry } from '../core/client.js';
+import type { KcState, SessionPlanEntry } from '../core/client.js';
 
 /*
  * The v3 pedagogical controller (/ORACLE.md, Tutor v3; blueprint §9).
@@ -85,7 +85,20 @@ export class PedagogicalController {
   private probingKcId: string | null = null;
   private celebrated = false;
 
-  constructor(private readonly plan: SessionPlanEntry[]) {
+  constructor(
+    private readonly plan: SessionPlanEntry[],
+    /**
+     * What this learner knows about EVERY knowledge component, not just the
+     * ones in today's plan. Core has always sent it and nothing read it —
+     * the same shape as `turnHistory`, which travelled sealed and validated
+     * for months into a renderer that dropped it.
+     *
+     * It is what turns the backward walk into a DIAGNOSIS. Without it the
+     * probe takes `prereqKcIds[0]`, the first prerequisite in array order,
+     * which is a guess wearing the costume of one.
+     */
+    private readonly kcStates: readonly KcState[] = [],
+  ) {
     for (const entry of plan) this.pKnown.set(entry.kcId, entry.pKnown);
     this.strategy = this.plan.length > 0 ? this.baseStrategy(this.plan[0]!) : 'DIRECT';
     this.lastDifficulty = band(this.plan[0]?.targetDifficulty ?? 2);
@@ -301,7 +314,7 @@ export class PedagogicalController {
     if (strategy === 'PROBE' && this.probingKcId === null) {
       const entry = this.plan[this.entryIndex];
       this.probeReturnIndex = this.entryIndex;
-      this.probingKcId = entry?.prereqKcIds[0] ?? null;
+      this.probingKcId = this.weakestPrerequisite(entry?.prereqKcIds ?? []);
       if (this.probingKcId === null) this.probeReturnIndex = null;
     }
     if (strategy === 'REMEDIATE' && this.probingKcId !== null) {
@@ -313,6 +326,39 @@ export class PedagogicalController {
       this.celebrated = true;
       this.advanceEntry();
     }
+  }
+
+  /**
+   * THE PREREQUISITE THEY ARE ACTUALLY WEAKEST AT.
+   *
+   * The blueprint calls this the product's "wow" moment — walk the graph
+   * backwards and find the gap from two years ago, rather than reteaching the
+   * step they just failed. Taking the FIRST prerequisite is not that: array
+   * order is authoring order, so it probed whichever idea the curriculum
+   * happened to list first and called it a diagnosis.
+   *
+   * With mastery in hand it is a real one: of everything this knowledge
+   * component rests on, ask about the piece the learner is least likely to
+   * have. A prerequisite with no evidence at all sorts as weakest, which is
+   * correct — never assessed is not the same as known, and it is exactly where
+   * a hidden gap hides.
+   */
+  private weakestPrerequisite(prereqKcIds: readonly string[]): string | null {
+    if (prereqKcIds.length === 0) return null;
+    const masteryOf = new Map(this.kcStates.map((s) => [s.kcId, s]));
+    let weakest: string | null = null;
+    let lowest = Number.POSITIVE_INFINITY;
+    for (const kcId of prereqKcIds) {
+      const state = masteryOf.get(kcId);
+      // No evidence sorts below any measured belief: unassessed is where a gap
+      // survives unnoticed, which is the whole point of looking backwards.
+      const score = state === undefined || state.attempts === 0 ? -1 : state.pKnown;
+      if (score < lowest) {
+        lowest = score;
+        weakest = kcId;
+      }
+    }
+    return weakest;
   }
 
   private advanceEntry(): void {
