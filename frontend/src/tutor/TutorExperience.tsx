@@ -520,6 +520,28 @@ export function TutorExperience() {
   }, [speechUrl, audioKey]);
 
   /*
+   * MUTE MUST NOT ALSO MEAN DEAF.
+   *
+   * `speaking` above is derived from the URL, not from playback, because the
+   * caption and the microphone both want to know a turn is in flight before a
+   * single byte has decoded. The cost is that a turn whose audio never plays
+   * would leave it stuck true — and `useHandsFreeTurn` waits for the tutor to
+   * STOP speaking, so the learner's microphone would never open again for the
+   * rest of the session.
+   *
+   * A browser blocking autoplay until the page is tapped is the ordinary way
+   * into that, and it is common on a first load. The stage already handles its
+   * own half honestly — the mouth stops and a chip explains — but the signal
+   * never reached here, so the tutor was silent AND deaf at the same time, and
+   * the learner had no way to tell which.
+   *
+   * Blocked means not speaking. That is all this says.
+   */
+  const handleSpeechBlocked = useCallback((blocked: boolean) => {
+    if (blocked) setSpeaking(false);
+  }, []);
+
+  /*
    * The tutor answering is what ends the wait, whatever the learner sent. ANY
    * turn clears it, including one the server volunteers, because a spinner that
    * outlives the thing it was spinning for is worse than no spinner.
@@ -901,6 +923,7 @@ export function TutorExperience() {
       shot={shot}
       onReady={handleReady}
       onSpeechEnd={handleSpeechEnd}
+      onSpeechBlocked={handleSpeechBlocked}
     >
       {/*
         Exactly one layer is on top at a time, and the island is underneath all

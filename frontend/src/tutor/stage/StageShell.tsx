@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useStageAnnouncement } from './useStageAnnouncement';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Icon } from '@/components/ui';
@@ -322,12 +323,13 @@ function StageShellInner({
    * moves every frame. One re-render at the moment the island appears is free;
    * sixty a second would cost more than the scene.
    */
-  const [ready, setReady] = useState(false);
-
-  const handleReady = useCallback(() => {
-    setReady(true);
-    onReady?.();
-  }, [onReady]);
+  /*
+   * The veil AND the speech gate, with a deadline on the gate. See
+   * `useStageAnnouncement` for why the gate cannot wait on the first frame
+   * forever — a tutor that is silent for a whole session, and a microphone that
+   * opens at the wrong moment because of it, was the cost of that wait.
+   */
+  const { ready, onFirstFrame: handleReady } = useStageAnnouncement(onReady, VEIL_TIMEOUT_MS);
 
   /*
    * WHETHER THE MATERIAL KEEPS ITS BLUR, decided by the same governor that
@@ -355,16 +357,7 @@ function StageShellInner({
     setLumenBlur(settings.lumenBlur);
   }, []);
 
-  /*
-   * The timer lifts the VEIL only. It deliberately does not call `onReady`,
-   * because that callback is the speech gate: telling the conversation layer
-   * that the cast is on screen when it is not plays the tutor's first line at a
-   * blank canvas, which is the exact failure the gate exists to prevent.
-   */
-  useEffect(() => {
-    const timer = window.setTimeout(() => setReady(true), VEIL_TIMEOUT_MS);
-    return () => window.clearTimeout(timer);
-  }, []);
+
 
   /*
    * THE DOCK'S BOTTOM EDGE, written imperatively.
