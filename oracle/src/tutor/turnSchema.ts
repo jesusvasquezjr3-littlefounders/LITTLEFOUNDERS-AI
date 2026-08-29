@@ -87,6 +87,18 @@ export const SegmentRequestSchema = z
      * exactly as a learner's words are.
      */
     rationale: z.string().min(1).max(400),
+    /**
+     * ROADMAP.md V4 sprint 2 backlog: a hint so the ladder can prefer a
+     * VISUAL catalog segment over its own frontier fallback (Core's
+     * last-resort "what should this learner do next", which can be
+     * completely unrelated to the story the tutor just told). Closed to
+     * exactly the two types the backlog named — this is a preference, not
+     * a new authoring surface, so the vocabulary stays as narrow as the
+     * two segment types it exists to reach. Best-effort on Core's side: a
+     * skill with no matching segment of either type still gets served
+     * from whatever the ladder would have picked anyway.
+     */
+    preferredTypes: z.array(z.enum(['interest_peek', 'number_line'])).max(2).nullable().optional(),
   })
   .strict();
 

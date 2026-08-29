@@ -1048,7 +1048,13 @@ async function deliver(live: Live, outcome: TurnOutcome | null): Promise<void> {
 
 async function serveSegment(
   live: Live,
-  requestInput: { skillKey: string; difficulty: number; framing: string; rationale: string },
+  requestInput: {
+    skillKey: string;
+    difficulty: number;
+    framing: string;
+    rationale: string;
+    preferredTypes?: readonly string[] | null;
+  },
 ): Promise<void> {
   /*
    * The ladder, from this side (/ORACLE.md §7).

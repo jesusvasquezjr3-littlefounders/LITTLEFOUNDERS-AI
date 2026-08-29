@@ -2079,12 +2079,22 @@ against it — 0 unreachable controls, 0 overlaps, caption never under the board
 A graded segment always wins the plate if somehow both are present (the schema
 refusal makes this unreachable in practice).
 
-**Explicitly out of scope, backlog, not silently dropped:** a `preferredTypes`
-hint so `segmentRequest` can prefer visual catalog types (`interest_peek`,
-`number_line`) over the frontier fallback when a REAL practice activity is
-requested — a separate, smaller fix from the live-whiteboard capability. A
-general free-form canvas ("UI generativa acotada", blueprint §10.4) — a
-multi-week content-pipeline feature (schema, CAS verifier, age classifier,
-content bank) needing its own scoping pass. Additional `kind` values
+**`preferredTypes` — SHIPPED 2026-08-29.** `segmentRequest` gained an optional
+`preferredTypes` field, closed to exactly `interest_peek` and `number_line` —
+a preference, not a new authoring surface, so the vocabulary stays as narrow
+as the two segment types it exists to reach. `tutorLadder.ts`'s
+`orderCandidates()` tries a matching-type candidate FIRST at every
+catalog/bank lookup (the named skill, its prerequisite fallback, and the
+frontier fallback itself), sorted by difficulty only within that group,
+before falling through to the ordinary any-type difficulty sort — a
+best-effort preference, never a hard filter, so a skill with no visual
+segment yet is never turned into an outage. The prompt tells the model to set
+it right after a growth or spending story, or whenever a number line would
+show the idea better than more words.
+
+**Still out of scope, backlog, not silently dropped:** a general free-form
+canvas ("UI generativa acotada", blueprint §10.4) — a multi-week
+content-pipeline feature (schema, CAS verifier, age classifier, content bank)
+needing its own scoping pass. Additional whiteboard `kind` values
 (two-quantity comparison, a marked number line) — same schema family,
 straightforward once `sequence` is proven live.

@@ -1106,6 +1106,93 @@ describe('serving an activity for a knowledge component nothing teaches', () => 
   });
 });
 
+describe('preferredTypes — the ladder\'s visual-type hint (V4 sprint 2 backlog)', () => {
+  /*
+   * ROADMAP.md: the tutor tells a growth or spending story and the activity
+   * panel showed something unrelated, because `serveFromCatalog` matched on
+   * difficulty alone and had no notion of "make it a visual one". This is the
+   * end-to-end proof: a topic with BOTH a quiz and a number line, requested
+   * at difficulty 2 — the quiz is the exact difficulty match and the number
+   * line is not, so a plain difficulty sort would pick the quiz every time.
+   */
+  const catalog = {
+    courses: [{ id: 'ee000000-0000-4000-8000-000000000001', slug: 'financial-education' }],
+    topics: [
+      {
+        id: 'ee000000-0000-4000-8000-000000000002',
+        slug: 'ahorro',
+        saga_id: 'ee000000-0000-4000-8000-000000000004',
+        status: 'published',
+      },
+    ],
+    lessons: [
+      {
+        id: 'ee000000-0000-4000-8000-000000000003',
+        topic_id: 'ee000000-0000-4000-8000-000000000002',
+        position: 1,
+        status: 'published',
+      },
+    ],
+    lessonDocuments: [
+      {
+        lesson_id: 'ee000000-0000-4000-8000-000000000003',
+        locale: 'es-MX',
+        schema_version: 1,
+        audio: null,
+        updated_at: '2026-08-29T00:00:00.000Z',
+        document: {
+          segments: [
+            { id: 'seg-quiz', type: 'quiz_mcq', difficulty: 2, prompt_md: '¿Cuánto ahorras?' },
+            { id: 'seg-visual', type: 'number_line', difficulty: 4, prompt_md: 'Marca el punto en la recta.' },
+          ],
+        },
+        answer_keys: { 'seg-quiz': { correct: 'a' }, 'seg-visual': { correct: 3 } },
+      },
+    ],
+  };
+
+  const body = {
+    sessionId: SESSION,
+    skillKey: 'financial-education/ahorro',
+    difficulty: 2,
+    framing: 'Veamos cómo crece.',
+    rationale: 'right after a growth story',
+  };
+
+  it('serves the exact-difficulty match when no preference is given', async () => {
+    stub({ ...catalog, segment: [{ id: 'sss00000-0000-4000-8000-000000000005' }] });
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/segments')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(body);
+
+    expect(response.body.data.segment?.id).toBe('seg-quiz');
+  });
+
+  it('serves the visual type instead, even at a worse difficulty distance, when asked', async () => {
+    stub({ ...catalog, segment: [{ id: 'sss00000-0000-4000-8000-000000000005' }] });
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/segments')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ ...body, preferredTypes: ['number_line'] });
+
+    expect(response.body.data.segment?.id).toBe('seg-visual');
+  });
+
+  it('rejects a type outside the two named ones — a preference, not a new authoring surface', async () => {
+    stub(catalog);
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/segments')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ ...body, preferredTypes: ['quiz_mcq'] });
+
+    expect(response.status).toBe(400);
+  });
+});
+
 describe('a tutor that admits it does not know which skill', () => {
   /*
    * In an open conversation there is no lesson plan and no skill state to copy

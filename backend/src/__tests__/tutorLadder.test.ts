@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { composeExactTray, submissionFromKey, verifyGeneratedSegment } from '../services/tutorLadder.js';
+import {
+  composeExactTray,
+  orderCandidates,
+  submissionFromKey,
+  verifyGeneratedSegment,
+} from '../services/tutorLadder.js';
 import { GRADERS } from '../lesson-contract/registry.js';
 import type { SegmentBase } from '../lesson-contract/core/types.js';
 
@@ -22,6 +27,51 @@ function traySegment(type: 'coin_count' | 'make_change', payload: Record<string,
     answer: {},
   } as unknown as SegmentBase;
 }
+
+describe('orderCandidates — the visual-type preference (V4 sprint 2 backlog)', () => {
+  const candidate = (type: string, difficulty: number) => ({ type, difficulty });
+
+  it('is a plain difficulty sort when no preference is given', () => {
+    const candidates = [candidate('quiz_mcq', 5), candidate('true_false', 2), candidate('coin_count', 3)];
+    expect(orderCandidates(candidates, 3, null).map((c) => c.type)).toEqual([
+      'coin_count',
+      'true_false',
+      'quiz_mcq',
+    ]);
+    // undefined behaves exactly like null — the caller should never have to
+    // pick which "no preference" spelling to use.
+    expect(orderCandidates(candidates, 3, undefined).map((c) => c.type)).toEqual([
+      'coin_count',
+      'true_false',
+      'quiz_mcq',
+    ]);
+  });
+
+  it('tries a preferred-type match FIRST, even at a worse difficulty distance', () => {
+    // The whole point: a visual segment two difficulty steps off should still
+    // win over an on-difficulty segment of some other type — this is a
+    // preference over TYPE, difficulty is only the tiebreaker within it.
+    const candidates = [candidate('quiz_mcq', 3), candidate('number_line', 5)];
+    expect(orderCandidates(candidates, 3, ['number_line', 'interest_peek'])[0]?.type).toBe('number_line');
+  });
+
+  it('falls through to the ordinary difficulty sort when nothing matches the preference', () => {
+    // Most skills have no visual segment yet — a preference must never turn
+    // into an outage.
+    const candidates = [candidate('quiz_mcq', 5), candidate('true_false', 3)];
+    expect(orderCandidates(candidates, 3, ['number_line'])[0]?.type).toBe('true_false');
+  });
+
+  it('sorts by difficulty within the preferred group when more than one matches', () => {
+    const candidates = [candidate('number_line', 5), candidate('interest_peek', 3), candidate('quiz_mcq', 3)];
+    const ordered = orderCandidates(candidates, 3, ['number_line', 'interest_peek']);
+    expect(ordered.map((c) => c.type)).toEqual(['interest_peek', 'number_line', 'quiz_mcq']);
+  });
+
+  it('is a no-op preference on an empty list', () => {
+    expect(orderCandidates([], 3, ['number_line'])).toEqual([]);
+  });
+});
 
 describe('composeExactTray', () => {
   it('composes exact totals, including the non-greedy case', () => {

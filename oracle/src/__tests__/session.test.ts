@@ -147,6 +147,46 @@ describe('the closed turn schema', () => {
     expect(TutorTurnSchema.safeParse({ ...valid, next: 'segment' }).success).toBe(false);
   });
 
+  describe('a segment request\'s visual-type hint (V4)', () => {
+    const requestOf = (preferredTypes?: unknown) => ({
+      ...valid,
+      next: 'segment' as const,
+      segmentRequest: {
+        skillKey: 'financial-education/ahorro',
+        difficulty: 2,
+        framing: 'Veamos cómo crece.',
+        rationale: 'right after a growth story',
+        ...(preferredTypes === undefined ? {} : { preferredTypes }),
+      },
+    });
+
+    it('is optional — an ordinary request with no hint still parses', () => {
+      expect(TutorTurnSchema.safeParse(requestOf()).success).toBe(true);
+    });
+
+    it('accepts either of the two named visual types', () => {
+      expect(TutorTurnSchema.safeParse(requestOf(['interest_peek'])).success).toBe(true);
+      expect(TutorTurnSchema.safeParse(requestOf(['number_line'])).success).toBe(true);
+      expect(TutorTurnSchema.safeParse(requestOf(['interest_peek', 'number_line'])).success).toBe(true);
+    });
+
+    it('accepts null, the same as omitting it', () => {
+      expect(TutorTurnSchema.safeParse(requestOf(null)).success).toBe(true);
+    });
+
+    it('refuses a type outside the closed vocabulary', () => {
+      // The whole point of naming exactly two types: this is a preference,
+      // not a new authoring surface the model can widen on its own.
+      expect(TutorTurnSchema.safeParse(requestOf(['quiz_mcq'])).success).toBe(false);
+    });
+
+    it('refuses more than the two types that exist', () => {
+      expect(
+        TutorTurnSchema.safeParse(requestOf(['interest_peek', 'number_line', 'interest_peek'])).success,
+      ).toBe(false);
+    });
+  });
+
   describe('the whiteboard (V4)', () => {
     const board = {
       kind: 'sequence' as const,

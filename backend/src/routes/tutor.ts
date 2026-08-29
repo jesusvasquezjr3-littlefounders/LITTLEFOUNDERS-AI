@@ -487,6 +487,12 @@ function internalRouter(): Router {
     kcId: z.string().uuid().nullish(),
     /** v3: the controller strategy in force when it was requested. */
     strategy: z.string().max(16).nullish(),
+    /**
+     * V4 sprint 2 backlog (ROADMAP.md): a hint so the ladder can prefer a
+     * VISUAL segment over its own frontier fallback. Best-effort — a miss
+     * falls through to the ladder's ordinary behaviour, never an error.
+     */
+    preferredTypes: z.array(z.enum(['interest_peek', 'number_line'])).max(2).nullish(),
   });
 
   /** Provenance stamp for the v3 evidence join — grading reads these back. */
@@ -557,6 +563,7 @@ function internalRouter(): Router {
         // Seeded on the session so a learner does not get lesson 1 every time,
         // but the sequence within one session stays stable.
         rotationSeed: hashSeed(session.id),
+        preferredTypes: parsed.data.preferredTypes,
       });
     }
     if (!candidate) {
@@ -564,6 +571,7 @@ function internalRouter(): Router {
         skillKey: namedSkill,
         tier: session.tier,
         locale: session.locale,
+        preferredTypes: parsed.data.preferredTypes,
         difficulty: parsed.data.difficulty,
         excludeSegmentIds: alreadyServed,
       });
@@ -610,6 +618,7 @@ function internalRouter(): Router {
             difficulty: parsed.data.difficulty,
             excludeSegmentIds: alreadyServed,
             rotationSeed: hashSeed(session.id),
+            preferredTypes: parsed.data.preferredTypes,
           });
           if (candidate) {
             console.warn(
@@ -655,6 +664,7 @@ function internalRouter(): Router {
             difficulty: parsed.data.difficulty,
             excludeSegmentIds: alreadyServed,
             rotationSeed: hashSeed(session.id),
+            preferredTypes: parsed.data.preferredTypes,
           });
           if (candidate) {
             console.warn(

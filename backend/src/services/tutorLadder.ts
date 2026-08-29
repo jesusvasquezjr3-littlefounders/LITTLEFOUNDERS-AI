@@ -104,6 +104,32 @@ export async function resolveSkill(skillKey: string): Promise<ResolvedSkill | nu
   return { courseId: course.id, courseSlug, topicId: topic.id, topicSlug };
 }
 
+/**
+ * Orders candidates for both tier 1 and tier 2: difficulty distance, with an
+ * optional TYPE preference (ROADMAP.md V4 sprint 2 backlog) tried first.
+ *
+ * A hard filter would have been the wrong shape — most skills have no
+ * `interest_peek`/`number_line` segment yet, and refusing to serve anything
+ * else would turn a preference into an outage. Instead the candidates whose
+ * type is preferred are difficulty-sorted and tried BEFORE the rest, so a
+ * match wins when one exists and the ladder falls through to its ordinary
+ * behaviour — unchanged — when none does.
+ */
+export function orderCandidates<T extends { type: string; difficulty?: number }>(
+  candidates: readonly T[],
+  difficulty: number,
+  preferredTypes: readonly string[] | null | undefined,
+): T[] {
+  const byDifficulty = (a: T, b: T) =>
+    Math.abs((a.difficulty ?? 3) - difficulty) - Math.abs((b.difficulty ?? 3) - difficulty);
+  if (!preferredTypes || preferredTypes.length === 0) {
+    return [...candidates].sort(byDifficulty);
+  }
+  const preferred = candidates.filter((c) => preferredTypes.includes(c.type));
+  const rest = candidates.filter((c) => !preferredTypes.includes(c.type));
+  return [...preferred.sort(byDifficulty), ...rest.sort(byDifficulty)];
+}
+
 // ── Tier 1: the published catalog ───────────────────────────────────────────
 
 interface LessonRow {
@@ -128,6 +154,7 @@ export async function serveFromCatalog(input: {
   difficulty: number;
   excludeSegmentIds: readonly string[];
   rotationSeed: number;
+  preferredTypes?: readonly string[] | null;
 }): Promise<LadderCandidate | null> {
   const lessons = await serviceRest<LessonRow[]>(
     `/lessons?topic_id=eq.${encodeURIComponent(input.skill.topicId)}&status=eq.published&select=id,topic_id,position,status&order=position.asc`,
@@ -153,10 +180,7 @@ export async function serveFromCatalog(input: {
       .filter((segment) => !input.excludeSegmentIds.includes(segment.id));
     if (candidates.length === 0) continue;
 
-    candidates.sort(
-      (a, b) => Math.abs((a.difficulty ?? 3) - input.difficulty) - Math.abs((b.difficulty ?? 3) - input.difficulty),
-    );
-    const chosen = candidates[0];
+    const chosen = orderCandidates(candidates, input.difficulty, input.preferredTypes)[0];
     if (!chosen) continue;
 
     const keys = picked.answer_keys as Record<string, Record<string, unknown>> | null;
@@ -192,6 +216,7 @@ export async function serveFromBank(input: {
   locale: string;
   difficulty: number;
   excludeSegmentIds: readonly string[];
+  preferredTypes?: readonly string[] | null;
 }): Promise<LadderCandidate | null> {
   const pack = await findPublishedPack(input.skillKey, input.tier, input.locale);
   if (!pack) return null;
@@ -204,10 +229,7 @@ export async function serveFromBank(input: {
     .filter((segment) => !input.excludeSegmentIds.includes(segment.id));
   if (candidates.length === 0) return null;
 
-  candidates.sort(
-    (a, b) => Math.abs((a.difficulty ?? 3) - input.difficulty) - Math.abs((b.difficulty ?? 3) - input.difficulty),
-  );
-  const chosen = candidates[0];
+  const chosen = orderCandidates(candidates, input.difficulty, input.preferredTypes)[0];
   if (!chosen) return null;
 
   return {

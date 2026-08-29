@@ -299,6 +299,12 @@ export interface RequestSegmentInput {
   kcId?: string | null;
   /** v3: the controller strategy in force when it was requested. */
   strategy?: string | null;
+  /**
+   * A hint so the ladder can prefer a VISUAL catalog segment over its own
+   * frontier fallback (ROADMAP.md V4 sprint 2 backlog). Best-effort — Core
+   * still serves whatever it would have otherwise when nothing matches.
+   */
+  preferredTypes?: readonly string[] | null;
 }
 
 /**

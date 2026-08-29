@@ -438,7 +438,8 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   `  "emotion": one of ${EMOTIONS.join(' | ')},`,
   `  "action": one of ${ACTIONS.join(' | ')},`,
   '  "next": "ask" | "segment" | "close",',
-  '  "segmentRequest": null or { "skillKey", "difficulty" 1-5, "framing", "rationale" },'
+  '  "segmentRequest": null or { "skillKey", "difficulty" 1-5, "framing", "rationale",'
+    + ' "preferredTypes"? },'
     + '\n'
     + [
         '',
@@ -452,6 +453,13 @@ export const TUTOR_SYSTEM_PROMPT: string = [
         'describe in `rationale` what the activity should be about. The system will',
         'choose what this learner is ready for. NEVER invent a key: a made-up course',
         'finds nothing, and the learner waits for something that never arrives.',
+        '',
+        '`preferredTypes` is optional: a list of up to 2 of `interest_peek` |',
+        '`number_line`, when you specifically want a VISUAL activity — right after',
+        'a growth or spending story, or when a number line would show the idea',
+        'better than more words. Leave it unset otherwise; it is a hint, and the',
+        'system may still serve something else if nothing visual exists for this',
+        'skill yet.',
       ].join('\n  '),
   '  "offerAdaptation": null or one of slower_pacing | more_examples | less_text | more_visual | repeat_before_advancing,',
   '  "demonstrate": null or 1-8 steps of { "kind": "add"|"remove"|"pause", "denomination"?, "ms"? }',
