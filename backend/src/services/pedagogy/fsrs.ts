@@ -49,8 +49,17 @@ const INITIAL_STABILITY: Record<ReviewRating, number> = { again: 0.5, hard: 1, g
 /** Multiplicative stability growth on a successful review, scaled by difficulty. */
 function grownStability(card: MemoryCard, rating: ReviewRating): number {
   const ease = { hard: 1.2, good: 2.2, easy: 3.2 }[rating as 'hard' | 'good' | 'easy'];
-  // Harder cards grow slower: difficulty 1 → full ease, difficulty 10 → ~40%.
-  const difficultyDrag = 1 - ((card.difficulty - 1) / 9) * 0.6;
+  // Harder cards grow slower: difficulty 1 → full ease, difficulty 10 → ~40%
+  // of it — but "slower" must never mean "shrinks". `again` is the only
+  // rating allowed to collapse a card's interval; `hard`/`good`/`easy` are
+  // passing grades, and the drag floor is clamped to 1/ease so the combined
+  // multiplier can bottom out at exactly 1 (flat) but never drop below it.
+  // Unclamped, a learner who kept passing at 'hard' with difficulty ≥ 3.5 —
+  // which drifts upward on EVERY 'hard' review, so this was not an edge case
+  // — compounded down to the 0.5-day floor within five reviews: the interval
+  // meant for a genuine lapse, reached purely by answering correctly.
+  const dragFloor = 1 / ease;
+  const difficultyDrag = clamp(1 - ((card.difficulty - 1) / 9) * 0.6, dragFloor, 1);
   return clamp(card.stability * ease * difficultyDrag, 0.5, 365);
 }
 

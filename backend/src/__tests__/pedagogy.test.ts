@@ -74,6 +74,27 @@ describe('fsrs', () => {
     expect(lapsed.stability).toBeGreaterThan(0);
   });
 
+  it('a learner who keeps PASSING at "hard" never has their interval shrink toward the lapse floor', () => {
+    // 'hard' still drifts difficulty upward (0.4/review), and difficulty
+    // crosses grownStability's old, unclamped breakeven point (3.5) within
+    // the FIRST review from the default difficulty of 5 — this was not an
+    // edge case. Before the drag floor was clamped to 1/ease, this exact
+    // sequence collapsed to the 0.5-day lapse floor by the 5th review, on
+    // nothing but a string of correct-but-imperfect answers.
+    let card = newCard(NOW);
+    let now = NOW;
+    let minStabilityAfterFirst = Infinity;
+    for (let i = 0; i < 12; i++) {
+      card = reviewCard(card, 'hard', now);
+      now = card.dueAt;
+      if (i > 0) minStabilityAfterFirst = Math.min(minStabilityAfterFirst, card.stability);
+    }
+    expect(card.state).toBe('review');
+    // Never dips below 1 day (the no-growth, no-shrink floor) once difficulty
+    // saturates — and never anywhere near the 0.5-day lapse-collapse floor.
+    expect(minStabilityAfterFirst).toBeGreaterThanOrEqual(1);
+  });
+
   it('difficulty drifts up on failure and down on ease, inside [1,10]', () => {
     const hardened = reviewCard(newCard(NOW), 'again', NOW);
     expect(hardened.difficulty).toBeGreaterThan(5);
