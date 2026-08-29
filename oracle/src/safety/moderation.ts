@@ -42,6 +42,12 @@ export interface ModerationInput {
   nonce?: string;
   /** Kid sessions require the model pass. Adult sessions may run without it. */
   requireModelPass: boolean;
+  /**
+   * Whether a second judge call is still worth making. False when the turn is
+   * already close to the client's 25 s ceiling: a verdict that lands after the
+   * learner was told to ask again protects nobody and costs the turn.
+   */
+  allowRetry?: boolean;
 }
 
 /*
@@ -197,7 +203,8 @@ export async function moderateTutorOutput(input: ModerationInput): Promise<Moder
   // One retry, and only for a THROW. A judge that answered "unsafe" is not
   // asked again — that would be shopping for a second opinion on a verdict we
   // already have.
-  for (let attempt = 0; attempt < 2; attempt += 1) {
+  const attempts = input.allowRetry === false ? 1 : 2;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
     try {
       verdict = await modelModeration(input);
       failure = null;

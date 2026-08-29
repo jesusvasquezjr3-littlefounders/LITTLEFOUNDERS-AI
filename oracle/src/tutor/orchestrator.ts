@@ -93,6 +93,16 @@ import type { SessionContext } from '../core/client.js';
  * shape drift takes — though the defect that actually shipped was worse than
  * drift, because one of the two consumers did not exist at all.
  */
+/**
+ * How long into a turn a RETRY is still worth buying.
+ *
+ * The client stops waiting at 25 s. A model attempt may take up to
+ * `MODEL_TIMEOUT_MS` (20 s), so a retry begun after this point cannot land in
+ * time, and an answer nobody is waiting for is pure cost — in money, and in a
+ * learner who was told to ask again and now gets two replies.
+ */
+const RETRY_DEADLINE_MS = 9_000;
+
 const TURN_HISTORY_WINDOW = 20;
 
 export interface TurnEmission {
@@ -761,11 +771,33 @@ export class TutorOrchestrator {
      * interrupted, so the answer is worth nothing and re-buying it would spend
      * money on a question nobody is waiting for any more.
      */
+    /*
+     * THE TURN'S OWN DEADLINE, and it exists because retries broke a promise
+     * the client depends on.
+     *
+     * `TutorExperience` stops waiting after 25 s, on the documented reasoning
+     * that "25 s is past every upstream timeout Oracle enforces (model 20 s)".
+     * Adding a retry to the model call and another to the moderation judge
+     * quietly made the worst case 80 s, so the client began giving up on turns
+     * the server was still working on — "Esto tardó demasiado", observed in a
+     * live session immediately after those retries shipped. A retry that
+     * arrives after the learner has been told to ask again is not a recovery;
+     * it is two failures.
+     *
+     * So a retry is a privilege the turn only gets while there is time for it.
+     * The first attempt always runs; the second happens only if the clock says
+     * its answer could still be delivered.
+     */
+    const retryDeadlineMs = nowMs + RETRY_DEADLINE_MS;
     let transportFailure: unknown = null;
     /** Set when attempt 0 produced a valid turn we want re-authored, and why. */
     let turnCorrection: string | null = null;
     try {
       for (let attempt = 0; attempt < 2 && turn === null; attempt += 1) {
+        if (attempt > 0 && Date.now() >= retryDeadlineMs) {
+          console.warn('[oracle] skipping retry — the turn is already too late to deliver');
+          break;
+        }
         const messages: ChatMessage[] = [
           { role: 'system', content: systemContent },
           { role: 'user', content: buildContextMessage(context) },
@@ -916,6 +948,9 @@ export class TutorOrchestrator {
         locale: this.session.locale,
         tier: this.session.tier,
         nonce: opts.nonce,
+        // Same clock as the model's retry: a second judge call that lands
+        // after the client gave up protects nobody and costs the turn.
+        allowRetry: Date.now() < retryDeadlineMs,
         // A minor's session always requires the model pass. An adult's may
         // run on the deterministic pass alone (/ORACLE.md §6).
         requireModelPass: this.session.isMinor,

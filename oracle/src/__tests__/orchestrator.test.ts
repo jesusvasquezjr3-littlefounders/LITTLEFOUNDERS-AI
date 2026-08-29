@@ -718,3 +718,36 @@ describe('the tutor can see the activity on screen', () => {
     expect(contextMessage).not.toContain('score');
   });
 });
+
+describe('a retry is only worth buying while the learner is still waiting', () => {
+  /*
+   * `TutorExperience` gives up after 25 s, on the documented reasoning that
+   * "25 s is past every upstream timeout Oracle enforces (model 20 s)".
+   * Adding a retry to the model call and another to the judge quietly made the
+   * worst case 80 s, and the client began abandoning turns the server was
+   * still working on — "Esto tardó demasiado", observed live within minutes of
+   * those retries shipping. A retry that lands after the learner was told to
+   * ask again is not a recovery, it is a second failure.
+   */
+  it('skips the retry when the turn is already too late to deliver', async () => {
+    fetchMock.mockRejectedValue(new Error('ECONNREFUSED'));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    // A turn whose clock started well in the past: the deadline has passed
+    // before the first attempt even returns.
+    const outcome = await orchestrator.handleLearnerText('hola', Date.now() - 60_000);
+
+    expect(outcome.emission.source).toBe('scripted');
+    // ONE model call. The second would have arrived after the client gave up.
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('still retries a turn that has time left', async () => {
+    fetchMock.mockRejectedValue(new Error('ECONNREFUSED'));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('hola', Date.now());
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+});
