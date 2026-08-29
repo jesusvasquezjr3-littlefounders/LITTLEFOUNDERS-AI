@@ -135,7 +135,14 @@ function startFakeModel(): Promise<Server> {
         else counts.model += 1;
 
         const content = isJudge
-          ? JSON.stringify({ safe: !body.includes(HOSTILE) })
+          ? // A refusal NAMES a harm category — that is the contract since the
+            // judge blocked a tutor for a maths inconsistency it had itself
+            // called "not unsafe". A verdict with no category is not a refusal.
+            JSON.stringify(
+              body.includes(HOSTILE)
+                ? { safe: false, category: 'dangerous_instructions', reason: 'hostile payload' }
+                : { safe: true },
+            )
           : JSON.stringify(nextTurn);
 
         res.writeHead(200, { 'Content-Type': 'application/json' });

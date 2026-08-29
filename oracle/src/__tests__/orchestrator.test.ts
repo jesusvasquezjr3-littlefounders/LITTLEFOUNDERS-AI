@@ -57,9 +57,19 @@ function modelReplies(payload: unknown): Response {
   );
 }
 
-function judgeSays(safe: boolean): Response {
+/**
+ * A judge verdict.
+ *
+ * A refusal NAMES A HARM CATEGORY, because that is the contract: the judge
+ * blocked a tutor explaining bank interest to a six-year-old with "Incorrect
+ * math ... may confuse but not unsafe per guidelines", so a refusal that names
+ * no recognised harm is no longer a refusal. A fixture without a category
+ * would be testing the old contract and passing against the wrong thing.
+ */
+function judgeSays(safe: boolean, category = 'dangerous_instructions'): Response {
+  const verdict = safe ? { safe: true } : { safe: false, category, reason: 'test' };
   return new Response(
-    JSON.stringify({ choices: [{ message: { content: JSON.stringify({ safe, reason: 'test' }) } }] }),
+    JSON.stringify({ choices: [{ message: { content: JSON.stringify(verdict) } }] }),
     { status: 200, headers: { 'Content-Type': 'application/json' } },
   );
 }

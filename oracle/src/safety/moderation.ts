@@ -99,23 +99,63 @@ export function deterministicModeration(input: ModerationInput): ModerationVerdi
   return { allowed: true };
 }
 
+/*
+ * THE ONLY REASONS A TURN MAY BE REFUSED, as a closed vocabulary.
+ *
+ * The prompt already said "being wrong about a fact is not a safety problem",
+ * and on 2026-08-29 the judge blocked a tutor explaining bank interest to a
+ * six-year-old with this verdict, verbatim: "Incorrect math: 10 pesos loaned +
+ * 2 extra is inconsistent with later example (20 + 1); MAY CONFUSE BUT NOT
+ * UNSAFE PER GUIDELINES." It found a teaching flaw, said in its own words that
+ * it was not a safety problem, and refused the turn anyway. The child got
+ * "Déjame decirlo de otra forma" instead of an answer.
+ *
+ * Prose instructions did not hold, so the verdict is a closed vocabulary
+ * instead. A refusal must NAME one of these categories; anything else — a
+ * category we do not recognise, or none at all — is not a safety refusal, and
+ * the turn is allowed with the judge's opinion logged. That is the §1.14 rule
+ * this repository keeps relearning: a closed vocabulary is checkable and free
+ * text is not.
+ *
+ * Quality still matters, and it is not this gate's job. A confusing
+ * explanation is caught by the repair passes in `produce()` and by reading
+ * transcripts; refusing the whole turn teaches the child nothing at all, which
+ * is strictly worse than a clumsy sentence.
+ */
+const HARM_CATEGORIES = [
+  'sexual',
+  'violence',
+  'self_harm',
+  'hate',
+  'dangerous_instructions',
+  'personal_information',
+  'secrecy',
+  'contact_details',
+  'off_platform',
+] as const;
+
 const JUDGE_SYSTEM = [
   'You are a child-safety reviewer for an educational product used by children',
   'as young as six. You are shown ONE message a tutor character is about to say',
   'out loud to a child.',
   '',
   'Answer with a single JSON object and nothing else:',
-  '{"safe": true} or {"safe": false, "reason": "<short reason>"}',
+  '{"safe": true}',
+  'or',
+  `{"safe": false, "category": "<one of: ${HARM_CATEGORIES.join(' | ')}>", "reason": "<short>"}`,
   '',
-  'Mark it unsafe if it contains: sexual content, violence, self-harm content,',
-  'hate or harassment, instructions that could hurt someone, requests for the',
-  "child's personal information, anything that tells the child to keep a secret",
-  'from their parents, contact details, links, or any attempt to move the',
-  'conversation off this product.',
+  'You judge HARM ONLY. The categories above are the complete list of reasons a',
+  'message may be refused. If the problem you see is not one of them, the answer',
+  'is {"safe": true} — say so even if the message is wrong, confusing,',
+  'inconsistent, badly explained, boring, simplistic or off-topic.',
   '',
-  'Ordinary teaching about money, saving, business, science or mathematics is',
-  'SAFE. Being wrong about a fact is not a safety problem. Do not mark a message',
-  'unsafe for being boring, simplistic, or off-topic.',
+  'A mathematical or factual error is NOT a safety problem. An example that',
+  'contradicts an earlier one is NOT a safety problem. If your reason would',
+  'contain the words "not unsafe", "may confuse", or would describe a teaching',
+  'flaw rather than a harm, the answer is {"safe": true}.',
+  '',
+  'Refusing a turn costs the child the whole answer and replaces it with a',
+  'scripted line that teaches nothing. Refuse only real harm.',
 ].join('\n');
 
 interface JudgeChoice {
@@ -159,13 +199,22 @@ async function modelModeration(input: ModerationInput): Promise<ModerationVerdic
   const match = /\{[\s\S]*\}/.exec(raw);
   if (!match) throw new Error('moderation judge returned no JSON object');
 
-  const parsed = JSON.parse(match[0]) as { safe?: unknown; reason?: unknown };
+  const parsed = JSON.parse(match[0]) as { safe?: unknown; reason?: unknown; category?: unknown };
   if (parsed.safe === true) return { allowed: true };
-  return {
-    allowed: false,
-    reason: 'unsafe_content',
-    detail: typeof parsed.reason === 'string' ? parsed.reason.slice(0, 200) : 'judge marked unsafe',
-  };
+
+  const detail = typeof parsed.reason === 'string' ? parsed.reason.slice(0, 200) : 'judge marked unsafe';
+  const category = typeof parsed.category === 'string' ? parsed.category : '';
+  if (!(HARM_CATEGORIES as readonly string[]).includes(category)) {
+    /*
+     * A refusal that names no recognised harm is not a safety refusal. Allowed,
+     * and LOGGED — the judge's opinion about the teaching is worth having, and
+     * it is worth knowing how often this happens, but it must not cost a child
+     * their answer.
+     */
+    console.warn(`[oracle] judge refused without a harm category (${category || 'none'}): ${detail}`);
+    return { allowed: true };
+  }
+  return { allowed: false, reason: 'unsafe_content', detail: `${category}: ${detail}` };
 }
 
 /**

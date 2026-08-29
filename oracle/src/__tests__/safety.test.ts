@@ -180,7 +180,7 @@ describe('a judge that is briefly unreachable', () => {
 
   it('does not shop for a second opinion on a real "unsafe" verdict', async () => {
     const fetchMock = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ choices: [{ message: { content: '{"safe":false,"reason":"nope"}' } }] }), {
+      new Response(JSON.stringify({ choices: [{ message: { content: '{"safe":false,"category":"hate","reason":"nope"}' } }] }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       }),
@@ -199,4 +199,56 @@ afterEach(async () => {
   delete process.env.JUDGE_API_KEY;
   const { resetConfigCache } = await import('../env.js');
   resetConfigCache();
+});
+
+describe('a refusal must name a harm', () => {
+  /*
+   * Observed 2026-08-29. A six-year-old asked why bank money grows by itself.
+   * The tutor answered, and the judge refused with this verdict, verbatim:
+   *
+   *   "Incorrect math: 10 pesos loaned + 2 extra is inconsistent with later
+   *    example (20 + 1); may confuse but not unsafe per guidelines"
+   *
+   * It found a teaching flaw, said IN ITS OWN WORDS that it was not a safety
+   * problem, and refused anyway. The child got "Déjame decirlo de otra forma"
+   * instead of an answer. The prompt already told it that being wrong about a
+   * fact is not a safety problem; prose did not hold, so the verdict is a
+   * closed vocabulary now.
+   */
+  const TEXT = { text: 'El interés es un poquito extra por guardar tu dinero.', locale: 'es-MX' as const, tier: 1 as const, nonce: undefined, requireModelPass: true };
+
+  function judgeReturns(verdict: unknown): void {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify(verdict) } }] }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      ),
+    );
+  }
+
+  beforeEach(async () => {
+    process.env.JUDGE_API_KEY = 'test-judge-key-0123';
+    const { resetConfigCache } = await import('../env.js');
+    resetConfigCache();
+  });
+
+  it('ALLOWS a refusal that names no harm — a teaching flaw is not a harm', async () => {
+    judgeReturns({ safe: false, reason: 'Incorrect math; may confuse but not unsafe per guidelines' });
+    expect((await moderateTutorOutput(TEXT)).allowed).toBe(true);
+  });
+
+  it('ALLOWS a refusal whose category is not a recognised harm', async () => {
+    judgeReturns({ safe: false, category: 'pedagogically_weak', reason: 'confusing example' });
+    expect((await moderateTutorOutput(TEXT)).allowed).toBe(true);
+  });
+
+  it('still REFUSES real harm, which is the whole point of the gate', async () => {
+    judgeReturns({ safe: false, category: 'personal_information', reason: 'asks for the school name' });
+    const verdict = await moderateTutorOutput(TEXT);
+    expect(verdict.allowed).toBe(false);
+    expect(verdict.allowed === false && verdict.detail).toContain('personal_information');
+  });
 });
