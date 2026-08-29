@@ -195,8 +195,19 @@ async function auditContentBridge(seed: z.infer<typeof SeedSchema>): Promise<voi
     console.log(`  ok    ${kc.key} -> ${skillKey} (${count} published lesson(s))`);
   }
 
-  if (broken.length > 0) {
+  /*
+   * The unmapped KCs are a standing authoring task, not an error, so the
+   * candidates are printed whenever any exist — not only when something
+   * BREAKS. Five knowledge components have no published topic that teaches
+   * them and therefore fall through to live generation on every request; the
+   * list below is what someone would need to close that, and keeping it behind
+   * a failure meant it was only ever seen by accident.
+   */
+  if (unmapped > 0 || broken.length > 0) {
     await suggestAlternatives(new Set(mapped.map((k) => k.skill_key as string)));
+  }
+
+  if (broken.length > 0) {
     throw new Error(
       `${broken.length} of ${mapped.length} content bridges do not carry traffic:\n  ${broken.join('\n  ')}`,
     );
