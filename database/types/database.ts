@@ -1081,6 +1081,320 @@ export type Database = {
         }
         Relationships: []
       }
+      kc: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          objective: Json
+          p_g: number
+          p_l0: number
+          p_s: number
+          p_t: number
+          skill_key: string | null
+          status: string
+          strand: string
+          tier_min: number
+          title: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          objective: Json
+          p_g?: number
+          p_l0?: number
+          p_s?: number
+          p_t?: number
+          skill_key?: string | null
+          status?: string
+          strand: string
+          tier_min?: number
+          title: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          objective?: Json
+          p_g?: number
+          p_l0?: number
+          p_s?: number
+          p_t?: number
+          skill_key?: string | null
+          status?: string
+          strand?: string
+          tier_min?: number
+          title?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      kc_attempt: {
+        Row: {
+          correct: boolean
+          created_at: string
+          id: string
+          kc_id: string
+          misconception_id: string | null
+          p_known_after: number
+          p_known_before: number
+          score: number | null
+          segment_id: string | null
+          session_id: string | null
+          source: string
+          strategy: string | null
+          user_id: string
+        }
+        Insert: {
+          correct: boolean
+          created_at?: string
+          id?: string
+          kc_id: string
+          misconception_id?: string | null
+          p_known_after: number
+          p_known_before: number
+          score?: number | null
+          segment_id?: string | null
+          session_id?: string | null
+          source: string
+          strategy?: string | null
+          user_id: string
+        }
+        Update: {
+          correct?: boolean
+          created_at?: string
+          id?: string
+          kc_id?: string
+          misconception_id?: string | null
+          p_known_after?: number
+          p_known_before?: number
+          score?: number | null
+          segment_id?: string | null
+          session_id?: string | null
+          source?: string
+          strategy?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kc_attempt_kc_id_fkey"
+            columns: ["kc_id"]
+            isOneToOne: false
+            referencedRelation: "kc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kc_attempt_misconception_id_fkey"
+            columns: ["misconception_id"]
+            isOneToOne: false
+            referencedRelation: "misconception"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kc_attempt_segment_id_fkey"
+            columns: ["segment_id"]
+            isOneToOne: false
+            referencedRelation: "tutor_segments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kc_attempt_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "tutor_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kc_attempt_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      kc_edge: {
+        Row: {
+          dependent_kc_id: string
+          prerequisite_kc_id: string
+        }
+        Insert: {
+          dependent_kc_id: string
+          prerequisite_kc_id: string
+        }
+        Update: {
+          dependent_kc_id?: string
+          prerequisite_kc_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kc_edge_dependent_kc_id_fkey"
+            columns: ["dependent_kc_id"]
+            isOneToOne: false
+            referencedRelation: "kc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kc_edge_prerequisite_kc_id_fkey"
+            columns: ["prerequisite_kc_id"]
+            isOneToOne: false
+            referencedRelation: "kc"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      learner_kc_mastery: {
+        Row: {
+          attempts: number
+          correct: number
+          kc_id: string
+          last_attempt_at: string | null
+          p_known: number
+          params_override: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          correct?: number
+          kc_id: string
+          last_attempt_at?: string | null
+          p_known: number
+          params_override?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          correct?: number
+          kc_id?: string
+          last_attempt_at?: string | null
+          p_known?: number
+          params_override?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learner_kc_mastery_kc_id_fkey"
+            columns: ["kc_id"]
+            isOneToOne: false
+            referencedRelation: "kc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "learner_kc_mastery_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      learner_memory: {
+        Row: {
+          content: string
+          store: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          store: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          store?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learner_memory_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      learner_memory_ledger: {
+        Row: {
+          actor: string
+          after_hash: string
+          before_hash: string | null
+          created_at: string
+          id: string
+          session_id: string | null
+          store: string
+          user_id: string
+        }
+        Insert: {
+          actor: string
+          after_hash: string
+          before_hash?: string | null
+          created_at?: string
+          id?: string
+          session_id?: string | null
+          store: string
+          user_id: string
+        }
+        Update: {
+          actor?: string
+          after_hash?: string
+          before_hash?: string | null
+          created_at?: string
+          id?: string
+          session_id?: string | null
+          store?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      learner_misconception: {
+        Row: {
+          evidence_count: number
+          last_seen_at: string
+          misconception_id: string
+          resolved_at: string | null
+          user_id: string
+        }
+        Insert: {
+          evidence_count?: number
+          last_seen_at?: string
+          misconception_id: string
+          resolved_at?: string | null
+          user_id: string
+        }
+        Update: {
+          evidence_count?: number
+          last_seen_at?: string
+          misconception_id?: string
+          resolved_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learner_misconception_misconception_id_fkey"
+            columns: ["misconception_id"]
+            isOneToOne: false
+            referencedRelation: "misconception"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "learner_misconception_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       learning_events: {
         Row: {
           anon_id: string | null
@@ -1441,6 +1755,95 @@ export type Database = {
             columns: ["topic_id"]
             isOneToOne: false
             referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      memory_card: {
+        Row: {
+          difficulty: number
+          due_at: string
+          kc_id: string
+          lapses: number
+          last_review_at: string | null
+          reps: number
+          stability: number
+          state: string
+          user_id: string
+        }
+        Insert: {
+          difficulty?: number
+          due_at?: string
+          kc_id: string
+          lapses?: number
+          last_review_at?: string | null
+          reps?: number
+          stability?: number
+          state?: string
+          user_id: string
+        }
+        Update: {
+          difficulty?: number
+          due_at?: string
+          kc_id?: string
+          lapses?: number
+          last_review_at?: string | null
+          reps?: number
+          stability?: number
+          state?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memory_card_kc_id_fkey"
+            columns: ["kc_id"]
+            isOneToOne: false
+            referencedRelation: "kc"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "memory_card_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      misconception: {
+        Row: {
+          code: string
+          created_at: string
+          description: Json
+          distractor_patterns: Json
+          id: string
+          kc_id: string
+          remediation_hint: Json
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description: Json
+          distractor_patterns?: Json
+          id?: string
+          kc_id: string
+          remediation_hint: Json
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: Json
+          distractor_patterns?: Json
+          id?: string
+          kc_id?: string
+          remediation_hint?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "misconception_kc_id_fkey"
+            columns: ["kc_id"]
+            isOneToOne: false
+            referencedRelation: "kc"
             referencedColumns: ["id"]
           },
         ]
@@ -2128,6 +2531,7 @@ export type Database = {
           segment_count: number
           skill_key: string | null
           started_at: string
+          summary: Json | null
           tier: number
           topic_id: string | null
           turn_count: number
@@ -2151,6 +2555,7 @@ export type Database = {
           segment_count?: number
           skill_key?: string | null
           started_at?: string
+          summary?: Json | null
           tier: number
           topic_id?: string | null
           turn_count?: number
@@ -2174,6 +2579,7 @@ export type Database = {
           segment_count?: number
           skill_key?: string | null
           started_at?: string
+          summary?: Json | null
           tier?: number
           topic_id?: string | null
           turn_count?: number
@@ -2232,6 +2638,7 @@ export type Database = {
           source: string
           speaker: string
           text: string
+          text_tsv: unknown
         }
         Insert: {
           action?: string | null
@@ -2245,6 +2652,7 @@ export type Database = {
           source?: string
           speaker: string
           text: string
+          text_tsv?: unknown
         }
         Update: {
           action?: string | null
@@ -2258,6 +2666,7 @@ export type Database = {
           source?: string
           speaker?: string
           text?: string
+          text_tsv?: unknown
         }
         Relationships: [
           {
@@ -2613,6 +3022,33 @@ export type Database = {
         }
         Relationships: []
       }
+      insights_anon_acquisition: {
+        Row: {
+          avg_days_to_convert: number | null
+          converted: number | null
+          device: string | null
+          first_seen_day: string | null
+          landing_route: string | null
+          locale: string | null
+          referrer_class: string | null
+          utm_campaign: string | null
+          utm_source: string | null
+          visitors: number | null
+        }
+        Relationships: []
+      }
+      insights_audience_daily: {
+        Row: {
+          day: string | null
+          events: number | null
+          role: string | null
+          sessions: number | null
+          surfaces: number | null
+          users: number | null
+          visitors: number | null
+        }
+        Relationships: []
+      }
       insights_cohort_retention: {
         Row: {
           cohort_size: number | null
@@ -2701,6 +3137,14 @@ export type Database = {
         }
         Relationships: []
       }
+      insights_registrations_daily: {
+        Row: {
+          day: string | null
+          registrations: number | null
+          role: string | null
+        }
+        Relationships: []
+      }
       insights_segment_calibration: {
         Row: {
           attempts: number | null
@@ -2744,6 +3188,17 @@ export type Database = {
           started_at: string | null
           surfaces: number | null
           visible_seconds: number | null
+        }
+        Relationships: []
+      }
+      insights_signup_funnel_integrity: {
+        Row: {
+          accounts_created: number | null
+          day: string | null
+          signup_complete: number | null
+          signup_start: number | null
+          signup_submit: number | null
+          unobserved: number | null
         }
         Relationships: []
       }
@@ -2847,6 +3302,17 @@ export type Database = {
           ok: boolean
           sagas_published: number
           topics_published: number
+        }[]
+      }
+      search_tutor_turns: {
+        Args: { p_limit?: number; p_query: string; p_user_id: string }
+        Returns: {
+          rank: number
+          said_at: string
+          seq: number
+          session_id: string
+          speaker: string
+          turn_text: string
         }[]
       }
     }
