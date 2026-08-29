@@ -1039,6 +1039,19 @@ export interface ConversationLayerProps extends StageLayerCommonProps {
   /** The learner just sent something. Starts the wait above. */
   onAwaitReply: () => void;
   /**
+   * True while the composer holds unsent text — found live: hands-free
+   * listening opens the microphone the instant the tutor's turn ends,
+   * completely unaware of whether the learner is typing instead of
+   * speaking. Ambient noise crossing the silence detector's threshold
+   * while a learner is mid-sentence in the composer submitted a garbled
+   * voice transcript ("El.") in place of what they had actually typed,
+   * and the tutor reacted to it as if it were a real answer. This flows
+   * up so the hands-free hook can stay disabled — never so it can discard
+   * a clip after the fact, which would still have spent the capture and
+   * the STT call.
+   */
+  onDraftChange: (hasDraft: boolean) => void;
+  /**
    * True while a dropped connection is being resumed with a fresh token. The
    * layer says so in place, because a silent gap between "the socket died" and
    * "the conversation came back" reads as the tutor freezing mid-sentence.

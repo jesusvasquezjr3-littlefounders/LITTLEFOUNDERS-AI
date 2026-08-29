@@ -495,6 +495,9 @@ export default function TutorLabPage() {
     speaking,
     awaitingReply,
     onAwaitReply: () => setAwaitingReply(true),
+    // The lab has no hands-free listener to gate — there is no real turn
+    // loop here, only fixed fixtures — so there is nothing to do with this.
+    onDraftChange: () => {},
     // There is no wire here, so there is nothing to resume and no wait to
     // outlive; the affordances still render, which is what the lab is for.
     resuming: false,

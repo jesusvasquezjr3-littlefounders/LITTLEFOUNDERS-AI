@@ -509,6 +509,30 @@ is the one a tutor most needs to hear, so the speech threshold is low; and a
 cough is not an answer, so a burst shorter than `minSpeechMs` can neither open a
 turn nor close one.
 
+**It did not know about the composer — found live, 2026-08-29.** Every gate
+above answers "should the microphone be open" from consent, policy, and the
+tutor's own speaking/turn state. None of them asked whether the learner was
+doing the OTHER thing this product lets them do instead: typing. A learner
+composing a text answer had hands-free listening open anyway, and ambient
+noise crossing the speech threshold mid-sentence was transcribed and
+delivered as a turn — silently discarding whatever had been typed, with the
+tutor then reacting to that garbled transcript as if it were the real
+answer. This is not a privacy gap (the gates above still hold: no consent,
+no mic, regardless), it is a CONVERSATIONAL one — two live input channels
+racing, with no rule for which one wins.
+
+Closed with one more gate, the same shape as the others: `ConversationView`
+tells `TutorExperience` whenever the composer holds unsent text
+(`onDraftChange`), and `useHandsFreeTurn`'s `enabled` is `false` while that is
+true — closing the microphone (or never opening it) the instant a keystroke
+lands, via the hook's own existing `cancelled` mechanism, the same one that
+already stops a stale clip from a revoked-consent or turn-ended race
+(`useHandsFreeTurn.test.tsx` now asserts this specific race directly: a
+`stop()` promise already in flight when the gate closes must not go on to
+deliver its clip). Explicit push-to-talk is untouched — pressing the orb is
+a deliberate choice and always wins, draft or not; only the PASSIVE,
+automatic listen defers to a learner who is already answering the other way.
+
 ### §4.3 The consent gate
 
 A `kid` cannot open the microphone until a **verified guardian** has granted

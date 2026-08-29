@@ -79,7 +79,11 @@ function makeSocket(overrides: Partial<TutorSocket> = {}): TutorSocket {
   };
 }
 
-function conversation(socket: TutorSocket, ready: boolean) {
+function conversation(
+  socket: TutorSocket,
+  ready: boolean,
+  overrides: { onDraftChange?: (hasDraft: boolean) => void } = {},
+) {
   return (
     <ConversationView
       phase="conversing"
@@ -90,6 +94,7 @@ function conversation(socket: TutorSocket, ready: boolean) {
       speaking={false}
       awaitingReply={false}
       onAwaitReply={vi.fn()}
+      onDraftChange={overrides.onDraftChange ?? vi.fn()}
       resuming={false}
       replyTimedOut={false}
       onRestart={vi.fn()}
@@ -266,6 +271,68 @@ describe('the live whiteboard (V4)', () => {
     };
     render(conversation(makeSocket({ turn: WHITEBOARD_TURN, segment }), false));
     expect(screen.queryByText('Cada día te dan 2 más')).not.toBeInTheDocument();
+  });
+});
+
+describe('telling the shell about an unsent draft', () => {
+  /*
+   * FOUND LIVE, 2026-08-29: hands-free listening opens the microphone the
+   * instant the tutor's turn ends, with no awareness of whether the learner
+   * is typing instead of speaking. Ambient noise crossing the silence
+   * detector's threshold mid-sentence submitted a garbled voice transcript
+   * OVER what had actually been typed. `onDraftChange` is the composer's
+   * only way to tell the shell "do not open the microphone right now" —
+   * these tests are the composer's half of that contract; the shell's half
+   * (disabling `useHandsFreeTurn`) is asserted directly in
+   * useHandsFreeTurn.test.tsx.
+   */
+  it('reports a draft the instant the learner types a character', () => {
+    const onDraftChange = vi.fn();
+    render(conversation(makeSocket(), false, { onDraftChange }));
+    onDraftChange.mockClear();
+
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: '1' } });
+
+    expect(onDraftChange).toHaveBeenCalledWith(true);
+  });
+
+  it('reports no draft for whitespace-only text', () => {
+    // A learner who mashes the space bar has not typed an answer, and the
+    // microphone must not stay closed over nothing.
+    const onDraftChange = vi.fn();
+    render(conversation(makeSocket(), false, { onDraftChange }));
+    onDraftChange.mockClear();
+
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: '   ' } });
+
+    expect(onDraftChange).toHaveBeenCalledWith(false);
+  });
+
+  it('reports the draft is gone once the field is cleared', () => {
+    const onDraftChange = vi.fn();
+    render(conversation(makeSocket(), false, { onDraftChange }));
+    const input = screen.getByRole('textbox');
+
+    fireEvent.change(input, { target: { value: '15' } });
+    expect(onDraftChange).toHaveBeenLastCalledWith(true);
+
+    fireEvent.change(input, { target: { value: '' } });
+    expect(onDraftChange).toHaveBeenLastCalledWith(false);
+  });
+
+  it('reports the draft is gone once the message is sent', () => {
+    const onDraftChange = vi.fn();
+    const sendText = vi.fn();
+    render(conversation(makeSocket({ sendText }), false, { onDraftChange }));
+    const input = screen.getByRole('textbox');
+
+    fireEvent.change(input, { target: { value: 'cinco' } });
+    expect(onDraftChange).toHaveBeenLastCalledWith(true);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+
+    expect(sendText).toHaveBeenCalledWith('cinco');
+    expect(onDraftChange).toHaveBeenLastCalledWith(false);
   });
 });
 

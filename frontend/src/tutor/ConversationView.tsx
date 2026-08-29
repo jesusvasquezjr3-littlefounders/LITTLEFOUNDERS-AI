@@ -113,6 +113,7 @@ export function ConversationView({
   replyTimedOut,
   onRestart,
   onExit,
+  onDraftChange,
 }: ConversationViewProps) {
   const { t } = useTranslation();
   const safeArea = useSafeArea();
@@ -120,6 +121,16 @@ export function ConversationView({
   const desktop = useDesktopPlate();
 
   const [typed, setTyped] = useState('');
+  /*
+   * ONE EFFECT, not a call at every `setTyped` site — a site missed there is a
+   * draft the shell never learns about, and hands-free listening would open
+   * over it exactly as if this feature did not exist. Derived from `typed`
+   * itself rather than duplicated as separate state, so the two can never
+   * disagree.
+   */
+  useEffect(() => {
+    onDraftChange(typed.trim() !== '');
+  }, [typed, onDraftChange]);
   /**
    * Whether the composer currently holds the learner's LAST message for
    * rephrasing rather than a fresh one. Set by the transcript's edit

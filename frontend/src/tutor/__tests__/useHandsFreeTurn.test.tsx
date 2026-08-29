@@ -123,6 +123,56 @@ describe('the microphone opens only when it should', () => {
     });
     expect(mic.stops).toBeGreaterThan(0);
   });
+
+  it('drops a clip already in flight when the gate closes before stop() resolves', async () => {
+    /*
+     * THE RACE THIS HOOK EXISTS TO CLOSE (found live, 2026-08-29): a learner
+     * starts typing while hands-free is listening. The composer tells the
+     * gate to close (`enabled: false`) the same instant the silence detector
+     * decides the turn is over and calls `mic.stop()`. If that promise still
+     * delivered its clip, ambient noise mistaken for speech would submit a
+     * garbled voice transcript OVER whatever the learner just typed. The
+     * `cancelled` flag inside the hook's own effect is what has to catch
+     * this — asserted directly here rather than trusted from the simpler
+     * "closes mid-listen" case above, which never checks `onTurn` at all.
+     */
+    const onTurn = vi.fn();
+    let resolveStop: (blob: Blob) => void = () => {};
+    // ONE promise shared across every call: `finish()` calls `stop()` when
+    // silence ends, and the hook's own cleanup calls it AGAIN, unconditionally,
+    // when `enabled` flips — a real MediaRecorder.stop() is idempotent-ish the
+    // same way. A fake that handed back a NEW promise per call would let the
+    // second (cleanup's) call resolve independently of the first, proving
+    // nothing about whether `finish()`'s own `.then()` respected `cancelled`.
+    const pendingStop = new Promise<Blob>((resolve) => {
+      resolveStop = resolve;
+    });
+    const mic = fakeMic({ stop: vi.fn(() => pendingStop) });
+    const { rerender } = renderHook((props: Parameters<typeof useHandsFreeTurn>[0]) => useHandsFreeTurn(props), {
+      initialProps: { ...BASE, microphone: mic, onTurn },
+    });
+    await act(async () => {});
+
+    // Speech, then enough silence that the detector calls stop() — which now
+    // hangs, exactly as a real MediaRecorder.stop() would mid-flight.
+    act(() => {
+      for (let i = 0; i < 40; i += 1) mic.emit(0.5);
+      for (let i = 0; i < 200; i += 1) mic.emit(0);
+    });
+
+    // The composer gained a draft (or consent dropped, or the tutor started
+    // speaking) before the recorder finished stopping.
+    await act(async () => {
+      rerender({ ...BASE, enabled: false, microphone: mic, onTurn });
+    });
+
+    // The stalled stop() now resolves — late, the way a real one can.
+    await act(async () => {
+      resolveStop(new Blob(['audio']));
+    });
+
+    expect(onTurn).not.toHaveBeenCalled();
+  });
 });
 
 describe('what it does with what it hears', () => {

@@ -179,6 +179,20 @@ export function TutorExperience() {
   const [awaitingReply, setAwaitingReply] = useState(false);
 
   /*
+   * TRUE WHILE THE COMPOSER HOLDS UNSENT TEXT — found live: hands-free
+   * listening opens the microphone the instant the tutor's turn ends,
+   * with no awareness of whether the learner is typing instead of
+   * speaking. Ambient noise crossing the silence detector's threshold
+   * mid-sentence submitted a garbled voice transcript in place of what
+   * had actually been typed, and the tutor reacted to it as a real
+   * answer. `useHandsFreeTurn` below is disabled while this is true —
+   * cheaper and safer than letting a clip get captured and then
+   * discarding it, which would still cost the recording and, if it ever
+   * escaped to the socket first, the STT call.
+   */
+  const [hasComposerDraft, setHasComposerDraft] = useState(false);
+
+  /*
    * THE SAVED CONVERSATION BEING PERFORMED, in three pieces (/ORACLE.md §12).
    *
    * The SUMMARY arrives from the archive and lands first, because it carries
@@ -676,7 +690,7 @@ export function TutorExperience() {
    * works and is untouched — this adds a way to answer, it does not remove one.
    */
   useHandsFreeTurn({
-    enabled: phase === 'conversing' && socket.microphone,
+    enabled: phase === 'conversing' && socket.microphone && !hasComposerDraft,
     speaking,
     awaitingReply,
     policy: turn?.policy ?? null,
@@ -806,6 +820,7 @@ export function TutorExperience() {
           speaking,
           awaitingReply,
           onAwaitReply: () => setAwaitingReply(true),
+          onDraftChange: setHasComposerDraft,
           resuming,
           replyTimedOut,
           onRestart: () => {
