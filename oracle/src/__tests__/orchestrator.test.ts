@@ -998,3 +998,46 @@ describe('the tutor may not reuse its own sentences', () => {
     expect(fetchMock).toHaveBeenCalledTimes(4);
   });
 });
+
+describe('a failed repair costs the improvement, never the turn', () => {
+  /*
+   * There are five repair conditions and one retry between them. Before this,
+   * a repaired attempt that then failed outright — an empty completion, a
+   * malformed shape — dropped through to "Se me enredaron las ideas", so a
+   * turn was DESTROYED for being slightly repetitive. Three of those appeared
+   * in one run the hour the fifth repair shipped.
+   *
+   * A clumsy real sentence beats a scripted apology every time.
+   */
+  it('delivers the original turn when the retry comes back empty', async () => {
+    const stock = 'Eso es pensar como un científico de verdad.';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: stock }))
+      .mockResolvedValueOnce(judgeSays(true))
+      // Second turn: repeats, triggering a repair — and the repair fails.
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: stock }))
+      .mockResolvedValueOnce(modelReplies(''))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('ya', Date.now());
+    const second = await orchestrator.handleLearnerText('otra vez', Date.now());
+
+    // The repeated sentence, not the scripted apology.
+    expect(second.emission.source).toBe('model');
+    expect(second.emission.turn.say).toBe(stock);
+  });
+
+  it('still falls back to the scripted line when NOTHING valid was produced', async () => {
+    // No usable turn at any attempt — that is a real outage, and the scripted
+    // line is the honest answer to it. A fresh Response per call: a Response
+    // body can only be read once, so a shared one fails on the retry for the
+    // wrong reason.
+    fetchMock.mockImplementation(() => Promise.resolve(modelReplies('not json at all')));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = await orchestrator.handleLearnerText('hola', Date.now());
+
+    expect(outcome.emission.source).toBe('scripted');
+  });
+});

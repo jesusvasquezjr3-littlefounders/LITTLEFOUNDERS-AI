@@ -855,6 +855,11 @@ export class TutorOrchestrator {
     let transportFailure: unknown = null;
     /** Set when attempt 0 produced a valid turn we want re-authored, and why. */
     let turnCorrection: string | null = null;
+    /**
+     * Attempt 0's turn when it was valid but imperfect — kept so a failed
+     * repair costs the improvement rather than the whole turn.
+     */
+    let repairable: TutorTurn | null = null;
     try {
       for (let attempt = 0; attempt < 2 && turn === null; attempt += 1) {
         if (attempt > 0 && Date.now() >= retryDeadlineMs) {
@@ -988,6 +993,22 @@ export class TutorOrchestrator {
               parsed.turn.say,
               this.history.filter((h) => h.speaker === 'tutor').map((h) => h.text),
             );
+            /*
+             * KEEP IT. It is a VALID turn — parsed, in shape, teaching
+             * something — and the only thing wrong with it is one of the
+             * faults below, each of which is worth one attempt at doing
+             * better and NOT worth losing the turn over.
+             *
+             * There are five repair conditions now and one retry between
+             * them. Before this, a repaired attempt that then failed outright
+             * — an empty completion, a shape error — dropped through to
+             * "Se me enredaron las ideas", so a turn was destroyed for being
+             * slightly repetitive. Three of them appeared in one run the hour
+             * the fifth repair shipped. A clumsy real sentence beats a
+             * scripted apology every time.
+             */
+            if (repairable === null) repairable = parsed.turn;
+
             if (violation !== null && attempt === 0) {
               turnCorrection = `used ${violation}, which this learner's age band must never hear. Say the same idea again for their age, using only whole numbers and things they can picture`;
               console.warn(`[oracle] tier ${this.session.tier} vocabulary slip (${violation}) — asking again`);
@@ -1047,6 +1068,12 @@ export class TutorOrchestrator {
       }
       if (!(error instanceof ModelUnavailableError)) throw error;
       console.warn('[oracle] model unavailable:', error.message);
+    }
+
+    if (turn === null && repairable !== null) {
+      // The repair did not land, but attempt 0 did. Deliver it.
+      console.warn('[oracle] repair attempt failed — delivering the original turn');
+      turn = repairable;
     }
 
     if (turn === null) {
