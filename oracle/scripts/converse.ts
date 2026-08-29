@@ -29,7 +29,7 @@ import { getConfig } from '../src/env.js';
 import { TutorOrchestrator } from '../src/tutor/orchestrator.js';
 import { tierVocabularyViolation, promisesAnActivity } from '../src/tutor/prompt.js';
 import { computeSequence } from '../src/tutor/whiteboard.js';
-import type { SessionContext } from '../src/core/client.js';
+import type { SessionContext, SessionPlanEntry, KcState } from '../src/core/client.js';
 import type { SpeechResult } from '../src/voice/speech.js';
 
 /** No audio: the synthesizer seam exists precisely so it can be inert here. */
@@ -188,6 +188,69 @@ const SCENARIOS: Scenario[] = [
       'ya me dijiste eso?',
       'no entiendo nada de nada',
       'otra vez cual era la pregunta',
+    ],
+  },
+  {
+    /*
+     * THE CONTROLLER, LIVE, FOR THE FIRST TIME IN THIS HARNESS.
+     *
+     * Every scenario above runs with `session.sessionPlan` unset, which is
+     * `?? []` inside the orchestrator — the v3/v4 controller is DORMANT for
+     * every one of them (`controller.ts`'s own header: "the controller
+     * reports null... that dormancy is the deploy story"). So nothing this
+     * script has ever printed — a strategy, a scaffolding level, a
+     * misconception hint — has been checked against what the REAL model does
+     * with it; only `verify:pedagogy` (the deterministic controller alone, no
+     * model) and a live browser session (manual, currently unavailable) ever
+     * have. This scenario seeds a real plan entry so the controller activates.
+     *
+     * It targets `scaffold-fading.md`'s open finding (ROADMAP.md, "Next up",
+     * 2026-08-29): `scaffoldingFor('FADED')` returns the constant 2 for the
+     * WHOLE time a learner is in the FADED band — there is no server-tracked
+     * fade step anywhere. `pKnown: 0.55` sits inside FADED's [0.5, 0.65) band
+     * (`baseStrategy`), and the script asks for help without demanding a
+     * graded exercise, so nothing here should trigger a BKT update large
+     * enough to leave the band (Core's own mirror moves p from 0.50 to 0.845
+     * on a single correct answer — this scenario is deliberately conversation
+     * only, to hold still in the band rather than fight that swing). Printed
+     * per turn: `strategy=` (should read FADED for every turn below). Read by
+     * hand for whether the MODEL's own language claims a fading progression
+     * ("ahora solo el último paso" → "ahora hazlo todo tú") that the server
+     * never actually sent — that contradiction, if present, is the product
+     * defect the structural finding predicted but could not observe.
+     */
+    name: 'a learner stuck in the faded-support band (controller LIVE)',
+    session: {
+      ...SESSION,
+      nickname: 'Nayeli',
+      sessionPlan: [
+        {
+          kcId: 'dddddddd-dddd-4ddd-8ddd-dddddddddd01',
+          kcKey: 'money.make-change-counting-up',
+          skillKey: null,
+          reason: 'frontier',
+          pKnown: 0.55,
+          targetDifficulty: 2,
+          objective: 'Dar el cambio contando hacia arriba desde el precio.',
+          prereqKcIds: [],
+          misconceptions: [],
+        } satisfies SessionPlanEntry,
+      ],
+      kcStates: [
+        {
+          kcId: 'dddddddd-dddd-4ddd-8ddd-dddddddddd01',
+          kcKey: 'money.make-change-counting-up',
+          pKnown: 0.55,
+          attempts: 3,
+        } satisfies KcState,
+      ],
+    },
+    script: [
+      'como se da el cambio contando hacia arriba?',
+      'osea empiezo en el precio y voy sumando?',
+      'sigo sin estar seguro, me confundo a la mitad',
+      'creo que ya casi le entiendo, dame otro ejemplo',
+      'ok creo que entendí, y ahora que sigue?',
     ],
   },
 ];
@@ -590,7 +653,8 @@ async function main(): Promise<void> {
       console.log(`  tutor    ${turn.say}`);
       console.log(
         `           [${ms} ms · ${outcome.emission.source} · next=${turn.next}` +
-          `${turn.segmentRequest ? ` · asks for ${turn.segmentRequest.skillKey}` : ''}]`,
+          `${turn.segmentRequest ? ` · asks for ${turn.segmentRequest.skillKey}` : ''}` +
+          `${orchestrator.activeStrategy ? ` · strategy=${orchestrator.activeStrategy}` : ''}]`,
       );
       if (turn.whiteboard) {
         const board = turn.whiteboard;
