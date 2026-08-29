@@ -1687,3 +1687,96 @@ It is superseded, not deleted, and two of its ideas survive into this design:
   explicitly overridden by decisions 1 and 3.** That override is the reason §4,
   §5 and §6 exist in the detail they do. The old rule was not wrong; it was
   simply cheaper than the defenses that now replace it.
+
+---
+
+## §19 Tutor v3 — the pedagogical brain (2026-08-28, owner decision)
+
+> **Status: the vertical loop is BUILT and gated; migration `0052` is pending
+> in production.** Owner verdict on v2, verbatim in intent: the Tutor conversed
+> safely but did not teach with direction — "no sirve de nada". The owner
+> adopted the architecture of an external blueprint (a Synthesis-class
+> adaptive tutor) with three constraints fixed in the same session: blueprint
+> ARCHITECTURE on the locked §1.2 stack (zero new vendors this phase), the
+> characters and the diorama KEPT as the product's identity, and money-math
+> plus entrepreneurship as the anchor strands from day 1.
+
+### §19.1 What the brain is
+
+Five organs, each deterministic, each explainable to a parent:
+
+| Organ | Where | What it does |
+|---|---|---|
+| **Knowledge-component graph** | Vault (`0052`: `kc`, `kc_edge`, `misconception`), seeded by `database/seeds/kc_graph.v1.json` via backend `npm run seed:kc` | The curriculum as a prerequisite DAG of units fine enough to master in one sitting — 28 KCs across two strands, 36 edges, 33 catalogued misconceptions with DETERMINISTIC detectors (numeric transforms of the item's own operands, authored distractor tags). `kc.skill_key` bridges to the existing content pools; null until an authoring pass maps it |
+| **Online mastery (BKT)** | Core `services/pedagogy/bkt.ts` + `learner_kc_mastery` | Four-parameter Bayesian Knowledge Tracing, updated inside the GRADE request (never the voice turn), persisted per attempt with the posterior before/after in `kc_attempt`. Degeneracy guards in schema AND code (guess ≤ .30, slip ≤ .10); an epsilon clamp so no posterior ever freezes |
+| **Spaced review (FSRS-style)** | Core `services/pedagogy/fsrs.ts` + `memory_card` | Stability/difficulty/due per (learner, KC). Deliberately not the trained 17-weight FSRS-6 — no data yet; same shape, swappable weights later |
+| **The session plan** | Core `services/pedagogy/sessionPlan.ts`, on the internal session context | Review debt first (due cards, capped at 2), then the ZPD frontier: KCs whose hard prerequisites sit at p ≥ .80, ranked by distance to predicted P(correct) = .75 plus unlock count, capped at 4. Entries carry the localized objective, weakest-first prerequisite ids (the PROBE path) and the KC's misconception hints |
+| **The strategy controller** | Oracle `tutor/controller.ts` | Twelve strategies (DIRECT, WORKED, FADED, SOCRATIC, FLUENCY, SPACED, PROBE, REMEDIATE, RESCUE, ELABORATE, TRANSFER, CELEBRATE) chosen per turn from mastery bands and server-witnessed events. Guardrails as pure tested rules: never two RESCUEs in a row, difficulty never rises after a failure, ≤ 3 strategy changes per minute, PROBE judges "unexpected" on the PRE-update belief. `plan.ts` remains the macro-phase spine; the controller decides HOW each beat is taught |
+
+**The three-clocks rule** (blueprint §4.2) is structural: the voice turn never
+waits on pedagogy. Mastery updates run inside Core's grade request; the fresh
+posterior rides back to Oracle on the client-relayed, HMAC-SIGNED grade echo
+(`recordAttempt.signGradeEcho` ↔ `oracle/src/session/gradeEcho.ts`, parity
+pinned by test under the shared `TUTOR_SESSION_SECRET`). Only a valid echo may
+feed the controller — the client-reported score still only colors the
+reaction, exactly as v2.
+
+### §19.2 Deterministic verdicts — the LLM never judges correctness
+
+- **Graded widgets** were always server-authoritative (§8). v3 adds the
+  evidence join: `provenance.kc_id` (stamped at serve time) routes the grade
+  into misconception detection → BKT → FSRS → `kc_attempt`.
+- **Spoken answers**: `POST /internal/segments/:id/voice-check`. Core
+  normalizes the utterance to a number (`normalizeSpoken.ts`, three locales,
+  "tres pesos con cincuenta centavos" → 3.50) and grades it with the REAL
+  grader (or exact tray arithmetic). `recognized: false` is a no-op
+  conversation turn BY CONTRACT — child speech through STT is noisy and
+  unparseable must never read as wrong (§1.14). No XP on the voice path.
+- **Misconception diagnosis is arithmetic**: the learner's number is compared
+  against what each catalogued wrong idea would produce from the item's own
+  operands (`a+b` for adds-instead-of-counts-up, etc.). What reaches the model
+  afterwards is OUR catalogued remediation wording, never the learner's words
+  (§4.1 row `pedagogy`, legal §2.2 item 12).
+
+### §19.3 The experience half
+
+- **The learning map** (`GET /api/v1/tutor/map`, `frontend/src/tutor/map/`):
+  the KC graph made literal, derived from the SAME tables the planner reads so
+  the map and the session can never disagree. Five node states — locked
+  (naming its prerequisite), available, in progress, mastered, needs review —
+  visible edges, and a CONTINUE that is the planner's own first pick. It
+  replaces the v2 opening chips whenever the graph has nodes; the chips remain
+  the graceful fallback (unseeded, brain off, failed read).
+- **The money trays live** (`coin_count`, `make_change` on
+  `LIVE_TYPE_ALLOWLIST`): self-contained payloads verified by COMPOSING an
+  exact tray (bounded coin-change DP in cents); an unreachable target is a
+  refused segment, never a served unwinnable one.
+- **The tutor's hands** (`demonstrate` on the turn schema): 1–8 closed steps
+  (add/remove/pause, denominations only) animated over the SAME controlled
+  draft a real tap changes, input locked during the demo, aborted on
+  interrupt, foreign denominations dropped fail-safe. §5's injection posture
+  is unchanged — the field has no free text and no reach beyond the open tray.
+- **Turn policy** (`policy.idleNudgeMs` on turn frames): per-strategy thinking
+  time — Socratic beats wait ~45 s before any nudge; fluency work paces at 15.
+
+### §19.4 Deploy posture and dormancy
+
+Everything degrades to exactly-v2 while `0052` is unapplied, the graph is
+unseeded, or `TUTOR_V3_BRAIN=false` in Core: the session context omits
+`sessionPlan`/`kcStates`, Oracle's controller reports inactive, the sealed
+context carries `pedagogy: null`, and the map endpoint returns the empty shape
+that makes the client fall back to the v2 openings. Deploy order is therefore
+free. Rollout: apply `0050`–`0052`, run backend `npm run seed:kc`, deploy
+Core + Oracle + frontend in any order.
+
+### §19.5 Deferred, explicitly (the v3 tail)
+
+Not built this pass, recorded here rather than dropped: the conversing-phase
+screen-state machine and step dots; the input-bar consolidation; the
+"un poco más" extend-twice cap (subsumed today by the 2-sessions/day server
+cap, which is the stronger control); word-level caption highlighting (needs
+provider timestamps); full-duplex VAD/barge-in (a voice-provider project);
+per-KC content pools (`kc.skill_key` authoring pass); per-learner BKT
+parameters; replaying `demonstrate` animations; the parent-portal "what is
+happening" narrative; the teacher console. Each is an increment on the organs
+above, none is a rearchitecture.

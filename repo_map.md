@@ -51,6 +51,7 @@ backend/
     routes/
     scripts/
     services/
+      pedagogy/
 coursegen/
   curriculum/
     entrepreneurship/
@@ -189,6 +190,7 @@ frontend/
       hud/
         __tests__/
       lab/
+      map/
       replay/
         __tests__/
       stage/
@@ -7062,6 +7064,46 @@ beforeEach(() => {
     profiles: [
 ```
 
+### backend/src/__tests__/pedagogy-routes.test.ts
+
+```
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import crypto from 'crypto';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { jsonResponse, mintToken } from './helpers.js';
+import { buildSessionPlan, difficultyFor } from '../services/pedagogy/sessionPlan.js';
+import { buildTutorMap, deriveNodeState } from '../services/pedagogy/tutorMap.js';
+
+/*
+ * The v3 brain's Core wiring: the session plan on the internal context, the
+ * pedagogy join on the grade route, and the deterministic voice-check.
+ */
+
+const KID = '11111111-1111-4111-8111-111111111111';
+const SESSION = '33333333-3333-4333-8333-333333333333';
+```
+
+### backend/src/__tests__/pedagogy.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { bktUpdate, clampParams, predictCorrect, type BktParams } from '../services/pedagogy/bkt.js';
+import { newCard, ratingFromScore, reviewCard } from '../services/pedagogy/fsrs.js';
+import { normalizeSpokenNumber } from '../services/pedagogy/normalizeSpoken.js';
+import { checkAttempt, type MisconceptionDef } from '../services/pedagogy/checkAnswer.js';
+
+const PARAMS: BktParams = { pL0: 0.25, pT: 0.15, pG: 0.2, pS: 0.1 };
+
+describe('bkt', () => {
+  it('a correct answer raises the posterior, a wrong one lowers it', () => {
+    const up = bktUpdate(0.5, true, PARAMS);
+    const down = bktUpdate(0.5, false, PARAMS);
+    expect(up).toBeGreaterThan(0.5);
+    expect(down).toBeLessThan(0.5);
+  });
+```
+
 ### backend/src/__tests__/placement.test.ts
 
 ```
@@ -7220,6 +7262,26 @@ import { tierForBirthDate } from '../routes/tutor.js';
  * guardian's consent, the other writes progress the server could not verify.
  */
 
+```
+
+### backend/src/__tests__/tutorLadder.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { composeExactTray, submissionFromKey, verifyGeneratedSegment } from '../services/tutorLadder.js';
+import { GRADERS } from '../lesson-contract/registry.js';
+import type { SegmentBase } from '../lesson-contract/core/types.js';
+
+/*
+ * The money trays joined the live allowlist (Tutor v3). Their keys are EMPTY
+ * by design — the grader reads the payload — so verification means composing
+ * an exact tray. These tests pin that the composition really scores 100
+ * against the REAL grader, and that an unreachable target fails the segment
+ * rather than serving an unwinnable exercise.
+ */
+
+function traySegment(type: 'coin_count' | 'make_change', payload: Record<string, unknown>): SegmentBase {
+  return {
 ```
 
 ### backend/src/__tests__/unlockRules.test.ts
@@ -7858,6 +7920,26 @@ import {
  * POST /api/v1/verification/parent — the universal → parent (Tutor) upgrade.
 ```
 
+### backend/src/scripts/seed-kc-graph.ts
+
+```
+#!/usr/bin/env node
+/*
+ * `npm run seed:kc` — loads the Tutor v3 knowledge-component graph
+ * (database/seeds/kc_graph.v1.json) into Vault via the service role.
+ *
+ * Idempotent by construction: KCs upsert by `key`, misconceptions by
+ * (kc_id, code), edges by their primary key with duplicates ignored. Running
+ * it twice changes nothing the second time. It REFUSES a cyclic seed before
+ * writing anything — the prerequisite graph is a DAG and the frontier
+ * computation in sessionPlan.ts assumes it, so a cycle here would surface as
+ * "no KC is ever available" for a learner, far from its cause.
+ *
+ * Operator tool, not CI (needs credentials), same posture as placement:verify:
+ *   SUPABASE_URL=… SUPABASE_ANON_KEY=… SUPABASE_SERVICE_ROLE_KEY=… npm run seed:kc
+ */
+```
+
 ### backend/src/scripts/verify-placement.ts
 
 ```
@@ -8096,6 +8178,166 @@ type Json = Record<string, unknown>;
 export function pickLessonLocale(rows: readonly LessonDocumentRow[], callerLocale: string | null | undefined): LessonDocumentRow | null {
   if (rows.length === 0) return null;
   const byLocale = new Map(rows.map((r) => [r.locale, r]));
+```
+
+### backend/src/services/pedagogy/bkt.ts
+
+```
+/*
+ * Bayesian Knowledge Tracing — the four-parameter update (Corbett & Anderson).
+ *
+ * Pure math, no I/O. This runs inside Core's grade request (the "decision
+ * clock"), never inside Oracle's voice turn — the posterior it produces rides
+ * back to the tutor on the segment_graded event. Oracle mirrors the same
+ * arithmetic locally for display, but THIS persisted value is authoritative.
+ *
+ * Parameter constraints (enforced in the schema too, migration 0052):
+ *   p_g ≤ 0.30, p_s ≤ 0.10 — the classic degeneracy guards. `clampParams`
+ * re-asserts them here so a hand-edited params_override can never push the
+ * model into an uninterpretable region.
+ */
+
+export interface BktParams {
+```
+
+### backend/src/services/pedagogy/checkAnswer.ts
+
+```
+/*
+ * Deterministic answer checking + misconception detection.
+ *
+ * THE RULE (blueprint §12.2, /ORACLE.md v3): the LLM never judges whether an
+ * answer is correct. Correctness is arithmetic against the segment's own key;
+ * a WRONG answer is then matched against the KC's misconception catalog to
+ * decide whether it was a systematic wrong idea rather than noise.
+ *
+ * Numeric misconception patterns are a CLOSED vocabulary evaluated against
+ * the item's named operands (e.g. change-making exposes a=price, b=paid,
+ * target=change). A pattern whose operands are absent is skipped, never
+ * guessed. Option-tag patterns match tags the authored item attached to the
+ * chosen distractor.
+ */
+
+```
+
+### backend/src/services/pedagogy/fsrs.ts
+
+```
+/*
+ * FSRS-style spaced-review scheduler — stability / difficulty / due date.
+ *
+ * Deliberately NOT the full 17-weight FSRS-6: those weights are trained
+ * against millions of reviews we do not have yet. This is the same three-state
+ * model (stability grows multiplicatively on success, collapses on a lapse,
+ * difficulty drifts with performance) with hand-set constants, which already
+ * beats the fixed thresholds Data Intel writes into review_due_at — and it is
+ * swappable for trained weights later without touching any caller, because
+ * the whole contract is `reviewCard(card, rating, now) -> card`.
+ *
+ * One card per (learner, KC), not per item: the Tutor reviews CONCEPTS with
+ * fresh items each time (migration 0052, memory_card).
+ */
+
+```
+
+### backend/src/services/pedagogy/kcData.ts
+
+```
+/*
+ * PostgREST accessors for the Tutor v3 knowledge-component tables (0052).
+ * Service role only — every table here is service-role-write by design, and
+ * the reads happen inside internal or owner-scoped routes.
+ *
+ * FAILURE POSTURE (§1.14): every reader returns null on an upstream failure,
+ * never an empty default. The pedagogy pipeline reads, modifies and writes
+ * back — collapsing "Vault did not answer" into "no mastery yet" would let a
+ * transient blip reset a learner's posterior to the prior.
+ */
+
+import { serviceRest } from '../supabaseRest.js';
+import type { BktParams } from './bkt.js';
+
+const eu = (v: string): string => encodeURIComponent(v);
+```
+
+### backend/src/services/pedagogy/normalizeSpoken.ts
+
+```
+/*
+ * Spoken-answer normalization — "cuarenta y dos", "tres pesos con cincuenta
+ * centavos", "4 2" → a number. Deterministic, three locales, no model.
+ *
+ * FAILURE POSTURE (§1.14): returning null means "I could not read a number
+ * out of this", and the caller MUST treat that as a no-op conversation turn,
+ * never as a wrong answer. Child speech through STT is noisy; an unparseable
+ * utterance must not decrement anyone's mastery.
+ */
+
+const UNITS: Record<string, Record<string, number>> = {
+  'es-MX': {
+    cero: 0, un: 1, uno: 1, una: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6,
+    siete: 7, ocho: 8, nueve: 9, diez: 10, once: 11, doce: 12, trece: 13,
+    catorce: 14, quince: 15, dieciseis: 16, diecisiete: 17, dieciocho: 18,
+```
+
+### backend/src/services/pedagogy/recordAttempt.ts
+
+```
+/*
+ * recordAttempt — the one place tutor evidence becomes persisted pedagogy.
+ *
+ * Called from the grade route AFTER the existing grader/XP logic, and from
+ * voice-check. It never decides the score — the grader already did — it turns
+ * that verdict into: a misconception diagnosis (deterministic), a BKT update,
+ * an FSRS review, and a kc_attempt evidence row.
+ *
+ * FAILURE POSTURE (§1.14): this is a read-modify-write on a learner's
+ * posterior. Any upstream read failure aborts the WHOLE pedagogy step with a
+ * loud log and a null return — the grade itself still succeeds. Updating from
+ * a default would silently reset mastery to the prior.
+ */
+
+import crypto from 'crypto';
+```
+
+### backend/src/services/pedagogy/sessionPlan.ts
+
+```
+/*
+ * The daily session plan — what the Tutor should teach THIS session.
+ *
+ * Two motors compete for session time (blueprint §8.4): review debt (memory
+ * cards due) and the learning frontier (KCs whose hard prerequisites are met
+ * and whose predicted P(correct) sits in the zone of proximal development,
+ * target ≈ 0.75). Review first, capped, then frontier — a learner drowning in
+ * overdue review still gets something new, and a learner with nothing due
+ * gets a full session of frontier work.
+ *
+ * Pure planning over rows the caller fetched; the one entry point with I/O is
+ * `buildSessionPlan`. Runs ONCE at session-context assembly (the decision
+ * clock), never inside a voice turn.
+ */
+
+```
+
+### backend/src/services/pedagogy/tutorMap.ts
+
+```
+/*
+ * The learning map (Tutor v3) — the KC graph as the learner sees it.
+ *
+ * This is deliberately the SAME graph the session planner traverses
+ * (sessionPlan.ts), not a parallel one built from course topics: the map's
+ * whole promise is "this is where you are and why", and a map drawn over a
+ * different structure than the brain plans against would be a beautiful lie.
+ * Node states are derived server-side, deterministically, and unit-tested.
+ */
+
+import { MASTERY_DISPLAY_THRESHOLD, MASTERY_PREREQ_THRESHOLD } from './bkt.js';
+import { buildSessionPlan } from './sessionPlan.js';
+import {
+  getActiveKcs,
+  getKcEdges,
 ```
 
 ### backend/src/services/placementAlgorithm.ts
@@ -12547,6 +12789,10 @@ BEGIN
 ### database/migrations/0051_tutor_session_summary.sql
 
 ```
+-- @phase: expand
+--   Adds a nullable jsonb column to a table that already exists. Nothing is
+--   dropped, narrowed or rewritten, so it is safe to apply before or after
+--   the code that starts writing to it.
 -- 0051_tutor_session_summary.sql
 -- (Authored as 0050 on feat/tutor-v2; renumbered on rebase — a concurrent
 -- session shipped 0050_audience_insights.sql to main first.)
@@ -12558,10 +12804,26 @@ BEGIN
 -- learner's words: the digest is what the next session's model context is
 -- allowed to see (oracle/src/context/schema.ts PreviousSessionSchema), and
 -- everything in it is data the model context already carried in some form.
+```
+
+### database/migrations/0052_kc_graph.sql
+
+```
+-- 0052_kc_graph.sql — the Tutor v3 pedagogical brain: knowledge components,
+-- prerequisites, misconceptions, online mastery, spaced review, evidence.
+-- @phase: expand
 --
--- A column on tutor_sessions rather than a table: the digest is 1:1 with a
--- session, dies with the session's row, and is therefore swept by the same
--- 90-day retention job with no new moving parts (backend tutorRetention.ts
+-- Authoritative design: /ORACLE.md (Tutor v3 sections). Owner decisions
+-- 2026-08-28: blueprint architecture on the locked stack; money-math AND
+-- entrepreneurship strands from day 1.
+--
+-- WHAT THIS ADDS AND WHY. The Tutor before v3 had no state a teacher would
+-- recognize: mastery lived as an offline Beta smoothing in Data Intel that no
+-- session updated, review dates were computed and never read, and "pedagogy"
+-- was a fixed step list. These seven tables are the missing organ:
+--
+--   kc / kc_edge            the curriculum as a prerequisite DAG of
+--                           Knowledge Components — units fine enough to be
 ```
 
 ### database/package.json
@@ -12936,6 +13198,26 @@ INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_obj
 INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status, kind, review_of) VALUES ('c0517497-736c-4d14-b8d4-86e2777d7554', '3467f69b-7248-4910-aec2-720d49b2db00', '3', 'tipos-input', '{"en-US": "Stand Accounts", "es-MX": "Las Cuentas del Puesto", "pt-BR": "As Contas da Barraca"}', 'Escribir y calcular números reales del puesto: cuántos limones hay, cuánto se ganó, cuánto falta para la meta.', '{"en-US": "Escribir respuestas numéricas y de texto exactas sobre las ventas del día (sumas hasta 80, conteos hasta 20).", "es-MX": "Escribir respuestas numéricas y de texto exactas sobre las ventas del día (sumas hasta 80, conteos hasta 20).", "pt-BR": "Escribir respuestas numéricas y de texto exactas sobre las ventas del día (sumas hasta 80, conteos hasta 20)."}', '["suma", "total", "contar"]', 'El precio de 5 pesos por vaso y la meta de 80.', 'draft', 'teaching', '[]') ON CONFLICT (id) DO NOTHING;
 INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status, kind, review_of) VALUES ('029fdc52-a280-462a-8e37-23787145b233', '3467f69b-7248-4910-aec2-720d49b2db00', '4', 'tipos-arrange', '{"en-US": "Setting Up Your Stand", "es-MX": "Organizar el Puesto", "pt-BR": "Organizar a Barraquinha"}', 'Un puesto ordenado vende más: los pasos de la receta en orden, los precios emparejados con sus productos, y las compras por prioridad.', '{"en-US": "Ordenar pasos, emparejar productos con precios y clasificar compras entre necesidades del puesto y gustos que pueden esperar.", "es-MX": "Ordenar pasos, emparejar productos con precios y clasificar compras entre necesidades del puesto y gustos que pueden esperar.", "pt-BR": "Ordenar pasos, emparejar productos con precios y clasificar compras entre necesidades del puesto y gustos que pueden esperar."}', '["orden", "primero", "prioridad"]', 'Costo y ganancia; el precio del vaso.', 'draft', 'teaching', '[]') ON CONFLICT (id) DO NOTHING;
 INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status, kind, review_of) VALUES ('e4b09cd0-6133-41dd-ba93-43d34dda8dff', '3467f69b-7248-4910-aec2-720d49b2db00', '5', 'tipos-money', '{"en-US": "The Money Box", "es-MX": "La Caja del Dinero", "pt-BR": "A Caixa do Dinheiro"}', 'Manejar dinero de verdad: contar monedas mexicanas, dar cambio exacto, repartir la ganancia y avanzar hacia la meta de 80 pesos.', '{"en-US": "Contar dinero con monedas de 1, 2, 5 y 10, calcular cambio de un billete de 20, y planear cuántas semanas faltan para la meta.", "es-MX": "Contar dinero con monedas de 1, 2, 5 y 10, calcular cambio de un billete de 20, y planear cuántas semanas faltan para la meta.", "pt-BR": "Contar dinero con monedas de 1, 2, 5 y 10, calcular cambio de un billete de 20, y planear cuántas semanas faltan para la meta."}', '["cambio", "alcancía", "meta"]', 'Sumas hasta 80; monedas y billetes de México.', 'draft', 'teaching', '[]') ON CONFLICT (id) DO NOTHING;
+```
+
+### database/seeds/kc_graph.v1.json
+
+```
+{
+  "$comment": "Tutor v3 seed knowledge-component graph (migration 0052). Loaded by backend `npm run seed:kc` (src/scripts/seed-kc-graph.ts) — idempotent upsert by kc.key, refuses cycles. skill_key is null on purpose: mapping KCs to published topic content pools is an authoring pass against the live catalog, never guessed here; until then the tutor falls back to the session's own skillKey for content. tier_min respects the taxonomy vocabulary gates: percent/interest/budget concepts never open below the tier whose vocabulary allows naming them.",
+  "version": 1,
+  "kcs": [
+    {
+      "key": "money.coin-recognition",
+      "strand": "money_math",
+      "tier_min": 1,
+      "p_l0": 0.4, "p_t": 0.2, "p_g": 0.25, "p_s": 0.08,
+      "title": { "en-US": "Know coins and bills", "es-MX": "Conocer monedas y billetes", "pt-BR": "Conhecer moedas e cédulas" },
+      "objective": {
+        "en-US": "Name each coin and bill and say how much it is worth.",
+        "es-MX": "Nombrar cada moneda y billete y decir cuánto vale.",
+        "pt-BR": "Nomear cada moeda e cédula e dizer quanto vale."
+      }
 ```
 
 ### database/types/database.ts
@@ -27132,12 +27414,12 @@ import type { SegmentBase, Verdict } from '@/lesson-engine/core/types';
 import { HudPlate } from './hud/HudPlate';
 import { useScrollEdges } from './hud/useScrollEdges';
 import { gradeSegment } from './tutorApi';
+import { runTrayDemo, TRAY_TYPES } from './trayDemo';
+import type { TrayDemoStep } from './types';
 import type { LiveSegmentState } from './useTutorSocket';
 
 /*
  * The Lesson Engine, running live, on the floating plate.
- *
- * IT REUSES THE REAL REGISTRY. Every one of the 57 renderers, the shared
 ```
 
 ### frontend/src/tutor/OfferChips.tsx
@@ -27156,8 +27438,8 @@ import { micBlockedReason } from './mic';
 import { SessionHistory } from './SessionHistory';
 import { SpeechCaption } from './SpeechCaption';
 import { useStageDock, type OfferLayerProps } from './stage/StageShell';
-import type { StartSessionInput } from './tutorApi';
-
+import { MapGraph } from './map/MapGraph';
+import type { StartSessionInput, TutorMapNode, TutorMapResponse } from './tutorApi';
 ```
 
 ### frontend/src/tutor/PersonalizeInWorld.tsx
@@ -27230,6 +27512,7 @@ import { duckTutorAmbient, playPlatformSound } from '@/lib/sound';
 import { SCENE_ASSETS } from '@/tutor-scene/assets';
 import { isSceneBackdropId, type SceneBackdropId } from '@/tutor-scene/backdrops';
 import {
+  getMap,
   getOffers,
   getPreferences,
   getTranscript,
@@ -27237,7 +27520,6 @@ import {
   savePreferences,
   startSession,
   type StartSessionInput,
-} from './tutorApi';
 ```
 
 ### frontend/src/tutor/TutorFace.tsx
@@ -27338,6 +27620,26 @@ import type { StartedSession } from '../types';
  * The live conversation, tested at the three places a mistake here is a CHILD's
  * problem rather than a developer's.
  *
+```
+
+### frontend/src/tutor/__tests__/learningMap.test.tsx
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { layoutMap } from '../map/mapLayout';
+import { MapGraph } from '../map/MapGraph';
+import type { TutorMapNode, TutorMapResponse } from '../tutorApi';
+
+/*
+ * The learning map (Tutor v3): the layout is deterministic arithmetic, the
+ * graph is a list of real buttons (the SR twin is the DOM itself), and a
+ * locked node NAMES its prerequisite instead of merely refusing.
+ */
+
+function node(overrides: Partial<TutorMapNode>): TutorMapNode {
+  return {
+    kcId: '00000000-0000-4000-a000-000000000001',
 ```
 
 ### frontend/src/tutor/__tests__/mic.test.ts
@@ -27657,7 +27959,47 @@ import type {
   TutorPreferences,
 } from '../types';
 import type { LiveSegmentState, TutorSocket, TutorTurnState } from '../useTutorSocket';
-import type { StagePhase } from '../stage/phases';
+import type { TutorMapNode, TutorMapResponse } from '../tutorApi';
+```
+
+### frontend/src/tutor/map/MapGraph.tsx
+
+```
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
+import { Icon } from '@/components/ui';
+import type { TutorMapNode, TutorMapResponse } from '../tutorApi';
+import { layoutMap } from './mapLayout';
+
+/*
+ * The learning map's graph (Tutor v3) — the KC graph made literal, so the
+ * learner SEES why change-making waits on counting (blueprint §A.2).
+ *
+ * Pure presentation over `layoutMap`'s deterministic rows: nodes are DOM
+ * buttons on a percentage grid, edges are one SVG underneath drawn from the
+ * SAME (row, col) arithmetic, so the two layers agree by construction and
+ * nothing is measured from the DOM.
+```
+
+### frontend/src/tutor/map/mapLayout.ts
+
+```
+import type { TutorMapNode } from '../tutorApi';
+
+/*
+ * The learning map's layout — pure, deterministic, testable without a DOM.
+ *
+ * Topological layering by prerequisite depth: a node's row is one past its
+ * deepest prerequisite, so every edge always points downward (mobile) or
+ * rightward (desktop) and the learner READS the graph as a path. No force
+ * simulation, no randomness — the same graph always draws the same map,
+ * which is what lets the SVG edge layer and the DOM node layer agree by
+ * construction.
+ */
+
+export interface LaidOutNode<T extends TutorMapNode = TutorMapNode> {
+  node: T;
 ```
 
 ### frontend/src/tutor/mic.ts
@@ -27938,6 +28280,26 @@ import type { ShotId } from '@/tutor-scene/shots';
  * still has one place to import from.
  */
 
+```
+
+### frontend/src/tutor/trayDemo.ts
+
+```
+import type { TrayDemoStep } from './types';
+
+/*
+ * The tray demonstration driver (Tutor v3).
+ *
+ * "Mira, si agrego esta moneda…" — the tutor MOVES the open money tray while
+ * speaking. The tray renderers (coin_count / make_change) are controlled
+ * components whose draft the tutor panel owns, so a demonstration is nothing
+ * more exotic than a sequence of draft updates on a timer: no new renderer,
+ * no ref plumbing into the lesson engine, and the animation is exactly the
+ * same state change a real tap produces — which is what makes it honest.
+ *
+ * Fail-safe by construction: steps naming a denomination the payload does not
+ * offer are DROPPED silently (the schema upstream already bounds the shape;
+ * this bounds the content), and an abort — the learner interrupting — stops
 ```
 
 ### frontend/src/tutor/tutorApi.ts
@@ -28416,6 +28778,26 @@ import {
  * /ORACLE.md §4.1 is a table in a document, and a table in a document does not
  * stop anybody. These tests are what actually stop them, and the most
  * important one is `rejects an unlisted field` — it is the difference between
+```
+
+### oracle/src/__tests__/controller.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { mirrorBktUpdate, PedagogicalController } from '../tutor/controller.js';
+import type { SessionPlanEntry } from '../core/client.js';
+import { mintGradeEcho, verifyGradeEcho } from '../session/gradeEcho.js';
+
+/*
+ * The v3 strategy controller: every guardrail is a rule a parent could be
+ * shown, so every guardrail gets a test with a name a parent could read.
+ */
+
+const KC_A = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
+const KC_PREREQ = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa0';
+
+function entry(overrides: Partial<SessionPlanEntry> = {}): SessionPlanEntry {
+  return {
 ```
 
 ### oracle/src/__tests__/env-example.test.ts
@@ -28998,6 +29380,26 @@ import type { Config } from '../env.js';
  *   running  → normal turns
 ```
 
+### oracle/src/session/gradeEcho.ts
+
+```
+import crypto from 'crypto';
+import { z } from 'zod';
+import { getConfig } from '../env.js';
+
+/*
+ * The grade echo (/ORACLE.md, Tutor v3).
+ *
+ * Core grades an activity, updates the learner's mastery, and hands the
+ * CLIENT a signed receipt: `{segmentId, kcId, correct, misconceptionCode}`
+ * under the shared TUTOR_SESSION_SECRET. The client relays it inside its
+ * `segment_graded` frame, and THIS verification is what lets Oracle feed the
+ * pedagogy event to its strategy controller.
+ *
+ * Why it exists: the score in `segment_graded` is client-reported (it echoes
+ * Core's own verdict, and `servedSegmentSkills` already pins the id). That
+```
+
 ### oracle/src/session/token.ts
 
 ```
@@ -29036,6 +29438,26 @@ process.env.REDIS_URL ??= 'redis://localhost:6379';
 process.env.VOICE_PROVIDER ??= 'none';
 ```
 
+### oracle/src/tutor/controller.ts
+
+```
+import type { PedagogyState, Strategy } from '../context/schema.js';
+import type { SessionPlanEntry } from '../core/client.js';
+
+/*
+ * The v3 pedagogical controller (/ORACLE.md, Tutor v3; blueprint §9).
+ *
+ * NOT a prompt — a policy. It receives state (the session plan Core computed,
+ * the local mastery mirror, the events the server witnessed) and emits a
+ * STRATEGY CODE per turn; the conversational layer only performs the matching
+ * template. If the differentiation lived in the prompt, there would be no
+ * product — this file is where "the intelligence lives upstream of the LLM"
+ * becomes code.
+ *
+ * Deterministic and side-effect-free by construction, like plan.ts: every
+ * decision here must be explainable to a parent later ("why did my child get
+```
+
 ### oracle/src/tutor/orchestrator.ts
 
 ```
@@ -29049,11 +29471,11 @@ import {
   stuckInstruction,
   type LessonPlan,
 } from './plan.js';
+import { IDLE_NUDGE_MS, PedagogicalController, type PedagogyEvent } from './controller.js';
 import { classifyLearnerInput, type SafetyCategory } from '../safety/classifier.js';
 import { fenceUntrusted } from '../safety/untrusted.js';
 import { moderateTutorOutput } from '../safety/moderation.js';
 import { complete, CompletionAbortedError, ModelUnavailableError } from '../model/provider.js';
-import { evaluateBudget, WRAP_UP_INSTRUCTION, type BudgetVerdict } from '../session/budget.js';
 ```
 
 ### oracle/src/tutor/placementIntake.ts
@@ -29311,9 +29733,9 @@ import {
   persistTurn,
   requestSegment,
   verifyGeneratedSegment,
+  voiceCheck,
   type SessionContext,
 } from '../core/client.js';
-import { getVoiceProvider } from '../voice/index.js';
 ```
 
 ### oracle/tsconfig.json
