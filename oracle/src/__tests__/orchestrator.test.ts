@@ -397,6 +397,49 @@ describe('the budget', () => {
     // Never a cut to a modal: there is always a line (/ORACLE.md §9.5).
     expect(outcome.emission.turn.say.length).toBeGreaterThan(10);
   });
+
+  /*
+   * NEVER END A SESSION MID-QUESTION (V4). Both of the owner's real sessions
+   * on 2026-08-29 ended with the farewell landing immediately after the tutor
+   * asked something — the learner's answer to a live question was met with
+   * goodbye.
+   */
+  it('grants one grace turn when the tutor left a question open', async () => {
+    const now = Date.now();
+    const orchestrator = new TutorOrchestrator(KID, now, silent);
+    // A normal exchange whose tutor turn ends in `ask`.
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('quiero ahorrar', now);
+
+    // The budget expires with that question still open. The learner answers.
+    fetchMock.mockClear();
+    fetchMock.mockResolvedValueOnce(
+      modelReplies({ ...GOOD_TURN, say: '¡Cuarenta pesos, exacto! Hoy aprendiste a estimar. ¡Hasta pronto!', next: 'close' }),
+    );
+    fetchMock.mockResolvedValueOnce(judgeSays(true));
+    const late = now + 60 * 60 * 1000;
+    const grace = await orchestrator.handleLearnerText('cuarenta', late);
+
+    // The answer got a REAL turn, not the scripted goodbye…
+    expect(grace?.emission.source).toBe('model');
+    // …the model was told it is the final turn…
+    const body = String(fetchMock.mock.calls[0]?.[1]?.body ?? '');
+    expect(body).toContain('FINAL TURN');
+    // …and the grace is minted exactly once: the next turn closes for real.
+    fetchMock.mockClear();
+    const after = await orchestrator.handleLearnerText('y ahora?', late + 1000);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(after?.emission.turn.next).toBe('close');
+  });
+
+  /*
+   * The no-open-thread case is the FIRST test in this describe: a session with
+   * no tutor turn at all (lastTurn null) expires and gets the scripted close
+   * with zero model calls. Since the turn vocabulary is ask|segment|close, a
+   * mid-session tutor turn virtually always leaves a thread open — which is
+   * exactly why the grace costs at most one model call per session, spent on
+   * sessions that ended mid-thread, i.e. nearly all of the ones that expire.
+   */
 });
 
 describe('adaptation', () => {

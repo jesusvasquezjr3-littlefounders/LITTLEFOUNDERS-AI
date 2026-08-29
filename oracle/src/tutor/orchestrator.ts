@@ -28,6 +28,7 @@ import { evaluateBudget, WRAP_UP_INSTRUCTION, type BudgetVerdict } from '../sess
 import {
   buildContextMessage,
   praiseContradictsAnswer,
+  contradictsCorrectAnswer,
   echoesPreviousTurn,
   repeatsEarlierSentence,
   promisesAnActivity,
@@ -35,6 +36,7 @@ import {
   TUTOR_SYSTEM_PROMPT,
   repeatsAnAnnouncement,
 } from './prompt.js';
+import { selectSkill } from './skills.js';
 import { parseTurn, type TutorTurn } from './turnSchema.js';
 import {
   closingResponse,
@@ -156,6 +158,8 @@ export class TutorOrchestrator {
   private adaptations: TutorContext['adaptations'];
   private stopped = false;
   private lastTurn: { turn: TutorTurn; seq: number } | null = null;
+  /** Whether the one grace turn an ended budget grants has been spent. */
+  private closeGraceUsed = false;
   /** The lesson's spine — deterministic, server-owned (tutor/plan.ts). */
   private readonly plan: LessonPlan;
   /**
@@ -547,16 +551,45 @@ export class TutorOrchestrator {
     );
   }
 
-  /** The controller's instruction when active; the legacy fallback otherwise. */
+  /**
+   * The didactic maneuver for this turn: the controller decides the STRATEGY,
+   * the skill catalogue supplies the PROCEDURE (V4).
+   *
+   * Before V4 this returned `decision.instruction` — one sentence per
+   * strategy. A tutor's edge over a chatbot is not knowing WHICH strategy to
+   * use but carrying a worked-out procedure for each: when to wait, what never
+   * to say, how support withdraws, what "it worked" looks like. That is what a
+   * pedagogical skill is (skills/moves/*.md), selected deterministically from
+   * the decision's own state — no model call, no file I/O, microseconds.
+   *
+   * The one-line instruction remains the fallback when no skill fits, which
+   * keeps "catalogue problem" strictly cheaper than "no instruction at all".
+   */
   private strategyInstruction(
     event: PedagogyEvent,
     nowMs: number,
     legacy: (() => string | null) | null,
   ): string | null {
-    if (this.controller.active) {
-      return this.controller.decide(event, nowMs).instruction;
-    }
-    return legacy ? legacy() : null;
+    if (!this.controller.active) return legacy ? legacy() : null;
+
+    const decision = this.controller.decide(event, nowMs);
+    const skill = selectSkill({
+      strategy: decision.strategy,
+      tier: this.session.tier,
+      pKnown: decision.pKnown,
+      misconceptionCode: decision.misconceptionCode,
+    });
+    if (skill === null) return decision.instruction;
+    /*
+     * The catalogued misconception hint still travels with the skill: the
+     * skill says HOW to remediate, the hint says WHAT wrong idea this
+     * specific learner holds. They are different facts.
+     */
+    const hint =
+      decision.misconceptionCode !== null && decision.instruction !== null
+        ? decision.instruction.match(/The specific wrong idea[^\n]*/)?.[0]
+        : undefined;
+    return hint ? `${skill.body}\n\n${hint}` : skill.body;
   }
 
   /**
@@ -597,7 +630,30 @@ export class TutorOrchestrator {
     const config = getConfig();
     const budget = this.currentBudget(nowMs);
 
-    if (this.stopped || budget.state === 'ended') {
+    /*
+     * NEVER END A SESSION MID-QUESTION (V4).
+     *
+     * Both of the owner's sessions on 2026-08-29 ended with the scripted
+     * farewell landing immediately after the tutor asked something — "si
+     * empiezas con 5 pesos, ¿cuántos tendrás…?" → "te dejo ir". The budget
+     * machinery is a pure function of elapsed time and turn count; it knew
+     * nothing about the open thread, so the child's answer to a live question
+     * was met with goodbye. A session that ends that way retroactively tells
+     * the learner the question never mattered.
+     *
+     * So an ended budget grants ONE grace turn when — and only when — the
+     * tutor's own last turn left something open: a question asked, or an
+     * activity still on screen. The grace turn carries an explicit final-turn
+     * instruction (resolve, credit, close; ask nothing new), and the flag
+     * guarantees the NEXT turn gets the scripted close whatever the model did
+     * with its instruction. Cost: at most one model call per session, spent
+     * only on sessions that ended mid-thread.
+     */
+    const openThread = this.lastTurn?.turn.next === 'ask' || this.openActivity !== null;
+    const graceTurn = budget.state === 'ended' && !this.stopped && !this.closeGraceUsed && openThread;
+    if (graceTurn) this.closeGraceUsed = true;
+
+    if (this.stopped || (budget.state === 'ended' && !graceTurn)) {
       return this.scriptedOutcome(
         closingResponse(this.session.locale, 'hard'),
         budget,
@@ -664,9 +720,36 @@ export class TutorOrchestrator {
         : verdict.correct
           ? `\n\nVERIFIED BY THE SYSTEM, not by you: their answer ${verdict.given} is CORRECT. Confirm it and move on.`
           : `\n\nVERIFIED BY THE SYSTEM, not by you: their answer ${verdict.given} is WRONG; the answer is ${verdict.expected}. Do NOT congratulate them. Say "casi", show how to reach ${verdict.expected}, and never claim they are doing well at this yet.`;
-    const outcome = await this.produce(`${fenced.block}${verdictNote}`, nowMs, {
+    /*
+     * THE BRAIN HEARS THE CONVERSATION (V4, and the defect that demanded it).
+     *
+     * Until now `strategyInstruction` had exactly two callers — the graded
+     * paths. The ordinary conversational turn, which is MOST of a session,
+     * never consulted the controller: no strategy procedure ever reached the
+     * model (only the enum name via the context message), and no
+     * `conversation_turn` event was ever emitted, so the questions-that-go-
+     * nowhere guardrail was dead code in production while its tests were
+     * green. The tutor felt like a chatbot because, on these turns, the
+     * entire pedagogical brain was disconnected.
+     *
+     * A computed verdict upgrades the event: an answer the system itself
+     * verified is assessment evidence, not just talk, so it reaches the
+     * controller as a `voice_result` and moves mastery the same way a graded
+     * activity does.
+     */
+    const pedagogyEvent: PedagogyEvent =
+      verdict === null
+        ? { kind: 'conversation_turn' }
+        : { kind: 'voice_result', correct: verdict.correct, misconceptionCode: null };
+    const maneuver = this.strategyInstruction(pedagogyEvent, nowMs, null);
+    const maneuverNote = maneuver === null ? '' : `\n\n${maneuver}`;
+    const finalNote = graceTurn
+      ? '\n\nTHIS IS THE FINAL TURN of the session — time is up. Resolve the open question or activity in one or two warm sentences (give the answer if they did not reach it, credit what they did), then say goodbye. Do NOT ask anything new, do NOT request or promise any activity.'
+      : '';
+    const outcome = await this.produce(`${fenced.block}${verdictNote}${maneuverNote}${finalNote}`, nowMs, {
       nonce: fenced.nonce,
       signal,
+      finalTurn: graceTurn,
     });
     // A completed exchange moves the plan's talk-only steps along; an aborted
     // one does not — a question the tutor never answered was not an exchange.
@@ -795,7 +878,7 @@ export class TutorOrchestrator {
   private async produce(
     userContent: string,
     nowMs: number,
-    opts: { nonce?: string; isSystemPrompted?: boolean; signal?: AbortSignal } = {},
+    opts: { nonce?: string; isSystemPrompted?: boolean; signal?: AbortSignal; finalTurn?: boolean } = {},
   ): Promise<TurnOutcome | null> {
     const budget = this.currentBudget(nowMs);
 
@@ -814,8 +897,12 @@ export class TutorOrchestrator {
      * having to remember it. And the slot is RESERVED below before the call
      * rather than counted after it, so the cap describes turns started rather
      * than turns finished.
+     *
+     * `finalTurn` is the one sanctioned exception: the grace turn an ended
+     * budget grants when the tutor's own last turn left a question or an
+     * activity open (see handleLearnerText). It is minted exactly once.
      */
-    if (this.stopped || budget.state === 'ended') {
+    if (this.stopped || (budget.state === 'ended' && opts.finalTurn !== true)) {
       return this.scriptedOutcome(
         closingResponse(this.session.locale, 'hard'),
         budget,
@@ -1029,6 +1116,15 @@ export class TutorOrchestrator {
             const falsePraise =
               spokenAnswer !== '' && praiseContradictsAnswer(parsed.turn.say, spokenAnswer);
             /*
+             * The mirror of falsePraise: "casi" followed by reasoning that
+             * lands on the learner's own number. Skipped whenever the
+             * deterministic verdict already ruled — a verified answer carries
+             * its own instruction, and double-correcting a turn the verdict
+             * shaped would fight it.
+             */
+            const falseCorrection =
+              spokenAnswer !== '' && contradictsCorrectAnswer(parsed.turn.say, spokenAnswer);
+            /*
              * §9.4 of the blueprint, stated as a hard rule: never give the
              * final answer while asking. Detected by computing the question's
              * answer and looking for it in the lead-in, which is exact where a
@@ -1080,12 +1176,28 @@ export class TutorOrchestrator {
               turnCorrection = `used ${violation}, which this learner's age band must never hear. Say the same idea again for their age, using only whole numbers and things they can picture`;
               console.warn(`[oracle] tier ${this.session.tier} vocabulary slip (${violation}) — asking again`);
             } else if (repeated !== null && attempt === 0) {
-              turnCorrection = `reused a sentence it has already said in this session ("${repeated.slice(0, 60)}"). Say something new — a child who hears the same compliment after every exercise learns the praise means nothing, and the same question twice learns nobody is listening`;
+              /*
+               * A repeated ANNOUNCEMENT gets a sharper correction than a
+               * repeated sentence. "Vamos a practicar con monedas en la
+               * pantalla" was heard three times in one of the owner's real
+               * sessions: the retry rephrased the announcement instead of
+               * dropping it, failed the same check, and was delivered. The
+               * fix is to tell the model the announcement is REDUNDANT — the
+               * activity appears on its own — so the compliant retry removes
+               * it entirely rather than rewording it.
+               */
+              turnCorrection = promisesAnActivity(repeated)
+                ? `announced an activity with nearly the same words it already used ("${repeated.slice(0, 60)}"). Do NOT announce it at all — the activity appears on screen by itself. React to what the learner said, keep the segmentRequest if you made one, and let the activity arrive unannounced`
+                : `reused a sentence it has already said in this session ("${repeated.slice(0, 60)}"). Say something new — a child who hears the same compliment after every exercise learns the praise means nothing, and the same question twice learns nobody is listening`;
               console.warn('[oracle] turn repeated an earlier sentence — asking again');
             } else if (givesAwayAnswer && attempt === 0) {
               turnCorrection =
                 'asked the learner a question and stated its answer in the same turn. Ask the question WITHOUT the answer — handing it to them removes the one act that does the teaching';
               console.warn('[oracle] turn answered its own question — asking again');
+            } else if (falseCorrection && attempt === 0) {
+              turnCorrection =
+                'told the learner "casi" but its own reasoning arrived at THE NUMBER THE LEARNER SAID. Their answer was right. Confirm it plainly, give them credit, and continue — never mark a correct answer as almost';
+              console.warn('[oracle] turn contradicted a correct answer — asking again');
             } else if (falsePraise && attempt === 0) {
               turnCorrection =
                 "congratulated the learner for an answer that was WRONG, and then stated the right one. Say \"casi\" instead, show the correct result and how to reach it, and do not tell them they are doing well at something they just got wrong";
@@ -1105,6 +1217,9 @@ export class TutorOrchestrator {
               }
               if (falsePraise) {
                 console.warn('[oracle] praise of a wrong answer SURVIVED the retry — delivered');
+              }
+              if (falseCorrection) {
+                console.warn('[oracle] contradiction of a correct answer SURVIVED the retry — delivered');
               }
               if (givesAwayAnswer) {
                 console.warn('[oracle] self-answered question SURVIVED the retry — delivered');

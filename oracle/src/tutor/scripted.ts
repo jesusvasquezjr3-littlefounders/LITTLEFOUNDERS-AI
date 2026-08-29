@@ -100,13 +100,25 @@ const MODERATION_BLOCKED: Trilingual = {
   'pt-BR': 'Deixa eu dizer de outro jeito. Que parte você quer que eu explique de novo?',
 };
 
+/*
+ * The line must not promise anything. The previous wording said "terminamos
+ * esta última parte y te dejo ir" — and there IS no last part: the socket
+ * calls finish() the moment this is delivered. Both of the owner's sessions
+ * on 2026-08-29 ended on that promise. A goodbye that announces one more
+ * thing and then leaves is, to a child, a small broken promise on the way
+ * out the door — the worst possible last impression.
+ *
+ * Changing scripted text orphans its pregenerated clips: the first delivery
+ * per character/locale synthesizes fresh and lands in the shared speech
+ * cache, so the cost is one paid synthesis per slot, once, not a regression.
+ */
 const SOFT_CLOSE: Trilingual = {
   'en-US':
-    'We have done good work today. Let us finish this last bit and I will let you go — you can come back whenever you want.',
+    'We did great work today. Thank you for coming — I will be right here whenever you want to keep going.',
   'es-MX':
-    'Hoy trabajamos muy bien. Terminamos esta última parte y te dejo ir; puedes volver cuando quieras.',
+    'Hoy trabajamos muy bien. Gracias por venir; aquí te espero para seguir cuando tú quieras.',
   'pt-BR':
-    'Hoje a gente trabalhou muito bem. Vamos terminar esta última parte e eu te deixo ir; você pode voltar quando quiser.',
+    'Hoje a gente trabalhou muito bem. Obrigado por vir; vou estar aqui esperando quando você quiser continuar.',
 };
 
 const HARD_CLOSE: Trilingual = {

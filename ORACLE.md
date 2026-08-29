@@ -1828,3 +1828,64 @@ per-KC content pools (`kc.skill_key` authoring pass); per-learner BKT
 parameters; replaying `demonstrate` animations; the parent-portal "what is
 happening" narrative; the teacher console. Each is an increment on the organs
 above, none is a rearchitecture.
+
+## 20. V4 — the bicameral tutor (harness architecture)
+
+**Owner decision, 2026-08-29.** The Tutor adopts the harness architecture from
+`tutor-ia-harness-v2.md` under its own central warning: the harness never lives
+in the voice path. Two chambers — the FAST chamber (this document's runtime,
+< 1s, unchanged in structure) fed by a SLOW chamber ("the Preceptor",
+asynchronous, seconds to hours). Integration is **patterns, not code** (the
+document's own option A): Hermes Agent's patterns reimplemented in our stack;
+running Hermes as a backstage service (option B) is a future decision requiring
+owner sign-off against the §1.2 stack lock.
+
+### 20.1 Pedagogical skills — procedural memory (SHIPPED)
+
+`oracle/skills/moves/*.md`: hand-written didactic maneuvers in SKILL.md format
+(frontmatter: `strategies`, `misconceptions`, `mastery_min/max`, `tiers`,
+`priority`; body = the procedure, hard cap 1,600 chars). Loaded once at boot,
+index in memory, only the SELECTED skill's body reaches the model — progressive
+disclosure, zero I/O per turn, prefix cache untouched. Selection is
+deterministic (blueprint §6.4 levels 0-1): a catalogued misconception forces its
+dedicated remediation; otherwise strategy+tier+mastery-band filter, highest
+priority. A skill dedicated to misconceptions is fenced OUT of generic
+selection — counterexample-confront's own procedure forbids using it on a slip.
+The one-line `STRATEGY_INSTRUCTIONS` remain solely as fallback.
+`verify:pedagogy` asserts every controller decision resolves to a real skill.
+
+**Governance (§15.1 of the harness doc): nothing autonomous reaches a child.**
+Today every skill is hand-written and enters through code review — the pull
+request IS the approval gate. A future self-authoring loop stages proposals for
+the same review; it never writes to the live catalogue.
+
+### 20.2 The brain hears the conversation (SHIPPED — and the defect that demanded it)
+
+Found 2026-08-29: `controller.decide()` had exactly one call site, reached only
+from the two GRADED paths. Ordinary conversational turns — most of a session —
+never consulted the controller: no strategy procedure ever reached the model
+(only the enum name via the context message), and no `conversation_turn` event
+was ever emitted, so the questions-that-go-nowhere guardrail was dead code in
+production while its unit tests were green. `handleLearnerText` now emits
+`conversation_turn` (or `voice_result` when the deterministic verdict ruled —
+a system-verified answer is assessment evidence and moves mastery like a graded
+activity), and the selected skill's procedure travels with every turn.
+
+### 20.3 A session never ends mid-question (SHIPPED)
+
+Both owner sessions of 2026-08-29 ended with the farewell landing immediately
+after the tutor asked something. An ended budget now grants ONE grace turn when
+the tutor's own last turn left a question or activity open: the turn carries an
+explicit final-turn instruction (resolve, credit, close; ask nothing new) and
+the next turn gets the scripted close regardless. Cost: at most one model call
+per session. The soft-close line no longer promises "one last part" that never
+existed; changed scripted text orphans its pregenerated clips deliberately —
+first delivery per slot synthesizes fresh into the shared speech cache.
+
+### 20.4 Planned in this program (not yet shipped)
+
+Learner memory stores (`LEARNER`/`PEDAGOGY`, hard char limits, append-only
+ledger, auto-write per owner decision 2026-08-29 with the parental approval
+gate documented as BLOCKING before rollout to real families), the session
+dossier injection, and episodic recall over the persisted transcripts. Each
+lands with its own §4.1 and legal-review update in the same commit.

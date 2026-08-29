@@ -50,6 +50,14 @@ export interface ControllerDecision {
   difficulty: 1 | 2 | 3 | 4 | 5;
   /** The extra system-side line the turn's prompt carries, or null. */
   instruction: string | null;
+  /**
+   * What the V4 skill selector needs to pick a maneuver (skills.ts): the
+   * mastery estimate behind this decision and the diagnosed wrong idea, if
+   * any. Exposed on the decision rather than read back out of the controller,
+   * so selection sees exactly the state the decision was made on.
+   */
+  pKnown: number | null;
+  misconceptionCode: string | null;
   /** How long the client should wait before a gentle nudge, per strategy. */
   idleNudgeMs: number;
   /**
@@ -311,6 +319,8 @@ export class PedagogicalController {
         scaffolding: 0,
         difficulty: this.lastDifficulty,
         instruction: null,
+        pKnown: null,
+        misconceptionCode: null,
         idleNudgeMs: IDLE_NUDGE_MS.CELEBRATE,
         listenSilenceMs: LISTEN_SILENCE_MS.CELEBRATE,
       };
@@ -402,6 +412,8 @@ export class PedagogicalController {
       scaffolding: this.scaffoldingFor(strategy),
       difficulty,
       instruction: this.instructionFor(strategy, entry),
+      pKnown: p,
+      misconceptionCode: this.misconceptionCode,
       idleNudgeMs: IDLE_NUDGE_MS[strategy],
       listenSilenceMs: LISTEN_SILENCE_MS[strategy],
     };

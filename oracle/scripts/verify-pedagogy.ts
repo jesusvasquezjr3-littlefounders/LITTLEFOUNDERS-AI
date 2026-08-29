@@ -30,6 +30,7 @@
 import process from 'node:process';
 import { PedagogicalController } from '../src/tutor/controller.js';
 import type { PedagogyEvent } from '../src/tutor/controller.js';
+import { selectSkill } from '../src/tutor/skills.js';
 import type { SessionPlanEntry } from '../src/core/client.js';
 
 const KC = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
@@ -172,6 +173,27 @@ function check(profile: Profile): Problem[] {
 
   const problems: Problem[] = [];
   const push = (detail: string): void => void problems.push({ profile: profile.name, detail });
+
+  /*
+   * V4: every decision must resolve to a real didactic maneuver. The fallback
+   * to the one-line instruction exists for resilience; a profile that FALLS
+   * BACK is a hole in the catalogue, and holes are how the tutor quietly
+   * regresses to its pre-V4 self one strategy at a time.
+   */
+  {
+    const c2 = new PedagogicalController(profile.plan);
+    profile.turns.forEach((event, i) => {
+      if (!c2.active) return;
+      const d = c2.decide(event, START + i * TURN_GAP_MS);
+      const skill = selectSkill({
+        strategy: d.strategy,
+        tier: 2,
+        pKnown: d.pKnown,
+        misconceptionCode: d.misconceptionCode,
+      });
+      if (skill === null) push(`no skill in the catalogue for ${d.strategy} at p=${d.pKnown} (turn ${i + 1})`);
+    });
+  }
 
   const thrash = alternation(seq);
   if (thrash !== null) push(`alternates between two strategies — ${thrash}`);

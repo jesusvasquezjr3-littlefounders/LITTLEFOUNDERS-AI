@@ -170,3 +170,12 @@ en-US has nothing to go on. When adding copy in any locale, read this table.
 | **grade echo** | Core's HMAC-signed grade receipt, relayed by the client inside `segment_graded`. The only thing allowed to feed the strategy controller — the bare score stays client-reported and only colors the reaction. |
 | **voice-check** | Deterministic verification of a SPOKEN answer: Core normalizes the utterance to a number and grades it against the stored key. `recognized: false` is a plain conversation turn by contract — unparseable is never wrong. |
 | **learning map** | The KC graph rendered as the Tutor's home (`GET /api/v1/tutor/map`, `frontend/src/tutor/map/`), drawn from the SAME tables the session planner reads. Five node states; a locked node names its prerequisite; CONTINUE is the planner's own first pick. |
+
+### Pedagogical skill (V4)
+A hand-written didactic maneuver in `oracle/skills/moves/*.md` — the Tutor's procedural memory. Selected deterministically per turn from the controller's decision; only the selected procedure reaches the model (progressive disclosure). See /ORACLE.md §20.1.
+
+### Preceptor (V4)
+The Tutor's slow chamber: asynchronous jobs (post-session review, memory writing, planning) that feed the fast voice runtime between sessions. Never in the voice path. See /ORACLE.md §20.
+
+### Grace turn (V4)
+The single model turn an ended session budget grants when the tutor's own last turn left a question or activity open, so a session never ends mid-question. See /ORACLE.md §20.3.

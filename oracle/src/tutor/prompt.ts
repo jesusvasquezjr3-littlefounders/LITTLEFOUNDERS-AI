@@ -193,6 +193,42 @@ const PRAISE = /\b(exacto|muy bien|correcto|perfecto|excelente|bien hecho)\b/i;
 const STATED_RESULT = /\b(?:es|son)\s+(\d+)/i;
 
 /**
+ * THE MIRROR DEFECT: "CASI" FOLLOWED BY THE LEARNER'S OWN NUMBER.
+ *
+ * From the owner's session of 2026-08-29 — the alcancía had 11 pesos and gave
+ * one per peso:
+ *
+ *   learner  Veintidós.                                        ← correct
+ *   tutor    ¡Casi! El segundo día tienes 11 pesos, y la alcancía te
+ *            regala 11. ¡Y entonces tienes 22!
+ *
+ * The tutor told a child their right answer was wrong, walked the reasoning,
+ * and arrived at THE SAME NUMBER. A child cannot survive that with their trust
+ * in their own arithmetic intact. It happens on word problems, where the
+ * deterministic verdict (`checkAnswer`) rightly stays silent — so the model
+ * judges alone, and this is the shape of it judging wrong.
+ *
+ * The shape is computable without understanding the problem: a corrective
+ * marker, and the LAST result the turn asserts equal to the single number the
+ * learner gave. If the learner's number is where the tutor's own reasoning
+ * lands, there was nothing to correct.
+ */
+const CORRECTIVE = /\b(casi|no es|no exactamente|not quite|quase|n[ãa]o [ée])\b/i;
+
+/** Every result assertion in a turn — "son 25", "tienes 22", "quedan 8". */
+const RESULT_ASSERTIONS = /\b(?:es|son|tienes|tendr[áa]s|quedan?|hay|da)\s+(\d+)/gi;
+
+export function contradictsCorrectAnswer(say: string, learnerText: string): boolean {
+  if (!CORRECTIVE.test(say)) return false;
+  const learnerNumbers = learnerText.match(/\d+/g) ?? [];
+  if (learnerNumbers.length !== 1) return false;
+  const asserted = [...say.matchAll(RESULT_ASSERTIONS)].map((m) => m[1]);
+  if (asserted.length === 0) return false;
+  // The LAST assertion is where the tutor's reasoning lands.
+  return asserted[asserted.length - 1] === learnerNumbers[0];
+}
+
+/**
  * True when the turn congratulates the learner and then states a different
  * answer from the one they gave.
  */
