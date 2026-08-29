@@ -751,3 +751,39 @@ describe('a retry is only worth buying while the learner is still waiting', () =
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
+
+describe('an activity that cannot be served', () => {
+  /*
+   * Every rung of the ladder can miss at once: no published topic for the KC
+   * (five of twenty-eight carry `skill_key` null on purpose), no prerequisite
+   * with content (`biz.goods-vs-services` is a root node and has none), and
+   * generation refused. That used to end the exchange — the tutor had just
+   * said "¡Ahora sí, hagamos un ejercicio!", the panel answered "Esa actividad
+   * ya no está lista", and nothing else happened. Observed live on 2026-08-29,
+   * twice. The missing activity is the smaller half; the larger half is being
+   * promised something and then abandoned.
+   */
+  it('becomes a real teaching turn instead of a dead end', async () => {
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = await orchestrator.handleSegmentUnavailable(Date.now());
+
+    expect(outcome?.emission.source).toBe('model');
+    expect(outcome?.emission.turn.say).toBe(GOOD_TURN.say);
+  });
+
+  it('never tells the child about our plumbing', async () => {
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleSegmentUnavailable(Date.now());
+
+    // The instruction that reaches the model must forbid narrating the
+    // failure: a child does not need to hear that a content lookup missed,
+    // they need the next question.
+    const body = String(fetchMock.mock.calls[0]?.[1]?.body ?? '');
+    expect(body).toContain('Do NOT mention this');
+    expect(body).toContain('teach');
+  });
+});

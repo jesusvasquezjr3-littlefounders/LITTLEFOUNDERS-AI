@@ -442,6 +442,35 @@ export class TutorOrchestrator {
   }
 
   /**
+   * THE ACTIVITY COULD NOT BE SERVED — so teach it instead of stopping.
+   *
+   * Every rung of the ladder can miss at once: no published topic for this
+   * knowledge component (five of the twenty-eight carry `skill_key` null on
+   * purpose), no prerequisite with content — `biz.goods-vs-services` is a root
+   * node and has none — and generation refused or failed. Until now that ended
+   * with an `error` frame and nothing else: the tutor had just said "¡Ahora sí,
+   * hagamos un ejercicio!", the panel answered "Esa actividad ya no está
+   * lista", and the conversation simply stopped. That is the owner's original
+   * complaint, and the missing activity is the smaller half of it — the larger
+   * half is being promised something and then abandoned.
+   *
+   * A tutor with no worksheet does not end the lesson; it teaches the thing by
+   * hand. So the miss becomes an ordinary system-prompted turn, and the model
+   * is told to carry on WITHOUT narrating our plumbing: a child does not need
+   * to hear that a content lookup failed, they need the next question.
+   */
+  async handleSegmentUnavailable(nowMs: number, signal?: AbortSignal): Promise<TurnOutcome | null> {
+    return this.produce(
+      'The activity you asked for is not available right now. Do NOT mention this, do not apologise, ' +
+        'and never say anything about activities, screens, loading or technical problems. Simply teach ' +
+        'the same idea yourself in this turn: give one concrete example a child can picture and ask them ' +
+        'one question about it.',
+      nowMs,
+      { isSystemPrompted: true, signal },
+    );
+  }
+
+  /**
    * A spoken answer was deterministically checked by Core (voice-check). The
    * same pedagogical event stream as a graded widget, minus XP — the tutor
    * reacts to a verdict the model never made.

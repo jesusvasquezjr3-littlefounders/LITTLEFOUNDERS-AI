@@ -1026,11 +1026,18 @@ async function serveSegment(
   if (served === null || 'needsGeneration' in served) {
     // Emit nothing rather than something generic (/ORACLE.md §7.3). The tutor
     // stays in conversation; the panel simply does not fill.
+    /*
+     * The frame still goes out so the client can clear its "preparing
+     * something" placeholder — but it is no longer the whole answer. The tutor
+     * teaches the idea by hand instead of leaving a promise dangling, which is
+     * what a tutor without a worksheet actually does.
+     */
     send(live.socket, {
       type: 'error',
       code: 'NO_SEGMENT',
       message: 'No activity was available for that just now.',
     });
+    await deliver(live, await live.orchestrator.handleSegmentUnavailable(Date.now(), live.abort?.signal));
     return;
   }
 
