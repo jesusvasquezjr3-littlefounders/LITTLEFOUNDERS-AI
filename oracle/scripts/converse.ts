@@ -225,6 +225,37 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
   console.log('');
   console.log('== Reading the transcript back ==');
 
+  /*
+   * 0. HOW LONG THE TUTOR TALKS.
+   *
+   * "Keep `say` under about 60 words. It is spoken aloud, and a child listening
+   * to a paragraph has stopped listening by the middle of it." That was a prompt
+   * rule with nothing measuring it, which is how every prompt-only rule in this
+   * system has behaved: followed when convenient, drifted from otherwise.
+   *
+   * MEASURED, NOT REPAIRED, and deliberately. A repair costs a model call, and
+   * the target is explicitly soft — "about" 60 words. Spending money to reshoot
+   * a 63-word turn would be worse than the turn. So the distribution is always
+   * reported, and only a genuine PARAGRAPH is called a fault: at 90+ words spoken
+   * aloud a six-year-old has been listening for well over half a minute without
+   * being asked anything, which is the harm the rule actually names.
+   */
+  const spokenWords = beats.map((b) => flatten(b.tutor).split(/\s+/).filter(Boolean).length);
+  if (spokenWords.length > 0) {
+    const longest = Math.max(...spokenWords);
+    const mean = Math.round(spokenWords.reduce((a, b) => a + b, 0) / spokenWords.length);
+    const over = spokenWords.filter((n) => n > 60).length;
+    console.log(
+      `  spoken length: ${mean} words on average, longest ${longest}, ` +
+        `${over}/${spokenWords.length} over the 60-word target`,
+    );
+    beats.forEach((b, i) => {
+      if (spokenWords[i]! >= 90) {
+        fault(`turn ${i + 1} is ${spokenWords[i]} words — a paragraph, spoken aloud`, b.tutor.slice(0, 100));
+      }
+    });
+  }
+
   // 1. GREETING EVERY TURN. Nine "¡Hola, Jason!" in an eleven-line session was
   // the symptom that exposed the conversation never reaching the model.
   const greetings = beats.filter((b) => /\bhola\b/.test(flatten(b.tutor)));
