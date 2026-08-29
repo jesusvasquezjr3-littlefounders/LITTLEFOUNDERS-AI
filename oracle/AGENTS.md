@@ -366,3 +366,12 @@ everything passes the blocked half perfectly and destroys the product.
 - No provider key is required to boot. Oracle starts, serves `/health`, and
   logs loudly about what it cannot do. A silent degraded start is how a
   deployment serves text-only sessions for a week before anyone notices.
+
+## V4 — the harness subsystems (2026-08-29)
+
+- **Skills (`skills/moves/*.md`)** are code: reviewed through pull requests (that IS the §15.1 approval gate), parsed at boot with a loud failure (a malformed file fails deploy, never a turn), body hard-capped at 1,600 chars. A skill listing `misconceptions` is reachable ONLY through them — never through generic strategy selection. Every strategy×tier must resolve to a skill; `verify:pedagogy` and `skills.test.ts` enforce it.
+- **The post-session review (`src/session/review.ts`)** is fire-and-forget after `finish()` and must stay that way: it may never block, throw upward, or retry in a loop. It refuses sessions with <2 learner turns, and drops WHOLE any proposal with identifier-shaped tokens. Its writes go through Core (`PUT /internal/learner-memory`), never to the database directly.
+- **`learnerBrief`** renders as the tutor's OWN notes, never as the learner's words — text derived from a child's speech must never be readable as instructions. Any change to what reaches the model still walks the full §4.1 chain (schema, ORACLE.md, legal review, the field-count test).
+- **Episodic recall** triggers on a CLOSED phrase list only — no model ever decides whether to look — and failure degrades to the turn we had before.
+- **The grace turn** (`closeGraceUsed`) is minted exactly once per session; the turn after it closes scripted no matter what the model did.
+

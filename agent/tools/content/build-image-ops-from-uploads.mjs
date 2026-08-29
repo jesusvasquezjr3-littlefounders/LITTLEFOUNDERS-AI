@@ -8,7 +8,7 @@ if (!startRaw || !endRaw || !baseDir || !assetManifestPath || !uploadsPath || !o
 
 const start = Number(startRaw);
 const end = Number(endRaw);
-const workOrder = JSON.parse(readFileSync('/tmp/littlefounders-image-session/agent/handoff/work-order.json', 'utf8'));
+const workOrder = JSON.parse(readFileSync(join(new URL('.', import.meta.url).pathname, '../../handoff/work-order.json'), 'utf8'));
 const assets = JSON.parse(readFileSync(assetManifestPath, 'utf8')).files;
 const uploads = JSON.parse(readFileSync(uploadsPath, 'utf8')).uploads;
 const uploadBySource = new Map(uploads.map((upload) => [upload.source, upload]));

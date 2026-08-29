@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+import { FORGE_ILLUSTRATION_STYLE_VERSION } from '../../../coursegen/src/pipeline/illustrationStyle.ts';
 
 const releasePath = process.argv[2];
 const baseDir = process.argv[3] ?? '/tmp/lf-production-images';
@@ -37,7 +38,17 @@ for (const locale of locales) {
   const response = await fetch(`${base}/rest/v1/lesson_documents?lesson_id=eq.${encodeURIComponent(release.lesson_id)}&locale=eq.${encodeURIComponent(locale)}`, {
     method: 'PATCH',
     headers: { ...headers, Prefer: 'return=minimal' },
-    body: JSON.stringify({ document: release.locales[locale].document }),
+    body: JSON.stringify({
+      document: release.locales[locale].document,
+      // A document whose art this pipeline just replaced with LF_VISUAL_IDENTITY-
+      // compliant art IS current, by the same definition FORGE_ILLUSTRATION_STYLE_VERSION
+      // encodes for Prism-generated art (see illustrationStyle.ts). Without this,
+      // `verify:course`'s "documents use the current illustration style" check can
+      // never pass for a document this pipeline touches, since Prism's backfill path
+      // is the only other writer of that column and this pipeline deliberately never
+      // calls Prism.
+      illustration_style_version: FORGE_ILLUSTRATION_STYLE_VERSION,
+    }),
   });
   if (!response.ok) throw new Error(`write ${locale} -> ${response.status}: ${(await response.text()).slice(0, 300)}`);
 }

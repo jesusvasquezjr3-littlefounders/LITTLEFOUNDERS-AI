@@ -40,3 +40,10 @@ The main API and the **only** service the frontend calls. Owns auth session hand
 
 - `agent/core/CONVENTIONS.md` — app layout, envelope, test shape.
 - `database/types/` — generated shared types (never hand-edit).
+
+## V4 — learner memory (2026-08-29)
+
+- `learner_memory` is written ONLY through `writeLearnerMemory` (tutorData.ts), which pairs every store change with an append-only ledger row (actor, session, before/after hashes). A store write without its ledger row is logged as an ERROR — that pairing is the compensating control for auto-write.
+- The brief read (`getLearnerMemory`) degrades to "no brief" on failure by design: it improves a session and must never block one. Do not make it load-bearing.
+- `search_tutor_turns` is a service-role-only RPC scoped by user id; the `/internal/recall` endpoint must always pass the SESSION'S OWN user id, never a client-supplied one.
+
