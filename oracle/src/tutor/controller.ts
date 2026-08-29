@@ -98,7 +98,7 @@ const MAX_STRATEGY_CHANGES_PER_MINUTE = 3;
  * small: this gates CELEBRATING and MOVING ON, not the teaching itself, and a
  * learner who genuinely knows something answers three questions quickly.
  */
-const MASTERY_MIN_OPPORTUNITIES = 3;
+export const MASTERY_MIN_OPPORTUNITIES = 3;
 
 /**
  * How much slower than their own median a correct answer must be to read as
@@ -179,7 +179,35 @@ export class PedagogicalController {
   /** Set while probing a prerequisite; holds the interrupted entry's index. */
   private probeReturnIndex: number | null = null;
   private probingKcId: string | null = null;
-  private celebrated = false;
+  /**
+   * Every KC that has EVER earned a CELEBRATE, kept for the life of the
+   * session — not a single boolean cleared on advance.
+   *
+   * Found live (adversarial review, 2026-08-29): a plain `celebrated`
+   * boolean was set true and then reset to false in the SAME synchronous
+   * call — `applyStrategy`'s CELEBRATE branch called `advanceEntry()`,
+   * which unconditionally zeroed it — so `propose()`'s
+   * `this.celebrated ? 'TRANSFER' : 'CELEBRATE'` could never observe
+   * `true`. TRANSFER was dead code: reachable through no input sequence,
+   * despite having its own skill file, its own turn-policy budgets, and
+   * its own entry in `STRATEGY_INSTRUCTIONS`. Proven with a throwaway test
+   * driving two KCs to mastery in one session: `['FLUENCY','FLUENCY',
+   * 'CELEBRATE','FLUENCY','FLUENCY','CELEBRATE']` — TRANSFER never
+   * appears.
+   *
+   * Keyed by kcId rather than replacing the boolean with a KC-scoped reset
+   * on `advanceEntry` for a reason that matters: this KC is normally never
+   * revisited after its entry is advanced past, so the ONLY turn TRANSFER
+   * could ever fire on on is a LATER encounter of the SAME kcId — spaced
+   * review (`SessionPlanEntry.reason === 'review_due'`) resurfacing an
+   * already-mastered skill. That is also the pedagogically right moment
+   * for "check it travels" (transfer-probe.md): not an artificial second
+   * check before the plan is allowed to move on, which would risk stalling
+   * `advanceEntry` — the ONLY place the plan pointer moves at all — on a
+   * learner who never gets a second qualifying opportunity on this exact
+   * entry before the session ends.
+   */
+  private readonly celebratedKcIds = new Set<string>();
 
   constructor(
     private readonly plan: SessionPlanEntry[],
@@ -497,7 +525,7 @@ export class PedagogicalController {
       (this.opportunities.get(entry.kcId) ?? 0) >= MASTERY_MIN_OPPORTUNITIES &&
       !this.answeredHesitantly(entry.kcId, event)
     ) {
-      return this.celebrated ? 'TRANSFER' : 'CELEBRATE';
+      return this.celebratedKcIds.has(entry.kcId) ? 'TRANSFER' : 'CELEBRATE';
     }
 
     // 6) A hard-won correct answer earns a self-explanation beat.
@@ -528,9 +556,31 @@ export class PedagogicalController {
   }
 
   private applyStrategy(strategy: Strategy, nowMs: number): void {
+    const wasRemediating = this.strategy === 'REMEDIATE';
     if (strategy !== this.strategy) this.strategyChangesAt.push(nowMs);
     if (strategy === 'RESCUE') this.rescuedSinceProgress = true;
     this.strategy = strategy;
+
+    /*
+     * A DIAGNOSIS DOES NOT OUTLIVE THE REMEDIATION IT WAS FOR.
+     *
+     * Found live (adversarial review, 2026-08-29): `this.misconceptionCode`
+     * is set ONLY inside the `activity_result`/`voice_result` branch of
+     * `decide()` — a `conversation_turn` never touches it, by design
+     * (rule 6 explicitly excludes `conversation_turn` from re-entering
+     * ELABORATE). So a learner who deflects a REMEDIATE turn with an
+     * ordinary chat reply ("no entiendo, ¿podemos hacer otra cosa?") moves
+     * the STRATEGY on via `baseStrategy(entry)` — `mode` in `state()`
+     * correctly reports the new one — while `misconceptionCode` (and the
+     * `misconceptionHint` prompt.ts sends the model from it) kept
+     * asserting the OLD diagnosis, contradicting `mode` in the very same
+     * context payload, for every turn afterward until the next graded
+     * result happened to overwrite it. Cleared here instead: the moment
+     * the strategy itself leaves REMEDIATE, whatever diagnosis it was
+     * open for is resolved BY DEFINITION, correctly-answered-and-cleared
+     * or not.
+     */
+    if (wasRemediating && strategy !== 'REMEDIATE') this.misconceptionCode = null;
 
     if (strategy === 'PROBE' && this.probingKcId === null) {
       const entry = this.plan[this.entryIndex];
@@ -543,8 +593,15 @@ export class PedagogicalController {
       this.probingKcId = null;
       this.probeReturnIndex = null;
     }
-    if (strategy === 'CELEBRATE') {
-      this.celebrated = true;
+    if (strategy === 'CELEBRATE' || strategy === 'TRANSFER') {
+      // TRANSFER only ever fires on a kcId already in the set (rule 5), so
+      // `.add` here is a no-op for it — advancing the plan is the part
+      // both share: whichever of the two resolves THIS entry, the plan
+      // moves on. Without this, a review-due re-encounter of an
+      // already-mastered KC that resolves to TRANSFER would never
+      // advance past its own entry at all.
+      const entry = this.plan[this.entryIndex];
+      if (entry) this.celebratedKcIds.add(entry.kcId);
       this.advanceEntry();
     }
   }
@@ -663,7 +720,6 @@ export class PedagogicalController {
       this.entryIndex += 1;
       this.consecutiveFailures = 0;
       this.misconceptionCode = null;
-      this.celebrated = false;
       const next = this.plan[this.entryIndex];
       if (next) {
         this.strategy = this.baseStrategy(next);

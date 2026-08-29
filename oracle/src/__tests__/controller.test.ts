@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   IDLE_NUDGE_MS,
   LISTEN_SILENCE_MS,
+  MASTERY_MIN_OPPORTUNITIES,
   mirrorBktUpdate,
   PedagogicalController,
 } from '../tutor/controller.js';
@@ -69,6 +70,62 @@ describe('PedagogicalController', () => {
     expect(c.state()?.mode).toBe('remediation');
   });
 
+  /*
+   * A DIAGNOSIS DOES NOT OUTLIVE THE REMEDIATION IT WAS FOR (adversarial
+   * review, 2026-08-29). `misconceptionCode` was set ONLY inside the
+   * activity_result/voice_result branch of `decide()` — a `conversation_turn`
+   * never touched it, by design (rule 6 excludes `conversation_turn` from
+   * ELABORATE). A learner who deflects a REMEDIATE turn with an ordinary chat
+   * reply moves `mode` on correctly (`baseStrategy` picks a fresh strategy),
+   * but `misconceptionHint` — sent to the model in the SAME context payload —
+   * kept asserting the resolved diagnosis, flatly contradicting `mode` in the
+   * model's own turn context, for every conversational turn afterward until
+   * the next graded result happened to overwrite it.
+   */
+  it('clears the misconception hint the moment the strategy leaves REMEDIATE via ordinary chat', () => {
+    const c = new PedagogicalController([entry({ pKnown: 0.9 })]);
+    c.decide(
+      { kind: 'activity_result', correct: false, misconceptionCode: 'adds-instead-of-counts-up', attemptNumber: 1 },
+      NOW,
+    );
+    expect(c.state()?.mode).toBe('remediation');
+    expect(c.state()?.misconceptionHint).not.toBeNull();
+
+    // An ordinary conversational deflection — not a retry, not graded.
+    const after = c.decide({ kind: 'conversation_turn' }, NOW + 1_000);
+
+    expect(after.strategy).not.toBe('REMEDIATE');
+    expect(c.state()?.mode).not.toBe('remediation');
+    // The bug: this stayed the OLD hint text even though `mode` above already
+    // says the diagnosis is no longer active.
+    expect(c.state()?.misconceptionHint).toBeNull();
+    expect(after.misconceptionCode).toBeNull();
+  });
+
+  it('does NOT clear the misconception hint while still inside REMEDIATE', () => {
+    // The fix must be scoped to LEAVING remediation, not to every turn —
+    // an unrelated conversational aside mid-remediation must not erase a
+    // diagnosis that is still the active one.
+    const c = new PedagogicalController([entry({ pKnown: 0.9, targetDifficulty: 1 })]);
+    c.decide(
+      { kind: 'activity_result', correct: false, misconceptionCode: 'adds-instead-of-counts-up', attemptNumber: 1 },
+      NOW,
+    );
+    expect(c.state()?.mode).toBe('remediation');
+
+    // A hard-won correct answer after REMEDIATE routes to ELABORATE, not away
+    // from remediation via chat — the hint should still be live here since
+    // this event itself reports which misconception was checked.
+    const after = c.decide(
+      { kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 2 },
+      NOW + 1_000,
+    );
+    expect(after.strategy).toBe('ELABORATE');
+    // Answered correctly, so line 385's own logic already clears it — this
+    // is the EXISTING mechanism working, not the new one firing redundantly.
+    expect(after.misconceptionCode).toBeNull();
+  });
+
   it('two failures trigger RESCUE, and never two RESCUEs in a row', () => {
     const c = new PedagogicalController([entry({ prereqKcIds: [] })]);
     c.decide({ kind: 'activity_result', correct: false, misconceptionCode: null, attemptNumber: 1 }, NOW);
@@ -82,6 +139,112 @@ describe('PedagogicalController', () => {
       NOW + 2_000,
     );
     expect(third.strategy).not.toBe('RESCUE');
+  });
+
+  /*
+   * TRANSFER WAS DEAD CODE (adversarial review, 2026-08-29): `applyStrategy`'s
+   * CELEBRATE branch set `this.celebrated = true` and then, in the SAME
+   * synchronous call, `advanceEntry()` unconditionally reset it back to
+   * `false` — so `propose()`'s `this.celebrated ? 'TRANSFER' : 'CELEBRATE'`
+   * could never observe `true`. No input sequence could ever produce
+   * TRANSFER, despite it having its own skill file (transfer-probe.md), its
+   * own turn-policy budgets, and its own line in STRATEGY_INSTRUCTIONS.
+   */
+  describe('mastering a knowledge component TWICE — CELEBRATE once, TRANSFER the second time', () => {
+    /*
+     * `activity_result` carries no `kcId` of its own — the controller reads
+     * it against WHATEVER entry `this.entryIndex` currently points at. Two
+     * plan entries sharing the same `kcId` (a frontier pass, then its own
+     * review-due re-encounter) is what makes "the same KC comes up twice"
+     * observable at all: `advanceEntry()` moves the pointer from the first
+     * to the second on CELEBRATE, and the second entry's `entry.kcId` is
+     * the SAME string, which is exactly what `celebratedKcIds` keys on.
+     */
+    const masteringOpportunities = () =>
+      Array.from({ length: MASTERY_MIN_OPPORTUNITIES }, () => ({
+        kind: 'activity_result' as const,
+        correct: true,
+        misconceptionCode: null,
+        attemptNumber: 1,
+      }));
+
+    it('CELEBRATEs the first time a KC is mastered, and advances the plan', () => {
+      const c = new PedagogicalController([
+        entry({ kcId: KC_A, pKnown: 0.9 }),
+        entry({ kcId: KC_A, reason: 'review_due', pKnown: 0.9 }),
+      ]);
+      let last;
+      for (const [i, event] of masteringOpportunities().entries()) {
+        last = c.decide(event, NOW + i * 1_000);
+      }
+      expect(last!.strategy).toBe('CELEBRATE');
+      // Advanced to the second plan entry, the review-due re-encounter.
+      expect(c.state()?.mode).toBe('review');
+    });
+
+    it('TRANSFERs — not CELEBRATEs again — when the SAME kcId is mastered a second time', () => {
+      // The whole point of the strategy (transfer-probe.md: "check it
+      // travels"): a KC that comes back via spaced review and is ALSO
+      // mastered there is the one real opportunity to verify the skill
+      // generalizes, rather than only ever having been shown in one story.
+      //
+      // Only ONE further correct answer is needed here, not another three:
+      // `this.opportunities`/`this.pKnown` are keyed by kcId and already
+      // cleared the mastery bar during the first batch, so the SAME kcId's
+      // very next correct answer re-qualifies immediately — it is rule 5's
+      // `celebratedKcIds` check, not a fresh opportunity count, that must
+      // now say TRANSFER instead of CELEBRATE.
+      const c = new PedagogicalController([
+        entry({ kcId: KC_A, pKnown: 0.9 }),
+        entry({ kcId: KC_A, reason: 'review_due', pKnown: 0.9 }),
+      ]);
+      const opportunities = masteringOpportunities();
+      opportunities.forEach((event, i) => c.decide(event, NOW + i * 1_000));
+      const again = c.decide(
+        { kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1 },
+        NOW + 10_000,
+      );
+      expect(again.strategy).toBe('TRANSFER');
+    });
+
+    it('TRANSFER still advances the plan — it must not strand the entry it resolves', () => {
+      const c = new PedagogicalController([
+        entry({ kcId: KC_A, pKnown: 0.9 }),
+        entry({ kcId: KC_A, reason: 'review_due', pKnown: 0.9 }),
+        entry({ kcId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2', pKnown: 0.1 }),
+      ]);
+      masteringOpportunities().forEach((event, i) => c.decide(event, NOW + i * 1_000));
+      c.decide(
+        { kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1 },
+        NOW + 10_000,
+      );
+      // Past both KC_A entries and onto the third, unrelated one.
+      expect(c.activeKcId).toBe('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2');
+    });
+
+    it('a DIFFERENT KC mastered for the first time still CELEBRATEs, even after another KC transferred', () => {
+      // celebratedKcIds must be scoped per KC — a single reused flag would
+      // either block every later CELEBRATE or none of them.
+      const KC_B = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa3';
+      const c = new PedagogicalController([
+        entry({ kcId: KC_A, pKnown: 0.9 }),
+        entry({ kcId: KC_A, reason: 'review_due', pKnown: 0.9 }),
+        entry({ kcId: KC_B, pKnown: 0.9 }),
+      ]);
+      masteringOpportunities().forEach((event, i) => c.decide(event, NOW + i * 1_000));
+      c.decide(
+        { kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1 },
+        NOW + 10_000,
+      );
+      // Now on KC_B, which starts with zero opportunities of its own —
+      // needs its own fresh MASTERY_MIN_OPPORTUNITIES, same as any KC
+      // meeting the bar for the first time.
+      let last;
+      for (const [i, event] of masteringOpportunities().entries()) {
+        last = c.decide(event, NOW + 20_000 + i * 1_000);
+      }
+      expect(last!.strategy).toBe('CELEBRATE');
+    });
   });
 
   /*
