@@ -39,6 +39,7 @@ on:
           - migrate
           - seed-kc
           - probe-models
+          - probe-empty
           - converse
           - provision
           - domain
@@ -96,7 +97,7 @@ jobs:
           jq --version
 
       - name: Write the Railway SSH key
-        if: inputs.step == 'inspect' || inputs.step == 'migrate' || inputs.step == 'verify' || inputs.step == 'converse'
+        if: inputs.step == 'inspect' || inputs.step == 'migrate' || inputs.step == 'verify' || inputs.step == 'converse' || inputs.step == 'probe-empty'
         run: |
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
@@ -292,6 +293,31 @@ jobs:
           echo "Seeding the KC graph against $SUPABASE_URL"
           npm ci --prefix backend --no-audit --no-fund >/dev/null
           npm run --prefix backend seed:kc
+
+      # ── PROBE-EMPTY — one variable at a time ─────────────────────────────
+      #
+      # `deepseek-chat` returns completions that are billed, normally
+      # terminated, and made of whitespace. The retry hides them from learners
+      # and doubles the cost of the turns they hit.
+      #
+      # The first attempt to reduce them was measured through `converse`, which
+      # gave 18 empties in one run and 32 in another AT THE SAME SETTING — and a
+      # change that moved it to 40 was shipped before that spread was noticed. A
+      # conversation varies the prompt, the history and the turn count at once;
+      # it is the right instrument for "is this a good lesson" and the wrong one
+      # for "does this parameter matter".
+      #
+      # This holds everything still and changes ONE thing, N times per
+      # condition. It changes nothing and is safe to re-run.
+      - name: Measure whitespace completions
+        if: inputs.step == 'probe-empty'
+        run: |
+          set -uo pipefail
+          set +e
+          SCRIPT='cd /app && npx --no-install tsx scripts/probe-empty.ts'
+          b64=$(printf '%s' "$SCRIPT" | base64 | tr -d '\n')
+          railway ssh --service oracle -i ~/.ssh/railway_key -- \
+            sh -c "echo $b64 | base64 -d | sh" 2>&1 | sed 's/^/   /'
 
       # ── CONVERSE — hold a real lesson and read it back ───────────────────
       #

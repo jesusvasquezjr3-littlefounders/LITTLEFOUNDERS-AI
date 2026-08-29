@@ -23,7 +23,8 @@
     "speech:pregenerate": "tsx --env-file-if-exists=.env scripts/pregenerate-speech.ts",
     "voice:guided": "tsx --env-file-if-exists=.env scripts/pregenerate-guided-voice.ts",
     "model:probe": "tsx --env-file-if-exists=.env scripts/probe-models.ts",
-    "tutor:converse": "tsx --env-file-if-exists=.env scripts/converse.ts"
+    "tutor:converse": "tsx --env-file-if-exists=.env scripts/converse.ts",
+    "model:probe-empty": "tsx --env-file-if-exists=.env scripts/probe-empty.ts"
   },
   "dependencies": {
     "express": "^5.1.0",
