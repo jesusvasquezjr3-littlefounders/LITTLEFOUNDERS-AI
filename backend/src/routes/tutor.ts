@@ -451,6 +451,22 @@ function internalRouter(): Router {
     const nextSeq = served.length;
 
     const skill = await resolveSkill(parsed.data.skillKey);
+    if (!skill) {
+      /*
+       * A key that does not resolve is almost always one the MODEL invented.
+       * The prompt never told it what a skillKey looks like, so it produced
+       * things like `making_change` — and `resolveSkill` requires
+       * `course-slug/topic-slug`, so tier 1 and tier 2 could never match and
+       * every activity fell through to live generation. That is why the
+       * twenty-three mapped knowledge components went unused in open sessions,
+       * and why "Esa actividad ya no está lista" kept appearing.
+       *
+       * Logged rather than rejected: the fallbacks below still have a chance,
+       * and refusing here would take away an activity rather than find one.
+       * The line is what makes the frequency visible if it starts again.
+       */
+      console.warn(`[tutor] segment request named an unresolvable skill: ${parsed.data.skillKey}`);
+    }
 
     let candidate: LadderCandidate | null = null;
     if (skill) {

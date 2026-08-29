@@ -134,7 +134,20 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   `  "emotion": one of ${EMOTIONS.join(' | ')},`,
   `  "action": one of ${ACTIONS.join(' | ')},`,
   '  "next": "ask" | "segment" | "close",',
-  '  "segmentRequest": null or { "skillKey", "difficulty" 1-5, "framing", "rationale" },',
+  '  "segmentRequest": null or { "skillKey", "difficulty" 1-5, "framing", "rationale" },'
+    + '\n'
+    + [
+        '',
+        '`skillKey` NAMES CONTENT THAT EXISTS. It is always two slugs joined by a',
+        'slash — a course and one of its topics, like',
+        '`financial-education/cobrar-y-dar-cambio`. Copy one from "What the system',
+        'estimates about their skills" or from the lesson plan below; those are the',
+        'only keys known to exist.',
+        '',
+        'If none of them fits what you want to practise, you may still ask, but say',
+        'in `rationale` what the activity should be about — an invented key finds',
+        'nothing, and the learner waits for something that never arrives.',
+      ].join('\n  '),
   '  "offerAdaptation": null or one of slower_pacing | more_examples | less_text | more_visual | repeat_before_advancing,',
   '  "demonstrate": null or 1-8 steps of { "kind": "add"|"remove"|"pause", "denomination"?, "ms"? }',
   '}',
