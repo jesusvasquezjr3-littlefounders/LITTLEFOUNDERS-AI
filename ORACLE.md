@@ -1038,6 +1038,23 @@ it silently is exactly that.
 - **Never** a hidden mode, never a label written to a profile, never a reduction
   in what the learner is allowed to reach.
 
+**The offer must stand ALONE in its turn — found live, 2026-08-29.** The
+frontend deliberately hides the typing box while an offer is open ("both
+answers are already on screen" — a reviewed decision, `ConversationView.tsx`)
+and — per §12 — **typing is the ONLY channel for a learner with no voice
+provider configured**. A turn observed in a real browser session set
+`offerAdaptation` and ALSO asked a brand-new arithmetic question in the same
+`say` ("¿te ayudaría otro ejemplo? … si tienes 9 monedas y das 4, ¿cuántas te
+quedan?"); a text-only learner had no control that could answer the second
+half — only "sí"/"no" to the first. The frontend's invariant is correct and
+was left alone; the fix is on the side that was breaking it: the prompt now
+tells the model that setting `offerAdaptation` means `say` is the offer and
+nothing else, and the next question waits for the accept/decline. Not yet
+backed by a deterministic check — a reliable "two questions in one turn"
+detector is the harder problem the whiteboard/robot-identity fixes did not
+have, so this one is prompt-only until `tutor:converse` or a live session
+shows it surviving anyway.
+
 ---
 
 ## §12 Persistence, replay and parent visibility
