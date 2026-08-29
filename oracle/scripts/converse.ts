@@ -338,6 +338,44 @@ async function main(): Promise<void> {
         next: turn.next,
         requestedActivity: turn.segmentRequest != null,
       });
+
+      /*
+       * THE ACTIVITY ARRIVES, because in production it does.
+       *
+       * Without this the harness asks the tutor for an activity and never
+       * delivers one, so from the tutor's side the practice never starts and it
+       * keeps announcing it — which the repetition check then reported as a
+       * product defect. It is not one: `ws/server.ts` serves the segment and
+       * feeds the result back. A harness that omits a step the product performs
+       * reports faults the product does not have, which is the fourth time
+       * today that shape has cost a cycle.
+       *
+       * The activity is a stand-in, deliberately: what is under test here is
+       * the CONVERSATION around it, and the ladder that picks real content has
+       * its own checks. Grading it correct keeps the lesson moving; a learner
+       * who fails everything is the third scenario's job.
+       */
+      if (turn.segmentRequest != null) {
+        const served = `seg-${beats.length}`;
+        orchestrator.noteSegmentServed(
+          served,
+          turn.segmentRequest.skillKey,
+          'coin_count',
+          'Junta monedas del cofre para pagar exactamente ese monto.',
+        );
+        const reaction = await orchestrator.handleSegmentResult(served, 100, Date.now());
+        if (reaction !== null) {
+          console.log(`  [activity] ${turn.segmentRequest.skillKey} — served and answered correctly`);
+          console.log(`  tutor    ${reaction.emission.turn.say}`);
+          beats.push({
+            learner: '(completed the activity)',
+            tutor: reaction.emission.turn.say,
+            source: reaction.emission.source,
+            next: reaction.emission.turn.next,
+            requestedActivity: reaction.emission.turn.segmentRequest != null,
+          });
+        }
+      }
     }
 
     review(beats, scenario.session.tier, scenario.session.nickname);
