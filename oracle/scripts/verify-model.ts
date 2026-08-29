@@ -164,9 +164,22 @@ async function completeLikeProduction(
           ]
         : []),
     ];
-    const result = await complete(messages, { temperature: attempt === 0 ? 0.6 : 0.2 });
-    last = parseTurn(result.text);
-    if (last.ok) return last;
+    try {
+      const result = await complete(messages, { temperature: attempt === 0 ? 0.6 : 0.2 });
+      last = parseTurn(result.text);
+      if (last.ok) return last;
+    } catch (error) {
+      /*
+       * An EMPTY completion arrives here as a thrown ModelUnavailableError,
+       * and production retries it — `produce()` catches the throw inside its
+       * own loop. Letting it escape made the probe weaker than the product for
+       * the second time in one session: two stages reported "model returned an
+       * empty completion" as a defect that a learner would never have seen.
+       * The retry is the product's behaviour, so it has to be the probe's.
+       */
+      if (!(error instanceof ModelUnavailableError) || attempt === 1) throw error;
+      console.log(`  ..    empty or failed completion, retrying once (${error.message})`);
+    }
   }
   return last;
 }
