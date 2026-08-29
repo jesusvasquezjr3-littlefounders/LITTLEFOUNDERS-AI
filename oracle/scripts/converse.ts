@@ -160,6 +160,36 @@ const SCENARIOS: Scenario[] = [
       'sigo sin entender',
     ],
   },
+  {
+    /*
+     * THE OWNER'S OWN TESTING PERSONA, WRITTEN INTO THE PERMANENT HARNESS
+     * (2026-08-29): "como si fueras un discapacitado mental o con problemas
+     * de aprendizaje, retención y poco coeficiente intelectual" — deliberately
+     * more extreme than "a learner who keeps failing" above. That scenario
+     * varies its wrong answers (20, then 25); this one asks the SAME question
+     * TWICE (turns 1 and 3) to stress RETENTION specifically — does the tutor
+     * notice it already answered this, or deliver the identical explanation
+     * again as if meeting it for the first time? — and answers with bare
+     * one-word non-answers ("no", "¿qué?") that carry no content at all,
+     * which is exactly the input the repetition/false-praise checks in
+     * orchestrator.ts must survive without inventing progress that did not
+     * happen. A ONE-OFF MANUAL SESSION TESTS THE PRODUCT ONCE; THIS SCENARIO
+     * TESTS IT ON EVERY FUTURE DEPLOY.
+     */
+    name: 'the owner\'s low-retention persona, made permanent',
+    passesActivities: false,
+    session: { ...SESSION, tier: 1, nickname: 'Uli' },
+    script: [
+      'que es un precio?',
+      'no',
+      'que es un precio?',
+      '¿qué?',
+      'no se',
+      'ya me dijiste eso?',
+      'no entiendo nada de nada',
+      'otra vez cual era la pregunta',
+    ],
+  },
 ];
 
 interface Beat {
