@@ -393,8 +393,22 @@ function reviewAcrossConversations(beats: Beat[]): void {
       sentences.set(s, (sentences.get(s) ?? 0) + 1);
     }
   }
+  /*
+   * THREE, not two — and the calibration is the point.
+   *
+   * This found what it was written for: "eso es pensar como un científico" four
+   * times, and the same follow-up question four times. Both are fixed, and what
+   * it reports now is different in kind: "¿quieres que lo practiquemos con
+   * monedas?" said in two separate conversations, which is a natural sentence
+   * for a natural situation, not a catchphrase.
+   *
+   * A tutor will and should reuse the language of its subject. Two children
+   * hearing the same sentence about the same activity is a coincidence; four
+   * is a machine with a script. Reporting the first teaches whoever reads this
+   * to skim it, and a check nobody reads is worse than no check.
+   */
   for (const [sentence, count] of sentences) {
-    if (count > 1) {
+    if (count > 2) {
       /*
        * Said "N times", not "to N learners": this counts sentences across
        * every conversation without tracking who heard them, and a message
