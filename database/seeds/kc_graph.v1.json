@@ -80,7 +80,7 @@
         "es-MX": "Decidir cuál de dos cantidades de dinero es mayor, aunque tengan monedas distintas.",
         "pt-BR": "Decidir qual de duas quantias de dinheiro é maior, mesmo com moedas diferentes."
       },
-      "skill_key": "financial-education/cual-vale-mas"
+      "skill_key": "financial-education/comparo-precios-de-dos-cosas"
     },
     {
       "key": "money.make-amount",
@@ -380,7 +380,7 @@
         "es-MX": "Explicar que un precio es lo que el comprador da para recibir algo.",
         "pt-BR": "Explicar que um preço é o que o comprador dá para receber algo."
       },
-      "skill_key": "financial-education/reviso-el-precio-antes-de-decidir"
+      "skill_key": "financial-education/todo-en-el-mercado-tiene-un-precio"
     },
     {
       "key": "biz.cost-vs-price",
