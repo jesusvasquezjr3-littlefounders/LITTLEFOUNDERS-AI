@@ -2092,6 +2092,19 @@ segment yet is never turned into an outage. The prompt tells the model to set
 it right after a growth or spending story, or whenever a number line would
 show the idea better than more words.
 
+**Measured on the real model the same day (`tutor:converse`): the closed
+vocabulary is doing real work.** The model tried to set `preferredTypes` to
+something outside `interest_peek`/`number_line` twice in one four-conversation
+run — `.strict()` refused the turn both times (`invalid_shape`), and the
+existing repair loop recovered without the field reaching Core or a learner
+ever seeing anything wrong. Correct behaviour, and also the same lesson this
+whole sprint keeps drawing: a two-item enum stated once in the prompt is not
+yet something the model reliably fills in on the first try. Left as a known,
+low-severity efficiency gap (a wasted retry, not a defect) rather than
+iterated on with more paid model calls the same session — a candidate for the
+same detect-and-retry-with-a-specific-correction treatment the whiteboard's
+`missedWhiteboard`/`wrongUnit` checks got, if it recurs.
+
 **Still out of scope, backlog, not silently dropped:** a general free-form
 canvas ("UI generativa acotada", blueprint §10.4) — a multi-week
 content-pipeline feature (schema, CAS verifier, age classifier, content bank)
