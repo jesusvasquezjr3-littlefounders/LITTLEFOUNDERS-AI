@@ -68,6 +68,26 @@ export type PedagogyEvent =
 /** Guardrail: never raise difficulty after a failure; cap strategy churn. */
 const MAX_STRATEGY_CHANGES_PER_MINUTE = 3;
 
+/**
+ * How many assessed opportunities a knowledge component needs before mastery
+ * can be declared, however confident the posterior is.
+ *
+ * Three is the blueprint's own number for a diagnosis ("2-3 ítems de sondeo",
+ * §640) and the conventional minimum in mastery learning. It is deliberately
+ * small: this gates CELEBRATING and MOVING ON, not the teaching itself, and a
+ * learner who genuinely knows something answers three questions quickly.
+ */
+const MASTERY_MIN_OPPORTUNITIES = 3;
+
+/**
+ * The strategies that ASK rather than TEACH.
+ *
+ * A learner making no progress must not be left in one of these. Fixing only
+ * SOCRATIC — the one the blueprint names — left the identical defect in
+ * FLUENCY, which is how this became a set rather than a comparison.
+ */
+const QUESTIONING_STRATEGIES: ReadonlySet<Strategy> = new Set(['SOCRATIC', 'FLUENCY']);
+
 type Difficulty = 1 | 2 | 3 | 4 | 5;
 const band = (n: number): Difficulty => Math.min(5, Math.max(1, Math.round(n))) as Difficulty;
 
@@ -81,13 +101,14 @@ export class PedagogicalController {
   private misconceptionCode: string | null = null;
   private strategyChangesAt: number[] = [];
   /**
-   * Consecutive SOCRATIC turns that produced no correct answer.
+   * Consecutive turns spent ASKING that produced no correct answer.
    *
    * The blueprint's guardrail is a COUNT, not a band: three questions with no
    * progress means questions are not working, whatever the mastery estimate
-   * says about them.
+   * says about them — which is why this counts every questioning strategy and
+   * not only the one the blueprint happens to name.
    */
-  private socraticWithoutProgress = 0;
+  private questioningWithoutProgress = 0;
   /**
    * Whether RESCUE has already fired since the learner last got something right.
    *
@@ -96,6 +117,15 @@ export class PedagogicalController {
    * reassurance, on a learner who by then needs the teaching.
    */
   private rescuedSinceProgress = false;
+  /**
+   * How many assessed opportunities this session has produced per KC, seeded
+   * from the learner's persisted history.
+   *
+   * The blueprint's own schema carries `n_opportunities` beside the posterior
+   * for a reason: a Bayesian belief says how confident we are, not how much we
+   * have seen. Mastery needs both.
+   */
+  private opportunities = new Map<string, number>();
   /** Set while probing a prerequisite; holds the interrupted entry's index. */
   private probeReturnIndex: number | null = null;
   private probingKcId: string | null = null;
@@ -118,6 +148,13 @@ export class PedagogicalController {
     for (const entry of plan) this.pKnown.set(entry.kcId, entry.pKnown);
     this.strategy = this.plan.length > 0 ? this.baseStrategy(this.plan[0]!) : 'DIRECT';
     this.lastDifficulty = band(this.plan[0]?.targetDifficulty ?? 2);
+    /*
+     * Seeded from the learner's persisted history, so a child returning to a KC
+     * they have already been asked about three times is not made to re-earn the
+     * evidence. The count is about how much we have SEEN of them, and previous
+     * sessions are things we saw.
+     */
+    for (const state of this.kcStates) this.opportunities.set(state.kcId, state.attempts);
   }
 
   /** Whether the controller has anything to control. False = v2 behaviour. */
@@ -178,28 +215,27 @@ export class PedagogicalController {
     if (p < 0.3) return 'DIRECT';
     if (p < 0.5) return 'WORKED';
     if (p < 0.65) return 'FADED';
-    if (p < 0.85) {
-      /*
-       * "NEVER MORE THAN 3 SOCRATIC WITHOUT PROGRESS → DEGRADE TO FADED"
-       * (blueprint §9.2). The band alone decided this before, so a learner
-       * sitting between 0.65 and 0.85 who kept failing got questions with no
-       * scaffolding, indefinitely — asked to reason their way out of something
-       * they have already shown three times they cannot reason their way out
-       * of.
-       *
-       * RESCUE covers the EMOTIONAL version of this at two consecutive
-       * failures, and it is not the same rule: rescue lowers the temperature
-       * and then hands the learner straight back to the band, which is
-       * SOCRATIC again. This one changes the TEACHING — a faded example gives
-       * them the shape of the answer and asks for the last step.
-       *
-       * The streak counts Socratic turns that produced no correct answer, and
-       * any correct answer resets it, because a learner who just succeeded is
-       * not stuck.
-       */
-      return this.socraticWithoutProgress >= 3 ? 'FADED' : 'SOCRATIC';
-    }
-    return 'FLUENCY';
+    /*
+     * "NEVER MORE THAN 3 SOCRATIC WITHOUT PROGRESS → DEGRADE TO FADED"
+     * (blueprint §9.2), applied to the CLASS rather than to the one strategy it
+     * names.
+     *
+     * The band alone decided this before, so a learner who kept getting nowhere
+     * stayed in whichever questioning strategy their mastery implied,
+     * indefinitely. The blueprint names SOCRATIC, and fixing only SOCRATIC left
+     * the identical defect one band up: a learner who had mastered something and
+     * then went quiet was given FLUENCY — timed drills — seven turns running,
+     * after six answers of "no sé". Same failure, different label, and it was
+     * caught by the sequence gate the moment the Socratic half was fixed.
+     *
+     * RESCUE covers the EMOTIONAL version of this at two consecutive failures,
+     * and it is not the same rule: rescue lowers the temperature and hands the
+     * learner straight back to the band. This one changes the TEACHING — a faded
+     * example gives them the shape of the answer and asks for the last step.
+     */
+    const stuck = this.questioningWithoutProgress >= 3;
+    if (p < 0.85) return stuck ? 'FADED' : 'SOCRATIC';
+    return stuck ? 'FADED' : 'FLUENCY';
   }
 
   private scaffoldingFor(strategy: Strategy): 0 | 1 | 2 | 3 {
@@ -248,6 +284,7 @@ export class PedagogicalController {
     const pBefore = this.pKnown.get(entry.kcId) ?? entry.pKnown;
     if (event.kind === 'activity_result' || event.kind === 'voice_result') {
       const kcId = entry.kcId;
+      this.opportunities.set(kcId, (this.opportunities.get(kcId) ?? 0) + 1);
       this.pKnown.set(kcId, mirrorBktUpdate(this.pKnown.get(kcId) ?? entry.pKnown, event.correct));
       this.misconceptionCode = event.misconceptionCode;
       if (event.correct) {
@@ -273,19 +310,19 @@ export class PedagogicalController {
      * indefinitely. Nothing in the controller could see that, because nothing
      * was counting the turns where NOTHING HAPPENED.
      *
-     * So: any Socratic turn that did not produce a correct answer counts, and a
-     * correct answer resets it. `this.strategy` is the strategy that was in
+     * So: any turn spent asking that did not produce a correct answer counts,
+     * and a correct answer resets it. `this.strategy` is the strategy that was in
      * force during the turn being judged, not the one about to be chosen.
      * `entry_opened` is excluded — it is the controller opening a KC, not the
      * learner spending a turn.
      */
     if (assessedCorrect) {
-      this.socraticWithoutProgress = 0;
+      this.questioningWithoutProgress = 0;
       // Progress re-arms rescue: the next slump gets the same support this one
       // did, rather than being permanently denied it by an earlier bad patch.
       this.rescuedSinceProgress = false;
-    } else if (this.strategy === 'SOCRATIC' && event.kind !== 'entry_opened') {
-      this.socraticWithoutProgress += 1;
+    } else if (QUESTIONING_STRATEGIES.has(this.strategy) && event.kind !== 'entry_opened') {
+      this.questioningWithoutProgress += 1;
     }
 
     const proposed = this.propose(event, entry, failedNow, pBefore);
@@ -364,8 +401,31 @@ export class PedagogicalController {
       return event.correct ? 'REMEDIATE' : 'DIRECT';
     }
 
-    // 5) Mastery reached → celebrate once, then move to the next plan entry.
-    if (p >= 0.85 && (event.kind === 'activity_result' || event.kind === 'voice_result') && event.correct) {
+    /*
+     * 5) Mastery reached → celebrate once, then move to the next plan entry.
+     *
+     * MASTERY NEEDS EVIDENCE, NOT JUST CONFIDENCE. The posterior alone declared
+     * it after a SINGLE correct answer: the mirror's textbook BKT update takes a
+     * learner from 0.50 to 0.845 on one right answer and to 0.967 on two, so a
+     * plan entry was finished, celebrated and left behind on evidence a guess
+     * produces one time in five. Driving a competent learner through the whole
+     * session plan took three turns, after which the controller went dormant and
+     * the rest of the session fell back to v2 behaviour with no pedagogy at all.
+     * That is the shallowness the product was accused of, expressed as a
+     * threshold.
+     *
+     * The fix is the one the blueprint's schema already implies by carrying
+     * `n_opportunities` beside the posterior, and that §640 states directly when
+     * it asks for "2-3 ítems de sondeo": confidence is not evidence. A belief
+     * above the bar on one observation means we have not looked enough, so
+     * mastery now also requires having actually asked.
+     */
+    if (
+      p >= 0.85 &&
+      (event.kind === 'activity_result' || event.kind === 'voice_result') &&
+      event.correct &&
+      (this.opportunities.get(entry.kcId) ?? 0) >= MASTERY_MIN_OPPORTUNITIES
+    ) {
       return this.celebrated ? 'TRANSFER' : 'CELEBRATE';
     }
 

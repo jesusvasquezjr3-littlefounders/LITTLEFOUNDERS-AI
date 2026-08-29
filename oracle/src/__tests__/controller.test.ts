@@ -190,19 +190,48 @@ describe('PedagogicalController', () => {
   });
 
   it('mastery earns one CELEBRATE and advances to the next plan entry', () => {
+    /*
+     * MASTERY NEEDS EVIDENCE, NOT JUST CONFIDENCE.
+     *
+     * This test used to read "one correct answer from 0.8 crosses the 0.85
+     * mastery bar" and assert exactly that — the defect written down as the
+     * intended contract. It is true of the arithmetic: the BKT mirror takes a
+     * learner from 0.50 to 0.845 on a single right answer. It is not true of
+     * teaching. A guess produces that same answer one time in five, and a
+     * competent learner finished the entire session plan in three turns, after
+     * which the controller went dormant for the rest of the session.
+     */
     const KC_B = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2';
     const c = new PedagogicalController([
       entry({ pKnown: 0.8, prereqKcIds: [] }),
       entry({ kcId: KC_B, kcKey: 'biz.profit', pKnown: 0.2, prereqKcIds: [] }),
     ]);
-    // One correct answer from 0.8 crosses the 0.85 mastery bar.
+    const right = { kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1 } as const;
+
+    // Confident after one answer — and deliberately not finished.
+    expect(c.decide(right, NOW).strategy).not.toBe('CELEBRATE');
+    expect(c.activeKcId).toBe(KC_A);
+    expect(c.decide(right, NOW + 40_000).strategy).not.toBe('CELEBRATE');
+
+    // Three opportunities is the blueprint's own number for a diagnosis.
+    expect(c.decide(right, NOW + 80_000).strategy).toBe('CELEBRATE');
+    expect(c.activeKcId).toBe(KC_B);
+    expect(c.currentStrategy).toBe('DIRECT'); // fresh entry, low mastery band
+  });
+
+  it('credits the evidence a returning learner already produced', () => {
+    // The opportunity count is about how much we have SEEN of a learner, and
+    // previous sessions are things we saw. A child coming back to a KC they
+    // have already been asked about must not re-earn it from zero.
+    const c = new PedagogicalController(
+      [entry({ pKnown: 0.8, prereqKcIds: [] })],
+      [{ kcId: KC_A, kcKey: 'money.make-change-counting-up', pKnown: 0.8, attempts: 4 }],
+    );
     const decision = c.decide(
       { kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1 },
       NOW,
     );
     expect(decision.strategy).toBe('CELEBRATE');
-    expect(c.activeKcId).toBe(KC_B);
-    expect(c.currentStrategy).toBe('DIRECT'); // fresh entry, low mastery band
   });
 
   it('holds its strategy past three changes per minute — never erratic', () => {

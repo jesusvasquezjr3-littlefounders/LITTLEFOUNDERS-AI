@@ -25,7 +25,8 @@
     "model:probe": "tsx --env-file-if-exists=.env scripts/probe-models.ts",
     "tutor:converse": "tsx --env-file-if-exists=.env scripts/converse.ts",
     "model:probe-empty": "tsx --env-file-if-exists=.env scripts/probe-empty.ts",
-    "voice:probe-prosody": "tsx --env-file-if-exists=.env scripts/probe-prosody.ts"
+    "voice:probe-prosody": "tsx --env-file-if-exists=.env scripts/probe-prosody.ts",
+    "verify:pedagogy": "tsx scripts/verify-pedagogy.ts"
   },
   "dependencies": {
     "express": "^5.1.0",
