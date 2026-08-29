@@ -299,17 +299,17 @@ describe('the dock steps aside only for a plate that is really there', () => {
 
   it('stays centred while nothing claims the corner', () => {
     renderWith(false);
-    expect(dockOf().className).not.toContain('lg:right-[30rem]');
+    expect(dockOf().className).not.toContain('lg:right-[min(27.5rem,34vw)]');
   });
 
   it('steps aside when a plate says it is holding the corner', () => {
     renderWith(true);
-    expect(dockOf().className).toContain('lg:right-[30rem]');
+    expect(dockOf().className).toContain('lg:right-[min(27.5rem,34vw)]');
   });
 
   it('comes back to centre when the plate stands down without unmounting', () => {
     const { rerender } = renderWith(true);
-    expect(dockOf().className).toContain('lg:right-[30rem]');
+    expect(dockOf().className).toContain('lg:right-[min(27.5rem,34vw)]');
     act(() => {
       rerender(
         <MemoryRouter>
@@ -319,6 +319,6 @@ describe('the dock steps aside only for a plate that is really there', () => {
         </MemoryRouter>,
       );
     });
-    expect(dockOf().className).not.toContain('lg:right-[30rem]');
+    expect(dockOf().className).not.toContain('lg:right-[min(27.5rem,34vw)]');
   });
 });

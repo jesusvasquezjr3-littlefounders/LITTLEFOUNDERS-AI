@@ -81,6 +81,23 @@ export interface SpeechCaptionProps {
    * caption over the wrong character is worse than no caption at all.
    */
   slot?: AnchorId;
+  /**
+   * V4: WHERE THE CAPTION LIVES WHEN A LESSON SURFACE OWNS THE SCREEN.
+   *
+   * The anchored caption escapes fixed chrome with a hard budget — 25% of
+   * the viewport's shorter side — and that budget is unbeatable against a
+   * full-height docked panel (desktop) or a full-width sheet at FULL
+   * (mobile): the escape refuses, the caption stays put, and at z-20 under
+   * the z-30 surface the tutor's words are PAINTED OVER. Confirmed as the
+   * top overlap mechanism in the owner's "elementos que se sobreponen".
+   *
+   * The caller knows deterministically when those surfaces are up, so it
+   * says so, and the caption DOCKS: `'panel'` centres it in the space left
+   * of the desktop panel; `'sheet'` pins it as a strip above the mobile
+   * sheet. No geometry listening, no z escalation — the caption moves to
+   * space nothing else claims.
+   */
+  docked?: 'panel' | 'sheet' | null;
   className?: string;
   /** Skips the reveal animation. Respected from prefers-reduced-motion too. */
   instant?: boolean;
@@ -127,7 +144,8 @@ export function SpeechCaption({
   className,
   instant = false,
   face = null,
-}: SpeechCaptionProps) {
+  docked = null,
+ }: SpeechCaptionProps) {
   const [shown, setShown] = useState('');
   const timerRef = useRef<number | null>(null);
   /*
@@ -203,7 +221,12 @@ export function SpeechCaption({
 
   return (
     <div
-      ref={anchorRef}
+      /*
+       * DOCKED MODE DETACHES FROM THE PROJECTOR. The anchor slot keeps its
+       * registration alive elsewhere, but this node stops handing it a ref,
+       * so no per-frame transform fights the fixed placement below.
+       */
+      ref={docked === null ? anchorRef : undefined}
       /*
        * THE ANCHORED NODE IS THE CAPTION, box and all. It used to be a 0x0
        * wrapper with this column absolutely positioned up out of it — which put
@@ -235,9 +258,20 @@ export function SpeechCaption({
        * two should be in.
        */
       className={cn(
-        'lf-speech pointer-events-none fixed left-0 top-0 z-20 flex w-max max-w-[min(88vw,32rem)] flex-col items-center will-change-transform',
+        'lf-speech pointer-events-none fixed z-20 flex flex-col items-center',
+        docked === null &&
+          'left-0 top-0 w-max max-w-[min(88vw,32rem)] will-change-transform',
+        /*
+         * Left of the docked desktop panel: the same width formula the panel
+         * and the dock use, so all three agree on where the free space is.
+         */
+        docked === 'panel' &&
+          'left-0 right-[min(27.5rem,34vw)] top-20 mx-auto w-max max-w-[min(60vw,32rem)]',
+        // Above the mobile sheet: a strip under the exit chip, full care width.
+        docked === 'sheet' && 'inset-x-0 top-16 mx-auto w-max max-w-[calc(100vw-2rem)]',
         className,
       )}
+      style={docked === null ? undefined : { transform: 'none' }}
     >
       <HudPlate
         shape="plate"

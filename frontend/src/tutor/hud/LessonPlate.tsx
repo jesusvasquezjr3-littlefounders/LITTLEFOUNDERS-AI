@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent, ReactNode } from 'react';
 import { Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
@@ -397,9 +397,17 @@ export function LessonPlate({
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // The camera has to know where this is from the first frame it exists, not
-  // from the first frame somebody drags it.
-  useEffect(() => {
+  /*
+   * The camera has to know where this is from the first frame it exists, not
+   * from the first frame somebody drags it. A LAYOUT effect, deliberately:
+   * `standDown` flipping back (the learner just answered an adaptation offer)
+   * makes the sheet reappear in the same commit, and a passive effect
+   * republished the footprint one paint LATER — so for those frames the dock
+   * sat at its resting inset with the sheet already over it, and the 300 ms
+   * bottom transition stretched the collision into something a person sees.
+   * Before paint, the dock never has a frame with a stale floor.
+   */
+  useLayoutEffect(() => {
     publishFootprint(heights[detent]);
   }, [publishFootprint, heights, detent]);
 

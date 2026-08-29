@@ -696,9 +696,17 @@ function StageShellInner({
             // The resting inset. A bottom surface overrides it inline, above.
             'bottom-3 lg:bottom-6',
             'motion-safe:transition-[bottom] motion-safe:duration-300 motion-safe:ease-[var(--lf-ease)]',
-            // 480 px clears the 420 px corner plate plus its 24 px inset plus
-            // a real gap, so the two never crowd each other at 1024 px either.
-            besidePlate && 'lg:right-[30rem] lg:max-w-[min(30rem,100%)]',
+            /*
+              The reservation is the PANEL'S OWN width formula, not a constant.
+              It was 30rem (480 px) "to clear the 420 px corner plate" — but
+              the docked panel is min(27.5rem, 34vw), which at exactly 1024 px
+              is 348 px: the dock shifted 480 px to clear 348, sitting
+              off-centre by ~130 px against nothing. Reserving exactly what
+              the panel occupies keeps the dock centred in the space that is
+              actually left, at every width, without a second number to keep
+              in sync.
+            */
+            besidePlate && 'lg:right-[min(27.5rem,34vw)] lg:max-w-[min(30rem,100%)]',
           )}
         >
           <div ref={attachAbove} className="flex w-full flex-col items-center gap-2 empty:hidden" />

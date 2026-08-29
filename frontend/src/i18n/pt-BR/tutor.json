@@ -191,7 +191,8 @@
     "transcriptLabel": "Tudo o que foi dito até agora",
     "resizePanel": "Mudar o tamanho deste painel",
     "peekOpenActivity": "Atividade pronta",
-    "peekActivityWaiting": "Já tem uma atividade."
+    "peekActivityWaiting": "Já tem uma atividade.",
+    "lessonThread": "Lição · passo {{step}} de {{of}}"
   },
   "mic": {
     "listening": "Estou ouvindo…",

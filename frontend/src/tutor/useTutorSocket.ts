@@ -102,6 +102,8 @@ export interface TutorSocket {
   /** Every turn so far, for the on-screen transcript (deaf accessibility). */
   history: { speaker: 'learner' | 'tutor'; text: string; seq: number }[];
   segment: LiveSegmentState | null;
+  /** V4: the lesson thread — child-facing topic + step N of M; null in open chat. */
+  lesson: { topic: string | null; step: number; of: number } | null;
   budget: BudgetState;
   remainingMs: number;
   microphone: boolean;
@@ -173,6 +175,8 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
   const [adaptationOffer, setAdaptationOffer] = useState<Adaptation | null>(null);
   const [closedReason, setClosedReason] = useState<string | null>(null);
   const [error, setError] = useState<TutorSocket['error']>(null);
+  /** V4: the lesson thread the last turn carried; null in open chat. */
+  const [lesson, setLesson] = useState<{ topic: string | null; step: number; of: number } | null>(null);
   const [thinking, setThinking] = useState(false);
   /**
    * The streamed-upload state, all refs: chunk encoding is async, so sends are
@@ -258,6 +262,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
             policy: message.policy ?? null,
             demonstrate: message.demonstrate ?? null,
           });
+          setLesson(message.lesson ?? null);
           setHistory((prev) => [...prev, { speaker: 'tutor', text: message.say, seq: message.seq }]);
           // A new turn clears the previous error banner: the tutor recovering
           // is the signal that whatever went wrong is over.
@@ -474,6 +479,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     turn,
     history,
     segment,
+    lesson,
     budget,
     remainingMs,
     microphone,

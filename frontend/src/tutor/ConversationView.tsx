@@ -266,6 +266,26 @@ export function ConversationView({
   }, [segmentId]);
 
   /*
+   * …UNLESS THE TUTOR JUST PROMISED IT OUT LOUD (V4).
+   *
+   * The rule above holds for an activity that merely arrives. But the turn
+   * that REQUESTS a segment (`next: 'segment'`) is the tutor saying "vamos a
+   * practicar con monedas en la pantalla" — and on a phone the learner then
+   * heard a promise and saw a peek row. The owner's verdict on that was
+   * "elementos que no funcionan": an announced activity that does not appear
+   * is a broken promise in UI form, the exact harm the unkept-promise
+   * repair chases on the language side. So when the tutor's own current turn
+   * asked for the screen, the sheet rises to HALF — the tutor keeps
+   * teaching above it, and the learner keeps the handle to dismiss it. An
+   * unannounced arrival still only announces itself.
+   */
+  useEffect(() => {
+    if (segmentId === null) return;
+    if (turn?.next !== 'segment') return;
+    setDetent((current) => (current === 'peek' ? 'half' : current));
+  }, [segmentId, turn?.next]);
+
+  /*
    * AN ARRIVING OFFER PUTS THE PLATE AWAY, and it is the whole reason the
    * `adapting` screen stopped being a form.
    *
@@ -487,7 +507,38 @@ export function ConversationView({
             both channels: the words, and the 2D mouth that is the only
             articulation `liruf` and `dina` have (/TUTOR_3D.md §3.1).
           */}
-          <SpeechCaption text={turn?.text ?? null} turnSeq={turnSeq} face={face} />
+          {/*
+            V4 (C6): THE LESSON THREAD. One quiet line that says "this is a
+            lesson, not a chat" — the child-facing topic and the step count
+            the plan is actually on. Absent in open chat by construction (the
+            server sends nothing), pointer-events-none, and small: it informs,
+            it does not compete with the tutor.
+          */}
+          {socket.lesson !== null && (
+            <div className="lf-caption pointer-events-none fixed left-4 top-16 z-20 max-w-[60vw] truncate rounded-full bg-[color:var(--lf-surface)]/70 px-3 py-1 text-[color:var(--lf-muted)] backdrop-blur-sm">
+              {socket.lesson.topic !== null ? `${socket.lesson.topic} — ` : ''}
+              {t('tutor.conversation.lessonThread', { step: socket.lesson.step, of: socket.lesson.of })}
+            </div>
+          )}
+
+          <SpeechCaption
+            text={turn?.text ?? null}
+            turnSeq={turnSeq}
+            face={face}
+            /*
+             * V4: when a lesson surface owns the screen, the caption docks to
+             * the space that is left instead of losing an unwinnable escape
+             * against it (see SpeechCaptionProps.docked). The caller decides
+             * because the caller KNOWS — no geometry listening.
+             */
+            docked={
+              socket.segment !== null && desktop
+                ? 'panel'
+                : !desktop && detent === 'full'
+                  ? 'sheet'
+                  : null
+            }
+          />
 
           {/*
             Time is a rune over the island, not a chip in a header bar, because
@@ -759,13 +810,26 @@ export function ConversationView({
           history={socket.history}
           spokenSeq={turn ? turnSeq : null}
           /*
-            The docked panel has the height for both the activity and the
-            record, so the cap that protects a 375 px sheet's Check control
-            never applies there.
+            An open activity wins the height on EVERY breakpoint. The old
+            exemption assumed the docked panel "has the height for both", and
+            it does not: the panel is full-viewport-height but the transcript
+            keeps flex-auto at the same shrink factor, so the answers scroller
+            and the log split the shortfall and the exercise squeezes against
+            its own Check button — which is what the owner saw as "elements
+            overlapping". The transcript stays mounted (its live region keeps
+            announcing the learner's speech) and returns the moment the
+            activity is graded.
           */
-          compact={socket.segment !== null && !desktop}
+          compact={socket.segment !== null}
           label={t('tutor.conversation.transcriptLabel')}
-          onEditLast={ended ? undefined : beginEdit}
+          /*
+           * No edit affordance while an activity is open — same reasoning as
+           * the explain-differently chip: mid-activity, rewinding the
+           * conversation is not a flow we honour, and in the compacted log
+           * the pencil was a control that existed but sat scrolled out of a
+           * 96 px window, which the reachability gate rightly flagged.
+           */
+          onEditLast={ended || socket.segment !== null ? undefined : beginEdit}
           editLabel={t('tutor.conversation.editMessage')}
         />
 

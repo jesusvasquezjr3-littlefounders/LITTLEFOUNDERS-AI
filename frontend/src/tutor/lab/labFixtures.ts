@@ -706,6 +706,7 @@ export function useLabSocket(
     turn: conversing ? labTurn(locale) : null,
     history,
     segment,
+    lesson: { topic: 'Ahorrar para una meta', step: 2, of: 4 },
     budget: 'running',
     remainingMs: LAB_REMAINING_MS,
     // True so the orb is LIVE during a conversation, which is the state the

@@ -240,6 +240,23 @@ export class TutorOrchestrator {
    * the brain is off, and the client then falls back to its own default rather
    * than to zero, because zero would cut a child off the instant they breathe.
    */
+  /**
+   * V4 (C6): the lesson thread the HUD shows — "step 2 of 4, objective…".
+   * Our own plan text, no learner data; null while there is no active plan,
+   * which keeps open chat looking like open chat.
+   */
+  get lessonThread(): { topic: string | null; step: number; of: number } | null {
+    if (this.plan.steps.length === 0) return null;
+    return {
+      // The child-facing name only. The plan's `objective` is the MODEL's
+      // instruction, written in English — a HUD that printed it would leak
+      // internal prose onto a child's screen in the wrong language.
+      topic: this.session.courseContext?.topicTitle ?? null,
+      step: Math.min(this.plan.stepIndex + 1, this.plan.steps.length),
+      of: this.plan.steps.length,
+    };
+  }
+
   get listenSilenceMs(): number | null {
     return this.controller.active ? LISTEN_SILENCE_MS[this.controller.currentStrategy] : null;
   }

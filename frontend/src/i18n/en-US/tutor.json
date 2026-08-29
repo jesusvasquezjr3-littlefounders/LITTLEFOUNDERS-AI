@@ -191,7 +191,8 @@
     "transcriptLabel": "Everything said so far",
     "resizePanel": "Resize this panel",
     "peekOpenActivity": "Activity ready",
-    "peekActivityWaiting": "An activity is ready."
+    "peekActivityWaiting": "An activity is ready.",
+    "lessonThread": "Lesson · step {{step}} of {{of}}"
   },
   "mic": {
     "listening": "Listening…",

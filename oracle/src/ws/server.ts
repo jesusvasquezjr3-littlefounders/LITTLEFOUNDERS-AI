@@ -965,6 +965,9 @@ async function deliver(live: Live, outcome: TurnOutcome | null): Promise<void> {
       : {}),
     // v3: tray demonstration steps, already schema-validated with the turn.
     ...(emission.turn.demonstrate ? { demonstrate: emission.turn.demonstrate } : {}),
+    // V4: the lesson thread — our own plan text, so the HUD can say "this is
+    // a lesson", which is the difference between a class and a chat.
+    ...(live.orchestrator.lessonThread ? { lesson: live.orchestrator.lessonThread } : {}),
   });
 
   /*

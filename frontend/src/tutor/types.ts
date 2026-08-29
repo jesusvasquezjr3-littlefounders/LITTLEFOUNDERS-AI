@@ -126,6 +126,8 @@ export type ServerMessage =
       policy?: { idleNudgeMs: number; listenSilenceMs: number };
       /** v3: demonstration steps the tutor performs on the open money tray. */
       demonstrate?: TrayDemoStep[];
+      /** V4: the lesson thread — child-facing topic + step N of M. Absent in open chat. */
+      lesson?: { topic: string | null; step: number; of: number };
     }
   | { type: 'turn_audio'; seq: number; audioUrl: string | null }
   | { type: 'thinking' }

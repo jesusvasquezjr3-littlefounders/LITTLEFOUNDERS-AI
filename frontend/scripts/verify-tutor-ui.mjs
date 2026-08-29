@@ -72,15 +72,54 @@ const SWEEP =
   ' for (const b of document.querySelectorAll("button:not([disabled]),a[href],input:not([disabled])")) {' +
   '   if (b.closest("[data-lab-chrome]")) continue;' +
   '   if (b.closest("[inert]") || b.inert) continue;' +
-  '   const r = b.getBoundingClientRect();' +
+  '   let r = b.getBoundingClientRect();' +
   '   if (r.width < 4 || r.height < 4) continue;' +
   '   if (r.right < 0 || r.left > innerWidth || r.bottom < 0 || r.top > innerHeight) continue;' +
-  '   const x = r.left + r.width / 2, y = r.top + r.height / 2;' +
+  // A control inside a scroller is reachable through the scroller's VIEW.
+  // Clip the test rect to every scrollable ancestor; a control that is
+  // entirely scrolled away is skipped — a finger scrolls to it, it is not
+  // painted over. Without this, the third option of a half-open sheet
+  // reported as unreachable while sitting exactly where a scroller puts it.
+  '   let clip = { left: r.left, top: r.top, right: r.right, bottom: r.bottom };' +
+  '   for (let a = b.parentElement; a; a = a.parentElement) {' +
+  '     const s = getComputedStyle(a);' +
+  '     if (!/auto|scroll|hidden/.test(s.overflowY + s.overflowX)) continue;' +
+  '     const ar = a.getBoundingClientRect();' +
+  '     clip.left = Math.max(clip.left, ar.left); clip.top = Math.max(clip.top, ar.top);' +
+  '     clip.right = Math.min(clip.right, ar.right); clip.bottom = Math.min(clip.bottom, ar.bottom);' +
+  '   }' +
+  '   if (clip.right - clip.left < 4 || clip.bottom - clip.top < 4) continue;' +
+  '   const x = clip.left + (clip.right - clip.left) / 2, y = clip.top + (clip.bottom - clip.top) / 2;' +
   '   if (y < 0 || y > innerHeight) continue;' +
   '   const t = document.elementFromPoint(x, y);' +
   '   const ok = t === b || b.contains(t) || (t && t.closest("button,a,label,input") === b);' +
   '   out.push({ name: (b.getAttribute("aria-label") || b.textContent || b.placeholder || b.tagName).trim().slice(0, 40),' +
   '     reaches: ok, topmost: t ? t.tagName + "." + String(t.className).slice(0, 30) : "null" }); }' +
+  ' return out })()'
+
+/*
+ * THE OVERLAP AUDIT (V4). The sweep proves a control is REACHABLE; nothing
+ * proved two surfaces were not painted over each other — which is exactly how
+ * the caption spent weeks disappearing under the docked lesson panel while
+ * every gate stayed green (the caption is pointer-events-none, so no control
+ * was "unreachable"). This measures the rects of the surfaces that share the
+ * conversing screen and fails on any pair that intersects by more than 8 px
+ * on both axes. Names, not selectors, so the report reads like the defect.
+ */
+const OVERLAPS =
+  '(() => { const rects = [];' +
+  ' const grab = (name, el) => { if (!el) return; const r = el.getBoundingClientRect();' +
+  '   if (r.width > 8 && r.height > 8) rects.push({ name, l: r.left, t: r.top, r: r.right, b: r.bottom }); };' +
+  ' grab("caption", document.querySelector(".lf-speech"));' +
+  ' grab("lesson-plate", document.querySelector("[data-plate-body]"));' +
+  ' grab("dock", document.querySelector(\'[role="group"][aria-label]\'));' +
+  ' const out = [];' +
+  ' for (let i = 0; i < rects.length; i += 1) for (let j = i + 1; j < rects.length; j += 1) {' +
+  '   const a = rects[i], b = rects[j];' +
+  '   const w = Math.min(a.r, b.r) - Math.max(a.l, b.l);' +
+  '   const h = Math.min(a.b, b.b) - Math.max(a.t, b.t);' +
+  '   if (w > 8 && h > 8) out.push(a.name + " overlaps " + b.name + " by " + Math.round(w) + "x" + Math.round(h) + "px");' +
+  ' }' +
   ' return out })()'
 
 async function realClick(page, x, y) {
@@ -150,7 +189,83 @@ try {
       failures += 1
       console.log(`  UNREACHABLE: "${c.name}" — topmost ${c.topmost}`)
     }
+    const overlaps = await page.evaluate(OVERLAPS)
+    for (const o of overlaps) {
+      failures += 1
+      console.log(`  OVERLAP: ${o}`)
+    }
     await shoot(page, `tutor-ui-${tag}`)
+
+    /*
+     * THE ACTIVITY PASS (V4) — the blindness that let a broken floating
+     * lesson ship. At PEEK the plate body is display:none, so the sweep's
+     * zero-rect filter silently skipped every activity control: Check, the
+     * options, all of it, on every run, while printing OK. On mobile the
+     * gate now opens the sheet the way a child does — a real tap on the peek
+     * row — and sweeps INSIDE it; on desktop the plate is already docked and
+     * the main sweep covers it.
+     */
+    if (tag === 'mobile-es') {
+      const peek = await page.evaluate(
+        centerOf(`[...document.querySelectorAll('button')].find((b) => (b.getAttribute('aria-label') || '').match(/actividad|activity|lección|lesson/i) || b.closest('[data-sheet-peek]'))`),
+      )
+      const alreadyOpen = await page.evaluate(
+        `(() => { const p = document.querySelector('[data-plate-body]'); return p ? p.getBoundingClientRect().height > 100 : false })()`,
+      )
+      if (!peek && alreadyOpen) {
+        // V4: an announced activity raises the sheet on its own, so there is
+        // no resting peek row to tap — and the main sweep above already
+        // hit-tested the open plate's controls.
+        console.log('  sheet already open (announced activity) — covered by the main sweep')
+      } else if (!peek) {
+        console.log('  NOTE: no peek row found — no activity in this scene, sheet pass skipped')
+      } else {
+        await realClick(page, peek.x, peek.y)
+        await sleep(900)
+        const inPlate = await page.evaluate(
+          `(() => { const plate = document.querySelector('[data-plate-body]');` +
+            ` if (!plate) return null; const r = plate.getBoundingClientRect(); return r.height > 100 })()`,
+        )
+        if (inPlate !== true) {
+          failures += 1
+          console.log('  SHEET: tapping the peek row did not open the activity')
+        } else {
+          const plateControls = await page.evaluate(SWEEP)
+          const plateUnreachable = plateControls.filter((c) => !c.reaches)
+          console.log(`  [sheet open] ${plateControls.length} controls, ${plateUnreachable.length} unreachable`)
+          for (const c of plateUnreachable) {
+            failures += 1
+            console.log(`  UNREACHABLE IN SHEET: "${c.name}" — topmost ${c.topmost}`)
+          }
+          const sheetOverlaps = await page.evaluate(OVERLAPS)
+          for (const o of sheetOverlaps) {
+            failures += 1
+            console.log(`  OVERLAP WITH SHEET OPEN: ${o}`)
+          }
+          await shoot(page, `tutor-ui-${tag}-sheet-open`)
+        }
+      }
+    }
+
+    /*
+     * The caption must never sit inside the docked panel's rect (desktop).
+     * This is the owner-reported defect, pinned as geometry.
+     */
+    if (tag.startsWith('desktop')) {
+      const captionInPanel = await page.evaluate(
+        '(() => { const cap = document.querySelector(".lf-speech");' +
+          ' const plate = document.querySelector("[data-plate-body]");' +
+          ' if (!cap || !plate) return false;' +
+          ' const c = cap.getBoundingClientRect(), p = plate.getBoundingClientRect();' +
+          ' const w = Math.min(c.right, p.right) - Math.max(c.left, p.left);' +
+          ' const h = Math.min(c.bottom, p.bottom) - Math.max(c.top, p.top);' +
+          ' return w > 8 && h > 8 })()',
+      )
+      if (captionInPanel) {
+        failures += 1
+        console.log('  CAPTION UNDER PANEL: the tutor\'s words are painted over by the activity')
+      }
+    }
 
     if (tag === 'desktop-en') {
       const activityUp = await page.evaluate(
@@ -178,7 +293,11 @@ try {
       const pencil = await page.evaluate(
         centerOf(`document.querySelector('button[aria-label="Rephrase this message"]')`),
       )
-      if (!pencil) {
+      if (activityUp) {
+        // Same design rule as explain-differently: no rewind mid-activity.
+        console.log(`  edit affordance hidden while an activity is up (by design): ${pencil === null}`)
+        if (pencil !== null) failures += 1
+      } else if (!pencil) {
         failures += 1
         console.log('  MISSING: edit affordance on the last learner message')
       } else {

@@ -56,6 +56,7 @@ function makeSocket(overrides: Partial<TutorSocket> = {}): TutorSocket {
     turn: { seq: 1, text: TUTOR_LINE, emotion: 'happy', action: 'nod', audioUrl: null, next: 'ask', policy: null, demonstrate: null },
     history: [{ speaker: 'tutor', text: TUTOR_LINE, seq: 1 }],
     segment: null,
+    lesson: null,
     budget: 'running',
     remainingMs: 300_000,
     microphone: true,
