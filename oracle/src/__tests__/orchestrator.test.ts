@@ -845,3 +845,65 @@ describe('praise that contradicts itself is repaired, not delivered', () => {
     expect(outcome.emission.turn.say).toContain('Excelente');
   });
 });
+
+describe('correctness is computed, not asked for', () => {
+  /*
+   * The blueprint's fourth differentiator, and the last place the model was
+   * still the judge. Activities have always been graded against the item's own
+   * key; conversation was not, and conversation is most of a session.
+   */
+  it('tells the model the answer was wrong, and what the answer is', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Casi. 20 más 5 son 25.' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    // The tutor's own previous line is what the question is read from.
+    await orchestrator.greet(Date.now());
+    (orchestrator as unknown as { history: { speaker: string; text: string }[] }).history.push({
+      speaker: 'tutor',
+      text: '¿Cuánto es 20 más 5?',
+    });
+    await orchestrator.handleLearnerText('20', Date.now());
+
+    const body = String(fetchMock.mock.calls[0]?.[1]?.body ?? '');
+    expect(body).toContain('VERIFIED BY THE SYSTEM');
+    expect(body).toContain('is WRONG');
+    expect(body).toContain('25');
+    expect(body).toContain('Do NOT congratulate');
+  });
+
+  it('confirms a correct answer just as deterministically', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: '¡Exacto! Son 25.' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.greet(Date.now());
+    (orchestrator as unknown as { history: { speaker: string; text: string }[] }).history.push({
+      speaker: 'tutor',
+      text: '¿Cuánto es 20 más 5?',
+    });
+    await orchestrator.handleLearnerText('25', Date.now());
+
+    expect(String(fetchMock.mock.calls[0]?.[1]?.body ?? '')).toContain('is CORRECT');
+  });
+
+  it('says nothing at all when it cannot read the question', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies(GOOD_TURN))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.greet(Date.now());
+    (orchestrator as unknown as { history: { speaker: string; text: string }[] }).history.push({
+      speaker: 'tutor',
+      text: '¿Qué es un descuento?',
+    });
+    await orchestrator.handleLearnerText('cuando algo cuesta menos', Date.now());
+
+    // Silence is the old behaviour, which is safe. A checker that guessed here
+    // would contradict a correct tutor with confidence.
+    expect(String(fetchMock.mock.calls[0]?.[1]?.body ?? '')).not.toContain('VERIFIED BY THE SYSTEM');
+  });
+});

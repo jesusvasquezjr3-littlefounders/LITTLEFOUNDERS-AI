@@ -14,6 +14,7 @@ import {
   PedagogicalController,
   type PedagogyEvent,
 } from './controller.js';
+import { checkAnswer } from './arithmetic.js';
 import { classifyLearnerInput, type SafetyCategory } from '../safety/classifier.js';
 import { fenceUntrusted } from '../safety/untrusted.js';
 import { moderateTutorOutput } from '../safety/moderation.js';
@@ -598,8 +599,39 @@ export class TutorOrchestrator {
       return this.scriptedOutcome(moderationBlockedResponse(this.session.locale), budget, null, null);
     }
 
+    /*
+     * CORRECTNESS IS COMPUTED, NOT ASKED FOR — the blueprint's fourth
+     * differentiator, and the last place the model was still the judge.
+     *
+     * Activities have always been graded deterministically against the item's
+     * own key. Conversation was not, and conversation is most of a session: the
+     * tutor asked "¿cuánto es 20 más 5?", the learner said 20, and the model
+     * decided. Three times on 2026-08-29 it decided wrong — "¡Muy bien, Robi!
+     * 20 más 5 son 25. Ya estás sumando con confianza" affirms a wrong answer,
+     * states a different one, and makes a false claim about the child, all at
+     * once. A prompt rule against it did not hold, and a repair pass caught the
+     * shape but still let the model own the verdict.
+     *
+     * Now the verdict arrives with the turn. `checkAnswer` reads the question
+     * the tutor JUST asked, computes it, and returns null for anything it
+     * cannot read — a word problem, two expressions, a fractional result. Null
+     * leaves the model deciding exactly as before, so an unrecognised sentence
+     * costs nothing and a guess never reaches a child.
+     */
+    const lastTutorLine = [...this.history].reverse().find((h) => h.speaker === 'tutor')?.text ?? '';
+    const verdict = checkAnswer(lastTutorLine, fenced.cleaned);
+
     this.history.push({ speaker: 'learner', text: fenced.cleaned });
-    const outcome = await this.produce(fenced.block, nowMs, { nonce: fenced.nonce, signal });
+    const verdictNote =
+      verdict === null
+        ? ''
+        : verdict.correct
+          ? `\n\nVERIFIED BY THE SYSTEM, not by you: their answer ${verdict.given} is CORRECT. Confirm it and move on.`
+          : `\n\nVERIFIED BY THE SYSTEM, not by you: their answer ${verdict.given} is WRONG; the answer is ${verdict.expected}. Do NOT congratulate them. Say "casi", show how to reach ${verdict.expected}, and never claim they are doing well at this yet.`;
+    const outcome = await this.produce(`${fenced.block}${verdictNote}`, nowMs, {
+      nonce: fenced.nonce,
+      signal,
+    });
     // A completed exchange moves the plan's talk-only steps along; an aborted
     // one does not — a question the tutor never answered was not an exchange.
     if (outcome !== null) noteConversationTurn(this.plan);
