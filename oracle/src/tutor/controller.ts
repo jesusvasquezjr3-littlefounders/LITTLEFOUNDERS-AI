@@ -80,6 +80,22 @@ export class PedagogicalController {
   private lastDifficulty: 1 | 2 | 3 | 4 | 5;
   private misconceptionCode: string | null = null;
   private strategyChangesAt: number[] = [];
+  /**
+   * Consecutive SOCRATIC turns that produced no correct answer.
+   *
+   * The blueprint's guardrail is a COUNT, not a band: three questions with no
+   * progress means questions are not working, whatever the mastery estimate
+   * says about them.
+   */
+  private socraticWithoutProgress = 0;
+  /**
+   * Whether RESCUE has already fired since the learner last got something right.
+   *
+   * Rescue lowers the temperature of a session that is going badly. Firing it
+   * repeatedly does not lower it further; it just replaces teaching with
+   * reassurance, on a learner who by then needs the teaching.
+   */
+  private rescuedSinceProgress = false;
   /** Set while probing a prerequisite; holds the interrupted entry's index. */
   private probeReturnIndex: number | null = null;
   private probingKcId: string | null = null;
@@ -162,7 +178,27 @@ export class PedagogicalController {
     if (p < 0.3) return 'DIRECT';
     if (p < 0.5) return 'WORKED';
     if (p < 0.65) return 'FADED';
-    if (p < 0.85) return 'SOCRATIC';
+    if (p < 0.85) {
+      /*
+       * "NEVER MORE THAN 3 SOCRATIC WITHOUT PROGRESS → DEGRADE TO FADED"
+       * (blueprint §9.2). The band alone decided this before, so a learner
+       * sitting between 0.65 and 0.85 who kept failing got questions with no
+       * scaffolding, indefinitely — asked to reason their way out of something
+       * they have already shown three times they cannot reason their way out
+       * of.
+       *
+       * RESCUE covers the EMOTIONAL version of this at two consecutive
+       * failures, and it is not the same rule: rescue lowers the temperature
+       * and then hands the learner straight back to the band, which is
+       * SOCRATIC again. This one changes the TEACHING — a faded example gives
+       * them the shape of the answer and asks for the last step.
+       *
+       * The streak counts Socratic turns that produced no correct answer, and
+       * any correct answer resets it, because a learner who just succeeded is
+       * not stuck.
+       */
+      return this.socraticWithoutProgress >= 3 ? 'FADED' : 'SOCRATIC';
+    }
     return 'FLUENCY';
   }
 
@@ -203,6 +239,9 @@ export class PedagogicalController {
     }
 
     let failedNow = false;
+    /** Whether this turn produced a correct answer — the definition of progress. */
+    const assessedCorrect =
+      (event.kind === 'activity_result' || event.kind === 'voice_result') && event.correct;
     // "Unexpected failure" is judged against what we believed BEFORE the
     // evidence — the update itself drags the posterior down, and a probe
     // decision made on the post-update number would never fire.
@@ -217,6 +256,36 @@ export class PedagogicalController {
         this.consecutiveFailures += 1;
         failedNow = true;
       }
+    }
+
+    /*
+     * THE STREAK COUNTS TURNS THAT WENT NOWHERE, NOT WRONG ANSWERS.
+     *
+     * A first version counted only failed results, and measuring it showed the
+     * threshold was unreachable: two consecutive wrong answers trigger RESCUE
+     * before a third can land, and any correct answer resets the count. It was
+     * dead code that read like a guardrail.
+     *
+     * "Sin progreso" is the broader thing, and it is the shape the owner's own
+     * transcripts show: a learner answering "no sé" produces a
+     * `conversation_turn`, which is not a failure, so `consecutiveFailures`
+     * never grows, RESCUE never fires, and the Socratic questions continue
+     * indefinitely. Nothing in the controller could see that, because nothing
+     * was counting the turns where NOTHING HAPPENED.
+     *
+     * So: any Socratic turn that did not produce a correct answer counts, and a
+     * correct answer resets it. `this.strategy` is the strategy that was in
+     * force during the turn being judged, not the one about to be chosen.
+     * `entry_opened` is excluded — it is the controller opening a KC, not the
+     * learner spending a turn.
+     */
+    if (assessedCorrect) {
+      this.socraticWithoutProgress = 0;
+      // Progress re-arms rescue: the next slump gets the same support this one
+      // did, rather than being permanently denied it by an earlier bad patch.
+      this.rescuedSinceProgress = false;
+    } else if (this.strategy === 'SOCRATIC' && event.kind !== 'entry_opened') {
+      this.socraticWithoutProgress += 1;
     }
 
     const proposed = this.propose(event, entry, failedNow, pBefore);
@@ -251,9 +320,29 @@ export class PedagogicalController {
   ): Strategy {
     const p = this.pKnown.get(entry.kcId) ?? entry.pKnown;
 
-    // 1) Safety rules always win (blueprint §9.3): frustration first. The
-    //    comparison is against the strategy IN FORCE — never two in a row.
-    if (this.consecutiveFailures >= 2 && this.strategy !== 'RESCUE') return 'RESCUE';
+    /*
+     * 1) Safety rules always win (blueprint §9.3): frustration first.
+     *
+     * THE COOLDOWN IS THE RULE, NOT THE "NEVER TWICE IN A ROW".
+     *
+     * Blocking only the immediately-consecutive rescue produced a worse thing
+     * than the one it prevented. Measured against six straight failures, the
+     * controller emitted RESCUE, DIRECT, RESCUE, DIRECT, RESCUE, DIRECT: the
+     * failure count stays at or above two, so rescue is proposed every turn, and
+     * the "never two in a row" guardrail downgrades every second one. The child
+     * is bounced between emotional support and direct instruction on alternating
+     * turns, forever — which is precisely the erratic experience the churn cap
+     * exists to prevent, arriving through a different door. The churn cap cannot
+     * catch it either, because real turns are far enough apart to keep clearing
+     * its sixty-second window.
+     *
+     * Rescue is a RESET, so it needs room to work: once it has fired, it does
+     * not fire again until the learner gets something right. Failing again after
+     * a rescue means the rescue was not the answer, and the answer is to keep
+     * teaching — rule 2's remediation, rule 3's prerequisite probe, or direct
+     * instruction — not to rescue again with a different label.
+     */
+    if (this.consecutiveFailures >= 2 && !this.rescuedSinceProgress) return 'RESCUE';
 
     // 2) A diagnosed wrong idea outranks everything except rescue.
     if (failedNow && this.misconceptionCode !== null) return 'REMEDIATE';
@@ -309,6 +398,7 @@ export class PedagogicalController {
 
   private applyStrategy(strategy: Strategy, nowMs: number): void {
     if (strategy !== this.strategy) this.strategyChangesAt.push(nowMs);
+    if (strategy === 'RESCUE') this.rescuedSinceProgress = true;
     this.strategy = strategy;
 
     if (strategy === 'PROBE' && this.probingKcId === null) {

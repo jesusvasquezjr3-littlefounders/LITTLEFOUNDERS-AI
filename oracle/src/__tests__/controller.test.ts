@@ -84,6 +84,78 @@ describe('PedagogicalController', () => {
     expect(third.strategy).not.toBe('RESCUE');
   });
 
+  /*
+   * "NEVER MORE THAN 3 SOCRATIC WITHOUT PROGRESS → DEGRADE TO FADED"
+   * (blueprint §9.2). FADED was reachable ONLY by mastery band before this, so
+   * a learner who kept answering "no sé" was asked question after question with
+   * no scaffolding, indefinitely — the shape the owner's own transcripts show.
+   */
+  describe('questions that are not working stop being questions', () => {
+    /** A learner in the Socratic band: 0.65 ≤ p < 0.85. */
+    const socratic = () => new PedagogicalController([entry({ pKnown: 0.8, targetDifficulty: 2 })]);
+    const shrug = { kind: 'conversation_turn' } as const;
+    const right = { kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1 } as const;
+
+    it('degrades to a faded example after three Socratic turns that went nowhere', () => {
+      /*
+       * "No sé" is not a WRONG ANSWER — it is not an answer at all, so
+       * `consecutiveFailures` never grows and RESCUE never fires. A first
+       * version of this guardrail counted only failed results and was therefore
+       * unreachable: two wrong answers trigger rescue before a third can land,
+       * and any correct one resets the count. Measuring it is what showed the
+       * guardrail was dead code.
+       */
+      const c = socratic();
+      const seen = [0, 1, 2].map((i) => c.decide(shrug, NOW + i * 40_000).strategy);
+      expect(seen.slice(0, 2)).toEqual(['SOCRATIC', 'SOCRATIC']);
+      expect(seen[2]).toBe('FADED');
+    });
+
+    it('keeps asking questions while the learner is still getting them right', () => {
+      // Progress resets the streak. A learner who is working must not be
+      // demoted to worked examples for pausing to think.
+      const c = socratic();
+      for (let i = 0; i < 6; i += 1) {
+        c.decide(i % 2 === 0 ? right : shrug, NOW + i * 40_000);
+      }
+      expect(c.decide(shrug, NOW + 7 * 40_000).strategy).not.toBe('FADED');
+    });
+  });
+
+  /*
+   * RESCUE IS A RESET, SO IT NEEDS ROOM TO WORK.
+   *
+   * Blocking only the immediately-consecutive rescue produced a worse thing
+   * than it prevented: with the failure count stuck at two, rescue was proposed
+   * every turn and downgraded every second one, giving RESCUE, DIRECT, RESCUE,
+   * DIRECT forever. The churn cap cannot catch it — real turns are far enough
+   * apart to keep clearing its sixty-second window.
+   */
+  describe('a learner having a bad run is taught, not bounced', () => {
+    const wrong = { kind: 'activity_result', correct: false, misconceptionCode: null, attemptNumber: 1 } as const;
+    const right = { ...wrong, correct: true } as const;
+
+    it('rescues once and then keeps teaching', () => {
+      const c = new PedagogicalController([entry({ pKnown: 0.8, targetDifficulty: 2 })]);
+      const seen = Array.from({ length: 8 }, (_, i) => c.decide(wrong, NOW + i * 60_000).strategy);
+      expect(seen.filter((s) => s === 'RESCUE')).toHaveLength(1);
+      // The turns after the rescue must not alternate back into it.
+      const afterRescue = seen.slice(seen.indexOf('RESCUE') + 1);
+      expect(afterRescue).not.toContain('RESCUE');
+      expect(new Set(afterRescue).size).toBeLessThanOrEqual(2);
+    });
+
+    it('rescues again once the learner has recovered and slumps a second time', () => {
+      // The cooldown must not permanently deny support because of one bad patch
+      // earlier in the session.
+      const c = new PedagogicalController([entry({ pKnown: 0.8, targetDifficulty: 2 })]);
+      for (let i = 0; i < 4; i += 1) c.decide(wrong, NOW + i * 60_000);
+      c.decide(right, NOW + 5 * 60_000);
+      const later = [5, 6, 7].map((i) => c.decide(wrong, NOW + (i + 1) * 60_000).strategy);
+      expect(later).toContain('RESCUE');
+    });
+  });
+
   it('difficulty never rises after a failure', () => {
     const c = new PedagogicalController([entry({ targetDifficulty: 3 })]);
     const after = c.decide(
