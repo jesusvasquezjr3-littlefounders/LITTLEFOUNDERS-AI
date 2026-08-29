@@ -1092,7 +1092,14 @@ jobs:
           # This walks the whole chain for a real character: enrolled, spoken in
           # their OWN cloned voice, stored, and then fetched back over plain
           # HTTP with no credentials at all, the way a browser will ask.
-          SCRIPT='cd /app && npx --no-install tsx scripts/verify-speaks.ts'
+          # `--all` sweeps every enrolled slot, not just the first.
+          #
+          # A one-slot check reported the cast as audible while a learner talking
+          # to a DIFFERENT character heard nothing: the owner's session on
+          # 2026-08-29 was with `liruf`, and the only slot this step had ever
+          # exercised was `rho`. A gate that checks one of twelve and prints OK is
+          # worse than no gate, because it is believed.
+          SCRIPT='cd /app && npx --no-install tsx scripts/verify-speaks.ts --all'
           b64=$(printf '%s' "$SCRIPT" | base64 | tr -d '\n')
           out="$(railway ssh --service oracle -i ~/.ssh/railway_key -- \
                   sh -c "echo $b64 | base64 -d | sh" 2>&1)"
