@@ -1,5 +1,5 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
-import { AddressInfo } from 'node:net';
+import type { AddressInfo } from 'node:net';
 import { WebSocket } from 'ws';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
@@ -415,7 +415,9 @@ describe('a real live session over a real websocket', () => {
 
     const answered = collect(socket, (m) => m.some((x) => x.type === 'turn' && x.whiteboard != null));
     socket.send(JSON.stringify({ type: 'learner_text', text: 'quieropizarron, cuentame una historia' }));
-    const board = (await answered).find((m) => m.type === 'turn')?.whiteboard;
+    const board = (await answered).find((m) => m.type === 'turn')?.whiteboard as
+      | { kind: string; start: number; unit: string; label: string; currency: string; values: number[] }
+      | undefined;
 
     expect(board).toMatchObject({
       kind: 'sequence',

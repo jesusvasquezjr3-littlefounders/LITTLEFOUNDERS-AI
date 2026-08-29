@@ -28820,7 +28820,7 @@ export default tseslint.config(
     "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "type-check": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json",
+    "type-check": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json && tsc --noEmit -p tsconfig.test.json",
     "lint": "eslint .",
 ```
 
@@ -29134,12 +29134,12 @@ mastery_min: 0.25
 mastery_max: 0.7
 tiers: [1, 2, 3]
 priority: 8
+once_per_session: true
 ---
 Strategy for this turn: CONFRONT WITH A COUNTEREXAMPLE.
 
 They hold a wrong RULE — not a slip, a rule they can state and defend. Rules
 do not die by being contradicted by you; they die by visibly failing.
-
 ```
 
 ### oracle/skills/moves/direct-then-check.md
@@ -29486,7 +29486,12 @@ import {
 
 ```
 import { describe, expect, it } from 'vitest';
-import { contradictsCorrectAnswer, praiseContradictsAnswer } from '../tutor/prompt.js';
+import {
+  contradictsCorrectAnswer,
+  narratesUnshownGrowth,
+  praiseContradictsAnswer,
+  whiteboardUnitMismatch,
+} from '../tutor/prompt.js';
 
 /*
  * TWO MIRROR DEFECTS, BOTH FROM REAL SESSIONS.
@@ -29495,11 +29500,6 @@ import { contradictsCorrectAnswer, praiseContradictsAnswer } from '../tutor/prom
  * in the same breath. contradictsCorrectAnswer: "¡Casi!" about a RIGHT answer,
  * with the tutor's own reasoning landing on the learner's number. The second
  * shipped on 2026-08-29 in the owner's session: the alcancía problem, learner
- * says "Veintidós" (correct), tutor says casi and then arrives at 22.
- *
- * Both live on word problems, where the deterministic verdict rightly stays
- * silent — so these shape checks are the only guard the model's judgment has.
- */
 ```
 
 ### oracle/src/__tests__/controller.test.ts
@@ -29548,7 +29548,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import { readFileSync } from 'node:fs';
 import { tierVocabularyViolation } from '../tutor/prompt.js';
-import { AddressInfo } from 'node:net';
+import type { AddressInfo } from 'node:net';
 import { WebSocket } from 'ws';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
@@ -29566,7 +29566,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from
 
 ```
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
-import { AddressInfo } from 'node:net';
+import type { AddressInfo } from 'node:net';
 import { WebSocket } from 'ws';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
@@ -30678,6 +30678,26 @@ import {
    * signature, so `correct` received a timestamp — truthy, so every activity
    * counted as passed, including in the scenario whose entire job is a learner
    * who fails — and `nowMs` received `undefined`, which fed NaN into every
+```
+
+### oracle/tsconfig.test.json
+
+```
+{
+  /*
+   * Type-checking for the TEST tree.
+   *
+   * `oracle/tsconfig.json` excludes `src/__tests__` outright (needed so a
+   * production build never emits test files), and `tsconfig.scripts.json`
+   * inherits that same exclusion rather than lifting it — so no test fixture
+   * here was ever checked against the types it claims. This is the same §5
+   * defect the backend already carries a rule about, applied to the service
+   * whose own operator scripts were unchecked for the identical reason until
+   * `tsconfig.scripts.json` closed that half of the gap.
+   *
+   * `noUncheckedIndexedAccess` is deliberately relaxed here, mirroring
+   * backend/tsconfig.test.json: a test indexing its own in-memory fixture
+   * array a line after populating it is not a real "possibly undefined" risk,
 ```
 
 ### oracle/vitest.config.ts

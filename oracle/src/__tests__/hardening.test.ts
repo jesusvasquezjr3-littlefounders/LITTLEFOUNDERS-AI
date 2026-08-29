@@ -1,7 +1,7 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import { readFileSync } from 'node:fs';
 import { tierVocabularyViolation } from '../tutor/prompt.js';
-import { AddressInfo } from 'node:net';
+import type { AddressInfo } from 'node:net';
 import { WebSocket } from 'ws';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 

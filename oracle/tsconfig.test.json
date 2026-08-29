@@ -1,0 +1,31 @@
+{
+  /*
+   * Type-checking for the TEST tree.
+   *
+   * `oracle/tsconfig.json` excludes `src/__tests__` outright (needed so a
+   * production build never emits test files), and `tsconfig.scripts.json`
+   * inherits that same exclusion rather than lifting it — so no test fixture
+   * here was ever checked against the types it claims. This is the same §5
+   * defect the backend already carries a rule about, applied to the service
+   * whose own operator scripts were unchecked for the identical reason until
+   * `tsconfig.scripts.json` closed that half of the gap.
+   *
+   * `noUncheckedIndexedAccess` is deliberately relaxed here, mirroring
+   * backend/tsconfig.test.json: a test indexing its own in-memory fixture
+   * array a line after populating it is not a real "possibly undefined" risk,
+   * and a gate whose output is mostly that noise is a gate people learn to
+   * skip. Everything that catches DRIFT — `strict` above all — stays on.
+   */
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noUncheckedIndexedAccess": false,
+    "noEmit": true
+  },
+  "include": ["src"],
+  /*
+   * MUST be stated. `extends` INHERITS `exclude`, and the parent excludes
+   * `src/__tests__` — so without this line the config that exists to check
+   * the test tree excludes the test tree and reports zero errors on anything.
+   */
+  "exclude": []
+}

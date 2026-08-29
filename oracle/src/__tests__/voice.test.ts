@@ -98,7 +98,7 @@ describe('an unenrolled character is SILENT, never substituted', () => {
     process.env.INWORLD_VOICE_RHO_ES_MX = 'workspace__lf-rho-es-mx';
     resetConfigCache();
 
-    const fetchSpy = vi.fn(() =>
+    const fetchSpy = vi.fn((_url: string, _init?: RequestInit) =>
       Promise.resolve(
         new Response(JSON.stringify({ audioContent: Buffer.from('fake-mp3-bytes').toString('base64') }), {
           status: 200,
@@ -128,7 +128,7 @@ describe('the transcription request', () => {
   });
 
   it('DISABLES the voice profile explicitly', async () => {
-    const fetchSpy = vi.fn(() =>
+    const fetchSpy = vi.fn((_url: string, _init?: RequestInit) =>
       Promise.resolve(
         new Response(JSON.stringify({ transcription: { transcript: 'hola' } }), {
           status: 200,

@@ -29,12 +29,12 @@
   /*
    * SCOPED TO THE SCRIPTS, AND SAYING SO.
    *
-   * This config's job is `scripts/`. Oracle's TEST tree turns out to be
-   * unchecked too — `tsconfig.json` excludes it and nothing else picks it up,
-   * which is the §5 defect the backend already carries a rule about. That is a
-   * real gap and it is being recorded rather than quietly swept in here:
-   * fixing it is dozens of assertion-narrowing edits and belongs to its own
-   * change, not to a config added to check something else.
+   * This config's job is `scripts/`. Oracle's TEST tree was ALSO unchecked —
+   * `tsconfig.json` excludes it and, until `tsconfig.test.json` (2026-08-29),
+   * nothing else picked it up. That gap was real: `orchestrator.test.ts` called
+   * `handleSegmentResult('seg-1', 100, Date.now())` against the same
+   * four-parameter signature this file's own history is about, undetected
+   * because the test that called it wrong was never type-checked either.
    */
   "exclude": ["src/__tests__"]
 }
