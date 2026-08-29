@@ -147,9 +147,30 @@ export async function complete(
   const body = (await response.json()) as ChatResponse;
   const text = body.choices?.[0]?.message?.content ?? '';
   if (text.trim() === '') {
-    // A billable empty completion is a failure, not an answer. Forge treats it
-    // the same way and for the same reason: silently accepting one means
-    // paying for nothing and showing nothing.
+    /*
+     * A billable empty completion is a failure, not an answer. Forge treats it
+     * the same way and for the same reason: silently accepting one means
+     * paying for nothing and showing nothing.
+     *
+     * AND IT SAYS WHY. Eighteen of these arrived in three scripted lessons on
+     * 2026-08-29 — the retry absorbs every one, so no learner sees them and no
+     * gate reports them, while we pay for a second call on a large fraction of
+     * turns. "The model sometimes returns nothing" stayed a guess for as long
+     * as the throw carried no evidence, and the four causes need different
+     * fixes: the budget ran out, a reasoning model ate the completion, we were
+     * billed for an empty string, or the provider refused behind a 200. All
+     * four are in the response we are about to discard, so they are logged
+     * here — counts and reasons only, never content.
+     */
+    const choice = body.choices?.[0] as { finish_reason?: unknown } | undefined;
+    const usage = (body as { usage?: Record<string, unknown> }).usage ?? {};
+    const message = (body.choices?.[0]?.message ?? {}) as Record<string, unknown>;
+    const reasoningChars =
+      typeof message.reasoning_content === 'string' ? message.reasoning_content.length : 0;
+    console.warn(
+      `[oracle] empty completion: finish_reason=${String(choice?.finish_reason ?? 'none')} ` +
+        `reasoning_chars=${reasoningChars} usage=${JSON.stringify(usage)}`,
+    );
     throw new ModelUnavailableError('model returned an empty completion');
   }
 
