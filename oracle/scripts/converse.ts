@@ -63,12 +63,60 @@ const SESSION: SessionContext = {
  * A happy path proves nothing here — it is the one every previous check
  * already walked.
  */
-const SCRIPT = [
-  '¿qué es el interés compuesto?',
-  'si algo cuesta 25 y pago con 50 el cambio son 35 verdad?',
-  '80 pesos',
-  'aqui solo platicamos, no haces nada mas. esto es aburrido',
-  'ya entendí, dame otro',
+interface Scenario {
+  name: string;
+  session: SessionContext;
+  script: string[];
+}
+
+const SCENARIOS: Scenario[] = [
+  {
+    // The conversation that broke, turn for turn.
+    name: 'the session that failed',
+    session: SESSION,
+    script: [
+      '¿qué es el interés compuesto?',
+      'si algo cuesta 25 y pago con 50 el cambio son 35 verdad?',
+      '80 pesos',
+      'aqui solo platicamos, no haces nada mas. esto es aburrido',
+      'ya entendí, dame otro',
+    ],
+  },
+  {
+    /*
+     * A SIX-YEAR-OLD. Tier 1 forbids percentages and decimals outright, and
+     * the band is where a slip does the most damage — an eight-year-old
+     * shrugs at an unfamiliar word, a six-year-old concludes they are bad at
+     * money. The questions are deliberately ones an adult would answer with
+     * exactly the vocabulary the band forbids.
+     */
+    name: 'a six-year-old asking hard questions',
+    session: { ...SESSION, tier: 1, nickname: 'Tavo' },
+    script: [
+      'por que el dinero del banco crece solito?',
+      'y que es un descuento?',
+      'no entendi nada',
+      'ya me aburri, quiero jugar',
+    ],
+  },
+  {
+    /*
+     * A LEARNER WHO KEEPS GETTING IT WRONG. The blueprint's RESCUE strategy
+     * exists for this and the guardrail says never two in a row — but the
+     * thing that actually matters is whether the tutor keeps its patience,
+     * lowers the difficulty, and stops repeating the same explanation. Three
+     * identical explanations of compound interest is what the owner saw.
+     */
+    name: 'a learner who keeps failing',
+    session: { ...SESSION, nickname: 'Robi' },
+    script: [
+      'cuanto es 10 mas 5?',
+      '20',
+      '25',
+      'no se, esto esta muy dificil',
+      'sigo sin entender',
+    ],
+  },
 ];
 
 interface Beat {
@@ -201,43 +249,50 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  console.log(`== Talking to the tutor (${config.MODEL_NAME}, tier ${SESSION.tier}, ${SESSION.locale}) ==`);
-  const orchestrator = new TutorOrchestrator(SESSION, Date.now(), silent);
-
-  const opening = await orchestrator.greet(Date.now());
-  console.log('');
-  console.log(`  tutor    ${opening.emission.turn.say}`);
-
-  const beats: Beat[] = [];
-  for (const line of SCRIPT) {
-    const started = Date.now();
-    const outcome = await orchestrator.handleLearnerText(line, Date.now());
-    const ms = Date.now() - started;
+  let spent = 0;
+  for (const scenario of SCENARIOS) {
     console.log('');
-    console.log(`  learner  ${line}`);
-    if (outcome === null) {
-      console.log('  tutor    (no turn was produced)');
-      continue;
-    }
-    const turn = outcome.emission.turn;
-    console.log(`  tutor    ${turn.say}`);
     console.log(
-      `           [${ms} ms · ${outcome.emission.source} · next=${turn.next}` +
-        `${turn.segmentRequest ? ` · asks for ${turn.segmentRequest.skillKey}` : ''}]`,
+      `== ${scenario.name} (${config.MODEL_NAME}, tier ${scenario.session.tier}, ${scenario.session.locale}) ==`,
     );
-    beats.push({
-      learner: line,
-      tutor: turn.say,
-      source: outcome.emission.source,
-      next: turn.next,
-      requestedActivity: turn.segmentRequest != null,
-    });
+    const orchestrator = new TutorOrchestrator(scenario.session, Date.now(), silent);
+
+    const opening = await orchestrator.greet(Date.now());
+    console.log('');
+    console.log(`  tutor    ${opening.emission.turn.say}`);
+
+    const beats: Beat[] = [];
+    for (const line of scenario.script) {
+      const started = Date.now();
+      const outcome = await orchestrator.handleLearnerText(line, Date.now());
+      const ms = Date.now() - started;
+      console.log('');
+      console.log(`  learner  ${line}`);
+      if (outcome === null) {
+        console.log('  tutor    (no turn was produced)');
+        continue;
+      }
+      const turn = outcome.emission.turn;
+      console.log(`  tutor    ${turn.say}`);
+      console.log(
+        `           [${ms} ms · ${outcome.emission.source} · next=${turn.next}` +
+          `${turn.segmentRequest ? ` · asks for ${turn.segmentRequest.skillKey}` : ''}]`,
+      );
+      beats.push({
+        learner: line,
+        tutor: turn.say,
+        source: outcome.emission.source,
+        next: turn.next,
+        requestedActivity: turn.segmentRequest != null,
+      });
+    }
+
+    review(beats, scenario.session.tier, scenario.session.nickname);
+    spent += orchestrator.totalCostUsd;
   }
 
-  review(beats, SESSION.tier, SESSION.nickname);
-
   console.log('');
-  console.log(`  cost this conversation: $${orchestrator.totalCostUsd.toFixed(4)}`);
+  console.log(`  cost across ${SCENARIOS.length} conversations: $${spent.toFixed(4)}`);
   if (problems > 0) {
     console.log('');
     console.log(`tutor:converse — ${problems} problem(s) a person would notice.`);
