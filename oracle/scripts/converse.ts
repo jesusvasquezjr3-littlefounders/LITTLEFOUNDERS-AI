@@ -28,6 +28,7 @@ import process from 'node:process';
 import { getConfig } from '../src/env.js';
 import { TutorOrchestrator } from '../src/tutor/orchestrator.js';
 import { tierVocabularyViolation, promisesAnActivity } from '../src/tutor/prompt.js';
+import { computeSequence } from '../src/tutor/whiteboard.js';
 import type { SessionContext } from '../src/core/client.js';
 import type { SpeechResult } from '../src/voice/speech.js';
 
@@ -177,6 +178,12 @@ interface Beat {
    * job and not a fault.
    */
   kind: 'said' | 'activity';
+  /**
+   * V4: the live whiteboard, when this turn drew one. `null` covers the
+   * common case (most turns tell no growth story); a check can therefore
+   * assert something PRESENT rather than merely absent-and-fine.
+   */
+  whiteboard: { start: number; values: number[]; label: string } | null;
 }
 
 /** Normalised for comparison: accents, case and punctuation removed. */
@@ -555,6 +562,13 @@ async function main(): Promise<void> {
         `           [${ms} ms · ${outcome.emission.source} · next=${turn.next}` +
           `${turn.segmentRequest ? ` · asks for ${turn.segmentRequest.skillKey}` : ''}]`,
       );
+      if (turn.whiteboard) {
+        const board = turn.whiteboard;
+        const values = computeSequence(board);
+        console.log(
+          `           [whiteboard "${board.label}" — ${board.start} → ${(values ?? []).join(' → ')}]`,
+        );
+      }
       beats.push({
         learner: line,
         tutor: turn.say,
@@ -562,6 +576,9 @@ async function main(): Promise<void> {
         next: turn.next,
         requestedActivity: turn.segmentRequest != null,
         kind: 'said',
+        whiteboard: turn.whiteboard
+          ? { start: turn.whiteboard.start, values: computeSequence(turn.whiteboard) ?? [], label: turn.whiteboard.label }
+          : null,
       });
 
       /*
@@ -628,7 +645,8 @@ async function main(): Promise<void> {
             next: reaction.emission.turn.next,
             requestedActivity: reaction.emission.turn.segmentRequest != null,
             kind: 'activity',
-          });
+          
+        whiteboard: null,});
         }
       }
     }
@@ -639,6 +657,29 @@ async function main(): Promise<void> {
   }
 
   reviewAcrossConversations(allBeats);
+
+  /*
+   * V4: DID THE WHITEBOARD ACTUALLY FIRE ON THE REAL MODEL?
+   *
+   * Every arithmetic guarantee around this feature already has unit tests
+   * (computeSequence bounds, the schema refusal, the wire recomputation) —
+   * what NONE of those can prove is that a live model, told "show your
+   * work" in the prompt, actually sets the field on a real growth story.
+   * "the session that failed" is literally the owner's own transcript
+   * ("¿qué es el interés compuesto?"), so this is the direct, automatable
+   * check that today's fix reaches the exact conversation that reported it.
+   */
+  const boards = allBeats.filter((b) => b.whiteboard !== null);
+  if (boards.length === 0) {
+    fault(
+      'no whiteboard appeared in any conversation',
+      'a growth-story scenario ran and the model never drew a board — either the prompt instruction is not landing, or something upstream is dropping it',
+    );
+  } else {
+    for (const b of boards) {
+      console.log(`  whiteboard: "${b.whiteboard!.label}" — ${b.whiteboard!.start} → ${b.whiteboard!.values.join(' → ')}`);
+    }
+  }
 
   console.log('');
   console.log(`  cost across ${SCENARIOS.length} conversations: $${spent.toFixed(4)}`);
