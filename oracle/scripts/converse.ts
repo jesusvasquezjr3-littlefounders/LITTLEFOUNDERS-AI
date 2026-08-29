@@ -125,6 +125,16 @@ interface Beat {
   source: string;
   next: string;
   requestedActivity: boolean;
+  /**
+   * `said` — the learner typed something. `activity` — they completed an
+   * exercise, so their "answer" is a score and not a sentence.
+   *
+   * The checks that read the learner's WORDS must skip `activity` beats. One
+   * that did not fired twice on "¡Chispa, contaste las monedas con precisión!"
+   * — praise for an activity actually completed, which is the tutor doing its
+   * job and not a fault.
+   */
+  kind: 'said' | 'activity';
 }
 
 /** Normalised for comparison: accents, case and punctuation removed. */
@@ -180,6 +190,7 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
     const isQuestion = asked.includes('?');
     const learnerAnswered = flatten(beats[i]!.learner).length > 0;
     if (!isQuestion || !learnerAnswered) continue;
+    if (beats[i]!.kind === 'activity') continue;
     // A tutor stating a number the learner never said, immediately after
     // asking for it, in a turn that also praises — that is answering itself.
     const said = beats[i]!.tutor;
@@ -210,6 +221,7 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
    */
   for (let i = 0; i < beats.length; i += 1) {
     const said = beats[i]!.tutor;
+    if (beats[i]!.kind === 'activity') continue;
     const praises = /\b(exacto|muy bien|correcto|perfecto|excelente)\b/i.test(said);
     if (!praises) continue;
     const learnerNumbers = beats[i]!.learner.match(/\d+/g) ?? [];
@@ -337,6 +349,7 @@ async function main(): Promise<void> {
         source: outcome.emission.source,
         next: turn.next,
         requestedActivity: turn.segmentRequest != null,
+        kind: 'said',
       });
 
       /*
@@ -373,6 +386,7 @@ async function main(): Promise<void> {
             source: reaction.emission.source,
             next: reaction.emission.turn.next,
             requestedActivity: reaction.emission.turn.segmentRequest != null,
+            kind: 'activity',
           });
         }
       }
