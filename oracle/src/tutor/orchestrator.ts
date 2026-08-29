@@ -439,7 +439,18 @@ export class TutorOrchestrator {
       ? `The learner completed the activity and scored ${score} out of 100.`
       : `The learner did not pass the activity; they scored ${score} out of 100.`;
     return this.produce(
-      `${summary} React to that as their tutor: say what was good about their thinking first, then help with what is still missing. Do not read the number out loud.${extra ? `\n\n${extra}` : ''}`,
+      /*
+       * "Say what was good about their thinking" is what produced the
+       * catchphrase. Asked for a general compliment about thinking, the model
+       * gives a general compliment about thinking — "eso es pensar como un
+       * científico", to three different children in one run, because the
+       * instruction is identical every time and nothing else in the turn is.
+       *
+       * So it asks for the SPECIFIC thing instead. A child can tell the
+       * difference between being seen and being praised, and the second one
+       * stops working the moment they hear it twice.
+       */
+      `${summary} React as their tutor. Name the SPECIFIC thing they did — the numbers they chose, the order they put things in, the one they got right that was hardest — never a general compliment about thinking or being clever. Then help with what is still missing. Do not read the score out loud.${extra ? `\n\n${extra}` : ''}`,
       nowMs,
       { isSystemPrompted: true, signal },
     );
