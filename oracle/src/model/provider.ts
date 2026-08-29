@@ -167,9 +167,23 @@ export async function complete(
     const message = (body.choices?.[0]?.message ?? {}) as Record<string, unknown>;
     const reasoningChars =
       typeof message.reasoning_content === 'string' ? message.reasoning_content.length : 0;
+    /*
+     * WHICH FIELD DID THE TOKENS GO TO?
+     *
+     * The first version of this log answered the four questions it was written
+     * for and produced a fifth: `finish_reason=stop`, `reasoning_chars=0`,
+     * `completion_tokens` between 41 and 87 — the model generated a normal,
+     * complete answer and `content` was still empty. The tokens went somewhere
+     * we are not reading. So the message's SHAPE is logged too: key names and
+     * value lengths, never values, because this is the one log line a
+     * learner's words could reach and they must not.
+     */
+    const shape = Object.entries(message)
+      .map(([k, v]) => `${k}:${typeof v === 'string' ? `${v.length}ch` : typeof v}`)
+      .join(' ');
     console.warn(
       `[oracle] empty completion: finish_reason=${String(choice?.finish_reason ?? 'none')} ` +
-        `reasoning_chars=${reasoningChars} usage=${JSON.stringify(usage)}`,
+        `reasoning_chars=${reasoningChars} message={${shape}} usage=${JSON.stringify(usage)}`,
     );
     throw new ModelUnavailableError('model returned an empty completion');
   }
