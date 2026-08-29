@@ -416,6 +416,9 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
           { op: 'add', value: 2 },
           { op: 'add', value: 2 },
         ],
+        // The fixture's own text says "cada semana" — this MUST agree, or
+        // the lab reproduces the exact defect it exists to catch.
+        unit: 'week',
         values: [10, 12, 14],
         label: text.label,
         currency: locale === 'en-US' ? 'USD' : locale === 'pt-BR' ? 'BRL' : 'MXN',

@@ -138,6 +138,8 @@ export type ServerMessage =
         kind: 'sequence';
         start: number;
         steps: { op: 'add' | 'subtract' | 'multiply_percent'; value: number }[];
+        /** What one step represents in time — must match the story's own cadence word. */
+        unit: 'day' | 'week' | 'month' | 'year';
         values: number[];
         label: string;
         currency: 'MXN' | 'USD' | 'BRL' | null;

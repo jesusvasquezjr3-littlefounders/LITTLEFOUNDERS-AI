@@ -228,6 +228,7 @@ const WHITEBOARD_TURN = {
     kind: 'sequence' as const,
     start: 10,
     steps: [{ op: 'add' as const, value: 2 }, { op: 'add' as const, value: 2 }],
+    unit: 'day' as const,
     values: [10, 12, 14],
     label: 'Cada día te dan 2 más',
     currency: 'MXN' as const,

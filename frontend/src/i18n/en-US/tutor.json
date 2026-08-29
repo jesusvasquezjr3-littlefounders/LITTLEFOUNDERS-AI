@@ -339,6 +339,11 @@
   },
   "whiteboard": {
     "start": "Start",
-    "step": "Day {{n}}"
+    "step": {
+      "day": "Day {{n}}",
+      "week": "Week {{n}}",
+      "month": "Month {{n}}",
+      "year": "Year {{n}}"
+    }
   }
 }

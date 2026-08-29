@@ -14,6 +14,7 @@ import { TutorWhiteboard } from '../TutorWhiteboard';
 const BOARD = {
   kind: 'sequence' as const,
   start: 10,
+  unit: 'day' as const,
   values: [10, 12, 14],
   label: 'Cada día te dan 2 más',
   currency: 'MXN' as const,

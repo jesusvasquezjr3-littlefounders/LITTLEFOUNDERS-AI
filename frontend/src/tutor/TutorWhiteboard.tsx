@@ -28,6 +28,14 @@ export interface TutorWhiteboardData {
   kind: 'sequence';
   start: number;
   values: number[];
+  /**
+   * What one step represents in time. Found missing from a real session:
+   * the tutor's own story said "cada semana" three times and the board, with
+   * no notion of a unit, drew "Día 1/2/3" — a label that CONTRADICTED the
+   * story it was supposed to match, on the one feature whose entire purpose
+   * is that match. Server-set, from the model's own cadence word.
+   */
+  unit: 'day' | 'week' | 'month' | 'year';
   label: string;
   currency: 'MXN' | 'USD' | 'BRL' | null;
 }
@@ -98,7 +106,9 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
                 style={{ height: grown ? `${heightPct}%` : '0%' }}
               />
               <span className="lf-caption text-content-muted" aria-hidden="true">
-                {i === 0 ? t('tutor.whiteboard.start') : t('tutor.whiteboard.step', { n: i })}
+                {i === 0
+                  ? t('tutor.whiteboard.start')
+                  : t(`tutor.whiteboard.step.${board.unit}`, { n: i })}
               </span>
             </div>
           );
