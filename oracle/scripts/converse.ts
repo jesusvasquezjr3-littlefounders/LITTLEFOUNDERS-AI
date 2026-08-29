@@ -375,10 +375,13 @@ function reviewAcrossConversations(beats: Beat[]): void {
   }
   for (const [sentence, count] of sentences) {
     if (count > 1) {
-      fault(
-        `the same sentence was said to ${count} different learners`,
-        sentence.slice(0, 90),
-      );
+      /*
+       * Said "N times", not "to N learners": this counts sentences across
+       * every conversation without tracking who heard them, and a message
+       * that claims more than it measured is the kind of small lie that makes
+       * a whole report untrustworthy.
+       */
+      fault(`the same sentence was used ${count} times`, sentence.slice(0, 90));
     }
   }
 
