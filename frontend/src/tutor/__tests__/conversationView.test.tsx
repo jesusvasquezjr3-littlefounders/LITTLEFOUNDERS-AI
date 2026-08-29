@@ -53,7 +53,7 @@ const TUTOR_LINE = 'A goal is easier to reach when you can see it.';
 function makeSocket(overrides: Partial<TutorSocket> = {}): TutorSocket {
   return {
     connection: 'open',
-    turn: { seq: 1, text: TUTOR_LINE, emotion: 'happy', action: 'nod', audioUrl: null, next: 'ask', policy: null, demonstrate: null },
+    turn: { seq: 1, text: TUTOR_LINE, emotion: 'happy', action: 'nod', audioUrl: null, next: 'ask', policy: null, demonstrate: null, whiteboard: null },
     history: [{ speaker: 'tutor', text: TUTOR_LINE, seq: 1 }],
     segment: null,
     lesson: null,
@@ -214,6 +214,59 @@ function renderInShell(socket: TutorSocket, ready: boolean) {
     </MemoryRouter>,
   );
 }
+
+const WHITEBOARD_TURN = {
+  seq: 2,
+  text: 'Imaginemos que guardas 10 pesos y cada día te dan 2 más.',
+  emotion: 'happy' as const,
+  action: 'nod' as const,
+  audioUrl: null,
+  next: 'ask' as const,
+  policy: null,
+  demonstrate: null,
+  whiteboard: {
+    kind: 'sequence' as const,
+    start: 10,
+    steps: [{ op: 'add' as const, value: 2 }, { op: 'add' as const, value: 2 }],
+    values: [10, 12, 14],
+    label: 'Cada día te dan 2 más',
+    currency: 'MXN' as const,
+  },
+};
+
+
+describe('the live whiteboard (V4)', () => {
+  /*
+   * The owner's own defect: a turn that draws a growth story used to render
+   * as plain text beside an unrelated activity, at PEEK on a phone (90 px).
+   * A turn carrying `whiteboard` must raise the sheet AND show the board
+   * instead of the segment panel — the same treatment an announced activity
+   * already gets (see the sibling describe block for that case).
+   */
+  it('raises a resting sheet and renders the board, not the segment panel', () => {
+    const { rerender } = render(conversation(makeSocket(), false));
+    expect(plateHeight()).toBe('88px');
+
+    rerender(conversation(makeSocket({ turn: WHITEBOARD_TURN }), false));
+
+    expect(plateHeight()).not.toBe('88px');
+    expect(screen.getByText('Cada día te dan 2 más')).toBeInTheDocument();
+    expect(screen.queryByRole('img', { name: /Cada día te dan 2 más/ })).toBeInTheDocument();
+  });
+
+  it('a graded segment wins the plate over a whiteboard, if both are somehow present', () => {
+    const segment = {
+      segmentId: '22222222-2222-4222-8222-222222222222',
+      seq: 0,
+      origin: 'catalog' as const,
+      segment: { id: 's', type: 'quiz_mcq', prompt_md: '¿Cuánto es?', difficulty: 2, xp: 20, payload: { options: [{ id: 'a', text_md: '12' }] } },
+      scoresXp: true,
+      framing: 'Practica esto.',
+    };
+    render(conversation(makeSocket({ turn: WHITEBOARD_TURN, segment }), false));
+    expect(screen.queryByText('Cada día te dan 2 más')).not.toBeInTheDocument();
+  });
+});
 
 describe('answering the adaptation offer', () => {
   const OFFER = 'slower_pacing' as const;

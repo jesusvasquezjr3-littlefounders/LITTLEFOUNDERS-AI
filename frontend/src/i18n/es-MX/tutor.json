@@ -336,5 +336,9 @@
       "mastered": "Dominado",
       "needs_review": "Toca repasar"
     }
+  },
+  "whiteboard": {
+    "start": "Inicio",
+    "step": "Día {{n}}"
   }
 }

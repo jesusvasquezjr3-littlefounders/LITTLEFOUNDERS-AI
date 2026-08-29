@@ -128,6 +128,20 @@ export type ServerMessage =
       demonstrate?: TrayDemoStep[];
       /** V4: the lesson thread — child-facing topic + step N of M. Absent in open chat. */
       lesson?: { topic: string | null; step: number; of: number };
+      /**
+       * V4: a live sequence board synced to this turn's story. `values` are
+       * SERVER-COMPUTED — the running quantity after each step, `values[0]`
+       * being `start` itself — and are what gets rendered; the client never
+       * redoes the arithmetic (/ORACLE.md §20.5).
+       */
+      whiteboard?: {
+        kind: 'sequence';
+        start: number;
+        steps: { op: 'add' | 'subtract' | 'multiply_percent'; value: number }[];
+        values: number[];
+        label: string;
+        currency: 'MXN' | 'USD' | 'BRL' | null;
+      };
     }
   | { type: 'turn_audio'; seq: number; audioUrl: string | null }
   | { type: 'thinking' }

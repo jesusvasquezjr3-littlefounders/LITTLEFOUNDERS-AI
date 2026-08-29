@@ -336,5 +336,9 @@
       "mastered": "Mastered",
       "needs_review": "Time to review"
     }
+  },
+  "whiteboard": {
+    "start": "Start",
+    "step": "Day {{n}}"
   }
 }

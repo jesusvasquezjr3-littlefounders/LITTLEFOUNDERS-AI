@@ -37,6 +37,18 @@ export interface TutorTurnState {
   policy: { idleNudgeMs: number; listenSilenceMs: number } | null;
   /** v3: tray demonstration steps to animate concurrently with the speech. */
   demonstrate: import('./types').TrayDemoStep[] | null;
+  /**
+   * V4: a live sequence board synced to this turn's story. `values` are
+   * server-computed. Null when this turn tells no growth/spending story.
+   */
+  whiteboard: {
+    kind: 'sequence';
+    start: number;
+    steps: { op: 'add' | 'subtract' | 'multiply_percent'; value: number }[];
+    values: number[];
+    label: string;
+    currency: 'MXN' | 'USD' | 'BRL' | null;
+  } | null;
 }
 
 export interface LiveSegmentState {
@@ -261,6 +273,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
             next: message.next,
             policy: message.policy ?? null,
             demonstrate: message.demonstrate ?? null,
+            whiteboard: message.whiteboard ?? null,
           });
           setLesson(message.lesson ?? null);
           setHistory((prev) => [...prev, { speaker: 'tutor', text: message.say, seq: message.seq }]);

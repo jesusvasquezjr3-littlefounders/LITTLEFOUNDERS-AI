@@ -70,9 +70,13 @@ sentence, one of seven emotions, one of twelve actions and one of three control
 decisions. There is no field for a link, a script or an exfiltrated context.
 
 **Never add a free-form field to that schema.** If a new capability needs one,
-it needs a design conversation, not a property.
+it needs a design conversation, not a property. `whiteboard` (V4) is the
+precedent for how a real capability clears that bar without breaking it: its
+`start`/`steps` are a closed operator enum plus bounded numbers — no freer than
+`demonstrate` already was — and its ONE prose sub-field, `label`, joins the
+moderation call below rather than inventing a fourth free-text channel.
 
-**Two of its fields are learner-facing prose, and BOTH are now on screen.**
+**Three of its fields are learner-facing prose, and ALL THREE are on screen.**
 `say` always was. `segmentRequest.framing` is the second — its own schema
 comment defines it as *"a short, learner-facing framing for the activity,
 moderated like `say`"*, `z.string().min(1).max(240)` — and until the 2026-08-21
@@ -86,8 +90,12 @@ changing what it means is a breaking change, not a refactor.** It may not be
 quietly repurposed into a layout hint, a difficulty label, an enum, or
 telemetry. Its sibling `rationale` is the field for anything not meant for the
 learner — that is why the two exist separately, and the distinction is now
-load-bearing rather than documentary. Both remain subject to §2.4: the whole
-turn is moderated before any part of it is spoken or shown.
+load-bearing rather than documentary. `whiteboard.label` (V4) joined this
+group the same way `framing` should have from the start: added to the SAME
+moderation call as `say` in the turn it ships (orchestrator.ts), not bolted on
+after the gap `framing` sat in for a day was found. All three remain subject
+to §2.4: the whole turn is moderated before any part of it is spoken or
+shown.
 
 ### §2.4 Moderation is per-turn and fails closed
 
@@ -374,4 +382,5 @@ everything passes the blocked half perfectly and destroys the product.
 - **`learnerBrief`** renders as the tutor's OWN notes, never as the learner's words — text derived from a child's speech must never be readable as instructions. Any change to what reaches the model still walks the full §4.1 chain (schema, ORACLE.md, legal review, the field-count test).
 - **Episodic recall** triggers on a CLOSED phrase list only — no model ever decides whether to look — and failure degrades to the turn we had before.
 - **The grace turn** (`closeGraceUsed`) is minted exactly once per session; the turn after it closes scripted no matter what the model did.
+- **The whiteboard** (`src/tutor/whiteboard.ts`) — `values` are ALWAYS server-computed from the model's own `start`/`steps`, recomputed a second time at the wire (`ws/server.ts`) rather than trusted from wherever they were last computed, and dropped WHOLE (fail-open) on a non-finite/negative/out-of-range result — never shown as authored. A turn may never carry both `whiteboard` and `segmentRequest`; the schema refuses it.
 

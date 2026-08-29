@@ -171,6 +171,33 @@ export type ServerMessage =
        * the speech and drops any denomination the payload lacks.
        */
       demonstrate?: Array<{ kind: 'add' | 'remove' | 'pause'; denomination?: number; ms?: number }>;
+      /**
+       * V4: the lesson thread — child-facing topic + step N of M, our own plan
+       * text. Absent while there is no active plan (open chat).
+       *
+       * NOTE: added after `demonstrate` without a matching field here for one
+       * commit — a conditional spread (`...(cond ? {lesson} : {})`) defeats
+       * TypeScript's excess-property check on the object literal it is spread
+       * into, so `tsc` passed clean while this type quietly stopped describing
+       * the wire. Declaring it explicitly is what makes the frontend's `lesson`
+       * typing (`useTutorSocket.ts`) actually checked against what Oracle sends,
+       * instead of trusting a shape nothing here asserts.
+       */
+      lesson?: { topic: string | null; step: number; of: number };
+      /**
+       * V4: a live sequence board synced to this turn's story (/ORACLE.md
+       * §20.5). `values` are the SERVER-COMPUTED running quantities — the
+       * client renders them as given and never redoes the arithmetic, exactly
+       * the posture `checkAnswer`'s verdict already takes with a spoken answer.
+       */
+      whiteboard?: {
+        kind: 'sequence';
+        start: number;
+        steps: Array<{ op: 'add' | 'subtract' | 'multiply_percent'; value: number }>;
+        values: number[];
+        label: string;
+        currency: 'MXN' | 'USD' | 'BRL' | null;
+      };
     }
   | {
       /**

@@ -1916,3 +1916,70 @@ pay the round trip; failure degrades to the turn we had before. Inherits the
 owner-accepted interim while the platform's only active learner is the owner.
 Before real families: LEARNER-store writes require guardian approval from the
 portal, which reads the same ledger.
+
+### 20.5 The whiteboard — a live visual synced to what the tutor says (SHIPPED)
+
+**The defect, reported directly by the owner from a live session (2026-08-29):**
+the tutor narrated a growth story purely in text — "empiezas con 10 y cada día
+la caja te da 2 más… ¿y si empezaras con 20?" — while the activity panel showed
+a completely unrelated true/false exercise about candy pricing, served by the
+ladder's own last-resort "frontier" fallback (§7). Nothing anywhere rendered
+what the tutor was narrating; `demonstrate` (§9.3) could only nudge coins in an
+already-open tray, 2 of 57 segment types, and every other visual in the Lesson
+Engine catalog is static, pre-authored content chosen by skill+difficulty, with
+no synchronization guarantee to the current turn's story at all.
+
+**The shape:** the narrowest general primitive that covers most of what this
+tutor narrates — a live, animated value SEQUENCE. `TutorTurnSchema` gained
+`whiteboard: {kind:'sequence', start, steps: [{op:'add'|'subtract'|
+'multiply_percent', value}] (1-8), label, currency}`, the same closed-vocabulary
+posture §5 already applies to `demonstrate`: numbers and a three-item operator
+enum, no free text drawn, bounded ranges (`start` ≤ 1,000,000; a step value ≤
+100,000; every intermediate ≤ 10,000,000). A turn may not carry both
+`whiteboard` and `segmentRequest` — schema-refused — because a board and a
+graded activity competing for the plate in one turn is exactly the
+disconnected-surfaces bug this closes.
+
+**The numbers are computed, never taken on the model's word** — the same rule
+`arithmetic.ts` applies to a spoken answer, extended to what gets drawn.
+`oracle/src/tutor/whiteboard.ts`'s `computeSequence()` re-derives the running
+values from the model's own `start`/`steps`; a result that goes negative,
+non-finite, or past the ceiling drops the whole whiteboard as if the model had
+not set one (fail-open, the `checkAnswer`-null posture) rather than show
+whatever came out. The turn frame carries `values` computed a SECOND time at
+the wire (`ws/server.ts`) from the same function, so a value the client
+receives was verified at the moment it was sent, not merely at authoring time.
+The `label` — the only free text on the field — is moderated in the same call
+as `say` and `segmentRequest.framing` (the exact gap that let `framing` reach a
+child unmoderated for one day, until 2026-08-29, is not reopened here).
+
+The prompt tells the model, under "Show your work": whenever a story involves a
+quantity that changes over two or more steps, set `whiteboard` with the SAME
+numbers the story uses, instead of only saying them — `say` narrates and asks;
+the board carries the running values, so an intermediate number is not spoken
+AND drawn.
+
+**Frontend** (`frontend/src/tutor/TutorWhiteboard.tsx`): deliberately NOT a
+Lesson Engine component — this has no grader, no key, no XP, and is owned
+entirely by the tutor surface (LESSON_ENGINE.md §4's family-boundary
+convention). Renders in the SAME `LessonPlate` a graded segment would occupy
+when no segment is present, so it inherits every overlap fix already built for
+that surface for free: the caption docks to the panel's own free space instead
+of losing an unwinnable escape budget against it, the sheet rises to `half` the
+same way an announced segment does, and the transcript yields height the same
+way. `verify-tutor-ui.mjs` drives a dedicated `whiteboard` lab scenario and
+runs the SAME sweep + geometric overlap audit already built for segments
+against it — 0 unreachable controls, 0 overlaps, caption never under the board.
+
+A graded segment always wins the plate if somehow both are present (the schema
+refusal makes this unreachable in practice).
+
+**Explicitly out of scope, backlog, not silently dropped:** a `preferredTypes`
+hint so `segmentRequest` can prefer visual catalog types (`interest_peek`,
+`number_line`) over the frontier fallback when a REAL practice activity is
+requested — a separate, smaller fix from the live-whiteboard capability. A
+general free-form canvas ("UI generativa acotada", blueprint §10.4) — a
+multi-week content-pipeline feature (schema, CAS verifier, age classifier,
+content bank) needing its own scoping pass. Additional `kind` values
+(two-quantity comparison, a marked number line) — same schema family,
+straightforward once `sequence` is proven live.

@@ -147,6 +147,56 @@ describe('the closed turn schema', () => {
     expect(TutorTurnSchema.safeParse({ ...valid, next: 'segment' }).success).toBe(false);
   });
 
+  describe('the whiteboard (V4)', () => {
+    const board = {
+      kind: 'sequence' as const,
+      start: 10,
+      steps: [{ op: 'add' as const, value: 2 }],
+      label: 'Cada día te dan 2 más',
+      currency: 'MXN' as const,
+    };
+
+    it('accepts a turn carrying a whiteboard', () => {
+      expect(TutorTurnSchema.safeParse({ ...valid, whiteboard: board }).success).toBe(true);
+    });
+
+    it('never both a whiteboard and a segment request on the same turn', () => {
+      // A board and a graded activity competing for the plate in one turn is
+      // exactly the disconnected-surfaces bug this schema exists to close.
+      const withBoth = {
+        ...valid,
+        next: 'segment' as const,
+        segmentRequest: {
+          skillKey: 'financial-education/ahorro',
+          difficulty: 2,
+          framing: 'Practiquemos ahorrar.',
+          rationale: 'reinforce the idea just shown',
+        },
+        whiteboard: board,
+      };
+      expect(TutorTurnSchema.safeParse(withBoth).success).toBe(false);
+    });
+
+    it('refuses a step operator outside the closed vocabulary', () => {
+      expect(
+        TutorTurnSchema.safeParse({
+          ...valid,
+          whiteboard: { ...board, steps: [{ op: 'divide', value: 2 }] },
+        }).success,
+      ).toBe(false);
+    });
+
+    it('refuses an out-of-range start or step value', () => {
+      expect(TutorTurnSchema.safeParse({ ...valid, whiteboard: { ...board, start: -1 } }).success).toBe(false);
+      expect(
+        TutorTurnSchema.safeParse({
+          ...valid,
+          whiteboard: { ...board, steps: [{ op: 'add', value: 200_000 }] },
+        }).success,
+      ).toBe(false);
+    });
+  });
+
   it('unwraps a markdown-fenced completion, because models do that', () => {
     const parsed = parseTurn('```json\n' + JSON.stringify(valid) + '\n```');
     expect(parsed.ok).toBe(true);

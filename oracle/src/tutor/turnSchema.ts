@@ -108,6 +108,51 @@ export const DemoStepSchema = z
   })
   .strict();
 
+/**
+ * ONE STEP OF A LIVE VALUE SEQUENCE — V4's "whiteboard" (/ORACLE.md §20.5).
+ *
+ * A closed arithmetic vocabulary, exactly the §5 discipline `DemoStepSchema`
+ * already uses: a three-item operator enum and one bounded number. There is
+ * no free text and nothing to draw beyond a running quantity — an injection
+ * that reaches this field can change a number on a board, and nothing else.
+ */
+export const WhiteboardStepSchema = z
+  .object({
+    op: z.enum(['add', 'subtract', 'multiply_percent']),
+    /** The delta (add/subtract) or the percentage (multiply_percent). Bounded so a hostile or broken value cannot produce a nonsense board. */
+    value: z.number().positive().max(100_000),
+  })
+  .strict();
+
+/**
+ * A LIVE VISUAL FOR A STORY THE TUTOR IS ALREADY TELLING (V4).
+ *
+ * `say` narrates hypothetical numbers by design (see the "invented numbers"
+ * rule in prompt.ts) and nothing ever rendered them — a growth or spending
+ * story was pure prose while an unrelated catalog activity sat on screen.
+ * This is the fix: the SAME numbers the model just invented for its story,
+ * as a small closed spec the client animates. `start`/`steps` are what the
+ * model proposes; the values actually shown are recomputed server-side
+ * (`whiteboard.ts`) and never taken from the model's own arithmetic —
+ * exactly the `checkAnswer`/verdict philosophy already applied to spoken
+ * answers, extended to what gets drawn.
+ */
+export const WhiteboardSchema = z
+  .object({
+    kind: z.literal('sequence'),
+    /** The starting quantity. */
+    start: z.number().min(0).max(1_000_000),
+    steps: z.array(WhiteboardStepSchema).min(1).max(8),
+    /**
+     * A short caption above the board — "Cada día la caja te da más" — not the
+     * numbers themselves (the board draws those). Free text, so it joins `say`
+     * and `segmentRequest.framing` in the same moderation call (orchestrator.ts).
+     */
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
 export const TutorTurnSchema = z
   .object({
     /**
@@ -138,6 +183,13 @@ export const TutorTurnSchema = z
      * interrupt, exactly like speech.
      */
     demonstrate: z.array(DemoStepSchema).min(1).max(8).nullable().optional(),
+    /**
+     * V4: a live sequence board synced to this turn's story. See
+     * `WhiteboardSchema`. Never both this AND a segment request in the same
+     * turn — a board and a graded activity competing for the plate in one
+     * turn is exactly the disconnected-surfaces bug this exists to close.
+     */
+    whiteboard: WhiteboardSchema.nullable().optional(),
   })
   .strict()
   .refine((turn) => turn.next !== 'segment' || turn.segmentRequest != null, {
@@ -147,11 +199,17 @@ export const TutorTurnSchema = z
   .refine((turn) => turn.demonstrate == null || turn.next !== 'segment', {
     message: 'demonstrate applies to the OPEN activity — not to one being requested',
     path: ['demonstrate'],
+  })
+  .refine((turn) => turn.whiteboard == null || turn.segmentRequest == null, {
+    message: 'whiteboard and segmentRequest may not both be set on the same turn',
+    path: ['whiteboard'],
   });
 
 export type TutorTurn = z.infer<typeof TutorTurnSchema>;
 export type SegmentRequest = z.infer<typeof SegmentRequestSchema>;
 export type DemoStep = z.infer<typeof DemoStepSchema>;
+export type WhiteboardStep = z.infer<typeof WhiteboardStepSchema>;
+export type Whiteboard = z.infer<typeof WhiteboardSchema>;
 
 export type TurnParse =
   | { ok: true; turn: TutorTurn }

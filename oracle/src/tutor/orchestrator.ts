@@ -39,6 +39,7 @@ import {
 import { selectSkill } from './skills.js';
 import { recallOwnHistory } from '../core/client.js';
 import { parseTurn, type TutorTurn } from './turnSchema.js';
+import { computeSequence } from './whiteboard.js';
 import {
   closingResponse,
   consentRevokedResponse,
@@ -1134,6 +1135,20 @@ export class TutorOrchestrator {
           const parsed = parseTurn(result.text);
           if (parsed.ok) {
             /*
+             * THE BOARD'S NUMBERS ARE COMPUTED, NEVER TAKEN ON THE MODEL'S
+             * WORD (V4). A whiteboard whose own arithmetic does not check out
+             * — negative, non-finite, past the ceiling — is dropped WHOLE
+             * before anything else sees it: fail-open, the same posture as a
+             * null verdict from `checkAnswer`. The turn still delivers; it
+             * simply says its story without a board this once.
+             */
+            if (parsed.turn.whiteboard !== null && parsed.turn.whiteboard !== undefined) {
+              if (computeSequence(parsed.turn.whiteboard) === null) {
+                console.warn('[oracle] whiteboard did not compute to a sane sequence — dropped');
+                parsed.turn.whiteboard = null;
+              }
+            }
+            /*
              * AGE-BAND VOCABULARY, checked rather than merely requested.
              * `TIER_GUIDANCE` already tells the model in the system prompt,
              * and telling is not checking — a slip is spoken straight to a
@@ -1147,10 +1162,13 @@ export class TutorOrchestrator {
              * slightly too high still teaches where "my thoughts got tangled"
              * teaches nothing.
              */
-            const visible =
-              parsed.turn.segmentRequest != null
-                ? `${parsed.turn.say} ${parsed.turn.segmentRequest.framing}`
-                : parsed.turn.say;
+            const visible = [
+              parsed.turn.say,
+              parsed.turn.segmentRequest?.framing,
+              parsed.turn.whiteboard?.label,
+            ]
+              .filter((s): s is string => typeof s === 'string')
+              .join(' ');
             const violation = tierVocabularyViolation(visible, this.session.tier);
             /*
              * PROSE AND INTENT MUST AGREE. `turnSchema` already refuses
@@ -1353,8 +1371,9 @@ export class TutorOrchestrator {
      * The separator is a blank line so the judge reads two sentences rather
      * than one run-on, which is what it would otherwise score.
      */
-    const visibleText =
-      turn.segmentRequest != null ? `${turn.say}\n\n${turn.segmentRequest.framing}` : turn.say;
+    const visibleText = [turn.say, turn.segmentRequest?.framing, turn.whiteboard?.label]
+      .filter((s): s is string => typeof s === 'string')
+      .join('\n\n');
 
     /*
      * SPECULATIVE SYNTHESIS, concurrent with the judge (see the file header).

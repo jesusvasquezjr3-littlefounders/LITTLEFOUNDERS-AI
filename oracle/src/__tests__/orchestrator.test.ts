@@ -385,6 +385,72 @@ describe('when the model misbehaves', () => {
   });
 });
 
+describe('the whiteboard (V4)', () => {
+  it('a valid whiteboard reaches the turn untouched', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          whiteboard: {
+            kind: 'sequence',
+            start: 10,
+            steps: [{ op: 'add', value: 2 }],
+            label: 'Cada día te dan 2 más',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = await orchestrator.handleLearnerText('hola', Date.now());
+    expect(outcome?.emission.turn.whiteboard?.start).toBe(10);
+    expect(outcome?.emission.turn.whiteboard?.steps).toHaveLength(1);
+  });
+
+  it('a whiteboard whose own arithmetic goes negative is dropped, and the turn still delivers', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          whiteboard: {
+            kind: 'sequence',
+            start: 5,
+            steps: [{ op: 'subtract', value: 10 }],
+            label: 'Gastas más de lo que tienes',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = await orchestrator.handleLearnerText('hola', Date.now());
+    // Fail-open: the turn is not thrown away, only the board.
+    expect(outcome).not.toBeNull();
+    expect(outcome?.emission.turn.whiteboard).toBeNull();
+  });
+
+  it("the board's label is moderated in the same call as say", async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          whiteboard: {
+            kind: 'sequence',
+            start: 10,
+            steps: [{ op: 'add', value: 2 }],
+            label: 'Cada día te dan 2 más',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('hola', Date.now());
+    const judgeBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(judgeBody).toContain('Cada día te dan 2 más');
+  });
+});
+
 describe('episodic recall (V4)', () => {
   it('quotes the learner\'s own past when they ask "¿te acuerdas…?"', async () => {
     const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);

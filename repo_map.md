@@ -27439,9 +27439,9 @@ import { SpeechCaption } from './SpeechCaption';
 import { TutorFace } from './TutorFace';
 import { TutorTranscript } from './TutorTranscript';
 import { LiveSegmentPanel } from './LiveSegmentPanel';
+import { TutorWhiteboard } from './TutorWhiteboard';
 import { useStageDock, type ConversationLayerProps, type StageDockValue } from './stage/StageShell';
 
-/*
 ```
 
 ### frontend/src/tutor/LiveSegmentPanel.tsx
@@ -27602,6 +27602,26 @@ import { useScrollEdges } from './hud/useScrollEdges';
  * The bubble was the character's 2D head beside the line it was saying right
  * now, mounted on the lesson plate. It existed for two stated reasons, and both
  * of them moved rather than died (/DESIGN.md §Lumen → *One line, one printing,
+```
+
+### frontend/src/tutor/TutorWhiteboard.tsx
+
+```
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
+
+/*
+ * THE TUTOR'S WHITEBOARD (V4).
+ *
+ * Until now a growth or spending story lived only in `say` — the tutor could
+ * narrate "empiezas con 10 y cada día te dan 2 más" and nothing on screen
+ * changed. Reported directly by the owner from a live session, alongside a
+ * COMPLETELY UNRELATED activity sitting in the plate. This renders the SAME
+ * numbers the tutor is already inventing for its story (oracle/prompt.ts's
+ * "invented numbers" rule), live, as the turn arrives.
+ *
+ * DELIBERATELY NOT A LESSON-ENGINE COMPONENT. `LiveSegmentPanel` reuses the
 ```
 
 ### frontend/src/tutor/VoiceConsentControl.tsx
@@ -27862,6 +27882,26 @@ import type { ServerMessage } from '../types';
 
 // ── A controllable fake WebSocket ───────────────────────────────────────────
 
+```
+
+### frontend/src/tutor/__tests__/tutorWhiteboard.test.tsx
+
+```
+import { act, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { TutorWhiteboard } from '../TutorWhiteboard';
+
+/*
+ * THE LIVE WHITEBOARD (V4). The owner's exact complaint: the tutor narrated a
+ * growth story in pure text while an unrelated activity sat on screen. These
+ * tests care about the two guarantees that make this trustworthy: the numbers
+ * drawn are EXACTLY the `values` the server computed (this component never
+ * redoes the arithmetic), and reduced motion shows the whole board at once
+ * rather than making a child wait through an animation they asked to skip.
+ */
+
+const BOARD = {
+  kind: 'sequence' as const,
 ```
 
 ### frontend/src/tutor/__tests__/useHandsFreeTurn.test.tsx
@@ -29782,6 +29822,26 @@ import { resetConfigCache } from '../env.js';
  *
 ```
 
+### oracle/src/__tests__/whiteboard.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { computeSequence } from '../tutor/whiteboard.js';
+
+/*
+ * THE BOARD'S NUMBERS ARE COMPUTED, NEVER TAKEN ON THE MODEL'S WORD — the same
+ * rule `arithmetic.ts` applies to a spoken answer. Every case below is either
+ * the owner's own screenshot (2026-08-29: "empiezas con 10, cada día +2… si
+ * empezaras con 20 y cada día 3") or a bound that must hold no matter what a
+ * model proposes.
+ */
+
+describe('a real sequence', () => {
+  it('matches the owner\'s own example: 10, +2 each day', () => {
+    expect(computeSequence({ start: 10, steps: [{ op: 'add', value: 2 }] })).toEqual([10, 12]);
+  });
+```
+
 ### oracle/src/app.ts
 
 ```
@@ -30378,6 +30438,26 @@ import { z } from 'zod';
  * three-item control decision. There is no field in which to return a link, a
  * script, an instruction to the client, or an exfiltrated context.
  *
+```
+
+### oracle/src/tutor/whiteboard.ts
+
+```
+import type { Whiteboard } from './turnSchema.js';
+
+/*
+ * THE NUMBERS ON THE BOARD ARE COMPUTED, NEVER TAKEN ON THE MODEL'S WORD.
+ *
+ * This is the same rule `arithmetic.ts` applies to a spoken answer, extended
+ * to what gets DRAWN: the model proposes `start` and `steps` as part of its
+ * story, and this function is the only thing that turns that proposal into
+ * the values a child actually sees. A drawn number that turned out to be
+ * wrong would be worse than a spoken one — a wrong picture is remembered
+ * longer than a wrong sentence.
+ *
+ * DELIBERATELY NARROW, same posture as the rest of §5: one operation per
+ * step from a three-item vocabulary, whole numbers in, a ceiling on every
+ * intermediate. Anything that would produce a non-finite, negative, or
 ```
 
 ### oracle/src/voice/cache.ts

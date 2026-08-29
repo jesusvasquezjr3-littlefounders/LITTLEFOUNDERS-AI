@@ -21,6 +21,7 @@ import { generateSegment } from '../content/generate.js';
 import { moderationReadiness } from '../safety/moderation.js';
 import { TutorOrchestrator, type TurnOutcome } from '../tutor/orchestrator.js';
 import { CLOSE_CODES, ClientMessageSchema, MAX_AUDIO_B64_CHARS, type ServerMessage } from './protocol.js';
+import { computeSequence } from '../tutor/whiteboard.js';
 import { assembleClip, decodeChunk } from './audioAssembly.js';
 
 /*
@@ -951,6 +952,7 @@ async function deliver(live: Live, outcome: TurnOutcome | null): Promise<void> {
    */
   const idleNudgeMs = live.orchestrator.idleNudgeMs;
   const listenSilenceMs = live.orchestrator.listenSilenceMs;
+  const boardValues = emission.turn.whiteboard ? computeSequence(emission.turn.whiteboard) : null;
   send(live.socket, {
     type: 'turn',
     seq: emission.seq,
@@ -968,6 +970,17 @@ async function deliver(live: Live, outcome: TurnOutcome | null): Promise<void> {
     // V4: the lesson thread — our own plan text, so the HUD can say "this is
     // a lesson", which is the difference between a class and a chat.
     ...(live.orchestrator.lessonThread ? { lesson: live.orchestrator.lessonThread } : {}),
+    /*
+     * V4: the whiteboard. `values` are RECOMPUTED here from the model's own
+     * `start`/`steps` rather than trusted from wherever they were last
+     * computed — the client must never redo arithmetic that could drift from
+     * what was verified, and a value that fails to compute at this point
+     * (should not happen; the turn was already checked before delivery) drops
+     * the whiteboard rather than send an unverified one.
+     */
+    ...(boardValues !== null && emission.turn.whiteboard
+      ? { whiteboard: { ...emission.turn.whiteboard, values: boardValues } }
+      : {}),
   });
 
   /*

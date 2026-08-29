@@ -144,10 +144,18 @@ function startFakeModel(): Promise<Server> {
       }
       // A learner asking to practise gets a turn that requests an activity.
       const wantsActivity = !isJudge && body.includes('quieropracticarya');
+      // V4: a learner whose message contains this asks for a growth story,
+      // and gets a turn carrying a whiteboard — proving the FRAME (not just
+      // the orchestrator) delivers server-computed values over a real socket.
+      const wantsBoard = !isJudge && body.includes('quieropizarron');
       const content = isJudge
         ? JSON.stringify({ safe: true })
         : JSON.stringify({
-            say: wantsActivity ? '¡Vamos a intentarlo!' : '¡Buena pregunta! ¿Cuánto crees que juntarías?',
+            say: wantsBoard
+              ? 'Imaginemos que guardas 10 pesos y cada día te dan 2 más.'
+              : wantsActivity
+                ? '¡Vamos a intentarlo!'
+                : '¡Buena pregunta! ¿Cuánto crees que juntarías?',
             emotion: 'happy',
             action: 'nod',
             next: wantsActivity ? 'segment' : 'ask',
@@ -155,6 +163,18 @@ function startFakeModel(): Promise<Server> {
               ? { skillKey: 'money.saving', difficulty: 2, framing: 'Prueba esto.', rationale: 'practice' }
               : null,
             offerAdaptation: null,
+            whiteboard: wantsBoard
+              ? {
+                  kind: 'sequence',
+                  start: 10,
+                  steps: [
+                    { op: 'add', value: 2 },
+                    { op: 'add', value: 2 },
+                  ],
+                  label: 'Cada día te dan 2 más',
+                  currency: 'MXN',
+                }
+              : null,
           });
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(
@@ -384,6 +404,29 @@ describe('a real live session over a real websocket', () => {
     expect(closing.find((m) => m.type === 'closed')).toMatchObject({ reason: 'completed' });
     expect(journal.closes.at(-1)).toMatchObject({ closeReason: 'completed' });
 
+    await closed();
+  });
+
+  it('the whiteboard reaches the client with SERVER-COMPUTED values (V4)', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const answered = collect(socket, (m) => m.some((x) => x.type === 'turn' && x.whiteboard != null));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quieropizarron, cuentame una historia' }));
+    const board = (await answered).find((m) => m.type === 'turn')?.whiteboard;
+
+    expect(board).toMatchObject({
+      kind: 'sequence',
+      start: 10,
+      label: 'Cada día te dan 2 más',
+      currency: 'MXN',
+    });
+    // 10 → 12 → 14, computed by Oracle from the model's own start/steps — not
+    // asserted anywhere in the model's completion body.
+    expect(board?.values).toEqual([10, 12, 14]);
+
+    socket.close();
     await closed();
   });
 

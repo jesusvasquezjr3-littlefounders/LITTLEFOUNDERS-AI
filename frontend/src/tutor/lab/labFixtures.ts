@@ -374,7 +374,54 @@ export function labSession(locale: Locale): StartedSession {
 }
 
 /** The tutor's current line, as the socket would report it. */
-export function labTurn(locale: Locale): TutorTurnState {
+/** A live-growth story, for the `whiteboard` lab activity (V4). */
+const LAB_WHITEBOARD_TEXT: Readonly<Record<Locale, { say: string; label: string }>> = {
+  'en-US': {
+    say: 'Imagine you save $10, and every week you add $2 more.',
+    label: 'You add $2 every week',
+  },
+  'es-MX': {
+    say: 'Imagina que guardas 10 pesos, y cada semana agregas 2 más.',
+    label: 'Agregas 2 pesos cada semana',
+  },
+  'pt-BR': {
+    say: 'Imagine que você guarda 10 reais, e a cada semana adiciona mais 2.',
+    label: 'Você adiciona 2 reais por semana',
+  },
+};
+
+/**
+ * `activity === 'whiteboard'` (V4) swaps the scripted "here is an exercise"
+ * turn for one that draws a live sequence board instead — the surface added
+ * to close the owner's reported defect: a growth story narrated in pure text
+ * beside an unrelated activity. `verify-tutor-ui.mjs` opens this scenario to
+ * audit the board for overlaps the same way it already does for a segment.
+ */
+export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY): TutorTurnState {
+  if (activity === 'whiteboard') {
+    const text = LAB_WHITEBOARD_TEXT[locale];
+    return {
+      seq: 4,
+      text: text.say,
+      emotion: 'happy',
+      action: 'nod',
+      audioUrl: null,
+      next: 'ask',
+      policy: null,
+      demonstrate: null,
+      whiteboard: {
+        kind: 'sequence',
+        start: 10,
+        steps: [
+          { op: 'add', value: 2 },
+          { op: 'add', value: 2 },
+        ],
+        values: [10, 12, 14],
+        label: text.label,
+        currency: locale === 'en-US' ? 'USD' : locale === 'pt-BR' ? 'BRL' : 'MXN',
+      },
+    };
+  }
   return {
     seq: 4,
     text: LAB_SCRIPTS[locale].turn,
@@ -384,6 +431,7 @@ export function labTurn(locale: Locale): TutorTurnState {
     next: 'segment',
     policy: null,
     demonstrate: null,
+    whiteboard: null,
   };
 }
 
@@ -415,6 +463,7 @@ const fixtureByType = (locale: Locale): Readonly<Record<string, SegmentBase>> =>
 export const LAB_ACTIVITIES: readonly string[] = [
   'script',
   'none',
+  'whiteboard',
   // The TYPE LIST is locale-independent by construction (registry.test.tsx
   // proves it), so building it from one locale is not a choice with a
   // consequence — it is the same list in all three.
@@ -425,7 +474,7 @@ export const DEFAULT_LAB_ACTIVITY = 'script';
 
 /** The activity the plate should hold, for whatever the switch is on. */
 export function labActivity(locale: Locale, activity: string): LiveSegmentState | null {
-  if (activity === 'none') return null;
+  if (activity === 'none' || activity === 'whiteboard') return null;
   if (activity === 'script') return labSegment(locale);
   const fixture = fixtureByType(locale)[activity];
   if (!fixture) return labSegment(locale);
@@ -703,7 +752,7 @@ export function useLabSocket(
 
   return {
     connection: conversing ? 'open' : 'connecting',
-    turn: conversing ? labTurn(locale) : null,
+    turn: conversing ? labTurn(locale, activity) : null,
     history,
     segment,
     lesson: { topic: 'Ahorrar para una meta', step: 2, of: 4 },

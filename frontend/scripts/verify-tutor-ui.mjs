@@ -309,6 +309,65 @@ try {
         console.log(`  edit affordance fills the composer: ${filled}`)
         if (!filled) failures += 1
       }
+
+      /*
+       * THE WHITEBOARD (V4). The owner's own defect: a growth story narrated
+       * in pure text beside an unrelated activity. The activity switch lives
+       * in the same chrome panel `hide` just unmounted (`panelOpen` gates the
+       * whole panel, not just its visibility), so briefly reopen it — the
+       * `lab` switch is the same one used to open the panel at the very start
+       * of this run — flip the fixture, and hide again before measuring, so
+       * the chrome is absent from the screenshot exactly like every other tag.
+       */
+      let whiteboardScenario = false
+      await pressSwitch(page, 'lab')
+      const activitySelect = await page.evaluate(
+        centerOf(`document.querySelector('select[aria-label="activity on the plate"]')`),
+      )
+      if (activitySelect) {
+        await page.evaluate(
+          `(() => { const s = document.querySelector('select[aria-label="activity on the plate"]');` +
+            ` s.value = 'whiteboard'; s.dispatchEvent(new Event('change', { bubbles: true })) })()`,
+        )
+        await pressSwitch(page, 'hide')
+        await sleep(300)
+        whiteboardScenario = true
+      } else {
+        failures += 1
+        console.log('  MISSING: the lab activity switch — cannot drive the whiteboard scenario')
+      }
+
+      if (whiteboardScenario) {
+        await waitFor(page, '!!document.querySelector("[data-tutor-whiteboard]")', 10_000, 'the whiteboard to mount')
+        await sleep(2_500) // let the bars grow in before measuring
+
+        const boardControls = await page.evaluate(SWEEP)
+        const boardUnreachable = boardControls.filter((c) => !c.reaches)
+        console.log(`  [whiteboard] ${boardControls.length} controls, ${boardUnreachable.length} unreachable`)
+        for (const c of boardUnreachable) {
+          failures += 1
+          console.log(`  UNREACHABLE WITH BOARD OPEN: "${c.name}" — topmost ${c.topmost}`)
+        }
+        const boardOverlaps = await page.evaluate(OVERLAPS)
+        for (const o of boardOverlaps) {
+          failures += 1
+          console.log(`  OVERLAP WITH BOARD OPEN: ${o}`)
+        }
+        const captionUnderBoard = await page.evaluate(
+          '(() => { const cap = document.querySelector(".lf-speech");' +
+            ' const board = document.querySelector("[data-tutor-whiteboard]");' +
+            ' if (!cap || !board) return false;' +
+            ' const c = cap.getBoundingClientRect(), b = board.getBoundingClientRect();' +
+            ' const w = Math.min(c.right, b.right) - Math.max(c.left, b.left);' +
+            ' const h = Math.min(c.bottom, b.bottom) - Math.max(c.top, b.top);' +
+            ' return w > 8 && h > 8 })()',
+        )
+        if (captionUnderBoard) {
+          failures += 1
+          console.log("  CAPTION UNDER BOARD: the tutor's words are painted over by the whiteboard")
+        }
+        await shoot(page, 'tutor-ui-desktop-en-whiteboard')
+      }
     }
     if (page.errors.length > 0) {
       failures += page.errors.length

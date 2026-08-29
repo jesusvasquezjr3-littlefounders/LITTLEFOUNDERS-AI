@@ -10,6 +10,7 @@ import { SpeechCaption } from './SpeechCaption';
 import { TutorFace } from './TutorFace';
 import { TutorTranscript } from './TutorTranscript';
 import { LiveSegmentPanel } from './LiveSegmentPanel';
+import { TutorWhiteboard } from './TutorWhiteboard';
 import { useStageDock, type ConversationLayerProps, type StageDockValue } from './stage/StageShell';
 
 /*
@@ -286,6 +287,18 @@ export function ConversationView({
   }, [segmentId, turn?.next]);
 
   /*
+   * THE SAME RULE FOR A LIVE WHITEBOARD (V4). A turn that draws a board is
+   * exactly the same "the tutor is showing you something" moment a requested
+   * segment is — the sheet should rise to make room for it rather than have
+   * it render into a 90 px peek strip. Keyed on `turn.seq` rather than a
+   * segment id, since a whiteboard turn has none.
+   */
+  useEffect(() => {
+    if (!turn?.whiteboard) return;
+    setDetent((current) => (current === 'peek' ? 'half' : current));
+  }, [turn?.seq, turn?.whiteboard]);
+
+  /*
    * AN ARRIVING OFFER PUTS THE PLATE AWAY, and it is the whole reason the
    * `adapting` screen stopped being a form.
    *
@@ -532,7 +545,7 @@ export function ConversationView({
              * because the caller KNOWS — no geometry listening.
              */
             docked={
-              socket.segment !== null && desktop
+              (socket.segment !== null || turn?.whiteboard != null) && desktop
                 ? 'panel'
                 : !desktop && detent === 'full'
                   ? 'sheet'
@@ -765,6 +778,21 @@ export function ConversationView({
             // The one child of the column that takes the free height and scrolls.
             className="min-h-0 flex-auto"
           />
+        ) : turn?.whiteboard ? (
+          /*
+            V4: THE LIVE WHITEBOARD. A graded segment always wins the plate if
+            one is somehow also present (the orchestrator's own schema refuses
+            a turn carrying both, so this is a belt-and-braces resolution, not
+            the common case). Otherwise this is exactly the surface the owner
+            asked for: the numbers the tutor is narrating, growing on screen as
+            it speaks, instead of an unrelated activity sitting beside plain
+            text.
+          */
+          <TutorWhiteboard
+            board={turn.whiteboard}
+            seq={turn.seq}
+            className="min-h-0 flex-auto"
+          />
         ) : ended ? (
           <p className="shrink-0 lf-body text-content-muted" role="status">
             {t('tutor.conversation.ended')}
@@ -820,7 +848,7 @@ export function ConversationView({
             announcing the learner's speech) and returns the moment the
             activity is graded.
           */
-          compact={socket.segment !== null}
+          compact={socket.segment !== null || turn?.whiteboard != null}
           label={t('tutor.conversation.transcriptLabel')}
           /*
            * No edit affordance while an activity is open — same reasoning as
@@ -829,7 +857,7 @@ export function ConversationView({
            * the pencil was a control that existed but sat scrolled out of a
            * 96 px window, which the reachability gate rightly flagged.
            */
-          onEditLast={ended || socket.segment !== null ? undefined : beginEdit}
+          onEditLast={ended || socket.segment !== null || turn?.whiteboard != null ? undefined : beginEdit}
           editLabel={t('tutor.conversation.editMessage')}
         />
 
