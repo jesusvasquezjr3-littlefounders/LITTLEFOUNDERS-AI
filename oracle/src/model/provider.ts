@@ -161,6 +161,17 @@ export async function complete(
      * billed for an empty string, or the provider refused behind a 200. All
      * four are in the response we are about to discard, so they are logged
      * here — counts and reasons only, never content.
+     *
+     * ANSWERED 2026-08-29, and it was none of the four. `finish_reason=stop`,
+     * no reasoning, 41-87 completion tokens generated, and `message.content`
+     * holding 45-76 characters — of WHITESPACE. The provider bills a full,
+     * normally-terminated completion for a string that trims to nothing. The
+     * retry catches it because the second attempt runs at a lower temperature
+     * and has never produced one, which is where the first attempt's tuned
+     * temperature comes from (see `orchestrator.produce`).
+     *
+     * The line stays: the rate is worth watching, and the next shape of empty
+     * will not be this one.
      */
     const choice = body.choices?.[0] as { finish_reason?: unknown } | undefined;
     const usage = (body as { usage?: Record<string, unknown> }).usage ?? {};

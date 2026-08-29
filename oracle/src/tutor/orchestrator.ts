@@ -845,7 +845,23 @@ export class TutorOrchestrator {
 
         try {
           const result = await complete(messages, {
-            temperature: attempt === 0 ? 0.6 : 0.2,
+            /*
+             * 0.4 on the first attempt, not 0.6.
+             *
+             * `deepseek-chat` returns a normally-terminated completion whose
+             * `content` is 45-76 characters of WHITESPACE often enough to cost
+             * a retry on a large fraction of turns — eighteen across three
+             * scripted lessons on 2026-08-29, every one billed and discarded.
+             * The retry has always run at 0.2 and has never produced one,
+             * which is the observation this number comes from: the behaviour
+             * is temperature-sensitive, so the first attempt moves toward the
+             * value that does not do it.
+             *
+             * Not to 0.2. A tutor at 0.2 gives every child the same sentence,
+             * and the variety is part of the teaching — this trades a little
+             * of it against a call we were paying for twice.
+             */
+            temperature: attempt === 0 ? 0.4 : 0.2,
             signal: opts.signal,
           });
           this.modelUsd += estimateCostUsd(result.promptTokens, result.completionTokens);
