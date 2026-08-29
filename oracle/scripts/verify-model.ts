@@ -133,6 +133,44 @@ async function diagnose(context: unknown): Promise<void> {
   }
 }
 
+/**
+ * One completion, retried once on a SHAPE failure — exactly what
+ * `TutorOrchestrator.produce` does.
+ *
+ * The first version of stage 5b called the client raw, and duly reported "no
+ * JSON object in completion" as a product defect. It is not: production
+ * retries a malformed shape with an explicit correction, and that retry is why
+ * a learner never sees it. A probe that exercises a WEAKER path than the
+ * product reports failures the product does not have — the same harness
+ * mistake §1.14 keeps naming, pointed the other way.
+ */
+async function completeLikeProduction(
+  context: TutorContext,
+  userContent: string,
+): Promise<ReturnType<typeof parseTurn>> {
+  let last = parseTurn('');
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const messages = [
+      { role: 'system' as const, content: TUTOR_SYSTEM_PROMPT },
+      { role: 'user' as const, content: buildContextMessage(context) },
+      { role: 'user' as const, content: userContent },
+      ...(attempt === 1
+        ? [
+            {
+              role: 'user' as const,
+              content:
+                'Your previous reply was not a valid JSON object in the required shape. Reply again with ONLY the JSON object.',
+            },
+          ]
+        : []),
+    ];
+    const result = await complete(messages, { temperature: attempt === 0 ? 0.6 : 0.2 });
+    last = parseTurn(result.text);
+    if (last.ok) return last;
+  }
+  return last;
+}
+
 function ok(label: string, detail = ''): void {
   console.log(`  ok    ${label}${detail ? ` — ${detail}` : ''}`);
 }
@@ -274,12 +312,7 @@ async function main(): Promise<void> {
     openActivity: null,
   } satisfies TutorContext);
   try {
-    const young = await complete([
-      { role: 'system', content: TUTOR_SYSTEM_PROMPT },
-      { role: 'user', content: buildContextMessage(youngContext) },
-      { role: 'user', content: '¿cómo crece el dinero en el banco?' },
-    ]);
-    const youngTurn = parseTurn(young.text);
+    const youngTurn = await completeLikeProduction(youngContext, '¿cómo crece el dinero en el banco?');
     if (!youngTurn.ok) {
       bad('a tier-1 answer did not parse', youngTurn.detail);
     } else {
@@ -295,12 +328,10 @@ async function main(): Promise<void> {
   // activity and delivered none: prose could promise what the turn never asked
   // for, and no gate compared the two.
   try {
-    const asked = await complete([
-      { role: 'system', content: TUTOR_SYSTEM_PROMPT },
-      { role: 'user', content: buildContextMessage(context) },
-      { role: 'user', content: 'ya entendí, ahora ponme un ejercicio de verdad para practicar' },
-    ]);
-    const askedTurn = parseTurn(asked.text);
+    const askedTurn = await completeLikeProduction(
+      context,
+      'ya entendí, ahora ponme un ejercicio de verdad para practicar',
+    );
     if (!askedTurn.ok) {
       bad('the activity request did not parse', askedTurn.detail);
     } else if (promisesAnActivity(askedTurn.turn.say) && askedTurn.turn.next !== 'segment') {
@@ -340,16 +371,10 @@ async function main(): Promise<void> {
         prompt: 'Ordena las monedas y billetes del que vale menos al que vale más.',
       },
     } satisfies TutorContext);
-    const reaction = await complete([
-      { role: 'system', content: TUTOR_SYSTEM_PROMPT },
-      { role: 'user', content: buildContextMessage(withActivity) },
-      {
-        role: 'user',
-        content:
-          'The learner completed the activity and scored 100 out of 100. React to that as their tutor.',
-      },
-    ]);
-    const reactionTurn = parseTurn(reaction.text);
+    const reactionTurn = await completeLikeProduction(
+      withActivity,
+      'The learner completed the activity and scored 100 out of 100. React to that as their tutor.',
+    );
     if (!reactionTurn.ok) {
       bad('the activity reaction did not parse', reactionTurn.detail);
     } else {
