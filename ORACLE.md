@@ -2092,18 +2092,33 @@ segment yet is never turned into an outage. The prompt tells the model to set
 it right after a growth or spending story, or whenever a number line would
 show the idea better than more words.
 
-**Measured on the real model the same day (`tutor:converse`): the closed
-vocabulary is doing real work.** The model tried to set `preferredTypes` to
-something outside `interest_peek`/`number_line` twice in one four-conversation
-run — `.strict()` refused the turn both times (`invalid_shape`), and the
-existing repair loop recovered without the field reaching Core or a learner
-ever seeing anything wrong. Correct behaviour, and also the same lesson this
-whole sprint keeps drawing: a two-item enum stated once in the prompt is not
-yet something the model reliably fills in on the first try. Left as a known,
-low-severity efficiency gap (a wasted retry, not a defect) rather than
-iterated on with more paid model calls the same session — a candidate for the
-same detect-and-retry-with-a-specific-correction treatment the whiteboard's
-`missedWhiteboard`/`wrongUnit` checks got, if it recurs.
+**CORRECTED the same day: enforcing the closed vocabulary at the turn schema
+was itself a defect, not just an inefficiency.** The first version of this
+feature validated `preferredTypes` with `z.enum(['interest_peek',
+'number_line'])` directly on `TutorTurnSchema`. Measured on the real model
+twice: the first run set an invalid value on the FIRST attempt, the retry
+dropped it, and the run reported clean — read at the time as "the repair
+loop recovered, low-severity efficiency gap." The very next run set an
+invalid value on BOTH the first attempt AND the retry, exhausting the
+repair budget, and the child got the scripted "se me enredaron las ideas"
+line instead of any real reply to what they had said — a whole turn lost
+over one optional hint field the rest of the turn had nothing wrong with.
+The first measurement was real but incomplete: it proved the safety net
+catches a bad guess, not that catching it is free.
+
+Fixed properly rather than patched with a sharper prompt: `preferredTypes`
+is now loose at the turn schema (any strings, so a bad guess can never fail
+shape validation and take the turn down with it) and a new
+`sanitizePreferredTypes()` — the actual closed vocabulary — filters it down
+to the two real values (or `null`) in `ws/server.ts`, right before it
+reaches Core, which still enforces the enum itself. The same fail-open
+posture `computeSequence` already gives a whiteboard whose arithmetic does
+not check out: a malformed hint degrades to no hint, never to a lost turn.
+General lesson for the next optional, model-set hint field this pattern
+gets applied to: OUTPUT-side closed vocabularies that gate the whole turn
+are the wrong shape whenever the field they gate is a preference rather
+than something the turn's correctness depends on — sanitize after parsing,
+don't reject at parse time.
 
 **Still out of scope, backlog, not silently dropped:** a general free-form
 canvas ("UI generativa acotada", blueprint §10.4) — a multi-week

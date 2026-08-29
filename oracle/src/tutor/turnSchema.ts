@@ -91,16 +91,46 @@ export const SegmentRequestSchema = z
      * ROADMAP.md V4 sprint 2 backlog: a hint so the ladder can prefer a
      * VISUAL catalog segment over its own frontier fallback (Core's
      * last-resort "what should this learner do next", which can be
-     * completely unrelated to the story the tutor just told). Closed to
-     * exactly the two types the backlog named — this is a preference, not
-     * a new authoring surface, so the vocabulary stays as narrow as the
-     * two segment types it exists to reach. Best-effort on Core's side: a
-     * skill with no matching segment of either type still gets served
-     * from whatever the ladder would have picked anyway.
+     * completely unrelated to the story the tutor just told). Best-effort
+     * on Core's side: a skill with no matching segment of either type
+     * still gets served from whatever the ladder would have picked anyway.
+     *
+     * DELIBERATELY LOOSE HERE — `sanitizePreferredTypes` (below) is where
+     * the real closed vocabulary lives. Measured live: enforcing it AT
+     * THIS SCHEMA, as a `z.enum`, cost a whole turn once already —
+     * `preferredTypes.0: Invalid option` failed shape validation on BOTH
+     * the first attempt and the retry, and the child got the scripted "se
+     * me enredaron las ideas" line instead of a real reply to what they
+     * said, over one optional hint field the rest of the turn had nothing
+     * to do with. A hint that turns out malformed should degrade to no
+     * hint, the same fail-open posture `computeSequence` already gives a
+     * whiteboard whose arithmetic does not check out — never take an
+     * otherwise-good turn down with it.
      */
-    preferredTypes: z.array(z.enum(['interest_peek', 'number_line'])).max(2).nullable().optional(),
+    preferredTypes: z.array(z.string()).max(4).nullable().optional(),
   })
   .strict();
+
+/** The only two values `preferredTypes` may ever actually carry past this file. */
+export const PREFERRED_SEGMENT_TYPES = ['interest_peek', 'number_line'] as const;
+
+/**
+ * Filters a model-supplied `preferredTypes` down to the closed vocabulary,
+ * silently — an invalid guess degrades to "no preference", never to a lost
+ * turn. Call this on every parsed turn before `preferredTypes` is used or
+ * forwarded to Core, which still enforces the closed enum itself and would
+ * otherwise reject the whole `/segments` request over one bad entry.
+ */
+export function sanitizePreferredTypes(
+  values: readonly string[] | null | undefined,
+): (typeof PREFERRED_SEGMENT_TYPES)[number][] | null {
+  if (!values || values.length === 0) return null;
+  const kept = values.filter(
+    (v): v is (typeof PREFERRED_SEGMENT_TYPES)[number] =>
+      (PREFERRED_SEGMENT_TYPES as readonly string[]).includes(v),
+  );
+  return kept.length > 0 ? kept.slice(0, 2) : null;
+}
 
 /**
  * One step of an on-screen demonstration over the OPEN money-tray activity

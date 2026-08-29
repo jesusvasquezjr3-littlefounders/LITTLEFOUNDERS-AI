@@ -7,7 +7,7 @@ import {
 } from '../session/token.js';
 import { evaluateBudget } from '../session/budget.js';
 import { getConfig } from '../env.js';
-import { parseTurn, TutorTurnSchema } from '../tutor/turnSchema.js';
+import { parseTurn, sanitizePreferredTypes, TutorTurnSchema } from '../tutor/turnSchema.js';
 
 const SECRET = process.env.TUTOR_SESSION_SECRET as string;
 const SID = '11111111-1111-4111-8111-111111111111';
@@ -174,16 +174,56 @@ describe('the closed turn schema', () => {
       expect(TutorTurnSchema.safeParse(requestOf(null)).success).toBe(true);
     });
 
-    it('refuses a type outside the closed vocabulary', () => {
-      // The whole point of naming exactly two types: this is a preference,
-      // not a new authoring surface the model can widen on its own.
-      expect(TutorTurnSchema.safeParse(requestOf(['quiz_mcq'])).success).toBe(false);
+    it('parses a value outside the closed vocabulary — sanitizing, not rejecting, is this schema\'s job', () => {
+      /*
+       * Found live, 2026-08-29: an earlier version of this schema enforced
+       * the closed vocabulary with `z.enum` HERE, and the real model set an
+       * invalid value on BOTH the first attempt and the retry —
+       * `preferredTypes.0: Invalid option`, failing shape validation twice
+       * and losing the WHOLE turn to the "se me enredaron las ideas"
+       * fallback, over one optional hint field the rest of the turn had
+       * nothing to do with. `sanitizePreferredTypes` (tested below) is
+       * where the closed vocabulary actually lives now; this schema must
+       * never again cost a turn over it.
+       */
+      expect(TutorTurnSchema.safeParse(requestOf(['quiz_mcq'])).success).toBe(true);
     });
 
-    it('refuses more than the two types that exist', () => {
+    it('parses more entries than the two types that exist', () => {
       expect(
         TutorTurnSchema.safeParse(requestOf(['interest_peek', 'number_line', 'interest_peek'])).success,
-      ).toBe(false);
+      ).toBe(true);
+    });
+  });
+
+  describe('sanitizePreferredTypes — the closed vocabulary, enforced without losing the turn', () => {
+    it('passes through valid values unchanged', () => {
+      expect(sanitizePreferredTypes(['interest_peek'])).toEqual(['interest_peek']);
+      expect(sanitizePreferredTypes(['number_line'])).toEqual(['number_line']);
+      expect(sanitizePreferredTypes(['interest_peek', 'number_line'])).toEqual(['interest_peek', 'number_line']);
+    });
+
+    it('degrades an invalid guess to "no preference" instead of failing anything', () => {
+      // The exact live incident: the model invented a value outside the two
+      // named types. Silently dropped, never a discarded turn.
+      expect(sanitizePreferredTypes(['quiz_mcq'])).toBeNull();
+    });
+
+    it('keeps the valid entries and drops only the invalid ones from a mixed list', () => {
+      expect(sanitizePreferredTypes(['quiz_mcq', 'number_line'])).toEqual(['number_line']);
+    });
+
+    it('caps at two, even if the model listed the same valid type three times', () => {
+      expect(sanitizePreferredTypes(['interest_peek', 'number_line', 'interest_peek'])).toEqual([
+        'interest_peek',
+        'number_line',
+      ]);
+    });
+
+    it('treats null, undefined, and empty the same — no preference', () => {
+      expect(sanitizePreferredTypes(null)).toBeNull();
+      expect(sanitizePreferredTypes(undefined)).toBeNull();
+      expect(sanitizePreferredTypes([])).toBeNull();
     });
   });
 

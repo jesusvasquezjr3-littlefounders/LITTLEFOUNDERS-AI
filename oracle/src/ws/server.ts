@@ -22,6 +22,7 @@ import { moderationReadiness } from '../safety/moderation.js';
 import { TutorOrchestrator, type TurnOutcome } from '../tutor/orchestrator.js';
 import { CLOSE_CODES, ClientMessageSchema, MAX_AUDIO_B64_CHARS, type ServerMessage } from './protocol.js';
 import { computeSequence } from '../tutor/whiteboard.js';
+import { sanitizePreferredTypes } from '../tutor/turnSchema.js';
 import { assembleClip, decodeChunk } from './audioAssembly.js';
 
 /*
@@ -1076,11 +1077,20 @@ async function serveSegment(
   const strategy = live.orchestrator.activeStrategy;
   const difficulty = live.orchestrator.activeDifficulty ?? requestInput.difficulty;
   const skillKey = live.orchestrator.activeSkillKey ?? requestInput.skillKey;
+  /*
+   * SANITIZED HERE, NOT REJECTED AT THE SCHEMA. `turnSchema.ts` deliberately
+   * accepts any strings for this field — see `sanitizePreferredTypes`'s own
+   * comment for the live incident that made a strict schema the wrong
+   * choice. Core still enforces the closed enum itself, so an unsanitized
+   * value would fail the WHOLE `/segments` request, not just this hint.
+   */
+  const preferredTypes = sanitizePreferredTypes(requestInput.preferredTypes);
 
   let served = await requestSegment({
     sessionId: live.session.sessionId,
     ...requestInput,
     skillKey,
+    preferredTypes,
     difficulty,
     ...(kcId ? { kcId } : {}),
     ...(strategy ? { strategy } : {}),
