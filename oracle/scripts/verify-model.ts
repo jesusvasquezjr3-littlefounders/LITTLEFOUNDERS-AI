@@ -37,7 +37,12 @@
 import process from 'node:process';
 import { getConfig } from '../src/env.js';
 import { sealContext } from '../src/context/schema.js';
-import { TUTOR_SYSTEM_PROMPT, buildContextMessage } from '../src/tutor/prompt.js';
+import {
+  TUTOR_SYSTEM_PROMPT,
+  buildContextMessage,
+  promisesAnActivity,
+  tierVocabularyViolation,
+} from '../src/tutor/prompt.js';
 import { complete, DEFAULT_MAX_TOKENS, ModelUnavailableError } from '../src/model/provider.js';
 import { parseTurn } from '../src/tutor/turnSchema.js';
 import { moderateTutorOutput } from '../src/safety/moderation.js';
@@ -230,6 +235,127 @@ async function main(): Promise<void> {
     console.log('');
     console.log('  A judge that refuses everything is as broken as one that is down:');
     console.log('  no minor gets a single sentence, and the service looks healthy.');
+  }
+
+  // ── 5. THE THINGS THAT ONLY A LIVE MODEL CAN PROVE ────────────────────────
+  //
+  // Everything above proves the pipeline carries a turn. These four prove the
+  // turn is TEACHING — and each one exists because the shipped product failed
+  // it in front of the owner. Unit tests pin the plumbing with a stubbed
+  // model; only the real one can show whether it actually behaves.
+  console.log('');
+  console.log('== 5. Does it teach the way it must? ==');
+
+  // 5a. THE AGE BAND. The prompt has always said "never use percentages" for a
+  // six-year-old, and on 2026-08-28 the tutor taught "interés compuesto" with
+  // "10% cada año". Telling is not checking.
+  const youngContext = sealContext({
+    nickname: 'Chispa',
+    tier: 1,
+    locale: 'es-MX',
+    character: 'rho',
+    intent: 'faq',
+    adaptations: [],
+    courseContext: null,
+    skillStates: [],
+    turnHistory: [{ speaker: 'learner', text: '¿cómo crece el dinero en el banco?' }],
+    planState: null,
+    previousSessions: [],
+    pedagogy: null,
+    openActivity: null,
+  });
+  try {
+    const young = await complete([
+      { role: 'system', content: TUTOR_SYSTEM_PROMPT },
+      { role: 'user', content: buildContextMessage(youngContext) },
+      { role: 'user', content: '¿cómo crece el dinero en el banco?' },
+    ]);
+    const youngTurn = parseTurn(young.text);
+    if (!youngTurn.ok) {
+      bad('a tier-1 answer did not parse', youngTurn.detail);
+    } else {
+      const slip = tierVocabularyViolation(youngTurn.turn.say, 1);
+      if (slip === null) ok('a six-year-old is answered without percentages or decimals');
+      else bad('tier-1 vocabulary reached the learner', `${slip} in: ${youngTurn.turn.say.slice(0, 120)}`);
+    }
+  } catch (error) {
+    bad('the tier-1 probe failed', error instanceof Error ? error.message : String(error));
+  }
+
+  // 5b. A PROMISE IS KEPT. Twice in the owner's sessions the tutor announced an
+  // activity and delivered none: prose could promise what the turn never asked
+  // for, and no gate compared the two.
+  try {
+    const asked = await complete([
+      { role: 'system', content: TUTOR_SYSTEM_PROMPT },
+      { role: 'user', content: buildContextMessage(context) },
+      { role: 'user', content: 'ya entendí, ahora ponme un ejercicio de verdad para practicar' },
+    ]);
+    const askedTurn = parseTurn(asked.text);
+    if (!askedTurn.ok) {
+      bad('the activity request did not parse', askedTurn.detail);
+    } else if (promisesAnActivity(askedTurn.turn.say) && askedTurn.turn.next !== 'segment') {
+      bad(
+        'the tutor promised an activity it did not request',
+        `next=${askedTurn.turn.next} for: ${askedTurn.turn.say.slice(0, 120)}`,
+      );
+    } else {
+      ok(
+        'no unkept promise',
+        askedTurn.turn.next === 'segment' ? 'it asked for the activity' : 'it did not announce one',
+      );
+    }
+  } catch (error) {
+    bad('the activity-request probe failed', error instanceof Error ? error.message : String(error));
+  }
+
+  // 5c. IT TALKS ABOUT THE ACTIVITY ON SCREEN. The tutor asks for a SKILL and
+  // the ladder picks the segment; before `openActivity` it narrated from
+  // imagination and congratulated a learner for change they never gave.
+  try {
+    const withActivity = sealContext({
+      nickname: 'Chispa',
+      tier: 2,
+      locale: 'es-MX',
+      character: 'rho',
+      intent: 'faq',
+      adaptations: [],
+      courseContext: null,
+      skillStates: [],
+      turnHistory: [],
+      planState: null,
+      previousSessions: [],
+      pedagogy: null,
+      openActivity: {
+        type: 'order_steps',
+        prompt: 'Ordena las monedas y billetes del que vale menos al que vale más.',
+      },
+    });
+    const reaction = await complete([
+      { role: 'system', content: TUTOR_SYSTEM_PROMPT },
+      { role: 'user', content: buildContextMessage(withActivity) },
+      {
+        role: 'user',
+        content:
+          'The learner completed the activity and scored 100 out of 100. React to that as their tutor.',
+      },
+    ]);
+    const reactionTurn = parseTurn(reaction.text);
+    if (!reactionTurn.ok) {
+      bad('the activity reaction did not parse', reactionTurn.detail);
+    } else {
+      // "ordenar/ordenaste/orden" — the verb the activity actually used. The
+      // failing shape was praise for a DIFFERENT task ("juntar monedas").
+      const onTopic = /orden/i.test(reactionTurn.turn.say);
+      if (onTopic) ok('it praised the task the learner actually did', reactionTurn.turn.say.slice(0, 90));
+      else
+        bad(
+          'it narrated a different activity from the one on screen',
+          reactionTurn.turn.say.slice(0, 140),
+        );
+    }
+  } catch (error) {
+    bad('the open-activity probe failed', error instanceof Error ? error.message : String(error));
   }
 
   console.log('');
