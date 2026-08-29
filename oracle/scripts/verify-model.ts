@@ -36,7 +36,15 @@
 
 import process from 'node:process';
 import { getConfig } from '../src/env.js';
-import { sealContext } from '../src/context/schema.js';
+/*
+ * `TutorContext` is imported so every fixture below can be `satisfies
+ * TutorContext`. `sealContext` takes `unknown` by design — it is the privacy
+ * boundary and must validate whatever arrives — which means TypeScript cannot
+ * protect a fixture that drifts from the schema. Adding `openActivity` broke
+ * this script's first context silently, and the only thing that noticed was a
+ * live run against production. `satisfies` turns that into a compile error.
+ */
+import { sealContext, type TutorContext } from '../src/context/schema.js';
 import {
   TUTOR_SYSTEM_PROMPT,
   buildContextMessage,
@@ -167,7 +175,8 @@ async function main(): Promise<void> {
       planState: null,
       previousSessions: [],
       pedagogy: null,
-    });
+      openActivity: null,
+    } satisfies TutorContext);
     ok('sealContext accepted an ordinary context');
   } catch (error) {
     bad('sealContext', error instanceof Error ? error.message : String(error));
@@ -263,7 +272,7 @@ async function main(): Promise<void> {
     previousSessions: [],
     pedagogy: null,
     openActivity: null,
-  });
+  } satisfies TutorContext);
   try {
     const young = await complete([
       { role: 'system', content: TUTOR_SYSTEM_PROMPT },
@@ -330,7 +339,7 @@ async function main(): Promise<void> {
         type: 'order_steps',
         prompt: 'Ordena las monedas y billetes del que vale menos al que vale más.',
       },
-    });
+    } satisfies TutorContext);
     const reaction = await complete([
       { role: 'system', content: TUTOR_SYSTEM_PROMPT },
       { role: 'user', content: buildContextMessage(withActivity) },

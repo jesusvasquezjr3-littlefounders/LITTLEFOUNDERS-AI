@@ -16,7 +16,7 @@
  */
 
 import process from 'node:process';
-import { sealContext } from '../src/context/schema.js';
+import { sealContext, type TutorContext } from '../src/context/schema.js';
 import { classifyLearnerInput } from '../src/safety/classifier.js';
 import { deterministicModeration } from '../src/safety/moderation.js';
 import { fenceUntrusted } from '../src/safety/untrusted.js';
@@ -52,7 +52,7 @@ const VALID_CONTEXT = {
   planState: null,
   previousSessions: [],
   pedagogy: null,
-};
+} satisfies TutorContext;
 
 /*
  * Every field on this list is something a well-meaning developer might
