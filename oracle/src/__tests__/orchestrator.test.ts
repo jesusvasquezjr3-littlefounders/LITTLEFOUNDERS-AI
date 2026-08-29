@@ -322,16 +322,41 @@ describe('when the model misbehaves', () => {
     expect(outcome.emission.source).toBe('scripted');
   });
 
-  it('does not retry a transport failure — the model is down, not confused', async () => {
+  /*
+   * THIS TEST USED TO ASSERT THE OPPOSITE, and the change is deliberate.
+   *
+   * The old rule was "a model that is down will still be down, so retrying a
+   * transport error just doubles the learner's wait". That is true of a model
+   * that is DOWN and false of the failure that actually happens: a timeout or
+   * a 5xx on one request where the next succeeds. The costs are not
+   * symmetric — a doubled wait on a rare turn, against "Se me enredaron las
+   * ideas" arriving mid-conversation, which is what the owner's session on
+   * 2026-08-28 shows and which reads to a child as the tutor giving up.
+   */
+  it('retries a transport failure ONCE before giving up', async () => {
     fetchMock.mockRejectedValue(new Error('ECONNREFUSED'));
 
     const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
     const outcome = await orchestrator.handleLearnerText('hola', Date.now());
 
+    // Two model calls, then the scripted line. Still no judge call — a
+    // scripted line is text a person already reviewed.
     expect(outcome.emission.source).toBe('scripted');
-    // Exactly one upstream call: the model. No retry (a down model stays
-    // down) and no judge call (a scripted line is already reviewed text).
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('recovers when only the FIRST call fails, instead of destroying the turn', async () => {
+    // The case the old policy could not win: one bad request, one good one.
+    fetchMock
+      .mockRejectedValueOnce(new Error('socket hang up'))
+      .mockResolvedValueOnce(modelReplies(GOOD_TURN))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = await orchestrator.handleLearnerText('hola', Date.now());
+
+    expect(outcome.emission.source).toBe('model');
+    expect(outcome.emission.turn.say).toBe(GOOD_TURN.say);
   });
 
   it('treats a billable EMPTY completion as a failure, not an answer', async () => {

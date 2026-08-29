@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { classifyLearnerInput } from '../safety/classifier.js';
 import { fenceUntrusted, stripInvisible } from '../safety/untrusted.js';
-import { deterministicModeration } from '../safety/moderation.js';
+import { deterministicModeration, moderateTutorOutput } from '../safety/moderation.js';
 import {
   BENIGN_CANARIES,
   BENIGN_OUTPUT,
@@ -141,4 +141,58 @@ describe('benign output — moderation must let these through', () => {
     });
     expect(verdict.allowed).toBe(true);
   });
+});
+
+describe('a judge that is briefly unreachable', () => {
+  /*
+   * "No judge configured" was tolerated for an adult while "judge threw" was
+   * not — two names for one epistemic state (we have no model verdict)
+   * answered with opposite policies. The owner's session on 2026-08-28 shows
+   * the cost: a correct explanation of compound interest replaced
+   * mid-conversation by "Déjame decirlo de otra forma", which reads to a
+   * learner as the tutor refusing to answer them.
+   */
+  const TEXT = { text: 'El interés compuesto es como una bola de nieve.', locale: 'es-MX' as const, tier: 3 as const, nonce: undefined };
+
+  it('does NOT destroy an adult turn the deterministic pass already cleared', async () => {
+    const fetchMock = vi.fn().mockRejectedValue(new Error('socket hang up'));
+    vi.stubGlobal('fetch', fetchMock);
+    const verdict = await moderateTutorOutput({ ...TEXT, requireModelPass: false });
+    expect(verdict.allowed).toBe(true);
+    // Retried once before giving up, because most of these are a timeout.
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('STILL refuses for a minor, which is the whole point of failing closed', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('socket hang up')));
+    const verdict = await moderateTutorOutput({ ...TEXT, tier: 1, requireModelPass: true });
+    expect(verdict.allowed).toBe(false);
+    expect(verdict.allowed === false && verdict.reason).toBe('moderator_unavailable');
+  });
+
+  it('does not shop for a second opinion on a real "unsafe" verdict', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ choices: [{ message: { content: '{"safe":false,"reason":"nope"}' } }] }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    const verdict = await moderateTutorOutput({ ...TEXT, requireModelPass: false });
+    expect(verdict.allowed).toBe(false);
+    // Asked ONCE. A judge that answered is not asked again.
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+beforeEach(() => {
+  process.env.JUDGE_API_KEY = 'test-judge-key-0123';
+});
+
+afterEach(async () => {
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+  delete process.env.JUDGE_API_KEY;
+  const { resetConfigCache } = await import('../env.js');
+  resetConfigCache();
 });

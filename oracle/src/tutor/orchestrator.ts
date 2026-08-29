@@ -701,11 +701,24 @@ export class TutorOrchestrator {
      */
     this.seq += 1;
 
+    /*
+     * ONE RETRY, NOW FOR A TRANSPORT FAILURE AS WELL AS A SHAPE ONE.
+     *
+     * It used to be shape-only, reasoning that "a model that is down will
+     * still be down, so retrying just doubles the learner's wait". That is
+     * true of a model that is DOWN and false of the failure that actually
+     * happens: a timeout or a 5xx on one request, where the next one succeeds.
+     * The cost of being wrong is not symmetric — a doubled wait on a rare turn
+     * against "Se me enredaron las ideas" mid-conversation, which is what the
+     * owner's session on 2026-08-28 shows, and which reads to a learner as the
+     * tutor giving up on them.
+     *
+     * An ABORT still bails instantly and is never retried: the learner
+     * interrupted, so the answer is worth nothing and re-buying it would spend
+     * money on a question nobody is waiting for any more.
+     */
+    let transportFailure: unknown = null;
     try {
-      // One retry, and only for a SHAPE failure. A model that returned prose
-      // will usually return JSON when told so explicitly; a model that is down
-      // will still be down, so retrying a transport error just doubles the
-      // learner's wait.
       for (let attempt = 0; attempt < 2 && turn === null; attempt += 1) {
         const messages: ChatMessage[] = [
           { role: 'system', content: systemContent },
@@ -721,19 +734,28 @@ export class TutorOrchestrator {
           });
         }
 
-        const result = await complete(messages, {
-          temperature: attempt === 0 ? 0.6 : 0.2,
-          signal: opts.signal,
-        });
-        this.modelUsd += estimateCostUsd(result.promptTokens, result.completionTokens);
+        try {
+          const result = await complete(messages, {
+            temperature: attempt === 0 ? 0.6 : 0.2,
+            signal: opts.signal,
+          });
+          this.modelUsd += estimateCostUsd(result.promptTokens, result.completionTokens);
+          transportFailure = null;
 
-        const parsed = parseTurn(result.text);
-        if (parsed.ok) {
-          turn = parsed.turn;
-        } else {
-          console.warn(`[oracle] discarded model turn (${parsed.reason}): ${parsed.detail}`);
+          const parsed = parseTurn(result.text);
+          if (parsed.ok) {
+            turn = parsed.turn;
+          } else {
+            console.warn(`[oracle] discarded model turn (${parsed.reason}): ${parsed.detail}`);
+          }
+        } catch (error) {
+          if (error instanceof CompletionAbortedError) throw error;
+          if (!(error instanceof ModelUnavailableError)) throw error;
+          transportFailure = error;
+          console.warn(`[oracle] model call failed (attempt ${attempt + 1}): ${error.message}`);
         }
       }
+      if (transportFailure instanceof ModelUnavailableError) throw transportFailure;
     } catch (error) {
       if (error instanceof CompletionAbortedError) {
         // The learner cut in. The question is abandoned, so its answer is

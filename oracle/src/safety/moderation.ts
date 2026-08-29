@@ -165,28 +165,56 @@ async function modelModeration(input: ModerationInput): Promise<ModerationVerdic
 /**
  * Moderates one tutor turn.
  *
- * FAIL-CLOSED, and the two shapes of "closed" are different on purpose:
+ * FAIL-CLOSED FOR A CHILD, and the meaning of "closed" follows the session:
  *
- * - The judge threw or timed out → refuse the turn. Something is wrong right
- *   now and the safe move is a scripted line.
- * - No judge is configured at all, on a session that requires one → refuse.
- *   This should never be reachable in production because
- *   `moderationReadiness()` refuses to START such a session, but a runtime
- *   config reload must not open a hole that startup closed.
+ * - The judge threw or timed out → RETRY once, because most of these are a
+ *   timeout or a 5xx and the cost of giving up is a whole turn destroyed. If
+ *   it fails again, the answer depends on who is listening (below).
+ * - Still no verdict, on a session that REQUIRES the model pass (a minor) →
+ *   refuse. A child never hears model-authored text an unavailable judge did
+ *   not clear.
+ * - Still no verdict, on a session that does not require it (an adult) → the
+ *   deterministic pass above already ran and allowed it, and §6 already says
+ *   an adult's session may run on that pass alone.
+ *
+ * THAT LAST BRANCH IS THE FIX, and the asymmetry it removes cost a real
+ * session. "No judge configured" was tolerated for an adult while "judge
+ * briefly unreachable" was not — two names for one epistemic state, we have no
+ * model verdict, answered with opposite policies. The owner's own session on
+ * 2026-08-28 shows the result: a correct explanation of compound interest
+ * replaced mid-conversation by "Déjame decirlo de otra forma", which reads to
+ * a learner as the tutor refusing to answer them. Nothing about a minor's
+ * protection changes here: `requireModelPass` is true for every one of their
+ * sessions and every path above still refuses.
  */
 export async function moderateTutorOutput(input: ModerationInput): Promise<ModerationVerdict> {
   const deterministic = deterministicModeration(input);
   if (!deterministic.allowed) return deterministic;
 
-  let verdict: ModerationVerdict | null;
-  try {
-    verdict = await modelModeration(input);
-  } catch (error) {
-    return {
-      allowed: false,
-      reason: 'moderator_unavailable',
-      detail: error instanceof Error ? error.message : 'moderation judge failed',
-    };
+  let verdict: ModerationVerdict | null = null;
+  let failure: string | null = null;
+
+  // One retry, and only for a THROW. A judge that answered "unsafe" is not
+  // asked again — that would be shopping for a second opinion on a verdict we
+  // already have.
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      verdict = await modelModeration(input);
+      failure = null;
+      break;
+    } catch (error) {
+      failure = error instanceof Error ? error.message : 'moderation judge failed';
+    }
+  }
+
+  if (failure !== null) {
+    if (input.requireModelPass) {
+      return { allowed: false, reason: 'moderator_unavailable', detail: failure };
+    }
+    // Adult session: the deterministic pass already cleared this text, and §6
+    // permits running on it alone. Destroying the turn would protect nobody.
+    console.warn(`[oracle] moderation judge unavailable, allowing on the deterministic pass: ${failure}`);
+    return { allowed: true };
   }
 
   if (verdict === null) {
