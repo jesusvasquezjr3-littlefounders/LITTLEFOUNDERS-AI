@@ -319,6 +319,46 @@ export function verifyGeneratedSegment(segment: SegmentBase, tier: number): Veri
     failures.push('tray target is unreachable from its own denominations');
   }
 
+  // `fill_blank`'s key re-execution below is SELF-referential: submissionFromKey
+  // builds the "learner" submission directly out of answer.gaps (bank_id, or
+  // accept[0]), so re-executing it against the same key always scores 100 no
+  // matter what that gaps entry contains — it proves the key agrees with
+  // itself, never that it agrees with what the learner is actually shown. A
+  // key can be internally consistent and still be unanswerable: a gap number
+  // with no matching {{N}} marker in the payload's own text, or a bank_id that
+  // names a token absent from the payload's own bank. Both were verified
+  // `ok: true, keyVerified: true` before this check existed. This is a CONTENT
+  // check, independent of re-execution, because re-execution structurally
+  // cannot catch it.
+  if (segment.type === 'fill_blank') {
+    const payload = segment.payload as { text_md?: unknown; mode?: unknown; bank?: unknown };
+    const key = segment.answer as { gaps?: unknown } | undefined;
+    const gaps = Array.isArray(key?.gaps) ? (key.gaps as { gap?: unknown; bank_id?: unknown }[]) : [];
+    const text = typeof payload.text_md === 'string' ? payload.text_md : '';
+    const markers = new Set(
+      [...text.matchAll(/\{\{(\d+)\}\}/g)].map((m) => m[1]),
+    );
+    const bankIds = new Set(
+      Array.isArray(payload.bank)
+        ? (payload.bank as { id?: unknown }[])
+            .map((b) => (typeof b?.id === 'string' ? b.id : null))
+            .filter((id): id is string => id !== null)
+        : [],
+    );
+    for (const g of gaps) {
+      const gapNo = typeof g?.gap === 'number' ? String(g.gap) : null;
+      if (gapNo === null || !markers.has(gapNo)) {
+        failures.push(`gap ${String(g?.gap)} has no matching {{${String(g?.gap)}}} marker in the payload's own text`);
+        continue;
+      }
+      if (payload.mode === 'bank') {
+        if (typeof g.bank_id !== 'string' || !bankIds.has(g.bank_id)) {
+          failures.push(`gap ${gapNo}'s bank_id "${String(g.bank_id)}" is not offered in the payload's own bank`);
+        }
+      }
+    }
+  }
+
   // ── key re-execution ──
   const keyVerified = reExecuteKey(segment, failures);
 

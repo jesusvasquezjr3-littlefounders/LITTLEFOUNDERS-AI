@@ -726,6 +726,28 @@ means re-running the real graders, which live with the database.
 > deliberately omits the nickname: a generated exercise has no reason to
 > address the learner by name, and a nickname inside authored content would
 > outlive the session it was written in.
+>
+> **A third, found 2026-08-29 by an adversarial code review: `fill_blank`'s key
+> re-execution is SELF-referential.** `submissionFromKey` builds the "learner"
+> submission directly out of `answer.gaps` (its `bank_id`, or its
+> `accept[0]`), so re-running it against the same key always scores 100 no
+> matter what that gaps entry contains — it proves the key agrees with itself,
+> never that it agrees with what the learner is actually shown. A key can be
+> internally consistent and still be unanswerable: a gap number with no
+> matching `{{N}}` marker anywhere in the payload's own `text_md`, or a
+> `bank_id` naming a token absent from the payload's own `bank`. Both were
+> reported `ok: true, keyVerified: true` — fully verified and payable — before
+> a CONTENT check was added (`verifyGeneratedSegment`,
+> `backend/src/services/tutorLadder.ts`) that ties the key back to the payload
+> directly, because re-execution structurally cannot catch this class: it never
+> reads `text_md` or `bank` at all. **Root cause, also fixed:** the
+> generation prompt (`AUTHOR_SYSTEM`, `oracle/src/content/generate.ts`)
+> documented the payload/answer shape for only 4 of the 12 allowlisted types
+> (`quiz_mcq`, `number_input`, `true_false`, `order_steps`) — `fill_blank`'s
+> exact shape, including the `{{N}}` marker convention and the `typed`/`bank`
+> split, was never told to the model at all, which is exactly the condition
+> under which a model invents a shape and produces a self-consistent-but-wrong
+> key.
 
 **A generation that fails any guard produces nothing.** §1.14 applies directly:
 emit NOTHING rather than something generic, because a confident wrong

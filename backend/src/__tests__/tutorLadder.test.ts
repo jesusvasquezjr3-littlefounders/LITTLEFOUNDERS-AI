@@ -123,3 +123,72 @@ describe('tray verification through the real graders', () => {
     expect(result.ok).toBe(false);
   });
 });
+
+/*
+ * fill_blank's key re-execution is SELF-referential: submissionFromKey builds
+ * the "learner" submission directly out of answer.gaps, so re-running it
+ * against the same key always scores 100 no matter what that key contains —
+ * it proves the key agrees with itself, never that it agrees with what the
+ * learner is actually shown. These tests pin the CONTENT check that catches
+ * what re-execution structurally cannot: a gap with no matching {{N}} marker
+ * in the payload's own text, and a bank_id that names a token absent from the
+ * payload's own bank. Before this check existed, verifyGeneratedSegment
+ * returned `ok: true, keyVerified: true` for both.
+ */
+function fillBlankSegment(payload: Record<string, unknown>, gaps: Record<string, unknown>[]): SegmentBase {
+  return {
+    id: 'seg-fill-1',
+    type: 'fill_blank',
+    prompt_md: 'Fill in the blank.',
+    difficulty: 2,
+    xp: 10,
+    explanation_md: 'because math.',
+    payload,
+    answer: { gaps },
+  } as unknown as SegmentBase;
+}
+
+describe('fill_blank verification — tying the key back to its own payload', () => {
+  it('refuses a gap number with no matching {{N}} marker in text_md', () => {
+    const segment = fillBlankSegment({ text_md: 'The sky is blue and grass is green.', mode: 'typed' }, [
+      { gap: 1, accept: ['green'] },
+    ]);
+    const result = verifyGeneratedSegment(segment, 2);
+    expect(result.ok).toBe(false);
+    expect(result.failures.some((f) => f.includes('no matching {{1}} marker'))).toBe(true);
+  });
+
+  it('refuses a bank-mode bank_id that names a token absent from the payload\'s own bank', () => {
+    const segment = fillBlankSegment(
+      {
+        text_md: 'The sky is {{1}}.',
+        mode: 'bank',
+        bank: [{ id: 'red', text_md: 'red' }, { id: 'yellow', text_md: 'yellow' }],
+      },
+      [{ gap: 1, bank_id: 'blue' }],
+    );
+    const result = verifyGeneratedSegment(segment, 2);
+    expect(result.ok).toBe(false);
+    expect(result.failures.some((f) => f.includes('not offered in the payload'))).toBe(true);
+  });
+
+  it('passes a genuinely well-formed typed fill_blank', () => {
+    const segment = fillBlankSegment({ text_md: 'The sky is {{1}} and grass is {{2}}.', mode: 'typed' }, [
+      { gap: 1, accept: ['blue'] },
+      { gap: 2, accept: ['green'] },
+    ]);
+    const result = verifyGeneratedSegment(segment, 2);
+    expect(result.ok).toBe(true);
+    expect(result.keyVerified).toBe(true);
+  });
+
+  it('passes a genuinely well-formed bank fill_blank', () => {
+    const segment = fillBlankSegment(
+      { text_md: 'The sky is {{1}}.', mode: 'bank', bank: [{ id: 'blue', text_md: 'blue' }, { id: 'red', text_md: 'red' }] },
+      [{ gap: 1, bank_id: 'blue' }],
+    );
+    const result = verifyGeneratedSegment(segment, 2);
+    expect(result.ok).toBe(true);
+    expect(result.keyVerified).toBe(true);
+  });
+});
