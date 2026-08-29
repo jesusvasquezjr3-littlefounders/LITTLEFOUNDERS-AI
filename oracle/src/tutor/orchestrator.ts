@@ -24,7 +24,12 @@ import {
   type ChatMessage,
 } from '../model/provider.js';
 import { evaluateBudget, WRAP_UP_INSTRUCTION, type BudgetVerdict } from '../session/budget.js';
-import { buildContextMessage, tierVocabularyViolation, TUTOR_SYSTEM_PROMPT } from './prompt.js';
+import {
+  buildContextMessage,
+  promisesAnActivity,
+  tierVocabularyViolation,
+  TUTOR_SYSTEM_PROMPT,
+} from './prompt.js';
 import { parseTurn, type TutorTurn } from './turnSchema.js';
 import {
   closingResponse,
@@ -718,8 +723,8 @@ export class TutorOrchestrator {
      * money on a question nobody is waiting for any more.
      */
     let transportFailure: unknown = null;
-    /** Set when attempt 0 produced a valid turn the age band forbids. */
-    let tierCorrection: string | null = null;
+    /** Set when attempt 0 produced a valid turn we want re-authored, and why. */
+    let turnCorrection: string | null = null;
     try {
       for (let attempt = 0; attempt < 2 && turn === null; attempt += 1) {
         const messages: ChatMessage[] = [
@@ -732,8 +737,8 @@ export class TutorOrchestrator {
           messages.push({
             role: 'user' as const,
             content:
-              tierCorrection !== null
-                ? `Your previous reply used ${tierCorrection}, which this learner's age band must never hear. Say the same idea again for their age, using only whole numbers and things they can picture. Reply with ONLY the JSON object.`
+              turnCorrection !== null
+                ? `Your previous reply ${turnCorrection}. Reply again with ONLY the JSON object.`
                 : 'Your previous reply was not a valid JSON object in the required shape. Reply again with ONLY the JSON object.',
           });
         }
@@ -767,14 +772,32 @@ export class TutorOrchestrator {
                 ? `${parsed.turn.say} ${parsed.turn.segmentRequest.framing}`
                 : parsed.turn.say;
             const violation = tierVocabularyViolation(visible, this.session.tier);
+            /*
+             * PROSE AND INTENT MUST AGREE. `turnSchema` already refuses
+             * `next: "segment"` with no `segmentRequest`, so the structured
+             * side cannot lie — but the model may announce an activity in
+             * `say` while setting `next: "ask"`, and the learner is then
+             * promised something nothing will deliver. Two of the owner's
+             * sessions end that way. It is repaired like a shape failure: ask
+             * again, and say which half to change.
+             */
+            const brokenPromise =
+              parsed.turn.next !== 'segment' && promisesAnActivity(parsed.turn.say);
             if (violation !== null && attempt === 0) {
-              tierCorrection = violation;
+              turnCorrection = `used ${violation}, which this learner's age band must never hear. Say the same idea again for their age, using only whole numbers and things they can picture`;
               console.warn(`[oracle] tier ${this.session.tier} vocabulary slip (${violation}) — asking again`);
+            } else if (brokenPromise && attempt === 0) {
+              turnCorrection =
+                'told the learner an activity was coming but did not request one. Either set "next":"segment" with a segmentRequest, or say something that does not promise anything on screen';
+              console.warn('[oracle] turn promised an activity without requesting one — asking again');
             } else {
               if (violation !== null) {
                 console.warn(
                   `[oracle] tier ${this.session.tier} vocabulary slip (${violation}) SURVIVED the retry — delivered`,
                 );
+              }
+              if (brokenPromise) {
+                console.warn('[oracle] unkept activity promise SURVIVED the retry — delivered');
               }
               turn = parsed.turn;
             }

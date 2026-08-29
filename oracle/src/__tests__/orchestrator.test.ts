@@ -590,3 +590,61 @@ describe('the age band is checked, not merely requested', () => {
     expect(outcome.emission.turn.say).toBe('Ganas 10% cada año.');
   });
 });
+
+describe('the tutor cannot promise an activity it did not request', () => {
+  /*
+   * `turnSchema` already refuses `next: "segment"` with no `segmentRequest`,
+   * so the STRUCTURED side cannot lie. The prose can, and did: two of the
+   * owner's sessions end with the tutor announcing something on screen and
+   * then delivering nothing — one promised a story and a magic-cactus game
+   * before closing, another promised coins on screen and produced an
+   * adaptation prompt. To a child that is not a missing feature, it is being
+   * lied to.
+   */
+  it('asks again when the words announce an activity and the turn requests none', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({ ...GOOD_TURN, say: 'Vamos a practicar con monedas en la pantalla.', next: 'ask' }),
+      )
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: '¿Cuánto te sobra de 50?', next: 'ask' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = await orchestrator.handleLearnerText('otra vez', Date.now());
+
+    expect(outcome.emission.turn.say).toBe('¿Cuánto te sobra de 50?');
+    const retry = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(retry).toContain('did not request one');
+  });
+
+  it('leaves the promise alone when the turn actually requests the activity', async () => {
+    const keeping = {
+      ...GOOD_TURN,
+      say: 'Vamos a practicar con monedas en la pantalla.',
+      next: 'segment',
+      segmentRequest: { skillKey: 'financial-education/cobrar-y-dar-cambio', difficulty: 2, framing: 'Junta el cambio exacto.', rationale: 'practice making change' },
+    };
+    fetchMock.mockResolvedValueOnce(modelReplies(keeping)).mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = await orchestrator.handleLearnerText('otra vez', Date.now());
+
+    // One model call: a kept promise is not a defect.
+    expect(outcome.emission.turn.say).toBe(keeping.say);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not fire on ordinary conversation', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Vamos a ver qué piensas de esto.', next: 'ask' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = await orchestrator.handleLearnerText('ok', Date.now());
+
+    // "vamos a ver" is talking, not announcing a screen. A detector that fires
+    // here would retry half the turns in the session for nothing.
+    expect(outcome.emission.turn.say).toBe('Vamos a ver qué piensas de esto.');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+});
