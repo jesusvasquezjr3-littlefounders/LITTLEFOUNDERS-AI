@@ -67,7 +67,26 @@ interface Scenario {
   name: string;
   session: SessionContext;
   script: string[];
+  /**
+   * Whether this learner passes the activities they are given. Defaults to
+   * true; the scenario built around a learner who fails sets it false, which it
+   * could not do while the result was hardcoded.
+   */
+  passesActivities?: boolean;
 }
+
+/*
+ * The activities the ladder would actually serve, varied by type and by what
+ * they ask. Real content is not one prompt repeated: Core excludes every
+ * segment a session has already served, so a learner meets a new one each time.
+ */
+const ACTIVITIES: { type: string; prompt: string }[] = [
+  { type: 'coin_count', prompt: 'Junta monedas del cofre para pagar exactamente ese monto.' },
+  { type: 'sort_buckets', prompt: 'Arrastra cada cosa a la cubeta que le toca: lo que necesito y lo que quiero.' },
+  { type: 'order_steps', prompt: 'Pon en orden los pasos para ahorrar para algo que cuesta mucho.' },
+  { type: 'memory_flip', prompt: 'Encuentra los pares: cada moneda con su valor escrito.' },
+  { type: 'make_change', prompt: 'El cliente pagó de más. Elige el cambio exacto que le devuelves.' },
+];
 
 const SCENARIOS: Scenario[] = [
   {
@@ -128,6 +147,9 @@ const SCENARIOS: Scenario[] = [
      * identical explanations of compound interest is what the owner saw.
      */
     name: 'a learner who keeps failing',
+    // Their whole job is to fail; passing every activity made this scenario a
+    // duplicate of the others while claiming to cover the opposite.
+    passesActivities: false,
     session: { ...SESSION, nickname: 'Robi' },
     script: [
       'cuanto es 10 mas 5?',
@@ -244,7 +266,7 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
   // one act that does the teaching.
   for (let i = 1; i < beats.length; i += 1) {
     const asked = beats[i - 1]!.tutor;
-    const numbersAsked = asked.match(/\d+/g) ?? [];
+    const numbersAsked: string[] = asked.match(/\d+/g) ?? [];
     const isQuestion = asked.includes('?');
     const learnerAnswered = flatten(beats[i]!.learner).length > 0;
     if (!isQuestion || !learnerAnswered) continue;
@@ -253,7 +275,7 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
     // asking for it, in a turn that also praises — that is answering itself.
     const said = beats[i]!.tutor;
     const praises = /excelente|exacto|muy bien|correcto/i.test(said);
-    const learnerNumbers = beats[i]!.learner.match(/\d+/g) ?? [];
+    const learnerNumbers: string[] = beats[i]!.learner.match(/\d+/g) ?? [];
     const newNumber = (said.match(/\d+/g) ?? []).find(
       (n) => !learnerNumbers.includes(n) && !numbersAsked.includes(n),
     );
@@ -473,6 +495,8 @@ async function main(): Promise<void> {
   let spent = 0;
   const allBeats: Beat[] = [];
   for (const scenario of SCENARIOS) {
+    // Per conversation, so each one walks the catalogue from the start.
+    let activityIndex = 0;
     console.log('');
     console.log(
       `== ${scenario.name} (${config.MODEL_NAME}, tier ${scenario.session.tier}, ${scenario.session.locale}) ==`,
@@ -527,15 +551,44 @@ async function main(): Promise<void> {
        */
       if (turn.segmentRequest != null) {
         const served = `seg-${beats.length}`;
-        orchestrator.noteSegmentServed(
+        /*
+         * A DIFFERENT ACTIVITY EACH TIME, because that is what the product does.
+         * Core excludes segments a session has already served, so a real learner
+         * never sees the same one twice — but this harness handed the
+         * orchestrator ONE hardcoded `coin_count` prompt on every request. The
+         * tutor then reacted identically to what it had been told was an
+         * identical activity, four times in one conversation, and the run
+         * reported that repetition as a product defect. It was correct behaviour
+         * on input the product would never produce.
+         */
+        const activity = ACTIVITIES[activityIndex % ACTIVITIES.length]!;
+        activityIndex += 1;
+        orchestrator.noteSegmentServed(served, turn.segmentRequest.skillKey, activity.type, activity.prompt);
+        /*
+         * THE SCENARIO DECIDES WHETHER IT WAS PASSED.
+         *
+         * This call was `handleSegmentResult(served, 100, Date.now())` against a
+         * four-parameter signature: `correct` received a timestamp — truthy, so
+         * EVERY activity passed, including in the scenario whose entire job is a
+         * learner who fails — and `nowMs` received `undefined`, feeding NaN into
+         * every time-based guardrail in the controller. Three cycles of
+         * conversation evidence were read through that, and no type-check
+         * covered this directory to say so.
+         */
+        const passed = scenario.passesActivities !== false;
+        const reaction = await orchestrator.handleSegmentResult(
           served,
-          turn.segmentRequest.skillKey,
-          'coin_count',
-          'Junta monedas del cofre para pagar exactamente ese monto.',
+          passed ? 100 : 40,
+          passed,
+          Date.now(),
+          undefined,
+          { misconceptionCode: passed ? null : 'adds-instead-of-counts-up', attemptNumber: 1 },
         );
-        const reaction = await orchestrator.handleSegmentResult(served, 100, Date.now());
         if (reaction !== null) {
-          console.log(`  [activity] ${turn.segmentRequest.skillKey} — served and answered correctly`);
+          console.log(
+            `  [activity] ${turn.segmentRequest.skillKey} (${activity.type}) — ` +
+              `served and answered ${passed ? 'correctly' : 'INCORRECTLY'}`,
+          );
           console.log(`  tutor    ${reaction.emission.turn.say}`);
           beats.push({
             learner: '(completed the activity)',

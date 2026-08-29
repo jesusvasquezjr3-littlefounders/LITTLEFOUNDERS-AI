@@ -1,0 +1,40 @@
+{
+  /*
+   * THE OPERATOR SCRIPTS ARE CODE, AND THEY WERE NEVER CHECKED.
+   *
+   * `tsconfig.json` says `"include": ["src"]`, so every script in `scripts/`
+   * compiled only inside tsx at runtime — no type-check, ever. These are the
+   * instruments the product is JUDGED with: converse, the probes, the
+   * verifiers. An unchecked instrument reports on the product with the same
+   * confidence as a checked one.
+   *
+   * It cost exactly what that costs. `converse.ts` called
+   * `handleSegmentResult(served, 100, Date.now())` against a four-parameter
+   * signature, so `correct` received a timestamp — truthy, so every activity
+   * counted as passed, including in the scenario whose entire job is a learner
+   * who fails — and `nowMs` received `undefined`, which fed NaN into every
+   * time-based guardrail in the controller. Three cycles of conversation
+   * evidence were read through that.
+   *
+   * `"exclude": []` is deliberate and is the §5 lesson written down: `extends`
+   * inherits the parent's exclusion, and a config written to check something
+   * that inherits an exclusion of it passes everything.
+   */
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "."
+  },
+  "include": ["scripts", "src"],
+  /*
+   * SCOPED TO THE SCRIPTS, AND SAYING SO.
+   *
+   * This config's job is `scripts/`. Oracle's TEST tree turns out to be
+   * unchecked too — `tsconfig.json` excludes it and nothing else picks it up,
+   * which is the §5 defect the backend already carries a rule about. That is a
+   * real gap and it is being recorded rather than quietly swept in here:
+   * fixing it is dozens of assertion-narrowing edits and belongs to its own
+   * change, not to a config added to check something else.
+   */
+  "exclude": ["src/__tests__"]
+}
