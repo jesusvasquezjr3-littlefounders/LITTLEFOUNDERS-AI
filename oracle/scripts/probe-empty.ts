@@ -57,12 +57,53 @@ interface Condition {
   name: string;
   temperature: number;
   correction: boolean;
+  /** How many prior turns to put in the context. */
+  historyTurns: number;
 }
 
+/*
+ * THE HYPOTHESIS UNDER TEST, and it came from the failure of the last one.
+ *
+ * A first version of this probe held a THREE-turn history still and produced
+ * ZERO whitespace completions in 24 calls — while real conversations were
+ * producing 18 to 40. So they are not random, and the correction message is not
+ * the variable.
+ *
+ * The logs say what is: every empty carried `prompt_tokens` above 2100, and the
+ * number climbed with the conversation — 2195, 2389, 2672, 2810, 3030, 3182.
+ * The suspect is the CONTEXT LENGTH, which means the conversation history added
+ * this morning, without which the tutor greeted a child nine times in eleven
+ * lines. If that is the cause, the fix is a window, not a parameter.
+ */
 const CONDITIONS: Condition[] = [
-  { name: 'as production runs today', temperature: 0.6, correction: false },
-  { name: 'with the retry correction on the FIRST call', temperature: 0.6, correction: true },
+  { name: 'short history (3 turns)', temperature: 0.6, correction: false, historyTurns: 3 },
+  { name: 'medium history (10 turns)', temperature: 0.6, correction: false, historyTurns: 10 },
+  { name: 'full window (20 turns)', temperature: 0.6, correction: false, historyTurns: 20 },
+  { name: 'full window + the retry correction', temperature: 0.6, correction: true, historyTurns: 20 },
 ];
+
+/** A plausible lesson, long enough to fill the window. */
+function historyOf(turns: number): TutorContext['turnHistory'] {
+  const beats: TutorContext['turnHistory'] = [];
+  const questions = [
+    '¿qué es el interés compuesto?',
+    'si algo cuesta 25 y pago con 50 el cambio son 35 verdad?',
+    'no entendí',
+    'y si cuesta 30?',
+    'ya entendí, dame otro',
+  ];
+  for (let i = 0; beats.length < turns; i += 1) {
+    beats.push({ speaker: 'learner', text: questions[i % questions.length]! });
+    if (beats.length >= turns) break;
+    beats.push({
+      speaker: 'tutor',
+      text:
+        'Imagina que guardas 100 pesos y cada año ganas 10. Al siguiente año el interés se calcula ' +
+        'sobre 110, no sobre 100. Así crece más rápido. ¿Qué crees que pasa después de varios años?',
+    });
+  }
+  return beats.slice(0, turns);
+}
 
 /** How many calls per condition. Small enough to be cheap, large enough to see a difference. */
 const N = 12;
@@ -75,9 +116,10 @@ interface Outcome {
 
 async function once(condition: Condition, context: TutorContext): Promise<Outcome | null> {
   const config = getConfig();
+  void context;
   const messages = [
     { role: 'system', content: TUTOR_SYSTEM_PROMPT },
-    { role: 'user', content: buildContextMessage(context) },
+    { role: 'user', content: buildContextMessage(sealContext({ ...CONTEXT, turnHistory: historyOf(condition.historyTurns) })) },
     { role: 'user', content: 'no entendí, explícamelo otra vez' },
     ...(condition.correction ? [{ role: 'user', content: CORRECTION }] : []),
   ];
@@ -147,26 +189,28 @@ async function main(): Promise<void> {
   }
 
   console.log('');
-  const [baseline, treatment] = results;
-  if (!baseline || !treatment || baseline.usable === 0 || treatment.usable === 0) {
+  /*
+   * Twelve calls per condition cannot separate small differences, and saying so
+   * is the point — the last change was shipped on a difference this instrument
+   * could not have measured.
+   */
+  const rates = results
+    .filter((r) => r.usable > 0)
+    .map((r) => ({ name: r.condition.name, rate: r.empties / r.usable }));
+  if (rates.length < 2) {
     console.log('  not enough usable calls to compare.');
     process.exit(1);
   }
-  const before = baseline.empties / baseline.usable;
-  const after = treatment.empties / treatment.usable;
-  console.log(`  baseline ${Math.round(before * 100)}%  →  treatment ${Math.round(after * 100)}%`);
-  /*
-   * Twelve calls per condition cannot separate small differences, and saying
-   * so is the point — the last change was shipped on a difference this
-   * instrument could not have measured.
-   */
-  if (Math.abs(after - before) < 0.2) {
-    console.log('  Difference is within what 12 calls can distinguish. Not a result.');
-  } else if (after < before) {
-    console.log('  The correction message REDUCES whitespace completions. Worth adopting.');
-  } else {
-    console.log('  The correction message makes it WORSE. Do not adopt.');
+  const lowest = rates.reduce((a, b) => (b.rate < a.rate ? b : a));
+  const highest = rates.reduce((a, b) => (b.rate > a.rate ? b : a));
+  if (highest.rate - lowest.rate < 0.2) {
+    console.log('  All conditions within what 12 calls can distinguish. Not a result.');
+    return;
   }
+  console.log(
+    `  Lowest: ${lowest.name} (${Math.round(lowest.rate * 100)}%). ` +
+      `Highest: ${highest.name} (${Math.round(highest.rate * 100)}%).`,
+  );
 }
 
 await main();
