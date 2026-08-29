@@ -565,9 +565,8 @@ async function main(): Promise<void> {
       if (turn.whiteboard) {
         const board = turn.whiteboard;
         const values = computeSequence(board);
-        console.log(
-          `           [whiteboard "${board.label}" — ${board.start} → ${(values ?? []).join(' → ')}]`,
-        );
+        // `values[0]` IS `start` — printing both would double it.
+        console.log(`           [whiteboard "${board.label}" — ${(values ?? []).join(' → ')}]`);
       }
       beats.push({
         learner: line,
@@ -677,7 +676,7 @@ async function main(): Promise<void> {
     );
   } else {
     for (const b of boards) {
-      console.log(`  whiteboard: "${b.whiteboard!.label}" — ${b.whiteboard!.start} → ${b.whiteboard!.values.join(' → ')}`);
+      console.log(`  whiteboard: "${b.whiteboard!.label}" — ${b.whiteboard!.values.join(' → ')}`);
     }
   }
 
