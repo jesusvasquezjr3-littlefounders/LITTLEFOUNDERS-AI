@@ -196,6 +196,7 @@ async function auditContentBridge(seed: z.infer<typeof SeedSchema>): Promise<voi
   }
 
   if (broken.length > 0) {
+    await suggestAlternatives(new Set(mapped.map((k) => k.skill_key as string)));
     throw new Error(
       `${broken.length} of ${mapped.length} content bridges do not carry traffic:\n  ${broken.join('\n  ')}`,
     );
@@ -207,3 +208,52 @@ main().catch((err) => {
   console.error(`seed:kc FAILED: ${err instanceof Error ? err.message : String(err)}`);
   process.exitCode = 1;
 });
+
+/**
+ * WHAT TO REPOINT A BROKEN BRIDGE AT.
+ *
+ * Without this the operator is guessing: the curriculum YAML in the repo lists
+ * every topic an author ever wrote, but the 2026-08-21 prune archived 771
+ * lessons, so a slug can be perfectly real, perfectly published, and hold
+ * nothing. Two mappings in the first run of this audit were exactly that, and
+ * finding replacements by editing the seed and re-running is a two-minute
+ * round trip per guess.
+ *
+ * So on failure the tool prints GROUND TRUTH instead: topics that actually
+ * have published lessons right now, ranked by how many, minus the ones already
+ * spoken for. Counting from the lessons side is what makes it one pair of
+ * queries rather than one per topic — 328 round trips would be its own reason
+ * not to run it.
+ *
+ * This is a hint, never an answer: it cannot know which topic TEACHES the
+ * knowledge component. The audit above is still the thing that decides, and it
+ * re-checks whatever is chosen through the same `resolveSkill` path the tutor
+ * uses at runtime.
+ */
+async function suggestAlternatives(alreadyMapped: Set<string>): Promise<void> {
+  const lessons = await serviceRest<{ topic_id: string }[]>(
+    '/lessons?status=eq.published&select=topic_id&limit=5000',
+  );
+  if (!lessons || lessons.length === 0) {
+    console.log('\n(no published lessons found, so no alternatives to suggest)');
+    return;
+  }
+
+  const perTopic = new Map<string, number>();
+  for (const l of lessons) perTopic.set(l.topic_id, (perTopic.get(l.topic_id) ?? 0) + 1);
+
+  const ids = [...perTopic.keys()];
+  const topics = await serviceRest<{ id: string; slug: string }[]>(
+    `/topics?id=in.(${ids.join(',')})&status=eq.published&select=id,slug`,
+  );
+  if (!topics) return;
+
+  const free = topics
+    .filter((t) => !alreadyMapped.has(`financial-education/${t.slug}`))
+    .map((t) => ({ slug: t.slug, count: perTopic.get(t.id) ?? 0 }))
+    .sort((a, b) => b.count - a.count);
+
+  console.log(`\nTopics WITH published lessons and not already mapped (${free.length}):`);
+  for (const t of free.slice(0, 40)) console.log(`  ${String(t.count).padStart(3)}  ${t.slug}`);
+  if (free.length > 40) console.log(`  … and ${free.length - 40} more`);
+}
