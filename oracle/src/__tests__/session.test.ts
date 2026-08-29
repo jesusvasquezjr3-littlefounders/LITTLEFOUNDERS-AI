@@ -157,11 +157,31 @@ describe('the closed turn schema', () => {
   });
 
   it('reports WHY an invalid turn was discarded', () => {
-    const parsed = parseTurn(JSON.stringify({ ...valid, emotion: 'furious' }));
+    // `say` is what the child hears; a wrong one is a real defect and the turn
+    // goes. (`emotion` and `action` no longer do — see below.)
+    const parsed = parseTurn(JSON.stringify({ ...valid, say: 42 }));
     expect(parsed.ok).toBe(false);
     if (!parsed.ok) {
       expect(parsed.reason).toBe('invalid_shape');
-      expect(parsed.detail).toContain('emotion');
+      expect(parsed.detail).toContain('say');
+    }
+  });
+
+  it('keeps the lesson when only the GESTURE is out of vocabulary', () => {
+    /*
+     * A model chose an action outside the enum twice in a row on 2026-08-29;
+     * both attempts were discarded and a child got "Se me enredaron las ideas"
+     * instead of a lesson, because the character would have waved instead of
+     * nodded. `emotion` and `action` are animation, and a wrong one is a
+     * neutral face — not a reason to throw away the teaching.
+     */
+    const parsed = parseTurn(JSON.stringify({ ...valid, emotion: 'furious', action: 'backflip' }));
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.turn.emotion).toBe('neutral');
+      expect(parsed.turn.action).toBe('idle');
+      // The words are untouched, which is the only part that had to survive.
+      expect(parsed.turn.say).toBe(valid.say);
     }
   });
 

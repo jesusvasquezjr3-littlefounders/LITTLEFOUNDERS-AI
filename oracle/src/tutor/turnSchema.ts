@@ -181,6 +181,32 @@ export function parseTurn(raw: string): TurnParse {
     };
   }
 
+  /*
+   * A GESTURE IS NOT WORTH A LESSON.
+   *
+   * `emotion` and `action` are closed vocabularies because the client animates
+   * them, and a value outside the list would animate nothing. But discarding
+   * the WHOLE turn for one is absurd: on 2026-08-29 a model chose an action
+   * outside the enum twice in a row, both attempts were thrown away, and a
+   * child got "Se me enredaron las ideas" instead of a lesson — because the
+   * character would have waved instead of nodded.
+   *
+   * So these two, and ONLY these two, are coerced to a safe default before
+   * validation. Everything else stays strict, which is the point of the
+   * schema: `say` is what the child hears, `next` and `segmentRequest` drive
+   * what happens, and a wrong value in any of them is a real defect. A wrong
+   * gesture is a neutral face.
+   */
+  if (typeof value === 'object' && value !== null) {
+    const shaped = value as Record<string, unknown>;
+    if (typeof shaped.emotion === 'string' && !EMOTIONS.includes(shaped.emotion as never)) {
+      shaped.emotion = 'neutral';
+    }
+    if (typeof shaped.action === 'string' && !ACTIONS.includes(shaped.action as never)) {
+      shaped.action = 'idle';
+    }
+  }
+
   const parsed = TutorTurnSchema.safeParse(value);
   if (!parsed.success) {
     return {
