@@ -14,6 +14,7 @@ import {
   type SessionContext,
 } from '../core/client.js';
 import { verifyGradeEcho } from '../session/gradeEcho.js';
+import { runPostSessionReview } from '../session/review.js';
 import { getVoiceProvider } from '../voice/index.js';
 import { newSpeechScope, speakLine, type SpeechScope } from '../voice/speech.js';
 import { generateSegment } from '../content/generate.js';
@@ -1154,6 +1155,21 @@ async function finish(
     segmentCount: live.orchestrator.servedSegments,
     costUsd: live.orchestrator.totalCostUsd,
   });
+
+  /*
+   * V4: THE SLOW CHAMBER WAKES UP AS THE FAST ONE GOES TO SLEEP.
+   *
+   * Fire-and-forget on purpose: the learner's socket must close now, and the
+   * review is between-sessions work by definition. It reads the conversation
+   * that just ended and rewrites the two curated memory stores — which is
+   * what makes the NEXT session start where a human tutor would start.
+   */
+  void runPostSessionReview({
+    session: live.session,
+    history: live.orchestrator.resumeSnapshot.turns,
+  }).catch((error) =>
+    console.warn('[oracle] post-session review crashed:', error instanceof Error ? error.message : error),
+  );
 
   send(live.socket, { type: 'closed', reason });
   live.socket.close(reason === 'completed' ? CLOSE_CODES.NORMAL : CLOSE_CODES.BUDGET_EXHAUSTED, reason);

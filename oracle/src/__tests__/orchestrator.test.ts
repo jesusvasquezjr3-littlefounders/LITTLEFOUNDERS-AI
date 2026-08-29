@@ -385,6 +385,45 @@ describe('when the model misbehaves', () => {
   });
 });
 
+describe('episodic recall (V4)', () => {
+  it('quotes the learner\'s own past when they ask "¿te acuerdas…?"', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    // Call 1: Core's /internal/recall. Calls 2-3: model + judge.
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          data: {
+            excerpts: [
+              { speaker: 'tutor', turnText: 'El de repartir 12 galletas entre 4 amigos.', saidAt: '2026-08-15T10:00:00Z' },
+            ],
+          },
+          error: null,
+        }),
+        { status: 200 },
+      ),
+    );
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+
+    await orchestrator.handleLearnerText('¿te acuerdas del problema de las galletas?', Date.now());
+
+    const recallUrl = String(fetchMock.mock.calls[0]?.[0] ?? '');
+    expect(recallUrl).toContain('/tutor/internal/recall');
+    expect(recallUrl).toContain('galletas');
+    // The verbatim excerpt reached the model, labelled as history.
+    const modelBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(modelBody).toContain('VERBATIM excerpts');
+    expect(modelBody).toContain('repartir 12 galletas');
+  });
+
+  it('an ordinary turn never pays the recall round trip', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('quiero aprender a ahorrar', Date.now());
+    const first = String(fetchMock.mock.calls[0]?.[0] ?? '');
+    expect(first).not.toContain('/recall');
+  });
+});
+
 describe('the budget', () => {
   it('ends the session once past the hard budget, with a real farewell', async () => {
     const startedLongAgo = Date.now() - 60 * 60 * 1000;

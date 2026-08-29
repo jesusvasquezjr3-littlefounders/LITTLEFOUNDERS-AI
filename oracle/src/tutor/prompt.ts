@@ -598,6 +598,28 @@ export function buildContextMessage(context: TutorContext): string {
    * sign-off 2026-08-28). Enough for continuity ("last time we worked on…");
    * nothing anyone said, ever.
    */
+  /*
+   * V4: THE LEARNER BRIEF — the best token-for-token upgrade in the system.
+   *
+   * ~500 tokens of curated, hard-capped prose written by the post-session
+   * review: who this child is, and what teaching actually works with them.
+   * "Sofía necesita ver antes de oír" transforms every turn it is present
+   * for. Framed explicitly as NOTES FROM PAST SESSIONS, never as the
+   * learner's words: the stores are written by our own reviewer from
+   * transcripts, but text derived from a child's speech must still never be
+   * read as instructions — so it renders as the tutor's own memory, with the
+   * system prompt's instruction hierarchy above it.
+   */
+  if (context.learnerBrief !== null) {
+    const brief = context.learnerBrief;
+    if (brief.learner !== null) {
+      lines.push('', 'Your own notes on who this learner is (from past sessions):', `  ${brief.learner.replace(/\n/g, '\n  ')}`);
+    }
+    if (brief.pedagogy !== null) {
+      lines.push('', 'Your own notes on what teaching works with them:', `  ${brief.pedagogy.replace(/\n/g, '\n  ')}`);
+    }
+  }
+
   if (context.previousSessions.length > 0) {
     lines.push('', 'Their previous conversations with you (digests only — you do not remember the words):');
     for (const prior of context.previousSessions) {

@@ -52,6 +52,7 @@ const SPELLINGS: Record<string, readonly string[]> = {
   previousSessions: ['`previousSessions`', 'Previous-session digests'],
   pedagogy: ['`pedagogy`', 'Pedagogy state'],
   openActivity: ['`openActivity`', 'Open activity'],
+  learnerBrief: ['`learnerBrief`', 'Learner brief'],
 };
 
 const schemaKeys = Object.keys(TutorContextSchema.shape).sort();
@@ -79,7 +80,7 @@ describe('the privacy contract documents enumerate exactly what the schema permi
     });
   }
 
-  it('is thirteen fields, and a change to that number is a decision', () => {
+  it('is fourteen fields, and a change to that number is a decision', () => {
     /*
      * Deliberately a hard-coded number. Widening what reaches a third-party
      * model about a child is exactly the change that should not pass quietly:
@@ -99,12 +100,20 @@ describe('the privacy contract documents enumerate exactly what the schema permi
      * catalogued misconception hint whose detection is arithmetic, never a
      * learner's words). §4.1 row, legal §2.2 item 12, and this list, in one
      * commit.
+     *
+     * Went 13 → 14 on 2026-08-29 (owner decision, V4): `learnerBrief` — the
+     * two curated memory stores, hard-capped by the database (1,400/2,200
+     * chars), every write ledgered append-only, guardian-readable by RLS.
+     * The FIRST field derived from the child's own speech that reaches the
+     * model as prose; the compensating controls and the blocking parental
+     * approval gate are §4.1's row and legal §2.2 item 14.
      */
     expect(schemaKeys).toEqual([
       'adaptations',
       'character',
       'courseContext',
       'intent',
+      'learnerBrief',
       'locale',
       'nickname',
       'openActivity',

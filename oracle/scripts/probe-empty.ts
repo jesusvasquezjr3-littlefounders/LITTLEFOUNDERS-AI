@@ -48,6 +48,7 @@ const CONTEXT: TutorContext = {
   previousSessions: [],
   pedagogy: null,
   openActivity: null,
+  learnerBrief: null,
 };
 
 /** The correction the RETRY appends today, and the variable under test. */

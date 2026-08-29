@@ -390,6 +390,7 @@ This is the section to read before changing any prompt.
 | `previousSessions` | up to three PRIOR sessions as strict digests: catalog topic title, ≤5 skill keys, a closed outcome (`completed \| left \| stopped`), two bounded counters, and a day count. **Never a transcript, never a learner's words** (`PreviousSessionSchema`) | Continuity — "last time we worked on…". This is the one deliberate exception to `turnHistory`'s this-session-only rule, and its shape is what keeps it narrow: nothing in a digest can reconstruct a sentence anyone said. Digests are computed deterministically by Core at close (never by a model), stored on the session row, and swept with it at 90 days. **Added 2026-08-28, owner sign-off.** |
 | `pedagogy` | the v3 controller's state for this turn (`PedagogyStateSchema`): a closed strategy enum (12 values), a 0-3 scaffolding level, a closed mode enum, one objective sentence from OUR kc catalog (`kc.objective`, migration 0052, localized), and at most one `misconceptionHint` — OUR catalogued remediation wording (`misconception.remediation_hint`), selected because arithmetic against the item's own numbers matched a known wrong-idea pattern. **Never learner text**: the detection is numeric, and what travels is our authored description of the wrong idea, not anything the learner said or answered | How this turn should be taught. The controller (`oracle/src/tutor/controller.ts`) decides the strategy from mastery bands and graded events; the model only performs it. Same privacy class as `planState` — state the server computed about its own teaching, over catalog text. Null while the v3 brain is dormant, which renders exactly the pre-v3 context. **Added 2026-08-28, owner sign-off (Tutor v3).** |
 | `openActivity` | the activity ON THE LEARNER'S SCREEN right now, as two fields: the engine's segment `type` (a closed vocabulary, e.g. `coin_count`) and the authored `prompt` already displayed, truncated to 400 characters. **Our own catalog text, never the learner's** — nothing they typed, answered, tapped or scored travels here, and the field is null between activities | So the tutor stops narrating an activity it has never read. It asks the ladder for a SKILL and the LADDER picks the segment, so before this the tutor improvised: on 2026-08-29 it framed a task as "you be the cashier, choose the change", the catalog served "the compass costs $12, make exactly that amount", and on success it congratulated the learner for change they never gave. Same privacy class as `courseContext` — published text we wrote. **Added 2026-08-29.** |
+| `learnerBrief` | the V4 curated memory: two prose stores, `learner` (max 1,400 chars — who this child is: interests, motivation, what to avoid) and `pedagogy` (max 2,200 chars — what teaching works with them), written ONLY by our post-session review from this learner's own transcripts, hard-capped by the database, every write ledgered append-only, and readable by a verified guardian via RLS from day one. **Derived from the child's own past speech** — which is why it renders as the tutor's OWN notes under the system prompt's instruction hierarchy, never as the learner's words; the review's prompt forbids surnames and locations (§1.9), and the parental approval gate is a documented blocker before family rollout (§20.4) | This is the harness blueprint's best token-for-token upgrade: ~500 tokens of "Sofía necesita ver antes de oír" transform every turn of a session. Supersedes 0051's no-transcript-prose rule for exactly these two bounded fields, by owner decision 2026-08-29, with the ledger and guardian RLS as compensating controls. **Added 2026-08-29.** |
 
 > **This table was incomplete for two days, which is the one defect a privacy
 > contract cannot afford.** It listed eight fields and called itself complete;
@@ -1882,10 +1883,36 @@ per session. The soft-close line no longer promises "one last part" that never
 existed; changed scripted text orphans its pregenerated clips deliberately —
 first delivery per slot synthesizes fresh into the shared speech cache.
 
-### 20.4 Planned in this program (not yet shipped)
+### 20.4 Learner memory, dossier and episodic recall (SHIPPED)
 
-Learner memory stores (`LEARNER`/`PEDAGOGY`, hard char limits, append-only
-ledger, auto-write per owner decision 2026-08-29 with the parental approval
-gate documented as BLOCKING before rollout to real families), the session
-dossier injection, and episodic recall over the persisted transcripts. Each
-lands with its own §4.1 and legal-review update in the same commit.
+Migration `0053`: two curated prose stores per learner (`learner` 1,400 chars,
+`pedagogy` 2,200 — the hard limit IS the curation: the writer must consolidate,
+not grow), an append-only write ledger (no UPDATE/DELETE policy; not FK'd to
+sessions, which purge at 90 days while the audit must not), and transcript FTS
+(generated tsvector + GIN + a SECURITY DEFINER RPC scoped to one user).
+
+**The post-session review** (`oracle/src/session/review.ts`) runs
+fire-and-forget after `finish()`: one cheap model call reads the conversation
+plus the existing stores and proposes complete replacements that fit the caps.
+It refuses sessions with fewer than two learner turns, drops malformed shapes,
+and drops WHOLE any proposal carrying identifier-shaped tokens (§1.9 re-check
+after the prompt's own prohibition). Core validates limits and writes store +
+ledger via `PUT /internal/learner-memory`.
+
+**The dossier**: Core's session context now carries `learnerBrief`; Oracle
+seals it as the fourteenth context field (§4.1 row, legal §2.2 item 14) and
+renders it as the tutor's OWN notes — never as the learner's words — under the
+system prompt's instruction hierarchy. Immutable during a session, so the
+prompt prefix stays cacheable.
+
+**Episodic recall** ("¿te acuerdas de…?"): a closed phrase list triggers a
+~20 ms indexed query over the learner's own past transcripts; up to three
+VERBATIM excerpts are injected labelled as history, so the tutor quotes what
+actually happened instead of inventing a plausible past. Ordinary turns never
+pay the round trip; failure degrades to the turn we had before. Inherits the
+90-day transcript retention window by design.
+
+**Parental approval gate (BLOCKING before family rollout):** auto-write is the
+owner-accepted interim while the platform's only active learner is the owner.
+Before real families: LEARNER-store writes require guardian approval from the
+portal, which reads the same ledger.

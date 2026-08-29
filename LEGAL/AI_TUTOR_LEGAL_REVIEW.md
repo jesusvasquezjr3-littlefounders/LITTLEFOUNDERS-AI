@@ -121,6 +121,24 @@ constraint.
     narration could describe a different task from the one on screen. It adds
     no learner-derived data of any kind.
 
+14. **Learner brief** (`learnerBrief`) — **added 2026-08-29 (V4).** Two short
+    prose notes about the learner, written by our own automated post-session
+    review from the learner's past conversations with the tutor: who they are
+    as a learner (interests, motivation, what to avoid — max 1,400
+    characters) and what teaching approaches work with them (max 2,200
+    characters). **This is the first field derived from the child's own
+    speech that reaches the model as prose**, and it is bounded by four
+    controls: the database refuses content over the caps; every write is
+    recorded in an append-only ledger with content hashes, actor and source
+    session; a verified guardian can read both stores and the ledger through
+    row-level security from the day the feature exists; and the review that
+    writes it is instructed to include no surnames, no locations and no
+    identifying details beyond what §1.9 already permits. Automatic writing
+    without prior parental approval is an interim state accepted by the owner
+    on 2026-08-29 while the platform's only active learner is the owner; a
+    parental approval flow is documented as a blocking requirement before
+    rollout to real families (/ORACLE.md §20.4).
+
 ### §2.2b The placement intake — a second, narrower disclosure (added 2026-08-24)
 
 A learner choosing where to start a course may be offered a short conversation

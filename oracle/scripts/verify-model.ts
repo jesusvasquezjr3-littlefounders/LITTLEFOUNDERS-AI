@@ -243,6 +243,7 @@ async function main(): Promise<void> {
       previousSessions: [],
       pedagogy: null,
       openActivity: null,
+  learnerBrief: null,
     } satisfies TutorContext);
     ok('sealContext accepted an ordinary context');
   } catch (error) {
@@ -363,6 +364,7 @@ async function main(): Promise<void> {
     previousSessions: [],
     pedagogy: null,
     openActivity: null,
+  learnerBrief: null,
   } satisfies TutorContext);
   try {
     const youngTurn = await completeLikeProduction(youngContext, '¿cómo crece el dinero en el banco?');
@@ -423,6 +425,7 @@ async function main(): Promise<void> {
         type: 'order_steps',
         prompt: 'Ordena las monedas y billetes del que vale menos al que vale más.',
       },
+      learnerBrief: null,
     } satisfies TutorContext);
     const reactionTurn = await completeLikeProduction(
       withActivity,

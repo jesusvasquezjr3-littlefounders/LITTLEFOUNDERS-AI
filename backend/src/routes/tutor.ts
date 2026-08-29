@@ -31,6 +31,9 @@ import {
   insertTutorSegment,
   insertTutorTurn,
   listRecentSummaries,
+  getLearnerMemory,
+  writeLearnerMemory,
+  searchOwnTurns,
   listSafetyFlags,
   listTutorSegments,
   listTutorSessions,
@@ -233,6 +236,8 @@ function internalRouter(): Router {
      * with no memory — never to a refused session.
      */
     const recent = await listRecentSummaries(session.user_id, session.id);
+    // V4: the curated learner brief (0053). Read failure degrades to no brief.
+    const learnerBrief = await getLearnerMemory(session.user_id);
 
     /*
      * THE V3 BRAIN (migration 0052). The session plan (review debt + ZPD
@@ -271,6 +276,14 @@ function internalRouter(): Router {
       courseContext,
       skillKey: session.skill_key,
       previousSessions,
+      /*
+       * V4 SESSION DOSSIER (harness §4.3): the slow chamber's qualitative
+       * knowledge of this learner, immutable for the whole session so the
+       * fast chamber's prompt prefix stays cacheable. Written only by the
+       * post-session review; a guardian can read it via RLS; every write is
+       * ledgered.
+       */
+      learnerBrief,
       skillStates: (states ?? []).slice(0, 12).map((s) => ({
         skillKey: s.skillKey,
         masteryProbability: s.masteryProbability,
@@ -312,6 +325,61 @@ function internalRouter(): Router {
     category: z.string().min(1).max(64),
     severity: z.enum(['low', 'medium', 'high']),
     handled: z.enum(['scripted_response', 'turn_blocked', 'session_stopped']),
+  });
+
+  /*
+   * V4: the post-session review's write path. Oracle destils what a session
+   * taught us about the learner and PUTs it here; Core owns the limits, the
+   * store and the ledger. Content rules are §1.9's: no surnames, no
+   * locations — the writer's prompt forbids them and the schema caps length.
+   */
+  router.put('/learner-memory', async (req, res) => {
+    const Body = z
+      .object({
+        userId: z.uuid(),
+        sessionId: z.uuid().nullable(),
+        stores: z
+          .object({
+            learner: z.string().min(1).max(1400).nullable(),
+            pedagogy: z.string().min(1).max(2200).nullable(),
+          })
+          .strict(),
+      })
+      .strict();
+    const parsed = Body.safeParse(req.body);
+    if (!parsed.success) {
+      return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid request');
+    }
+    const { userId, sessionId, stores } = parsed.data;
+    const results: Record<string, boolean> = {};
+    for (const store of ['learner', 'pedagogy'] as const) {
+      const content = stores[store];
+      if (content === null) continue; // null = no update proposed for this store
+      results[store] = await writeLearnerMemory({
+        userId,
+        store,
+        content,
+        actor: 'oracle-post-session-review',
+        sessionId,
+      });
+    }
+    return ok(res, { written: results });
+  });
+
+  /*
+   * V4 episodic recall: literal excerpts from this learner's own history,
+   * for the "¿te acuerdas de…?" moments. GIN-indexed, ~20 ms, no model.
+   */
+  router.get('/recall', async (req, res) => {
+    const Q = z
+      .object({ userId: z.uuid(), q: z.string().min(2).max(200) })
+      .strict();
+    const parsed = Q.safeParse({ userId: req.query.userId, q: req.query.q });
+    if (!parsed.success) {
+      return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid request');
+    }
+    const excerpts = await searchOwnTurns(parsed.data.userId, parsed.data.q, 3);
+    return ok(res, { excerpts });
   });
 
   router.post('/flags', async (req, res) => {

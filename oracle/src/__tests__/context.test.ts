@@ -31,6 +31,7 @@ function validContext(overrides: Partial<TutorContext> = {}): TutorContext {
     planState: null,
     previousSessions: [],
     pedagogy: null,
+    learnerBrief: null,
     ...overrides,
   };
 }

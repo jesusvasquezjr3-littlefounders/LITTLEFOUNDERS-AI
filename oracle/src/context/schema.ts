@@ -252,6 +252,19 @@ export const TutorContextSchema = z
      * cannot see. §4.1 row + legal §2.2 item 13.
      */
     openActivity: OpenActivitySchema.nullable(),
+    /**
+     * V4: the curated learner brief (LEARNER + PEDAGOGY stores, /ORACLE.md
+     * §20). Derived from this learner's own past sessions by the post-session
+     * review, hard-capped, ledgered, guardian-readable. The only prose about
+     * the CHILD (rather than the session) that reaches the model.
+     */
+    learnerBrief: z
+      .object({
+        learner: z.string().min(1).max(1400).nullable(),
+        pedagogy: z.string().min(1).max(2200).nullable(),
+      })
+      .strict()
+      .nullable(),
   })
   .strict();
 

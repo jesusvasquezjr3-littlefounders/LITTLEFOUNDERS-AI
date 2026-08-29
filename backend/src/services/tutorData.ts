@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createHash } from 'node:crypto';
 import { serviceRest } from './supabaseRest.js';
 
 /*
@@ -290,6 +291,110 @@ export async function setSessionSummary(
  * Only what the memory feature needs travels out of here: the digest and when
  * the session ended.
  */
+/*
+ * ─── V4 learner memory (0053) ────────────────────────────────────────────────
+ *
+ * Two curated prose stores per learner — LEARNER (who this child is) and
+ * PEDAGOGY (what teaching works with them) — written by the post-session
+ * review and injected into every session as the learner brief. The hard
+ * character limits live in the schema; this layer only moves the text.
+ */
+
+export interface LearnerBrief {
+  learner: string | null;
+  pedagogy: string | null;
+}
+
+export async function getLearnerMemory(userId: string): Promise<LearnerBrief> {
+  const rows = await serviceRest<{ store: string; content: string }[]>(
+    `/learner_memory?user_id=eq.${eu(userId)}&select=store,content`,
+  );
+  // A read failure degrades to "no brief" deliberately: the brief improves a
+  // session, it must never be able to block one. Display-only read (§1.14).
+  const byStore = new Map((rows ?? []).map((r) => [r.store, r.content]));
+  return {
+    learner: byStore.get('learner') ?? null,
+    pedagogy: byStore.get('pedagogy') ?? null,
+  };
+}
+
+/**
+ * Write one store and its ledger row. Returns false if either write failed —
+ * and the caller treats false as "the memory did not advance", never retrying
+ * blindly: the review runs again after the next session anyway.
+ */
+export async function writeLearnerMemory(input: {
+  userId: string;
+  store: 'learner' | 'pedagogy';
+  content: string;
+  actor: string;
+  sessionId: string | null;
+}): Promise<boolean> {
+  const existing = await serviceRest<{ content: string }[]>(
+    `/learner_memory?user_id=eq.${eu(input.userId)}&store=eq.${input.store}&select=content`,
+  );
+  const before = existing?.[0]?.content ?? null;
+  if (before === input.content) return true; // nothing new — no ledger noise
+
+  const sha = (text: string) => createHash('sha256').update(text, 'utf8').digest('hex');
+  const stored = await serviceRest<unknown>(`/learner_memory?on_conflict=user_id,store`, {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal,resolution=merge-duplicates' },
+    body: JSON.stringify({
+      user_id: input.userId,
+      store: input.store,
+      content: input.content,
+      updated_at: new Date().toISOString(),
+    }),
+  });
+  if (stored === null) return false;
+
+  /*
+   * The ledger row is what makes auto-write acceptable (owner decision
+   * 2026-08-29): every belief the system holds about a child traces to the
+   * write that created it. A failed ledger write is LOUD — the store already
+   * changed, and an unaudited change is the one condition this table exists
+   * to prevent.
+   */
+  const ledgered = await serviceRest<unknown>(`/learner_memory_ledger`, {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({
+      user_id: input.userId,
+      store: input.store,
+      actor: input.actor,
+      before_hash: before === null ? null : sha(before),
+      after_hash: sha(input.content),
+      session_id: input.sessionId,
+    }),
+  });
+  if (ledgered === null) {
+    console.error(
+      `[tutor] learner_memory ledger write FAILED for user ${input.userId} store ${input.store} — the store changed without an audit row`,
+    );
+  }
+  return true;
+}
+
+/**
+ * Episodic recall: literal excerpts from this learner's own past sessions.
+ * ~20 ms of GIN index, zero model cost — the only memory cheap enough for
+ * the conversation clock.
+ */
+export async function searchOwnTurns(
+  userId: string,
+  query: string,
+  limit = 3,
+): Promise<{ speaker: string; turnText: string; saidAt: string }[]> {
+  const rows = await serviceRest<
+    { speaker: string; turn_text: string; said_at: string }[]
+  >(`/rpc/search_tutor_turns`, {
+    method: 'POST',
+    body: JSON.stringify({ p_user_id: userId, p_query: query, p_limit: limit }),
+  });
+  return (rows ?? []).map((r) => ({ speaker: r.speaker, turnText: r.turn_text, saidAt: r.said_at }));
+}
+
 export async function listRecentSummaries(
   userId: string,
   excludeSessionId: string | null = null,

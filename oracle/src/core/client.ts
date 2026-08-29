@@ -101,6 +101,20 @@ const SessionContextSchema = z
      */
     previousSessions: z.array(PreviousSessionSchema).max(3).optional(),
     /**
+     * V4 learner brief (0053): the slow chamber's curated prose about this
+     * learner. OPTIONAL on the wire — an Oracle deployed ahead of Core, or a
+     * learner with no memory yet, degrades to a tutor without a brief.
+     * Limits mirror the schema's hard caps.
+     */
+    learnerBrief: z
+      .object({
+        learner: z.string().min(1).max(1400).nullable(),
+        pedagogy: z.string().min(1).max(2200).nullable(),
+      })
+      .strict()
+      .nullable()
+      .optional(),
+    /**
      * The v3 brain (migration 0052). OPTIONAL AND NULLABLE on the wire, and
      * that is the whole deployment story: while 0052 is unapplied, unseeded,
      * or TUTOR_V3_BRAIN is off, Core sends null (or nothing) and Oracle's
@@ -398,6 +412,53 @@ export async function voiceCheck(input: {
 }
 
 /** Whether the learner's guardian consent is STILL active. Cheap, called per turn. */
+/**
+ * V4: persist what the post-session review learned. Core owns the caps and
+ * the append-only ledger; a false return means "did not land", and the
+ * caller's answer to that is the next session's review, never a retry loop.
+ */
+export async function updateLearnerMemory(input: {
+  userId: string;
+  sessionId: string | null;
+  stores: { learner: string | null; pedagogy: string | null };
+}): Promise<boolean> {
+  try {
+    const body = await coreFetch('/tutor/internal/learner-memory', {
+      method: 'PUT',
+      body: JSON.stringify(input),
+    });
+    const parsed = Envelope(z.object({ written: z.record(z.string(), z.boolean()) })).safeParse(body);
+    return parsed.success && parsed.data.data !== null;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * V4 episodic recall: literal excerpts from this learner's own past sessions.
+ * Failure degrades to an empty list — recall garnishes a turn, never blocks one.
+ */
+export async function recallOwnHistory(
+  userId: string,
+  query: string,
+): Promise<{ speaker: string; turnText: string; saidAt: string }[]> {
+  try {
+    const body = await coreFetch(
+      `/tutor/internal/recall?userId=${encodeURIComponent(userId)}&q=${encodeURIComponent(query)}`,
+    );
+    const parsed = Envelope(
+      z.object({
+        excerpts: z.array(
+          z.object({ speaker: z.string(), turnText: z.string(), saidAt: z.string() }).loose(),
+        ),
+      }),
+    ).safeParse(body);
+    return parsed.success && parsed.data.data !== null ? parsed.data.data.excerpts : [];
+  } catch {
+    return [];
+  }
+}
+
 export async function checkVoiceConsent(userId: string): Promise<boolean | null> {
   try {
     const body = await coreFetch(`/tutor/internal/consent/${encodeURIComponent(userId)}`);

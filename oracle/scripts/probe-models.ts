@@ -75,6 +75,7 @@ const CONTEXT: TutorContext = {
   previousSessions: [],
   pedagogy: null,
   openActivity: null,
+  learnerBrief: null,
 };
 
 interface Probe {

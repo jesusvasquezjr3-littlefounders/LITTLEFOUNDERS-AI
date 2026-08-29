@@ -37,6 +37,7 @@ import {
   repeatsAnAnnouncement,
 } from './prompt.js';
 import { selectSkill } from './skills.js';
+import { recallOwnHistory } from '../core/client.js';
 import { parseTurn, type TutorTurn } from './turnSchema.js';
 import {
   closingResponse,
@@ -109,6 +110,13 @@ import type { SessionContext } from '../core/client.js';
  * learner who was told to ask again and now gets two replies.
  */
 const RETRY_DEADLINE_MS = 9_000;
+
+/**
+ * What counts as asking about the past (V4 episodic recall). A closed list on
+ * purpose: the fast chamber never runs a model to decide whether to look.
+ */
+const RECALL_TRIGGER =
+  /\b(te acuerdas|recuerdas|acu[ée]rdate|la otra vez|el otro d[íi]a|la semana pasada|do you remember|remember when|lembra|voc[êe] lembra)\b/i;
 
 const TURN_HISTORY_WINDOW = 20;
 
@@ -737,6 +745,39 @@ export class TutorOrchestrator {
      * controller as a `voice_result` and moves mastery the same way a graded
      * activity does.
      */
+    /*
+     * V4 EPISODIC RECALL — "¿te acuerdas del problema de las galletas?"
+     *
+     * A tutor that remembers is the difference between a tutor and a chatbot,
+     * and this is the ONE piece of the harness cheap enough for the
+     * conversation clock: a GIN-indexed query over the learner's own past
+     * transcripts, ~20 ms, zero model cost. The trigger is deterministic — a
+     * closed phrase list, no agent loop deciding whether to look — and the
+     * result is injected as VERBATIM excerpts labelled as history, so the
+     * model quotes what actually happened instead of inventing a plausible
+     * past. Failure or no match degrades to exactly the turn we had before.
+     */
+    let recallNote = '';
+    if (RECALL_TRIGGER.test(fenced.cleaned)) {
+      const query = fenced.cleaned
+        .replace(RECALL_TRIGGER, ' ')
+        .replace(/[¿?¡!.,]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      if (query.length >= 3) {
+        const excerpts = await recallOwnHistory(this.session.userId, query);
+        if (excerpts.length > 0) {
+          const quoted = excerpts
+            .slice(0, 3)
+            .map((e) => `- ${e.speaker === 'tutor' ? 'You said' : 'They said'}: "${e.turnText.slice(0, 160)}"`)
+            .join('\n');
+          recallNote =
+            '\n\nThe learner is asking about something from a PAST session. VERBATIM excerpts from their own history (quote these, do not invent):\n' +
+            quoted;
+        }
+      }
+    }
+
     const pedagogyEvent: PedagogyEvent =
       verdict === null
         ? { kind: 'conversation_turn' }
@@ -746,7 +787,7 @@ export class TutorOrchestrator {
     const finalNote = graceTurn
       ? '\n\nTHIS IS THE FINAL TURN of the session — time is up. Resolve the open question or activity in one or two warm sentences (give the answer if they did not reach it, credit what they did), then say goodbye. Do NOT ask anything new, do NOT request or promise any activity.'
       : '';
-    const outcome = await this.produce(`${fenced.block}${verdictNote}${maneuverNote}${finalNote}`, nowMs, {
+    const outcome = await this.produce(`${fenced.block}${verdictNote}${recallNote}${maneuverNote}${finalNote}`, nowMs, {
       nonce: fenced.nonce,
       signal,
       finalTurn: graceTurn,
@@ -822,6 +863,7 @@ export class TutorOrchestrator {
       // which renders exactly the v2 context (§4.1 row + legal §2.2 item 12).
       pedagogy: this.controller.active ? this.controller.state() : null,
       openActivity: this.openActivity,
+      learnerBrief: this.session.learnerBrief ?? null,
     });
   }
 
