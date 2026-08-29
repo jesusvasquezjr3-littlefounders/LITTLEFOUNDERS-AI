@@ -102,6 +102,16 @@ const MASTERY_MIN_OPPORTUNITIES = 3;
 const HESITATION_FACTOR = 2;
 
 /**
+ * How much FASTER than their own median a wrong answer must be to read as a
+ * guess rather than an attempt (blueprint §8.3).
+ *
+ * Three is deliberately conservative in the same direction as its sibling: the
+ * cost of missing a guess is one wasted remediation, and the cost of calling a
+ * real attempt a guess is telling a child who tried that they did not.
+ */
+const GUESS_FACTOR = 3;
+
+/**
  * The strategies that ASK rather than TEACH.
  *
  * A learner making no progress must not be left in one of these. Fixing only
@@ -156,6 +166,8 @@ export class PedagogicalController {
    * struggling with the other.
    */
   private correctLatencies = new Map<string, number[]>();
+  /** Whether the last assessed answer looked like a guess rather than an attempt. */
+  private guessedLastTurn = false;
   /** Set while probing a prerequisite; holds the interrupted entry's index. */
   private probeReturnIndex: number | null = null;
   private probingKcId: string | null = null;
@@ -325,7 +337,14 @@ export class PedagogicalController {
         }
       }
       this.pKnown.set(kcId, mirrorBktUpdate(this.pKnown.get(kcId) ?? entry.pKnown, event.correct));
-      this.misconceptionCode = event.misconceptionCode;
+      /*
+       * A GUESS IS NOT A DIAGNOSIS. Our distractors are authored to encode
+       * misconceptions, so a random tap produces a confident wrong-idea code;
+       * accepting it makes the tutor argue against something the child never
+       * thought. Dropping it lets the turn be about re-engaging them instead.
+       */
+      this.guessedLastTurn = this.answeredWithoutReading(kcId, event);
+      this.misconceptionCode = this.guessedLastTurn ? null : event.misconceptionCode;
       if (event.correct) {
         this.consecutiveFailures = 0;
       } else {
@@ -572,6 +591,43 @@ export class PedagogicalController {
     return median > 0 && latency > median * HESITATION_FACTOR;
   }
 
+  /**
+   * "INCORRECTO + LATENCIA MUY BAJA → ADIVINANZA O DESENGANCHE" (blueprint §8.3).
+   *
+   * This matters more here than the blueprint's own framing suggests, because of
+   * how our content is authored. The content playbook's rule 7 requires that
+   * "every wrong option encodes ONE specific, common kid misconception" and that
+   * a wrong choice be "tempting AND diagnostic" — so in 475 published lessons,
+   * essentially EVERY wrong option is tagged with a wrong idea.
+   *
+   * That is excellent content design and it makes a guess indistinguishable from
+   * a diagnosis. A child who taps at random lands on a misconception-tagged
+   * distractor nearly every time they miss, the controller reads a diagnosed
+   * wrong idea, and the tutor spends its next turns arguing against an idea the
+   * child never held — while the actual problem, that they were not reading, is
+   * never addressed. The better the distractors, the more confidently wrong the
+   * diagnosis.
+   *
+   * Same self-calibrating threshold as the hesitation signal and the same
+   * refusal to judge without evidence: faster than a third of this learner's own
+   * median for this KC is not reading time, and fewer than two measurements
+   * means no opinion.
+   */
+  private answeredWithoutReading(kcId: string, event: PedagogyEvent): boolean {
+    if (event.kind !== 'activity_result' || event.correct) return false;
+    const latency = event.latencyMs;
+    if (latency === null || latency === undefined) return false;
+
+    const history = this.correctLatencies.get(kcId) ?? [];
+    if (history.length < 2) return false;
+
+    const sorted = [...history].sort((a, b) => a - b);
+    const middle = Math.floor(sorted.length / 2);
+    const median =
+      sorted.length % 2 === 0 ? (sorted[middle - 1]! + sorted[middle]!) / 2 : sorted[middle]!;
+    return median > 0 && latency * GUESS_FACTOR < median;
+  }
+
   private weakestPrerequisite(prereqKcIds: readonly string[]): string | null {
     if (prereqKcIds.length === 0) return null;
     const masteryOf = new Map(this.kcStates.map((s) => [s.kcId, s]));
@@ -615,10 +671,20 @@ export class PedagogicalController {
     const template = STRATEGY_INSTRUCTIONS[strategy];
     if (!template) return null;
     const hint = this.activeMisconceptionHint(entry);
-    if (strategy === 'REMEDIATE' && hint) {
-      return `${template} The specific wrong idea, from our catalog: "${hint}"`;
-    }
-    return template;
+    const base =
+      strategy === 'REMEDIATE' && hint
+        ? `${template} The specific wrong idea, from our catalog: "${hint}"`
+        : template;
+    if (!this.guessedLastTurn) return base;
+    /*
+     * "Bajar dificultad, cambiar de modalidad" (§8.3). Difficulty already drops
+     * on any failure; this is the other half. The instruction says what was
+     * OBSERVED rather than what to conclude, because the tutor is better at
+     * choosing words for a disengaged child than a rule is — and it must not
+     * accuse: a child answering fast may be bored, tired, or testing the toy,
+     * and none of those are met by being told off.
+     */
+    return `${base} NOTE: they answered almost instantly, too fast to have read it — treat this as disengagement, not a wrong idea. Do not re-teach the concept. Change what they are DOING: a different kind of activity, something to touch or say out loud, or a question about them.`;
   }
 
   /** The strict projection allowed to reach the model (context/schema.ts). */

@@ -219,6 +219,53 @@ describe('PedagogicalController', () => {
     expect(c.currentStrategy).toBe('DIRECT'); // fresh entry, low mastery band
   });
 
+  describe('a guess is not a diagnosis (§8.3)', () => {
+    /*
+     * Our content playbook requires every wrong option to encode a specific
+     * misconception ("tempting AND diagnostic"), so a child tapping at random
+     * lands on a diagnosed wrong idea nearly every time they miss. The better
+     * the distractors, the more confidently wrong the diagnosis.
+     */
+    const right = (latencyMs: number) =>
+      ({ kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1, latencyMs }) as const;
+    const wrong = (latencyMs: number | null) =>
+      ({
+        kind: 'activity_result',
+        correct: false,
+        misconceptionCode: 'adds-instead-of-counts-up',
+        attemptNumber: 1,
+        latencyMs,
+      }) as const;
+    /** Two fluent answers establish this learner's own pace. */
+    const paced = () => {
+      const c = new PedagogicalController([entry({ pKnown: 0.7, prereqKcIds: [] })]);
+      c.decide(right(9_000), NOW);
+      c.decide(right(9_000), NOW + 40_000);
+      return c;
+    };
+
+    it('does not remediate an idea the child never had', () => {
+      const c = paced();
+      const decision = c.decide(wrong(600), NOW + 80_000);
+      expect(decision.strategy).not.toBe('REMEDIATE');
+      expect(decision.instruction).toContain('disengagement');
+    });
+
+    it('still remediates a real attempt that went wrong', () => {
+      // The same wrong answer, thought about. This is the case the catalogued
+      // hint exists for, and it must survive the guess detector intact.
+      const c = paced();
+      const decision = c.decide(wrong(11_000), NOW + 80_000);
+      expect(decision.strategy).toBe('REMEDIATE');
+      expect(decision.instruction).not.toContain('disengagement');
+    });
+
+    it('refuses to call anything a guess without a measurement', () => {
+      const c = paced();
+      expect(c.decide(wrong(null), NOW + 80_000).strategy).toBe('REMEDIATE');
+    });
+  });
+
   describe('a right answer that took too long is not mastery (§8.3)', () => {
     const right = (latencyMs: number | null) =>
       ({ kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1, latencyMs }) as const;
