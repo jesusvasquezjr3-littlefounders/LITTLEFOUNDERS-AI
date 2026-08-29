@@ -12,7 +12,12 @@ import { IDLE_NUDGE_MS, PedagogicalController, type PedagogyEvent } from './cont
 import { classifyLearnerInput, type SafetyCategory } from '../safety/classifier.js';
 import { fenceUntrusted } from '../safety/untrusted.js';
 import { moderateTutorOutput } from '../safety/moderation.js';
-import { complete, CompletionAbortedError, ModelUnavailableError } from '../model/provider.js';
+import {
+  complete,
+  CompletionAbortedError,
+  ModelUnavailableError,
+  type ChatMessage,
+} from '../model/provider.js';
 import { evaluateBudget, WRAP_UP_INSTRUCTION, type BudgetVerdict } from '../session/budget.js';
 import { buildContextMessage, TUTOR_SYSTEM_PROMPT } from './prompt.js';
 import { parseTurn, type TutorTurn } from './turnSchema.js';
@@ -68,6 +73,17 @@ import type { SessionContext } from '../core/client.js';
  * orchestrator returns what should be emitted. That split is what makes the
  * whole pipeline testable without opening a port.
  */
+
+/**
+ * How many of the session's most recent turns the model is shown.
+ *
+ * ONE constant for two consumers on purpose. The sealed context's
+ * `turnHistory` and the chat messages built from the same array must describe
+ * the same window; they were two unrelated `slice(-20)` calls, which is the
+ * shape drift takes — though the defect that actually shipped was worse than
+ * drift, because one of the two consumers did not exist at all.
+ */
+const TURN_HISTORY_WINDOW = 20;
 
 export interface TurnEmission {
   turn: TutorTurn;
@@ -551,13 +567,63 @@ export class TutorOrchestrator {
       // Last 20 exchanges. Truncation is not just a token budget: a long
       // history is also a long window in which an earlier injection attempt
       // could keep influencing later turns.
-      turnHistory: this.history.slice(-20),
+      turnHistory: this.history.slice(-TURN_HISTORY_WINDOW),
       planState: planState(this.plan),
       previousSessions: (this.session.previousSessions ?? []).slice(0, 3),
       // The v3 controller's strict projection; null while the brain is off,
       // which renders exactly the v2 context (§4.1 row + legal §2.2 item 12).
       pedagogy: this.controller.active ? this.controller.state() : null,
     });
+  }
+
+  /**
+   * THE CONVERSATION ITSELF, as chat messages.
+   *
+   * `turnHistory` has been sealed, validated and capped since v2 — and never
+   * rendered. `buildContextMessage` writes ELEVEN of the sealed context's
+   * TWELVE fields and drops this one in silence, so every turn reached the
+   * model as though it were the first one. That is not a degraded tutor, it
+   * is an amnesiac one, and the production transcripts show exactly what it
+   * costs: "¡Hola, Jason!" nine times inside an eleven-line session, the
+   * tutor re-introducing ITSELF at line seven, and — worst — answering a
+   * question it had asked one turn earlier, which robs the learner of the
+   * single act that does the teaching. No pedagogy can survive it: the v3
+   * controller was picking strategies for a model that could not remember
+   * the exchange it was in the middle of, which is why a knowledge graph, a
+   * BKT posterior and twelve strategies produced no observable improvement.
+   *
+   * They go in as REAL alternating turns rather than as a transcript pasted
+   * into the context block, because that is the shape a chat model is
+   * trained on: "you already greeted them" becomes something the model SEES
+   * rather than something it has to infer from a quoted log.
+   *
+   * EVERY learner line is re-fenced, with a fresh nonce per line. The stored
+   * `cleaned` text already had the fence shape stripped when it was first
+   * accepted, so a learner cannot forge a marker — but re-fencing is what
+   * stops a sentence they spoke five turns ago from being read as an
+   * instruction now that it is no longer the current utterance. A history
+   * replayed unfenced would turn every past turn into an injection slot.
+   */
+  private conversationMessages(isSystemPrompted: boolean): ChatMessage[] {
+    const turns = this.history.slice(-TURN_HISTORY_WINDOW);
+
+    /*
+     * When the caller is answering the learner's OWN words, the last history
+     * entry is the very utterance being passed as `userContent`, so rendering
+     * it here as well would show the model the same sentence twice and invite
+     * it to answer the echo. A system-prompted turn passes an INSTRUCTION as
+     * `userContent` instead (an activity verdict, a voice-check result), and
+     * its learner line exists nowhere else — so that one must be kept.
+     */
+    const rendered =
+      !isSystemPrompted && turns.at(-1)?.speaker === 'learner' ? turns.slice(0, -1) : turns;
+
+    const maxChars = getConfig().TURN_MAX_INPUT_CHARS;
+    return rendered.map((turn) =>
+      turn.speaker === 'tutor'
+        ? { role: 'assistant', content: turn.text }
+        : { role: 'user', content: fenceUntrusted(turn.text, maxChars).block },
+    );
   }
 
   private async produce(
@@ -627,10 +693,11 @@ export class TutorOrchestrator {
       // will still be down, so retrying a transport error just doubles the
       // learner's wait.
       for (let attempt = 0; attempt < 2 && turn === null; attempt += 1) {
-        const messages = [
-          { role: 'system' as const, content: systemContent },
-          { role: 'user' as const, content: buildContextMessage(context) },
-          { role: 'user' as const, content: userContent },
+        const messages: ChatMessage[] = [
+          { role: 'system', content: systemContent },
+          { role: 'user', content: buildContextMessage(context) },
+          ...this.conversationMessages(opts.isSystemPrompted === true),
+          { role: 'user', content: userContent },
         ];
         if (attempt === 1) {
           messages.push({

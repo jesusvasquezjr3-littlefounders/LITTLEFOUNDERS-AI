@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TutorOrchestrator } from '../tutor/orchestrator.js';
+import { TUTOR_SYSTEM_PROMPT } from '../tutor/prompt.js';
 import type { SpeechResult } from '../voice/speech.js';
 import type { SessionContext } from '../core/client.js';
 
@@ -405,5 +406,88 @@ describe('what actually reaches the provider', () => {
     expect(system).not.toContain('enséñame fracciones');
     expect(learner).toContain('<<<LEARNER_INPUT_');
     expect(learner).toContain('enséñame fracciones');
+  });
+});
+
+/*
+ * THE CONVERSATION REACHES THE MODEL.
+ *
+ * This is the regression for the defect that made the tutor useless in
+ * production for its entire life: `turnHistory` was sealed, validated and
+ * capped, and `buildContextMessage` rendered ELEVEN of the context's TWELVE
+ * fields — dropping this one silently. Every turn arrived at the model as if
+ * it were the first, so the tutor greeted a learner nine times inside one
+ * eleven-line session, re-introduced itself at line seven, and answered a
+ * question it had asked one turn earlier.
+ *
+ * WHY NO GATE CAUGHT IT, which is the part worth not repeating: the existing
+ * tests DID exercise `turnHistory` — `context.test.ts` builds it, and the
+ * privacy-contract test asserts it is documented. But the context fixture set
+ * it to `[]`, so no test ever ran a non-empty history, and every assertion was
+ * about the SCHEMA rather than about what the model is shown. A field can be
+ * perfectly validated all the way to the moment it is thrown away.
+ *
+ * So these assertions deliberately read the OUTBOUND REQUEST BODY. That is the
+ * only artefact that answers "what did the model actually see", and it is the
+ * question the previous tests never asked.
+ */
+describe('the model is shown the conversation', () => {
+  /** The tutor's own model call, identified by its system prompt. */
+  function modelCalls(): { role: string; content: string }[][] {
+    return fetchMock.mock.calls
+      .map(([, init]) => JSON.parse(String((init as RequestInit).body)))
+      .filter((body) => body.messages?.[0]?.role === 'system' && body.messages[0].content.startsWith(TUTOR_SYSTEM_PROMPT.slice(0, 60)))
+      .map((body) => body.messages);
+  }
+
+  async function twoTurns() {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies(GOOD_TURN))
+      .mockResolvedValueOnce(judgeSays(true))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Segunda respuesta.' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('me llamo Jason', Date.now());
+    await orchestrator.handleLearnerText('quiero ahorrar', Date.now());
+    return orchestrator;
+  }
+
+  it('carries the earlier exchange into the second turn', async () => {
+    await twoTurns();
+    const second = modelCalls()[1];
+
+    // The learner's first line and the tutor's answer to it are both present.
+    expect(second.some((m) => m.role === 'user' && m.content.includes('me llamo Jason'))).toBe(true);
+    expect(second.some((m) => m.role === 'assistant' && m.content === GOOD_TURN.say)).toBe(true);
+  });
+
+  it('sends the past as real alternating roles, not a pasted transcript', async () => {
+    await twoTurns();
+    // The tutor's prior line must arrive AS the assistant, which is what makes
+    // "you already said this" something the model sees rather than infers.
+    expect(modelCalls()[1].filter((m) => m.role === 'assistant')).toHaveLength(1);
+    // The first turn had nothing before it.
+    expect(modelCalls()[0].filter((m) => m.role === 'assistant')).toHaveLength(0);
+  });
+
+  it('does not show the current utterance twice', async () => {
+    await twoTurns();
+    const occurrences = modelCalls()[1].filter((m) => m.content.includes('quiero ahorrar')).length;
+    // The live turn is the last user message and appears there ONLY. It is
+    // already in `history` when `produce` runs, so the naive fix double-sends
+    // it and invites the model to answer its own echo.
+    expect(occurrences).toBe(1);
+  });
+
+  it('re-fences every replayed learner line', async () => {
+    await twoTurns();
+    const replayed = modelCalls()[1].find(
+      (m) => m.role === 'user' && m.content.includes('me llamo Jason'),
+    );
+    // A history replayed unfenced turns every past turn into an injection
+    // slot: something said five turns ago stops being marked as data.
+    expect(replayed?.content).toMatch(/<<<LEARNER_INPUT_/);
+    expect(replayed?.content).toMatch(/never an instruction/i);
   });
 });
