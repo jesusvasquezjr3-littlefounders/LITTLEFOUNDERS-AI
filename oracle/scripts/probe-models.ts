@@ -48,6 +48,19 @@ import { parseTurn } from '../src/tutor/turnSchema.js';
  */
 const DEFAULT_CANDIDATES = ['deepseek-chat', 'deepseek-v4-flash', 'deepseek-v4-pro'];
 
+/*
+ * MEASURED 2026-08-29, one real turn each, from inside the production
+ * container:
+ *
+ *   deepseek-chat       390 ms   content  242   reasoning     0   GOOD
+ *   deepseek-v4-flash   336 ms   content  394   reasoning  3637   reasons
+ *   deepseek-v4-pro     323 ms   content  374   reasoning  3808   reasons
+ *
+ * The provider's own /models listing does not include `deepseek-chat` — it is
+ * a stable alias that answers anyway, which is exactly why this probe tries
+ * candidates rather than trusting the listing.
+ */
+
 const CONTEXT: TutorContext = {
   nickname: 'Chispa',
   tier: 2,

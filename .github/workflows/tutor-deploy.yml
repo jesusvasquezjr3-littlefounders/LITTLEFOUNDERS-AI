@@ -45,10 +45,15 @@ on:
       model_name:
         description: >-
           provision only. The pedagogical model Oracle calls. `keep` never
-          touches it. Oracle needs a NON-reasoning model: deepseek-v4-pro spends
-          the whole completion budget on reasoning_content and returns empty
-          content, which reaches a learner as the scripted "my thoughts got
-          tangled" line on every single turn.
+          touches it. Oracle needs a NON-reasoning model: one that spends the
+          completion budget on reasoning_content returns empty content often
+          enough to reach a learner as the scripted "my thoughts got tangled"
+          line. MEASURED 2026-08-29 with `step=probe-models`, one real turn
+          each: deepseek-chat 0 reasoning chars (GOOD); deepseek-v4-flash 3637;
+          deepseek-v4-pro 3808. This note named only `pro` for months while
+          production ran `flash`, which reasons just as hard — the requirement
+          was right and the example was incomplete, so nobody checked. Run
+          `probe-models` rather than trusting this list; it asks the provider.
         required: false
         default: keep
         type: string
