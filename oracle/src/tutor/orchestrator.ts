@@ -833,15 +833,37 @@ export class TutorOrchestrator {
           ...this.conversationMessages(opts.isSystemPrompted === true),
           { role: 'user', content: userContent },
         ];
-        if (attempt === 1) {
-          messages.push({
-            role: 'user' as const,
-            content:
-              turnCorrection !== null
+        /*
+         * THE SHAPE REMINDER GOES ON EVERY CALL, not only on the retry.
+         *
+         * MEASURED with `model:probe-empty`, twelve calls per condition
+         * against the live provider, messages built exactly as they are here:
+         *
+         *    8%   3 turns of history
+         *   42%  10 turns
+         *   67%  20 turns          ← the window production uses
+         *    0%  20 turns + this reminder
+         *
+         * `deepseek-chat` returns a billed, normally-terminated completion made
+         * of whitespace, and the rate rises with the conversation until two
+         * turns in three cost a second call. The retry has always carried this
+         * reminder, which is why the second attempt always worked and why I
+         * spent two cycles blaming its temperature instead.
+         *
+         * It rides in the LAST user message, so the prefix cache is untouched,
+         * and it says nothing about a previous reply on the first attempt —
+         * there is none, and telling a model it just failed when it did not is
+         * how a first turn starts apologising.
+         */
+        messages.push({
+          role: 'user' as const,
+          content:
+            attempt === 0
+              ? 'Reply with ONLY the JSON object described above. No prose, no markdown fence, no blank reply.'
+              : turnCorrection !== null
                 ? `Your previous reply ${turnCorrection}. Reply again with ONLY the JSON object.`
                 : 'Your previous reply was not a valid JSON object in the required shape. Reply again with ONLY the JSON object.',
-          });
-        }
+        });
 
         try {
           const result = await complete(messages, {
