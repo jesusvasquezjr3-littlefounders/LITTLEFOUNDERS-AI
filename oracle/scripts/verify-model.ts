@@ -56,6 +56,8 @@ import { parseTurn } from '../src/tutor/turnSchema.js';
 import { moderateTutorOutput } from '../src/safety/moderation.js';
 
 let failures = 0;
+/** One raw-response diagnosis per run is enough to name the cause. */
+let diagnosed = false;
 
 /**
  * What `complete()` deliberately does not tell you.
@@ -179,6 +181,20 @@ async function completeLikeProduction(
        */
       if (!(error instanceof ModelUnavailableError) || attempt === 1) throw error;
       console.log(`  ..    empty or failed completion, retrying once (${error.message})`);
+      /*
+       * WHY it was empty, printed the first time it happens in a run.
+       *
+       * Production absorbs these with a retry, so no learner sees one — but it
+       * is a second paid call and a doubled wait on roughly half the turns
+       * measured on 2026-08-29, and "the model sometimes returns nothing" is a
+       * guess until the raw response says which of its four causes this is
+       * (budget exhausted, reasoning_content eating the completion, billed for
+       * an empty string, or an error envelope behind a 200).
+       */
+      if (!diagnosed) {
+        diagnosed = true;
+        await diagnose(context);
+      }
     }
   }
   return last;
