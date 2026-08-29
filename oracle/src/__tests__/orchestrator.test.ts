@@ -787,3 +787,61 @@ describe('an activity that cannot be served', () => {
     expect(body).toContain('teach');
   });
 });
+
+describe('praise that contradicts itself is repaired, not delivered', () => {
+  /*
+   * Observed three times in scripted lessons on 2026-08-29, with a prompt rule
+   * against it already in place:
+   *
+   *   tutor    ¿Y si tuvieras 20 y te dieran 5, cuánto tendrías?
+   *   learner  20                                    ← wrong, it is 25
+   *   tutor    ¡Muy bien, Robi! 20 más 5 son 25. Ya estás sumando con confianza.
+   *
+   * A tutor telling a struggling child they are doing well removes the only
+   * signal they have that they are struggling, and "ya estás sumando con
+   * confianza" is a claim about them that is false. Asking the model not to do
+   * it was not enough; this makes it a repair.
+   */
+  it('asks again when a turn praises a wrong answer and states a different one', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: '¡Muy bien! 20 más 5 son 25.' }))
+      .mockResolvedValueOnce(
+        modelReplies({ ...GOOD_TURN, say: 'Casi. 20 más 5 son 25: cuenta 21, 22, 23, 24, 25.' }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = await orchestrator.handleLearnerText('20', Date.now());
+
+    expect(outcome.emission.turn.say).toContain('Casi');
+    const retry = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(retry).toContain('WRONG');
+  });
+
+  it('leaves praise alone when the learner was actually right', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: '¡Muy bien! 20 más 5 son 25.' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = await orchestrator.handleLearnerText('25', Date.now());
+
+    // One model call: the stated result matches what they said, so there is
+    // nothing to correct and nothing to repair.
+    expect(outcome.emission.turn.say).toContain('Muy bien');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not fire on a turn with no single learner number', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: '¡Excelente! La respuesta es 15.' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = await orchestrator.handleLearnerText('no sé, ayúdame', Date.now());
+
+    // No number to contradict. Praise for effort is not a fault.
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(outcome.emission.turn.say).toContain('Excelente');
+  });
+});

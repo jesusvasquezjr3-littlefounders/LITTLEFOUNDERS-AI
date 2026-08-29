@@ -26,6 +26,7 @@ import {
 import { evaluateBudget, WRAP_UP_INSTRUCTION, type BudgetVerdict } from '../session/budget.js';
 import {
   buildContextMessage,
+  praiseContradictsAnswer,
   promisesAnActivity,
   tierVocabularyViolation,
   TUTOR_SYSTEM_PROMPT,
@@ -926,9 +927,24 @@ export class TutorOrchestrator {
              */
             const brokenPromise =
               parsed.turn.next !== 'segment' && promisesAnActivity(parsed.turn.say);
+            /*
+             * The learner's own words for this turn — the raw text, not the
+             * fenced block, because the fence wraps it in four lines of
+             * instruction that would swamp a number comparison. A
+             * system-prompted turn (an activity verdict) has no spoken answer
+             * to contradict, so it is skipped.
+             */
+            const spokenAnswer =
+              opts.isSystemPrompted === true ? '' : (this.history.at(-1)?.text ?? '');
+            const falsePraise =
+              spokenAnswer !== '' && praiseContradictsAnswer(parsed.turn.say, spokenAnswer);
             if (violation !== null && attempt === 0) {
               turnCorrection = `used ${violation}, which this learner's age band must never hear. Say the same idea again for their age, using only whole numbers and things they can picture`;
               console.warn(`[oracle] tier ${this.session.tier} vocabulary slip (${violation}) — asking again`);
+            } else if (falsePraise && attempt === 0) {
+              turnCorrection =
+                "congratulated the learner for an answer that was WRONG, and then stated the right one. Say \"casi\" instead, show the correct result and how to reach it, and do not tell them they are doing well at something they just got wrong";
+              console.warn('[oracle] turn praised a wrong answer — asking again');
             } else if (brokenPromise && attempt === 0) {
               turnCorrection =
                 'told the learner an activity was coming but did not request one. Either set "next":"segment" with a segmentRequest, or say something that does not promise anything on screen';
@@ -941,6 +957,9 @@ export class TutorOrchestrator {
               }
               if (brokenPromise) {
                 console.warn('[oracle] unkept activity promise SURVIVED the retry — delivered');
+              }
+              if (falsePraise) {
+                console.warn('[oracle] praise of a wrong answer SURVIVED the retry — delivered');
               }
               turn = parsed.turn;
             }

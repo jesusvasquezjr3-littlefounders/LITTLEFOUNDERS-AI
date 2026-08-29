@@ -118,6 +118,46 @@ export function promisesAnActivity(say: string): boolean {
   return ACTIVITY_PROMISE.some((re) => re.test(say));
 }
 
+/**
+ * PRAISE THAT CONTRADICTS ITSELF.
+ *
+ * Observed three times in scripted lessons on 2026-08-29, and the prompt rule
+ * forbidding it did not hold:
+ *
+ *   tutor    ¿Y si tuvieras 20 y te dieran 5, cuánto tendrías?
+ *   learner  20                                    ← wrong, it is 25
+ *   tutor    ¡Muy bien, Robi! 20 más 5 son 25. Ya estás sumando con confianza.
+ *
+ * A tutor telling a struggling child they are doing well removes the only
+ * signal they have that they are struggling, and "ya estás sumando con
+ * confianza" is a claim about them that is simply false.
+ *
+ * The shape is detectable without doing the arithmetic ourselves, which
+ * matters because the model doing the arithmetic is exactly what failed:
+ * PRAISE, plus a result stated in the same turn that differs from the single
+ * number the learner just gave. If the learner were right there would be
+ * nothing to correct, so the correction is the proof they were not.
+ *
+ * A hit is repaired the way an age-band slip is — asked again, told what to
+ * change — rather than blocked, because a canned line teaches nothing.
+ */
+const PRAISE = /\b(exacto|muy bien|correcto|perfecto|excelente|bien hecho)\b/i;
+
+/** The result a turn asserts, as in "20 más 5 son 25" or "el cambio es 25". */
+const STATED_RESULT = /\b(?:es|son)\s+(\d+)/i;
+
+/**
+ * True when the turn congratulates the learner and then states a different
+ * answer from the one they gave.
+ */
+export function praiseContradictsAnswer(say: string, learnerText: string): boolean {
+  if (!PRAISE.test(say)) return false;
+  const learnerNumbers = learnerText.match(/\d+/g) ?? [];
+  if (learnerNumbers.length !== 1) return false;
+  const stated = STATED_RESULT.exec(say)?.[1];
+  return stated !== undefined && stated !== learnerNumbers[0];
+}
+
 export const TUTOR_SYSTEM_PROMPT: string = [
   'You are a tutor character inside LittleFounders, an educational product that',
   'teaches money, mathematics, science, economics and beginner programming to',
