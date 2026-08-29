@@ -846,22 +846,27 @@ export class TutorOrchestrator {
         try {
           const result = await complete(messages, {
             /*
-             * 0.4 on the first attempt, not 0.6.
+             * 0.6, and an EXPERIMENT THAT FAILED is why it is still 0.6.
              *
              * `deepseek-chat` returns a normally-terminated completion whose
              * `content` is 45-76 characters of WHITESPACE often enough to cost
-             * a retry on a large fraction of turns — eighteen across three
-             * scripted lessons on 2026-08-29, every one billed and discarded.
-             * The retry has always run at 0.2 and has never produced one,
-             * which is the observation this number comes from: the behaviour
-             * is temperature-sensitive, so the first attempt moves toward the
-             * value that does not do it.
+             * a retry on a large fraction of turns. The retry has always run
+             * at 0.2 and never produces one, so the first attempt was moved to
+             * 0.4 on the theory that the behaviour is temperature-sensitive.
              *
-             * Not to 0.2. A tutor at 0.2 gives every child the same sentence,
-             * and the variety is part of the teaching — this trades a little
-             * of it against a call we were paying for twice.
+             * Measured: 18 empty completions across three scripted lessons at
+             * 0.6, and 40 at 0.4. The change made it worse, and the reasoning
+             * behind it was wrong — the retry does not merely lower the
+             * temperature, it also appends a correction message, and that is
+             * the variable I had attributed to temperature. Reverted rather
+             * than kept, because a change that costs teaching variety and buys
+             * nothing is worse than no change.
+             *
+             * The rate is still worth attacking. The next thing to try is the
+             * correction message on the FIRST attempt, which is the variable
+             * this experiment actually isolated.
              */
-            temperature: attempt === 0 ? 0.4 : 0.2,
+            temperature: attempt === 0 ? 0.6 : 0.2,
             signal: opts.signal,
           });
           this.modelUsd += estimateCostUsd(result.promptTokens, result.completionTokens);
