@@ -874,9 +874,19 @@ async function handleLearnerTurn(
   // The learner's own turn goes into the transcript before the tutor answers,
   // so a guardian reading it later sees the exchange in the order it happened
   // even if the tutor's reply never arrives.
+  //
+  // CAPTURED, not left inline: `tutor_safety_flags.turn_seq` must name THIS
+  // row for episodic recall's exclusion query to ever match it (see
+  // `deliver`'s `learnerTurnSeq` parameter below). `SafetyEvent.turnSeq`
+  // (`this.seq` inside the orchestrator) counts MODEL turns, a different
+  // numbering space from `tutor_turns.seq` — the exact conflation this
+  // file's own `tutorRowSeq` comment already warns cost a deleted learner
+  // line once. Using it for the flag would have looked like a fix while
+  // silently matching nothing.
+  const learnerTurnSeq = nextTranscriptSeq(live);
   void persistTurn({
     sessionId: live.session.sessionId,
-    seq: nextTranscriptSeq(live),
+    seq: learnerTurnSeq,
     speaker: 'learner',
     text,
     // 'stt' is the wire's only learner-source value today, typed or spoken —
@@ -924,10 +934,23 @@ async function handleLearnerTurn(
     opts.edit
       ? await live.orchestrator.handleLearnerEdit(text, Date.now(), signal)
       : await live.orchestrator.handleLearnerText(text, Date.now(), signal),
+    learnerTurnSeq,
   );
 }
 
-async function deliver(live: Live, outcome: TurnOutcome | null): Promise<void> {
+async function deliver(
+  live: Live,
+  outcome: TurnOutcome | null,
+  /**
+   * The transcript row `seq` the learner's own utterance was just persisted
+   * under, when this call is the direct result of one (text or edit).
+   * Absent for every other caller of `deliver` (greet, farewell,
+   * consent-revoked, a voice-check verdict, an unavailable segment) — none
+   * of which can produce a `safety` flag in the first place, since that
+   * only ever comes from classifying learner TEXT.
+   */
+  learnerTurnSeq?: number,
+): Promise<void> {
   if (outcome === null) {
     // An interrupted production. Nothing to say — but the client's thinking
     // state must end on a server frame, not on a guess, so the budget frame
@@ -1013,9 +1036,23 @@ async function deliver(live: Live, outcome: TurnOutcome | null): Promise<void> {
   });
 
   if (safety) {
+    /*
+     * `learnerTurnSeq` — the TRANSCRIPT row's own seq — wins when this
+     * `deliver` call came from a learner's text/edit turn, which is the
+     * only place a `safety` flag is ever produced. `safety.turnSeq` (the
+     * orchestrator's internal turn counter, a DIFFERENT numbering space
+     * from `tutor_turns.seq`) is kept only as a fallback for a caller
+     * this function does not currently have — recording SOMETHING is
+     * still better than dropping the flag, but it will not match a real
+     * transcript row, so `search_tutor_turns` (migration 0054) can only
+     * exclude a flagged turn from episodic recall when the accurate seq
+     * reached here. See the `learnerTurnSeq` capture above for the
+     * incident this closes: a flagged utterance's OWN transcript row was
+     * never identifiable from the flag record at all.
+     */
     void persistSafetyFlag({
       sessionId: live.session.sessionId,
-      turnSeq: safety.turnSeq,
+      turnSeq: learnerTurnSeq ?? safety.turnSeq,
       category: safety.category,
       severity: safety.severity,
       handled: safety.handled,

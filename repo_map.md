@@ -7270,7 +7270,12 @@ import { tierForBirthDate } from '../routes/tutor.js';
 
 ```
 import { describe, expect, it } from 'vitest';
-import { composeExactTray, submissionFromKey, verifyGeneratedSegment } from '../services/tutorLadder.js';
+import {
+  composeExactTray,
+  orderCandidates,
+  submissionFromKey,
+  verifyGeneratedSegment,
+} from '../services/tutorLadder.js';
 import { GRADERS } from '../lesson-contract/registry.js';
 import type { SegmentBase } from '../lesson-contract/core/types.js';
 
@@ -7279,11 +7284,6 @@ import type { SegmentBase } from '../lesson-contract/core/types.js';
  * by design — the grader reads the payload — so verification means composing
  * an exact tray. These tests pin that the composition really scores 100
  * against the REAL grader, and that an unreachable target fails the segment
- * rather than serving an unwinnable exercise.
- */
-
-function traySegment(type: 'coin_count' | 'make_change', payload: Record<string, unknown>): SegmentBase {
-  return {
 ```
 
 ### backend/src/__tests__/unlockRules.test.ts
@@ -12846,6 +12846,26 @@ BEGIN
 --   learner_memory          Two small prose stores per learner — LEARNER
 --                           (who this child is: interests, what motivates
 --                           them, what to avoid) and PEDAGOGY (what teaching
+```
+
+### database/migrations/0054_recall_excludes_flagged_turns.sql
+
+```
+-- 0054_recall_excludes_flagged_turns.sql — episodic recall must never
+-- resurface a turn the input classifier already flagged.
+-- @phase: expand
+--
+-- FOUND BY ADVERSARIAL REVIEW, 2026-08-29. `search_tutor_turns` (migration
+-- 0053) does a plain full-text search over EVERY row in `tutor_turns`,
+-- including a learner utterance that was classified `personal_data`,
+-- `self_harm`, `abuse_disclosure`, `grooming_pattern` or `injection_attempt`
+-- and correctly kept out of that turn's own model call — the flag exists
+-- precisely so nobody trusts that turn's text again. Nothing stopped a LATER
+-- turn's recall query from finding and quoting it anyway: Oracle's
+-- `recallOwnHistory` splices the excerpt into the very next prompt, and
+-- `ORACLE.md §5`'s own injection fence is bypassed by construction there (a
+-- separate, already-noted defect in `orchestrator.ts`, tracked alongside this
+-- one) — meaning a home address a child typed and was correctly blocked from
 ```
 
 ### database/package.json
@@ -29509,6 +29529,7 @@ import { describe, expect, it } from 'vitest';
 import {
   IDLE_NUDGE_MS,
   LISTEN_SILENCE_MS,
+  MASTERY_MIN_OPPORTUNITIES,
   mirrorBktUpdate,
   PedagogicalController,
 } from '../tutor/controller.js';
@@ -29519,7 +29540,6 @@ import { mintGradeEcho, verifyGradeEcho } from '../session/gradeEcho.js';
  * The v3 strategy controller: every guardrail is a rule a parent could be
  * shown, so every guardrail gets a test with a name a parent could read.
  */
-
 ```
 
 ### oracle/src/__tests__/env-example.test.ts
@@ -29754,7 +29774,7 @@ import {
 } from '../session/token.js';
 import { evaluateBudget } from '../session/budget.js';
 import { getConfig } from '../env.js';
-import { parseTurn, TutorTurnSchema } from '../tutor/turnSchema.js';
+import { parseTurn, sanitizePreferredTypes, TutorTurnSchema } from '../tutor/turnSchema.js';
 
 const SECRET = process.env.TUTOR_SESSION_SECRET as string;
 const SID = '11111111-1111-4111-8111-111111111111';

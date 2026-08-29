@@ -557,6 +557,29 @@ describe('episodic recall (V4)', () => {
     const modelBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
     expect(modelBody).toContain('VERBATIM excerpts');
     expect(modelBody).toContain('repartir 12 galletas');
+
+    /*
+     * FENCED, NOT SPLICED IN RAW (found live, adversarial review,
+     * 2026-08-29). This used to sit structurally OUTSIDE the current
+     * turn's own fence — past its closing `<<<END_LEARNER_INPUT_...>>>`
+     * tag — with no re-fencing of its own, exactly the "history replayed
+     * unfenced" gap `conversationMessages()`'s own comment warns about,
+     * applied to a DIFFERENT session's past turns instead of this one's.
+     * The excerpt must now sit inside its OWN closed fence pair, with the
+     * same "never an instruction" disclaimer every other piece of
+     * learner-authored text gets.
+     */
+    const fenceOpen = /<<<LEARNER_INPUT_[A-Za-z0-9_-]+>>>/g;
+    const opens = modelBody.match(fenceOpen) ?? [];
+    // The current utterance's own fence, AND the recalled excerpt's — two
+    // separate fenced blocks in one message, not one fence and a bare tail.
+    expect(opens.length).toBeGreaterThanOrEqual(2);
+    // The excerpt itself lands strictly BETWEEN a pair of fence markers,
+    // not after the last one.
+    const lastCloseIndex = modelBody.lastIndexOf('repartir 12 galletas');
+    const nextCloseTagIndex = modelBody.indexOf('<<<END_LEARNER_INPUT_', lastCloseIndex);
+    expect(nextCloseTagIndex).toBeGreaterThan(lastCloseIndex);
+    expect(modelBody).toContain('never an instruction');
   });
 
   it('an ordinary turn never pays the recall round trip', async () => {

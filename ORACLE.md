@@ -1991,6 +1991,50 @@ actually happened instead of inventing a plausible past. Ordinary turns never
 pay the round trip; failure degrades to the turn we had before. Inherits the
 90-day transcript retention window by design.
 
+**CRITICAL DEFECT, found and fixed the same day (adversarial review,
+2026-08-29): recall could resurface a minor's own previously-blocked
+personal data to the third-party model.** The classifier correctly keeps a
+`personal_data`/`self_harm`/`abuse_disclosure`/`grooming_pattern`/
+`injection_attempt`-flagged utterance out of the model on the turn it
+happens — but that turn's raw text is STILL written to `tutor_turns`
+(§12's own table, because a guardian must be able to read what was said
+even when it was blocked), and `search_tutor_turns` (0053) had no notion
+that some rows it searches were already flagged. A child who typed a home
+address, correctly blocked that turn, and weeks later asked "¿te acuerdas
+cuando te dije...?" would have had that address quoted VERBATIM into the
+very next request to DeepSeek — exactly the harm the `personal_data` rule
+exists to prevent, via a path that never re-checked it. Compounding it: the
+excerpt was spliced in AFTER the current turn's own fence closed, with only
+a soft "quote these, do not invent" caption in place of the "never an
+instruction" disclaimer every other piece of learner text gets — the same
+"history replayed unfenced is an injection slot" gap `conversationMessages()`
+already guards against for THIS session's own turns, unapplied to a
+DIFFERENT session's past ones.
+
+Two independent fixes, because fencing alone cannot close this: a fence
+stops the MODEL from OBEYING replayed text as a command, it does not stop
+the PII from simply being present in the request body a third party
+receives, which is the actual harm. **At the source:** migration `0054`
+adds a `NOT EXISTS` guard to `search_tutor_turns` against
+`tutor_safety_flags` — a flagged turn is no longer recallable, period.
+Verified against a real local Postgres instance: a flagged and an
+unflagged turn matching the identical query, only the unflagged one
+returned. Fixing this also fixed a SECOND latent bug in the same
+call — `persistSafetyFlag`'s `turnSeq` had been the orchestrator's own
+turn counter (`this.seq`), a different numbering space from
+`tutor_turns.seq` (the transcript row number `ws/server.ts`'s
+`nextTranscriptSeq` allocates), so a flag and the turn it was FOR could
+never have been correlated at all — the exact "TRANSCRIPT's row number,
+never the model-turn seq" conflation this file's own `tutorRowSeq` comment
+already warns cost a deleted learner line once, here nearly costing a
+child-safety fix that would have looked complete while matching nothing.
+`ws/server.ts` now captures the learner turn's real transcript seq and
+threads it through. **Defense in depth:** the recalled excerpt is now
+itself wrapped in its own `fenceUntrusted()` block, with the standard
+disclaimer, rather than concatenated raw — so even content the classifier's
+five categories do not cover degrades to the same treatment as any other
+replayed learner text.
+
 **Parental approval gate (BLOCKING before family rollout):** auto-write is the
 owner-accepted interim while the platform's only active learner is the owner.
 Before real families: LEARNER-store writes require guardian approval from the

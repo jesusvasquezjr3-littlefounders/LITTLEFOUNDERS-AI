@@ -1226,3 +1226,67 @@ paid repair walked straight through the outage on 2026-08-15:
 
 Two lessons were stamped before the first guard existed; they were reverted by
 PATCHing `illustration_style_version` back to the prior composite value.
+
+## Episodic recall could resurface a minor's own blocked PII to the model — incident 2026-08-29, closed the same day
+
+**Found by an independent adversarial code review**, deliberately dispatched
+to hunt the "a rule is asserted somewhere, never checked in the code that
+matters" shape this project keeps finding — not by a report, not by a user.
+No evidence it was ever exploited; the review is dated the same day as the
+recall feature's own release (0053, 2026-08-29), so the window this was live
+in production is believed to be hours, not days.
+
+**What was wrong.** A learner's utterance classified `personal_data` (or
+`self_harm`/`abuse_disclosure`/`grooming_pattern`/`injection_attempt`) is
+correctly kept out of the model on the turn it happens — but the RAW turn
+text is still written to `tutor_turns` regardless, because a guardian must be
+able to read what their child said even when it was blocked (§1.9, a real
+requirement, not the bug). `search_tutor_turns` (the FTS RPC behind episodic
+recall, "¿te acuerdas de…?") had no notion that some of the rows it searches
+carry that flag. A child who disclosed a home address, had that turn
+correctly blocked, and later asked the tutor to recall it would have had the
+address quoted VERBATIM into the next request to DeepSeek — the exact harm
+the `personal_data` classifier rule exists to prevent, through a path that
+never re-checked it. A second, independent gap compounded it: the recalled
+excerpt was spliced into the prompt AFTER the current turn's own fence had
+already closed, with a soft caption in place of the "never an instruction"
+disclaimer every other piece of learner text gets — replayed history from a
+DIFFERENT session, getting none of the treatment this session's own history
+already receives via `conversationMessages()`.
+
+**Why two fixes, not one.** Fencing the excerpt (oracle-side,
+`orchestrator.ts`) stops the MODEL from obeying replayed text as a command.
+It does NOT stop the PII from simply being present in the request body a
+third party receives, which is the actual §1.9 harm. The fence is necessary
+but not sufficient; the query itself had to stop returning the row.
+
+**The fix.** Migration `0054_recall_excludes_flagged_turns.sql` adds
+`AND NOT EXISTS (SELECT 1 FROM tutor_safety_flags sf WHERE sf.session_id =
+tt.session_id AND sf.turn_seq = tt.seq)` to `search_tutor_turns` — a flagged
+turn is no longer recallable, full stop, expand-safe either side of a code
+deploy. Fixing this surfaced a THIRD, latent bug in the same call:
+`persistSafetyFlag`'s `turnSeq` had been the orchestrator's internal turn
+counter (`this.seq`), a completely different numbering space from
+`tutor_turns.seq` (the transcript row number `ws/server.ts`'s
+`nextTranscriptSeq` allocates) — so a flag and the turn it was actually FOR
+could never have correlated at all. Writing the migration against the WRONG
+column would have shipped a fix that looked complete and matched nothing,
+silently. `ws/server.ts` now captures the real transcript seq at the point
+the learner's turn is persisted and threads it through to the flag.
+
+**How it was verified, not just reasoned about.** Against a REAL local
+Postgres instance (`database/scripts/local-stack.sh psql`, wrapped in a
+transaction that was rolled back afterward, no trace left): inserted one
+turn classified `personal_data` and one ordinary turn matching the identical
+FTS query, called `search_tutor_turns` directly, confirmed only the
+unflagged turn came back. This is the standard the whole session held to
+elsewhere — a claimed fix is not fixed until it is run against the real
+thing, not inferred from reading the SQL.
+
+**What this means for anyone adding a NEW way to search or replay past
+turns.** `tutor_turns` is not a safe table to query blind. Any future
+feature reading it (a second recall trigger, a "what have we covered"
+summary, anything) must carry the same `tutor_safety_flags` exclusion this
+migration added — it does not live in a view or a trigger, it lives in this
+one function, and a new query written against the base table directly will
+silently reopen this exact incident.

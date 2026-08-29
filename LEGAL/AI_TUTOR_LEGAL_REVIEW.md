@@ -139,6 +139,29 @@ constraint.
     parental approval flow is documented as a blocking requirement before
     rollout to real families (/ORACLE.md §20.4).
 
+15. **Episodic recall excerpts** — **shipped 2026-08-29 (V4), recorded here
+    2026-08-29 after engineering found it had never been added to this list**
+    (§8 of this brief commits to updating this document in the same commit as
+    any new field; that did not happen when this one shipped). This is
+    materially different from item 14: where the learner brief is a short
+    prose summary WRITTEN by our own review, this field is a verbatim excerpt
+    of the child's own past words, found by a full-text search over that
+    learner's own prior turns and quoted into the current prompt, at most a
+    few short snippets, each truncated. It is wrapped in the same per-turn
+    fence used for the live turn (`/ORACLE.md` §5) and framed to the model as
+    quoted data, never as an instruction. **Incident, closed same day
+    (RUNBOOK.md, "Episodic recall could resurface a minor's own blocked PII to
+    the model"):** the search had no awareness of `tutor_safety_flags`, so a
+    turn our own moderation had already blocked for containing personal
+    data — for example a home address — could still be found by this search
+    and quoted back into a later turn: once fenced, but not excluded at the
+    source. Fixed by excluding any flagged turn from the search itself
+    (migration `0054`) as well as fencing the excerpt; the fence alone was
+    judged insufficient because it stops the model from obeying quoted text,
+    not from the text — potentially the child's own previously-blocked
+    PII — being present in the request body at all. No new field was added by
+    this fix; the exclusion narrows what item 15 can ever contain.
+
 ### §2.2b The placement intake — a second, narrower disclosure (added 2026-08-24)
 
 A learner choosing where to start a course may be offered a short conversation
