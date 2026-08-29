@@ -39,6 +39,7 @@ on:
           - migrate
           - seed-kc
           - probe-models
+          - converse
           - provision
           - domain
           - verify
@@ -95,7 +96,7 @@ jobs:
           jq --version
 
       - name: Write the Railway SSH key
-        if: inputs.step == 'inspect' || inputs.step == 'migrate' || inputs.step == 'verify'
+        if: inputs.step == 'inspect' || inputs.step == 'migrate' || inputs.step == 'verify' || inputs.step == 'converse'
         run: |
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
@@ -291,6 +292,38 @@ jobs:
           echo "Seeding the KC graph against $SUPABASE_URL"
           npm ci --prefix backend --no-audit --no-fund >/dev/null
           npm run --prefix backend seed:kc
+
+      # ── CONVERSE — hold a real lesson and read it back ───────────────────
+      #
+      # Every other check answers "did the machinery work". None answers "was
+      # that a good lesson", and every defect the owner actually reported lived
+      # in that gap with all gates green: greeting a child nine times in eleven
+      # lines, answering its own question one turn after asking it, teaching
+      # compound interest with numbers that demonstrate no compounding,
+      # promising a game and then closing.
+      #
+      # This drives the REAL orchestrator through a scripted lesson — the same
+      # seal, model, parse, moderation and history a learner gets — prints the
+      # transcript, and reads it for the faults a person would notice. It is
+      # not a substitute for someone talking to the product; it is what makes
+      # those faults catchable without waiting for someone to be free.
+      #
+      # Costs one model call and one moderation call per turn.
+      - name: Converse with the tutor
+        if: inputs.step == 'converse'
+        run: |
+          set -euo pipefail
+          SCRIPT='cd /app && npx --no-install tsx scripts/converse.ts'
+          b64=$(printf '%s' "$SCRIPT" | base64 | tr -d '\n')
+          out="$(railway ssh --service oracle -i ~/.ssh/railway_key -- \
+                  sh -c "echo $b64 | base64 -d | sh" 2>&1)"
+          status=$?
+          printf '%s\n' "$out" | sed 's/^/   /'
+          if printf '%s' "$out" | grep -q 'nothing a person would notice went wrong'; then
+            exit 0
+          fi
+          echo "::error::the transcript has problems a person would notice (exit $status) — read it above"
+          exit 1
 
       # ── PROBE-MODELS — read-only, answers "then which model?" ────────────
       #
