@@ -193,6 +193,37 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
     }
   }
 
+  /*
+   * 3b. AFFIRMING AND THEN CONTRADICTING — the worst one found so far.
+   *
+   * Observed 2026-08-29, tier 2: the tutor asked "20 menos 5" and the learner
+   * said "20". The tutor replied "¡Exacto! 20 menos 5 es 15." It affirmed a
+   * wrong answer and stated the right one in the same breath, then two turns
+   * later said "¡Muy bien, 25! Veo que ya manejas sumas y restas" to another
+   * wrong answer. A tutor telling a struggling child they are doing well is
+   * worse than one that says nothing: it removes the only signal they have.
+   *
+   * The shape is detectable without doing the arithmetic ourselves: praise,
+   * plus a RESULT stated in the same turn that differs from the number the
+   * learner just gave. If the learner were right, there would be nothing to
+   * correct.
+   */
+  for (let i = 0; i < beats.length; i += 1) {
+    const said = beats[i]!.tutor;
+    const praises = /\b(exacto|muy bien|correcto|perfecto|excelente)\b/i.test(said);
+    if (!praises) continue;
+    const learnerNumbers = beats[i]!.learner.match(/\d+/g) ?? [];
+    if (learnerNumbers.length !== 1) continue;
+    // "X menos Y es Z" / "son Z" / "es Z" — the result the tutor states.
+    const stated = /\b(?:es|son)\s+(\d+)/i.exec(said)?.[1];
+    if (stated !== undefined && stated !== learnerNumbers[0]) {
+      fault(
+        `turn ${i + 1} praises "${learnerNumbers[0]}" and then states the answer is ${stated}`,
+        said.slice(0, 120),
+      );
+    }
+  }
+
   // 4. REPEATING ITSELF. Three near-identical explanations of compound
   // interest in one session, each asking the same question again.
   for (let i = 1; i < beats.length; i += 1) {
