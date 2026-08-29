@@ -219,6 +219,43 @@ describe('PedagogicalController', () => {
     expect(c.currentStrategy).toBe('DIRECT'); // fresh entry, low mastery band
   });
 
+  describe('a right answer that took too long is not mastery (§8.3)', () => {
+    const right = (latencyMs: number | null) =>
+      ({ kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1, latencyMs }) as const;
+    const fluent = () => new PedagogicalController([entry({ pKnown: 0.8, prereqKcIds: [] })]);
+
+    it('holds the promotion when the learner laboured over it', () => {
+      const c = fluent();
+      // Two fluent answers establish this learner's own pace...
+      c.decide(right(4_000), NOW);
+      c.decide(right(4_000), NOW + 40_000);
+      // ...and the third, four times slower, is a learner working it out rather
+      // than knowing it. Confidence and opportunity count both say promote.
+      expect(c.decide(right(16_000), NOW + 80_000).strategy).not.toBe('CELEBRATE');
+      // A fluent answer afterwards promotes, so this holds rather than blocks.
+      expect(c.decide(right(4_500), NOW + 120_000).strategy).toBe('CELEBRATE');
+    });
+
+    it('promotes a learner who is simply consistent, however slow', () => {
+      // The threshold is the learner's OWN pace. A careful child who always
+      // takes twenty seconds must never be held back for being careful — which
+      // is what any absolute number would have done to them.
+      const c = fluent();
+      c.decide(right(20_000), NOW);
+      c.decide(right(21_000), NOW + 40_000);
+      expect(c.decide(right(20_500), NOW + 80_000).strategy).toBe('CELEBRATE');
+    });
+
+    it('refuses to judge fluency with no measurement', () => {
+      // Null is not zero. With nothing measured, behaviour is exactly what it
+      // was before the signal existed.
+      const c = fluent();
+      c.decide(right(null), NOW);
+      c.decide(right(null), NOW + 40_000);
+      expect(c.decide(right(null), NOW + 80_000).strategy).toBe('CELEBRATE');
+    });
+  });
+
   it('credits the evidence a returning learner already produced', () => {
     // The opportunity count is about how much we have SEEN of a learner, and
     // previous sessions are things we saw. A child coming back to a KC they

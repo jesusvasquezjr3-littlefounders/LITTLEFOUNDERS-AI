@@ -60,7 +60,20 @@ export interface ControllerDecision {
 }
 
 export type PedagogyEvent =
-  | { kind: 'activity_result'; correct: boolean; misconceptionCode: string | null; attemptNumber: number }
+  | {
+      kind: 'activity_result';
+      correct: boolean;
+      misconceptionCode: string | null;
+      attemptNumber: number;
+      /**
+       * How long the learner took, or null when nothing measured it.
+       *
+       * Null is not zero and must never be read as a fast answer: it means we
+       * have no evidence about fluency, so fluency cannot be a reason to promote
+       * or to hold.
+       */
+      latencyMs?: number | null;
+    }
   | { kind: 'voice_result'; correct: boolean; misconceptionCode: string | null }
   | { kind: 'conversation_turn' }
   | { kind: 'entry_opened' };
@@ -78,6 +91,15 @@ const MAX_STRATEGY_CHANGES_PER_MINUTE = 3;
  * learner who genuinely knows something answers three questions quickly.
  */
 const MASTERY_MIN_OPPORTUNITIES = 3;
+
+/**
+ * How much slower than their own median a correct answer must be to read as
+ * hesitant rather than fluent (blueprint §8.3).
+ *
+ * Two is wide on purpose. This guard HOLDS a promotion, and holding a fluent
+ * learner back is a worse error than promoting a hesitant one a turn late.
+ */
+const HESITATION_FACTOR = 2;
 
 /**
  * The strategies that ASK rather than TEACH.
@@ -126,6 +148,14 @@ export class PedagogicalController {
    * have seen. Mastery needs both.
    */
   private opportunities = new Map<string, number>();
+  /**
+   * How long each CORRECT answer took, per KC — the §8.3 fluency signal.
+   *
+   * Kept per KC because pace is not comparable across skills: counting coins is
+   * slower than recalling a fact, and a learner who is careful about one is not
+   * struggling with the other.
+   */
+  private correctLatencies = new Map<string, number[]>();
   /** Set while probing a prerequisite; holds the interrupted entry's index. */
   private probeReturnIndex: number | null = null;
   private probingKcId: string | null = null;
@@ -285,6 +315,15 @@ export class PedagogicalController {
     if (event.kind === 'activity_result' || event.kind === 'voice_result') {
       const kcId = entry.kcId;
       this.opportunities.set(kcId, (this.opportunities.get(kcId) ?? 0) + 1);
+      if (event.correct && event.kind === 'activity_result') {
+        const latency = event.latencyMs;
+        if (latency !== null && latency !== undefined) {
+          // Only correct answers set the pace. A wrong answer's timing measures
+          // confusion, not fluency, and mixing them makes every learner look
+          // slow exactly when they are struggling.
+          this.correctLatencies.set(kcId, [...(this.correctLatencies.get(kcId) ?? []), latency]);
+        }
+      }
       this.pKnown.set(kcId, mirrorBktUpdate(this.pKnown.get(kcId) ?? entry.pKnown, event.correct));
       this.misconceptionCode = event.misconceptionCode;
       if (event.correct) {
@@ -424,7 +463,8 @@ export class PedagogicalController {
       p >= 0.85 &&
       (event.kind === 'activity_result' || event.kind === 'voice_result') &&
       event.correct &&
-      (this.opportunities.get(entry.kcId) ?? 0) >= MASTERY_MIN_OPPORTUNITIES
+      (this.opportunities.get(entry.kcId) ?? 0) >= MASTERY_MIN_OPPORTUNITIES &&
+      !this.answeredHesitantly(entry.kcId, event)
     ) {
       return this.celebrated ? 'TRANSFER' : 'CELEBRATE';
     }
@@ -493,6 +533,45 @@ export class PedagogicalController {
    * correct — never assessed is not the same as known, and it is exactly where
    * a hidden gap hides.
    */
+  /**
+   * "CORRECTO + LATENCIA ALTA → DOMINIO FRÁGIL. NO PROMOVER" (blueprint §8.3).
+   *
+   * A right answer that took far longer than this learner's own right answers
+   * usually take is a learner working it out rather than knowing it. Promoting
+   * on it moves them off something they can only just barely do — which is how a
+   * tutor produces a confident-looking mastery curve and a child who cannot do
+   * any of it a week later.
+   *
+   * THE THRESHOLD IS THE LEARNER'S OWN PACE, deliberately, because every
+   * absolute number here would have been invented. Children differ enormously in
+   * how fast they answer, an activity that needs reading and dragging is slower
+   * than one that needs a word, and a number tuned on a guess would silently
+   * hold back every careful child. Comparing a learner against themselves needs
+   * no such guess.
+   *
+   * It refuses to judge without evidence: fewer than two prior measurements, or
+   * none at all, and this returns false — exactly the behaviour we had before
+   * the signal existed. Absent data must never be read as a bad answer.
+   */
+  private answeredHesitantly(kcId: string, event: PedagogyEvent): boolean {
+    if (event.kind !== 'activity_result') return false;
+    const latency = event.latencyMs;
+    if (latency === null || latency === undefined) return false;
+
+    const history = this.correctLatencies.get(kcId) ?? [];
+    // Two prior measurements is the minimum from which "usually" means anything.
+    if (history.length < 2) return false;
+
+    const sorted = [...history].sort((a, b) => a - b);
+    const middle = Math.floor(sorted.length / 2);
+    const median =
+      sorted.length % 2 === 0 ? (sorted[middle - 1]! + sorted[middle]!) / 2 : sorted[middle]!;
+    // Twice the learner's own median is a wide margin on purpose: this HOLDS a
+    // promotion, and holding a fluent learner is a worse error than promoting a
+    // hesitant one a turn late.
+    return median > 0 && latency > median * HESITATION_FACTOR;
+  }
+
   private weakestPrerequisite(prereqKcIds: readonly string[]): string | null {
     if (prereqKcIds.length === 0) return null;
     const masteryOf = new Map(this.kcStates.map((s) => [s.kcId, s]));

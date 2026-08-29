@@ -187,6 +187,8 @@ export class TutorOrchestrator {
    * grading), and a fabricated id was previously accepted without question.
    */
   private readonly servedSegmentSkills = new Map<string, string>();
+  /** When each open segment went on screen, for the §8.3 latency signal. */
+  private readonly segmentServedAt = new Map<string, number>();
 
   constructor(
     private readonly session: SessionContext,
@@ -330,6 +332,20 @@ export class TutorOrchestrator {
   ): void {
     this.segmentCount += 1;
     this.servedSegmentSkills.set(segmentId, skillKey);
+    /*
+     * WHEN IT WENT ON SCREEN, so the grade that comes back can be read as more
+     * than right-or-wrong.
+     *
+     * The blueprint's §8.3 is the argument: "correcto + latencia alta → dominio
+     * frágil, NO PROMOVER". A correct answer that took a long time is weaker
+     * evidence than the same answer given fluently, and promoting on it is how a
+     * learner gets moved off something they can only just barely do.
+     *
+     * It costs nothing and adds no data about the child: both ends of the
+     * interval are server-side clocks, so nothing new is asked of the client,
+     * nothing new is stored about the learner, and §1.9 is untouched.
+     */
+    this.segmentServedAt.set(segmentId, Date.now());
     if (segmentType && TutorOrchestrator.CHECKABLE_TYPES.has(segmentType)) {
       this.openCheckableSegment = segmentId;
     }
@@ -411,6 +427,11 @@ export class TutorOrchestrator {
     pedagogy?: { misconceptionCode: string | null; attemptNumber?: number } | null,
   ): Promise<TurnOutcome | null> {
     const skillKey = this.servedSegmentSkills.get(segmentId) ?? 'unknown';
+    const servedAt = this.segmentServedAt.get(segmentId);
+    // Undefined for a segment this session never served — the controller reads
+    // that as "no measurement", never as a fast answer.
+    const latencyMs = servedAt === undefined ? null : Math.max(0, Date.now() - servedAt);
+    this.segmentServedAt.delete(segmentId);
     this.nudgeSkillEstimate(skillKey, correct);
     // The stuck instruction reads the counter recordGrade is about to bump,
     // so the order is: count the miss, then ask what it now amounts to.
@@ -430,6 +451,7 @@ export class TutorOrchestrator {
         correct,
         misconceptionCode: pedagogy?.misconceptionCode ?? null,
         attemptNumber: pedagogy?.attemptNumber ?? 1,
+        latencyMs,
       },
       nowMs,
       correct ? null : () => stuckInstruction(this.plan, skillKey),
