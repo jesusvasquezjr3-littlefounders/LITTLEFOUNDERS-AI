@@ -171,8 +171,27 @@ async function main(): Promise<void> {
  */
 async function auditContentBridge(seed: z.infer<typeof SeedSchema>): Promise<void> {
   const mapped = seed.kcs.filter((k) => k.skill_key);
-  const unmapped = seed.kcs.length - mapped.length;
+  const unmappedKcs = seed.kcs.filter((k) => !k.skill_key);
+  const unmapped = unmappedKcs.length;
   console.log(`\nContent bridge — ${mapped.length} mapped, ${unmapped} deliberately unmapped:`);
+  if (unmapped > 0) {
+    /*
+     * SEARCHED, AND THE ANSWER WAS NO — recorded so nobody repeats it.
+     *
+     * On 2026-08-29 all sixty published topics that have lessons and are not
+     * already spoken for were read against these five. Nothing teaches them.
+     * The nearest misses are false friends worth naming: `si-no-me-alcanza-que-cambio`
+     * and `es-un-buen-cambio` are "cambio" as in BARTER, not as in money
+     * returned, and mapping either to `money.subtract-money` would serve a
+     * lesson about swapping toys to a child asking what is left from fifty
+     * pesos.
+     *
+     * So this is a CONTENT gap, not a mapping one, and closing it means
+     * authoring. Until then these fall through to live generation on every
+     * request, which is exactly what the null is admitting.
+     */
+    console.log(`  (${unmappedKcs.map((k) => k.key).join(', ')} — no published topic teaches these)`);
+  }
 
   const broken: string[] = [];
   for (const kc of mapped) {
