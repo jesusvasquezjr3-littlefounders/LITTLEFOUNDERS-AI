@@ -37,6 +37,7 @@ on:
           - inspect
           - probe
           - migrate
+          - seed-kc
           - provision
           - domain
           - verify
@@ -253,6 +254,37 @@ jobs:
           echo ""
           echo "== Applying =="
           bash database/scripts/railway-migrate.sh --confirm-production
+
+      # ── SEED-KC — loads the Tutor v3 knowledge-component graph ───────────
+      #
+      # Content, not schema: migration 0052 creates the tables and this fills
+      # them from database/seeds/kc_graph.v1.json through the backend's own
+      # loader — idempotent upsert by kc.key, cycle-checked, so re-dispatching
+      # is always safe (/ORACLE.md §19). It runs HERE for the same reason
+      # migrate does: the credentials live as Railway service variables and
+      # nowhere else. The five env values are read straight into the
+      # environment and never printed; SUPABASE_URL is the public gateway
+      # (database/DEPLOYMENT.md), which is what makes a runner able to reach
+      # PostgREST at all.
+      - name: Seed the KC graph
+        if: inputs.step == 'seed-kc'
+        run: |
+          set -euo pipefail
+          read_var() {
+            railway variable list --service littlefounders-backend --environment "$ENVIRONMENT" --json 2>/dev/null \
+              | jq -r --arg k "$1" '.[$k] // ""'
+          }
+          export SUPABASE_URL="$(read_var SUPABASE_URL)"
+          export SUPABASE_ANON_KEY="$(read_var SUPABASE_ANON_KEY)"
+          export SUPABASE_SERVICE_ROLE_KEY="$(read_var SUPABASE_SERVICE_ROLE_KEY)"
+          export SUPABASE_JWT_SECRET="$(read_var SUPABASE_JWT_SECRET)"
+          export INTERNAL_API_KEY="$(read_var INTERNAL_API_KEY)"
+          for v in SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY SUPABASE_JWT_SECRET INTERNAL_API_KEY; do
+            [ -n "${!v}" ] || { echo "::error::backend variable $v is empty"; exit 1; }
+          done
+          echo "Seeding the KC graph against $SUPABASE_URL"
+          npm ci --prefix backend --no-audit --no-fund >/dev/null
+          npm run --prefix backend seed:kc
 
       # ── PROVISION — creates the service and sets variables ───────────────
       #
