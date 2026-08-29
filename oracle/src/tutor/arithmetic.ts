@@ -183,7 +183,23 @@ export function answersItsOwnQuestion(say: string): boolean {
   // Only the text BEFORE the final question can give it away; anything after
   // is part of the question itself.
   const lastOpener = Math.max(say.lastIndexOf('¿'), 0);
-  const beforeQuestion = say.slice(0, lastOpener);
+  /*
+   * COUNTING ALOUD IS NOT GIVING THE ANSWER AWAY, and this cost a false
+   * positive the moment it was tested against a real lesson:
+   *
+   *   "Casi. Si tienes 10 y agregas 5, cuenta: 11, 12, 13, 14, 15.
+   *    ¿Y cuánto es 10 más 3?"
+   *
+   * The answer to the new question is 13, and 13 is sitting in the counting
+   * run for the OLD one. Counting forward is how this age band is taught to
+   * add; a check that punished it would fire on the best turns in the session.
+   *
+   * So runs of three or more numbers are removed before looking. A tutor
+   * asserting a result says it alone, not as the third item of a count.
+   */
+  const beforeQuestion = say
+    .slice(0, lastOpener)
+    .replace(/\b\d+(?:\s*,\s*\d+){2,}\b/g, ' ');
 
   // The answer stated as a bare number is the give-away. `20 más 5` in the
   // lead-in is the problem being set up, not its answer, so operands are not

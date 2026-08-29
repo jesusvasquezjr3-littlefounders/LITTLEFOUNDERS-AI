@@ -193,6 +193,35 @@ function sentencesOf(text: string): string[] {
     .filter((s) => s.split(' ').length >= MIN_DISTINCTIVE_WORDS);
 }
 
+/**
+ * TRUE WHEN THIS TURN IS THE PREVIOUS ONE AGAIN, reworded.
+ *
+ * `repeatsEarlierSentence` needs an EXACT sentence match, and the harness that
+ * found the problem uses word overlap. That gap is real: measured
+ * 2026-08-29, a turn 86% identical to the one before it — "Casi, Chispa. Si
+ * pagas 50 y cuesta 25, restamos: 50 menos 25. ¿Cuánto te queda?" after the
+ * same correction in different words — passed the repair and failed the check.
+ *
+ * The thing that DETECTS and the thing that REPAIRS must share a definition,
+ * or the product ships faults its own gate reports.
+ *
+ * Unchanged NUMBERS are required, for the reason the harness learned the hard
+ * way: the same method applied to a new problem is good teaching, not
+ * repetition. New numbers mean a new question however familiar the words.
+ */
+export function echoesPreviousTurn(say: string, previous: string): boolean {
+  const previousWords = new Set(
+    sentencesOf(previous).join(' ').split(' ').filter((w) => w.length > 4),
+  );
+  const words = sentencesOf(say).join(' ').split(' ').filter((w) => w.length > 4);
+  if (previousWords.size === 0 || words.length === 0) return false;
+  const overlap = words.filter((w) => previousWords.has(w)).length / words.length;
+  if (overlap <= 0.6) return false;
+
+  const numbersOf = (s: string): string => [...new Set(s.match(/\d+/g) ?? [])].sort().join(',');
+  return numbersOf(previous) === numbersOf(say);
+}
+
 /** The first sentence this turn reuses from earlier in the session, or null. */
 export function repeatsEarlierSentence(say: string, earlierTutorLines: readonly string[]): string | null {
   if (earlierTutorLines.length === 0) return null;

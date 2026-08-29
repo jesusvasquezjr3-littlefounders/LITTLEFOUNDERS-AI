@@ -28,6 +28,7 @@ import { evaluateBudget, WRAP_UP_INSTRUCTION, type BudgetVerdict } from '../sess
 import {
   buildContextMessage,
   praiseContradictsAnswer,
+  echoesPreviousTurn,
   repeatsEarlierSentence,
   promisesAnActivity,
   tierVocabularyViolation,
@@ -1006,10 +1007,15 @@ export class TutorOrchestrator {
              * times. The prompt rule against it did not hold, so it becomes a
              * repair like the others.
              */
-            const repeated = repeatsEarlierSentence(
-              parsed.turn.say,
-              this.history.filter((h) => h.speaker === 'tutor').map((h) => h.text),
-            );
+            const priorTutorLines = this.history
+              .filter((h) => h.speaker === 'tutor')
+              .map((h) => h.text);
+            const lastTutorSaid = priorTutorLines.at(-1) ?? '';
+            const repeated =
+              repeatsEarlierSentence(parsed.turn.say, priorTutorLines) ??
+              (lastTutorSaid !== '' && echoesPreviousTurn(parsed.turn.say, lastTutorSaid)
+                ? 'the same thing you just said, reworded'
+                : null);
             /*
              * KEEP IT. It is a VALID turn — parsed, in shape, teaching
              * something — and the only thing wrong with it is one of the

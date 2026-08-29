@@ -123,3 +123,20 @@ describe('a turn that asks and answers itself', () => {
     expect(answersItsOwnQuestion('Casi, 10 más 3 es 13. ¿Y cuánto es 10 más 7?')).toBe(false);
   });
 });
+
+describe('counting aloud is not giving the answer away', () => {
+  /*
+   * Caught by a test written for something else, which is the best way to
+   * catch one. Counting forward is how this age band is taught to add, and a
+   * check that punished it would fire on the best turns in a session.
+   */
+  it('ignores a number that sits inside a counting run', () => {
+    expect(
+      answersItsOwnQuestion('Casi. Si tienes 10 y agregas 5, cuenta: 11, 12, 13, 14, 15. ¿Y cuánto es 10 más 3?'),
+    ).toBe(false);
+  });
+
+  it('still catches an answer asserted on its own', () => {
+    expect(answersItsOwnQuestion('El resultado es 13. ¿Cuánto es 10 más 3?')).toBe(true);
+  });
+});

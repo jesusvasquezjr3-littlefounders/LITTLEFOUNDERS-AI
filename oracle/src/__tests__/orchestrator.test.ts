@@ -1041,3 +1041,49 @@ describe('a failed repair costs the improvement, never the turn', () => {
     expect(outcome.emission.source).toBe('scripted');
   });
 });
+
+describe('saying the same thing again in different words', () => {
+  /*
+   * `repeatsEarlierSentence` needs an exact match; the harness that found the
+   * problem uses word overlap. That gap shipped a turn 86% identical to the one
+   * before it — the same correction, reworded — which passed the repair and
+   * failed the check. The thing that DETECTS and the thing that REPAIRS have to
+   * share a definition, or the product ships faults its own gate reports.
+   */
+  it('repairs a reworded repeat of the previous turn', async () => {
+    const first = 'Casi, Robi. Si pagas 50 y cuesta 25, restamos 50 menos 25. ¿Cuánto queda?';
+    const reworded = 'Casi, Robi. Restamos: 50 menos 25 cuando pagas 50 y cuesta 25. ¿Cuánto queda?';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: first }))
+      .mockResolvedValueOnce(judgeSays(true))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: reworded }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Usa monedas: 2 de 10 y 1 de 5. ¿Cuántas son?' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('35', Date.now());
+    const second = await orchestrator.handleLearnerText('no sé', Date.now());
+
+    expect(second.emission.turn.say).toContain('Usa monedas');
+  });
+
+  it('leaves the same METHOD on new numbers alone', async () => {
+    // The scaffold reused on a new problem is good teaching. New numbers mean
+    // a new question, however familiar the words.
+    const first = 'Casi. Si tienes 10 y agregas 5, cuenta: 11, 12, 13, 14, 15. ¿Y 10 más 3?';
+    const next = 'Casi. Si tienes 10 y agregas 3, cuenta: 11, 12, 13. ¿Y 10 más 7?';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: first }))
+      .mockResolvedValueOnce(judgeSays(true))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: next }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('20', Date.now());
+    const second = await orchestrator.handleLearnerText('25', Date.now());
+
+    expect(second.emission.turn.say).toBe(next);
+    // Four calls: two turns, no retry bought for teaching well.
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
+});
