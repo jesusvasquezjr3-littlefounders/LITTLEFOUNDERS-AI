@@ -99,10 +99,11 @@ export function tierVocabularyViolation(text: string, tier: 1 | 2 | 3): string |
  * not the ordinary "vamos a ver" of conversation. A false positive costs one
  * retry, which is cheap; a false negative costs the child's trust.
  */
+/**
+ * Phrases that ANNOUNCE something, on their own, in any tense-free reading.
+ * Each already carries its own future or offering sense.
+ */
 const ACTIVITY_PROMISE: RegExp[] = [
-  /\b(en|sobre)\s+la\s+pantalla\b/i,
-  /\bna\s+tela\b/i,
-  /\bon\s+the\s+screen\b/i,
   /\bvamos\s+a\s+(jugar|practicar\s+con|armar|probar)\b/i,
   /\bvamos\s+(jogar|praticar\s+com)\b/i,
   /\b(let'?s|we'?ll)\s+(play|try|practi[cs]e\s+with|build)\b/i,
@@ -111,11 +112,56 @@ const ACTIVITY_PROMISE: RegExp[] = [
 ];
 
 /**
+ * Merely NAMING the screen. On its own this says nothing about tense, and that
+ * is the whole problem it caused.
+ */
+const SCREEN_MENTION: RegExp[] = [
+  /\b(en|sobre)\s+la\s+pantalla\b/i,
+  /\bna\s+tela\b/i,
+  /\bon\s+the\s+screen\b/i,
+];
+
+/**
+ * The tutor describing what the learner ALREADY DID there.
+ *
+ * A deliberately explicit list rather than a preterite pattern: `-aste|-iste`
+ * would also catch `triste`, `chiste` and `existe`, and a checker that
+ * misreads "estás triste" as past tense is the same class of bug one level
+ * down. These are the verbs a tutor actually uses to narrate an activity.
+ */
+const ALREADY_DID =
+  /\b(pusiste|hiciste|contaste|elegiste|escogiste|juntaste|lograste|armaste|ordenaste|acomodaste|encontraste|completaste|marcaste|seleccionaste|uniste|resolviste|pagaste|colocaste)\b/i;
+
+/** A cue that what follows is about to happen rather than has happened. */
+const FUTURE_OFFER =
+  /\b(vamos|quieres|qu[eé]\s+tal\s+si|y\s+si|te\s+muestro|te\s+pongo|te\s+preparo|practiquemos|practicamos|probemos|probamos|intentemos|intentamos|jugamos|hacemos|let'?s|we'?ll|i'?ll\s+show|shall\s+we|vou|vamos\s+ver|quer)\b/i;
+
+/**
  * True when the tutor's own words announce an activity. Compared against the
  * turn's `next`, so prose and intent cannot disagree.
+ *
+ * A BARE MENTION OF THE SCREEN IS NOT A PROMISE, and treating it as one got
+ * steadily worse as the tutor got better. The turn that reacts to a graded
+ * activity is SUPPOSED to name what the learner just did — that is what
+ * `openActivity` exists for — and it says so in the past tense:
+ *
+ *   "Robi, en la pantalla pusiste la moneda de 10 en la cubeta de 'necesito'"
+ *
+ * That is the best kind of turn this tutor produces, and the checker read it as
+ * an unkept promise, forced a retry, spent a model call, risked replacing a good
+ * turn with a worse one, and then reported the result as a product defect. The
+ * better the tutor got at referring to what a child did, the more it cried wolf.
+ *
+ * So a screen mention now counts only when the same sentence also offers
+ * something, and never when that sentence narrates what the learner already did.
  */
 export function promisesAnActivity(say: string): boolean {
-  return ACTIVITY_PROMISE.some((re) => re.test(say));
+  if (ACTIVITY_PROMISE.some((re) => re.test(say))) return true;
+  return sentencesOf(say).some((sentence) => {
+    if (!SCREEN_MENTION.some((re) => re.test(sentence))) return false;
+    if (ALREADY_DID.test(sentence)) return false;
+    return FUTURE_OFFER.test(sentence);
+  });
 }
 
 /**
