@@ -8,6 +8,7 @@ import { HudPlate } from './hud/HudPlate';
 import { useScrollEdges } from './hud/useScrollEdges';
 import { gradeSegment } from './tutorApi';
 import { mayDemonstrate, runTrayDemo } from './trayDemo';
+import { isSegmentLocked, MAX_ATTEMPTS } from './segmentLock';
 import type { TrayDemoStep } from './types';
 import type { LiveSegmentState } from './useTutorSocket';
 
@@ -73,7 +74,6 @@ export interface LiveSegmentPanelProps {
   className?: string;
 }
 
-const MAX_ATTEMPTS = 2;
 
 export function LiveSegmentPanel({ live, token, onGraded, demo, className }: LiveSegmentPanelProps) {
   const { t } = useTranslation();
@@ -197,7 +197,12 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, className }: Liv
   }
 
   const Component = entry.component;
-  const locked = checking || demoRunning || verdict?.correct === true || attempt > MAX_ATTEMPTS;
+  const locked = isSegmentLocked({
+    checking,
+    demoRunning,
+    answeredCorrectly: verdict?.correct === true,
+    attempt,
+  });
 
   return (
     /*
