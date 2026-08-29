@@ -38,6 +38,7 @@ import {
   LAB_SCENES,
   LAB_TOKEN,
   labLocaleOf,
+  labMap,
   labOffers,
   labSession,
   labTranscript,
@@ -425,6 +426,9 @@ export default function TutorLabPage() {
     phase,
     articulates,
     adaptationOffered: socket.adaptationOffer !== null,
+    // The lab's introduction carries the map fixture, exactly as the product
+    // does once the KC graph is seeded.
+    mapOpen: phase === 'introducing',
     replayEnded: director?.finished ?? false,
   });
 
@@ -720,7 +724,7 @@ export default function TutorLabPage() {
 
         {phase === 'introducing' && (
           <StageLayer label={t('tutor.stage.introduceLayer')} placement="world">
-            <OfferChips {...offerLayer} character={character} nickname={preferences.nickname} />
+            <OfferChips {...offerLayer} character={character} nickname={preferences.nickname} map={labMap(locale)} />
           </StageLayer>
         )}
 

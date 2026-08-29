@@ -12,6 +12,7 @@ import type {
   TutorPreferences,
 } from '../types';
 import type { LiveSegmentState, TutorSocket, TutorTurnState } from '../useTutorSocket';
+import type { TutorMapNode, TutorMapResponse } from '../tutorApi';
 import type { StagePhase } from '../stage/phases';
 
 /*
@@ -274,6 +275,76 @@ export function labOffers(locale: Locale): TutorOffers {
     ],
     faqIds: ['what_is_saving', 'why_prices_change', 'what_is_a_budget', 'how_does_a_loan_work'],
     canAskOpen: true,
+  };
+}
+
+/**
+ * The learning map (Tutor v3), small but showing all five node states and a
+ * cross-strand edge — what the introducing phase renders when the KC graph
+ * exists. Localized by hand: the real titles come from Vault's own catalog.
+ */
+export function labMap(locale: Locale): TutorMapResponse {
+  const titles: Record<Locale, Record<string, string>> = {
+    'en-US': {
+      count: 'Count mixed money',
+      change: 'Give change by counting up',
+      compare: 'Compare amounts',
+      needs: 'Needs and wants',
+      price: 'What a price is',
+      profit: 'What is left: profit',
+    },
+    'es-MX': {
+      count: 'Contar dinero mezclado',
+      change: 'Dar cambio contando hacia arriba',
+      compare: 'Comparar cantidades',
+      needs: 'Necesidades y deseos',
+      price: 'Qué es un precio',
+      profit: 'Lo que queda: la ganancia',
+    },
+    'pt-BR': {
+      count: 'Contar dinheiro misturado',
+      change: 'Dar troco contando para cima',
+      compare: 'Comparar quantias',
+      needs: 'Necessidades e desejos',
+      price: 'O que é um preço',
+      profit: 'O que sobra: o lucro',
+    },
+  };
+  const tt = titles[locale];
+  const node = (
+    kcKey: string,
+    title: string,
+    state: TutorMapNode['state'],
+    strand: TutorMapNode['strand'],
+    attempts = 0,
+  ): TutorMapNode => ({
+    kcId: `f47ac10b-58cc-4372-a567-0e02b2c3d${(kcKey.length + 470).toString().padStart(3, '0')}`,
+    kcKey,
+    strand,
+    title,
+    state,
+    mastery: attempts > 0 ? 0.72 : null,
+    attempts,
+    skillKey: null,
+  });
+  return {
+    nodes: [
+      node('money.count-mixed-coins', tt.count!, 'in_progress', 'money_math', 3),
+      node('money.compare-amounts', tt.compare!, 'needs_review', 'money_math', 5),
+      node('money.make-change-counting-up', tt.change!, 'locked', 'money_math'),
+      node('biz.needs-vs-wants', tt.needs!, 'mastered', 'entrepreneurship', 6),
+      node('biz.what-is-price', tt.price!, 'available', 'entrepreneurship'),
+      node('biz.profit', tt.profit!, 'locked', 'entrepreneurship'),
+    ],
+    edges: [
+      { from: 'money.count-mixed-coins', to: 'money.make-change-counting-up' },
+      { from: 'money.count-mixed-coins', to: 'money.compare-amounts' },
+      { from: 'biz.needs-vs-wants', to: 'biz.what-is-price' },
+      { from: 'biz.what-is-price', to: 'biz.profit' },
+      { from: 'money.count-mixed-coins', to: 'biz.profit' },
+    ],
+    continueTarget: { kcKey: 'money.compare-amounts', title: tt.compare!, reason: 'review_due', skillKey: null },
+    review: { count: 1 },
   };
 }
 

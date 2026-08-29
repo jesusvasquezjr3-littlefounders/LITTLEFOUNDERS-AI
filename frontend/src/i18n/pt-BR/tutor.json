@@ -320,5 +320,20 @@
     "STT_FAILED": "Não consegui te ouvir bem. Tente de novo, um pouquinho mais perto do microfone.",
     "VALIDATION_ERROR": "Não entendi. Quer tentar dizer de outro jeito?",
     "generic": "Algo não funcionou nessa tentativa. Tente de novo."
+  },
+  "map": {
+    "graphLabel": "Seu mapa de aprendizado",
+    "continue": "Continuar: {{title}}",
+    "continueReview": "Revisar: {{title}}",
+    "reviewCount_one": "{{count}} coisa para revisar hoje",
+    "reviewCount_other": "{{count}} coisas para revisar hoje",
+    "lockedBy": "Abre depois de {{title}}",
+    "state": {
+      "locked": "Ainda não abriu",
+      "available": "Pronto para aprender",
+      "in_progress": "Em andamento",
+      "mastered": "Dominado",
+      "needs_review": "Hora de revisar"
+    }
   }
 }

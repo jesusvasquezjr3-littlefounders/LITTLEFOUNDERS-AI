@@ -64,6 +64,7 @@ function renderChips(offers: Partial<TutorOffers> = {}, props: Record<string, un
   const view = render(
     <OfferChips
       phase="introducing"
+      map={null}
       // The guaranteed arrangement by default: with no canvas there is nothing
       // to anchor to, and a test that asserted against culled chips would be
       // asserting against an empty screen.

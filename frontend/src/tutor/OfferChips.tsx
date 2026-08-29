@@ -11,7 +11,8 @@ import { micBlockedReason } from './mic';
 import { SessionHistory } from './SessionHistory';
 import { SpeechCaption } from './SpeechCaption';
 import { useStageDock, type OfferLayerProps } from './stage/StageShell';
-import type { StartSessionInput } from './tutorApi';
+import { MapGraph } from './map/MapGraph';
+import type { StartSessionInput, TutorMapNode, TutorMapResponse } from './tutorApi';
 
 /*
  * The introduction and the openings, in close-up (/ORACLE.md §9.2).
@@ -124,6 +125,14 @@ export interface OfferChipsProps extends OfferLayerProps {
    * it is a learner-chosen nickname rather than a real name by construction.
    */
   nickname: string | null;
+  /**
+   * The learning map (Tutor v3) — the KC graph this learner's sessions
+   * actually traverse. When it carries nodes, IT replaces the opening chips:
+   * the map is the home (blueprint §A.2), CONTINUE is the planner's own first
+   * pick, and "algo más" keeps the open door. Null (v3 off, unseeded, or a
+   * failed read) falls back to the v2 openings — graceful in both directions.
+   */
+  map: TutorMapResponse | null;
 }
 
 export function OfferChips({
@@ -137,6 +146,7 @@ export function OfferChips({
   ready,
   character,
   nickname,
+  map,
 }: OfferChipsProps) {
   const { t } = useTranslation();
   const dock = useStageDock();
@@ -381,6 +391,93 @@ export function OfferChips({
     </>
   );
 
+  /*
+   * THE LEARNING MAP (Tutor v3). When the KC graph exists it IS the home:
+   * one accent CONTINUE (the planner's own first pick — the map and the
+   * session can never disagree), the review count when something is due, the
+   * graph with its visible prerequisite edges, and the open door. Nodes that
+   * can be started start; locked nodes name their prerequisite instead of
+   * merely refusing.
+   */
+  const startInputForNode = useCallback(
+    (skillKey: string | null): Omit<StartSessionInput, 'wantsVoice'> =>
+      skillKey ? { intent: 'weak_skill', skillKey } : { intent: 'open' },
+    [],
+  );
+
+  const pickNode = useCallback(
+    (node: TutorMapNode) => choose(startInputForNode(node.skillKey)),
+    [choose, startInputForNode],
+  );
+
+  const mapPanel =
+    map && map.nodes.length > 0 ? (
+      <HudPlate
+        shape="sheet"
+        className={cn('pointer-events-auto max-h-full w-full overflow-y-auto overscroll-contain', settleStep(0))}
+        /*
+         * INLINE for the same reason the chips do it: `cn` is a plain join, so
+         * a `max-w-*` class here would land beside the sheet's own 44ch cap
+         * with the winner decided by Tailwind's output order. A curriculum
+         * graph is not a 44ch reading column.
+         */
+        style={{ maxWidth: '100%' }}
+      >
+        <div className="flex w-full flex-col gap-3">
+          {/*
+            The greeting lives IN the map while the map is the home: the
+            crown caption is projected over the character, and with the camera
+            at the establishing shot it landed across the map's own CONTINUE
+            (measured overlap in the lab report). One sentence, one place.
+          */}
+          <p className="lf-speech text-content" aria-live="polite" aria-atomic="true">
+            {greeting}
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {map.continueTarget && (
+              <HudPlate
+                as="button"
+                shape="chip"
+                floor="accent"
+                disabled={disabled}
+                data-opening="map-continue"
+                onClick={() => choose(startInputForNode(map.continueTarget!.skillKey))}
+                className="pointer-events-auto"
+                style={{ maxWidth: '100%' }}
+              >
+                <Icon name="play_arrow" />
+                <span className="lf-action text-left">
+                  {map.continueTarget.reason === 'review_due'
+                    ? t('tutor.map.continueReview', { title: map.continueTarget.title })
+                    : t('tutor.map.continue', { title: map.continueTarget.title })}
+                </span>
+              </HudPlate>
+            )}
+            {map.review.count > 0 && (
+              <HudPlate shape="chip" className="pointer-events-none">
+                <Icon name="history" className="text-warning-strong" />
+                <span className="lf-caption">{t('tutor.map.reviewCount', { count: map.review.count })}</span>
+              </HudPlate>
+            )}
+            {offers.canAskOpen && (
+              <HudPlate
+                as="button"
+                shape="chip"
+                disabled={disabled}
+                data-opening="open"
+                onClick={() => choose({ intent: 'open' })}
+                className="pointer-events-auto"
+              >
+                <Icon name="chat" className="text-primary" />
+                <span className="lf-action">{t('tutor.offers.open.title')}</span>
+              </HudPlate>
+            )}
+          </div>
+          <MapGraph map={map} onPick={pickNode} disabled={disabled} />
+        </div>
+      </HudPlate>
+    ) : null;
+
   const chips = (
     <div
       role="group"
@@ -572,7 +669,10 @@ export function OfferChips({
             the whole greeting play out behind the shell's veil and then lifts
             it on a line that has already finished.
           */}
-          <SpeechCaption text={greeting} turnSeq={ready ? 1 : 0} />
+          {/* With the map open the greeting rides the map's own header —
+              projected over the establishing shot, the crown caption landed
+              across the map's CONTINUE. */}
+          {!mapPanel && <SpeechCaption text={greeting} turnSeq={ready ? 1 : 0} />}
 
           <div
             ref={clusterRef}
@@ -610,7 +710,12 @@ export function OfferChips({
               className="absolute left-1/2 top-2 flex w-[min(88vw,22rem)] -translate-x-1/2 flex-col items-stretch gap-2 md:w-[min(90vw,54rem)] md:items-center"
             >
               {status}
-              {chipsIn && chips}
+              {/* With the map open, this anchored cluster carries ONLY the
+                  status lines — the map has its own centered surface below,
+                  because a 56vh reading sheet hanging from a chest anchor
+                  covered the dock and the microphone (measured: three overlaps
+                  in the lab's own collision report). */}
+              {chipsIn && !mapPanel && chips}
               {chipsIn && !dockAbove && secondary}
               {/*
                 THE ARCHIVE IS DELIBERATELY NOT HERE. This cluster is the
@@ -638,6 +743,22 @@ export function OfferChips({
                 dockAbove,
               )
             : null}
+
+          {/*
+            THE MAP'S OWN SURFACE (Tutor v3). Viewport-anchored and centered,
+            never hung from the character: the camera is at the establishing
+            shot while it is open (`phases.ts` → `mapOpen`), the island reads
+            behind it, and the bottom offset keeps the microphone dock clear —
+            the anchored-cluster version measurably covered the dock, the
+            archive chips and the orb.
+          */}
+          {chipsIn && mapPanel && (
+            <div className="pointer-events-none fixed inset-x-0 top-[max(4.5rem,9vh)] bottom-60 z-20 flex justify-center px-4">
+              <div className="pointer-events-auto flex max-h-full w-[min(94vw,58rem)] justify-center">
+                {mapPanel}
+              </div>
+            </div>
+          )}
         </>
       ) : (
         /*
@@ -666,7 +787,7 @@ export function OfferChips({
             </span>
           </HudPlate>
           {status}
-          {chips}
+          {mapPanel ?? chips}
           {/*
             Inline here whatever the shell is doing. This branch is the no-stage
             arrangement — the dock is a control over a render, and on a device

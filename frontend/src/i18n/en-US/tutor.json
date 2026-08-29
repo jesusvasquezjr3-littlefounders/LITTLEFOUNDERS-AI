@@ -320,5 +320,20 @@
     "STT_FAILED": "I didn't quite catch that. Try again, a little closer to the microphone.",
     "VALIDATION_ERROR": "I didn't understand that. Want to try saying it another way?",
     "generic": "Something didn't work just then. Try again."
+  },
+  "map": {
+    "graphLabel": "Your learning map",
+    "continue": "Continue: {{title}}",
+    "continueReview": "Review: {{title}}",
+    "reviewCount_one": "{{count}} thing to review today",
+    "reviewCount_other": "{{count}} things to review today",
+    "lockedBy": "Opens after {{title}}",
+    "state": {
+      "locked": "Not open yet",
+      "available": "Ready to learn",
+      "in_progress": "In progress",
+      "mastered": "Mastered",
+      "needs_review": "Time to review"
+    }
   }
 }

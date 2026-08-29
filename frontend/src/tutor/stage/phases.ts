@@ -103,6 +103,15 @@ export interface StageShotInput {
   /** True while the tutor is waiting on an answer to an adaptation offer. */
   adaptationOffered?: boolean;
   /**
+   * True when the learning map (Tutor v3) is the introduction's content.
+   *
+   * The map is a reading surface over the whole island, so the introduction
+   * pulls back to the establishing shot for it — a close-up would put a
+   * curriculum graph across the character's face, which is exactly what the
+   * first screenshot of it showed. Ignored outside `introducing`.
+   */
+  mapOpen?: boolean;
+  /**
    * True when a replay has reached the end of its last beat.
    *
    * The ONE input the `replaying` phase adds, and it exists so the camera can
@@ -147,6 +156,7 @@ export function shotForPhase({
   phase,
   articulates,
   adaptationOffered = false,
+  mapOpen = false,
   replayEnded = false,
 }: StageShotInput): ShotId {
   const speaking: ShotId = articulates ? 'closeup' : 'closeup-wide';
@@ -160,7 +170,9 @@ export function shotForPhase({
       // the camera closes the distance to it first.
       return 'approach';
     case 'introducing':
-      return speaking;
+      // The learning map reads over the whole island; the greeting close-up
+      // returns the moment the map is not the content (v2 fallback).
+      return mapOpen ? 'establishing' : speaking;
     case 'conversing':
       /*
        * An adaptation is a question one character asks in front of another, so

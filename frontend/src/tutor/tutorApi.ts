@@ -121,6 +121,38 @@ export function gradeSegment(
   });
 }
 
+// ── The learning map (Tutor v3) ─────────────────────────────────────────────
+
+export type TutorMapNodeState = 'locked' | 'available' | 'in_progress' | 'mastered' | 'needs_review';
+
+export interface TutorMapNode {
+  kcId: string;
+  kcKey: string;
+  strand: 'money_math' | 'entrepreneurship';
+  title: string;
+  state: TutorMapNodeState;
+  mastery: number | null;
+  attempts: number;
+  skillKey: string | null;
+}
+
+export interface TutorMapResponse {
+  nodes: TutorMapNode[];
+  edges: Array<{ from: string; to: string }>;
+  continueTarget: {
+    kcKey: string;
+    title: string;
+    reason: 'review_due' | 'frontier';
+    skillKey: string | null;
+  } | null;
+  review: { count: number };
+}
+
+/** The KC graph as this learner sees it — the same graph the planner traverses. */
+export function getMap(token: string): Promise<ApiResult<TutorMapResponse>> {
+  return api<TutorMapResponse>('/tutor/map', { token });
+}
+
 // ── Consent (/ORACLE.md §4.3) ───────────────────────────────────────────────
 
 export interface ConsentState {

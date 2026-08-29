@@ -40,6 +40,10 @@ describe('shotForPhase', () => {
     // them was legible either.
     expect(shotForPhase({ phase: 'introducing', articulates: true })).toBe('closeup');
     expect(shotForPhase({ phase: 'introducing', articulates: false })).toBe('closeup-wide');
+    // The learning map (Tutor v3) reads over the whole island, so it pulls the
+    // introduction back to the establishing shot; the close-up greeting is the
+    // v2 fallback for an unseeded graph.
+    expect(shotForPhase({ phase: 'introducing', articulates: true, mapOpen: true })).toBe('establishing');
   });
 
   it('gives the adaptation offer its own framing, and nothing else during a conversation', () => {

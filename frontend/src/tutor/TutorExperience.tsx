@@ -5,6 +5,7 @@ import { duckTutorAmbient, playPlatformSound } from '@/lib/sound';
 import { SCENE_ASSETS } from '@/tutor-scene/assets';
 import { isSceneBackdropId, type SceneBackdropId } from '@/tutor-scene/backdrops';
 import {
+  getMap,
   getOffers,
   getPreferences,
   getTranscript,
@@ -12,6 +13,7 @@ import {
   savePreferences,
   startSession,
   type StartSessionInput,
+  type TutorMapResponse,
 } from './tutorApi';
 import { micBlockedForOffers, micBlockedReason, narrowBlockedReason, primaryOpening } from './mic';
 import { PersonalizeInWorld } from './PersonalizeInWorld';
@@ -153,6 +155,8 @@ export function TutorExperience() {
   const [preferences, setPreferences] = useState<TutorPreferences | null>(null);
   const [catalog, setCatalog] = useState<TutorCatalog | null>(null);
   const [offers, setOffers] = useState<TutorOffers | null>(null);
+  /** The learning map (Tutor v3). Null = the v2 openings — graceful. */
+  const [map, setMap] = useState<TutorMapResponse | null>(null);
   const [session, setSession] = useState<StartedSession | null>(null);
   const [saving, setSaving] = useState(false);
   const [starting, setStarting] = useState(false);
@@ -213,9 +217,12 @@ export function TutorExperience() {
       }
       setToken(authToken);
 
-      const [prefsResult, offersResult] = await Promise.all([
+      const [prefsResult, offersResult, mapResult] = await Promise.all([
         getPreferences(authToken),
         getOffers(authToken),
+        // Best-effort: a failed map read falls back to the v2 openings and
+        // never blocks the phase — the offers are the load-bearing read.
+        getMap(authToken),
       ]);
       if (cancelled) return;
 
@@ -231,6 +238,7 @@ export function TutorExperience() {
       setPreferences(prefs);
       setCatalog(served);
       setOffers(offersResult.data);
+      setMap(mapResult.data ?? null);
       /*
        * The picker opens on the first visit and never again — and the SERVER
        * remembers now (`personalized`: a preferences row exists, which the
@@ -630,6 +638,8 @@ export function TutorExperience() {
     phase,
     articulates,
     adaptationOffered: socket.adaptationOffer !== null,
+    // The map pulls the introduction back to the island (phases.ts).
+    mapOpen: phase === 'introducing' && (map?.nodes.length ?? 0) > 0,
     // The pull back to the island at the end of a replay is the same goodbye
     // the session itself ended on (/ORACLE.md §9.5, and the note in `phases.ts`).
     replayEnded: director?.finished ?? false,
@@ -724,6 +734,10 @@ export function TutorExperience() {
             if (token) {
               void getOffers(token).then((result) => {
                 if (result.data) setOffers(result.data);
+              });
+              // The map moved too: the session that just ended changed mastery.
+              void getMap(token).then((result) => {
+                if (result.data) setMap(result.data);
               });
             }
           },
@@ -912,7 +926,7 @@ export function TutorExperience() {
           learner's, and no other layer does.
         */
         <StageLayer label={t('tutor.stage.introduceLayer')} placement="world">
-          <OfferChips {...offerLayer} character={character} nickname={preferences?.nickname ?? null} />
+          <OfferChips {...offerLayer} character={character} nickname={preferences?.nickname ?? null} map={map} />
         </StageLayer>
       )}
 
