@@ -7,7 +7,7 @@ import type { SegmentBase, Verdict } from '@/lesson-engine/core/types';
 import { HudPlate } from './hud/HudPlate';
 import { useScrollEdges } from './hud/useScrollEdges';
 import { gradeSegment } from './tutorApi';
-import { runTrayDemo, TRAY_TYPES } from './trayDemo';
+import { mayDemonstrate, runTrayDemo } from './trayDemo';
 import type { TrayDemoStep } from './types';
 import type { LiveSegmentState } from './useTutorSocket';
 
@@ -100,16 +100,25 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, className }: Liv
   draftRef.current = draft;
   const lastDemoSeq = useRef<number>(-1);
   useEffect(() => {
-    if (!demo || demo.seq === lastDemoSeq.current) return;
-    if (!TRAY_TYPES.has(segment.type) || verdict?.correct === true) return;
-    lastDemoSeq.current = demo.seq;
-    const denominations = (segment.payload as { denominations?: unknown }).denominations;
-    if (!Array.isArray(denominations)) return;
+    const denominations: unknown = (segment.payload as { denominations?: unknown }).denominations;
+    if (
+      !mayDemonstrate({
+        demoSeq: demo?.seq ?? null,
+        lastPlayedSeq: lastDemoSeq.current,
+        segmentType: segment.type,
+        answeredCorrectly: verdict?.correct === true,
+        denominations,
+      })
+    ) {
+      return;
+    }
+    lastDemoSeq.current = demo!.seq;
     const abort = new AbortController();
     setDemoRunning(true);
     void runTrayDemo(
-      demo.steps,
-      denominations.filter((d): d is number => typeof d === 'number'),
+      demo!.steps,
+      // `mayDemonstrate` has already established this is a non-empty array.
+      (denominations as unknown[]).filter((d): d is number => typeof d === 'number'),
       {
         getPicked: () => {
           const current = draftRef.current as { picked?: unknown } | undefined;

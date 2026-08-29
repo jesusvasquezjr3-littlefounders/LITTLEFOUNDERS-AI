@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { runTrayDemo, TRAY_TYPES } from '../trayDemo';
+import { mayDemonstrate, runTrayDemo, TRAY_TYPES } from '../trayDemo';
 import type { TrayDemoStep } from '../types';
 
 /*
@@ -131,5 +131,50 @@ describe('which activities the tutor may touch', () => {
     expect(TRAY_TYPES.has('coin_count')).toBe(true);
     expect(TRAY_TYPES.has('make_change')).toBe(true);
     expect(TRAY_TYPES.has('sort_buckets')).toBe(false);
+  });
+});
+
+describe('when the tutor may touch the tray at all', () => {
+  /*
+   * Four guards protecting a child's unsubmitted answer. They lived inside a
+   * `useEffect` in a component with no test file, so the only thing holding
+   * them was that nobody edited them.
+   */
+  const ok = {
+    demoSeq: 2,
+    lastPlayedSeq: 1,
+    segmentType: 'coin_count',
+    answeredCorrectly: false,
+    denominations: [1, 5, 10],
+  };
+
+  it('demonstrates when everything is in order', () => {
+    expect(mayDemonstrate(ok)).toBe(true);
+  });
+
+  it('never replays a demonstration it already played', () => {
+    // The same seq arriving twice is a re-render, not a second instruction.
+    // Replaying would double every coin the tutor put down.
+    expect(mayDemonstrate({ ...ok, lastPlayedSeq: 2 })).toBe(false);
+  });
+
+  it('does not reach into an activity that is not a tray', () => {
+    expect(mayDemonstrate({ ...ok, segmentType: 'sort_buckets' })).toBe(false);
+  });
+
+  it('does not rewrite an answer the learner already got right', () => {
+    // That answer has been graded and paid. Moving coins in it afterwards
+    // edits a result the child was already told was correct.
+    expect(mayDemonstrate({ ...ok, answeredCorrectly: true })).toBe(false);
+  });
+
+  it('refuses a payload that offers no legal move', () => {
+    expect(mayDemonstrate({ ...ok, denominations: [] })).toBe(false);
+    expect(mayDemonstrate({ ...ok, denominations: undefined })).toBe(false);
+    expect(mayDemonstrate({ ...ok, denominations: 'coins' })).toBe(false);
+  });
+
+  it('does nothing when there is no demonstration', () => {
+    expect(mayDemonstrate({ ...ok, demoSeq: null })).toBe(false);
   });
 });

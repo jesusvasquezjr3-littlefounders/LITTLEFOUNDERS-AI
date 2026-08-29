@@ -18,6 +18,35 @@ import type { TrayDemoStep } from './types';
 
 export const TRAY_TYPES = new Set(['coin_count', 'make_change']);
 
+/**
+ * WHETHER THE TUTOR MAY TOUCH THIS TRAY RIGHT NOW.
+ *
+ * Four guards, each protecting a child's unsubmitted answer, and they lived
+ * inside a `useEffect` in a component with no test file — so the only thing
+ * holding them was that nobody edited them. Pulled out here because a rule
+ * about when it is safe to write into someone's answer should be checkable
+ * without mounting a panel.
+ *
+ * - A demo already played must not replay: the same `seq` arriving twice is a
+ *   re-render, not a second instruction.
+ * - A demo aimed at a segment that is not a tray has nothing to move.
+ * - A demo for an activity the learner already got right would rewrite an
+ *   answer that has been graded and paid.
+ * - A payload with no denominations offers no legal move at all.
+ */
+export function mayDemonstrate(input: {
+  demoSeq: number | null;
+  lastPlayedSeq: number;
+  segmentType: string;
+  answeredCorrectly: boolean;
+  denominations: unknown;
+}): boolean {
+  if (input.demoSeq === null || input.demoSeq === input.lastPlayedSeq) return false;
+  if (!TRAY_TYPES.has(input.segmentType)) return false;
+  if (input.answeredCorrectly) return false;
+  return Array.isArray(input.denominations) && input.denominations.length > 0;
+}
+
 const DEFAULT_STEP_MS = 700;
 
 export interface TrayDemoIo {
