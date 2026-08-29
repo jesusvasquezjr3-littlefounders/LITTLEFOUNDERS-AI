@@ -742,18 +742,28 @@ function StageShellInner({
                 notice={mic.denied ? t('tutor.conversation.micDenied') : null}
                 onClip={mic.onClip}
                 onInterrupt={mic.onInterrupt}
-                className="shrink-0"
               />
             )}
 
             {/*
-              `min-w-0` so a long placeholder cannot push the orb off centre,
-              and `flex-none` from `lg:` up where the slot goes back to being a
-              full-width row under the orb rather than the space beside it.
+              `flex-none` from `lg:` up: the slot goes back to being a
+              full-width row under the orb rather than the space beside it,
+              where `lg:w-full` claims the whole column regardless of this
+              min-width.
+
+              `min-w-[9.5rem]` is a FLOOR, not the old `min-w-0` — found live:
+              with an unbounded-shrink composer sharing a row with `MicOrb`'s
+              blocked-reason plate (a full sentence, up to `86vw` on its own),
+              the plate did not lose gracefully. The composer measured 10 px
+              wide, its input unusable, on a real "voice unavailable" session.
+              `MicOrb` now shrinks its plate instead of demanding that width
+              (see MicOrb.tsx); this floor is the second half of the fix, so
+              the composer keeps enough room for its input AND send button
+              even in a blocked-mic state neither of us has seen yet.
             */}
             <div
               ref={attachBelow}
-              className="flex min-w-0 flex-1 flex-col gap-2 empty:hidden lg:w-full lg:flex-none"
+              className="flex min-w-[9.5rem] flex-1 flex-col gap-2 empty:hidden lg:w-full lg:flex-none"
             />
           </div>
         </div>

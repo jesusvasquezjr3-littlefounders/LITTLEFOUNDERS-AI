@@ -458,8 +458,17 @@ export function MicOrb({
    * in, and 36 px of the dock's height back on every one of them.
    */
   if (!reason) {
+    /*
+     * `shrink-0` is hard-coded HERE, not left to the caller, because it
+     * protects something the caller cannot see from the outside: the 96 px
+     * CIRCLE. A flex row that runs out of room shrinks WIDTH only, never
+     * height, so a shrinkable orb sharing a tight row would flatten into an
+     * oval before this component ever gets a say. The `reason` branch below
+     * has no such constraint — a plate of TEXT is exactly what is supposed to
+     * reflow when the row is tight — so it deliberately does NOT get this.
+     */
     return (
-      <div className={cn('flex flex-col items-center', className)}>
+      <div className={cn('flex shrink-0 flex-col items-center', className)}>
         <style>{ORB_KEYFRAMES}</style>
         {orb}
         {hint}
@@ -480,7 +489,17 @@ export function MicOrb({
   return (
     <HudPlate
       shape="plate"
-      className={cn('pointer-events-none self-center', className)}
+      /*
+       * `min-w-0`, NOT `shrink-0` — found live, at a phone width, sharing a
+       * row with the composer (StageShell.tsx): this plate's own `max-w` is
+       * `min(38ch,86vw)`, sized for standing ALONE, and a flex sibling that
+       * refuses to shrink takes that full width regardless of what the
+       * composer next to it needs — down to an unusable ~10 px input box.
+       * `text-balance` on the reason line already expects to wrap; letting
+       * this plate shrink is what lets it actually do that instead of
+       * forcing one wide, un-wrapped row.
+       */
+      className={cn('pointer-events-none min-w-0 self-center', className)}
       // Tighter than the plate's own `py-4`: the ring is already 96 px of air
       // with a 28 px glyph in the middle of it, and the plate's job here is to
       // hold the two together, not to frame them.

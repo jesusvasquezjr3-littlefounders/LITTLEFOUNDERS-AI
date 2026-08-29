@@ -1260,6 +1260,26 @@ so a second removal is an edit somebody made on purpose rather than a silent
 consequence. Going missing by accident is the original bug; going missing on
 purpose is a product decision, and only one has been made.
 
+**The reason line can take the composer down with it — found live, on a phone,
+2026-08-29.** `VOICE_UNAVAILABLE`'s full sentence and the composer share ONE
+row on a phone (`StageShell.tsx`): the orb's own wrapper carried `shrink-0` in
+BOTH of its states — the bare 96 px circle (where that protects its shape from
+flattening into an oval) and the wide reason plate (where it does not protect
+anything and instead forces the plate to its full `min(38ch,86vw)` entitlement
+regardless of what the composer next to it needs). Measured on a real
+production session: the composer's own `<input>` computed to 10 px wide,
+un-usably narrow, with the reason plate having taken the rest of the row.
+For a learner with no voice provider configured, ORACLE.md §12 already calls
+the composer the ONLY channel — so this was the SAME "an opt-out must be told
+what the system decided" class §1.14 already names elsewhere, wearing the
+mobile-width costume: `shrink-0` was applied blindly to both of `MicOrb`'s
+states from the outside, and the wide-text state never got to say it needed
+different treatment. Fixed in two places for one failure: `MicOrb.tsx` now
+keeps `shrink-0` ONLY on the compact circle and lets the reason plate shrink
+(`min-w-0`) so its already-`text-balance`d line wraps instead of demanding one
+wide row; `StageShell.tsx`'s composer slot gained a `min-w-[9.5rem]` floor so
+it survives even a state neither of us has tested yet.
+
 ---
 
 ## §15 Cost and rate limits
