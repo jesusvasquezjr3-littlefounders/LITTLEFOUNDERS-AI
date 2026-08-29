@@ -231,29 +231,53 @@ main().catch((err) => {
  * uses at runtime.
  */
 async function suggestAlternatives(alreadyMapped: Set<string>): Promise<void> {
+  /*
+   * EVERY FAILURE HERE IS ANNOUNCED. The first version of this helper ended
+   * two of its paths with a bare `return` on a null query result, and that is
+   * precisely what happened on its first real run: the `id=in.(...)` list of
+   * ~200 UUIDs made a URL long enough for PostgREST to reject, the result was
+   * null, and the function returned having printed NOTHING — a diagnostic that
+   * failed silently while diagnosing a defect whose whole nature was failing
+   * silently (§1.14). Hence the course-scoped query below instead of a giant
+   * id list, and hence a printed reason on every path that gives up.
+   */
+  const courses = await serviceRest<{ id: string }[]>(
+    '/courses?slug=eq.financial-education&status=eq.published&select=id&limit=1',
+  );
+  const courseId = courses?.[0]?.id;
+  if (!courseId) {
+    console.log('\n(cannot suggest: the financial-education course did not resolve)');
+    return;
+  }
+
+  const topics = await serviceRest<{ id: string; slug: string }[]>(
+    `/topics?status=eq.published&select=id,slug,sagas!inner(adventures!inner(course_id))` +
+      `&sagas.adventures.course_id=eq.${encodeURIComponent(courseId)}&limit=2000`,
+  );
+  if (!topics || topics.length === 0) {
+    console.log('\n(cannot suggest: no published topics came back for the course)');
+    return;
+  }
+
   const lessons = await serviceRest<{ topic_id: string }[]>(
     '/lessons?status=eq.published&select=topic_id&limit=5000',
   );
   if (!lessons || lessons.length === 0) {
-    console.log('\n(no published lessons found, so no alternatives to suggest)');
+    console.log('\n(cannot suggest: no published lessons came back)');
     return;
   }
 
   const perTopic = new Map<string, number>();
   for (const l of lessons) perTopic.set(l.topic_id, (perTopic.get(l.topic_id) ?? 0) + 1);
 
-  const ids = [...perTopic.keys()];
-  const topics = await serviceRest<{ id: string; slug: string }[]>(
-    `/topics?id=in.(${ids.join(',')})&status=eq.published&select=id,slug`,
-  );
-  if (!topics) return;
-
   const free = topics
-    .filter((t) => !alreadyMapped.has(`financial-education/${t.slug}`))
     .map((t) => ({ slug: t.slug, count: perTopic.get(t.id) ?? 0 }))
+    .filter((t) => t.count > 0 && !alreadyMapped.has(`financial-education/${t.slug}`))
     .sort((a, b) => b.count - a.count);
 
-  console.log(`\nTopics WITH published lessons and not already mapped (${free.length}):`);
-  for (const t of free.slice(0, 40)) console.log(`  ${String(t.count).padStart(3)}  ${t.slug}`);
-  if (free.length > 40) console.log(`  … and ${free.length - 40} more`);
+  console.log(
+    `\n${topics.length} published topics in the course; ${free.length} have lessons and are unmapped:`,
+  );
+  for (const t of free.slice(0, 60)) console.log(`  ${String(t.count).padStart(3)}  ${t.slug}`);
+  if (free.length > 60) console.log(`  … and ${free.length - 60} more`);
 }
