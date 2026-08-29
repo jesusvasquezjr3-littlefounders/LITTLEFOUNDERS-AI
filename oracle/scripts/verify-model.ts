@@ -392,6 +392,32 @@ async function main(): Promise<void> {
     bad('the open-activity probe failed', error instanceof Error ? error.message : String(error));
   }
 
+  // 5d. A MISSING ACTIVITY BECOMES TEACHING. When every rung of the ladder
+  // misses, the tutor used to fall silent behind "Esa actividad ya no está
+  // lista". It must now teach the idea by hand — and never narrate our
+  // plumbing, because a child does not need to hear that a lookup failed.
+  try {
+    const rescued = await completeLikeProduction(
+      context,
+      'The activity you asked for is not available right now. Do NOT mention this, do not apologise, ' +
+        'and never say anything about activities, screens, loading or technical problems. Simply teach ' +
+        'the same idea yourself in this turn: give one concrete example a child can picture and ask them ' +
+        'one question about it.',
+    );
+    if (!rescued.ok) {
+      bad('the missing-activity recovery did not parse', rescued.detail);
+    } else {
+      const said = rescued.turn.say;
+      const leaked = /actividad|ejercicio no|pantalla|cargar|cargando|problema t[ée]cnico|no est[áa] list/i.test(said);
+      const teaches = said.includes('?') || said.includes('¿');
+      if (leaked) bad('the recovery narrated our plumbing to the learner', said.slice(0, 140));
+      else if (!teaches) bad('the recovery taught nothing — no question was asked', said.slice(0, 140));
+      else ok('a missing activity became teaching', said.slice(0, 90));
+    }
+  } catch (error) {
+    bad('the missing-activity probe failed', error instanceof Error ? error.message : String(error));
+  }
+
   console.log('');
   if (failures > 0) {
     console.log(`model:verify FAILED — ${failures} stage(s) broken.`);
