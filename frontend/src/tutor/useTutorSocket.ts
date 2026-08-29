@@ -28,8 +28,13 @@ export interface TutorTurnState {
   action: CharacterAction;
   audioUrl: string | null;
   next: 'ask' | 'segment' | 'close';
-  /** v3: per-strategy thinking time before any gentle nudge. */
-  policy: { idleNudgeMs: number } | null;
+  /**
+   * v3 turn policy, per pedagogical strategy. `idleNudgeMs` is how long to let
+   * a learner think before a nudge; `listenSilenceMs` is how much silence,
+   * after they have spoken, ends their turn. Null while the brain is dormant,
+   * and the client then uses its own patient defaults rather than zero.
+   */
+  policy: { idleNudgeMs: number; listenSilenceMs: number } | null;
   /** v3: tray demonstration steps to animate concurrently with the speech. */
   demonstrate: import('./types').TrayDemoStep[] | null;
 }

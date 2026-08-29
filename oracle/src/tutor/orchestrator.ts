@@ -8,7 +8,12 @@ import {
   stuckInstruction,
   type LessonPlan,
 } from './plan.js';
-import { IDLE_NUDGE_MS, PedagogicalController, type PedagogyEvent } from './controller.js';
+import {
+  IDLE_NUDGE_MS,
+  LISTEN_SILENCE_MS,
+  PedagogicalController,
+  type PedagogyEvent,
+} from './controller.js';
 import { classifyLearnerInput, type SafetyCategory } from '../safety/classifier.js';
 import { fenceUntrusted } from '../safety/untrusted.js';
 import { moderateTutorOutput } from '../safety/moderation.js';
@@ -189,6 +194,15 @@ export class TutorOrchestrator {
   /** Per-strategy client idle-nudge budget, or null while the brain is off. */
   get idleNudgeMs(): number | null {
     return this.controller.active ? IDLE_NUDGE_MS[this.controller.currentStrategy] : null;
+  }
+
+  /**
+   * How much silence ends the learner's spoken turn, per strategy — null while
+   * the brain is off, and the client then falls back to its own default rather
+   * than to zero, because zero would cut a child off the instant they breathe.
+   */
+  get listenSilenceMs(): number | null {
+    return this.controller.active ? LISTEN_SILENCE_MS[this.controller.currentStrategy] : null;
   }
 
   /** The controller's difficulty band for the next activity, or null. */

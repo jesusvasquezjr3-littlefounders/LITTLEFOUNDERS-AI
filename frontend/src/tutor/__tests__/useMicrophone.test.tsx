@@ -309,3 +309,51 @@ describe('useMicrophone push-to-talk guarantees', () => {
     expect(clip).toBeNull();
   });
 });
+
+describe('two things can open this microphone now', () => {
+  /*
+   * Hands-free listening opens the microphone after a tutor turn, and the orb
+   * opens it when the learner presses. A second `start()` on a LIVE recorder
+   * used to be silently destructive: a new MediaRecorder over the same stream,
+   * `recorderRef` overwritten, the running one orphaned and still streaming
+   * chunks nobody would commit, and `chunksRef` cleared — so a child pressing
+   * the orb to answer a question the microphone was already hearing lost the
+   * first half of their sentence.
+   */
+  it('a second start() on a live recorder is a no-op, not a new recorder', async () => {
+    const { result } = renderHook(() => useMicrophone(true));
+
+    await act(async () => {
+      await result.current.start();
+    });
+    const first = FakeRecorder.last;
+    expect(first?.state).toBe('recording');
+
+    await act(async () => {
+      await result.current.start();
+    });
+
+    // Same recorder, still running: nothing was orphaned and no audio was
+    // thrown away.
+    expect(FakeRecorder.last).toBe(first);
+    expect(first?.state).toBe('recording');
+    expect(result.current.recording).toBe(true);
+  });
+
+  it('still starts normally once the previous recorder has stopped', async () => {
+    const { result } = renderHook(() => useMicrophone(true));
+    await act(async () => {
+      await result.current.start();
+    });
+    const first = FakeRecorder.last;
+    await act(async () => {
+      await result.current.stop();
+    });
+    await act(async () => {
+      await result.current.start();
+    });
+    // The guard must not become a one-shot microphone: the next turn needs one.
+    expect(FakeRecorder.last).not.toBe(first);
+    expect(result.current.recording).toBe(true);
+  });
+});

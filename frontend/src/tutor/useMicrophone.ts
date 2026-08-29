@@ -234,6 +234,19 @@ export function useMicrophone(enabled: boolean, options: MicrophoneOptions = {})
 
   const start = useCallback(async () => {
     if (!enabled) return;
+    /*
+     * ALREADY LISTENING IS NOT A REASON TO START AGAIN.
+     *
+     * There are now two things that open this microphone — the orb the learner
+     * presses, and hands-free listening after a tutor turn — and a second
+     * `start()` on a live recorder is silently destructive: it builds a NEW
+     * MediaRecorder over the same stream, overwrites `recorderRef`, orphans the
+     * running one, and clears `chunksRef`, so the audio captured so far is
+     * discarded and the orphan keeps streaming chunks nobody will commit. A
+     * child pressing the orb to answer a question the microphone was already
+     * listening to would lose the first half of their sentence.
+     */
+    if (recorderRef.current && recorderRef.current.state !== 'inactive') return;
     if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
       setPermission('unsupported');
       return;

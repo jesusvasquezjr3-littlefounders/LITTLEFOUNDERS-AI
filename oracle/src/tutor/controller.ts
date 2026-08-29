@@ -52,6 +52,11 @@ export interface ControllerDecision {
   instruction: string | null;
   /** How long the client should wait before a gentle nudge, per strategy. */
   idleNudgeMs: number;
+  /**
+   * How much silence, after the learner has actually spoken, means their turn
+   * is over — the blueprint's §6.2 turn policy, per strategy.
+   */
+  listenSilenceMs: number;
 }
 
 export type PedagogyEvent =
@@ -174,7 +179,14 @@ export class PedagogicalController {
   decide(event: PedagogyEvent, nowMs: number): ControllerDecision {
     const entry = this.activeEntry;
     if (!entry) {
-      return { strategy: 'CELEBRATE', scaffolding: 0, difficulty: this.lastDifficulty, instruction: null, idleNudgeMs: 30_000 };
+      return {
+        strategy: 'CELEBRATE',
+        scaffolding: 0,
+        difficulty: this.lastDifficulty,
+        instruction: null,
+        idleNudgeMs: IDLE_NUDGE_MS.CELEBRATE,
+        listenSilenceMs: LISTEN_SILENCE_MS.CELEBRATE,
+      };
     }
 
     let failedNow = false;
@@ -214,6 +226,7 @@ export class PedagogicalController {
       difficulty,
       instruction: this.instructionFor(strategy, entry),
       idleNudgeMs: IDLE_NUDGE_MS[strategy],
+      listenSilenceMs: LISTEN_SILENCE_MS[strategy],
     };
   }
 
@@ -373,6 +386,49 @@ export const IDLE_NUDGE_MS: Record<Strategy, number> = {
   ELABORATE: 45_000,
   TRANSFER: 35_000,
   CELEBRATE: 30_000,
+};
+
+/**
+ * HOW LONG A PAUSE MEANS "I'M DONE TALKING", PER STRATEGY.
+ *
+ * This is the blueprint's §6.2 turn policy, and it is differentiator #1 of the
+ * fourteen for a reason: in customer service you want to close a turn fast, and
+ * in TUTORING you want the opposite. The silence of a child who is thinking is
+ * the most valuable part of the session, and a tutor that talks into it has
+ * destroyed the thing it was there to cause.
+ *
+ * So the number is not global and it is not a timeout — it is a pedagogical
+ * decision that changes with what the tutor just did. After an open Socratic
+ * question, three and a half seconds of quiet is a child working; after a
+ * fluency drill, the same silence is a child who has lost the thread and needs
+ * the next card. The strategy already knows which of those it is, and it is the
+ * only thing that does.
+ *
+ * These are DELIBERATELY longer than a voice assistant's ~700 ms. A product
+ * built for six-year-olds that cuts them off mid-sentence is a product they
+ * stop talking to, and the cost of waiting too long is one awkward beat where
+ * the cost of waiting too little is the answer itself.
+ */
+export const LISTEN_SILENCE_MS: Record<Strategy, number> = {
+  // The tutor just explained; the learner is acknowledging or asking back.
+  DIRECT: 1_500,
+  WORKED: 1_500,
+  // A partially-faded example: they are working, with a step to fill in.
+  FADED: 2_500,
+  // The whole point is the pause. Never rush it.
+  SOCRATIC: 3_500,
+  // Recall drills want pace — a long tail here reads as the app being broken.
+  FLUENCY: 900,
+  SPACED: 1_500,
+  // A diagnostic probe is a question about something they may not know yet.
+  PROBE: 3_000,
+  REMEDIATE: 2_500,
+  // Frustrated: present, unhurried, never looming.
+  RESCUE: 2_500,
+  // "Explain why it works" — the longest answers in the whole session.
+  ELABORATE: 3_500,
+  TRANSFER: 3_000,
+  CELEBRATE: 1_200,
 };
 
 /**

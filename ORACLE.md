@@ -460,6 +460,53 @@ learner and never returns a number it did not derive.
   cleared moderation, it carries nothing the learner was not about to hear.
 - **Never:** learner identity of any kind. The provider sees a session id.
 
+### §4.2b Hands-free listening — WHEN capture starts
+
+**Added 2026-08-28.** The microphone no longer requires a held button. After a
+tutor turn, it opens on its own, and the learner's turn ends when they stop
+talking rather than when they remember to let go.
+
+**Why this is pedagogy and not convenience.** Push-to-talk asks a child to hold
+a button while they think, and thinking is the behaviour the product exists to
+cause. A learner working out "cuarenta y… dos" releases the button during the
+pause and loses the rest of their answer. This is the blueprint's §6.2 turn
+policy and the first of its fourteen differentiators, and it is the one place
+where the right answer is the OPPOSITE of a voice assistant's: in customer
+service you close a turn fast, and in tutoring the silence is the valuable part.
+
+**The budget is per strategy, never global.** `LISTEN_SILENCE_MS`
+(`oracle/src/tutor/controller.ts`) travels on the turn as `policy.listenSilenceMs`.
+Only the strategy knows whether three seconds of quiet is a child working
+through a Socratic question (3 500 ms) or one who has lost the thread in a
+fluency drill (900 ms). A dormant v3 brain sends no policy and the client falls
+back to a deliberately patient default — never to zero, which would cut a child
+off the moment they drew breath.
+
+**What this does NOT change, and this is the whole privacy argument.** It is not
+an always-on microphone:
+
+- It rides the **same gate** push-to-talk does. Consent (§4.3), Core's answer,
+  the DPA state and the browser permission are all upstream and untouched — a
+  `kid` with no verified guardian consent gets no microphone at all, held or
+  hands-free.
+- It opens **only in the gap after a tutor turn**, never while the tutor is
+  speaking and never while a turn is already in flight.
+- It **closes itself** when nobody speaks (`leadInMs`), so a silent room is not
+  recorded and no room tone is shipped to a paid transcriber.
+- Nothing about the audio's handling changes: same provider, same
+  moderation-before-speech, same never-persisted rule (§4.1, §4.2).
+- **Push-to-talk still works.** This adds a way to answer; it removes none. The
+  orb ends a turn early, and the detector defers to it rather than sending twice.
+
+**Where the noise floor is decided.** `frontend/src/tutor/turnDetector.ts` is a
+pure function over microphone levels, so the whole policy — including the
+failure modes that only appear after four seconds of silence — is tested with no
+microphone and no fake clock. Its thresholds encode two facts about children
+that a default tuned for adults gets wrong: the quietest, least confident answer
+is the one a tutor most needs to hear, so the speech threshold is low; and a
+cough is not an answer, so a burst shorter than `minSpeechMs` can neither open a
+turn nor close one.
+
 ### §4.3 The consent gate
 
 A `kid` cannot open the microphone until a **verified guardian** has granted

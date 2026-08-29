@@ -151,12 +151,20 @@ export type ServerMessage =
       /** What the tutor intends next, so the UI can prepare the panel. */
       next: 'ask' | 'segment' | 'close';
       /**
-       * v3 turn policy: how long the client should let the learner think
-       * before any gentle nudge, chosen per pedagogical strategy (thinking
-       * time is sacred in a Socratic beat; fluency wants pace). Absent while
-       * the v3 brain is dormant — the client then keeps its own default.
+       * v3 turn policy, chosen per pedagogical strategy. Absent while the v3
+       * brain is dormant — the client then keeps its own defaults, which must
+       * be real numbers rather than zero: a zero here would cut a child off
+       * the moment they drew breath.
+       *
+       * `idleNudgeMs` — how long to let the learner think before any gentle
+       * nudge. `listenSilenceMs` — how much silence, AFTER they have actually
+       * spoken, means the turn is theirs no longer (blueprint §6.2). The two
+       * are different questions: one is about a learner who has not started,
+       * the other about one who has finished. Thinking time is sacred in a
+       * Socratic beat and fluency work wants pace, so both move with the
+       * strategy rather than being global constants.
        */
-      policy?: { idleNudgeMs: number };
+      policy?: { idleNudgeMs: number; listenSilenceMs: number };
       /**
        * v3: demonstration steps over the OPEN money-tray activity, validated
        * by the closed turn schema. The client animates them concurrently with

@@ -842,6 +842,7 @@ async function deliver(live: Live, outcome: TurnOutcome | null): Promise<void> {
    * silence after they speak.
    */
   const idleNudgeMs = live.orchestrator.idleNudgeMs;
+  const listenSilenceMs = live.orchestrator.listenSilenceMs;
   send(live.socket, {
     type: 'turn',
     seq: emission.seq,
@@ -851,7 +852,9 @@ async function deliver(live: Live, outcome: TurnOutcome | null): Promise<void> {
     audioUrl: null,
     next: emission.turn.next,
     // v3 turn policy: per-strategy thinking time. Absent while dormant.
-    ...(idleNudgeMs !== null ? { policy: { idleNudgeMs } } : {}),
+    ...(idleNudgeMs !== null && listenSilenceMs !== null
+      ? { policy: { idleNudgeMs, listenSilenceMs } }
+      : {}),
     // v3: tray demonstration steps, already schema-validated with the turn.
     ...(emission.turn.demonstrate ? { demonstrate: emission.turn.demonstrate } : {}),
   });

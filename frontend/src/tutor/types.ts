@@ -123,7 +123,7 @@ export type ServerMessage =
       audioUrl: string | null;
       next: 'ask' | 'segment' | 'close';
       /** v3: per-strategy thinking time before any gentle nudge. */
-      policy?: { idleNudgeMs: number };
+      policy?: { idleNudgeMs: number; listenSilenceMs: number };
       /** v3: demonstration steps the tutor performs on the open money tray. */
       demonstrate?: TrayDemoStep[];
     }

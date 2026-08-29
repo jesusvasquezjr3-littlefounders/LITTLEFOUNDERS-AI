@@ -36,6 +36,7 @@ import {
   type StageMicProps,
   type StagePhase,
 } from './stage/StageShell';
+import { useHandsFreeTurn } from './useHandsFreeTurn';
 import { useMicrophone, type Microphone } from './useMicrophone';
 import { useTutorSocket } from './useTutorSocket';
 import type { SessionSummary, StartedSession, TutorCatalog, TutorOffers, TutorPreferences } from './types';
@@ -594,6 +595,29 @@ export function TutorExperience() {
   const microphone = useMicrophone(phase === 'conversing' && socket.microphone, {
     onAutoRelease: handleClip,
     onChunk: socket.streamAudioChunk,
+  });
+
+  /*
+   * HANDS-FREE LISTENING — the blueprint's differentiator #1.
+   *
+   * The tutor asks, the microphone opens on its own, and the turn ends when the
+   * child stops talking rather than when they remember to let go of a button.
+   * The silence budget is the one the pedagogical strategy chose, so thinking
+   * time is protected exactly where thinking is the point.
+   *
+   * It rides the SAME gate push-to-talk does (`socket.microphone`, which is
+   * downstream of consent and of Core's answer), opens only in the gap after a
+   * tutor turn, and closes itself when nobody speaks. Holding the orb still
+   * works and is untouched — this adds a way to answer, it does not remove one.
+   */
+  useHandsFreeTurn({
+    enabled: phase === 'conversing' && socket.microphone,
+    speaking,
+    awaitingReply,
+    policy: turn?.policy ?? null,
+    turnSeq: turn?.seq ?? 0,
+    microphone,
+    onTurn: handleClip,
   });
 
   /*

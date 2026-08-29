@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { mirrorBktUpdate, PedagogicalController } from '../tutor/controller.js';
+import {
+  IDLE_NUDGE_MS,
+  LISTEN_SILENCE_MS,
+  mirrorBktUpdate,
+  PedagogicalController,
+} from '../tutor/controller.js';
 import type { SessionPlanEntry } from '../core/client.js';
 import { mintGradeEcho, verifyGradeEcho } from '../session/gradeEcho.js';
 
@@ -203,5 +208,46 @@ describe('the grade echo', () => {
     expect(verifyGradeEcho('', NOW).ok).toBe(false);
     expect(verifyGradeEcho('ge1.zzz', NOW).ok).toBe(false);
     expect(verifyGradeEcho('v1.a.b', NOW).ok).toBe(false);
+  });
+});
+
+/*
+ * THE TURN POLICY — differentiator #1 of the blueprint's fourteen.
+ *
+ * In customer service you close a turn fast. In tutoring you do the opposite:
+ * the silence of a child who is thinking is the most valuable part of the
+ * session, and a tutor that talks into it has destroyed the thing it was there
+ * to cause. So this is asserted as a RELATIONSHIP rather than as a set of
+ * magic numbers — the exact milliseconds will be tuned against real children,
+ * but the ordering is the pedagogy and must not silently invert.
+ */
+describe('per-strategy listening budgets', () => {
+  it('waits longest where the learner is thinking, shortest where pace is the point', () => {
+    // An open question and "explain why it works" produce the longest answers
+    // in the whole session; a recall drill wants the next card.
+    expect(LISTEN_SILENCE_MS.SOCRATIC).toBeGreaterThan(LISTEN_SILENCE_MS.DIRECT);
+    expect(LISTEN_SILENCE_MS.ELABORATE).toBeGreaterThan(LISTEN_SILENCE_MS.DIRECT);
+    expect(LISTEN_SILENCE_MS.PROBE).toBeGreaterThan(LISTEN_SILENCE_MS.FLUENCY);
+    expect(LISTEN_SILENCE_MS.FLUENCY).toBeLessThan(LISTEN_SILENCE_MS.SOCRATIC);
+  });
+
+  it('never rushes a frustrated learner more than a fluent one', () => {
+    // RESCUE is the beat where being cut off is most expensive.
+    expect(LISTEN_SILENCE_MS.RESCUE).toBeGreaterThan(LISTEN_SILENCE_MS.FLUENCY);
+  });
+
+  it('gives every strategy a budget a six-year-old can actually use', () => {
+    // A voice assistant closes at ~700ms. A child is not a voice assistant, and
+    // a zero or a missing entry would cut them off the moment they breathe.
+    for (const [strategy, ms] of Object.entries(LISTEN_SILENCE_MS)) {
+      expect(ms, `${strategy} is too impatient`).toBeGreaterThanOrEqual(900);
+      expect(ms, `${strategy} would feel broken`).toBeLessThanOrEqual(5_000);
+    }
+  });
+
+  it('covers every strategy the controller can choose', () => {
+    for (const s of Object.keys(IDLE_NUDGE_MS)) {
+      expect(LISTEN_SILENCE_MS[s as keyof typeof LISTEN_SILENCE_MS]).toBeDefined();
+    }
   });
 });
