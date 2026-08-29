@@ -157,12 +157,17 @@ export async function buildSessionPlan(
   }
 
   const now = Date.now();
-  const dueCards = cards
+  const dueCardsAll = cards
     .filter((c) => graph.byId.has(c.kc_id) && new Date(c.due_at).getTime() <= now)
-    .sort((a, b) => new Date(a.due_at).getTime() - new Date(b.due_at).getTime())
-    .slice(0, MAX_REVIEW);
+    .sort((a, b) => new Date(a.due_at).getTime() - new Date(b.due_at).getTime());
+  const dueCards = dueCardsAll.slice(0, MAX_REVIEW);
 
-  const reviewIds = new Set(dueCards.map((c) => c.kc_id));
+  // Every KC that is due for review is excluded from the frontier, not only
+  // the ones that fit inside MAX_REVIEW — otherwise a review overflowing the
+  // cap silently reappears one line down relabeled 'frontier', taking a slot
+  // that should have gone to genuinely new material, and reporting a reason
+  // to the learner ("this is new ground") that is not why it was chosen.
+  const reviewIds = new Set(dueCardsAll.map((c) => c.kc_id));
 
   const frontier = graph.kcs
     .filter((kc) => !reviewIds.has(kc.id))

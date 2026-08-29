@@ -207,6 +207,63 @@ describe('buildSessionPlan', () => {
     expect(change!.objective).toContain('cambio');
   });
 
+  it('a review-debt card that overflows MAX_REVIEW is DROPPED, never relabeled frontier', async () => {
+    // Three independent KCs (no edges, no mastery), all overdue for review.
+    // MAX_REVIEW caps review_due entries at 2 — the KC bumped by the cap must
+    // not silently reappear one line down as 'frontier': that reports a
+    // reason to the learner ("this is new ground") which is not why it was
+    // chosen, and it steals a frontier slot that should go to genuinely new
+    // material.
+    const overflowKc = (id: string, key: string) => ({
+      id,
+      key,
+      strand: 'money_math',
+      title: { 'es-MX': key },
+      objective: { 'es-MX': key },
+      tier_min: 1,
+      p_l0: 0.25,
+      p_t: 0.15,
+      p_g: 0.2,
+      p_s: 0.1,
+      skill_key: null,
+      status: 'active',
+    });
+    const overdueCard = (kcId: string) => ({
+      kc_id: kcId,
+      state: 'review',
+      stability: 3,
+      difficulty: 5,
+      reps: 2,
+      lapses: 0,
+      due_at: '2020-01-01T00:00:00Z',
+      last_review_at: '2019-12-01T00:00:00Z',
+    });
+    const K1 = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc1';
+    const K2 = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc2';
+    const K3 = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc3';
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        const method = init?.method ?? 'GET';
+        if (url.includes('/rest/v1/kc_edge')) return Promise.resolve(jsonResponse(200, []));
+        if (url.includes('/rest/v1/kc?')) {
+          return Promise.resolve(jsonResponse(200, [overflowKc(K1, 'k1'), overflowKc(K2, 'k2'), overflowKc(K3, 'k3')]));
+        }
+        if (url.includes('/rest/v1/misconception')) return Promise.resolve(jsonResponse(200, []));
+        if (url.includes('/rest/v1/learner_kc_mastery')) return Promise.resolve(jsonResponse(200, []));
+        if (url.includes('/rest/v1/memory_card')) {
+          return Promise.resolve(jsonResponse(200, [overdueCard(K1), overdueCard(K2), overdueCard(K3)]));
+        }
+        void method;
+        return Promise.resolve(jsonResponse(200, []));
+      }),
+    );
+    const result = await buildSessionPlan(KID, 2, 'es-MX');
+    expect(result!.plan.map((p) => p.reason)).toEqual(['review_due', 'review_due']);
+    expect(result!.plan.find((p) => p.kcKey === 'k3')).toBeUndefined();
+  });
+
   it('an empty catalog yields an empty plan, not a failure', async () => {
     vi.stubGlobal(
       'fetch',
