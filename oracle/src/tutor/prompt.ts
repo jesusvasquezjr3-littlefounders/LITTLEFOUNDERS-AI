@@ -158,6 +158,51 @@ export function praiseContradictsAnswer(say: string, learnerText: string): boole
   return stated !== undefined && stated !== learnerNumbers[0];
 }
 
+/**
+ * A SENTENCE THE TUTOR HAS ALREADY USED.
+ *
+ * The prompt asks it not to repeat itself, and asking did not work — the same
+ * measurement that found the problem found it again after the rule was added:
+ *
+ *   "eso es pensar como un científico"                              ×4
+ *   "ahora dime, si tienes 15 monedas y quitas 5, ¿cuántas quedan?"  ×4
+ *
+ * A child hearing the same compliment after every exercise learns that the
+ * praise is furniture, and the same question a fourth time learns that nobody
+ * is listening. Neither is visible inside one turn, which is why this compares
+ * against the session's own history rather than against the turn alone.
+ *
+ * Only sentences of four words or more count. "¡Muy bien!" and "¿Cuánto es?"
+ * SHOULD recur — they are the language of teaching, not a catchphrase — and a
+ * check that flagged them would retry every turn in the session.
+ */
+const MIN_DISTINCTIVE_WORDS = 4;
+
+function sentencesOf(text: string): string[] {
+  return text
+    .split(/(?<=[.!?])\s+/)
+    .map((s) =>
+      s
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9 ]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim(),
+    )
+    .filter((s) => s.split(' ').length >= MIN_DISTINCTIVE_WORDS);
+}
+
+/** The first sentence this turn reuses from earlier in the session, or null. */
+export function repeatsEarlierSentence(say: string, earlierTutorLines: readonly string[]): string | null {
+  if (earlierTutorLines.length === 0) return null;
+  const already = new Set(earlierTutorLines.flatMap(sentencesOf));
+  for (const sentence of sentencesOf(say)) {
+    if (already.has(sentence)) return sentence;
+  }
+  return null;
+}
+
 export const TUTOR_SYSTEM_PROMPT: string = [
   'You are a tutor character inside LittleFounders, an educational product that',
   'teaches money, mathematics, science, economics and beginner programming to',

@@ -28,6 +28,7 @@ import { evaluateBudget, WRAP_UP_INSTRUCTION, type BudgetVerdict } from '../sess
 import {
   buildContextMessage,
   praiseContradictsAnswer,
+  repeatsEarlierSentence,
   promisesAnActivity,
   tierVocabularyViolation,
   TUTOR_SYSTEM_PROMPT,
@@ -977,9 +978,22 @@ export class TutorOrchestrator {
              * classifier would be probabilistic.
              */
             const givesAwayAnswer = answersItsOwnQuestion(parsed.turn.say);
+            /*
+             * Measured across four scripted lessons: "eso es pensar como un
+             * científico" four times, and the same follow-up question four
+             * times. The prompt rule against it did not hold, so it becomes a
+             * repair like the others.
+             */
+            const repeated = repeatsEarlierSentence(
+              parsed.turn.say,
+              this.history.filter((h) => h.speaker === 'tutor').map((h) => h.text),
+            );
             if (violation !== null && attempt === 0) {
               turnCorrection = `used ${violation}, which this learner's age band must never hear. Say the same idea again for their age, using only whole numbers and things they can picture`;
               console.warn(`[oracle] tier ${this.session.tier} vocabulary slip (${violation}) — asking again`);
+            } else if (repeated !== null && attempt === 0) {
+              turnCorrection = `reused a sentence it has already said in this session ("${repeated.slice(0, 60)}"). Say something new — a child who hears the same compliment after every exercise learns the praise means nothing, and the same question twice learns nobody is listening`;
+              console.warn('[oracle] turn repeated an earlier sentence — asking again');
             } else if (givesAwayAnswer && attempt === 0) {
               turnCorrection =
                 'asked the learner a question and stated its answer in the same turn. Ask the question WITHOUT the answer — handing it to them removes the one act that does the teaching';
@@ -1006,6 +1020,9 @@ export class TutorOrchestrator {
               }
               if (givesAwayAnswer) {
                 console.warn('[oracle] self-answered question SURVIVED the retry — delivered');
+              }
+              if (repeated !== null) {
+                console.warn('[oracle] repeated sentence SURVIVED the retry — delivered');
               }
               turn = parsed.turn;
             }

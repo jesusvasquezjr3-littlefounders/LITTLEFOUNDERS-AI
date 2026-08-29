@@ -953,3 +953,48 @@ describe('a turn may not answer its own question', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
+
+describe('the tutor may not reuse its own sentences', () => {
+  /*
+   * Measured across four scripted lessons, AFTER a prompt rule against it was
+   * added: "eso es pensar como un científico" four times, and the same
+   * follow-up question four times. A child hearing the same compliment after
+   * every exercise learns the praise is furniture.
+   */
+  it('asks again when a turn repeats an earlier sentence', async () => {
+    const stock = 'Eso es pensar como un científico de verdad.';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: stock }))
+      .mockResolvedValueOnce(judgeSays(true))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: stock }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Contaste cada moneda sin saltarte ninguna.' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('ya', Date.now());
+    const second = await orchestrator.handleLearnerText('otra vez', Date.now());
+
+    expect(second.emission.turn.say).toBe('Contaste cada moneda sin saltarte ninguna.');
+    expect(String(fetchMock.mock.calls[3]?.[1]?.body ?? '')).toContain('reused a sentence');
+  });
+
+  it('lets short teaching language recur, because that is what teaching sounds like', async () => {
+    // "¡Muy bien!" and "¿Cuánto es?" SHOULD repeat. A check that flagged them
+    // would retry every turn in the session.
+    const short = '¡Muy bien!';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: short }))
+      .mockResolvedValueOnce(judgeSays(true))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: short }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('ya', Date.now());
+    const second = await orchestrator.handleLearnerText('otra vez', Date.now());
+
+    expect(second.emission.turn.say).toBe(short);
+    // Four calls total: two turns, each one model call and one judge call. No
+    // retry was bought for a phrase that is supposed to recur.
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
+});
