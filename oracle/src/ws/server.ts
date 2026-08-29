@@ -1038,6 +1038,10 @@ async function serveSegment(
     served.segmentId,
     skillKey,
     typeof served.segment.type === 'string' ? served.segment.type : undefined,
+    // The authored prompt already on the learner's screen, so the tutor stops
+    // narrating an activity it has never read. Our own catalog text — nothing
+    // the learner typed or scored travels with it.
+    typeof served.segment.prompt_md === 'string' ? served.segment.prompt_md : undefined,
   );
   send(live.socket, {
     type: 'segment',

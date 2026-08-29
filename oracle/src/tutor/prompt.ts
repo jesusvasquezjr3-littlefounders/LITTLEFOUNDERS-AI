@@ -232,6 +232,24 @@ export function buildContextMessage(context: TutorContext): string {
     TIER_GUIDANCE[context.tier],
   ];
 
+  if (context.openActivity !== null) {
+    /*
+     * The tutor asks for a SKILL and the ladder chooses the activity, so
+     * without this the tutor talks about something it has never read. It
+     * drifted exactly that way on 2026-08-29: framed as "you be the cashier,
+     * choose the change", served as "make exactly $12", and praised on
+     * success as change the learner never gave.
+     */
+    lines.push(
+      '',
+      'ON THE LEARNER\'S SCREEN RIGHT NOW is this activity. Talk about THIS, not',
+      'about the one you had in mind. Do not restate its question — they can read',
+      'it — and do not congratulate them for doing something it did not ask for.',
+      `  type: ${context.openActivity.type}`,
+      `  it asks: ${context.openActivity.prompt}`,
+    );
+  }
+
   if (context.adaptations.length > 0) {
     lines.push(
       '',

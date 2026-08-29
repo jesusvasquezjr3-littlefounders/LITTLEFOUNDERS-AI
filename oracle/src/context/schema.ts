@@ -122,7 +122,36 @@ export const STRATEGIES = [
  * arithmetic against the item's own numbers, and what travels is our
  * catalogued wording about the wrong idea, not anything the learner said.
  */
-export const PedagogyStateSchema = z
+export /**
+ * THE ACTIVITY THE LEARNER IS LOOKING AT RIGHT NOW.
+ *
+ * The tutor used to narrate activities it could not see. It asks the ladder
+ * for a SKILL; the ladder picks whichever authored segment on that topic best
+ * fits the difficulty, and the tutor was told only the id and the skill key —
+ * never a word of what the thing actually says. So it improvised, and the
+ * improvisation drifted: observed on 2026-08-29, the tutor framed a task as
+ * "you be the cashier, choose how much change to give", the catalog served
+ * "the compass costs $12, make exactly that amount", and on success the tutor
+ * congratulated the learner for "giving the exact change" they had never
+ * given. Every word of that is wrong in a way a child notices.
+ *
+ * IT IS OUR OWN CATALOG TEXT, not the learner's. `prompt` is the authored
+ * question already on the learner's screen — the same class of data as
+ * `courseContext`'s titles, written by us, published by us, and containing
+ * nothing about the person reading it. Nothing the LEARNER typed or did with
+ * the activity travels here: not their answer, not their score, not their
+ * taps. §4.1 row + legal §2.2 item 13.
+ */
+const OpenActivitySchema = z
+  .object({
+    /** The engine's segment type, e.g. `coin_count` — a closed vocabulary. */
+    type: z.string().min(1).max(64),
+    /** The authored prompt already on screen. Truncated; never learner text. */
+    prompt: z.string().min(1).max(400),
+  })
+  .strict();
+
+const PedagogyStateSchema = z
   .object({
     strategy: z.enum(STRATEGIES),
     /** 0 = none … 3 = maximum support. The controller's scaffolding level. */
@@ -217,6 +246,12 @@ export const TutorContextSchema = z
      * v2 did. §4.1 row + legal §2.2 item 12.
      */
     pedagogy: PedagogyStateSchema.nullable(),
+    /**
+     * The activity currently on the learner's screen, or null when there is
+     * none. Our own authored text, so the tutor stops narrating something it
+     * cannot see. §4.1 row + legal §2.2 item 13.
+     */
+    openActivity: OpenActivitySchema.nullable(),
   })
   .strict();
 

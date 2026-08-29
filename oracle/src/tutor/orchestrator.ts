@@ -155,6 +155,11 @@ export class TutorOrchestrator {
    */
   private openCheckableSegment: string | null = null;
   /**
+   * The activity on the learner's screen right now, as the model is shown it.
+   * Null between activities, so the tutor never references one that is gone.
+   */
+  private openActivity: TutorContext['openActivity'] = null;
+  /**
    * The session's LIVE copy of the skill estimates. The handshake snapshot
    * used to be frozen for the whole session, so the model was told "very
    * little evidence" about a skill the learner had just demonstrated four
@@ -303,12 +308,34 @@ export class TutorOrchestrator {
   ]);
 
   /** An activity went out. Remembered by id, so a grade can be matched to it. */
-  noteSegmentServed(segmentId: string, skillKey: string, segmentType?: string): void {
+  noteSegmentServed(
+    segmentId: string,
+    skillKey: string,
+    segmentType?: string,
+    prompt?: string,
+  ): void {
     this.segmentCount += 1;
     this.servedSegmentSkills.set(segmentId, skillKey);
     if (segmentType && TutorOrchestrator.CHECKABLE_TYPES.has(segmentType)) {
       this.openCheckableSegment = segmentId;
     }
+    /*
+     * WHAT IT SAYS, not just that it exists. The tutor asks for a SKILL and
+     * the ladder chooses the segment, so without this the tutor is talking
+     * about something it has never read — and it drifts: it framed a task as
+     * giving change, the catalog served "make exactly $12", and it then
+     * congratulated the learner for change they never gave.
+     */
+    const text = (prompt ?? '').replace(/\s+/g, ' ').trim();
+    this.openActivity =
+      segmentType && text !== ''
+        ? { type: segmentType, prompt: text.slice(0, 400) }
+        : null;
+  }
+
+  /** Cleared when the activity is graded — it is no longer on screen. */
+  private clearOpenActivity(): void {
+    this.openActivity = null;
   }
 
   /** Whether this session actually served the segment a grade claims to be for. */
@@ -364,6 +391,7 @@ export class TutorOrchestrator {
     // so the order is: count the miss, then ask what it now amounts to.
     recordGrade(this.plan, skillKey, correct);
     if (this.openCheckableSegment === segmentId) this.openCheckableSegment = null;
+    this.clearOpenActivity();
 
     /*
      * THE CONTROLLER SUPERSEDES THE STUCK COUNTER when it is active: the same
@@ -415,6 +443,7 @@ export class TutorOrchestrator {
     this.nudgeSkillEstimate(skillKey, result.correct);
     recordGrade(this.plan, skillKey, result.correct);
     if (this.openCheckableSegment === segmentId) this.openCheckableSegment = null;
+    this.clearOpenActivity();
 
     const extra = this.strategyInstruction(
       { kind: 'voice_result', correct: result.correct, misconceptionCode: result.misconceptionCode },
@@ -592,6 +621,7 @@ export class TutorOrchestrator {
       // The v3 controller's strict projection; null while the brain is off,
       // which renders exactly the v2 context (§4.1 row + legal §2.2 item 12).
       pedagogy: this.controller.active ? this.controller.state() : null,
+      openActivity: this.openActivity,
     });
   }
 

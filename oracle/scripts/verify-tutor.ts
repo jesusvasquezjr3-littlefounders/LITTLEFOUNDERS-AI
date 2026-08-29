@@ -48,6 +48,7 @@ const VALID_CONTEXT = {
   courseContext: null,
   skillStates: [],
   turnHistory: [],
+  openActivity: null,
   planState: null,
   previousSessions: [],
   pedagogy: null,

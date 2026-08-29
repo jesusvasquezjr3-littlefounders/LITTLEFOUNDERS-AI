@@ -108,6 +108,18 @@ constraint.
     It contains no learner-derived data the other items do not already
     contain, and it is absent entirely while the v3 teaching engine is
     switched off.
+13. **Open activity** (`openActivity`) — **added 2026-08-29.** The exercise
+    currently displayed on the learner's screen, as two values: its type from
+    a closed engine vocabulary (for example `coin_count`), and the wording of
+    the question itself, truncated to 400 characters. **Both are our own
+    published curriculum text, written and reviewed by us before any learner
+    saw them.** Nothing the learner did with the exercise travels here — not
+    their answer, not their taps, not their score — and the field is absent
+    between exercises. It exists because the tutor previously described
+    exercises it had never been shown: it asks our content system for a SKILL
+    and that system chooses which exercise to display, so the tutor's
+    narration could describe a different task from the one on screen. It adds
+    no learner-derived data of any kind.
 
 ### §2.2b The placement intake — a second, narrower disclosure (added 2026-08-24)
 

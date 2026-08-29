@@ -648,3 +648,56 @@ describe('the tutor cannot promise an activity it did not request', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
+
+describe('the tutor can see the activity on screen', () => {
+  /*
+   * It asks the ladder for a SKILL; the LADDER picks the segment. Before this
+   * the tutor was told only an id and a skill key, so it narrated from
+   * imagination and drifted: on 2026-08-29 it framed a task as "you be the
+   * cashier, choose the change", the catalog served "the compass costs $12,
+   * make exactly that amount", and on success it congratulated the learner for
+   * change they never gave.
+   */
+  const PROMPT = 'La brújula cuesta $12. Junta monedas del cofre para pagar EXACTAMENTE ese monto.';
+
+  it('puts the served activity in front of the model', async () => {
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    orchestrator.noteSegmentServed('seg-1', 'financial-education/x', 'coin_count', PROMPT);
+    await orchestrator.handleLearnerText('ya lo hice', Date.now());
+
+    const body = String(fetchMock.mock.calls[0]?.[1]?.body ?? '');
+    expect(body).toContain('coin_count');
+    expect(body).toContain('pagar EXACTAMENTE');
+  });
+
+  it('forgets it once graded, so the tutor never references a screen that moved on', async () => {
+    fetchMock.mockResolvedValue(modelReplies(GOOD_TURN));
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    orchestrator.noteSegmentServed('seg-1', 'financial-education/x', 'coin_count', PROMPT);
+    await orchestrator.handleSegmentResult('seg-1', 100, Date.now());
+
+    fetchMock.mockClear();
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('y ahora?', Date.now());
+
+    expect(String(fetchMock.mock.calls[0]?.[1]?.body ?? '')).not.toContain('pagar EXACTAMENTE');
+  });
+
+  it('carries our catalog text and nothing the learner did', async () => {
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    orchestrator.noteSegmentServed('seg-1', 'financial-education/x', 'coin_count', PROMPT);
+    await orchestrator.handleLearnerText('doce', Date.now());
+
+    const sealed = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as {
+      messages: { content: string }[];
+    };
+    const contextMessage = sealed.messages.map((m) => m.content).join('\n');
+    // The activity is described; the learner's score, taps and answer are not
+    // part of the field at all (§4.1 row, legal §2.2 item 13).
+    expect(contextMessage).toContain('ON THE LEARNER');
+    expect(contextMessage).not.toContain('score');
+  });
+});

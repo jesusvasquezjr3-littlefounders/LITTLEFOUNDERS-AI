@@ -27,6 +27,7 @@ function validContext(overrides: Partial<TutorContext> = {}): TutorContext {
     courseContext: null,
     skillStates: [],
     turnHistory: [],
+    openActivity: null,
     planState: null,
     previousSessions: [],
     pedagogy: null,

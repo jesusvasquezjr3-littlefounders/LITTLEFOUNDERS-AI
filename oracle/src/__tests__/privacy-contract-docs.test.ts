@@ -51,6 +51,7 @@ const SPELLINGS: Record<string, readonly string[]> = {
   planState: ['`planState`', 'Lesson plan state'],
   previousSessions: ['`previousSessions`', 'Previous-session digests'],
   pedagogy: ['`pedagogy`', 'Pedagogy state'],
+  openActivity: ['`openActivity`', 'Open activity'],
 };
 
 const schemaKeys = Object.keys(TutorContextSchema.shape).sort();
@@ -78,7 +79,7 @@ describe('the privacy contract documents enumerate exactly what the schema permi
     });
   }
 
-  it('is twelve fields, and a change to that number is a decision', () => {
+  it('is thirteen fields, and a change to that number is a decision', () => {
     /*
      * Deliberately a hard-coded number. Widening what reaches a third-party
      * model about a child is exactly the change that should not pass quietly:
@@ -106,6 +107,7 @@ describe('the privacy contract documents enumerate exactly what the schema permi
       'intent',
       'locale',
       'nickname',
+      'openActivity',
       'pedagogy',
       'planState',
       'previousSessions',
