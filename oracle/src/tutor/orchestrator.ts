@@ -190,6 +190,16 @@ export class TutorOrchestrator {
    */
   private openActivity: TutorContext['openActivity'] = null;
   /**
+   * Names of pedagogical skills already delivered this session — the only
+   * memory `selectSkill`'s `onceOnly` fencing has. Found live: a learner who
+   * failed the same skill four times in one `tutor:converse` run got
+   * `counterexample-confront` — whose own procedure says "ONE per session,
+   * ever" — all four times, because selection was a pure function of the
+   * turn's own strategy/tier/misconception with no memory of what it had
+   * already returned.
+   */
+  private readonly usedSkillNames = new Set<string>();
+  /**
    * The session's LIVE copy of the skill estimates. The handshake snapshot
    * used to be frozen for the whole session, so the model was told "very
    * little evidence" about a skill the learner had just demonstrated four
@@ -606,8 +616,10 @@ export class TutorOrchestrator {
       tier: this.session.tier,
       pKnown: decision.pKnown,
       misconceptionCode: decision.misconceptionCode,
+      usedSkillNames: this.usedSkillNames,
     });
     if (skill === null) return decision.instruction;
+    this.usedSkillNames.add(skill.name);
     /*
      * The catalogued misconception hint still travels with the skill: the
      * skill says HOW to remediate, the hint says WHAT wrong idea this

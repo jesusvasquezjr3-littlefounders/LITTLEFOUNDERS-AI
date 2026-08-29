@@ -41,6 +41,17 @@ export interface PedagogicalSkill {
   tiers: number[];
   /** Higher wins among candidates that pass every filter. */
   priority: number;
+  /**
+   * The skill's own procedure forbids reusing it in the same session — found
+   * live: `counterexample-confront`'s body says "ONE counterexample per
+   * session, ever" while `selectSkill` is a pure function of the CURRENT
+   * turn's strategy/tier/misconception, with no memory of what it already
+   * returned. A learner who fails the same skill four times in one session
+   * got the identical confrontation, and near-identical wording, four times —
+   * the exact "told, not checked" gap this catalogue exists to close for the
+   * strategy layer above it.
+   */
+  onceOnly: boolean;
   /** The procedure — what actually reaches the model. */
   body: string;
 }
@@ -130,6 +141,7 @@ function parseSkill(file: string, raw: string): PedagogicalSkill {
     masteryMax,
     tiers: tiers.length > 0 ? tiers : [1, 2, 3],
     priority: meta.priority === undefined ? 0 : Number(meta.priority),
+    onceOnly: meta.once_per_session === 'true',
     body,
   };
 }
@@ -161,6 +173,14 @@ export interface SkillQuery {
   /** Current mastery estimate for the active KC; null when unknown. */
   pKnown: number | null;
   misconceptionCode: string | null;
+  /**
+   * Skill names already delivered earlier in THIS session — so a skill whose
+   * own procedure says "once, ever" (`onceOnly`) can be fenced out on a
+   * repeat visit instead of being selected identically every time the same
+   * misconception or strategy comes back. Skills without that flag ignore
+   * this set entirely; reuse is fine for the rest of the catalogue.
+   */
+  usedSkillNames: ReadonlySet<string>;
 }
 
 /**
@@ -174,11 +194,13 @@ export interface SkillQuery {
  */
 export function selectSkill(query: SkillQuery): PedagogicalSkill | null {
   const all = skillCatalogue();
+  const notSpent = (s: PedagogicalSkill) => !s.onceOnly || !query.usedSkillNames.has(s.name);
 
   if (query.misconceptionCode !== null) {
     const dedicated = all
       .filter((s) => s.misconceptions.includes(query.misconceptionCode as string))
-      .filter((s) => s.tiers.includes(query.tier));
+      .filter((s) => s.tiers.includes(query.tier))
+      .filter(notSpent);
     if (dedicated.length > 0) {
       return dedicated.sort((a, b) => b.priority - a.priority)[0]!;
     }
@@ -196,6 +218,7 @@ export function selectSkill(query: SkillQuery): PedagogicalSkill | null {
      */
     .filter((s) => s.misconceptions.length === 0)
     .filter((s) => s.tiers.includes(query.tier))
+    .filter(notSpent)
     .filter((s) => {
       // No estimate means no band filter: never let missing data hide the
       // only skill a strategy has.
@@ -208,7 +231,8 @@ export function selectSkill(query: SkillQuery): PedagogicalSkill | null {
     const anyBand = all
       .filter((s) => s.strategies.includes(query.strategy))
       .filter((s) => s.misconceptions.length === 0)
-      .filter((s) => s.tiers.includes(query.tier));
+      .filter((s) => s.tiers.includes(query.tier))
+      .filter(notSpent);
     if (anyBand.length === 0) return null;
     return anyBand.sort((a, b) => b.priority - a.priority)[0]!;
   }

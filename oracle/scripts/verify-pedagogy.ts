@@ -182,6 +182,9 @@ function check(profile: Profile): Problem[] {
    */
   {
     const c2 = new PedagogicalController(profile.plan);
+    // Mirrors orchestrator.ts's own memory: a onceOnly skill fenced out on a
+    // repeat visit must still resolve to SOMETHING, never to a silent hole.
+    const usedSkillNames = new Set<string>();
     profile.turns.forEach((event, i) => {
       if (!c2.active) return;
       const d = c2.decide(event, START + i * TURN_GAP_MS);
@@ -190,8 +193,13 @@ function check(profile: Profile): Problem[] {
         tier: 2,
         pKnown: d.pKnown,
         misconceptionCode: d.misconceptionCode,
+        usedSkillNames,
       });
-      if (skill === null) push(`no skill in the catalogue for ${d.strategy} at p=${d.pKnown} (turn ${i + 1})`);
+      if (skill === null) {
+        push(`no skill in the catalogue for ${d.strategy} at p=${d.pKnown} (turn ${i + 1})`);
+      } else {
+        usedSkillNames.add(skill.name);
+      }
     });
   }
 

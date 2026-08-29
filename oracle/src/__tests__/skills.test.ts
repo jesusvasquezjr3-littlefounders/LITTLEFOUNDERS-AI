@@ -24,6 +24,9 @@ const STRATEGIES: Strategy[] = [
   'CELEBRATE',
 ];
 
+/** No skill spent yet — the common case for most of these tests. */
+const NONE = new Set<string>();
+
 describe('the catalogue on disk', () => {
   it('loads, and every skill respects the body budget', () => {
     const all = skillCatalogue();
@@ -39,7 +42,7 @@ describe('the catalogue on disk', () => {
     // a licence to leave holes. A strategy with no skill is the pre-V4 tutor.
     for (const strategy of STRATEGIES) {
       for (const tier of [1, 2, 3]) {
-        const skill = selectSkill({ strategy, tier, pKnown: null, misconceptionCode: null });
+        const skill = selectSkill({ strategy, tier, pKnown: null, misconceptionCode: null, usedSkillNames: NONE });
         expect(skill, `${strategy} tier ${tier}`).not.toBeNull();
       }
     }
@@ -53,6 +56,7 @@ describe('deterministic selection', () => {
       tier: 2,
       pKnown: 0.5,
       misconceptionCode: 'adds-instead-of-counts-up',
+      usedSkillNames: NONE,
     });
     expect(skill?.name).toBe('counterexample-confront');
   });
@@ -63,6 +67,7 @@ describe('deterministic selection', () => {
       tier: 2,
       pKnown: 0.5,
       misconceptionCode: 'some-code-no-skill-claims',
+      usedSkillNames: NONE,
     });
     expect(skill?.name).toBe('error-as-data');
   });
@@ -70,11 +75,23 @@ describe('deterministic selection', () => {
   it('the mastery band picks the right variant of a shared strategy', () => {
     // SOCRATIC has two skills: the one-question default and the
     // productive-struggle hold, gated to high mastery and tiers 2-3.
-    const low = selectSkill({ strategy: 'SOCRATIC', tier: 2, pKnown: 0.6, misconceptionCode: null });
+    const low = selectSkill({
+      strategy: 'SOCRATIC',
+      tier: 2,
+      pKnown: 0.6,
+      misconceptionCode: null,
+      usedSkillNames: NONE,
+    });
     expect(low?.name).toBe('socratic-one-question');
     // At 0.8 both bands match; the default wins on priority — holding back is
     // a deliberate downgrade the controller signals, not the default posture.
-    const high = selectSkill({ strategy: 'SOCRATIC', tier: 2, pKnown: 0.8, misconceptionCode: null });
+    const high = selectSkill({
+      strategy: 'SOCRATIC',
+      tier: 2,
+      pKnown: 0.8,
+      misconceptionCode: null,
+      usedSkillNames: NONE,
+    });
     expect(high?.name).toBe('socratic-one-question');
   });
 
@@ -84,19 +101,80 @@ describe('deterministic selection', () => {
     const all = skillCatalogue();
     const hold = all.find((s) => s.name === 'productive-struggle-hold');
     expect(hold?.tiers).toEqual([2, 3]);
-    const t1 = selectSkill({ strategy: 'SOCRATIC', tier: 1, pKnown: 0.8, misconceptionCode: null });
+    const t1 = selectSkill({
+      strategy: 'SOCRATIC',
+      tier: 1,
+      pKnown: 0.8,
+      misconceptionCode: null,
+      usedSkillNames: NONE,
+    });
     expect(t1?.name).not.toBe('productive-struggle-hold');
   });
 
   it('an unknown mastery never hides the only skill a strategy has', () => {
-    const skill = selectSkill({ strategy: 'RESCUE', tier: 1, pKnown: null, misconceptionCode: null });
+    const skill = selectSkill({
+      strategy: 'RESCUE',
+      tier: 1,
+      pKnown: null,
+      misconceptionCode: null,
+      usedSkillNames: NONE,
+    });
     expect(skill?.name).toBe('frustration-rescue');
   });
 
   it('a band with no candidates falls back to the strategy rather than to nothing', () => {
     // DIRECT skills top out at 0.4; a DIRECT decision at 0.9 (possible via
     // probe routing) must still get a procedure.
-    const skill = selectSkill({ strategy: 'DIRECT', tier: 2, pKnown: 0.9, misconceptionCode: null });
+    const skill = selectSkill({
+      strategy: 'DIRECT',
+      tier: 2,
+      pKnown: 0.9,
+      misconceptionCode: null,
+      usedSkillNames: NONE,
+    });
     expect(skill).not.toBeNull();
+  });
+});
+
+describe('a skill whose own procedure says "once, ever"', () => {
+  it('is reachable the first time a session hits its misconception', () => {
+    const skill = selectSkill({
+      strategy: 'REMEDIATE',
+      tier: 2,
+      pKnown: 0.5,
+      misconceptionCode: 'adds-instead-of-counts-up',
+      usedSkillNames: NONE,
+    });
+    expect(skill?.name).toBe('counterexample-confront');
+  });
+
+  it('is fenced out the second time, in favour of the general remediation', () => {
+    // Found live: `tutor:converse` served the SAME learner the SAME
+    // confrontation four times in one session because selection was a pure
+    // function of strategy/tier/misconception, with no memory of what it had
+    // already returned. `error-as-data` is what a real learner should see on
+    // repeat, per counterexample-confront's own step 5 ("degrade to
+    // showing").
+    const skill = selectSkill({
+      strategy: 'REMEDIATE',
+      tier: 2,
+      pKnown: 0.5,
+      misconceptionCode: 'adds-instead-of-counts-up',
+      usedSkillNames: new Set(['counterexample-confront']),
+    });
+    expect(skill?.name).toBe('error-as-data');
+  });
+
+  it('does not fence out a DIFFERENT skill with the same misconception fallback path', () => {
+    // Spending counterexample-confront must not blind selection to skills
+    // that were never flagged onceOnly.
+    const skill = selectSkill({
+      strategy: 'REMEDIATE',
+      tier: 2,
+      pKnown: 0.5,
+      misconceptionCode: 'some-code-no-skill-claims',
+      usedSkillNames: new Set(['counterexample-confront']),
+    });
+    expect(skill?.name).toBe('error-as-data');
   });
 });

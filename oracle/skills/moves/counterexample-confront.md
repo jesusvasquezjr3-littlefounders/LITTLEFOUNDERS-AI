@@ -7,6 +7,7 @@ mastery_min: 0.25
 mastery_max: 0.7
 tiers: [1, 2, 3]
 priority: 8
+once_per_session: true
 ---
 Strategy for this turn: CONFRONT WITH A COUNTEREXAMPLE.
 

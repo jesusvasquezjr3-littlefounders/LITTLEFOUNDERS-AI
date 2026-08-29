@@ -1855,6 +1855,24 @@ selection — counterexample-confront's own procedure forbids using it on a slip
 The one-line `STRATEGY_INSTRUCTIONS` remain solely as fallback.
 `verify:pedagogy` asserts every controller decision resolves to a real skill.
 
+**A rule the model is only TOLD does not hold; a rule it is CHECKED on does —
+this catalogue itself needed the lesson (found live, 2026-08-29).**
+`counterexample-confront`'s own procedure says "ONE counterexample per
+session, ever," and `selectSkill` was a pure function of the current turn's
+strategy/tier/misconception, with no memory of what it had already returned.
+A `tutor:converse` run against production served the SAME learner the SAME
+confrontation, in near-identical wording, four times in one session — the
+learner kept failing the same skill, Core kept reporting the same
+misconception code, and selection kept resolving to the same skill every
+time. Closed with `onceOnly` (frontmatter `once_per_session: true`, today
+only on `counterexample-confront`) plus `TutorOrchestrator.usedSkillNames`, a
+per-session set the orchestrator fills as skills are delivered and
+`selectSkill` fences a spent `onceOnly` skill out of BOTH the dedicated-
+misconception path and the generic one, falling through to the next-best
+candidate (`error-as-data`, the general remediation) — exactly
+counterexample-confront's own step 5: "if it does not land, stop — degrade to
+showing."
+
 **Governance (§15.1 of the harness doc): nothing autonomous reaches a child.**
 Today every skill is hand-written and enters through code review — the pull
 request IS the approval gate. A future self-authoring loop stages proposals for
