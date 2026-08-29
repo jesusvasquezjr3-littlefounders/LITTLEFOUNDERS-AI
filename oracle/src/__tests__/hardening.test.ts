@@ -1,4 +1,6 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
+import { readFileSync } from 'node:fs';
+import { tierVocabularyViolation } from '../tutor/prompt.js';
 import { AddressInfo } from 'node:net';
 import { WebSocket } from 'ws';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -571,5 +573,39 @@ describe('an unreadable consent answer is not a granted one', () => {
     socket.close();
 
     expect(revoked).toBe(true);
+  });
+});
+
+/*
+ * The two services share no library by design (§1.5), so Oracle's age-band
+ * vocabulary list is a deliberate COPY of `FORBIDDEN_BY_TIER` in
+ * backend/src/services/tutorLadder.ts. A copy nobody compares is a copy that
+ * drifts, and the drift here is silent in the worst direction: the generated
+ * activity would be refused for a word the tutor is free to say out loud in
+ * the same breath.
+ */
+describe('the age-band vocabulary lists agree across services', () => {
+  it('catches the same words Core refuses in a generated activity', () => {
+    const core = readFileSync(
+      new URL('../../../backend/src/services/tutorLadder.ts', import.meta.url),
+      'utf8',
+    );
+    const block = /const FORBIDDEN_BY_TIER[\s\S]*?\n\};/.exec(core)?.[0] ?? '';
+    expect(block, 'FORBIDDEN_BY_TIER not found in tutorLadder.ts').not.toBe('');
+
+    // Every word Core forbids for a band, Oracle must also catch for it.
+    for (const [tier, probes] of [
+      [1, ['Ganas 10% al año.', 'Eso es un porcentaje.', 'Cuesta 3.1416 pesos.']],
+      [2, ['That is compound interest.', 'Eso es interés compuesto.']],
+    ] as const) {
+      for (const probe of probes) {
+        expect(
+          tierVocabularyViolation(probe, tier),
+          `tier ${tier} must catch: ${probe}`,
+        ).not.toBeNull();
+      }
+    }
+    // And tier 3 is deliberately empty on both sides.
+    expect(tierVocabularyViolation('Ganas 10% al año.', 3)).toBeNull();
   });
 });

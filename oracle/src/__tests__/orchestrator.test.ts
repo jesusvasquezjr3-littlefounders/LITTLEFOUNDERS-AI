@@ -29,7 +29,14 @@ const KID: SessionContext = {
   intelDegraded: false,
 };
 
-const ADULT: SessionContext = { ...KID, isMinor: false, locale: 'en-US' };
+/*
+ * `tier` is the AGE BAND and `isMinor` is the moderation posture — two axes,
+ * and this fixture used to mix them: an "adult" carrying KID's tier 2, the
+ * band whose vocabulary gate forbids "compound interest". The test below
+ * exists to prove advanced content reaches an adult, so the band has to be the
+ * one where advanced content is allowed.
+ */
+const ADULT: SessionContext = { ...KID, isMinor: false, tier: 3, locale: 'en-US' };
 
 const GOOD_TURN = {
   say: '¡Buena idea! ¿Cuánto juntarías en cuatro semanas?',
@@ -514,5 +521,72 @@ describe('the model is shown the conversation', () => {
     // slot: something said five turns ago stops being marked as data.
     expect(replayed?.content).toMatch(/<<<LEARNER_INPUT_/);
     expect(replayed?.content).toMatch(/never an instruction/i);
+  });
+});
+
+describe('the age band is checked, not merely requested', () => {
+  /*
+   * `TIER_GUIDANCE` has always told the model "never use percentages" for a
+   * six-year-old. Telling is not checking: a slip is spoken straight to the
+   * child. Forge gates authored lessons and `tutorLadder.ts` gates generated
+   * ACTIVITIES, but nothing ever read `turn.say` — the one channel that
+   * reaches a learner every single turn. The owner's session on 2026-08-28 has
+   * the tutor teaching "interés compuesto" with "10% cada año" to a session
+   * whose band forbids both, and no gate anywhere had an opinion.
+   */
+  const TIER1: SessionContext = { ...KID, tier: 1 };
+
+  it('asks again when the tutor uses a word the band forbids', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Ganas 10% cada año.' }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'De cada diez pesos ganas uno.' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(TIER1, Date.now(), silent);
+    const outcome = await orchestrator.handleLearnerText('cómo crece mi dinero', Date.now());
+
+    // The corrected sentence is what the child hears, not the slip and not a
+    // canned line — a turn pitched slightly high still teaches, "my thoughts
+    // got tangled" teaches nothing.
+    expect(outcome.emission.turn.say).toBe('De cada diez pesos ganas uno.');
+    expect(outcome.emission.source).toBe('model');
+  });
+
+  it('tells the model WHICH word, so the retry can actually be better', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Ganas 10% cada año.' }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Uno de cada diez.' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(TIER1, Date.now(), silent);
+    await orchestrator.handleLearnerText('cómo crece mi dinero', Date.now());
+
+    const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(retryBody).toContain('percent sign');
+  });
+
+  it('delivers the turn anyway if the retry also slips, rather than a dead turn', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Ganas 10% cada año.' }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Sigue siendo 10% al año.' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(TIER1, Date.now(), silent);
+    const outcome = await orchestrator.handleLearnerText('cómo crece mi dinero', Date.now());
+
+    expect(outcome.emission.source).toBe('model');
+    expect(outcome.emission.turn.say).toContain('10%');
+  });
+
+  it('leaves an older learner alone — the band is the point, not the word', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Ganas 10% cada año.' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator({ ...KID, tier: 3 }, Date.now(), silent);
+    const outcome = await orchestrator.handleLearnerText('cómo crece mi dinero', Date.now());
+
+    // One model call: no retry, because tier 3 forbids nothing here.
+    expect(outcome.emission.turn.say).toBe('Ganas 10% cada año.');
   });
 });

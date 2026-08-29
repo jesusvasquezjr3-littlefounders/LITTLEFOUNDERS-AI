@@ -154,6 +154,14 @@ describe('a judge that is briefly unreachable', () => {
    */
   const TEXT = { text: 'El interés compuesto es como una bola de nieve.', locale: 'es-MX' as const, tier: 3 as const, nonce: undefined };
 
+  beforeEach(async () => {
+    // A judge must be CONFIGURED for these, or the code takes the
+    // "no judge at all" branch and never reaches the failure path under test.
+    process.env.JUDGE_API_KEY = 'test-judge-key-0123';
+    const { resetConfigCache } = await import('../env.js');
+    resetConfigCache();
+  });
+
   it('does NOT destroy an adult turn the deterministic pass already cleared', async () => {
     const fetchMock = vi.fn().mockRejectedValue(new Error('socket hang up'));
     vi.stubGlobal('fetch', fetchMock);
@@ -183,10 +191,6 @@ describe('a judge that is briefly unreachable', () => {
     // Asked ONCE. A judge that answered is not asked again.
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
-});
-
-beforeEach(() => {
-  process.env.JUDGE_API_KEY = 'test-judge-key-0123';
 });
 
 afterEach(async () => {

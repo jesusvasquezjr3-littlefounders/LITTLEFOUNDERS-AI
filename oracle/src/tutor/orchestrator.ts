@@ -24,7 +24,7 @@ import {
   type ChatMessage,
 } from '../model/provider.js';
 import { evaluateBudget, WRAP_UP_INSTRUCTION, type BudgetVerdict } from '../session/budget.js';
-import { buildContextMessage, TUTOR_SYSTEM_PROMPT } from './prompt.js';
+import { buildContextMessage, tierVocabularyViolation, TUTOR_SYSTEM_PROMPT } from './prompt.js';
 import { parseTurn, type TutorTurn } from './turnSchema.js';
 import {
   closingResponse,
@@ -718,6 +718,8 @@ export class TutorOrchestrator {
      * money on a question nobody is waiting for any more.
      */
     let transportFailure: unknown = null;
+    /** Set when attempt 0 produced a valid turn the age band forbids. */
+    let tierCorrection: string | null = null;
     try {
       for (let attempt = 0; attempt < 2 && turn === null; attempt += 1) {
         const messages: ChatMessage[] = [
@@ -730,7 +732,9 @@ export class TutorOrchestrator {
           messages.push({
             role: 'user' as const,
             content:
-              'Your previous reply was not a valid JSON object in the required shape. Reply again with ONLY the JSON object.',
+              tierCorrection !== null
+                ? `Your previous reply used ${tierCorrection}, which this learner's age band must never hear. Say the same idea again for their age, using only whole numbers and things they can picture. Reply with ONLY the JSON object.`
+                : 'Your previous reply was not a valid JSON object in the required shape. Reply again with ONLY the JSON object.',
           });
         }
 
@@ -744,7 +748,36 @@ export class TutorOrchestrator {
 
           const parsed = parseTurn(result.text);
           if (parsed.ok) {
-            turn = parsed.turn;
+            /*
+             * AGE-BAND VOCABULARY, checked rather than merely requested.
+             * `TIER_GUIDANCE` already tells the model in the system prompt,
+             * and telling is not checking — a slip is spoken straight to a
+             * six-year-old, which is how "10% cada año" reached the owner's
+             * session with no gate anywhere holding an opinion.
+             *
+             * On the FIRST attempt a hit is treated as a shape failure: the
+             * model is told the exact word and asked again. On the last one
+             * the turn is delivered anyway and logged, because at that point
+             * the alternative is a canned line, and a sentence pitched
+             * slightly too high still teaches where "my thoughts got tangled"
+             * teaches nothing.
+             */
+            const visible =
+              parsed.turn.segmentRequest != null
+                ? `${parsed.turn.say} ${parsed.turn.segmentRequest.framing}`
+                : parsed.turn.say;
+            const violation = tierVocabularyViolation(visible, this.session.tier);
+            if (violation !== null && attempt === 0) {
+              tierCorrection = violation;
+              console.warn(`[oracle] tier ${this.session.tier} vocabulary slip (${violation}) — asking again`);
+            } else {
+              if (violation !== null) {
+                console.warn(
+                  `[oracle] tier ${this.session.tier} vocabulary slip (${violation}) SURVIVED the retry — delivered`,
+                );
+              }
+              turn = parsed.turn;
+            }
           } else {
             console.warn(`[oracle] discarded model turn (${parsed.reason}): ${parsed.detail}`);
           }

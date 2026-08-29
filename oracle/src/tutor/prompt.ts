@@ -36,6 +36,52 @@ const TIER_GUIDANCE: Record<1 | 2 | 3, string> = {
   3: 'The learner is older (10+). You may use percentages, simple algebra and abstract terms, but still lead with a concrete case before the general rule.',
 };
 
+/**
+ * WORDS THE TUTOR MUST NOT SAY OUT LOUD, BY AGE BAND.
+ *
+ * `TIER_GUIDANCE` above already tells the model this, and telling is not
+ * checking: the guidance is advice inside a prompt, and a model that slips
+ * speaks the slip straight to a six-year-old. Forge applies a Piaget gate to
+ * authored lessons and `tutorLadder.ts` applies one to GENERATED ACTIVITIES,
+ * but nothing ever looked at `turn.say` — the one channel that reaches a child
+ * every single turn. The owner's session on 2026-08-28 has the tutor
+ * explaining "interés compuesto" with "10% cada año", which is tier-3
+ * vocabulary, and no gate anywhere had an opinion about it.
+ *
+ * MIRRORS `FORBIDDEN_BY_TIER` in backend/src/services/tutorLadder.ts. The two
+ * services share no library by design (§1.5), so this is a deliberate copy;
+ * the pinned test asserts the same words are caught on both sides.
+ *
+ * A hit is NOT a moderation block. Replacing the turn with a canned line is
+ * the failure this product already has too much of — the learner would hear
+ * "let me say that differently" and lose the answer. It is treated as a SHAPE
+ * failure instead: the model is told which word it must not use and asked
+ * again, which is the one response that can actually produce a better sentence.
+ */
+export const TIER_FORBIDDEN: Record<1 | 2 | 3, { pattern: RegExp; why: string }[]> = {
+  1: [
+    { pattern: /\d+\s*%/, why: 'a percent sign' },
+    { pattern: /\bpercent(age)?\b/i, why: 'the word "percent"' },
+    { pattern: /\bporcentaje/i, why: 'the word "porcentaje"' },
+    { pattern: /\bporcentagem/i, why: 'the word "porcentagem"' },
+    { pattern: /\d+\.\d{2,}/, why: 'a multi-decimal number' },
+  ],
+  2: [
+    { pattern: /\bcompound\s+interest\b/i, why: 'the term "compound interest"' },
+    { pattern: /\binter[ée]s\s+compuesto\b/i, why: 'the term "interés compuesto"' },
+    { pattern: /\bjuros\s+compostos\b/i, why: 'the term "juros compostos"' },
+  ],
+  3: [],
+};
+
+/** The first tier violation in a learner-visible string, or null. */
+export function tierVocabularyViolation(text: string, tier: 1 | 2 | 3): string | null {
+  for (const { pattern, why } of TIER_FORBIDDEN[tier]) {
+    if (pattern.test(text)) return why;
+  }
+  return null;
+}
+
 export const TUTOR_SYSTEM_PROMPT: string = [
   'You are a tutor character inside LittleFounders, an educational product that',
   'teaches money, mathematics, science, economics and beginner programming to',
