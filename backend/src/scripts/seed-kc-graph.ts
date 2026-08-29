@@ -19,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { z } from 'zod';
 import { serviceRest } from '../services/supabaseRest.js';
+import { resolveSkill } from '../services/tutorLadder.js';
 
 const Localized = z.record(z.enum(['en-US', 'es-MX', 'pt-BR']), z.string().min(1));
 
@@ -141,6 +142,65 @@ async function main(): Promise<void> {
   console.log(
     `seed:kc OK — ${seed.kcs.length} KCs, ${seed.edges.length} edges, ${seed.misconceptions.length} misconceptions (idempotent upsert)`,
   );
+
+  await auditContentBridge(seed);
+}
+
+/**
+ * THE BRIDGE AUDIT — does each mapped KC actually reach published content?
+ *
+ * `kc.skill_key` is the ONLY thing connecting the knowledge graph to the
+ * catalog. While it was null on all 28 rows the tutor could not reach tier 1
+ * or tier 2 for anything, so EVERY activity fell through to live generation —
+ * the most fragile rung of the ladder — and the first activity of the first
+ * real session failed in front of the owner with "that activity is no longer
+ * ready". A null here is a deliberate, readable gap. A WRONG value is worse
+ * than null: the ladder tries, misses, falls through to generation anyway, and
+ * the mapping reads as done while carrying nothing.
+ *
+ * So this checks the thing that actually matters, in two steps rather than
+ * one. `resolveSkill` proves the course and topic exist and are PUBLISHED.
+ * That is not enough: a topic can resolve perfectly and still hold zero
+ * published lessons, and `serveFromCatalog` would then return null on every
+ * request — a bridge that exists and carries no traffic, which is exactly the
+ * silent-miss shape this whole defect had. So the lesson count is checked too.
+ *
+ * It runs AFTER the upserts because they are idempotent: a red audit is a
+ * report about data that is already in place, and the fix is to correct the
+ * mapping and run this again.
+ */
+async function auditContentBridge(seed: z.infer<typeof SeedSchema>): Promise<void> {
+  const mapped = seed.kcs.filter((k) => k.skill_key);
+  const unmapped = seed.kcs.length - mapped.length;
+  console.log(`\nContent bridge — ${mapped.length} mapped, ${unmapped} deliberately unmapped:`);
+
+  const broken: string[] = [];
+  for (const kc of mapped) {
+    const skillKey = kc.skill_key as string;
+    const skill = await resolveSkill(skillKey);
+    if (!skill) {
+      broken.push(`${kc.key} -> ${skillKey} (no published course/topic)`);
+      console.log(`  DEAD  ${kc.key} -> ${skillKey}`);
+      continue;
+    }
+    const lessons = await serviceRest<{ id: string }[]>(
+      `/lessons?topic_id=eq.${encodeURIComponent(skill.topicId)}&status=eq.published&select=id`,
+    );
+    const count = lessons?.length ?? 0;
+    if (count === 0) {
+      broken.push(`${kc.key} -> ${skillKey} (topic resolves but has 0 published lessons)`);
+      console.log(`  EMPTY ${kc.key} -> ${skillKey}`);
+      continue;
+    }
+    console.log(`  ok    ${kc.key} -> ${skillKey} (${count} published lesson(s))`);
+  }
+
+  if (broken.length > 0) {
+    throw new Error(
+      `${broken.length} of ${mapped.length} content bridges do not carry traffic:\n  ${broken.join('\n  ')}`,
+    );
+  }
+  console.log(`\nbridge OK — all ${mapped.length} mapped KCs reach published lessons.`);
 }
 
 main().catch((err) => {

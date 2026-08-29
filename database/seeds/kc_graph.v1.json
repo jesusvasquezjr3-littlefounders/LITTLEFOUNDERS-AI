@@ -6,376 +6,708 @@
       "key": "money.coin-recognition",
       "strand": "money_math",
       "tier_min": 1,
-      "p_l0": 0.4, "p_t": 0.2, "p_g": 0.25, "p_s": 0.08,
-      "title": { "en-US": "Know coins and bills", "es-MX": "Conocer monedas y billetes", "pt-BR": "Conhecer moedas e cédulas" },
+      "p_l0": 0.4,
+      "p_t": 0.2,
+      "p_g": 0.25,
+      "p_s": 0.08,
+      "title": {
+        "en-US": "Know coins and bills",
+        "es-MX": "Conocer monedas y billetes",
+        "pt-BR": "Conhecer moedas e cédulas"
+      },
       "objective": {
         "en-US": "Name each coin and bill and say how much it is worth.",
         "es-MX": "Nombrar cada moneda y billete y decir cuánto vale.",
         "pt-BR": "Nomear cada moeda e cédula e dizer quanto vale."
-      }
+      },
+      "skill_key": "financial-education/cofre-del-repaso-de-monedas-y-billetes"
     },
     {
       "key": "money.count-like-coins",
       "strand": "money_math",
       "tier_min": 1,
-      "p_l0": 0.35, "p_t": 0.18, "p_g": 0.2, "p_s": 0.08,
-      "title": { "en-US": "Count equal coins", "es-MX": "Contar monedas iguales", "pt-BR": "Contar moedas iguais" },
+      "p_l0": 0.35,
+      "p_t": 0.18,
+      "p_g": 0.2,
+      "p_s": 0.08,
+      "title": {
+        "en-US": "Count equal coins",
+        "es-MX": "Contar monedas iguales",
+        "pt-BR": "Contar moedas iguais"
+      },
       "objective": {
         "en-US": "Count a pile of same-value coins by skip counting.",
         "es-MX": "Contar un grupo de monedas del mismo valor saltando de valor en valor.",
         "pt-BR": "Contar um grupo de moedas do mesmo valor pulando de valor em valor."
-      }
+      },
+      "skill_key": "financial-education/cuento-lo-que-gane"
     },
     {
       "key": "money.count-mixed-coins",
       "strand": "money_math",
       "tier_min": 1,
-      "p_l0": 0.25, "p_t": 0.15, "p_g": 0.15, "p_s": 0.1,
-      "title": { "en-US": "Count mixed money", "es-MX": "Contar dinero mezclado", "pt-BR": "Contar dinheiro misturado" },
+      "p_l0": 0.25,
+      "p_t": 0.15,
+      "p_g": 0.15,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Count mixed money",
+        "es-MX": "Contar dinero mezclado",
+        "pt-BR": "Contar dinheiro misturado"
+      },
       "objective": {
         "en-US": "Find the total of mixed coins and bills, starting from the biggest value.",
         "es-MX": "Encontrar el total de monedas y billetes mezclados, empezando por el de mayor valor.",
         "pt-BR": "Encontrar o total de moedas e cédulas misturadas, começando pelo maior valor."
-      }
+      },
+      "skill_key": "financial-education/la-gran-cosecha-de-monedas-del-festival"
     },
     {
       "key": "money.compare-amounts",
       "strand": "money_math",
       "tier_min": 1,
-      "p_l0": 0.3, "p_t": 0.16, "p_g": 0.3, "p_s": 0.08,
-      "title": { "en-US": "Compare amounts", "es-MX": "Comparar cantidades", "pt-BR": "Comparar quantias" },
+      "p_l0": 0.3,
+      "p_t": 0.16,
+      "p_g": 0.3,
+      "p_s": 0.08,
+      "title": {
+        "en-US": "Compare amounts",
+        "es-MX": "Comparar cantidades",
+        "pt-BR": "Comparar quantias"
+      },
       "objective": {
         "en-US": "Decide which of two amounts of money is bigger, even with different coins.",
         "es-MX": "Decidir cuál de dos cantidades de dinero es mayor, aunque tengan monedas distintas.",
         "pt-BR": "Decidir qual de duas quantias de dinheiro é maior, mesmo com moedas diferentes."
-      }
+      },
+      "skill_key": "financial-education/cual-vale-mas"
     },
     {
       "key": "money.make-amount",
       "strand": "money_math",
       "tier_min": 1,
-      "p_l0": 0.22, "p_t": 0.15, "p_g": 0.12, "p_s": 0.1,
-      "title": { "en-US": "Make an exact amount", "es-MX": "Armar una cantidad exacta", "pt-BR": "Formar uma quantia exata" },
+      "p_l0": 0.22,
+      "p_t": 0.15,
+      "p_g": 0.12,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Make an exact amount",
+        "es-MX": "Armar una cantidad exacta",
+        "pt-BR": "Formar uma quantia exata"
+      },
       "objective": {
         "en-US": "Pick coins and bills that add up to an exact amount.",
         "es-MX": "Elegir monedas y billetes que sumen una cantidad exacta.",
         "pt-BR": "Escolher moedas e cédulas que somem uma quantia exata."
-      }
+      },
+      "skill_key": "financial-education/junto-monedas-para-llegar-a-un-numero"
     },
     {
       "key": "money.add-money",
       "strand": "money_math",
       "tier_min": 1,
-      "p_l0": 0.25, "p_t": 0.15, "p_g": 0.12, "p_s": 0.1,
-      "title": { "en-US": "Add money", "es-MX": "Sumar dinero", "pt-BR": "Somar dinheiro" },
+      "p_l0": 0.25,
+      "p_t": 0.15,
+      "p_g": 0.12,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Add money",
+        "es-MX": "Sumar dinero",
+        "pt-BR": "Somar dinheiro"
+      },
       "objective": {
         "en-US": "Add two prices or amounts of money together.",
         "es-MX": "Sumar dos precios o cantidades de dinero.",
         "pt-BR": "Somar dois preços ou quantias de dinheiro."
-      }
+      },
+      "skill_key": "financial-education/mi-primera-semana-de-ganancias"
     },
     {
       "key": "money.subtract-money",
       "strand": "money_math",
       "tier_min": 1,
-      "p_l0": 0.2, "p_t": 0.14, "p_g": 0.12, "p_s": 0.1,
-      "title": { "en-US": "Subtract money", "es-MX": "Restar dinero", "pt-BR": "Subtrair dinheiro" },
+      "p_l0": 0.2,
+      "p_t": 0.14,
+      "p_g": 0.12,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Subtract money",
+        "es-MX": "Restar dinero",
+        "pt-BR": "Subtrair dinheiro"
+      },
       "objective": {
         "en-US": "Find how much money is left after spending some.",
         "es-MX": "Encontrar cuánto dinero queda después de gastar una parte.",
         "pt-BR": "Descobrir quanto dinheiro sobra depois de gastar uma parte."
-      }
+      },
+      "skill_key": null
     },
     {
       "key": "money.make-change-counting-up",
       "strand": "money_math",
       "tier_min": 2,
-      "p_l0": 0.15, "p_t": 0.13, "p_g": 0.1, "p_s": 0.1,
-      "title": { "en-US": "Give change by counting up", "es-MX": "Dar cambio contando hacia arriba", "pt-BR": "Dar troco contando para cima" },
+      "p_l0": 0.15,
+      "p_t": 0.13,
+      "p_g": 0.1,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Give change by counting up",
+        "es-MX": "Dar cambio contando hacia arriba",
+        "pt-BR": "Dar troco contando para cima"
+      },
       "objective": {
         "en-US": "Give the right change by counting up from the price to the money handed over.",
         "es-MX": "Dar el cambio correcto contando desde el precio hasta el dinero entregado.",
         "pt-BR": "Dar o troco certo contando do preço até o dinheiro entregue."
-      }
+      },
+      "skill_key": "financial-education/cobrar-y-dar-cambio"
     },
     {
       "key": "money.unit-price",
       "strand": "money_math",
       "tier_min": 2,
-      "p_l0": 0.18, "p_t": 0.13, "p_g": 0.15, "p_s": 0.1,
-      "title": { "en-US": "Price of one", "es-MX": "El precio de uno", "pt-BR": "O preço de um" },
+      "p_l0": 0.18,
+      "p_t": 0.13,
+      "p_g": 0.15,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Price of one",
+        "es-MX": "El precio de uno",
+        "pt-BR": "O preço de um"
+      },
       "objective": {
         "en-US": "Find the price of one item when several cost a known total.",
         "es-MX": "Encontrar el precio de un artículo cuando varios cuestan un total conocido.",
         "pt-BR": "Descobrir o preço de um item quando vários custam um total conhecido."
-      }
+      },
+      "skill_key": "financial-education/cuanto-cuesta-cada-material"
     },
     {
       "key": "money.estimate-total",
       "strand": "money_math",
       "tier_min": 2,
-      "p_l0": 0.2, "p_t": 0.15, "p_g": 0.2, "p_s": 0.1,
-      "title": { "en-US": "Estimate the total", "es-MX": "Estimar el total", "pt-BR": "Estimar o total" },
+      "p_l0": 0.2,
+      "p_t": 0.15,
+      "p_g": 0.2,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Estimate the total",
+        "es-MX": "Estimar el total",
+        "pt-BR": "Estimar o total"
+      },
       "objective": {
         "en-US": "Round prices to estimate whether the money you have is enough.",
         "es-MX": "Redondear precios para estimar si el dinero que tienes alcanza.",
         "pt-BR": "Arredondar preços para estimar se o dinheiro que você tem é suficiente."
-      }
+      },
+      "skill_key": "financial-education/sumar-el-costo-total"
     },
     {
       "key": "money.simple-budget",
       "strand": "money_math",
       "tier_min": 2,
-      "p_l0": 0.15, "p_t": 0.12, "p_g": 0.1, "p_s": 0.1,
-      "title": { "en-US": "Plan what to spend", "es-MX": "Planear el gasto", "pt-BR": "Planejar o gasto" },
+      "p_l0": 0.15,
+      "p_t": 0.12,
+      "p_g": 0.1,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Plan what to spend",
+        "es-MX": "Planear el gasto",
+        "pt-BR": "Planejar o gasto"
+      },
       "objective": {
         "en-US": "Choose what to buy so the total never passes the money available.",
         "es-MX": "Elegir qué comprar de modo que el total nunca pase del dinero disponible.",
         "pt-BR": "Escolher o que comprar para que o total nunca passe do dinheiro disponível."
-      }
+      },
+      "skill_key": "financial-education/presupuestar-mi-meta"
     },
     {
       "key": "money.equal-sharing",
       "strand": "money_math",
       "tier_min": 1,
-      "p_l0": 0.25, "p_t": 0.15, "p_g": 0.15, "p_s": 0.1,
-      "title": { "en-US": "Share equally", "es-MX": "Repartir en partes iguales", "pt-BR": "Dividir em partes iguais" },
+      "p_l0": 0.25,
+      "p_t": 0.15,
+      "p_g": 0.15,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Share equally",
+        "es-MX": "Repartir en partes iguales",
+        "pt-BR": "Dividir em partes iguais"
+      },
       "objective": {
         "en-US": "Split an amount of money into equal parts with nothing left over.",
         "es-MX": "Repartir una cantidad de dinero en partes iguales sin que sobre nada.",
         "pt-BR": "Dividir uma quantia de dinheiro em partes iguais sem sobrar nada."
-      }
+      },
+      "skill_key": "financial-education/repartir-ahorrar-gastar-compartir"
     },
     {
       "key": "money.fraction-of-amount",
       "strand": "money_math",
       "tier_min": 2,
-      "p_l0": 0.15, "p_t": 0.12, "p_g": 0.12, "p_s": 0.1,
-      "title": { "en-US": "A fraction of the money", "es-MX": "Una fracción del dinero", "pt-BR": "Uma fração do dinheiro" },
+      "p_l0": 0.15,
+      "p_t": 0.12,
+      "p_g": 0.12,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "A fraction of the money",
+        "es-MX": "Una fracción del dinero",
+        "pt-BR": "Uma fração do dinheiro"
+      },
       "objective": {
         "en-US": "Find half, a third or a quarter of an amount of money.",
         "es-MX": "Encontrar la mitad, un tercio o un cuarto de una cantidad de dinero.",
         "pt-BR": "Encontrar a metade, um terço ou um quarto de uma quantia de dinheiro."
-      }
+      },
+      "skill_key": null
     },
     {
       "key": "money.percent-intro",
       "strand": "money_math",
       "tier_min": 3,
-      "p_l0": 0.12, "p_t": 0.12, "p_g": 0.15, "p_s": 0.1,
-      "title": { "en-US": "Percentages of money", "es-MX": "Porcentajes del dinero", "pt-BR": "Porcentagens do dinheiro" },
+      "p_l0": 0.12,
+      "p_t": 0.12,
+      "p_g": 0.15,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Percentages of money",
+        "es-MX": "Porcentajes del dinero",
+        "pt-BR": "Porcentagens do dinheiro"
+      },
       "objective": {
         "en-US": "Find 10 percent and 50 percent of an amount, and use them to build other percentages.",
         "es-MX": "Encontrar el 10 y el 50 por ciento de una cantidad, y usarlos para armar otros porcentajes.",
         "pt-BR": "Encontrar 10 e 50 por cento de uma quantia, e usá-los para montar outras porcentagens."
-      }
+      },
+      "skill_key": null
     },
     {
       "key": "money.simple-interest-peek",
       "strand": "money_math",
       "tier_min": 3,
-      "p_l0": 0.1, "p_t": 0.1, "p_g": 0.15, "p_s": 0.1,
-      "title": { "en-US": "Money that grows", "es-MX": "Dinero que crece", "pt-BR": "Dinheiro que cresce" },
+      "p_l0": 0.1,
+      "p_t": 0.1,
+      "p_g": 0.15,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Money that grows",
+        "es-MX": "Dinero que crece",
+        "pt-BR": "Dinheiro que cresce"
+      },
       "objective": {
         "en-US": "Work out how saved money grows step by step when it earns a little each period.",
         "es-MX": "Calcular paso a paso cómo crece el dinero ahorrado cuando gana un poco cada periodo.",
         "pt-BR": "Calcular passo a passo como o dinheiro guardado cresce quando rende um pouco a cada período."
-      }
+      },
+      "skill_key": "financial-education/el-banco-te-regala-un-poquito-por-guardar"
     },
     {
       "key": "money.savings-plan-math",
       "strand": "money_math",
       "tier_min": 2,
-      "p_l0": 0.18, "p_t": 0.13, "p_g": 0.12, "p_s": 0.1,
-      "title": { "en-US": "Math of a saving plan", "es-MX": "Las cuentas de un plan de ahorro", "pt-BR": "As contas de um plano de poupança" },
+      "p_l0": 0.18,
+      "p_t": 0.13,
+      "p_g": 0.12,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Math of a saving plan",
+        "es-MX": "Las cuentas de un plan de ahorro",
+        "pt-BR": "As contas de um plano de poupança"
+      },
       "objective": {
         "en-US": "Work out how many weeks of saving it takes to reach a goal.",
         "es-MX": "Calcular cuántas semanas de ahorro se necesitan para llegar a una meta.",
         "pt-BR": "Calcular quantas semanas de poupança são necessárias para alcançar uma meta."
-      }
+      },
+      "skill_key": "financial-education/cuantas-semanas-me-faltan"
     },
     {
       "key": "biz.needs-vs-wants",
       "strand": "entrepreneurship",
       "tier_min": 1,
-      "p_l0": 0.35, "p_t": 0.2, "p_g": 0.3, "p_s": 0.08,
-      "title": { "en-US": "Needs and wants", "es-MX": "Necesidades y deseos", "pt-BR": "Necessidades e desejos" },
+      "p_l0": 0.35,
+      "p_t": 0.2,
+      "p_g": 0.3,
+      "p_s": 0.08,
+      "title": {
+        "en-US": "Needs and wants",
+        "es-MX": "Necesidades y deseos",
+        "pt-BR": "Necessidades e desejos"
+      },
       "objective": {
         "en-US": "Tell apart things a person needs from things a person wants.",
         "es-MX": "Distinguir lo que una persona necesita de lo que una persona desea.",
         "pt-BR": "Distinguir o que uma pessoa precisa do que uma pessoa deseja."
-      }
+      },
+      "skill_key": "financial-education/separar-necesidades-y-deseos"
     },
     {
       "key": "biz.goods-vs-services",
       "strand": "entrepreneurship",
       "tier_min": 1,
-      "p_l0": 0.3, "p_t": 0.2, "p_g": 0.3, "p_s": 0.08,
-      "title": { "en-US": "Things and services", "es-MX": "Productos y servicios", "pt-BR": "Produtos e serviços" },
+      "p_l0": 0.3,
+      "p_t": 0.2,
+      "p_g": 0.3,
+      "p_s": 0.08,
+      "title": {
+        "en-US": "Things and services",
+        "es-MX": "Productos y servicios",
+        "pt-BR": "Produtos e serviços"
+      },
       "objective": {
         "en-US": "Tell apart selling a thing from selling help or work.",
         "es-MX": "Distinguir entre vender una cosa y vender ayuda o trabajo.",
         "pt-BR": "Distinguir entre vender uma coisa e vender ajuda ou trabalho."
-      }
+      },
+      "skill_key": null
     },
     {
       "key": "biz.what-is-price",
       "strand": "entrepreneurship",
       "tier_min": 1,
-      "p_l0": 0.28, "p_t": 0.18, "p_g": 0.25, "p_s": 0.08,
-      "title": { "en-US": "What a price is", "es-MX": "Qué es un precio", "pt-BR": "O que é um preço" },
+      "p_l0": 0.28,
+      "p_t": 0.18,
+      "p_g": 0.25,
+      "p_s": 0.08,
+      "title": {
+        "en-US": "What a price is",
+        "es-MX": "Qué es un precio",
+        "pt-BR": "O que é um preço"
+      },
       "objective": {
         "en-US": "Explain that a price is what a buyer gives to get something.",
         "es-MX": "Explicar que un precio es lo que el comprador da para recibir algo.",
         "pt-BR": "Explicar que um preço é o que o comprador dá para receber algo."
-      }
+      },
+      "skill_key": "financial-education/reviso-el-precio-antes-de-decidir"
     },
     {
       "key": "biz.cost-vs-price",
       "strand": "entrepreneurship",
       "tier_min": 2,
-      "p_l0": 0.18, "p_t": 0.14, "p_g": 0.2, "p_s": 0.1,
-      "title": { "en-US": "Cost and price", "es-MX": "Costo y precio", "pt-BR": "Custo e preço" },
+      "p_l0": 0.18,
+      "p_t": 0.14,
+      "p_g": 0.2,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Cost and price",
+        "es-MX": "Costo y precio",
+        "pt-BR": "Custo e preço"
+      },
       "objective": {
         "en-US": "Tell apart what it costs to make something from the price it sells for.",
         "es-MX": "Distinguir lo que cuesta hacer algo del precio al que se vende.",
         "pt-BR": "Distinguir o que custa fazer algo do preço pelo qual é vendido."
-      }
+      },
+      "skill_key": "financial-education/el-costo-no-es-el-precio"
     },
     {
       "key": "biz.revenue",
       "strand": "entrepreneurship",
       "tier_min": 2,
-      "p_l0": 0.18, "p_t": 0.14, "p_g": 0.15, "p_s": 0.1,
-      "title": { "en-US": "Money that comes in", "es-MX": "El dinero que entra", "pt-BR": "O dinheiro que entra" },
+      "p_l0": 0.18,
+      "p_t": 0.14,
+      "p_g": 0.15,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Money that comes in",
+        "es-MX": "El dinero que entra",
+        "pt-BR": "O dinheiro que entra"
+      },
       "objective": {
         "en-US": "Work out all the money a stand takes in from its sales.",
         "es-MX": "Calcular todo el dinero que un puesto recibe por sus ventas.",
         "pt-BR": "Calcular todo o dinheiro que uma barraca recebe por suas vendas."
-      }
+      },
+      "skill_key": "financial-education/el-gran-dia-de-ventas"
     },
     {
       "key": "biz.profit",
       "strand": "entrepreneurship",
       "tier_min": 2,
-      "p_l0": 0.12, "p_t": 0.12, "p_g": 0.12, "p_s": 0.1,
-      "title": { "en-US": "What is left: profit", "es-MX": "Lo que queda: la ganancia", "pt-BR": "O que sobra: o lucro" },
+      "p_l0": 0.12,
+      "p_t": 0.12,
+      "p_g": 0.12,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "What is left: profit",
+        "es-MX": "Lo que queda: la ganancia",
+        "pt-BR": "O que sobra: o lucro"
+      },
       "objective": {
         "en-US": "Find the profit by taking the costs away from the money that came in.",
         "es-MX": "Encontrar la ganancia quitando los costos al dinero que entró.",
         "pt-BR": "Encontrar o lucro tirando os custos do dinheiro que entrou."
-      }
+      },
+      "skill_key": "financial-education/un-poquito-mas-por-tu-trabajo"
     },
     {
       "key": "biz.saving-goal",
       "strand": "entrepreneurship",
       "tier_min": 1,
-      "p_l0": 0.25, "p_t": 0.16, "p_g": 0.2, "p_s": 0.09,
-      "title": { "en-US": "Saving toward a goal", "es-MX": "Ahorrar para una meta", "pt-BR": "Poupar para uma meta" },
+      "p_l0": 0.25,
+      "p_t": 0.16,
+      "p_g": 0.2,
+      "p_s": 0.09,
+      "title": {
+        "en-US": "Saving toward a goal",
+        "es-MX": "Ahorrar para una meta",
+        "pt-BR": "Poupar para uma meta"
+      },
       "objective": {
         "en-US": "Set a goal and decide how much to keep aside each time money comes in.",
         "es-MX": "Fijar una meta y decidir cuánto apartar cada vez que entra dinero.",
         "pt-BR": "Definir uma meta e decidir quanto guardar cada vez que entra dinheiro."
-      }
+      },
+      "skill_key": "financial-education/tengo-un-sueno-que-cuesta-monedas"
     },
     {
       "key": "biz.budget-decisions",
       "strand": "entrepreneurship",
       "tier_min": 2,
-      "p_l0": 0.13, "p_t": 0.12, "p_g": 0.12, "p_s": 0.1,
-      "title": { "en-US": "Deciding with a budget", "es-MX": "Decidir con un presupuesto", "pt-BR": "Decidir com um orçamento" },
+      "p_l0": 0.13,
+      "p_t": 0.12,
+      "p_g": 0.12,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Deciding with a budget",
+        "es-MX": "Decidir con un presupuesto",
+        "pt-BR": "Decidir com um orçamento"
+      },
       "objective": {
         "en-US": "Choose what a small business spends on when it cannot pay for everything.",
         "es-MX": "Elegir en qué gasta un pequeño negocio cuando no alcanza para todo.",
         "pt-BR": "Escolher em que um pequeno negócio gasta quando não dá para pagar tudo."
-      }
+      },
+      "skill_key": "financial-education/presupuesto-familiar-participativo"
     },
     {
       "key": "biz.trade-and-markets",
       "strand": "entrepreneurship",
       "tier_min": 1,
-      "p_l0": 0.25, "p_t": 0.16, "p_g": 0.25, "p_s": 0.09,
-      "title": { "en-US": "Trading in a market", "es-MX": "Intercambiar en un mercado", "pt-BR": "Trocar em um mercado" },
+      "p_l0": 0.25,
+      "p_t": 0.16,
+      "p_g": 0.25,
+      "p_s": 0.09,
+      "title": {
+        "en-US": "Trading in a market",
+        "es-MX": "Intercambiar en un mercado",
+        "pt-BR": "Trocar em um mercado"
+      },
       "objective": {
         "en-US": "Explain how buyers and sellers both leave a fair trade happier.",
         "es-MX": "Explicar cómo compradores y vendedores salen más contentos de un intercambio justo.",
         "pt-BR": "Explicar como compradores e vendedores saem mais felizes de uma troca justa."
-      }
+      },
+      "skill_key": "financial-education/el-problema-del-trueque"
     },
     {
       "key": "biz.value-of-work",
       "strand": "entrepreneurship",
       "tier_min": 1,
-      "p_l0": 0.28, "p_t": 0.17, "p_g": 0.25, "p_s": 0.09,
-      "title": { "en-US": "Work has value", "es-MX": "El trabajo vale", "pt-BR": "O trabalho tem valor" },
+      "p_l0": 0.28,
+      "p_t": 0.17,
+      "p_g": 0.25,
+      "p_s": 0.09,
+      "title": {
+        "en-US": "Work has value",
+        "es-MX": "El trabajo vale",
+        "pt-BR": "O trabalho tem valor"
+      },
       "objective": {
         "en-US": "Explain that time and effort put into work deserve to be paid.",
         "es-MX": "Explicar que el tiempo y el esfuerzo del trabajo merecen un pago.",
         "pt-BR": "Explicar que o tempo e o esforço do trabalho merecem pagamento."
-      }
+      },
+      "skill_key": "financial-education/gano-monedas-por-mi-chambita"
     },
     {
       "key": "biz.pricing-strategy",
       "strand": "entrepreneurship",
       "tier_min": 3,
-      "p_l0": 0.1, "p_t": 0.11, "p_g": 0.12, "p_s": 0.1,
-      "title": { "en-US": "Choosing a price", "es-MX": "Elegir un precio", "pt-BR": "Escolher um preço" },
+      "p_l0": 0.1,
+      "p_t": 0.11,
+      "p_g": 0.12,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Choosing a price",
+        "es-MX": "Elegir un precio",
+        "pt-BR": "Escolher um preço"
+      },
       "objective": {
         "en-US": "Choose a price that covers costs, leaves a profit and buyers still accept.",
         "es-MX": "Elegir un precio que cubra los costos, deje ganancia y los compradores acepten.",
         "pt-BR": "Escolher um preço que cubra os custos, deixe lucro e os compradores aceitem."
-      }
+      },
+      "skill_key": "financial-education/ni-muy-caro-ni-muy-barato"
     },
     {
       "key": "biz.risk-and-reward",
       "strand": "entrepreneurship",
       "tier_min": 3,
-      "p_l0": 0.1, "p_t": 0.11, "p_g": 0.15, "p_s": 0.1,
-      "title": { "en-US": "Risk and reward", "es-MX": "Riesgo y recompensa", "pt-BR": "Risco e recompensa" },
+      "p_l0": 0.1,
+      "p_t": 0.11,
+      "p_g": 0.15,
+      "p_s": 0.1,
+      "title": {
+        "en-US": "Risk and reward",
+        "es-MX": "Riesgo y recompensa",
+        "pt-BR": "Risco e recompensa"
+      },
       "objective": {
         "en-US": "Weigh what can be lost against what can be gained before deciding.",
         "es-MX": "Comparar lo que se puede perder con lo que se puede ganar antes de decidir.",
         "pt-BR": "Comparar o que se pode perder com o que se pode ganhar antes de decidir."
-      }
+      },
+      "skill_key": null
     }
   ],
   "edges": [
-    ["money.coin-recognition", "money.count-like-coins"],
-    ["money.count-like-coins", "money.count-mixed-coins"],
-    ["money.count-mixed-coins", "money.compare-amounts"],
-    ["money.count-mixed-coins", "money.make-amount"],
-    ["money.count-mixed-coins", "money.add-money"],
-    ["money.count-mixed-coins", "money.equal-sharing"],
-    ["money.add-money", "money.subtract-money"],
-    ["money.add-money", "money.unit-price"],
-    ["money.add-money", "money.estimate-total"],
-    ["money.add-money", "money.savings-plan-math"],
-    ["money.make-amount", "money.make-change-counting-up"],
-    ["money.subtract-money", "money.make-change-counting-up"],
-    ["money.subtract-money", "money.simple-budget"],
-    ["money.estimate-total", "money.simple-budget"],
-    ["money.equal-sharing", "money.fraction-of-amount"],
-    ["money.subtract-money", "money.fraction-of-amount"],
-    ["money.fraction-of-amount", "money.percent-intro"],
-    ["money.percent-intro", "money.simple-interest-peek"],
-    ["money.simple-budget", "money.savings-plan-math"],
-    ["biz.needs-vs-wants", "biz.what-is-price"],
-    ["biz.goods-vs-services", "biz.what-is-price"],
-    ["biz.what-is-price", "biz.cost-vs-price"],
-    ["biz.what-is-price", "biz.trade-and-markets"],
-    ["biz.needs-vs-wants", "biz.value-of-work"],
-    ["biz.what-is-price", "biz.revenue"],
-    ["money.add-money", "biz.revenue"],
-    ["biz.cost-vs-price", "biz.profit"],
-    ["biz.revenue", "biz.profit"],
-    ["money.subtract-money", "biz.profit"],
-    ["biz.needs-vs-wants", "biz.saving-goal"],
-    ["money.savings-plan-math", "biz.saving-goal"],
-    ["biz.profit", "biz.budget-decisions"],
-    ["money.simple-budget", "biz.budget-decisions"],
-    ["biz.profit", "biz.pricing-strategy"],
-    ["money.percent-intro", "biz.pricing-strategy"],
-    ["biz.profit", "biz.risk-and-reward"]
+    [
+      "money.coin-recognition",
+      "money.count-like-coins"
+    ],
+    [
+      "money.count-like-coins",
+      "money.count-mixed-coins"
+    ],
+    [
+      "money.count-mixed-coins",
+      "money.compare-amounts"
+    ],
+    [
+      "money.count-mixed-coins",
+      "money.make-amount"
+    ],
+    [
+      "money.count-mixed-coins",
+      "money.add-money"
+    ],
+    [
+      "money.count-mixed-coins",
+      "money.equal-sharing"
+    ],
+    [
+      "money.add-money",
+      "money.subtract-money"
+    ],
+    [
+      "money.add-money",
+      "money.unit-price"
+    ],
+    [
+      "money.add-money",
+      "money.estimate-total"
+    ],
+    [
+      "money.add-money",
+      "money.savings-plan-math"
+    ],
+    [
+      "money.make-amount",
+      "money.make-change-counting-up"
+    ],
+    [
+      "money.subtract-money",
+      "money.make-change-counting-up"
+    ],
+    [
+      "money.subtract-money",
+      "money.simple-budget"
+    ],
+    [
+      "money.estimate-total",
+      "money.simple-budget"
+    ],
+    [
+      "money.equal-sharing",
+      "money.fraction-of-amount"
+    ],
+    [
+      "money.subtract-money",
+      "money.fraction-of-amount"
+    ],
+    [
+      "money.fraction-of-amount",
+      "money.percent-intro"
+    ],
+    [
+      "money.percent-intro",
+      "money.simple-interest-peek"
+    ],
+    [
+      "money.simple-budget",
+      "money.savings-plan-math"
+    ],
+    [
+      "biz.needs-vs-wants",
+      "biz.what-is-price"
+    ],
+    [
+      "biz.goods-vs-services",
+      "biz.what-is-price"
+    ],
+    [
+      "biz.what-is-price",
+      "biz.cost-vs-price"
+    ],
+    [
+      "biz.what-is-price",
+      "biz.trade-and-markets"
+    ],
+    [
+      "biz.needs-vs-wants",
+      "biz.value-of-work"
+    ],
+    [
+      "biz.what-is-price",
+      "biz.revenue"
+    ],
+    [
+      "money.add-money",
+      "biz.revenue"
+    ],
+    [
+      "biz.cost-vs-price",
+      "biz.profit"
+    ],
+    [
+      "biz.revenue",
+      "biz.profit"
+    ],
+    [
+      "money.subtract-money",
+      "biz.profit"
+    ],
+    [
+      "biz.needs-vs-wants",
+      "biz.saving-goal"
+    ],
+    [
+      "money.savings-plan-math",
+      "biz.saving-goal"
+    ],
+    [
+      "biz.profit",
+      "biz.budget-decisions"
+    ],
+    [
+      "money.simple-budget",
+      "biz.budget-decisions"
+    ],
+    [
+      "biz.profit",
+      "biz.pricing-strategy"
+    ],
+    [
+      "money.percent-intro",
+      "biz.pricing-strategy"
+    ],
+    [
+      "biz.profit",
+      "biz.risk-and-reward"
+    ]
   ],
   "misconceptions": [
     {
@@ -391,7 +723,11 @@
         "es-MX": "Compara dos monedas donde la más pequeña vale más, y lean juntos el valor impreso.",
         "pt-BR": "Compare duas moedas em que a menor vale mais, e leiam juntos o valor impresso."
       },
-      "distractor_patterns": { "option_tags": ["picks-larger-coin"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "picks-larger-coin"
+        ]
+      }
     },
     {
       "kc": "money.count-like-coins",
@@ -406,7 +742,14 @@
         "es-MX": "Cuenten el mismo grupo dos veces: una como monedas y otra como valor, y comparen las dos respuestas.",
         "pt-BR": "Contem o mesmo grupo duas vezes: uma como moedas e outra como valor, e comparem as duas respostas."
       },
-      "distractor_patterns": { "numeric": ["count"], "option_tags": ["counts-pieces"] }
+      "distractor_patterns": {
+        "numeric": [
+          "count"
+        ],
+        "option_tags": [
+          "counts-pieces"
+        ]
+      }
     },
     {
       "kc": "money.count-mixed-coins",
@@ -421,7 +764,14 @@
         "es-MX": "Primero ordenen las monedas por valor, y cuenten las de mayor valor antes que las pequeñas.",
         "pt-BR": "Primeiro ordenem as moedas por valor, e contem as de maior valor antes das pequenas."
       },
-      "distractor_patterns": { "numeric": ["count"], "option_tags": ["counts-pieces"] }
+      "distractor_patterns": {
+        "numeric": [
+          "count"
+        ],
+        "option_tags": [
+          "counts-pieces"
+        ]
+      }
     },
     {
       "kc": "money.count-mixed-coins",
@@ -436,7 +786,11 @@
         "es-MX": "Agrupen los pesos por un lado y los centavos por otro antes de juntarlos.",
         "pt-BR": "Agrupem os reais de um lado e os centavos do outro antes de juntá-los."
       },
-      "distractor_patterns": { "option_tags": ["unit-confusion"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "unit-confusion"
+        ]
+      }
     },
     {
       "kc": "money.compare-amounts",
@@ -451,7 +805,11 @@
         "es-MX": "Comparen pocas monedas grandes contra muchas pequeñas y sumen los dos grupos.",
         "pt-BR": "Comparem poucas moedas grandes com muitas pequenas e somem os dois grupos."
       },
-      "distractor_patterns": { "option_tags": ["picks-more-pieces"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "picks-more-pieces"
+        ]
+      }
     },
     {
       "kc": "money.make-amount",
@@ -466,7 +824,11 @@
         "es-MX": "Digan el total acumulado en voz alta después de cada moneda y deténganse en cuanto coincida.",
         "pt-BR": "Digam o total acumulado em voz alta após cada moeda e parem assim que coincidir."
       },
-      "distractor_patterns": { "numeric": ["gt_target"] }
+      "distractor_patterns": {
+        "numeric": [
+          "gt_target"
+        ]
+      }
     },
     {
       "kc": "money.make-amount",
@@ -481,7 +843,11 @@
         "es-MX": "Empiecen con la moneda más grande que quepa, y completen el resto con más pequeñas.",
         "pt-BR": "Comecem com a maior moeda que couber, e completem o resto com menores."
       },
-      "distractor_patterns": { "option_tags": ["single-denomination"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "single-denomination"
+        ]
+      }
     },
     {
       "kc": "money.add-money",
@@ -496,7 +862,11 @@
         "es-MX": "Sumen primero los centavos, cambien cada 100 centavos por un peso, y luego sumen los pesos.",
         "pt-BR": "Somem primeiro os centavos, troquem cada 100 centavos por um real, e depois somem os reais."
       },
-      "distractor_patterns": { "option_tags": ["decimal-misaligned"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "decimal-misaligned"
+        ]
+      }
     },
     {
       "kc": "money.subtract-money",
@@ -511,7 +881,11 @@
         "es-MX": "Cambien un peso por monedas cuando los centavos no alcancen, y luego resten.",
         "pt-BR": "Troquem um real por moedas quando os centavos não bastarem, e depois subtraiam."
       },
-      "distractor_patterns": { "numeric": ["digitwise_diff"] }
+      "distractor_patterns": {
+        "numeric": [
+          "digitwise_diff"
+        ]
+      }
     },
     {
       "kc": "money.make-change-counting-up",
@@ -526,7 +900,11 @@
         "es-MX": "Empiecen en el precio y cuenten hacia arriba moneda por moneda hasta llegar al dinero entregado.",
         "pt-BR": "Comecem no preço e contem para cima moeda por moeda até chegar ao dinheiro entregue."
       },
-      "distractor_patterns": { "numeric": ["a+b"] }
+      "distractor_patterns": {
+        "numeric": [
+          "a+b"
+        ]
+      }
     },
     {
       "kc": "money.make-change-counting-up",
@@ -541,7 +919,11 @@
         "es-MX": "Actúen la venta: el precio se queda en la caja, solo el resto se devuelve.",
         "pt-BR": "Encenem a venda: o preço fica no caixa, só o resto volta."
       },
-      "distractor_patterns": { "numeric": ["b"] }
+      "distractor_patterns": {
+        "numeric": [
+          "b"
+        ]
+      }
     },
     {
       "kc": "money.unit-price",
@@ -556,7 +938,11 @@
         "es-MX": "Repartan el total en grupos iguales, uno por artículo, y miren un solo grupo.",
         "pt-BR": "Repartam o total em grupos iguais, um por item, e olhem um único grupo."
       },
-      "distractor_patterns": { "numeric": ["a*b"] }
+      "distractor_patterns": {
+        "numeric": [
+          "a*b"
+        ]
+      }
     },
     {
       "kc": "money.estimate-total",
@@ -571,7 +957,11 @@
         "es-MX": "Redondeen los precios hacia arriba al revisar si alcanza, para que no haya sorpresas en la caja.",
         "pt-BR": "Arredondem os preços para cima ao verificar se dá, para não haver surpresa no caixa."
       },
-      "distractor_patterns": { "option_tags": ["rounds-down"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "rounds-down"
+        ]
+      }
     },
     {
       "kc": "money.simple-budget",
@@ -586,7 +976,11 @@
         "es-MX": "Lleven el total acumulado de la canasta y comparen ese total, no cada artículo, con el dinero disponible.",
         "pt-BR": "Mantenham o total acumulado da cesta e comparem esse total, não cada item, com o dinheiro disponível."
       },
-      "distractor_patterns": { "option_tags": ["per-item-check"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "per-item-check"
+        ]
+      }
     },
     {
       "kc": "money.equal-sharing",
@@ -601,7 +995,11 @@
         "es-MX": "Repartan el dinero moneda por moneda como cartas, y revisen que todos los montones coincidan.",
         "pt-BR": "Distribuam o dinheiro moeda por moeda como cartas, e verifiquem que todos os montes coincidem."
       },
-      "distractor_patterns": { "option_tags": ["unequal-parts"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "unequal-parts"
+        ]
+      }
     },
     {
       "kc": "money.fraction-of-amount",
@@ -616,7 +1014,11 @@
         "es-MX": "Repartan la misma cantidad de las dos formas y comparen una parte de cada reparto.",
         "pt-BR": "Dividam a mesma quantia das duas formas e comparem uma parte de cada divisão."
       },
-      "distractor_patterns": { "option_tags": ["denominator-as-size"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "denominator-as-size"
+        ]
+      }
     },
     {
       "kc": "money.percent-intro",
@@ -631,7 +1033,11 @@
         "es-MX": "Encuentren el 10 por ciento de dos cantidades muy distintas y comparen los resultados.",
         "pt-BR": "Encontrem 10 por cento de duas quantias bem diferentes e comparem os resultados."
       },
-      "distractor_patterns": { "numeric": ["p"] }
+      "distractor_patterns": {
+        "numeric": [
+          "p"
+        ]
+      }
     },
     {
       "kc": "money.simple-interest-peek",
@@ -646,7 +1052,11 @@
         "es-MX": "Dibujen la cantidad al final de cada periodo como un escalón propio en una escalera.",
         "pt-BR": "Desenhem a quantia ao fim de cada período como um degrau próprio numa escada."
       },
-      "distractor_patterns": { "option_tags": ["single-step-growth"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "single-step-growth"
+        ]
+      }
     },
     {
       "kc": "money.savings-plan-math",
@@ -661,7 +1071,11 @@
         "es-MX": "Primero encuentren lo que falta, y dividan solo eso entre el ahorro semanal.",
         "pt-BR": "Primeiro encontrem o que falta, e dividam só isso pela poupança semanal."
       },
-      "distractor_patterns": { "numeric": ["goal_div_rate"] }
+      "distractor_patterns": {
+        "numeric": [
+          "goal_div_rate"
+        ]
+      }
     },
     {
       "kc": "biz.needs-vs-wants",
@@ -676,7 +1090,11 @@
         "es-MX": "Pregunten qué pasa tras una semana sin eso: si hay problemas es necesidad, si hay tristeza es deseo.",
         "pt-BR": "Perguntem o que acontece após uma semana sem isso: problema é necessidade, tristeza é desejo."
       },
-      "distractor_patterns": { "option_tags": ["desire-as-need"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "desire-as-need"
+        ]
+      }
     },
     {
       "kc": "biz.goods-vs-services",
@@ -691,7 +1109,11 @@
         "es-MX": "Hagan una lista de ventas donde nada físico cambia de manos, como un corte de pelo o lavar un coche.",
         "pt-BR": "Listem vendas em que nada físico muda de mãos, como um corte de cabelo ou lavar um carro."
       },
-      "distractor_patterns": { "option_tags": ["object-required"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "object-required"
+        ]
+      }
     },
     {
       "kc": "biz.what-is-price",
@@ -706,7 +1128,11 @@
         "es-MX": "Encuentren el mismo artículo vendido en dos lugares a precios distintos y hablen del porqué.",
         "pt-BR": "Encontrem o mesmo item vendido em dois lugares por preços diferentes e conversem sobre o porquê."
       },
-      "distractor_patterns": { "option_tags": ["fixed-price"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "fixed-price"
+        ]
+      }
     },
     {
       "kc": "biz.cost-vs-price",
@@ -721,7 +1147,11 @@
         "es-MX": "Sigan un vaso de limonada desde los ingredientes hasta la venta y escriban los dos números lado a lado.",
         "pt-BR": "Sigam um copo de limonada dos ingredientes até a venda e escrevam os dois números lado a lado."
       },
-      "distractor_patterns": { "option_tags": ["cost-price-same"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "cost-price-same"
+        ]
+      }
     },
     {
       "kc": "biz.revenue",
@@ -736,7 +1166,11 @@
         "es-MX": "Pongan el dinero que entró de un lado y lo gastado del otro antes de ponerle nombre a nada.",
         "pt-BR": "Coloquem o dinheiro que entrou de um lado e o gasto do outro antes de dar nome a qualquer coisa."
       },
-      "distractor_patterns": { "option_tags": ["revenue-as-profit"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "revenue-as-profit"
+        ]
+      }
     },
     {
       "kc": "biz.profit",
@@ -751,7 +1185,11 @@
         "es-MX": "Primero paguen los costos con el dinero de las ventas, y solo lo que quede llámenlo ganancia.",
         "pt-BR": "Primeiro paguem os custos com o dinheiro das vendas, e só o que sobrar chamem de lucro."
       },
-      "distractor_patterns": { "numeric": ["a"] }
+      "distractor_patterns": {
+        "numeric": [
+          "a"
+        ]
+      }
     },
     {
       "kc": "biz.profit",
@@ -766,7 +1204,11 @@
         "es-MX": "Actúenlo con monedas reales: las monedas del costo salen de la mesa antes de contar lo que queda.",
         "pt-BR": "Encenem com moedas reais: as moedas do custo saem da mesa antes de contar o que resta."
       },
-      "distractor_patterns": { "numeric": ["a+b"] }
+      "distractor_patterns": {
+        "numeric": [
+          "a+b"
+        ]
+      }
     },
     {
       "kc": "biz.saving-goal",
@@ -781,7 +1223,11 @@
         "es-MX": "Aparten la parte ahorrada primero, en cuanto entre el dinero, antes de cualquier gasto.",
         "pt-BR": "Separem a parte poupada primeiro, assim que o dinheiro entrar, antes de qualquer gasto."
       },
-      "distractor_patterns": { "option_tags": ["save-leftover"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "save-leftover"
+        ]
+      }
     },
     {
       "kc": "biz.budget-decisions",
@@ -796,7 +1242,11 @@
         "es-MX": "Ordenen las opciones por importancia antes de gastar una sola moneda.",
         "pt-BR": "Classifiquem as opções por importância antes de gastar uma única moeda."
       },
-      "distractor_patterns": { "option_tags": ["list-order-spend"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "list-order-spend"
+        ]
+      }
     },
     {
       "kc": "biz.trade-and-markets",
@@ -811,7 +1261,11 @@
         "es-MX": "Pregunten qué quería más cada lado, y por qué los dos dijeron que sí.",
         "pt-BR": "Perguntem o que cada lado queria mais, e por que os dois disseram sim."
       },
-      "distractor_patterns": { "option_tags": ["zero-sum"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "zero-sum"
+        ]
+      }
     },
     {
       "kc": "biz.value-of-work",
@@ -826,7 +1280,11 @@
         "es-MX": "Comparen dos artículos idénticos donde uno tomó mucho más tiempo hacer, y discutan el precio justo.",
         "pt-BR": "Comparem dois itens idênticos em que um levou muito mais tempo para fazer, e discutam o preço justo."
       },
-      "distractor_patterns": { "option_tags": ["labor-worthless"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "labor-worthless"
+        ]
+      }
     },
     {
       "kc": "biz.pricing-strategy",
@@ -841,7 +1299,11 @@
         "es-MX": "Comparen vender muchos a un precio justo contra vender casi ninguno a uno alto.",
         "pt-BR": "Comparem vender muitos a um preço justo com vender quase nenhum a um preço alto."
       },
-      "distractor_patterns": { "option_tags": ["max-price"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "max-price"
+        ]
+      }
     },
     {
       "kc": "biz.risk-and-reward",
@@ -856,7 +1318,11 @@
         "es-MX": "Escriban el mejor caso y el peor caso lado a lado antes de elegir.",
         "pt-BR": "Escrevam o melhor caso e o pior caso lado a lado antes de escolher."
       },
-      "distractor_patterns": { "option_tags": ["upside-only"] }
+      "distractor_patterns": {
+        "option_tags": [
+          "upside-only"
+        ]
+      }
     }
   ]
 }
