@@ -256,10 +256,34 @@ async function main(): Promise<void> {
   const started = Date.now();
   let completion;
   try {
-    completion = await complete([
-      { role: 'system', content: TUTOR_SYSTEM_PROMPT },
-      { role: 'user', content: buildContextMessage(context) },
-    ]);
+    /*
+     * RETRIED ONCE, because production retries once. This stage used to make a
+     * single call, and with `deepseek-v4-flash` spending most of its completion
+     * budget on `reasoning_content` an empty `content` comes back often enough
+     * that a single call fails roughly half the time — turning the whole
+     * deploy verification red for something a learner never experiences.
+     *
+     * The retry is REPORTED rather than hidden: an answer that needed two
+     * calls is a real cost and a real latency, and a check that quietly papers
+     * over it is how "the model is fine" becomes an expensive belief.
+     */
+    try {
+      completion = await complete([
+        { role: 'system', content: TUTOR_SYSTEM_PROMPT },
+        { role: 'user', content: buildContextMessage(context) },
+      ]);
+    } catch (first) {
+      if (!(first instanceof ModelUnavailableError)) throw first;
+      console.log(`  ..    ${first.message} — retrying once, as production does`);
+      if (!diagnosed) {
+        diagnosed = true;
+        await diagnose(context);
+      }
+      completion = await complete([
+        { role: 'system', content: TUTOR_SYSTEM_PROMPT },
+        { role: 'user', content: buildContextMessage(context) },
+      ]);
+    }
     ok(
       'the model answered',
       `${Date.now() - started} ms, ${completion.promptTokens} in / ${completion.completionTokens} out`,
