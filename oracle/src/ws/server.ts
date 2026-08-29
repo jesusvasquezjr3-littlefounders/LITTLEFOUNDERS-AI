@@ -377,6 +377,34 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
     socket,
     session,
     orchestrator:
+      /*
+       * ONLY `turn.say` REACHES THE VOICE, and that is a decision now rather
+       * than an oversight.
+       *
+       * The turn also carries `emotion` — happy, thinking, encouraging, proud
+       * — chosen per turn by the pedagogical controller, which is the
+       * blueprint's differentiator #2, "prosodia dirigida por pedagogía". Our
+       * TTS request has no emotion field, so the only route is an inline
+       * direction tag in the text.
+       *
+       * MEASURED on 2026-08-29 with `step=probe-prosody`, the same sentence
+       * synthesized three ways against the live provider:
+       *
+       *   plain     97,536 bytes
+       *   [warm]   120,192 bytes   ← 23% MORE audio: the tag is SPOKEN
+       *   <warm>   103,680 bytes   ← within 6%: not spoken
+       *
+       * The blueprint recommends the square-bracket form. On this provider it
+       * would have a six-year-old hear "corchete warm cierra corchete" before
+       * the answer to their question — a worse defect than the one it fixes,
+       * aimed at the youngest users, and invisible to every test we have
+       * because the failure is in the audio.
+       *
+       * The angle-bracket form is not read aloud. That is NOT evidence it
+       * changes the delivery; a silently dropped tag looks identical from
+       * here. So nothing ships until someone LISTENS. Re-run the probe before
+       * trying again — this is a provider behaviour, and it can change.
+       */
       resumed?.orchestrator ?? new TutorOrchestrator(session, Date.now(), (turn) => speakLine(turn.say, speech)),
     speech,
     lastTurnAtMs: resumed?.lastTurnAtMs ?? 0,
