@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { contradictsCorrectAnswer, praiseContradictsAnswer } from '../tutor/prompt.js';
+import { contradictsCorrectAnswer, narratesUnshownGrowth, praiseContradictsAnswer } from '../tutor/prompt.js';
 
 /*
  * TWO MIRROR DEFECTS, BOTH FROM REAL SESSIONS.
@@ -53,5 +53,41 @@ describe('the two mirrors never both fire', () => {
     const say = '¡Muy bien, Robi! 20 más 5 son 25. Ya estás sumando con confianza.';
     expect(praiseContradictsAnswer(say, '20')).toBe(true);
     expect(contradictsCorrectAnswer(say, '20')).toBe(false);
+  });
+});
+
+describe('a growth story told in words with no board to show for it', () => {
+  it('catches the exact production sentence that shipped with no board', () => {
+    expect(
+      narratesUnshownGrowth(
+        'Imagina que guardas 10 pesos en una alcancía mágica. Cada día, la alcancía te regala 2 pesos. Al día siguiente, ¿cuántos tienes?',
+        null,
+      ),
+    ).toBe(true);
+  });
+
+  it('never fires when a whiteboard is already present', () => {
+    expect(
+      narratesUnshownGrowth('Cada día te dan 2 pesos más.', {
+        kind: 'sequence',
+        start: 10,
+        steps: [{ op: 'add', value: 2 }],
+        label: 'x',
+        currency: null,
+      }),
+    ).toBe(false);
+  });
+
+  it('leaves a single static fact alone — nothing there moves', () => {
+    expect(narratesUnshownGrowth('Un helado cuesta 12 pesos.', null)).toBe(false);
+  });
+
+  it('needs a repetition cue, not just two numbers', () => {
+    expect(narratesUnshownGrowth('Tienes 10 pesos y tu amigo tiene 15.', null)).toBe(false);
+  });
+
+  it('catches the English and Portuguese equivalents', () => {
+    expect(narratesUnshownGrowth('Imagine you save 10 dollars, and every week you get 2 more.', null)).toBe(true);
+    expect(narratesUnshownGrowth('Imagine que você guarda 10 reais, e a cada semana ganha 2 a mais.', null)).toBe(true);
   });
 });

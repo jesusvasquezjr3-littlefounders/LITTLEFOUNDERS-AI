@@ -29,6 +29,7 @@ import {
   buildContextMessage,
   praiseContradictsAnswer,
   contradictsCorrectAnswer,
+  narratesUnshownGrowth,
   echoesPreviousTurn,
   repeatsEarlierSentence,
   promisesAnActivity,
@@ -1202,6 +1203,16 @@ export class TutorOrchestrator {
             const falseCorrection =
               spokenAnswer !== '' && contradictsCorrectAnswer(parsed.turn.say, spokenAnswer);
             /*
+             * THE PROMPT INSTRUCTION ALONE DID NOT LAND ON THE REAL MODEL
+             * (V4). Measured directly: `tutor:converse` against production
+             * ran the owner's own growth story — "cada día la alcancía te
+             * regala 2 pesos" — and the model never set `whiteboard`, not
+             * even a malformed attempt. Same lesson as every other repair in
+             * this file: a rule the model is only TOLD does not hold; a rule
+             * it is CHECKED on does.
+             */
+            const missedWhiteboard = narratesUnshownGrowth(parsed.turn.say, parsed.turn.whiteboard);
+            /*
              * §9.4 of the blueprint, stated as a hard rule: never give the
              * final answer while asking. Detected by computing the question's
              * answer and looking for it in the lead-in, which is exact where a
@@ -1275,6 +1286,10 @@ export class TutorOrchestrator {
               turnCorrection =
                 'told the learner "casi" but its own reasoning arrived at THE NUMBER THE LEARNER SAID. Their answer was right. Confirm it plainly, give them credit, and continue — never mark a correct answer as almost';
               console.warn('[oracle] turn contradicted a correct answer — asking again');
+            } else if (missedWhiteboard && attempt === 0) {
+              turnCorrection =
+                'told a story about a quantity that changes every day/week/month/year, in words only. Say the SAME story again, but this time ALSO set "whiteboard" with the exact start value and step values your story used — do not add a step count higher than what you already said';
+              console.warn('[oracle] growth story told with no whiteboard — asking again');
             } else if (falsePraise && attempt === 0) {
               turnCorrection =
                 "congratulated the learner for an answer that was WRONG, and then stated the right one. Say \"casi\" instead, show the correct result and how to reach it, and do not tell them they are doing well at something they just got wrong";
@@ -1297,6 +1312,9 @@ export class TutorOrchestrator {
               }
               if (falseCorrection) {
                 console.warn('[oracle] contradiction of a correct answer SURVIVED the retry — delivered');
+              }
+              if (missedWhiteboard) {
+                console.warn('[oracle] growth story with no whiteboard SURVIVED the retry — delivered as text only');
               }
               if (givesAwayAnswer) {
                 console.warn('[oracle] self-answered question SURVIVED the retry — delivered');

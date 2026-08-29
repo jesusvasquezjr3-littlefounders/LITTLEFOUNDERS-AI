@@ -218,6 +218,35 @@ const CORRECTIVE = /\b(casi|no es|no exactamente|not quite|quase|n[ãa]o [ée])\
 /** Every result assertion in a turn — "son 25", "tienes 22", "quedan 8". */
 const RESULT_ASSERTIONS = /\b(?:es|son|tienes|tendr[áa]s|quedan?|hay|da)\s+(\d+)/gi;
 
+/**
+ * A GROWTH STORY TOLD IN WORDS, WITH NO BOARD TO SHOW FOR IT.
+ *
+ * "Show your work" (this file, the V4 whiteboard instruction) is a system-
+ * prompt-only rule competing with dozens of others, and measured against the
+ * real model it does not reliably land: `tutor:converse` against production
+ * on 2026-08-29 ran the owner's OWN scenario — "imagina que guardas 10 pesos
+ * en una alcancía mágica. Cada día, la alcancía te regala 2 pesos. ¿Cuántos
+ * tienes?" — and the model never set `whiteboard`, not even a malformed
+ * attempt (no shape-violation log at all). It simply did not act on an
+ * instruction it was only ever told, never checked — the same lesson every
+ * other repair in this file already learned.
+ *
+ * Detected by the SHAPE of the sentence rather than by re-parsing arithmetic:
+ * a cue that something repeats "cada día/semana/mes/año" (or the English/
+ * Portuguese equivalents), alongside at least two numbers — one to start
+ * from, one that changes. A single number ("cuesta 12 pesos") is a fact, not
+ * a story that moves; nothing to draw there.
+ */
+const REPEATING_CUE =
+  /\bcada\s+(d[ií]a|semana|mes|a[ñn]o)\b|\btodos\s+los\s+d[ií]as\b|\bevery\s+(day|week|month|year)\b|\ba\s+cada\s+(dia|semana|m[êe]s|ano)\b/i;
+
+export function narratesUnshownGrowth(say: string, whiteboard: unknown): boolean {
+  if (whiteboard != null) return false;
+  if (!REPEATING_CUE.test(say)) return false;
+  const numbers = say.match(/\d+/g) ?? [];
+  return numbers.length >= 2;
+}
+
 export function contradictsCorrectAnswer(say: string, learnerText: string): boolean {
   if (!CORRECTIVE.test(say)) return false;
   const learnerNumbers = learnerText.match(/\d+/g) ?? [];

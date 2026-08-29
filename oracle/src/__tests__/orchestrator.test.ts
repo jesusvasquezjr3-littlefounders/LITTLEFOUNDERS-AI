@@ -386,6 +386,39 @@ describe('when the model misbehaves', () => {
 });
 
 describe('the whiteboard (V4)', () => {
+  it('asks again when a growth story is told in words with no board — the measured production gap', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          say: 'Imagina que guardas 10 pesos en una alcancía mágica. Cada día, la alcancía te regala 2 pesos. ¿Cuántos tienes?',
+          whiteboard: null,
+        }),
+      )
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          say: 'Imagina que guardas 10 pesos. Cada día la alcancía te regala 2 pesos. ¿Cuántos tienes?',
+          whiteboard: {
+            kind: 'sequence',
+            start: 10,
+            steps: [{ op: 'add', value: 2 }],
+            label: 'Cada día te dan 2 pesos más',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = await orchestrator.handleLearnerText('hola', Date.now());
+
+    const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(retryBody).toContain('ALSO set');
+    expect(outcome?.emission.turn.whiteboard?.start).toBe(10);
+  });
+});
+
+describe('the whiteboard (V4) — verification and delivery', () => {
   it('a valid whiteboard reaches the turn untouched', async () => {
     const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
     fetchMock
