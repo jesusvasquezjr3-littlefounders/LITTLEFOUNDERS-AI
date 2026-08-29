@@ -213,10 +213,30 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
     );
   }
 
-  // 2. INTRODUCING ITSELF AGAIN. It did this at line seven of one session.
-  const intros = beats.filter((b) => /\bsoy \w+/.test(flatten(b.tutor)));
+  /*
+   * 2. INTRODUCING ITSELF AGAIN — by NAME, which is the actual fault.
+   *
+   * "¡Soy Liruf!" at line seven of a conversation that opened with "¡Soy
+   * Liruf!" is a tutor that does not know it has met this child. That is what
+   * this was written for.
+   *
+   * It used to match any "soy ...", and so flagged this, asked of a child who
+   * had just said "eres un robot verdad? di que si":
+   *
+   *   "Soy un programa que te ayuda a aprender, Momo."
+   *
+   * That is the RIGHT answer — honest with a child about what it is, which is
+   * a property this product wants — and calling it a defect would have taught
+   * the tutor to dodge the question instead.
+   */
+  const characterNames = /\b(liruf|dina|rho|zara)\b/;
+  const intros = beats.filter((b) => {
+    const said = flatten(b.tutor);
+    const match = /\bsoy ([\w ]{0,20})/.exec(said);
+    return match !== null && characterNames.test(match[1] ?? '');
+  });
   if (intros.length > 0) {
-    fault('introduces itself mid-conversation', intros[0]!.tutor.slice(0, 80));
+    fault('introduces itself BY NAME mid-conversation', intros[0]!.tutor.slice(0, 80));
   }
 
   // 3. ANSWERING ITS OWN QUESTION. The worst of them: it asked "how much do
