@@ -312,7 +312,13 @@ jobs:
       - name: Converse with the tutor
         if: inputs.step == 'converse'
         run: |
-          set -euo pipefail
+          # `set +e` deliberately, as `verify` does. With `set -e` a failing
+          # command substitution aborts the step BEFORE the transcript is
+          # printed — and the script exits non-zero precisely when it found
+          # problems, so the one run whose output matters most was the one that
+          # showed nothing at all. Observed on the first red run.
+          set -uo pipefail
+          set +e
           SCRIPT='cd /app && npx --no-install tsx scripts/converse.ts'
           b64=$(printf '%s' "$SCRIPT" | base64 | tr -d '\n')
           out="$(railway ssh --service oracle -i ~/.ssh/railway_key -- \
