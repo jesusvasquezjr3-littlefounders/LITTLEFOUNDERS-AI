@@ -542,6 +542,50 @@ function internalRouter(): Router {
       }
     }
 
+    /*
+     * LAST RESORT BEFORE GENERATION: WHAT THE LEARNER IS ACTUALLY READY FOR.
+     *
+     * The model names the skill, and it can name one that does not exist. The
+     * prompt now states the format and tells it to copy a key from its
+     * context — but an OPEN conversation has no lesson plan and no skill
+     * states to copy from, so it invents a plausible one. Observed 2026-08-29:
+     * `mathematics/sumar-con-monedas`, correct in shape and naming a course
+     * that has never existed.
+     *
+     * Rather than fall through to generation — the most fragile rung, and the
+     * one that produced "Esa actividad ya no está lista" — ask the pedagogy
+     * layer what this learner should be doing next. `continueTarget` is the
+     * planner's own first pick: review debt if any is due, otherwise the
+     * frontier. Serving that is not a guess, it is the answer the product
+     * already computes for the CONTINUE button.
+     *
+     * It is deliberately LAST. A key that resolved, a bank pack, and the KC's
+     * own prerequisites all describe what the tutor was talking about; this
+     * one describes the learner instead, and is right only when nothing better
+     * is available.
+     */
+    if (!candidate) {
+      const map = await buildTutorMap(session.user_id, session.tier, session.locale);
+      const frontierKey = map?.continueTarget?.skillKey ?? null;
+      if (frontierKey !== null && frontierKey !== parsed.data.skillKey) {
+        const frontierSkill = await resolveSkill(frontierKey);
+        if (frontierSkill) {
+          candidate = await serveFromCatalog({
+            skill: frontierSkill,
+            locale: session.locale,
+            difficulty: parsed.data.difficulty,
+            excludeSegmentIds: alreadyServed,
+            rotationSeed: hashSeed(session.id),
+          });
+          if (candidate) {
+            console.warn(
+              `[tutor] "${parsed.data.skillKey}" found nothing; served the learner's own next step ${frontierKey}`,
+            );
+          }
+        }
+      }
+    }
+
     if (!candidate) {
       return ok(res, {
         needsGeneration: true,
