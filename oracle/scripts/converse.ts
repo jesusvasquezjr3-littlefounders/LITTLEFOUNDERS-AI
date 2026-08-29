@@ -443,6 +443,32 @@ async function main(): Promise<void> {
     console.error('MODEL_API_KEY is not set — there is no tutor to talk to.');
     process.exit(1);
   }
+  /*
+   * A HARNESS THAT CANNOT OPERATE THE SURFACE MUST SAY SO, NOT BLAME THE
+   * PRODUCT (CLAUDE.md §1.14).
+   *
+   * Every scenario here is a minor, so every turn requires a model moderation
+   * pass, and with no judge configured that pass fails CLOSED — which is the
+   * correct safety behaviour and completely destroys the measurement. What came
+   * out was a transcript of five identical canned fallback lines and the verdict
+   * "14 problems a person would notice": a confident, entirely false report that
+   * the tutor is broken, produced by a missing local environment variable.
+   * Production had the key the whole time.
+   *
+   * The failure had to be indistinguishable from a real one to be worth
+   * guarding, and it was — repetition and canned-fallback counts are exactly
+   * what this script exists to detect, so the fallbacks tripped its own best
+   * detectors. Refusing to start is the only honest option.
+   */
+  if (!config.JUDGE_API_KEY) {
+    console.error('JUDGE_API_KEY is not set.');
+    console.error('');
+    console.error('Every scenario here is a minor, so every turn needs a moderation pass, and');
+    console.error('without a judge that pass fails closed. The tutor would answer with canned');
+    console.error('fallback lines and this script would report them as repetition — measuring');
+    console.error('the missing key, not the product. Set the key or run nothing.');
+    process.exit(1);
+  }
 
   let spent = 0;
   const allBeats: Beat[] = [];
