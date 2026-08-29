@@ -28,6 +28,7 @@ import process from 'node:process';
 import { getConfig } from '../src/env.js';
 import { sealContext, type TutorContext } from '../src/context/schema.js';
 import { TUTOR_SYSTEM_PROMPT, buildContextMessage } from '../src/tutor/prompt.js';
+import { fenceUntrusted } from '../src/safety/untrusted.js';
 
 const CONTEXT: TutorContext = {
   nickname: 'Chispa',
@@ -117,10 +118,35 @@ interface Outcome {
 async function once(condition: Condition, context: TutorContext): Promise<Outcome | null> {
   const config = getConfig();
   void context;
+  /*
+   * BUILT THE WAY `produce()` BUILDS IT, and the previous version was not.
+   *
+   * The first attempt put the history into `turnHistory` and varied its length
+   * — 3, 10, 20 turns — and every condition returned zero whitespace. Of
+   * course it did: `buildContextMessage` does not render `turnHistory`. That
+   * is the original defect this whole day started with, and I reproduced it
+   * inside the instrument meant to study its consequences.
+   *
+   * The real path sends history as ALTERNATING chat messages, and re-fences
+   * every learner line — which repeats the fence's four-line instruction once
+   * per historical learner turn. That repetition is the thing this probe now
+   * varies, because it is the only structural difference between a call that
+   * returns whitespace and one that does not.
+   */
+  const history = historyOf(condition.historyTurns);
+  const maxChars = config.TURN_MAX_INPUT_CHARS;
   const messages = [
     { role: 'system', content: TUTOR_SYSTEM_PROMPT },
-    { role: 'user', content: buildContextMessage(sealContext({ ...CONTEXT, turnHistory: historyOf(condition.historyTurns) })) },
-    { role: 'user', content: 'no entendí, explícamelo otra vez' },
+    {
+      role: 'user',
+      content: buildContextMessage(sealContext({ ...CONTEXT, turnHistory: history })),
+    },
+    ...history.map((turn) =>
+      turn.speaker === 'tutor'
+        ? { role: 'assistant', content: turn.text }
+        : { role: 'user', content: fenceUntrusted(turn.text, maxChars).block },
+    ),
+    { role: 'user', content: fenceUntrusted('no entendí, explícamelo otra vez', maxChars).block },
     ...(condition.correction ? [{ role: 'user', content: CORRECTION }] : []),
   ];
   try {
