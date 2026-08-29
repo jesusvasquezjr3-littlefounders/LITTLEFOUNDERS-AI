@@ -224,21 +224,43 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
     }
   }
 
-  // 4. REPEATING ITSELF. Three near-identical explanations of compound
-  // interest in one session, each asking the same question again.
+  /*
+   * 4. REPEATING ITSELF — and NOT merely reusing a scaffold.
+   *
+   * The first version measured word overlap alone and flagged this:
+   *
+   *   turn 2  "Casi. Si tienes 10 y agregas 5, piensa: 10..15. La respuesta es
+   *            15. ¿Y si tuvieras 10 y agregaras 3?"
+   *   turn 3  "Casi. Si tienes 10 y agregas 3, cuenta: 10..13. La respuesta es
+   *            13. Vamos a practicar con monedas."
+   *
+   * That is the SAME METHOD applied to a NEW problem, which is what good
+   * teaching looks like — a consistent scaffold is the point, not a fault. The
+   * defect it was written for is different: three near-identical explanations
+   * of compound interest, nothing changed, no new question. A detector that
+   * cannot tell those apart is noise, and noise sends someone to fix something
+   * that works (§1.14).
+   *
+   * So high overlap only counts when the NUMBERS are unchanged too. New
+   * numbers mean a new problem, however familiar the words around them.
+   */
   for (let i = 1; i < beats.length; i += 1) {
-    const a = flatten(beats[i - 1]!.tutor);
-    const b = flatten(beats[i]!.tutor);
-    const aWords = new Set(a.split(' ').filter((w) => w.length > 4));
-    const bWords = b.split(' ').filter((w) => w.length > 4);
+    const prev = beats[i - 1]!.tutor;
+    const curr = beats[i]!.tutor;
+    const aWords = new Set(flatten(prev).split(' ').filter((w) => w.length > 4));
+    const bWords = flatten(curr).split(' ').filter((w) => w.length > 4);
     if (aWords.size === 0 || bWords.length === 0) continue;
     const overlap = bWords.filter((w) => aWords.has(w)).length / bWords.length;
-    if (overlap > 0.6) {
-      fault(
-        `turn ${i + 1} repeats turn ${i} (${Math.round(overlap * 100)}% of its words)`,
-        beats[i]!.tutor.slice(0, 100),
-      );
-    }
+    if (overlap <= 0.6) continue;
+
+    const prevNumbers = [...new Set(prev.match(/\d+/g) ?? [])].sort().join(',');
+    const currNumbers = [...new Set(curr.match(/\d+/g) ?? [])].sort().join(',');
+    if (prevNumbers !== currNumbers) continue;
+
+    fault(
+      `turn ${i + 1} repeats turn ${i} with nothing changed (${Math.round(overlap * 100)}% of its words)`,
+      curr.slice(0, 100),
+    );
   }
 
   // 5. A PROMISE IT DID NOT KEEP. Announced a game, requested nothing.
