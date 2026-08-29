@@ -144,6 +144,15 @@ export const WhiteboardSchema = z
     start: z.number().min(0).max(1_000_000),
     steps: z.array(WhiteboardStepSchema).min(1).max(8),
     /**
+     * What ONE step represents in time — "cada día" vs. "cada semana" vs.
+     * "cada mes" vs. "cada año". Added after a real session showed the exact
+     * defect this closes: the story said "cada semana" three times and the
+     * board, hard-coded to "Día 1/2/3", drew days — a visual that
+     * CONTRADICTED its own narration instead of matching it, on the feature
+     * whose entire purpose is that match.
+     */
+    unit: z.enum(['day', 'week', 'month', 'year']),
+    /**
      * A short caption above the board — "Cada día la caja te da más" — not the
      * numbers themselves (the board draws those). Free text, so it joins `say`
      * and `segmentRequest.framing` in the same moderation call (orchestrator.ts).

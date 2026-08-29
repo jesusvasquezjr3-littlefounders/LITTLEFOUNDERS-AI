@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { contradictsCorrectAnswer, narratesUnshownGrowth, praiseContradictsAnswer } from '../tutor/prompt.js';
+import {
+  contradictsCorrectAnswer,
+  narratesUnshownGrowth,
+  praiseContradictsAnswer,
+  whiteboardUnitMismatch,
+} from '../tutor/prompt.js';
 
 /*
  * TWO MIRROR DEFECTS, BOTH FROM REAL SESSIONS.
@@ -71,6 +76,7 @@ describe('a growth story told in words with no board to show for it', () => {
       narratesUnshownGrowth('Cada día te dan 2 pesos más.', {
         kind: 'sequence',
         start: 10,
+        unit: 'day',
         steps: [{ op: 'add', value: 2 }],
         label: 'x',
         currency: null,
@@ -89,5 +95,38 @@ describe('a growth story told in words with no board to show for it', () => {
   it('catches the English and Portuguese equivalents', () => {
     expect(narratesUnshownGrowth('Imagine you save 10 dollars, and every week you get 2 more.', null)).toBe(true);
     expect(narratesUnshownGrowth('Imagine que você guarda 10 reais, e a cada semana ganha 2 a mais.', null)).toBe(true);
+  });
+});
+
+describe('a board labelled with the wrong unit of time', () => {
+  it('catches the exact live-session mismatch: the story said "semana", the board said "day"', () => {
+    // Verified against production 2026-08-29: before `unit` existed, every
+    // board drew "Día 1/2/3" regardless of what the story said. This is the
+    // regression guard for the SAME defect once the model can get it wrong.
+    expect(
+      whiteboardUnitMismatch(
+        'Imagina que guardas 10 pesos en una caja, y cada semana te dan 2 más. ¿Cuántos tendrías al final de la tercera semana?',
+        { unit: 'day' },
+      ),
+    ).toBe(true);
+  });
+
+  it('passes when the unit matches the story', () => {
+    expect(
+      whiteboardUnitMismatch('Cada semana te dan 2 pesos más.', { unit: 'week' }),
+    ).toBe(false);
+  });
+
+  it('has nothing to check against a story naming no cadence word', () => {
+    expect(whiteboardUnitMismatch('Cada vez que ahorras, ganas más.', { unit: 'month' })).toBe(false);
+  });
+
+  it('never fires when there is no whiteboard at all', () => {
+    expect(whiteboardUnitMismatch('Cada semana te dan 2 pesos más.', null)).toBe(false);
+  });
+
+  it('catches every cadence word, not just "day" vs "week"', () => {
+    expect(whiteboardUnitMismatch('Cada mes te dan 2 pesos más.', { unit: 'year' })).toBe(true);
+    expect(whiteboardUnitMismatch('Cada año te dan 2 pesos más.', { unit: 'month' })).toBe(true);
   });
 });

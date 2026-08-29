@@ -151,6 +151,7 @@ describe('the closed turn schema', () => {
     const board = {
       kind: 'sequence' as const,
       start: 10,
+      unit: 'day' as const,
       steps: [{ op: 'add' as const, value: 2 }],
       label: 'Cada día te dan 2 más',
       currency: 'MXN' as const,
@@ -193,6 +194,20 @@ describe('the closed turn schema', () => {
           ...valid,
           whiteboard: { ...board, steps: [{ op: 'add', value: 200_000 }] },
         }).success,
+      ).toBe(false);
+    });
+
+    it('requires "unit" — a board with no notion of time cannot be labelled', () => {
+      // Found by actually using the shipped feature: the tutor's story said
+      // "cada semana" and the board (which had no unit field yet) was hard-coded
+      // to draw "Día 1/2/3" — a visual that contradicted its own narration.
+      const { unit: _unit, ...withoutUnit } = board;
+      expect(TutorTurnSchema.safeParse({ ...valid, whiteboard: withoutUnit }).success).toBe(false);
+    });
+
+    it('refuses a unit outside the closed vocabulary', () => {
+      expect(
+        TutorTurnSchema.safeParse({ ...valid, whiteboard: { ...board, unit: 'fortnight' } }).success,
       ).toBe(false);
     });
   });

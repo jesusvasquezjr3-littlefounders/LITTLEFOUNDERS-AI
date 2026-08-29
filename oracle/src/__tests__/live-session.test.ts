@@ -167,6 +167,7 @@ function startFakeModel(): Promise<Server> {
               ? {
                   kind: 'sequence',
                   start: 10,
+                  unit: 'day',
                   steps: [
                     { op: 'add', value: 2 },
                     { op: 'add', value: 2 },
@@ -419,6 +420,7 @@ describe('a real live session over a real websocket', () => {
     expect(board).toMatchObject({
       kind: 'sequence',
       start: 10,
+      unit: 'day',
       label: 'Cada día te dan 2 más',
       currency: 'MXN',
     });

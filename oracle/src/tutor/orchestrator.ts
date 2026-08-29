@@ -30,6 +30,7 @@ import {
   praiseContradictsAnswer,
   contradictsCorrectAnswer,
   narratesUnshownGrowth,
+  whiteboardUnitMismatch,
   echoesPreviousTurn,
   repeatsEarlierSentence,
   promisesAnActivity,
@@ -1212,6 +1213,7 @@ export class TutorOrchestrator {
              * it is CHECKED on does.
              */
             const missedWhiteboard = narratesUnshownGrowth(parsed.turn.say, parsed.turn.whiteboard);
+            const wrongUnit = whiteboardUnitMismatch(parsed.turn.say, parsed.turn.whiteboard);
             /*
              * §9.4 of the blueprint, stated as a hard rule: never give the
              * final answer while asking. Detected by computing the question's
@@ -1288,8 +1290,12 @@ export class TutorOrchestrator {
               console.warn('[oracle] turn contradicted a correct answer — asking again');
             } else if (missedWhiteboard && attempt === 0) {
               turnCorrection =
-                'told a story about a quantity that changes every day/week/month/year, in words only. Say the SAME story again, but this time ALSO set "whiteboard" with the exact start value and step values your story used — do not add a step count higher than what you already said';
+                'told a story about a quantity that changes every day/week/month/year, in words only. Say the SAME story again, but this time ALSO set "whiteboard" with the exact start value and step values your story used, and set "unit" to whichever of day/week/month/year your own words named — do not add a step count higher than what you already said';
               console.warn('[oracle] growth story told with no whiteboard — asking again');
+            } else if (wrongUnit && attempt === 0) {
+              turnCorrection =
+                'set "whiteboard.unit" to a value that does not match the cadence word your own story used ("cada día" needs "day", "cada semana" needs "week", "cada mes" needs "month", "cada año" needs "year"). Say the SAME story again with "unit" corrected to match your own words';
+              console.warn('[oracle] whiteboard unit did not match the story\'s own cadence word — asking again');
             } else if (falsePraise && attempt === 0) {
               turnCorrection =
                 "congratulated the learner for an answer that was WRONG, and then stated the right one. Say \"casi\" instead, show the correct result and how to reach it, and do not tell them they are doing well at something they just got wrong";
@@ -1315,6 +1321,9 @@ export class TutorOrchestrator {
               }
               if (missedWhiteboard) {
                 console.warn('[oracle] growth story with no whiteboard SURVIVED the retry — delivered as text only');
+              }
+              if (wrongUnit) {
+                console.warn('[oracle] whiteboard unit mismatch SURVIVED the retry — delivered as-is');
               }
               if (givesAwayAnswer) {
                 console.warn('[oracle] self-answered question SURVIVED the retry — delivered');

@@ -247,6 +247,34 @@ export function narratesUnshownGrowth(say: string, whiteboard: unknown): boolean
   return numbers.length >= 2;
 }
 
+/**
+ * A BOARD LABELLED WITH THE WRONG UNIT OF TIME.
+ *
+ * `unit` exists precisely so the axis matches the words — "cada semana" must
+ * draw "Semana 1/2/3", never "Día 1/2/3". The failure mode is the same class
+ * as `narratesUnshownGrowth` (a rule only stated in the prompt, not checked),
+ * so it gets the same treatment: read the cadence word the story ITSELF used,
+ * and compare it to what the model set. A story naming no cadence word at all
+ * (an abstract "cada vez") is not a mismatch — there is nothing to check it
+ * against, and the model is free to pick.
+ */
+const UNIT_WORD: [RegExp, string][] = [
+  [/\bcada\s+d[ií]a\b|\btodos\s+los\s+d[ií]as\b|\bevery\s+day\b|\bcada\s+dia\b/i, 'day'],
+  [/\bcada\s+semana\b|\bevery\s+week\b/i, 'week'],
+  [/\bcada\s+mes\b|\bevery\s+month\b|\bcada\s+m[êe]s\b/i, 'month'],
+  [/\bcada\s+a[ñn]o\b|\bevery\s+year\b|\bcada\s+ano\b/i, 'year'],
+];
+
+export function whiteboardUnitMismatch(
+  say: string,
+  whiteboard: { unit?: unknown } | null | undefined,
+): boolean {
+  if (whiteboard == null || typeof whiteboard.unit !== 'string') return false;
+  const named = UNIT_WORD.find(([re]) => re.test(say));
+  if (!named) return false;
+  return named[1] !== whiteboard.unit;
+}
+
 export function contradictsCorrectAnswer(say: string, learnerText: string): boolean {
   if (!CORRECTIVE.test(say)) return false;
   const learnerNumbers = learnerText.match(/\d+/g) ?? [];
@@ -464,13 +492,18 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '  `say` — that is the board\'s job now, and saying it twice is one idea said',
   '  twice. A single, static amount ("a book costs 12 pesos") does not need a',
   '  board — this is for a story that MOVES.',
-  '  Example: you say "imaginemos que guardas 10 pesos, y cada día la alcancía',
-  '  te da 2 más — ¿cuántos tendrías al tercer día?" and set',
-  '  `whiteboard: {kind:"sequence", start:10, steps:[{op:"add",value:2},',
-  '  {op:"add",value:2},{op:"add",value:2}], label:"Cada día te dan 2 más",',
-  '  currency:"MXN"}` — the board grows to 12, 14, 16 while you speak, and the',
-  '  learner answers from what they watched, not from mental arithmetic on a',
-  '  sentence.',
+  '  `unit` names what ONE step represents in time — "day", "week", "month" or',
+  '  "year" — and it MUST match the words in your own story: if you say "cada',
+  '  semana", unit is "week", never "day". A board labelled with the wrong unit',
+  '  contradicts the very story it is supposed to match.',
+  '  Example: you say "imaginemos que guardas 10 pesos, y cada semana la',
+  '  alcancía te da 2 más — ¿cuántos tendrías al final de la tercera semana?"',
+  '  and set `whiteboard: {kind:"sequence", start:10, unit:"week",',
+  '  steps:[{op:"add",value:2},{op:"add",value:2},{op:"add",value:2}],',
+  '  label:"Cada semana te dan 2 más", currency:"MXN"}` — the board grows to',
+  '  12, 14, 16 while you speak, labelled by WEEK because that is what you',
+  '  said, and the learner answers from what they watched, not from mental',
+  '  arithmetic on a sentence.',
   '  Never set BOTH `whiteboard` and `segmentRequest` on the same turn — the',
   '  schema refuses it. Choose one surface for this turn.',
   '- A wrong answer is information, never a failure. Say what was right about',

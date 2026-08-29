@@ -403,6 +403,7 @@ describe('the whiteboard (V4)', () => {
           whiteboard: {
             kind: 'sequence',
             start: 10,
+            unit: 'day',
             steps: [{ op: 'add', value: 2 }],
             label: 'Cada día te dan 2 pesos más',
             currency: 'MXN',
@@ -418,6 +419,47 @@ describe('the whiteboard (V4)', () => {
   });
 });
 
+describe('the whiteboard (V4) — unit mismatch repair', () => {
+  it('asks again when the board\'s unit contradicts the story\'s own cadence word', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          say: 'Imagina que guardas 10 pesos, y cada semana te dan 2 más. ¿Cuántos tendrías al final de la tercera semana?',
+          whiteboard: {
+            kind: 'sequence',
+            start: 10,
+            unit: 'day',
+            steps: [{ op: 'add', value: 2 }],
+            label: 'Cada semana te dan 2 más',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          say: 'Imagina que guardas 10 pesos, y cada semana te dan 2 más. ¿Cuántos tendrías al final de la tercera semana?',
+          whiteboard: {
+            kind: 'sequence',
+            start: 10,
+            unit: 'week',
+            steps: [{ op: 'add', value: 2 }],
+            label: 'Cada semana te dan 2 más',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = await orchestrator.handleLearnerText('hola', Date.now());
+
+    const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(retryBody).toContain('does not match the cadence word');
+    expect(outcome?.emission.turn.whiteboard?.unit).toBe('week');
+  });
+});
+
 describe('the whiteboard (V4) — verification and delivery', () => {
   it('a valid whiteboard reaches the turn untouched', async () => {
     const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
@@ -428,6 +470,7 @@ describe('the whiteboard (V4) — verification and delivery', () => {
           whiteboard: {
             kind: 'sequence',
             start: 10,
+            unit: 'day',
             steps: [{ op: 'add', value: 2 }],
             label: 'Cada día te dan 2 más',
             currency: 'MXN',
@@ -449,6 +492,7 @@ describe('the whiteboard (V4) — verification and delivery', () => {
           whiteboard: {
             kind: 'sequence',
             start: 5,
+            unit: 'day',
             steps: [{ op: 'subtract', value: 10 }],
             label: 'Gastas más de lo que tienes',
             currency: 'MXN',
@@ -471,6 +515,7 @@ describe('the whiteboard (V4) — verification and delivery', () => {
           whiteboard: {
             kind: 'sequence',
             start: 10,
+            unit: 'day',
             steps: [{ op: 'add', value: 2 }],
             label: 'Cada día te dan 2 más',
             currency: 'MXN',

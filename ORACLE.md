@@ -1959,6 +1959,32 @@ numbers the story uses, instead of only saying them — `say` narrates and asks;
 the board carries the running values, so an intermediate number is not spoken
 AND drawn.
 
+**Two defects found by actually USING the shipped feature, not by unit tests
+(2026-08-29):** first, on the owner's own growth-story scenario the real
+production model told the story and never set `whiteboard` at all — the
+instruction alone was not reliable. `oracle/src/tutor/prompt.ts`'s
+`narratesUnshownGrowth(say, whiteboard)` detects a repetition cue ("cada
+día/semana/mes/año", "every day/week/month/year") plus two or more numbers with
+no whiteboard set, and the orchestrator's existing repair loop (§9, the same
+mechanism that catches false praise and a given-away answer) retries once with
+a correction — the model follows what it is CHECKED on, not merely told, the
+same lesson §1.14 already draws from the pedagogy guardrails.
+
+Second, `WhiteboardSchema` had no notion of TIME: a board was `{start, steps,
+values, label, currency}` and the axis was rendered as `Día 1`, `Día 2`,
+regardless of what the story actually said. A live session showed this
+directly contradicting itself — the tutor said "cada semana te dan 2 más"
+three times while the board under it read "Día 1 / Día 2", the exact kind of
+disconnect this feature exists to close. Closed with a required
+`unit: 'day' | 'week' | 'month' | 'year'` field (closed vocabulary, §5): the
+model must name which unit its own story used, the frontend now renders
+`Semana 1` / `Week 1` / `Semana 1` (locale-specific, `tutor.whiteboard.step.
+<unit>`) instead of a single hardcoded label, and
+`whiteboardUnitMismatch(say, whiteboard)` deterministically compares the FIRST
+cadence word in `say` against `whiteboard.unit`, feeding the same retry loop
+when they disagree. Neither field touches the model's input context or §4.1 —
+both are output-side turn fields, same posture as `demonstrate`.
+
 **Frontend** (`frontend/src/tutor/TutorWhiteboard.tsx`): deliberately NOT a
 Lesson Engine component — this has no grader, no key, no XP, and is owned
 entirely by the tutor surface (LESSON_ENGINE.md §4's family-boundary
