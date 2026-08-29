@@ -40,6 +40,7 @@ on:
           - seed-kc
           - probe-models
           - probe-empty
+          - probe-prosody
           - converse
           - provision
           - domain
@@ -97,7 +98,7 @@ jobs:
           jq --version
 
       - name: Write the Railway SSH key
-        if: inputs.step == 'inspect' || inputs.step == 'migrate' || inputs.step == 'verify' || inputs.step == 'converse' || inputs.step == 'probe-empty'
+        if: inputs.step == 'inspect' || inputs.step == 'migrate' || inputs.step == 'verify' || inputs.step == 'converse' || inputs.step == 'probe-empty' || inputs.step == 'probe-prosody'
         run: |
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
@@ -315,6 +316,30 @@ jobs:
           set -uo pipefail
           set +e
           SCRIPT='cd /app && npx --no-install tsx scripts/probe-empty.ts'
+          b64=$(printf '%s' "$SCRIPT" | base64 | tr -d '\n')
+          railway ssh --service oracle -i ~/.ssh/railway_key -- \
+            sh -c "echo $b64 | base64 -d | sh" 2>&1 | sed 's/^/   /'
+
+      # ── PROBE-PROSODY — read-only, and it must run before any tag ships ──
+      #
+      # The tutor picks an `emotion` for every turn and the synthesizer never
+      # receives it: the call site passes `turn.say` and drops the rest. That is
+      # the blueprint's differentiator #2 computed and discarded. Our TTS
+      # request has no emotion field, so inline direction tags are the only
+      # route — and if the provider does NOT interpret them, the tag is not
+      # ignored, it is SPOKEN. A child asks why money grows and hears "corchete
+      # warm cierra corchete" first. That is a worse defect than the one being
+      # fixed, aimed at the youngest users, and no unit test can see it because
+      # the failure is in the audio.
+      #
+      # So the same sentence is synthesized three ways and the audio LENGTH
+      # answers it. Changes nothing.
+      - name: Probe direction tags
+        if: inputs.step == 'probe-prosody'
+        run: |
+          set -uo pipefail
+          set +e
+          SCRIPT='cd /app && npx --no-install tsx scripts/probe-prosody.ts'
           b64=$(printf '%s' "$SCRIPT" | base64 | tr -d '\n')
           railway ssh --service oracle -i ~/.ssh/railway_key -- \
             sh -c "echo $b64 | base64 -d | sh" 2>&1 | sed 's/^/   /'
