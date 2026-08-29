@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { promisesAnActivity } from '../tutor/prompt.js';
+import { promisesAnActivity, repeatsAnAnnouncement } from '../tutor/prompt.js';
 
 /*
  * A BARE MENTION OF THE SCREEN IS NOT A PROMISE.
@@ -53,5 +53,38 @@ describe('what counts as announcing an activity', () => {
 
   it('is silent about a turn that offers nothing at all', () => {
     expect(promisesAnActivity('¿Cuánto es 10 más 5?')).toBe(false);
+  });
+});
+
+describe('the same announcement again, reworded', () => {
+  /*
+   * Observed in production 2026-08-29, one conversation, three turns. The
+   * exact-match check needs the tails to agree and they do not; the
+   * previous-turn check looks one turn back and forgives a pair whose numbers
+   * changed — right for teaching, wrong for an announcement, which carries no
+   * pedagogical numbers at all. So a child was told three times that something
+   * was about to appear and every check we owned called the session clean.
+   */
+  const first = 'Vamos a practicar con monedas en la pantalla para que lo veas con tus ojos.';
+
+  it('catches the third telling', () => {
+    expect(
+      repeatsAnAnnouncement('Vamos a practicar con monedas en la pantalla para que lo veas claro.', [first]),
+    ).not.toBeNull();
+  });
+
+  it('leaves a genuinely different activity alone', () => {
+    expect(repeatsAnAnnouncement('Te muestro un juego de descuentos rapidito.', [first])).toBeNull();
+  });
+
+  it('says nothing about turns that announce nothing', () => {
+    // Teaching that reuses vocabulary is not a repeated announcement, and this
+    // check must never fire on it — the same method on a new problem is good
+    // practice, which is exactly why the previous-turn check forgives numbers.
+    expect(repeatsAnAnnouncement('Si tienes 12 monedas y quitas 4, ¿cuántas te quedan?', [first])).toBeNull();
+  });
+
+  it('has nothing to compare against on the first announcement', () => {
+    expect(repeatsAnAnnouncement(first, [])).toBeNull();
   });
 });

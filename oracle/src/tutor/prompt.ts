@@ -268,6 +268,57 @@ export function echoesPreviousTurn(say: string, previous: string): boolean {
   return numbersOf(previous) === numbersOf(say);
 }
 
+/**
+ * THE SAME ANNOUNCEMENT AGAIN, REWORDED.
+ *
+ * "You never announce the SAME activity twice" was a prompt rule with nothing
+ * checking it, and the blueprint's golden rule is exactly about that: if the
+ * differentiation is in the prompt, there is no product. A model follows what
+ * it is CHECKED on and drifts from what it is merely asked, which is the sixth
+ * time that has been true in this file alone.
+ *
+ * The two detectors either side of this one both miss the case. Observed in
+ * production 2026-08-29, one conversation, three turns:
+ *
+ *   "¿Qué tal si lo practicamos con monedas en la pantalla?"
+ *   "Vamos a practicar con monedas en la pantalla para que lo veas con tus ojos."
+ *   "Vamos a practicar con monedas en la pantalla para que lo veas claro."
+ *
+ * `repeatsEarlierSentence` needs an exact match and the tails differ.
+ * `echoesPreviousTurn` looks only at the turn immediately before and exempts a
+ * pair whose numbers changed — which is right for TEACHING, where the same
+ * method on a new problem is good practice, and wrong for an ANNOUNCEMENT,
+ * which carries no pedagogical numbers at all. So a child is told three times
+ * that something is about to appear, in almost the same words, and every check
+ * we own reports the session as clean.
+ *
+ * Scoped to announcing sentences for that reason, and compared across the whole
+ * session rather than one turn back. Announcing a genuinely different activity
+ * shares few long words with the last one and is untouched.
+ */
+export function repeatsAnAnnouncement(
+  say: string,
+  earlierTutorLines: readonly string[],
+): string | null {
+  const announcing = (line: string): string[] =>
+    sentencesOf(line).filter((s) => promisesAnActivity(s));
+  const earlier = earlierTutorLines.flatMap(announcing);
+  if (earlier.length === 0) return null;
+
+  const longWords = (s: string): string[] => s.split(' ').filter((w) => w.length > 4);
+  for (const sentence of announcing(say)) {
+    const words = longWords(sentence);
+    if (words.length === 0) continue;
+    for (const before of earlier) {
+      const seen = new Set(longWords(before));
+      if (seen.size === 0) continue;
+      const overlap = words.filter((w) => seen.has(w)).length / words.length;
+      if (overlap > 0.6) return before;
+    }
+  }
+  return null;
+}
+
 /** The first sentence this turn reuses from earlier in the session, or null. */
 export function repeatsEarlierSentence(say: string, earlierTutorLines: readonly string[]): string | null {
   if (earlierTutorLines.length === 0) return null;

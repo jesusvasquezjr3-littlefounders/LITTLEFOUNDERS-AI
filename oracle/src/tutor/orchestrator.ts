@@ -33,6 +33,7 @@ import {
   promisesAnActivity,
   tierVocabularyViolation,
   TUTOR_SYSTEM_PROMPT,
+  repeatsAnAnnouncement,
 } from './prompt.js';
 import { parseTurn, type TutorTurn } from './turnSchema.js';
 import {
@@ -1046,6 +1047,16 @@ export class TutorOrchestrator {
             const lastTutorSaid = priorTutorLines.at(-1) ?? '';
             const repeated =
               repeatsEarlierSentence(parsed.turn.say, priorTutorLines) ??
+              /*
+               * The same ANNOUNCEMENT again, in slightly different words. Both
+               * checks above miss it — one needs an exact match, the other looks
+               * one turn back and forgives a pair whose numbers changed, which is
+               * right for teaching and wrong for an announcement. Observed in
+               * production: "vamos a practicar con monedas en la pantalla" three
+               * times in one conversation, with three different tails, and every
+               * check we owned called the session clean.
+               */
+              repeatsAnAnnouncement(parsed.turn.say, priorTutorLines) ??
               (lastTutorSaid !== '' && echoesPreviousTurn(parsed.turn.say, lastTutorSaid)
                 ? 'the same thing you just said, reworded'
                 : null);
