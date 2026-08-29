@@ -356,6 +356,30 @@ describe('POST /api/v1/tutor/sessions — the microphone gate', () => {
     expect(response.body.error.code).toBe('SESSION_LIMIT');
   });
 
+  /*
+   * The cap is a promise to parents (the tutor sends a child away on purpose),
+   * so it is not weakened and not made configurable. Staff are exempt because
+   * they are not who it protects, and because iterating on the Tutor means
+   * starting sessions: at two per day the person fixing a defect cannot look
+   * at their own next change until tomorrow.
+   */
+  it('exempts staff from the daily cap, and only staff', async () => {
+    stub({ sessions: [{ id: 'a' }, { id: 'b' }], roles: [{ role: 'superadmin' }] });
+    const staff = await request(createApp())
+      .post('/api/v1/tutor/sessions')
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+      .send({ intent: 'open' });
+    expect(staff.status).toBe(201);
+
+    stub({ sessions: [{ id: 'a' }, { id: 'b' }], roles: [{ role: 'parent' }] });
+    const ordinary = await request(createApp())
+      .post('/api/v1/tutor/sessions')
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
+      .send({ intent: 'open' });
+    expect(ordinary.status).toBe(429);
+    expect(ordinary.body.error.code).toBe('SESSION_LIMIT');
+  });
+
   it('hands back a websocket URL carrying a session token, never a Supabase JWT', async () => {
     stub();
 

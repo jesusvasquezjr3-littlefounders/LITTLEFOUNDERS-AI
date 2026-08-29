@@ -1010,7 +1010,21 @@ export function tutorRouter(): Router {
 
     const started = await countSessionsSince(user.id, startOfTodayIso());
     if (started === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read session history');
-    if (started >= MAX_SESSIONS_PER_DAY) {
+    /*
+     * THE DAILY CAP IS A PRODUCT PROMISE TO PARENTS, NOT A RATE LIMIT — a
+     * tutor that sends a child away is the anti-addiction stance the product
+     * takes deliberately, so this number is not weakened and is not made
+     * configurable by env, where it would drift.
+     *
+     * Staff are exempt because they are not the people it protects, and
+     * because the alternative was worse: iterating on the Tutor means starting
+     * sessions, and with a cap of two the person fixing it is locked out after
+     * two attempts and cannot see their own next change until tomorrow. That
+     * is how a defect survives — not because nobody could fix it, but because
+     * nobody could look at it twice in one evening.
+     */
+    const isStaff = roles.includes('admin') || roles.includes('superadmin');
+    if (!isStaff && started >= MAX_SESSIONS_PER_DAY) {
       return fail(res, 429, 'SESSION_LIMIT', 'You have used all of today’s tutor sessions');
     }
 
