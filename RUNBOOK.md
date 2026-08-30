@@ -2250,3 +2250,46 @@ regardless of this fix — a false failure that would have looked like
 confirmation of a defect that was actually a test-sequencing mistake. The
 corrected version mounts without a demo first, then introduces it on a
 LATER render, matching how it actually happens live.
+
+## The guardian's tutor page: severity fetched and never shown, flags in the wrong order, an open session reported as empty — closed 2026-08-30
+
+**Found by adversarial review, round 13** (the guardian-visibility surface
+— `/family/:kidId/tutor` — a page that had not had a dedicated round yet
+this session), three real findings, all in `KidTutorPage.tsx`.
+
+**Finding 1 (MEDIUM) — a safety flag's `severity` was fetched and never
+rendered.** The type, the API response and the file's own header comment
+("the flag carries a category and a severity") all carried it; the JSX
+only read `flag.category` and `flag.created_at`. A guardian reading the
+one section this product exists to make sure they see had no way to tell
+a `self_harm` flag from a `model_output_blocked` one apart from the
+category label alone.
+
+**Finding 2 (MEDIUM/HIGH, same root cause) — flags rendered in raw
+`created_at DESC` order, not severity order.** `/AGENTS.md` §1.9 and this
+file's own comment both say safety disclosures are "surfaced FIRST" — true
+of the SECTION, never of what a parent sees first INSIDE it. A HIGH-severity
+flag from days ago could render below a LOW-severity one from an hour ago.
+
+**Finding 3 (LOW/MEDIUM, different root cause) — an in-progress session
+always reported "0 messages".** `tutor_sessions.turn_count` defaults to 0
+and is only written by `closeTutorSession()` at close; `summarizeSession()`
+reads that column verbatim for open and closed sessions alike, and the
+page had no branch for "still talking." A session with real turns already
+in its transcript displayed a false "0 messages" to a parent while it was
+still running.
+
+Fixed together: safety flags are now sorted by severity (high → medium →
+low, then most-recent-first within a tier) before rendering, each one
+labelled with a new translated severity chip (`tutor.guardian.flagSeverity.*`,
+all three locales); a session whose `endedAt` is still `null` shows
+`tutor.guardian.ongoing` instead of computing a message count from a
+column that has not been written yet.
+
+Proven with a new test file (`KidTutorPage.test.tsx` — the page had none):
+an older HIGH flag and a newer LOW flag assert the HIGH one renders first
+with its "Urgent" label, the LOW one with "Low priority" second; an
+in-progress session asserts "Still talking with the tutor" appears and "0
+messages" does not; a closed session with real turns still reports the
+real count. All three confirmed to fail against the pre-fix page first.
+Full frontend suite green (1410 tests), lint, type-check, i18n:check.

@@ -295,8 +295,14 @@
     "read": "Leerla",
     "hide": "Ocultar",
     "turns": "{{count}} mensajes",
+    "ongoing": "Todavía está platicando con el tutor",
     "flagsTitle": "Vale la pena que lo veas",
     "flagsHelp": "En estos momentos el tutor detuvo o redirigió la conversación. Las palabras completas están en la transcripción de abajo.",
+    "flagSeverity": {
+      "low": "Prioridad baja",
+      "medium": "Vale la pena revisarlo",
+      "high": "Urgente"
+    },
     "flagCategory": {
       "self_harm": "Tu hijo o hija dijo algo sobre lastimarse",
       "abuse_disclosure": "Tu hijo o hija contó que alguien le hace daño",

@@ -1443,6 +1443,16 @@ from `tutor-speech` only, and that is asserted by a test rather than trusted.
   disclosing distress to a tutor is precisely the case where a parent must find
   out, and burying it under a list of chat logs would be a product failure
   dressed up as tidiness.
+  **"Surfaced FIRST" was true of the SECTION and not of what renders first
+  inside it — found by adversarial review, 2026-08-30 (MEDIUM/HIGH).**
+  Flags rendered in raw `created_at DESC` order, so an old HIGH-severity
+  flag could sit below a newer LOW-severity one; `severity` was fetched and
+  simply never shown at all, even as a label. Fixed: sorted severity-first
+  (then most-recent-first within a tier), each flag now carries a
+  translated severity chip. The same round also found an in-progress
+  session always reporting "0 messages" (`tutor_sessions.turn_count` is
+  only written at close, and the page had no "still talking" branch) —
+  fixed with an explicit ongoing state keyed on `endedAt === null`.
 - **Retention 90 days**, then automatic deletion, enforced by a scheduled job
   with its own test. A retention policy nobody runs is not a retention policy.
 - RLS from the first migration. Kid rows readable by verified guardians only.

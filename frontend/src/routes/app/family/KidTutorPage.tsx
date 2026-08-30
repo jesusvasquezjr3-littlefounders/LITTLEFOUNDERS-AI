@@ -65,6 +65,21 @@ export function KidTutorPage() {
   const { sessions, safetyFlags } = state.history;
   const formatter = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'medium', timeStyle: 'short' });
 
+  /*
+   * SEVERITY FIRST, THEN RECENCY — not the server's raw `created_at DESC`.
+   *
+   * Found by adversarial review, 2026-08-30 (MEDIUM/HIGH): flags rendered in
+   * plain chronological order, so an old HIGH-severity flag (self_harm) could
+   * sit BELOW a newer LOW-severity one (model_output_blocked) — "surfaced
+   * FIRST" was true of the section, never of what a parent actually sees
+   * first inside it. `severity` was already fetched and simply never read.
+   */
+  const SEVERITY_RANK: Record<string, number> = { high: 0, medium: 1, low: 2 };
+  const sortedFlags = [...safetyFlags].sort((a, b) => {
+    const rank = (SEVERITY_RANK[a.severity] ?? 3) - (SEVERITY_RANK[b.severity] ?? 3);
+    return rank !== 0 ? rank : new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
+
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-4 py-6 md:px-6">
       <header>
@@ -83,10 +98,19 @@ export function KidTutorPage() {
           </h2>
           <p className="lf-body mb-3 text-content-muted">{t('tutor.guardian.flagsHelp')}</p>
           <ul className="space-y-2">
-            {safetyFlags.map((flag) => (
+            {sortedFlags.map((flag) => (
               <li key={flag.id} className="lf-body rounded-md bg-warning-soft px-3 py-2 text-content">
-                <span className="lf-label block">
+                <span className="lf-label flex items-center gap-2">
                   {t(`tutor.guardian.flagCategory.${flag.category}`, { defaultValue: flag.category })}
+                  <span
+                    className={
+                      flag.severity === 'high'
+                        ? 'lf-caption rounded-full bg-error px-2 py-0.5 text-on-error'
+                        : 'lf-caption rounded-full bg-surface px-2 py-0.5 text-content-muted'
+                    }
+                  >
+                    {t(`tutor.guardian.flagSeverity.${flag.severity}`, { defaultValue: flag.severity })}
+                  </span>
                 </span>
                 <span className="lf-caption text-content-muted">
                   {formatter.format(new Date(flag.created_at))}
@@ -113,7 +137,9 @@ export function KidTutorPage() {
                     </p>
                     <p className="lf-caption text-content-muted">
                       {formatter.format(new Date(session.startedAt))} ·{' '}
-                      {t('tutor.guardian.turns', { count: session.turnCount })}
+                      {session.endedAt === null
+                        ? t('tutor.guardian.ongoing')
+                        : t('tutor.guardian.turns', { count: session.turnCount })}
                     </p>
                   </div>
                   <Button

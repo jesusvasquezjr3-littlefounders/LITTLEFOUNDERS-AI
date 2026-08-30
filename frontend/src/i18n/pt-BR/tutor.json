@@ -295,8 +295,14 @@
     "read": "Ler",
     "hide": "Esconder",
     "turns": "{{count}} mensagens",
+    "ongoing": "Ainda está conversando com o tutor",
     "flagsTitle": "Vale a sua atenção",
     "flagsHelp": "Nestes momentos o tutor parou ou redirecionou a conversa. As palavras completas estão na transcrição abaixo.",
+    "flagSeverity": {
+      "low": "Prioridade baixa",
+      "medium": "Vale a pena olhar",
+      "high": "Urgente"
+    },
     "flagCategory": {
       "self_harm": "Seu filho ou filha disse algo sobre se machucar",
       "abuse_disclosure": "Seu filho ou filha contou que alguém o machuca",

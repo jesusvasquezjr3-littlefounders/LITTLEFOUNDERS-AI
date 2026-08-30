@@ -295,8 +295,14 @@
     "read": "Read it",
     "hide": "Hide",
     "turns": "{{count}} messages",
+    "ongoing": "Still talking with the tutor right now",
     "flagsTitle": "Worth your attention",
     "flagsHelp": "The tutor stopped or redirected the conversation at these moments. The full wording is in the transcript below.",
+    "flagSeverity": {
+      "low": "Low priority",
+      "medium": "Worth a look",
+      "high": "Urgent"
+    },
     "flagCategory": {
       "self_harm": "Your child said something about hurting themselves",
       "abuse_disclosure": "Your child described being hurt by someone",
