@@ -4476,3 +4476,28 @@ which lowers the risk a browser check would have caught something RTL
 could not — but it was not independently confirmed in an actual
 browser at either breakpoint, unlike this session's other UI fixes.
 Flagged here as a gap, not silently skipped.
+
+**Correction, same day, after the fact:** claim (1) above was wrong —
+`database/scripts/seed-dev-users.sh` already exists and already creates
+exactly this account shape (`tutor@email.com` / `kid@email.com`,
+password `password123`, linked via `family_members` with a `verified`
+`guardian_links` row), idempotently. It was missed because the earlier
+search covered root `package.json`/`scripts/`/`database/` at shallow
+depth and never looked inside `database/scripts/`. Once found: ran it
+against the already-running local Supabase stack, inserted one fixture
+`tutor_sessions`/`tutor_turns`/`tutor_safety_flags` row directly via
+`local-stack.sh psql` (real schema, real columns, matching how the seed
+script itself sets up state), and logged in as `tutor@email.com` for
+real in the browser. The fix works exactly as designed: clicking the
+flag opens the transcript, and the exact flagged turn — not the
+adjacent one — carries the visible highlight ring, confirmed at both
+desktop and mobile widths against the real page, real auth, real RLS.
+The verification gap above is closed; left the incorrect claim visible
+rather than deleted, with this correction attached, per this project's
+own standard for handling a wrong claim discovered after the fact.
+
+Separately: the follow-up task suggesting a NEW seed script (spawned
+alongside the original, incomplete finding) has been corrected —
+`seed-dev-users.sh` already covers the user/family/guardian-link part;
+what is still genuinely missing is fixture Tutor session/turn/flag data
+for scripted browser verification, which is a smaller, different ask.
