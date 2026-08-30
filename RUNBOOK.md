@@ -2782,3 +2782,38 @@ is explicitly interim and nothing above the adapter may know its name);
 caught immediately by the full suite and reworded to "the provider"
 before committing. Full oracle suite green (450 tests), lint clean,
 type-check clean on all three tsconfigs, `verify:tutor` green.
+
+## Revoking voice consent stopped sending audio but left the browser's mic indicator lit — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 20 (MEDIUM) — the frontend half of
+round 19's HIGH backend finding (a revoked minor's in-flight audio still
+reaching the STT provider, closed the same day). `frontend/src/tutor/
+useMicrophone.ts`'s `stop()` deliberately keeps the browser's
+`MediaStream` open between push-to-talk holds, so a repeated press does
+not re-prompt for microphone permission — and `release()`, the only
+function that actually stops the hardware tracks, used to run only on
+unmount. A guardian's one-press revoke (`/ORACLE.md` §4.3, "revocation
+must always be easier than granting") flips the hook's `enabled` prop
+false in the SAME `TutorExperience` component instance, since the tutor
+deliberately keeps running in text-and-choices mode rather than
+unmounting. No audio actually leaked — `start()` already refuses any new
+recording while `!enabled`, and the round-19 fix means the socket refuses
+it too — but the browser's own mic-in-use indicator stayed lit for the
+rest of the conversation, which breaks the trust a guardian places in
+that indicator the moment they press "off."
+
+Fixed with a second `useEffect` in `useMicrophone` that calls `release()`
+whenever `enabled` transitions to false, alongside the pre-existing
+release-on-unmount effect. `release()` is idempotent (`streamRef.current`
+is null if nothing was ever recording), so this is safe to fire on mount
+too when `enabled` starts false.
+
+Proven with a new test in `useMicrophone.test.tsx`: `enabled` starts
+`true`, a hold is started and stopped (confirming the stream is
+intentionally still warm — `stoppedTracks` does NOT yet contain `'audio'`,
+the precondition the test actually exercises), then `rerender({enabled:
+false})` simulates the consent-revocation transition and asserts
+`stoppedTracks` now DOES contain `'audio'`. Confirmed to fail against the
+pre-fix hook for the claimed reason (`expected [] to include 'audio'`) via
+`git stash`, pass against the fix. Full frontend suite green (1412
+tests), lint clean, type-check clean, i18n:check clean.

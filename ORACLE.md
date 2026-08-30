@@ -772,6 +772,23 @@ RENDERED string rather than a translation key, so the stored record keeps
 saying what this guardian actually read; a test pins that. The wording in
 `tutor.consent.body` is a PLACEHOLDER until counsel supplies the final text.
 
+**The revoke sent to Core is real; the browser's own indicator did not
+agree — found by adversarial review, 2026-08-30 (MEDIUM), the frontend
+half of the HIGH backend finding just above.** `useMicrophone.ts`'s
+`stop()` deliberately keeps the browser's `MediaStream` warm between
+holds — a repeated push-to-talk press should not re-prompt for the
+microphone — and `release()`, the only function that actually stops the
+hardware tracks, ran only on unmount. But a guardian's one-press revoke
+flips `enabled` false in the SAME `TutorExperience` component instance,
+because the tutor deliberately keeps running in text-and-choices mode
+rather than unmounting — so the browser's own mic-in-use indicator stayed
+lit for the rest of the conversation even though `start()` already
+refused any new recording and no audio was ever captured or sent after
+the revoke. No data leaked; a guardian who presses "off" and trusts their
+own browser's indicator deserves that indicator to actually go dark.
+Fixed with a second effect in `useMicrophone` that calls `release()`
+whenever `enabled` transitions to false, not only on unmount.
+
 ---
 
 ## §5 Prompt injection — the defense, layer by layer

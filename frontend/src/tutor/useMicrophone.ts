@@ -232,6 +232,26 @@ export function useMicrophone(enabled: boolean, options: MicrophoneOptions = {})
   // which reads as "this site is still listening" and is a promise we break.
   useEffect(() => release, [release]);
 
+  /*
+   * THE SAME PROMISE, ON A REVOCATION MID-SESSION, NOT JUST ON LEAVING.
+   *
+   * Found by adversarial review, 2026-08-30 (MEDIUM): `stop()` deliberately
+   * keeps `streamRef` warm between holds — a repeated push-to-talk press
+   * should not re-prompt for the microphone every time — and `release()`,
+   * the only thing that actually stops the hardware tracks, used to run
+   * only on unmount. But a guardian's ONE-PRESS revoke (/ORACLE.md §4.3)
+   * flips `enabled` false in this SAME component instance, because the
+   * tutor deliberately keeps running in text-and-choices mode rather than
+   * unmounting — so the browser's own mic-in-use indicator stayed lit for
+   * the rest of the conversation even though `start()` already refuses any
+   * new recording while `!enabled` and no audio was ever actually sent.
+   * No audio leaked; a guardian who presses "off" and trusts the browser's
+   * own indicator deserves that indicator to actually go dark.
+   */
+  useEffect(() => {
+    if (!enabled) release();
+  }, [enabled, release]);
+
   const start = useCallback(async () => {
     if (!enabled) return;
     /*

@@ -294,6 +294,37 @@ describe('useMicrophone push-to-talk guarantees', () => {
     expect(stoppedTracks).toContain('audio');
   });
 
+  /*
+   * Found by adversarial review, 2026-08-30 (MEDIUM): `stop()` deliberately
+   * keeps the stream warm between holds so a repeated push-to-talk press does
+   * not re-prompt for the microphone, and `release()` — the only thing that
+   * actually stops the hardware tracks — used to run only on unmount. A
+   * guardian's one-press voice-consent revoke (/ORACLE.md §4.3) flips
+   * `enabled` false in the SAME component instance, because the tutor
+   * deliberately keeps running in text mode rather than unmounting — so the
+   * browser's own mic-in-use indicator stayed lit for the rest of the
+   * conversation even though no more audio was ever captured or sent.
+   */
+  it('stops the stream when disabled mid-session, not only on unmount', async () => {
+    const { result, rerender } = renderHook(({ enabled }) => useMicrophone(enabled), {
+      initialProps: { enabled: true },
+    });
+    await act(async () => {
+      await result.current.start();
+    });
+    await act(async () => {
+      await result.current.stop();
+    });
+    // The stream is intentionally still warm here — a second hold should not
+    // re-prompt. Confirms the precondition this test actually exercises.
+    expect(stoppedTracks).not.toContain('audio');
+
+    // The guardian revokes; `enabled` (wired to `socket.microphone`) goes false.
+    rerender({ enabled: false });
+
+    expect(stoppedTracks).toContain('audio');
+  });
+
   it('drops a mis-tap rather than sending a fragment of a word', async () => {
     const { result } = renderHook(() => useMicrophone(true));
     await act(async () => {
