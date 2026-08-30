@@ -1102,6 +1102,34 @@ interface CourseTitleRow {
   title: Record<string, string>;
 }
 
+/**
+ * Resolves what a `course_topic` session is ABOUT, into the title Oracle's
+ * `buildPlan` names as the lesson's whole objective.
+ *
+ * Found by adversarial review, round 46 (2026-08-30, HIGH): both lookups used
+ * to omit `status=eq.published` — unlike every other consumer of these two
+ * tables (`tutorLadder.ts`, `supabaseRest.ts`'s own course/topic reads) — and
+ * ran INDEPENDENTLY, with no check that `topicId` actually belongs to
+ * `courseId`. `courseId`/`topicId` are client-supplied on `POST
+ * /tutor/sessions` (`StartBody` validates only `.uuid()`), so a crafted
+ * request could pull a DRAFT course's real title into a child's session
+ * objective — unpublished, unreviewed content reaching a minor — and pair a
+ * topic from one course with a courseId from an unrelated one, a
+ * Frankenstein combination with no relationship at all. The leaked title
+ * does not stay in-session either: the same unfiltered resolution runs again
+ * at session close to write the post-session memory digest, which later
+ * renders verbatim as the "Continue" chip's visible label
+ * (`OfferChips.tsx`'s `tutor.offers.continue.title`) — a draft course's
+ * title could appear as button text on a child's screen on a LATER visit.
+ *
+ * Fixed the same way `tutorLadder.ts:99` already verifies a topic's course
+ * membership: PostgREST's `!inner` join walks `topics -> sagas -> adventures`
+ * to filter on the ANCESTOR `course_id`, in the same query that also
+ * enforces `status=eq.published` on both tables. When only one id is
+ * present, or the two do not belong together, the OTHER one can still
+ * resolve on its own — this degrades to a partial, individually-real
+ * context, never to a mismatched pairing.
+ */
 async function resolveCourseContext(
   courseId: string | null,
   topicId: string | null,
@@ -1111,10 +1139,22 @@ async function resolveCourseContext(
     title?.[locale] ?? title?.['es-MX'] ?? Object.values(title ?? {})[0] ?? null;
 
   const course = courseId
-    ? (await serviceRest<CourseTitleRow[]>(`/courses?id=eq.${encodeURIComponent(courseId)}&select=id,title&limit=1`))?.[0]
+    ? (
+        await serviceRest<CourseTitleRow[]>(
+          `/courses?id=eq.${encodeURIComponent(courseId)}&status=eq.published&select=id,title&limit=1`,
+        )
+      )?.[0]
     : undefined;
   const topic = topicId
-    ? (await serviceRest<CourseTitleRow[]>(`/topics?id=eq.${encodeURIComponent(topicId)}&select=id,title&limit=1`))?.[0]
+    ? (
+        await serviceRest<CourseTitleRow[]>(
+          courseId
+            ? `/topics?id=eq.${encodeURIComponent(topicId)}&status=eq.published` +
+                `&select=id,title,sagas!inner(adventures!inner(course_id))` +
+                `&sagas.adventures.course_id=eq.${encodeURIComponent(courseId)}&limit=1`
+            : `/topics?id=eq.${encodeURIComponent(topicId)}&status=eq.published&select=id,title&limit=1`,
+        )
+      )?.[0]
     : undefined;
 
   if (!course && !topic) return null;

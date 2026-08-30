@@ -4880,3 +4880,98 @@ different repair reason, the harness to answer it already exists.
 clean. No production code changed; this closes an investigation
 thread with evidence rather than leaving a plausible-sounding guess
 undecided.
+
+## Round 46: `course_topic`'s course-context resolver leaked drafts and mismatched pairings — fixed; the v3 ladder ignoring the requested topic — found, deliberately deferred
+
+Round 46 reviewed the `course_topic` intent end to end — the Learn
+section's bridge into the Tutor, never dedicated a round before. Two
+real HIGH findings.
+
+**1. HIGH, FIXED — `resolveCourseContext` leaked unpublished course/topic
+titles and never checked the two ids belong together.**
+`backend/src/routes/tutor.ts`'s `resolveCourseContext` looked up
+`/courses` and `/topics` independently via the service-role client, with
+no `status=eq.published` filter on either — unlike every other consumer
+of these tables — and no check that `topicId` actually belongs to
+`courseId`. `courseId`/`topicId` are client-supplied on `POST
+/tutor/sessions` (`StartBody` validates only `.uuid()`), so a crafted
+request could pull a DRAFT course's real title into a child's session
+objective (unpublished, unreviewed content reaching a minor), and pair
+a topic from one course with an unrelated courseId — a Frankenstein
+pairing with no relationship at all. The leaked title didn't stay
+in-session either: the same unfiltered resolution runs again at
+session close to write the post-session memory digest, which later
+renders verbatim as the "Continue" chip's visible label — a draft
+course's title could appear as button text on a LATER visit.
+
+Fixed the same way `tutorLadder.ts:99` already verifies a topic's
+course membership: PostgREST's `!inner` join walks `topics -> sagas ->
+adventures` to filter on the ancestor `course_id`, in the same query
+that also enforces `status=eq.published` on both tables. When only one
+id is present, or the two don't belong together, the OTHER one can
+still resolve on its own — this degrades to a partial, individually-real
+context, never to a mismatched pairing. Two new tests in
+`tutor.test.ts` prove both halves (a draft course excluded entirely; a
+real-but-mismatched topic excluded, leaving only the real course),
+using a mock that models a real unaware-of-the-query database row (the
+row's OWN status/ownership decide whether it satisfies a filter that
+is actually present in the URL) — the first version of this mock
+didn't do that and produced a decisive-looking but imprecise failure
+mode; corrected before trusting it. Confirmed to fail without the fix
+via `git stash`. Full backend suite green (39 files, 659 tests), lint
+and type-check clean.
+
+**2. HIGH, FOUND, DELIBERATELY DEFERRED — the v3 content ladder is
+topic-agnostic, so `course_topic`'s "stay on this one topic" promise
+holds only in the system prompt's objective string, not in what
+actually gets taught or graded.** `buildSessionPlan(userId, tier,
+locale)` (`backend/src/services/pedagogy/sessionPlan.ts`) — the
+function that ranks the learner's ENTIRE KC graph by review-debt-then-
+frontier and produces `session.sessionPlan[0]`, which
+`orchestrator.ts`'s `activeSkillKey` reads as "what to teach/grade
+right now" — takes no `intent`, `courseId`, `topicId`, or `skillKey`
+parameter at all. A learner who opens the Tutor from a specific course
+topic gets a system prompt that names that topic, while the actual
+content served can be an entirely unrelated KC that happened to be
+next on their general review/frontier queue — the model receives BOTH
+objectives in the same context (`plan.ts`'s `objective` and
+`controller.ts`'s `pedagogy.kcObjective`) with nothing reconciling
+them. This is the same "announced one thing, served another" class
+round 44 already fixed for the segment-reaction trigger, recurring
+here for the SESSION-OPENING trigger instead — proven with a real
+orchestrator test showing the model's request body containing both the
+requested topic's title and an unrelated KC's objective, and
+`activeSkillKey` resolving to the unrelated KC.
+
+**Why this is not fixed this round**, despite real design groundwork
+already done: `kc.skill_key` follows a discovered, existing, exact
+convention — `lower(course_slug || '/' || topic_slug)`
+(`database/migrations/0052_kc_graph.sql:67`) — so a `course_topic`
+session's resolved course+topic slugs CAN be turned into a real
+`skill_key` and matched against the KC graph to find the exact KC(s)
+the learner asked for. But wiring this through correctly touches the
+Core↔Oracle wire contract, not just Core: `SessionPlanEntry.reason`
+(`'review_due' | 'frontier'`) is not a display label — `controller.ts:
+328` branches actual pedagogical strategy on it (`review_due` →
+`'SPACED'`), so an anchor KC mislabeled as either existing value risks
+a real correctness bug in strategy sequencing for the exact class of
+mistake this codebase has been burned by before (§9.2's guardrail-
+SEQUENCE lessons, `oracle/AGENTS.md`) — each rule individually correct,
+the run wrong. Doing this properly means either a third wire-schema
+reason value (a cross-service schema change, plus updating
+`/ORACLE.md` and both services' docs per the stewardship table) or a
+carefully-reasoned decision about which EXISTING reason best fits an
+explicitly-requested topic and why, verified with `verify:pedagogy`-
+level rigor (real learner-profile sequences, not just unit shape) —
+work that deserves its own dedicated, adversarially-reviewed round
+rather than a same-turn patch riding alongside Finding 1's fix. Left
+for a follow-up round with this design already worked out.
+
+Also confirmed sound: no file under `frontend/src/routes/app/learn/`
+currently constructs `{intent:'course_topic', courseId, topicId}` — the
+only real producer today is the server-computed "Continue" chip, so
+the realistic exploitation path for Finding 1 was a crafted API call
+or a stale digest, not a live in-Learn-page link. And the
+`courseContext: null` graceful-degradation path (both ids absent or
+not found) was checked and is sound — nothing throws or 502s a learner
+out of the session.

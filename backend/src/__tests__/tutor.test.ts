@@ -1077,6 +1077,100 @@ describe('the internal surface', () => {
     expect(response.status).toBe(409);
   });
 
+  /*
+   * Found by adversarial review, round 46 (2026-08-30, HIGH): `resolveCourseContext`
+   * used to look up `/courses` and `/topics` with no `status=eq.published`
+   * filter — unlike every other consumer of these tables — and the two
+   * lookups ran independently, with no check that the topic actually
+   * belongs to the course. `courseId`/`topicId` are client-supplied on
+   * session start, so a crafted `course_topic` session could pull a DRAFT
+   * course's real title into a child's session objective, and pair a topic
+   * from one course with an unrelated courseId.
+   */
+  describe('resolveCourseContext never leaks a draft or a mismatched pairing', () => {
+    const DRAFT_COURSE = '55555555-5555-4555-8555-555555555551';
+    const OTHER_COURSE = '55555555-5555-4555-8555-555555555552';
+    const TOPIC_FROM_OTHER_COURSE = '55555555-5555-4555-8555-555555555553';
+
+    /**
+     * Wraps `stub()`'s own fetch mock, replacing ONLY /courses and /topics —
+     * modelled as a real, unaware-of-the-query database row would behave: the
+     * row's OWN `status`/`belongsToCourseId` decide whether it satisfies a
+     * filter that is actually present in the URL. A query that omits the
+     * filter (the pre-fix shape) gets the row back regardless of its status
+     * or ownership — exactly what an unfiltered `SELECT ... WHERE id = $1`
+     * returns from a real table with no other WHERE clause.
+     */
+    function stubCoursesAndTopics(input: {
+      course?: { id: string; title: Record<string, string>; status: 'draft' | 'published' };
+      topic?: { id: string; title: Record<string, string>; belongsToCourseId: string };
+    }) {
+      const inner = global.fetch as unknown as (i: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+      vi.stubGlobal('fetch', vi.fn((rawInput: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(rawInput);
+        if (url.includes('/rest/v1/courses')) {
+          const c = input.course;
+          if (!c) return Promise.resolve(jsonResponse(200, []));
+          const requiresPublished = url.includes('status=eq.published');
+          const satisfies = !requiresPublished || c.status === 'published';
+          return Promise.resolve(jsonResponse(200, satisfies ? [{ id: c.id, title: c.title }] : []));
+        }
+        if (url.includes('/rest/v1/topics')) {
+          const t = input.topic;
+          if (!t) return Promise.resolve(jsonResponse(200, []));
+          const requiresJoin = /sagas\.adventures\.course_id=eq\.([^&]+)/.exec(url)?.[1];
+          const joinSatisfied =
+            requiresJoin === undefined || decodeURIComponent(requiresJoin) === t.belongsToCourseId;
+          return Promise.resolve(jsonResponse(200, joinSatisfied ? [{ id: t.id, title: t.title }] : []));
+        }
+        return inner(rawInput, init);
+      }));
+    }
+
+    it('excludes a draft course entirely, rather than exposing its real title', async () => {
+      stub({
+        session: [{ ...SESSION_ROW, course_id: DRAFT_COURSE, topic_id: null }],
+      });
+      stubCoursesAndTopics({
+        course: { id: DRAFT_COURSE, title: { 'es-MX': 'Curso sin publicar' }, status: 'draft' },
+      });
+
+      const response = await request(createApp())
+        .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+        .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.courseContext).toBeNull();
+      expect(JSON.stringify(response.body)).not.toContain('Curso sin publicar');
+    });
+
+    it('excludes a topic that does not belong to the session\'s own course, rather than pairing them anyway', async () => {
+      stub({
+        session: [{ ...SESSION_ROW, course_id: OTHER_COURSE, topic_id: TOPIC_FROM_OTHER_COURSE }],
+      });
+      stubCoursesAndTopics({
+        course: { id: OTHER_COURSE, title: { 'es-MX': 'Curso real' }, status: 'published' },
+        // The topic exists and is published, but belongs to a DIFFERENT
+        // course than the one the session names.
+        topic: {
+          id: TOPIC_FROM_OTHER_COURSE,
+          title: { 'es-MX': 'Tema de otro curso' },
+          belongsToCourseId: DRAFT_COURSE,
+        },
+      });
+
+      const response = await request(createApp())
+        .get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+        .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.courseContext).toEqual(
+        expect.objectContaining({ courseTitle: 'Curso real', topicTitle: null }),
+      );
+      expect(JSON.stringify(response.body)).not.toContain('Tema de otro curso');
+    });
+  });
+
   it('writes a memory digest at close — topic, skills, outcome, counters, and nothing anyone said', async () => {
     const calls: { url: string; method: string; body?: string }[] = [];
     stub({
