@@ -626,21 +626,40 @@ export function ConversationView({
             it does not compete with the tutor.
 
             Found by adversarial review, round 43 (2026-08-30, MEDIUM): this
-            and the docked-sheet caption (`SpeechCaption.tsx`'s `docked ===
-            'sheet'` case) both land on the identical `top-16`/`z-20` band
-            whenever a lesson is active AND the mobile sheet is at its FULL
-            detent — reachable by drag or the documented keyboard `End`
-            control. The caption's box can span up to `calc(100vw-2rem)`
-            centered, reaching this chip's own `left-4` column on a
-            phone-width screen. Both are `pointer-events-none` (nothing
-            becomes unreachable), but the caption is the surface that "may
-            never hide" for a deaf or hard-of-hearing learner (/ORACLE.md §1
-            step 4), so THIS chip yields: at FULL, the sheet's own body
-            already shows the lesson's topic and step directly, making the
-            redundant top banner both unnecessary and the thing that has to
-            move.
+            and the docked caption (`SpeechCaption.tsx`'s `docked === 'sheet'`
+            case) both land on the identical `top-16`/`z-20` band whenever a
+            lesson is active AND the mobile sheet is at its FULL detent —
+            reachable by drag or the documented keyboard `End` control. The
+            caption's box can span up to `calc(100vw-2rem)` centered, reaching
+            this chip's own `left-4` column on a phone-width screen. Both are
+            `pointer-events-none` (nothing becomes unreachable), but the
+            caption is the surface that "may never hide" for a deaf or
+            hard-of-hearing learner (/ORACLE.md §1 step 4), so THIS chip
+            yields: at FULL, the sheet's own body already shows the lesson's
+            topic and step directly, making the redundant top banner both
+            unnecessary and the thing that has to move.
+
+            Found by adversarial review, round 61 (2026-08-30, MEDIUM): the
+            guard above only excluded `docked === 'sheet'` — the mobile case
+            round 43 fixed — and missed `docked === 'panel'`, which is the
+            FAR more common state: since round 43's own fix, `docked` is
+            `'panel'` on desktop for essentially every ordinary conversing
+            screen, not only while an activity is open. `SpeechCaption`'s
+            `docked === 'panel'` class is `top-20` (80px); this chip's
+            `top-16` (64px) plus its own height puts its bottom at 88px — an
+            8px vertical band both surfaces occupy on desktop, constant and
+            content-independent (two fixed Tailwind offsets, not a layout
+            computed from either surface's actual content). Neither of this
+            codebase's other two anti-overlap mechanisms could have caught
+            it: `SafeAreaContext`'s `HudChromeSlot` registry has no slot for
+            a bare `<div>` outside its own primitive, and
+            `verify-tutor-ui.mjs`'s `OVERLAPS` selectors name `.lf-speech`,
+            `[data-plate-body]` and `[role="group"][aria-label]` — none of
+            which this chip carries. Same resolution as round 43: the chip
+            yields to the caption whenever the caption is docked to ANY
+            fixed-offset surface, not only the sheet.
           */}
-          {socket.lesson !== null && docked !== 'sheet' && (
+          {socket.lesson !== null && docked === null && (
             <div className="lf-caption pointer-events-none fixed left-4 top-16 z-20 max-w-[60vw] truncate rounded-full bg-[color:var(--lf-surface)]/70 px-3 py-1 text-[color:var(--lf-muted)] backdrop-blur-sm">
               {socket.lesson.topic !== null ? `${socket.lesson.topic} — ` : ''}
               {t('tutor.conversation.lessonThread', { step: socket.lesson.step, of: socket.lesson.of })}

@@ -980,6 +980,26 @@ describe('the lesson-thread chip yields the top band to the docked caption at FU
     fireEvent.keyDown(resizeHandle(), { key: 'Home' });
     expect(screen.queryByText(/Ahorro/)).not.toBeNull();
   });
+
+  /*
+   * Found by adversarial review, round 61 (2026-08-30, MEDIUM): the guard
+   * above only excluded the mobile `docked === 'sheet'` state. On desktop,
+   * `docked` is `'panel'` for essentially every ordinary conversing screen
+   * (round 43) — a state this describe block never exercised, since none of
+   * its tests stub `matchMedia` to desktop. The chip and the panel-docked
+   * caption share the identical `top-16`/`top-20` band there too.
+   */
+  it('hides the chip on desktop too, where the caption docks to the panel instead of the sheet', () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: true,
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+    render(conversation(makeSocket({ lesson: LESSON }), true));
+    expect(screen.queryByText(/Ahorro/)).toBeNull();
+    vi.unstubAllGlobals();
+  });
 });
 
 describe('the bottom edge the sheet and the microphone share', () => {

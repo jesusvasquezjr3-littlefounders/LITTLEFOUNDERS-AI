@@ -6117,3 +6117,86 @@ regressions — the fix strengthened an existing test rather than adding
 one), lint and type-check clean, root `docs:check`/`secrets:check`/
 `i18n:check`/`seo:check` clean. No `oracle/AGENTS.md` item — touches
 only `backend/`.
+
+## Round 61: a torn dossier read, and a HUD chip that inherited its sibling's collision on the far more common screen
+
+A background adversarial review targeted the two remaining unreviewed
+V4 surfaces: the Preceptor (learner memory, dossier, episodic recall,
+commit `6dc48a63`) and the floating-lesson gate (commit `7389e3ac`).
+Two real MEDIUM findings; one fixed this round, one deliberately
+deferred with a spawned follow-up because it needs a new migration.
+
+**MEDIUM, FIXED — the lesson-thread chip overlapped the docked caption
+on desktop, not only on the mobile sheet round 43 already fixed.**
+`ConversationView.tsx`'s lesson-thread chip guard read `docked !==
+'sheet'` — excluding only the mobile full-sheet state round 43's own
+fix targeted. Since that same round 43 fix, `docked` is `'panel'` on
+desktop for essentially every ordinary conversing screen (not only
+while an activity is open), and the guard never excluded that case.
+`SpeechCaption`'s `docked === 'panel'` class is `top-20` (80px); the
+chip's `top-16` (64px) plus its own height puts its bottom at 88px — an
+8px vertical band both surfaces occupy, constant and content-independent
+(two fixed Tailwind offsets, not a layout computed from either
+surface's own content). None of this codebase's other two anti-overlap
+mechanisms could have caught it: `SafeAreaContext`'s `HudChromeSlot`
+registry has no slot for a bare `<div>` outside its own primitive, and
+`verify-tutor-ui.mjs`'s `OVERLAPS` selectors (`.lf-speech`,
+`[data-plate-body]`, `[role="group"][aria-label]`) name nothing this
+chip carries. Reproduced live against the running dev server's
+`/dev/tutor-lab` (scene `conversing`, `rho`, en-US, activity `none`,
+1280×720): `chipRect.bottom = 88`, `capRect.top = 80`, an 8px overlap
+repeated at a second topic with the same vertical figure (only the
+horizontal span varied with topic-name length).
+
+Fixed with the same resolution round 43 already established: the chip
+now yields whenever the caption is docked to ANY fixed-offset surface,
+not only the sheet — the guard is `docked === null` in place of
+`docked !== 'sheet'`. Proof: a new `conversationView.test.tsx` test
+stubbing desktop (mirroring the existing "the caption docks to the
+desktop panel" describe block's own `stubDesktop()` pattern, which the
+original round-43 tests never combined with a lesson fixture) asserting
+the chip is absent once `docked === 'panel'`. Confirmed to fail for the
+exact claimed reason pre-fix via `git stash` (chip rendered instead of
+being hidden). Full frontend `conversationView.test.tsx` suite green
+(55 tests), lint and type-check clean. Live re-verified in a real
+browser session: the "Needs and wants — Lesson · step 1 of 5" chip that
+previously sat at top-left on every desktop conversing screen is now
+correctly absent, with no visible regression to the caption itself.
+
+**MEDIUM, DEFERRED — a session or guardian read can observe a torn
+dossier mid-review.** `PUT /internal/tutor/learner-memory` writes the
+post-session review's `learner` and `pedagogy` stores as two
+independent, sequentially-awaited compare-and-swap RPC calls
+(`write_learner_memory_checked`, migration 0059) — each store's OWN
+write is correctly serialized against concurrent writers of THAT store
+(rounds 42/51), but nothing prevents `getLearnerMemory` (called at the
+start of a new session for the same learner) from reading in the
+window between the `learner` write committing and the `pedagogy` write
+committing, observing one brand-new note beside one stale one.
+Reproduced with a stubbed `fetch` holding the `pedagogy` write open on
+a manually-resolved promise while the `learner` write completed and a
+concurrent read ran: returned `{ learner: 'NEW...', pedagogy: 'OLD...'
+}`, a genuine torn read. Contained blast radius (single learner,
+self-corrects the moment the second write lands, not a cross-learner
+leak) is why this is MEDIUM rather than HIGH, but closing it properly
+needs a real design decision — a new Postgres RPC wrapping both
+compare-and-swap writes in one transaction — rather than a same-session
+patch, so it was deferred with the design groundwork captured in a
+spawned follow-up (`task_8ea50baa`).
+
+**Also confirmed sound by the same review:** no cross-learner
+episodic-recall leak (`search_tutor_turns` scopes strictly by
+`ts.user_id = p_user_id`, joined through `tutor_sessions`; the route is
+internal-key-gated and Oracle always calls it with the connection's own
+session's `userId`); dossier writes and episodic-recall excerpts both
+go through the same mandatory, `isMinor`-independent moderation pass as
+every other turn, no bypass for either path; the write-side CAS itself
+(migration 0059 + `expectedBefore` threaded from the real session-start
+snapshot, rounds 42/51) is present and correct in the current code; the
+chip's OTHER half of the collision — against the mobile `docked ===
+'sheet'` caption, round 43's own fix — remains correctly guarded.
+
+Verification for the fixed finding: full frontend suite for the touched
+file green, lint and type-check clean, root `docs:check`/
+`secrets:check`/`i18n:check` clean. No `oracle/AGENTS.md` item —
+touches only `frontend/`.
