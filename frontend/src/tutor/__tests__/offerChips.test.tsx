@@ -250,4 +250,35 @@ describe('the arrival, once the island is on screen', () => {
 
     expect(openings(container)).toHaveLength(4);
   });
+
+  /*
+   * Found by adversarial review, round 27 (2026-08-30, MEDIUM): `archive`
+   * used to render ONLY inside the dock's portal (`{chipsIn && dockAbove ?
+   * createPortal(...) : null}`), with no fallback for `!dockAbove` — unlike
+   * its sibling `secondary`, which already had one. This component's OWN
+   * comment says the dock "is absent... in a unit test", which is exactly
+   * this render (no `StageDockContext` provider), so `dockAbove` is null
+   * here — the same combination a live device hits if the dock's portal
+   * target is ever unmounted or delayed. Pre-fix, tapping "Past
+   * conversations" flipped the toggle's own `aria-expanded` and label with
+   * no error, while the archive list itself never appeared anywhere on
+   * screen — a control that looks like it worked and silently does nothing.
+   */
+  it('still shows the archive when toggled with no stage dock present', () => {
+    vi.useFakeTimers();
+    const { getByRole, queryByText } = renderChips({}, { ready: true });
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    const toggle = getByRole('button', { name: 'Past conversations' });
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+
+    act(() => {
+      toggle.click();
+    });
+
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(queryByText('Your past conversations')).not.toBeNull();
+  });
 });

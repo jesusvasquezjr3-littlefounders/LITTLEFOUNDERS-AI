@@ -355,6 +355,43 @@ describe('the one plate', () => {
     expect(onDone).toHaveBeenCalledTimes(1);
   });
 
+  /*
+   * Found by adversarial review, round 27 (2026-08-30, LOW): every
+   * session-starting control in the sibling `OfferChips` carries
+   * `disabled={disabled}` — this button had no busy guard at all. In
+   * production `onDone` runs `persistPreferences({})`, which sets `saving`
+   * true synchronously before its network call, the same guard shape as
+   * `begin()`'s `starting` — so once the real caller reacts to that by
+   * passing `saving` back in, a second fast click while it is still true
+   * must not fire a second, wholly redundant save.
+   */
+  it('does not re-fire once a save is already in flight', () => {
+    const { onDone, rerender, onSave } = renderLayer();
+    fireEvent.click(screen.getByRole('button', { name: "I'm ready" }));
+    expect(onDone).toHaveBeenCalledTimes(1);
+
+    // The real caller reacts to the first click by setting `saving` true
+    // before `onDone`'s own network call ever resolves.
+    rerender(
+      <SafeAreaProvider>
+        <AnchorProvider>
+          <PersonalizeInWorld
+            phase="personalizing"
+            ready
+            preferences={PREFERENCES}
+            catalog={CATALOG}
+            saving
+            onSave={onSave}
+            onDone={onDone}
+          />
+        </AnchorProvider>
+      </SafeAreaProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: "I'm ready" }));
+    expect(onDone).toHaveBeenCalledTimes(1);
+  });
+
   it('reveals the rest on demand, and says so to a screen reader', () => {
     const { container } = renderLayer();
     const toggle = screen.getByRole('button', { name: 'Show the list' });

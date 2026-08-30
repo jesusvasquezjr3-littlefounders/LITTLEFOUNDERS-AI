@@ -3281,3 +3281,49 @@ fails on a `getByPlaceholderText` lookup, because pre-fix the composer is
 still showing "Rephrase your message…" — direct evidence `editing` never
 reset), pass against the fix. Full frontend suite green (1424 tests, up
 from 1421), lint clean, type-check clean, root `i18n:check` clean.
+
+## The "Past conversations" toggle could silently do nothing, and "I'm ready" had no busy guard — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 27 (`OfferChips.tsx` and
+`PersonalizeInWorld.tsx` — the very first screen a learner sees, before a
+Tutor session starts).
+
+**1. MEDIUM — the archive toggle could flip its own visible state while
+the list it opens never appeared anywhere.** `OfferChips.tsx`'s `archive`
+(the "Past conversations" list) used to render ONLY inside the dock's
+portal (`{chipsIn && dockAbove ? createPortal(<>{archive}{secondary}</>,
+dockAbove) : null}`) — with no fallback for `!dockAbove`, unlike its
+sibling `secondary`, which already had one (`{chipsIn && !dockAbove &&
+secondary}`). The component's own comment says the dock "is absent... in
+a unit test" — meaning `ready && !dockAbove` is not a hypothetical, it is
+the exact combination the existing test suite already runs under with no
+`StageDockContext` provider. In that combination, tapping "Past
+conversations" still flips its own `aria-expanded` and its label from
+"Past conversations" to "Hide" — every outward sign says it worked — but
+the list itself never rendered anywhere on screen. Exactly the shape
+`oracle/AGENTS.md`'s own catalogue names repeatedly this session: a
+surface that opts something out of its layout without checking whether
+the fallback layout has it either. No live caller currently hits this
+combination in production (the dock's portal target mounts before the
+reveal delay elapses), but nothing enforces that, and the existing tests
+never covered it.
+
+Fixed by adding the same fallback the sibling `secondary` already has:
+`{chipsIn && !dockAbove && archive}`, right beside it.
+
+**2. LOW — "I'm ready" had no busy guard, unlike every session-starting
+control in the sibling `OfferChips`.** Every control there that can
+trigger `onStart` carries `disabled={disabled}`; the personalize screen's
+"I'm ready" (Done) button had none. In production `onDone` runs
+`persistPreferences({})`, which sets `saving` true synchronously before
+its network call — the identical guard shape `begin()` already uses for
+`starting` — so two fast clicks fired a second, wholly redundant `PUT
+/tutor/preferences` with an empty body. Fixed with `disabled={saving}`.
+
+Proven with a new test in `offerChips.test.tsx` (toggling the archive
+with no stage dock present now actually shows "Your past conversations")
+and a new test in `personalizeInWorld.test.tsx` (a second click while
+`saving` is true does not re-fire `onDone`). Both confirmed to fail
+against the pre-fix code for the exact claimed reason via `git stash`,
+pass against the fix. Full frontend suite green (1426 tests, up from
+1424), lint clean, type-check clean, root `i18n:check` clean.

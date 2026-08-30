@@ -847,6 +847,16 @@ export function PersonalizeInWorld({
             as="button"
             shape="chip"
             floor="accent"
+            /*
+             * Found by adversarial review, round 27 (2026-08-30, LOW): every
+             * session-starting control in the sibling `OfferChips` carries
+             * `disabled={disabled}` — this one had no busy guard at all.
+             * `onDone` runs `persistPreferences({})`, which sets `saving`
+             * true synchronously before its network call the same way
+             * `begin()` sets `starting` — so two fast clicks fired the save
+             * twice, a wholly redundant request with nothing to show for it.
+             */
+            disabled={saving}
             onClick={() => {
               if (commitNickname()) onDone();
             }}

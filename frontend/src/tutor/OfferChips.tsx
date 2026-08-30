@@ -718,13 +718,31 @@ export function OfferChips({
               {chipsIn && !mapPanel && chips}
               {chipsIn && !dockAbove && secondary}
               {/*
-                THE ARCHIVE IS DELIBERATELY NOT HERE. This cluster is the
-                anchored node `ScreenAnchor` rewrites the transform of on every
-                frame; a 52vh scrolling sheet inside it would be a list flying
-                around the island. Where there is no dock the archive belongs to
-                the guaranteed column below, which is the arrangement a device
-                without a stage actually gets.
-              */}
+                THE ARCHIVE IS DELIBERATELY NOT HERE WHILE THE DOCK EXISTS.
+                This cluster is the anchored node `ScreenAnchor` rewrites the
+                transform of on every frame; a 52vh scrolling sheet inside it
+                would be a list flying around the island — it belongs in the
+                portal below instead, beside `secondary`.
+               *
+               * But when there IS no dock, it needs a home here, matching
+               * `secondary` immediately above. Found by adversarial review,
+               * round 27 (2026-08-30, MEDIUM): this branch used to render
+               * `archive` ONLY inside `{chipsIn && dockAbove ? createPortal(...)
+               * : null}` below, with no fallback for `!dockAbove` — unlike
+               * `secondary`, which already has one. In that combination the
+               * "Past conversations" toggle still renders and still flips its
+               * own `aria-expanded`/label on tap, so every outward sign says it
+               * worked, but the archive list itself never appears anywhere:
+               * exactly the §1.14 shape of "a surface that opts out of a
+               * system must be told what the system decided" — this cluster
+               * opts the archive OUT of its own layout without checking
+               * whether the fallback layout (the guaranteed no-stage column
+               * below) actually has it either. No live caller currently hits
+               * `ready && !dockAbove` (the dock's portal target mounts before
+               * `chipsIn`'s reveal delay elapses), but nothing enforces that,
+               * and the existing tests never covered the combination.
+               */}
+              {chipsIn && !dockAbove && archive}
             </div>
           </div>
 
