@@ -2081,3 +2081,34 @@ accessible name mentions the unmet one and not the mastered one; a second
 test confirms a prerequisite with no mastery data at all outranks one with
 some (however low) as the named blocker. Both confirmed to fail against
 the pre-fix component first. Full frontend suite green (1405 tests).
+
+## Push-to-talk gave the full "listening" ritual for a turn that was always going to be discarded — closed 2026-08-30
+
+**Found by adversarial review, round 10** (voice/turn-taking UX), MEDIUM
+severity — the last of that round's two findings, the first (hands-free
+opening in the audio-pending gap) already closed above.
+
+`MicOrb.tsx`'s `beginHold` gated on `available` (`state !== 'unavailable'`),
+which is true for `'thinking'` — the tutor's reply is already being
+produced. Holding the orb there started a real recording: the mic-open
+sound played, haptics fired, the ambient bed ducked, a live level meter ran,
+and on release the clip was sent. Unlike `'speaking'` — deliberately
+interruptible, with its own `onInterrupt` call and its own test — nothing
+in this path tells the server a turn is being cut short; `ws/server.ts`'s
+one-turn-at-a-time claim correctly refuses the resulting submission
+(`RATE_LIMITED`). So the behavior was never wrong in a way that doubled a
+bill or broke a rule — it was a dead end a child could not tell was
+dead until after living through the whole ritual for it.
+
+Fixed with one added condition in `beginHold`: `state === 'thinking'` now
+refuses the hold before it starts, the same way `recording` and
+`holdingRef.current` already do. `available` itself is untouched, so the
+orb keeps its own distinct `'thinking'` look (a spinner, not the dashed
+"unavailable" ring) — only pressing it during that state stops doing
+anything.
+
+Proven with a permanent test (`MicOrb.test.tsx`) mirroring the existing
+`'speaking'` case exactly, with the opposite expectation: the orb has no
+`aria-disabled` (it still LOOKS pressable) and a `pointerdown` on it does
+NOT call `microphone.start`. Confirmed to fail against the pre-fix
+component first. Full frontend suite green (1406 tests).

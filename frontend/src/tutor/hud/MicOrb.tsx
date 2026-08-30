@@ -204,7 +204,19 @@ export function MicOrb({
   }, [stop, onClip]);
 
   const beginHold = useCallback(() => {
-    if (!available || recording || holdingRef.current) return;
+    /*
+     * 'thinking' is not 'unavailable' — `available` stays true so the orb
+     * keeps its own distinct spinner rather than looking broken — but a
+     * hold started here is a dead end. Found by adversarial review,
+     * 2026-08-30 (MEDIUM): unlike 'speaking' (deliberately interruptible,
+     * via `onInterrupt` below), nothing sends an `interrupt` frame for a
+     * hold begun while a reply is already in flight, so the server's own
+     * one-turn-at-a-time claim correctly refuses the resulting submission —
+     * but only AFTER the child has gone through the full "you are being
+     * heard" ritual (sound, haptics, ducked ambience, a live meter) for a
+     * turn that was always going to be discarded.
+     */
+    if (!available || recording || holdingRef.current || state === 'thinking') return;
     holdingRef.current = true;
     if (state === 'speaking') onInterrupt?.();
     playPlatformSound('tutor_mic_open');

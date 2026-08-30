@@ -126,6 +126,27 @@ describe('MicOrb presence', () => {
   });
 
   /*
+   * Found by adversarial review, 2026-08-30 (MEDIUM). Unlike 'speaking',
+   * pressing during 'thinking' sends no `interrupt` frame — nothing here
+   * aborts the in-flight production the way the speaking case does — so the
+   * server's own one-turn-at-a-time claim correctly refuses the eventual
+   * submission (`RATE_LIMITED`). Recording anyway just makes the child sit
+   * through the full "you are being heard" ritual for a turn that was
+   * always going to be discarded. `state="thinking"` still looks pressable
+   * (its own spinner, not the dashed "unavailable" ring) — a hold started
+   * here must simply not record.
+   */
+  it('looks pressable but does not record while the tutor is thinking, unlike speaking', () => {
+    const microphone = makeMicrophone();
+    render(<MicOrb state="thinking" microphone={microphone} onClip={vi.fn()} />);
+
+    const orb = screen.getByRole('button');
+    expect(orb).not.toHaveAttribute('aria-disabled');
+    fireEvent.pointerDown(orb, { pointerId: 1 });
+    expect(microphone.start).not.toHaveBeenCalled();
+  });
+
+  /*
    * `idleCopy` exists for exactly one screen: the introduction, where no socket
    * has been opened yet, so the press cannot record and instead CREATES the
    * conversation. "Hold to talk" there asks a child to hold a button with

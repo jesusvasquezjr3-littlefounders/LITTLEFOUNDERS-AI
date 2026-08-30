@@ -662,6 +662,20 @@ wire (`oracle/src/ws/server.ts`) are each covered by a `live-session.test.ts`
 assertion: ordinary delivery always says `audioPending: true`, a resume
 redraw always says `false`.
 
+**Push-to-talk during `'thinking'` was a dead end nobody could see —
+closed in the same round, MEDIUM.** `MicOrb.tsx`'s hold gate excluded only
+`'unavailable'`; `'thinking'` (a reply already being produced) passed it,
+so holding the orb ran the full ritual — sound, haptics, ducked ambience, a
+live meter — and sent a clip on release. Unlike `'speaking'`, which calls
+`onInterrupt` and has its own test, nothing here tells the server a turn is
+being cut short, so `ws/server.ts`'s one-turn-at-a-time claim correctly
+refuses the submission (`RATE_LIMITED`) — never a double bill, always a
+dead end the child could not tell was dead until after living through it.
+Fixed with one added condition in `beginHold` (`state === 'thinking'`
+refuses the hold, same as `recording`/`holdingRef.current` already do);
+`available` itself is untouched, so the orb keeps its own `'thinking'`
+spinner rather than looking broken.
+
 ### §4.3 The consent gate
 
 A `kid` cannot open the microphone until a **verified guardian** has granted
