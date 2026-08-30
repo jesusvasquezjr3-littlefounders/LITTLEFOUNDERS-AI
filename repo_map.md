@@ -29562,6 +29562,26 @@ import { afterEach, describe, expect, it } from 'vitest';
  *      `undefined`, not `''` — an empty assignment is a PRESENT value of length
 ```
 
+### oracle/src/__tests__/generate.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { generateSegment, type GenerationRequest } from '../content/generate.js';
+
+/*
+ * Found MISSING entirely by an adversarial review, 2026-08-30 (CRITICAL):
+ * `/ORACLE.md` §7.3's own guard table asserts "Moderation | §6, same as
+ * speech" for tier-3 live-generated content — a generated segment's
+ * `prompt_md`/`explanation_md`/`payload` strings never passed through
+ * `deterministicModeration`/`moderateTutorOutput` at all, only the separate
+ * quality/pedagogy judge in this file (one loose bullet about "anything
+ * unsuitable for a child" among eight correctness criteria, not the closed
+ * harm-category vocabulary the safety stack enforces everywhere else). These
+ * tests pin the fix: a candidate that passes the quality judge cleanly but
+ * carries a contact detail in its learner-visible text must still be
+ * refused, and a clean candidate must still be served.
+```
+
 ### oracle/src/__tests__/hardening.test.ts
 
 ```
@@ -29890,6 +29910,7 @@ import { withTimeout } from '../lib/http.js';
 import { complete, ModelUnavailableError } from '../model/provider.js';
 import { sealGenerationBrief, type Locale } from '../context/schema.js';
 import { fenceUntrusted } from '../safety/untrusted.js';
+import { moderateTutorOutput } from '../safety/moderation.js';
 
 /*
  * Ladder tier 3: authoring one activity in the moment (/ORACLE.md §7.3).
@@ -29899,7 +29920,6 @@ import { fenceUntrusted } from '../safety/untrusted.js';
  * finite bank structurally cannot cover: a child who did NOT understand the
  * canonical explanation needs a different one now, and "come back when we have
  * written one" is not a tutoring product.
- *
 ```
 
 ### oracle/src/context/schema.ts
@@ -30126,6 +30146,7 @@ import type { SafetyCategory } from './classifier.js';
 
 ```
 import type { Locale } from '../context/schema.js';
+import { stripInvisible } from './untrusted.js';
 
 /*
  * Layer 4 of the injection/safety stack (/ORACLE.md §5): classify the
@@ -30139,7 +30160,6 @@ import type { Locale } from '../context/schema.js';
  * scripted response; a model pass may be layered on top later without moving
  * this file.
  *
- * Two things this deliberately does NOT try to be:
 ```
 
 ### oracle/src/safety/moderation.ts
@@ -30148,6 +30168,7 @@ import type { Locale } from '../context/schema.js';
 import { getConfig } from '../env.js';
 import { withTimeout } from '../lib/http.js';
 import type { Locale } from '../context/schema.js';
+import { stripInvisible } from './untrusted.js';
 
 /*
  * Moderation before the screen AND before the ear (/ORACLE.md §6).
@@ -30159,7 +30180,6 @@ import type { Locale } from '../context/schema.js';
  *
  * TWO PASSES, AND THE ORDER MATTERS.
  *
- * The deterministic pass runs first because it catches the failures a model
 ```
 
 ### oracle/src/safety/untrusted.ts

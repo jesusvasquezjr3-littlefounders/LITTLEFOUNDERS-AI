@@ -705,6 +705,24 @@ through our own service) is what makes it enforceable at all.
 For adult roles this may be relaxed to sentence-level buffering. For `kid` it
 may not.
 
+> **Fixed 2026-08-30 (adversarial review, CRITICAL): a judge response with no
+> interpretable verdict was silently treated as ALLOWED.** `modelModeration`
+> (`oracle/src/safety/moderation.ts`) parses the judge's JSON reply and reads
+> `parsed.safe`/`parsed.category`. A reply that is valid JSON but omits
+> `safe` entirely — `{}`, or a field-name mismatch like `{"result": true}`, a
+> known and ordinary LLM failure mode against a `max_tokens: 120` budget —
+> is the SAME epistemic state as no response at all (a timeout, an
+> unconfigured judge), which this file's own rule already covers: "a
+> moderation service that does not answer means the turn is not spoken." But
+> the code fell into the branch built for a DIFFERENT case — a real opinion
+> that named no recognised harm (2026-08-29's "refusal must name a harm"
+> fix) — and returned `{ allowed: true }`, bypassing `requireModelPass`
+> entirely for exactly the malformed-response shape the fail-closed rule
+> exists to cover. Fixed by checking `typeof parsed.safe === 'boolean'`
+> first: anything else now throws, routing it through the same
+> retry-then-fail-closed-for-a-minor path a timeout already takes, rather
+> than through the "opinion with no harm named" path. See `RUNBOOK.md`.
+
 Moderation failure is **fail-closed**: a moderation service that does not answer
 means the turn is not spoken. A safe scripted line covers the gap.
 
@@ -777,7 +795,7 @@ when we have written one" is not a tutoring product.
 | Deterministic gates | The same gates Forge runs: tier vocabulary, arithmetic re-execution, exactly-one-correct, unique ids, required `rationale_md` on wrong options, readability band. |
 | Independent judge | A separate adversarial model pass against the course rubric. WALKTHROUGH's own record: the judge caught twelve real semantic defects across 544 lessons that **all nine gates passed.** It is not optional here. |
 | Answer-key re-execution | Core re-derives the answer independently before the segment can pay XP (§8). |
-| Moderation | §6, same as speech. |
+| Moderation | §6, same as speech. **Corrected 2026-08-30 — this row asserted a control that did not exist.** An adversarial review found `generateSegment` never called `deterministicModeration`/`moderateTutorOutput` on a candidate's `prompt_md`/`explanation_md`/`payload` text at all — only the quality judge above ran, and its rubric has one loose bullet about "anything unsuitable for a child" among eight correctness/pedagogy criteria, not the closed harm-category vocabulary §6 enforces everywhere else. A candidate with, for example, an embedded contact detail in its explanation would pass the quality judge cleanly and reach a minor unmoderated. Fixed the same day: `generateSegment` now moderates every learner-visible string (never the answer key) after the quality judge passes, using the identical gate every spoken turn goes through, `requireModelPass` tied to the session's `isMinor`. See `RUNBOOK.md`. |
 | Provenance | Every live segment is stored with `origin='live'`, its full generation record, and the session it was born in. A defect found later must be traceable to every learner who saw it. |
 | Post-hoc sampling | **HALF BUILT, and the half that is missing is the human.** A fraction of live segments IS sampled and flagged — `backend/src/routes/tutor.ts` sets `review_status: 'pending'`, persisted with a partial index (migration `0047`). **Nothing reads it.** No Core query filters on it and `/admin/content` reviews lessons, not tutor segments, so every sampled segment is marked pending and seen by nobody. Corrected 2026-08-23: this row asserted a control that does not exist. It is the one guard in this table that is not real, and unlike the other seven it cannot be made real by code alone — it needs a queue AND somebody who reads it. Tracked in §15.2. |
 

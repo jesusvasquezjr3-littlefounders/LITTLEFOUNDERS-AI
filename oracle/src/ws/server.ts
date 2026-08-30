@@ -1181,6 +1181,7 @@ async function serveSegment(
       rationale: requestInput.rationale,
       allowedTypes: served.allowedTypes,
       recentTutorLines: live.orchestrator.recentTutorLines,
+      isMinor: live.session.isMinor,
     });
     served = candidate
       ? await verifyGeneratedSegment({

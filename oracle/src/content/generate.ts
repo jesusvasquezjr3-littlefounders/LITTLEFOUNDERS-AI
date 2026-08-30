@@ -3,6 +3,7 @@ import { withTimeout } from '../lib/http.js';
 import { complete, ModelUnavailableError } from '../model/provider.js';
 import { sealGenerationBrief, type Locale } from '../context/schema.js';
 import { fenceUntrusted } from '../safety/untrusted.js';
+import { moderateTutorOutput } from '../safety/moderation.js';
 
 /*
  * Ladder tier 3: authoring one activity in the moment (/ORACLE.md §7.3).
@@ -38,6 +39,8 @@ export interface GenerationRequest {
   allowedTypes: readonly string[];
   /** TUTOR lines already said this session, so the generator does not repeat. */
   recentTutorLines: readonly string[];
+  /** Whether the model safety pass is MANDATORY for this segment's text (§6). */
+  isMinor: boolean;
 }
 
 export interface GenerationResult {
@@ -175,6 +178,28 @@ async function judge(segment: unknown, tier: 1 | 2 | 3): Promise<JudgeVerdict> {
 }
 
 /**
+ * Every learner-visible string in a candidate segment, joined — mirrors
+ * Core's own `collectProse` (`backend/src/services/tutorLadder.ts`) exactly,
+ * reimplemented here because the two services share no code (11 independent
+ * packages, no workspaces). `answer` is deliberately excluded: the learner
+ * never sees it, and moderating it would only produce false positives on
+ * numbers and key data nobody is shown.
+ */
+function collectSegmentProse(candidate: Record<string, unknown>): string {
+  const parts: string[] = [
+    typeof candidate.prompt_md === 'string' ? candidate.prompt_md : '',
+    typeof candidate.explanation_md === 'string' ? candidate.explanation_md : '',
+  ];
+  const walk = (value: unknown): void => {
+    if (typeof value === 'string') parts.push(value);
+    else if (Array.isArray(value)) value.forEach(walk);
+    else if (value && typeof value === 'object') Object.values(value).forEach(walk);
+  };
+  walk(candidate.payload);
+  return parts.join('\n');
+}
+
+/**
  * Authors one candidate and puts it past the judge.
  *
  * Returns `null` for every failure, and the caller must then emit NOTHING
@@ -293,6 +318,36 @@ export async function generateSegment(request: GenerationRequest): Promise<Gener
 
   if (!verdict.pass) {
     console.warn(`[oracle] judge rejected a generated segment: ${verdict.reason ?? 'no reason given'}`);
+    return null;
+  }
+
+  /*
+   * SAFETY MODERATION — found MISSING entirely by an adversarial review,
+   * 2026-08-30 (CRITICAL). `/ORACLE.md` §7.3's own guard table states
+   * "Moderation | §6, same as speech" as fact; it was not. `judge()` above is
+   * a QUALITY/pedagogy reviewer — one loose bullet among eight about
+   * correctness and teaching, not the closed harm-category vocabulary
+   * `deterministicModeration`/`moderateTutorOutput` enforce for every spoken
+   * turn. A generated segment's `prompt_md`, `explanation_md` and every
+   * string in its `payload` (options, rationales, item text) are shown to a
+   * learner with NO human in the loop, under the exact §1.9 carve-out whose
+   * entire justification is deterministic gates + moderation + an
+   * independent judge — and this was the one of those three actually
+   * missing from the code. Reusing the SAME gate every spoken turn goes
+   * through, not inventing a second one, and never the answer key: a
+   * learner never sees `answer`, so moderating it would only produce false
+   * positives on numbers and key data nobody is shown.
+   */
+  const prose = collectSegmentProse(candidate);
+  const safety = await moderateTutorOutput({
+    text: prose,
+    locale: sealed.locale,
+    tier: sealed.tier,
+    nonce: undefined,
+    requireModelPass: request.isMinor,
+  });
+  if (!safety.allowed) {
+    console.warn(`[oracle] generated segment failed safety moderation: ${safety.reason}`);
     return null;
   }
 

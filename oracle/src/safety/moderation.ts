@@ -210,6 +210,23 @@ async function modelModeration(input: ModerationInput): Promise<ModerationVerdic
   if (!match) throw new Error('moderation judge returned no JSON object');
 
   const parsed = JSON.parse(match[0]) as { safe?: unknown; reason?: unknown; category?: unknown };
+  if (typeof parsed.safe !== 'boolean') {
+    /*
+     * A response with no interpretable verdict at all — valid JSON, but no
+     * `safe` field, e.g. `{}` or `{"result": true}` — is the SAME epistemic
+     * state as no response, not an opinion we received. Throwing here routes
+     * it through the retry-then-fail-closed-for-a-minor path below (the same
+     * one "no JSON object found" already uses), rather than falling into the
+     * "refused without a harm category" branch further down, which exists
+     * for a DIFFERENT case: a real opinion we DID get, just not a safety one.
+     * Found by an adversarial review, 2026-08-30 (CRITICAL): `{}` used to
+     * take that branch and be silently converted to `{ allowed: true }`,
+     * bypassing `requireModelPass` for exactly the malformed-response shape
+     * §6's fail-closed rule exists to cover — reachable by ordinary model
+     * non-compliance with the requested JSON shape, not an adversarial input.
+     */
+    throw new Error('moderation judge response had no interpretable verdict');
+  }
   if (parsed.safe === true) return { allowed: true };
 
   const detail = typeof parsed.reason === 'string' ? parsed.reason.slice(0, 200) : 'judge marked unsafe';

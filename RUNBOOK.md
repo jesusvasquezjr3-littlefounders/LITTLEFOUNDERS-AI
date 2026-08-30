@@ -1447,3 +1447,81 @@ is enforced. Any future change to how a session is resumed, migrated between
 processes, or reconnected must preserve the `liveSessions` check as the
 single place that answers "is this session already live", the same way
 `claimTurn` is the single place that answers "is a turn already in flight".
+
+## The semantic moderation judge had a control that didn't exist and a fail-open on a malformed reply — incident 2026-08-30, closed the same day
+
+**Found by a fifth independent adversarial code review**, pointed this time
+at the semantic (model-based) judge half of output moderation — not by a
+report, not by a user. Both findings proven with a throwaway test against
+the real code before being trusted, then reverted.
+
+**Finding 1 (CRITICAL) — tier-3 generated content never reached the safety
+judge at all.** `/ORACLE.md` §7.3's own guard table stated as fact:
+"Moderation | §6, same as speech." It was not. `oracle/src/content/generate.ts`
+runs a QUALITY judge on a candidate segment — one loose bullet ("it contains
+anything unsuitable for a child") among eight correctness/pedagogy
+criteria — but never called `deterministicModeration`/`moderateTutorOutput`,
+the closed harm-category gate every spoken turn goes through, on the
+segment's own `prompt_md`, `explanation_md`, or any string in `payload`
+(option text, rationales). A candidate that passed the quality judge cleanly
+with, say, a contact detail embedded in its explanation would reach a minor
+with zero exposure to the dedicated safety judge or even the free,
+synchronous deterministic pass. This is content shown under the §1.9
+carve-out for live generation, whose entire justification is "deterministic
+gates + moderation + an independent judge instead of human publication" —
+one of those three named controls was simply absent from the code.
+
+Proven with a throwaway test: mocked the author model to return a segment
+whose `explanation_md` contained an email address, mocked the quality judge
+to approve it (`{pass: true}`), and confirmed `generateSegment()` returned
+the segment unmodified with zero calls to moderation. The same string run
+through the real `deterministicModeration()` blocks instantly — the gap was
+structural, not a matter of the judge being fooled.
+
+Fixed by moderating every learner-visible string in the candidate (never
+the answer key — the learner never sees it) after the quality judge passes,
+reusing the exact same `moderateTutorOutput` gate every spoken turn already
+uses, with `requireModelPass` tied to the session's `isMinor`. A new local
+`collectSegmentProse()` mirrors Core's own `collectProse()`
+(`backend/src/services/tutorLadder.ts`) — reimplemented rather than shared,
+since the two services are independent npm packages with no workspace.
+
+**Finding 2 (CRITICAL) — a judge reply with no interpretable verdict was
+silently allowed.** `modelModeration` parses the judge's JSON and checks
+`parsed.safe === true` for the allow path; anything else falls into the
+"refused, does it name a harm" branch built for a DIFFERENT case — a real
+opinion, e.g. `{"safe": false, "category": "pedagogically_weak"}`. A reply
+that is valid JSON but has no `safe` field at all — `{}`, or a field-name
+mismatch such as `{"result": true}` — landed in that same branch, computed
+an empty category, found it unrecognised, and returned `{ allowed: true }`.
+That is the identical epistemic state as a timeout or an unconfigured
+judge — this file's own rule already says a moderation service that does
+not answer means the turn is not spoken — but it silently bypassed
+`requireModelPass` instead. Reachable by ordinary model non-compliance with
+the requested JSON shape (more likely given the judge's tight `max_tokens:
+120` budget), not by an adversarial learner input.
+
+Proven with a throwaway test: mocked the judge's reply as literally `{}`
+with `requireModelPass: true` (a minor session) and got back `allowed:
+true`, logged as "judge refused without a harm category (none)" — a
+non-answer masquerading as a benign opinion.
+
+Fixed by checking `typeof parsed.safe === 'boolean'` before interpreting
+anything else; a response that fails that check now throws, which routes it
+through the SAME retry-then-fail-closed-for-a-minor path a timeout already
+takes.
+
+**How both were verified.** Permanent regression tests added to
+`generate.test.ts` (new file) and `safety.test.ts`; each confirmed to fail
+against the pre-fix code (the contact-detail segment served unmodified; the
+malformed-verdict test returning `allowed: true`) by stashing just the
+source change and re-running.
+
+**What this means for anyone adding a new content-generation or moderation
+path.** A "judge" is not automatically a safety control — this project now
+has at least three distinct judges (tier-3 quality, tier-3 safety, and the
+turn-level semantic moderation pass) and conflating any two of them, or
+assuming a quality pass implies a safety pass, is exactly how Finding 1
+happened. And a judge's response schema must be checked for the PRESENCE
+and TYPE of the field a verdict depends on, not merely parsed as JSON —
+valid JSON is not the same guarantee as an interpretable answer.

@@ -291,4 +291,26 @@ describe('a refusal must name a harm', () => {
     expect(verdict.allowed).toBe(false);
     expect(verdict.allowed === false && verdict.detail).toContain('personal_information');
   });
+
+  /*
+   * Found by an adversarial review, 2026-08-30 (CRITICAL): a judge response
+   * with NO interpretable verdict at all — valid JSON, but no `safe` field —
+   * is a different epistemic state from "a real opinion that named no harm"
+   * (the two tests above). It is the SAME state as no response, and must
+   * fail closed for a minor exactly like a timeout does, not fall into the
+   * "refused without a harm category" branch and come out allowed.
+   */
+  it('does NOT allow a judge response with no `safe` field at all — that is a non-answer, not an opinion', async () => {
+    judgeReturns({});
+    const verdict = await moderateTutorOutput(TEXT);
+    expect(verdict.allowed).toBe(false);
+    expect(verdict.allowed === false && verdict.reason).toBe('moderator_unavailable');
+  });
+
+  it('does NOT allow a judge response using the wrong field name for its verdict', async () => {
+    judgeReturns({ result: true, reason: 'looks fine' });
+    const verdict = await moderateTutorOutput(TEXT);
+    expect(verdict.allowed).toBe(false);
+    expect(verdict.allowed === false && verdict.reason).toBe('moderator_unavailable');
+  });
 });

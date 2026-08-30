@@ -112,6 +112,18 @@ a child sitting with a character who apologises forever is worse than an honest
 already reviewed; putting them past a judge would mean a judge outage replaced
 one safe line with another while doubling upstream calls.
 
+**"Failing closed" also means a malformed judge reply must not be read as an
+answer** (found 2026-08-30, CRITICAL). `modelModeration` used to fall into
+its "opinion named no harm, allow" branch for a reply that had NO `safe`
+field at all — the same epistemic state as a timeout, which already fails
+closed. Check `typeof parsed.safe === 'boolean'` before interpreting
+anything else; treat anything that fails that check as a failure, not an
+opinion. And a "judge" running on generated content is not automatically
+THIS gate — `content/generate.ts`'s own quality judge is a different judge
+with a different rubric, and it used to be the ONLY one a tier-3 segment's
+text ever saw (`moderateTutorOutput` was never called on it at all). See
+`RUNBOOK.md` for both incidents.
+
 ### §2.5 The voice provider stays behind its interface
 
 Nothing outside `src/voice/` may import a provider SDK or name a provider, and
