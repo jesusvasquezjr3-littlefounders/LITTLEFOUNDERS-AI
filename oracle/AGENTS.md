@@ -497,7 +497,7 @@ everything passes the blocked half perfectly and destroys the product.
    repair loop keeps `repairable` (attempt 0's turn) so a failed retry
    delivers it rather than a scripted apology — "a clumsy real sentence
    beats a scripted apology every time," true for a vocabulary slip, a
-   self-answered question, false praise, because the delivered turn is
+   self-answered question, an unkept promise, because the delivered turn is
    imperfect but still teaches something NEW. Found live, testing as a
    struggling learner, 2026-08-30: it is the WRONG rule for a REPEAT
    specifically, because delivering `repairable` there delivers the repeat
@@ -514,7 +514,11 @@ everything passes the blocked half perfectly and destroys the product.
    N distinct repair reasons needs to be re-examined per reason, not
    assumed correct because it is correct for most of them — "imperfect but
    new" and "guaranteed to reproduce the exact defect" are not the same
-   failure mode, even though both arrive at this one line of code.
+   failure mode, even though both arrive at this one line of code. (This
+   item originally also listed "false praise" among the safe-to-deliver
+   reasons — item 29 found that claim wrong and the item text above has
+   been corrected; the two repair reasons share the exact defect this item
+   describes, not two different ones.)
 22. **A refused-and-fell-back result needs to say WHY it fell back, or every
    refusal reason collapses into the same object.** `placementIntake.ts`'s
    `runPlacementIntake` correctly classifies the learner's text and refuses
@@ -621,6 +625,34 @@ everything passes the blocked half perfectly and destroys the product.
    on a value that is the OUTPUT of chained floating-point arithmetic —
    never one taken directly from input — needs to ask "how close" before it
    asks "which side of the line."
+29. **The ONE retry a repair gets can swap one contradiction for its
+   mirror image instead of removing it, and item 21's fallback delivered
+   whichever one survived.** Found live, testing as a struggling learner,
+   2026-08-30: a child answered "25" to a question whose right answer was
+   15. Attempt 0 said "casi" but its own arithmetic landed back on the
+   learner's number (25) — `contradictsCorrectAnswer` correctly caught this
+   as `falseCorrection` and asked for a retry with "their answer was right,
+   confirm it plainly." The retry took that instruction literally and
+   produced a turn that congratulates 25 as correct while STILL stating the
+   real answer is 15 in the same breath — `praiseContradictsAnswer`'s
+   `falsePraise`, the mirror-image fault, which item 21's own text
+   (pre-correction) had listed as safe to deliver on the theory that it is
+   "imperfect but still teaches something new." It is not: telling a child
+   they were right and wrong about the SAME answer in the SAME sentence
+   teaches nothing and undermines every future "¡Exacto!" — the same defect
+   class as item 21's repeat, not a different one, because delivering it
+   reproduces the exact contradiction the check exists to catch rather than
+   a merely clumsy turn. Fixed the same way item 21 was: a new
+   `repairableIsFalseVerdict` flag, set whenever `falsePraise` or
+   `falseCorrection` is true on the turn `repairable` captured OR on the
+   turn that survives the retry, routes to the scripted line instead of
+   `produce()`'s normal "deliver it anyway" path. General lesson: when a
+   repair's correction message tells the model "you were wrong about X, the
+   truth is Y," a model that takes the instruction at face value without
+   re-deriving Y itself can produce a turn that is confidently wrong about
+   whether the ORIGINAL claim or the correction is now the operative one —
+   watch for the retry inheriting the correction's ASSERTION without
+   inheriting its REASONING.
 
 ---
 

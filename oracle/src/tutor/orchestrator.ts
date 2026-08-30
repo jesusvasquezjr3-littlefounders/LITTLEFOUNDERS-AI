@@ -1183,8 +1183,8 @@ export class TutorOrchestrator {
      * Whether `repairable` was flagged as a REPEAT specifically. Found live,
      * testing as a struggling learner, 2026-08-30: "a clumsy real sentence
      * beats a scripted apology" is right for a vocabulary slip, a self-
-     * answered question, false praise — the delivered turn is imperfect but
-     * still teaches something new. It is wrong for a repeat, because the
+     * answered question, an unkept promise — the delivered turn is imperfect
+     * but still teaches something new. It is wrong for a repeat, because the
      * "clumsy real sentence" IS the exact defect the check exists to catch:
      * delivering `repairable` here delivers the repeat itself, with 100%
      * certainty, not a degraded-but-different turn. Confirmed live via a
@@ -1194,6 +1194,22 @@ export class TutorOrchestrator {
      * case), and the fallback delivered the flagged turn verbatim.
      */
     let repairableIsRepeat = false;
+    /**
+     * The sibling of `repairableIsRepeat`, for `falsePraise`/`falseCorrection`.
+     * Found live, testing as a struggling learner, 2026-08-30: the ONE retry
+     * can swap one contradiction for the other rather than removing it — a
+     * correction telling the model "the learner was right, confirm it
+     * plainly" came back as praise for a wrong answer, because the model
+     * changed WHICH claim it made, not whether the claim was sound. Every
+     * other surviving fault is still a coherent, honestly-labelled turn (a
+     * repetitive one, one missing a board, one over the vocabulary band) — a
+     * clumsy real sentence a child can still use. This one is not: it tells
+     * the child they were right and wrong about the SAME answer in the SAME
+     * sentence, which teaches nothing and undermines every future "¡Exacto!".
+     * Delivering it is worse than the scripted line, the same reasoning as
+     * the repeat carve-out above, so it gets the same treatment.
+     */
+    let repairableIsFalseVerdict = false;
     try {
       for (let attempt = 0; attempt < 2 && turn === null; attempt += 1) {
         if (attempt > 0 && Date.now() >= retryDeadlineMs) {
@@ -1421,6 +1437,7 @@ export class TutorOrchestrator {
             if (repairable === null) {
               repairable = parsed.turn;
               repairableIsRepeat = repeated !== null;
+              repairableIsFalseVerdict = falsePraise || falseCorrection;
             }
 
             if (violation !== null && attempt === 0) {
@@ -1474,12 +1491,6 @@ export class TutorOrchestrator {
               if (brokenPromise) {
                 console.warn('[oracle] unkept activity promise SURVIVED the retry — delivered');
               }
-              if (falsePraise) {
-                console.warn('[oracle] praise of a wrong answer SURVIVED the retry — delivered');
-              }
-              if (falseCorrection) {
-                console.warn('[oracle] contradiction of a correct answer SURVIVED the retry — delivered');
-              }
               if (missedWhiteboard) {
                 console.warn('[oracle] growth story with no whiteboard SURVIVED the retry — delivered as text only');
               }
@@ -1492,7 +1503,22 @@ export class TutorOrchestrator {
               if (repeated !== null) {
                 console.warn('[oracle] repeated sentence SURVIVED the retry — delivered');
               }
-              turn = parsed.turn;
+              if (falsePraise || falseCorrection) {
+                // See `repairableIsFalseVerdict`'s doc comment: this specific
+                // pair of faults is a self-contradicting correctness verdict,
+                // not a merely-imperfect turn, so it does not get delivered.
+                if (falsePraise) {
+                  console.warn('[oracle] praise of a wrong answer SURVIVED the retry — scripted line instead');
+                }
+                if (falseCorrection) {
+                  console.warn(
+                    '[oracle] contradiction of a correct answer SURVIVED the retry — scripted line instead',
+                  );
+                }
+                repairableIsFalseVerdict = true;
+              } else {
+                turn = parsed.turn;
+              }
             }
           } else {
             console.warn(`[oracle] discarded model turn (${parsed.reason}): ${parsed.detail}`);
@@ -1517,13 +1543,16 @@ export class TutorOrchestrator {
       console.warn('[oracle] model unavailable:', error.message);
     }
 
-    if (turn === null && repairable !== null && repairableIsRepeat) {
-      // The repair did not land, and attempt 0 was a KNOWN repeat — the one
-      // repair failure "deliver the clumsy original" must not apply to,
-      // because the clumsy original is a verbatim repeat, not a merely
-      // imperfect turn. Falls through to the scripted line below instead.
+    if (turn === null && repairable !== null && (repairableIsRepeat || repairableIsFalseVerdict)) {
+      // The repair did not land, and attempt 0 was a KNOWN repeat or a
+      // self-contradicting correctness verdict — the one repair failure
+      // "deliver the clumsy original" must not apply to, because the
+      // clumsy original IS the exact defect the check exists to catch, not
+      // a merely imperfect turn. Falls through to the scripted line below.
       console.warn(
-        '[oracle] repair attempt for a repeated sentence failed — scripted line instead of delivering the repeat',
+        repairableIsRepeat
+          ? '[oracle] repair attempt for a repeated sentence failed — scripted line instead of delivering the repeat'
+          : '[oracle] repair attempt for a false verdict failed — scripted line instead of delivering the contradiction',
       );
     } else if (turn === null && repairable !== null) {
       // The repair did not land, but attempt 0 did, and it was not a repeat.

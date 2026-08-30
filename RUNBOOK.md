@@ -2537,11 +2537,13 @@ mechanism precisely — this was NOT a missed detection:
   just said "ya entendí, dame otro" (I get it now, give me another).
 
 The fallback rule is right for MOST repair reasons (a vocabulary slip, a
-self-answered question, false praise) because the delivered turn is
+self-answered question, an unkept promise) because the delivered turn is
 imperfect but still teaches something new. It is wrong specifically for a
 repeat, because delivering the flagged original reproduces the EXACT
 defect the check exists to catch, with certainty, rather than merely
-degrading quality.
+degrading quality. (Also wrong for false praise/false correction — see the
+later entry below; this line originally listed false praise as safe, which
+turned out not to be true.)
 
 Fixed by tracking `repairableIsRepeat` alongside `repairable` in
 `orchestrator.ts`: when the repair that failed was specifically for a
@@ -2902,3 +2904,62 @@ proves the fix: confirmed to fail against the pre-fix file for the exact
 claimed reason (`onStartAnother`'s body did not contain the call) via
 `git stash`, pass against the fix. Full frontend suite green (1415
 tests), lint clean, type-check clean, i18n:check clean.
+
+## The one retry a repair gets swapped a false correction for false praise, and the fallback delivered whichever one survived — found live, closed 2026-08-30
+
+Found live, testing as a struggling learner, in the very next
+`tutor:converse` run after the map-staleness fix above: the harness's own
+transcript review flagged "turn 4 praises '25' and then states the answer
+is 15" — `¡Exacto! 10 más 5 es 15, y lo dijiste bien.` delivered to a child
+who had just answered 25 (wrong; the right answer was 15).
+
+The console trace showed the mechanism precisely, and it is the sibling of
+the repeat defect closed earlier in this file, not a new class of bug:
+
+- Attempt 0 said "casi" but its own arithmetic landed back on the
+  learner's own number (25) — `contradictsCorrectAnswer` correctly caught
+  this as `falseCorrection` (`oracle/src/tutor/prompt.ts`) and asked for a
+  retry with "their answer was right, confirm it plainly, never mark a
+  correct answer as almost."
+- The retry (attempt 1) took that instruction literally rather than
+  re-deriving the real answer, and produced a turn that congratulates 25
+  as correct while STILL stating 15 as the right answer in the same
+  sentence — `praiseContradictsAnswer`'s `falsePraise`, the mirror-image
+  fault.
+- `produce()`'s retry loop only special-cased a REPEAT surviving to
+  delivery (see the entry above). Every other surviving fault, including
+  `falsePraise`/`falseCorrection`, fell through to "a clumsy real sentence
+  beats a scripted apology" and was delivered — logged as `[oracle] praise
+  of a wrong answer SURVIVED the retry — delivered`, but delivered
+  nonetheless.
+
+That fallback rule is right for a vocabulary slip, a self-answered
+question, an unkept promise: the delivered turn is imperfect but still
+teaches something new. It is wrong for `falsePraise`/`falseCorrection` for
+the same reason it was wrong for a repeat: telling a child they were right
+and wrong about the SAME answer in the SAME sentence is not a degraded
+turn, it is the exact contradiction the check exists to catch, delivered
+with certainty.
+
+Fixed by extending the repeat carve-out rather than writing a new one:
+`orchestrator.ts` now tracks a `repairableIsFalseVerdict` flag alongside
+`repairableIsRepeat`, set whenever `falsePraise` or `falseCorrection` is
+true on the turn `repairable` captured or on the turn that survives the
+retry, and routes to the same scripted-line fallback the repeat case
+already uses. `oracle/AGENTS.md` item 21 previously listed "false praise"
+among the repair reasons safe to deliver anyway; that line was wrong and
+has been corrected there, with a new item 29 documenting this fix.
+
+Proven with a new test in `orchestrator.test.ts`: attempt 0 is mocked to
+produce the false-correction turn, the retry is mocked to produce the
+false-praise turn, and the assertion is that the final delivered turn is
+`source: 'scripted'`, never either self-contradicting sentence. Confirmed
+to fail against the pre-fix code for the exact claimed reason
+(`expected 'model' to be 'scripted'`) via `git stash`, pass against the
+fix. Full oracle suite green (453 tests, up from 452), lint clean,
+type-check clean on all three tsconfigs, `verify:pedagogy` and
+`verify:tutor` both green, and independently re-verified against two
+fresh `tutor:converse` runs: neither reproduced the contradiction again,
+and the only remaining reported problems are the already-tracked
+canned-fallback rate from DeepSeek's own empty-completion behavior (see
+this file's empty-completions entry), not a new defect.

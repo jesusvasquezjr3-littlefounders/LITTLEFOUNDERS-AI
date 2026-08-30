@@ -1474,6 +1474,42 @@ describe('a failed repair costs the improvement, never the turn', () => {
     expect(second.emission.turn.say).not.toBe(stock);
   });
 
+  /*
+   * Found live, testing as a struggling learner, 2026-08-30: the ONE retry
+   * can swap one contradiction for the other instead of removing it. A
+   * learner answered "25" to a question whose right answer was 15. Attempt 0
+   * told them "casi" but its own arithmetic landed back on their number
+   * (25) — a false CORRECTION, so the repair asked it to "confirm it
+   * plainly, they were right". The retry took that instruction and produced
+   * a turn that congratulates "25" as correct while STILL stating the real
+   * answer is 15 in the same breath — a false PRAISE, the mirror-image fault.
+   * Pre-fix, this delivered verbatim: "¡Exacto! ... es 15, y lo dijiste
+   * bien" to a child who said 25. Both readings of that sentence are false
+   * at once, which is worse than a repeated sentence or a scripted apology.
+   */
+  it('falls back to the scripted line when the retry swaps a false correction for false praise', async () => {
+    const falseCorrectionSay = 'Casi, aunque contando de nuevo la cuenta da 25.';
+    const falsePraiseSay = '¡Exacto! 10 más 5 es 15, y lo dijiste bien.';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Empecemos con algo sencillo.' }))
+      .mockResolvedValueOnce(judgeSays(true))
+      // Second turn, answering "25": attempt 0 falsely "corrects" a wrong
+      // answer as if it were right, triggering a repair...
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: falseCorrectionSay }))
+      // ...and the retry swaps to falsely PRAISING the same wrong answer.
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: falsePraiseSay }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('ya', Date.now());
+    const second = (await orchestrator.handleLearnerText('25', Date.now()))!;
+
+    // The scripted line, never either self-contradicting verdict.
+    expect(second.emission.source).toBe('scripted');
+    expect(second.emission.turn.say).not.toBe(falsePraiseSay);
+    expect(second.emission.turn.say).not.toBe(falseCorrectionSay);
+  });
+
   it('still falls back to the scripted line when NOTHING valid was produced', async () => {
     // No usable turn at any attempt — that is a real outage, and the scripted
     // line is the honest answer to it. A fresh Response per call: a Response
