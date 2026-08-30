@@ -1333,6 +1333,25 @@ detector is the harder problem the whiteboard/robot-identity fixes did not
 have, so this one is prompt-only until `tutor:converse` or a live session
 shows it surviving anyway.
 
+**"Never imposed" also means never accepted without an offer — found by
+adversarial review, 2026-08-30 (MEDIUM).** `applyAdaptation` (the WS
+`adaptation_response` handler's call into the orchestrator) applied whatever
+value the client sent, with no check that the tutor's own last turn had
+offered it — or offered anything at all. A stray, replayed, or hand-crafted
+`adaptation_response` frame could silently steer every subsequent turn, which
+is exactly what "offered, never imposed" exists to rule out; it also meant
+the SAME acceptance frame, replayed, could re-apply (harmlessly, since the
+adaptation is idempotent once active, but for the wrong reason — nothing was
+actually checking). The orchestrator now records `lastOfferedAdaptation`
+at the one place every model-produced turn funnels through (`produce()`) and
+clears it on every scripted turn (`scriptedOutcome()`); `applyAdaptation`
+compares the accepted value against it and is a no-op on any mismatch,
+consuming the offer on a genuine match so a second acceptance of the same
+(now-stale) offer is also refused. `oracle/src/__tests__/orchestrator.test.ts`
+covers all three shapes of the defect: nothing was ever offered, the
+acceptance names a different adaptation than the one just offered, and a
+replayed acceptance after the offer was already consumed.
+
 ---
 
 ## §12 Persistence, replay and parent visibility

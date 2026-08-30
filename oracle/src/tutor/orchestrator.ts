@@ -169,6 +169,12 @@ export class TutorOrchestrator {
   private adaptations: TutorContext['adaptations'];
   private stopped = false;
   private lastTurn: { turn: TutorTurn; seq: number } | null = null;
+  /**
+   * The adaptation, if any, the MOST RECENT tutor turn actually offered.
+   * `applyAdaptation` only honors an acceptance that names this exact value
+   * — see its own comment and `produce()`'s, where this is set.
+   */
+  private lastOfferedAdaptation: TutorContext['adaptations'][number] | null = null;
   /** Whether the one grace turn an ended budget grants has been spent. */
   private closeGraceUsed = false;
   /** The lesson's spine — deterministic, server-owned (tutor/plan.ts). */
@@ -427,8 +433,21 @@ export class TutorOrchestrator {
     return this.servedSegmentSkills.has(segmentId);
   }
 
-  /** The learner accepted an offered adaptation. Applied only on acceptance (§11). */
+  /**
+   * The learner accepted an offered adaptation. Applied only on acceptance
+   * (§11) — AND only when it names the adaptation the tutor's own most
+   * recent turn actually offered. Found by adversarial review, 2026-08-30
+   * (MEDIUM): this used to apply WHATEVER value the client sent, with no
+   * check that anything had been offered at all — a stray, replayed or
+   * hand-crafted `adaptation_response` could silently steer every
+   * subsequent turn, which is exactly what "offered, never imposed" (§11)
+   * exists to rule out. Consumed on use, the same way a one-time offer
+   * should be: a second `adaptation_response` for the same offer, or one
+   * that arrives after the tutor has already moved on, is refused.
+   */
   applyAdaptation(adaptation: TutorContext['adaptations'][number]): void {
+    if (adaptation !== this.lastOfferedAdaptation) return;
+    this.lastOfferedAdaptation = null;
     if (!this.adaptations.includes(adaptation)) this.adaptations.push(adaptation);
   }
 
@@ -1572,6 +1591,19 @@ export class TutorOrchestrator {
     // `this.seq` was already advanced at entry, where the slot was reserved.
     this.history.push({ speaker: 'tutor', text: turn.say });
     this.lastTurn = { turn, seq: this.seq };
+    /*
+     * THE ONE ADAPTATION THIS TURN ACTUALLY OFFERED, and nothing else counts
+     * as accepted. Found by adversarial review, 2026-08-30 (MEDIUM):
+     * `ws/server.ts`'s `adaptation_response` handler applied WHATEVER
+     * `adaptation` value the client sent, with no check that the tutor had
+     * offered it — or offered anything at all. §11 states "offered, never
+     * imposed"; a `WS` message is not privileged over any other client input,
+     * so nothing stopped a stray, replayed or hand-crafted `adaptation_response`
+     * from silently steering every subsequent turn. A fresh turn with no offer
+     * clears this, so accepting an old offer after the tutor has moved on is
+     * refused the same way accepting one that was never made is.
+     */
+    this.lastOfferedAdaptation = turn.offerAdaptation ?? null;
 
     const afterBudget = this.currentBudget(nowMs);
     const closeReason =
@@ -1627,6 +1659,11 @@ export class TutorOrchestrator {
     this.history.push({ speaker: 'tutor', text: turn.say });
     this.seq += 1;
     this.lastTurn = { turn, seq: this.seq };
+    // A scripted line never offers an adaptation — clears whatever the
+    // previous MODEL turn offered, so accepting a stale offer after the
+    // tutor moved on (or ended the session) is refused. See `produce()`'s
+    // own comment on `lastOfferedAdaptation`.
+    this.lastOfferedAdaptation = null;
     // Not awaited: a scripted line's text is ready NOW, and its audio (usually
     // the pre-generated manifest) follows in its own frame like any other.
     const audio = this.speak(turn);

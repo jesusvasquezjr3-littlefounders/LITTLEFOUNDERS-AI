@@ -442,6 +442,19 @@ everything passes the blocked half perfectly and destroys the product.
    consistency check compares against "the last turn," ask whether an
    intervening, LEGITIMATELY-different turn could reset it while the thing
    actually being repeated sits one turn further back.
+18. **An "offered, never imposed" invariant needs the offer remembered, not
+   just made.** `applyAdaptation` — the WS `adaptation_response` handler's
+   only path into the orchestrator — applied whatever value the client sent
+   with no check that the tutor's own last turn had offered it, found by
+   adversarial review 2026-08-30 (MEDIUM). §11 states the rule in words; a
+   stray, replayed, or hand-crafted `adaptation_response` frame proved it
+   wasn't enforced in code. Fixed by recording `lastOfferedAdaptation` at the
+   same two funnel points item 16/17's fixes already lean on — `produce()`
+   for every model-produced turn, `scriptedOutcome()` (cleared) for every
+   scripted one — and gating `applyAdaptation` on an exact match, consumed
+   on use. A prohibition written only in a prompt or a doc is a request the
+   model can honor; the same prohibition enforced at the one call site a
+   client message reaches is a guarantee.
 
 ---
 

@@ -2293,3 +2293,69 @@ in-progress session asserts "Still talking with the tutor" appears and "0
 messages" does not; a closed session with real turns still reports the
 real count. All three confirmed to fail against the pre-fix page first.
 Full frontend suite green (1410 tests), lint, type-check, i18n:check.
+
+## A reworded repeat two turns back slipped past the no-repeat checker — found live, testing as a struggling learner, closed 2026-08-30
+
+Found live, not by a background review round: the same worked example
+reappeared, reworded, two tutor turns after it was first taught — with a
+correctly-untouched RESCUE turn (different numbers, legitimately new
+teaching) sitting between the original and the repeat.
+
+`echoesPreviousTurn` — the checker that catches a repeat reworded rather
+than restated verbatim — only ever compared a candidate turn against
+`lastTutorSaid`, the single immediately-preceding tutor line. The
+intervening RESCUE turn is exactly the case the checker is right to leave
+alone (a new problem is good teaching), but it also resets the pairwise
+comparison, so a repeat sitting one turn further back than "the last one"
+passed through untouched. This is the identical shape `repeatsAnAnnouncement`
+was already built to fix, for announcing sentences specifically ("both
+checks either side of this one miss it") — the general fix had just never
+been generalized past that one category.
+
+Fixed with a new `echoesEarlierTurn` in `oracle/src/tutor/prompt.ts`, which
+runs `echoesPreviousTurn`'s same word-overlap-plus-matching-numbers test
+against every earlier tutor line in the session, not just the last one.
+`orchestrator.ts`'s repeat-detection chain now tries
+`repeatsEarlierSentence` → `repeatsAnAnnouncement` → `echoesEarlierTurn` in
+order, dropping the `lastTutorSaid`-only special case entirely.
+
+Proven with a new permanent test in `orchestrator.test.ts` ("repairs a
+REWORDED repeat from several turns back, not just the last one"), modeled
+on the file's existing single-turn-back reworded-repeat test but with a
+genuinely different-numbered turn inserted between the original and its
+echo. Confirmed to fail against the pre-fix checker chain, pass against the
+fix. Full oracle suite green, lint, type-check (all three tsconfigs),
+`verify:pedagogy`.
+
+## An adaptation could be accepted without ever being offered — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 15 (MEDIUM): `applyAdaptation` — the one
+method the WS `adaptation_response` handler calls to record a learner's
+acceptance — applied whatever value the client sent, with no check that
+the tutor's own last turn had actually offered it, or offered anything at
+all. `/ORACLE.md` §11 states the invariant in words ("offered, never
+imposed"); nothing in code enforced it. A stray, replayed, or
+hand-crafted `adaptation_response` frame could silently steer every
+subsequent turn toward an adaptation the learner never agreed to, or
+re-apply an already-consumed acceptance a second time.
+
+Fixed by giving the orchestrator a `lastOfferedAdaptation` field, written
+at the two places every tutor turn already funnels through: `produce()`
+records `turn.offerAdaptation` after every model-produced turn, and
+`scriptedOutcome()` clears it after every scripted one (a scripted turn
+never carries a fresh offer). `applyAdaptation` now compares the accepted
+value against `lastOfferedAdaptation` and is a no-op on any mismatch —
+nothing offered, or a different adaptation than the one offered — and
+consumes the offer on a genuine match, so a second acceptance of the same,
+now-stale offer is also refused.
+
+Proven with three new tests in `orchestrator.test.ts`: an acceptance with
+nothing ever offered, an acceptance naming a different adaptation than the
+one just offered, and a replayed acceptance of an offer already consumed
+by an intervening turn — all three confirmed to apply the adaptation
+against the pre-fix code (the actual defect) and correctly refuse it
+against the fix. The pre-existing "applies an adaptation only once the
+learner accepts it" test was rewritten to first let a real model-produced
+turn record a genuine offer before accepting it, matching the new,
+correct contract. Full oracle suite green (433 tests), lint, type-check
+(all three tsconfigs), `verify:pedagogy`.

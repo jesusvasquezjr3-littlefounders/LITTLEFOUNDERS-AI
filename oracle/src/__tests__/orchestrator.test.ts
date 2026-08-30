@@ -708,8 +708,13 @@ describe('the budget', () => {
 });
 
 describe('adaptation', () => {
-  it('applies an adaptation only once the learner accepts it', async () => {
+  it('applies an adaptation only once the learner accepts it — and only what was actually offered', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, offerAdaptation: 'slower_pacing' }))
+      .mockResolvedValueOnce(judgeSays(true));
     const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('esto es difícil', Date.now());
+
     orchestrator.applyAdaptation('slower_pacing');
     orchestrator.applyAdaptation('slower_pacing');
 
@@ -723,6 +728,75 @@ describe('adaptation', () => {
     const contextMessage = body.messages[1]?.content ?? '';
     // Present once, not twice — applying the same adaptation twice must not
     // duplicate the instruction.
+    expect(contextMessage.match(/Go slower/g)).toHaveLength(1);
+  });
+
+  /*
+   * Found by adversarial review, 2026-08-30 (MEDIUM): `applyAdaptation` used
+   * to apply WHATEVER value it was called with, with no check that the
+   * tutor had offered it — or offered anything at all. §11 states
+   * "offered, never imposed"; a stray, replayed or hand-crafted
+   * `adaptation_response` on the socket could silently steer every
+   * subsequent turn with no offer ever having existed.
+   */
+  it('refuses an adaptation nobody offered', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    orchestrator.applyAdaptation('more_visual');
+
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('hola', Date.now());
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body)) as {
+      messages: { content: string }[];
+    };
+    const contextMessage = body.messages[1]?.content ?? '';
+    expect(contextMessage).not.toContain('adjustments');
+  });
+
+  it('refuses an acceptance that names a DIFFERENT adaptation than the one just offered', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, offerAdaptation: 'slower_pacing' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('esto es difícil', Date.now());
+
+    // A response naming a DIFFERENT adaptation than the one offered.
+    orchestrator.applyAdaptation('more_visual');
+
+    fetchMock.mockClear();
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('hola', Date.now());
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body)) as {
+      messages: { content: string }[];
+    };
+    const contextMessage = body.messages[1]?.content ?? '';
+    expect(contextMessage).not.toContain('adjustments');
+  });
+
+  it('consumes the offer once accepted, so a second acceptance of the same offer is refused', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, offerAdaptation: 'slower_pacing' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('esto es difícil', Date.now());
+
+    orchestrator.applyAdaptation('slower_pacing');
+    // A NEW ordinary turn with no offer runs in between.
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('gracias', Date.now());
+    // A replayed acceptance of the SAME (now stale) offer must do nothing new.
+    orchestrator.applyAdaptation('slower_pacing');
+
+    fetchMock.mockClear();
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('hola', Date.now());
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body)) as {
+      messages: { content: string }[];
+    };
+    const contextMessage = body.messages[1]?.content ?? '';
+    // Still present exactly once — the first acceptance, never duplicated.
     expect(contextMessage.match(/Go slower/g)).toHaveLength(1);
   });
 });
