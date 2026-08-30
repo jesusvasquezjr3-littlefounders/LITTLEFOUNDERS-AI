@@ -103,7 +103,6 @@ const IntakeBody = z
     learnerText: z.string().min(1).max(4000),
     /** Localized fallback line, owned by the frontend catalog — see placementIntake.ts. */
     neutralReflection: z.string().min(1).max(400),
-    birthDate: BirthDate.optional(),
   })
   .strict();
 
@@ -196,7 +195,24 @@ export function placementRouter(): Router {
     if (!profiles) return fail(res, 502, 'INTERNAL', 'Profile service unreachable');
 
     const locale = (profiles[0]?.locale as Locale | undefined) ?? 'en-US';
-    const ageBand = ageBandForIntake(parsed.data.birthDate ?? profiles[0]?.birth_date, new Date());
+    /*
+     * Found by adversarial review, round 40 (2026-08-30, HIGH): this used to
+     * be `parsed.data.birthDate ?? profiles[0]?.birth_date` — a client-
+     * supplied birth date took priority over the learner's own verified
+     * profile. §1.9's floor for this exact gate is "decided here and nowhere
+     * else" (see GET /intake above, which never accepted a client value); a
+     * crafted request with a fabricated adult birth date bypassed the 12+
+     * floor for an account whose REAL, on-file birth date belonged to a
+     * child under 12, sending their free text to a third-party model and, as
+     * a direct consequence, disabling `requireModelPass` in
+     * `placementIntake.ts` — the fail-CLOSED moderation guarantee meant for
+     * exactly that population. No legitimate caller ever sent this field
+     * (the frontend's only POST body is `{ learnerText, neutralReflection }`
+     * — `PlacementPage.tsx`), so it is removed rather than merely
+     * reprioritized: the profile's own verified birth date is the only
+     * source this gate ever reads, matching GET /intake exactly.
+     */
+    const ageBand = ageBandForIntake(profiles[0]?.birth_date, new Date());
     if (!ageBand) {
       // Not an error — the learner is simply not eligible, and the client shows
       // the deterministic opener. Saying so plainly beats a 403 the UI has to

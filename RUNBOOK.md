@@ -4332,3 +4332,74 @@ locked-node prerequisite-naming bug (commit `06e27d84`) holds under
 every phase transition that actually needs a re-fetch after grading;
 map nodes are real `<button>` elements with no synthetic-click or
 z-index concern; i18n parity holds for `tutor.map.*` in all 3 locales.
+
+## Two real HIGH findings from round 40 — a spoofed birth date bypassed the §1.9 age floor, and the FAQ intent's "closed" question set was not closed — found by adversarial review, closed 2026-08-30
+
+Round 40 reviewed the two Tutor session-start paths no prior round had
+touched — `faq`/`diagnostic` intents and the course-placement
+conversational intake — and found both real, both HIGH.
+
+**1. HIGH, child safety — a client-supplied `birthDate` in
+`POST /placement/:courseSlug/intake` overrode the learner's own
+verified profile, bypassing the §1.9 age floor.** `IntakeBody` accepted
+an optional `birthDate`, and the gate read
+`ageBandForIntake(parsed.data.birthDate ?? profiles[0]?.birth_date,
+new Date())` — the CLIENT value took priority. `GET /intake` (used only
+to decide whether to show the UI) correctly derives the age band from
+the profile alone; the `POST` that actually sends free text to a
+third-party model did not. A crafted request with a fabricated adult
+birth date bypassed the floor for an account whose real, on-file birth
+date belonged to a child under 12 — sending their words to the model
+and, as a direct consequence, disabling `placementIntake.ts`'s
+`requireModelPass` (the fail-CLOSED moderation guarantee meant for
+exactly that population; `oracle/src/safety/moderation.ts` fails OPEN
+when it's false and the judge is briefly unavailable). No legitimate
+caller ever sent this field — `PlacementPage.tsx`'s only POST body is
+`{ learnerText, neutralReflection }` — so it is removed entirely rather
+than reprioritized: the gate now reads only `profiles[0]?.birth_date`,
+matching `GET /intake` exactly. New test in `placement.test.ts` proves
+a real under-12 profile is refused even when the request tries to
+assert an adult age; confirmed to fail without the fix via `git stash`
+(the pre-fix code returned `available: true`).
+
+**2. HIGH — the FAQ intent's "closed, human-written question set" was
+enforced nowhere, and even a legitimate id never reached the model as
+an actual question.** Two compounding defects in one path:
+
+- `backend/src/routes/tutor.ts`'s `/offers` route commented the FAQ
+  list as "A closed, human-written question set. Never a free-text
+  box" — but `StartBody`'s `skillKey` was `z.string().min(1).max(128)`
+  regardless of `intent`, so `POST /sessions` with
+  `{ intent: 'faq', skillKey: <any string> }` was accepted outright,
+  including instruction-shaped text. That string reached Oracle's
+  `plan.ts` as the lesson's `objective` — a live prompt-injection
+  channel, reachable by any authenticated account including a `kid`.
+  Fixed by extracting the list to a shared `FAQ_IDS` constant and
+  adding a `.refine` on `StartBody` rejecting any `faq` session whose
+  `skillKey` isn't one of the four published ids. New test in
+  `tutor.test.ts` proves an instruction-shaped `skillKey` is rejected
+  (`400 VALIDATION_ERROR`) and a real FAQ id is accepted; confirmed to
+  fail without the fix via `git stash`.
+- Even a legitimate FAQ id never became the actual question. Oracle's
+  `buildPlan` (`oracle/src/tutor/plan.ts`) has no access to the
+  frontend's i18n catalog where the curated question text lives (`why
+  prices change?`, etc.) — the two services deploy independently — so
+  the raw slug (`why_prices_change`) fell straight through to
+  `subject` and became the entire lesson objective: `Teach one real
+  idea about "why_prices_change" until the learner can use it.` The
+  model was never told this names a question, in a session whose
+  spoken locale it doesn't even match (the slug is always English).
+  Fixed with a small closed `FAQ_TOPICS` map translating each of the
+  four ids to a readable English phrase; an id outside the map
+  degrades to the existing no-subject objective rather than a broken
+  slug. Two new tests in `plan.test.ts` prove the readable phrase
+  appears and the raw id never does; confirmed to fail without the fix
+  via `git stash`.
+
+Both fixes documented as `oracle/AGENTS.md` item 44 (the plan.ts half)
+and this entry (the backend halves). Full suites green: backend (39
+files, 654 tests), oracle (25 files, 483 tests). Lint and type-check
+clean in both services (including `tsconfig.test.json` and, for
+oracle, `tsconfig.scripts.json`). `verify:tutor` and `verify:pedagogy`
+green. Root `docs:check`, `secrets:check`, `i18n:check`,
+`provider:check`, and `tools:test` (26/26) all green.

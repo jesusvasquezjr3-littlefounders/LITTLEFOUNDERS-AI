@@ -81,6 +81,21 @@ import { verdictFrom } from '../lesson-contract/core/types.js';
 const NOT_FOUND = 'NOT_FOUND';
 const VALIDATION = 'VALIDATION_ERROR';
 
+/**
+ * A closed, human-written question set. Never a free-text box (§9.2).
+ *
+ * Found by adversarial review, round 40 (2026-08-30, HIGH): this list used
+ * to exist ONLY as an inline literal in the `/offers` response — the actual
+ * gate at session-start time (`StartBody` below) validated `skillKey` as any
+ * `string.min(1).max(128)`, regardless of `intent`. A crafted `POST
+ * /sessions` with `{ intent: 'faq', skillKey: <anything> }` was accepted,
+ * and that string reached Oracle's `plan.ts` as the lesson's `objective` —
+ * a live prompt-injection channel directly contradicting this comment's own
+ * "never a free-text box" claim. Shared here so `/offers` and `StartBody`'s
+ * `.superRefine` below can never drift apart.
+ */
+const FAQ_IDS = ['what_is_saving', 'why_prices_change', 'what_is_a_budget', 'how_does_a_loan_work'] as const;
+
 /** Daily caps (/ORACLE.md §15, §0 assumption 5). */
 const MAX_SESSIONS_PER_DAY = 2;
 /** Without a cap the tutor is the cheapest XP per minute and courses become optional (§8). */
@@ -1332,8 +1347,7 @@ export function tutorRouter(): Router {
         recommendedAction: s.recommendedAction,
         reasonCode: s.reasonCode,
       })),
-      // A closed, human-written question set. Never a free-text box (§9.2).
-      faqIds: ['what_is_saving', 'why_prices_change', 'what_is_a_budget', 'how_does_a_loan_work'],
+      faqIds: FAQ_IDS,
       canAskOpen: true,
     });
   });
@@ -1348,7 +1362,18 @@ export function tutorRouter(): Router {
       skillKey: z.string().min(1).max(128).nullish(),
       wantsVoice: z.boolean().default(false),
     })
-    .strict();
+    .strict()
+    /*
+     * `faq`'s `skillKey` carries one of `FAQ_IDS`, and only one of them — see
+     * that constant's own comment for the incident this closes. Every other
+     * intent keeps its existing, unrestricted-string `skillKey` (`weak_skill`
+     * is validated against the learner's own live weak-skills list downstream;
+     * a wrong value there just finds nothing).
+     */
+    .refine((body) => body.intent !== 'faq' || FAQ_IDS.includes(body.skillKey as (typeof FAQ_IDS)[number]), {
+      message: 'skillKey must be one of the published FAQ ids',
+      path: ['skillKey'],
+    });
 
   router.post('/sessions', async (req, res) => {
     const parsed = StartBody.safeParse(req.body);

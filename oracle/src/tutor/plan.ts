@@ -52,6 +52,27 @@ const SEQUENCES: Record<TutorIntent, PlanStep[]> = {
   open: ['explain', 'practice', 'check'],
 };
 
+/**
+ * `faq`'s carrier field is a published FAQ id (Core's `FAQ_IDS`,
+ * `backend/src/routes/tutor.ts`), not a title — Oracle has no access to the
+ * frontend's i18n catalog where the learner-facing question text actually
+ * lives, and the two services deploy independently. Found by adversarial
+ * review, round 40 (2026-08-30, HIGH): before this map existed, the RAW id
+ * (e.g. `why_prices_change`) fell straight through to `subject` below and
+ * became the lesson's whole `objective` — the model was never told this is
+ * a QUESTION, let alone which one, and had to guess a topic from a mangled
+ * snake_case identifier. A readable English phrase here (the instructions
+ * channel is English throughout this file; `say` is separately steered to
+ * the session's own locale elsewhere in the prompt) replaces the guess with
+ * the actual topic.
+ */
+const FAQ_TOPICS: Record<string, string> = {
+  what_is_saving: 'what saving means',
+  why_prices_change: 'why prices change',
+  what_is_a_budget: 'what a budget is',
+  how_does_a_loan_work: 'how a loan works',
+};
+
 /** Composed from OUR titles and the closed intent vocabulary — never learner text. */
 export function buildPlan(
   intent: TutorIntent,
@@ -59,7 +80,10 @@ export function buildPlan(
   skillKey: string | null,
 ): LessonPlan {
   const subject =
-    courseContext?.topicTitle ?? courseContext?.courseTitle ?? skillKey ?? null;
+    courseContext?.topicTitle ??
+    courseContext?.courseTitle ??
+    (intent === 'faq' && skillKey ? (FAQ_TOPICS[skillKey] ?? null) : skillKey) ??
+    null;
   const objective =
     intent === 'diagnostic'
       ? 'Find out where this learner actually stands, gently.'

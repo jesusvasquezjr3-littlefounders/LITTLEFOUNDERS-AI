@@ -26,6 +26,26 @@ describe('building a plan', () => {
     expect(buildPlan('open', null, null).objective).toContain('whatever the learner brings');
   });
 
+  /*
+   * Found by adversarial review, round 40 (2026-08-30, HIGH): `faq`'s
+   * skillKey is a published FAQ id (e.g. "why_prices_change"), not a title —
+   * before this map existed it fell straight through to `subject` and the
+   * model was handed the raw slug as the whole lesson objective, never told
+   * it names a QUESTION, in a session whose spoken locale it does not even
+   * match.
+   */
+  it('turns a published FAQ id into a readable topic, never the raw slug', () => {
+    const objective = buildPlan('faq', null, 'why_prices_change').objective;
+    expect(objective).toContain('why prices change');
+    expect(objective).not.toContain('why_prices_change');
+  });
+
+  it('degrades to no subject for an FAQ id outside the closed set, rather than showing the raw slug', () => {
+    const objective = buildPlan('faq', null, 'not_a_real_faq_id').objective;
+    expect(objective).not.toContain('not_a_real_faq_id');
+    expect(objective).toContain('whatever the learner brings');
+  });
+
   it('always projects into the sealed schema — the plan cannot outgrow its gate', () => {
     for (const intent of ['course_topic', 'weak_skill', 'faq', 'open', 'diagnostic'] as const) {
       const plan = buildPlan(intent, COURSE, 'money.saving');

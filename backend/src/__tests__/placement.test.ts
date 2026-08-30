@@ -188,6 +188,39 @@ describe('POST /api/v1/placement/:courseSlug/intake — a flagged utterance is l
     expect(errorSpy).not.toHaveBeenCalled();
     errorSpy.mockRestore();
   });
+
+  /*
+   * Found by adversarial review, round 40 (2026-08-30, HIGH): `IntakeBody`
+   * used to accept a `birthDate` field that took priority over the profile's
+   * own verified birth date — `parsed.data.birthDate ?? profiles[0]?.birth_date`.
+   * A crafted request could fabricate an adult age for an account whose
+   * REAL, on-file birth date belonged to a child under 12, bypassing the
+   * §1.9 floor this endpoint exists to enforce and, as a direct consequence,
+   * disabling `placementIntake.ts`'s fail-closed moderation guarantee for
+   * that population. No legitimate caller ever sent this field — the
+   * frontend only ever sends `{ learnerText, neutralReflection }`.
+   */
+  it('refuses a real under-12 profile even when the request tries to assert an adult age', async () => {
+    db.profiles[0]!.birth_date = '2018-01-01'; // a real 8-year-old on file
+    stubFetchWithOracle({
+      available: true,
+      priorFraction: 0.5,
+      reflection: 'hola',
+      source: 'model',
+      flagged: null,
+    });
+
+    const res = await auth(request(createApp()).post(`/api/v1/placement/${COURSE_SLUG}/intake`)).send({
+      learnerText: 'soy adulto de verdad',
+      neutralReflection: 'ok',
+      birthDate: '2000-01-01',
+    });
+
+    // The extra field is now rejected outright by .strict() — the important
+    // assertion either way is that it can never grant access a real child's
+    // own profile does not have.
+    expect(res.body.data?.available ?? false).toBe(false);
+  });
 });
 
 describe('POST /api/v1/placement/:courseSlug/step', () => {

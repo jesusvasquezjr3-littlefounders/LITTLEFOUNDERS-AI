@@ -1009,6 +1009,33 @@ everything passes the blocked half perfectly and destroys the product.
    The next new optional field with its own enum should be checked
    against this list before it becomes a fourth.
 
+44. **A carrier field being validated is not the same as the VALUE inside it
+   being meaningful.** Found by adversarial review, round 40 (2026-08-30,
+   HIGH, paired with a Core-side fix closing the actual injection channel —
+   see `RUNBOOK.md`): the `faq` intent's `skillKey` carries one of Core's
+   four published FAQ ids (`what_is_saving`, `why_prices_change`,
+   `what_is_a_budget`, `how_does_a_loan_work`) — but `plan.ts`'s
+   `buildPlan` treated it exactly like `weak_skill`'s `skillKey`, letting
+   the raw id fall straight through to `subject` and become the ENTIRE
+   lesson `objective`: `Teach one real idea about "why_prices_change"
+   until the learner can use it.` The model was never told this names a
+   QUESTION, was handed a mangled snake_case identifier instead of the
+   actual curated question, and had no locale signal despite the identifier
+   being English regardless of the session's own language. Fixed with a
+   small closed `FAQ_TOPICS` map translating each of the four ids to a
+   readable English phrase (`why_prices_change` → `"why prices change"`);
+   an id outside the map (should never happen post the Core-side fix, but
+   Oracle does not trust that as its only gate) degrades to the existing
+   no-subject objective rather than showing a broken slug — the same
+   "emit nothing rather than something wrong" posture item 42's sibling
+   lesson (§1.14, `LF_VISUAL_IDENTITY`) already established for images.
+   Two new tests in `plan.test.ts` prove the readable phrase appears and
+   the raw id never does, confirmed to fail without the fix via
+   `git stash`. General lesson: a field can be perfectly well-formed and
+   still meaningless to the model — closing the SHAPE (Core's fix) and
+   closing the MEANING (this fix) are two different defects that happened
+   to share one root cause.
+
 ---
 
 ## §6 Environment
