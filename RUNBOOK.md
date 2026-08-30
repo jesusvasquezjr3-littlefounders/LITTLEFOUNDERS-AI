@@ -3526,3 +3526,84 @@ root `docs:check`/`secrets:check`/`provider:check` clean, and the root
 `tools:test` migration-ledger gate green after updating ROADMAP.md's
 declared pending-delta range to `0054`–`0056`. See `oracle/AGENTS.md`
 item 39 for the general lesson.
+
+## Three real defects in the guardian voice-consent grant/revoke flow — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 30 (guardian voice consent — one of
+the platform's most safety-critical flows, the compensating control
+`/AGENTS.md` §1.9's Tutor voice carve-out is conditioned on).
+
+**1. MEDIUM — `VoiceConsentControl` could show "never granted" right after
+a grant that had actually succeeded.** `grant()`'s flow was: POST
+`/consent` (succeeds) → `await load()` (a GET refresh, purely to confirm).
+If that refresh failed for any transient reason — unrelated to the grant,
+which had already committed server-side — `load()` collapsed the whole
+control to `{ status: 'error' }`, which renders IDENTICALLY to "never
+granted": the Grant button reappears, the status line says the
+microphone is off. A guardian who had just completed the deliberate
+two-step confirmation (required specifically so the stored consent
+record reflects what they actually read) would see their own action
+apparently undone. The sibling direction (revoke succeeds, refresh
+fails) had the same root cause, masked because "inactive" and "error"
+happen to render the identical button — the decisive difference was an
+error banner claiming a revoke that had, in fact, worked had failed.
+
+Fixed with two changes in `VoiceConsentControl.tsx`: `grant()`/`revoke()`
+now update `state` OPTIMISTICALLY from the write's own response the
+instant it succeeds, before the confirmation `load()` even runs; and
+`load()` itself no longer regresses an already-`'ready'` state to
+`'error'` on a failed refresh — only the very first load, with nothing
+confirmed yet, has nowhere else to fall back to.
+
+**2. LOW-MEDIUM — the mic-blocked reason shown to a child went stale the
+instant a guardian revoked consent mid-session.** `TutorExperience.tsx`
+computed the displayed reason from `session.microphoneBlockedBy`, a
+value fixed once at session creation and never updated afterward.
+`useTutorSocket.ts` correctly closed the microphone on a live
+`CONSENT_REVOKED` frame, but the transient error banner naming the
+reason is cleared by the tutor's own very next turn — so for the rest of
+the session the child saw the generic "Talking out loud isn't available"
+instead of "A grown-up needs to turn the microphone on for you," the
+exact "unfalsifiable absent control" shape `/ORACLE.md` §14.1 exists to
+prevent. Does not affect actual mic gating (already correctly closed),
+communication only.
+
+Fixed with a new persistent `micRevoked` field on `useTutorSocket`'s
+returned state — unlike `error`, it survives past the next turn, set on
+`CONSENT_REVOKED` and reset only by a genuinely fresh `ready` frame (a
+new session, or a resume, where a still-active revocation is promptly
+re-observed by the existing per-turn consent recheck anyway).
+`TutorExperience.tsx`'s `blockedBy` computation now prefers it over the
+stale session-creation-time value once observed.
+
+**3. LOW — the loser of a grant/grant race was told a false failure.**
+`grantVoiceConsent` is check-then-insert across two round trips, not one
+transaction. The database's own partial unique index
+(`idx_tutor_voice_consent_live`, migration 0047) makes two
+simultaneously-active consent rows for the same child impossible
+regardless — data integrity was never at risk — but two devices (or a
+double-tap) granting at once could both pass the pre-insert check before
+either write lands, and the SECOND insert is refused by the DB's own
+constraint, which collapses to `null` indistinguishably from a genuine
+outage. The race loser was told `DATA_UNAVAILABLE` even though an active
+consent row for that exact child now existed, written by the winner an
+instant earlier.
+
+Fixed by re-checking `getActiveVoiceConsent` when the insert fails,
+before concluding failure — a live row found at that point means someone
+else won the race, and the caller returns it as success rather than
+`null`.
+
+Proven with new tests: `frontend/src/tutor/__tests__/voiceConsentControl.test.tsx`
+(a grant/revoke that lands, followed by a refresh that fails, still
+shows the correct final state, not an error); `frontend/src/tutor/__tests__/micRevoked.test.tsx`
+(a real `useTutorSocket` instance sets `micRevoked` on `CONSENT_REVOKED`
+and it survives the next turn, resets on a fresh `ready`, plus a
+source-scan proving `TutorExperience.tsx` actually reads it) and
+`backend/src/__tests__/tutorData.test.ts` (a race loser's insert failure
+now resolves to the winner's row; a genuine failure with no row ever
+appearing still returns `null`). All confirmed to fail against the
+pre-fix code for the exact claimed reason via `git stash`, pass against
+the fix. Full frontend suite green (1432 tests, up from 1426), full
+backend suite green (637 tests, up from 635), lint clean on both, type-
+check clean, root `i18n:check` clean.

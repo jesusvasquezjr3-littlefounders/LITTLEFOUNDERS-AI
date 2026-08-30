@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getLearnerMemory, searchOwnTurns } from '../services/tutorData.js';
+import { getLearnerMemory, grantVoiceConsent, searchOwnTurns } from '../services/tutorData.js';
 
 /*
  * Found by adversarial review, round 28 (2026-08-30, HIGH): `getLearnerMemory`
@@ -70,7 +70,7 @@ describe('searchOwnTurns threads the caller\'s locale into the RPC call', () => 
   });
 
   it.each(['en-US', 'es-MX', 'pt-BR'] as const)('sends p_locale: %s', async (locale) => {
-    const fetchMock = vi.fn((_url: string, _init?: RequestInit) =>
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
       Promise.resolve(new Response(JSON.stringify([]), { status: 200 })),
     );
     vi.stubGlobal('fetch', fetchMock);
@@ -80,12 +80,84 @@ describe('searchOwnTurns threads the caller\'s locale into the RPC call', () => 
   });
 
   it('defaults to es-MX when no locale is given, so an older caller keeps working', async () => {
-    const fetchMock = vi.fn((_url: string, _init?: RequestInit) =>
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
       Promise.resolve(new Response(JSON.stringify([]), { status: 200 })),
     );
     vi.stubGlobal('fetch', fetchMock);
     await searchOwnTurns('22222222-2222-4222-8222-222222222222', 'galletas problema');
     const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as { p_locale?: string };
     expect(body.p_locale).toBe('es-MX');
+  });
+});
+
+/*
+ * Found by adversarial review, round 30 (2026-08-30, LOW): grantVoiceConsent
+ * is check-then-insert across two round trips, not one transaction. The
+ * partial unique index on `tutor_voice_consent` (migration 0047) makes two
+ * simultaneously-active rows for the same child impossible regardless, so
+ * data integrity was never at risk — but the LOSER of a grant/grant race
+ * (two devices, or a double-tap) used to be told the write failed
+ * (`DATA_UNAVAILABLE` at the route), even though an active consent row for
+ * that exact child now exists, written by the winner an instant earlier.
+ */
+describe('grantVoiceConsent tells the race LOSER the truth, not a false failure', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const WINNER_ROW = {
+    id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    user_id: '22222222-2222-4222-8222-222222222222',
+    granted_by: '33333333-3333-4333-8333-333333333333',
+    consent_text: 'I allow it.',
+    locale: 'en-US',
+    granted_at: '2026-08-30T00:00:00.000Z',
+    revoked_at: null,
+  };
+
+  it('returns the winner\'s row instead of null when its own insert loses the race', async () => {
+    // Two GETs bracket one POST: the pre-insert check (sees nothing yet —
+    // the race has not resolved) and the post-failure re-check (sees the
+    // winner's row, which has landed by then).
+    let getCount = 0;
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>((_url, init) => {
+      const method = init?.method ?? 'GET';
+      if (method === 'POST') {
+        // The loser's insert: refused by the DB's own unique constraint.
+        return Promise.resolve(new Response('duplicate key value violates unique constraint', { status: 409 }));
+      }
+      getCount += 1;
+      return Promise.resolve(
+        new Response(JSON.stringify(getCount === 1 ? [] : [WINNER_ROW]), { status: 200 }),
+      );
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await grantVoiceConsent({
+      userId: WINNER_ROW.user_id,
+      grantedBy: '44444444-4444-4444-8444-444444444444',
+      consentText: 'I allow it.',
+      locale: 'en-US',
+    });
+
+    expect(result).toEqual(WINNER_ROW);
+  });
+
+  it('still returns null when the insert genuinely fails and no active row ever appears', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>((_url, init) => {
+      const method = init?.method ?? 'GET';
+      if (method === 'POST') return Promise.resolve(new Response(null, { status: 500 }));
+      return Promise.resolve(new Response(JSON.stringify([]), { status: 200 }));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await grantVoiceConsent({
+      userId: WINNER_ROW.user_id,
+      grantedBy: '44444444-4444-4444-8444-444444444444',
+      consentText: 'I allow it.',
+      locale: 'en-US',
+    });
+
+    expect(result).toBeNull();
   });
 });

@@ -967,9 +967,25 @@ export function TutorExperience() {
    * what the microphone does in it, which is exactly how four phases came to
    * have no microphone at all.
    */
+  /*
+   * `session.microphoneBlockedBy` IS FIXED AT SESSION CREATION and never
+   * updated afterward — a live guardian revocation mid-session used to fall
+   * through to the generic `VOICE_UNAVAILABLE` fallback below instead,
+   * because nothing here ever learns a revocation happened. Found by
+   * adversarial review, round 30 (2026-08-30, LOW-MEDIUM): the transient
+   * `CONSENT_REVOKED` error banner is cleared by the tutor's own very next
+   * turn (`useTutorSocket.ts`'s `error` reset on `'turn'`), so for the rest
+   * of the session the child saw "Talking out loud isn't available" instead
+   * of "A grown-up needs to turn the microphone on for you" — the exact
+   * "unfalsifiable absent control" shape /ORACLE.md §14.1 exists to
+   * prevent. `socket.micRevoked` is the persistent signal (unlike `error`,
+   * it survives past the next turn) and takes priority once observed.
+   */
   const blockedBy =
     phase === 'conversing' && session
-      ? narrowBlockedReason(session.microphoneBlockedBy)
+      ? socket.micRevoked
+        ? 'CONSENT_REQUIRED'
+        : narrowBlockedReason(session.microphoneBlockedBy)
       : offers
         ? micBlockedForOffers(offers)
         : 'VOICE_UNAVAILABLE';

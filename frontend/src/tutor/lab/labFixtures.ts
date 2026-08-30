@@ -767,6 +767,7 @@ export function useLabSocket(
     // product has whenever a voice provider is configured, and the only state
     // in which the hero control's full silhouette is on screen.
     microphone: true,
+    micRevoked: false,
     intelDegraded: false,
     adaptationOffer,
     closedReason,

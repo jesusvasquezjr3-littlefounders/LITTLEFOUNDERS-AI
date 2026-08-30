@@ -60,6 +60,7 @@ function makeSocket(overrides: Partial<TutorSocket> = {}): TutorSocket {
     budget: 'running',
     remainingMs: 300_000,
     microphone: true,
+    micRevoked: false,
     intelDegraded: false,
     adaptationOffer: null,
     closedReason: null,

@@ -141,7 +141,23 @@ export async function grantVoiceConsent(input: {
       locale: input.locale,
     }),
   });
-  return rows?.[0] ?? null;
+  if (rows?.[0]) return rows[0];
+  /*
+   * THE INSERT FAILED — BUT A CONCURRENT GRANT COULD HAVE WON THE RACE
+   * between the `existing` check above and this insert. Found by
+   * adversarial review, round 30 (2026-08-30, LOW): this is check-then-
+   * insert across two round trips, not one transaction, and the partial
+   * unique index (`idx_tutor_voice_consent_live`, migration 0047) makes
+   * this a REAL race, not a hypothetical — two devices/tabs granting for
+   * the same child at once both pass the `existing` check (neither sees
+   * the other's row yet), and the SECOND insert is refused by the DB's own
+   * constraint, which `serviceRest` collapses to `null` indistinguishably
+   * from a genuine outage. The index guarantees data integrity either way
+   * — two live rows can never exist — so re-checking here only fixes what
+   * the LOSER of the race is TOLD: "consent is active" (true, and for the
+   * exact same child) instead of a misleading `DATA_UNAVAILABLE`.
+   */
+  return getActiveVoiceConsent(input.userId);
 }
 
 /** Closes the live consent row. The row is kept — "was consent active on date X" must stay answerable. */

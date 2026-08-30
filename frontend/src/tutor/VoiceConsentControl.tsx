@@ -45,18 +45,30 @@ export function VoiceConsentControl({ kidUserId, token, kidName }: VoiceConsentC
   const load = useCallback(async () => {
     if (!token) return;
     const result = await getVoiceConsent(token, kidUserId);
-    setState(
-      result.data
-        ? {
-            status: 'ready',
-            active: result.data.active,
-            grantedAt: result.data.grantedAt,
-            // An older build, or a payload that lost the field, must not be
-            // read as permission. Absent means blocked.
-            policy: result.data.policy === 'allowed' ? 'allowed' : 'blocked',
-          }
-        : { status: 'error' },
-    );
+    if (result.data) {
+      setState({
+        status: 'ready',
+        active: result.data.active,
+        grantedAt: result.data.grantedAt,
+        // An older build, or a payload that lost the field, must not be
+        // read as permission. Absent means blocked.
+        policy: result.data.policy === 'allowed' ? 'allowed' : 'blocked',
+      });
+      return;
+    }
+    /*
+     * A FAILED REFRESH MUST NOT ERASE AN ALREADY-CONFIRMED STATE. Found by
+     * adversarial review, round 30 (2026-08-30, MEDIUM): `grant()`/`revoke()`
+     * call this after their own write already succeeded, purely to confirm
+     * it — a transient failure on THAT read used to collapse straight to
+     * `'error'`, which renders identically to "never granted": a guardian
+     * who just completed the deliberate two-step confirmation saw the Grant
+     * button and "the microphone is off" again, as if their own action had
+     * been undone, even though the grant landed and the child's mic really
+     * is on. Only the very FIRST load (nothing confirmed yet) has nothing
+     * to fall back to; any later failure keeps the last confirmed reading.
+     */
+    setState((prev) => (prev.status === 'ready' ? prev : { status: 'error' }));
   }, [token, kidUserId]);
 
   useEffect(() => {
@@ -81,6 +93,18 @@ export function VoiceConsentControl({ kidUserId, token, kidName }: VoiceConsentC
       return;
     }
     setConfirming(false);
+    // Reflect the grant that just landed IMMEDIATELY, from the write's own
+    // response — `load()` below is a best-effort confirmation, and its
+    // failure (see `load`'s own comment) now preserves this instead of
+    // erasing it. Policy cannot have flipped to `blocked` in the instant
+    // between the confirmation screen and this response landing, so the
+    // last-known value carries forward rather than being guessed at.
+    setState((prev) => ({
+      status: 'ready',
+      active: true,
+      grantedAt: result.data.grantedAt,
+      policy: prev.status === 'ready' ? prev.policy : 'allowed',
+    }));
     await load();
   };
 
@@ -94,6 +118,12 @@ export function VoiceConsentControl({ kidUserId, token, kidName }: VoiceConsentC
       setFailed(true);
       return;
     }
+    setState((prev) => ({
+      status: 'ready',
+      active: false,
+      grantedAt: null,
+      policy: prev.status === 'ready' ? prev.policy : 'allowed',
+    }));
     await load();
   };
 

@@ -140,6 +140,12 @@ export interface TutorSocket {
   budget: BudgetState;
   remainingMs: number;
   microphone: boolean;
+  /**
+   * Whether THIS live socket has observed a guardian revoke consent — a
+   * persistent fact about the session, unlike the transient `error` banner.
+   * See the `micRevoked` state's own comment in this hook's body.
+   */
+  micRevoked: boolean;
   intelDegraded: boolean;
   adaptationOffer: Adaptation | null;
   closedReason: string | null;
@@ -218,6 +224,18 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
   const [budget, setBudget] = useState<BudgetState>('running');
   const [remainingMs, setRemainingMs] = useState(0);
   const [microphone, setMicrophone] = useState(false);
+  /**
+   * Whether THIS live socket has observed a guardian revoke consent —
+   * unlike `error`, this never clears itself on the next turn. Found by
+   * adversarial review, round 30 (2026-08-30, LOW-MEDIUM): `TutorExperience`
+   * computed the mic's blocked reason from `session.microphoneBlockedBy`, a
+   * value fixed once at session creation and never updated after a live
+   * revocation — so once the transient `CONSENT_REVOKED` error banner was
+   * cleared by the tutor's own next (scripted) reply, the mic-off message
+   * fell back to the generic "voice unavailable" copy instead of "a grown-up
+   * needs to turn the microphone on for you," for the rest of the session.
+   */
+  const [micRevoked, setMicRevoked] = useState(false);
   const [intelDegraded, setIntelDegraded] = useState(false);
   const [adaptationOffer, setAdaptationOffer] = useState<Adaptation | null>(null);
   const [closedReason, setClosedReason] = useState<string | null>(null);
@@ -304,6 +322,11 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
       switch (message.type) {
         case 'ready':
           setMicrophone(message.microphone);
+          // A fresh `ready` (a genuinely new session, or a resume) is a
+          // clean slate: if consent is STILL revoked, the very next
+          // per-turn consent recheck will observe that again and set this
+          // right back to true, promptly.
+          setMicRevoked(false);
           setIntelDegraded(message.intelDegraded);
           break;
         case 'turn':
@@ -390,7 +413,10 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
           // An error frame ends whatever wait it interrupted: a spinner that
           // outlives its turn is the stuck state this flag exists to prevent.
           setThinking(false);
-          if (message.code === 'CONSENT_REVOKED') setMicrophone(false);
+          if (message.code === 'CONSENT_REVOKED') {
+            setMicrophone(false);
+            setMicRevoked(true);
+          }
           break;
       }
     };
@@ -567,6 +593,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     budget,
     remainingMs,
     microphone,
+    micRevoked,
     intelDegraded,
     adaptationOffer,
     closedReason,
