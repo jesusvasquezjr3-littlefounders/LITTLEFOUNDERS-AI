@@ -300,11 +300,10 @@ export function parseTurn(raw: string): TurnParse {
    * child got "Se me enredaron las ideas" instead of a lesson — because the
    * character would have waved instead of nodded.
    *
-   * So these two, and ONLY these two, are coerced to a safe default before
-   * validation. Everything else stays strict, which is the point of the
-   * schema: `say` is what the child hears, `next` and `segmentRequest` drive
-   * what happens, and a wrong value in any of them is a real defect. A wrong
-   * gesture is a neutral face.
+   * So these two are coerced to a safe default before validation. Everything
+   * else stays strict, which is the point of the schema: `say` is what the
+   * child hears, `next` and `segmentRequest` drive what happens, and a wrong
+   * value in any of them is a real defect. A wrong gesture is a neutral face.
    */
   if (typeof value === 'object' && value !== null) {
     const shaped = value as Record<string, unknown>;
@@ -313,6 +312,29 @@ export function parseTurn(raw: string): TurnParse {
     }
     if (typeof shaped.action === 'string' && !ACTIONS.includes(shaped.action as never)) {
       shaped.action = 'idle';
+    }
+    /*
+     * A BOARD THAT DOES NOT CHECK OUT IS NO BOARD — the same fail-open
+     * posture `computeSequence` already gives a whiteboard whose arithmetic
+     * is wrong (see `preferredTypes`'s doc comment above), extended to a
+     * whiteboard whose SHAPE is wrong. Found live, round 39 (2026-08-30):
+     * a real session had the model set `whiteboard.unit` to a value outside
+     * `day|week|month|year`, which failed `TutorTurnSchema`'s strict parse
+     * and discarded the ENTIRE turn — a real, well-taught reply to the
+     * learner, lost over one cosmetic field the retry then had no
+     * corrective guidance to fix (unlike every other repairable fault this
+     * file's schema produces, `invalid_shape` sets no `turnCorrection`, so
+     * the retry is a blind re-ask). The whiteboard is a bonus visual for a
+     * story `say` already tells in words; losing it for one turn costs far
+     * less than losing the turn. Validated against its OWN schema and
+     * dropped wholesale on any failure — not patched field-by-field — so a
+     * bad `op`, `currency`, or `kind` degrades the same way a bad `unit`
+     * does.
+     */
+    if (shaped.whiteboard !== null && shaped.whiteboard !== undefined) {
+      if (!WhiteboardSchema.safeParse(shaped.whiteboard).success) {
+        shaped.whiteboard = null;
+      }
     }
   }
 

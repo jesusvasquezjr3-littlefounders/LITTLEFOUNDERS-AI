@@ -979,6 +979,36 @@ everything passes the blocked half perfectly and destroys the product.
    different, WRONG contract — the model has no way to know a field merely
    went unlisted rather than genuinely not existing.
 
+43. **A bonus visual is not worth a lesson, and this file already knew
+   that twice before `whiteboard.unit` made it a third time.** Found LIVE,
+   round 39 (2026-08-30, HIGH): a real `tutor:converse` run produced
+   `discarded model turn (invalid_shape): whiteboard.unit: Invalid option`
+   — the model set `whiteboard.unit` to a value outside
+   `day|week|month|year`, `TutorTurnSchema`'s top-level `.strict()` parse
+   failed on the WHOLE object, and a real, well-taught reply was thrown
+   away over one cosmetic field. Worse than the two prior incidents this
+   exact file already documents (`preferredTypes`'s doc comment,
+   `emotion`/`action`'s "A GESTURE IS NOT WORTH A LESSON" block): unlike
+   every OTHER repairable fault the orchestrator's retry loop handles
+   (`wrongUnit`, `missedWhiteboard`, a repeated sentence, a self-answered
+   question — each sets a `turnCorrection` string the retry prompt
+   actually sees), `invalid_shape` sets none, so the one retry attempt is
+   a blind re-ask with no idea what to fix. Fixed the same way the other
+   two were: in `turnSchema.ts`'s `parseTurn`, before validation, if
+   `whiteboard` is present and fails `WhiteboardSchema.safeParse` on its
+   own, it is dropped to `null` wholesale — not patched field-by-field —
+   so a bad `op`, `currency`, or `kind` degrades exactly the same way a
+   bad `unit` does. `say`, `next` and `segmentRequest` are untouched;
+   only the bonus visual is lost. Two new tests in `session.test.ts`
+   ("keeps the lesson when only the WHITEBOARD is malformed" / "...has an
+   out-of-vocabulary step operator") prove it directly against `parseTurn`,
+   confirmed to fail without the fix via `git stash`. General lesson: this
+   codebase now has THREE independent instances of "an optional field's
+   closed vocabulary lives inside a `.strict()` object that gates the
+   ENTIRE turn" — `preferredTypes`, `emotion`/`action`, and `whiteboard`.
+   The next new optional field with its own enum should be checked
+   against this list before it becomes a fourth.
+
 ---
 
 ## §6 Environment

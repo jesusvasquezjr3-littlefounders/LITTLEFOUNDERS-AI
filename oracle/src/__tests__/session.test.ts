@@ -335,4 +335,48 @@ describe('the closed turn schema', () => {
     expect(parsed.ok).toBe(false);
     if (!parsed.ok) expect(parsed.reason).toBe('no_json');
   });
+
+  it('keeps the lesson when only the WHITEBOARD is malformed', () => {
+    /*
+     * Found live, round 39 (2026-08-30): a real session had the model set
+     * `whiteboard.unit` to a value outside day|week|month|year. That failed
+     * `TutorTurnSchema`'s strict parse, discarding the entire turn — a real,
+     * well-taught reply, lost over one cosmetic field. The board is a bonus
+     * visual for a story `say` already tells in words; losing it for one
+     * turn costs far less than losing the turn (the same principle already
+     * applied to `emotion`/`action` above).
+     */
+    const board = {
+      kind: 'sequence' as const,
+      start: 10,
+      unit: 'day' as const,
+      steps: [{ op: 'add' as const, value: 2 }],
+      label: 'Cada día te dan 2 más',
+      currency: 'MXN' as const,
+    };
+    const parsed = parseTurn(JSON.stringify({ ...valid, whiteboard: { ...board, unit: 'fortnight' } }));
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.turn.whiteboard).toBeNull();
+      // The words are untouched, which is the only part that had to survive.
+      expect(parsed.turn.say).toBe(valid.say);
+    }
+  });
+
+  it('keeps the lesson when the whiteboard has an out-of-vocabulary step operator', () => {
+    // Same class as the unit case above: a bad `op` inside `steps` fails the
+    // whole `whiteboard` sub-object, which must degrade to no board rather
+    // than take the turn down with it.
+    const board = {
+      kind: 'sequence' as const,
+      start: 10,
+      unit: 'day' as const,
+      steps: [{ op: 'divide' as unknown as 'add', value: 2 }],
+      label: 'Cada día te dan 2 más',
+      currency: 'MXN' as const,
+    };
+    const parsed = parseTurn(JSON.stringify({ ...valid, whiteboard: board }));
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) expect(parsed.turn.whiteboard).toBeNull();
+  });
 });

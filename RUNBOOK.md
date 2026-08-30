@@ -4217,3 +4217,58 @@ a bug with a clear repro:**
   there is no prior client implementation this could have broken. Left
   for a future round to either build the client-side nudge or confirm
   the feature is intentionally deferred.
+
+## An invalid whiteboard.unit discarded a whole real turn, live, in this session's own testing — found and closed 2026-08-30
+
+Not from the round-38/39 adversarial-review agents — from directly
+playing the Tutor via `npm run tutor:converse` right after round 38
+closed, per this session's own standing instruction to test live and
+judge critically rather than only reviewing code. One of six scripted
+conversations logged:
+
+```
+[oracle] discarded model turn (invalid_shape): whiteboard.unit: Invalid option: expected one of "day"|"week"|"month"|"year"
+```
+
+The model had set `whiteboard.unit` to something outside the closed
+four-value enum. `TutorTurnSchema`'s `.strict()` parse failed on the
+WHOLE object, so a real, well-taught reply was thrown away over one
+cosmetic field, and the retry that followed had no idea what to fix:
+unlike every OTHER repairable fault this orchestrator's retry loop
+handles (`wrongUnit`, `missedWhiteboard`, a repeated sentence, a
+self-answered question — each sets a `turnCorrection` string the retry
+prompt actually reads), a schema-level `invalid_shape` failure sets
+none, so the one retry is a blind re-ask.
+
+This is the SAME class of defect `turnSchema.ts` already documents
+twice over — `preferredTypes`'s doc comment, and the `emotion`/`action`
+"A GESTURE IS NOT WORTH A LESSON" block from 2026-08-29 (a model chose
+an out-of-enum `action` twice in a row and a child got "Se me
+enredaron las ideas" instead of a lesson, over a wave-vs-nod mismatch).
+`whiteboard.unit` just hadn't been given the same treatment yet.
+
+Fixed the same way: in `parseTurn` (`oracle/src/tutor/turnSchema.ts`),
+before validation, a `whiteboard` that fails `WhiteboardSchema.safeParse`
+on its own is dropped to `null` wholesale — not patched field-by-field,
+so a bad `op` or `currency` degrades exactly the same way a bad `unit`
+does. `say`, `next` and `segmentRequest` are untouched; only the bonus
+visual is lost for that one turn. Two new tests added to
+`oracle/src/__tests__/session.test.ts` proving this directly against
+`parseTurn`, confirmed to fail without the fix via `git stash` (both
+failed with `expected false to be true`, matching the pre-fix discard).
+Full oracle suite green (25 files, 481 tests), lint and type-check clean
+(including `tsconfig.scripts.json` and `tsconfig.test.json`),
+`verify:tutor` and `verify:pedagogy` both green. Documented as
+`oracle/AGENTS.md` item 43, which also names the general lesson: this
+codebase now has three independent instances of "an optional field's
+closed vocabulary lives inside a `.strict()` object that gates the
+entire turn" — the next new one should be checked against this list
+before it becomes a fourth.
+
+No live re-verification via `tutor:converse` for this specific fix —
+unlike round 37's prompt-wording change, this fix touches parsing logic
+only, not the prompt, so its correctness is fully determined by
+`parseTurn`'s own code path and is exhaustively covered by the two new
+unit tests against the real function; spending a paid conversation
+hoping to re-trigger a rare model mistake would be a worse test of a
+deterministic code path, not a better one.
