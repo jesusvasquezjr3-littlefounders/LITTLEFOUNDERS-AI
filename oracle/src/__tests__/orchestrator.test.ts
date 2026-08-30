@@ -628,6 +628,68 @@ describe('the whiteboard (V4) — verification and delivery', () => {
     const judgeBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
     expect(judgeBody).toContain('Cada día te dan 2 más');
   });
+
+  /*
+   * Found by adversarial review, round 60 (2026-08-30, HIGH): the client only
+   * renders `whiteboard` when the live segment panel is empty
+   * (`ConversationView.tsx`), and a served segment occupies that panel until
+   * it grades, regardless of type — a `sort_buckets` activity reproduces this
+   * exactly as well as a checkable one. Nothing server-side used to check
+   * that before letting a turn set `whiteboard`, so a fully valid,
+   * moderated board silently never reached the screen behind a still-open,
+   * ungraded activity.
+   */
+  it('a whiteboard is dropped while an activity is still open and ungraded, of ANY type', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    orchestrator.noteSegmentServed('seg-1', 'needs-vs-wants', 'sort_buckets', 'Sort the needs from the wants');
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          whiteboard: {
+            kind: 'sequence',
+            start: 10,
+            unit: 'week',
+            steps: [{ op: 'add', value: 2 }],
+            label: 'Cada semana ahorras 2 más',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = (await orchestrator.handleLearnerText('¿y si ahorro cada semana?', Date.now()))!;
+    // Fail-open, same posture as a board whose own arithmetic is invalid:
+    // the turn still delivers, only the board is withheld.
+    expect(outcome).not.toBeNull();
+    expect(outcome?.emission.turn.whiteboard).toBeNull();
+  });
+
+  it('a whiteboard is delivered again once the open activity has graded', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    orchestrator.noteSegmentServed('seg-1', 'needs-vs-wants', 'sort_buckets', 'Sort the needs from the wants');
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'reaction' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleSegmentResult('seg-1', 100, true, Date.now());
+
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          whiteboard: {
+            kind: 'sequence',
+            start: 10,
+            unit: 'week',
+            steps: [{ op: 'add', value: 2 }],
+            label: 'Cada semana ahorras 2 más',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = (await orchestrator.handleLearnerText('¿y si ahorro cada semana?', Date.now()))!;
+    expect(outcome?.emission.turn.whiteboard?.start).toBe(10);
+  });
 });
 
 describe('episodic recall (V4)', () => {

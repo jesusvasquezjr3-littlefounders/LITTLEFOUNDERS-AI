@@ -1421,6 +1421,38 @@ everything passes the blocked half perfectly and destroys the product.
    language correctness needs a locale other than the harness's own
    default before it can even be WRONG.
 
+54. **A valid whiteboard could be computed, moderated, and delivered, and
+   still never reach the screen — because a still-open, ungraded activity
+   of ANY type already occupied the one panel it renders into.** Found by
+   adversarial review, round 60, 2026-08-30 (HIGH). The client
+   (`ConversationView.tsx`) renders `LiveSegmentPanel` whenever
+   `socket.segment` is set and only falls back to `TutorWhiteboard`
+   otherwise; `socket.segment` is cleared only by grading or a session
+   reset, never by a new turn arriving. The turn schema refuses `whiteboard`
+   and `segmentRequest` on the SAME turn, but says nothing about a
+   PREVIOUS turn's activity still sitting open — and nothing server-side
+   ever checked that before this round. `openActivity` (tracked for prompt
+   grounding) can't stand in for this gate: it is deliberately kept after
+   grading too, so it would over-block. `openCheckableSegment` can't either:
+   it only covers the narrow voice-answerable subset. Reproduced by serving
+   a `sort_buckets` activity (not checkable, not graded), then having the
+   model return an ordinary, schema-legal "SHOW YOUR WORK" whiteboard on the
+   next turn — it was delivered untouched, and would have sat behind the
+   client's segment panel forever, invisible.
+   Fixed with a new tracker, `openUngradedSegmentId` — set in
+   `noteSegmentServed` alongside `openActivity`/`openCheckableSegment`,
+   cleared in both grading paths (`handleSegmentResult`,
+   `handleVoiceCheckResult`) the same way `openCheckableSegment` already is.
+   Checked at the same call site as the existing "did not compute to a sane
+   sequence" guard, same fail-open posture: the board is dropped whole, the
+   turn still delivers with its `say` text intact. Proven with 2 new
+   `orchestrator.test.ts` tests — one confirming the drop while a
+   `sort_buckets` activity sits open and ungraded (the exact repro), one
+   confirming a whiteboard is delivered again immediately after that same
+   activity grades, so the fix doesn't over-block once the screen is
+   actually free. Both confirmed to fail/pass for the exact claimed reason
+   via `git stash`. See `RUNBOOK.md` Round 60.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:

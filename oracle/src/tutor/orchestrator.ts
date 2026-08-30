@@ -215,6 +215,23 @@ export class TutorOrchestrator {
    */
   private openActivity: TutorContext['openActivity'] = null;
   /**
+   * The id of the most recently served segment, for as long as it stays
+   * UNGRADED — cleared the moment it grades, unlike `openActivity` (which is
+   * deliberately kept so a later reaction turn can still describe it).
+   *
+   * Found by adversarial review, round 60 (2026-08-30, HIGH): the whiteboard
+   * is client-rendered only when `socket.segment` is empty — a graded
+   * segment stays in that slot until ANOTHER one replaces it, by the exact
+   * design `openActivity`'s own comment describes. Nothing server-side ever
+   * checked whether that slot was still occupied before letting a turn set
+   * `whiteboard`, so a perfectly valid growth-story board — computed,
+   * moderated, delivered — silently never reached the screen behind a
+   * still-open, ungraded activity of any type (`sort_buckets` reproduced it;
+   * `openCheckableSegment` below only tracks the narrower voice-answerable
+   * subset and can't stand in for this).
+   */
+  private openUngradedSegmentId: string | null = null;
+  /**
    * Names of pedagogical skills already delivered this session — the only
    * memory `selectSkill`'s `onceOnly` fencing has. Found live: a learner who
    * failed the same skill four times in one `tutor:converse` run got
@@ -443,6 +460,7 @@ export class TutorOrchestrator {
     if (segmentType && TutorOrchestrator.CHECKABLE_TYPES.has(segmentType)) {
       this.openCheckableSegment = segmentId;
     }
+    this.openUngradedSegmentId = segmentId;
     /*
      * WHAT IT SAYS, not just that it exists. The tutor asks for a SKILL and
      * the ladder chooses the segment, so without this the tutor is talking
@@ -546,6 +564,7 @@ export class TutorOrchestrator {
     // so the order is: count the miss, then ask what it now amounts to.
     recordGrade(this.plan, skillKey, correct);
     if (this.openCheckableSegment === segmentId) this.openCheckableSegment = null;
+    if (this.openUngradedSegmentId === segmentId) this.openUngradedSegmentId = null;
 
     /*
      * THE CONTROLLER SUPERSEDES THE STUCK COUNTER when it is active: the same
@@ -756,6 +775,7 @@ export class TutorOrchestrator {
     this.nudgeSkillEstimate(skillKey, result.correct);
     recordGrade(this.plan, skillKey, result.correct);
     if (this.openCheckableSegment === segmentId) this.openCheckableSegment = null;
+    if (this.openUngradedSegmentId === segmentId) this.openUngradedSegmentId = null;
 
     const { text: extra, skillName } = this.strategyInstruction(
       { kind: 'voice_result', correct: result.correct, misconceptionCode: result.misconceptionCode },
@@ -1468,7 +1488,21 @@ export class TutorOrchestrator {
              * simply says its story without a board this once.
              */
             if (parsed.turn.whiteboard !== null && parsed.turn.whiteboard !== undefined) {
-              if (computeSequence(parsed.turn.whiteboard) === null) {
+              if (this.openUngradedSegmentId !== null) {
+                /*
+                 * Found by adversarial review, round 60 (2026-08-30, HIGH):
+                 * the client only renders `whiteboard` when the live segment
+                 * panel is empty (`ConversationView.tsx`), and a served
+                 * segment occupies that panel until IT grades — regardless of
+                 * type, not only the voice-checkable ones `openCheckableSegment`
+                 * tracks. A board computed and moderated here would silently
+                 * never reach the screen behind a still-open activity. The
+                 * turn still delivers; it says its story without a board this
+                 * once, exactly like a board whose own arithmetic fails.
+                 */
+                console.warn('[oracle] whiteboard set while an activity is still open and ungraded — dropped');
+                parsed.turn.whiteboard = null;
+              } else if (computeSequence(parsed.turn.whiteboard) === null) {
                 console.warn('[oracle] whiteboard did not compute to a sane sequence — dropped');
                 parsed.turn.whiteboard = null;
               }

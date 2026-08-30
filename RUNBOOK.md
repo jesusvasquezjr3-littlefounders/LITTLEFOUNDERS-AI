@@ -5964,3 +5964,97 @@ assertions, now correctly recognized as a placeholder — and confirmed
 `secrets:check` passes clean and the two `config.test.ts` tests still
 pass. Folded into this round's commit rather than a separate one, since
 it is a one-line fixture rename with no behavioral change of its own.
+
+## Round 60: a valid whiteboard was computed, moderated, and delivered — and still never reached the screen
+
+A background adversarial review targeted the Tutor's newest surface, the
+V4 whiteboard (a live visual synced to the story, shipped in commit
+`a7bfd86e`). One real, well-verified HIGH finding; everything else
+about the whiteboard (moderation coverage, server-side arithmetic,
+i18n, currency formatting, the verification harness's own real-pointer-
+event discipline) confirmed sound on inspection.
+
+**HIGH, FIXED — a whiteboard turn was silently swallowed whenever a
+previously-served, ungraded activity was still on screen.**
+`ConversationView.tsx` renders `LiveSegmentPanel` whenever
+`socket.segment` is set, and only falls back to `TutorWhiteboard`
+otherwise — `socket.segment` is cleared only by grading
+(`reportGrade()`) or a session reset, never by a new turn simply
+arriving. The turn schema refuses `whiteboard` and `segmentRequest` on
+the SAME turn, and the code's own comment at the render site read that
+exclusion as making a stale-segment collision "not the common case" —
+but the schema is about co-occurrence WITHIN one turn; it says nothing
+about a PREVIOUS turn's activity still sitting open when a LATER turn
+wants to show a board. Nothing server-side ever checked that.
+
+The two existing trackers that looked like they might already cover
+this both don't: `openActivity` is deliberately kept non-null even
+AFTER an activity grades (so a later reaction turn can still describe
+what was on screen), so gating on it would over-block almost the entire
+rest of a session; `openCheckableSegment` only tracks the narrow
+voice-answerable subset (`number_input`, `count_objects`,
+`estimate_slider`, `coin_count`, `make_change`) and misses everything
+else — including `sort_buckets`, the exact type used to reproduce this.
+
+Reproduced by serving a `sort_buckets` activity via `noteSegmentServed`
+(not checkable, not graded), then having the model return an ordinary,
+fully schema-legal "SHOW YOUR WORK" whiteboard on the next turn — a
+completely normal shape per the prompt's own growth-story instruction,
+which nowhere conditions on "no activity currently open." The board was
+computed, moderated, and delivered untouched; on the client it would
+have sat behind the still-open segment panel indefinitely, invisible,
+while the tutor narrated numbers growing that the child could never
+see. Confirmed the same defect reaches the reconnect path by inspection
+of `ws/server.ts`'s resume handling, which resends both the turn and any
+cached `lastSegmentFrame` unconditionally — a resumed session
+reconstructs the identical segment-wins state.
+
+Fixed with a new tracker purpose-built for this gate,
+`openUngradedSegmentId` (`oracle/src/tutor/orchestrator.ts`): set in
+`noteSegmentServed` alongside the two existing trackers, cleared in both
+grading paths (`handleSegmentResult`, `handleVoiceCheckResult`) the same
+way `openCheckableSegment` already is. Checked at the same call site as
+the pre-existing "whiteboard did not compute to a sane sequence" guard,
+with the identical fail-open posture: the board is dropped whole and the
+turn still delivers with its `say` text intact — exactly the posture
+this file already uses for a board whose own arithmetic fails.
+
+Proof: 2 new `orchestrator.test.ts` tests — one serves a `sort_buckets`
+activity and confirms a subsequently-offered whiteboard is dropped
+(`outcome.emission.turn.whiteboard` is `null`, turn still delivers);
+the other confirms a whiteboard IS delivered again immediately after
+that same activity grades, so the fix's own gate releases correctly and
+doesn't over-block once the screen is actually free. Both confirmed to
+fail/pass for the exact claimed reason via `git stash` (the drop test
+fails — whiteboard delivered — against the unfixed file; the
+release test is unaffected either way, confirming no false coupling).
+Full oracle suite green (26 files, 507 tests — 505 existing + 2 new,
+zero regressions), lint and type-check clean, `verify:pedagogy` and
+`verify:tutor` both green. `oracle/AGENTS.md` item 54.
+
+**Also fixed in this round, found live via a genuine browser session as
+a real seeded account (not by the background agent):** the greeting
+line shown when a session's learner-intelligence read fails —
+`tutor.introduce.cannotSeeProgress` — read "I can't see your courses
+right now" in en-US, while its es-MX and pt-BR siblings both correctly
+say "I can't see HOW YOUR COURSES ARE GOING" (`Ahorita no veo cómo van
+tus cursos.` / `Agora não vejo como estão seus cursos.`). The underlying
+condition (`intelDegraded = states === null` in
+`backend/src/routes/tutor.ts`) is specifically about missing PROGRESS
+data — a benign, expected cold-start state the code's own comment calls
+"the normal case, not an edge case" — not about the course catalog
+itself, which loaded correctly the entire time (confirmed via the
+`/api/v1/tutor/map` response: 24 real KCs, edges, and a real
+`continueTarget`, served alongside the misleading banner). An
+English-reading child would read the shipped copy as "the tutor is
+broken, it can't find my courses," a materially more alarming and
+factually wrong claim than what the other two locales actually say.
+Fixed by correcting the en-US string to `"I can't see your progress
+right now."`, matching the other two locales' own semantics; no key
+changes, no test references the old wording. `i18n:check` clean (3-locale
+parity was never broken — only one locale's WORDING was wrong relative
+to its own intended meaning).
+
+Verification: full oracle suite, lint, type-check, `verify:pedagogy`,
+`verify:tutor` all green (above); root `docs:check`, `secrets:check`,
+`i18n:check` all clean.
