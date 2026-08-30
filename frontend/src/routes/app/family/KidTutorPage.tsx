@@ -42,6 +42,18 @@ export function KidTutorPage() {
 
   useEffect(() => {
     let cancelled = false;
+    /*
+     * Found by adversarial review, round 31 (2026-08-30, MEDIUM): the route
+     * has no `key={kidId}`, so React Router reuses this component instance
+     * across a `:kidId` change instead of remounting it. Without this reset,
+     * `state` kept whichever kid's history last rendered until the NEW kid's
+     * fetch resolved — meaning a parent could, for a moment, see one child's
+     * safety flags (self-harm, abuse) under a URL that already names a
+     * different child. Not reachable through today's shipped navigation, but
+     * a real defect in the component itself and cheap to close now.
+     */
+    setState({ status: 'loading' });
+    setOpenId(null);
     void (async () => {
       const authToken = await getToken();
       if (!authToken || cancelled) return;

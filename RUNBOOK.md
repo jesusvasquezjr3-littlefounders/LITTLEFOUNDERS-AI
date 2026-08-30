@@ -3607,3 +3607,61 @@ pre-fix code for the exact claimed reason via `git stash`, pass against
 the fix. Full frontend suite green (1432 tests, up from 1426), full
 backend suite green (637 tests, up from 635), lint clean on both, type-
 check clean, root `i18n:check` clean.
+
+## A parent switching between two children's Tutor histories on one page could see the OUTGOING child's safety flags under the new child's URL — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 31 (the guardian transcript viewer —
+the surface `/AGENTS.md` §1.9's parent-visibility invariant becomes for
+a real human).
+
+`KidTutorPage.tsx` (route `family/:kidId/tutor`) fetched a child's
+sessions and safety flags in a `useEffect` keyed on `[kidId, getToken]`,
+but only ever initialized `state` to `{ status: 'loading' }` once, in
+`useState`'s own initializer — the effect itself never reset it back to
+`loading` when `kidId` changed. The route in `App.tsx` carries no
+`key={kidId}`, so React Router reuses the SAME `KidTutorPage` instance
+across a `:kidId` change rather than remounting it (confirmed by reading
+the route definition directly). The result: for as long as the new
+child's fetch takes to resolve, the page kept rendering the OUTGOING
+child's data — including safety flags in categories `self_harm` and
+`abuse_disclosure` — under a URL that already named a different child.
+
+Not reachable through today's shipped navigation: the only link into
+this route is `FamilyPage.tsx`, and every path between two different
+kids' `/tutor` pages transits `/family` first, which is a different
+component and does force a real unmount. But it is a real defect in the
+component itself, invisible on any normal first visit (which is exactly
+why no existing test caught it), and it would silently reactivate the
+moment any future feature adds a direct kid-to-kid navigation on this
+route — a "switch kid" control, a "next child" button, a deep link from
+a notification. Given what leaks (safety-flag categories that exist
+specifically because a parent must find out), this was fixed now rather
+than left for the day it becomes reachable.
+
+Fixed by resetting `state` to `{ status: 'loading' }` and `openId` to
+`null` synchronously at the top of the effect, before the async fetch
+even starts — so a `kidId` change shows the loading screen immediately,
+never a stale render of the previous child's data.
+
+Proven with a new test in `frontend/src/routes/app/family/__tests__/KidTutorPage.test.tsx`:
+render at kid A's page (kid A has a HIGH `self_harm` flag), click a
+control that navigates to kid B's page without unmounting (kid B's
+fetch left deliberately pending), and assert kid A's flag text is gone
+and the loading state is showing before kid B's data ever arrives.
+Confirmed to fail against the pre-fix code for the exact claimed
+reason via `git stash` (kid A's flag text was still on screen), passes
+against the fix. One test-authoring pitfall hit and fixed along the way,
+worth recording since it's easy to repeat: the test's `AuthContext` mock
+originally created a brand-new `getToken` function on every render
+(`useAuth: () => ({ getToken: vi.fn()... })`), unlike the real
+`AuthContext`, which memoizes `getToken` with `useCallback` — with an
+unstable mock, the effect's `[kidId, getToken]` dependency array looks
+"changed" on every render even when `kidId` hasn't moved, and each
+resolution re-triggers the effect, which creates a new mock function,
+which re-triggers it again; holding a fetch pending across an assertion
+(exactly what proving this bug requires) turned that into an unbounded
+microtask storm that OOM'd the test worker. Fixed by hoisting the mock's
+`getToken` to a single module-level `vi.fn()`, matching the real
+component's actual stability guarantee. Full frontend suite green (1434
+tests, up from 1432), lint clean, type-check clean, root `i18n:check`
+clean.

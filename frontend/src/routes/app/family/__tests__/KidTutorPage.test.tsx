@@ -1,6 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { KidTutorPage } from '../KidTutorPage';
 import { getKidTutorHistory } from '@/tutor/tutorApi';
 
@@ -18,7 +18,18 @@ vi.mock('@/tutor/tutorApi', () => ({
   getKidTutorHistory: vi.fn(),
   getTranscript: vi.fn(),
 }));
-vi.mock('@/auth/AuthContext', () => ({ useAuth: () => ({ getToken: vi.fn().mockResolvedValue('tok') }) }));
+/*
+ * `getToken` must be the SAME function reference across renders, exactly as
+ * the real `AuthContext` guarantees via `useCallback` — otherwise the fetch
+ * effect's `[kidId, getToken]` dependency array looks "changed" on every
+ * render even when `kidId` hasn't moved, and the effect re-fires forever
+ * (each async resolution triggers a re-render, which creates a new mock
+ * function, which re-triggers the effect...). A test that holds a fetch
+ * pending across an assertion — as the kidId-switch test below does — turns
+ * that into an unbounded microtask storm and OOMs the worker.
+ */
+const stableGetToken = vi.fn().mockResolvedValue('tok');
+vi.mock('@/auth/AuthContext', () => ({ useAuth: () => ({ getToken: stableGetToken }) }));
 
 function renderPage() {
   render(
@@ -114,5 +125,88 @@ describe('KidTutorPage — an in-progress session is not reported as 0 messages'
     renderPage();
 
     await waitFor(() => screen.getByText(/6 messages/));
+  });
+});
+
+/*
+ * Found by adversarial review, round 31 (2026-08-30, MEDIUM): the route
+ * `family/:kidId/tutor` (App.tsx) has no `key={kidId}`, so navigating from
+ * one kid's page to another's does NOT remount `KidTutorPage` — it reuses
+ * the same instance. Before the fix, `state` was only initialized once, at
+ * mount, and the fetch effect never reset it back to `loading` when `kidId`
+ * changed — so kid A's safety flags (self-harm, abuse) stayed on screen,
+ * under a URL that already named kid B, for as long as kid B's fetch took
+ * to resolve. Not reachable through today's shipped navigation (there is no
+ * direct kid-to-kid link yet), but a real defect in the component itself.
+ */
+function NavigateOnClick({ to }: { to: string }) {
+  const navigate = useNavigate();
+  return (
+    <button type="button" onClick={() => navigate(to)}>
+      switch-kid
+    </button>
+  );
+}
+
+describe('KidTutorPage — switching kidId without a remount does not leak the previous kid', () => {
+  it('drops the outgoing kid’s safety flags off screen before the new kid’s data arrives', async () => {
+    let resolveKidB: ((value: Awaited<ReturnType<typeof getKidTutorHistory>>) => void) | null = null;
+    vi.mocked(getKidTutorHistory).mockImplementation((_token, kidId) => {
+      if (kidId === 'kid-a') {
+        return Promise.resolve({
+          data: {
+            sessions: [],
+            safetyFlags: [
+              {
+                id: 'flag-a',
+                session_id: 's-a',
+                turn_seq: 1,
+                category: 'self_harm',
+                severity: 'high' as const,
+                handled: 'session_stopped' as const,
+                created_at: '2026-08-29T00:00:00Z',
+              },
+            ],
+          },
+          error: null,
+        });
+      }
+      return new Promise((resolve) => {
+        resolveKidB = resolve;
+      });
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/family/kid-a/tutor']}>
+        <Routes>
+          <Route
+            path="/family/:kidId/tutor"
+            element={
+              <>
+                <NavigateOnClick to="/family/kid-b/tutor" />
+                <KidTutorPage />
+              </>
+            }
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => screen.getByText(/hurting themselves/));
+
+    fireEvent.click(screen.getByText('switch-kid'));
+
+    // Kid B's fetch is still pending — the page must show loading, not kid A's flag.
+    expect(screen.queryByText(/hurting themselves/)).toBeNull();
+    expect(screen.getByText('Loading…')).toBeInTheDocument();
+
+    // The switch triggers `getToken()` first, so kid B's actual fetch call
+    // (and its resolver) only exists a tick later — wait for it rather than
+    // racing it, or this resolves a stale placeholder and hangs forever.
+    await waitFor(() => expect(resolveKidB).not.toBeNull());
+    resolveKidB!({ data: { sessions: [], safetyFlags: [] }, error: null });
+
+    await waitFor(() => expect(screen.queryByText('Loading…')).toBeNull());
+    expect(screen.queryByText(/hurting themselves/)).toBeNull();
   });
 });
