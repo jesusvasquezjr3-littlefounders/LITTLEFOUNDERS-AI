@@ -1917,3 +1917,25 @@ touches this next: a cap or running total that spans more than one row
 cannot be made safe by careful code on the write side alone; the atomicity
 has to move into the database, because no amount of discipline in Node
 closes a race across two separate network round trips.
+
+**A near-miss observed deploying this fix itself, worth a line for whoever
+ships the next migration-plus-code pair.** `database CD` and `backend CD`
+are two independent workflows with no ordering dependency between them
+(each triggers on its OWN service's CI succeeding); on this deploy,
+`backend CD` finished and went live at 03:58:12 UTC while `database CD` did
+not apply migration `0055` (creating the `award_tutor_xp` function this same
+commit's Core code calls) until 04:00:29 — a roughly two-minute window
+where the new code's only path to crediting XP had nothing to call. The
+route fails CLOSED in that state (`502 DATA_UNAVAILABLE`, per §1.14 — never
+a silent zero), so the failure mode is "an activity briefly could not be
+graded," not a wrong or lost credit; a live log check afterwards found no
+occurrence, most likely because no XP-earning grade request happened to
+land in that window, not because the risk was not real. Unlike the row-level
+migrations this file has shipped before, this one is **not** safe on both
+sides of the code — old code tolerates the new function existing early,
+but new code does NOT tolerate the function existing late. Whenever a
+migration and the code that calls it ship in the same commit and the code
+introduces a NEW call the old code never made (an RPC, a new table), that
+asymmetry is the thing to say out loud before pushing, and confirming the
+migration has already applied before relying on the new code path is worth
+the wait when the traffic pattern makes the window matter.
