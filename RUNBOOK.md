@@ -5557,3 +5557,69 @@ an existing, already-responsive caption class with no new layout, so
 §1.11's breakpoint requirement does not add information a component
 test doesn't already give; stated plainly rather than claimed as a
 screenshot-verified UI check it was not.
+
+## Round 55: forbidden tier vocabulary that survived its one repair retry was delivered anyway, to a real six-year-old's session and a real tier-2 one
+
+Found by my own live testing, twice over: once in a fresh conversation
+this session (a tier-2 learner heard "interés compuesto" after the
+repair retry repeated it), and once as a PRE-EXISTING TEST in
+`orchestrator.test.ts` that had locked in the identical bug as intended
+behavior for a TIER1 (roughly 6-7 year old) session.
+
+The repair loop's own established, well-reasoned design says: when a
+flagged turn's one retry does not land, deliver the flagged turn (or
+the retry's own output) rather than a scripted line — "a clumsy real
+sentence beats a scripted apology" — because most flagged faults (a
+missing whiteboard, an unkept promise, a self-answered question) are
+merely imperfect, not unsafe, and destroying the turn over them costs
+more than it protects. `tierVocabularyViolation` was grouped into that
+same "deliver anyway" bucket, on the same reasoning. That reasoning
+does not hold for it: `TIER_FORBIDDEN` exists specifically because the
+owner's own session on 2026-08-28 had the tutor explain "interés
+compuesto" with "10% cada año" to a much younger vocabulary band with
+no gate holding an opinion — the exact incident that motivated
+building this mechanism in the first place. A violation that SURVIVES
+the one retry is not a stylistic flaw a child can still learn from; it
+is the exact age-inappropriate content the check was built to keep
+out, delivered anyway.
+
+Two distinct code paths in `oracle/src/tutor/orchestrator.ts` produced
+the same outcome and both needed fixing: (1) inside the retry loop, a
+violation surviving attempt 1 fell through to `turn = parsed.turn`
+instead of joining `falsePraise`/`falseCorrection` in the "scripted
+line instead" branch; (2) separately, the `repairable` snapshot taken
+at attempt 0 only flagged itself unsafe for `falsePraise ||
+falseCorrection`, so a vocabulary violation at attempt 0 whose retry
+then transport-failed (an empty completion, not merely "still
+violates") independently delivered the ORIGINAL violating turn
+verbatim through a completely different branch. Both now set the same
+`repairableIsFalseVerdict` flag whenever `violation !== null`.
+
+Proof: two new tests covering each path (retry still violates; retry
+transport-fails after an attempt-0 violation), plus a correction to
+the pre-existing test that had encoded the bug — it asserted, by name,
+that the turn "delivers... anyway if the retry also slips" for a
+TIER1 session saying "10%", which is precisely the harm this check
+exists to prevent. All three confirmed to fail for the exact claimed
+reason pre-fix via `git stash` (the violating text delivered with
+`source: 'model'` instead of falling back to `source: 'scripted'`).
+
+Verification: full oracle suite green (26 files, 494 tests, zero
+regressions), lint and type-check clean, `verify:pedagogy` and
+`verify:tutor` both green. Re-ran the full live `tutor:converse`
+scenario set afterward: the same class of slip that used to survive
+now correctly falls back to the scripted line, confirmed by the
+log line itself changing from "SURVIVED the retry — delivered" to
+"repair attempt for a false verdict or forbidden vocabulary failed —
+scripted line instead of delivering it". `oracle/AGENTS.md` item 51.
+
+General lesson, stated plainly because it is the second time this
+exact shape has cost a round this session (after round 54 correcting
+my own round-47 comment): a design decision that groups several fault
+types under one shared fallback bucket needs re-examining every time a
+NEW check joins that bucket by analogy, not just accepted because it
+already fits the code's existing shape — the original "deliver anyway
+vs. scripted line" split was reasoned about survivable imperfection
+versus active harm, and a vocabulary gate built after a real safety
+incident was placed in the wrong one of those two buckets from the
+start.

@@ -1240,7 +1240,20 @@ describe('the age band is checked, not merely requested', () => {
     expect(retryBody).toContain('percent sign');
   });
 
-  it('delivers the turn anyway if the retry also slips, rather than a dead turn', async () => {
+  /*
+   * Corrected by round 55 (2026-08-30, HIGH): this test used to assert the
+   * OPPOSITE — that "Sigue siendo 10% al año." was delivered anyway to a
+   * TIER1 (roughly 6-7 year old) session, on the reasoning that a
+   * vocabulary slip was merely imperfect, not unsafe. That reasoning does
+   * not hold for `TIER_FORBIDDEN`: it exists specifically because a real
+   * production session had this exact term reach a much younger vocabulary
+   * band with no gate holding an opinion (`oracle/AGENTS.md` item 55).
+   * Delivering it a second time, after the retry ALSO failed to remove it,
+   * is the exact harm the mechanism exists to prevent — so it now falls
+   * back to the scripted line instead, the same treatment false praise and
+   * a false correction already get.
+   */
+  it('falls back to the scripted line if the retry also slips, rather than delivering forbidden vocabulary twice', async () => {
     fetchMock
       .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Ganas 10% cada año.' }))
       .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Sigue siendo 10% al año.' }))
@@ -1249,8 +1262,8 @@ describe('the age band is checked, not merely requested', () => {
     const orchestrator = new TutorOrchestrator(TIER1, Date.now(), silent);
     const outcome = (await orchestrator.handleLearnerText('cómo crece mi dinero', Date.now()))!;
 
-    expect(outcome.emission.source).toBe('model');
-    expect(outcome.emission.turn.say).toContain('10%');
+    expect(outcome.emission.source).toBe('scripted');
+    expect(outcome.emission.turn.say).not.toContain('10%');
   });
 
   it('leaves an older learner alone — the band is the point, not the word', async () => {
@@ -1791,6 +1804,61 @@ describe('a failed repair costs the improvement, never the turn', () => {
     expect(second.emission.source).toBe('scripted');
     expect(second.emission.turn.say).not.toBe(falsePraiseSay);
     expect(second.emission.turn.say).not.toBe(falseCorrectionSay);
+  });
+
+  /*
+   * Found live, testing as a struggling learner, 2026-08-30 (HIGH): a
+   * tier-2 vocabulary violation ("interés compuesto") used to be grouped
+   * with "deliver the clumsy original" — the same bucket as a missing
+   * whiteboard or an unkept promise — reasoning that it was merely
+   * imperfect but still taught something new. That reasoning does not hold
+   * here: `TIER_FORBIDDEN` exists specifically because the owner's own
+   * session on 2026-08-28 had exactly this term reach a much younger
+   * vocabulary band with no gate holding an opinion. A violation that
+   * SURVIVES the one retry is the exact age-inappropriate content the
+   * mechanism exists to keep out, not a stylistic flaw a child can still
+   * use — so it now gets the same "scripted line instead" treatment as
+   * false praise and a false correction.
+   */
+  it('falls back to the scripted line when a forbidden-vocabulary retry STILL uses the forbidden term', async () => {
+    const violatingSay = 'Eso es justo lo que hace el interés compuesto: tu ahorro crece poco a poco.';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Empecemos con algo sencillo.' }))
+      .mockResolvedValueOnce(judgeSays(true))
+      // Second turn: names the forbidden term, triggering a repair — and the
+      // retry names it again instead of removing it.
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: violatingSay }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: violatingSay }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('ya', Date.now());
+    const second = (await orchestrator.handleLearnerText('otra vez', Date.now()))!;
+
+    expect(second.emission.source).toBe('scripted');
+    expect(second.emission.turn.say).not.toContain('interés compuesto');
+  });
+
+  it('falls back to the scripted line — never the original — when the retry for a forbidden term transport-fails', async () => {
+    const violatingSay = 'Eso es justo lo que hace el interés compuesto: tu ahorro crece poco a poco.';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Empecemos con algo sencillo.' }))
+      .mockResolvedValueOnce(judgeSays(true))
+      // Second turn: names the forbidden term, triggering a repair — and the
+      // retry itself produces nothing usable at all (an empty completion).
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: violatingSay }))
+      .mockResolvedValueOnce(modelReplies(''))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('ya', Date.now());
+    const second = (await orchestrator.handleLearnerText('otra vez', Date.now()))!;
+
+    // Pre-fix this delivered `repairable` — the attempt-0 turn that used the
+    // forbidden term — verbatim, the same shape as the repeat-vs-empty-retry
+    // incident above.
+    expect(second.emission.source).toBe('scripted');
+    expect(second.emission.turn.say).not.toContain('interés compuesto');
   });
 
   it('still falls back to the scripted line when NOTHING valid was produced', async () => {

@@ -1272,6 +1272,52 @@ everything passes the blocked half perfectly and destroys the product.
    changed, and be willing to iterate the wording again when the first pass
    only gets partway.
 
+51. **"A clumsy real sentence beats a scripted apology" is the right call for
+   an imperfect turn, and the wrong one for content that must never reach a
+   child at all.** Found live, testing as a struggling learner, 2026-08-30
+   (HIGH): the repair loop's own established design — deliver `repairable`
+   (the flagged attempt-0 turn) or the retry's own output rather than a
+   scripted line, when a repair fails — correctly protects a turn from being
+   destroyed over something merely imperfect (a missing whiteboard, an
+   unkept promise, a self-answered question). `tierVocabularyViolation` was
+   grouped into that same bucket, on the same reasoning: "imperfect but
+   still teaches something new." That reasoning does not hold for
+   `TIER_FORBIDDEN` — this check exists specifically because the owner's
+   session on 2026-08-28 had the tutor explain "interés compuesto" with
+   "10% cada año" to a much younger vocabulary band, and nothing caught it
+   (see this file's own §2's vocabulary-gate entry). A violation that
+   SURVIVES the one retry is not a stylistic flaw a child can still learn
+   from — it is the exact age-inappropriate content the mechanism was built
+   to keep out, delivered anyway. Reproduced live twice in the same session:
+   a tier-2 conversation where the retry repeated "interés compuesto"
+   verbatim, and a PRE-EXISTING TEST (`'delivers the turn anyway if the
+   retry also slips, rather than a dead turn'`) that had locked in the
+   identical bug for a TIER1 (roughly 6-7 year old) session delivering
+   "Sigue siendo 10% al año." — the youngest band, where this content does
+   the most damage. Two distinct code paths led to the same outcome and
+   both needed the same fix: (1) inside the retry loop, a violation
+   surviving attempt 1 now joins `falsePraise`/`falseCorrection` in setting
+   `repairableIsFalseVerdict = true` instead of falling through to
+   `turn = parsed.turn`; (2) the `repairable` snapshot taken at attempt 0
+   now ALSO flags itself unsafe when `violation !== null`, closing a second,
+   narrower path where the RETRY itself transport-fails (an empty
+   completion) rather than merely still-violating — pre-fix, that path
+   independently delivered the attempt-0 violating turn verbatim, since
+   `repairableIsFalseVerdict` was computed from `falsePraise || falseCorrection`
+   alone. Proven with two new `orchestrator.test.ts` tests covering both
+   paths, plus a correction to the pre-existing test that had encoded the
+   bug as intended behavior; all three confirmed to fail for the exact
+   claimed reason pre-fix via `git stash`. Re-verified live afterward: the
+   same "interés compuesto" slip that used to survive now falls back to the
+   scripted line ("repair attempt for a false verdict or forbidden
+   vocabulary failed — scripted line instead of delivering it"). General
+   lesson: when a repair-failure fallback groups several fault types into
+   "deliver anyway" vs. "scripted line instead," re-examine the group
+   whenever a NEW check joins it by analogy — the original two-bucket split
+   was reasoned about "imperfect but survivable" vs. "actively wrong,"
+   and a vocabulary gate built after a real safety incident belongs in the
+   second bucket, not wherever a first, cursory placement put it.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:

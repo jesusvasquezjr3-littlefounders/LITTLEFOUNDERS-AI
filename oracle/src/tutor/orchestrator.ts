@@ -1336,19 +1336,34 @@ export class TutorOrchestrator {
      */
     let repairableIsRepeat = false;
     /**
-     * The sibling of `repairableIsRepeat`, for `falsePraise`/`falseCorrection`.
+     * The sibling of `repairableIsRepeat`, for `falsePraise`/`falseCorrection`
+     * — and, as of round 55, forbidden tier vocabulary too.
      * Found live, testing as a struggling learner, 2026-08-30: the ONE retry
      * can swap one contradiction for the other rather than removing it — a
      * correction telling the model "the learner was right, confirm it
      * plainly" came back as praise for a wrong answer, because the model
      * changed WHICH claim it made, not whether the claim was sound. Every
      * other surviving fault is still a coherent, honestly-labelled turn (a
-     * repetitive one, one missing a board, one over the vocabulary band) — a
-     * clumsy real sentence a child can still use. This one is not: it tells
-     * the child they were right and wrong about the SAME answer in the SAME
-     * sentence, which teaches nothing and undermines every future "¡Exacto!".
-     * Delivering it is worse than the scripted line, the same reasoning as
-     * the repeat carve-out above, so it gets the same treatment.
+     * repetitive one, one missing a board) — a clumsy real sentence a child
+     * can still use. This one is not: it tells the child they were right and
+     * wrong about the SAME answer in the SAME sentence, which teaches
+     * nothing and undermines every future "¡Exacto!". Delivering it is
+     * worse than the scripted line, the same reasoning as the repeat
+     * carve-out above, so it gets the same treatment.
+     *
+     * FOUND LIVE AGAIN, round 55 (2026-08-30, HIGH): a tier-2 vocabulary
+     * violation ("interés compuesto") was originally grouped with the
+     * "deliver the clumsy original" bucket instead — reasoning that it was
+     * merely "imperfect but still teaches something new," the same as a
+     * missing whiteboard or an unkept promise. That reasoning does not hold
+     * for `TIER_FORBIDDEN`: this check exists specifically because the
+     * owner's session on 2026-08-28 had the tutor explaining "interés
+     * compuesto" with "10% cada año" to what should have been a much
+     * younger vocabulary band, and nothing caught it. A vocabulary
+     * violation that SURVIVES the one retry is not a stylistic flaw a child
+     * can still learn from — it is the exact age-inappropriate content this
+     * whole mechanism was built to keep out, delivered anyway. It belongs
+     * with false praise and false correction, not with a missing board.
      */
     let repairableIsFalseVerdict = false;
     try {
@@ -1578,7 +1593,17 @@ export class TutorOrchestrator {
             if (repairable === null) {
               repairable = parsed.turn;
               repairableIsRepeat = repeated !== null;
-              repairableIsFalseVerdict = falsePraise || falseCorrection;
+              /*
+               * Round 55 (2026-08-30, HIGH): this used to read
+               * `falsePraise || falseCorrection` only, so a vocabulary
+               * violation at attempt 0 whose RETRY then transport-failed
+               * (an empty completion, not merely "still violates") fell
+               * through to the `else if` below and delivered `repairable`
+               * — the very turn that used the forbidden term — verbatim.
+               * Same content-safety stakes as false praise/correction, so
+               * it gets the same flag.
+               */
+              repairableIsFalseVerdict = falsePraise || falseCorrection || violation !== null;
             }
 
             if (violation !== null && attempt === 0) {
@@ -1624,11 +1649,6 @@ export class TutorOrchestrator {
                 'told the learner an activity was coming but did not request one. Either set "next":"segment" with a segmentRequest, or say something that does not promise anything on screen';
               console.warn('[oracle] turn promised an activity without requesting one — asking again');
             } else {
-              if (violation !== null) {
-                console.warn(
-                  `[oracle] tier ${this.session.tier} vocabulary slip (${violation}) SURVIVED the retry — delivered`,
-                );
-              }
               if (brokenPromise) {
                 console.warn('[oracle] unkept activity promise SURVIVED the retry — delivered');
               }
@@ -1644,16 +1664,22 @@ export class TutorOrchestrator {
               if (repeated !== null) {
                 console.warn('[oracle] repeated sentence SURVIVED the retry — delivered');
               }
-              if (falsePraise || falseCorrection) {
-                // See `repairableIsFalseVerdict`'s doc comment: this specific
-                // pair of faults is a self-contradicting correctness verdict,
-                // not a merely-imperfect turn, so it does not get delivered.
+              if (falsePraise || falseCorrection || violation !== null) {
+                // See `repairableIsFalseVerdict`'s doc comment: false praise,
+                // a false correction, and forbidden vocabulary are each
+                // content the child must never actually receive, not a
+                // merely-imperfect turn, so none of them gets delivered.
                 if (falsePraise) {
                   console.warn('[oracle] praise of a wrong answer SURVIVED the retry — scripted line instead');
                 }
                 if (falseCorrection) {
                   console.warn(
                     '[oracle] contradiction of a correct answer SURVIVED the retry — scripted line instead',
+                  );
+                }
+                if (violation !== null) {
+                  console.warn(
+                    `[oracle] tier ${this.session.tier} vocabulary slip (${violation}) SURVIVED the retry — scripted line instead`,
                   );
                 }
                 repairableIsFalseVerdict = true;
@@ -1685,15 +1711,16 @@ export class TutorOrchestrator {
     }
 
     if (turn === null && repairable !== null && (repairableIsRepeat || repairableIsFalseVerdict)) {
-      // The repair did not land, and attempt 0 was a KNOWN repeat or a
-      // self-contradicting correctness verdict — the one repair failure
-      // "deliver the clumsy original" must not apply to, because the
-      // clumsy original IS the exact defect the check exists to catch, not
-      // a merely imperfect turn. Falls through to the scripted line below.
+      // The repair did not land, and attempt 0 was a KNOWN repeat, a
+      // self-contradicting correctness verdict, or forbidden vocabulary —
+      // the one repair failure "deliver the clumsy original" must not apply
+      // to any of these, because the clumsy original IS the exact defect
+      // the check exists to catch, not a merely imperfect turn. Falls
+      // through to the scripted line below.
       console.warn(
         repairableIsRepeat
           ? '[oracle] repair attempt for a repeated sentence failed — scripted line instead of delivering the repeat'
-          : '[oracle] repair attempt for a false verdict failed — scripted line instead of delivering the contradiction',
+          : '[oracle] repair attempt for a false verdict or forbidden vocabulary failed — scripted line instead of delivering it',
       );
     } else if (turn === null && repairable !== null) {
       // The repair did not land, but attempt 0 did, and it was not a repeat.
