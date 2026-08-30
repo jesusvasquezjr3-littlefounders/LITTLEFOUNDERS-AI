@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { KidTutorPage } from '../KidTutorPage';
-import { getKidTutorHistory } from '@/tutor/tutorApi';
+import { getKidTutorHistory, getTranscript } from '@/tutor/tutorApi';
 
 /*
  * Found by adversarial review, 2026-08-30 (round 13, guardian visibility).
@@ -56,6 +56,7 @@ const BASE_SESSION = {
 
 beforeEach(() => {
   vi.mocked(getKidTutorHistory).mockReset();
+  vi.mocked(getTranscript).mockReset();
 });
 
 describe('KidTutorPage — safety flags are severity-first, not just chronological', () => {
@@ -208,5 +209,63 @@ describe('KidTutorPage — switching kidId without a remount does not leak the p
 
     await waitFor(() => expect(screen.queryByText('Loading…')).toBeNull());
     expect(screen.queryByText(/hurting themselves/)).toBeNull();
+  });
+});
+
+/*
+ * Found by adversarial review, round 41 (2026-08-30, HIGH): a flag carried
+ * `session_id`/`turn_seq` on the wire and this page never read either —
+ * "the words are in the transcript, where they belong in context" (this
+ * file's own header comment) was a promise with no control behind it. A
+ * parent saw "Self-harm — Urgent" with no way to reach what was actually
+ * said.
+ */
+describe('KidTutorPage — a safety flag opens the exact transcript it happened in', () => {
+  it('reads a flag whose session is NOT among the recent sessions shown below', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValue({
+      data: {
+        // The flagged session is deliberately absent from `sessions` — an
+        // older incident outside the capped "recent sessions" list, exactly
+        // the orphaned-reference scenario the review proved is real.
+        sessions: [],
+        safetyFlags: [
+          {
+            id: 'flag-1',
+            session_id: 'old-session',
+            turn_seq: 3,
+            category: 'self_harm',
+            severity: 'high',
+            handled: 'session_stopped',
+            created_at: '2026-08-20T09:00:00Z',
+          },
+        ],
+      },
+      error: null,
+    });
+    vi.mocked(getTranscript).mockResolvedValue({
+      data: {
+        session: { ...BASE_SESSION, id: 'old-session' },
+        turns: [
+          { id: 't1', seq: 2, speaker: 'tutor', text: 'How are you feeling today?', emotion: null, action: null, audio_path: null, source: 'model', created_at: '2026-08-20T09:00:00Z', whiteboard: null },
+          { id: 't2', seq: 3, speaker: 'learner', text: 'the flagged words', emotion: null, action: null, audio_path: null, source: 'learner', created_at: '2026-08-20T09:00:01Z', whiteboard: null },
+        ],
+        segments: [],
+      },
+      error: null,
+    });
+
+    renderPage();
+    await waitFor(() => screen.getByText(/hurting themselves/));
+
+    fireEvent.click(screen.getByText('Read it'));
+
+    await waitFor(() => screen.getByText('the flagged words'));
+    expect(getTranscript).toHaveBeenCalledWith('tok', 'old-session');
+    expect(screen.getByText('How are you feeling today?')).toBeInTheDocument();
+
+    // The exact turn `turn_seq` names is visibly distinguished — not merely
+    // present somewhere in a wall of text a parent has to search themselves.
+    expect(screen.getByText('the flagged words').className).toContain('ring-warning');
+    expect(screen.getByText('How are you feeling today?').className).not.toContain('ring-warning');
   });
 });

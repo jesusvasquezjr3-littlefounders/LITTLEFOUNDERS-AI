@@ -4403,3 +4403,76 @@ clean in both services (including `tsconfig.test.json` and, for
 oracle, `tsconfig.scripts.json`). `verify:tutor` and `verify:pedagogy`
 green. Root `docs:check`, `secrets:check`, `i18n:check`,
 `provider:check`, and `tools:test` (26/26) all green.
+
+## A safety flag shown to a parent had no way to reach the transcript it happened in — found and closed 2026-08-30 (round 41)
+
+Round 41 reviewed guardian/parent visibility into a kid's Tutor
+activity end to end (RLS, `guardian_links`, multi-parent handling,
+voice-consent visibility, the failure-vs-emptiness distinction) — the
+one HIGH finding is in `frontend/src/routes/app/family/KidTutorPage.tsx`,
+which this file's own header comment describes as `/AGENTS.md §1.9`'s
+parent-visibility invariant "becoming a surface."
+
+**HIGH — a flag carried `session_id`/`turn_seq` on the wire, and the
+page never read either.** `GET /tutor/kids/:kidUserId/sessions` already
+returns both fields (`backend/src/routes/tutor.ts`), and Oracle fixed
+the turn-level flag/transcript correlation in a prior round specifically
+so a flag could be traced to its exact context (`ORACLE.md`). None of
+that reached the guardian UI: each flag rendered its category, severity
+badge and date with no button, no link, nothing that opened the session
+it belonged to. `KidTutorPage.tsx`'s own header comment promises "the
+words are in the transcript, where they belong in context" — a promise
+with no control behind it. A parent saw "Self-harm — Urgent" and had no
+way to find out what was actually said or in what conversation.
+
+Fixed by wiring each flag to the SAME `Transcript` component the
+session list below already opens via its "Read" button — `Transcript`
+fetches `GET /tutor/sessions/:id` (already authorized for "owner or
+verified guardian," `backend/src/routes/tutor.ts`) purely by session
+id, with no dependency on that session appearing in the separately-
+limited, separately-capped `sessions` list (`LIMIT 30` sessions vs.
+`LIMIT 50` flags, confirmed independently queryable — the review's own
+proof showed a flag can reference a session absent from that response's
+`sessions` array). So this works for a flag from anywhere in the
+90-day retention window, not only a recent one. The exact flagged turn
+(`turn_seq`) is now highlighted (`ring-2 ring-warning`) and scrolled
+into view once the transcript renders, via a new optional `highlightSeq`
+prop on `Transcript`.
+
+New test in `KidTutorPage.test.tsx` proves the whole path: a flag whose
+session is deliberately absent from `sessions` opens correctly via
+`getTranscript`, and the exact flagged turn — not the adjacent one —
+carries the highlight class. Confirmed to fail without the fix via
+`git stash` (pre-fix: no "Read it" control exists on a flag at all).
+Full frontend suite green (126 files, 1446 tests), lint and type-check
+clean, `i18n:check`/`docs:check`/`secrets:check` green (no new i18n
+keys — reuses the existing `guardian.read`/`guardian.hide` strings).
+
+**Verification gap, stated plainly rather than papered over:** this is
+a real production route (`/family/:kidId/tutor`), not the `/dev/tutor-lab`
+fixture harness prior UI rounds used for live-browser screenshots, and
+it needs a genuinely logged-in parent with a verified kid to reach at
+all. Checked three ways to get there before accepting the gap: (1) no
+seed script anywhere in this v2 repo creates a ready-made parent/kid
+pair — the only path to one is the real signup + Guardian OCR
+identity-verification flow, disproportionate to stand up for a UI
+wiring change; (2) faking a session via a forged JWT in
+`localStorage['lf.session.v1']` plus a `window.fetch` patch for
+`/auth/me` was traced all the way through `AuthContext.tsx` and is
+mechanically sound (Core "verifies on every API call," never the
+client, and `jwtClaims()` only decodes for display) — but a `fetch`
+monkey-patch cannot survive the page's own navigation/reload, and
+nothing in this session's toolset can inject a script before a fresh
+document's own bootstrap runs, so the patch would need to already be
+active before `AuthProvider`'s mount-time restore effect fires, which
+is exactly what a full navigation prevents; (3) driving the SPA
+client-side from an already-authenticated page (where a fetch patch
+WOULD survive in-app navigation) still needs a real login to start
+from. All three dead-ended on the same root cause: no real credentials
+and no seed data exist locally for this account shape. The fix reuses
+the `Transcript` component's exact existing, already-live-verified
+rendering path (only the trigger and one highlight class are new),
+which lowers the risk a browser check would have caught something RTL
+could not — but it was not independently confirmed in an actual
+browser at either breakpoint, unlike this session's other UI fixes.
+Flagged here as a gap, not silently skipped.

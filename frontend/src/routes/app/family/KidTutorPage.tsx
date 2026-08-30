@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
@@ -39,6 +39,7 @@ export function KidTutorPage() {
   const [state, setState] = useState<State>({ status: 'loading' });
   const [token, setToken] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
+  const [openFlagId, setOpenFlagId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -54,6 +55,7 @@ export function KidTutorPage() {
      */
     setState({ status: 'loading' });
     setOpenId(null);
+    setOpenFlagId(null);
     void (async () => {
       const authToken = await getToken();
       if (!authToken || cancelled) return;
@@ -112,21 +114,49 @@ export function KidTutorPage() {
           <ul className="space-y-2">
             {sortedFlags.map((flag) => (
               <li key={flag.id} className="lf-body rounded-md bg-warning-soft px-3 py-2 text-content">
-                <span className="lf-label flex items-center gap-2">
-                  {t(`tutor.guardian.flagCategory.${flag.category}`, { defaultValue: flag.category })}
-                  <span
-                    className={
-                      flag.severity === 'high'
-                        ? 'lf-caption rounded-full bg-error px-2 py-0.5 text-on-error'
-                        : 'lf-caption rounded-full bg-surface px-2 py-0.5 text-content-muted'
-                    }
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <span className="lf-label flex items-center gap-2">
+                      {t(`tutor.guardian.flagCategory.${flag.category}`, { defaultValue: flag.category })}
+                      <span
+                        className={
+                          flag.severity === 'high'
+                            ? 'lf-caption rounded-full bg-error px-2 py-0.5 text-on-error'
+                            : 'lf-caption rounded-full bg-surface px-2 py-0.5 text-content-muted'
+                        }
+                      >
+                        {t(`tutor.guardian.flagSeverity.${flag.severity}`, { defaultValue: flag.severity })}
+                      </span>
+                    </span>
+                    <span className="lf-caption text-content-muted">
+                      {formatter.format(new Date(flag.created_at))}
+                    </span>
+                  </div>
+                  {/*
+                   * Found by adversarial review, round 41 (2026-08-30, HIGH):
+                   * a flag carried `session_id`/`turn_seq` on the wire —
+                   * exactly what Oracle's own turn/flag correlation fix
+                   * exists to provide — and this page never read either.
+                   * "The words are in the transcript, where they belong in
+                   * context" (this file's own header comment) was a promise
+                   * with no control behind it: a parent saw "Self-harm —
+                   * Urgent" and had no way to find out what was said. Reuses
+                   * the exact same `Transcript` component the session list
+                   * below already opens BY ID — it fetches by `sessionId`
+                   * alone and never depends on that session appearing in the
+                   * capped `sessions` list, so this works for a flag from
+                   * any point in the retention window, not only a recent one.
+                   */}
+                  <Button
+                    variant="secondary"
+                    onClick={() => setOpenFlagId(openFlagId === flag.id ? null : flag.id)}
                   >
-                    {t(`tutor.guardian.flagSeverity.${flag.severity}`, { defaultValue: flag.severity })}
-                  </span>
-                </span>
-                <span className="lf-caption text-content-muted">
-                  {formatter.format(new Date(flag.created_at))}
-                </span>
+                    {openFlagId === flag.id ? t('tutor.guardian.hide') : t('tutor.guardian.read')}
+                  </Button>
+                </div>
+                {openFlagId === flag.id && token && (
+                  <Transcript token={token} sessionId={flag.session_id} highlightSeq={flag.turn_seq} />
+                )}
               </li>
             ))}
           </ul>
@@ -173,10 +203,20 @@ export function KidTutorPage() {
   );
 }
 
-function Transcript({ token, sessionId }: { token: string; sessionId: string }) {
+function Transcript({
+  token,
+  sessionId,
+  highlightSeq = null,
+}: {
+  token: string;
+  sessionId: string;
+  /** The exact turn a safety flag names (`turn_seq`), or null for an ordinary read. */
+  highlightSeq?: number | null;
+}) {
   const { t } = useTranslation();
   const [transcript, setTranscript] = useState<SessionTranscript | null>(null);
   const [failed, setFailed] = useState(false);
+  const highlightRef = useRef<HTMLParagraphElement | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -190,23 +230,34 @@ function Transcript({ token, sessionId }: { token: string; sessionId: string }) 
     };
   }, [token, sessionId]);
 
+  // Scrolls the flagged moment into view once the transcript it belongs to
+  // has actually rendered — a highlight nobody can see is not a highlight.
+  useEffect(() => {
+    if (highlightRef.current) highlightRef.current.scrollIntoView({ block: 'center' });
+  }, [transcript]);
+
   if (failed) return <p className="lf-body mt-4 text-content-muted">{t('tutor.guardian.loadFailed')}</p>;
   if (!transcript) return <p className="lf-body mt-4 text-content-muted">{t('tutor.guardian.loading')}</p>;
 
   return (
     <div className="mt-4 space-y-2 border-t border-outline pt-4">
-      {transcript.turns.map((turn) => (
-        <p
-          key={turn.id}
-          className={
-            turn.speaker === 'tutor'
-              ? 'lf-body rounded-md bg-surface-sunken px-3 py-2 text-content'
-              : 'lf-body ml-auto max-w-[85%] rounded-md bg-accent-soft px-3 py-2 text-content'
-          }
-        >
-          {turn.text}
-        </p>
-      ))}
+      {transcript.turns.map((turn) => {
+        const isFlagged = highlightSeq !== null && turn.seq === highlightSeq;
+        return (
+          <p
+            key={turn.id}
+            ref={isFlagged ? highlightRef : undefined}
+            className={
+              (turn.speaker === 'tutor'
+                ? 'lf-body rounded-md bg-surface-sunken px-3 py-2 text-content'
+                : 'lf-body ml-auto max-w-[85%] rounded-md bg-accent-soft px-3 py-2 text-content') +
+              (isFlagged ? ' ring-2 ring-warning' : '')
+            }
+          >
+            {turn.text}
+          </p>
+        );
+      })}
     </div>
   );
 }
