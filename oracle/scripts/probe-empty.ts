@@ -22,6 +22,26 @@
  * as whitespace. It is the experiment the conversation could not be.
  *
  * Costs N × (number of conditions) short completions. Nothing is changed.
+ *
+ * ROUND 45'S HYPOTHESIS, MEASURED AND REFUTED (2026-08-30). A live
+ * `tutor:converse` run had 2 of 9 turns in one conversation fall to the
+ * scripted fallback after BOTH a repeated-sentence repair retry and its own
+ * second attempt came back empty. The repeated-sentence correction
+ * (`orchestrator.ts`'s `turnCorrection` for `repeated !== null`) is the only
+ * one of seven repair reasons that quotes up to 60 chars of the model's OWN
+ * prior output back to it verbatim — a plausible mechanism (some models
+ * degenerate when shown their own text in-context), identified but not
+ * testable from inside an isolated review worktree with no live credentials.
+ * Measured here with two new conditions, same 20-turn window and temperature
+ * 0.2 the real retry actually uses, the ONLY difference between them being
+ * whether the correction message quotes the model's own text: 0/12 empty for
+ * the quoting version, 0/12 for the non-quoting control — indistinguishable
+ * from each other and from the existing reminder-protected baseline. The
+ * quoting hypothesis does not hold at this N; the 2-of-9 observation was
+ * statistical variance in an already-mostly-mitigated issue, consistent with
+ * this same run's own `full window` (no correction, no reminder) condition
+ * landing at 33% — the baseline risk this reminder already exists to close,
+ * with or without a quote riding alongside it.
  */
 
 import process from 'node:process';
@@ -61,7 +81,26 @@ interface Condition {
   correction: boolean;
   /** How many prior turns to put in the context. */
   historyTurns: number;
+  /**
+   * Round 45 (2026-08-30): the REAL repair path sends a SECOND message before
+   * the shape reminder — `Your previous reply ${turnCorrection}.` — and one
+   * repair reason, the repeated-sentence correction, is the only one of seven
+   * that quotes up to 60 chars of the model's OWN prior output back to it
+   * verbatim (`orchestrator.ts`'s `turnCorrection` for `repeated !== null`).
+   * The four conditions above never modelled this second message at all —
+   * "the retry correction" there means only the trailing shape reminder,
+   * which every attempt sends regardless of repair reason. `true` here adds
+   * the real quoting-shaped message; `false` adds the SAME correction with
+   * the quote removed, so the only variable between the two is the quote.
+   */
+  repairQuotesOwnText?: boolean;
 }
+
+const QUOTING_CORRECTION = (priorText: string) =>
+  `Your previous reply reused a sentence it has already said in this session ("${priorText.slice(0, 60)}"). Say something new — a child who hears the same compliment after every exercise learns the praise means nothing, and the same question twice learns nobody is listening.`;
+
+const NON_QUOTING_CORRECTION =
+  'Your previous reply reused a sentence it has already said in this session. Say something new — a child who hears the same compliment after every exercise learns the praise means nothing, and the same question twice learns nobody is listening.';
 
 /*
  * THE HYPOTHESIS UNDER TEST, and it came from the failure of the last one.
@@ -82,6 +121,27 @@ const CONDITIONS: Condition[] = [
   { name: 'medium history (10 turns)', temperature: 0.6, correction: false, historyTurns: 10 },
   { name: 'full window (20 turns)', temperature: 0.6, correction: false, historyTurns: 20 },
   { name: 'full window + the retry correction', temperature: 0.6, correction: true, historyTurns: 20 },
+  /*
+   * Round 45's hypothesis, isolated: same window, same temperature (0.2 is
+   * what the real repeated-sentence retry actually uses — see
+   * `orchestrator.ts`'s repair-loop lowering it on attempt 1), same shape
+   * reminder, same correction message — the ONLY difference between these
+   * two is whether that correction quotes the model's own prior text.
+   */
+  {
+    name: 'repair correction, quote REMOVED (control)',
+    temperature: 0.2,
+    correction: true,
+    historyTurns: 20,
+    repairQuotesOwnText: false,
+  },
+  {
+    name: 'repair correction, quoting own prior text (repeated-sentence shape)',
+    temperature: 0.2,
+    correction: true,
+    historyTurns: 20,
+    repairQuotesOwnText: true,
+  },
 ];
 
 /** A plausible lesson, long enough to fill the window. */
@@ -136,6 +196,15 @@ async function once(condition: Condition, context: TutorContext): Promise<Outcom
    */
   const history = historyOf(condition.historyTurns);
   const maxChars = config.TURN_MAX_INPUT_CHARS;
+  // The text a repeated-sentence correction would quote, in the real path: the
+  // tutor's own most recent prior turn.
+  const priorTutorText = [...history].reverse().find((turn) => turn.speaker === 'tutor')?.text ?? '';
+  const repairCorrection =
+    condition.repairQuotesOwnText === undefined
+      ? null
+      : condition.repairQuotesOwnText
+        ? QUOTING_CORRECTION(priorTutorText)
+        : NON_QUOTING_CORRECTION;
   const messages = [
     { role: 'system', content: TUTOR_SYSTEM_PROMPT },
     {
@@ -148,6 +217,7 @@ async function once(condition: Condition, context: TutorContext): Promise<Outcom
         : { role: 'user', content: fenceUntrusted(turn.text, maxChars).block },
     ),
     { role: 'user', content: fenceUntrusted('no entendí, explícamelo otra vez', maxChars).block },
+    ...(repairCorrection !== null ? [{ role: 'user', content: repairCorrection }] : []),
     ...(condition.correction ? [{ role: 'user', content: CORRECTION }] : []),
   ];
   try {

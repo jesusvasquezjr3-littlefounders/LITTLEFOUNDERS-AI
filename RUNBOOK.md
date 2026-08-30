@@ -4832,3 +4832,51 @@ and testing it directly against the exact false-positive sentence and
 two genuine-praise sentences from real transcripts — matching this
 codebase's own standard of proving a fix against the real code rather
 than a reconstruction of it.
+
+## Round 45: a live empty-completion cluster investigated, no code defect found, one open hypothesis measured and refuted
+
+The same live run that verified round 44's fix had 2 of 9 turns in one
+conversation fall to the scripted "Se me enredaron las ideas" line
+after a repeated-sentence repair retry AND its own second attempt both
+came back as empty completions. A dedicated investigation traced the
+repair-retry code path in full and found no structural defect: the
+shape reminder that brings whitespace completions to 0% (`orchestrator
+.ts`'s `produce()`) is pushed unconditionally on every attempt,
+including this one, and a diagnostic dump of the literal request
+bodies for a real repeated-sentence retry showed it byte-for-byte
+identical to an ordinary attempt except for the expected correction
+insert and a lower temperature. `oracle/src/__tests__/orchestrator
+.test.ts`'s existing coverage of exactly this fallback scenario passes
+(81/81 in that file). Conclusion: most likely statistical variance in
+an already-mostly-mitigated issue, not a regression — a valid, honest
+"nothing found" outcome per this codebase's own standard.
+
+One real, plausible-but-untested hypothesis came out of that
+investigation: the repeated-sentence correction is the only one of
+seven repair reasons that quotes up to 60 chars of the model's own
+prior output back to it verbatim, and some models are known to
+degenerate when shown their own text in-context. The investigating
+agent designed the exact experiment to test it but had no live
+credentials in its isolated worktree to run it.
+
+Closed with real measurement rather than left open. Extended
+`oracle/scripts/probe-empty.ts` (`npm run model:probe-empty`) with two
+new conditions — same 20-turn window and temperature 0.2 the real
+retry uses, differing ONLY in whether the correction message quotes
+the model's own prior text — and ran it live: **0/12 empty for the
+quoting version, 0/12 for the non-quoting control**, indistinguishable
+from each other and from the tool's existing reminder-protected
+baseline. The quoting hypothesis does not hold. The same run's `full
+window` condition (no correction, no reminder at all) landed at 33%
+empty — the pre-existing baseline risk the shape reminder already
+exists to close, confirming the reminder is what matters and a quoted
+excerpt riding alongside it changes nothing measurable at this N.
+
+The two new probe conditions are a permanent addition to the tool
+(documented in its own header comment with the measurement), not a
+one-off script — the next time this class of question comes up for a
+different repair reason, the harness to answer it already exists.
+`type-check` (including `tsconfig.scripts.json`) and `lint` both
+clean. No production code changed; this closes an investigation
+thread with evidence rather than leaving a plausible-sounding guess
+undecided.
