@@ -99,24 +99,48 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, className }: Liv
   const draftRef = useRef<unknown>(undefined);
   draftRef.current = draft;
   const lastDemoSeq = useRef<number>(-1);
+  /*
+   * `demo`, `segment` and `verdict` are held in refs so this effect depends
+   * ONLY on `demo?.seq` — the one primitive that actually says "this is a
+   * genuinely new demo to run." Found by adversarial review, 2026-08-30
+   * (HIGH): `ConversationView.tsx` builds `demo` as a fresh object literal
+   * every render (`{ seq: turn.seq, steps: turn.demonstrate }`), so ANY
+   * unrelated re-render of that ancestor — a composer keystroke, a mic-level
+   * update, any sibling state change, none of them rare during a 5+ second,
+   * up-to-8-step demo — produced a new `demo` reference with the SAME `seq`.
+   * Depending on the object itself made the effect re-run on every one of
+   * those: the cleanup aborted `runTrayDemo` mid-loop, and the new setup's
+   * `mayDemonstrate` check then saw `demoSeq === lastPlayedSeq` (set
+   * synchronously at the FIRST run, before the demo even started moving) and
+   * refused to restart — the tutor's hands moved exactly one coin and froze
+   * forever while the tutor kept narrating the remaining steps aloud.
+   */
+  const demoRef = useRef(demo);
+  demoRef.current = demo;
+  const segmentRef = useRef(segment);
+  segmentRef.current = segment;
+  const verdictRef = useRef(verdict);
+  verdictRef.current = verdict;
   useEffect(() => {
-    const denominations: unknown = (segment.payload as { denominations?: unknown }).denominations;
+    const currentDemo = demoRef.current;
+    const currentSegment = segmentRef.current;
+    const denominations: unknown = (currentSegment.payload as { denominations?: unknown }).denominations;
     if (
       !mayDemonstrate({
-        demoSeq: demo?.seq ?? null,
+        demoSeq: currentDemo?.seq ?? null,
         lastPlayedSeq: lastDemoSeq.current,
-        segmentType: segment.type,
-        answeredCorrectly: verdict?.correct === true,
+        segmentType: currentSegment.type,
+        answeredCorrectly: verdictRef.current?.correct === true,
         denominations,
       })
     ) {
       return;
     }
-    lastDemoSeq.current = demo!.seq;
+    lastDemoSeq.current = currentDemo!.seq;
     const abort = new AbortController();
     setDemoRunning(true);
     void runTrayDemo(
-      demo!.steps,
+      currentDemo!.steps,
       // `mayDemonstrate` has already established this is a non-empty array.
       (denominations as unknown[]).filter((d): d is number => typeof d === 'number'),
       {
@@ -129,7 +153,13 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, className }: Liv
       { signal: abort.signal },
     ).finally(() => setDemoRunning(false));
     return () => abort.abort();
-  }, [demo, segment, verdict]);
+    // `demo`, `segment` and `verdict` are read from the refs above on
+    // purpose, not listed here — see the comment above this effect.
+    // `live.segmentId` (a stable string, not the `segment` object) IS a real
+    // dependency: when the segment actually changes, any demo still mid-play
+    // must be aborted rather than going on to write stale tray positions
+    // into the NEW segment's draft.
+  }, [demo?.seq, live.segmentId]);
 
   // The answers are the one scrolling box on the plate, so they are the one box
   // that has to SAY it scrolls. See `useScrollEdges`.

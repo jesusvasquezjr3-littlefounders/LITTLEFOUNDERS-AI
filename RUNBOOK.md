@@ -2197,3 +2197,56 @@ covered was "is this free of certain punctuation." The two claims share a
 test that happened to pass for the narrower one, which is exactly how a
 gap like this survives a code review: the existing test was genuinely
 green, and proved less than its own name said it did.
+
+## A tray demonstration froze after one coin the instant anything else on screen re-rendered — closed 2026-08-30
+
+**Found by adversarial review, round 14** (the whiteboard and the tray
+demonstration — neither had a dedicated round yet this session), HIGH
+severity, and about as easily triggered as a defect gets: any composer
+keystroke, any mic-level update, any unrelated sibling state change during
+a demo's 5+ second, up-to-8-step run.
+
+`frontend/src/tutor/ConversationView.tsx` builds the `demo` prop handed to
+`LiveSegmentPanel` as a fresh object literal on every render (`{ seq:
+turn.seq, steps: turn.demonstrate }`). `LiveSegmentPanel.tsx`'s demo effect
+depended on that whole object. React compares effect dependencies by
+reference, so a new object with the SAME `seq` and the SAME `steps` still
+counted as "changed" — the effect's cleanup fired, aborting `runTrayDemo`
+mid-loop, and the fresh setup then found `lastDemoSeq.current` already
+equal to this `seq` (set synchronously the FIRST time the effect ran,
+before the demo had even started moving) and refused to restart. The
+tutor's hands moved exactly one coin — the loop's first `setPicked` call,
+which runs before its first `await` — and froze there for the rest of the
+turn, while the tutor's own narration kept describing steps that were
+never going to happen on screen.
+
+Fixed in `LiveSegmentPanel.tsx` by holding `demo`, `segment` and `verdict`
+in refs and depending the effect on `demo?.seq` (a stable primitive)
+instead of the object. `live.segmentId` (a stable string) was added as a
+genuine second dependency — deliberately, not an oversight — so that when
+the SEGMENT actually changes the effect still re-runs and aborts a demo
+still mid-play, rather than letting it go on writing stale tray positions
+into a different segment's draft. This is the same shape as the round-8
+fix to this same file (a value read via a ref, checked against the CURRENT
+segment before applying), applied to a second location for the same
+underlying reason: a value handed down as a fresh object every render is
+not a signal that the thing it describes actually changed.
+
+Proven with a permanent test using fake timers: mounts a tray segment
+without a demo (matching the real sequencing — a demo normally arrives on
+a LATER render, after the segment is already on screen, not on the very
+first mount, which would also trigger the unrelated `[live.segmentId]`
+reset effect on the same commit), introduces a 2-step demo, confirms step
+1 applies, then re-renders with a content-IDENTICAL but reference-DIFFERENT
+`demo` object before the step delay elapses — and asserts the demo still
+reaches step 2. Confirmed to fail against the pre-fix component first (the
+demo stayed frozen at step 1 forever). Full frontend suite green (1407
+tests), lint, type-check.
+
+**A near-miss in building this test, worth naming.** The first version
+introduced the demo on the panel's very FIRST render, which also fires the
+segment-reset effect on that same mount and stomps the demo's first step
+regardless of this fix — a false failure that would have looked like
+confirmation of a defect that was actually a test-sequencing mistake. The
+corrected version mounts without a demo first, then introduces it on a
+LATER render, matching how it actually happens live.

@@ -2135,6 +2135,17 @@ reaction, exactly as v2.
   draft a real tap changes, input locked during the demo, aborted on
   interrupt, foreign denominations dropped fail-safe. §5's injection posture
   is unchanged — the field has no free text and no reach beyond the open tray.
+  **Froze after one coin on any unrelated re-render — found by adversarial
+  review, 2026-08-30 (HIGH).** `ConversationView.tsx` builds the `demo`
+  prop as a fresh object every render; the demo effect depended on that
+  whole object rather than on the one primitive (`seq`) that actually says
+  whether it is a new demo. Any sibling re-render — a keystroke, a mic-level
+  update — aborted the run mid-loop and then refused to restart, since the
+  "already played" latch was set at the FIRST run, before the demo had even
+  started moving. Fixed by depending the effect on `demo?.seq` alone
+  (reading `demo`/`segment`/`verdict` from refs), plus `live.segmentId` as a
+  genuine second dependency so a real segment change still aborts a demo in
+  flight rather than letting it write into the wrong segment's draft.
 - **Turn policy** (`policy.idleNudgeMs` on turn frames): per-strategy thinking
   time — Socratic beats wait ~45 s before any nudge; fluency work paces at 15.
 
