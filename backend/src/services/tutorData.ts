@@ -391,9 +391,41 @@ export async function getLearnerMemory(userId: string): Promise<LearnerBrief | n
 }
 
 /**
- * Write one store and its ledger row. Returns false if either write failed —
- * and the caller treats false as "the memory did not advance", never retrying
- * blindly: the review runs again after the next session anyway.
+ * Write one store and its ledger row, ATOMICALLY, with the check-then-write
+ * as one Postgres call.
+ *
+ * Found by adversarial review, round 42 (2026-08-30, MEDIUM/HIGH): this used
+ * to be a plain read-then-write — GET the current content, then an
+ * unconditional upsert — with nothing checking the row was still in the
+ * state that was just read. Two concurrent calls for the SAME (user_id,
+ * store) — the documented "dropped connection, 90s park window, quick
+ * reopen" case this codebase already names elsewhere as plausibly common —
+ * both read the same stale content before either write landed, each folds
+ * in a DIFFERENT real observation, and whichever write lands last wins
+ * outright: the other call's genuine update is silently discarded, with
+ * both calls reporting success identically. Reproduced: two concurrent
+ * calls off the same "before," both returned `true`, and the final stored
+ * content reflected only one of them.
+ *
+ * `write_learner_memory_checked` (migration 0059) moves the compare and the
+ * write into ONE function, serialized with a Postgres advisory lock keyed on
+ * the learner — the same shape `award_tutor_xp` (migration 0055) already
+ * uses for a different race, adapted for compare-and-swap instead of
+ * recompute-from-source (the new CONTENT here comes from a model call that
+ * cannot run inside Postgres, so the write must instead refuse when what it
+ * read a moment ago no longer matches). Returns `false` for BOTH a genuine
+ * transport failure and a detected conflict — the caller (Oracle's
+ * post-session review) already treats `false` as "did not advance, will try
+ * again next session," which is correct for either cause — but the two are
+ * logged distinctly here, where the conflict is actually visible, so an
+ * operator can tell a race from an outage.
+ *
+ * This closes the race AT THIS CALL'S OWN read-write boundary — it does not
+ * (and structurally cannot, without a larger cross-service change) protect
+ * against the wider case where two whole SESSIONS overlap and each one's
+ * model proposal was computed from a belief read at session START, minutes
+ * before either write. That residual window is smaller and rarer than the
+ * one this fix closes, and is not what was reproduced.
  */
 export async function writeLearnerMemory(input: {
   userId: string;
@@ -409,43 +441,27 @@ export async function writeLearnerMemory(input: {
   if (before === input.content) return true; // nothing new — no ledger noise
 
   const sha = (text: string) => createHash('sha256').update(text, 'utf8').digest('hex');
-  const stored = await serviceRest<unknown>(`/learner_memory?on_conflict=user_id,store`, {
+  const outcome = await serviceRest<string>('/rpc/write_learner_memory_checked', {
     method: 'POST',
-    headers: { Prefer: 'return=minimal,resolution=merge-duplicates' },
     body: JSON.stringify({
-      user_id: input.userId,
-      store: input.store,
-      content: input.content,
-      updated_at: new Date().toISOString(),
+      p_user_id: input.userId,
+      p_store: input.store,
+      p_expected_before: before,
+      p_new_content: input.content,
+      p_before_hash: before === null ? null : sha(before),
+      p_after_hash: sha(input.content),
+      p_actor: input.actor,
+      p_session_id: input.sessionId,
     }),
   });
-  if (stored === null) return false;
-
-  /*
-   * The ledger row is what makes auto-write acceptable (owner decision
-   * 2026-08-29): every belief the system holds about a child traces to the
-   * write that created it. A failed ledger write is LOUD — the store already
-   * changed, and an unaudited change is the one condition this table exists
-   * to prevent.
-   */
-  const ledgered = await serviceRest<unknown>(`/learner_memory_ledger`, {
-    method: 'POST',
-    headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify({
-      user_id: input.userId,
-      store: input.store,
-      actor: input.actor,
-      before_hash: before === null ? null : sha(before),
-      after_hash: sha(input.content),
-      session_id: input.sessionId,
-    }),
-  });
-  if (ledgered === null) {
-    console.error(
-      `[tutor] learner_memory ledger write FAILED for user ${input.userId} store ${input.store} — the store changed without an audit row`,
+  if (outcome === null) return false; // transport failure
+  if (outcome === 'conflict') {
+    console.warn(
+      `[tutor] learner_memory write for user ${input.userId} store ${input.store} lost a concurrent write race — dropped, not overwritten`,
     );
+    return false;
   }
-  return true;
+  return true; // 'written' or 'unchanged'
 }
 
 /**

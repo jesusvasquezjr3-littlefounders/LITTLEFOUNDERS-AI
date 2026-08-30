@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { getConfig } from '../env.js';
 import { updateLearnerMemory } from '../core/client.js';
 import { stripInvisible } from '../safety/untrusted.js';
+import { moderateTutorOutput } from '../safety/moderation.js';
 import type { SessionContext } from '../core/client.js';
 
 /*
@@ -235,6 +236,44 @@ export async function runPostSessionReview(input: {
   for (const text of [proposal.learner, proposal.pedagogy]) {
     if (text !== null && suspicious.test(text)) {
       console.warn('[oracle] post-session review proposal carried an identifier-shaped token — dropped whole');
+      return null;
+    }
+  }
+
+  /*
+   * THE REGEX ABOVE ONLY CATCHES DIGIT/URL-SHAPED IDENTIFIERS. Found by
+   * adversarial review, round 42 (2026-08-30, HIGH): a surname, a school
+   * name, or a neighborhood contains none of those shapes and sailed
+   * straight through — "Se llama Sofía Hernández López y va a la Escuela
+   * Primaria Benito Juárez" is not suspicious to a single regex, and this
+   * note is not merely SHOWN to a child once: it is persisted and re-injected
+   * VERBATIM, UNFENCED, as trusted system-prompt text into EVERY future
+   * session (`prompt.ts`'s "Your own notes on who this learner is") — a
+   * direct §1.9 violation ("no surnames, no locations... sent to a
+   * third-party AI API") repeating itself forever once written once.
+   *
+   * `moderateTutorOutput`'s judge already carries a `personal_information`
+   * harm category (`moderation.ts`'s `HARM_CATEGORIES`) built for exactly
+   * this kind of free-text classification a regex cannot do — reused here
+   * rather than standing up a second judge. `requireModelPass: true`
+   * UNCONDITIONALLY, regardless of `isMinor`: unlike a live spoken turn
+   * (time-sensitive, an adult may run on the deterministic pass alone per
+   * §6), this write is permanent and this call has no client waiting on a
+   * clock, so the fail-closed judge always runs — a memory note about ANY
+   * learner deserves the same protection before it is believed forever.
+   */
+  for (const text of [proposal.learner, proposal.pedagogy]) {
+    if (text === null) continue;
+    const verdict = await moderateTutorOutput({
+      text,
+      locale: input.session.locale,
+      tier: input.session.tier,
+      requireModelPass: true,
+    });
+    if (!verdict.allowed) {
+      console.warn(
+        `[oracle] post-session review proposal failed content moderation (${verdict.reason}: ${verdict.detail}) — dropped whole`,
+      );
       return null;
     }
   }

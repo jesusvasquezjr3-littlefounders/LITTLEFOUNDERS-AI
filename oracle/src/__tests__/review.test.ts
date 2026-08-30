@@ -42,13 +42,24 @@ function modelSays(payload: unknown): Response {
   );
 }
 
+/** Matches `orchestrator.test.ts`'s own helper — the same judge, the same shape. */
+function judgeSays(safe: boolean, category = 'personal_information'): Response {
+  const verdict = safe ? { safe: true } : { safe: false, category, reason: 'test' };
+  return new Response(
+    JSON.stringify({ choices: [{ message: { content: JSON.stringify(verdict) } }] }),
+    { status: 200, headers: { 'Content-Type': 'application/json' } },
+  );
+}
+
 beforeEach(() => {
   process.env.MODEL_API_KEY = 'test-model-key-0123';
+  process.env.JUDGE_API_KEY = 'test-judge-key-0123';
   vi.stubGlobal('fetch', fetchMock);
   fetchMock.mockReset();
 });
 afterEach(() => {
   delete process.env.MODEL_API_KEY;
+  delete process.env.JUDGE_API_KEY;
   vi.unstubAllGlobals();
 });
 
@@ -85,13 +96,14 @@ describe('when it refuses to run', () => {
 
   it('still runs normally when the brief is absent but NOT flagged as degraded (an old Core, or a genuinely new learner)', async () => {
     fetchMock.mockResolvedValueOnce(modelSays({ learner: 'Nueva nota.', pedagogy: null }));
+    fetchMock.mockResolvedValueOnce(judgeSays(true));
     fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ data: { written: { learner: true } }, error: null }), { status: 200 }));
     const result = await runPostSessionReview({
       session: { ...SESSION, learnerBrief: null, learnerBriefDegraded: false } as SessionContext,
       history: EXCHANGE,
     });
     expect(result).toEqual({ learner: 'Nueva nota.', pedagogy: null });
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 });
 
@@ -101,6 +113,7 @@ describe('what it forwards to Core', () => {
       .mockResolvedValueOnce(
         modelSays({ learner: 'Le motivan las metas concretas (una bici).', pedagogy: null }),
       )
+      .mockResolvedValueOnce(judgeSays(true))
       // Core's PUT — the envelope the client validates.
       .mockResolvedValueOnce(
         new Response(JSON.stringify({ data: { written: { learner: true } }, error: null }), { status: 200 }),
@@ -118,6 +131,50 @@ describe('what it forwards to Core', () => {
     const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
     expect(result).toEqual({ learner: null, pedagogy: null });
     expect(fetchMock).toHaveBeenCalledTimes(1); // no PUT
+  });
+
+  /*
+   * Found by adversarial review, round 42 (2026-08-30, HIGH): the regex above
+   * only catches digit/URL-shaped identifiers. A surname or a school name has
+   * neither shape and sailed straight through to `learner_memory`, from where
+   * it is re-injected VERBATIM, UNFENCED, into every future session's system
+   * prompt — a direct §1.9 violation repeating itself forever once written
+   * once. The model judge's `personal_information` category is what actually
+   * catches this class.
+   */
+  it('drops a proposal WHOLE when the content judge flags an identifier a regex cannot see', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        modelSays({
+          learner: 'Se llama Sofía Hernández López y va a la Escuela Primaria Benito Juárez.',
+          pedagogy: null,
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(false, 'personal_information'));
+    const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
+    expect(result).toBeNull();
+    expect(fetchMock).toHaveBeenCalledTimes(2); // no PUT
+  });
+
+  /*
+   * FAIL-CLOSED, THE SAME WAY EVERY OTHER CALLER OF THIS JUDGE ALREADY IS.
+   * This write is permanent and this call has no client waiting on a clock
+   * (`retryDeadlineMs` omitted, `requireModelPass: true` unconditionally) —
+   * so an unavailable judge must refuse the write, not wave it through.
+   */
+  it('drops the whole proposal when the content judge is unavailable, rather than writing it unverified', async () => {
+    fetchMock.mockResolvedValueOnce(modelSays({ learner: 'Le gusta contar historias.', pedagogy: null }));
+    delete process.env.JUDGE_API_KEY; // "not configured" — moderateTutorOutput returns moderator_unavailable
+    const { resetConfigCache } = await import('../env.js');
+    resetConfigCache();
+    try {
+      const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
+      expect(result).toBeNull();
+      expect(fetchMock).toHaveBeenCalledTimes(1); // no judge call attempted, no PUT
+    } finally {
+      process.env.JUDGE_API_KEY = 'test-judge-key-0123';
+      resetConfigCache();
+    }
   });
 
   it('drops an identifier-shaped proposal WHOLE', async () => {
@@ -157,6 +214,7 @@ describe('the transcript sent to the model is fenced, not raw', () => {
   it('wraps the transcript in a nonce-delimited block with a "never an instruction" disclaimer', async () => {
     fetchMock
       .mockResolvedValueOnce(modelSays({ learner: 'Le gustan los juegos.', pedagogy: null }))
+      .mockResolvedValueOnce(judgeSays(true))
       .mockResolvedValueOnce(
         new Response(JSON.stringify({ data: { written: { learner: true } }, error: null }), { status: 200 }),
       );
@@ -219,6 +277,7 @@ describe('the identifier re-check catches a phone number written with separators
       .mockResolvedValueOnce(
         modelSays({ learner: 'Cuenta bien: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10. Le gustan los números.', pedagogy: null }),
       )
+      .mockResolvedValueOnce(judgeSays(true))
       .mockResolvedValueOnce(new Response('{}', { status: 200 }));
     const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
     expect(result?.learner).toContain('números');

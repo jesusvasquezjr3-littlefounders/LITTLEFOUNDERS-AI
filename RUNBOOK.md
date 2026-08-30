@@ -4501,3 +4501,96 @@ alongside the original, incomplete finding) has been corrected —
 `seed-dev-users.sh` already covers the user/family/guardian-link part;
 what is still genuinely missing is fixture Tutor session/turn/flag data
 for scripted browser verification, which is a smaller, different ask.
+
+## A child's name and school could leak into every future session forever, and a concurrent memory write could silently vanish — found by adversarial review, closed 2026-08-30 (round 42)
+
+Round 42 reviewed the Preceptor learner-memory system (dossier,
+episodic recall) — already through significant scrutiny in prior
+rounds (`oracle/AGENTS.md` items 36-39), so this round hunted
+specifically for what those rounds left open. Two real findings.
+
+**1. HIGH — the §1.9 re-check for the post-session review's memory
+notes only caught digit/URL-shaped identifiers, not names or
+locations.** `session/review.ts`'s regex
+(`/@|https?:\/\/|\b\d{7,}\b|.../`) matches a phone number, an email, a
+URL — nothing else. A proposal like "Se llama Sofía Hernández López y
+va a la Escuela Primaria Benito Juárez" contains a full surname and a
+school, but no digit run and no `@`, so it sailed straight through
+untouched. This note is not shown to a child once and forgotten: it is
+persisted as `learner_memory` and re-injected VERBATIM, UNFENCED, as
+trusted system-prompt text into EVERY future session — a direct §1.9
+violation ("no surnames, no locations... sent to a third-party AI
+API") repeating itself forever once written once.
+
+Fixed by reusing `moderateTutorOutput` (`oracle/src/safety/moderation.ts`)
+rather than standing up a second judge — its model judge already
+carries a `personal_information` harm category built for exactly this
+class of free-text classification a regex cannot do. `requireModelPass:
+true` unconditionally, regardless of `isMinor`: unlike a live spoken
+turn (time-sensitive, an adult session may run on the deterministic
+pass alone per §6), this write is permanent and this call has no
+client waiting on a clock, so the fail-closed judge always runs — a
+memory note about ANY learner deserves the same protection. Two new
+tests prove a name+school proposal is dropped whole when the judge
+flags `personal_information`, and that an unavailable judge ALSO drops
+the proposal rather than writing it unverified. Every existing test in
+`review.test.ts` needed a mocked judge response added to its call
+sequence, since the check now runs unconditionally on every non-null
+store. Confirmed to fail without the fix via `git stash`. Documented as
+`oracle/AGENTS.md` item 45.
+
+**2. MEDIUM/HIGH — `writeLearnerMemory` was a plain read-then-write, so
+two concurrent sessions for the same learner could silently discard
+each other's memory update.** Reproduced: two concurrent calls off the
+same stale "before" content, both returned `true`, and the final
+stored content reflected only one of them — the other session's
+genuine learning discarded with no error, no log, indistinguishable
+from an ordinary uncontested write. The documented "dropped
+connection, 90s park window, quick reopen" scenario (already named
+elsewhere in this codebase as plausibly common) is exactly the trigger.
+
+Unlike `award_tutor_xp`'s fix for the identical-shaped XP race
+(migration 0055), the new CONTENT here comes from a model call that
+cannot run inside Postgres, so recompute-from-source atomicity doesn't
+apply — the fix is optimistic concurrency control instead. Migration
+`0059_atomic_learner_memory_write.sql` adds `write_learner_memory_checked`,
+a `SECURITY DEFINER` function serialized with `pg_advisory_xact_lock`
+(a third, distinct salt from 0055's and 0057's) that only writes when
+the row's current content still matches what the caller read a moment
+before proposing its replacement — otherwise it reports `'conflict'`
+rather than overwriting. `writeLearnerMemory` (`backend/src/services/
+tutorData.ts`) now calls this RPC instead of a raw two-step GET/POST;
+`false` still means "did not advance" to the caller either way
+(transport failure or a lost race), but the two are now logged
+distinctly at Core, where the conflict is actually visible.
+
+This closes the race reproduced — the compare-and-swap at
+`writeLearnerMemory`'s own read-write boundary — not the wider,
+smaller-probability case where two whole SESSIONS overlap and each
+one's model proposal was computed from a belief read at session START,
+minutes before either write; that residual window is real but was not
+what was reproduced, and closing it would need a larger cross-service
+change (threading a per-review "what did I believe" value through the
+wire). New tests in `tutorData.test.ts` prove: a normal write lands, a
+detected conflict returns `false` and logs distinctly, and a same-
+content write short-circuits before ever calling the RPC (no ledger
+noise, matching prior behavior). Confirmed to fail without the fix via
+`git stash` (the old code takes a structurally different path — three
+raw REST calls, never the new RPC — so the mocked call sequence itself
+proves the old code no longer exists in this form).
+
+Verified against a REAL local Postgres instance, not only mocks: ran
+the RPC directly three times (first write with no existing row, a
+correct second write, then a deliberately STALE third write) and
+confirmed `written`/`written`/`conflict` with the stored content
+correctly staying at the second write's value, never the stale third's.
+`npm run db:reset` succeeded twice. Types regenerated
+(`database/types/database.ts`). ROADMAP.md's pending-delta range
+extended to `0054`–`0059` with a paragraph for `0059`, required by
+`npm run tools:test`'s own consistency check.
+
+Full suites green: backend (39 files, 657 tests), oracle (25 files, 485
+tests). Lint and type-check clean in both (including `tsconfig.test.json`
+and, for oracle, `tsconfig.scripts.json`). `verify:tutor` and
+`verify:pedagogy` green. Root `docs:check`, `secrets:check`,
+`provider:check`, and `tools:test` (26/26) all green.

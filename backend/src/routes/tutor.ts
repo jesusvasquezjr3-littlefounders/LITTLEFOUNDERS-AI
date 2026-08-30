@@ -467,7 +467,13 @@ function internalRouter(): Router {
    * V4: the post-session review's write path. Oracle destils what a session
    * taught us about the learner and PUTs it here; Core owns the limits, the
    * store and the ledger. Content rules are §1.9's: no surnames, no
-   * locations — the writer's prompt forbids them and the schema caps length.
+   * locations. Enforced upstream, in Oracle, BEFORE this call is ever made —
+   * the writer's prompt forbids them, a regex re-check catches digit/URL-
+   * shaped identifiers, and (round 42, 2026-08-30) a content-moderation
+   * judge catches what the regex cannot (a surname or a school name has
+   * neither shape). This endpoint's own job is only the length caps and the
+   * atomic write (`writeLearnerMemory`, `tutorData.ts`) — it does not, and
+   * should not, re-run content checks Oracle already ran.
    */
   router.put('/learner-memory', async (req, res) => {
     const Body = z

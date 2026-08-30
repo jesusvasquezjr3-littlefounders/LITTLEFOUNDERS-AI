@@ -1,5 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getLearnerMemory, grantVoiceConsent, insertTutorTurn, listTutorTurns, searchOwnTurns } from '../services/tutorData.js';
+import {
+  getLearnerMemory,
+  grantVoiceConsent,
+  insertTutorTurn,
+  listTutorTurns,
+  searchOwnTurns,
+  writeLearnerMemory,
+} from '../services/tutorData.js';
 
 /*
  * Found by adversarial review, round 28 (2026-08-30, HIGH): `getLearnerMemory`
@@ -249,5 +256,89 @@ describe('the whiteboard survives the round trip through Core’s own data layer
 
     const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
     expect(rows?.[0]?.whiteboard).toEqual(BOARD);
+  });
+});
+
+/*
+ * Found by adversarial review, round 42 (2026-08-30, MEDIUM/HIGH):
+ * `writeLearnerMemory` was a plain read-then-write with nothing checking
+ * the row was still in the state that was just read. Two concurrent calls
+ * for the same (user_id, store) both read the same stale content before
+ * either write landed, and whichever write landed last discarded the
+ * other's real update — both calls reported success identically. Fixed by
+ * moving the compare-and-write into one atomic RPC
+ * (`write_learner_memory_checked`, migration 0059) that reports 'written',
+ * 'unchanged', or 'conflict' — the last of which this function must now
+ * treat as a failed write, not a successful one.
+ */
+describe('writeLearnerMemory reports a lost concurrent-write race, never silently as success', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const USER = '22222222-2222-4222-8222-222222222222';
+
+  function jsonResponse(body: unknown, status = 200): Response {
+    return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+  }
+
+  it('writes through when the RPC reports "written"', async () => {
+    const fetchMock = vi.fn();
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse([{ content: 'Vieja nota.' }])) // the pre-write GET
+      .mockResolvedValueOnce(jsonResponse('written')); // the atomic RPC
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await writeLearnerMemory({
+      userId: USER,
+      store: 'learner',
+      content: 'Nota nueva.',
+      actor: 'oracle-post-session-review',
+      sessionId: null,
+    });
+
+    expect(result).toBe(true);
+    const rpcCall = fetchMock.mock.calls[1];
+    expect(String(rpcCall?.[0])).toContain('/rpc/write_learner_memory_checked');
+    const rpcBody = JSON.parse(String(rpcCall?.[1]?.body ?? '{}'));
+    expect(rpcBody.p_expected_before).toBe('Vieja nota.');
+    expect(rpcBody.p_new_content).toBe('Nota nueva.');
+  });
+
+  it('reports false — not true — when the RPC detects a lost race, and logs it distinctly', async () => {
+    const fetchMock = vi.fn();
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse([{ content: 'Vieja nota.' }]))
+      .mockResolvedValueOnce(jsonResponse('conflict'));
+    vi.stubGlobal('fetch', fetchMock);
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const result = await writeLearnerMemory({
+      userId: USER,
+      store: 'learner',
+      content: 'Nota que llegó tarde.',
+      actor: 'oracle-post-session-review',
+      sessionId: null,
+    });
+
+    expect(result).toBe(false);
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('lost a concurrent write race'));
+    warnSpy.mockRestore();
+  });
+
+  it('short-circuits before ever calling the RPC when the new content matches what is already stored', async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(jsonResponse([{ content: 'Misma nota.' }]));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await writeLearnerMemory({
+      userId: USER,
+      store: 'pedagogy',
+      content: 'Misma nota.',
+      actor: 'oracle-post-session-review',
+      sessionId: null,
+    });
+
+    expect(result).toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(1); // the GET only — no ledger noise
   });
 });

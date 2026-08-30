@@ -1036,6 +1036,41 @@ everything passes the blocked half perfectly and destroys the product.
    closing the MEANING (this fix) are two different defects that happened
    to share one root cause.
 
+45. **A re-check written for ONE identifier shape does not catch every
+   identifier shape, and this file's own `session/review.ts` said so about
+   itself.** Found by adversarial review, round 42 (2026-08-30, HIGH): the
+   post-session review's §1.9 re-check (`session/review.ts`) was a single
+   regex matching only digit/URL-shaped tokens (`@`, `https?://`, a
+   phone-shaped digit run) — a surname or a school name has NEITHER shape
+   and sailed straight through untouched. The proposal this call produces
+   is not shown to a child once and forgotten: it is persisted as
+   `learner_memory` and re-injected VERBATIM, UNFENCED, as trusted
+   system-prompt text into EVERY future session — a direct §1.9 violation
+   ("no surnames, no locations... sent to a third-party AI API")
+   repeating itself forever once written once. Fixed by reusing
+   `moderateTutorOutput` (`safety/moderation.ts`) — its judge already
+   carries a `personal_information` harm category built for exactly this
+   class of free-text classification a regex cannot do, so no second judge
+   was stood up. `requireModelPass: true` UNCONDITIONALLY, regardless of
+   `isMinor`: unlike a live spoken turn (time-sensitive, an adult session
+   may run on the deterministic pass alone per §6), this write is
+   permanent and this call has no client waiting on a clock, so the
+   fail-closed judge always runs — a memory note about ANY learner
+   deserves the same protection before it is believed forever. Two new
+   tests in `review.test.ts` prove a name+school proposal is dropped whole
+   when the judge flags `personal_information`, and that an UNAVAILABLE
+   judge also drops the proposal rather than writing it unverified (fail
+   closed, not fail open); every existing test needed a mocked judge
+   response added to its call sequence, since the check now runs
+   unconditionally on every non-null store. Confirmed to fail without the
+   fix via `git stash`. General lesson: this file already names TWO prior
+   incidents of "a hand-written regex only catches the shape its author
+   thought of" (`preferredTypes`, item 42's `whiteboard.unit`) — a §1.9
+   re-check deserves the SAME model-judge treatment this codebase already
+   gives live spoken output, not a bespoke pattern match, because the
+   thing being checked (does this contain an identifier) is exactly the
+   kind of free-text judgment a regex cannot make and a judge already can.
+
 ---
 
 ## §6 Environment

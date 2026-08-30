@@ -3382,6 +3382,19 @@ export type Database = {
         }
       }
       tutor_fts_config: { Args: { p_locale: string }; Returns: unknown }
+      write_learner_memory_checked: {
+        Args: {
+          p_actor: string
+          p_after_hash: string
+          p_before_hash: string
+          p_expected_before: string
+          p_new_content: string
+          p_session_id: string
+          p_store: string
+          p_user_id: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
