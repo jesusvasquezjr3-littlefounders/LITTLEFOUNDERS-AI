@@ -270,6 +270,13 @@ describe('the whiteboard survives the round trip through Core’s own data layer
  * (`write_learner_memory_checked`, migration 0059) that reports 'written',
  * 'unchanged', or 'conflict' — the last of which this function must now
  * treat as a failed write, not a successful one.
+ *
+ * Round 51 (2026-08-30, MEDIUM) then found that comparing against a value
+ * this function read ITSELF, moments before the compare, could never
+ * actually catch two overlapping SESSIONS — see `writeLearnerMemory`'s own
+ * comment. `expectedBefore` is now the CALLER's belief, not an internal
+ * read, so the tests below no longer mock a pre-write GET at all — there
+ * isn't one anymore.
  */
 describe('writeLearnerMemory reports a lost concurrent-write race, never silently as success', () => {
   afterEach(() => {
@@ -283,22 +290,21 @@ describe('writeLearnerMemory reports a lost concurrent-write race, never silentl
   }
 
   it('writes through when the RPC reports "written"', async () => {
-    const fetchMock = vi.fn();
-    fetchMock
-      .mockResolvedValueOnce(jsonResponse([{ content: 'Vieja nota.' }])) // the pre-write GET
-      .mockResolvedValueOnce(jsonResponse('written')); // the atomic RPC
+    const fetchMock = vi.fn().mockResolvedValueOnce(jsonResponse('written'));
     vi.stubGlobal('fetch', fetchMock);
 
     const result = await writeLearnerMemory({
       userId: USER,
       store: 'learner',
       content: 'Nota nueva.',
+      expectedBefore: 'Vieja nota.',
       actor: 'oracle-post-session-review',
       sessionId: null,
     });
 
     expect(result).toBe(true);
-    const rpcCall = fetchMock.mock.calls[1];
+    expect(fetchMock).toHaveBeenCalledTimes(1); // no pre-write GET anymore
+    const rpcCall = fetchMock.mock.calls[0];
     expect(String(rpcCall?.[0])).toContain('/rpc/write_learner_memory_checked');
     const rpcBody = JSON.parse(String(rpcCall?.[1]?.body ?? '{}'));
     expect(rpcBody.p_expected_before).toBe('Vieja nota.');
@@ -306,10 +312,7 @@ describe('writeLearnerMemory reports a lost concurrent-write race, never silentl
   });
 
   it('reports false — not true — when the RPC detects a lost race, and logs it distinctly', async () => {
-    const fetchMock = vi.fn();
-    fetchMock
-      .mockResolvedValueOnce(jsonResponse([{ content: 'Vieja nota.' }]))
-      .mockResolvedValueOnce(jsonResponse('conflict'));
+    const fetchMock = vi.fn().mockResolvedValueOnce(jsonResponse('conflict'));
     vi.stubGlobal('fetch', fetchMock);
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
 
@@ -317,6 +320,7 @@ describe('writeLearnerMemory reports a lost concurrent-write race, never silentl
       userId: USER,
       store: 'learner',
       content: 'Nota que llegó tarde.',
+      expectedBefore: 'Vieja nota.',
       actor: 'oracle-post-session-review',
       sessionId: null,
     });
@@ -326,19 +330,74 @@ describe('writeLearnerMemory reports a lost concurrent-write race, never silentl
     warnSpy.mockRestore();
   });
 
-  it('short-circuits before ever calling the RPC when the new content matches what is already stored', async () => {
-    const fetchMock = vi.fn().mockResolvedValueOnce(jsonResponse([{ content: 'Misma nota.' }]));
+  it('reports success without ledger noise when the RPC finds nothing actually changed', async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(jsonResponse('unchanged'));
     vi.stubGlobal('fetch', fetchMock);
 
     const result = await writeLearnerMemory({
       userId: USER,
       store: 'pedagogy',
       content: 'Misma nota.',
+      expectedBefore: 'Misma nota.',
       actor: 'oracle-post-session-review',
       sessionId: null,
     });
 
     expect(result).toBe(true);
-    expect(fetchMock).toHaveBeenCalledTimes(1); // the GET only — no ledger noise
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  /*
+   * THE ACTUAL ROUND-51 REPRO: two overlapping sessions for the same
+   * learner, each proposing content computed from the SAME session-start
+   * belief. Session A writes first and wins outright. Session B's own
+   * `expectedBefore` still names the ORIGINAL belief (not a value re-read
+   * after A's write, which is exactly what the old, now-removed internal
+   * GET would have done) — so B correctly loses instead of silently
+   * clobbering A's real, already-landed update.
+   */
+  it('correctly refuses a second session\'s write when a first session already moved the row it both started from', async () => {
+    /*
+     * URL-aware on purpose, not just RPC-aware: this exact mock also proves
+     * the OLD, pre-round-51 implementation (a GET of the live row, THEN the
+     * RPC) was vulnerable, by faithfully modeling BOTH real endpoints
+     * against ONE shared `stored` value — a GET reads whatever the row
+     * genuinely holds right now, exactly like real PostgREST would.
+     */
+    let stored = 'Nota original de la sesión anterior.';
+    const fetchMock = vi.fn(async (url: unknown, init?: { body?: string }) => {
+      if (String(url).includes('/learner_memory?')) return jsonResponse([{ content: stored }]);
+      const body = JSON.parse(String(init?.body ?? '{}')) as { p_expected_before: string | null; p_new_content: string };
+      if (stored !== body.p_expected_before) return jsonResponse('conflict');
+      if (stored === body.p_new_content) return jsonResponse('unchanged');
+      stored = body.p_new_content;
+      return jsonResponse('written');
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const sharedBelief = 'Nota original de la sesión anterior.';
+    const sessionA = await writeLearnerMemory({
+      userId: USER,
+      store: 'learner',
+      content: 'Actualización real de la sesión A.',
+      expectedBefore: sharedBelief,
+      actor: 'oracle-post-session-review',
+      sessionId: '11111111-1111-4111-8111-111111111111',
+    });
+    const sessionB = await writeLearnerMemory({
+      userId: USER,
+      store: 'learner',
+      content: 'Propuesta obsoleta de la sesión B.',
+      expectedBefore: sharedBelief, // B's belief never saw A's write
+      actor: 'oracle-post-session-review',
+      sessionId: '33333333-3333-4333-8333-333333333333',
+    });
+
+    expect(sessionA).toBe(true);
+    expect(sessionB).toBe(false);
+    expect(stored).toBe('Actualización real de la sesión A.'); // A's real update survives
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('lost a concurrent write race'));
+    warnSpy.mockRestore();
   });
 });

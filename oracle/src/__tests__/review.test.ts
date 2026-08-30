@@ -126,6 +126,32 @@ describe('what it forwards to Core', () => {
     expect(reviewBody).toContain('Responde bien a ejemplos con comida.');
   });
 
+  /*
+   * Found by adversarial review, round 51 (2026-08-30, MEDIUM): this call
+   * used to send only `stores`, with no `expectedBefore` at all — Core then
+   * had nothing to compare a write against except a value IT read itself,
+   * moments before writing, which can never catch a genuinely concurrent
+   * session's earlier write. `brief` (this session's OWN start-of-session
+   * snapshot — the SAME value `userContent`, above, built the model's
+   * prompt from) must reach Core as `expectedBefore`, verbatim, or the fix
+   * in `writeLearnerMemory` (tutorData.ts) has nothing real to compare.
+   */
+  it('sends its OWN session-start belief as expectedBefore, not a value invented at write time', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelSays({ learner: 'Le motivan las metas concretas (una bici).', pedagogy: null }))
+      .mockResolvedValueOnce(judgeSays(true))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ data: { written: { learner: true } }, error: null }), { status: 200 }),
+      );
+    await runPostSessionReview({ session: SESSION, history: EXCHANGE });
+
+    const putBody = JSON.parse(String(fetchMock.mock.calls[2]?.[1]?.body ?? '{}')) as {
+      expectedBefore: { learner: string | null; pedagogy: string | null };
+    };
+    // SESSION.learnerBrief = { learner: null, pedagogy: 'Responde bien a ejemplos con comida.' }
+    expect(putBody.expectedBefore).toEqual({ learner: null, pedagogy: 'Responde bien a ejemplos con comida.' });
+  });
+
   it('a double-null proposal writes nothing — most short sessions teach nothing durable', async () => {
     fetchMock.mockResolvedValueOnce(modelSays({ learner: null, pedagogy: null }));
     const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });

@@ -420,35 +420,38 @@ export async function getLearnerMemory(userId: string): Promise<LearnerBrief | n
  * logged distinctly here, where the conflict is actually visible, so an
  * operator can tell a race from an outage.
  *
- * This closes the race AT THIS CALL'S OWN read-write boundary — it does not
- * (and structurally cannot, without a larger cross-service change) protect
- * against the wider case where two whole SESSIONS overlap and each one's
- * model proposal was computed from a belief read at session START, minutes
- * before either write. That residual window is smaller and rarer than the
- * one this fix closes, and is not what was reproduced.
+ * This closed the race at a SINGLE CALL's own read-write boundary — the
+ * function's own comment used to admit it could not, "without a larger
+ * cross-service change," protect the wider case where two whole SESSIONS
+ * overlap and each one's model proposal was computed from a belief read at
+ * session START, minutes before either write. That "larger change" is
+ * exactly what closes it now (round 51, 2026-08-30, MEDIUM): this function
+ * no longer reads the CURRENT row itself to invent an "expected before" —
+ * doing that meant comparing the row against a value read moments before the
+ * compare, which by construction always matches (the compare-and-swap could
+ * only ever catch two calls landing within the same network round trip).
+ * `expectedBefore` now comes from the CALLER — Oracle's `learnerBrief`,
+ * fetched at session start, the actual belief `content` was computed from —
+ * so two overlapping sessions' proposals are compared against what each one
+ * genuinely started from, and the loser correctly reports 'conflict'.
  */
 export async function writeLearnerMemory(input: {
   userId: string;
   store: 'learner' | 'pedagogy';
   content: string;
+  expectedBefore: string | null;
   actor: string;
   sessionId: string | null;
 }): Promise<boolean> {
-  const existing = await serviceRest<{ content: string }[]>(
-    `/learner_memory?user_id=eq.${eu(input.userId)}&store=eq.${input.store}&select=content`,
-  );
-  const before = existing?.[0]?.content ?? null;
-  if (before === input.content) return true; // nothing new — no ledger noise
-
   const sha = (text: string) => createHash('sha256').update(text, 'utf8').digest('hex');
   const outcome = await serviceRest<string>('/rpc/write_learner_memory_checked', {
     method: 'POST',
     body: JSON.stringify({
       p_user_id: input.userId,
       p_store: input.store,
-      p_expected_before: before,
+      p_expected_before: input.expectedBefore,
       p_new_content: input.content,
-      p_before_hash: before === null ? null : sha(before),
+      p_before_hash: input.expectedBefore === null ? null : sha(input.expectedBefore),
       p_after_hash: sha(input.content),
       p_actor: input.actor,
       p_session_id: input.sessionId,

@@ -513,6 +513,16 @@ function internalRouter(): Router {
    * atomic write (`writeLearnerMemory`, `tutorData.ts`) — it does not, and
    * should not, re-run content checks Oracle already ran.
    */
+  /*
+   * `expectedBefore` — round 51 (2026-08-30, MEDIUM): without this, this
+   * route's own `writeLearnerMemory` call had no way to compare against
+   * anything but a value it had just re-read itself, which can never lose a
+   * race against a genuinely concurrent session (see that function's own
+   * comment). Oracle now sends the belief its proposal was actually
+   * computed from — `learnerBrief`, read at session start — so a session
+   * that overlapped another one's write correctly reports 'conflict'
+   * instead of silently discarding it.
+   */
   router.put('/learner-memory', async (req, res) => {
     const Body = z
       .object({
@@ -524,13 +534,19 @@ function internalRouter(): Router {
             pedagogy: z.string().min(1).max(2200).nullable(),
           })
           .strict(),
+        expectedBefore: z
+          .object({
+            learner: z.string().min(1).max(1400).nullable(),
+            pedagogy: z.string().min(1).max(2200).nullable(),
+          })
+          .strict(),
       })
       .strict();
     const parsed = Body.safeParse(req.body);
     if (!parsed.success) {
       return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid request');
     }
-    const { userId, sessionId, stores } = parsed.data;
+    const { userId, sessionId, stores, expectedBefore } = parsed.data;
     const results: Record<string, boolean> = {};
     for (const store of ['learner', 'pedagogy'] as const) {
       const content = stores[store];
@@ -539,6 +555,7 @@ function internalRouter(): Router {
         userId,
         store,
         content,
+        expectedBefore: expectedBefore[store],
         actor: 'oracle-post-session-review',
         sessionId,
       });

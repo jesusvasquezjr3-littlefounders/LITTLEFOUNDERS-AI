@@ -5224,3 +5224,95 @@ existing + 2 new, zero regressions), lint and type-check (all three
 tsconfigs, including `tsconfig.scripts.json` for the new harness
 scenario) clean, `verify:pedagogy` and `verify:tutor` both green.
 Documented as `oracle/AGENTS.md` item 48.
+
+## Round 51: `write_learner_memory_checked`'s compare-and-swap was comparing against a value it had just read itself — closing the exact race item 42 documented as still open
+
+A background adversarial review targeting session concurrency at the
+WebSocket layer (multiple sockets per session, resume-vs-live races,
+turn-claim/abort scoping, the daily session cap under concurrent
+starts) found four of five areas already genuinely sound — thanks to
+this session's own prior concurrency-hardening rounds (0055, 0057,
+0059) — and one real gap in the one area those rounds explicitly
+flagged as still open.
+
+`write_learner_memory_checked` (migration 0059, item 42) closed a real
+race: two calls for the same learner landing within the same network
+round trip could no longer silently discard each other's write. But
+`writeLearnerMemory` (`backend/src/services/tutorData.ts`) populated
+the RPC's `p_expected_before` with a value it read ITSELF, immediately
+before making the call — which, by construction, always matches
+whatever the row currently holds, barring a sub-second window. The
+compare-and-swap could therefore only ever catch two calls racing
+inside that same network round trip — exactly the narrow case 0059's
+own comment already said it closed, and exactly what its own comment
+already admitted it could NOT catch: two whole SESSIONS overlapping,
+each with a proposal computed from a belief read minutes earlier, at
+session start. Verified this is a realistic scenario, not a contrived
+one: the product's own 2-sessions-per-day cap makes "two tabs open at
+once" ordinary rather than an edge case, and nothing in the socket
+layer (confirmed sound by the same review) prevents two different
+sessions for one learner running concurrently.
+
+The failure mode: session A's post-session review writes first. B's
+own fresh internal read then sees A's write, "expects" exactly that
+(since it just read it), and silently overwrites the row with content
+computed from B's own stale, much-earlier belief — zero conflict
+reported, indistinguishable from an ordinary uncontested write. A
+session's real pedagogical evidence (a discovered misconception, a
+teaching approach that worked) can vanish from `learner_memory` with
+no operational signal at all.
+
+Verified independently before fixing — read the actual SQL function
+(`database/migrations/0059_atomic_learner_memory_write.sql`) to confirm
+it needed no change at all: it already accepts an arbitrary
+caller-supplied `p_expected_before` and does a correct, textbook
+compare-then-write under an advisory lock. The bug was entirely in
+which value the APPLICATION code chose to pass.
+
+Fixed by threading the caller's actual belief through instead of
+re-deriving one at write time: Oracle's `runPostSessionReview`
+(`oracle/src/session/review.ts`) now sends `learnerBrief` — the exact
+session-start snapshot the model's prompt was built from — as
+`expectedBefore` on `PUT /internal/learner-memory`. `updateLearnerMemory`
+(`oracle/src/core/client.ts`) forwards it verbatim; the route
+(`backend/src/routes/tutor.ts`) requires it (`.strict()`, no longer
+optional); `writeLearnerMemory` compares the row against THAT instead
+of a value it invents itself, and no longer needs (or makes) its own
+pre-write GET at all — one fewer REST call per write, a simplification
+that fell out of the fix rather than being a separate change.
+
+Proof: a repro test in `backend/src/__tests__/tutorData.test.ts` models
+the real CAS semantics end to end (a URL-aware mock faithfully
+implementing both the `learner_memory` GET and the RPC's compare logic
+against one shared `stored` value) — two "sessions" proposing from the
+SAME starting belief, the first's write landing, the second's correctly
+refused (`false`, logged distinctly) with the first's real content
+intact. Confirmed to fail for the exact claimed reason pre-fix via
+`git stash`: the second write incorrectly reported success and
+clobbered the first's real update. Companion tests added at every
+layer of the chain: `oracle/src/__tests__/review.test.ts` (the belief
+sent is this session's own `learnerBrief`, not a value invented at
+write time — confirmed to fail pre-fix), `oracle/src/__tests__
+/coreClient.test.ts` (the wire body carries `expectedBefore` verbatim),
+and `backend/src/__tests__/tutor.test.ts` (the route now requires
+`expectedBefore` — a request without it is rejected 400, closing a
+pre-existing gap where this route had no direct test coverage at all).
+
+Verification: full backend suite green (39 files, 672 tests, zero
+regressions), full oracle suite green (26 files, 491 tests, zero
+regressions), lint and type-check clean in both services,
+`verify:pedagogy` and `verify:tutor` both green. No new migration — the
+SQL function was already correct; this closes entirely in application
+code. Documented as `oracle/AGENTS.md` item 49.
+
+Also confirmed sound by the same review round (not fixed, because
+nothing was wrong): a second socket for an already-live session is
+refused atomically (no `await` between the check and the registration
+in `ws/server.ts`); the daily session cap and the daily XP cap are both
+real Postgres-level atomic guards (migrations 0057, 0055); the
+turn-claim/abort mechanism assigns `live.abort` synchronously in the
+same tick as every `claimTurn` call, so an interrupt can never grab a
+stale controller from a different turn; and the resume-without-preflight
+design (`POST /sessions/:id/resume`) is safe specifically because Oracle
+is pinned to a single Railway replica — a documented, existing
+architectural invariant, not a hidden dependency.

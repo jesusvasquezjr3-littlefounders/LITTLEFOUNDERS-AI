@@ -1200,11 +1200,41 @@ everything passes the blocked half perfectly and destroys the product.
    ungraded, low-stakes question rather than anything that read as a test,
    across all four turns of its own `check` steps.
 
----
+49. **A compare-and-swap that reads its own "expected" value moments before
+   the compare can never detect the race it exists for.** Found by
+   adversarial review, round 51 (2026-08-30, MEDIUM): item 42's
+   `write_learner_memory_checked` (migration 0059) closed a real race — two
+   calls landing within the same network round trip — but `writeLearnerMemory`
+   populated `p_expected_before` with a FRESH read taken by the function
+   itself, immediately before the RPC call. That value, by construction,
+   always matches whatever the row currently holds (barring a sub-second
+   window), so the optimistic-concurrency check could never catch the
+   realistic case: two whole SESSIONS overlapping, each with a proposal
+   computed from a belief read MINUTES earlier at session start — exactly the
+   case 0059's own comment already admitted was out of scope, and this
+   product's 2-sessions-per-day cap makes "two tabs open at once" ordinary
+   rather than contrived. Session A writes first; session B's OWN fresh
+   internal read then sees A's write, "expects" exactly that, and silently
+   overwrites it with content computed from B's stale belief — zero conflict
+   reported, indistinguishable from an uncontested write. Fixed by threading
+   the CALLER's actual belief through instead of re-deriving one: Oracle now
+   sends `learnerBrief` (the same session-start snapshot the model's prompt
+   was built from) as `expectedBefore` on `PUT /internal/learner-memory`, and
+   `writeLearnerMemory` compares against THAT rather than a value it invents
+   itself. The SQL function needed no change — it already accepted an
+   arbitrary caller-supplied `p_expected_before`; the bug was entirely in
+   which value the application code chose to pass. Proven with a repro
+   modeling the real CAS semantics end to end: two "sessions" proposing from
+   the same starting belief, the first's write landing, the second's
+   correctly refused (`false`, logged) with the first's real content intact
+   — confirmed to fail for the exact claimed reason pre-fix via `git stash`
+   (the second write incorrectly succeeded and clobbered the first's update).
+   General lesson: an optimistic-concurrency check is only as good as the
+   staleness of the value it compares against — comparing against a value
+   read at the LAST possible moment protects against nothing, since it will
+   always agree with itself.
 
 ---
-
-## §6 Environment
 
 `.env.example` is the reference. Three notes that are not obvious:
 

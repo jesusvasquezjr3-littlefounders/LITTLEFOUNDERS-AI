@@ -38,6 +38,7 @@ describe('updateLearnerMemory reflects the real per-store result, not just envel
       userId: '22222222-2222-4222-8222-222222222222',
       sessionId: '11111111-1111-4111-8111-111111111111',
       stores: { learner: 'Nueva nota.', pedagogy: 'Nueva nota de pedagogia.' },
+      expectedBefore: { learner: null, pedagogy: null },
     });
     expect(result).toBe(true);
   });
@@ -48,6 +49,7 @@ describe('updateLearnerMemory reflects the real per-store result, not just envel
       userId: '22222222-2222-4222-8222-222222222222',
       sessionId: '11111111-1111-4111-8111-111111111111',
       stores: { learner: 'Nueva nota.', pedagogy: 'Nueva nota de pedagogia.' },
+      expectedBefore: { learner: null, pedagogy: null },
     });
     expect(result).toBe(false);
   });
@@ -58,6 +60,7 @@ describe('updateLearnerMemory reflects the real per-store result, not just envel
       userId: '22222222-2222-4222-8222-222222222222',
       sessionId: '11111111-1111-4111-8111-111111111111',
       stores: { learner: 'Nueva nota.', pedagogy: 'Nueva nota de pedagogia.' },
+      expectedBefore: { learner: null, pedagogy: null },
     });
     expect(result).toBe(false);
   });
@@ -69,8 +72,32 @@ describe('updateLearnerMemory reflects the real per-store result, not just envel
       userId: '22222222-2222-4222-8222-222222222222',
       sessionId: '11111111-1111-4111-8111-111111111111',
       stores: { learner: 'Nueva nota.', pedagogy: null },
+      expectedBefore: { learner: null, pedagogy: null },
     });
     expect(result).toBe(true);
+  });
+
+  /*
+   * Found by adversarial review, round 51 (2026-08-30, MEDIUM): this
+   * function used to send only `stores`, so Core had nothing to compare a
+   * write against except a value it read itself, moments before writing —
+   * which can never detect a genuinely concurrent session's earlier write
+   * (see `updateLearnerMemory`'s own comment, and `writeLearnerMemory`'s in
+   * `backend/src/services/tutorData.ts`). `expectedBefore` must reach the
+   * wire body verbatim, unmodified, for Core's compare-and-swap to mean
+   * anything.
+   */
+  it('sends expectedBefore on the wire exactly as given — Core\'s compare-and-swap depends on it', async () => {
+    fetchMock.mockResolvedValueOnce(coreSays({ learner: true }));
+    await updateLearnerMemory({
+      userId: '22222222-2222-4222-8222-222222222222',
+      sessionId: '11111111-1111-4111-8111-111111111111',
+      stores: { learner: 'Nota consolidada.', pedagogy: null },
+      expectedBefore: { learner: 'Nota de la sesión anterior.', pedagogy: null },
+    });
+
+    const sentBody = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}'));
+    expect(sentBody.expectedBefore).toEqual({ learner: 'Nota de la sesión anterior.', pedagogy: null });
   });
 });
 

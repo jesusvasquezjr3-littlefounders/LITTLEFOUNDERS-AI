@@ -1518,6 +1518,52 @@ describe('the internal surface', () => {
   });
 });
 
+/*
+ * Found by adversarial review, round 51 (2026-08-30, MEDIUM): this route had
+ * no direct test coverage at all before this fix — every existing check
+ * exercised `writeLearnerMemory` (the service layer) or `updateLearnerMemory`
+ * (Oracle's client), never the route wiring itself. `expectedBefore` is now
+ * REQUIRED so a caller must state the belief its proposal was computed from,
+ * rather than letting Core invent one from a fresh read that can never
+ * detect a genuinely concurrent session (see `writeLearnerMemory`'s own
+ * comment, tutorData.ts).
+ */
+describe('PUT /api/v1/tutor/internal/learner-memory', () => {
+  it('rejects a request with no expectedBefore at all', async () => {
+    stub();
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: KID,
+        sessionId: SESSION,
+        stores: { learner: 'Nueva nota.', pedagogy: null },
+      });
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('forwards the caller\'s expectedBefore as the RPC\'s compare value, not a value it reads itself', async () => {
+    const calls = stub();
+    const response = await request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: KID,
+        sessionId: SESSION,
+        stores: { learner: 'Nueva nota.', pedagogy: null },
+        expectedBefore: { learner: 'Nota original de la sesión.', pedagogy: null },
+      });
+
+    expect(response.status).toBe(200);
+    const rpcCall = calls.find((c) => c.url.includes('/rpc/write_learner_memory_checked'));
+    expect(rpcCall).toBeDefined();
+    const rpcBody = JSON.parse(String(rpcCall?.body ?? '{}'));
+    expect(rpcBody.p_expected_before).toBe('Nota original de la sesión.');
+    expect(rpcBody.p_new_content).toBe('Nueva nota.');
+  });
+});
+
 describe('guardian visibility', () => {
   it('refuses a stranger', async () => {
     stub({ guardianLinks: [] });

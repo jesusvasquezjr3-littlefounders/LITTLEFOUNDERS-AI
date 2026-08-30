@@ -455,11 +455,29 @@ export async function voiceCheck(input: {
  * V4: persist what the post-session review learned. Core owns the caps and
  * the append-only ledger; a false return means "did not land", and the
  * caller's answer to that is the next session's review, never a retry loop.
+ *
+ * `expectedBefore` is THIS SESSION'S OWN belief — `learnerBrief.learner`/
+ * `.pedagogy`, read at session START — not a value re-derived at write time.
+ * Found by adversarial review, round 51 (2026-08-30, MEDIUM): Core's
+ * `writeLearnerMemory` used to read the CURRENT row itself, immediately
+ * before its own compare-and-swap call, and compare against THAT — which by
+ * construction always matches whatever is currently stored (barring a
+ * sub-second race), so the optimistic-concurrency check 0059 added could
+ * never actually detect the realistic case, two whole SESSIONS overlapping
+ * (this product's 2-per-day cap makes "two tabs at once" ordinary, not
+ * contrived): session A writes first, then session B's own fresh read sees
+ * A's write, "expects" exactly that, and silently overwrites it with content
+ * computed from B's OWN much-earlier, now-stale belief — zero conflict
+ * reported, indistinguishable from an uncontested write. Sending the belief
+ * the CONTENT was actually computed from closes that gap: Core's compare now
+ * runs against what THIS proposal is really built on, so B's write correctly
+ * reports 'conflict' when A already moved the row out from under it.
  */
 export async function updateLearnerMemory(input: {
   userId: string;
   sessionId: string | null;
   stores: { learner: string | null; pedagogy: string | null };
+  expectedBefore: { learner: string | null; pedagogy: string | null };
 }): Promise<boolean> {
   try {
     const body = await coreFetch('/tutor/internal/learner-memory', {
