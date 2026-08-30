@@ -4786,3 +4786,49 @@ completions — the rare residual of an issue already measured and
 mostly closed elsewhere (`oracle/AGENTS.md`'s empty-completions entry:
 0% after its fix, measured in a different scenario), not a regression
 introduced here, and not the same code path this round touched.
+
+## The tutor:converse harness's own "praises an answer" check false-positived on ordinary money vocabulary — fixed 2026-08-30
+
+Surfaced by the same live run that verified round 44's fix (see the
+entry above): `oracle/scripts/converse.ts`'s "praises an answer the
+learner never gave" check flagged a turn that was validating a
+learner's COMPLAINT about the session being boring
+("Tienes razón, Chispa... para dar el cambio exacto."), not reacting
+to any answer at all.
+
+Root cause: the check's `praises` regex matched `exacto` as a bare
+substring anywhere in the turn. In this money-focused tutoring domain,
+"el cambio exacto" / "el monto exacto" ("the exact change" / "the
+exact amount") uses the word as an ordinary ADJECTIVE describing
+precision, with zero affirmation in it — a false positive of the exact
+same SHAPE the file already documents fixing once (the
+`learnerAskedBack` guard, 2026-08-30, right above this check), just a
+different trigger. Genuine praise uses `exacto` as its own exclamation
+("¡Exacto!") or to open a sentence ("Exacto, Nayeli: ..."), never
+buried mid-sentence modifying a noun.
+
+Fixed by extracting a shared `praises()` helper (previously the same
+regex was hand-duplicated at both of the file's two praise-based
+checks, already showing signs of drift — one had `perfecto`, the other
+didn't) that only counts `exacto` as praise when it opens the turn or
+follows a sentence boundary (`(?:^|[.!?]\s*)¡?exacto\b`), leaving the
+other three praise words (`excelente`, `muy bien`, `correcto`) as
+plain substring matches — no false positive from them has been
+observed in any transcript so far. Verified against the exact regex
+now in the file: the false-positive sentence no longer matches, while
+`¡Exacto! 20 menos 5 es 15.` and `Exacto, Nayeli: empiezas en el
+precio...` (both genuine praise, one an interjection and one opening a
+sentence) still do.
+
+This is test-instrument code, not production code, so the applicable
+gates are narrower: `npm run type-check` (which in `oracle/` already
+covers `scripts/` via `tsconfig.scripts.json` per root
+`AGENTS.md`/`CLAUDE.md` §5 — the exact gate that exists because this
+same file once shipped a call-arity bug undetected) and `npm run lint`,
+both clean. No Vitest coverage exists for `converse.ts`'s internal
+checks (it is a live operator script, not an importable module), so
+this was verified by extracting the real, current regex from the file
+and testing it directly against the exact false-positive sentence and
+two genuine-praise sentences from real transcripts — matching this
+codebase's own standard of proving a fix against the real code rather
+than a reconstruction of it.

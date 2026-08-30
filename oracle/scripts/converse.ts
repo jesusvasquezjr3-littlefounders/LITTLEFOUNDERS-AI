@@ -290,6 +290,28 @@ function flatten(s: string): string {
     .trim();
 }
 
+/**
+ * Whether a tutor turn PRAISES something, for the two checks below that infer
+ * a wrong reaction from praise language plus a suspicious number.
+ *
+ * `exacto` is not always praise — this domain talks about money, and "el
+ * cambio exacto" / "el monto exacto" ("the exact change" / "the exact
+ * amount") uses it as an ordinary ADJECTIVE describing precision, with no
+ * affirmation in it at all. Found as a false positive on a real transcript,
+ * 2026-08-30: "...para dar el cambio exacto." tripped `praises an answer the
+ * learner never gave" over a turn that was validating the LEARNER'S COMPLAINT
+ * about the session being boring, not reacting to any answer. Genuine praise
+ * uses the word as its own exclamation ("¡Exacto!") or to OPEN a sentence
+ * ("Exacto, Nayeli: ...") — never buried mid-sentence describing a noun. The
+ * other three words in this list (`excelente`, `muy bien`, `correcto`) do not
+ * show this same ambiguity in any transcript observed so far, so they stay a
+ * plain substring match; if one of them ever does, it earns the same
+ * position-anchored treatment `exacto` gets here.
+ */
+function praises(said: string): boolean {
+  return /excelente|muy bien|correcto|perfecto|(?:^|[.!?]\s*)¡?exacto\b/i.test(said);
+}
+
 let problems = 0;
 /**
  * Empty completions the provider returned, counted across the run.
@@ -405,7 +427,7 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
     // A tutor stating a number the learner never said, immediately after
     // asking for it, in a turn that also praises — that is answering itself.
     const said = beats[i]!.tutor;
-    const praises = /excelente|exacto|muy bien|correcto/i.test(said);
+    const isPraise = praises(said);
     const learnerNumbers: string[] = beats[i]!.learner.match(/\d+/g) ?? [];
     const newNumber = (said.match(/\d+/g) ?? []).find(
       (n) => !learnerNumbers.includes(n) && !numbersAsked.includes(n),
@@ -421,7 +443,7 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
      * an attempted answer; a bare confirmation question is not one.
      */
     const learnerAskedBack = beats[i]!.learner.trim().endsWith('?');
-    if (praises && newNumber !== undefined && learnerNumbers.length === 0 && !learnerAskedBack) {
+    if (isPraise && newNumber !== undefined && learnerNumbers.length === 0 && !learnerAskedBack) {
       fault('praises an answer the learner never gave', said.slice(0, 100));
     }
   }
@@ -444,8 +466,7 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
   for (let i = 0; i < beats.length; i += 1) {
     const said = beats[i]!.tutor;
     if (beats[i]!.kind === 'activity') continue;
-    const praises = /\b(exacto|muy bien|correcto|perfecto|excelente)\b/i.test(said);
-    if (!praises) continue;
+    if (!praises(said)) continue;
     const learnerNumbers = beats[i]!.learner.match(/\d+/g) ?? [];
     if (learnerNumbers.length !== 1) continue;
     // "X menos Y es Z" / "son Z" / "es Z" — the result the tutor states.
