@@ -268,8 +268,16 @@ function internalRouter(): Router {
      * with no memory — never to a refused session.
      */
     const recent = await listRecentSummaries(session.user_id, session.id);
-    // V4: the curated learner brief (0053). Read failure degrades to no brief.
-    const learnerBrief = await getLearnerMemory(session.user_id);
+    /*
+     * V4: the curated learner brief (0053). A read failure is NOT an empty
+     * brief (/AGENTS.md, round 28, 2026-08-30, HIGH) — `learnerBriefDegraded`
+     * travels alongside it so Oracle's post-session review can refuse to
+     * treat "we could not read it" as "this learner has none" and overwrite
+     * real accumulated memory with a note written from a false premise.
+     */
+    const learnerBriefResult = await getLearnerMemory(session.user_id);
+    const learnerBriefDegraded = learnerBriefResult === null;
+    const learnerBrief = learnerBriefResult ?? { learner: null, pedagogy: null };
 
     /*
      * THE V3 BRAIN (migration 0052). The session plan (review debt + ZPD
@@ -316,6 +324,7 @@ function internalRouter(): Router {
        * ledgered.
        */
       learnerBrief,
+      learnerBriefDegraded,
       skillStates: (states ?? []).slice(0, 12).map((s) => ({
         skillKey: s.skillKey,
         masteryProbability: s.masteryProbability,

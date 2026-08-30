@@ -3327,3 +3327,68 @@ and a new test in `personalizeInWorld.test.tsx` (a second click while
 against the pre-fix code for the exact claimed reason via `git stash`,
 pass against the fix. Full frontend suite green (1426 tests, up from
 1424), lint clean, type-check clean, root `i18n:check` clean.
+
+## A curated cross-session memory write could be silently lost or could silently erase real memory on a transient read failure — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 28 (`oracle/src/core/client.ts` — every
+HTTP call Oracle makes to Core, the only way Oracle reads or writes
+anything about a learner). Both HIGH, both in the V4 curated-memory
+(`learner_memory`) read/write path — the single highest-stakes data flow
+in the codebase to get wrong, since a mistake here corrupts what the tutor
+believes about a real child across every future session, permanently.
+
+**1. `updateLearnerMemory` reported success on a genuine per-store write
+failure.** Core answers `PUT /learner-memory` with an ordinary 200 even
+when one store fails to persist — `{ written: { learner: false, pedagogy:
+true } }` is not an error envelope, just a partial result. This function
+checked only that the envelope parsed and `data !== null`, true in BOTH a
+full success and a partial failure, unlike every sibling write function in
+the same file (`persistTurn`, `persistSafetyFlag`, `closeSession`), which
+all check the real boolean. The function's own doc comment promises "a
+false return means did not land," which `session/review.ts` relies on to
+let the next session's review retry — silently returning true instead
+meant a memory write could fail with no retry and no warning, forever.
+
+**2. A transient read failure could look identical to "this learner has no
+memory yet," and the difference mattered because the caller WRITES based
+on it.** `backend/services/tutorData.ts`'s `getLearnerMemory` collapsed a
+failed read and a genuinely empty one into the identical `{ learner: null,
+pedagogy: null }` shape, labeled in its own comment as safe because the
+read is "Display-only (§1.14)." That labeling was wrong for its actual
+consumer: `session/review.ts` treats an empty brief as "this learner never
+had memory" and has the model write a note "from scratch" — which then
+REPLACES whatever real, accumulated memory existed from every prior
+session. A transient Core hiccup on session N+1 could silently and
+permanently erase everything sessions 1..N had written, the exact
+failure-must-be-distinguishable-from-emptiness shape this file's own
+header already names for `getLearningStatsForUpdate`. `intelDegraded`
+already makes this distinction for the `skillStates` read; nothing
+equivalent existed for `learnerBrief`.
+
+Fixed end to end. `updateLearnerMemory` now requires `written[store] ===
+true` for every store actually proposed (a `null` store was never
+requested and correctly never appears in `written`). `getLearnerMemory`
+now returns `null` specifically when the read fails — the signal
+(`serviceRest` returning `null` on failure vs. a real `[]`) already
+existed and was simply being thrown away via `rows ?? []`. Core's route
+threads a new `learnerBriefDegraded` flag alongside the unchanged
+`learnerBrief` field, the same way `intelDegraded` rides beside
+`skillStates`, and `runPostSessionReview` now refuses to run at all when
+`learnerBriefDegraded` is true, rather than trusting an empty brief it
+cannot tell from a failed one. See `oracle/AGENTS.md` items 36-37 for the
+general lessons.
+
+Proven with new tests: `backend/src/__tests__/tutorData.test.ts` (a failed
+read returns `null`, a real empty result returns the object, real content
+comes through unchanged); `oracle/src/__tests__/coreClient.test.ts` (a
+partial or total per-store failure returns `false`, a full success returns
+`true`, a store that was never proposed is not required to appear); and
+two new cases in `oracle/src/__tests__/review.test.ts` (the review skips
+entirely when `learnerBriefDegraded` is true, and still runs normally when
+the brief is merely absent and NOT flagged as degraded). All confirmed to
+fail against the pre-fix code for the exact claimed reason via `git
+stash`, pass against the fix. Full oracle suite green (471 tests, up from
+465), full backend suite green (631 tests, up from 628), lint clean on
+both services, type-check clean on all tsconfigs in both services
+(backend's own + oracle's three), `verify:pedagogy` and `verify:tutor`
+both green, root `docs:check`, `secrets:check` and `provider:check` clean.

@@ -61,6 +61,38 @@ describe('when it refuses to run', () => {
     expect(result).toBeNull();
     expect(fetchMock).not.toHaveBeenCalled();
   });
+
+  /*
+   * Found by adversarial review, round 28 (2026-08-30, HIGH): `learnerBrief`
+   * arriving empty used to be treated identically whether this learner
+   * genuinely had no memory yet OR Core's read of it had just failed — the
+   * model would be told "(empty)" either way and propose a note "from
+   * scratch," which `updateLearnerMemory` writes as a FULL REPLACEMENT. A
+   * transient read failure on session N+1 could silently and permanently
+   * erase everything sessions 1..N had accumulated. `learnerBriefDegraded`
+   * is Core's own signal that the read failed; this review must refuse to
+   * run at all rather than trust an empty brief it cannot tell from a
+   * failed one.
+   */
+  it('spends nothing when the learner brief read was degraded, not genuinely empty', async () => {
+    const result = await runPostSessionReview({
+      session: { ...SESSION, learnerBrief: null, learnerBriefDegraded: true } as SessionContext,
+      history: EXCHANGE,
+    });
+    expect(result).toBeNull();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('still runs normally when the brief is absent but NOT flagged as degraded (an old Core, or a genuinely new learner)', async () => {
+    fetchMock.mockResolvedValueOnce(modelSays({ learner: 'Nueva nota.', pedagogy: null }));
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ data: { written: { learner: true } }, error: null }), { status: 200 }));
+    const result = await runPostSessionReview({
+      session: { ...SESSION, learnerBrief: null, learnerBriefDegraded: false } as SessionContext,
+      history: EXCHANGE,
+    });
+    expect(result).toEqual({ learner: 'Nueva nota.', pedagogy: null });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('what it forwards to Core', () => {

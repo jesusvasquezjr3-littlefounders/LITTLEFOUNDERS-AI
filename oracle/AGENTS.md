@@ -775,6 +775,57 @@ everything passes the blocked half perfectly and destroys the product.
    every promise that still owes it a write; the moment that matters is not
    "did we start every paid call" but "have all of them finished writing
    their cost," and those are only the same moment if something enforces it.
+36. **A write function that checks "did the envelope parse" instead of "did
+   the field say true" reports a partial failure as success.**
+   `updateLearnerMemory` PUTs a proposed update to two independent stores in
+   one call, and Core answers with an ordinary 200 whenever ONE store fails
+   to persist — `{ written: { learner: false, pedagogy: true } }` is not an
+   error envelope, just a partial result. Found by adversarial review,
+   round 28 (2026-08-30, HIGH): this function checked only that the
+   envelope parsed and `data !== null` — true in BOTH a full success and a
+   partial failure — so a genuine per-store write failure was reported to
+   the caller as a wholesale success. It was the odd one out in this file:
+   every sibling write function (`persistTurn`, `persistSafetyFlag`,
+   `closeSession`) already checks the real boolean field, not merely that
+   a response arrived. Its own doc comment promises "a false return means
+   did not land," which `session/review.ts` relies on to let the NEXT
+   session's review try again — silently returning true instead meant a
+   curated cross-session memory note could fail to persist with no retry
+   and no warning, forever. Fixed by checking `written[store] === true` for
+   every store actually proposed (a `null` store was never requested and
+   correctly never appears in `written` — Core's own route skips it).
+   General lesson: "the request succeeded" and "the thing the request asked
+   for happened" are different claims for any write with more than one
+   possible outcome, and only the second one is what a caller relying on a
+   boolean return actually needs.
+37. **A display-only degraded-read label does not survive being reused as
+   the base state for a write.** `backend/services/tutorData.ts`'s
+   `getLearnerMemory` collapsed "this learner genuinely has no memory yet"
+   and "the read of it just failed" into the identical `{ learner: null,
+   pedagogy: null }` shape, with its own comment calling this correct
+   because the read is "Display-only (§1.14)". Found by adversarial
+   review, round 28 (2026-08-30, HIGH): that labeling was wrong for its
+   actual consumer. `session/review.ts` does NOT display the brief — it
+   treats it as "the existing stores" and tells the model to write a
+   REPLACEMENT that carries forward what still holds. A transient read
+   failure on session N+1 therefore told the model there was nothing to
+   carry forward, and the resulting "from scratch" note overwrote
+   everything sessions 1..N had actually accumulated — a silent, permanent
+   erasure of exactly the shape this file's own header names for
+   `getLearningStatsForUpdate`. `intelDegraded` already makes this same
+   distinction for the `skillStates` read; nothing equivalent existed for
+   `learnerBrief`. Fixed end to end: `getLearnerMemory` now returns `null`
+   specifically on a failed read (Core's `serviceRest` already signals this
+   correctly — the bug was throwing the signal away via `rows ?? []`);
+   the route threads a new `learnerBriefDegraded` flag alongside the
+   (unchanged-shape) `learnerBrief` field, the same way `intelDegraded`
+   rides beside `skillStates`; and `runPostSessionReview` refuses to run at
+   all when `learnerBriefDegraded` is true, rather than trusting an empty
+   brief it cannot tell from a failed one. General lesson: before reusing a
+   "failure degrades to empty, and that's fine" read somewhere new, check
+   what the NEW caller actually does with the result — the same collapse
+   that is harmless for a read that only ever gets shown is a data-loss bug
+   for one that gets treated as the starting point of a replace.
 
 ---
 

@@ -137,6 +137,27 @@ export async function runPostSessionReview(input: {
   // A session with no real exchange teaches nothing — do not spend a call.
   const learnerTurns = input.history.filter((h) => h.speaker === 'learner').length;
   if (learnerTurns < 2) return null;
+  /*
+   * NEVER WRITE OVER REAL MEMORY BASED ON A FAILED READ OF IT.
+   *
+   * Found by adversarial review, round 28 (2026-08-30, HIGH): `learnerBrief`
+   * arriving empty means one of two very different things — this learner
+   * genuinely has no memory yet, or Core's read of it just failed — and
+   * this function used to treat both identically, telling the model "(empty)"
+   * either way. The model then proposes a note "from scratch," which
+   * `updateLearnerMemory` WRITES AS A FULL REPLACEMENT — so a transient read
+   * failure on session N+1 could silently and permanently erase everything
+   * sessions 1..N had accumulated. This is the exact §1.14
+   * failure-must-be-distinguishable-from-emptiness shape this codebase's own
+   * `getLearningStatsForUpdate` incident already named. `learnerBriefDegraded`
+   * is Core's own signal that the read failed; when it is set, this review
+   * skips entirely rather than writing over memory it cannot see, the same
+   * as a short session already skips rather than writing from nothing.
+   */
+  if (input.session.learnerBriefDegraded === true) {
+    console.warn('[oracle] skipping post-session review — the learner brief read was degraded, not empty');
+    return null;
+  }
 
   const brief = input.session.learnerBrief ?? { learner: null, pedagogy: null };
   const transcript = input.history

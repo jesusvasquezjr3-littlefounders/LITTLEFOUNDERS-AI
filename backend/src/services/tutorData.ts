@@ -305,13 +305,32 @@ export interface LearnerBrief {
   pedagogy: string | null;
 }
 
-export async function getLearnerMemory(userId: string): Promise<LearnerBrief> {
+/**
+ * `null` means the READ ITSELF failed (a transient `serviceRest` error) —
+ * distinct from a real, successful query that simply found no rows yet.
+ *
+ * Found by adversarial review, round 28 (2026-08-30, HIGH): this used to
+ * collapse both into the same `{ learner: null, pedagogy: null }` shape via
+ * `rows ?? []`, throwing away the one signal (`serviceRest` returning `null`
+ * specifically on failure, vs. a real `[]`) that tells them apart. The
+ * caller injects this into the session as `learnerBrief`, and
+ * `session/review.ts`'s post-session write treats an empty brief as "this
+ * learner never had memory" and proposes a note "from scratch" — which then
+ * REPLACES whatever real, accumulated memory existed. A transient read
+ * failure on session N+1 could silently and permanently erase everything
+ * sessions 1..N wrote, the exact §1.14 failure-must-be-distinguishable-from-
+ * emptiness shape this file's own header already names for
+ * `getLearningStatsForUpdate`. The route now threads this through as
+ * `learnerBriefDegraded`, and `session/review.ts` refuses to run the write
+ * at all when it is true, rather than writing over real data based on a
+ * false "empty" premise.
+ */
+export async function getLearnerMemory(userId: string): Promise<LearnerBrief | null> {
   const rows = await serviceRest<{ store: string; content: string }[]>(
     `/learner_memory?user_id=eq.${eu(userId)}&select=store,content`,
   );
-  // A read failure degrades to "no brief" deliberately: the brief improves a
-  // session, it must never be able to block one. Display-only read (§1.14).
-  const byStore = new Map((rows ?? []).map((r) => [r.store, r.content]));
+  if (rows === null) return null;
+  const byStore = new Map(rows.map((r) => [r.store, r.content]));
   return {
     learner: byStore.get('learner') ?? null,
     pedagogy: byStore.get('pedagogy') ?? null,

@@ -115,6 +115,18 @@ const SessionContextSchema = z
       .nullable()
       .optional(),
     /**
+     * Whether Core's OWN read of `learnerBrief` failed, as opposed to this
+     * learner genuinely having no memory yet — the same "failure is not
+     * emptiness" distinction `intelDegraded` already makes for `skillStates`
+     * (/AGENTS.md, round 28, 2026-08-30, HIGH). OPTIONAL on the wire, so an
+     * Oracle deployed ahead of Core (which does not send this field yet)
+     * defaults to `false` — the same conservative default `learnerBrief`
+     * itself already had before this flag existed, not a regression.
+     * `session/review.ts` refuses to write over real memory when this is
+     * true, rather than trusting an empty brief that might just be unread.
+     */
+    learnerBriefDegraded: z.boolean().optional(),
+    /**
      * The v3 brain (migration 0052). OPTIONAL AND NULLABLE on the wire, and
      * that is the whole deployment story: while 0052 is unapplied, unseeded,
      * or TUTOR_V3_BRAIN is off, Core sends null (or nothing) and Oracle's
@@ -445,7 +457,33 @@ export async function updateLearnerMemory(input: {
       body: JSON.stringify(input),
     });
     const parsed = Envelope(z.object({ written: z.record(z.string(), z.boolean()) })).safeParse(body);
-    return parsed.success && parsed.data.data !== null;
+    if (!parsed.success || parsed.data.data === null) return false;
+    /*
+     * EVERY STORE ACTUALLY ASKED FOR, NOT JUST "DID THE ENVELOPE PARSE".
+     *
+     * Found by adversarial review, round 28 (2026-08-30, HIGH): Core answers
+     * this call with a real 200 even when a per-store write fails — a null
+     * store in `input.stores` means "nothing proposed for it" and is
+     * correctly absent from `written` (Core's own route: `if (content ===
+     * null) continue`), but a store that WAS proposed and failed to persist
+     * (a PostgREST error) still comes back as an ordinary 200 with
+     * `written: { learner: false, ... }`. This function used to check only
+     * that the envelope parsed and `data` was non-null — true in BOTH cases
+     * — so a genuine write failure was reported as success. The doc comment
+     * above already promises "a false return means did not land"; this is
+     * the only write function in this file that was not actually keeping
+     * that promise (`persistTurn`/`persistSafetyFlag` check `.recorded`,
+     * `closeSession` checks `.closed`). The caller (`session/review.ts`)
+     * only logs and lets the NEXT session's review try again when this
+     * returns false — silently returning true instead meant a curated
+     * cross-session memory note could fail to land with no retry and no
+     * warning, forever.
+     */
+    const written = parsed.data.data.written;
+    const proposedStores = (Object.keys(input.stores) as (keyof typeof input.stores)[]).filter(
+      (store) => input.stores[store] !== null,
+    );
+    return proposedStores.every((store) => written[store] === true);
   } catch {
     return false;
   }
