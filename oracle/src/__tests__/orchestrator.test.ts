@@ -869,6 +869,91 @@ describe('the grace turn also covers an activity result, not only spoken convers
   });
 });
 
+/*
+ * Found live testing as the owner's low-retention persona, 2026-08-30: the
+ * tutor announced a coin-counting activity ("Te voy a mostrar un cofre con
+ * monedas...") to set up a `financial-education/cobrar-y-dar-cambio` request,
+ * and the ladder served a `sort_buckets` needs-vs-wants activity instead — an
+ * ordinary mismatch `preferredTypes`'s own doc comment already allows for
+ * ("the system may still serve something else"). The reaction turn then
+ * described the COIN activity anyway, inventing a specific wrong total for an
+ * activity that has no coins or numbers at all. `buildContextMessage`'s "ON
+ * THE LEARNER'S SCREEN RIGHT NOW" block already carried the correct type and
+ * prompt — grounding was available, exactly as it was for the item-14
+ * incident this one echoes — so the question this test answers is structural:
+ * does anything in the messages actually sent to the model put that true fact
+ * where the model is most likely to use it, or does the model's OWN earlier,
+ * more specific promise sit closer to the generation point than the fact
+ * that contradicts it?
+ */
+describe('the reaction turn must not lose to the tutor\'s own earlier promise', () => {
+  const ANNOUNCE_TURN = {
+    say: 'Te voy a mostrar un cofre con monedas. Tienes que juntar monedas para pagar exactamente el precio que aparece. ¿Listo para intentarlo?',
+    emotion: 'happy',
+    action: 'nod',
+    next: 'segment',
+    segmentRequest: {
+      skillKey: 'financial-education/cobrar-y-dar-cambio',
+      difficulty: 2,
+      framing: 'Practicar a dar cambio con monedas',
+      rationale: 'El aprendiz necesita practicar sumar monedas para pagar un monto exacto',
+    },
+    offerAdaptation: null,
+  };
+  const SORT_BUCKETS_PROMPT = 'Clasifica cada cosa: ¿es una necesidad o un gusto?';
+
+  it('gives the model the ACTUAL activity, restated in the same message as the instruction that needs it', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+
+    // The tutor's own earlier turn — a specific, richly-detailed promise about
+    // a coin-counting activity — lands in `this.history` as an assistant turn.
+    fetchMock.mockResolvedValueOnce(modelReplies(ANNOUNCE_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('quiero practicar dar cambio', Date.now());
+
+    // What the ladder actually served is unrelated: a sort_buckets activity
+    // with no coins or numbers, for the same skill key.
+    orchestrator.noteSegmentServed(
+      'seg-1',
+      'financial-education/cobrar-y-dar-cambio',
+      'sort_buckets',
+      SORT_BUCKETS_PROMPT,
+    );
+
+    fetchMock.mockClear();
+    fetchMock.mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, next: 'ask' })).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleSegmentResult('seg-1', 40, false, Date.now());
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as {
+      messages: { role: string; content: string }[];
+    };
+    const messages = body.messages;
+    expect(messages.length).toBeGreaterThan(2);
+
+    const contextMessage = messages.find((m) => m.content.includes('ON THE LEARNER\'S SCREEN'));
+    // `messages.at(-1)` is always the unconditional "reply with ONLY the JSON
+    // object" shape reminder (see `produce()`'s own comment on why it rides
+    // in its own trailing message on every attempt) — the reaction
+    // instruction itself is the one before it.
+    const reactionMessage = messages.at(-2)!;
+
+    // Sanity check on the fixture itself: the conflicting narrative really is
+    // in the messages the model receives, further along than the context
+    // message — otherwise this test would not be exercising the conflict it
+    // claims to.
+    const announceIndex = messages.findIndex((m) => m.content.includes('cofre con monedas'));
+    const contextIndex = messages.indexOf(contextMessage!);
+    expect(announceIndex).toBeGreaterThan(contextIndex);
+
+    // The fact that resolves the conflict — what was ACTUALLY on screen — must
+    // reach the model in the reaction instruction itself, the message
+    // adjacent to "React as their tutor" and closest to generation. The
+    // context message being correct is not enough; it already was, for the
+    // incident this test reproduces.
+    expect(reactionMessage.content).toContain('sort_buckets');
+    expect(reactionMessage.content).toContain(SORT_BUCKETS_PROMPT);
+  });
+});
+
 describe('adaptation', () => {
   it('applies an adaptation only once the learner accepts it — and only what was actually offered', async () => {
     fetchMock

@@ -1070,6 +1070,48 @@ everything passes the blocked half perfectly and destroys the product.
    gives live spoken output, not a bespoke pattern match, because the
    thing being checked (does this contain an identifier) is exactly the
    kind of free-text judgment a regex cannot make and a judge already can.
+46. **A fact available in the prompt is not a fact the model will use, if
+   something closer to the point of generation contradicts it.** Found live,
+   testing as the owner's low-retention persona, 2026-08-30: the tutor's own
+   preceding turn announced a coin-counting activity ("Te voy a mostrar un
+   cofre con monedas...") to set up a `financial-education/cobrar-y-dar-cambio`
+   request, and the ladder served a `sort_buckets` needs-vs-wants activity
+   instead — an ordinary mismatch `segmentRequest.preferredTypes`'s own doc
+   comment already allows for ("the system may still serve something else if
+   nothing visual exists for this skill yet"). The reaction turn
+   (`handleSegmentResult`, already carrying item 14's fix) described the COIN
+   activity anyway, inventing a specific wrong total ("elegiste una moneda de
+   5 y una de 2... te falta una moneda de 1") for a sort activity with no
+   coins or numbers at all — a THIRD manifestation of the class items 14 and
+   the 2026-08-29 `openActivity` fix (`prompt.ts`'s "Talk about THIS, not
+   about the one you had in mind") both already tried to close. This time the
+   context message ("ON THE LEARNER'S SCREEN RIGHT NOW") was correct and
+   present — grounding was available, exactly as item 14 found it was — so
+   the gap was never missing information, it was POSITION: `produce()` places
+   the context message early, for prefix-cache reasons, and the model's OWN
+   richer, more specific promise sits LATER, in conversation history, closer
+   to the reaction instruction than the truth is. `handleVoiceCheckResult`
+   never had this failure mode, because the one fact it needs — the learner's
+   verified utterance — is the last history line before its own instruction,
+   adjacent by construction. Fixed by restating the real activity type and
+   prompt (read from `this.openActivity`, already tracked for exactly this)
+   directly inside `handleSegmentResult`'s own reaction instruction — the SAME
+   message as "name the specific thing they did" — instead of relying on the
+   model to reach back past its own conflicting narrative to find it. Proven
+   with a test that inspects the literal messages array `produce()` sends
+   (`orchestrator.test.ts`, "the reaction turn must not lose to the tutor's
+   own earlier promise"): the conflicting narrative is confirmed present in
+   history, further from the context message than the truth is, and the
+   reaction message itself is asserted to carry the real type and prompt.
+   Confirmed to fail without the fix via `git stash`. General lesson: a rule
+   stated once, early in the prompt, does not protect a later decision it
+   never sits beside — if a later message can conflict with an earlier fact,
+   restate the fact next to the decision, rather than trusting the model to
+   retrieve it across the whole conversation. Two independent rounds of
+   prompt wording aimed at this exact failure (item 14, and
+   `buildContextMessage`'s own "not about the one you had in mind") narrowed
+   it without closing it, because both added MORE instruction rather than
+   moving the FACT closer to where it is needed.
 
 ---
 

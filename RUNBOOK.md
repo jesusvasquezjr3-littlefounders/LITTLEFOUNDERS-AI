@@ -4672,3 +4672,117 @@ condition, not a code defect) prevented driving the resize handle to
 FULL detent live. Finding 2 rests on the RTL/git-stash proof above,
 which exercises the real component tree end to end; finding 1 (the
 more severe one) was independently confirmed live.
+
+## The reaction turn to a graded activity described a coin-counting scenario for a needs-vs-wants sort activity that had no coins at all — found live, round 44, closed 2026-08-30
+
+Not from an adversarial-review agent — from directly playing the Tutor
+via `npm run tutor:converse` as the owner's low-retention persona, per
+this session's own standing instruction to test live rather than only
+review code. One exchange in the transcript:
+
+```
+tutor: Te voy a mostrar un cofre con monedas. Tienes que juntar monedas
+       para pagar exactamente el precio que aparece. ¿Listo para
+       intentarlo?
+       [next=segment, requesting financial-education/cobrar-y-dar-cambio]
+[activity] financial-education/cobrar-y-dar-cambio (sort_buckets)
+           — served and answered INCORRECTLY
+tutor: Vi que elegiste una moneda de 5 y una de 2 para pagar 8. Eso
+       suma 7, y el cofre pedía 8. Te falta una moneda de 1. Vamos a
+       contarlas juntas despacio: 5, luego 2 son 7, y una más de 1 son
+       8.
+```
+
+The served activity was `sort_buckets` — a needs-vs-wants sorting
+exercise with no coins and no numeric total anywhere in it. The
+reaction turn's coin-counting description is entirely invented.
+
+Root-caused rather than re-patched blind. The tutor's OWN preceding
+turn had announced a coin-counting activity to set up the
+`financial-education/cobrar-y-dar-cambio` request; the ladder served a
+`sort_buckets` activity instead, an ordinary mismatch
+`segmentRequest.preferredTypes`'s own doc comment already allows for
+("the system may still serve something else if nothing visual exists
+for this skill yet"). `buildContextMessage`'s "ON THE LEARNER'S SCREEN
+RIGHT NOW" block was checked directly and was CORRECT — it named
+`sort_buckets` and the real needs-vs-wants prompt, so this was not the
+item-14 staleness shape and grounding was genuinely available. The gap
+was POSITION, not information: `produce()` (`oracle/src/tutor/
+orchestrator.ts`) places the context message early in the messages
+array, for prefix-cache reasons, and the model's own richer, more
+specific promise arrives LATER, in conversation history — closer to
+the reaction instruction than the fact that contradicts it.
+`handleVoiceCheckResult` never has this failure mode, because the one
+fact it needs (the learner's verified utterance) is the last history
+line before its own instruction, adjacent by construction;
+`handleSegmentResult` had no equivalent adjacency.
+
+This is the THIRD manifestation of the same underlying class: item 14
+(`oracle/AGENTS.md`) generalized the reaction instruction away from
+presupposing a numeric answer, and a 2026-08-29 fix to
+`buildContextMessage` added "Talk about THIS, not about the one you
+had in mind." Both are still live in the code and neither closed this
+case, because both add MORE instruction rather than moving the FACT
+itself closer to the point of generation.
+
+Fixed by restating the real activity type and prompt — read from
+`this.openActivity`, already tracked by `noteSegmentServed` for
+exactly this purpose — directly inside `handleSegmentResult`'s own
+reaction instruction, the SAME message as "name the specific thing
+they did," rather than relying on the model to reach back past its own
+conflicting narrative to the earlier context message. A new test in
+`oracle/src/__tests__/orchestrator.test.ts` ("the reaction turn must
+not lose to the tutor's own earlier promise") reproduces the exact
+transcript shape — an announced coin activity in history, a
+`sort_buckets` activity actually served — and inspects the literal
+`messages` array `produce()` sends to the model: it confirms the
+conflicting narrative really is present, further from the context
+message than the truth is, and then asserts the reaction message
+itself (not just the context message) carries the real type and
+prompt. Confirmed to fail without the fix via `git stash` (assertion
+failed exactly as expected, matching the pre-fix content verbatim).
+
+Full oracle suite green (25 files, 486 tests). Lint and type-check
+clean, including `tsconfig.scripts.json` and `tsconfig.test.json`.
+`verify:tutor` and `verify:pedagogy` both green — unaffected, as
+expected, since this change touches only one reaction instruction's
+text, not context schema or controller sequencing. Documented as
+`oracle/AGENTS.md` item 46, which also names the general lesson: a
+rule stated once, early in a prompt, does not protect a later decision
+it never sits beside — when a later message can conflict with an
+earlier fact, restate the fact next to the decision instead of
+trusting retrieval across the whole conversation.
+
+**Re-verified live after the merge**, by the calling session, via a
+fresh local `npm run tutor:converse` run (the paid `gh workflow run
+tutor-deploy.yml -f step=converse` gate remains blocked by the same
+account-wide billing issue tracked all session, so a local run is the
+substitute evidence, per this session's own established precedent).
+That run happened to reproduce the EXACT trigger shape three separate
+times — a coin-counting activity announced in a preceding turn, a
+`sort_buckets` needs-vs-wants activity actually served — and every one
+of the three reaction turns correctly described the sort activity
+("Clasificaste todo sin dudar: pusiste la comida y el agua en
+'necesito'...", "Clasificaste cada cosa en su cubeta...", "vi que
+pusiste la comida y los juguetes en la cubeta de 'lo que quiero'...").
+Zero coin-hallucination-for-a-non-coin-activity instances, where the
+original bug reproduced on the very first live run it was found in.
+Also independently re-ran the full oracle suite (486 tests), lint,
+type-check, `verify:tutor` and `verify:pedagogy` from the merged main
+working directory (not only the isolated investigation worktree), and
+confirmed the new test fails without the fix via `git stash` a second
+time, independently of the investigation's own claim.
+
+That same run surfaced two OTHER observations, noted here rather than
+silently dropped, neither actioned this round: (1) the harness's own
+`praises an answer the learner never gave` check false-positived on
+"Tienes razón, ya basta de plática" — the tutor validating a learner's
+COMPLAINT about the session being boring, not praising a math answer;
+the detector does not distinguish the two, which is a harness gap, not
+a product one. (2) 2 of 9 turns in one conversation fell to the
+scripted "Se me enredaron las ideas" line after BOTH a repeated-
+sentence repair attempt AND its own retry came back as empty
+completions — the rare residual of an issue already measured and
+mostly closed elsewhere (`oracle/AGENTS.md`'s empty-completions entry:
+0% after its fix, measured in a different scenario), not a regression
+introduced here, and not the same code path this round touched.

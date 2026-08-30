@@ -568,6 +568,39 @@ export class TutorOrchestrator {
     const summary = correct
       ? `The learner completed the activity and scored ${score} out of 100.`
       : `The learner did not pass the activity; they scored ${score} out of 100.`;
+    /*
+     * THE ACTIVITY, RESTATED HERE — NOT ONLY IN THE CONTEXT MESSAGE.
+     *
+     * Found live, testing as the owner's low-retention persona, 2026-08-30: a
+     * `sort_buckets` needs-vs-wants activity was served for
+     * `financial-education/cobrar-y-dar-cambio`, correctly grounded in
+     * `buildContextMessage`'s "ON THE LEARNER'S SCREEN RIGHT NOW" block (type
+     * and prompt both present and correct — this was not the item-14 staleness
+     * shape). But the tutor's OWN preceding turn had announced a
+     * coin-counting activity to set that request up ("Te voy a mostrar un
+     * cofre con monedas..."), an ordinary mismatch `preferredTypes`'s own doc
+     * comment already allows for ("the system may still serve something
+     * else"). The reaction turn described the COIN activity anyway, inventing
+     * a specific wrong total ("elegiste una moneda de 5 y una de 2... te
+     * falta una moneda de 1") for a sort activity with no coins or numbers at
+     * all.
+     *
+     * The fact was available; it just was not where the model was most
+     * likely to use it. `produce()` puts the context message early (prefix-
+     * cache order) and this session's OWN richer, more specific promise
+     * arrives LATER, in conversation history — closer to this instruction
+     * than the truth is. Asking the model to ground "in the activity
+     * described above" pointed back past its own conflicting narrative
+     * instead of at the fact that resolves it. `handleVoiceCheckResult`
+     * never had this problem, because the verified utterance it reacts to is
+     * the last history line before its own instruction — adjacent by
+     * construction. This restates the real type and prompt in the SAME
+     * message as the instruction that needs them, which is the same
+     * adjacency, built by hand instead of inherited for free.
+     */
+    const activityFact = this.openActivity
+      ? ` What was ACTUALLY on their screen for this activity: a "${this.openActivity.type}" activity that asked "${this.openActivity.prompt}". If anything said earlier in this conversation described a different activity, that was a plan that did not happen — react to only this one.`
+      : '';
     const outcome = await this.produce(
       /*
        * "Say what was good about their thinking" is what produced the
@@ -596,7 +629,7 @@ export class TutorOrchestrator {
        * whatever the ACTUAL activity produced — a choice, an order, a match,
        * a number — rather than presupposing which.
        */
-      `${summary} React as their tutor. Name the SPECIFIC thing they did IN THAT ACTIVITY — grounded in the activity described above as on their screen, never invented: the choice they made, the numbers they used, the order they picked, whichever of those this particular activity actually involved — never a general compliment about thinking or being clever. Then help with what is still missing. Do not read the score out loud.${extra ? `\n\n${extra}` : ''}${finalNote}`,
+      `${summary}${activityFact} React as their tutor. Name the SPECIFIC thing they did IN THAT ACTIVITY — grounded in the activity described above as on their screen, never invented: the choice they made, the numbers they used, the order they picked, whichever of those this particular activity actually involved — never a general compliment about thinking or being clever. Then help with what is still missing. Do not read the score out loud.${extra ? `\n\n${extra}` : ''}${finalNote}`,
       nowMs,
       { isSystemPrompted: true, signal, finalTurn: graceTurn },
     );
