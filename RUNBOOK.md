@@ -3697,3 +3697,86 @@ item is still unchecked, with nothing in code or Railway config
 preventing a scale-out that would silently defeat it. Not a regression
 and not new information — left as the standing, tracked item it already
 was.
+
+## Two HIGH grace-turn bugs and one child-safety-adjacent UI gap — found by adversarial review, closed 2026-08-30
+
+Round 33 targeted the grace-turn mechanism (`oracle/src/tutor/orchestrator.ts`
+— "never end a session mid-question") and the mic-orb/closing-screen UI, two
+surfaces this session's earlier rounds had not yet reached.
+
+**1. HIGH — the one-time grace ticket was spent at GRANT time, not at
+DELIVERY time.** `this.closeGraceUsed = true` was set the instant the grace
+turn was computed eligible — before the model call that attempts it even
+started. A learner who interrupted that one attempt (the same ordinary
+interrupt path every turn allows) burned the ticket on a turn that delivered
+nothing, and the very next attempt at the exact same open thread got the
+abrupt scripted close with zero chance to try again — reproducing the "ended
+mid-question" defect the mechanism exists to prevent, just delayed by one
+turn. The exact "checked also means checked at the right moment" class this
+file already fixed once for `usedSkillNames` (`oracle/AGENTS.md` item 33
+area), recurring in different state because that fix was never generalized
+into a rule (now item 40).
+
+**2. HIGH — `handleSegmentResult` and `handleVoiceCheckResult` never granted
+the grace turn at all**, even though the mechanism's own `openThread`
+condition names "an activity still on screen" as half of what qualifies —
+both functions grade the activity (XP, mastery estimate) before reacting to
+it, so a budget that ended exactly as a graded widget or a spoken answer came
+back fell straight into `produce()`'s unconditional scripted close: scored
+and never acknowledged, the "promised something and abandoned" shape
+`handleSegmentUnavailable`'s own doc comment already names for a different
+cause.
+
+Fixed by extracting `graceTurnFor`/`commitGraceTurn` as shared helpers used
+by all three call sites (`handleLearnerText`, `handleSegmentResult`,
+`handleVoiceCheckResult`), and by moving the ticket-spend to AFTER `produce()`
+resolves, gated on `outcome !== null` — mirroring `commitSkillUse`'s own
+`emission.source === 'model'` gate. Proven with three new tests in
+`oracle/src/__tests__/orchestrator.test.ts`: an interrupted first grace
+attempt is followed by a second, successful one, then the ticket is truly
+spent; `handleSegmentResult` and `handleVoiceCheckResult` each get one grace
+turn when the budget ends exactly as their result comes back. All three
+confirmed to fail against the pre-fix code for the exact claimed reason via
+`git stash`, pass against the fix. Full oracle suite green (478 tests), lint
+clean, type-check clean (all three tsconfigs), `verify:tutor` and
+`verify:pedagogy` both green.
+
+**3. MEDIUM/HIGH (UX, child-safety-adjacent) — `ClosingInWorld.tsx` collapsed
+every close reason into one generic, cheerful screen.** The component ignored
+`useTutorSocket`'s `closedReason` entirely, so a session the safety
+classifier stopped — the tutor's own scripted line had just told the child
+"I am stopping our lesson here so you can [go tell a grown-up]" — was
+followed on the very next screen by the IDENTICAL "See you soon! Saved. You
+can listen again any time." as an ordinary satisfied completion, with the
+same prominent "Start Another" CTA and "Past conversations" replay archive.
+The §1.14 "failure indistinguishable from emptiness" pattern, applied to the
+one close reason where the mismatch matters most. No test file existed for
+this component before this fix.
+
+Fixed by threading `closedReason` from `TutorExperience.tsx`'s socket into
+`ClosingInWorld`, which now shows calmer, minimal wording — "We stopped
+here" / "Go find that grown-up now." (new i18n keys
+`tutor.page.sessionStoppedTitle`/`sessionStoppedBody`, all three locales) —
+specifically for `closedReason === 'safety_stop'`, echoing the tutor's own
+spoken instruction rather than contradicting it; every other close reason
+(`completed`, `hard_budget`, `consent_revoked`, `error`, or none yet) keeps
+the original cheerful copy unchanged. **The exact wording is a first pass,
+not a final word** — this is child-safety-adjacent text invented to close a
+proven defect, not copy that came from an existing spec (`/ORACLE.md` §9.5
+covers only the ordinary soft/hard close performance, not a safety stop), and
+it deserves a human product/legal read before being treated as settled. The
+functional actions (start another session, browse past conversations) were
+deliberately left unchanged — hiding them was a bigger, more speculative
+product decision this fix does not make.
+
+Proven with a new test file, `frontend/src/tutor/__tests__/closingInWorldReason.test.tsx`
+(4 tests: the safety-stop wording shows and the cheerful wording is absent;
+the cheerful wording still shows for `completed`, `hard_budget`, and no
+reason yet). Confirmed to fail against the pre-fix code for the exact
+claimed reason via `git stash`, passes against the fix. Verified visually
+in-browser at both breakpoints via `/dev/tutor-lab` (temporarily forcing the
+lab's `closedReason` prop to reach the new screen, reverted before
+committing) — both mobile (375px) and desktop render cleanly, no overlap or
+truncation, since the fix only swaps which two i18n keys are read and
+touches no layout. Full frontend suite green (1437 tests, up from 1433),
+lint clean, type-check clean, root `i18n:check` clean (3-locale parity).

@@ -1193,6 +1193,7 @@ export function TutorExperience() {
               refreshOffersAndMap();
             }}
             onReplay={openReplay}
+            closedReason={socket.closedReason}
           />
         </StageLayer>
       )}

@@ -882,6 +882,43 @@ everything passes the blocked half perfectly and destroys the product.
    review, re-measure the original trade-off rather than treating the
    comment as settled just because it already gave a reason.
 
+40. **A one-time ticket spent at GRANT time, not at DELIVERY time, is spent on
+   attempts that deliver nothing — and a mechanism scoped to one call site
+   silently excludes every other path the same condition also describes.**
+   Found by adversarial review, round 33 (2026-08-30, two HIGH findings, same
+   root cause). The grace turn (`handleLearnerText`'s "never end mid-question"
+   fix, item 810 area) set `this.closeGraceUsed = true` the instant the grace
+   turn was GRANTED — before the model call that attempts it even started. A
+   learner who interrupted that one attempt (the same ordinary interrupt path
+   every turn allows) burned the ticket on a turn that delivered nothing, and
+   the very next attempt at the exact same open thread got the abrupt scripted
+   close with zero chance to try again — reproducing the "ended mid-question"
+   defect the mechanism exists to prevent, just delayed by one turn. The exact
+   "checked also means checked at the right moment" class this file already
+   named once for `usedSkillNames` (item 33 area, `commitSkillUse`), recurring
+   in a DIFFERENT piece of state because the fix for the first instance was
+   never generalized into a rule. Separately, the mechanism's own `openThread`
+   condition names "an activity still on screen" as HALF of what qualifies —
+   but `handleSegmentResult` and `handleVoiceCheckResult`, which both grade an
+   activity BEFORE reacting to it, never computed grace eligibility at all,
+   so a budget that ended exactly as a graded widget or a spoken answer came
+   back fell straight into `produce()`'s unconditional scripted close: scored
+   and never acknowledged, the "promised something and abandoned" shape
+   `handleSegmentUnavailable`'s own doc comment names for a different cause.
+   Fixed by extracting `graceTurnFor`/`commitGraceTurn` as shared helpers used
+   by all three call sites, and by moving the ticket-spend to AFTER `produce()`
+   resolves, gated on `outcome !== null` (mirroring `commitSkillUse`'s own
+   `emission.source === 'model'` gate). General lesson, stated once so it does
+   not need re-deriving per field: (1) a flag that gates "may this happen
+   again" must be committed on CONFIRMED OUTCOME, not on the decision to try —
+   an interrupted/aborted/failed attempt must leave the flag exactly as if the
+   attempt had never happened, because from the state machine's point of view
+   it didn't; (2) when a shared condition (here, `openThread`) is defined once
+   for one caller, grep every OTHER caller whose own doc comments describe the
+   same situation in different words ("an activity still on screen" was
+   sitting in a comment the whole time) before assuming the mechanism already
+   covers them.
+
 ---
 
 ## §6 Environment

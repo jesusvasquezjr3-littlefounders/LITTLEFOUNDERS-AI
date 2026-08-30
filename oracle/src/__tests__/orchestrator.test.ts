@@ -747,6 +747,126 @@ describe('the budget', () => {
    * exactly why the grace costs at most one model call per session, spent on
    * sessions that ended mid-thread, i.e. nearly all of the ones that expire.
    */
+
+  /*
+   * Found by adversarial review, round 33, 2026-08-30 (HIGH): the ticket used
+   * to be spent the instant the grace turn was GRANTED, before the model call
+   * that attempts it even started. A learner who interrupted that one
+   * attempt — the same ordinary interrupt every turn allows — burned the
+   * ticket on a turn that delivered nothing, and the very next attempt at the
+   * exact same open thread got the abrupt scripted close with zero chance to
+   * try again: precisely the "ended mid-question" defect the mechanism exists
+   * to prevent, just delayed by one turn.
+   */
+  it('does not spend the one grace turn on an attempt the learner interrupted', async () => {
+    const now = Date.now();
+    const orchestrator = new TutorOrchestrator(KID, now, silent);
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('quiero ahorrar', now);
+
+    const late = now + 60 * 60 * 1000;
+
+    // First grace attempt: the learner interrupts before it lands. A
+    // completion that never resolves on its own — it ends only when the
+    // signal it was handed aborts, exactly as a cancelled fetch does (the
+    // same pattern the ordinary mid-completion interrupt test above uses).
+    fetchMock.mockReset();
+    fetchMock.mockImplementationOnce(
+      (_url: string, init: { signal?: AbortSignal }) =>
+        new Promise((_, reject) => {
+          init.signal?.addEventListener('abort', () =>
+            reject(new DOMException('The operation was aborted.', 'AbortError')),
+          );
+        }),
+    );
+    const controller = new AbortController();
+    const interrupted = orchestrator.handleLearnerText('cuarenta', late, controller.signal);
+    controller.abort();
+    expect(await interrupted).toBeNull();
+
+    // The thread is still open (nothing was delivered) and the budget is
+    // still ended — a SECOND grace attempt must still be available. A
+    // DIFFERENT `say` than the first exchange's, or the orchestrator's own
+    // repeated-sentence guard (correctly) retries it, consuming a fetch call
+    // this test does not mock.
+    fetchMock.mockReset();
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({ ...GOOD_TURN, say: '¡Cuarenta pesos, exacto! Hoy aprendiste a estimar. ¡Hasta pronto!', next: 'close' }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const grace = await orchestrator.handleLearnerText('cuarenta', late + 1000);
+
+    expect(grace?.emission.source).toBe('model');
+    const body = String(fetchMock.mock.calls[0]?.[1]?.body ?? '');
+    expect(body).toContain('FINAL TURN');
+
+    // NOW the ticket is spent — a third attempt gets the scripted close.
+    fetchMock.mockClear();
+    const after = await orchestrator.handleLearnerText('y ahora?', late + 2000);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(after?.emission.turn.next).toBe('close');
+  });
+});
+
+/*
+ * Found by adversarial review, round 33, 2026-08-30 (HIGH): the grace turn's
+ * own `openThread` condition names "an activity still on screen" as HALF of
+ * what qualifies — but `handleSegmentResult` and `handleVoiceCheckResult`
+ * never computed it at all, so a budget that ended exactly when a graded
+ * widget or a spoken answer came back fell straight into `produce()`'s
+ * unconditional scripted close. Both functions grade the activity (XP,
+ * mastery estimate) BEFORE that happens, so the learner's work was scored
+ * and then never acknowledged — the exact "promised something and
+ * abandoned" shape `handleSegmentUnavailable`'s own doc comment names.
+ */
+describe('the grace turn also covers an activity result, not only spoken conversation', () => {
+  const PROMPT = 'La brújula cuesta $12. Junta monedas del cofre para pagar EXACTAMENTE ese monto.';
+
+  it('handleSegmentResult gets one grace turn when the budget ends exactly as a graded widget comes back', async () => {
+    const now = Date.now();
+    const orchestrator = new TutorOrchestrator(KID, now, silent);
+    orchestrator.noteSegmentServed('seg-1', 'financial-education/x', 'coin_count', PROMPT);
+
+    const late = now + 60 * 60 * 1000;
+    fetchMock.mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, next: 'close' })).mockResolvedValueOnce(judgeSays(true));
+    const outcome = await orchestrator.handleSegmentResult('seg-1', 100, true, late);
+
+    // A real, model-authored acknowledgment — not the abrupt scripted close.
+    expect(outcome?.emission.source).toBe('model');
+    const body = String(fetchMock.mock.calls[0]?.[1]?.body ?? '');
+    expect(body).toContain('FINAL TURN');
+
+    // Spent — the very next turn closes for real, with zero model calls.
+    fetchMock.mockClear();
+    const after = await orchestrator.handleLearnerText('gracias', late + 1000);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(after?.emission.turn.next).toBe('close');
+  });
+
+  it('handleVoiceCheckResult gets one grace turn when the budget ends exactly as a spoken answer is verified', async () => {
+    const now = Date.now();
+    const orchestrator = new TutorOrchestrator(KID, now, silent);
+    orchestrator.noteSegmentServed('seg-1', 'financial-education/x', 'coin_count', PROMPT);
+
+    const late = now + 60 * 60 * 1000;
+    fetchMock.mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, next: 'close' })).mockResolvedValueOnce(judgeSays(true));
+    const outcome = await orchestrator.handleVoiceCheckResult(
+      'seg-1',
+      { correct: true, misconceptionCode: null },
+      'doce',
+      late,
+    );
+
+    expect(outcome?.emission.source).toBe('model');
+    const body = String(fetchMock.mock.calls[0]?.[1]?.body ?? '');
+    expect(body).toContain('FINAL TURN');
+
+    fetchMock.mockClear();
+    const after = await orchestrator.handleLearnerText('gracias', late + 1000);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(after?.emission.turn.next).toBe('close');
+  });
 });
 
 describe('adaptation', () => {

@@ -49,12 +49,25 @@ export interface ClosingInWorldProps {
    * component that owns the phase is the one that enters it.
    */
   onReplay: (session: SessionSummary) => void;
+  /**
+   * Why the session ended (`useTutorSocket`'s `closedReason`, whatever the
+   * socket's `closed` frame carried — `null` before one has arrived). Found by
+   * adversarial review, round 33, 2026-08-30 (MEDIUM/HIGH): this used to be
+   * ignored entirely, so a session the safety classifier stopped — the tutor's
+   * own line just told the child "I am stopping our lesson here so you can
+   * [tell a grown-up]" — was followed by the IDENTICAL cheerful "See you soon!
+   * Saved. You can listen again any time." as an ordinary satisfied
+   * completion. The §1.14 "failure indistinguishable from emptiness" pattern,
+   * applied to the one close reason where the mismatch matters most.
+   */
+  closedReason: string | null;
 }
 
-export function ClosingInWorld({ onStartAnother, token, onReplay }: ClosingInWorldProps) {
+export function ClosingInWorld({ onStartAnother, token, onReplay, closedReason }: ClosingInWorldProps) {
   const { t } = useTranslation();
   const dock = useStageDock();
   const [historyOpen, setHistoryOpen] = useState(false);
+  const isSafetyStop = closedReason === 'safety_stop';
 
   const goodbye = (
     <>
@@ -65,11 +78,22 @@ export function ClosingInWorld({ onStartAnother, token, onReplay }: ClosingInWor
         chrome density the material would have flattened "Saved. You can listen
         again any time." up to full ink beside the headline, which is two shouts
         where the design wanted a statement and a reassurance.
+
+        A safety-stopped session gets calmer, deliberately minimal wording
+        instead — never the cheerful "see you soon, listen any time" framing,
+        which would contradict the tutor's own closing line rather than follow
+        it. The exact copy is a first pass, not a final word: this is
+        child-safety-adjacent text and worth a human product/legal read before
+        it is treated as settled (see RUNBOOK.md's entry for this fix).
       */}
       <HudPlate shape="plate" density="reading">
         <span className="flex flex-col gap-1 text-center">
-          <span className="lf-display-lg text-content">{t('tutor.page.seeYouSoon')}</span>
-          <span className="lf-body text-content-muted">{t('tutor.page.sessionSaved')}</span>
+          <span className="lf-display-lg text-content">
+            {t(isSafetyStop ? 'tutor.page.sessionStoppedTitle' : 'tutor.page.seeYouSoon')}
+          </span>
+          <span className="lf-body text-content-muted">
+            {t(isSafetyStop ? 'tutor.page.sessionStoppedBody' : 'tutor.page.sessionSaved')}
+          </span>
         </span>
       </HudPlate>
 

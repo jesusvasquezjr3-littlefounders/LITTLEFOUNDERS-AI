@@ -51,6 +51,8 @@
     "changeStage": "My island",
     "seeYouSoon": "See you soon!",
     "sessionSaved": "Saved. You can listen again any time.",
+    "sessionStoppedTitle": "We stopped here",
+    "sessionStoppedBody": "Go find that grown-up now.",
     "startAnother": "Start again"
   },
   "introduce": {

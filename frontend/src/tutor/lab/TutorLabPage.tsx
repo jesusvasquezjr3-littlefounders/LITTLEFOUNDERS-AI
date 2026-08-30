@@ -747,6 +747,7 @@ export default function TutorLabPage() {
               token={LAB_TOKEN}
               onStartAnother={() => setSurface('introducing')}
               onReplay={() => setSurface('replaying')}
+              closedReason={null}
             />
           </StageLayer>
         )}

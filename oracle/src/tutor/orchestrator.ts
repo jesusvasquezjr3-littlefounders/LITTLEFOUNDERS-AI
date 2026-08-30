@@ -532,6 +532,8 @@ export class TutorOrchestrator {
     signal?: AbortSignal,
     pedagogy?: { misconceptionCode: string | null; attemptNumber?: number } | null,
   ): Promise<TurnOutcome | null> {
+    const budget = this.currentBudget(nowMs);
+    const { graceTurn, finalNote } = this.graceTurnFor(budget);
     const skillKey = this.servedSegmentSkills.get(segmentId) ?? 'unknown';
     const servedAt = this.segmentServedAt.get(segmentId);
     // Undefined for a segment this session never served — the controller reads
@@ -594,11 +596,12 @@ export class TutorOrchestrator {
        * whatever the ACTUAL activity produced — a choice, an order, a match,
        * a number — rather than presupposing which.
        */
-      `${summary} React as their tutor. Name the SPECIFIC thing they did IN THAT ACTIVITY — grounded in the activity described above as on their screen, never invented: the choice they made, the numbers they used, the order they picked, whichever of those this particular activity actually involved — never a general compliment about thinking or being clever. Then help with what is still missing. Do not read the score out loud.${extra ? `\n\n${extra}` : ''}`,
+      `${summary} React as their tutor. Name the SPECIFIC thing they did IN THAT ACTIVITY — grounded in the activity described above as on their screen, never invented: the choice they made, the numbers they used, the order they picked, whichever of those this particular activity actually involved — never a general compliment about thinking or being clever. Then help with what is still missing. Do not read the score out loud.${extra ? `\n\n${extra}` : ''}${finalNote}`,
       nowMs,
-      { isSystemPrompted: true, signal },
+      { isSystemPrompted: true, signal, finalTurn: graceTurn },
     );
     this.commitSkillUse(skillName, outcome);
+    this.commitGraceTurn(graceTurn, outcome);
     return outcome;
   }
 
@@ -659,6 +662,7 @@ export class TutorOrchestrator {
      * through `handleLearnerText`.
      */
     const budget = this.currentBudget(nowMs);
+    const { graceTurn, finalNote } = this.graceTurnFor(budget);
     const classification = classifyLearnerInput(utterance, this.session.locale);
     if (classification.category !== null && classification.action !== 'allow') {
       const stopping = classification.action === 'session_stopped';
@@ -699,11 +703,12 @@ export class TutorOrchestrator {
       ? 'The learner just answered the current activity OUT LOUD, and their spoken answer was verified as CORRECT.'
       : 'The learner just answered the current activity OUT LOUD, and their spoken answer was verified as INCORRECT.';
     const outcome = await this.produce(
-      `${summary} React as their tutor — acknowledge the spoken answer naturally, never mention any verification.${extra ? `\n\n${extra}` : ''}`,
+      `${summary} React as their tutor — acknowledge the spoken answer naturally, never mention any verification.${extra ? `\n\n${extra}` : ''}${finalNote}`,
       nowMs,
-      { isSystemPrompted: true, signal },
+      { isSystemPrompted: true, signal, finalTurn: graceTurn },
     );
     this.commitSkillUse(skillName, outcome);
+    this.commitGraceTurn(graceTurn, outcome);
     return outcome;
   }
 
@@ -825,9 +830,7 @@ export class TutorOrchestrator {
      * with its instruction. Cost: at most one model call per session, spent
      * only on sessions that ended mid-thread.
      */
-    const openThread = this.lastTurn?.turn.next === 'ask' || this.openActivity !== null;
-    const graceTurn = budget.state === 'ended' && !this.stopped && !this.closeGraceUsed && openThread;
-    if (graceTurn) this.closeGraceUsed = true;
+    const { graceTurn, finalNote } = this.graceTurnFor(budget);
 
     if (this.stopped || (budget.state === 'ended' && !graceTurn)) {
       return this.scriptedOutcome(
@@ -971,15 +974,13 @@ export class TutorOrchestrator {
         : { kind: 'voice_result', correct: verdict.correct, misconceptionCode: null };
     const { text: maneuver, skillName } = this.strategyInstruction(pedagogyEvent, nowMs, null);
     const maneuverNote = maneuver === null ? '' : `\n\n${maneuver}`;
-    const finalNote = graceTurn
-      ? '\n\nTHIS IS THE FINAL TURN of the session — time is up. Resolve the open question or activity in one or two warm sentences (give the answer if they did not reach it, credit what they did), then say goodbye. Do NOT ask anything new, do NOT request or promise any activity.'
-      : '';
     const outcome = await this.produce(`${fenced.block}${verdictNote}${recallNote}${maneuverNote}${finalNote}`, nowMs, {
       nonce: fenced.nonce,
       signal,
       finalTurn: graceTurn,
     });
     this.commitSkillUse(skillName, outcome);
+    this.commitGraceTurn(graceTurn, outcome);
     // A completed exchange moves the plan's talk-only steps along; an aborted
     // one does not — a question the tutor never answered was not an exchange.
     if (outcome !== null) noteConversationTurn(this.plan);
@@ -1027,6 +1028,50 @@ export class TutorOrchestrator {
       { startedAtMs: this.startedAtMs, nowMs, turnCount: this.seq },
       getConfig(),
     );
+  }
+
+  /**
+   * THE ONE GRACE TURN an ended budget grants when something is left open —
+   * see `handleLearnerText`'s own doc comment for the full rationale. Shared
+   * with `handleSegmentResult` and `handleVoiceCheckResult`, whose own
+   * "an activity still on screen" is literally half of what `openThread`
+   * means below — those two callers used to skip this check entirely and
+   * fall straight into `produce()`'s unconditional scripted close, grading
+   * the activity (both already do, before calling this) and then never
+   * acknowledging it: the exact "promised something and abandoned" defect
+   * class `handleSegmentUnavailable`'s own doc comment names. Found by
+   * adversarial review, round 33, 2026-08-30 (HIGH).
+   *
+   * Returns the flag to pass as `finalTurn` and the instruction text to
+   * append to the model prompt when it fires. Does NOT mark the ticket
+   * spent — see `commitGraceTurn`.
+   */
+  private graceTurnFor(budget: BudgetVerdict): { graceTurn: boolean; finalNote: string } {
+    const openThread = this.lastTurn?.turn.next === 'ask' || this.openActivity !== null;
+    const graceTurn = budget.state === 'ended' && !this.stopped && !this.closeGraceUsed && openThread;
+    const finalNote = graceTurn
+      ? '\n\nTHIS IS THE FINAL TURN of the session — time is up. Resolve the open question or activity in one or two warm sentences (give the answer if they did not reach it, credit what they did), then say goodbye. Do NOT ask anything new, do NOT request or promise any activity.'
+      : '';
+    return { graceTurn, finalNote };
+  }
+
+  /**
+   * Marks the one grace ticket spent — but only once it was actually
+   * DELIVERED (`outcome !== null`), never merely attempted. Found by
+   * adversarial review, round 33, 2026-08-30 (HIGH): this used to be set the
+   * instant the grace turn was GRANTED, before `produce()` even started — so
+   * a learner who interrupted that one attempt (the same ordinary interrupt
+   * path every turn allows) burned the ticket on a turn that delivered
+   * nothing, and the very next attempt at the same open thread got the
+   * abrupt scripted close with no chance to try again. `this.lastTurn` is
+   * only ever updated by a genuinely delivered `produce()` call (never on an
+   * aborted one), so `openThread` still holds on the next attempt as long as
+   * the ticket itself was not falsely spent here. The exact "checked also
+   * means checked at the right moment" class this file already fixed once
+   * for `usedSkillNames` — see `commitSkillUse`.
+   */
+  private commitGraceTurn(graceTurn: boolean, outcome: TurnOutcome | null): void {
+    if (graceTurn && outcome !== null) this.closeGraceUsed = true;
   }
 
   /** Builds the sealed context for this turn. Throws if anything is off-contract. */
