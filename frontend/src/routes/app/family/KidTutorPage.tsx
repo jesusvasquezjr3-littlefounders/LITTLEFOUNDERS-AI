@@ -183,6 +183,23 @@ export function KidTutorPage() {
                         ? t('tutor.guardian.ongoing')
                         : t('tutor.guardian.turns', { count: session.turnCount })}
                     </p>
+                    {/*
+                     * Found by adversarial review, round 54 (2026-08-30,
+                     * MEDIUM): `closeReason` reached this component on every
+                     * session but was never read anywhere — a session force-
+                     * closed by an internal error, a dropped-and-never-
+                     * resumed connection, or a mid-session consent
+                     * revocation rendered identically to an ordinary
+                     * finished chat. `completed` needs no annotation (the
+                     * unremarkable default); every other reason gets one.
+                     */}
+                    {session.closeReason !== null && session.closeReason !== 'completed' && (
+                      <p className="lf-caption text-content-muted">
+                        {t(`tutor.guardian.closeReason.${session.closeReason}`, {
+                          defaultValue: session.closeReason,
+                        })}
+                      </p>
+                    )}
                   </div>
                   <Button
                     variant="secondary"

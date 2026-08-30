@@ -315,6 +315,15 @@
       "injection_attempt": "Tu hijo o hija intentó cambiarle las reglas al tutor",
       "model_output_blocked": "La respuesta del tutor se bloqueó antes de decirse"
     },
+    "closeReason": {
+      "soft_budget": "Terminó al llegar al límite de tiempo de hoy",
+      "hard_budget": "Terminó de golpe por pasarse del límite de tiempo de hoy",
+      "learner_left": "Tu hijo o hija se salió a mitad de la conversación",
+      "abandoned": "Se cortó la conexión y nunca se retomó",
+      "consent_revoked": "Terminó porque se quitó el permiso del micrófono",
+      "safety_stop": "El tutor detuvo la conversación por un motivo de seguridad",
+      "error": "Terminó antes de tiempo por un problema técnico, no por algo que tu hijo o hija hizo"
+    },
     "retentionNote": "Las conversaciones se guardan 90 días y después se borran solas."
   },
   "conversationError": {

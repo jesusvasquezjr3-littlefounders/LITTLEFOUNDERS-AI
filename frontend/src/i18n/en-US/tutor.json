@@ -315,6 +315,15 @@
       "injection_attempt": "Your child tried to change the tutor’s rules",
       "model_output_blocked": "The tutor’s reply was blocked before it was said"
     },
+    "closeReason": {
+      "soft_budget": "Ended after reaching today’s time limit",
+      "hard_budget": "Ended abruptly after running over today’s time limit",
+      "learner_left": "Your child left in the middle of the conversation",
+      "abandoned": "The connection dropped and was never resumed",
+      "consent_revoked": "Ended because microphone permission was turned off",
+      "safety_stop": "The tutor stopped the conversation for a safety reason",
+      "error": "Ended early because of a technical problem, not something your child did"
+    },
     "retentionNote": "Conversations are kept for 90 days and then deleted automatically."
   },
   "conversationError": {

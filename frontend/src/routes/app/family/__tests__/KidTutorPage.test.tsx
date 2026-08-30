@@ -132,6 +132,55 @@ describe('KidTutorPage — an in-progress session is not reported as 0 messages'
 });
 
 /*
+ * Found by adversarial review, round 54 (2026-08-30, MEDIUM): `closeReason`
+ * reached this component on every session (`getKidTutorHistory`'s own
+ * response, and `BASE_SESSION`'s own fixture already carries it) but was
+ * never rendered anywhere — a session force-closed by an internal error, a
+ * dropped-and-never-resumed connection, or a mid-session consent revocation
+ * looked identical to an ordinary finished chat. Proven with 4 sessions
+ * differing ONLY in `closeReason`, which produced byte-identical visible
+ * text before this fix.
+ */
+describe('KidTutorPage — a session that did not end normally says so', () => {
+  it('shows nothing extra for an ordinary completed session', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValue({
+      data: {
+        sessions: [{ ...BASE_SESSION, closeReason: 'completed', endedAt: '2026-08-30T10:05:00Z', turnCount: 6 }],
+        safetyFlags: [],
+      },
+      error: null,
+    });
+
+    renderPage();
+
+    await waitFor(() => screen.getByText(/6 messages/));
+    expect(screen.queryByText(/technical problem/i)).toBeNull();
+  });
+
+  it.each([
+    ['error', /technical problem/i],
+    ['consent_revoked', /microphone permission was turned off/i],
+    ['learner_left', /left in the middle/i],
+    ['abandoned', /connection dropped/i],
+    ['soft_budget', /time limit/i],
+    ['hard_budget', /time limit/i],
+    ['safety_stop', /safety reason/i],
+  ] as const)('shows a plain-language reason for closeReason "%s"', async (closeReason, expected) => {
+    vi.mocked(getKidTutorHistory).mockResolvedValue({
+      data: {
+        sessions: [{ ...BASE_SESSION, closeReason, endedAt: '2026-08-30T10:05:00Z', turnCount: 6 }],
+        safetyFlags: [],
+      },
+      error: null,
+    });
+
+    renderPage();
+
+    await waitFor(() => screen.getByText(expected));
+  });
+});
+
+/*
  * Found by adversarial review, round 31 (2026-08-30, MEDIUM): the route
  * `family/:kidId/tutor` (App.tsx) has no `key={kidId}`, so navigating from
  * one kid's page to another's does NOT remount `KidTutorPage` — it reuses

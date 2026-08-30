@@ -5487,3 +5487,73 @@ existing + 10 new across two new test files, zero regressions), lint
 and type-check clean, root `docs:check`/`secrets:check` clean. No
 oracle/AGENTS.md item — this round touches only `backend/` and
 `database/seeds/`.
+
+## Round 54: a session that did not end normally looked identical to an ordinary finished chat, in the ONE view designed to tell a parent what happened
+
+A background adversarial review audited the full guardian-facing Tutor
+surface end to end for the first time this session (round 41 fixed one
+bug in it, but nothing had reviewed it as a whole) against this
+codebase's own stated invariant: "Parent visibility into kid activity
+is a product invariant, not a feature flag" (§1.9). Four of five areas
+checked out sound — the safety-flag category/severity vocabulary is
+complete and undiluted in all 3 locales; the guardian authorization
+boundary independently re-verifies guardianship on every read, with no
+cross-family IDOR in either the session-list or single-transcript
+route; an in-progress session and a flag raised mid-session are both
+visible immediately, with no "wait until it closes" delay; and
+voice-consent revocation is reflected synchronously, with no
+stale-active display window. One real gap.
+
+`backend/src/routes/tutor.ts`'s `summarizeSession` already puts
+`closeReason: session.close_reason` on every session object
+`GET /tutor/kids/:kidUserId/sessions` returns — the backend was never
+the problem. But `frontend/src/routes/app/family/KidTutorPage.tsx`'s
+session-list card never read it: it rendered only the intent, the
+start time, and either "still talking" or a turn count. Four sessions
+identical except for `closeReason` (`safety_stop`, `completed`,
+`error`, `consent_revoked`) produced byte-identical visible text.
+
+The mitigating nuance the review itself found: `safety_stop` sessions
+ARE independently surfaced through the separate "Worth your attention"
+flags panel higher on the same page, so the single worst case isn't
+silently blank in practice today. But the other 6 reasons in the
+`tutor_sessions.close_reason` CHECK constraint —
+`soft_budget`/`hard_budget` (today's time limit reached, gracefully or
+abruptly), `learner_left`, `abandoned` (a dropped connection that was
+never resumed, written only by the retention janitor, never a client),
+`error` (Oracle's own circuit breaker force-closing after repeated
+internal persistence failures — `ws/server.ts`'s `PERSIST_FAILURE_LIMIT`),
+and `consent_revoked` — carried zero signal anywhere a parent would
+look. A session Oracle gave up on due to an internal fault looked
+exactly like an ordinary finished conversation.
+
+Fixed by rendering `session.closeReason` in the session-list card
+whenever it is present and not `'completed'` (the unremarkable
+default needs no annotation) — including `safety_stop` here too, for
+consistency with the flags panel rather than relying on a parent
+noticing that separate section. New `tutor.guardian.closeReason.*` i18n
+keys for all 7 non-`completed` reasons, in all three locales, written
+in the same plain, non-alarming, parent-readable register the existing
+`flagCategory` keys already use (e.g. `error`: "Ended early because of
+a technical problem, not something your child did" — naming the one
+thing a worried parent would otherwise wonder).
+
+Proof: `it.each` over all 7 reasons in `KidTutorPage.test.tsx`, plus a
+case confirming an ordinary `completed` session shows nothing extra;
+all 8 confirmed to fail for the exact claimed reason pre-fix via
+`git stash` (6 of 7 non-completed cases showed no reason text at all;
+the `completed`-shows-nothing case correctly still passed, since
+nothing should render for it either way).
+
+Verification: full frontend suite green (126 files, 1460 tests, zero
+regressions), lint and type-check clean, root `i18n:check` clean (all
+7 new leaf keys exist in all 3 locales; the dynamic
+`tutor.guardian.closeReason.${session.closeReason}` lookup itself is
+outside static verification by construction, closed instead by the
+explicit `it.each` covering every real value). Verified via the real
+component rendered under Vitest/Testing Library rather than a live
+authenticated browser session — this is a text-only addition reusing
+an existing, already-responsive caption class with no new layout, so
+§1.11's breakpoint requirement does not add information a component
+test doesn't already give; stated plainly rather than claimed as a
+screenshot-verified UI check it was not.
