@@ -300,6 +300,17 @@ export class TutorOrchestrator {
   }
 
   /**
+   * The session context this orchestrator was built with, for a caller that
+   * only holds a `TutorOrchestrator` and needs it — a parked session finalized
+   * by its grace-window timeout, for one (`ws/server.ts`'s `finalizeParked`),
+   * which needs it to run the post-session review the same way a graceful
+   * `finish()` does.
+   */
+  get sessionContext(): SessionContext {
+    return this.session;
+  }
+
+  /**
    * What this session cost us, model AND voice (/ORACLE.md §15).
    *
    * Voice used to be missing from this number entirely, which meant the ledger

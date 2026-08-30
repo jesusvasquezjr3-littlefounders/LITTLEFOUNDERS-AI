@@ -2390,6 +2390,21 @@ separators ("55-1234-5678", "(55) 1234 5678", "55.1234.5678") broke the run
 below 7 and sailed through; the check now also matches the grouped shape
 without false-positiving on ordinary teaching prose that lists small numbers.
 
+**A session ended by a dropped connection got no review at all — found by
+adversarial review, 2026-08-30 (MEDIUM).** `finish()` runs the review;
+`ws/server.ts`'s park path — `parkSession` → (grace window passes, nobody
+resumes) → `finalizeParked` — closes the session directly and never called
+it. This is not a rare path: a sleeping phone, a proxy timeout, a stairwell
+are exactly what parking exists to survive, plausibly a large share of real
+sessions with young children on phones. Every one of them silently taught
+the memory system nothing — no error, nothing distinguishable from a
+session with nothing durable to write. Fixed by calling
+`runPostSessionReview` from `finalizeParked` too, the same fire-and-forget
+way `finish()` calls it, reading the parked orchestrator's own session
+context (a new `sessionContext` getter on `TutorOrchestrator`, since a
+parked entry holds only the orchestrator, not a live `Live.session`) and
+its `resumeSnapshot.turns`.
+
 ### 20.5 The whiteboard — a live visual synced to what the tutor says (SHIPPED)
 
 **The defect, reported directly by the owner from a live session (2026-08-29):**

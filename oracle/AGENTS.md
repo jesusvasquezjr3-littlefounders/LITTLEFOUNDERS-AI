@@ -477,7 +477,22 @@ everything passes the blocked half perfectly and destroys the product.
    extended to match the grouped shape too. A model-facing prompt that reads
    MORE learner text, not less, is the LAST place to skip the fence a single
    utterance already gets.
-20. **A "must not be negative" guard on a floating-point running total needs
+20. **A session has more than one way to end, and a between-sessions side
+   effect wired to only one of them silently never runs for the others.**
+   `ws/server.ts` closes a session two ways: `finish()` (a graceful
+   farewell/budget/safety close) and `finalizeParked()` (the grace-window
+   timeout after a dropped connection — a sleeping phone, a proxy timeout,
+   a stairwell). Only `finish()` called `runPostSessionReview`, found by
+   adversarial review 2026-08-30 (MEDIUM). The park path is not an edge
+   case to this product's actual users: it is plausibly a LARGE share of
+   real sessions with young children on phones, and every one of them
+   silently taught the memory system nothing. Fixed by calling the review
+   from `finalizeParked` too, which needed a new `sessionContext` getter on
+   `TutorOrchestrator` — a parked entry keeps only the orchestrator, not a
+   live `Live.session`. Whenever a new "when the session ends, also do X"
+   requirement lands, check `ws/server.ts` for every place a session
+   actually closes, not just the one that happens to be nearby.
+21. **A "must not be negative" guard on a floating-point running total needs
    a zero band, not a zero line.** `whiteboard.ts`'s `computeSequence` chains
    decimal `add`/`subtract`/`multiply_percent` steps (`value` is
    `z.number()`, not an integer — money and fractions are legitimate), and

@@ -874,6 +874,44 @@ describe('a dropped session can be resumed on a fresh token', () => {
     expect(journal.closes.at(-1)).toMatchObject({ closeReason: 'learner_left' });
   });
 
+  /*
+   * Found by adversarial review, 2026-08-30 (MEDIUM): a session ended by a
+   * dropped connection — a sleeping phone, a proxy timeout, a stairwell,
+   * exactly what parking exists to survive — went through `finalizeParked`
+   * rather than `finish()`, and only `finish()` ran the V4 post-session
+   * review that rewrites `learner_memory`. A real conversation ended this
+   * way taught the memory system nothing, silently: no error, no log line,
+   * indistinguishable from a session with nothing durable to write.
+   */
+  it('runs the post-session review for a session that ends by a dropped connection, not just a graceful close', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    // Two real learner turns — the review's own floor (`learnerTurns < 2`).
+    const first = collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'no sé qué es ahorrar' }));
+    await first;
+    // Past MIN_TURN_GAP_MS (700ms) — otherwise the second send is refused
+    // as too-soon rather than reaching the model at all.
+    await new Promise((r) => setTimeout(r, 750));
+    const second = collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'ahora sí entendí un poco' }));
+    await second;
+
+    // Dropped, not farewelled — the park path, not `finish()`.
+    socket.terminate();
+    await closed();
+
+    // The window passes with nobody coming back.
+    await new Promise((r) => setTimeout(r, 1_700));
+
+    // The review's own system prompt is distinctive enough to prove it ran,
+    // rather than asserting on Core's fake (which has no learner-memory
+    // route and would 404 either way — the review handles that gracefully).
+    expect(modelJournal.bodies.some((body) => body.includes('reflection pass'))).toBe(true);
+  });
+
   it('still burns each token once — the resume token is new, the old one stays dead', async () => {
     freshJournal();
     const url = await socketUrl();

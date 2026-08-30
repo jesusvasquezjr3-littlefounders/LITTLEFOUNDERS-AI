@@ -262,6 +262,25 @@ function finalizeParked(sessionId: string): void {
     segmentCount: entry.orchestrator.servedSegments,
     costUsd: entry.orchestrator.totalCostUsd,
   });
+
+  /*
+   * V4's slow chamber, for the session that ended THIS way too.
+   *
+   * Found by adversarial review, 2026-08-30 (MEDIUM): this path — a sleeping
+   * phone, a proxy timeout, a stairwell, exactly what parking exists to
+   * survive — closed the session directly and never called
+   * `runPostSessionReview`, unlike `finish()`'s graceful close. A session
+   * with a real conversation in it, ended only by a dropped connection,
+   * silently taught the memory system nothing: no error, no log line,
+   * indistinguishable from a session with nothing worth writing. Fired the
+   * same fire-and-forget way `finish()` fires it.
+   */
+  void runPostSessionReview({
+    session: entry.orchestrator.sessionContext,
+    history: entry.orchestrator.resumeSnapshot.turns,
+  }).catch((error) =>
+    console.warn('[oracle] post-session review crashed:', error instanceof Error ? error.message : error),
+  );
 }
 
 /** Every parked session, finalized. Called on shutdown so no close is lost. */

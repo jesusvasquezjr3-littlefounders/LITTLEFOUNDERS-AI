@@ -2476,3 +2476,39 @@ suite (`window.matchMedia` is unpolyfilled in jsdom, so no test exercises
 lab fixture always has a segment active) covers "plain conversation, no
 exercise open, desktop" — flagged for a human visual check at 1280px before
 treating it as either confirmed or closed.
+
+## A session ended by a dropped connection never got a post-session review — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 16 (MEDIUM): `oracle/src/ws/server.ts`
+closes a session two different ways — `finish()` for a graceful
+farewell/budget/safety close, and `finalizeParked()` for a session parked
+after a dropped connection whose grace window then passes with nobody
+resuming (a sleeping phone, a proxy timeout, a stairwell — exactly what
+parking exists to survive). Only `finish()` called
+`runPostSessionReview`, the V4 fire-and-forget call that rewrites the
+`learner_memory` stores from the conversation that just ended. The park
+path is not an edge case for this product's actual users — plausibly a
+large share of real sessions with young children on phones end exactly
+this way — and every one of them silently taught the memory system
+nothing: no error, no log line, indistinguishable from a session with
+nothing durable to write.
+
+Fixed by calling `runPostSessionReview` from `finalizeParked` too, the
+same fire-and-forget shape `finish()` already uses. This needed a new
+`sessionContext` getter on `TutorOrchestrator` (`oracle/src/tutor/
+orchestrator.ts`), since a parked entry (`ParkedSession`) keeps only the
+orchestrator and a few scalars, not a live `Live.session` — the same
+established pattern as the file's other read-only getters
+(`resumeSnapshot`, `turnCount`, `servedSegments`).
+
+Proven with a new end-to-end test in `live-session.test.ts`: a real
+WebSocket session takes two real learner turns (clearing the review's own
+`learnerTurns < 2` floor), is dropped without a farewell, and once the
+grace window passes, the review's own distinctive system-prompt text
+("reflection pass") is confirmed present in the fake model server's
+received request bodies — proof the review actually ran through the park
+path, without needing Core's fake (which has no learner-memory route) to
+record anything. Confirmed to fail against the pre-fix `finalizeParked`
+for the claimed reason via `git stash`, pass against the fix. Full oracle
+suite green (442 tests), lint clean, type-check clean on all three
+tsconfigs, `verify:pedagogy` green.
