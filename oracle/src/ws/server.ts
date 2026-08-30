@@ -256,7 +256,9 @@ function finalizeParked(sessionId: string): void {
   void closeSession({
     sessionId,
     closeReason: 'learner_left',
-    turnCount: entry.orchestrator.turnCount,
+    // The transcript's own row count, not the model-turn count — see
+    // `CloseSessionInput.turnCount`'s comment.
+    turnCount: entry.transcriptSeq,
     segmentCount: entry.orchestrator.servedSegments,
     costUsd: entry.orchestrator.totalCostUsd,
   });
@@ -1312,7 +1314,10 @@ async function finish(
   await closeSession({
     sessionId: live.session.sessionId,
     closeReason: reason,
-    turnCount: live.orchestrator.turnCount,
+    // The transcript's own row count (both speakers), not the model-turn
+    // count — see `CloseSessionInput.turnCount`'s comment (found by
+    // adversarial review, 2026-08-30, HIGH).
+    turnCount: live.transcriptSeq,
     segmentCount: live.orchestrator.servedSegments,
     costUsd: live.orchestrator.totalCostUsd,
   });

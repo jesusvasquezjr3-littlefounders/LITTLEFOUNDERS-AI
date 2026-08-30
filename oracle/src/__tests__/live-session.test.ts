@@ -767,7 +767,23 @@ describe('a dropped session can be resumed on a fresh token', () => {
     const ending = collect(second.socket, (m) => m.some((x) => x.type === 'closed'));
     second.socket.send(JSON.stringify({ type: 'end_session' }));
     await ending;
-    expect(journal.closes.at(-1)).toMatchObject({ closeReason: 'completed' });
+    await new Promise((r) => setTimeout(r, 150));
+    /*
+     * Found by adversarial review, 2026-08-30 (HIGH): `closeSession` used to
+     * report `orchestrator.turnCount` — the model-turn counter, incremented
+     * only for TUTOR turns — as the session's `turnCount`. This conversation
+     * has a greeting, a learner line, a reply and a farewell: 4 transcript
+     * rows (`journal.turns`, every persisted row this session ever wrote),
+     * only 3 of them tutor turns. The parent-facing "N líneas" list and the
+     * resume player's "line X of N" both count every row, either speaker —
+     * so reporting the tutor-only count here made a 4-row conversation
+     * display as "3 líneas". `turnCount` must equal the transcript's own
+     * row count, not the model's.
+     */
+    expect(journal.closes.at(-1)).toMatchObject({
+      closeReason: 'completed',
+      turnCount: journal.turns.length,
+    });
   });
 
   /*

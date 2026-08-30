@@ -237,6 +237,17 @@ export async function persistSafetyFlag(input: PersistFlagInput): Promise<boolea
 export interface CloseSessionInput {
   sessionId: string;
   closeReason: CloseReason;
+  /**
+   * The TRANSCRIPT's own row count — every persisted `tutor_turns` row,
+   * learner and tutor alike (`ws/server.ts`'s `transcriptSeq`, not
+   * `orchestrator.turnCount`, which counts only model-produced tutor turns
+   * and is right for cost/budget tracking but wrong for this). This is what
+   * a parent's "N líneas" and the resume player's "line X of N" both count.
+   * Found by adversarial review, 2026-08-30 (HIGH): sending the tutor-only
+   * count here made a 5-tutor-turn/5-learner-turn session — 10 real rows —
+   * display as "5 líneas" while its own replay showed 10, on the one page a
+   * guardian can directly count the mismatch on.
+   */
   turnCount: number;
   segmentCount: number;
   costUsd: number;

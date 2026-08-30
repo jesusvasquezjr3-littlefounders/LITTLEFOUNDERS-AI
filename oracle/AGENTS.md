@@ -415,6 +415,19 @@ everything passes the blocked half perfectly and destroys the product.
    in that window. If you add a field whose ABSENCE is ambiguous between two
    states a client must act on differently, say which one explicitly rather
    than letting the client infer it from timing.
+16. **Two counters answering different questions will get confused for each
+   other if their names differ only by which file they live in.**
+   `orchestrator.turnCount` (`this.seq`) counts MODEL-PRODUCED tutor turns —
+   right for the in-session budget cap (`session/budget.ts`). `Live.transcriptSeq`
+   (`ws/server.ts`) counts every PERSISTED transcript row, either speaker —
+   right for anything a parent or the resume player displays as "how many
+   lines". `finish()`'s `closeSession()` call used the first where it needed
+   the second, found by adversarial review 2026-08-30 (HIGH), and it is the
+   exact bug `transcriptSeq`'s own doc comment already predicted for a
+   DIFFERENT consumer months earlier ("the transcript gets its own monotonic
+   counter... [because] one model turn legitimately produces two transcript
+   rows"). Before wiring EITHER counter into something new, ask which
+   question it actually answers.
 
 ---
 

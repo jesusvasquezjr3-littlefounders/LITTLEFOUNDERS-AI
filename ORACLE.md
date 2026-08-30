@@ -1388,6 +1388,21 @@ from `tutor-speech` only, and that is asserted by a test rather than trusted.
     conversation — character, date, line count, XP — and hands it upward. It
     does not replay anything any more, and there is no `<audio controls>` in the TUTOR
     anywhere in the product.
+
+    **The line count was the wrong counter — found by adversarial review,
+    2026-08-30 (HIGH), matching what live testing had separately noticed the
+    same day.** `tutor_sessions.turn_count`, persisted at close from
+    `orchestrator.turnCount` (`ws/server.ts`'s `finish()`), counted only
+    MODEL-PRODUCED tutor turns — a different number from the transcript's
+    own row count, which `tutor_turns` and the resume player's "line X of
+    N" both count per SPEAKER, learner and tutor alike. A 3-tutor-turn
+    conversation is 3 rows in the transcript (a greeting, a learner line, a
+    reply) but reported `turn_count: 2`. Fixed by persisting `ws/server.ts`'s
+    own `transcriptSeq` — the transcript's true row counter, already
+    maintained for exactly this reason (§ above, "the transcript gets its
+    own monotonic counter") — instead, at both `closeSession()` call sites
+    (the ordinary close and the unclaimed-park finalize). `orchestrator.turnCount`
+    itself is unchanged and still correctly drives the in-session budget cap.
 - **Parent visibility is an invariant**, and it is a page: `/family/:kidId/tutor`.
   A verified guardian reads their child's full transcripts — not a summary, not
   a redaction — with the safety flags surfaced FIRST, because a child

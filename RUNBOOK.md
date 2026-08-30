@@ -1999,3 +1999,54 @@ built to answer "is this turn's own audio question settled yet" — only "is
 the tutor currently speaking" and "is a reply currently in flight". A
 boolean reused for a purpose slightly adjacent to the one it was named for
 is where this class of defect keeps coming from.
+
+## A parent-facing conversation showed roughly half its real length — closed 2026-08-30
+
+**Found by adversarial review, round 11** (the learning map and past-
+conversation replay), HIGH severity, and matching exactly what live manual
+testing had separately noticed earlier the same day (a session shown as "5
+líneas" replayed as "línea 2 de 10") without either side yet knowing why.
+
+`oracle/src/tutor/orchestrator.ts`'s `turnCount` getter returns `this.seq` —
+a counter incremented once per MODEL-PRODUCED tutor turn. `finish()` (and
+the equivalent path for a session that finalizes unclaimed after a park)
+reported this value as the session's `turnCount` to Core, which persists it
+as `tutor_sessions.turn_count`. But the parent-facing "N líneas" list
+(`frontend/src/tutor/SessionHistory.tsx`), the guardian's own transcript
+page (`frontend/src/routes/app/family/KidTutorPage.tsx`, which labels the
+number "messages" and renders exactly that many bubbles), and the resume
+player's "line X of N" ribbon all count `tutor_turns` rows — one per
+speaker, learner and tutor alike, from `ws/server.ts`'s separate
+`transcriptSeq` counter. A 3-tutor-turn conversation (a greeting, a
+learner line, a reply) is 3 rows in the transcript but only 2 in
+`orchestrator.turnCount`; the review reproduced the exact "5 líneas / line
+2 of 10" shape with a realistic 5-tutor/5-learner fixture (10 real rows,
+`turnCount` reporting 5).
+
+Fixed at both `closeSession()` call sites in `ws/server.ts` (the ordinary
+`finish()` path and `finalizeParked()`'s unclaimed-park path): each now
+passes the live/parked session's own `transcriptSeq` — the transcript's
+true row count — instead of `orchestrator.turnCount`. `orchestrator.turnCount`
+itself is untouched and still drives the in-session budget cap
+(`session/budget.ts`'s `SESSION_MAX_TURNS`) and the live "state" frames sent
+to the client during a conversation; only the value PERSISTED for a closed
+session's display changed, because that is the only place a mismatch
+reaches a parent.
+
+Proven with a permanent test in `live-session.test.ts`: a resumed session
+with a greeting, a learner line, a reply and a farewell (4 real transcript
+rows, only 3 of them tutor-produced) asserts `closeSession`'s `turnCount`
+equals `journal.turns.length` — the count the fake Core actually received
+one row at a time — confirmed to fail against the pre-fix code (3 vs. the
+correct 4) first.
+
+**What this incident adds to the pattern.** The exact same class of defect
+this file's own `transcriptSeq` comment already names for a DIFFERENT bug
+in the SAME two counters — "the model-turn seq cannot simply be reused: it
+counts MODEL CALLS... so the transcript gets its own monotonic counter" —
+had a second, unrelated consumer reach for the wrong one of the two months
+later, for a different purpose, because both counters are plausibly named
+"turn count" and only one of them is a display of what actually happened
+in the conversation. Two counters that answer genuinely different
+questions need names that say so, not names that differ only in which file
+they live in.
