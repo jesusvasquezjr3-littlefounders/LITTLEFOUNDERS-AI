@@ -364,6 +364,24 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
           // is the signal that whatever went wrong is over.
           setError(null);
           setThinking(false);
+          /*
+           * A new turn also clears any adaptation offer from the PREVIOUS
+           * turn. Found by adversarial review, round 34 (2026-08-30, HIGH):
+           * an `adaptation_offer` frame is only ever sent when THAT turn's
+           * `offerAdaptation` is truthy — there is no explicit "the offer is
+           * gone now" frame — and the orchestrator's own notion of "the
+           * currently valid offer" moves on with every produced turn. Left
+           * uncleared, the UI could keep presenting a stale offer as a
+           * full-attention moment (composer hidden) after the tutor had
+           * already moved the conversation forward; tapping it then looked
+           * like it worked (the card clears optimistically) while the
+           * orchestrator silently refused it and the tutor never remarked.
+           * Safe to clear unconditionally here because the server always
+           * sends `turn` BEFORE any `adaptation_offer` for the SAME emission
+           * (`ws/server.ts`'s `deliver()`) — a fresh offer for this exact
+           * turn arrives right after and re-sets it via its own case below.
+           */
+          setAdaptationOffer(null);
           break;
         case 'turn_audio':
           // The voice catching up with its own turn. A stale seq is a clip for

@@ -3330,6 +3330,54 @@ export type Database = {
           turn_text: string
         }[]
       }
+      start_tutor_session_checked: {
+        Args: {
+          p_cap: number
+          p_character: string
+          p_companion: string
+          p_consent_id: string
+          p_course_id: string
+          p_diorama: string
+          p_intent: string
+          p_locale: string
+          p_since: string
+          p_skill_key: string
+          p_tier: number
+          p_topic_id: string
+          p_user_id: string
+          p_voice_used: boolean
+        }
+        Returns: {
+          character: string
+          close_reason: string | null
+          companion: string | null
+          consent_id: string | null
+          cost_usd: number
+          course_id: string | null
+          diorama: string
+          ended_at: string | null
+          id: string
+          intent: string
+          locale: string
+          purge_after: string
+          segment_count: number
+          skill_key: string | null
+          started_at: string
+          summary: Json | null
+          tier: number
+          topic_id: string | null
+          turn_count: number
+          user_id: string
+          voice_used: boolean
+          xp_awarded: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "tutor_sessions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       tutor_fts_config: { Args: { p_locale: string }; Returns: unknown }
     }
     Enums: {

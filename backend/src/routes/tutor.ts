@@ -20,8 +20,7 @@ import {
   awardTutorXp,
   closeTutorSession,
   countSessionSegments,
-  countSessionsSince,
-  createTutorSession,
+  startTutorSessionChecked,
   getActiveVoiceConsent,
   getTutorPreferences,
   getTutorSegment,
@@ -88,9 +87,66 @@ const MAX_SESSIONS_PER_DAY = 2;
 const MAX_TUTOR_XP_PER_DAY = 120;
 const PASS_THRESHOLD = 70;
 
-function startOfTodayIso(): string {
-  const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).toISOString();
+/**
+ * Start of "today" in the calendar day the LEARNER experiences, not the
+ * server's UTC day.
+ *
+ * Found by adversarial review, round 34 (2026-08-30, MEDIUM-HIGH,
+ * systematic — not a rare boundary case). This used to be a plain
+ * `Date.UTC(...)` midnight, and UTC midnight falls in the afternoon or
+ * evening local time for all three of this platform's locales (roughly
+ * 13:00-21:00 depending on locale and DST). So an entirely ordinary
+ * morning session and evening session, both on the SAME local calendar
+ * day, were treated as two different cap windows — letting a third or
+ * fourth session through on what is, for that learner, still today. This
+ * was reachable through completely ordinary use, every day, for the large
+ * majority of the real user base, not an edge case near a boundary.
+ *
+ * There is no stored per-user timezone (a bigger feature than this fix
+ * adds), so the locale maps to one representative IANA zone — an
+ * approximation for `en-US`, which spans several US timezones, but still
+ * strictly more correct than a UTC boundary for the other two locales, and
+ * no worse than UTC was for the one it cannot represent precisely.
+ */
+const LOCALE_TIMEZONE: Record<'en-US' | 'es-MX' | 'pt-BR', string> = {
+  'es-MX': 'America/Mexico_City',
+  'pt-BR': 'America/Sao_Paulo',
+  'en-US': 'America/New_York',
+};
+
+export function startOfLocalDayIso(locale: 'en-US' | 'es-MX' | 'pt-BR', now: Date = new Date()): string {
+  const timeZone = LOCALE_TIMEZONE[locale];
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    })
+      .formatToParts(now)
+      .map((p) => [p.type, p.value]),
+  ) as Record<string, string>;
+  // The clock reading `now` HAS in `timeZone`, reinterpreted as if it were
+  // UTC, reveals that zone's current UTC offset — derived from `now` itself
+  // rather than a fixed table, so it is correct across a DST transition.
+  // `% 24` guards against `Intl`'s documented midnight-as-"24" quirk under
+  // `hour12: false`.
+  const asIfUtcMs = Date.UTC(
+    Number(parts.year),
+    Number(parts.month) - 1,
+    Number(parts.day),
+    Number(parts.hour) % 24,
+    Number(parts.minute),
+    Number(parts.second),
+  );
+  const offsetMs = asIfUtcMs - now.getTime();
+  const localMidnightUtcMs =
+    Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day), 0, 0, 0) - offsetMs;
+  return new Date(localMidnightUtcMs).toISOString();
 }
 
 /**
@@ -1265,26 +1321,7 @@ export function tutorRouter(): Router {
 
     const profile = await profileOf(user.accessToken, user.id);
     if (!profile) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read profile');
-
-    const started = await countSessionsSince(user.id, startOfTodayIso());
-    if (started === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read session history');
-    /*
-     * THE DAILY CAP IS A PRODUCT PROMISE TO PARENTS, NOT A RATE LIMIT — a
-     * tutor that sends a child away is the anti-addiction stance the product
-     * takes deliberately, so this number is not weakened and is not made
-     * configurable by env, where it would drift.
-     *
-     * Staff are exempt because they are not the people it protects, and
-     * because the alternative was worse: iterating on the Tutor means starting
-     * sessions, and with a cap of two the person fixing it is locked out after
-     * two attempts and cannot see their own next change until tomorrow. That
-     * is how a defect survives — not because nobody could fix it, but because
-     * nobody could look at it twice in one evening.
-     */
-    const isStaff = roles.includes('admin') || roles.includes('superadmin');
-    if (!isStaff && started >= MAX_SESSIONS_PER_DAY) {
-      return fail(res, 429, 'SESSION_LIMIT', 'You have used all of today’s tutor sessions');
-    }
+    const locale = normalizeLocale(profile.locale);
 
     // THE MICROPHONE GATE. Blocking, not a flag (/ORACLE.md §4.3). A minor with
     // no active guardian consent gets a working, silent session — never a
@@ -1300,9 +1337,27 @@ export function tutorRouter(): Router {
     const prefs = await getTutorPreferences(user.id);
     if (prefs === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read preferences');
 
-    const session = await createTutorSession({
+    /*
+     * THE DAILY CAP IS A PRODUCT PROMISE TO PARENTS, NOT A RATE LIMIT — a
+     * tutor that sends a child away is the anti-addiction stance the product
+     * takes deliberately, so this number is not weakened and is not made
+     * configurable by env, where it would drift.
+     *
+     * Staff are exempt because they are not the people it protects, and
+     * because the alternative was worse: iterating on the Tutor means starting
+     * sessions, and with a cap of two the person fixing it is locked out after
+     * two attempts and cannot see their own next change until tomorrow. That
+     * is how a defect survives — not because nobody could fix it, but because
+     * nobody could look at it twice in one evening. Passing an effectively
+     * unlimited cap for staff reuses this one atomic path rather than a
+     * second, unchecked insert.
+     */
+    const isStaff = roles.includes('admin') || roles.includes('superadmin');
+    const result = await startTutorSessionChecked({
       userId: user.id,
-      locale: normalizeLocale(profile.locale),
+      sinceIso: startOfLocalDayIso(locale),
+      cap: isStaff ? Number.MAX_SAFE_INTEGER : MAX_SESSIONS_PER_DAY,
+      locale,
       tier: tierForBirthDate(profile.birth_date),
       character: prefs.character,
       companion: prefs.companion,
@@ -1314,7 +1369,11 @@ export function tutorRouter(): Router {
       voiceUsed: wantsVoice && runtime.microphoneAvailable,
       consentId: consent?.id ?? null,
     });
-    if (!session) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not start the session');
+    if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not start the session');
+    if (result.status === 'cap_reached') {
+      return fail(res, 429, 'SESSION_LIMIT', 'You have used all of today’s tutor sessions');
+    }
+    const session = result.session;
 
     const { url, expiresAt } = tutorSocketUrl(session.id, user.id);
     return ok(
@@ -1500,7 +1559,7 @@ export function tutorRouter(): Router {
       const awarded = await awardTutorXp({
         sessionId: session.id,
         userId: user.id,
-        sinceIso: startOfTodayIso(),
+        sinceIso: startOfLocalDayIso(normalizeLocale(session.locale)),
         cap: MAX_TUTOR_XP_PER_DAY,
         requested: requestedXp,
       });

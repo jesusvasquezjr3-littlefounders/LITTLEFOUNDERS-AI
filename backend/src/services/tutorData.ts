@@ -235,26 +235,63 @@ export interface CreateSessionInput {
   consentId: string | null;
 }
 
-export async function createTutorSession(input: CreateSessionInput): Promise<TutorSessionRow | null> {
-  const rows = await serviceRest<TutorSessionRow[]>('/tutor_sessions', {
+/**
+ * The result of an attempted session start against the daily cap.
+ *
+ * `null` on a transport/RPC failure — the caller must refuse rather than
+ * assume the cap was or was not reached (§1.14): a failed call collapsed
+ * into "cap reached" would wrongly turn away a learner who never actually
+ * used their sessions, and collapsed into "created" would be worse.
+ */
+export type StartSessionResult = { status: 'created'; session: TutorSessionRow } | { status: 'cap_reached' };
+
+/**
+ * Creates a session, ATOMICALLY checked against the learner's daily cap.
+ *
+ * Found by adversarial review, round 34 (2026-08-30, HIGH): the previous
+ * shape was a plain application-level read-then-write — count "sessions
+ * today" via a separate query, compare to the cap in JS, then create the
+ * session with a SEPARATE, unconditional INSERT. Two concurrent
+ * session-creation requests for the same learner (a double-tap, a
+ * flaky-connection retry, two open tabs) both read the same stale count
+ * before either insert landed, so both independently believed a slot was
+ * free and both created a session — and unlike the daily XP cap
+ * (`awardTutorXp`, same fix shape) or voice consent (a partial unique
+ * index), `tutor_sessions` carried no per-day uniqueness constraint at all,
+ * so this did not just mislabel an error under a race, it actually
+ * defeated the cap.
+ *
+ * `start_tutor_session_checked` (migration 0057) does the count, the cap
+ * comparison and the insert inside ONE Postgres function, serialized with
+ * an advisory lock keyed on the learner. An empty result set means the cap
+ * was reached and nothing was inserted; staff exemption stays in the
+ * CALLER, which passes an effectively unlimited `cap` for staff rather
+ * than maintaining a second, unchecked insert path.
+ */
+export async function startTutorSessionChecked(
+  input: CreateSessionInput & { sinceIso: string; cap: number },
+): Promise<StartSessionResult | null> {
+  const rows = await serviceRest<TutorSessionRow[]>('/rpc/start_tutor_session_checked', {
     method: 'POST',
-    headers: { Prefer: 'return=representation' },
     body: JSON.stringify({
-      user_id: input.userId,
-      locale: input.locale,
-      tier: input.tier,
-      character: input.character,
-      companion: input.companion,
-      diorama: input.diorama,
-      intent: input.intent,
-      course_id: input.courseId,
-      topic_id: input.topicId,
-      skill_key: input.skillKey,
-      voice_used: input.voiceUsed,
-      consent_id: input.consentId,
+      p_user_id: input.userId,
+      p_since: input.sinceIso,
+      p_cap: input.cap,
+      p_locale: input.locale,
+      p_tier: input.tier,
+      p_character: input.character,
+      p_companion: input.companion,
+      p_diorama: input.diorama,
+      p_intent: input.intent,
+      p_course_id: input.courseId,
+      p_topic_id: input.topicId,
+      p_skill_key: input.skillKey,
+      p_voice_used: input.voiceUsed,
+      p_consent_id: input.consentId,
     }),
   });
-  return rows?.[0] ?? null;
+  if (rows === null) return null;
+  return rows.length > 0 ? { status: 'created', session: rows[0]! } : { status: 'cap_reached' };
 }
 
 export async function getTutorSession(sessionId: string): Promise<TutorSessionRow | null> {
@@ -774,13 +811,4 @@ export async function listSafetyFlags(userId: string, limit = 50): Promise<Safet
 }
 
 // ── Daily budget (/ORACLE.md §15) ───────────────────────────────────────────
-
-/** Sessions the learner has already started today, in their own local date. */
-export async function countSessionsSince(userId: string, sinceIso: string): Promise<number | null> {
-  const rows = await serviceRest<{ id: string }[]>(
-    `/tutor_sessions?user_id=eq.${eu(userId)}&started_at=gte.${encodeURIComponent(sinceIso)}&select=id`,
-  );
-  if (rows === null) return null;
-  return rows.length;
-}
 

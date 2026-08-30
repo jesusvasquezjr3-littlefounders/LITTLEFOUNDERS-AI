@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
 import { jsonResponse, mintToken } from './helpers.js';
-import { tierForBirthDate } from '../routes/tutor.js';
+import { startOfLocalDayIso, tierForBirthDate } from '../routes/tutor.js';
 
 /*
  * The Tutor's Core surface (/ORACLE.md).
@@ -170,10 +170,23 @@ function stub(opts: StubOpts = {}) {
         return Promise.resolve(jsonResponse(200, opts.segments ?? []));
       }
       if (url.includes('/rest/v1/tutor_sessions')) {
-        if (method === 'POST') return Promise.resolve(jsonResponse(200, opts.insertedSession ?? [SESSION_ROW]));
         if (method === 'PATCH') return Promise.resolve(new Response(null, { status: 204 }));
         if (url.includes('?id=eq.')) return Promise.resolve(jsonResponse(200, opts.session ?? [SESSION_ROW]));
         return Promise.resolve(jsonResponse(200, opts.sessions ?? []));
+      }
+      if (url.includes('/rpc/start_tutor_session_checked')) {
+        /*
+         * The real function (migration 0057) counts, compares to the cap,
+         * and conditionally inserts, all in one call. The mock reuses
+         * `opts.sessions` for "how many sessions already exist today" —
+         * preserving the SAME fixture every existing cap test already sets
+         * — and `opts.insertedSession` for what a successful start returns,
+         * exactly as the old two-step mock did.
+         */
+        const cap = JSON.parse(String(init?.body ?? '{}')).p_cap as number;
+        const existing = (opts.sessions ?? []).length;
+        if (existing >= cap) return Promise.resolve(jsonResponse(200, []));
+        return Promise.resolve(jsonResponse(200, opts.insertedSession ?? [SESSION_ROW]));
       }
       if (url.includes('/rpc/award_tutor_xp')) {
         // Default: award exactly what was requested (no cap in play). A test
@@ -209,6 +222,46 @@ describe('tierForBirthDate', () => {
 
   it('uses the middle band for an unknown birth date, never the adult band', () => {
     expect(tierForBirthDate(null, now)).toBe(2);
+  });
+});
+
+/*
+ * Found by adversarial review, round 34 (2026-08-30, MEDIUM-HIGH,
+ * systematic): the daily session cap's "start of today" used to be plain
+ * `Date.UTC(...)` midnight — the SERVER's day, not the learner's. UTC
+ * midnight falls in the afternoon or evening local time for all three of
+ * this platform's locales, so an ordinary morning session and evening
+ * session on the SAME local calendar day were treated as two different cap
+ * windows.
+ */
+describe('startOfLocalDayIso — the cap window is the LEARNER’s day, not the server’s UTC day', () => {
+  it('treats a morning and an evening session on the same Mexico City day as the SAME window', () => {
+    // 2026-08-30T23:00Z is 2026-08-30 17:00 in Mexico City (UTC-6) — still
+    // the same local day as anything earlier that day.
+    const evening = new Date('2026-08-30T23:00:00Z');
+    const morning = new Date('2026-08-30T14:00:00Z');
+    expect(startOfLocalDayIso('es-MX', evening)).toBe(startOfLocalDayIso('es-MX', morning));
+  });
+
+  it('rolls over to a NEW window once Mexico City itself crosses midnight, not when UTC does', () => {
+    // 2026-08-31T01:00Z is still 2026-08-30 19:00 in Mexico City — the OLD
+    // UTC-midnight boundary would have already rolled this to a new day.
+    const stillYesterdayLocally = new Date('2026-08-31T01:00:00Z');
+    const reference = new Date('2026-08-30T14:00:00Z');
+    expect(startOfLocalDayIso('es-MX', stillYesterdayLocally)).toBe(startOfLocalDayIso('es-MX', reference));
+
+    // 2026-08-31T07:00Z is 2026-08-31 01:00 in Mexico City — genuinely the
+    // next local day, so the window must be different.
+    const genuinelyNextDay = new Date('2026-08-31T07:00:00Z');
+    expect(startOfLocalDayIso('es-MX', genuinelyNextDay)).not.toBe(startOfLocalDayIso('es-MX', reference));
+  });
+
+  it('computes a different window per locale for the SAME instant', () => {
+    const now = new Date('2026-08-31T04:00:00Z');
+    // 04:00 UTC is still 2026-08-30 22:00 in Mexico City (UTC-6) but already
+    // 2026-08-31 01:00 in São Paulo (UTC-3, no DST since 2019) — genuinely
+    // different calendar days for the two locales at the same instant.
+    expect(startOfLocalDayIso('es-MX', now)).not.toBe(startOfLocalDayIso('pt-BR', now));
   });
 });
 
@@ -268,8 +321,8 @@ describe('POST /api/v1/tutor/sessions — the microphone gate', () => {
     expect(response.body.data.microphoneAvailable).toBe(false);
     expect(response.body.data.microphoneBlockedBy).toBe('CONSENT_REQUIRED');
 
-    const insert = calls.find((c) => c.method === 'POST' && c.url.includes('tutor_sessions'));
-    expect(JSON.parse(insert?.body ?? '{}').voice_used).toBe(false);
+    const insert = calls.find((c) => c.method === 'POST' && c.url.includes('/rpc/start_tutor_session_checked'));
+    expect(JSON.parse(insert?.body ?? '{}').p_voice_used).toBe(false);
   });
 
   it('allows the microphone for a kid WITH active consent, once policy permits', async () => {
@@ -397,6 +450,42 @@ describe('POST /api/v1/tutor/sessions — the microphone gate', () => {
 
     expect(response.status).toBe(429);
     expect(response.body.error.code).toBe('SESSION_LIMIT');
+  });
+
+  /*
+   * Found by adversarial review, round 34 (2026-08-30, HIGH). The count, the
+   * cap comparison and the insert used to be a plain application-level
+   * read-then-write: a separate GET for "sessions today", the cap check in
+   * JS, then a SEPARATE, unconditional POST. Two concurrent requests both
+   * reading the same stale count before either insert landed both created a
+   * session — and unlike the daily XP cap or voice consent, tutor_sessions
+   * carried no per-day database constraint at all, so this did not just
+   * mislabel an error under a race, it actually defeated the cap. The fix
+   * moves the whole check-and-insert into ONE atomic Postgres function
+   * (migration 0057, start_tutor_session_checked), serialized on the
+   * learner — this test proves the ROUTE now delegates to that single
+   * atomic call rather than issuing a separate count-then-create pair; the
+   * function's own atomicity under real concurrent connections is verified
+   * directly against Postgres in the migration's own review, the same way
+   * 0055's advisory lock was.
+   */
+  it('checks the cap and creates the session in ONE atomic call, not a separate count-then-create', async () => {
+    const calls = stub();
+
+    await request(createApp())
+      .post('/api/v1/tutor/sessions')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ intent: 'course_topic' });
+
+    const rpcCalls = calls.filter((c) => c.url.includes('/rpc/start_tutor_session_checked'));
+    expect(rpcCalls).toHaveLength(1);
+    // No separate, unconditional POST to the raw table — the insert only
+    // ever happens INSIDE the atomic function.
+    const rawInserts = calls.filter((c) => c.method === 'POST' && c.url.includes('/rest/v1/tutor_sessions'));
+    expect(rawInserts).toHaveLength(0);
+    const body = JSON.parse(rpcCalls[0]?.body ?? '{}');
+    expect(body.p_cap).toBe(2);
+    expect(typeof body.p_since).toBe('string');
   });
 
   /*

@@ -3780,3 +3780,89 @@ committing) — both mobile (375px) and desktop render cleanly, no overlap or
 truncation, since the fix only swaps which two i18n keys are read and
 touches no layout. Full frontend suite green (1437 tests, up from 1433),
 lint clean, type-check clean, root `i18n:check` clean (3-locale parity).
+
+## The daily session cap could be defeated by a race, its day boundary was systematically wrong for most users, and a stale adaptation offer looked like it worked when it silently didn't — found by adversarial review, closed 2026-08-30
+
+Round 34 targeted two surfaces: the daily session-cap enforcement
+(`POST /tutor/sessions`) and the frontend side of the adaptation-offer
+flow (`/ORACLE.md` §11, "offered, never imposed" — the orchestrator-side
+authorization was already correct from earlier work).
+
+**1. HIGH — the daily session cap (2/day) was enforced by a non-atomic
+read-then-write, so it was not actually a cap.** The exact race shape this
+migration series already closed once for the daily XP cap
+(`0055_atomic_tutor_xp.sql`) and once, with a compensating unique index, for
+voice consent — but never applied to session creation. `tutor_sessions`
+carries no per-day database constraint at all, so this was not a mislabeled
+error under a race, it was a real defeat of the cap: two concurrent
+`POST /tutor/sessions` requests both observing count=1 (one below the cap
+of 2) both succeeded, landing 3 sessions against a cap of 2.
+
+**2. MEDIUM-HIGH, systematic — the cap's day boundary was the server's UTC
+calendar day, not the learner's.** `startOfTodayIso()` used `Date.UTC(...)`
+midnight while its own doc comment falsely claimed "in their own local
+date." UTC midnight falls in the afternoon or evening local time for all
+three of this platform's locales (roughly 13:00-21:00 depending on locale
+and DST), so an entirely ordinary morning session and evening session on
+the SAME local calendar day were treated as two different cap windows —
+reachable through completely ordinary use, every day, for the large
+majority of the real user base, not a rare edge case near a boundary.
+
+Fixed together: `start_tutor_session_checked` (migration `0057`) moves the
+count, the cap comparison and the insert into one `SECURITY DEFINER`
+Postgres function serialized with `pg_advisory_xact_lock` keyed on the
+learner (a different lock salt than `award_tutor_xp`'s, so the two never
+wait on each other); staff exemption stays in application code, which
+passes an effectively unlimited cap for staff rather than a second,
+unchecked insert path. `startOfTodayIso()` became `startOfLocalDayIso`,
+mapping the session's locale to one representative IANA timezone
+(`America/Mexico_City`, `America/Sao_Paulo`, `America/New_York`) — an
+approximation for `en-US`, which spans several US timezones since there is
+no stored per-user timezone, but still strictly more correct than a UTC
+boundary for the other two locales, and no worse than UTC was for the one
+it cannot represent precisely. `countSessionsSince` and `createTutorSession`
+were deleted (their one call site each was the code being replaced), not
+left as dead code.
+
+Proven with: a unit test suite for `startOfLocalDayIso` (a morning and an
+evening session in Mexico City land in the SAME window; the window rolls
+over only when Mexico City itself crosses midnight, not when UTC does; the
+two locales genuinely disagree on the calendar day for the same instant); a
+route-level test confirming `POST /tutor/sessions` now delegates to the one
+atomic RPC rather than a separate count-then-create; and, most decisively,
+a direct test against a REAL local Postgres instance — two genuinely
+concurrent `psql` connections racing `start_tutor_session_checked` with one
+cap slot remaining settled at exactly one created session and one
+cap-reached empty result, never exceeding the cap, with `npm run db:reset`
+succeeding twice. All confirmed to fail against the pre-fix code for the
+exact claimed reason via `git stash` (the atomic-call test failed cleanly;
+several others failed as collateral of the mock contract changing
+entirely, expected when a mechanism is replaced rather than patched). Full
+backend suite green (641 tests, up from 637), lint clean, type-check clean,
+root `i18n:check`/`docs:check`/`secrets:check`/`paths:check`/`seo:check`/
+`provider:check`/`tools:test` all clean, database types regenerated.
+
+**3. HIGH — a stale adaptation offer could silently fail when accepted,
+with nothing telling the learner it didn't work.** An `adaptation_offer`
+frame is only ever sent when that turn's `offerAdaptation` is truthy — there
+is no explicit "the offer is gone now" frame — and the orchestrator's own
+notion of the currently valid offer moves on with every produced turn.
+`useTutorSocket.ts`'s `case 'turn'` never touched `adaptationOffer`, so the
+client's copy could go stale: an offer from an earlier turn stayed on
+screen — hiding the composer, per `ConversationView.tsx`'s `standDown` — even
+after the tutor had already moved the conversation forward with an ordinary
+turn that offered nothing. Tapping the stale card cleared it optimistically
+(looked like it worked) while the orchestrator correctly refused it
+server-side and the tutor never remarked either way — a silent failure.
+
+Fixed by clearing `adaptationOffer` unconditionally in `case 'turn'`. Safe
+because the server always sends the `turn` frame BEFORE any
+`adaptation_offer` for the same emission (`ws/server.ts`'s `deliver()`), so
+a fresh offer for that exact turn arrives immediately after and re-sets it
+via its own case. Proven with a new test file,
+`frontend/src/tutor/__tests__/adaptationOfferStale.test.tsx` (an offer is
+cleared once an ordinary next turn arrives without re-offering it; a FRESH
+offer for the same turn is not clobbered by the clear). Confirmed to fail
+against the pre-fix code for the exact claimed reason via `git stash`,
+passes against the fix. Full frontend suite green (1439 tests, up from
+1437), lint clean, type-check clean.
