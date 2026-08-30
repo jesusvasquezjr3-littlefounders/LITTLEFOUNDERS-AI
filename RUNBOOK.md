@@ -2112,3 +2112,42 @@ Proven with a permanent test (`MicOrb.test.tsx`) mirroring the existing
 `aria-disabled` (it still LOOKS pressable) and a `pointerdown` on it does
 NOT call `microphone.start`. Confirmed to fail against the pre-fix
 component first. Full frontend suite green (1406 tests).
+
+## Investigated, NOT changed: a due review can outrank an unmet prerequisite on the learning map
+
+**Found by adversarial review, round 11** (the learning map), rated
+MEDIUM by the reviewer with an explicit caveat — "I verified the code path
+that makes prerequisite regression possible but did not trigger it end-to-
+end through a live BKT session" — and on investigation this session judged
+it a genuine product-policy question rather than a confirmed bug, so
+**no code was changed**.
+
+`deriveNodeState` (`backend/src/services/pedagogy/tutorMap.ts`) checks
+`reviewDue` before `prereqsMet`: a node whose spaced-review card is due
+reports `'needs_review'` even if a prerequisite has since regressed below
+`MASTERY_PREREQ_THRESHOLD` (a wrong answer's BKT update can lower a
+prerequisite's `p_known` after the review card was scheduled).
+`MapGraph.tsx`'s `startable` treats `'needs_review'` as tappable exactly
+like `'available'`, so this node stays reachable rather than reverting to
+`'locked'`.
+
+**Why this was not simply reordered to check `prereqsMet` first.** Reading
+the two states' actual meaning suggests the current order may be the
+pedagogically CORRECT one, not an oversight: a spaced-review card exists
+because the learner already demonstrated mastery of THIS skill once, and
+spaced review is specifically for catching decay before it compounds. A
+child who has since gotten rusty on an unrelated prerequisite has not
+un-learned the dependent skill — locking them out of reviewing it because
+a DIFFERENT skill decayed could deny exactly the practice that would
+reinforce both. No design document (`ROADMAP.md`, `/ORACLE.md`) states an
+intended priority between these two states, and the reviewer's own
+end-to-end BKT session did not reproduce a case where the CURRENT order
+produces a worse outcome than the reordered one would.
+
+Changing this without that evidence risks trading a real, working feature
+(reachable spaced review) for a state that "looks more consistent" but may
+not actually serve the learner better — the same mistake this file has
+called out in the other direction all session, just facing the other way.
+Left open for an explicit product decision rather than guessed at; if
+resolved, it belongs beside `deriveNodeState`'s existing tests
+(`pedagogy-routes.test.ts`, "the learning map" describe block).
