@@ -628,8 +628,38 @@ export class TutorOrchestrator {
        * nearest numbers lying around in history instead. The fix asks for
        * whatever the ACTUAL activity produced — a choice, an order, a match,
        * a number — rather than presupposing which.
+       *
+       * "NEVER INVENTED" WAS UNSATISFIABLE, BECAUSE NOTHING SPECIFIC EVER
+       * REACHES ORACLE. Found live, testing as a low-retention/struggling
+       * persona, 2026-08-30 (HIGH): the two fixes above stopped the model
+       * from lifting a WRONG activity's details, but the instruction still
+       * demanded it name "the choice they made, the numbers they used, the
+       * order they picked" — and `segment_graded` (`ws/server.ts`) carries
+       * only `segmentId`, `score`, `correct` and an optional
+       * `misconceptionCode`; no item, option, amount or order the learner
+       * actually submitted is ever sent to Oracle at all (frontend grades
+       * client-side against Core, not us). Told to be specific and given no
+       * specific truth to be specific ABOUT, the model complied the only way
+       * it could: on a `sort_buckets` needs-vs-wants miss it told "Robi" —
+       * verbatim, live — "vi que pusiste 'comida' en 'lo que quiero'" and,
+       * next turn, "pusiste zapatos en 'quiero'" — two concrete, confident,
+       * entirely fabricated claims about what the child chose, since no
+       * "comida" or "zapatos" appeared anywhere in the session's data. A
+       * coin-counting miss in the same run got the softer version: "elegiste
+       * algunas que sumaban más de lo pedido" — a specific failure MODE
+       * (overcounting) invented with equal confidence from the same nothing.
+       * §1.14's own lesson about generated images applies unchanged to
+       * generated speech: a confident wrong picture of what happened misleads
+       * a struggling child worse than an honest general one would. The
+       * REMEDIATE strategy's catalogued misconception hint (`extra`, appended
+       * below) is real, curated content and stays exactly as specific as it
+       * already is; this instruction is the ONLY thing that was asking for
+       * specifics with nothing behind them, so it is the only thing that
+       * changes — to ground in the two facts that ARE always true (the
+       * activity's real type and prompt, restated just above, and whether
+       * they got it right) instead of a submitted answer nobody sent us.
        */
-      `${summary}${activityFact} React as their tutor. Name the SPECIFIC thing they did IN THAT ACTIVITY — grounded in the activity described above as on their screen, never invented: the choice they made, the numbers they used, the order they picked, whichever of those this particular activity actually involved — never a general compliment about thinking or being clever. Then help with what is still missing. Do not read the score out loud.${extra ? `\n\n${extra}` : ''}${finalNote}`,
+      `${summary}${activityFact} React as their tutor, grounded ONLY in what you actually know: the activity's type and prompt (restated above) and whether they got it right. Do NOT invent the specific items, numbers, choices or order they picked — you were never told those, so anything you say about their exact answer is a guess dressed as an observation. Refer to the activity itself by what it actually asked (the sorting, the counting, the ordering — whichever this one was) instead of either a made-up detail about their submission or a general compliment about thinking or being clever. Then help with what is still missing. Do not read the score out loud.${extra ? `\n\n${extra}` : ''}${finalNote}`,
       nowMs,
       { isSystemPrompted: true, signal, finalTurn: graceTurn },
     );

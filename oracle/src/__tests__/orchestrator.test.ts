@@ -952,6 +952,42 @@ describe('the reaction turn must not lose to the tutor\'s own earlier promise', 
     expect(reactionMessage.content).toContain('sort_buckets');
     expect(reactionMessage.content).toContain(SORT_BUCKETS_PROMPT);
   });
+
+  /*
+   * Found live, testing as a low-retention/struggling persona, 2026-08-30
+   * (HIGH): `segment_graded` (`ws/server.ts`) carries only segmentId, score,
+   * correct and an optional misconceptionCode — no item, option, amount or
+   * order the learner actually submitted ever reaches Oracle. The reaction
+   * instruction used to demand the model name that unavailable specific
+   * anyway ("the choice they made, the numbers they used, the order they
+   * picked... never invented"), which is unsatisfiable by construction, and
+   * live it produced two confident, false, concrete claims about a child's
+   * submitted answer ("pusiste 'comida' en 'lo que quiero'", "pusiste
+   * zapatos en 'quiero'") for a sort_buckets activity whose real content was
+   * never sent anywhere near the model.
+   */
+  it('never tells the model the specific submitted choice is known, since nothing that reaches Oracle names it', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    orchestrator.noteSegmentServed(
+      'seg-1',
+      'financial-education/necesidades-y-gustos',
+      'sort_buckets',
+      SORT_BUCKETS_PROMPT,
+    );
+
+    fetchMock.mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, next: 'ask' })).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleSegmentResult('seg-1', 40, false, Date.now());
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as {
+      messages: { content: string }[];
+    };
+    const reactionMessage = body.messages.at(-2)!;
+
+    expect(reactionMessage.content).toContain(
+      'Do NOT invent the specific items, numbers, choices or order they picked',
+    );
+    expect(reactionMessage.content).not.toContain('the choice they made, the numbers they used, the order they picked');
+  });
 });
 
 describe('adaptation', () => {
@@ -1380,7 +1416,7 @@ describe('the tutor can see the activity on screen', () => {
 
     const body = String(fetchMock.mock.calls[0]?.[1]?.body ?? '');
     expect(body).not.toContain('the numbers they chose, the order they put things in');
-    expect(body).toContain('grounded in the activity described above');
+    expect(body).toContain("the activity's type and prompt (restated above)");
   });
 });
 

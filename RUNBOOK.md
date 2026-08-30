@@ -5045,3 +5045,65 @@ existing + 4 new, zero regressions), lint and type-check (including
 `tsconfig.test.json`) both clean. No `oracle/AGENTS.md` item needed —
 this round touches only `backend/`, matching the precedent set by
 round 41 and round 46's Finding 1.
+
+## Round 48: a segment-reaction instruction demanded a specific submitted answer that never reaches Oracle at all — the model invented one, live, twice in one conversation
+
+Found by my own live testing (`npm run tutor:converse`, playing the
+mandate's low-retention/struggling persona), not by a review agent —
+the harness's own `review()` verdict still said "nothing a person
+would notice went wrong," and this was in the raw transcript underneath
+it. Items 14 and 46 (`oracle/AGENTS.md`) already closed two rounds of
+"the reaction turn described the WRONG activity"; this is a third,
+narrower defect in the same instruction that survived both: the text
+itself demanded a fact that no code path ever supplies.
+
+`handleSegmentResult`'s reaction instruction (`oracle/src/tutor
+/orchestrator.ts`) told the model to "name the SPECIFIC thing they did
+IN THAT ACTIVITY... the choice they made, the numbers they used, the
+order they picked... never invented." But `segment_graded`
+(`oracle/src/ws/server.ts`) carries only `segmentId`, `score`,
+`correct` and an optional `misconceptionCode` — no item, option,
+amount or order the learner actually submitted is EVER sent to Oracle;
+the frontend grades client-side against Core. Live, this produced: on
+a `sort_buckets` needs-vs-wants miss, "vi que pusiste 'comida' en 'lo
+que quiero'" and, the very next miss in the same conversation,
+"pusiste zapatos en 'quiero'" — two concrete, confident, fabricated
+claims about what the child chose, since no "comida" or "zapatos"
+appeared anywhere in the session's data. A `coin_count` miss in the
+same run got the softer version: "elegiste algunas que sumaban más de
+lo pedido" — a specific failure mode invented with equal confidence
+from the same nothing. For the exact persona this session is testing
+as, being told a confident, false, specific account of what you just
+did is worse than an honest general one — the same "confident wrong
+picture misleads where an absent one merely omits" principle §1.14
+already states for generated images, unchanged for generated speech.
+
+Fixed by rewriting the instruction to ground in the two facts that are
+always genuinely true — the activity's real type and prompt (already
+restated adjacent to it since item 46) and whether they got it right —
+and to explicitly forbid inventing the submitted specifics instead of
+demanding them: "grounded ONLY in what you actually know... Do NOT
+invent the specific items, numbers, choices or order they picked — you
+were never told those." The REMEDIATE strategy's own catalogued
+misconception hint (real, curated content from `misconception.hint`,
+appended separately in `extra`) is untouched — only the one instruction
+that was asking for specifics with nothing behind it changed. New test
+in `orchestrator.test.ts` asserts the reaction message forbids
+inventing and no longer contains the old unsatisfiable demand;
+confirmed to fail for the exact reason pre-fix via `git stash`
+(reproducing the literal old instruction text in the failure output).
+An existing test asserting the prior fix's own wording
+(`'grounded in the activity described above'`) was updated to check
+the new wording's equivalent guarantee instead.
+
+Verification: full oracle suite green (25 files, 487 tests, zero
+regressions), lint and type-check (all three tsconfigs) clean,
+`verify:pedagogy` and `verify:tutor` both green. Re-ran the full live
+`tutor:converse` scenario set afterward as substitute evidence for a
+prompt-wording change (the paid `tutor-deploy step=converse` gate
+remains blocked by the ongoing GitHub Actions billing issue): every
+incorrect-activity reaction across all 6 conversations — including the
+same two personas that surfaced the bug — was honest and general
+("todavía se nos resiste un poco", a needs-vs-wants metaphor with no
+invented item names), zero fabricated specifics, versus two in the
+run that found it. `oracle/AGENTS.md` item 47.

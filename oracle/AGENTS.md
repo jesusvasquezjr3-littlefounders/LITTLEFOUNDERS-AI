@@ -1113,6 +1113,56 @@ everything passes the blocked half perfectly and destroys the product.
    it without closing it, because both added MORE instruction rather than
    moving the FACT closer to where it is needed.
 
+47. **An instruction that demands a specific truth is unsatisfiable — and
+   gets satisfied by invention — when nothing upstream ever carries that
+   truth.** Found live, testing as a low-retention/struggling persona,
+   2026-08-30 (HIGH): items 14 and 46 both stopped the model from lifting
+   the WRONG activity's details into a segment-result reaction, but the
+   instruction itself still said "name the SPECIFIC thing they did... the
+   choice they made, the numbers they used, the order they picked... never
+   invented." `segment_graded` (`ws/server.ts`) carries only `segmentId`,
+   `score`, `correct` and an optional `misconceptionCode` — no item, option,
+   amount or order the learner actually submitted is EVER sent to Oracle;
+   the frontend grades client-side against Core, not us. Told to be specific
+   about a submitted answer and given no submitted answer to be specific
+   about, the model complied the only way it could: on a real `sort_buckets`
+   needs-vs-wants miss it told the learner, live and verbatim, "vi que
+   pusiste 'comida' en 'lo que quiero'" and, the very next miss, "pusiste
+   zapatos en 'quiero'" — two concrete, confident, entirely fabricated
+   claims about what the child chose, since no "comida" or "zapatos"
+   appeared anywhere in the session. A coin-counting miss in the same run
+   got the softer version: "elegiste algunas que sumaban más de lo pedido"
+   — a specific failure MODE invented with equal confidence from the same
+   nothing. §1.14's own lesson about a generative image inventing a default
+   subject applies unchanged to generated speech: a confident wrong account
+   of what happened misleads a struggling child worse than an honest general
+   one would, and this persona is exactly the child least able to tell the
+   difference between "you got this wrong" and "you did a specific thing
+   that never happened." Fixed by rewriting the instruction to ground in the
+   two facts that ARE always true — the activity's real type and prompt
+   (already restated adjacent to it, per item 46) and whether they got it
+   right — and to explicitly forbid inventing the submitted specifics
+   instead of demanding them: "grounded ONLY in what you actually know...
+   Do NOT invent the specific items, numbers, choices or order they picked —
+   you were never told those." The REMEDIATE strategy's own catalogued
+   misconception hint (real, curated content, appended separately) is
+   untouched — this only changes the one instruction that was asking for
+   specifics with nothing behind them. Proven with a new
+   `orchestrator.test.ts` test asserting the reaction message forbids
+   inventing and no longer contains the old unsatisfiable demand; confirmed
+   to fail for the exact claimed reason pre-fix via `git stash`. Re-verified
+   live afterward across the full `tutor:converse` scenario set (including
+   the same low-retention persona and the "keeps failing" persona that
+   surfaced it): every incorrect-activity reaction across the run was
+   honest and general ("todavía se nos resiste un poco", a needs-vs-wants
+   metaphor with no invented item names) with zero fabricated specifics,
+   where the same run previously produced two per conversation. General
+   lesson: when a prompt instruction demands specificity, check that
+   something upstream actually CAN supply it for every case the instruction
+   covers — an instruction can be perfectly worded and still be a standing
+   invitation to hallucinate if the data behind it doesn't exist for some of
+   the paths that reach it.
+
 ---
 
 ## §6 Environment
