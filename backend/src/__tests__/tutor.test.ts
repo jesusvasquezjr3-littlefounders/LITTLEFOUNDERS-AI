@@ -76,6 +76,8 @@ interface StubOpts {
   lessonDocuments?: unknown[];
   kcs?: unknown[];
   kcEdges?: unknown[];
+  /** The human-published bank (tier 2). Absent by default, matching the catalog's own "no content" default. */
+  packs?: unknown[];
   roles?: { role: string }[];
   profile?: unknown;
   consent?: unknown[];
@@ -146,12 +148,37 @@ function stub(opts: StubOpts = {}) {
           jsonResponse(200, want ? rows.filter((r) => r.slug === decodeURIComponent(want)) : rows),
         );
       }
-      if (url.includes('/rest/v1/lessons')) return Promise.resolve(jsonResponse(200, opts.lessons ?? []));
+      if (url.includes('/rest/v1/lessons')) {
+        /*
+         * Filtered by `topic_id`, not just returned whole — found while
+         * writing round 58's PROBE-mismatch test (2026-08-30): with two
+         * topics' lessons both fixture-supplied, an unfiltered mock let
+         * EITHER one win depending on `serveFromCatalog`'s rotation offset,
+         * regardless of which topic actually resolved — a test that could
+         * pass on both the buggy and fixed code, proving nothing.
+         */
+        const want = /topic_id=eq\.([^&]+)/.exec(url)?.[1];
+        const rows = (opts.lessons ?? []) as { topic_id?: string }[];
+        return Promise.resolve(
+          jsonResponse(200, want ? rows.filter((r) => r.topic_id === decodeURIComponent(want)) : rows),
+        );
+      }
       if (url.includes('/rest/v1/lesson_documents')) {
-        return Promise.resolve(jsonResponse(200, opts.lessonDocuments ?? []));
+        const want = /lesson_id=eq\.([^&]+)/.exec(url)?.[1];
+        const rows = (opts.lessonDocuments ?? []) as { lesson_id?: string }[];
+        return Promise.resolve(
+          jsonResponse(200, want ? rows.filter((r) => r.lesson_id === decodeURIComponent(want)) : rows),
+        );
       }
       if (url.includes('/rest/v1/kc_edge')) return Promise.resolve(jsonResponse(200, opts.kcEdges ?? []));
       if (url.includes('/rest/v1/kc?')) return Promise.resolve(jsonResponse(200, opts.kcs ?? []));
+      if (url.includes('/rest/v1/tutor_packs')) {
+        const want = /skill_key=eq\.([^&]+)/.exec(url)?.[1];
+        const rows = (opts.packs ?? []) as { skill_key?: string }[];
+        return Promise.resolve(
+          jsonResponse(200, want ? rows.filter((r) => r.skill_key === decodeURIComponent(want)) : rows),
+        );
+      }
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, opts.roles ?? [{ role: 'kid' }]));
       if (url.includes('/rest/v1/profiles')) return Promise.resolve(jsonResponse(200, [opts.profile ?? KID_PROFILE]));
       if (url.includes('/rest/v1/tutor_voice_consent')) {
@@ -1758,6 +1785,153 @@ describe('serving an activity for a knowledge component nothing teaches', () => 
     // The fallback must not become a way to always answer SOMETHING: with no
     // mapped neighbour, tier 3 is still the honest next step.
     expect(response.body.data.needsGeneration).toBe(true);
+  });
+
+  /*
+   * Found by adversarial review, round 58 (2026-08-30, MEDIUM): this
+   * fallback only ever tried `serveFromCatalog` for the prerequisite,
+   * unlike the named-skill path at the top of the route, which tries the
+   * human-published bank when the catalog misses. A prerequisite whose
+   * only real content lives in the bank was unreachable from here.
+   */
+  it('tries the BANK for the prerequisite too, not just the catalog', async () => {
+    stub({
+      ...catalog,
+      // The prerequisite's topic has no catalog content at all this time —
+      // only a published tier-2 bank pack.
+      topics: [],
+      lessons: [],
+      lessonDocuments: [],
+      packs: [
+        {
+          id: 'dddddddd-dddd-4ddd-8ddd-ddddddddddd6',
+          skill_key: 'financial-education/cual-vale-mas',
+          tier: 2,
+          locale: 'es-MX',
+          status: 'published',
+          pack: { segments: [{ id: 'seg-bank', type: 'quiz_mcq', prompt_md: '¿Cuál vale más?' }], answers: { 'seg-bank': { correct: 'a' } } },
+        },
+      ],
+    });
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/segments')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(body);
+
+    expect(response.body.data.needsGeneration).toBeUndefined();
+    expect(response.body.data.segment?.id).toBe('seg-bank');
+  });
+});
+
+/*
+ * Found by adversarial review, round 58 (2026-08-30, HIGH): Oracle's PROBE
+ * strategy (`oracle/src/tutor/controller.ts`'s `probeEntry()`) synthesizes a
+ * request naming the PREREQUISITE's real `kcId` alongside the INTERRUPTED
+ * (original) entry's own `skillKey` — the controller has no way to look up
+ * the prerequisite's own skill_key, since it only knows about KCs that are
+ * full entries in the session's own plan. Because the wrong-but-real
+ * skillKey almost always resolves immediately (it names the exact topic the
+ * learner was already being taught, which is WHY it has content in the
+ * first place), tier 1 served content about KC A while the evidence got
+ * stamped against KC B — corrupting KC B's BKT posterior with evidence that
+ * was actually about a different skill, silently, on the ordinary PROBE
+ * path.
+ */
+describe('a mismatched (skillKey, kcId) pair — PROBE\'s own shape — is corrected, not trusted blindly', () => {
+  const KC_A = 'ffffffff-ffff-4fff-8fff-ffffffffff01'; // the interrupted entry's own KC
+  const KC_B = 'ffffffff-ffff-4fff-8fff-ffffffffff02'; // the prerequisite actually being probed
+
+  const catalog = {
+    segment: [{ id: 'ffffffff-ffff-4fff-8fff-ffffffffff09' }],
+    courses: [{ id: 'ffffffff-ffff-4fff-8fff-ffffffffff03', slug: 'financial-education' }],
+    topics: [
+      {
+        id: 'ffffffff-ffff-4fff-8fff-ffffffffff04',
+        slug: 'cobrar-y-dar-cambio',
+        saga_id: 'ffffffff-ffff-4fff-8fff-ffffffffff08',
+        status: 'published',
+      },
+      {
+        id: 'ffffffff-ffff-4fff-8fff-ffffffffff05',
+        slug: 'cual-vale-mas',
+        saga_id: 'ffffffff-ffff-4fff-8fff-ffffffffff08',
+        status: 'published',
+      },
+    ],
+    lessons: [
+      { id: 'ffffffff-ffff-4fff-8fff-ffffffffff06', topic_id: 'ffffffff-ffff-4fff-8fff-ffffffffff04', position: 1, status: 'published' },
+      { id: 'ffffffff-ffff-4fff-8fff-ffffffffff07', topic_id: 'ffffffff-ffff-4fff-8fff-ffffffffff05', position: 1, status: 'published' },
+    ],
+    lessonDocuments: [
+      {
+        lesson_id: 'ffffffff-ffff-4fff-8fff-ffffffffff06',
+        locale: 'es-MX',
+        schema_version: 1,
+        audio: null,
+        updated_at: '2026-08-29T00:00:00.000Z',
+        document: { segments: [{ id: 'seg-kc-a', type: 'quiz_mcq', difficulty: 1, prompt_md: 'Sobre KC A: dar cambio.' }] },
+        answer_keys: { 'seg-kc-a': { correct: 'a' } },
+      },
+      {
+        lesson_id: 'ffffffff-ffff-4fff-8fff-ffffffffff07',
+        locale: 'es-MX',
+        schema_version: 1,
+        audio: null,
+        updated_at: '2026-08-29T00:00:00.000Z',
+        document: { segments: [{ id: 'seg-kc-b', type: 'quiz_mcq', difficulty: 1, prompt_md: 'Sobre KC B: cual vale mas.' }] },
+        answer_keys: { 'seg-kc-b': { correct: 'a' } },
+      },
+    ],
+    kcs: [
+      { id: KC_A, key: 'money.make-change', skill_key: 'financial-education/cobrar-y-dar-cambio' },
+      { id: KC_B, key: 'money.compare-amounts', skill_key: 'financial-education/cual-vale-mas' },
+    ],
+    kcEdges: [{ prerequisite_kc_id: KC_B, dependent_kc_id: KC_A }],
+  };
+
+  it('serves content about the KC that kcId names, never the mismatched skillKey\'s own topic', async () => {
+    stub(catalog);
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/segments')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        sessionId: SESSION,
+        // PROBE's exact bug shape: skillKey names KC A (the interrupted
+        // entry the learner was actually working on), kcId names KC B (the
+        // prerequisite the controller actually wants to probe).
+        skillKey: 'financial-education/cobrar-y-dar-cambio',
+        kcId: KC_B,
+        difficulty: 1,
+        framing: 'Practiquemos algo más sencillo primero.',
+        rationale: 'probing a shaky prerequisite',
+      });
+
+    expect(response.status).toBe(200);
+    // Pre-fix this served 'seg-kc-a' — the caller-asserted skillKey's own
+    // content — while stamping the evidence against KC B regardless.
+    expect(response.body.data.segment?.id).toBe('seg-kc-b');
+  });
+
+  it('stamps the persisted evidence against the SAME KC the served content is actually about', async () => {
+    const calls = stub(catalog);
+    await request(createApp())
+      .post('/api/v1/tutor/internal/segments')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        sessionId: SESSION,
+        skillKey: 'financial-education/cobrar-y-dar-cambio',
+        kcId: KC_B,
+        difficulty: 1,
+        framing: 'Practiquemos algo más sencillo primero.',
+        rationale: 'probing a shaky prerequisite',
+      });
+
+    const insert = calls.find((c) => c.url.includes('/rest/v1/tutor_segments') && c.method === 'POST');
+    expect(insert).toBeDefined();
+    const inserted = JSON.parse(String(insert?.body ?? '{}'));
+    expect(inserted.provenance?.kc_id).toBe(KC_B);
+    expect(inserted.payload?.id).toBe('seg-kc-b');
   });
 });
 

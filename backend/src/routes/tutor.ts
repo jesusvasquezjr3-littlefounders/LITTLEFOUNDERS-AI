@@ -54,7 +54,7 @@ import {
   verifyGeneratedSegment,
   type LadderCandidate,
 } from '../services/tutorLadder.js';
-import { getActiveKcs, getKcEdges, getKcBySkillKey } from '../services/pedagogy/kcData.js';
+import { getActiveKcs, getKcEdges, getKcBySkillKey, type KcRow } from '../services/pedagogy/kcData.js';
 import { purgeExpiredTutorSessions } from '../services/tutorRetention.js';
 import { buildSessionPlan } from '../services/pedagogy/sessionPlan.js';
 import { buildTutorMap } from '../services/pedagogy/tutorMap.js';
@@ -738,7 +738,39 @@ function internalRouter(): Router {
      * decides. Skipping the by-name tiers is not a loss, because a key that
      * names nothing was never going to match them.
      */
-    const namedSkill = parsed.data.skillKey === 'unknown' ? null : parsed.data.skillKey;
+    let namedSkill = parsed.data.skillKey === 'unknown' ? null : parsed.data.skillKey;
+    /*
+     * WHEN kcId IS PRESENT, THE CATALOG'S OWN skill_key WINS OVER WHATEVER
+     * skillKey THE CALLER SEPARATELY ASSERTED.
+     *
+     * Found by adversarial review, round 58 (2026-08-30, HIGH): Oracle's
+     * PROBE strategy (`controller.ts`'s `probeEntry()`) synthesizes a
+     * request naming the PREREQUISITE's real `kcId` alongside the
+     * INTERRUPTED (original) entry's own `skillKey` — the controller has no
+     * way to look up the prerequisite's own skill_key, since it only knows
+     * about KCs that are full entries in the session's own plan, not every
+     * node in the graph. Because the wrong-but-real skillKey almost always
+     * resolves immediately (it names the exact topic the learner was
+     * already being taught, which is WHY it has content in the first
+     * place), tier 1 served content about KC A while `stampPedagogy` (below)
+     * stamped the evidence against KC B — corrupting KC B's BKT posterior,
+     * misconception diagnosis and FSRS memory card with evidence that was
+     * actually about a different skill, silently, on the ordinary PROBE
+     * path that fires whenever a confident learner unexpectedly fails a
+     * question with prerequisites. `kcId`, when present, always originates
+     * from Core's own KC graph (via the v3 session plan Core itself
+     * computed) — strictly more authoritative than a client-asserted
+     * string — so resolving THIS KC's own catalog skill_key and using it
+     * for content selection guarantees whatever gets served is always about
+     * the exact KC the evidence will be attributed to. A no-op in the
+     * ordinary case, where the two already agree.
+     */
+    let kcCatalog: KcRow[] | null = null;
+    if (parsed.data.kcId) {
+      kcCatalog = await getActiveKcs();
+      const kc = kcCatalog?.find((k) => k.id === parsed.data.kcId);
+      if (kc?.skill_key) namedSkill = kc.skill_key;
+    }
     const skill = namedSkill === null ? null : await resolveSkill(namedSkill);
     if (!skill && namedSkill !== null) {
       /*
@@ -805,7 +837,10 @@ function internalRouter(): Router {
      * request rather than answer it.
      */
     if (!candidate && parsed.data.kcId) {
-      const [edges, kcs] = await Promise.all([getKcEdges(), getActiveKcs()]);
+      // `kcCatalog` was already fetched above when kcId is present — reused
+      // here rather than fetched twice, with one retry if that first read
+      // itself failed (a transient hiccup should not cost this whole rung).
+      const [edges, kcs] = await Promise.all([getKcEdges(), kcCatalog ?? getActiveKcs()]);
       if (edges && kcs) {
         const byId = new Map(kcs.map((k) => [k.id, k]));
         const prerequisiteKeys = edges
@@ -815,15 +850,36 @@ function internalRouter(): Router {
 
         for (const key of prerequisiteKeys) {
           const fallbackSkill = await resolveSkill(key);
-          if (!fallbackSkill) continue;
-          candidate = await serveFromCatalog({
-            skill: fallbackSkill,
-            locale: session.locale,
-            difficulty: parsed.data.difficulty,
-            excludeSegmentIds: alreadyServed,
-            rotationSeed: hashSeed(session.id),
-            preferredTypes: parsed.data.preferredTypes,
-          });
+          if (fallbackSkill) {
+            candidate = await serveFromCatalog({
+              skill: fallbackSkill,
+              locale: session.locale,
+              difficulty: parsed.data.difficulty,
+              excludeSegmentIds: alreadyServed,
+              rotationSeed: hashSeed(session.id),
+              preferredTypes: parsed.data.preferredTypes,
+            });
+          }
+          /*
+           * TIER 2 FOR THE PREREQUISITE TOO. Found by adversarial review,
+           * round 58 (2026-08-30, MEDIUM): this fallback only ever tried
+           * `serveFromCatalog`, unlike the named-skill path above, which
+           * tries the human-published bank when the catalog misses. A
+           * prerequisite whose only real content lives in the bank was
+           * unreachable from here — the ladder silently narrowed to
+           * "catalog or generate" the moment it needed this rung, with no
+           * signal that the bank was never even asked.
+           */
+          if (!candidate) {
+            candidate = await serveFromBank({
+              skillKey: key,
+              tier: session.tier,
+              locale: session.locale,
+              preferredTypes: parsed.data.preferredTypes,
+              difficulty: parsed.data.difficulty,
+              excludeSegmentIds: alreadyServed,
+            });
+          }
           if (candidate) {
             console.warn(
               `[tutor] no content for the active KC; served its prerequisite ${key} instead`,
@@ -870,11 +926,24 @@ function internalRouter(): Router {
             rotationSeed: hashSeed(session.id),
             preferredTypes: parsed.data.preferredTypes,
           });
-          if (candidate) {
-            console.warn(
-              `[tutor] "${parsed.data.skillKey}" found nothing; served the learner's own next step ${frontierKey}`,
-            );
-          }
+        }
+        // Tier 2 for the frontier fallback too (round 58, 2026-08-30,
+        // MEDIUM) — see the identical comment on the prerequisite rung
+        // above; this rung had the same catalog-only gap.
+        if (!candidate) {
+          candidate = await serveFromBank({
+            skillKey: frontierKey,
+            tier: session.tier,
+            locale: session.locale,
+            preferredTypes: parsed.data.preferredTypes,
+            difficulty: parsed.data.difficulty,
+            excludeSegmentIds: alreadyServed,
+          });
+        }
+        if (candidate) {
+          console.warn(
+            `[tutor] "${parsed.data.skillKey}" found nothing; served the learner's own next step ${frontierKey}`,
+          );
         }
       }
     }

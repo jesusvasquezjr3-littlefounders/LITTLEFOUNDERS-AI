@@ -31,9 +31,9 @@ describe('TUTOR_SESSION_SECRET has no insecure default', () => {
   });
 
   it('never silently becomes the old placeholder value even by accident', () => {
-    process.env.TUTOR_SESSION_SECRET = 'a-real-secret-that-is-at-least-32-chars-long';
+    process.env.TUTOR_SESSION_SECRET = 'test-secret-that-is-at-least-32-chars-long';
     resetConfigForTests();
     expect(getConfig().TUTOR_SESSION_SECRET).not.toBe('replace-me-with-a-64-char-random-string-0000');
-    expect(getConfig().TUTOR_SESSION_SECRET).toBe('a-real-secret-that-is-at-least-32-chars-long');
+    expect(getConfig().TUTOR_SESSION_SECRET).toBe('test-secret-that-is-at-least-32-chars-long');
   });
 });

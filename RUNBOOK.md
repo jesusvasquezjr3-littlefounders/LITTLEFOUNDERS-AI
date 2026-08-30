@@ -5836,3 +5836,131 @@ proof rests on the git-stash-confirmed orchestrator test built from the
 real observed sentences, the same substitute-evidence standard this
 session has used for every prompt-wording fix whose live re-trigger is
 otherwise blocked. `oracle/AGENTS.md` item 53.
+
+## Round 59: the content ladder's fallback rungs — a corrected KC gets stamped, a bank pack gets reached, a drifting difficulty gets deferred
+
+A background adversarial review targeted the content-ladder fallback
+chain in `backend/src/routes/tutor.ts`'s `POST /segments` — the full
+path from PROBE strategies and named-skill requests down through
+prerequisite and frontier fallbacks to the tier-3 "generate it" floor.
+Five findings; two fixed and verified this round, one deliberately
+deferred with a spawned follow-up, two confirmed sound.
+
+**1. HIGH, FIXED — Oracle's PROBE strategy stamped evidence against the
+wrong knowledge component.** `oracle/src/tutor/controller.ts`'s
+`probeEntry()` synthesizes a segment request carrying `kcId: <the
+prerequisite's real id>` alongside `skillKey: <the INTERRUPTED entry's
+own skill>` — the controller only tracks `skill_key` for KCs that are
+full entries in the session's own plan, so it has no way to look up a
+prerequisite's own skill. The backend's `stampPedagogy` trusted
+`skillKey` blindly to resolve and serve content, then stamped
+`kc_id: data.kcId` on the persisted attempt unconditionally — so a
+PROBE turn could serve content about one KC (the skillKey's own topic)
+while writing mastery/misconception/FSRS evidence against a completely
+different KC (the kcId), corrupting that KC's persisted state with
+evidence about a different activity entirely.
+
+Fixed by resolving `kcId` first, against the real KC catalog
+(`getActiveKcs()`), and using ITS `skill_key` in place of the
+possibly-mismatched one whenever a `kcId` is present — the KC id is the
+authoritative signal here since PROBE always supplies it correctly; the
+skillKey is the one that can be stale. The existing prerequisite-fallback
+block's own KC-catalog fetch now reuses this same lookup instead of
+re-querying. New describe block `'a mismatched (skillKey, kcId) pair —
+PROBE's own shape — is corrected, not trusted blindly'` in
+`backend/src/__tests__/tutor.test.ts`, with two distinct published
+topics/lessons/segments so the two KCs are actually distinguishable by
+served content: one test asserts the SERVED segment matches the KC the
+`kcId` names, not the mismatched `skillKey`'s own topic; the other
+captures the `/rest/v1/tutor_segments` insert call and asserts the
+persisted `kc_id` matches the KC the content is actually about.
+
+Writing that first test surfaced a real test-infrastructure gap: the
+shared `stub()` helper's `/rest/v1/lessons` and `/rest/v1/lesson_documents`
+handlers returned the WHOLE fixture array, unfiltered by the
+`topic_id`/`lesson_id` query params real PostgREST would filter on
+(unlike the pre-existing `/rest/v1/topics` handler, which already
+filtered by slug) — so a two-topic fixture could pass identically
+whether the code served the right topic or the wrong one, depending on
+`serveFromCatalog`'s own rotation-offset coin-flip. Confirmed by the
+new test PASSING against deliberately un-fixed `tutor.ts` on a first
+attempt — a red flag that led straight to the stub gap. Fixed both stub
+handlers to filter by their real query params before trusting the new
+test's result. Both PROBE tests confirmed to fail for the exact claimed
+reason pre-fix via `git stash` (served the wrong topic's segment while
+stamping the RIGHT kc_id from the request — the exact corruption
+described above).
+
+**2. MEDIUM, FIXED — the prerequisite and frontier fallback rungs only
+ever tried the catalog, never the human-published bank.** The
+named-skill path at the top of the route already falls through from
+`serveFromCatalog` to `serveFromBank` (tier 2) when the catalog has
+nothing. The prerequisite-walk and frontier-fallback rungs further down
+never did — each tried `serveFromCatalog` alone and, on a miss, moved
+straight to the next candidate (or to `needsGeneration: true`), so a
+prerequisite or frontier KC whose only real content lived in a
+published bank pack was unreachable from either rung, a real
+completeness gap and an avoidable trip to (paid, latent) tier-3
+generation.
+
+Fixed by adding a `serveFromBank` attempt after each `serveFromCatalog`
+miss, in both rungs, before advancing. New test `'tries the BANK for
+the prerequisite too, not just the catalog'` — a fixture with NO
+catalog content for the prerequisite's topic at all, but a matching
+published `tutor_packs` row — asserting the response serves the bank's
+segment (`needsGeneration` absent) instead of falling through to
+generation. Required adding `/rest/v1/tutor_packs` support to the
+shared stub (previously unhandled entirely, so every existing test's
+bank was implicitly always empty — confirmed harmless, since no
+existing test relied on the bank being reachable from these two rungs).
+Confirmed to fail for the exact claimed reason pre-fix via `git stash`
+(`needsGeneration: true` instead of the bank's segment).
+
+**3. MEDIUM, DEFERRED — served difficulty is never reconciled with
+requested difficulty.** `serveFromCatalog`/`serveFromBank`'s own
+nearest-match logic can return a segment at a different difficulty than
+requested, but the response never reports which difficulty was actually
+served (every `difficulty` in the route is the REQUESTED value).
+`oracle/src/tutor/orchestrator.ts`'s `noteSegmentServed` takes no
+difficulty parameter, so `oracle/src/tutor/controller.ts`'s own
+`lastDifficulty` ratchet keeps ratcheting off what it ASKED for, not
+what actually landed on screen — a silent drift between Oracle's local
+adaptive state and reality. Core's BKT mastery posterior is
+difficulty-agnostic, so the PERSISTED evidence is not corrupted, only
+Oracle's session-scoped difficulty tracking. This needs a real design
+decision (response schema shape, whether a mismatch should also log,
+how the controller should react beyond correcting its own bookkeeping)
+rather than a mechanical patch, so it was deferred with the design
+groundwork captured in a spawned follow-up (`task_c959a479`) instead of
+rushed into this round.
+
+**Also confirmed sound by the same review:** the exclusion list
+(`alreadyServed`) is applied consistently across every rung, so no
+fallback can re-serve a segment the learner already saw this session;
+and the terminal "nothing available anywhere" state — `served === null`
+or `'needsGeneration' in served` — routes to `handleSegmentUnavailable`
+exactly as round 44 left it, with no new gap introduced by either of
+this round's fixes.
+
+Verification: full backend suite green (42 files, 687 tests — 685
+existing + 2 new, zero regressions), lint and type-check clean, root
+`docs:check`/`secrets:check` clean. No `oracle/AGENTS.md` item — this
+round's fixes touch only `backend/`.
+
+**Also caught in this round's own pre-commit gate run:** running
+`secrets:check` before staging surfaced that the PREVIOUS commit (round
+57-58, `9a98c70a`) had already landed with a gate violation —
+`backend/src/__tests__/config.test.ts`'s fixture secret,
+`'a-real-secret-that-is-at-least-32-chars-long'`, does not start with
+any of `check-secrets.sh`'s exempt placeholder prefixes (`test`, `dev`,
+`fake`, `placeholder`, `replace`, `example`, `local`), so it reads as a
+real credential to the scanner despite being an obvious test fixture.
+The gate should have blocked that commit and did not (this session ran
+`secrets:check` for that round too, on a smaller diff that happened not
+to trigger it, and the miss went unnoticed until this round's own gate
+run touched the same file's neighborhood). Renamed the fixture to
+`'test-secret-that-is-at-least-32-chars-long'` — same length, same
+assertions, now correctly recognized as a placeholder — and confirmed
+`secrets:check` passes clean and the two `config.test.ts` tests still
+pass. Folded into this round's commit rather than a separate one, since
+it is a one-line fixture rename with no behavioral change of its own.
