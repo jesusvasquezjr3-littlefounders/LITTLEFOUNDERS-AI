@@ -253,6 +253,32 @@ const SCENARIOS: Scenario[] = [
       'ok creo que entendí, y ahora que sigue?',
     ],
   },
+  {
+    /*
+     * `intent: 'diagnostic'`, FOR THE FIRST TIME IN THIS HARNESS.
+     *
+     * Every scenario above uses `open` or `course_topic`. `diagnostic` has
+     * its own plan sequence (`plan.ts`'s `SEQUENCES.diagnostic`:
+     * `['warmup', 'check', 'check', 'explain']`) — the only one where
+     * `check` runs before anything is ever `explain`ed. Found by adversarial
+     * review, round 48 (2026-08-30, MEDIUM): the shared `check` guidance
+     * ("ask them to use the idea or explain it back") presupposes something
+     * already taught, contradicting the session's own "find out where they
+     * stand, gently — it must not feel like a test" framing. Fixed with a
+     * diagnostic-specific probe instruction (`prompt.ts`'s
+     * `DIAGNOSTIC_PROBE_GUIDANCE`); this scenario is the live check that the
+     * fix actually reads as a gentle probe rather than a confusing demand,
+     * on turns 2 and 3 — the session's first two `check` steps.
+     */
+    name: 'a first-ever session, diagnostic (no history at all)',
+    session: { ...SESSION, intent: 'diagnostic', nickname: 'Emi' },
+    script: [
+      'hola, es mi primera vez aqui',
+      'creo que si, mas o menos',
+      'no estoy segura, nunca lo he hecho',
+      'ok quiero intentarlo',
+    ],
+  },
 ];
 
 interface Beat {

@@ -5169,3 +5169,58 @@ contradiction (MEDIUM — its own entry follows) and a confirmed "not a
 bug" result (diagnostic's mastery evidence flows through the same
 BKT/mastery pipeline as every other intent; there is no separate
 "diagnosis report" that could evaporate).
+
+## Round 50: `diagnostic`'s own "check" step told the model to confirm an idea it never taught
+
+Closes round 48's Finding 1 (MEDIUM). `diagnostic` is the only intent
+whose plan sequence (`oracle/src/tutor/plan.ts`'s `SEQUENCES.diagnostic`:
+`['warmup', 'check', 'check', 'explain']`) runs `check` before `explain`
+ever happens. `PLAN_STEP_GUIDANCE.check`, one shared string rendered
+for every intent, reads "Ask them to USE the idea or explain it back
+in their own words" — written for confirming retention of something
+already taught. At `diagnostic`'s own step 2, nothing has been taught
+yet. A cold-start diagnostic session's system prompt therefore carried
+three instructions pulling different directions at once: "find out
+where they stand, gently — it must not feel like a test"
+(`INTENT_INSTRUCTIONS.diagnostic`), "use an idea" that this session
+never taught (the shared `check` wording), and "open with one short,
+friendly diagnostic question" (the no-history branch). No test in the
+codebase checked step-guidance TEXT for coherence per intent —
+`plan.test.ts` only ever asserted step sequences and objective
+strings — so this genuine authoring gap in an otherwise fully
+deterministic, model-free file went unnoticed by every gate.
+
+Fixed with a second, `diagnostic`-specific rendering of the `check`
+step (`DIAGNOSTIC_PROBE_GUIDANCE`, `oracle/src/tutor/prompt.ts`),
+selected in `buildContextMessage` only when `step === 'check' &&
+intent === 'diagnostic'`: it asks the model to offer a small, low-stakes
+situation and read whatever comes back as information about where to
+start, rather than demanding a look-back at teaching that never
+happened. Every other intent's `check` step is untouched by
+construction (the branch only fires for `diagnostic`) and by test — a
+dedicated case proves `course_topic`'s `check` step still renders the
+original wording verbatim.
+
+New `oracle/src/__tests__/prompt.test.ts` — `buildContextMessage` had
+zero direct unit coverage before this fix; every prior check exercised
+it only through a full orchestrator turn. Calls the real `buildPlan` →
+`planState` → `buildContextMessage` pipeline directly, asserting the
+diagnostic rendering replaces the old wording and the `course_topic`
+rendering does not change. Confirmed to fail for the exact claimed
+reason pre-fix via `git stash` (the old "Ask them to USE the idea..."
+wording present where the test asserts its absence).
+
+Also added a permanent `tutor:converse` scenario —
+`'a first-ever session, diagnostic (no history at all)'` — the
+harness's first-ever exercise of `intent: 'diagnostic'` after 48 rounds
+of adversarial review across this session; every prior scenario used
+`open` or `course_topic`. Run live post-fix: the tutor opened with a
+small, ungraded, low-stakes counting question rather than anything
+that read as a test, across all four turns spanning the session's own
+two `check` steps.
+
+Verification: full oracle suite green (26 files, 489 tests — 487
+existing + 2 new, zero regressions), lint and type-check (all three
+tsconfigs, including `tsconfig.scripts.json` for the new harness
+scenario) clean, `verify:pedagogy` and `verify:tutor` both green.
+Documented as `oracle/AGENTS.md` item 48.

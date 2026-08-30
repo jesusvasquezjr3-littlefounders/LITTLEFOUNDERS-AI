@@ -730,10 +730,29 @@ export function buildContextMessage(context: TutorContext): string {
   if (context.planState) {
     const plan = context.planState;
     const step = plan.steps[plan.stepIndex] ?? 'explain';
+    /*
+     * `diagnostic`'s OWN sequence is `['warmup', 'check', 'check',
+     * 'explain']` (`tutor/plan.ts`'s `SEQUENCES`) — the only intent where
+     * `check` ever comes before `explain`. Found by adversarial review,
+     * round 48 (2026-08-30, MEDIUM): `PLAN_STEP_GUIDANCE.check` is shared
+     * across every intent and reads "Ask them to USE THE IDEA or explain it
+     * back in their own words" — worded for confirming retention of
+     * something already taught. Rendered for a cold-start diagnostic
+     * session at its very first `check` step, the model received three
+     * instructions pulling different directions in the same prompt: "find
+     * out where they stand" (`INTENT_INSTRUCTIONS.diagnostic`), "ask them to
+     * use an idea" that this session has not taught yet, and (when there is
+     * no learner history) "open with one short, friendly diagnostic
+     * question" (the no-`skillStates` branch below). A diagnostic's `check`
+     * step is a PROBE, not a retention test, and needs its own wording
+     * rather than borrowing the generic one.
+     */
+    const stepGuidance =
+      step === 'check' && context.intent === 'diagnostic' ? DIAGNOSTIC_PROBE_GUIDANCE : PLAN_STEP_GUIDANCE[step];
     lines.push(
       '',
       `The lesson plan for this session: ${plan.objective}`,
-      `You are on step ${plan.stepIndex + 1} of ${plan.steps.length}: ${PLAN_STEP_GUIDANCE[step]}`,
+      `You are on step ${plan.stepIndex + 1} of ${plan.steps.length}: ${stepGuidance}`,
     );
     if (plan.stuckSkillKey) {
       lines.push(
@@ -859,6 +878,17 @@ const PLAN_STEP_GUIDANCE: Record<string, string> = {
   stretch:
     'stretch. One step further: a twist, a harder case, or a connection to something bigger. Keep it playful — this step is a bonus, not a test.',
 };
+
+/**
+ * `diagnostic`'s own version of the `check` step (round 48, 2026-08-30):
+ * nothing has been explained yet in this sequence, so there is no "the idea"
+ * to use or explain back. This probes instead of confirms.
+ */
+const DIAGNOSTIC_PROBE_GUIDANCE =
+  'gently probe. You have not taught anything yet — you are finding out what they already know, not confirming ' +
+  'something you just explained. Give them a small, low-stakes situation related to the subject and ask what they ' +
+  'would do or what they think, then listen for what that tells you. There is no right answer to get to yet; ' +
+  'read whatever they say as information about where to start, never as correct or wrong.';
 
 const PEDAGOGY_MODE_WORDS: Record<string, string> = {
   new: 'learning something new.',

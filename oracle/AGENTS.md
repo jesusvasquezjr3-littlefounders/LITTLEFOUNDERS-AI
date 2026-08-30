@@ -1163,6 +1163,45 @@ everything passes the blocked half perfectly and destroys the product.
    invitation to hallucinate if the data behind it doesn't exist for some of
    the paths that reach it.
 
+48. **A shared step vocabulary carries an assumption from the sequence it was
+   written for, silently, into every OTHER sequence that reuses it.** Found
+   by adversarial review, round 48 (2026-08-30, MEDIUM): `diagnostic` is the
+   only intent whose plan (`plan.ts`'s `SEQUENCES.diagnostic`:
+   `['warmup', 'check', 'check', 'explain']`) puts `check` before `explain`
+   ever runs. `PLAN_STEP_GUIDANCE.check`, shared verbatim across every
+   intent, reads "Ask them to USE the idea or explain it back in their own
+   words" — worded for confirming retention of something already taught,
+   which at `diagnostic`'s own step 2 has not happened yet. Rendered for a
+   cold-start diagnostic session, the model received three instructions
+   pulling in different directions in the same prompt: `INTENT_INSTRUCTIONS
+   .diagnostic`'s "find out where they stand... it must not feel like a
+   test", the shared `check` guidance's "use an idea" that this session had
+   not taught, and (with no learner history) "open with one short, friendly
+   diagnostic question." Nothing in the codebase tested step-guidance TEXT
+   for coherence per intent — `plan.test.ts` only ever asserted step
+   sequences and objective strings — so a genuine authoring gap in a
+   deterministic, model-free file went unnoticed by every gate. Fixed by
+   giving `check` a second, `diagnostic`-specific rendering
+   (`DIAGNOSTIC_PROBE_GUIDANCE` in `prompt.ts`) selected in
+   `buildContextMessage` when `step === 'check' && intent === 'diagnostic'`:
+   it asks the model to probe with a small, low-stakes situation and read
+   whatever comes back as information rather than as correct or wrong,
+   instead of demanding a look-back at teaching that never happened. Every
+   other intent's `check` step is untouched — proven by a dedicated test
+   asserting `course_topic`'s `check` step still renders the original
+   wording verbatim. New `prompt.test.ts` (this module had zero direct unit
+   coverage before this fix — every prior check exercised it only through a
+   full orchestrator turn) calls the real `buildPlan` → `planState` →
+   `buildContextMessage` pipeline directly and asserts the diagnostic
+   rendering; confirmed to fail for the exact claimed reason pre-fix via
+   `git stash`. Re-verified live: a new permanent `tutor:converse` scenario
+   (`'a first-ever session, diagnostic (no history at all)'` — the harness's
+   first-ever exercise of `intent: 'diagnostic'`) opened with a small,
+   ungraded, low-stakes question rather than anything that read as a test,
+   across all four turns of its own `check` steps.
+
+---
+
 ---
 
 ## §6 Environment
