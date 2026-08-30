@@ -410,7 +410,18 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
     const newNumber = (said.match(/\d+/g) ?? []).find(
       (n) => !learnerNumbers.includes(n) && !numbersAsked.includes(n),
     );
-    if (praises && newNumber !== undefined && learnerNumbers.length === 0) {
+    /*
+     * A learner who asks their OWN question back ("so I start at the price
+     * and add up?") never attempted a numeric answer at all — there is
+     * nothing here for the tutor to have hallucinated. Found as a false
+     * positive on a real transcript, 2026-08-30: the tutor's "Exacto" praised
+     * the learner's correctly-restated METHOD in words, not a number, and the
+     * next sentence's new example numbers tripped this check as if they were
+     * an invented answer. `praises an answer the learner never gave` presupposes
+     * an attempted answer; a bare confirmation question is not one.
+     */
+    const learnerAskedBack = beats[i]!.learner.trim().endsWith('?');
+    if (praises && newNumber !== undefined && learnerNumbers.length === 0 && !learnerAskedBack) {
       fault('praises an answer the learner never gave', said.slice(0, 100));
     }
   }
