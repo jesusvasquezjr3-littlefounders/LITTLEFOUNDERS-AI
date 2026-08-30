@@ -286,6 +286,43 @@ describe('PedagogicalController', () => {
   });
 
   /*
+   * DIRECT and WORKED have no lower rung to degrade to the way SOCRATIC and
+   * FLUENCY degrade to FADED — found live, testing as a struggling learner,
+   * 2026-08-30: answering "no sé" repeatedly to a WORKED example produced a
+   * fresh example with new numbers every turn, forever, because a
+   * conversational shrug is a `conversation_turn`, never a graded failure, so
+   * `consecutiveFailures` never grew and rule 1's RESCUE never fired. This is
+   * the same "sin progreso" streak the Socratic fix above already counts —
+   * it was just never spent on these two bands.
+   */
+  describe('a learner stuck in DIRECT or WORKED, not just SOCRATIC, gets rescued', () => {
+    const shrug = { kind: 'conversation_turn' } as const;
+    const right = { kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1 } as const;
+
+    it('escalates to RESCUE after three WORKED turns that went nowhere', () => {
+      const c = new PedagogicalController([entry({ pKnown: 0.4, targetDifficulty: 2 })]);
+      const seen = [0, 1, 2].map((i) => c.decide(shrug, NOW + i * 40_000).strategy);
+      expect(seen.slice(0, 2)).toEqual(['WORKED', 'WORKED']);
+      expect(seen[2]).toBe('RESCUE');
+    });
+
+    it('escalates to RESCUE after three DIRECT turns that went nowhere', () => {
+      const c = new PedagogicalController([entry({ pKnown: 0.1, targetDifficulty: 2 })]);
+      const seen = [0, 1, 2].map((i) => c.decide(shrug, NOW + i * 40_000).strategy);
+      expect(seen.slice(0, 2)).toEqual(['DIRECT', 'DIRECT']);
+      expect(seen[2]).toBe('RESCUE');
+    });
+
+    it('keeps teaching while the learner is still getting them right', () => {
+      const c = new PedagogicalController([entry({ pKnown: 0.4, targetDifficulty: 2 })]);
+      for (let i = 0; i < 6; i += 1) {
+        c.decide(i % 2 === 0 ? right : shrug, NOW + i * 40_000);
+      }
+      expect(c.decide(shrug, NOW + 7 * 40_000).strategy).not.toBe('RESCUE');
+    });
+  });
+
+  /*
    * RESCUE IS A RESET, SO IT NEEDS ROOM TO WORK.
    *
    * Blocking only the immediately-consecutive rescue produced a worse thing

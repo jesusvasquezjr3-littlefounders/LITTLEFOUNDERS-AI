@@ -380,6 +380,17 @@ everything passes the blocked half perfectly and destroys the product.
    (`microphoneBlockedBy()` returns `POLICY_BLOCKED`, `CONSENT_REQUIRED`,
    `VOICE_UNAVAILABLE`, policy first on purpose); Oracle supplies the facts
    behind them and nothing about their presentation.
+13. **A guardrail fixed for ONE mastery band is not fixed for the bands below
+   it.** `controller.ts`'s "no sé" no-progress counter was patched for
+   SOCRATIC/FLUENCY (mastery ≥ 0.65) on 2026-08-29 and left DIRECT/WORKED/
+   FADED — where every new or struggling learner actually starts — with no
+   equivalent, because those bands degrade nowhere lower on their own. Found
+   live, testing as a struggling learner, 2026-08-30, by reproducing the exact
+   same "no sé" twice against a fresh account and watching the tutor invent a
+   new example each time. If you touch a controller guardrail, check whether
+   it was scoped to a mastery band or a strategy subset, and if so ask
+   whether the OTHER bands need the same thing — `verify:pedagogy` will not
+   ask this for you, it only asserts the sequences it already knows to run.
 
 ---
 

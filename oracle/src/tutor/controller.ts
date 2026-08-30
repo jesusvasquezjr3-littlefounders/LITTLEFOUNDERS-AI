@@ -120,13 +120,35 @@ const HESITATION_FACTOR = 2;
 const GUESS_FACTOR = 3;
 
 /**
- * The strategies that ASK rather than TEACH.
+ * Every ordinary teaching strategy the no-progress counter watches.
  *
- * A learner making no progress must not be left in one of these. Fixing only
- * SOCRATIC — the one the blueprint names — left the identical defect in
- * FLUENCY, which is how this became a set rather than a comparison.
+ * Originally just SOCRATIC and FLUENCY — "the strategies that ASK rather than
+ * TEACH" — because a learner making no progress must not be left in one of
+ * them, and fixing only SOCRATIC (the one the blueprint names) left the
+ * identical defect in FLUENCY.
+ *
+ * Widened to include DIRECT, WORKED and FADED, found live, testing as a
+ * struggling learner, 2026-08-30: answering "no sé" / "no entiendo"
+ * repeatedly during DIRECT or WORKED — the bands a NEW or struggling learner
+ * actually starts in, below the 0.65 mastery floor where SOCRATIC/FLUENCY
+ * begin — produced a fresh worked example with new numbers every turn,
+ * forever, because `conversation_turn` events never touch
+ * `consecutiveFailures` (that field only moves on a graded `activity_result`
+ * / `voice_result`) and this counter used to increment only for SOCRATIC/
+ * FLUENCY. The top-of-file rationale already claimed "any turn spent asking
+ * that did not produce a correct answer counts" — DIRECT and WORKED teach
+ * rather than ask, but a learner stuck in them is exactly as stuck, and they
+ * have no lower rung to degrade to the way SOCRATIC/FLUENCY degrade to FADED.
+ * So they share the same counter, and `propose()`'s rule 1b spends it on
+ * RESCUE instead — the response actually built for "frustrated, no progress".
  */
-const QUESTIONING_STRATEGIES: ReadonlySet<Strategy> = new Set(['SOCRATIC', 'FLUENCY']);
+const NO_PROGRESS_TRACKED_STRATEGIES: ReadonlySet<Strategy> = new Set([
+  'DIRECT',
+  'WORKED',
+  'FADED',
+  'SOCRATIC',
+  'FLUENCY',
+]);
 
 type Difficulty = 1 | 2 | 3 | 4 | 5;
 const band = (n: number): Difficulty => Math.min(5, Math.max(1, Math.round(n))) as Difficulty;
@@ -417,7 +439,7 @@ export class PedagogicalController {
       // Progress re-arms rescue: the next slump gets the same support this one
       // did, rather than being permanently denied it by an earlier bad patch.
       this.rescuedSinceProgress = false;
-    } else if (QUESTIONING_STRATEGIES.has(this.strategy) && event.kind !== 'entry_opened') {
+    } else if (NO_PROGRESS_TRACKED_STRATEGIES.has(this.strategy) && event.kind !== 'entry_opened') {
       this.questioningWithoutProgress += 1;
     }
 
@@ -478,6 +500,29 @@ export class PedagogicalController {
      * instruction — not to rescue again with a different label.
      */
     if (this.consecutiveFailures >= 2 && !this.rescuedSinceProgress) return 'RESCUE';
+
+    /*
+     * 1b) No progress across ordinary teaching turns, in a band with no lower
+     * rung to fall back to.
+     *
+     * SOCRATIC and FLUENCY have somewhere to go when stuck: `baseStrategy`
+     * degrades them to FADED (rule 7, below). DIRECT, WORKED and FADED do
+     * not — a learner already being given a full worked example who keeps
+     * answering "no sé" is not undertaught, they are stuck, and rule 1 above
+     * cannot see it because a conversational "I don't know" is never a graded
+     * failure. Three such turns is the SAME threshold rule 7 already uses for
+     * the questioning bands, spent on the response actually built for this:
+     * RESCUE validates the difficulty and makes the next thing easier, rather
+     * than handing the model the identical DIRECT/WORKED instruction a fourth
+     * time and trusting it to notice on its own that nothing is landing.
+     */
+    if (
+      this.questioningWithoutProgress >= 3 &&
+      !this.rescuedSinceProgress &&
+      (this.strategy === 'DIRECT' || this.strategy === 'WORKED' || this.strategy === 'FADED')
+    ) {
+      return 'RESCUE';
+    }
 
     // 2) A diagnosed wrong idea outranks everything except rescue.
     if (failedNow && this.misconceptionCode !== null) return 'REMEDIATE';

@@ -1739,3 +1739,63 @@ backend leaves the browser-side half of the same feature unaudited, and
 defaulting to `readyState = OPEN`) that made an entire class of real,
 reachable timing bug structurally invisible to every test in that file
 until this review deliberately built a socket that starts CONNECTING.
+
+## A learner stuck below the mastery floor had no guardrail at all — found live, testing as a struggling learner, closed 2026-08-30
+
+**Found for the first time not by an adversarial code review, but by
+actually playing the Tutor** — logged into a real, authenticated account,
+answered a coin-counting activity, then replied "no entiendo" and "no sé" to
+two of the tutor's own follow-up questions in a row, exactly as a struggling
+child would.
+
+Both times, the tutor discarded the question it had just asked and produced
+a brand-new worked example with different numbers — once even switching the
+underlying skill entirely (skip-counting by 5s to reach 30, to subtracting
+coins) with no acknowledgment of the switch. Reproduced twice, deliberately,
+against a fresh subtraction example the second time, to rule out a one-off.
+
+**Root cause.** `controller.ts`'s "no sé" guardrail — added 2026-08-29 after
+production transcripts showed the identical loop in SOCRATIC/FLUENCY (see
+the entry above dated 2026-08-29 for the strategy-controller history) —
+counts turns that produced no correct answer and degrades to FADED after
+three of them. But the counter only incremented while the ACTIVE strategy
+was SOCRATIC or FLUENCY, which only happens at ≥ 0.65 mastery. A new or
+struggling learner starts in DIRECT or WORKED (< 0.65), and a conversational
+"no sé" is a `conversation_turn` event, never a graded `activity_result` or
+`voice_result` — so it never touches `consecutiveFailures` either. The
+result: the ONE population the mandate exists to protect — a learner who
+does not understand from the start — had no path to RESCUE at all. The
+model was simply handed the same "teach one worked example" instruction
+every turn and, with nothing telling it otherwise, taught a fresh one.
+
+**Fix.** The no-progress counter now watches DIRECT, WORKED and FADED as
+well as SOCRATIC and FLUENCY, and a new rule in `propose()` spends it on
+RESCUE — at the same three-turn threshold the questioning bands already
+use — specifically for those three strategies, since they have no lower
+rung to degrade to the way SOCRATIC/FLUENCY degrade to FADED. `RESCUE`
+already validates the difficulty and eases the next step; it did not need
+inventing, only reaching. Existing behavior for SOCRATIC/FLUENCY is
+untouched — `verify:pedagogy`'s "learner who answers 'no sé' and nothing
+else" profile now reads one RESCUE mid-stall in FADED where it previously
+stalled in FADED indefinitely once reached, and still shows no thrash and no
+repeated rescue.
+
+Proven with two permanent tests in `controller.test.ts` (a learner seeded at
+WORKED-band and DIRECT-band mastery, given three consecutive
+`conversation_turn` shrugs, asserting the third decision is `RESCUE` where
+the prior two held strategy) plus a third confirming a learner still
+answering correctly is never rescued. Confirmed to fail against the
+pre-fix controller (`WORKED`/`DIRECT` returned on the third turn instead of
+`RESCUE`) via `git stash` before being trusted.
+
+**What this incident adds to the pattern.** Every prior guardrail fix this
+week was found by an adversarial code review reading the controller from the
+outside. This one required actually being the learner: the gap was not a
+bug in the fixed code, it was the ORIGINAL fix's scope being narrower than
+the defect it was named for — "a learner answering 'no sé' is never
+assessed, so nothing in the controller could see them stuck" was true of
+DIRECT and WORKED the whole time, and no test caught it because every
+existing test seeded a learner already at or above the mastery band the fix
+covered. A guardrail closed for one band is not closed for the bands below
+it, and the only way that surfaces is trying the thing at the band nobody
+tested.
