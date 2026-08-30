@@ -216,6 +216,20 @@ export function placementRouter(): Router {
     });
 
     if (!outcome) return ok(res, { available: false, priorFraction: null, reflection: null });
+    if (outcome.flagged) {
+      // Loud on purpose (§1.9), and with the user id attached — this handler
+      // is the one place in the whole path with real request context. Found
+      // by adversarial review, 2026-08-30 (HIGH): a flagged placement-intake
+      // utterance used to be indistinguishable, in every log and every
+      // response, from Oracle simply being down. The CLIENT response stays
+      // exactly as innocuous as it always was — a child is never told their
+      // own words were flagged, matching every other safety response in
+      // this product — this is server-side visibility only.
+      console.error(
+        `[core] placement intake blocked a flagged utterance for user ${user.id}: ` +
+          `${outcome.flagged.category} (${outcome.flagged.severity})`,
+      );
+    }
     return ok(res, { available: true, priorFraction: outcome.priorFraction, reflection: outcome.reflection });
   });
 

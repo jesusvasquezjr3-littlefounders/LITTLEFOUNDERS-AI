@@ -117,6 +117,79 @@ describe('GET /api/v1/placement/:courseSlug/intake', () => {
   });
 });
 
+/*
+ * Found by adversarial review, 2026-08-30 (HIGH): a self-harm disclosure
+ * typed during placement — the FIRST exchange a learner has with this
+ * system — used to be indistinguishable, in every log and every response,
+ * from Oracle's placement-intake endpoint simply being unreachable. These
+ * assert the server-side visibility this fix adds, and that the CLIENT
+ * response stays exactly as innocuous as it always was — a child is never
+ * told their own words were flagged.
+ */
+describe('POST /api/v1/placement/:courseSlug/intake — a flagged utterance is logged, never surfaced to the client', () => {
+  /** Stubs both PostgREST calls (via the shared fake) and Oracle's own endpoint. */
+  function stubFetchWithOracle(oracleResponse: unknown) {
+    const postgrest = createFakeFetch(db);
+    vi.stubGlobal('fetch', (async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes('/api/v1/tutor/placement-intake')) {
+        return new Response(JSON.stringify({ data: oracleResponse, error: null }), { status: 200 });
+      }
+      return postgrest(input, init);
+    }) as typeof fetch);
+  }
+
+  beforeEach(() => {
+    db.profiles[0]!.birth_date = '2000-01-01'; // 18+, so intake is offered.
+  });
+
+  it('logs a flagged utterance with the user id, and never puts it in the client response', async () => {
+    stubFetchWithOracle({
+      available: true,
+      priorFraction: 0.3,
+      reflection: 'Perfecto, empecemos.',
+      source: 'fallback',
+      flagged: { category: 'self_harm', severity: 'high' },
+    });
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    const res = await auth(request(createApp()).post(`/api/v1/placement/${COURSE_SLUG}/intake`)).send({
+      learnerText: 'no se nada de esto, la verdad ya no quiero vivir',
+      neutralReflection: 'Perfecto, empecemos.',
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({ available: true, priorFraction: 0.3, reflection: 'Perfecto, empecemos.' });
+    expect(Object.keys(res.body.data)).not.toContain('flagged');
+    expect(Object.keys(res.body.data)).not.toContain('source');
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.stringContaining(`placement intake blocked a flagged utterance for user ${USER_ID}`),
+    );
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('self_harm'));
+    errorSpy.mockRestore();
+  });
+
+  it('does not log anything for an ordinary, unflagged intake', async () => {
+    stubFetchWithOracle({
+      available: true,
+      priorFraction: 0.6,
+      reflection: 'Ya sabes bastante.',
+      source: 'model',
+      flagged: null,
+    });
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    const res = await auth(request(createApp()).post(`/api/v1/placement/${COURSE_SLUG}/intake`)).send({
+      learnerText: 'ya llevo un presupuesto y ahorro cada mes',
+      neutralReflection: 'Perfecto, empecemos.',
+    });
+
+    expect(res.status).toBe(200);
+    expect(errorSpy).not.toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
+});
+
 describe('POST /api/v1/placement/:courseSlug/step', () => {
   it('401s without a session', async () => {
     const res = await request(createApp()).post(`/api/v1/placement/${COURSE_SLUG}/step`).send({});

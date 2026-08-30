@@ -35,7 +35,7 @@ import { z } from 'zod';
 import { complete, ModelUnavailableError } from '../model/provider.js';
 import { fenceUntrusted } from '../safety/untrusted.js';
 import { moderateTutorOutput } from '../safety/moderation.js';
-import { classifyLearnerInput } from '../safety/classifier.js';
+import { classifyLearnerInput, type SafetyCategory, type Severity } from '../safety/classifier.js';
 
 /** Learner text longer than this is truncated, never rejected — rambling is not misuse. */
 const MAX_LEARNER_CHARS = 600;
@@ -96,6 +96,25 @@ export interface PlacementIntakeResult {
   reflection: string;
   /** How the number was reached, so Core can log it and the UI can stay honest. */
   source: 'model' | 'fallback';
+  /**
+   * Set ONLY when `source: 'fallback'` was reached because the learner's own
+   * text was flagged by `classifyLearnerInput` — never for an ordinary model
+   * outage, malformed reply, or moderation refusal of the REFLECTION.
+   *
+   * Found by adversarial review, 2026-08-30 (HIGH): before this field
+   * existed, a self-harm disclosure typed during placement — the FIRST
+   * exchange a learner has with this system, precisely when the least is
+   * known about them — produced a `PlacementIntakeResult` byte-identical to
+   * an ordinary Oracle outage. No category, no severity, nothing a caller
+   * could act on, log, or show a guardian. This field is what makes that
+   * distinction a runtime fact a caller can check, rather than only a
+   * comment on `classifyLearnerInput`'s call site explaining why the fallback
+   * fired. Core is expected to log this loudly at minimum; whether it also
+   * belongs in a guardian-visible record is a schema decision this fix does
+   * not make unilaterally (placement has no `tutor_sessions` row to attach
+   * a flag to — see the note in `backend/src/routes/placement.ts`).
+   */
+  flagged: { category: SafetyCategory; severity: Severity } | null;
 }
 
 const LOCALE_NAME: Record<PlacementIntakeInput['locale'], string> = {
@@ -113,8 +132,11 @@ const LOCALE_NAME: Record<PlacementIntakeInput['locale'], string> = {
  */
 const NEUTRAL_PRIOR = 0.3;
 
-function fallback(reflection: string): PlacementIntakeResult {
-  return { priorFraction: NEUTRAL_PRIOR, reflection, source: 'fallback' };
+function fallback(
+  reflection: string,
+  flagged: { category: SafetyCategory; severity: Severity } | null = null,
+): PlacementIntakeResult {
+  return { priorFraction: NEUTRAL_PRIOR, reflection, source: 'fallback', flagged };
 }
 
 function buildMessages(input: PlacementIntakeInput, fenced: { block: string }) {
@@ -193,8 +215,16 @@ export async function runPlacementIntake(
    * new one: no model call, no reflection about what was said, just the
    * caller's neutral line.
    */
-  if (classifyLearnerInput(input.learnerText, input.locale).action !== 'allow') {
-    return fallback(neutralReflection);
+  const classification = classifyLearnerInput(input.learnerText, input.locale);
+  if (classification.category !== null && classification.action !== 'allow') {
+    // Loud on purpose (§1.9): this is the one signal available today that a
+    // flagged utterance happened here at all — see `PlacementIntakeResult.
+    // flagged`'s own comment for why a full guardian-visible record is a
+    // separate, not-yet-made schema decision.
+    console.error(
+      `[oracle] placement intake blocked a flagged utterance: ${classification.category} (${classification.severity})`,
+    );
+    return fallback(neutralReflection, { category: classification.category, severity: classification.severity });
   }
 
   const fenced = fenceUntrusted(input.learnerText, MAX_LEARNER_CHARS);
@@ -233,5 +263,5 @@ export async function runPlacementIntake(
   });
   if (!verdict.allowed) return fallback(neutralReflection);
 
-  return { priorFraction: reply.priorFraction, reflection: reply.reflection.trim(), source: 'model' };
+  return { priorFraction: reply.priorFraction, reflection: reply.reflection.trim(), source: 'model', flagged: null };
 }

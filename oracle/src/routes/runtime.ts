@@ -52,7 +52,7 @@ export function runtimeRouter(liveSessions: () => number): Router {
     if (!modelConfigured()) {
       // Not an error: the caller treats this as "no intake available today" and
       // shows the deterministic path instead.
-      return ok(res, { available: false, priorFraction: null, reflection: null, source: null });
+      return ok(res, { available: false, priorFraction: null, reflection: null, source: null, flagged: null });
     }
 
     const { neutralReflection, ...intake } = parsed.data;
@@ -60,7 +60,7 @@ export function runtimeRouter(liveSessions: () => number): Router {
       const result = await runPlacementIntake(intake, neutralReflection);
       return ok(res, { available: true, ...result });
     } catch {
-      return ok(res, { available: false, priorFraction: null, reflection: null, source: null });
+      return ok(res, { available: false, priorFraction: null, reflection: null, source: null, flagged: null });
     }
   });
 

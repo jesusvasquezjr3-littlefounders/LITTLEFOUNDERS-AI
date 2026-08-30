@@ -515,7 +515,18 @@ everything passes the blocked half perfectly and destroys the product.
    assumed correct because it is correct for most of them — "imperfect but
    new" and "guaranteed to reproduce the exact defect" are not the same
    failure mode, even though both arrive at this one line of code.
-22. **A "must not be negative" guard on a floating-point running total needs
+22. **A refused-and-fell-back result needs to say WHY it fell back, or every
+   refusal reason collapses into the same object.** `placementIntake.ts`'s
+   `runPlacementIntake` correctly classifies the learner's text and refuses
+   to send a flagged one to the model — but landed on the exact same
+   neutral fallback an ordinary Oracle outage produces, found by
+   adversarial review 2026-08-30 (HIGH). Full detail and the fix (a new
+   `flagged` field, logged loudly with the user id at Core's route handler)
+   is in `/ORACLE.md` §4.1b. General lesson: "never throw at the learner,
+   always land on a safe default" is right for the LEARNER-FACING side of a
+   fallback; it must not also erase the REASON from every place that could
+   act on it.
+23. **A "must not be negative" guard on a floating-point running total needs
    a zero band, not a zero line.** `whiteboard.ts`'s `computeSequence` chains
    decimal `add`/`subtract`/`multiply_percent` steps (`value` is
    `z.number()`, not an integer — money and fractions are legitimate), and

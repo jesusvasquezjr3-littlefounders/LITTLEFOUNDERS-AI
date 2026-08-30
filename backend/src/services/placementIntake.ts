@@ -24,6 +24,15 @@ const IntakeEnvelope = z.object({
       priorFraction: z.number().min(0).max(1).nullable(),
       reflection: z.string().max(400).nullable(),
       source: z.enum(['model', 'fallback']).nullable(),
+      /**
+       * Set ONLY when `source: 'fallback'` was reached because the
+       * learner's own text was flagged, never for an ordinary outage. See
+       * `oracle/src/tutor/placementIntake.ts`'s `PlacementIntakeResult.
+       * flagged` for the full context (found by adversarial review,
+       * 2026-08-30, HIGH: a self-harm disclosure during placement used to
+       * be indistinguishable from Oracle simply being down).
+       */
+      flagged: z.object({ category: z.string(), severity: z.string() }).nullable().optional(),
     })
     .nullable(),
   error: z.object({ code: z.string(), message: z.string() }).nullable(),
@@ -46,6 +55,8 @@ export interface PlacementIntakeOutcome {
   priorFraction: number;
   reflection: string;
   source: 'model' | 'fallback';
+  /** Present only when `source: 'fallback'` was a flagged utterance, not an outage. */
+  flagged: { category: string; severity: string } | null;
 }
 
 /**
@@ -85,9 +96,19 @@ export async function runPlacementIntake(request: PlacementIntakeRequest): Promi
     });
     const parsed = IntakeEnvelope.safeParse(await res.json());
     if (!res.ok || !parsed.success || parsed.data.error || !parsed.data.data) return null;
-    const { available, priorFraction, reflection, source } = parsed.data.data;
+    const { available, priorFraction, reflection, source, flagged } = parsed.data.data;
     if (!available || priorFraction === null || reflection === null || source === null) return null;
-    return { priorFraction, reflection, source };
+    if (flagged) {
+      // Loud on purpose (§1.9): this is the only signal today that a
+      // learner's placement-intake text was flagged rather than Oracle
+      // simply being unavailable. `request.learnerText` is deliberately NOT
+      // logged here — the category/severity is the actionable part, and the
+      // raw text is exactly what §1.9 minimizes exposure of.
+      console.error(
+        `[core] placement intake blocked a flagged utterance: ${flagged.category} (${flagged.severity})`,
+      );
+    }
+    return { priorFraction, reflection, source, flagged: flagged ?? null };
   } catch {
     return null;
   }

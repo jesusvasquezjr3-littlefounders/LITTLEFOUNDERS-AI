@@ -2563,3 +2563,53 @@ reason via `git stash`, pass against the fix. Full oracle suite green
 defect now ends in `[oracle] repair attempt for a repeated sentence
 failed — scripted line instead of delivering the repeat` followed by the
 scripted "Se me enredaron las ideas" line, never the repeat.
+
+## A self-harm disclosure during placement intake was indistinguishable from Oracle simply being down — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 17 (HIGH): `oracle/src/tutor/
+placementIntake.ts`'s `runPlacementIntake` correctly classifies the
+learner's own text before it reaches the model (a fix from 2026-08-29) and
+refuses to send a flagged utterance — but the refusal landed on the exact
+same neutral `PlacementIntakeResult` an ordinary Oracle outage produces:
+`{priorFraction: 0.3, reflection, source: 'fallback'}`, with nothing
+distinguishing "the model was unreachable" from "the learner just
+disclosed self-harm." This is the FIRST exchange a learner has with the
+Tutor system, precisely the moment the least is known about them, and it
+produced no signal ANYWHERE — no category, no severity, nothing a caller
+could log, act on, or eventually show a guardian.
+
+Fixed by adding `PlacementIntakeResult.flagged: {category, severity} |
+null`, set only when the fallback was reached via the classifier gate
+(never for an ordinary outage, malformed reply, or a moderation refusal of
+the model's own reflection). Threaded through Core's `backend/src/
+services/placementIntake.ts` (extending `IntakeEnvelope`'s Zod schema and
+`PlacementIntakeOutcome`) to `backend/src/routes/placement.ts`'s intake
+handler, which now logs loudly — `console.error`, with the user id
+attached, since that handler is the one place in the whole path with real
+request context — whenever a flagged utterance blocked the model call.
+The CLIENT-facing response is deliberately UNCHANGED: a child is never
+told their own words were flagged, matching every other safety response
+in this product. This is server-side visibility only, and it is
+explicitly the floor, not the ceiling — whether a flagged placement-intake
+utterance belongs in a guardian-visible record the way a live-session
+safety flag does is a separate schema decision, since `tutor_safety_flags`
+requires a `session_id` FK and placement intake has no session to attach
+one to; documented as an open item in `/ORACLE.md` §4.1b rather than
+rushed into this fix.
+
+Proven with tests on both sides: `oracle/src/__tests__/
+placementIntake.test.ts` gained a `flagged` field on every existing
+fallback assertion, a dedicated case confirming a self-harm disclosure
+carries `{category: 'self_harm', severity: 'high'}`, and a new test that
+directly asserts the fix's own claim — a self-harm fallback and an
+ordinary-outage fallback share the same prior/reflection/source but are
+`not.toEqual` each other, because one now carries `flagged` and the other
+doesn't. `backend/src/__tests__/placement.test.ts` gained two new tests on
+the actual HTTP route: one confirms a flagged utterance is logged with the
+user id and that `flagged`/`source` never appear in the client JSON
+response, the other confirms an ordinary unflagged intake logs nothing at
+all. Both new backend-route tests confirmed to fail against the pre-fix
+code (no log call, `expected "error" to be called ... Number of calls: 0`)
+via `git stash`, pass against the fix. Full oracle suite green (444
+tests), full backend suite green (628 tests), lint clean and type-check
+clean (including the test tree) on both services.

@@ -568,6 +568,29 @@ down, malformed JSON, an extra field, a refused reflection — lands on a neutra
 prior identical to having had no conversation at all. It never throws at the
 learner and never returns a number it did not derive.
 
+**A flagged utterance and an ordinary outage were the same object — found by
+adversarial review, 2026-08-30 (HIGH).** `classifyLearnerInput` runs before
+the model call here too (fixed 2026-08-29), and correctly refuses to send a
+flagged utterance — but the refusal landed on the SAME neutral fallback an
+ordinary Oracle-is-down would produce, with no field distinguishing "the
+model was unreachable" from "the learner just disclosed self-harm." This is
+the FIRST exchange a learner has with the system, precisely when the least
+is known about them, and it produced no signal anywhere — no log, no
+category, nothing a guardian could ever see. Fixed by adding
+`PlacementIntakeResult.flagged: {category, severity} | null`, set only when
+the fallback was reached via the classifier gate, threaded through Core's
+`placementIntake.ts` service and logged loudly (with the user id attached)
+at the one place in the whole path with real request context —
+`backend/src/routes/placement.ts`'s intake handler. The CLIENT response is
+UNCHANGED: a child is never told their own words were flagged, matching
+every other safety response in this product; this is server-side visibility
+only. **Not yet done, and stated so rather than silently skipped:** whether
+a flagged placement-intake utterance belongs in a guardian-visible record
+the way a live-session safety flag does is a separate schema decision —
+`tutor_safety_flags` requires a `session_id` FK and placement has no
+session to attach one to. A loud log is the floor this fix guarantees, not
+the ceiling.
+
 ### §4.2 To the voice provider (Inworld)
 
 - **Inbound:** the learner's audio, for transcription. It transits, is never

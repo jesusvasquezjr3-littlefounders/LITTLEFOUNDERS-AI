@@ -95,6 +95,7 @@ describe('runPlacementIntake — the happy path', () => {
       priorFraction: 0.55,
       reflection: 'Ya llevas presupuesto, eso ya es terreno ganado.',
       source: 'model',
+      flagged: null,
     });
   });
 
@@ -133,7 +134,7 @@ describe('runPlacementIntake — every failure is neutral, never loud and never 
   it('falls back when the model is not available at all', async () => {
     vi.mocked(complete).mockRejectedValue(new ModelUnavailableError('no key'));
     const result = await runPlacementIntake(INPUT, NEUTRAL);
-    expect(result).toEqual({ priorFraction: 0.3, reflection: NEUTRAL, source: 'fallback' });
+    expect(result).toEqual({ priorFraction: 0.3, reflection: NEUTRAL, source: 'fallback', flagged: null });
   });
 
   it('falls back on unparseable output instead of guessing at it', async () => {
@@ -182,7 +183,12 @@ describe('runPlacementIntake — every failure is neutral, never loud and never 
       { ...INPUT, learnerText: 'no se nada de esto, la verdad ya no quiero vivir' },
       NEUTRAL,
     );
-    expect(result).toEqual({ priorFraction: 0.3, reflection: NEUTRAL, source: 'fallback' });
+    expect(result).toEqual({
+      priorFraction: 0.3,
+      reflection: NEUTRAL,
+      source: 'fallback',
+      flagged: { category: 'self_harm', severity: 'high' },
+    });
     expect(complete).not.toHaveBeenCalled();
   });
 
@@ -192,7 +198,35 @@ describe('runPlacementIntake — every failure is neutral, never loud and never 
       NEUTRAL,
     );
     expect(result.source).toBe('fallback');
+    expect(result.flagged).toEqual({ category: 'personal_data', severity: 'medium' });
     expect(complete).not.toHaveBeenCalled();
+  });
+
+  /*
+   * THE ACTUAL DEFECT (found by adversarial review, 2026-08-30, HIGH): before
+   * `flagged` existed, a self-harm disclosure — the FIRST exchange a learner
+   * has with this system, precisely when the least is known about them —
+   * produced a result byte-identical to an ordinary Oracle outage. No
+   * category, no severity, nothing a caller could act on, log, or eventually
+   * show a guardian.
+   */
+  it('is DISTINGUISHABLE from an ordinary model outage — the actual defect this fix closes', async () => {
+    vi.mocked(complete).mockRejectedValue(new ModelUnavailableError('no key'));
+    const outage = await runPlacementIntake(INPUT, NEUTRAL);
+
+    const selfHarm = await runPlacementIntake(
+      { ...INPUT, learnerText: 'no se nada de esto, la verdad ya no quiero vivir' },
+      NEUTRAL,
+    );
+
+    // Same neutral prior and reflection (the whole point of the fallback),
+    // but no longer the same OBJECT — a caller can now tell them apart.
+    expect(outage.priorFraction).toBe(selfHarm.priorFraction);
+    expect(outage.reflection).toBe(selfHarm.reflection);
+    expect(outage.source).toBe(selfHarm.source);
+    expect(outage.flagged).toBeNull();
+    expect(selfHarm.flagged).not.toBeNull();
+    expect(outage).not.toEqual(selfHarm);
   });
 
   it('requires the moderation model pass for a minor, and not for an adult', async () => {
@@ -230,7 +264,7 @@ describe('runPlacementIntake — a persuaded model still cannot place anyone', (
   it('returns nothing but a number and a sentence, whatever the model said', async () => {
     modelReturns(JSON.stringify({ priorFraction: 0.5, reflection: 'Bien.' }));
     const result = await runPlacementIntake(INPUT, NEUTRAL);
-    expect(Object.keys(result).sort()).toEqual(['priorFraction', 'reflection', 'source']);
+    expect(Object.keys(result).sort()).toEqual(['flagged', 'priorFraction', 'reflection', 'source']);
   });
 
   it('hands the fence nonce to moderation so a reply that recites its own fence is caught', async () => {
