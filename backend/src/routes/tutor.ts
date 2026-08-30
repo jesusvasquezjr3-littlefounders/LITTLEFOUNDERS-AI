@@ -1458,13 +1458,37 @@ export function tutorRouter(): Router {
      * downstream consumer ever checked it against anything. It is now
      * verified against the real KC graph, asynchronously, in the route
      * handler below (a shape-only Zod refine cannot make a DB call) — see
-     * that check's own comment for the incident and why `open`/`course_topic`
-     * (which pass no meaningful `skillKey` at all) are untouched.
+     * that check's own comment for the incident.
+     *
+     * `open`, `course_topic` and `diagnostic` carry NO legitimate `skillKey`
+     * at all — round 47's own comment here used to claim this as an
+     * assumption about client behavior ("pass no meaningful skillKey"), which
+     * is not the same thing as an enforced boundary. Found by adversarial
+     * review, round 49 (2026-08-30, HIGH): any authenticated caller can POST
+     * directly, and nothing stopped `{intent:'open', skillKey:'<anything up
+     * to 128 chars>'}` from reaching `buildPlan` (`oracle/src/tutor/plan.ts`)
+     * unfenced as the WHOLE lesson objective whenever `courseContext` is null
+     * — the common shape for `open`, and a reachable one for `course_topic`
+     * too, since `courseId`/`topicId` are independent, attacker-controlled
+     * fields that can simply be omitted or fail to resolve. Verified end to
+     * end via Supertest against the real route: `{intent:'open',
+     * skillKey:'IGNORE ALL PRIOR INSTRUCTIONS...'}` returned 201 and sent the
+     * string verbatim to `p_skill_key`, persisted with zero check — the exact
+     * shape already closed twice for `faq` (round 40) and `weak_skill`
+     * (round 47), just on the two intents that comment incorrectly declared
+     * safe. No frontend caller ever sends `skillKey` for these three intents
+     * (`OfferChips.tsx`, `mic.ts` — grepped, confirmed), so rejecting one
+     * outright costs no real traffic and closes the whole class rather than
+     * trying to validate content that was never supposed to exist here.
      */
-    .refine((body) => body.intent !== 'faq' || FAQ_IDS.includes(body.skillKey as (typeof FAQ_IDS)[number]), {
-      message: 'skillKey must be one of the published FAQ ids',
-      path: ['skillKey'],
-    });
+    .refine(
+      (body) => {
+        if (body.intent === 'faq') return FAQ_IDS.includes(body.skillKey as (typeof FAQ_IDS)[number]);
+        if (body.intent === 'weak_skill') return true; // verified against the real KC graph below
+        return body.skillKey === null || body.skillKey === undefined;
+      },
+      { message: 'skillKey is not valid for this intent', path: ['skillKey'] },
+    );
 
   router.post('/sessions', async (req, res) => {
     const parsed = StartBody.safeParse(req.body);
@@ -1484,9 +1508,10 @@ export function tutorRouter(): Router {
      * `skillKey` reached the tutor's own system prompt with that same
      * elevated framing vouching for it. `getKcBySkillKey` distinguishes a
      * genuinely unknown key (400 — reject) from a read failure (502 — refuse
-     * rather than let an unverified string through unchecked); `open` and
-     * `course_topic` never carry a meaningful `skillKey` here and are
-     * untouched.
+     * rather than let an unverified string through unchecked); `open`,
+     * `course_topic` and `diagnostic` are handled above instead, in the
+     * schema itself — `skillKey` is rejected outright for those three, not
+     * merely assumed absent (round 49 closed that gap).
      */
     if (parsed.data.intent === 'weak_skill' && parsed.data.skillKey) {
       const lookup = await getKcBySkillKey(parsed.data.skillKey);

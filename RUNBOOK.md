@@ -5107,3 +5107,65 @@ same two personas that surfaced the bug — was honest and general
 ("todavía se nos resiste un poco", a needs-vs-wants metaphor with no
 invented item names), zero fabricated specifics, versus two in the
 run that found it. `oracle/AGENTS.md` item 47.
+
+## Round 49: `open`, `course_topic` and `diagnostic` could all carry an injected `skillKey` reaching the model unfenced — the round-47 fix's own "these two are safe" comment was wrong
+
+A background adversarial review of the `diagnostic` intent (round 48)
+independently re-derived and disproved a claim I wrote myself in round
+47: that `open` and `course_topic` "pass no meaningful `skillKey` at
+all" and were therefore untouched by the same fix. That is a true
+statement about what the FRONTEND happens to send — confirmed again
+here by grep, no caller in `OfferChips.tsx` or `mic.ts` ever attaches
+`skillKey` to these three intents — but it is not an enforced
+boundary, and every prior incident this session has closed in this
+exact area (round 40's `faq`, round 47's `weak_skill`) was precisely
+this gap: a comment asserting safety where the schema enforced none.
+
+Verified independently before fixing (never trust a finding, including
+a background agent's, without re-deriving it): `StartBody`
+(`backend/src/routes/tutor.ts`) puts no per-intent constraint on
+`skillKey` beyond `faq`'s FAQ-id check and `weak_skill`'s async
+KC-graph check (round 47) — any authenticated caller can POST
+`{intent:'open', skillKey:'<up to 128 chars>'}` directly. `courseContext`
+resolves to `null` whenever both `course_id`/`topic_id` are absent —
+always true for `open`, and reachable for `course_topic` too, since
+`courseId`/`topicId` are independent, attacker-controlled fields that
+can simply be omitted. With `courseContext` null and `intent` neither
+`faq` nor `weak_skill`, `oracle/src/tutor/plan.ts`'s `buildPlan` falls
+through its ternary straight to the raw `skillKey` string as `subject`,
+and from there into `objective` — `Teach one real idea about
+"<attacker string>" until the learner can use it.` — unfenced, in the
+tutor's own system prompt. `diagnostic` has the identical schema gap
+with a narrower immediate blast radius (its own objective ignores
+`skillKey` — confirmed clean, `buildPlan` checks `intent === 'diagnostic'`
+before ever consulting `subject`) but the same STORAGE gap: the
+unchecked value persists to `tutor_sessions.skill_key` and resurfaces,
+unfenced, describing "what we did last time" in a LATER session's
+`previousSessions` digest (`prompt.ts`'s `previousSessions` block has
+no fencing or moderation anywhere in that file).
+
+Fixed with one schema-level change rather than three separate content
+checks, because none of these three intents has any legitimate content
+for `skillKey` to validate: `StartBody`'s refine now requires
+`skillKey` to be null/absent for every intent except `faq` and
+`weak_skill`, which keep their existing checks. This closes the whole
+class rather than trying to sanitize a field that was never supposed
+to carry anything here — confirmed safe against real traffic by
+grepping every frontend caller (`OfferChips.tsx`, `mic.ts`): none ever
+sends `skillKey` for `open`, `course_topic`, or `diagnostic`.
+
+Six new tests (`it.each` over all three intents): a crafted injection
+string is rejected (400 `VALIDATION_ERROR`) for each; a request with no
+`skillKey` at all still starts a real session (201) for each — proving
+the fix costs no legitimate traffic. All three rejection cases
+confirmed to fail for the exact claimed reason pre-fix via `git stash`
+(201 instead of 400, the literal injected string accepted). Full
+backend suite green (39 files, 669 tests — 663 existing + 6 new, zero
+regressions), lint and type-check (both tsconfigs) clean.
+
+Two other findings from the same round 48 review, addressed separately
+from this fix: diagnostic's `check`-before-`explain` plan-sequence
+contradiction (MEDIUM — its own entry follows) and a confirmed "not a
+bug" result (diagnostic's mastery evidence flows through the same
+BKT/mastery pipeline as every other intent; there is no separate
+"diagnosis report" that could evaporate).
