@@ -115,6 +115,39 @@ function normalizeLocale(raw: string | null | undefined): 'en-US' | 'es-MX' | 'p
   return raw === 'en-US' || raw === 'pt-BR' ? raw : 'es-MX';
 }
 
+/**
+ * True when a nickname is the learner's own real name, or contains it.
+ *
+ * Found by adversarial review, 2026-08-30 (HIGH): `PreferencesBody`'s
+ * nickname regex only excludes punctuation (`/^[\p{L}\p{N}][\p{L}\p{N}
+ * '_-]*$/u`) — it accepts SPACES, so a clean two-word name with no comma or
+ * period sails through untouched. The existing rejection test only proved
+ * this for `'Ana Vasquez, Jr.'`, which fails on the comma, not on being a
+ * full name; a bare `'Ana Vasquez'` — literally a real learner's own
+ * `display_name` — was never checked against anything. That nickname is
+ * "the only name-shaped value that may travel" into the model context
+ * (`tutor.ts`'s own comment, a few lines below where it is read), and
+ * `oracle/src/context/schema.ts`'s `NicknameSchema` doc calls it "a place to
+ * hide a surname" — this closes the one place nothing ever checked that.
+ *
+ * Word-based rather than whole-string, so "Vasquez" alone (the surname on
+ * its own, §1.9's specific example) is caught exactly as "Ana Vasquez" is,
+ * without also rejecting a nickname that merely shares a short, common word
+ * with the real name by coincidence.
+ */
+function looksLikeRealName(nickname: string, displayName: string): boolean {
+  const wordsOf = (s: string): string[] =>
+    s
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((w) => w.length >= 3);
+  const realWords = new Set(wordsOf(displayName));
+  if (realWords.size === 0) return false;
+  return wordsOf(nickname).some((w) => realWords.has(w));
+}
+
 async function profileOf(accessToken: string, userId: string): Promise<FullProfileRow | null> {
   const rows = await getFullOwnProfile(accessToken, userId);
   return rows?.[0] ?? null;
@@ -1057,6 +1090,14 @@ export function tutorRouter(): Router {
 
     if (parsed.data.companion && parsed.data.character && parsed.data.companion === parsed.data.character) {
       return fail(res, 400, VALIDATION, 'The companion cannot be the same character as the tutor');
+    }
+
+    if (parsed.data.nickname) {
+      const profile = await profileOf(user.accessToken, user.id);
+      if (profile === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read profile');
+      if (looksLikeRealName(parsed.data.nickname, profile.display_name)) {
+        return fail(res, 400, VALIDATION, 'A nickname may not be your real name');
+      }
     }
 
     const saved = await upsertTutorPreferences(user.id, parsed.data);

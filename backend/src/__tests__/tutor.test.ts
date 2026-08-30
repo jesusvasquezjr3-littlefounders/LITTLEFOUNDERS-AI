@@ -1064,6 +1064,42 @@ describe('preferences', () => {
     expect(response.status).toBe(400);
   });
 
+  /*
+   * Found by adversarial review, 2026-08-30 (HIGH). The test above only
+   * proves rejection because of the comma and period — the nickname regex
+   * (`/^[\p{L}\p{N}][\p{L}\p{N} '_-]*$/u`) allows spaces, so a CLEAN two-word
+   * name with no punctuation sailed straight through untouched, even when it
+   * was literally the learner's own `display_name` (`KID_PROFILE` below).
+   * That value is "the only name-shaped value that may travel" into the
+   * model context — a direct §1.9 leak path this test closes.
+   */
+  it('rejects a nickname that exactly matches the learner’s own real name, with no punctuation involved', async () => {
+    stub({ profile: KID_PROFILE }); // display_name: 'Ana Vasquez'
+    const response = await request(createApp())
+      .put('/api/v1/tutor/preferences')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ nickname: 'Ana Vasquez' });
+    expect(response.status).toBe(400);
+  });
+
+  it('rejects a nickname that is just the learner’s surname on its own', async () => {
+    stub({ profile: KID_PROFILE }); // display_name: 'Ana Vasquez'
+    const response = await request(createApp())
+      .put('/api/v1/tutor/preferences')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ nickname: 'Vasquez' });
+    expect(response.status).toBe(400);
+  });
+
+  it('still allows an ordinary nickname that shares nothing with the real name', async () => {
+    stub({ profile: KID_PROFILE }); // display_name: 'Ana Vasquez'
+    const response = await request(createApp())
+      .put('/api/v1/tutor/preferences')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ nickname: 'Estrella' });
+    expect(response.status).toBe(200);
+  });
+
   it('rejects a companion that is the same character as the tutor', async () => {
     stub();
     const response = await request(createApp())

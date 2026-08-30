@@ -511,6 +511,26 @@ sessions' transcripts, and any free text the learner typed outside this session.
 object is built by a single function, validated, and only then serialized. An
 unknown key is a rejection, not a passthrough — `.strict()`, always.
 
+> **"Never the profile name" was stated, and nothing ever checked it —
+> found by adversarial review, 2026-08-30 (HIGH).** `nickname`'s own
+> format guard (`/^[\p{L}\p{N}][\p{L}\p{N} '_-]*$/u`, shared by Core's
+> `PUT /preferences` and Oracle's `NicknameSchema`) excludes punctuation,
+> not identity — it allows spaces, so a clean two-word name with no comma
+> or period sailed straight through. The existing rejection test only
+> proved punctuation was excluded (`'Ana Vasquez, Jr.'` fails on the comma);
+> a bare `'Ana Vasquez'` — literally a real learner's own `display_name` —
+> was never checked against anything at all, on the one value this table
+> already called "the only name-shaped value that may travel." Closed at
+> Core's `PUT /preferences` route, the only place both the submitted
+> nickname and the learner's real profile are in hand at once: a nickname
+> is now rejected if it shares any word of three or more letters with the
+> learner's `display_name`, word-based rather than whole-string so a bare
+> surname (§1.9's own named example) is caught exactly as the full name is,
+> without also rejecting a nickname that merely shares an unrelated short
+> word by coincidence. Oracle's own `NicknameSchema` is unchanged and still
+> a genuine second layer — a format backstop for whatever Core sends,
+> independent of whether Core's own check ever regresses.
+
 ### §4.1b The placement intake — a SECOND, separate allowed set (2026-08-24)
 
 `oracle/src/tutor/placementIntake.ts` is not a tutor turn and does not use

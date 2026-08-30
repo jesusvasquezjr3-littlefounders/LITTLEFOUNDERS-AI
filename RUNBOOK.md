@@ -2151,3 +2151,49 @@ called out in the other direction all session, just facing the other way.
 Left open for an explicit product decision rather than guessed at; if
 resolved, it belongs beside `deriveNodeState`'s existing tests
 (`pedagogy-routes.test.ts`, "the learning map" describe block).
+
+## A learner's real name could reach the third-party model as their "nickname" — closed 2026-08-30
+
+**Found by adversarial review, round 15** (consent, preferences and
+adaptation routes — a surface that had not had a dedicated round yet this
+session), HIGH severity.
+
+`PUT /tutor/preferences`'s nickname validation (`/^[\p{L}\p{N}][\p{L}\p{N}
+'_-]*$/u`, shared by Core's route and Oracle's own `NicknameSchema`) is a
+FORMAT guard: it excludes punctuation, digits-only strings and empty
+input, nothing more. It allows spaces, so a clean two-word name with no
+comma or period sailed straight through untouched — including the exact
+reproduction the reviewer used: `nickname: 'Ana Vasquez'`, literally the
+`display_name` of the test fixture already used throughout this file's
+test suite. The existing rejection test (`'Ana Vasquez, Jr.'`) only ever
+proved the comma and period were excluded; nothing checked whether a
+CLEAN, punctuation-free nickname was actually the learner's own real name.
+`nickname` is `/ORACLE.md` §4.1's own stated exception to "everything else
+is forbidden" — "the only name-shaped value that may travel" into
+DeepSeek/Qwen — which makes this a direct path for a minor's real name,
+and specifically their surname, to reach a third-party API in violation of
+§1.9.
+
+Fixed at `PUT /tutor/preferences`, the only place both the submitted
+nickname and the caller's real profile are available at once:
+`looksLikeRealName` fetches the profile and rejects a nickname sharing any
+word of three or more letters with `display_name`. Word-based rather than
+whole-string on purpose — it catches a bare surname on its own (§1.9's own
+named example of what must never leak) exactly as it catches the full
+name, without also rejecting a nickname that happens to share an unrelated
+short word with the real name by coincidence.
+
+Proven with two permanent tests alongside the existing punctuation one: a
+clean `'Ana Vasquez'` and a bare `'Vasquez'`, both matching the same test
+fixture's `display_name`, are rejected; a control (`'Estrella'`, sharing
+nothing with the real name) is still accepted. Both rejections confirmed
+to fail against the pre-fix route (200, not 400) before being trusted.
+Full backend suite green (626 tests), lint, type-check.
+
+**What this incident adds to the pattern.** A regex that rejects malformed
+input is not the same claim as a check that rejects the wrong VALUE — this
+one was read as covering "is this a full name" when everything it actually
+covered was "is this free of certain punctuation." The two claims share a
+test that happened to pass for the narrower one, which is exactly how a
+gap like this survives a code review: the existing test was genuinely
+green, and proved less than its own name said it did.
