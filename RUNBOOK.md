@@ -3024,3 +3024,62 @@ pre-fix code for the exact claimed reason via `git stash`, pass against
 the fix. Full oracle suite green (456 tests, up from 453), lint clean,
 type-check clean on all three tsconfigs, `verify:pedagogy` and
 `verify:tutor` both green, root `docs:check` and `secrets:check` clean.
+
+## A pt-BR growth story with natural phrasing never got its whiteboard, because the check couldn't recognize the sentence — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 23 (the whiteboard sync system — V4
+sprint 2, the most recently shipped major Tutor feature), MEDIUM.
+`oracle/src/tutor/prompt.ts`'s `REPEATING_CUE` (does this turn narrate a
+growth story that needs a whiteboard?) and `UNIT_WORD` (which cadence
+word — day/week/month/year — did the story use?) were two independently
+hand-written regex lists that both needed the identical phrase set across
+all three locked locales. Both were built almost entirely around Spanish
+"cada X" and English "every X," with Portuguese covered only by the
+CALQUED "a cada X" — never the phrasing a Brazilian Portuguese speaker (or
+the model producing pt-BR output) actually uses: "todo dia," "toda
+semana," "todos os meses," "todos os anos." English "each X" (as distinct
+from "every X") was missing from both lists too.
+
+Effect on a real session: a pt-BR conversation telling a growth or
+spending story with ordinary native phrasing set no `whiteboard` object,
+and the repair loop that exists specifically to force the model to draw
+one — shipped in V4 sprint 2 to fix exactly this failure mode for Spanish
+and English — silently never fired. No warning was even logged, because
+the deterministic check that is supposed to catch a missing whiteboard did
+not recognize the sentence as a growth story at all. The sibling check
+(`whiteboardUnitMismatch`) had the identical gap: a board mislabeled "Day
+1/2/3" under a story that said "toda semana" would not be caught and
+corrected either. Spanish- and English-phrased sessions got the intended
+repair; naturally-phrased Portuguese sessions silently did not — a
+locale-specific quality regression on a product that lists `pt-BR` as one
+of three supported locales, in a feature whose entire job is making the
+story's numbers visible.
+
+Fixed by making `REPEATING_CUE` a `RegExp` derived from `UNIT_WORD`'s own
+patterns instead of a separately hand-written union, so the two
+structurally cannot drift apart again, and adding the missing
+natural-Portuguese ("todo/toda/todos os/todas as X") and "each X" phrasings
+to `UNIT_WORD` — the one place both checks now read from. See
+`oracle/AGENTS.md` item 32 for the general lesson.
+
+Proven with new tests in `contradiction.test.ts`: natural Portuguese
+phrasing for all four cadence words, plus English "each day," now correctly
+trigger `narratesUnshownGrowth`; a unit mismatch under natural Portuguese
+phrasing ("toda semana" vs. a board labelled "day") is now caught by
+`whiteboardUnitMismatch`. Both new tests confirmed to fail against the
+pre-fix code for the exact claimed reason via `git stash`, pass against the
+fix. Full oracle suite green (458 tests, up from 456), lint clean,
+type-check clean on all three tsconfigs, `verify:pedagogy` and
+`verify:tutor` both green.
+
+The rest of round 23's review found no other reproducing defect: the
+existing `ZERO_EPSILON` fix (item 28) was re-verified with a 500,000-trial
+search within the schema's real bounds and holds; the whiteboard/
+segmentRequest mutual exclusivity is genuinely Zod-enforced, not just
+commented; the two independent server-side computations of a whiteboard's
+sequence (fresh delivery and session resume) call the same pure function on
+an object that is replaced, never mutated in place, so they cannot
+disagree; and the "tray demonstration froze" fix from an earlier session
+lives in a different file (`LiveSegmentPanel.tsx`) and does not recur in
+`TutorWhiteboard.tsx`, which already keys its effects on primitives rather
+than object identity.

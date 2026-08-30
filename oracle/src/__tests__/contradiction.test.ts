@@ -96,6 +96,26 @@ describe('a growth story told in words with no board to show for it', () => {
     expect(narratesUnshownGrowth('Imagine you save 10 dollars, and every week you get 2 more.', null)).toBe(true);
     expect(narratesUnshownGrowth('Imagine que você guarda 10 reais, e a cada semana ganha 2 a mais.', null)).toBe(true);
   });
+
+  /*
+   * Found by adversarial review, round 23 (2026-08-30, MEDIUM): the prior
+   * test above only exercises the calqued "a cada semana," which a
+   * Brazilian Portuguese speaker (or the model producing pt-BR output)
+   * would not naturally say — "todo dia," "toda semana" is the ordinary
+   * phrasing, and English "each day" is as natural as "every day." Neither
+   * was recognized before this fix, so a naturally-phrased pt-BR or en-US
+   * growth story silently skipped the repair that forces a whiteboard onto
+   * screen — no warning logged, since the check itself never fired.
+   */
+  it('catches NATURAL Portuguese and English phrasing, not just the calqued forms', () => {
+    expect(narratesUnshownGrowth('Todo dia o cofrinho te dá mais 2 reais. Você começa com 10.', null)).toBe(true);
+    expect(narratesUnshownGrowth('Toda semana você ganha mais 5 reais. Você começa com 20.', null)).toBe(true);
+    expect(narratesUnshownGrowth('Todos os meses você ganha mais 5 reais. Você começa com 20.', null)).toBe(true);
+    expect(narratesUnshownGrowth('Todos os anos você ganha mais 5 reais. Você começa com 20.', null)).toBe(true);
+    expect(narratesUnshownGrowth('Each day the piggy bank gives you 2 more pesos, starting from 10.', null)).toBe(
+      true,
+    );
+  });
 });
 
 describe('a board labelled with the wrong unit of time', () => {
@@ -128,5 +148,15 @@ describe('a board labelled with the wrong unit of time', () => {
   it('catches every cadence word, not just "day" vs "week"', () => {
     expect(whiteboardUnitMismatch('Cada mes te dan 2 pesos más.', { unit: 'year' })).toBe(true);
     expect(whiteboardUnitMismatch('Cada año te dan 2 pesos más.', { unit: 'month' })).toBe(true);
+  });
+
+  // Found by adversarial review, round 23 (2026-08-30, MEDIUM) — the sibling
+  // of the natural-phrasing gap above: a board mislabeled "Day 1/2/3" under
+  // a story that said "toda semana" (natural Brazilian Portuguese, not the
+  // calqued "a cada semana") went uncorrected because this check's own word
+  // list did not recognize the phrase as a cadence word at all.
+  it('catches a mismatch under NATURAL Portuguese phrasing, not just the calqued form', () => {
+    expect(whiteboardUnitMismatch('Toda semana você ganha mais 5 reais.', { unit: 'day' })).toBe(true);
+    expect(whiteboardUnitMismatch('Todo dia o cofrinho te dá mais 2 reais.', { unit: 'week' })).toBe(true);
   });
 });

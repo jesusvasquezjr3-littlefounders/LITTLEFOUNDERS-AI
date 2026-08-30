@@ -234,6 +234,45 @@ const CORRECTIVE = /\b(casi|no es|no exactamente|not quite|quase|n[ãa]o [ée])\
 const RESULT_ASSERTIONS = /\b(?:es|son|tienes|tendr[áa]s|quedan?|hay|da)\s+(\d+)/gi;
 
 /**
+ * A BOARD LABELLED WITH THE WRONG UNIT OF TIME — and, unioned together
+ * below, the single source `narratesUnshownGrowth` also uses to recognize a
+ * growth story in the first place.
+ *
+ * `unit` exists precisely so the axis matches the words — "cada semana" must
+ * draw "Semana 1/2/3", never "Día 1/2/3". The failure mode is the same class
+ * as `narratesUnshownGrowth` (a rule only stated in the prompt, not checked),
+ * so it gets the same treatment: read the cadence word the story ITSELF used,
+ * and compare it to what the model set. A story naming no cadence word at all
+ * (an abstract "cada vez") is not a mismatch — there is nothing to check it
+ * against, and the model is free to pick.
+ *
+ * Found by adversarial review, round 23 (2026-08-30, MEDIUM): this table and
+ * `REPEATING_CUE` used to be two independently hand-written regexes needing
+ * the SAME phrase set, and Portuguese's natural phrasing ("todo dia," "toda
+ * semana," as opposed to the calqued "cada dia/semana" both already
+ * matched) was missing from both. A pt-BR session — one of three locales
+ * this product ships — telling a growth story with ordinary native phrasing
+ * set no `whiteboard`, and the repair that exists specifically to force one
+ * silently never fired: no warning logged, because the check that was
+ * supposed to catch it did not recognize the sentence as a growth story at
+ * all. Deriving `REPEATING_CUE` from this table instead of authoring it
+ * separately makes that drift structurally impossible instead of merely
+ * avoidable.
+ */
+const UNIT_WORD: [RegExp, string][] = [
+  [
+    /\bcada\s+d[ií]a\b|\btodos\s+los\s+d[ií]as\b|\bcada\s+dia\b|\btodo\s+dia\b|\btodos\s+os\s+dias\b|\bevery\s+day\b|\beach\s+day\b/i,
+    'day',
+  ],
+  [/\bcada\s+semana\b|\btoda\s+semana\b|\btodas\s+as\s+semanas\b|\bevery\s+week\b|\beach\s+week\b/i, 'week'],
+  [
+    /\bcada\s+mes\b|\bcada\s+m[êe]s\b|\btodo\s+m[êe]s\b|\btodos\s+os\s+meses\b|\bevery\s+month\b|\beach\s+month\b/i,
+    'month',
+  ],
+  [/\bcada\s+a[ñn]o\b|\bcada\s+ano\b|\btodo\s+ano\b|\btodos\s+os\s+anos\b|\bevery\s+year\b|\beach\s+year\b/i, 'year'],
+];
+
+/**
  * A GROWTH STORY TOLD IN WORDS, WITH NO BOARD TO SHOW FOR IT.
  *
  * "Show your work" (this file, the V4 whiteboard instruction) is a system-
@@ -248,12 +287,11 @@ const RESULT_ASSERTIONS = /\b(?:es|son|tienes|tendr[áa]s|quedan?|hay|da)\s+(\d+
  *
  * Detected by the SHAPE of the sentence rather than by re-parsing arithmetic:
  * a cue that something repeats "cada día/semana/mes/año" (or the English/
- * Portuguese equivalents), alongside at least two numbers — one to start
- * from, one that changes. A single number ("cuesta 12 pesos") is a fact, not
- * a story that moves; nothing to draw there.
+ * Portuguese equivalents, see `UNIT_WORD` above), alongside at least two
+ * numbers — one to start from, one that changes. A single number ("cuesta
+ * 12 pesos") is a fact, not a story that moves; nothing to draw there.
  */
-const REPEATING_CUE =
-  /\bcada\s+(d[ií]a|semana|mes|a[ñn]o)\b|\btodos\s+los\s+d[ií]as\b|\bevery\s+(day|week|month|year)\b|\ba\s+cada\s+(dia|semana|m[êe]s|ano)\b/i;
+const REPEATING_CUE = new RegExp(UNIT_WORD.map(([re]) => re.source).join('|'), 'i');
 
 export function narratesUnshownGrowth(say: string, whiteboard: unknown): boolean {
   if (whiteboard != null) return false;
@@ -261,24 +299,6 @@ export function narratesUnshownGrowth(say: string, whiteboard: unknown): boolean
   const numbers = say.match(/\d+/g) ?? [];
   return numbers.length >= 2;
 }
-
-/**
- * A BOARD LABELLED WITH THE WRONG UNIT OF TIME.
- *
- * `unit` exists precisely so the axis matches the words — "cada semana" must
- * draw "Semana 1/2/3", never "Día 1/2/3". The failure mode is the same class
- * as `narratesUnshownGrowth` (a rule only stated in the prompt, not checked),
- * so it gets the same treatment: read the cadence word the story ITSELF used,
- * and compare it to what the model set. A story naming no cadence word at all
- * (an abstract "cada vez") is not a mismatch — there is nothing to check it
- * against, and the model is free to pick.
- */
-const UNIT_WORD: [RegExp, string][] = [
-  [/\bcada\s+d[ií]a\b|\btodos\s+los\s+d[ií]as\b|\bevery\s+day\b|\bcada\s+dia\b/i, 'day'],
-  [/\bcada\s+semana\b|\bevery\s+week\b/i, 'week'],
-  [/\bcada\s+mes\b|\bevery\s+month\b|\bcada\s+m[êe]s\b/i, 'month'],
-  [/\bcada\s+a[ñn]o\b|\bevery\s+year\b|\bcada\s+ano\b/i, 'year'],
-];
 
 export function whiteboardUnitMismatch(
   say: string,

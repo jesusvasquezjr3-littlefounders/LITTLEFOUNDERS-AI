@@ -690,6 +690,30 @@ everything passes the blocked half perfectly and destroys the product.
    when adding a new item to a closed enum (`Strategy`) or reviewing one
    that already exists, check it against every guardrail keyed on the
    ENUM's members, not just the members a bug report already named.
+32. **Two regexes hand-authored separately to recognize the SAME phrase set
+   will drift, and the locale added last is the one that drifts.**
+   `prompt.ts`'s `REPEATING_CUE` (does this turn narrate a growth story at
+   all?) and `UNIT_WORD` (which cadence word did it use?) were two
+   independently written regex lists needing the identical set of
+   day/week/month/year phrasings across three locales. Found by adversarial
+   review, round 23 (2026-08-30, MEDIUM): both were built almost entirely
+   around Spanish "cada X" and English "every X," with Portuguese covered
+   only by the CALQUED "a cada X" — never the natural "todo dia," "toda
+   semana," "todos os meses" a Brazilian Portuguese speaker (or the model
+   producing pt-BR output) actually says, and English "each X" was missing
+   too. A pt-BR session telling a growth story with ordinary native phrasing
+   set no `whiteboard`, and the repair that exists specifically to force one
+   onto screen silently never fired — no warning logged, because the check
+   that should have caught it did not recognize the sentence as a growth
+   story in the first place. Fixed by making `REPEATING_CUE` a `RegExp`
+   derived from `UNIT_WORD`'s own patterns (`UNIT_WORD.map(([re]) =>
+   re.source).join('|')`) instead of a separately hand-written union, so the
+   two structurally cannot drift apart again, and adding the missing
+   natural-Portuguese and "each X" phrasings to `UNIT_WORD` itself — the one
+   place both checks now read from. General lesson: when two checks need the
+   SAME domain knowledge (a phrase list, a vocabulary set, a unit table),
+   derive one from the other rather than authoring both by hand — the
+   alternative is trusting every future edit to remember to touch both.
 
 ---
 
