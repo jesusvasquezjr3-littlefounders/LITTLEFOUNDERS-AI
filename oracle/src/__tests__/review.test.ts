@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { runPostSessionReview } from '../session/review.js';
+import { fenceTranscript, runPostSessionReview } from '../session/review.js';
 import type { SessionContext } from '../core/client.js';
 
 /*
@@ -61,6 +61,30 @@ afterEach(() => {
   delete process.env.MODEL_API_KEY;
   delete process.env.JUDGE_API_KEY;
   vi.unstubAllGlobals();
+});
+
+/*
+ * Found by adversarial review, round 55 (2026-08-30, HIGH): `fenceTranscript`
+ * used to return a bare string, so `runPostSessionReview` had no nonce to
+ * hand `moderateTutorOutput` for its per-call echo check — the same defense
+ * `orchestrator.ts`'s per-turn fence already gets from `fenceUntrusted`.
+ * `PROMPT_LEAK_MARKERS` also only recognized the sibling `LEARNER_INPUT`
+ * fence shape, not this one's `SESSION_TRANSCRIPT` marker (see
+ * `safety/canary.ts`'s new `leaks-session-transcript-fence` canary and
+ * `safety/moderation.ts`'s own fix for that half).
+ */
+describe('fenceTranscript hands the caller a real per-call nonce, mirroring fenceUntrusted', () => {
+  it('uses a different nonce every call, so the fence cannot be guessed', () => {
+    const a = fenceTranscript('TUTOR: hola\nLEARNER: hola');
+    const b = fenceTranscript('TUTOR: hola\nLEARNER: hola');
+    expect(a.nonce).not.toBe(b.nonce);
+  });
+
+  it('embeds that exact nonce in the fence syntax the block carries', () => {
+    const { block, nonce } = fenceTranscript('TUTOR: hola\nLEARNER: hola');
+    expect(block).toContain(`<<<SESSION_TRANSCRIPT_${nonce}>>>`);
+    expect(block).toContain(`<<<END_SESSION_TRANSCRIPT_${nonce}>>>`);
+  });
 });
 
 describe('when it refuses to run', () => {

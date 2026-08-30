@@ -1318,6 +1318,52 @@ everything passes the blocked half perfectly and destroys the product.
    and a vocabulary gate built after a real safety incident belongs in the
    second bucket, not wherever a first, cursory placement put it.
 
+52. **Two different fence vocabularies exist, and the deterministic
+   prompt-leak check only ever recognized one of them.** Found by
+   adversarial review, round 55 (2026-08-30, HIGH), a dedicated sweep of
+   every call site reaching moderation. `safety/untrusted.ts`'s
+   `fenceUntrusted` wraps ONE learner utterance in a `LEARNER_INPUT_<nonce>`
+   fence; `session/review.ts`'s `fenceTranscript` wraps a WHOLE session
+   transcript in a deliberately different `SESSION_TRANSCRIPT_<nonce>`
+   fence, since it fences a multi-speaker transcript rather than one line.
+   `safety/moderation.ts`'s `PROMPT_LEAK_MARKERS` only ever listed the
+   `LEARNER_INPUT` shape — verified end to end that a recitation of the
+   `SESSION_TRANSCRIPT` fence sailed straight through `moderateTutorOutput`
+   even with `requireModelPass: true`, because a judge answering strictly
+   within its own documented, closed harm-category vocabulary correctly
+   says "safe" to reciting a data fence (it is not sexual, violent,
+   self-harm, etc.). This matters MORE here than at a live turn: this
+   call's output is persisted as `learner_memory` and re-injected,
+   UNFENCED, as trusted system-prompt text into EVERY future session — a
+   successful escape here is a cross-session, elevated-trust payload, not
+   one turn a later pass might still catch. Fixed with a matching
+   `SESSION_TRANSCRIPT` marker pair added to `PROMPT_LEAK_MARKERS`, a new
+   `leaks-session-transcript-fence` output canary (so `npm run verify:tutor`
+   — the operational gate, not just the unit suite — enforces it going
+   forward), and threading `fenceTranscript`'s own nonce into
+   `moderateTutorOutput`'s per-call echo check (it used to be omitted
+   entirely), the same defense `orchestrator.ts`'s per-turn fence already
+   gets. The SAME sweep also found `content/generate.ts`'s tier-3
+   generation path omitting its own fence's nonce from its moderation call
+   (LOW — the generic marker still catches a full fence recitation; only a
+   bare-nonce echo with no surrounding syntax would have slipped through)
+   — fixed alongside it, same mechanism.
+   Proven: `fenceTranscript` exported and directly tested for a fresh
+   nonce per call and correct embedding (mirroring `fenceUntrusted`'s own
+   existing tests); confirmed to fail for the exact claimed reason pre-fix
+   via `git stash` (`fenceTranscript is not a function`, and the new canary
+   absent from the corpus). A background review (not this session's own
+   testing) also found a real MEDIUM gap — a resumed Tutor session can keep
+   enforcing a STALE `isMinor` for up to the 90-second resume grace window,
+   since the orchestrator's `private readonly session` is never refreshed
+   on resume while sibling gates on the same reconnect (door gate, mic
+   gating) already use a freshly re-verified value — deliberately NOT fixed
+   this round, because `this.session` is used pervasively beyond `isMinor`
+   and deciding which fields should refresh on resume versus stay pinned
+   to the original connection (tier, courseContext, voiceConsent) is a real
+   design question, not a one-line patch; spawned as its own follow-up
+   (`task_b249a68e`) with the design groundwork already captured.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:

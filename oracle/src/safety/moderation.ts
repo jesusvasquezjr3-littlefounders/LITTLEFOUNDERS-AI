@@ -66,6 +66,24 @@ export interface ModerationInput {
  * instructions. Kept short and structural rather than trying to match the
  * prompt verbatim — a paraphrased leak is still a leak, and the give-away is
  * the vocabulary of instruction, not the exact wording.
+ *
+ * TWO FENCE VOCABULARIES EXIST, AND ONLY ONE WAS COVERED HERE. Found by
+ * adversarial review, round 55 (2026-08-30, HIGH): `session/review.ts`'s
+ * `fenceTranscript` wraps a whole session transcript in its OWN marker,
+ * `<<<SESSION_TRANSCRIPT_<nonce>>>>` — deliberately different from
+ * `safety/untrusted.ts`'s per-turn `LEARNER_INPUT` fence, since it fences a
+ * multi-speaker transcript rather than one learner utterance. This list only
+ * ever recognized `LEARNER_INPUT`, so a recitation of the SESSION_TRANSCRIPT
+ * fence was invisible to this deterministic pass — verified end to end
+ * through `moderateTutorOutput` with `requireModelPass: true`: a judge
+ * behaving exactly per its own documented, closed harm-category vocabulary
+ * correctly answers "safe" (reciting a data fence is not sexual, violent,
+ * self-harm, etc.), so nothing else in the pipeline would have caught it
+ * either. This matters MORE than at a live turn: `review.ts`'s output is
+ * persisted as `learner_memory` and re-injected, unfenced, as trusted
+ * system-prompt text into EVERY future session — a successful escape here
+ * is a cross-session, elevated-trust payload, not one turn a later pass
+ * might still catch.
  */
 const PROMPT_LEAK_MARKERS: readonly RegExp[] = [
   /\bsystem\s+(prompt|instructions?|message)\b/i,
@@ -73,6 +91,8 @@ const PROMPT_LEAK_MARKERS: readonly RegExp[] = [
   /\byou\s+are\s+(dina|liruf|dr\.?\s*rho|rho|zara)[^.]{0,40}\b(tutor|assistant)\b.*\bnever\b/i,
   /<<<(?:END_)?LEARNER_INPUT/i,
   /\bLEARNER_INPUT_[A-Za-z0-9_-]+\b/,
+  /<<<(?:END_)?SESSION_TRANSCRIPT/i,
+  /\bSESSION_TRANSCRIPT_[A-Za-z0-9_-]+\b/,
   /\bas\s+an\s+ai\s+(language\s+)?model\b/i,
   /\bmis\s+instrucciones\s+(dicen|son)\b/i,
   /\bminhas\s+instru[çc][õo]es\s+(dizem|s[ãa]o)\b/i,

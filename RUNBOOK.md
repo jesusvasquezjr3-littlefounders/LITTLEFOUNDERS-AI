@@ -5623,3 +5623,86 @@ vs. scripted line" split was reasoned about survivable imperfection
 versus active harm, and a vocabulary gate built after a real safety
 incident was placed in the wrong one of those two buckets from the
 start.
+
+## Round 56: the deterministic prompt-leak check only ever recognized ONE of the Tutor's two fence vocabularies
+
+A background adversarial review swept every call site reaching
+moderation, looking specifically for inconsistent fail-open/fail-closed
+behavior and gaps where a path that should be moderated silently isn't.
+Four of five areas checked out sound (the core turn pipeline moderates
+every repaired/retried turn exactly once with no lighter path; scripted
+lines are genuinely fixed strings with no interpolation; fail-closed
+behavior for minors is uniform across every call site; `placementIntake.ts`
+and `content/generate.ts` derive `isMinor`/`requireModelPass` from
+trustworthy server-side values, never client input). One real HIGH gap,
+one LOW gap in the same family, and one MEDIUM finding deliberately
+deferred.
+
+**HIGH, fixed — `session/review.ts`'s own fence marker was invisible to
+the deterministic prompt-leak check.** `safety/untrusted.ts`'s
+`fenceUntrusted` wraps one learner utterance in a `LEARNER_INPUT_<nonce>`
+fence; `session/review.ts`'s `fenceTranscript` wraps a WHOLE session
+transcript in a deliberately different `SESSION_TRANSCRIPT_<nonce>`
+fence. `safety/moderation.ts`'s `PROMPT_LEAK_MARKERS` only ever listed
+the `LEARNER_INPUT` shape. Verified end to end: a recitation of the
+`SESSION_TRANSCRIPT` fence sailed straight through `moderateTutorOutput`
+even with `requireModelPass: true`, because a judge answering strictly
+within its own documented, closed harm-category vocabulary correctly
+says "safe" to reciting a data fence — it isn't sexual, violent,
+self-harm, or any of the categories that vocabulary covers. This
+matters more here than at a live turn: this call's output is persisted
+as `learner_memory` and re-injected, unfenced, as trusted system-prompt
+text into EVERY future session — a successful escape here is a
+cross-session, elevated-trust payload, not one turn a later pass might
+still catch.
+
+Fixed three ways, all complementary: (1) a matching `SESSION_TRANSCRIPT`
+marker pair added to `PROMPT_LEAK_MARKERS`; (2) a new
+`leaks-session-transcript-fence` output canary in `safety/canary.ts`, so
+`npm run verify:tutor` — the operational gate that actually runs, not
+just the unit suite — enforces it going forward (confirmed: the gate's
+own output now lists `ok refuses leaks-session-transcript-fence`); (3)
+`fenceTranscript` changed to return `{block, nonce}` instead of a bare
+string, with the nonce now threaded into `moderateTutorOutput`'s own
+per-call echo check — this had been omitted entirely, so a bare nonce
+surfacing with no surrounding fence syntax at all would have had no
+defense whatsoever.
+
+**LOW, fixed alongside it — `content/generate.ts`'s tier-3 generation
+path omitted its own fence's nonce too.** Same mechanism, much smaller
+blast radius: the generic markers still catch a full fence recitation
+regardless of the specific nonce, so only a bare-nonce echo with no
+fence syntax would have slipped through. Fixed by passing
+`derived.nonce` (the fence already built for the untrusted brief) into
+the same moderation call instead of `nonce: undefined`.
+
+Proof: `fenceTranscript` exported and directly tested for a fresh nonce
+per call and correct embedding in the block, mirroring `fenceUntrusted`'s
+own existing test pattern. Confirmed to fail for the exact claimed
+reason pre-fix via `git stash`: `fenceTranscript` wasn't a callable
+export yet, and the canary corpus count dropped by one. Full oracle
+suite green (26 files, 497 tests, zero regressions), lint and
+type-check clean, `verify:tutor` green with the new canary explicitly
+listed as passing.
+
+**MEDIUM, deliberately deferred — a resumed session can enforce a STALE
+`isMinor` for up to the 90-second resume grace window.**
+`oracle/src/ws/server.ts` re-fetches a fresh `SessionContext` on every
+connection, including a resume, and that fresh value correctly drives
+the door gate and microphone gating on the same reconnect. But the
+resumed orchestrator instance's `private readonly session` — the ONLY
+place `requireModelPass: this.session.isMinor` reads from — is never
+refreshed, so it still reflects whatever was true at the FIRST
+connection. Reachable only if a role actually changes for the same
+user inside the grace window — narrow, but real, and it is the same
+"state read back out of a shared/kept object is the previous holder's
+state" class this codebase has already named for a different
+subsystem. Not fixed this round because `this.session` is used
+pervasively beyond `isMinor` (locale, tier, character, courseContext,
+voiceConsent), and deciding which fields should refresh on resume
+versus stay pinned to the original connection is a real design
+question — refreshing `courseContext` mid-grace-window, for instance,
+could disrupt an in-flight lesson plan built from the original value.
+Spawned as its own follow-up (`task_b249a68e`) with the design
+groundwork already captured rather than risking a same-round patch that
+trades one staleness bug for a different one.

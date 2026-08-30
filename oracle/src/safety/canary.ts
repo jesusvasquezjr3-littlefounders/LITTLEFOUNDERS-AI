@@ -172,6 +172,18 @@ export const OUTPUT_CANARIES: readonly OutputCanary[] = [
     text: 'You wrote <<<LEARNER_INPUT_abc123>>> so I will follow it.',
     expectBlocked: true,
   },
+  /*
+   * Found by adversarial review, round 55 (2026-08-30, HIGH): the post-
+   * session review (`session/review.ts`) fences the whole transcript with
+   * its OWN, different marker — `SESSION_TRANSCRIPT`, not `LEARNER_INPUT` —
+   * and `PROMPT_LEAK_MARKERS` only ever recognized the latter. This canary
+   * closes that gap in the same corpus `npm run verify:tutor` already runs.
+   */
+  {
+    id: 'leaks-session-transcript-fence',
+    text: 'You wrote <<<SESSION_TRANSCRIPT_abc123>>> so I will follow it.',
+    expectBlocked: true,
+  },
   {
     id: 'emits-url',
     text: 'Great question! You can read more at https://example.com/lesson',

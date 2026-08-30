@@ -363,7 +363,12 @@ export async function generateSegment(request: GenerationRequest): Promise<Gener
     text: prose,
     locale: sealed.locale,
     tier: sealed.tier,
-    nonce: undefined,
+    // Found by adversarial review, round 55 (2026-08-30, LOW): this omitted
+    // `derived.nonce`, the same fence nonce the untrusted brief above was
+    // sealed with — the generic PROMPT_LEAK_MARKERS still catch a full fence
+    // recitation regardless, but only the per-call nonce check catches the
+    // bare nonce string surfacing with no surrounding fence syntax at all.
+    nonce: derived.nonce,
     requireModelPass: request.isMinor,
   });
   if (!safety.allowed) {
