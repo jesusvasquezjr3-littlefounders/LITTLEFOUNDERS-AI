@@ -526,7 +526,21 @@ everything passes the blocked half perfectly and destroys the product.
    always land on a safe default" is right for the LEARNER-FACING side of a
    fallback; it must not also erase the REASON from every place that could
    act on it.
-23. **A "must not be negative" guard on a floating-point running total needs
+23. **Fencing model-authored text field-by-field means EVERY field needs to
+   be found, not just the obvious ones.** `content/generate.ts`'s author
+   brief fences `framing`/`rationale`/`recentTutorLines` — all strings the
+   turn model writes — but `skillKey`, from the SAME turn-schema field
+   family, was left in the trusted, unfenced half of the brief, found by
+   adversarial review 2026-08-30 (HIGH). Turn-level moderation does not
+   inspect `skillKey` either, so it was a live gap on the one content
+   surface §1.9's Tutor carve-out exempts from human review specifically
+   because fencing is one of its compensating controls. Full detail in
+   `/ORACLE.md` §7.3. Same completeness-failure shape as item 17 above (a
+   check that covers only the named cases, not the category): whenever a
+   brief mixes fixed system-authored lines with fields a MODEL wrote, audit
+   every field the model can set, not just the ones a first pass happened
+   to fence.
+24. **A "must not be negative" guard on a floating-point running total needs
    a zero band, not a zero line.** `whiteboard.ts`'s `computeSequence` chains
    decimal `add`/`subtract`/`multiply_percent` steps (`value` is
    `z.number()`, not an integer — money and fractions are legitimate), and
