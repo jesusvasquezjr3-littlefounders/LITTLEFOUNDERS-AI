@@ -1035,6 +1035,32 @@ describe('the tutor can see the activity on screen', () => {
     expect(contextMessage).toContain('ON THE LEARNER');
     expect(contextMessage).not.toContain('score');
   });
+
+  /*
+   * Found live, testing as a struggling learner, 2026-08-30: on a true/false
+   * activity with no numbers in it at all, the reaction turn invented "sumaste
+   * 4 más 4 y te dio 8" — a whole different, unrelated exchange from three
+   * turns earlier in the conversation — because the instruction demanded "the
+   * numbers they chose" on an activity that never had any. The context
+   * message already carried the real activity prompt; the instruction gave
+   * the model nowhere true to point for THIS activity's own kind of answer,
+   * so it filled the gap from the nearest numbers lying around in history.
+   */
+  it('does not presuppose the activity was numeric', async () => {
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    orchestrator.noteSegmentServed(
+      'seg-1',
+      'financial-education/x',
+      'true_false',
+      'Un dulce que cuesta 1 moneda es más barato que un collar que cuesta 20 monedas.',
+    );
+    await orchestrator.handleSegmentResult('seg-1', 40, false, Date.now());
+
+    const body = String(fetchMock.mock.calls[0]?.[1]?.body ?? '');
+    expect(body).not.toContain('the numbers they chose, the order they put things in');
+    expect(body).toContain('grounded in the activity described above');
+  });
 });
 
 describe('a retry is only worth buying while the learner is still waiting', () => {

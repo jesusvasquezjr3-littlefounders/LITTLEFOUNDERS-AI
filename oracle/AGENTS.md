@@ -391,6 +391,18 @@ everything passes the blocked half perfectly and destroys the product.
    it was scoped to a mastery band or a strategy subset, and if so ask
    whether the OTHER bands need the same thing — `verify:pedagogy` will not
    ask this for you, it only asserts the sequences it already knows to run.
+14. **An instruction that presupposes the shape of every activity will be
+   wrong for most of them.** `orchestrator.ts`'s reaction-to-a-graded-activity
+   instruction said "name the numbers they chose" as if every one of the
+   lesson engine's dozens of segment types were numeric. On a true/false
+   activity, found live 2026-08-30, the model — given nowhere true to point
+   for "the numbers" — invented a whole different, unrelated activity from
+   earlier in the conversation instead. The context message already carried
+   this exact activity's real prompt; grounding being AVAILABLE did not stop
+   the hallucination, because the instruction actively asked for something
+   that was not there. Word an instruction about "whatever this activity
+   actually involved," not about one shape you had in mind, whenever it is
+   meant to apply to more than one segment type.
 
 ---
 

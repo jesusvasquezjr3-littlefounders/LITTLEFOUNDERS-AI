@@ -514,8 +514,24 @@ export class TutorOrchestrator {
        * So it asks for the SPECIFIC thing instead. A child can tell the
        * difference between being seen and being praised, and the second one
        * stops working the moment they hear it twice.
+       *
+       * "THE NUMBERS THEY CHOSE" ASSUMES EVERY ACTIVITY IS NUMERIC, AND MOST OF
+       * THE LESSON ENGINE ISN'T. Found live, testing as a struggling learner,
+       * 2026-08-30: on a true/false-plus-reason activity ("Un dulce que cuesta
+       * 1 moneda es más barato que un collar que cuesta 20 monedas"), the
+       * reaction turn said "En la actividad, sumaste 4 más 4 y te dio 8, y eso
+       * estuvo bien" — a whole invented activity, lifted from an UNRELATED
+       * addition question three turns earlier in the same conversation. The
+       * context message already hands the model this exact activity's real
+       * prompt (`buildContextMessage`'s "ON THE LEARNER'S SCREEN RIGHT NOW"
+       * block), so the grounding was available; this instruction, asking by
+       * name for "the numbers they chose" on an activity that had none, gave
+       * the model nowhere true to point and it filled the gap from the
+       * nearest numbers lying around in history instead. The fix asks for
+       * whatever the ACTUAL activity produced — a choice, an order, a match,
+       * a number — rather than presupposing which.
        */
-      `${summary} React as their tutor. Name the SPECIFIC thing they did — the numbers they chose, the order they put things in, the one they got right that was hardest — never a general compliment about thinking or being clever. Then help with what is still missing. Do not read the score out loud.${extra ? `\n\n${extra}` : ''}`,
+      `${summary} React as their tutor. Name the SPECIFIC thing they did IN THAT ACTIVITY — grounded in the activity described above as on their screen, never invented: the choice they made, the numbers they used, the order they picked, whichever of those this particular activity actually involved — never a general compliment about thinking or being clever. Then help with what is still missing. Do not read the score out loud.${extra ? `\n\n${extra}` : ''}`,
       nowMs,
       { isSystemPrompted: true, signal },
     );
