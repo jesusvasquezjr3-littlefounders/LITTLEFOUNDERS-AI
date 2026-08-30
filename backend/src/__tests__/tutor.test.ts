@@ -524,12 +524,33 @@ describe('POST /api/v1/tutor/sessions — the microphone gate', () => {
    * at their own next change until tomorrow.
    */
   it('exempts staff from the daily cap, and only staff', async () => {
-    stub({ sessions: [{ id: 'a' }, { id: 'b' }], roles: [{ role: 'superadmin' }] });
+    const calls = stub({ sessions: [{ id: 'a' }, { id: 'b' }], roles: [{ role: 'superadmin' }] });
     const staff = await request(createApp())
       .post('/api/v1/tutor/sessions')
       .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`)
       .send({ intent: 'open' });
     expect(staff.status).toBe(201);
+
+    /*
+     * Found live, testing as a real `admin` account, 2026-08-30 (HIGH): the
+     * "unlimited" cap sent for staff was `Number.MAX_SAFE_INTEGER`
+     * (9007199254740991), but the real RPC (migration 0057) declares
+     * `p_cap int` — Postgres's 32-bit `int4`, max 2147483647. This test's
+     * own mock never round-trips through real Postgres, so it stayed green
+     * throughout: it only ever compares `existing >= cap` in plain JS,
+     * which is true for ANY sufficiently large number. Every real staff
+     * attempt to start a session failed with a 502
+     * ("ERROR: integer out of range" from Postgres, surfaced as
+     * DATA_UNAVAILABLE) — the exemption this test claims to prove existed
+     * in name only. Asserting the actual value sent, not just that SOME
+     * value let the request through, is the only way this mock can catch
+     * that class of regression.
+     */
+    const rpcCall = calls.find((c) => c.url.includes('/rpc/start_tutor_session_checked'));
+    const staffCap = JSON.parse(rpcCall?.body ?? '{}').p_cap as number;
+    expect(Number.isInteger(staffCap)).toBe(true);
+    expect(staffCap).toBeLessThanOrEqual(2_147_483_647);
+    expect(staffCap).toBeGreaterThan(1000);
 
     stub({ sessions: [{ id: 'a' }, { id: 'b' }], roles: [{ role: 'parent' }] });
     const ordinary = await request(createApp())

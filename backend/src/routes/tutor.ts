@@ -98,6 +98,27 @@ const FAQ_IDS = ['what_is_saving', 'why_prices_change', 'what_is_a_budget', 'how
 
 /** Daily caps (/ORACLE.md §15, §0 assumption 5). */
 const MAX_SESSIONS_PER_DAY = 2;
+/**
+ * The staff exemption's "effectively unlimited" cap, capped ITSELF at
+ * Postgres's `int4` ceiling.
+ *
+ * Found live, testing as a real logged-in `admin` account, 2026-08-30
+ * (HIGH): every staff attempt to start a Tutor session failed with a 502
+ * ("Could not start the session"), because `start_tutor_session_checked`
+ * (`database/migrations/0057_atomic_tutor_session_cap.sql`) declares
+ * `p_cap int` — Postgres's 32-bit `int4`, max 2147483647 — and this route
+ * was passing `Number.MAX_SAFE_INTEGER` (9007199254740991) as the staff
+ * cap. PostgREST coercing that value into the function's own parameter
+ * type threw `ERROR: integer out of range` (confirmed directly: `SELECT
+ * 9007199254740991::int` fails with that exact message), `serviceRest`
+ * correctly returned null on the failure, and the route correctly turned
+ * that into a loud 502 rather than a silent wrong success — but the net
+ * effect was that the ONE escape hatch the route's own comment describes
+ * ("the person fixing it is locked out... nobody could look at it twice
+ * in one evening") could never be used at all. `2147483647` is still
+ * unreachable by any real per-day session count.
+ */
+const STAFF_SESSION_CAP = 2_147_483_647;
 /** Without a cap the tutor is the cheapest XP per minute and courses become optional (§8). */
 const MAX_TUTOR_XP_PER_DAY = 120;
 const PASS_THRESHOLD = 70;
@@ -1648,7 +1669,7 @@ export function tutorRouter(): Router {
     const result = await startTutorSessionChecked({
       userId: user.id,
       sinceIso: startOfLocalDayIso(locale),
-      cap: isStaff ? Number.MAX_SAFE_INTEGER : MAX_SESSIONS_PER_DAY,
+      cap: isStaff ? STAFF_SESSION_CAP : MAX_SESSIONS_PER_DAY,
       locale,
       tier: tierForBirthDate(profile.birth_date),
       character: prefs.character,

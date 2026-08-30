@@ -6058,3 +6058,62 @@ to its own intended meaning).
 Verification: full oracle suite, lint, type-check, `verify:pedagogy`,
 `verify:tutor` all green (above); root `docs:check`, `secrets:check`,
 `i18n:check` all clean.
+
+## Round 62: the staff exemption from the Tutor's daily session cap did not work — at all, for any staff account
+
+Found live, testing the round 60 whiteboard fix as a real logged-in
+`admin` account (the daily-cap-exempt path was the only way to get a
+second and third live Tutor session in one day once the seeded `kid`
+account had already used its own two sessions testing rounds 57-61).
+Clicking "Continue" to start a session failed every time with a 502,
+`{"code":"DATA_UNAVAILABLE","message":"Could not start the session"}`.
+
+**HIGH, FIXED.** `backend/src/routes/tutor.ts`'s `POST /sessions`
+passes `cap: isStaff ? Number.MAX_SAFE_INTEGER : MAX_SESSIONS_PER_DAY`
+to `startTutorSessionChecked`, which sends it as `p_cap` to the atomic
+RPC `start_tutor_session_checked` (migration 0057). That function
+declares `p_cap int` — Postgres's 32-bit `int4`, max `2147483647` —
+while `Number.MAX_SAFE_INTEGER` is `9007199254740991`. Confirmed
+directly against the real local Postgres: `SELECT
+9007199254740991::int;` → `ERROR: integer out of range`, the exact
+failure PostgREST hits coercing the RPC call's JSON body into the
+function's own parameter type. `serviceRest` correctly returned `null`
+on the failure (not a silent wrong success) and the route correctly
+turned that into a loud 502 rather than pretending the session
+started — but the net effect was that the ONE escape hatch this exact
+code path's own comment describes ("the person fixing it is locked
+out... nobody could look at it twice in one evening") never worked for
+a single admin or superadmin account, ever, in any environment,
+including this session's own local dev database.
+
+Fixed by replacing `Number.MAX_SAFE_INTEGER` with a new
+`STAFF_SESSION_CAP = 2_147_483_647` — Postgres's own `int4` ceiling,
+still unreachable by any real per-day session count. Re-confirmed valid
+directly against Postgres (`SELECT 2147483647::int;` succeeds).
+
+**Why the existing "exempts staff from the daily cap" test never
+caught this:** `backend/src/__tests__/tutor.test.ts`'s shared mock
+never round-trips through real Postgres — its stand-in for the RPC
+compares `existing >= cap` in plain JavaScript, which is `true` for
+literally any number large enough, so the test was green whether the
+cap sent was `2147483647` or `9007199254740991` or `Infinity`. It
+proved "some large number gets through," never "a number Postgres can
+actually accept gets through." Strengthened the SAME test to capture
+the RPC call's real `p_cap` body value and assert it is an integer
+within `int4` range — the one property that actually distinguishes a
+working exemption from a broken one, and the one this whole bug lived
+in the gap of. Confirmed to fail for the exact claimed reason pre-fix
+via `git stash` (`expected 9007199254740991 to be less than or equal
+to 2147483647`).
+
+Live-reproduced and re-verified end to end: after the fix, the same
+`admin` account's "Continue" click started a real session against the
+real backend and real Postgres (`Needs and wants — Lesson · step 1 of
+5`, a real greeting turn, `25 min left`) — no manual database edits, no
+bypass, just the intended staff path finally working.
+
+Verification: full backend suite green (42 files, 687 tests, zero
+regressions — the fix strengthened an existing test rather than adding
+one), lint and type-check clean, root `docs:check`/`secrets:check`/
+`i18n:check`/`seo:check` clean. No `oracle/AGENTS.md` item — touches
+only `backend/`.
