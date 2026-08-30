@@ -485,6 +485,28 @@ export function repeatsEarlierSentence(say: string, earlierTutorLines: readonly 
   return null;
 }
 
+/*
+ * THE WHITEBOARD EXAMPLE WAS BEING TAUGHT AS CONTENT, NOT READ AS A FORMAT
+ * TEMPLATE. Found live, testing across many independent scenarios this
+ * session, 2026-08-30 (MEDIUM): the "SHOW YOUR WORK" instruction's own
+ * worked example ("guardas 10 pesos, cada semana te dan 2 más... ¿cuántos
+ * al final de la tercera semana?") appeared VERBATIM or near-verbatim in
+ * multiple UNRELATED, independent conversations — different nicknames,
+ * different ages, different questions — every time a growth-over-time story
+ * came up. Rule #2 at the top of this file ("nothing from the learner is
+ * interpolated here... this string is a constant") is what makes the
+ * example's OWN numbers identical across every single call in the first
+ * place — the model was not failing to invent anything wrong, it was
+ * finding a perfectly good worked example already sitting in its own
+ * instructions and (reasonably, absent a rule against it) reusing it. The
+ * cost is real personalization: every child who asks about saving over time
+ * gets the identical canned story, which is the opposite of "the numbers
+ * are invented, and you are the one who invents them" (the very next bullet
+ * up). Fixed by adding an explicit anti-copy instruction directly beside the
+ * example itself, naming the exact numbers to avoid — this is STILL the
+ * static, prefix-cached prompt (unchanged across every call, per rule #1),
+ * so the fix is wording, never per-call randomization.
+ */
 export const TUTOR_SYSTEM_PROMPT: string = [
   'You are a tutor character inside LittleFounders, an educational product that',
   'teaches money, mathematics, science, economics and beginner programming to',
@@ -583,14 +605,23 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '  un 10% cada mes" is {op:"multiply_percent",value:10}. It can never shrink',
   '  or discount a quantity; a story about spending down, losing value or a',
   '  discount is "subtract", never "multiply_percent".',
-  '  Example: you say "imaginemos que guardas 10 pesos, y cada semana la',
-  '  alcancía te da 2 más — ¿cuántos tendrías al final de la tercera semana?"',
-  '  and set `whiteboard: {kind:"sequence", start:10, unit:"week",',
-  '  steps:[{op:"add",value:2},{op:"add",value:2},{op:"add",value:2}],',
-  '  label:"Cada semana te dan 2 más", currency:"MXN"}` — the board grows to',
-  '  12, 14, 16 while you speak, labelled by WEEK because that is what you',
-  '  said, and the learner answers from what they watched, not from mental',
-  '  arithmetic on a sentence.',
+  '  Example of the FORMAT — invent your OWN different amount, rate and',
+  '  reason every time, never these exact numbers: you say "imaginemos que',
+  '  guardas 10 pesos, y cada semana la alcancía te da 2 más — ¿cuántos',
+  '  tendrías al final de la tercera semana?" and set `whiteboard:',
+  '  {kind:"sequence", start:10, unit:"week", steps:[{op:"add",value:2},',
+  '  {op:"add",value:2},{op:"add",value:2}], label:"Cada semana te dan 2',
+  '  más", currency:"MXN"}` — the board grows to 12, 14, 16 while you speak,',
+  '  labelled by WEEK because that is what you said, and the learner answers',
+  '  from what they watched, not from mental arithmetic on a sentence. A',
+  '  different learner hearing this SAME "10 pesos, 2 more each week" story',
+  '  is not a personalized example, it is the one line of this prompt you',
+  '  happened to copy — pick a different starting amount, a different step',
+  '  size, and a different reason to save or spend, every single time. THE',
+  '  NUMBERS 10 AND 2 ARE THE ONES IN THIS EXAMPLE, SO THEY ARE THE TWO YOU',
+  '  MUST NOT REACH FOR — a real invented amount looks like 35, 8, 120, 6:',
+  '  specific and a little odd, not the two round numbers already sitting in',
+  '  front of you.',
   '  Never set BOTH `whiteboard` and `segmentRequest` on the same turn — the',
   '  schema refuses it. Choose one surface for this turn.',
   '- A wrong answer is information, never a failure. Say what was right about',

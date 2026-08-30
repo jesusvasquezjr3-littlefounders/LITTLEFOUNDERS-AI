@@ -5316,3 +5316,60 @@ stale controller from a different turn; and the resume-without-preflight
 design (`POST /sessions/:id/resume`) is safe specifically because Oracle
 is pinned to a single Railway replica — a documented, existing
 architectural invariant, not a hidden dependency.
+
+## Round 52: the whiteboard's own worked example was being taught as content, not read as a format template — closed in two passes because the first one only got partway
+
+Found by my own live testing across many independent `tutor:converse`
+scenarios, not by a review agent — the tutor's "SHOW YOUR WORK"
+instruction (`oracle/src/tutor/prompt.ts`) illustrates the whiteboard
+feature with a concrete worked example: "guardas 10 pesos, cada semana
+te dan 2 más... ¿cuántos al final de la tercera semana?" This exact
+scenario, or a trivial variation of its phrasing, appeared in multiple
+UNRELATED conversations — different nicknames, different ages,
+different questions — every single time a growth-over-time story came
+up. `TUTOR_SYSTEM_PROMPT`'s own rule #1 ("the static part comes first
+and never varies," load-bearing for prefix-cache economics) is exactly
+what makes the example's numbers byte-identical on every call; the
+model wasn't failing to invent anything, it found a serviceable
+worked example already in its own instructions and reused it, since
+nothing told it not to. Every child asking about saving over time got
+the identical canned story — the opposite of the very next bullet's
+own promise, "the numbers are invented, and you are the one who
+invents them."
+
+**Pass one** added "invent your OWN different amount, rate and reason
+every time, never these exact numbers" directly beside the example.
+Live re-test confirmed the LITERAL SENTENCE stopped recurring — phrasing
+genuinely varied — but the model kept reaching for the SAME underlying
+10/+2 arithmetic anyway, just narrated with a different time unit
+("Cada año el banco te da 2 más" — 10 → 12 → 14). A one-line "invent
+your own" instruction was not enough to actually dislodge the specific
+numbers sitting right next to it.
+
+**Pass two**, prompted by that live result rather than assumed
+sufficient, named the exact numbers to avoid outright: "THE NUMBERS 10
+AND 2 ARE THE ONES IN THIS EXAMPLE, SO THEY ARE THE TWO YOU MUST NOT
+REACH FOR — a real invented amount looks like 35, 8, 120, 6." Re-ran
+the full live scenario set afterward: 35/+5, 30/+3, 8/+2 in a distinct
+age-appropriate context, 1/+3 (a dinosaur's weight — genuinely invented
+for that exact tangent), 35/+8 — no recurrence of 10/+2 anywhere across
+7 conversations. Both wording passes sit in the SAME static prompt
+position, so prefix-caching is unaffected — the text is still a
+constant, just a more specific one.
+
+Proof: new `oracle/src/__tests__/prompt.test.ts` test asserting the
+exact callout strings (including the final "NUMBERS 10 AND 2" line)
+are present in `TUTOR_SYSTEM_PROMPT`; confirmed to fail for the exact
+claimed reason pre-fix via `git stash`. Verification: full oracle
+suite green (26 files, 492 tests, zero regressions), lint and
+type-check (all three tsconfigs) clean, `verify:pedagogy` and
+`verify:tutor` both green.
+
+General lesson, worth stating plainly since this is the second time
+this session a prompt fix needed a second pass to actually close
+(after item 47's "never invented" instruction): an instruction that
+tells the model to generalize away from an example is not the same as
+an instruction the model actually generalizes from on the first try —
+the only way to know is to run it live and read the ACTUAL numbers
+produced, not just confirm the sentence changed shape. `oracle/AGENTS.md`
+item 50.

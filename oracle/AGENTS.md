@@ -1234,6 +1234,44 @@ everything passes the blocked half perfectly and destroys the product.
    read at the LAST possible moment protects against nothing, since it will
    always agree with itself.
 
+50. **A worked example in a static, prefix-cached prompt is CONTENT the model
+   can reuse, not merely a format the model performs.** Found live, testing
+   across many independent scenarios this session, 2026-08-30 (MEDIUM): the
+   "SHOW YOUR WORK" instruction's own example ("guardas 10 pesos, cada
+   semana te dan 2 más... ¿cuántos al final de la tercera semana?") appeared
+   verbatim or near-verbatim in multiple UNRELATED conversations — different
+   nicknames, ages, questions — every time a growth-over-time story came up.
+   This file's own rule #1 ("the static part comes first and never varies")
+   is exactly what makes the example's own numbers byte-identical on every
+   single call in the first place; the model was not failing to invent
+   anything, it found a perfectly serviceable worked example already sitting
+   in its own instructions and reused it, absent any rule against doing so.
+   The cost is real personalization loss: every child asking about saving
+   over time got the identical canned story — the opposite of the very next
+   bullet's own promise ("the numbers are invented, and you are the one who
+   invents them"). Fixed in two passes, because the first was insufficient
+   and only live re-testing caught that: pass one added "invent your OWN
+   different amount, rate and reason every time, never these exact numbers"
+   beside the example, which stopped the LITERAL SENTENCE from recurring
+   (confirmed live — phrasing genuinely varied across a fresh run) but the
+   model kept reaching for the SAME 10/+2 arithmetic anyway, just narrated
+   differently ("Cada año el banco te da 2 más" — 10 → 12 → 14). Pass two
+   named the exact numbers to avoid outright ("THE NUMBERS 10 AND 2 ARE THE
+   ONES IN THIS EXAMPLE... a real invented amount looks like 35, 8, 120, 6")
+   — re-verified live afterward across the full scenario set: 35/+5, 30/+3,
+   8/+2 in an age-appropriate context, 1/+3 (a dinosaur's weight, thematically
+   invented for that exact conversation), 35/+8 — no repeat of 10/+2 anywhere
+   in the run. Both changes are wording only, in the SAME static prompt
+   position, so prefix-caching is unaffected (rule #1 is still honored — the
+   text is a constant, just a different one). Proven with a test asserting
+   the exact callout strings are present in `TUTOR_SYSTEM_PROMPT`; confirmed
+   to fail for the exact claimed reason pre-fix via `git stash`. General
+   lesson: an instruction that says "invent your own" beside a worked example
+   is not the same as an instruction the model actually generalizes from —
+   verify the ACTUAL numbers a live run produces, not just that the sentence
+   changed, and be willing to iterate the wording again when the first pass
+   only gets partway.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:

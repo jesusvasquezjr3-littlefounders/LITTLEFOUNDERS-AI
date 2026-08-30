@@ -1,7 +1,27 @@
 import { describe, expect, it } from 'vitest';
-import { buildContextMessage } from '../tutor/prompt.js';
+import { buildContextMessage, TUTOR_SYSTEM_PROMPT } from '../tutor/prompt.js';
 import { buildPlan, planState } from '../tutor/plan.js';
 import type { TutorContext } from '../context/schema.js';
+
+/*
+ * Found live, testing across many independent scenarios this session,
+ * 2026-08-30 (MEDIUM): the whiteboard instruction's own worked example (10
+ * pesos, 2 more each week, 3 weeks) appeared verbatim in multiple unrelated
+ * conversations — the model was reusing the FORMAT example as if it were
+ * real content, since nothing told it not to. This is the static, prefix-
+ * cached system prompt (never varies per call), so the fix is an explicit
+ * instruction beside the example, not per-call randomization.
+ */
+describe('the whiteboard example tells the model not to copy its own numbers', () => {
+  it('explicitly forbids reusing the "10 pesos, 2 more each week" example verbatim', () => {
+    expect(TUTOR_SYSTEM_PROMPT).toContain('invent your OWN different amount, rate and');
+    expect(TUTOR_SYSTEM_PROMPT).toContain('is not a personalized example');
+    // A first wording pass stopped the LITERAL SENTENCE from recurring but,
+    // live, the model kept reaching for the same 10/+2 arithmetic anyway —
+    // this stronger callout names the exact numbers to avoid.
+    expect(TUTOR_SYSTEM_PROMPT).toContain('NUMBERS 10 AND 2 ARE THE ONES IN THIS EXAMPLE');
+  });
+});
 
 /*
  * `buildContextMessage` had no direct unit coverage before this file — every
