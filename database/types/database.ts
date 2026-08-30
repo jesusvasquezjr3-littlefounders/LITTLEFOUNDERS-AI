@@ -2639,6 +2639,7 @@ export type Database = {
           speaker: string
           text: string
           text_tsv: unknown
+          whiteboard: Json | null
         }
         Insert: {
           action?: string | null
@@ -2653,6 +2654,7 @@ export type Database = {
           speaker: string
           text: string
           text_tsv?: unknown
+          whiteboard?: Json | null
         }
         Update: {
           action?: string | null
@@ -2667,6 +2669,7 @@ export type Database = {
           speaker?: string
           text?: string
           text_tsv?: unknown
+          whiteboard?: Json | null
         }
         Relationships: [
           {

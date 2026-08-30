@@ -228,6 +228,23 @@ export interface TranscriptTurn {
   audio_path: string | null;
   source: string;
   created_at: string;
+  /**
+   * V4's live sequence board, exactly as it was shown — never recomputed.
+   * Null on every row that never drew one, including every row written
+   * before this field existed. Found by adversarial review, round 35
+   * (2026-08-30, HIGH): a session that used the whiteboard lost it
+   * silently on replay (see `TutorWhiteboardData` in `TutorWhiteboard.tsx`,
+   * the same shape this mirrors).
+   */
+  whiteboard: {
+    kind: 'sequence';
+    start: number;
+    steps: { op: 'add' | 'subtract' | 'multiply_percent'; value: number }[];
+    unit: 'day' | 'week' | 'month' | 'year';
+    values: number[];
+    label: string;
+    currency: 'MXN' | 'USD' | 'BRL' | null;
+  } | null;
 }
 
 export interface TranscriptSegment {

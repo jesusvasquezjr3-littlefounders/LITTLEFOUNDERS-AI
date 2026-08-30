@@ -55,6 +55,7 @@ function turn(over: Pick<TranscriptTurn, 'id' | 'seq' | 'speaker' | 'text'> & Pa
     audio_path: null,
     source: 'model',
     created_at: `2026-08-14T16:2${over.seq}:00.000Z`,
+    whiteboard: null,
     ...over,
   };
 }
@@ -163,6 +164,45 @@ describe('ReplayInWorld', () => {
      */
     expect(screen.queryByRole('radio')).toBeNull();
     expect(screen.queryByRole('button', { name: /check/i })).toBeNull();
+  });
+
+  /*
+   * Found by adversarial review, round 35 (2026-08-30, HIGH): a tutor turn
+   * that drew a V4 whiteboard live had no path into replay at all — the
+   * board simply never rendered, silently, even once the transcript row
+   * itself started carrying it (migration 0058).
+   */
+  it('draws the stored whiteboard on the tutor beat that recorded one', () => {
+    const boarded: SessionTranscript = {
+      session: SESSION,
+      turns: [
+        turn({
+          id: 'tb1',
+          seq: 1,
+          speaker: 'tutor',
+          text: 'Imaginemos que guardas 10 pesos.',
+          whiteboard: {
+            kind: 'sequence',
+            start: 10,
+            steps: [{ op: 'add', value: 2 }],
+            unit: 'day',
+            values: [10, 12],
+            label: 'Cada día te dan 2 más',
+            currency: 'MXN',
+          },
+        }),
+      ],
+      segments: [],
+    };
+    const boardScript = buildReplayScript(boarded);
+    renderReplay(directorAt(boardScript, 0));
+
+    expect(screen.getByText('Cada día te dan 2 más')).toBeInTheDocument();
+  });
+
+  it('draws no board for a beat that never recorded one', () => {
+    renderReplay(directorAt(script, 0));
+    expect(document.querySelector('[data-tutor-whiteboard]')).toBeNull();
   });
 
   it('gives every transport control a name, and the play button the name of what it does', () => {

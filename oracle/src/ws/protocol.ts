@@ -120,6 +120,25 @@ export type ClientMessage = z.infer<typeof ClientMessageSchema>;
 
 export type BudgetState = 'running' | 'wrapping' | 'ended';
 
+/**
+ * V4's live sequence board, exactly as it reaches the wire — the model's
+ * `start`/`steps`/`unit`/`label`/`currency` plus the server-COMPUTED
+ * `values` (`ws/server.ts`'s `computeSequence`). Named and exported so
+ * `core/client.ts`'s `PersistTurnInput` can persist the SAME object a
+ * learner actually saw rather than a second, driftable shape — a board
+ * replay must show, per /ORACLE.md §12, is the one that was drawn, never
+ * one recomputed later against arithmetic that could disagree with it.
+ */
+export interface WireWhiteboard {
+  kind: 'sequence';
+  start: number;
+  steps: Array<{ op: 'add' | 'subtract' | 'multiply_percent'; value: number }>;
+  unit: 'day' | 'week' | 'month' | 'year';
+  values: number[];
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
 export type ServerMessage =
   | {
       type: 'ready';
@@ -203,16 +222,7 @@ export type ServerMessage =
        * client renders them as given and never redoes the arithmetic, exactly
        * the posture `checkAnswer`'s verdict already takes with a spoken answer.
        */
-      whiteboard?: {
-        kind: 'sequence';
-        start: number;
-        steps: Array<{ op: 'add' | 'subtract' | 'multiply_percent'; value: number }>;
-        /** What one step represents in time — must match the story's own cadence word. */
-        unit: 'day' | 'week' | 'month' | 'year';
-        values: number[];
-        label: string;
-        currency: 'MXN' | 'USD' | 'BRL' | null;
-      };
+      whiteboard?: WireWhiteboard;
     }
   | {
       /**

@@ -42,6 +42,7 @@ function turn(over: Partial<TranscriptTurn> & Pick<TranscriptTurn, 'id' | 'seq' 
     audio_path: null,
     source: 'model',
     created_at: '2026-08-14T16:20:00.000Z',
+    whiteboard: null,
     ...over,
   };
 }
@@ -128,6 +129,37 @@ describe('buildReplayScript', () => {
     // A learner row has both columns NULL by schema, so the character listens.
     // A staging decision, and one the script states rather than smuggles.
     expect(script.beats[1]).toMatchObject({ emotion: 'thinking', action: 'idle' });
+  });
+
+  /*
+   * Found by adversarial review, round 35 (2026-08-30, HIGH): a tutor turn
+   * that drew a V4 whiteboard had no path into a replay beat at all — the
+   * field did not exist on `ReplayBeat`, so the board was invisible on
+   * replay even though the stored row now carries it (migration 0058).
+   */
+  it('carries the stored whiteboard through to the tutor beat that drew it', () => {
+    const BOARD = {
+      kind: 'sequence' as const,
+      start: 10,
+      steps: [{ op: 'add' as const, value: 2 }],
+      unit: 'day' as const,
+      values: [10, 12],
+      label: 'Cada día te dan 2 más',
+      currency: 'MXN' as const,
+    };
+    const script = buildReplayScript(
+      transcript([
+        turn({ id: 't1', seq: 1, speaker: 'tutor', text: 'Imaginemos que guardas 10 pesos.', whiteboard: BOARD }),
+      ]),
+    );
+    expect(script.beats[0]?.whiteboard).toEqual(BOARD);
+  });
+
+  it('never puts a whiteboard on a learner or note beat — nothing was ever recorded for those', () => {
+    const script = buildReplayScript(
+      transcript([turn({ id: 't1', seq: 1, speaker: 'learner', text: 'quiero un pizarrón' })]),
+    );
+    expect(script.beats[0]?.whiteboard).toBeNull();
   });
 
   it('never attributes audio to the learner, because no such recording exists', () => {

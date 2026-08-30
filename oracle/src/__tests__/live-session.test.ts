@@ -32,7 +32,13 @@ const SEGMENT_ID = '33333333-3333-4333-8333-333333333333';
 
 /** Everything the fake Core was asked to persist, so the test can assert on it. */
 interface CoreJournal {
-  turns: { speaker: string; text: string; source: string; seq: number }[];
+  turns: {
+    speaker: string;
+    text: string;
+    source: string;
+    seq: number;
+    whiteboard?: { values: number[] } | null;
+  }[];
   flags: { category: string; handled: string }[];
   closes: { closeReason: string; turnCount: number }[];
   segmentRequests: number;
@@ -437,6 +443,34 @@ describe('a real live session over a real websocket', () => {
     // 10 → 12 → 14, computed by Oracle from the model's own start/steps — not
     // asserted anywhere in the model's completion body.
     expect(board?.values).toEqual([10, 12, 14]);
+
+    socket.close();
+    await closed();
+  });
+
+  /*
+   * Found by adversarial review, round 35 (2026-08-30, HIGH): a whiteboard
+   * reached the learner's own screen and NOWHERE else — `PersistTurnInput`
+   * had no field for it, so the transcript row Core stores, and every
+   * replay and guardian read of it, lost the board silently. This proves
+   * the PERSISTED row carries the SAME server-computed values the wire
+   * frame above does, not a second, potentially-drifted copy.
+   */
+  it('persists the whiteboard on the transcript row, not only on the wire', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const answered = collect(socket, (m) => m.some((x) => x.type === 'turn' && x.whiteboard != null));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quieropizarron, cuentame una historia' }));
+    await answered;
+    // The transcript write waits for synthesis and fires after the wire frame
+    // — give it the same settling window every other persisted-turn
+    // assertion in this file does.
+    await new Promise((r) => setTimeout(r, 150));
+
+    const persisted = journal.turns.find((t) => t.speaker === 'tutor' && t.whiteboard != null);
+    expect(persisted?.whiteboard).toMatchObject({ values: [10, 12, 14] });
 
     socket.close();
     await closed();

@@ -105,6 +105,15 @@ export interface ReplayBeat {
   durationMs: number;
   /** Present on, and only on, an `activity` beat. */
   activity: ReplayActivity | null;
+  /**
+   * V4's live sequence board, when this tutor beat drew one — the SAME
+   * server-computed values shown live, never recomputed. Present only on a
+   * `tutor` beat; every other kind carries `null`, the same way `activity`
+   * is null outside an `activity` beat. Found by adversarial review, round
+   * 35 (2026-08-30, HIGH): this did not exist at all, so a session that
+   * used the whiteboard lost it silently on replay.
+   */
+  whiteboard: TranscriptTurn['whiteboard'];
 }
 
 export interface ReplayScript {
@@ -319,6 +328,10 @@ export function buildReplayScript(transcript: SessionTranscript): ReplayScript {
           xpAwarded: entry.row.xpAwarded,
           origin: entry.row.origin,
         },
+        // Mutually exclusive with an activity by construction on the tutor's
+        // own turn (never both `whiteboard` and `segmentRequest`), and this
+        // beat itself IS the activity — nothing to draw here.
+        whiteboard: null,
       };
     }
 
@@ -340,6 +353,7 @@ export function buildReplayScript(transcript: SessionTranscript): ReplayScript {
         audioUrl: row.audio_path,
         durationMs: estimateBeatMs(row.text, kind),
         activity: null,
+        whiteboard: row.whiteboard,
       };
     }
 
@@ -354,6 +368,9 @@ export function buildReplayScript(transcript: SessionTranscript): ReplayScript {
       audioUrl: null,
       durationMs: estimateBeatMs(row.text, kind),
       activity: null,
+      // A learner/note row's column is NULL by schema — the board is a
+      // performance the tutor alone gives.
+      whiteboard: null,
     };
   });
 

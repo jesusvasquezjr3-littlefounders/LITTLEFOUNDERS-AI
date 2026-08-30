@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getLearnerMemory, grantVoiceConsent, searchOwnTurns } from '../services/tutorData.js';
+import { getLearnerMemory, grantVoiceConsent, insertTutorTurn, listTutorTurns, searchOwnTurns } from '../services/tutorData.js';
 
 /*
  * Found by adversarial review, round 28 (2026-08-30, HIGH): `getLearnerMemory`
@@ -159,5 +159,95 @@ describe('grantVoiceConsent tells the race LOSER the truth, not a false failure'
     });
 
     expect(result).toBeNull();
+  });
+});
+
+/*
+ * Found by adversarial review, round 35 (2026-08-30, HIGH): the V4
+ * whiteboard reached the learner's own screen and nowhere else —
+ * `InsertTurnInput` had no field for it and `listTutorTurns`'s SELECT did
+ * not name the column, so a session that drew a board lost it silently on
+ * replay and on the guardian transcript viewer (migration 0058).
+ */
+describe('the whiteboard survives the round trip through Core’s own data layer', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const BOARD = {
+    kind: 'sequence' as const,
+    start: 10,
+    steps: [{ op: 'add' as const, value: 2 }],
+    unit: 'day' as const,
+    values: [10, 12],
+    label: 'Cada día te dan 2 más',
+    currency: 'MXN' as const,
+  };
+
+  it('insertTutorTurn sends the board exactly as given, not re-derived', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve(new Response(null, { status: 204 })),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await insertTutorTurn({
+      sessionId: '22222222-2222-4222-8222-222222222222',
+      seq: 3,
+      speaker: 'tutor',
+      text: 'Imaginemos que guardas 10 pesos y cada día te dan 2 más.',
+      source: 'model',
+      whiteboard: BOARD,
+    });
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as { whiteboard?: unknown };
+    expect(body.whiteboard).toEqual(BOARD);
+  });
+
+  it('a turn with no board sends whiteboard: null, not an absent field', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve(new Response(null, { status: 204 })),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await insertTutorTurn({
+      sessionId: '22222222-2222-4222-8222-222222222222',
+      seq: 1,
+      speaker: 'tutor',
+      text: 'Hola, ¿en qué trabajamos hoy?',
+      source: 'model',
+    });
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as { whiteboard?: unknown };
+    expect(body.whiteboard).toBeNull();
+  });
+
+  it('listTutorTurns selects the whiteboard column, so a stored board actually comes back', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>((url) => {
+      expect(String(url)).toContain('whiteboard');
+      return Promise.resolve(
+        new Response(
+          JSON.stringify([
+            {
+              id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+              session_id: '22222222-2222-4222-8222-222222222222',
+              seq: 3,
+              speaker: 'tutor',
+              text: 'Imaginemos que guardas 10 pesos y cada día te dan 2 más.',
+              emotion: 'happy',
+              action: 'nod',
+              audio_path: null,
+              source: 'model',
+              created_at: '2026-08-30T00:00:00.000Z',
+              whiteboard: BOARD,
+            },
+          ]),
+          { status: 200 },
+        ),
+      );
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+    expect(rows?.[0]?.whiteboard).toEqual(BOARD);
   });
 });

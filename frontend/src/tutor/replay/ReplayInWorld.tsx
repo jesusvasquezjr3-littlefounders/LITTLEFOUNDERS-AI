@@ -9,6 +9,7 @@ import { LessonPlate, type LessonPlateDetent } from '../hud/LessonPlate';
 import { useScrollEdges } from '../hud/useScrollEdges';
 import { SpeechCaption } from '../SpeechCaption';
 import { TutorFace } from '../TutorFace';
+import { TutorWhiteboard } from '../TutorWhiteboard';
 import { useStageDock, type ReplayLayerProps } from '../stage/StageShell';
 import type { ReplayBeat } from './replayScript';
 
@@ -292,6 +293,16 @@ export function ReplayInWorld({ director, loading, error, onDone, ready }: Repla
         )}
 
         {beat?.activity && <ActivityDetail beat={beat} />}
+
+        {/*
+          THE WHITEBOARD, REPLAYED — never recomputed, exactly the values
+          drawn live. Found by adversarial review, round 35 (2026-08-30,
+          HIGH): a session that used the whiteboard lost it silently here;
+          `beat.index` stands in for the live `seq` prop, which only needs
+          to change per beat so the growth animation replays once per line
+          rather than being skipped as "the same board as before".
+        */}
+        {beat?.whiteboard && <TutorWhiteboard board={beat.whiteboard} seq={beat.index} className="min-h-0 flex-auto" />}
 
         <ReplayTranscript
           beats={script.beats}

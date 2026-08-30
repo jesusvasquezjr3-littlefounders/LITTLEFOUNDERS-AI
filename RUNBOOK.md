@@ -3866,3 +3866,77 @@ offer for the same turn is not clobbered by the clear). Confirmed to fail
 against the pre-fix code for the exact claimed reason via `git stash`,
 passes against the fix. Full frontend suite green (1439 tests, up from
 1437), lint clean, type-check clean.
+
+## The V4 whiteboard reached a learner's screen and nowhere else — invisible on replay and to a guardian — found by adversarial review, closed 2026-08-30
+
+Round 35 reviewed the session-replay flow ("Past conversations") end to
+end for the first time this campaign — a surface directly adjacent to
+round 33's `ClosingInWorld` fix but never itself audited.
+
+**HIGH — the whiteboard had no path into persistence at all.** The V4
+live sequence board (`oracle/src/tutor/turnSchema.ts`'s `WhiteboardSchema`,
+computed server-side and sent over the live socket) reached the
+learner's own screen and stopped there: `tutor_turns` had no column for
+it, Oracle's `PersistTurnInput` had no field for it, and none of its
+three `persistTurn` call sites passed one. `oracle/src/tutor/prompt.ts`'s
+`narratesUnshownGrowth` check actively forces a repair loop whenever the
+model narrates a growth story without drawing a board, so this is not a
+rare feature — any savings/growth-sequence lesson is steered toward
+using it. The result: every session that used the whiteboard lost it,
+silently, on replay AND on the guardian transcript viewer, which
+`/ORACLE.md` §12's own table claimed (inaccurately, until this fix)
+shows "the segments alongside how the learner did on them."
+
+Fixed across all four layers, each verified independently:
+
+- **Oracle**: the SAME server-computed wire object (`wireBoard` in
+  `ws/server.ts`'s `deliver()`) is now captured once and threaded to both
+  the wire `send()` and `persistTurn()` — never recomputed a second time
+  for storage. `WireWhiteboard` extracted as a named, exported type in
+  `ws/protocol.ts` so `core/client.ts`'s `PersistTurnInput` shares the
+  exact shape rather than a second, driftable one.
+- **Database**: migration `0058` adds one additive, nullable `jsonb`
+  column to `tutor_turns`. NULL for every row written before this
+  migration, exactly as a replay of an old session already shows today.
+- **Backend**: `TutorTurnRow`/`InsertTurnInput` gain `whiteboard`;
+  `insertTutorTurn` writes it, `listTutorTurns`'s SELECT names the
+  column, and the internal `/turns` route's Zod schema validates a
+  closed, `.strict()` shape at the edge before it ever reaches storage.
+- **Frontend**: `TranscriptTurn`/`ReplayBeat` gain `whiteboard`;
+  `buildReplayScript` carries it through to the tutor beat that drew it
+  (null on every other beat kind, since nothing else ever performs one);
+  `ReplayInWorld.tsx` renders it with the SAME `TutorWhiteboard`
+  component the live view already uses — no new render logic invented,
+  because the shape it draws is exactly the shape now stored.
+
+Proven with a real, end-to-end chain of tests, one per layer: a real
+live-socket test (`oracle/src/__tests__/live-session.test.ts`) proving
+the persisted transcript row carries the same values sent over the wire;
+a service-level test (`backend/src/__tests__/tutorData.test.ts`) proving
+`insertTutorTurn` sends the board exactly as given and `listTutorTurns`
+selects it back; and two frontend tests (`replayScript.test.ts`,
+`replayInWorld.test.tsx`) proving a stored board reaches its beat and
+actually renders, while a beat with none draws nothing. Every one of the
+five confirmed to fail against the pre-fix code for the exact claimed
+reason via `git stash`, passes against the fix. `/ORACLE.md` §12's own
+table corrected in the same commit. Full oracle suite green (479 tests,
+up from 478), full backend suite green (644 tests, up from 641), full
+frontend suite green (1443 tests, up from 1439), lint and type-check
+clean on all three, `npm run db:reset` succeeding twice locally, database
+types regenerated, root `tools:test`/`docs:check`/`secrets:check`/
+`provider:check`/`i18n:check` all clean, `verify:tutor-ui` green.
+
+**MEDIUM, coverage gap, not a proven defect** — `frontend/scripts/verify-tutor-ui.mjs`
+(the real-pointer-event hit-testing gate built after the §1.14
+synthetic-click incident) only ever drives the `conversing` phase, never
+`replaying`. Structural reasoning suggests the replay transport is safe
+(it portals into the SAME dock container the conversing phase's controls
+already use and already get hit-tested, and the 3D canvas paints below
+it under normal stacking with no competing z-index) — but that is
+reasoning from the CSS, not a real-pointer-event measurement, and this
+codebase's own §1.14 lesson is precisely that this kind of reasoning
+previously shipped a fully unclickable surface. Left as a noted gap
+rather than a fix in this round: extending the gate to a second phase is
+a separate, larger task than the confirmed defect above, and no evidence
+of an actual reachability problem exists — only an absence of the proof
+that would rule one out.

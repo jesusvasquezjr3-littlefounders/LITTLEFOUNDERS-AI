@@ -546,6 +546,22 @@ export async function awardTutorXp(input: {
 
 // ── Turns ───────────────────────────────────────────────────────────────────
 
+/**
+ * V4's live sequence board, exactly as it was shown — the server-computed
+ * `values`, never recomputed. Mirrors `oracle/src/ws/protocol.ts`'s
+ * `WireWhiteboard`; the two packages share no types, so the shape is
+ * duplicated deliberately rather than imported.
+ */
+export interface TutorTurnWhiteboard {
+  kind: 'sequence';
+  start: number;
+  steps: { op: 'add' | 'subtract' | 'multiply_percent'; value: number }[];
+  unit: 'day' | 'week' | 'month' | 'year';
+  values: number[];
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
 export interface TutorTurnRow {
   id: string;
   session_id: string;
@@ -557,6 +573,8 @@ export interface TutorTurnRow {
   audio_path: string | null;
   source: string;
   created_at: string;
+  /** Null on every row that never drew a board — see migration 0058. */
+  whiteboard: TutorTurnWhiteboard | null;
 }
 
 export interface InsertTurnInput {
@@ -569,6 +587,13 @@ export interface InsertTurnInput {
   audioPath?: string | null;
   source: 'model' | 'scripted' | 'stt';
   moderation?: Record<string, unknown>;
+  /**
+   * Found by adversarial review, round 35 (2026-08-30, HIGH): this field
+   * did not exist at all, so a session that used the whiteboard lost it
+   * silently on replay and on the guardian transcript viewer (migration
+   * 0058).
+   */
+  whiteboard?: TutorTurnWhiteboard | null;
 }
 
 export async function insertTutorTurn(input: InsertTurnInput): Promise<boolean> {
@@ -587,6 +612,7 @@ export async function insertTutorTurn(input: InsertTurnInput): Promise<boolean> 
       audio_path: input.audioPath ?? null,
       source: input.source,
       moderation: input.moderation ?? {},
+      whiteboard: input.whiteboard ?? null,
     }),
   });
   return res !== null;
@@ -594,7 +620,7 @@ export async function insertTutorTurn(input: InsertTurnInput): Promise<boolean> 
 
 export async function listTutorTurns(sessionId: string): Promise<TutorTurnRow[] | null> {
   return serviceRest<TutorTurnRow[]>(
-    `/tutor_turns?session_id=eq.${eu(sessionId)}&select=id,session_id,seq,speaker,text,emotion,action,audio_path,source,created_at&order=seq.asc`,
+    `/tutor_turns?session_id=eq.${eu(sessionId)}&select=id,session_id,seq,speaker,text,emotion,action,audio_path,source,created_at,whiteboard&order=seq.asc`,
   );
 }
 

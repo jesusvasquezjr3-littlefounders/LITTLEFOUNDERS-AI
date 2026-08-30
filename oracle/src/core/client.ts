@@ -10,6 +10,7 @@ import {
   SkillStateSchema,
   type Locale,
 } from '../context/schema.js';
+import type { WireWhiteboard } from '../ws/protocol.js';
 
 /*
  * Oracle talks to Core, and to nothing else that holds a learner's data.
@@ -200,6 +201,14 @@ export interface PersistTurnInput {
   audioPath?: string | null;
   source: 'model' | 'scripted' | 'stt';
   moderation?: Record<string, unknown>;
+  /**
+   * V4's live sequence board, when this tutor turn drew one — the SAME
+   * object sent over the wire (see `WireWhiteboard`'s own comment), never
+   * recomputed. Found by adversarial review, round 35 (2026-08-30, HIGH):
+   * this field did not exist at all, so a session that used the whiteboard
+   * lost it silently on replay and on the guardian transcript viewer.
+   */
+  whiteboard?: WireWhiteboard | null;
 }
 
 /**

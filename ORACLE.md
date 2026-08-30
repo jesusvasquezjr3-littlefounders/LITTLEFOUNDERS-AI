@@ -1448,6 +1448,7 @@ Decision 8.
 | The tutor's synthesized audio (Depot, `tutor-speech`) | Any raw provider payload |
 | Which segments were served, and their results | |
 | Provenance of live-generated segments (§7.3) | |
+| The V4 whiteboard (§20.5), exactly as drawn — migration `0058`, added 2026-08-30 after adversarial review, round 35, found it was live-only: the board reached the learner's own screen and nowhere else, so it was invisible to both replay and this very table's own claim below | |
 
 **One clarification added 2026-08-22, because retention and reuse turned out to
 be the same question.** The 90-day deletion below covers a child's SESSION

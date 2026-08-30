@@ -919,6 +919,31 @@ everything passes the blocked half perfectly and destroys the product.
    sitting in a comment the whole time) before assuming the mechanism already
    covers them.
 
+41. **A field that reaches the WIRE has not necessarily reached STORAGE, and a
+   comment that says otherwise is a claim, not a fact.** Found by adversarial
+   review, round 35 (2026-08-30, HIGH): the V4 whiteboard (`turnSchema.ts`'s
+   `WhiteboardSchema`, computed server-side and sent over the live socket by
+   `ws/server.ts`) had no column on `tutor_turns`, no field on
+   `PersistTurnInput`, and none of the three `persistTurn` call sites passed
+   one — a session that drew a board lost it silently on replay and on the
+   guardian transcript viewer, while `/ORACLE.md` §12's own table listed only
+   what a HUMAN had remembered to add there, not what the code actually
+   persisted. `oracle/src/tutor/prompt.ts`'s `narratesUnshownGrowth` check
+   actively forces a repair loop whenever the model narrates a growth story
+   without drawing a board, so this was not a rare feature — any
+   savings/growth-sequence lesson is steered toward using it, which is why
+   nobody had reported it: the LIVE turn always looked complete, and the gap
+   only existed one layer downstream of anywhere anyone was looking. Fixed by
+   capturing the SAME server-computed wire object once (`wireBoard` in
+   `deliver()`) and threading it through `persistTurn` → Core's `/turns`
+   route → `tutor_turns.whiteboard` (migration `0058`) → the replay script →
+   `TutorWhiteboard` — the live component reused as-is, no new render logic
+   invented, because the shape it already draws is exactly the shape now
+   stored. General lesson: when auditing "does X reach Y", trace the actual
+   data path end to end rather than trusting a table that describes the
+   INTENT — a docs table is a promise a human made, and a promise is not a
+   test.
+
 ---
 
 ## §6 Environment

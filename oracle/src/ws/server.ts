@@ -20,7 +20,13 @@ import { newSpeechScope, speakLine, type SpeechScope } from '../voice/speech.js'
 import { generateSegment } from '../content/generate.js';
 import { moderationReadiness } from '../safety/moderation.js';
 import { TutorOrchestrator, type TurnOutcome } from '../tutor/orchestrator.js';
-import { CLOSE_CODES, ClientMessageSchema, MAX_AUDIO_B64_CHARS, type ServerMessage } from './protocol.js';
+import {
+  CLOSE_CODES,
+  ClientMessageSchema,
+  MAX_AUDIO_B64_CHARS,
+  type ServerMessage,
+  type WireWhiteboard,
+} from './protocol.js';
 import { computeSequence } from '../tutor/whiteboard.js';
 import { sanitizePreferredTypes } from '../tutor/turnSchema.js';
 import { assembleClip, decodeChunk } from './audioAssembly.js';
@@ -1192,6 +1198,16 @@ async function deliver(
   const idleNudgeMs = live.orchestrator.idleNudgeMs;
   const listenSilenceMs = live.orchestrator.listenSilenceMs;
   const boardValues = emission.turn.whiteboard ? computeSequence(emission.turn.whiteboard) : null;
+  /*
+   * Captured ONCE, used for both the wire send below and the persisted
+   * transcript row further down — the same object either way, never
+   * recomputed a second time for storage. Found by adversarial review,
+   * round 35 (2026-08-30, HIGH): this board reached the learner's screen
+   * and nowhere else, so replay and the guardian transcript viewer lost it
+   * silently.
+   */
+  const wireBoard: WireWhiteboard | null =
+    boardValues !== null && emission.turn.whiteboard ? { ...emission.turn.whiteboard, values: boardValues } : null;
   send(live.socket, {
     type: 'turn',
     seq: emission.seq,
@@ -1220,9 +1236,7 @@ async function deliver(
      * (should not happen; the turn was already checked before delivery) drops
      * the whiteboard rather than send an unverified one.
      */
-    ...(boardValues !== null && emission.turn.whiteboard
-      ? { whiteboard: { ...emission.turn.whiteboard, values: boardValues } }
-      : {}),
+    ...(wireBoard !== null ? { whiteboard: wireBoard } : {}),
   });
 
   /*
@@ -1250,6 +1264,7 @@ async function deliver(
       audioPath: audioUrl,
       source: emission.source,
       moderation: emission.moderation,
+      whiteboard: wireBoard,
     }).then((recorded) => notePersist(live, recorded));
   });
 

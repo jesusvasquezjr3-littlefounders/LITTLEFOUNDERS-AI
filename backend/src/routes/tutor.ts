@@ -397,6 +397,29 @@ function internalRouter(): Router {
     });
   });
 
+  /**
+   * V4's live sequence board, exactly as Oracle computed it. Validated at
+   * the edge like everything else here (§1.6) — a `.strict()` closed shape,
+   * mirroring `oracle/src/ws/protocol.ts`'s `WireWhiteboard`. Found by
+   * adversarial review, round 35 (2026-08-30, HIGH): no field for this
+   * existed at all, so a session that drew a board lost it silently on
+   * replay and on the guardian transcript viewer (migration 0058).
+   */
+  const WhiteboardBody = z
+    .object({
+      kind: z.literal('sequence'),
+      start: z.number(),
+      steps: z
+        .array(z.object({ op: z.enum(['add', 'subtract', 'multiply_percent']), value: z.number() }).strict())
+        .min(1)
+        .max(8),
+      unit: z.enum(['day', 'week', 'month', 'year']),
+      values: z.array(z.number()),
+      label: z.string().max(60),
+      currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+    })
+    .strict();
+
   const TurnBody = z.object({
     sessionId: z.string().uuid(),
     seq: z.number().int().nonnegative(),
@@ -407,6 +430,7 @@ function internalRouter(): Router {
     audioPath: z.string().max(2_048).nullish(),
     source: z.enum(['model', 'scripted', 'stt']),
     moderation: z.record(z.string(), z.unknown()).optional(),
+    whiteboard: WhiteboardBody.nullish(),
   });
 
   router.post('/turns', async (req, res) => {

@@ -1,0 +1,25 @@
+-- 0058_tutor_turn_whiteboard.sql — the V4 whiteboard had no path into
+-- persistence at all, so it was invisible to replay and to a guardian.
+-- @phase: expand
+--
+-- FOUND BY ADVERSARIAL REVIEW, round 35, 2026-08-30 (HIGH). The whiteboard
+-- (migration-free, wire-only: `oracle/src/tutor/turnSchema.ts`'s
+-- `WhiteboardSchema`, sent over the live socket by `ws/server.ts`) was a
+-- live-only visual: `tutor_turns` had no column for it, `PersistTurnInput`
+-- had no field for it, and none of Oracle's three `persistTurn` call sites
+-- passed one. `oracle/src/tutor/prompt.ts`'s `narratesUnshownGrowth` check
+-- actively forces a repair loop whenever the model narrates a growth story
+-- without drawing a board, so this is not a rare feature — any
+-- savings/growth-sequence lesson is steered toward using it. The result:
+-- every session that used the whiteboard lost it, silently, on replay AND
+-- on the guardian transcript viewer, which /ORACLE.md's own §12 claims
+-- shows "the segments alongside how the learner did on them" — a claim
+-- that was false for any turn that drew a board.
+--
+-- One additive, nullable JSONB column. Populated only for a tutor turn that
+-- actually drew a board; NULL for every other row, including every row
+-- written before this migration — a replay of an old session simply shows
+-- no board, exactly as it already does today, rather than backfilling a
+-- value nothing recorded.
+ALTER TABLE public.tutor_turns
+    ADD COLUMN IF NOT EXISTS whiteboard jsonb NULL;
