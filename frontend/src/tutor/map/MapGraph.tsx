@@ -71,10 +71,33 @@ export function MapGraph({ map, onPick, disabled = false }: MapGraphProps) {
   const rowHeight = 92;
   const height = layout.rows * rowHeight;
 
+  /*
+   * THE FIRST-LISTED PREREQUISITE IS NOT NECESSARILY THE ONE BLOCKING IT.
+   *
+   * Found by adversarial review, 2026-08-30 (MEDIUM): a node with several
+   * prerequisites (the backend's `prereqsMet` requires ALL of them to meet
+   * the mastery threshold) named whichever one happened to be first in
+   * `map.edges`' array order — which could be one the learner has already
+   * mastered, while the real blocker went unmentioned. That is a false
+   * statement about the child's own progress, read out through the
+   * accessible name.
+   *
+   * The lowest-mastery candidate is the actual reason the gate is still
+   * closed, mirroring the same rule Oracle's own controller already uses
+   * for its backward-prerequisite walk (`oracle/src/tutor/controller.ts`'s
+   * PROBE rule: "probes the prerequisite with the LOWEST mastery, not the
+   * first listed"). A prerequisite with NO evidence at all (`mastery: null`)
+   * reads as the weakest of all, for the same reason that walk does.
+   */
   const prereqTitleOf = (node: TutorMapNode): string | null => {
-    const edge = map.edges.find((e) => e.to === node.kcKey);
-    if (!edge) return null;
-    return map.nodes.find((n) => n.kcKey === edge.from)?.title ?? null;
+    let worst: TutorMapNode | null = null;
+    for (const edge of map.edges) {
+      if (edge.to !== node.kcKey) continue;
+      const candidate = map.nodes.find((n) => n.kcKey === edge.from);
+      if (!candidate) continue;
+      if (worst === null || (candidate.mastery ?? -1) < (worst.mastery ?? -1)) worst = candidate;
+    }
+    return worst?.title ?? null;
   };
 
   return (

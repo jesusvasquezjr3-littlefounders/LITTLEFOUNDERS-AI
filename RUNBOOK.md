@@ -2050,3 +2050,34 @@ later, for a different purpose, because both counters are plausibly named
 in the conversation. Two counters that answer genuinely different
 questions need names that say so, not names that differ only in which file
 they live in.
+
+## The learning map could name an already-mastered skill as the reason a node is locked — closed 2026-08-30
+
+**Found by the same adversarial review, round 11** (learning map and
+past-conversation replay), MEDIUM severity.
+
+`frontend/src/tutor/map/MapGraph.tsx`'s `prereqTitleOf` picked the FIRST
+edge in `map.edges` pointing at a locked node and named that prerequisite
+in the node's accessible label ("Opens after {{title}}"). The backend's
+`prereqsMet` requires ALL of a node's prerequisites to clear the mastery
+threshold (`deriveNodeState`, `tutorMap.ts`), so a node can have several,
+and array order carries no meaning about which one is actually unmet. A
+node with one mastered prerequisite and one that is not could name the
+MASTERED one as the reason it is locked — a false statement about the
+child's own progress, read out through the one field that exists
+specifically to explain the lock rather than just enforce it.
+
+Fixed by naming the LOWEST-mastery candidate among all of a node's
+prerequisites instead of the first one in array order — the same rule
+Oracle's own controller already uses for its backward-prerequisite walk
+(`oracle/src/tutor/controller.ts`'s PROBE rule). A prerequisite with no
+evidence at all (`mastery: null`) reads as the weakest of all, matching
+that same walk's treatment of missing evidence.
+
+Proven with two permanent tests (`MapGraph.test.tsx`, new file, since the
+component had none): a locked node with one mastered and one unmet
+prerequisite — the mastered one listed FIRST on purpose — asserts the
+accessible name mentions the unmet one and not the mastered one; a second
+test confirms a prerequisite with no mastery data at all outranks one with
+some (however low) as the named blocker. Both confirmed to fail against
+the pre-fix component first. Full frontend suite green (1405 tests).
