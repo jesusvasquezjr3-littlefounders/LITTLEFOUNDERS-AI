@@ -54,7 +54,7 @@ import {
   verifyGeneratedSegment,
   type LadderCandidate,
 } from '../services/tutorLadder.js';
-import { getActiveKcs, getKcEdges } from '../services/pedagogy/kcData.js';
+import { getActiveKcs, getKcEdges, getKcBySkillKey } from '../services/pedagogy/kcData.js';
 import { purgeExpiredTutorSessions } from '../services/tutorRetention.js';
 import { buildSessionPlan } from '../services/pedagogy/sessionPlan.js';
 import { buildTutorMap } from '../services/pedagogy/tutorMap.js';
@@ -327,10 +327,48 @@ function internalRouter(): Router {
     const states = await getOwnLearnerIntelligence(session.user_id);
     const intelDegraded = states === null;
 
-    const courseContext =
+    let courseContext =
       session.course_id || session.topic_id
         ? await resolveCourseContext(session.course_id, session.topic_id, session.locale)
         : null;
+
+    /*
+     * `weak_skill` WITHOUT a course/topic link — the common shape (round 47,
+     * 2026-08-30, HIGH): `OfferChips.tsx`'s "continue" chip sends only
+     * `skillKey` whenever the prior session had no course/topic. With
+     * `courseContext` null, `buildPlan` (oracle/src/tutor/plan.ts) fell
+     * through to the raw `skill_key` slug — e.g.
+     * `financial-education/la-gran-cosecha-de-monedas-del-festival`, a
+     * narrative lesson-title fragment, not a description — as the WHOLE
+     * lesson objective, embedded unfenced in the system prompt. `kc.title` is
+     * OUR clean, localized catalog text for exactly this skill_key and was
+     * never looked up on this path. Resolved here into the SAME field
+     * `course_topic` already uses, so `buildPlan`'s existing fallback chain
+     * picks up a readable title with no change to Oracle's wire schema.
+     * `session.skill_key` is guaranteed to name a real KC by this point — the
+     * `POST /sessions` handler now refuses to start a `weak_skill` session
+     * whose skillKey does not (see that check's own comment) — so this is a
+     * plain lookup, not a second validation.
+     */
+    if (courseContext === null && session.intent === 'weak_skill' && session.skill_key) {
+      const kc = await getKcBySkillKey(session.skill_key);
+      if (kc.status === 'found') {
+        const title =
+          kc.kc.title[session.locale as keyof typeof kc.kc.title] ??
+          kc.kc.title['es-MX'] ??
+          Object.values(kc.kc.title)[0] ??
+          null;
+        if (title !== null) {
+          courseContext = { courseId: null, courseTitle: null, topicId: null, topicTitle: title };
+        }
+      }
+      // Neither 'not_found' (should not happen given the POST-time check,
+      // short of the KC being deleted in between) nor 'error' gets a special
+      // branch: both degrade to the pre-existing raw-skillKey fallback in
+      // `buildPlan` rather than refusing an already-running session — a
+      // failed or missing lookup here costs a less-readable objective, never
+      // the session itself.
+    }
 
     /*
      * The memory digests (/ORACLE.md §4.1, 2026-08-28). Only the fields
@@ -1411,10 +1449,17 @@ export function tutorRouter(): Router {
     .strict()
     /*
      * `faq`'s `skillKey` carries one of `FAQ_IDS`, and only one of them — see
-     * that constant's own comment for the incident this closes. Every other
-     * intent keeps its existing, unrestricted-string `skillKey` (`weak_skill`
-     * is validated against the learner's own live weak-skills list downstream;
-     * a wrong value there just finds nothing).
+     * that constant's own comment for the incident this closes.
+     *
+     * `weak_skill`'s `skillKey` used to keep the unrestricted-string shape on
+     * the strength of a comment here claiming it was "validated against the
+     * learner's own live weak-skills list downstream." Found by adversarial
+     * review, round 47 (2026-08-30, HIGH): that claim was false — no
+     * downstream consumer ever checked it against anything. It is now
+     * verified against the real KC graph, asynchronously, in the route
+     * handler below (a shape-only Zod refine cannot make a DB call) — see
+     * that check's own comment for the incident and why `open`/`course_topic`
+     * (which pass no meaningful `skillKey` at all) are untouched.
      */
     .refine((body) => body.intent !== 'faq' || FAQ_IDS.includes(body.skillKey as (typeof FAQ_IDS)[number]), {
       message: 'skillKey must be one of the published FAQ ids',
@@ -1425,6 +1470,31 @@ export function tutorRouter(): Router {
     const parsed = StartBody.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid request');
     const user = authedUser(res);
+
+    /*
+     * `weak_skill`'s ONE trust claim, actually enforced. Found by adversarial
+     * review, round 47 (2026-08-30, HIGH): `skillKey` reached this far as any
+     * string up to 128 chars — the schema's own comment above claimed a
+     * downstream check that did not exist. Oracle's `INTENT_INSTRUCTIONS.
+     * weak_skill` tells the model "the system flagged a skill... and they
+     * accepted the offer" — an authority claim the model has no way to
+     * question — and with `courseContext` null (the common shape for a
+     * weak-skill offer with no course/topic link), `buildPlan` embedded the
+     * raw string, UNFENCED, as the whole lesson objective. A crafted
+     * `skillKey` reached the tutor's own system prompt with that same
+     * elevated framing vouching for it. `getKcBySkillKey` distinguishes a
+     * genuinely unknown key (400 — reject) from a read failure (502 — refuse
+     * rather than let an unverified string through unchecked); `open` and
+     * `course_topic` never carry a meaningful `skillKey` here and are
+     * untouched.
+     */
+    if (parsed.data.intent === 'weak_skill' && parsed.data.skillKey) {
+      const lookup = await getKcBySkillKey(parsed.data.skillKey);
+      if (lookup.status === 'error') return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify that skill');
+      if (lookup.status === 'not_found') {
+        return fail(res, 400, VALIDATION, 'skillKey does not name a real skill');
+      }
+    }
 
     const roles = await getRolesForGate(user.id);
     if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve roles');

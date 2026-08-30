@@ -4975,3 +4975,73 @@ or a stale digest, not a live in-Learn-page link. And the
 `courseContext: null` graceful-degradation path (both ids absent or
 not found) was checked and is sound — nothing throws or 502s a learner
 out of the session.
+
+## Round 47: `weak_skill`'s `skillKey` had no server-side existence check, and its raw slug leaked into the tutor's objective the same way round 40's FAQ ids once did
+
+Adversarial review of the `weak_skill` intent — a diagnostic path the
+Learn section uses to send a learner straight into remediation for one
+named skill, reviewed for the first time this session — found the same
+bug class round 40 already closed for `intent: 'faq'`, unfixed here.
+
+`backend/src/routes/tutor.ts`'s `StartBody` `.refine()` only checked
+`skillKey` shape for `intent === 'faq'`; for `weak_skill` any string
+passed `.min(1)` and went straight into the session row. The route's
+own comment claimed the value was "validated... downstream" — it was
+not: nothing between `POST /sessions` and the model ever checked that
+the string named a real knowledge component. `oracle/src/tutor/plan.ts`'s
+`buildPlan` then used the raw, unverified `skillKey` AS the lesson's
+objective whenever `intent !== 'faq'` — but real `skill_key` values are
+narrative slugs (`lower(course_slug + '/' + topic_slug)`, per
+`database/migrations/0052_kc_graph.sql:67`), never human-readable
+descriptions, e.g. `financial-education/cobrar-y-dar-cambio` verbatim
+as the child's stated learning goal, or — since the field is otherwise
+unvalidated free text — anything the caller chose to put there at all.
+
+Fixed with a new discriminated-union lookup rather than a bare
+`KcRow | null`, because this result gates a reject/allow decision that
+needs to tell "no such skill" (400) apart from "could not check" (502):
+
+```ts
+export type KcLookup = { status: 'found'; kc: KcRow } | { status: 'not_found' } | { status: 'error' };
+
+export async function getKcBySkillKey(skillKey: string): Promise<KcLookup> {
+  const rows = await serviceRest<KcRow[]>(`/kc?skill_key=eq.${eu(skillKey)}&select=${KC_FIELDS}&limit=1`);
+  if (rows === null) return { status: 'error' };
+  return rows[0] ? { status: 'found', kc: coerceKc(rows[0]) } : { status: 'not_found' };
+}
+```
+
+(`backend/src/services/pedagogy/kcData.ts`). Deliberately not filtered
+to `status=eq.active`: a `retired` KC is a real, previously-taught
+skill, not injected text, and whether a retired KC should still be
+OFFERABLE is round 37's own separate, still-open product question —
+this check exists only to tell a real identifier from an arbitrary
+string, not to re-litigate that one. `POST /tutor/sessions` now calls
+it for `weak_skill` requests and refuses the session outright on
+either a real miss (400 `VALIDATION_ERROR`) or a failed read (502
+`DATA_UNAVAILABLE`) — per §1.14, an unverifiable skillKey must never
+reach a child's tutor session just because the check that would have
+caught it happened to fail closed the wrong way. The internal `GET
+/sessions/:id` route (Oracle's session-context fetch) uses the same
+lookup to turn an already-validated `skill_key` into a human-readable
+title for `courseContext.topicTitle` when no course/topic link exists,
+falling back to the pre-existing raw-slug behavior if that later,
+separate read itself fails or (short of the KC being deleted between
+session start and this read) somehow misses — a degraded objective,
+never a refused session, since the session was already validated once.
+
+Four new tests in `tutor.test.ts` prove: a fabricated skillKey is
+rejected (400) with no session row created; a real one is accepted
+(201); a KC-read failure at start time refuses the session (502) rather
+than letting it through; and the internal route resolves a readable KC
+title into `courseContext` while the raw `skillKey` field remains
+present in the response for Oracle's own content-ladder use (an
+earlier draft of that last assertion wrongly expected the raw slug to
+disappear entirely — corrected after confirming, via the existing
+route code, that it is a separate, legitimately-still-needed field).
+All four confirmed to fail for the exact claimed reason pre-fix via
+`git stash`. Full backend suite green (663 tests, 39 files — 659
+existing + 4 new, zero regressions), lint and type-check (including
+`tsconfig.test.json`) both clean. No `oracle/AGENTS.md` item needed —
+this round touches only `backend/`, matching the precedent set by
+round 41 and round 46's Finding 1.

@@ -51,6 +51,33 @@ export async function getActiveKcs(): Promise<KcRow[] | null> {
   return rows === null ? null : rows.map(coerceKc);
 }
 
+/**
+ * Whether `skillKey` names a real KC, at any status — and, separately,
+ * whether that could even be determined.
+ *
+ * Found by adversarial review, round 47 (2026-08-30, HIGH): `weak_skill`'s
+ * `skillKey` had no server-side existence check at all — a route comment
+ * claimed one happened "downstream," and it did not. Deliberately not
+ * restricted to `status=eq.active`: a `retired` KC is a real, previously-
+ * taught skill, not injected text, and whether a retired KC should still be
+ * OFFERABLE is round 37's own separate, deliberately-unresolved product
+ * question (`RUNBOOK.md`) — this check exists only to distinguish a real
+ * identifier from an arbitrary string, not to re-litigate that question.
+ *
+ * `'error' | 'not_found'` are kept apart on purpose (§1.14): a transient
+ * read failure must refuse the session (502) rather than either silently
+ * rejecting a real learner's real skillKey as invalid (400) or — worse —
+ * treating "could not check" as "must be fine" and letting an unverified
+ * string through to a child's tutor session anyway.
+ */
+export type KcLookup = { status: 'found'; kc: KcRow } | { status: 'not_found' } | { status: 'error' };
+
+export async function getKcBySkillKey(skillKey: string): Promise<KcLookup> {
+  const rows = await serviceRest<KcRow[]>(`/kc?skill_key=eq.${eu(skillKey)}&select=${KC_FIELDS}&limit=1`);
+  if (rows === null) return { status: 'error' };
+  return rows[0] ? { status: 'found', kc: coerceKc(rows[0]) } : { status: 'not_found' };
+}
+
 export interface KcEdgeRow {
   prerequisite_kc_id: string;
   dependent_kc_id: string;
