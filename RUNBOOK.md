@@ -4030,3 +4030,101 @@ the closed vocabularies on `character`/`companion`/`diorama`/`backdrop`/`adaptat
 (Zod-enum-validated against the same constants Core defines, rejected
 before ever reaching storage or Oracle); nickname moderation (already
 fixed earlier today, reconfirmed still in place by reading).
+
+## A redundant fetch could double-count as failure, and the whiteboard's own schema never told the model it existed — found by adversarial review, closed 2026-08-30
+
+Round 37 reviewed the whiteboard's server-side arithmetic
+(`oracle/src/tutor/whiteboard.ts`'s `computeSequence`, the feature round
+35 just gave a persistence path) and the V3 learning-map route
+(`backend/src/services/pedagogy/tutorMap.ts`) — both genuinely
+unreviewed by this campaign until now.
+
+**1. MEDIUM — the learning map's `continueTarget` doubled its own read
+cost and collapsed a real failure into "nothing to continue."**
+`buildTutorMap` fetches `kc`/`kc_edge`/`learner_kc_mastery`/`memory_card`
+to build the map, then called `buildSessionPlan` — which independently
+RE-FETCHED the exact same four tables a second time, purely to answer
+"what would today's session open with." That doubled the route's read
+cost, and silently conflated two different things into the identical
+`continueTarget: null`: a learner who genuinely has nothing to continue,
+and the redundant re-fetch itself failing on a table the map's own read
+of that exact table had just succeeded against — the §1.14 pattern this
+codebase keeps finding in new shapes.
+
+Fixed by extracting the planner's review+frontier ranking
+(`rankPlanKcs` in `sessionPlan.ts`) as a PURE function over already-fetched
+rows — no I/O, cannot fail. `buildTutorMap` now calls it directly with
+the rows it already holds; `buildSessionPlan` (used elsewhere, e.g.
+session creation) calls the same pure function internally and keeps its
+own fifth read (`misconception`s) for callers that actually need them —
+`continueTarget` never surfaced misconceptions, so the map route no
+longer fetches them at all. Proven with two new tests in
+`backend/src/__tests__/tutorMap.test.ts`: the four tables are each read
+exactly once with zero calls to `misconception`; and a map still comes
+back fully populated in a scenario where the OLD redundant second fetch
+would have failed (impossible to trigger against the current code,
+which is exactly the point — the failure mode no longer exists). Both
+confirmed to fail against the pre-fix code for the exact claimed reason
+via `git stash`. Full backend suite green (backend + `tutorMap.test.ts` +
+`pedagogy.test.ts`: 97 tests together, all passing), lint clean,
+type-check clean.
+
+**2. MEDIUM — the whiteboard's own schema declaration never told the
+model the field existed.** `TUTOR_SYSTEM_PROMPT`'s "The object has
+exactly these fields:" JSON-shape block never listed `whiteboard` at
+all — the only place the model was ever told to set it was 35 lines
+later, inside one worked pedagogical example, with `multiply_percent`
+never named or explained anywhere in the prompt. This is a plausible
+root cause of an ALREADY-measured symptom this same file's own
+`narratesUnshownGrowth` comment records: the real model sometimes
+narrates a growth story and never sets `whiteboard` — indistinguishable,
+from inside the model, from "this field does not really exist," because
+the block that is supposed to be authoritative said so. Left
+unexplained, `multiply_percent` was also a live risk in the OTHER
+direction: per `whiteboard.ts`, it can only ever GROW a quantity (no
+code path shrinks via percentage — `subtract` is the only way to
+represent spending down, a discount, or loss), but a model reaching for
+"multiply by a percent" by the more natural reading ("the new value IS
+X percent of the old") would draw a board that GROWS while the
+narration describes something SHRINKING — the exact drawn-vs-spoken
+contradiction this whole feature exists to prevent.
+
+Fixed by adding `whiteboard` to the schema block and explicitly naming
+and defining all three step operators, with `multiply_percent` stated
+as growth-only. Verified live (`tutor:converse` — the paid
+`tutor-deploy step=converse` gate remains blocked by the same
+account-wide billing issue tracked all session, so local runs are the
+substitute evidence): whiteboard usage increased across runs post-fix,
+including a correctly-represented decreasing story via `subtract`
+("cada semana come 1 tonelada", 6→5→4→3→2→1→0) and, for the first time
+observed this session, a correct `multiply_percent` growth story ("cada
+mes crece 10%", 10→11→12.1→13.31) — neither pattern reproduced before
+the fix. Full oracle suite green (479 tests), `verify:tutor` green,
+lint and type-check clean. Documented as `oracle/AGENTS.md` item 42.
+
+**Noted, deliberately NOT fixed this round — reachability or product
+intent make a speculative fix worse than leaving it recorded:**
+
+- **MEDIUM, ambiguous product intent — retiring a KC with live
+  dependents silently unlocks them.** `kc_edge` carries no status
+  filter, so an edge to a since-retired prerequisite drops out of
+  `prereqsOf` entirely, and the dependent's `.every()` over an empty
+  prerequisite list is vacuously true. Whether "a retired prerequisite's
+  dependent becomes available" is the CORRECT degradation (arguably
+  better than permanently locking content whose gate no longer exists)
+  or a bug depends on a product decision about what "retired" means for
+  a KC with live dependents — this needs a human call, not a guess.
+  Requires a content-admin action to reach (retiring a KC), not
+  user-triggered.
+- **LOW, by design — `TUTOR_V3_BRAIN=false` and a genuinely empty/unseeded
+  catalog produce byte-identical responses.** The route's own comment
+  states this is intentional ("an unseeded graph yields an empty map,
+  which the client says honestly"), and the flag defaults to `true` —
+  disabling it is a deliberate operator action. A diagnostics gap for
+  engineers debugging a misconfigured deploy, not a learner-facing harm.
+- Rounding/float drift in `computeSequence` (e.g. `10 × 1.1³ =
+  13.309999999999999`) is real but fully absorbed at DISPLAY time by
+  `TutorWhiteboard.tsx`'s `Intl.NumberFormat({maximumFractionDigits: 0})`
+  — confirmed the same component renders both the live and replayed
+  board, so no broken bar height or spoken/drawn mismatch ever reaches a
+  child on either surface. Not a defect.

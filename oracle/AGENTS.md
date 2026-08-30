@@ -944,6 +944,41 @@ everything passes the blocked half perfectly and destroys the product.
    INTENT — a docs table is a promise a human made, and a promise is not a
    test.
 
+42. **"The object has exactly these fields" is a contract with the model,
+   and an incomplete one teaches the model the field does not exist.** Found
+   by adversarial review, round 37 (2026-08-30, MEDIUM): `TUTOR_SYSTEM_PROMPT`'s
+   own JSON-shape declaration (`prompt.ts`, "The object has exactly these
+   fields:") never listed `whiteboard` at all — the ONLY place the model was
+   ever told to set it was 35 lines later, inside a single worked pedagogical
+   example, with `multiply_percent` never named or explained anywhere in the
+   prompt. This is a plausible root cause of the ALREADY-measured symptom
+   this same file's `narratesUnshownGrowth` comment records: the real model
+   sometimes narrates a growth story and never sets `whiteboard` at all — a
+   silent omission indistinguishable, from inside the model, from "this field
+   does not really exist," because the schema block that is supposed to be
+   authoritative said so. The existing fix for that symptom (a repair-loop
+   retry) treats the SYMPTOM every time it fires; this closes a plausible
+   CAUSE once. Fixed by adding `whiteboard` to the schema block, and by
+   naming and defining all three step operators explicitly, particularly
+   `multiply_percent` — which, per `whiteboard.ts`, can ONLY ever grow a
+   quantity (there is no code path that shrinks via percentage; `subtract`
+   is the only way to represent spending-down, discount or loss). Left
+   unexplained, a model reaching for "multiply by a percent" by the more
+   common natural-language reading ("the new value IS X percent of the old")
+   would produce a board that GROWS while the narration describes something
+   SHRINKING — the exact drawn-vs-spoken contradiction this whole feature
+   exists to prevent. Verified live post-fix (`tutor:converse`, the paid
+   `tutor-deploy step=converse` gate being blocked by the same account-wide
+   billing issue tracked all session): whiteboard usage increased across
+   runs, including a correctly-represented decreasing story via `subtract`
+   ("cada semana come 1 tonelada", 6→5→4→3→2→1→0) and, for the first time
+   observed this session, a correct `multiply_percent` growth story ("cada
+   mes crece 10%", 10→11→12.1→13.31) — both consistent with the clarified
+   prompt, neither reproduced before it. General lesson: an incomplete
+   schema declaration is not a smaller version of the correct one, it is a
+   different, WRONG contract — the model has no way to know a field merely
+   went unlisted rather than genuinely not existing.
+
 ---
 
 ## §6 Environment

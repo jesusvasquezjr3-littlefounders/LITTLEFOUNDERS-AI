@@ -128,23 +128,32 @@ function frontierScore(graph: Graph, kc: KcRow, unlocks: Map<string, number>): n
 }
 
 /**
- * Build the plan. Returns null ONLY on an upstream read failure — an empty
- * KC catalog (migration applied, nothing seeded) yields an empty plan, which
- * callers treat as "v3 brain has nothing to say", the graceful v2 fallback.
+ * The review+frontier ranking (blueprint §8.4-8.5), PURE over rows the
+ * caller already fetched — no I/O, cannot fail. Extracted so a caller that
+ * has ALREADY read these four tables never has to fetch them a SECOND time
+ * just to ask "what would today's session open with".
+ *
+ * Found by adversarial review, round 37 (2026-08-30, MEDIUM): `buildTutorMap`
+ * (the learning-map route) used to call `buildSessionPlan` for exactly this
+ * — its OWN first-planned pick, to fill `continueTarget` — which
+ * independently re-fetched the SAME four tables `buildTutorMap` had just
+ * read successfully, purely for this one answer. That doubled the read cost
+ * of the map route AND collapsed two different things into the identical
+ * `continueTarget: null`: a learner who genuinely has nothing to continue,
+ * and the redundant re-fetch itself failing on a table the map's OWN read
+ * of the exact same table had just succeeded against. `buildTutorMap` now
+ * calls this directly with the rows it already holds; the misconceptions
+ * lookup below (a fifth read `continueTarget` never surfaces) stays here,
+ * in the one caller that actually needs it.
  */
-export async function buildSessionPlan(
-  userId: string,
+export function rankPlanKcs(
+  kcs: KcRow[],
+  edges: Array<{ prerequisite_kc_id: string; dependent_kc_id: string }>,
+  mastery: Array<{ kc_id: string; p_known: number; attempts: number; params_override: unknown }>,
+  cards: Array<{ kc_id: string; due_at: string; reps: number }>,
   tier: number,
-  locale: string,
-): Promise<SessionPlanResult | null> {
-  const [kcs, edges, mastery, cards] = await Promise.all([
-    getActiveKcs(),
-    getKcEdges(),
-    getLearnerMastery(userId),
-    getMemoryCards(userId),
-  ]);
-  if (kcs === null || edges === null || mastery === null || cards === null) return null;
-  if (kcs.length === 0) return { plan: [], kcStates: [] };
+): Array<{ kc: KcRow; reason: 'review_due' | 'frontier' }> {
+  if (kcs.length === 0) return [];
 
   const eligible = kcs.filter((k) => k.tier_min <= tier);
   const graph = assemble(eligible, edges, mastery);
@@ -176,13 +185,37 @@ export async function buildSessionPlan(
     .sort((a, b) => frontierScore(graph, b, unlocks) - frontierScore(graph, a, unlocks))
     .slice(0, MAX_FRONTIER);
 
-  const planKcs: Array<{ kc: KcRow; reason: 'review_due' | 'frontier' }> = [
+  return [
     ...dueCards
       .map((c) => graph.byId.get(c.kc_id))
       .filter((kc): kc is KcRow => kc !== undefined)
       .map((kc) => ({ kc, reason: 'review_due' as const })),
     ...frontier.map((kc) => ({ kc, reason: 'frontier' as const })),
   ];
+}
+
+/**
+ * Build the plan. Returns null ONLY on an upstream read failure — an empty
+ * KC catalog (migration applied, nothing seeded) yields an empty plan, which
+ * callers treat as "v3 brain has nothing to say", the graceful v2 fallback.
+ */
+export async function buildSessionPlan(
+  userId: string,
+  tier: number,
+  locale: string,
+): Promise<SessionPlanResult | null> {
+  const [kcs, edges, mastery, cards] = await Promise.all([
+    getActiveKcs(),
+    getKcEdges(),
+    getLearnerMastery(userId),
+    getMemoryCards(userId),
+  ]);
+  if (kcs === null || edges === null || mastery === null || cards === null) return null;
+  if (kcs.length === 0) return { plan: [], kcStates: [] };
+
+  const eligible = kcs.filter((k) => k.tier_min <= tier);
+  const graph = assemble(eligible, edges, mastery);
+  const planKcs = rankPlanKcs(kcs, edges, mastery, cards, tier);
 
   const misconceptions = await getMisconceptionsForKcs(planKcs.map((p) => p.kc.id));
   if (misconceptions === null) return null;

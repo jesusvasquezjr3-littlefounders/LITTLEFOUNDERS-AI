@@ -9,7 +9,7 @@
  */
 
 import { MASTERY_DISPLAY_THRESHOLD, MASTERY_PREREQ_THRESHOLD } from './bkt.js';
-import { buildSessionPlan } from './sessionPlan.js';
+import { rankPlanKcs } from './sessionPlan.js';
 import {
   getActiveKcs,
   getKcEdges,
@@ -120,21 +120,29 @@ export async function buildTutorMap(
     .filter((e) => eligibleIds.has(e.prerequisite_kc_id) && eligibleIds.has(e.dependent_kc_id))
     .map((e) => ({ from: keyById.get(e.prerequisite_kc_id)!, to: keyById.get(e.dependent_kc_id)! }));
 
-  // CONTINUE opens exactly what the planner would teach first — the map and
-  // the session can never disagree about "where were we".
-  const plan = await buildSessionPlan(userId, tier, locale);
-  const first = plan?.plan[0] ?? null;
-  const firstNode = first ? nodes.find((n) => n.kcId === first.kcId) : null;
+  /*
+   * CONTINUE opens exactly what the planner would teach first — the map and
+   * the session can never disagree about "where were we". This calls the
+   * planner's PURE ranking directly, over the rows already fetched above,
+   * rather than `buildSessionPlan` (found by adversarial review, round 37,
+   * 2026-08-30, MEDIUM — see `rankPlanKcs`'s own doc comment for the full
+   * defect: a redundant second fetch of these same four tables, and a
+   * silent collapse of "nothing to continue" with "that redundant fetch
+   * itself failed"). Cannot fail here — the four reads it needs already
+   * succeeded, or this function would have returned null above.
+   */
+  const first = rankPlanKcs(kcs, edges, mastery, cards, tier)[0] ?? null;
+  const firstNode = first ? nodes.find((n) => n.kcId === first.kc.id) : null;
 
   return {
     nodes,
     edges: mapEdges,
     continueTarget: first
       ? {
-          kcKey: first.kcKey,
-          title: firstNode?.title ?? first.objective,
+          kcKey: first.kc.key,
+          title: firstNode?.title ?? pickLocale(first.kc.objective, locale),
           reason: first.reason,
-          skillKey: first.skillKey,
+          skillKey: first.kc.skill_key,
         }
       : null,
     review: { count: nodes.filter((n) => n.state === 'needs_review').length },
