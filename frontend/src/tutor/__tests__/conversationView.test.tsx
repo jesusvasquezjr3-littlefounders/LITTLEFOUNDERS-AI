@@ -337,6 +337,113 @@ describe('telling the shell about an unsent draft', () => {
   });
 });
 
+/*
+ * Found by adversarial review, round 26 (2026-08-30, HIGH): every OTHER way
+ * to speak to the tutor already refuses to fire twice — `MicOrb` won't start
+ * a new recording while a reply is pending, the "explain differently" chip
+ * is gated on `!awaitingReply` — but the composer, "the ONLY channel" when no
+ * voice provider is configured, had no such guard. A learner who typed again
+ * while waiting could fire a second, billed turn before the first reply had
+ * even landed.
+ */
+describe('the composer refuses to submit while a reply is already pending', () => {
+  function conversationAwaitingReply(socket: TutorSocket) {
+    return (
+      <ConversationView
+        phase="conversing"
+        ready={false}
+        session={SESSION}
+        socket={socket}
+        token="test-token"
+        speaking={false}
+        awaitingReply
+        onAwaitReply={vi.fn()}
+        onDraftChange={vi.fn()}
+        resuming={false}
+        replyTimedOut={false}
+        onRestart={vi.fn()}
+        onExit={vi.fn()}
+      />
+    );
+  }
+
+  it('disables the Send button', () => {
+    render(conversationAwaitingReply(makeSocket()));
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'are you there' } });
+
+    expect(screen.getByRole('button', { name: 'Send' })).toBeDisabled();
+  });
+
+  it('does not send even if Enter is pressed', () => {
+    const sendText = vi.fn();
+    render(conversationAwaitingReply(makeSocket({ sendText })));
+    const input = screen.getByRole('textbox');
+    fireEvent.change(input, { target: { value: 'are you there' } });
+
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(sendText).not.toHaveBeenCalled();
+  });
+});
+
+/*
+ * Found by adversarial review, round 26 (2026-08-30, HIGH): the transcript's
+ * own edit affordance refuses to START a rephrase once an activity or
+ * whiteboard is open, but `submitTyped` never re-checked that at SEND time —
+ * only at the moment the affordance was clicked. A learner who tapped
+ * "Rephrase" and then had a segment arrive before pressing Send could still
+ * fire a server-side conversation rewind (`socket.editLast`) while an
+ * activity was on screen, exactly the flow this file's own comment says is
+ * "not a flow we honour".
+ */
+describe('an in-progress rephrase is abandoned once an activity opens', () => {
+  const LEARNER_LINE = 'is 5 plus 5 equal to 10';
+  const historyWithLearnerLine = [
+    { speaker: 'tutor' as const, text: TUTOR_LINE, seq: 1 },
+    { speaker: 'learner' as const, text: LEARNER_LINE, seq: 2 },
+  ];
+
+  it('sends a segment-interrupted rephrase as an ordinary new message, never as a rewind', () => {
+    const editLast = vi.fn();
+    const sendText = vi.fn();
+    const socket = makeSocket({ history: historyWithLearnerLine, editLast, sendText });
+    const { rerender } = render(conversation(socket, false));
+
+    // Begin rephrasing the learner's last message.
+    fireEvent.click(resizeHandle());
+    fireEvent.click(screen.getByRole('button', { name: 'Rephrase this message' }));
+    expect(screen.getByPlaceholderText('Rephrase your message…')).toHaveValue(LEARNER_LINE);
+
+    // A segment arrives before the learner presses Send.
+    const socketWithSegment = makeSocket({
+      history: historyWithLearnerLine,
+      editLast,
+      sendText,
+      segment: {
+        segmentId: 'seg-1',
+        seq: 2,
+        origin: 'bank',
+        segment: {
+          type: 'coin_count',
+          prompt_md: 'Junta las monedas.',
+          payload: { currency: 'MXN', denominations: [1, 2, 5, 10], target: 8 },
+        },
+        scoresXp: true,
+        framing: 'Junta las monedas exactas.',
+      },
+    });
+    rerender(conversation(socketWithSegment, false));
+
+    const input = screen.getByPlaceholderText('Type a message…');
+    expect(input).toHaveValue(LEARNER_LINE);
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    // Sent as a fresh message, and the conversation was never rewound.
+    expect(editLast).not.toHaveBeenCalled();
+    expect(sendText).toHaveBeenCalledWith(LEARNER_LINE);
+  });
+});
+
 describe('answering the adaptation offer', () => {
   const OFFER = 'slower_pacing' as const;
   const QUESTION = 'Shall I slow down?';

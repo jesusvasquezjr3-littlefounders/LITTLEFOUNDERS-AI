@@ -3232,3 +3232,52 @@ tests confirmed to fail against the pre-fix file for the exact claimed
 reason via `git stash`, pass against the fix. Full frontend suite green
 (1421 tests, up from 1415), lint clean, type-check clean, root
 `i18n:check` clean.
+
+## The composer could fire twice while a reply was pending, and a rephrase could rewind the conversation mid-activity — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 26 (`ConversationView.tsx` — the
+component a child actually looks at and types into every turn). Both
+HIGH, both in the composer's submit path (`submitTyped`).
+
+**1. No "a reply is already pending" guard, unlike every other input path
+in this file.** `MicOrb` refuses to start a new recording while a reply is
+pending (`state === 'thinking'`); the "explain differently" chip is gated
+on `!awaitingReply`. The text composer — "the ONLY channel" when no voice
+provider is configured, per this file's own comment — had no such guard
+at all: the Send button and Enter key stayed fully live while
+`awaitingReply` was true, so a learner who typed again while waiting
+(impatient, or thinking they mistyped) could fire a second, billed turn
+before the first reply had even landed.
+
+**2. An in-progress rephrase could still rewind the conversation once an
+activity opened.** The transcript's own edit affordance refuses to START
+a rephrase while `socket.segment !== null || turn?.whiteboard != null`
+(its own comment: "mid-activity, rewinding the conversation is not a flow
+we honour"), but `submitTyped` never re-checked that same condition at
+SEND time — only the affordance checked it at click time. A learner who
+tapped "Rephrase," then had a segment or whiteboard arrive before
+pressing Send, could still fire `socket.editLast(...)` — a server-side
+conversation rewind — while an activity was on screen, the exact flow
+the product says it does not honour.
+
+Fixed with one reactive effect plus one guard, both in
+`ConversationView.tsx`: an effect resets `editing` to `false` whenever
+`turnSeq`, `socket.segment`, or `turn?.whiteboard` changes (an edit stops
+being valid the instant the message it targets stops being "the last
+message" — a new turn arrived, or an activity opened), and `submitTyped`
+now refuses to submit at all while `awaitingReply` is true and carries a
+defence-in-depth check against the same segment/whiteboard condition
+right before calling `editLast`. The learner's typed text is deliberately
+NOT discarded when an edit is abandoned this way — it is sent as an
+ordinary new message instead, so nothing they typed is lost, only the
+rewind intent.
+
+Proven with three new tests in `conversationView.test.tsx`: the Send
+button is disabled and Enter does nothing while `awaitingReply` is true;
+a rephrase interrupted by an arriving segment sends the same text as a
+fresh `sendText` call, never `editLast`. Confirmed to fail against the
+pre-fix code for the exact claimed reason via `git stash` (the third test
+fails on a `getByPlaceholderText` lookup, because pre-fix the composer is
+still showing "Rephrase your message…" — direct evidence `editing` never
+reset), pass against the fix. Full frontend suite green (1424 tests, up
+from 1421), lint clean, type-check clean, root `i18n:check` clean.

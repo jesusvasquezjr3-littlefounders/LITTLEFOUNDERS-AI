@@ -224,10 +224,49 @@ export function ConversationView({
    * and it cannot fight another control for a key press.
    */
 
+  /*
+   * AN EDIT IN PROGRESS STOPS BEING VALID the moment the message it targets
+   * stops being "the last message" — a new turn arrives, or an activity or
+   * whiteboard opens (the same condition the transcript's own edit
+   * affordance already gates on, `onEditLast` below). Found by adversarial
+   * review, round 26 (2026-08-30, HIGH): `submitTyped` never re-checked this
+   * at SEND time, only `beginEdit` checked it at START time — a learner who
+   * tapped "Rephrase" and then had a segment/whiteboard arrive before
+   * pressing Send could still fire `socket.editLast(...)`, a server-side
+   * conversation rewind, while an activity was on screen. That is precisely
+   * the flow the comment on `onEditLast` says is "not a flow we honour".
+   * `typed` is deliberately left alone: the learner's effort survives, and
+   * `submitTyped` below now sends it as an ordinary new message instead of a
+   * forbidden rewind. `setEditing(false)` while already false is a no-op, so
+   * this safely runs on every mount and on every turn/segment/whiteboard
+   * change, not only the ones where an edit happened to be in progress.
+   */
+  useEffect(() => {
+    setEditing(false);
+  }, [turnSeq, socket.segment, turn?.whiteboard]);
+
   const submitTyped = () => {
     const value = typed.trim();
-    if (value === '' || ended) return;
+    /*
+     * NO SUBMIT WHILE A REPLY IS ALREADY PENDING. Found by adversarial
+     * review, round 26 (2026-08-30, HIGH): every OTHER way to speak to the
+     * tutor already refuses to fire twice — `MicOrb` won't start a new
+     * recording while `state === 'thinking'`, the "explain differently"
+     * chip is gated on `!awaitingReply` — but the composer, "the ONLY
+     * channel" per this file's own comment above, had no such guard. A
+     * learner who typed again while waiting could fire a second (billed)
+     * turn at the socket before the first reply had even landed.
+     */
+    if (value === '' || ended || awaitingReply) return;
     if (editing) {
+      // Defence in depth alongside the reset effect above, for the
+      // narrow window between a segment/whiteboard arriving and that
+      // effect's re-render actually landing: never rewind the
+      // conversation while an activity is on screen.
+      if (socket.segment !== null || turn?.whiteboard != null) {
+        setEditing(false);
+        return;
+      }
       socket.editLast(value);
       setEditing(false);
     } else {
@@ -510,7 +549,7 @@ export function ConversationView({
         <button
           type="button"
           onClick={submitTyped}
-          disabled={typed.trim() === '' || ended}
+          disabled={typed.trim() === '' || ended || awaitingReply}
           aria-label={t('tutor.conversation.send')}
           className="grid h-11 w-11 shrink-0 place-items-center rounded-md text-content transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-40"
         >
