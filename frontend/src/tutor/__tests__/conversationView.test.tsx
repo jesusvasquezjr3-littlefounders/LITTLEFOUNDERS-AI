@@ -917,6 +917,39 @@ describe('the soft keyboard and the lesson plate', () => {
     // while claiming a debt had been settled.
     expect(plateHeight()).toBe('88px');
   });
+
+  /*
+   * Found by adversarial review, 2026-08-30 (HIGH): an announced segment or
+   * whiteboard turn raised the sheet to HALF unconditionally, so a learner
+   * who sent a message and got a reply announcing a practice activity BEFORE
+   * dismissing the keyboard saw the sheet rise to HALF while the keyboard
+   * still covered the bottom of the screen — the exact overlap the
+   * keyboard-borrow mechanism above exists to prevent. The raise must be
+   * deferred until the keyboard actually closes.
+   */
+  it('does not raise the sheet for an announced segment while the keyboard is still open', () => {
+    const socket = makeSocket();
+    const { rerender } = renderConversation(socket, { wrapper: withSafeArea });
+
+    // The keyboard opens while the sheet rests at PEEK — an ordinary learner
+    // typing a message before any activity has been announced.
+    act(() => viewport.resizeTo(Math.round(window.innerHeight / 2)));
+    expect(plateHeight()).toBe('88px');
+
+    // The reply announces a segment while the keyboard is STILL open.
+    const announced = makeSocket({
+      turn: { ...socket.turn!, seq: 2, next: 'segment' },
+      segment: SEGMENT,
+    });
+    rerender(<>{withSafeArea(conversation(announced, false))}</>);
+
+    // Must NOT have risen yet — the keyboard is still covering the screen.
+    expect(plateHeight()).toBe('88px');
+
+    // Only once the keyboard actually closes does the promised activity rise.
+    act(() => viewport.resizeTo(window.innerHeight));
+    expect(plateHeight()).not.toBe('88px');
+  });
 });
 
 /*

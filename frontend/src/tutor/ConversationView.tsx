@@ -290,12 +290,28 @@ export function ConversationView({
    * asked for the screen, the sheet rises to HALF — the tutor keeps
    * teaching above it, and the learner keeps the handle to dismiss it. An
    * unannounced arrival still only announces itself.
+   *
+   * BUT NOT WHILE THE KEYBOARD IS STILL OPEN. Found by adversarial review,
+   * 2026-08-30 (HIGH): this raised the sheet unconditionally, so an
+   * ordinary sequence — a learner sends a message and the reply announces a
+   * practice activity before they have dismissed the keyboard — raised the
+   * sheet to HALF while the keyboard still covered the bottom of the
+   * screen, defeating the keyboard-borrow protection above by construction
+   * (the two exactly overlap, the condition that mechanism exists to
+   * prevent). While the keyboard is open, the raise is DEFERRED into the
+   * same `borrowedDetentRef` the keyboard-close handler already reads: it
+   * takes effect the moment the keyboard actually closes, never while it is
+   * still covering the screen.
    */
   useEffect(() => {
     if (segmentId === null) return;
     if (turn?.next !== 'segment') return;
+    if (safeArea?.keyboardOpenRef.current) {
+      borrowedDetentRef.current = 'half';
+      return;
+    }
     setDetent((current) => (current === 'peek' ? 'half' : current));
-  }, [segmentId, turn?.next]);
+  }, [segmentId, turn?.next, safeArea]);
 
   /*
    * THE SAME RULE FOR A LIVE WHITEBOARD (V4). A turn that draws a board is
@@ -303,11 +319,19 @@ export function ConversationView({
    * segment is — the sheet should rise to make room for it rather than have
    * it render into a 90 px peek strip. Keyed on `turn.seq` rather than a
    * segment id, since a whiteboard turn has none.
+   *
+   * Same keyboard deferral as the segment announcement above, and for the
+   * identical reason: a whiteboard turn can arrive while the learner is
+   * still typing.
    */
   useEffect(() => {
     if (!turn?.whiteboard) return;
+    if (safeArea?.keyboardOpenRef.current) {
+      borrowedDetentRef.current = 'half';
+      return;
+    }
     setDetent((current) => (current === 'peek' ? 'half' : current));
-  }, [turn?.seq, turn?.whiteboard]);
+  }, [turn?.seq, turn?.whiteboard, safeArea]);
 
   /*
    * AN ARRIVING OFFER PUTS THE PLATE AWAY, and it is the whole reason the

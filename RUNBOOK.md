@@ -2429,3 +2429,50 @@ false-positived. All 5 fence/regex-dependent tests confirmed to fail against
 the pre-fix code for the claimed reason via `git stash`, pass against the
 fix. Full oracle suite green (441 tests), lint clean, type-check clean on
 all three tsconfigs.
+
+## An announced activity raised the lesson sheet while the keyboard still covered the screen — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 16 (HIGH): `ConversationView.tsx`'s two
+"the tutor just promised this out loud" effects — one for an announced
+segment (`turn.next === 'segment'`), one for a live whiteboard turn — raised
+the lesson sheet from PEEK to HALF unconditionally the moment either
+arrived. An ordinary sequence broke this: a learner sends a message and the
+reply announces a practice activity before they have dismissed the soft
+keyboard, and the sheet rose to HALF while the keyboard was STILL covering
+the bottom of the screen — exactly the overlap the file's own
+keyboard-borrow mechanism (a few effects above) exists to prevent, defeated
+by a sibling effect that never checked whether the keyboard's loan was still
+outstanding.
+
+Fixed by consulting `SafeAreaContext`'s `keyboardOpenRef` (already exposed,
+just not read by these two effects) before raising the sheet: while the
+keyboard is open, the raise is deferred into the same `borrowedDetentRef`
+the keyboard-close handler already restores from, so it takes effect the
+moment the keyboard actually closes rather than while it is still covering
+the screen. The keyboard-open/close mechanism itself was untouched.
+
+Proven with a new test in `ConversationView.test.tsx`: keyboard opens while
+the sheet rests at PEEK, an announced segment arrives via `rerender`, the
+sheet is asserted to STILL be at PEEK (88px) while the keyboard remains
+open, then the keyboard closes and the sheet is asserted to have risen.
+Confirmed to fail against the pre-fix effects (sheet incorrectly rose to
+346px while the keyboard was still open) via `git stash`, pass against the
+fix. Full frontend suite green (1411 tests), lint clean, type-check clean,
+i18n:check clean.
+
+**Not yet closed from the same review round (MEDIUM/HIGH, visual
+confirmation blocked):** the desktop caption's docking condition
+(`ConversationView.tsx`) only activates `docked: 'panel'` when
+`socket.segment !== null || turn?.whiteboard != null` — but the desktop
+lesson panel (`LessonPlate.tsx`) is a permanent fixture regardless of
+content, and `SpeechCaption.tsx`'s own comment says its escape budget is
+"unbeatable against a full-height docked panel" full stop, not only while
+an exercise is open. On desktop with no segment/whiteboard active (ordinary
+back-and-forth chat, plausibly the majority of desktop conversation time),
+`docked` computes to `null` and the caption falls back to the anchored/escape
+mode the same comment says cannot win against this panel. Neither the unit
+suite (`window.matchMedia` is unpolyfilled in jsdom, so no test exercises
+`desktop` mode at all) nor the live `verify-tutor-ui.mjs` gate (its default
+lab fixture always has a segment active) covers "plain conversation, no
+exercise open, desktop" — flagged for a human visual check at 1280px before
+treating it as either confirmed or closed.
