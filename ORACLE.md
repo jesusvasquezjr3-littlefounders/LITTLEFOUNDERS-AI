@@ -1686,6 +1686,20 @@ expensive thing in the product was the least measured.**
    (added to `SpeechScope` alongside the existing `memo`), matching the
    existing privacy boundary between the two caches exactly.
 
+   **A client-side timeout that does not cancel the request is not a
+   timeout, it is a promise to stop waiting — found by the same review
+   (LOW).** `withTimeout` (`oracle/src/lib/http.ts`) races an
+   ALREADY-STARTED promise against a timer; when the timer wins, the
+   underlying `fetch()` to Inworld keeps running in the background and may
+   still complete — and potentially be billed — on the provider's side,
+   invisible to our own cost ledger. Fixed by passing
+   `signal: AbortSignal.timeout(config.VOICE_TIMEOUT_MS)` directly into
+   each Inworld `fetch()` call (`transcribe`, `synthesize`, `cloneVoice`),
+   so the request is actually cancelled at the network layer the moment
+   our own timeout fires. `withTimeout`'s own race stays in place as the
+   labeled-error path; the two timeouts share the same duration, so
+   whichever settles first wins.
+
 **Voice cost now reaches the ledger.** `costUsd` accumulated model tokens only
 and `speak()` recorded nothing, so a session could synthesise forty turns and
 report the price of its tokens. It is now model + voice, with the per-character

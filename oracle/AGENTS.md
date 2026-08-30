@@ -556,7 +556,19 @@ everything passes the blocked half perfectly and destroys the product.
    call and a write-back needs to ask whether TWO CONCURRENT CALLERS could
    both read the miss before either writes — sequential code reads as
    atomic and is not.
-25. **A "must not be negative" guard on a floating-point running total needs
+25. **A timeout that races an already-started promise cannot cancel it.**
+   `withTimeout` (`lib/http.ts`) wraps a `fetch()` call that was already
+   invoked before being handed in, so on our own timeout the underlying
+   HTTP request to Inworld kept running in the background — possibly
+   completing, and being billed, on the provider's side with nothing in
+   our own ledger to show for it. Found by adversarial review 2026-08-30
+   (LOW). Fixed by passing `signal: AbortSignal.timeout(ms)` directly into
+   the `fetch()` call itself at all three Inworld call sites — `withTimeout`
+   stays for its labeled error message, but the `signal` is what actually
+   stops the request. Whenever wrapping a promise in a timeout race, check
+   whether the promise's OWN constructor accepts a cancellation signal —
+   racing it is not the same as cancelling it.
+26. **A "must not be negative" guard on a floating-point running total needs
    a zero band, not a zero line.** `whiteboard.ts`'s `computeSequence` chains
    decimal `add`/`subtract`/`multiply_percent` steps (`value` is
    `z.number()`, not an integer — money and fractions are legitimate), and

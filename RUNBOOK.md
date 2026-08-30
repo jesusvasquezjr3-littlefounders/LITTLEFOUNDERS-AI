@@ -2702,3 +2702,35 @@ confirmed to fail against the pre-fix code for the claimed reason (both
 calls independently reported `source: 'synthesized'`, 2 TTS calls) via
 `git stash`, pass against the fix. Full oracle suite green (447 tests),
 lint clean, type-check clean on all three tsconfigs.
+
+## A client-side timeout on an Inworld call did not cancel the request — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 18 (LOW) and closed as a same-day
+follow-up: `oracle/src/lib/http.ts`'s `withTimeout` races an
+ALREADY-STARTED promise against a timer — the `fetch()` call it wraps has
+already been invoked by the time `withTimeout` sees it, so on our own
+timeout it can only stop WAITING on the request, not cancel it. The
+underlying HTTP request to Inworld kept running in the background and
+could still complete — and potentially be billed — on the provider's
+side, invisible to our own cost ledger. Not provable as an actual
+overspend (this codebase has no visibility into Inworld's server-side
+billing semantics for an abandoned response), so it was reported and
+closed as a verified code fact rather than a proven financial loss.
+
+Fixed by passing `signal: AbortSignal.timeout(config.VOICE_TIMEOUT_MS)`
+directly into the `fetch()` call at all three Inworld call sites in
+`oracle/src/voice/inworld.ts` — `transcribe`, `synthesize`, and the
+offline `cloneVoice` script helper (120s timeout). `withTimeout` itself is
+unchanged and still provides the labeled error message
+("inworld speech-to-text timed out after Xms") on the rare case its own
+race wins; the `signal` is what actually cancels the request at the
+network layer the moment the timeout fires.
+
+Proven with two new tests in `voice.test.ts` (one for `transcribe`, one
+for `synthesize`): both assert the `fetch` mock was called with a `signal`
+that is a real `AbortSignal` instance, not merely present in the request
+init but of the wrong type. Confirmed to fail against the pre-fix code for
+the claimed reason (`expected undefined to be an instance of AbortSignal`
+— no `signal` property was ever passed) via `git stash`, pass against the
+fix. Full oracle suite green (449 tests), lint clean, type-check clean on
+all three tsconfigs.

@@ -182,6 +182,13 @@ export class InworldVoiceProvider implements VoiceProvider {
             },
             audioData: { content: request.audio.toString('base64') },
           }),
+          // Found by adversarial review, 2026-08-30 (LOW): `withTimeout` races
+          // an ALREADY-STARTED promise and cannot retroactively cancel it — on
+          // our own timeout the outbound request to Inworld kept running in
+          // the background, possibly completing (and billing) on their side,
+          // invisible to our cost ledger. `signal` actually aborts the
+          // request at the network layer the moment our timeout fires.
+          signal: AbortSignal.timeout(config.VOICE_TIMEOUT_MS),
         }),
         config.VOICE_TIMEOUT_MS,
         'inworld speech-to-text',
@@ -241,6 +248,8 @@ export class InworldVoiceProvider implements VoiceProvider {
             language: request.locale,
             audioConfig: { audioEncoding: 'MP3' },
           }),
+          // See the identical comment on transcribe()'s fetch above.
+          signal: AbortSignal.timeout(config.VOICE_TIMEOUT_MS),
         }),
         config.VOICE_TIMEOUT_MS,
         'inworld text-to-speech',
@@ -304,6 +313,8 @@ export async function cloneVoice(input: CloneVoiceInput): Promise<string> {
         description: input.description ?? '',
         audioProcessingConfig: { removeBackgroundNoise: true },
       }),
+      // See the identical comment on transcribe()'s fetch above.
+      signal: AbortSignal.timeout(120_000),
     }),
     120_000,
     'inworld voice clone',

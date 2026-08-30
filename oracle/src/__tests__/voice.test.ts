@@ -119,6 +119,35 @@ describe('an unenrolled character is SILENT, never substituted', () => {
     expect(body.voiceId).toBe('workspace__lf-rho-es-mx');
     expect(String(fetchSpy.mock.calls[0]?.[0])).toContain('/tts/v1/voice');
   });
+
+  /*
+   * Found by adversarial review, 2026-08-30 (LOW): `withTimeout` races an
+   * ALREADY-STARTED promise and cannot retroactively cancel it — on our own
+   * timeout, the outbound request to Inworld kept running in the background,
+   * possibly completing (and billing) on their side, invisible to our cost
+   * ledger. `fetch`'s own `signal` is what actually cancels the request at
+   * the network layer.
+   */
+  it('wires an AbortSignal into the fetch call, so our own timeout actually cancels the request', async () => {
+    process.env.INWORLD_API_KEY = 'test-inworld-key-0123';
+    process.env.INWORLD_VOICE_RHO_ES_MX = 'workspace__lf-rho-es-mx';
+    resetConfigCache();
+    const fetchSpy = vi.fn((_url: string, _init?: RequestInit) =>
+      Promise.resolve(
+        new Response(JSON.stringify({ audioContent: Buffer.from('x').toString('base64') }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      ),
+    );
+    vi.stubGlobal('fetch', fetchSpy);
+
+    await new InworldVoiceProvider().synthesize({ text: 'hola', locale: 'es-MX', character: 'rho' });
+
+    const signal = fetchSpy.mock.calls[0]?.[1]?.signal;
+    expect(signal).toBeInstanceOf(AbortSignal);
+    expect(signal?.aborted).toBe(false);
+  });
 });
 
 describe('the transcription request', () => {
@@ -155,6 +184,28 @@ describe('the transcription request', () => {
     expect(body.transcribeConfig.voiceProfileConfig?.enableVoiceProfile).toBe(false);
     expect(body.transcribeConfig.audioEncoding).toBe('AUTO_DETECT');
     expect(body.transcribeConfig.language).toBe('es');
+  });
+
+  it('wires an AbortSignal into the fetch call, so our own timeout actually cancels the request', async () => {
+    const fetchSpy = vi.fn((_url: string, _init?: RequestInit) =>
+      Promise.resolve(
+        new Response(JSON.stringify({ transcription: { transcript: 'hola' } }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      ),
+    );
+    vi.stubGlobal('fetch', fetchSpy);
+
+    await new InworldVoiceProvider().transcribe({
+      audio: Buffer.from('audio'),
+      mimeType: 'audio/webm;codecs=opus',
+      locale: 'es-MX',
+    });
+
+    const signal = fetchSpy.mock.calls[0]?.[1]?.signal;
+    expect(signal).toBeInstanceOf(AbortSignal);
+    expect(signal?.aborted).toBe(false);
   });
 
   it('discards a voice profile loudly if one arrives anyway', async () => {
