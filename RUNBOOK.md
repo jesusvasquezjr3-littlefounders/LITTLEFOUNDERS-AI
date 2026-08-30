@@ -3665,3 +3665,35 @@ microtask storm that OOM'd the test worker. Fixed by hoisting the mock's
 component's actual stability guarantee. Full frontend suite green (1434
 tests, up from 1432), lint clean, type-check clean, root `i18n:check`
 clean.
+
+## The Oracle session-token mint/verify boundary held up under adversarial review — one doc line corrected, no code defect — closed 2026-08-30
+
+Round 32 targeted the single highest-leverage security boundary not yet
+reviewed this session: the Core-minted, single-use, session-scoped
+token that lets the browser open a WebSocket directly to `oracle/`
+(`/AGENTS.md` §1.5's Oracle exception, four constraints). Adversarially
+tested against the real code — session binding under payload tampering,
+`.strict()` schema rejecting a smuggled extra field, single-use atomicity
+under simulated simultaneous connections, Supabase-JWT rejection through
+a real socket, server-side expiry, and live (not token-baked) consent
+freshness re-checked before every turn's audio — all held. No code
+defect found; every throwaway test proving this was deleted afterward.
+
+One inaccuracy found and fixed: `/AGENTS.md` §1.5 said the socket "is
+refused outright for a `kid` without an active guardian voice consent."
+The real, deliberately better-designed behavior (`/ORACLE.md` §4.3) is
+that the socket still connects — a working, silent session, never a
+session that quietly opens a microphone — while only the MICROPHONE is
+refused, server-side, on every `learner_audio*` frame, and re-checked
+before each turn so a mid-session revocation takes effect immediately.
+The underlying child-safety property already held; only the doc's
+one-sentence summary overstated a full connection refusal. Corrected in
+both `AGENTS.md` and `CLAUDE.md` in the same commit.
+
+One already-known, already-documented risk reconfirmed rather than
+newly found: `NonceLedger`'s single-use guarantee is in-process, and
+`/ORACLE.md` §16's "Oracle runs as a SINGLE Railway replica" checklist
+item is still unchecked, with nothing in code or Railway config
+preventing a scale-out that would silently defeat it. Not a regression
+and not new information — left as the standing, tracked item it already
+was.
