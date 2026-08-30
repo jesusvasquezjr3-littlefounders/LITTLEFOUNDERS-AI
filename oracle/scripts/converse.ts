@@ -450,6 +450,21 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
     const learnerAnswered = flatten(beats[i]!.learner).length > 0;
     if (!isQuestion || !learnerAnswered) continue;
     if (beats[i]!.kind === 'activity') continue;
+    /*
+     * A THIRD false positive in this same detector, found live testing as a
+     * cold-start diagnostic learner, 2026-08-30: the preceding turn asked an
+     * OFFER, not a sum — "¿te gustaría empezar con una pregunta sobre
+     * monedas o sobre precios?" — with no number in it at all. The learner's
+     * vague "creo que si, mas o menos" answered THAT (agreeing to proceed),
+     * and the tutor's next turn opened a brand-new worked example starting
+     * "Perfecto, Emi. Imagina que tienes 10 pesos..." — a fresh number
+     * introducing a NEW problem, not a number invented to stand in for one
+     * the learner never gave, because none was ever asked for. This
+     * detector's own premise (see its header comment) is a tutor answering a
+     * numeric question ITSELF; a question with no number in it has no
+     * numeric answer to have invented.
+     */
+    if (numbersAsked.length === 0) continue;
     // A tutor stating a number the learner never said, immediately after
     // asking for it, in a turn that also praises — that is answering itself.
     const said = beats[i]!.tutor;
@@ -524,10 +539,23 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
    *
    * So high overlap only counts when the NUMBERS are unchanged too. New
    * numbers mean a new problem, however familiar the words around them.
+   *
+   * A SECOND false positive, found live testing as the owner's low-retention
+   * persona, 2026-08-30: the learner asked "otra vez cual era la pregunta"
+   * (what was the question again?), and the tutor correctly restated its own
+   * previous question near-verbatim — same words, same numbers, because
+   * repeating it UNCHANGED is the only correct answer to that request. This
+   * check has no way to know the repetition was asked for, so it flagged a
+   * turn doing exactly what it was supposed to do. Skipped when the learner's
+   * own line asked for the repeat — a narrow list, on purpose: broadening it
+   * risks hiding the real defect this check exists to catch.
    */
+  const EXPLICIT_REPEAT_REQUEST =
+    /\b(otra vez|de nuevo|repite|rep[ií]teme|cu[aá]l era la pregunta|qu[eé] (dijiste|preguntaste)|say that again|what was the question|repeat that)\b/i;
   for (let i = 1; i < beats.length; i += 1) {
     const prev = beats[i - 1]!.tutor;
     const curr = beats[i]!.tutor;
+    if (EXPLICIT_REPEAT_REQUEST.test(beats[i]!.learner)) continue;
     const aWords = new Set(flatten(prev).split(' ').filter((w) => w.length > 4));
     const bWords = flatten(curr).split(' ').filter((w) => w.length > 4);
     if (aWords.size === 0 || bWords.length === 0) continue;
