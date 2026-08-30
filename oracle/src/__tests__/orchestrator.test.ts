@@ -304,6 +304,48 @@ describe('output moderation', () => {
     expect(orchestrator.speechCounts.paid).toBe(2);
   });
 
+  /*
+   * Found by adversarial review, round 24 (2026-08-30, MEDIUM): the test
+   * above uses an instant synthesizer, so the discarded speculative clip
+   * always happened to settle before anything read the ledger — masking a
+   * real race. `speak()` only adds its cost to `voiceUsd` when ITS OWN
+   * promise resolves, and `produce()` never awaits the discarded one
+   * (`void speculative`, pre-fix) — nobody was waiting on it. If a blocked
+   * turn's speculative clip is SLOWER than its scripted replacement (a real
+   * TTS call has no reason to be faster the second time), and that same
+   * turn ends the session, `ws/server.ts`'s `finish()` used to read
+   * `totalCostUsd` and persist it to Core before the slower clip had a
+   * chance to settle — permanently losing a real, billed cost, since
+   * nothing ever reads this orchestrator again once the session is closed.
+   */
+  it('awaitPendingCosts() folds in a discarded speculative clip that had not yet settled', async () => {
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(false));
+
+    let calls = 0;
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), async (turn) => {
+      calls += 1;
+      if (calls === 1) {
+        // The speculative clip for the turn that ends up blocked — slower
+        // than the replacement, exactly as a real second TTS call can be.
+        await new Promise((resolve) => setTimeout(resolve, 30));
+      }
+      return { url: `http://depot.test/${calls}.mp3`, source: 'synthesized' as const, billedChars: turn.say.length };
+    });
+
+    const outcome = (await orchestrator.handleLearnerText('cuéntame algo', Date.now()))!;
+    // Exactly what ws/server.ts's `deliver()` awaits before `finish()` runs.
+    await outcome.emission.audio;
+
+    // The slower, discarded clip has not settled yet — its cost is not in
+    // the ledger, reproducing the exact race `finish()` used to read
+    // straight through without ever waiting for it.
+    expect(orchestrator.speechCounts.paid).toBe(1);
+
+    await orchestrator.awaitPendingCosts();
+
+    expect(orchestrator.speechCounts.paid).toBe(2);
+  });
+
   it('emits NOTHING when the learner interrupts mid-completion', async () => {
     // A completion that never resolves on its own — it ends only when the
     // signal it was handed aborts, exactly as a cancelled fetch does.

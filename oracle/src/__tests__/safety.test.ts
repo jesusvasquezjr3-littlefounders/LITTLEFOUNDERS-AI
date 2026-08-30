@@ -211,6 +211,32 @@ describe('a judge that is briefly unreachable', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
+  /*
+   * Found by adversarial review, round 24 (2026-08-30, MEDIUM): the caller
+   * used to freeze "is a retry still worth it" into a BOOLEAN before the
+   * first attempt even started (`allowRetry: Date.now() < retryDeadlineMs`
+   * in orchestrator.ts), so a first attempt that itself consumed most or
+   * all of the timeout budget still bought a second, unconditional paid
+   * call — unlike the pedagogical model's own retry, which re-checks a LIVE
+   * `Date.now()` immediately before firing. This proves the retry is now
+   * skipped when the deadline passes DURING the first attempt, not only
+   * when it had already passed before the call started.
+   */
+  it('skips the retry once the deadline passes DURING the first attempt, not just before it', async () => {
+    const deadline = Date.now() + 10;
+    const fetchMock = vi.fn().mockImplementationOnce(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      throw new Error('socket hang up');
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const verdict = await moderateTutorOutput({ ...TEXT, requireModelPass: false, retryDeadlineMs: deadline });
+    expect(verdict.allowed).toBe(true);
+    // The deadline was already past by the time attempt 0 finished failing —
+    // a live check must skip the retry, not just a check made before attempt
+    // 0 started.
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it('STILL refuses for a minor, which is the whole point of failing closed', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('socket hang up')));
     const verdict = await moderateTutorOutput({ ...TEXT, tier: 1, requireModelPass: true });

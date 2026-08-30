@@ -714,6 +714,67 @@ everything passes the blocked half perfectly and destroys the product.
    SAME domain knowledge (a phrase list, a vocabulary set, a unit table),
    derive one from the other rather than authoring both by hand — the
    alternative is trusting every future edit to remember to touch both.
+33. **A fix applied to three call sites of a shared helper does not cover the
+   OTHER call sites of that same helper.** Item 25 above fixed `withTimeout`
+   racing an already-invoked `fetch()` — which stops us waiting on our own
+   timeout but never cancels the real request, which can still be billed
+   with nothing in our ledger to show for it — at the three voice-provider
+   call sites. Found by adversarial review, round 24 (2026-08-30, HIGH):
+   the SAME `withTimeout` helper, imported the SAME way, was still unfixed
+   at `model/provider.ts`'s `complete()` (the pedagogical model, called
+   EVERY turn — the single highest-volume paid call in the whole service),
+   `safety/moderation.ts`'s judge call (every model-authored turn), and
+   `content/generate.ts`'s tier-3 judge. Fixed by passing a real
+   cancelling `signal` into all four remaining `fetch()` calls (plus the
+   model preflight probe, for consistency): `AbortSignal.timeout(ms)`
+   directly for the two judges and the probe, and
+   `AbortSignal.any([callerSignal, AbortSignal.timeout(ms)])` for
+   `complete()` specifically, since it already accepted a CALLER-provided
+   signal (a learner's interruption) that must keep working alongside the
+   new timeout signal, not be replaced by it. General lesson: when a fix
+   targets "every call site of X," grep for every OTHER caller of the
+   underlying helper too — a fix scoped to the call sites a bug report
+   happened to name is not the same claim as a fix scoped to the pattern.
+34. **A retry budget frozen into a boolean before the first attempt starts
+   cannot see that the first attempt itself spent the budget.** The
+   pedagogical model's own retry re-checks a LIVE `Date.now()` against its
+   deadline immediately before firing attempt 2. `moderateTutorOutput`'s
+   `allowRetry` was instead a boolean the caller computed ONCE, before
+   attempt 0 even started — found by adversarial review, round 24
+   (2026-08-30, MEDIUM): a first judge attempt that itself consumed most
+   or all of `MODEL_TIMEOUT_MS` (more than double the deadline the boolean
+   was based on) still bought a second, full paid call unconditionally,
+   despite a code comment claiming "same clock as the model's retry" that
+   did not actually hold for the retry itself. Fixed by replacing the
+   boolean with `ModerationInput.retryDeadlineMs` (the raw deadline,
+   passed straight through from `orchestrator.ts`) and re-checking it with
+   a live `Date.now()` inside the retry loop, mirroring the model's own
+   pattern exactly. General lesson: a caller-computed boolean gate is only
+   as fresh as the moment it was computed — if the gate is meant to reflect
+   elapsed time, pass the clock reference itself and let the gated code
+   check it live, not a pre-derived answer that goes stale the instant time
+   moves on.
+35. **A fire-and-forget promise's side effect on a shared ledger is not
+   guaranteed to have happened by the time something reads that ledger.**
+   `produce()`'s speculative synthesis for a turn that gets moderation-
+   blocked is discarded (`void speculative`) rather than awaited — its
+   cost only reaches `voiceUsd` whenever ITS OWN promise happens to settle,
+   with nobody waiting on it. Found by adversarial review, round 24
+   (2026-08-30, MEDIUM): if that discarded clip is SLOWER than the
+   scripted replacement that ships instead (ordinary for a second, real
+   TTS call), and that same turn also ends the session, `ws/server.ts`'s
+   `finish()` read `totalCostUsd` and persisted it to Core before the
+   slower clip had a chance to settle — permanently losing a real, billed
+   cost, since nothing ever reads this orchestrator again once the session
+   is closed. Fixed by tracking every discarded synthesis promise in
+   `pendingDiscardedAudio` and adding `awaitPendingCosts()`, called from
+   `finish()` right before the session's economics are treated as final —
+   deliberately NOT on the per-turn path, where the whole point of firing
+   these speculatively is to never make the learner wait on them. General
+   lesson: a value read from a shared mutable ledger is only as complete as
+   every promise that still owes it a write; the moment that matters is not
+   "did we start every paid call" but "have all of them finished writing
+   their cost," and those are only the same moment if something enforces it.
 
 ---
 

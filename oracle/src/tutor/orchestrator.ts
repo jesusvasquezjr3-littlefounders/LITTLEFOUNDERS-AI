@@ -165,6 +165,24 @@ export class TutorOrchestrator {
   private paidSyntheses = 0;
   private freeSyntheses = 0;
   private discardedSyntheses = 0;
+  /**
+   * Discarded synthesis promises — paid for, delivered to nobody — that
+   * have not yet SETTLED, so their cost has not yet reached `voiceUsd`.
+   *
+   * Found by adversarial review, round 24 (2026-08-30, MEDIUM): a blocked
+   * turn's speculative synthesis is fired concurrently with the judge and
+   * discarded on a block (`void speculative` used to be the whole of it) —
+   * `speak()` only adds its cost to the ledger when ITS OWN promise
+   * settles, which nobody was waiting on. If that same turn also happened
+   * to end the session, `ws/server.ts`'s `finish()` read `totalCostUsd`
+   * and persisted it to Core before the discarded promise had a chance to
+   * settle, permanently losing that real, billed cost from the record —
+   * the session closes and nothing ever reads this orchestrator again.
+   * `awaitPendingCosts()` lets the session-ending path fold every
+   * outstanding discard in before the number is treated as final, without
+   * making an ordinary mid-session turn wait on a synthesis nobody needs.
+   */
+  private pendingDiscardedAudio: Promise<unknown>[] = [];
   private segmentCount = 0;
   private adaptations: TutorContext['adaptations'];
   private stopped = false;
@@ -320,6 +338,21 @@ export class TutorOrchestrator {
    */
   get totalCostUsd(): number {
     return this.modelUsd + this.voiceUsd;
+  }
+
+  /**
+   * Waits for every discarded-but-still-settling synthesis to finish adding
+   * its cost to `voiceUsd`, so `totalCostUsd` is complete before a caller
+   * treats it as final. Call this before persisting a session's cost
+   * (`ws/server.ts`'s `finish`/`finalizeParked`) — never on the per-turn
+   * path, where the whole point of firing these speculatively is to NOT
+   * make the learner wait on them.
+   */
+  async awaitPendingCosts(): Promise<void> {
+    if (this.pendingDiscardedAudio.length === 0) return;
+    const pending = this.pendingDiscardedAudio;
+    this.pendingDiscardedAudio = [];
+    await Promise.allSettled(pending);
   }
 
   get modelCostUsd(): number {
@@ -1616,8 +1649,12 @@ export class TutorOrchestrator {
         tier: this.session.tier,
         nonce: opts.nonce,
         // Same clock as the model's retry: a second judge call that lands
-        // after the client gave up protects nobody and costs the turn.
-        allowRetry: Date.now() < retryDeadlineMs,
+        // after the client gave up protects nobody and costs the turn. The
+        // deadline itself is passed through, re-checked live right before
+        // the retry fires inside `moderateTutorOutput` — not frozen into a
+        // boolean here before this attempt has even started (round 24,
+        // 2026-08-30 — see `ModerationInput.retryDeadlineMs`'s doc comment).
+        retryDeadlineMs,
         // A minor's session always requires the model pass. An adult's may
         // run on the deterministic pass alone (/ORACLE.md §6).
         requireModelPass: this.session.isMinor,
@@ -1635,9 +1672,11 @@ export class TutorOrchestrator {
         turn = moderationBlockedResponse(this.session.locale);
         source = 'scripted';
         // The blocked line's clip: paid for (speak() bills it when it settles)
-        // and delivered to nobody. Counted so the gamble stays visible.
+        // and delivered to nobody. Counted so the gamble stays visible, and
+        // tracked so a session that ends on THIS turn still waits for that
+        // cost before treating the ledger as final (`awaitPendingCosts`).
         this.discardedSyntheses += 1;
-        void speculative;
+        this.pendingDiscardedAudio.push(speculative);
         audio = this.speak(turn);
       } else {
         audio = speculative;
@@ -1652,6 +1691,7 @@ export class TutorOrchestrator {
       // now would talk OVER the learner, which is the one outcome worse than
       // the waste. The clip joins the discard count and nothing is emitted.
       this.discardedSyntheses += 1;
+      this.pendingDiscardedAudio.push(audio);
       return null;
     }
 

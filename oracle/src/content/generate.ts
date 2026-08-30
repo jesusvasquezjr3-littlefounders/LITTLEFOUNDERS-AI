@@ -148,6 +148,12 @@ async function judge(segment: unknown, tier: 1 | 2 | 3): Promise<JudgeVerdict> {
   const response = await withTimeout(
     fetch(`${config.JUDGE_API_BASE}/chat/completions`, {
       method: 'POST',
+      // Found by adversarial review, round 24 (2026-08-30, HIGH, shared with
+      // the pedagogical model and moderation judge calls): `withTimeout`
+      // below only stops US from waiting on our own timeout — the real
+      // request keeps running and can still be billed with nothing in our
+      // ledger to show for it. The signal is what actually cancels it.
+      signal: AbortSignal.timeout(config.MODEL_TIMEOUT_MS),
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.JUDGE_API_KEY}` },
       body: JSON.stringify({
         model: config.JUDGE_MODEL_NAME,

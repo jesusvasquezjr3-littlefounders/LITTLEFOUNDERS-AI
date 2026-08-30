@@ -81,12 +81,29 @@ export async function complete(
     throw new ModelUnavailableError('no MODEL_API_KEY configured');
   }
 
+  /*
+   * Found by adversarial review, round 24 (2026-08-30, HIGH): `withTimeout`
+   * below races an already-invoked fetch — on OUR timeout it stops waiting,
+   * but the real HTTP request to DeepSeek keeps running and can still be
+   * billed on the provider's side with nothing in our own ledger to show
+   * for it, on top of whatever the following retry attempt then spends.
+   * `AGENTS.md` item 25 fixed the identical pattern at the three voice
+   * provider call sites; this is the single highest-volume paid call in the
+   * whole service (every turn) and had never gotten the same fix.
+   * `AbortSignal.any` combines the caller's OWN interruption signal (a
+   * learner cutting in mid-thought) with a timeout signal, so either one
+   * actually cancels the request — `withTimeout` stays only for its labeled
+   * error message.
+   */
+  const timeoutSignal = AbortSignal.timeout(config.MODEL_TIMEOUT_MS);
+  const signal = opts.signal ? AbortSignal.any([opts.signal, timeoutSignal]) : timeoutSignal;
+
   let response: Response;
   try {
     response = await withTimeout(
       fetch(`${config.MODEL_API_BASE}/chat/completions`, {
         method: 'POST',
-        signal: opts.signal,
+        signal,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${config.MODEL_API_KEY}`,
@@ -245,6 +262,9 @@ export async function modelReachable(): Promise<ModelProbeResult> {
     const response = await withTimeout(
       fetch(`${config.MODEL_API_BASE}/chat/completions`, {
         method: 'POST',
+        // Same fix as `complete()` above: a signal is what actually cancels
+        // the request on our own timeout, not merely `withTimeout`'s race.
+        signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${config.MODEL_API_KEY}`,

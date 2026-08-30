@@ -3083,3 +3083,85 @@ disagree; and the "tray demonstration froze" fix from an earlier session
 lives in a different file (`LiveSegmentPanel.tsx`) and does not recur in
 `TutorWhiteboard.tsx`, which already keys its effects on primitives rather
 than object identity.
+
+## Three cost-ledger gaps in the highest-volume paid calls — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 24 (session cost and budget
+enforcement — the surface `/AGENTS.md` §1.0 rule 5 names explicitly as one
+of the four ways a defect here costs this company real money). Three
+findings, all in the exact call paths that fire every turn.
+
+**1. HIGH — timed-out calls to the pedagogical model and the moderation
+judge were never actually cancelled.** `lib/http.ts`'s `withTimeout` races
+an already-invoked `fetch()` against a timer — on OUR timeout it stops
+WAITING, but the real HTTP request keeps running server-side and can still
+be billed by the provider with nothing in our own ledger to show for it.
+`oracle/AGENTS.md` item 25 already fixed this exact pattern at the three
+voice-provider call sites; round 24 found the SAME unfixed gap at
+`model/provider.ts`'s `complete()` (the pedagogical model — the single
+highest-volume paid call in the whole service, every turn),
+`safety/moderation.ts`'s judge call (every model-authored turn), and
+`content/generate.ts`'s tier-3 judge. On a timeout — already a measured,
+recurring event in this service (empty completions, slow reasoning
+models, provider 5xx) — the abandoned request could complete and bill for
+real while the session's own cost accounting never saw those tokens, on
+top of whatever the orchestrator's own retry then spent fresh. Fixed by
+passing a real cancelling `signal` into all four remaining `fetch()` calls
+(plus the model preflight probe): `AbortSignal.timeout(ms)` for the two
+judges and the probe, `AbortSignal.any([callerSignal,
+AbortSignal.timeout(ms)])` for `complete()`, since it already carries a
+caller-provided interruption signal (a learner cutting in) that must keep
+working alongside the new timeout signal.
+
+**2. MEDIUM — the moderation judge's retry ignored real elapsed time,
+unlike the model's own retry.** The model's retry loop re-checks a live
+`Date.now()` against its deadline immediately before firing attempt 2.
+`moderateTutorOutput`'s `allowRetry` was a boolean the caller froze ONCE,
+before attempt 0 even started — so a first judge attempt that itself
+consumed most or all of `MODEL_TIMEOUT_MS` (more than double the deadline
+the boolean was based on) still bought a second, unconditional paid call.
+Fixed by replacing the boolean with `ModerationInput.retryDeadlineMs` (the
+raw deadline, passed straight through) and re-checking it live inside the
+retry loop, mirroring the model's own pattern exactly.
+
+**3. MEDIUM — a blocked turn's discarded speculative synthesis could be
+permanently lost from a session's persisted cost.** A blocked turn's
+speculative TTS clip is paid for and discarded (`void speculative`)
+rather than awaited — its cost only reaches the ledger whenever its own
+promise happens to settle, with nobody waiting on it. If that discarded
+clip is slower than the scripted replacement that ships instead (ordinary
+for a real second TTS call) and that same turn also ends the session,
+`ws/server.ts`'s `finish()` read the total cost and persisted it to Core
+before the slower clip had a chance to settle — permanently losing a
+real, billed cost, since nothing ever reads that orchestrator again once
+the session closes. Fixed by tracking every discarded synthesis promise
+in a new `pendingDiscardedAudio` list and adding
+`TutorOrchestrator.awaitPendingCosts()`, called from `finish()` right
+before the session's economics are treated as final — deliberately not on
+the per-turn path, where firing these speculatively exists specifically
+so the learner never waits on them.
+
+See `oracle/AGENTS.md` items 33-35 for the general lessons.
+
+Proven with a new `timeout-cancellation.test.ts` (asserts a real
+cancelling `AbortSignal` reaches `fetch()` at all four call sites plus the
+probe, and that the model's caller-interruption signal still works
+alongside the timeout signal), a new test in `safety.test.ts` (the retry
+is skipped once the deadline passes DURING the first attempt, not only
+before it started), and a new test in `orchestrator.test.ts`
+(`awaitPendingCosts()` folds in a discarded clip that had not yet settled
+when the delivered turn's own audio was already awaited — mirroring
+exactly what `ws/server.ts`'s `deliver()` does before calling `finish()`).
+All three confirmed to fail against the pre-fix code for the exact
+claimed reason via `git stash`, pass against the fix. Full oracle suite
+green (465 tests, up from 458), lint clean, type-check clean on all three
+tsconfigs, `verify:pedagogy` and `verify:tutor` both green, and
+independently re-verified against two fresh `tutor:converse` runs against
+the real provider: completions and retries still behave identically post-
+fix, including one fully clean run with zero problems reported.
+
+One self-caused regression along the way: the new fix comments in
+`model/provider.ts` and `safety/moderation.ts` named "Inworld" (the voice
+provider) while explaining the item-25 precedent, which
+`boundaries.test.ts` correctly caught — nothing outside `src/voice/` may
+name the provider. Reworded to "the voice provider" before committing.

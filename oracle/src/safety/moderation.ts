@@ -44,11 +44,21 @@ export interface ModerationInput {
   /** Kid sessions require the model pass. Adult sessions may run without it. */
   requireModelPass: boolean;
   /**
-   * Whether a second judge call is still worth making. False when the turn is
-   * already close to the client's 25 s ceiling: a verdict that lands after the
-   * learner was told to ask again protects nobody and costs the turn.
+   * The absolute deadline (a `Date.now()`-comparable ms timestamp) after
+   * which a second judge call is no longer worth making — a verdict that
+   * lands after the learner was told to ask again protects nobody and costs
+   * the turn. Re-checked with a LIVE `Date.now()` immediately before the
+   * retry fires, not only once when the caller built this input — found by
+   * adversarial review, round 24 (2026-08-30, MEDIUM): the caller used to
+   * freeze this into a boolean before the first attempt even started, so a
+   * first attempt that itself consumed most or all of `MODEL_TIMEOUT_MS`
+   * (more than double the deadline the boolean was based on) still bought a
+   * second full paid call unconditionally. Mirrors the exact live check the
+   * model's own retry already does in `orchestrator.ts`. Undefined means no
+   * deadline: always worth a retry — true for the two callers with no
+   * client waiting on a clock (tier-3 content generation, placement intake).
    */
-  allowRetry?: boolean;
+  retryDeadlineMs?: number;
 }
 
 /*
@@ -199,6 +209,16 @@ async function modelModeration(input: ModerationInput): Promise<ModerationVerdic
   const response = await withTimeout(
     fetch(`${config.JUDGE_API_BASE}/chat/completions`, {
       method: 'POST',
+      // Found by adversarial review, round 24 (2026-08-30, HIGH, shared
+      // with the pedagogical model call in model/provider.ts): `withTimeout`
+      // below races an already-invoked fetch — on OUR timeout it stops
+      // waiting, but the real HTTP request keeps running and can still be
+      // billed by the provider with nothing in our own ledger to show for
+      // it. `AGENTS.md` item 25 fixed this at the three voice provider call
+      // sites; this is the highest-volume judge call in the service and had
+      // never gotten the same fix. The signal is what actually cancels the
+      // request; `withTimeout` stays for its labeled error message.
+      signal: AbortSignal.timeout(config.MODEL_TIMEOUT_MS),
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${config.JUDGE_API_KEY}`,
@@ -293,9 +313,15 @@ export async function moderateTutorOutput(input: ModerationInput): Promise<Moder
 
   // One retry, and only for a THROW. A judge that answered "unsafe" is not
   // asked again — that would be shopping for a second opinion on a verdict we
-  // already have.
-  const attempts = input.allowRetry === false ? 1 : 2;
-  for (let attempt = 0; attempt < attempts; attempt += 1) {
+  // already have. The deadline is re-checked with a LIVE Date.now() right
+  // before the retry fires — not decided once up front — so a first attempt
+  // that itself consumed the whole budget correctly skips the second call,
+  // the same live check the model's own retry uses in orchestrator.ts.
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    if (attempt > 0 && input.retryDeadlineMs !== undefined && Date.now() >= input.retryDeadlineMs) {
+      console.warn('[oracle] skipping moderation retry — the turn is already too late to deliver');
+      break;
+    }
     try {
       verdict = await modelModeration(input);
       failure = null;

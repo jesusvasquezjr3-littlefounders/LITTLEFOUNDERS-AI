@@ -1380,6 +1380,20 @@ async function finish(
   clearInterval(live.heartbeat);
 
   /*
+   * Found by adversarial review, round 24 (2026-08-30, MEDIUM): a blocked
+   * turn's discarded speculative synthesis is paid for but fired without
+   * being awaited, so its cost only reaches `voiceCostUsd` whenever its own
+   * promise happens to settle. If THIS turn was also the one that ended the
+   * session, everything below read the ledger before that promise had a
+   * chance to resolve, and a real, billed cost was permanently lost from
+   * what gets persisted. This is the one moment the whole session's
+   * economics are treated as final, so it is also the one moment worth
+   * waiting the (typically already-settled, at most a few hundred ms)
+   * outstanding discards.
+   */
+  await live.orchestrator.awaitPendingCosts();
+
+  /*
    * One line, at the one moment the whole session's economics are known.
    *
    * Model and voice are split because they behave differently and are fixed
