@@ -826,6 +826,34 @@ everything passes the blocked half perfectly and destroys the product.
    what the NEW caller actually does with the result — the same collapse
    that is harmless for a read that only ever gets shown is a data-loss bug
    for one that gets treated as the starting point of a replace.
+38. **A shared failure counter is reset by a write that has nothing to do
+   with the failure it exists to detect.** `ws/server.ts`'s
+   `persistSafetyFlag` call — the write migration 0054's whole episodic-
+   recall exclusion depends on (`NOT EXISTS` against `tutor_safety_flags`)
+   — used to be a bare fire-and-forget with no retry and no failure
+   counter at all, found by adversarial review, round 29 (2026-08-30,
+   CRITICAL): a blocked turn (a child's own address/phone/email —
+   `personal_data` → `turn_blocked`, the session keeps going) whose flag
+   write silently failed left that turn indistinguishable from an ordinary
+   safe one, so a later "¿te acuerdas cuando te dije...?" recall could
+   resurface the PII verbatim into the model context. The first fix
+   attempt chained it through `notePersist` — the SAME counter
+   `persistTurn` already uses — and it was WRONG, caught only because the
+   regression test that was supposed to prove it kept timing out: a
+   blocked turn also writes the learner's raw text via the ordinary
+   `persistTurn` call one line above, which succeeds against a healthy
+   Core even when the flag write is the one failing, so that success reset
+   the shared counter to zero every single turn and it could never detect
+   five consecutive FLAG failures specifically, no matter how many
+   occurred. Fixed with `noteFlagPersist`, a sibling with its own
+   dedicated counter (`flagPersistFailures`), never shared with
+   `persistFailures`. General lesson: before routing a new failure through
+   an EXISTING "N consecutive failures closes the session" counter, ask
+   whether anything ELSE on the same turn writes successfully regardless
+   of whether the new thing you're counting failed — if so, that success
+   will paper over the exact failure the counter exists to catch, and only
+   a live test that actually drives the counter to its threshold (not just
+   asserts the call is now chained) will catch it before production does.
 
 ---
 

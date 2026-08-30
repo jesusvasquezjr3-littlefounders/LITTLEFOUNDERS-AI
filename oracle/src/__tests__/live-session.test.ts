@@ -52,6 +52,8 @@ let modelJournal: ModelJournal;
 /** Flipped per test to shape what the fake Core reports about the learner. */
 let sessionIsMinor = false;
 const sessionConsent = true;
+/** Flipped per test to make the fake Core refuse every safety-flag write. */
+let flagsShouldFail = false;
 
 function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve) => {
@@ -103,7 +105,7 @@ function startFakeCore(): Promise<Server> {
       }
       if (url.includes('/tutor/internal/flags')) {
         journal.flags.push(JSON.parse(body) as CoreJournal['flags'][number]);
-        return json(res, { recorded: true });
+        return json(res, { recorded: !flagsShouldFail });
       }
       if (url.includes('/tutor/internal/segments')) {
         journal.segmentRequests += 1;
@@ -304,6 +306,7 @@ afterAll(async () => {
 });
 
 afterEach(async () => {
+  flagsShouldFail = false;
   const { nonceLedger } = await import('../session/token.js');
   nonceLedger.clear();
   // Tests share one session id, and a socket closed without a farewell PARKS
@@ -561,6 +564,55 @@ describe('a real live session over a real websocket', () => {
 
     await closed();
   });
+
+  /*
+   * Found by adversarial review, round 29 (2026-08-30, CRITICAL): a
+   * `personal_data` classification BLOCKS the turn from ever reaching the
+   * model (unlike `self_harm` above, it does not stop the session — the
+   * conversation keeps going with a scripted line) and writes a
+   * `tutor_safety_flags` row that migration 0054's episodic recall query
+   * excludes on. That write used to be a bare fire-and-forget with no
+   * retry and no failure counter, unlike every transcript write in this
+   * same file — so a systematically failing flag write (a Core hiccup,
+   * exactly as plausible here as for a transcript write) meant the child's
+   * own address/phone/email sat in `tutor_turns` with no corresponding
+   * flag, ready to resurface verbatim to the model on a later "¿te
+   * acuerdas...?" recall. This proves the fix: the flag write now shares
+   * `persistTurn`'s own `PERSIST_FAILURE_LIMIT` discipline, so a Core that
+   * cannot confirm the flag closes the session instead of silently
+   * accepting an unconfirmed safety record forever.
+   */
+  it('closes the session once safety-flag writes go unconfirmed enough times — the same discipline transcript writes already have', async () => {
+    // Four paced 750ms gaps (MIN_TURN_GAP_MS) plus round trips comfortably
+    // exceed the suite's default 5s test timeout.
+    freshJournal();
+    flagsShouldFail = true;
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    // Four personal_data turns: each is BLOCKED before the model but still
+    // answered with a scripted line, so the session stays open after each
+    // one on its own — `personal_data` alone never stops a session.
+    for (let i = 0; i < 4; i += 1) {
+      const turnReply = collect(socket, (m) => m.some((x) => x.type === 'turn'));
+      socket.send(JSON.stringify({ type: 'learner_text', text: `mi telefono es 555000000${i}` }));
+      await turnReply;
+      expect(socket.readyState).toBe(WebSocket.OPEN);
+      // Past MIN_TURN_GAP_MS (700ms), same as every other multi-turn test.
+      await new Promise((r) => setTimeout(r, 750));
+    }
+
+    // The FIFTH consecutive unconfirmed flag write crosses
+    // PERSIST_FAILURE_LIMIT — the session closes instead of answering.
+    const closing = closed();
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'mi telefono es 5550000009' }));
+    await closing;
+
+    expect(journal.flags).toHaveLength(5);
+    expect(
+      journal.flags.every((f) => f.category === 'personal_data' && f.handled === 'turn_blocked'),
+    ).toBe(true);
+  }, 10_000);
 
   it('answers an unparseable frame with an error and keeps the session alive', async () => {
     freshJournal();

@@ -92,6 +92,19 @@ interface Live {
    */
   persistFailures: number;
   /**
+   * Consecutive safety-flag writes Core did not confirm — deliberately its
+   * OWN counter, not shared with `persistFailures`. Found while proving the
+   * round-29 (2026-08-30, CRITICAL) fix live: a personal_data-blocked turn
+   * ALSO writes the learner's raw text via the ordinary `persistTurn` call
+   * just above it, which succeeds against a healthy Core even when the flag
+   * write is the one failing — so a SHARED counter gets reset back to zero
+   * by that success every single turn and can never reach the limit,
+   * regardless of how many consecutive flag writes fail. A dedicated
+   * counter is the only way "the flag endpoint specifically is
+   * systematically failing" is ever actually detectable.
+   */
+  flagPersistFailures: number;
+  /**
    * THE TRANSCRIPT'S OWN ROW COUNTER, and it must not be the model-turn seq.
    *
    * `tutor_turns` is unique on `(session_id, seq)` and written with
@@ -362,6 +375,36 @@ function notePersist(live: Live, recorded: boolean): void {
   }
 }
 
+/**
+ * `notePersist`'s sibling for safety-flag writes specifically — a SEPARATE
+ * counter, not a shared one. Found by adversarial review, round 29
+ * (2026-08-30, CRITICAL): a blocked turn (e.g. `personal_data`) ALSO writes
+ * the learner's raw text via the ordinary `persistTurn` above it, which
+ * succeeds against a healthy Core even when the flag write is the one
+ * failing — so routing both through `notePersist`'s single counter let the
+ * transcript write's success reset it to zero every turn, and it could
+ * never reach `PERSIST_FAILURE_LIMIT` no matter how many consecutive flag
+ * writes failed. Migration 0054's episodic recall exclusion is a `NOT
+ * EXISTS` against the flag table it writes to; a systematically-unconfirmed
+ * flag write means a turn the classifier correctly blocked (a child's own
+ * address, phone, email) sits in the transcript with nothing marking it,
+ * ready to resurface verbatim to the model on a later "¿te acuerdas...?"
+ * recall. This counter is the only thing that can actually detect that.
+ */
+function noteFlagPersist(live: Live, recorded: boolean): void {
+  if (recorded) {
+    live.flagPersistFailures = 0;
+    return;
+  }
+  live.flagPersistFailures += 1;
+  if (live.flagPersistFailures >= PERSIST_FAILURE_LIMIT && !live.closing) {
+    console.error(
+      `[oracle] ${live.flagPersistFailures} consecutive safety-flag writes unconfirmed — closing the session`,
+    );
+    void finish(live, 'error');
+  }
+}
+
 function tokenFrom(request: IncomingMessage): string | null {
   // Query string rather than a header: browsers cannot set headers on a
   // WebSocket handshake. The token is single-use and expires in a minute
@@ -500,6 +543,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
     microphone,
     closing: false,
     persistFailures: 0,
+    flagPersistFailures: 0,
     transcriptSeq: resumed?.transcriptSeq ?? 0,
     lastSegmentFrame: resumed?.lastSegmentFrame ?? null,
     heartbeat: setInterval(() => {
@@ -1224,13 +1268,32 @@ async function deliver(
      * incident this closes: a flagged utterance's OWN transcript row was
      * never identifiable from the flag record at all.
      */
+    /*
+     * CHAINED THROUGH noteFlagPersist — its OWN counter, not `notePersist`'s.
+     * Found by adversarial review, round 29 (2026-08-30, CRITICAL): this used
+     * to be a bare fire-and-forget with no retry and no failure counter at
+     * all, unlike its transcript-write siblings. Migration 0054's whole
+     * recall exclusion is a `NOT EXISTS` against `tutor_safety_flags` — with
+     * no flag row (a transient Core hiccup, exactly as plausible here as for
+     * a transcript write), a turn the classifier correctly BLOCKED from the
+     * model (a child's own address, phone, email — `personal_data` →
+     * `turn_blocked`, the session keeps going) is indistinguishable from an
+     * ordinary safe one, and a later "¿te acuerdas cuando te dije...?" query
+     * resurfaces that PII verbatim into the model context. It is its OWN
+     * counter rather than sharing `notePersist`'s because the learner's raw
+     * text is ALSO persisted via the ordinary `persistTurn` call above,
+     * which succeeds against a healthy Core even when this flag write fails
+     * — a shared counter would be reset to zero by that success every
+     * single turn and could never detect the flag endpoint specifically
+     * failing, no matter how many times in a row it did.
+     */
     void persistSafetyFlag({
       sessionId: live.session.sessionId,
       turnSeq: learnerTurnSeq ?? safety.turnSeq,
       category: safety.category,
       severity: safety.severity,
       handled: safety.handled,
-    });
+    }).then((recorded) => noteFlagPersist(live, recorded));
   }
 
   if (emission.turn.offerAdaptation) {

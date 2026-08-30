@@ -3392,3 +3392,60 @@ stash`, pass against the fix. Full oracle suite green (471 tests, up from
 both services, type-check clean on all tsconfigs in both services
 (backend's own + oracle's three), `verify:pedagogy` and `verify:tutor`
 both green, root `docs:check`, `secrets:check` and `provider:check` clean.
+
+## A blocked turn's own safety flag could silently fail to persist, letting migration 0054's recall exclusion be defeated — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 29 (episodic recall — the "¿te acuerdas
+de…?" literal-excerpt feature), CRITICAL.
+
+A child typing something identifier-shaped (an address, phone, email) is
+correctly classified `personal_data` and BLOCKED before it ever reaches
+the model — the session keeps going with a scripted line, it does not
+stop — and Oracle writes a `tutor_safety_flags` row so migration 0054's
+episodic-recall search can exclude that turn from ever being excerpted
+back to the model later. That write (`ws/server.ts`'s call to
+`persistSafetyFlag`) used to be a bare fire-and-forget: no retry, no
+failure counter, unlike every transcript write in the same file. A
+systematically failing write (a Core hiccup, exactly as plausible here as
+for a transcript write) meant the blocked turn's own PII sat in
+`tutor_turns` with no flag marking it — indistinguishable from an
+ordinary safe turn — ready to resurface verbatim to the model the next
+time a "¿te acuerdas cuando te dije...?" recall matched it. This is the
+missing other half of migration 0054's own fix: the query-side exclusion
+was hardened, but the write that populates the thing it excludes on was
+never given the same failure discipline the ordinary transcript writes
+already have.
+
+**The first fix attempt was wrong, and the regression test is what caught
+it.** Chaining `persistSafetyFlag` through `notePersist` — the SAME
+counter `persistTurn` already uses — looked like the obvious fix and
+compiled clean, but the new live-session test kept timing out waiting for
+the session to close. Root cause: a blocked turn ALSO writes the
+learner's raw text via the ordinary `persistTurn` call one line above,
+which succeeds against a healthy Core even when the flag write is the one
+failing — so that success reset the shared counter to zero every single
+turn, and it could never accumulate five consecutive FLAG failures no
+matter how many actually occurred. Fixed with a dedicated sibling,
+`noteFlagPersist`, carrying its own counter (`flagPersistFailures`),
+never shared with `persistFailures`. See `oracle/AGENTS.md` item 38 for
+the general lesson — a shared "N failures closes the session" counter is
+only safe when nothing else on the same turn can reset it for an
+unrelated reason.
+
+Proven with a new test in `live-session.test.ts`: a real websocket session
+sends five consecutive `personal_data`-shaped messages against a fake
+Core that always refuses the flag write (but always accepts the ordinary
+transcript write); the first four are answered normally and the session
+stays open after each; the fifth crosses the dedicated threshold and the
+session closes. Confirmed to fail against the pre-fix code for the exact
+claimed reason (the socket never closes within the test's timeout) via
+`git stash`, pass against the fix. Full oracle suite green (472 tests, up
+from 471), lint clean, type-check clean on all three tsconfigs,
+`verify:pedagogy` and `verify:tutor` both green.
+
+Round 29 also found a second, HIGH-severity defect in the same feature —
+episodic recall's full-text search hardcodes the Spanish Postgres text-
+search configuration regardless of the session's actual locale, silently
+degrading or breaking recall for `en-US` and `pt-BR` sessions. That is a
+schema-level fix (a new migration) and is tracked and closed separately;
+see the entry below.
