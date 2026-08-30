@@ -188,6 +188,20 @@ async function blobToBase64(blob: Blob): Promise<string> {
 
 export function useTutorSocket(socketUrl: string | null): TutorSocket {
   const socketRef = useRef<WebSocket | null>(null);
+  /**
+   * Messages sent while the handshake is still in flight, held here rather
+   * than dropped. Found by an adversarial review, 2026-08-30 (CRITICAL): the
+   * composer renders fully enabled the instant `phase` becomes 'conversing',
+   * the same render that starts the handshake — there is no gate on
+   * `connection === 'open'` anywhere in that path. `sendText` echoes the
+   * learner's line into `history` immediately (by design, for perceived
+   * responsiveness on a slow connection) and then called `send()`, which
+   * silently no-opped because the socket was still CONNECTING. The learner's
+   * answer appeared in their own transcript as delivered; the tutor never
+   * received it and never replied, with nothing to tell them why. Flushed in
+   * order the moment the socket opens; cleared on every new connection.
+   */
+  const pendingRef = useRef<ClientMessage[]>([]);
   const [connection, setConnection] = useState<ConnectionState>('connecting');
   const [turn, setTurn] = useState<TutorTurnState | null>(null);
   const [history, setHistory] = useState<TutorSocket['history']>([]);
@@ -241,6 +255,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     setThinking(false);
     streamOpenRef.current = false;
     streamChainRef.current = Promise.resolve();
+    pendingRef.current = [];
     setConnection('connecting');
 
     if (!socketUrl) return;
@@ -248,7 +263,14 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
     const socket = new WebSocket(socketUrl);
     socketRef.current = socket;
 
-    socket.onopen = () => setConnection('open');
+    socket.onopen = () => {
+      setConnection('open');
+      // Flush anything sent while the handshake was still in flight, in the
+      // order it was queued.
+      const queued = pendingRef.current;
+      pendingRef.current = [];
+      for (const message of queued) socket.send(JSON.stringify(message));
+    };
 
     /*
      * KEEPALIVE, at last — `ping` sat in the protocol union unsent, so any
@@ -288,7 +310,23 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
             whiteboard: message.whiteboard ?? null,
           });
           setLesson(message.lesson ?? null);
-          setHistory((prev) => [...prev, { speaker: 'tutor', text: message.say, seq: message.seq }]);
+          setHistory((prev) =>
+            /*
+             * On resume, the server's `history` frame ALREADY includes this
+             * exact tutor line (it is the on-screen turn being redrawn), and
+             * this `turn` frame re-delivers the same line right after it —
+             * by design, so a fresh mount that never saw `history` still gets
+             * the active turn. Appending unconditionally duplicated it in
+             * `history`: invisible while `TutorTranscript`'s `spokenSeq`
+             * filter still matched THIS seq, but printing the same sentence
+             * twice in a row in the accessible transcript the moment the
+             * NEXT turn changed which seq that filter hides. Found by an
+             * adversarial review, 2026-08-30 (MEDIUM).
+             */
+            prev.at(-1)?.speaker === 'tutor' && prev.at(-1)?.seq === message.seq
+              ? prev
+              : [...prev, { speaker: 'tutor', text: message.say, seq: message.seq }],
+          );
           // A new turn clears the previous error banner: the tutor recovering
           // is the signal that whatever went wrong is over.
           setError(null);
@@ -387,8 +425,17 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
 
   const send = useCallback((message: ClientMessage) => {
     const socket = socketRef.current;
-    if (!socket || socket.readyState !== WebSocket.OPEN) return;
-    socket.send(JSON.stringify(message));
+    if (!socket) return;
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify(message));
+      return;
+    }
+    // Still connecting: queue it rather than silently dropping it — see
+    // `pendingRef`'s own comment. A socket that is CLOSING or CLOSED is a
+    // real, terminal problem already surfaced through `connection`/`error`;
+    // queuing there would just delay the same silent loss, so this is the
+    // one readyState worth holding for.
+    if (socket.readyState === WebSocket.CONNECTING) pendingRef.current.push(message);
   }, []);
 
   const sendText = useCallback(

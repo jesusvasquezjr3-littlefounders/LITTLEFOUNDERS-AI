@@ -332,6 +332,35 @@ resumed on a fresh token" (all three tests) and `backend/src/__tests__/tutor.tes
 > resume" and "redraws the open ACTIVITY on resume", both confirmed to fail
 > against the pre-fix code first.
 
+> **Fixed 2026-08-30 (a seventh adversarial review, this time the frontend
+> client — two CRITICAL, one MEDIUM).** (1) A SUCCESSFUL resume used to tear
+> itself down: `TutorExperience.tsx`'s resume effect cleared `resuming` in
+> the SAME tick as it changed `socketUrl` to the fresh one, but
+> `useTutorSocket`'s own reset of `connection`/`history`/`closedReason` only
+> happens on ITS NEXT effect pass — so the very next render still read the
+> OLD, already-ended socket state with `resuming` now false, re-triggered
+> the "has this ended?" check against stale data, and called
+> `setPhase('closing')`, closing the brand-new socket before it could ever
+> say `ready`. Fixed by leaving `resuming` true until a NEW effect observes
+> the fresh socket's OWN `connection === 'open'`, by which point the reset
+> has genuinely happened. (2) The composer rendered fully enabled the
+> instant the handshake started, with no gate on `connection === 'open'`;
+> `sendText`'s optimistic echo (by design, for perceived responsiveness)
+> appeared in the learner's own transcript as delivered while the
+> underlying `send()` silently no-opped because the socket was still
+> CONNECTING — a real window on a slow or mobile link. Fixed with a queue
+> (`pendingRef`) flushed the moment the socket opens, rather than either
+> dropping the message or disabling the composer. (3) MEDIUM: on resume, the
+> re-sent `turn` frame for the on-screen line duplicated an entry the
+> `history` frame already carried; invisible while `TutorTranscript`'s
+> `spokenSeq` filter still hid that exact seq, printing the same sentence
+> twice the moment the NEXT turn changed which seq the filter hides. Fixed
+> by skipping the append when the last history entry is already that exact
+> tutor line. All three proven with permanent tests
+> (`useTutorSocket.ts`/`TutorExperience.tsx`'s test suites) against the real
+> hook and a controllable fake socket, each confirmed to fail against the
+> pre-fix code first.
+
 ### §3.3 Inworld sits behind an interface, from day one
 
 The owner's stated intent is to replace Inworld with self-hosted STT/TTS once

@@ -27784,6 +27784,26 @@ import type { TutorCatalog, TutorPreferences } from '../types';
  * job, it happens inside a `useFrame` against a real camera, and jsdom has
 ```
 
+### frontend/src/tutor/__tests__/resumeRace.test.tsx
+
+```
+import { act, render, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { useEffect, useRef, useState } from 'react';
+import { useTutorSocket } from '../useTutorSocket';
+import { resumeSession } from '../tutorApi';
+
+/*
+ * Found by an adversarial review, 2026-08-30 (CRITICAL): a SUCCESSFUL resume
+ * used to tear itself down. This harness reproduces the exact effect logic
+ * from `TutorExperience.tsx`'s resume-driving effect — copied here rather
+ * than exercising the full component, which renders the 3D stage and a large
+ * tree of children unrelated to this timing bug — against the REAL
+ * `useTutorSocket` hook and a controllable fake WebSocket, so the race is
+ * proven against real React scheduling, not a mock of it.
+ */
+```
+
 ### frontend/src/tutor/__tests__/segmentLock.test.ts
 
 ```
@@ -29649,7 +29669,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TutorOrchestrator } from '../tutor/orchestrator.js';
 import { TUTOR_SYSTEM_PROMPT } from '../tutor/prompt.js';
 import type { SpeechResult } from '../voice/speech.js';
-import type { SessionContext } from '../core/client.js';
+import type { SessionContext, SessionPlanEntry, KcState } from '../core/client.js';
 
 /*
  * The turn pipeline, end to end, with the network stubbed at exactly one seam:

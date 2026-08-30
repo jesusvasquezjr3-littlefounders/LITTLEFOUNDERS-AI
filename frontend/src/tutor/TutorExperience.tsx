@@ -415,11 +415,25 @@ export function TutorExperience() {
       resumeAttemptedRef.current = session.sessionId;
       setResuming(true);
       void resumeSession(token, session.sessionId).then((result) => {
-        setResuming(false);
         if (result.data) {
           const fresh = result.data;
-          // A new socketUrl is all it takes: the hook resets and re-dials, and
-          // the server replays the transcript into the fresh connection.
+          /*
+           * `resuming` STAYS true here — found by an adversarial review,
+           * 2026-08-30 (CRITICAL). Clearing it in this same tick raced this
+           * very effect: `setSession` below changes `socketUrl`, which only
+           * makes `useTutorSocket` reset its OWN state (`connection`,
+           * `history`, `closedReason`) on ITS NEXT effect pass — so the
+           * render this `setResuming(false)` would have produced still read
+           * the OLD, already-ended socket state. With `resuming` now false,
+           * this effect's own `if (!ended || resuming) return` guard no
+           * longer held, so it re-evaluated "has this ended?" against stale
+           * data, concluded yes, and called `setPhase('closing')` — tearing
+           * the brand-new socket down (via the `phase !== 'conversing'`
+           * cleanup) before it could ever say `ready`. The resume feature
+           * defeated itself on every SUCCESS. The effect below clears
+           * `resuming` only once the FRESH socket has actually opened, by
+           * which point the reset has genuinely happened.
+           */
           setSession((prev) =>
             prev && prev.sessionId === fresh.sessionId
               ? { ...prev, socketUrl: fresh.socketUrl, socketExpiresAt: fresh.socketExpiresAt }
@@ -427,8 +441,9 @@ export function TutorExperience() {
           );
           return;
         }
-        // The park expired or the resume was refused. The conversation that
-        // did happen still gets its goodbye.
+        // The park expired or the resume was refused — resuming is genuinely
+        // over. The conversation that did happen still gets its goodbye.
+        setResuming(false);
         setPhase('closing');
       });
       return;
@@ -437,6 +452,13 @@ export function TutorExperience() {
     const heldAConversation = socket.history.length > 0;
     setPhase(heldAConversation ? 'closing' : 'unavailable');
   }, [phase, socket.closedReason, socket.connection, socket.history.length, socket.error, resuming, session, token]);
+
+  // Clears `resuming` once the freshly re-dialled socket has actually opened —
+  // see the comment on the successful-resume branch above for why this is
+  // NOT done inside that `.then()` directly.
+  useEffect(() => {
+    if (resuming && socket.connection === 'open') setResuming(false);
+  }, [resuming, socket.connection]);
 
   /*
    * What the cast and the place actually are, right now.

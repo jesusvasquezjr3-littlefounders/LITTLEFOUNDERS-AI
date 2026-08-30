@@ -1630,3 +1630,112 @@ check whose whole job is catching a locale-specific notation. The common
 lesson is the same one anyway: measure the mechanism against the FULL
 range of real inputs and real interruption points it will actually see, not
 just the path that was originally tested.
+
+## A seventh adversarial review, this time the frontend client: a resume that tore down its own success, a message echoed as sent but never transmitted, and a duplicated transcript line — closed 2026-08-30
+
+**Found by a seventh independent adversarial code review**, this time
+pointed at the frontend client code a real learner's browser actually runs
+during a live session — every prior round this session targeted Oracle's
+backend/server code. Two CRITICAL findings and one MEDIUM, all in
+`frontend/src/tutor/`, all proven with permanent tests against the real
+hook/component and a controllable fake WebSocket, each confirmed to fail
+against the pre-fix code before being trusted.
+
+**Finding 1 (CRITICAL) — a successful resume tore down the very socket it
+just opened.** `TutorExperience.tsx`'s resume-driving effect calls
+`setResuming(false)` and `setSession(newUrl)` in the SAME tick once the
+resume API call resolves. React batches both into one render — but
+`useTutorSocket`'s own reset of `connection`/`history`/`closedReason` only
+happens on ITS NEXT effect pass, triggered by the `socketUrl` change, not
+synchronously within this render. So the render this batch produced still
+read the OLD, already-ended socket state (`connection: 'failed'` or
+similar), with `resuming` now `false` — and the SAME resume-driving effect,
+re-triggered by the `resuming` dependency change, saw `ended === true` (from
+the stale reading), `resuming === false`, concluded the session had ended
+AGAIN, and called `setPhase('closing')`. Because `phase !== 'conversing'`
+tears the socket down via `useTutorSocket`'s cleanup, the BRAND-NEW,
+server-granted socket was closed before it could ever deliver `ready`.
+
+The net effect: the resume feature (owner sign-off 2026-08-28, built
+specifically to survive a sleeping phone or flaky wifi as "one quiet
+repair") appeared to defeat itself every time it actually succeeded — the
+learner saw the generic goodbye screen for a conversation the server was
+still fully willing to continue.
+
+Fixed by no longer clearing `resuming` inside the success branch of that
+`.then()` at all; a separate effect now clears it only once the FRESH
+socket's own `connection` reaches `'open'` — by which point
+`useTutorSocket`'s reset has genuinely already happened, so the
+resume-driving effect's re-evaluation reads accurate, non-stale state and
+correctly does nothing.
+
+Proven with a dedicated test file (`resumeRace.test.tsx`) that reproduces
+the EXACT effect logic from `TutorExperience.tsx` against the real
+`useTutorSocket` hook (rather than the full component, which renders the 3D
+stage and a large unrelated tree): a socket delivers a turn, drops without
+a farewell, a mocked `resumeSession` resolves with a fresh URL, and the test
+asserts the second socket is never closed and `phase` never leaves
+`'conversing'`. Reproducing the pre-fix shape inline (clearing `resuming` in
+the same tick as the URL change) reliably fails this same test with
+`phase === 'closing'`.
+
+**Finding 2 (CRITICAL) — a message sent before the handshake finished was
+echoed as delivered but silently never transmitted.** The composer renders
+fully enabled the instant a session enters the conversing phase — the same
+render that starts the WebSocket handshake — with no gate anywhere on
+`connection === 'open'`. `sendText` echoes the learner's line into the
+visible transcript immediately (a deliberate design choice, so typing never
+feels broken on a slow connection) and then calls the shared `send()`
+helper, which used to silently no-op whenever `readyState !== OPEN`. On a
+slow or mobile connection, a learner who types and sends within that
+CONNECTING window sees their own answer appear in their own transcript as
+if delivered — the tutor never receives it and never replies, with nothing
+to distinguish this from the tutor simply being slow.
+
+Fixed with a small queue (`pendingRef`) on the shared `send()` path: a
+message sent while the socket is CONNECTING is held rather than dropped,
+and flushed in order the instant `onopen` fires. A socket that is CLOSING or
+CLOSED is a separate, real, terminal problem already surfaced through
+`connection`/`error` — queuing there would only delay the same silent loss,
+so only CONNECTING is held.
+
+Proven with a permanent test (`tutor.test.tsx`) using a `FakeSocket` variant
+that starts in the real CONNECTING state rather than OPEN-from-construction
+(the existing shared fixture defaults to OPEN specifically because every
+other test in that file assumes an already-open socket, which is exactly
+why this gap was invisible to the whole existing suite): sends a message
+while connecting, confirms it is echoed locally but NOT yet transmitted,
+then opens the socket and confirms it is flushed.
+
+**Finding 3 (MEDIUM) — the redrawn turn on resume duplicated an entry the
+history frame already carried.** Oracle's `history` frame on resume already
+includes the on-screen tutor line (it is the turn being redrawn), and a
+`turn` frame for that identical seq follows immediately after, by design —
+so a fresh mount that never processed `history` still receives the active
+turn. The client's `turn` handler appended unconditionally, so resuming
+duplicated that one line in `history`. Invisible while
+`TutorTranscript`'s `spokenSeq` filter still hid that exact seq (it hides
+BOTH copies at once), the duplicate resurfaced, unfiltered, the moment the
+next genuine turn changed which seq the filter hides — printing the tutor's
+own sentence twice in a row in the accessible transcript right after a
+network hiccup.
+
+Fixed by skipping the append when the last entry in `history` is already
+that exact `(speaker: 'tutor', seq)` pair — a no-op on the ordinary path,
+where a new turn's seq never matches the previous entry's.
+
+Proven with a permanent test (`tutor.test.tsx`) replaying the exact resume
+frame sequence (a `history` frame carrying the line, then a `turn` frame
+re-delivering it) and asserting exactly one match in `history`, followed by
+a genuinely new turn to confirm normal appending still works.
+
+**What this round adds to the pattern.** All three are the SAME shape as
+every prior incident in this file this week — a mechanism whose coverage is
+narrower than its own intent, or state read at a moment when it is stale —
+but reached, for the first time this session, through the CLIENT rather
+than the server. The lesson generalizes: a fix proven only against the
+backend leaves the browser-side half of the same feature unaudited, and
+`useTutorSocket.ts`'s own existing test suite had a fixture (`FakeSocket`
+defaulting to `readyState = OPEN`) that made an entire class of real,
+reachable timing bug structurally invisible to every test in that file
+until this review deliberately built a socket that starts CONNECTING.
