@@ -250,6 +250,61 @@ describe('the cache sits BEFORE the paid call', () => {
     vi.resetModules();
   });
 
+  /*
+   * Found by adversarial review, 2026-08-30 (MEDIUM): steps 1+2 (pregenerated,
+   * cache) are a read-check-then-write with nothing between the two. Two
+   * callers that both miss before either has written back both fell through
+   * to the paid path — proven here by firing two calls for the identical
+   * GENERATED line, on the SAME session, at the same instant instead of
+   * sequentially.
+   */
+  it('coalesces two CONCURRENT calls for the identical generated line into one paid call', async () => {
+    const spy = withVoice();
+    const scope = newSpeechScope(SESSION);
+    const generated = 'Muy bien pensado, esa idea sirve.';
+
+    const [first, second] = await Promise.all([speakLine(generated, scope), speakLine(generated, scope)]);
+
+    // Exactly one of the two actually paid; the other coalesced onto it.
+    const sources = [first.source, second.source].sort();
+    expect(sources).toEqual(['cache', 'synthesized']);
+    expect(first.url).toBe(second.url);
+    expect(first.billedChars + second.billedChars).toBe(generated.length);
+    expect(ttsCalls(spy)).toBe(1);
+  });
+
+  it('coalesces two CONCURRENT sessions greeting on a cold shared cache into one paid call', async () => {
+    // The exact shape the review found: two different children's sockets,
+    // nothing serializes them against each other, both racing a cold cache
+    // right after a deploy or a locale/character not yet pregenerated.
+    const store = new Map<string, string>();
+    vi.doMock('../lib/redis.js', () => ({
+      redisClient: { isOpen: true },
+      redisGet: (k: string) => Promise.resolve(store.get(k) ?? null),
+      redisSetEx: (k: string, v: string) => {
+        store.set(k, v);
+        return Promise.resolve(true);
+      },
+    }));
+    vi.resetModules();
+
+    const spy = withVoice();
+    const fresh = await import('../voice/speech.js');
+
+    const [first, second] = await Promise.all([
+      fresh.speakLine(SCRIPTED_LINE, fresh.newSpeechScope(SESSION)),
+      fresh.speakLine(SCRIPTED_LINE, fresh.newSpeechScope({ ...SESSION, sessionId: 'a-different-session' })),
+    ]);
+
+    const sources = [first.source, second.source].sort();
+    expect(sources).toEqual(['cache', 'synthesized']);
+    expect(first.url).toBe(second.url);
+    expect(ttsCalls(spy)).toBe(1);
+
+    vi.doUnmock('../lib/redis.js');
+    vi.resetModules();
+  });
+
   it('degrades a cache outage to a PAID CALL, never to silence', async () => {
     // Redis is not connected in tests, so every lookup is already a miss —
     // which is exactly the outage posture. The line is still spoken.

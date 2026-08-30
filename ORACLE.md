@@ -1669,6 +1669,23 @@ expensive thing in the product was the least measured.**
    is a paid call, never a silence** (§14 unchanged). A write failure is
    equally ignorable: the next session pays once.
 
+   **"Pays once" assumed the read-check-then-write never raced — found by
+   adversarial review, 2026-08-30 (MEDIUM).** The cache is read, then (on a
+   miss) the provider is paid and the result is written back — with nothing
+   between the two steps. Two callers that both miss before either has
+   written back both fall through to the paid path: proven with two
+   different children's sessions greeting concurrently on a cold cache
+   (right after a deploy, or a locale/character not yet in
+   `speech.pregenerate`d), 2 Inworld calls and 2 Depot uploads for the
+   IDENTICAL shared greeting line. Fixed with in-flight coalescing in
+   `speech.ts`: a second caller for the exact same key while a synthesis is
+   already running awaits the FIRST caller's result instead of starting a
+   second one, and reports its own cost as zero. Scoped per-process for the
+   shared/scripted cache (a module-level map) — correct because Oracle runs
+   as a single replica, unlike Core — and per-session for generated lines
+   (added to `SpeechScope` alongside the existing `memo`), matching the
+   existing privacy boundary between the two caches exactly.
+
 **Voice cost now reaches the ledger.** `costUsd` accumulated model tokens only
 and `speak()` recorded nothing, so a session could synthesise forty turns and
 report the price of its tokens. It is now model + voice, with the per-character

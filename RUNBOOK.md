@@ -2649,3 +2649,56 @@ you" disclaimer. Confirmed to fail against the pre-fix brief for the
 claimed reason (the injected text appeared before the fence, not inside
 it) via `git stash`, pass against the fix. Full oracle suite green (445
 tests), lint clean, type-check clean on all three tsconfigs.
+
+## Two concurrent sessions on a cold speech cache both paid for the identical line — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 18 (MEDIUM): `oracle/src/voice/
+speech.ts`'s "pays once, ever" cache (`/ORACLE.md` §15.1) is a
+read-check-then-write with nothing between the two steps — the cache is
+checked, a miss falls through to the paid provider call, and only THEN is
+the result written back. Two callers that both check before either has
+written back both fall through to the paid path. Proven two ways: two
+`speakLine()` calls for the same generated text on the same session,
+fired concurrently instead of sequentially — 2 Inworld calls instead of
+1; and two entirely different sessions (two different children's sockets,
+nothing in `ws/server.ts` serializes them against each other) both
+greeting at the same instant on a cold shared cache — 2 Inworld calls and
+2 Depot uploads for the identical scripted greeting line, defeating the
+"pay once, ever" guarantee `/ORACLE.md` §15.1 documents. This lands
+hardest on exactly the moments that matter most for cost: right after a
+deploy or a Redis flush, or for a character/locale not yet baked into
+`speech.pregenerated.json` — precisely when many sessions start and greet
+concurrently.
+
+Fixed with in-flight promise coalescing in `speech.ts`: a second caller
+for the identical cache key while a synthesis is already running now
+AWAITS the first caller's in-flight promise instead of starting a second
+paid call, and reports its own `billedChars` as zero — only the caller
+that actually triggered the spend is billed for it. Scoped to match the
+existing privacy split between the two caches exactly: a module-level map
+for the shared/scripted cache (correct because Oracle runs as a single
+replica, unlike Core, so a process-level map already covers every session
+that could actually race on one instance), and a new field on
+`SpeechScope` (alongside the pre-existing `memo`) for session-scoped
+generated lines, so the coalescing for non-shareable text never crosses
+the same session boundary the cache itself already enforces.
+
+Also noted, not fixed here (LOW, no proven financial loss): `withTimeout`
+(`oracle/src/lib/http.ts`), used by the Inworld provider's `transcribe`/
+`synthesize` calls, races the caller's promise against a timeout but never
+passes an `AbortSignal` into the underlying `fetch`. When our client-side
+timeout wins, the outbound request to Inworld keeps running in the
+background and may still complete (and potentially be billed) on the
+provider's side, invisible to our own cost ledger. Flagged for a
+follow-up, not rushed into this fix since verifying it as an actual
+overspend would need visibility into Inworld's own billing semantics for
+an abandoned response, which this codebase does not have.
+
+Proven with two new tests in `speech.test.ts`, both firing genuinely
+concurrent `speakLine()` calls via `Promise.all` rather than sequentially:
+one for the same-session generated-line case, one for the cross-session
+shared-cache case (reusing the existing Redis-mock harness). Both
+confirmed to fail against the pre-fix code for the claimed reason (both
+calls independently reported `source: 'synthesized'`, 2 TTS calls) via
+`git stash`, pass against the fix. Full oracle suite green (447 tests),
+lint clean, type-check clean on all three tsconfigs.

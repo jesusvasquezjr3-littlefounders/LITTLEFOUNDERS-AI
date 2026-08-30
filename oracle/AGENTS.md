@@ -540,7 +540,23 @@ everything passes the blocked half perfectly and destroys the product.
    brief mixes fixed system-authored lines with fields a MODEL wrote, audit
    every field the model can set, not just the ones a first pass happened
    to fence.
-24. **A "must not be negative" guard on a floating-point running total needs
+24. **A "check the cache, then pay" sequence is not atomic just because it
+   reads top-to-bottom.** `speech.ts`'s "pays once, ever" cache is a read,
+   then (on a miss) a paid provider call, then a write-back — with nothing
+   between the read and the write. Found by adversarial review 2026-08-30
+   (MEDIUM): two different children's sessions greeting at the same instant
+   on a cold cache both missed before either had written back, and both
+   paid — proven with 2 Inworld calls for one shared, identical line. Fixed
+   with in-flight promise coalescing keyed the same way the cache itself
+   is: a module-level map for the shared/scripted cache (Oracle is a single
+   replica, so a process-level map genuinely covers every session that
+   could race), a per-`SpeechScope` map for session-scoped generated lines
+   (matching the existing privacy split between the two caches). General
+   lesson: any "have we already paid for this" check followed by a paid
+   call and a write-back needs to ask whether TWO CONCURRENT CALLERS could
+   both read the miss before either writes — sequential code reads as
+   atomic and is not.
+25. **A "must not be negative" guard on a floating-point running total needs
    a zero band, not a zero line.** `whiteboard.ts`'s `computeSequence` chains
    decimal `add`/`subtract`/`multiply_percent` steps (`value` is
    `z.number()`, not an integer — money and fractions are legitimate), and

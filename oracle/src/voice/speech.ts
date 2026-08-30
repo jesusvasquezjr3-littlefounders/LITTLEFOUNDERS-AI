@@ -87,6 +87,14 @@ export interface SpeechScope {
   character: CharacterId;
   locale: Locale;
   memo: Map<string, string>;
+  /**
+   * Non-reusable lines currently being synthesized for THIS session, keyed
+   * the same way `memo` is. See the module-level `inFlightShared` map's
+   * comment for why this exists; this is its session-scoped twin, for the
+   * text class `memo` itself covers (never shared across sessions, so the
+   * coalescing must not be either).
+   */
+  inFlight: Map<string, Promise<SynthesisOutcome>>;
 }
 
 export function newSpeechScope(session: {
@@ -99,7 +107,30 @@ export function newSpeechScope(session: {
     character: session.character,
     locale: session.locale,
     memo: new Map(),
+    inFlight: new Map(),
   };
+}
+
+/**
+ * Reusable/scripted lines currently being synthesized, process-wide.
+ *
+ * Found by adversarial review, 2026-08-30 (MEDIUM): the cache
+ * (`cachedSpeechUrl`/`rememberSpeechUrl`) is a read-check-then-write with
+ * nothing between the two, so two callers that both miss before either has
+ * written back both fall through to the paid path — proven with two
+ * sessions greeting concurrently on a cold cache, 2 Inworld calls where the
+ * cache's own docstring promises "pay once, ever". Scoped per-process,
+ * which is correct here: Oracle runs as a single replica (unlike Core —
+ * see `backend/AGENTS.md`), so this already covers every session that could
+ * actually race on the same instance.
+ */
+const inFlightShared = new Map<string, Promise<SynthesisOutcome>>();
+
+/** What one paid synthesis attempt produced, for the leader AND every follower coalesced onto it. */
+interface SynthesisOutcome {
+  url: string | null;
+  /** Whether the provider call itself succeeded — true even if storage then failed (§15: billed and lost, never billed and free). */
+  billed: boolean;
 }
 
 /**
@@ -151,16 +182,54 @@ export async function speakLine(text: string, scope: SpeechScope): Promise<Speec
     if (remembered) return { url: remembered, source: 'cache', billedChars: 0 };
   }
 
-  // ── 3: the paid path ─────────────────────────────────────────────────────
+  // ── 3: the paid path, COALESCED ──────────────────────────────────────────
+  //
+  // Found by adversarial review, 2026-08-30 (MEDIUM): steps 1+2 above are a
+  // read-check-then-write with nothing between the two, so two callers that
+  // both miss before either has written back both fell through to here —
+  // proven with two sessions greeting concurrently on a cold cache, 2
+  // Inworld calls for the identical shared line the cache's own docstring
+  // promises "pay once, ever" for. A second caller for the exact key now
+  // AWAITS the first's in-flight promise instead of starting a second paid
+  // call, and reports its own cost as zero — only the leader's `speak()`
+  // call, which actually caused the spend, is billed for it.
+  const inFlightMap = reusable ? inFlightShared : scope.inFlight;
+  let promise = inFlightMap.get(key);
+  const isLeader = promise === undefined;
+  if (promise === undefined) {
+    promise = synthesizeAndStore(text, scope, reusable, key);
+    inFlightMap.set(key, promise);
+    void promise.finally(() => inFlightMap.delete(key));
+  }
+  const outcome = await promise;
+
+  if (!isLeader) {
+    // Somebody else's in-flight synthesis — this call spent nothing, whether
+    // it succeeded (a cache hit, effectively) or failed (silent, same as them).
+    return outcome.url ? { url: outcome.url, source: 'cache', billedChars: 0 } : SILENT;
+  }
+  return {
+    url: outcome.url,
+    source: outcome.billed ? 'synthesized' : 'unavailable',
+    billedChars: outcome.billed ? text.length : 0,
+  };
+}
+
+/** Does the actual provider call and storage. Never throws — every failure is a `SynthesisOutcome`. */
+async function synthesizeAndStore(
+  text: string,
+  scope: SpeechScope,
+  reusable: boolean,
+  key: string,
+): Promise<SynthesisOutcome> {
+  const provider = getVoiceProvider();
   let audio: { audio: Buffer; mimeType: string };
   try {
     audio = await provider.synthesize({ text, locale: scope.locale, character: scope.character });
   } catch (error) {
     console.warn('[oracle] synthesis failed:', error instanceof Error ? error.message : error);
-    return SILENT;
+    return { url: null, billed: false };
   }
-
-  const billedChars = text.length;
 
   const stored = await storeSpeechAudio(audio.audio, audio.mimeType, {
     bucket: reusable ? SHARED_SPEECH_BUCKET : SESSION_SPEECH_BUCKET,
@@ -173,11 +242,11 @@ export async function speakLine(text: string, scope: SpeechScope): Promise<Speec
   if (!stored) {
     // Billed and lost. Say so in the ledger rather than reporting it free.
     console.warn('[oracle] synthesized audio could not be stored — the turn will be captioned and silent');
-    return { url: null, source: 'synthesized', billedChars };
+    return { url: null, billed: true };
   }
 
   if (reusable) await rememberSpeechUrl(key, stored.url);
   else scope.memo.set(key, stored.url);
 
-  return { url: stored.url, source: 'synthesized', billedChars };
+  return { url: stored.url, billed: true };
 }
