@@ -42,6 +42,26 @@
  * this same run's own `full window` (no correction, no reminder) condition
  * landing at 33% — the baseline risk this reminder already exists to close,
  * with or without a quote riding alongside it.
+ *
+ * ROUND 63'S HYPOTHESIS, MEASURED AND REFUTED (2026-08-30). A real browser
+ * session hit the scripted fallback TWICE in one 5-turn conversation, at
+ * SHORT history (this was the tutor's second and fourth turn). A dedicated
+ * investigation traced one occurrence to a genuine repeated-sentence repair
+ * whose retry (temp 0.2, the real correction message) came back empty, and
+ * separately measured ~8% empty across its own ~24 retry-eligible live
+ * calls at short history — matching the PRE-reminder short-history baseline
+ * this file's own three unconditioned conditions above also show (0-8%
+ * range depending on the run), not the 0% the reminder-protected conditions
+ * establish. The gap: every reminder-protected condition above (`repair
+ * correction, quote REMOVED` / `quoting own prior text`) was measured ONLY
+ * at `historyTurns: 20` — never at the short/medium history a repair retry
+ * early in a real conversation actually runs at. Closed with the same
+ * discipline as round 45: two new conditions, same real retry shape (temp
+ * 0.2 + the correction message) at `historyTurns: 3` and `10`. Result: 0/12
+ * empty at BOTH — indistinguishable from the existing full-window
+ * measurement. The short-history residual hypothesis does not hold either;
+ * round 63's own ~8% was statistical variance from a smaller, less
+ * tightly-controlled live sample, not a real gap in the reminder's reach.
  */
 
 import process from 'node:process';
@@ -141,6 +161,31 @@ const CONDITIONS: Condition[] = [
     correction: true,
     historyTurns: 20,
     repairQuotesOwnText: true,
+  },
+  /*
+   * Round 63 (2026-08-30): a real live session hit the scripted fallback
+   * TWICE in a 5-turn conversation, at SHORT history. Traced to a genuine
+   * repeated-sentence repair whose retry (temp 0.2, the real correction
+   * message) came back empty. Every condition above that uses the real
+   * retry shape (temp 0.2 + a correction message) was only ever measured
+   * at `historyTurns: 20` — the "0%" this file's own header comment and
+   * `oracle/AGENTS.md` cite for the shape reminder was never actually
+   * measured at the short/medium history a repair retry early in a real
+   * conversation actually runs at. These two conditions close that gap.
+   */
+  {
+    name: 'repair correction (real retry shape) at short history (3 turns)',
+    temperature: 0.2,
+    correction: true,
+    historyTurns: 3,
+    repairQuotesOwnText: false,
+  },
+  {
+    name: 'repair correction (real retry shape) at medium history (10 turns)',
+    temperature: 0.2,
+    correction: true,
+    historyTurns: 10,
+    repairQuotesOwnText: false,
   },
 ];
 

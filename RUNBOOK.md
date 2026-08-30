@@ -6200,3 +6200,65 @@ Verification for the fixed finding: full frontend suite for the touched
 file green, lint and type-check clean, root `docs:check`/
 `secrets:check`/`i18n:check` clean. No `oracle/AGENTS.md` item —
 touches only `frontend/`.
+
+## Round 63: the repeated scripted fallback investigated — no code defect, a real measurement gap in an old "0%" claim closed, and refuted
+
+A real browser session (testing round 60's whiteboard fix as a real
+`admin` account) hit the scripted "My thoughts got tangled" fallback
+TWICE in one 5-turn conversation — once after a wrong numeric answer,
+once after a correct non-numeric one. A dedicated investigation traced
+the mechanism with real reproduction rather than guessing.
+
+**Ruled out with direct evidence, no code defect:** `falsePraise` and
+`falseCorrection` (`praiseContradictsAnswer`/`contradictsCorrectAnswer`
+in `prompt.ts`) structurally cannot fire on English text — both regexes
+(`STATED_RESULT`, `RESULT_ASSERTIONS`) are Spanish-verb-only
+(`es`/`son`/`tienes`/`da`…), confirmed by feeding both functions
+hand-written English sentences engineered to be exactly the failure
+shape they exist to catch, and by 0 occurrences of either flag across
+15 live en-US reproduction conversations (~60 model turns).
+`tierVocabularyViolation` and `languageViolation` were called directly
+against the ACTUAL quoted sentences from the live conversation and both
+returned `null`/no violation; also 0 occurrences across all 15
+reproduction runs.
+
+**Positively identified mechanism, reproduced live:** `repairableIsRepeat`
+— one of the 15 reproduction runs genuinely re-said an earlier sentence
+almost verbatim, correctly tripping the repeat check, and the mandatory
+one-shot retry then came back a real, billed, whitespace-only empty
+completion. With the turn still null and the repeat flag set, the code
+correctly fell through to the scripted line rather than delivering the
+known-repetitive text verbatim — exactly the DELIBERATE fix an earlier
+round (2026-08-30, "a failed repair for a REPEATED sentence delivered
+the repeat itself, verbatim") already put in place. Working as designed.
+
+**The one real, worth-closing gap: an old "0%" claim had never actually
+been measured at the history length where it was failing.** The shape
+reminder that eliminates empty completions on a repair retry
+(`scripts/probe-empty.ts`, extended by round 45) was measured "0%" only
+at `historyTurns: 20` (full window) — never at the short/medium history
+a repair retry early in a REAL conversation (like this one) actually
+runs at. The investigation's own live sample (~8% empty across ~24
+retry-eligible calls at short history) matched the OLD pre-reminder
+short-history baseline closely enough to look like a real residual gap.
+
+Closed with the same discipline round 45 already established for
+exactly this kind of claim: extended `probe-empty.ts` with two new
+conditions — the real retry shape (temperature 0.2, the actual
+correction message) at `historyTurns: 3` and `10`, the two lengths the
+existing reminder-protected conditions never covered. Ran it: **0/12
+empty at both** — indistinguishable from the existing full-window
+measurement (also reconfirmed clean in the same run). The short-history
+residual hypothesis does not hold either: round 63's own ~8% was
+statistical variance from a smaller, less tightly-controlled live
+sample, not a real gap in the reminder's reach. Documented in the
+script's own header comment, the same place round 45's refutation
+lives, so the next time this class of question comes up the measurement
+is already there.
+
+No production code changed — this closes an investigation thread with
+evidence, the same honest "nothing found, but here is what was actually
+verified" outcome round 45 already set the precedent for. `type-check`
+(including `tsconfig.scripts.json`) and `lint` both clean. No
+`oracle/AGENTS.md` item — matches round 45's own precedent of living
+entirely in this file plus the probe's own header.
