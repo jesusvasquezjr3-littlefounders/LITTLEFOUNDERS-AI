@@ -323,6 +323,36 @@ describe('PedagogicalController', () => {
   });
 
   /*
+   * SPACED has the identical "no lower rung to fall back to" shape as DIRECT/
+   * WORKED/FADED above — found by adversarial review, round 22 (2026-08-30,
+   * HIGH): `baseStrategy` returns SPACED unconditionally for a due review,
+   * with no `stuck` check at all, and SPACED was missing from the set rule
+   * 1b's counter tracks. A learner who deflects a spaced-review question with
+   * "no sé" produces only `conversation_turn` events — never a graded
+   * failure — so before this fix the controller proposed SPACED forever,
+   * with no escalation path whatsoever.
+   */
+  describe('a learner stuck in SPACED, not just DIRECT/WORKED/FADED, gets rescued', () => {
+    const shrug = { kind: 'conversation_turn' } as const;
+    const right = { kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1 } as const;
+
+    it('escalates to RESCUE after three SPACED turns that went nowhere', () => {
+      const c = new PedagogicalController([entry({ reason: 'review_due', pKnown: 0.9 })]);
+      const seen = [0, 1, 2].map((i) => c.decide(shrug, NOW + i * 40_000).strategy);
+      expect(seen.slice(0, 2)).toEqual(['SPACED', 'SPACED']);
+      expect(seen[2]).toBe('RESCUE');
+    });
+
+    it('keeps reviewing while the learner is still getting the reviews right', () => {
+      const c = new PedagogicalController([entry({ reason: 'review_due', pKnown: 0.9 })]);
+      for (let i = 0; i < 6; i += 1) {
+        c.decide(i % 2 === 0 ? right : shrug, NOW + i * 40_000);
+      }
+      expect(c.decide(shrug, NOW + 7 * 40_000).strategy).not.toBe('RESCUE');
+    });
+  });
+
+  /*
    * RESCUE IS A RESET, SO IT NEEDS ROOM TO WORK.
    *
    * Blocking only the immediately-consecutive rescue produced a worse thing

@@ -653,6 +653,43 @@ everything passes the blocked half perfectly and destroys the product.
    whether the ORIGINAL claim or the correction is now the operative one —
    watch for the retry inheriting the correction's ASSERTION without
    inheriting its REASONING.
+30. **A metadata filter that skips ONE axis on purpose ("the specific
+   procedure beats the general one") can bypass an axis that was never meant
+   to be optional.** Found by adversarial review, round 22 (2026-08-30,
+   HIGH): `selectSkill`'s dedicated-misconception path filtered by
+   `misconceptions`, `tiers`, and `notSpent` — never by `query.strategy` —
+   on the theory that a diagnosed wrong idea should win regardless of mode.
+   `controller.ts` sets `misconceptionCode` on every misconception-tagged
+   failure and clears it only on leaving REMEDIATE, so a second consecutive
+   failure that happens to carry a misconception code produces
+   `strategy: 'RESCUE'` (rule 1, frustration first) with `misconceptionCode`
+   still set — and this path handed back `counterexample-confront`, a skill
+   declared `strategies: [REMEDIATE]` whose own procedure says "Never use
+   this on a careless slip" and asks the child to defend and test their own
+   reasoning. A frustrated child got intellectually confronted instead of
+   the emotional de-escalation the controller had just decided was needed.
+   Fixed by adding the same `s.strategies.includes(query.strategy)` filter
+   the generic candidates path already had. General lesson: "the specific
+   wins over the general" is a priority rule between two matches, not a
+   licence to stop checking whether the specific one is even eligible.
+31. **A "no lower rung to fall back to" strategy gets missed unless someone
+   remembers to list it, one at a time.** Item 17 above widened
+   `NO_PROGRESS_TRACKED_STRATEGIES` from SOCRATIC/FLUENCY to also cover
+   DIRECT/WORKED/FADED. Found by the SAME adversarial review round that
+   found item 30 (2026-08-30, HIGH): SPACED has the identical shape —
+   `baseStrategy` returns it unconditionally for a due review, with no
+   `stuck` check at all — and was left out. A learner who deflects a
+   spaced-review question with "no sé" produces only `conversation_turn`
+   events, never a graded failure, so before this fix the controller
+   proposed SPACED forever with no escalation path whatsoever — the exact
+   defect item 17 closed, just for the one strategy nobody had written a
+   test for yet. Fixed by adding `'SPACED'` to the set and to rule 1b's
+   strategy check alongside DIRECT/WORKED/FADED. General lesson: a "these N
+   strategies share this failure mode" set is a claim about ALL strategies
+   with that shape, not just the ones a past incident happened to surface —
+   when adding a new item to a closed enum (`Strategy`) or reviewing one
+   that already exists, check it against every guardrail keyed on the
+   ENUM's members, not just the members a bug report already named.
 
 ---
 

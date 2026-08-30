@@ -2963,3 +2963,64 @@ fresh `tutor:converse` runs: neither reproduced the contradiction again,
 and the only remaining reported problems are the already-tracked
 canned-fallback rate from DeepSeek's own empty-completion behavior (see
 this file's empty-completions entry), not a new defect.
+
+## Two sequence bugs in the pedagogical brain — a RESCUE turn could confront a frustrated child, and SPACED review never escalated — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 22 (the pedagogical skill selector,
+`oracle/src/tutor/skills.ts` and `controller.ts`), both HIGH. Same review
+round, same defect class as several earlier entries in this file: a rule
+that is correct in isolation is still wrong once you look at the SEQUENCE
+of decisions across a whole conversation, or at how one filtering axis
+interacts with another.
+
+**1. A RESCUE turn could select a REMEDIATE-only confrontation skill.**
+`selectSkill`'s dedicated-misconception path filtered a diagnosed
+misconception by `misconceptions`, `tiers`, and `notSpent` — never by the
+controller's chosen strategy — on the theory that "the specific procedure
+beats the general one" should win outright. `controller.ts` sets
+`misconceptionCode` on every misconception-tagged failure and clears it
+only on leaving REMEDIATE, so a learner's SECOND consecutive wrong answer,
+landing on a misconception-tagged distractor, produces `strategy: 'RESCUE'`
+(rule 1, frustration first) together with a still-set `misconceptionCode`.
+The selector handed back `counterexample-confront` regardless — a skill
+declared `strategies: [REMEDIATE]` whose own procedure says "Never use
+this on a careless slip" and walks the child through defending and testing
+their own wrong rule. A child who is already frustrated (two wrong answers
+running) got intellectually confronted instead of the emotional
+de-escalation the controller itself had just decided was needed.
+
+Fixed by adding the same `s.strategies.includes(query.strategy)` filter
+the generic (non-dedicated) candidates path already had, in
+`oracle/src/tutor/skills.ts`. Only one skill in the whole catalogue
+declares `misconceptions` at all (`counterexample-confront`,
+`strategies: [REMEDIATE]`), so the fix cannot regress any other
+misconception match — there isn't one.
+
+**2. A learner stuck in spaced review never escalated to RESCUE.** Item 17
+elsewhere in this file (and `oracle/AGENTS.md` item 17) widened
+`NO_PROGRESS_TRACKED_STRATEGIES` from SOCRATIC/FLUENCY to also cover
+DIRECT/WORKED/FADED — every strategy with "no lower rung to fall back to."
+SPACED has the identical shape (`baseStrategy` returns it unconditionally
+for a due review, with no `stuck` check at all) and was left out. A
+learner who repeatedly deflects a spaced-review question with ordinary
+chat ("no sé", "olvidé eso") produces only `conversation_turn` events,
+never a graded `activity_result`/`voice_result`, so `consecutiveFailures`
+never moves (rule 1 can't fire) and — before this fix —
+`questioningWithoutProgress` never moved either (SPACED wasn't tracked).
+The controller proposed SPACED forever, with no escalation path.
+
+Fixed by adding `'SPACED'` to `NO_PROGRESS_TRACKED_STRATEGIES` and to rule
+1b's strategy check in `oracle/src/tutor/controller.ts`, alongside
+DIRECT/WORKED/FADED.
+
+Both proven with new tests reproducing the exact reported scenario:
+`skills.test.ts` asserts a RESCUE-strategy query with a catalogued
+misconception falls through to `frustration-rescue`, never
+`counterexample-confront`; `controller.test.ts` asserts three
+`conversation_turn` events in a row on a `review_due` entry escalate
+`SPACED, SPACED, RESCUE` (mirroring the existing DIRECT/WORKED tests
+immediately above it in that file). Both confirmed to fail against the
+pre-fix code for the exact claimed reason via `git stash`, pass against
+the fix. Full oracle suite green (456 tests, up from 453), lint clean,
+type-check clean on all three tsconfigs, `verify:pedagogy` and
+`verify:tutor` both green, root `docs:check` and `secrets:check` clean.

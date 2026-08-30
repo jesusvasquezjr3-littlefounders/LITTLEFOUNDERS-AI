@@ -187,10 +187,24 @@ export interface SkillQuery {
  * Deterministic selection, blueprint §6.4 levels 0-1.
  *
  * A catalogued misconception with a dedicated remediation always wins — the
- * specific procedure beats the general one. Otherwise: filter by strategy,
- * tier, and mastery band, then highest priority. Null when nothing fits, and
- * null must cost nothing: the caller falls back to the strategy's one-line
- * instruction, which is exactly the pre-V4 behaviour.
+ * specific procedure beats the general one — PROVIDED it is still declared
+ * for the CURRENT strategy. Found by adversarial review, round 22
+ * (2026-08-30, HIGH): this path used to skip the strategy filter entirely,
+ * on the theory that a diagnosed misconception should win regardless of
+ * mode. It does not: the controller sets `misconceptionCode` on every
+ * misconception-tagged failure and only clears it on leaving REMEDIATE
+ * (`controller.ts`), so a SECOND consecutive failure that happens to carry a
+ * misconception code produces `strategy: 'RESCUE'` (rule 1, frustration
+ * first) together with a still-set `misconceptionCode` — and this path
+ * handed back `counterexample-confront`, whose own frontmatter restricts it
+ * to `strategies: [REMEDIATE]` and whose own procedure says "Never use this
+ * on a careless slip" and asks the child to defend and test their reasoning.
+ * A frustrated child got intellectually confronted instead of the emotional
+ * de-escalation the controller itself had just decided was needed. Otherwise
+ * (no dedicated match): filter by strategy, tier, and mastery band, then
+ * highest priority. Null when nothing fits, and null must cost nothing: the
+ * caller falls back to the strategy's one-line instruction, which is exactly
+ * the pre-V4 behaviour.
  */
 export function selectSkill(query: SkillQuery): PedagogicalSkill | null {
   const all = skillCatalogue();
@@ -199,6 +213,7 @@ export function selectSkill(query: SkillQuery): PedagogicalSkill | null {
   if (query.misconceptionCode !== null) {
     const dedicated = all
       .filter((s) => s.misconceptions.includes(query.misconceptionCode as string))
+      .filter((s) => s.strategies.includes(query.strategy))
       .filter((s) => s.tiers.includes(query.tier))
       .filter(notSpent);
     if (dedicated.length > 0) {

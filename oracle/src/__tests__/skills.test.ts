@@ -61,6 +61,34 @@ describe('deterministic selection', () => {
     expect(skill?.name).toBe('counterexample-confront');
   });
 
+  /*
+   * Found by adversarial review, round 22 (2026-08-30, HIGH): the controller
+   * sets `misconceptionCode` on every misconception-tagged failure and only
+   * clears it on leaving REMEDIATE, so a SECOND consecutive failure that
+   * happens to carry a misconception code produces `strategy: 'RESCUE'`
+   * (frustration first) together with a still-set `misconceptionCode` — a
+   * real, reachable combination (`controller.test.ts` covers the sequencing;
+   * this file only needs to prove the SELECTOR'S half of the bug). Before the
+   * fix, the dedicated-misconception path ignored `query.strategy` entirely
+   * and handed back `counterexample-confront` anyway — a skill declared
+   * `strategies: [REMEDIATE]` whose own procedure says "Never use this on a
+   * careless slip" and asks a child to defend and test their reasoning,
+   * delivered instead of the emotional de-escalation RESCUE exists for.
+   */
+  it('does NOT hand a REMEDIATE-only dedicated remediation to a RESCUE turn', () => {
+    const skill = selectSkill({
+      strategy: 'RESCUE',
+      tier: 2,
+      pKnown: 0.5,
+      misconceptionCode: 'adds-instead-of-counts-up',
+      usedSkillNames: NONE,
+    });
+    // Falls through to the ordinary RESCUE skill instead — the misconception
+    // diagnosis does not override the strategy the controller decided on.
+    expect(skill?.name).toBe('frustration-rescue');
+    expect(skill?.strategies).toContain('RESCUE');
+  });
+
   it('an uncatalogued misconception falls back to the general remediation', () => {
     const skill = selectSkill({
       strategy: 'REMEDIATE',

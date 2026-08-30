@@ -141,6 +141,20 @@ const GUESS_FACTOR = 3;
  * have no lower rung to degrade to the way SOCRATIC/FLUENCY degrade to FADED.
  * So they share the same counter, and `propose()`'s rule 1b spends it on
  * RESCUE instead — the response actually built for "frustrated, no progress".
+ *
+ * Widened again to include SPACED, found by adversarial review, round 22
+ * (2026-08-30, HIGH): `baseStrategy` returns SPACED unconditionally for a
+ * due review (`entry.reason === 'review_due'`), with no `stuck` check at
+ * all — unlike the mastery-band branch just below it, which always checks
+ * `stuck` before choosing between SOCRATIC/FLUENCY and FADED. A learner who
+ * deflects a spaced-review question with ordinary chat ("no sé", "olvidé
+ * eso") produces only `conversation_turn` events, never a graded
+ * `activity_result`/`voice_result` — so `consecutiveFailures` never moves
+ * (rule 1 can't fire) and, before this widening, `questioningWithoutProgress`
+ * never moved either (rule 1b's counter was blind to SPACED). The controller
+ * proposed SPACED forever, with no escalation path at all — the exact defect
+ * this set already exists to close for DIRECT/WORKED/FADED, just for the one
+ * strategy nobody had reason to type an example of yet.
  */
 const NO_PROGRESS_TRACKED_STRATEGIES: ReadonlySet<Strategy> = new Set([
   'DIRECT',
@@ -148,6 +162,7 @@ const NO_PROGRESS_TRACKED_STRATEGIES: ReadonlySet<Strategy> = new Set([
   'FADED',
   'SOCRATIC',
   'FLUENCY',
+  'SPACED',
 ]);
 
 type Difficulty = 1 | 2 | 3 | 4 | 5;
@@ -506,20 +521,24 @@ export class PedagogicalController {
      * rung to fall back to.
      *
      * SOCRATIC and FLUENCY have somewhere to go when stuck: `baseStrategy`
-     * degrades them to FADED (rule 7, below). DIRECT, WORKED and FADED do
-     * not — a learner already being given a full worked example who keeps
-     * answering "no sé" is not undertaught, they are stuck, and rule 1 above
-     * cannot see it because a conversational "I don't know" is never a graded
-     * failure. Three such turns is the SAME threshold rule 7 already uses for
-     * the questioning bands, spent on the response actually built for this:
-     * RESCUE validates the difficulty and makes the next thing easier, rather
-     * than handing the model the identical DIRECT/WORKED instruction a fourth
-     * time and trusting it to notice on its own that nothing is landing.
+     * degrades them to FADED (rule 7, below). DIRECT, WORKED, FADED and
+     * SPACED do not — a learner already being given a full worked example
+     * (or a due review) who keeps answering "no sé" is not undertaught,
+     * they are stuck, and rule 1 above cannot see it because a
+     * conversational "I don't know" is never a graded failure. Three such
+     * turns is the SAME threshold rule 7 already uses for the questioning
+     * bands, spent on the response actually built for this: RESCUE
+     * validates the difficulty and makes the next thing easier, rather
+     * than handing the model the identical instruction a fourth time and
+     * trusting it to notice on its own that nothing is landing.
      */
     if (
       this.questioningWithoutProgress >= 3 &&
       !this.rescuedSinceProgress &&
-      (this.strategy === 'DIRECT' || this.strategy === 'WORKED' || this.strategy === 'FADED')
+      (this.strategy === 'DIRECT' ||
+        this.strategy === 'WORKED' ||
+        this.strategy === 'FADED' ||
+        this.strategy === 'SPACED')
     ) {
       return 'RESCUE';
     }
