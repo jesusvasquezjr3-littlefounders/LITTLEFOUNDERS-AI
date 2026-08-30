@@ -361,6 +361,26 @@ resumed on a fresh token" (all three tests) and `backend/src/__tests__/tutor.tes
 > hook and a controllable fake socket, each confirmed to fail against the
 > pre-fix code first.
 
+> **Fixed 2026-08-30 (an eighth adversarial review, CRITICAL):
+> `LiveSegmentPanel.tsx`'s `submit()` could apply a stale grade response to
+> whatever segment happened to be on screen.** The server can legitimately
+> replace an unanswered segment while a grade request for the PREVIOUS one is
+> still in flight; `submit`'s closure over `live.segmentId` cannot see this,
+> because React gives the already-running call the `live` object from the
+> render it started in, which never mutates — only a NEW `submit` closure
+> would see the new prop, and the old one is the one still awaiting. A stale
+> response therefore painted its verdict over the segment that replaced it,
+> and — because `isSegmentLocked` reads `verdict?.correct` — a stale CORRECT
+> verdict soft-locked that segment's inputs on an activity the learner had
+> not even attempted. Fixed with a ref (`liveSegmentIdRef`) written on every
+> render regardless of which closure is running, checked against the id
+> `submit` captured at call time immediately after the await; a mismatch
+> drops the response silently, since the segment-reset effect already put the
+> new segment in a clean state. Proven with `LiveSegmentPanel.test.tsx` (new
+> file) using a minimal test-only registry entry rather than a real renderer,
+> confirmed to fail against the pre-fix component first — the stale "Exactly
+> right!" banner rendered over a fresh, unanswered segment.
+
 ### §3.3 Inworld sits behind an interface, from day one
 
 The owner's stated intent is to replace Inworld with self-hosted STT/TTS once

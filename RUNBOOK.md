@@ -1799,3 +1799,56 @@ existing test seeded a learner already at or above the mastery band the fix
 covered. A guardrail closed for one band is not closed for the bands below
 it, and the only way that surfaces is trying the thing at the band nobody
 tested.
+
+## An eighth adversarial review: a stale grade response could paint over, and soft-lock, the segment that replaced it — closed 2026-08-30
+
+**Found by an eighth independent adversarial code review**, this time
+pointed at the remaining Tutor stage components, one CRITICAL finding in
+`frontend/src/tutor/LiveSegmentPanel.tsx`.
+
+`submit()` awaits `gradeSegment` and then unconditionally calls
+`setVerdict`/`setXpAwarded` on whatever segment is currently rendered. The
+server can legitimately replace an unanswered segment while that request is
+still in flight — the tutor moved on before Core answered, exactly the shape
+`ws/server.ts` is built to allow. When that happens, segment A's response
+lands after segment B is already on screen, and `submit`'s own closure over
+`live.segmentId` cannot tell: React re-creates `submit` with a fresh closure
+when the prop changes, but the call already in flight keeps evaluating the
+`live` object from the render it started in, which never mutates. The stale
+verdict then paints over B's UI, and — because `isSegmentLocked` reads
+`verdict?.correct` — a stale CORRECT verdict soft-locks B's inputs until the
+segment changes again, on an activity the learner has not touched yet.
+
+**Fix.** A ref (`liveSegmentIdRef`) is written on every render, independent
+of which `submit` closure is running, so it always reflects the segment
+actually on screen. `submit` captures the segment id it was called for
+(`requestedSegmentId`) and compares it against the ref immediately after the
+await, before any `setState` call; a mismatch means the tutor already moved
+on, and the response is silently dropped — the segment-reset effect that
+runs on every `live.segmentId` change has already put the new segment in a
+clean state, so there is nothing to repair.
+
+Proven with a permanent test (`LiveSegmentPanel.test.tsx`, new file) using a
+minimal test-only registry entry rather than any of the 57 real exercise
+renderers, since the property under test is the panel's own staleness guard,
+not any specific renderer: a controlled, still-pending `gradeSegment` promise
+is left in flight while the component re-renders with a different
+`live.segmentId`, then resolved with a correct verdict. Asserts the new
+segment shows no verdict banner, `onGraded` is never called, and its input
+control is not disabled. Confirmed to fail against the pre-fix component —
+the stale "Exactly right!" banner rendered over the new segment — via
+`git stash` before being trusted. A second test confirms the ordinary,
+non-stale path still applies the response normally. Full suite (1401 tests
+across 118 files), lint, type-check and `i18n:check` all green.
+
+**What this incident adds to the pattern.** The same shape as the seventh
+review's findings — a mechanism whose correctness depends on a moment in
+time rather than on current state — but this is the first fix in this file
+proven by first reproducing the exact failure LIVE, in the browser, as a
+real learner (the "no sé" guardrail gap in the entry above), then continuing
+into a code-level adversarial pass rather than the other order. Neither
+alone would have found everything this session did: the live session found
+a pedagogical gap no unit test happened to probe for, and the adversarial
+review found a client-side race no amount of playing the product by hand was
+likely to trigger on demand, since it requires a grade response and a new
+served segment to race in a specific order.

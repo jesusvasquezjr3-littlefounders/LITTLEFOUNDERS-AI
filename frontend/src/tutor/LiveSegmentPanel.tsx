@@ -148,6 +148,22 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, className }: Liv
     setXpAwarded(null);
   }, [live.segmentId]);
 
+  /*
+   * Mirrors `live.segmentId` on every render, independent of which `submit`
+   * closure is currently awaiting a response. Found by adversarial review,
+   * 2026-08-30 (CRITICAL): the server can legitimately replace an unanswered
+   * segment while a grade request for the PREVIOUS one is still in flight —
+   * the tutor moved on before Core answered. `submit`'s own closure over
+   * `live.segmentId` cannot detect this: React re-creates `submit` with a new
+   * closure when the prop changes, but the ALREADY-RUNNING call keeps
+   * evaluating its own, now-stale `live` from the render it started in. Only
+   * a ref, mutated on every render regardless of which closure is running,
+   * reflects what segment is actually on screen by the time the response
+   * lands.
+   */
+  const liveSegmentIdRef = useRef(live.segmentId);
+  liveSegmentIdRef.current = live.segmentId;
+
   const canSubmit = useMemo(() => {
     if (!entry || entry.kind !== 'input') return false;
     return entry.canSubmit ? entry.canSubmit(draft, segment) : draft !== undefined;
@@ -155,9 +171,22 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, className }: Liv
 
   const submit = useCallback(
     async (answer: unknown) => {
+      const requestedSegmentId = live.segmentId;
       setChecking(true);
       setFailed(false);
-      const result = await gradeSegment(token, live.segmentId, answer, attempt);
+      const result = await gradeSegment(token, requestedSegmentId, answer, attempt);
+
+      if (requestedSegmentId !== liveSegmentIdRef.current) {
+        // The tutor already served a different segment while this grade
+        // request was in flight. Applying the response now would paint a
+        // stale verdict over a fresh, unanswered segment and — through
+        // `isSegmentLocked` reading that leaked `verdict?.correct` — soft-lock
+        // its inputs until the segment changes again. Silently drop it; the
+        // segment-reset effect above has already put the new one in a clean
+        // state.
+        return;
+      }
+
       setChecking(false);
 
       if (result.error || !result.data) {
@@ -178,7 +207,7 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, className }: Liv
         const pedagogy = result.data.pedagogy
           ? { echo: result.data.pedagogy.echo, attemptNumber: attempt }
           : undefined;
-        onGraded(live.segmentId, result.data.verdict.score, result.data.verdict.correct, pedagogy);
+        onGraded(requestedSegmentId, result.data.verdict.score, result.data.verdict.correct, pedagogy);
       } else {
         setAttempt((n) => n + 1);
       }
