@@ -305,7 +305,7 @@ export function PersonalizeInWorld({
   const chooseTutor = (id: CharacterId) => {
     if (id === lead) return;
     playPlatformSound('tutor_chip');
-    onSave({
+    void onSave({
       character: id,
       /*
        * A companion who is also the tutor would put one character on the island
@@ -320,14 +320,14 @@ export function PersonalizeInWorld({
   const toggleCompanion = (id: CharacterId) => {
     if (id === lead) return;
     playPlatformSound('tutor_chip');
-    onSave({ companion: companion === id ? null : id });
+    void onSave({ companion: companion === id ? null : id });
   };
 
   const goToIsland = (id: string) => {
     if (id === preferences.diorama) return;
     // The move is the choice, so it gets the travel cue rather than the pick one.
     playPlatformSound('tutor_camera');
-    onSave({ diorama: id });
+    void onSave({ diorama: id });
   };
 
   /*
@@ -342,13 +342,13 @@ export function PersonalizeInWorld({
   const setLight = (id: string) => {
     if (id === preferences.backdrop) return;
     playPlatformSound('tutor_chip');
-    onSave({ backdrop: id });
+    void onSave({ backdrop: id });
   };
 
   const toggleAdaptation = (adaptation: Adaptation) => {
     playPlatformSound('tutor_chip');
     const on = preferences.adaptations.includes(adaptation);
-    onSave({
+    void onSave({
       adaptations: on
         ? preferences.adaptations.filter((entry) => entry !== adaptation)
         : [...preferences.adaptations, adaptation],
@@ -356,10 +356,19 @@ export function PersonalizeInWorld({
   };
 
   /**
-   * Validates and persists the nickname. Returns whether it was acceptable, so
-   * the same function can guard the press that leaves this layer.
+   * Validates and persists the nickname. Returns whether it actually landed,
+   * so the same function can guard the press that leaves this layer.
+   *
+   * Found by adversarial review, round 38 (2026-08-30, HIGH): this used to
+   * return `true` the instant `onSave` was CALLED, not once it actually
+   * succeeded — the format check here cannot replicate the backend's
+   * real-name check (it has no access to the learner's `display_name`), so
+   * a clean-looking value like "Ana Vasquez" sailed past this function,
+   * `onSave` fired, and the "I'm ready" button closed the picker as if it
+   * had worked, while the server had actually rejected it and the
+   * optimistic value never really saved.
    */
-  const commitNickname = (): boolean => {
+  const commitNickname = async (): Promise<boolean> => {
     const value = nickname.trim();
     if (value !== '' && !NICKNAME_PATTERN.test(value)) {
       setNicknameError(t('tutor.personalize.nicknameInvalid'));
@@ -367,8 +376,10 @@ export function PersonalizeInWorld({
     }
     setNicknameError(null);
     const next = value === '' ? null : value;
-    if (next !== preferences.nickname) onSave({ nickname: next });
-    return true;
+    if (next === preferences.nickname) return true;
+    const saved = await onSave({ nickname: next });
+    if (!saved) setNicknameError(t('tutor.personalize.nicknameRejected'));
+    return saved;
   };
 
   return (
@@ -658,7 +669,7 @@ export function PersonalizeInWorld({
                 value={nickname}
                 maxLength={24}
                 onChange={(event) => setNickname(event.target.value)}
-                onBlur={() => commitNickname()}
+                onBlur={() => void commitNickname()}
               />
 
               <div role="group" aria-labelledby={adaptHeadingId}>
@@ -858,7 +869,9 @@ export function PersonalizeInWorld({
              */
             disabled={saving}
             onClick={() => {
-              if (commitNickname()) onDone();
+              void commitNickname().then((ok) => {
+                if (ok) onDone();
+              });
             }}
             className="pointer-events-auto min-w-0 flex-1 !max-w-none"
             floorClassName="py-3"

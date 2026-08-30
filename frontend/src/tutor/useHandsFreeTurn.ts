@@ -85,9 +85,26 @@ export function useHandsFreeTurn(input: HandsFreeTurnInput): void {
     let cancelled = false;
     let unsubscribe: (() => void) | null = null;
 
+    /*
+     * FLOORED, NEVER TRUSTED RAW. Found by adversarial review, round 38
+     * (2026-08-30, MEDIUM, not reachable through any code path shipped
+     * today — every real `listenSilenceMs` the server sends is a hardcoded
+     * positive constant, 900-3500ms). Nothing on either side of the wire
+     * enforced positivity here, and `ws/protocol.ts`'s own comment already
+     * warns "a zero here would cut a child off the moment they drew
+     * breath" — a value of 0 (or negative) would end the turn after the
+     * detector's own MIN_SPEECH_MS plus a single silent frame, far too
+     * fast for a child to actually answer. The floor is well below every
+     * real production value, so it changes nothing for a healthy policy —
+     * it only prevents a malformed or future misconfigured one from ever
+     * reaching the detector unguarded.
+     */
+    const MIN_LISTEN_SILENCE_MS = 500;
     const detectorPolicy: TurnDetectorPolicy = {
       ...DEFAULT_TURN_POLICY,
-      ...(policyRef.current ? { silenceMs: policyRef.current.listenSilenceMs } : {}),
+      ...(policyRef.current
+        ? { silenceMs: Math.max(MIN_LISTEN_SILENCE_MS, policyRef.current.listenSilenceMs) }
+        : {}),
     };
 
     void mic

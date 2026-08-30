@@ -955,7 +955,16 @@ export interface PersonalizeLayerProps extends StageLayerCommonProps {
   catalog: TutorCatalog;
   /** True while a patch is in flight. Never blocks the picker. */
   saving: boolean;
-  onSave: (patch: Partial<TutorPreferences>) => void;
+  /**
+   * Resolves to whether the save actually succeeded. Found by adversarial
+   * review, round 38 (2026-08-30, HIGH): this used to return nothing, so a
+   * server-rejected save (a nickname the backend correctly refuses as the
+   * learner's own real name) was indistinguishable from a successful one —
+   * `commitNickname` in `PersonalizeInWorld.tsx` declared success and closed
+   * the picker the instant `onSave` was CALLED, never once it actually
+   * landed.
+   */
+  onSave: (patch: Partial<TutorPreferences>) => Promise<boolean>;
   /** Done making the place theirs. Moves the camera to the introduce shot. */
   onDone: () => void;
 }

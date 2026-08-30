@@ -349,9 +349,14 @@ describe('the one plate', () => {
     expect(resting[1]).toHaveTextContent("I'm ready");
   });
 
-  it('is one press from starting when nothing needs changing', () => {
+  it('is one press from starting when nothing needs changing', async () => {
     const { onDone } = renderLayer();
-    fireEvent.click(screen.getByRole('button', { name: "I'm ready" }));
+    // `commitNickname` is async even on its early-return path (nothing
+    // changed, no `onSave` call needed) — `onDone` fires inside its `.then`,
+    // one microtask after the click.
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: "I'm ready" }));
+    });
     expect(onDone).toHaveBeenCalledTimes(1);
   });
 
@@ -365,9 +370,11 @@ describe('the one plate', () => {
    * passing `saving` back in, a second fast click while it is still true
    * must not fire a second, wholly redundant save.
    */
-  it('does not re-fire once a save is already in flight', () => {
+  it('does not re-fire once a save is already in flight', async () => {
     const { onDone, rerender, onSave } = renderLayer();
-    fireEvent.click(screen.getByRole('button', { name: "I'm ready" }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: "I'm ready" }));
+    });
     expect(onDone).toHaveBeenCalledTimes(1);
 
     // The real caller reacts to the first click by setting `saving` true
@@ -436,6 +443,47 @@ describe('the one plate', () => {
 
     expect(onDone).not.toHaveBeenCalled();
     expect(onSave).not.toHaveBeenCalled();
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+  });
+
+  /*
+   * Found by adversarial review, round 38 (2026-08-30, HIGH). The test
+   * above only proves the CLIENT-side format check — the frontend has no
+   * access to the learner's `display_name`, so it cannot replicate the
+   * backend's real-name check at all. A format-valid nickname like "Ana
+   * Vasquez" sails past `NICKNAME_PATTERN` here, `onSave` is called, and
+   * the backend correctly rejects it — but `onSave` used to return nothing,
+   * so `commitNickname` declared success the instant it was CALLED, not
+   * once it actually landed, and the picker closed as if the save had
+   * worked while the server had refused it.
+   */
+  it('does not leave, and shows an error, when the SERVER rejects a format-valid nickname', async () => {
+    const onSave = vi.fn().mockResolvedValue(false);
+    const onDone = vi.fn();
+    render(
+      <SafeAreaProvider>
+        <AnchorProvider>
+          <PersonalizeInWorld
+            phase="personalizing"
+            ready
+            preferences={PREFERENCES}
+            catalog={CATALOG}
+            saving={false}
+            onSave={onSave}
+            onDone={onDone}
+          />
+        </AnchorProvider>
+      </SafeAreaProvider>,
+    );
+    openPanel();
+    fireEvent.change(screen.getByLabelText('Nickname'), { target: { value: 'Ana Vasquez' } });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: "I'm ready" }));
+    });
+
+    expect(onSave).toHaveBeenCalledWith({ nickname: 'Ana Vasquez' });
+    expect(onDone).not.toHaveBeenCalled();
     expect(screen.getByRole('alert')).toBeInTheDocument();
   });
 

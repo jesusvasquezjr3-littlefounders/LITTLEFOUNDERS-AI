@@ -305,4 +305,42 @@ describe('the silence budget comes from the strategy', () => {
     // dormant brain must not collapse to a voice-assistant timeout.
     expect(onTurn).not.toHaveBeenCalled();
   });
+
+  /*
+   * Found by adversarial review, round 38 (2026-08-30, MEDIUM, not
+   * reachable through any code path shipped today — every real
+   * `listenSilenceMs` is a hardcoded positive server constant). Nothing
+   * clamped a malformed or hostile value before it reached the detector;
+   * `ws/protocol.ts`'s own comment already warns "a zero here would cut a
+   * child off the moment they drew breath."
+   */
+  it('never lets a malformed near-zero silence budget end a turn almost instantly', async () => {
+    const onTurn = vi.fn();
+    const mic = fakeMic();
+    await act(async () => {
+      renderHook(() =>
+        useHandsFreeTurn({
+          ...BASE,
+          policy: { listenSilenceMs: 0 },
+          microphone: mic,
+          onTurn,
+        }),
+      );
+    });
+
+    await act(async () => {
+      for (let i = 0; i < 40; i += 1) mic.emit(0.5);
+      // ~200ms of silence — an unfloored zero budget would already have
+      // ended the turn after the very first silent frame.
+      for (let i = 0; i < 10; i += 1) mic.emit(0);
+    });
+    expect(onTurn).not.toHaveBeenCalled();
+
+    await act(async () => {
+      // Past the 500ms floor this hook now enforces regardless of what the
+      // server sent.
+      for (let i = 0; i < 30; i += 1) mic.emit(0);
+    });
+    expect(onTurn).toHaveBeenCalledTimes(1);
+  });
 });

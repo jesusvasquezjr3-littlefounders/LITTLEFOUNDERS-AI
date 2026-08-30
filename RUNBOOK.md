@@ -4128,3 +4128,92 @@ intent make a speculative fix worse than leaving it recorded:**
   — confirmed the same component renders both the live and replayed
   board, so no broken bar height or spoken/drawn mismatch ever reaches a
   child on either surface. Not a defect.
+
+## A rejected preference save could close the personalize picker as if it had worked, and an unguarded silence budget could end a hands-free turn almost instantly — found by adversarial review, closed 2026-08-30
+
+Round 38 reviewed hands-free voice timing (`frontend/src/tutor/useHandsFreeTurn.ts`)
+and the personalization/nickname save flow (`PersonalizeInWorld.tsx`,
+`TutorExperience.tsx`, `stage/StageShell.tsx`, the lab's mock in
+`TutorLabPage.tsx`) — neither previously touched by this campaign.
+
+**1. HIGH — a rejected preference save left the picker believing it had
+succeeded.** `onSave: (patch) => void` gave the caller no way to learn
+whether a save actually landed. `commitNickname` returned `true` the
+instant `onSave` was CALLED, not once it actually succeeded — the
+client-side format check (`NICKNAME_PATTERN`) cannot replicate the
+backend's real-name check (it has no access to the learner's
+`display_name`), so a clean-looking value like "Ana Vasquez" sailed past
+the client check, `onSave` fired, and the "I'm ready" button closed the
+picker as if it had worked, while the server had actually rejected it
+and the optimistic value never really saved — with nothing on screen
+ever telling the learner or parent that anything had gone wrong.
+
+Fixed by changing the contract to `onSave: (patch) => Promise<boolean>`
+end to end: `TutorExperience.tsx`'s `persistPreferences` now applies the
+patch optimistically (so the picker still feels instant), captures the
+PRIOR state inside the `setState` updater — the only place it's actually
+available — and rolls back to exactly that prior state if
+`savePreferences` comes back without data, resolving `false`.
+`PersonalizeInWorld.tsx`'s `commitNickname` is now `async`, awaits the
+real result, sets a new `tutor.personalize.nicknameRejected` error
+("That nickname didn't work. Try a different one.", all 3 locales) on
+failure, and the "I'm ready" press only calls `onDone()` when the save
+actually succeeded — a rejected save now keeps the learner on the
+picker with a visible reason, instead of silently discarding their
+correction. All 5 fire-and-forget `onSave(...)` call sites (tutor
+choice, companion toggle, island choice, light, adaptation toggle)
+updated to `void` the now-Promise-returning call.
+
+Verified live in `/dev/tutor-lab`: with the lab's mock forced to reject
+every save, changing the nickname and pressing "I'm ready" left the
+learner on the personalize screen with the new error banner visible,
+at both desktop (~1280px) and mobile (~375px) — screenshotted at both.
+The first attempt at this looked like the fix had failed (surface still
+advanced to `introducing`), which turned out to be an artifact of the
+lab's OWN mock: it called `setPreferences` unconditionally regardless of
+the returned success value, so the input's `onBlur`-triggered commit
+optimistically wrote the new nickname into `preferences` even though it
+"failed" — by the time the "I'm ready" click's own `commitNickname` ran,
+`next === preferences.nickname` was already true and it short-circuited
+to `true` without calling `onSave` a second time. Production's real
+`persistPreferences` does not have this problem (it rolls back on
+failure); only the lab's simplified mock needed a truer rejection
+(dropping its own optimistic `setPreferences`) to prove the fix
+correctly. Confirmed via `git stash` that the pre-fix code let `onDone`
+fire regardless of `onSave`'s result. Full frontend suite green (126
+files, 1445 tests), lint and type-check clean, `i18n:check` green for
+the new key.
+
+**2. MEDIUM, not reachable through any code path shipped today — an
+unguarded silence budget could end a hands-free turn almost instantly.**
+`useHandsFreeTurn.ts` passed the server-sent `listenSilenceMs` straight
+into the turn detector's policy with no floor. `ws/protocol.ts`'s own
+comment already warns "a zero here would cut a child off the moment
+they drew breath," but nothing on either side of the wire actually
+enforced positivity — every real value the server sends today is a
+hardcoded positive constant (900–3500ms per strategy), so this was
+latent, not live.
+
+Fixed with a `MIN_LISTEN_SILENCE_MS = 500` floor applied via
+`Math.max(MIN_LISTEN_SILENCE_MS, policyRef.current.listenSilenceMs)`,
+well below every real production value so a healthy policy is
+unaffected. Proven with a new test in `useHandsFreeTurn.test.tsx`
+supplying `listenSilenceMs: 0`: `onTurn` is NOT called after ~200ms of
+silence, and IS called once the floored 500ms budget is actually
+reached. Confirmed to fail against the pre-fix code via `git stash`.
+
+**Noted, deliberately NOT fixed this round — a half-built feature, not
+a bug with a clear repro:**
+
+- **`idleNudgeMs` is computed server-side per pedagogical strategy
+  (`oracle/src/tutor/controller.ts`'s `IDLE_NUDGE_MS`), sent over the
+  wire in the same `policy` object as `listenSilenceMs`
+  (`ws/server.ts`, `ws/protocol.ts`), typed on the client
+  (`useTutorSocket.ts`, `types.ts`) — and never read anywhere in
+  `TutorExperience.tsx` or `useHandsFreeTurn.ts`.** No idle-nudge timer
+  exists client-side; the value arrives and is discarded. This reads as
+  an intentionally staged rollout (server-side plumbing landed ahead of
+  the client behavior it's meant to drive) rather than a regression —
+  there is no prior client implementation this could have broken. Left
+  for a future round to either build the client-side nudge or confirm
+  the feature is intentionally deferred.

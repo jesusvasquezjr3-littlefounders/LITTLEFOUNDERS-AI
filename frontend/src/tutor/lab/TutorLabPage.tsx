@@ -470,7 +470,11 @@ export default function TutorLabPage() {
     preferences,
     catalog: LAB_CATALOG,
     saving: false,
-    onSave: (patch) => setPreferences((prev) => ({ ...prev, ...patch })),
+    onSave: (patch) => {
+      setPreferences((prev) => ({ ...prev, ...patch }));
+      // There is no real backend here — a lab save always "succeeds".
+      return Promise.resolve(true);
+    },
     onDone: () => setSurface('introducing'),
   };
 

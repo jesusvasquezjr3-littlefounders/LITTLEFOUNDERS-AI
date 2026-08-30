@@ -279,16 +279,39 @@ export function TutorExperience() {
   }, [getToken]);
 
   const persistPreferences = useCallback(
-    (patch: Partial<TutorPreferences>) => {
-      if (!token) return;
+    (patch: Partial<TutorPreferences>): Promise<boolean> => {
+      if (!token) return Promise.resolve(false);
       setSaving(true);
-      // Applied OPTIMISTICALLY, which is what makes the picker a picker: the
-      // island, the cast and the light are props of the one live canvas, so a
-      // choice reaches the scene on this tick rather than after a round trip.
-      setPreferences((prev) => (prev ? { ...prev, ...patch } : prev));
-      void savePreferences(token, patch).then((result) => {
+      /*
+       * Applied OPTIMISTICALLY, which is what makes the picker a picker: the
+       * island, the cast and the light are props of the one live canvas, so a
+       * choice reaches the scene on this tick rather than after a round trip.
+       * `previous` is captured INSIDE the updater — the only place the prior
+       * value is actually available — so a rejected save can roll back to
+       * exactly what was there before, not to whatever `preferences` happens
+       * to be by the time the network call resolves.
+       */
+      let previous: TutorPreferences | null = null;
+      setPreferences((prev) => {
+        previous = prev;
+        return prev ? { ...prev, ...patch } : prev;
+      });
+      return savePreferences(token, patch).then((result) => {
         setSaving(false);
-        if (result.data) setPreferences(result.data);
+        if (result.data) {
+          setPreferences(result.data);
+          return true;
+        }
+        /*
+         * ROLLS BACK THE OPTIMISTIC PATCH — it was never actually saved.
+         * Found by adversarial review, round 38 (2026-08-30, HIGH): a
+         * rejected save (e.g. a nickname the backend correctly refuses as
+         * the learner's own real name) used to leave the optimistic,
+         * never-persisted value sitting in state forever, with nothing
+         * anywhere telling the caller the save had failed at all.
+         */
+        setPreferences(previous);
+        return false;
       });
     },
     [token],
@@ -866,7 +889,7 @@ export function TutorExperience() {
             // SERVER-SIDE half of the marker: it guarantees a preferences row
             // exists, which is what `personalized` reads on the next visit —
             // so a cleared browser no longer re-opens the picker forever.
-            persistPreferences({});
+            void persistPreferences({});
             rememberPicker(userIdRef.current);
             setPhase('introducing');
           },
