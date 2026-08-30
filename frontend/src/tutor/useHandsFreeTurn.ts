@@ -40,6 +40,18 @@ export interface HandsFreeTurnInput {
   speaking: boolean;
   /** A turn is already in flight; a second one would race it. */
   awaitingReply: boolean;
+  /**
+   * The current turn's own `turn_audio` frame has not arrived yet, so it is
+   * still unknown whether the tutor is about to have a clip. Found by
+   * adversarial review, 2026-08-30 (HIGH): `speaking` only becomes true once
+   * that frame lands with a real URL — but the turn's TEXT arrives first, in
+   * its own frame, and `awaitingReply` clears the instant text lands. In the
+   * gap between those two moments, both `speaking` and `awaitingReply` read
+   * false, which used to be exactly the condition below that opens the
+   * microphone — silently capturing, and then discarding, anything the
+   * learner said in that window. See `TutorTurnState.audioPending`.
+   */
+  audioPending: boolean;
   /** The server's per-strategy turn policy, or null while the brain is dormant. */
   policy: { listenSilenceMs: number } | null;
   /** Rises on every new tutor turn, so each answer gets a fresh listen. */
@@ -50,11 +62,11 @@ export interface HandsFreeTurnInput {
 }
 
 export function useHandsFreeTurn(input: HandsFreeTurnInput): void {
-  const { enabled, speaking, awaitingReply, policy, turnSeq, microphone, onTurn } = input;
+  const { enabled, speaking, awaitingReply, audioPending, policy, turnSeq, microphone, onTurn } = input;
 
   /*
    * The callbacks and the live objects are held in refs so the effect below
-   * depends ONLY on the four booleans that decide whether to listen. Without
+   * depends ONLY on the five booleans that decide whether to listen. Without
    * this the effect re-runs whenever the parent re-renders — which is every
    * animation frame during a conversation — and each re-run would stop and
    * restart the recorder mid-sentence.
@@ -67,7 +79,7 @@ export function useHandsFreeTurn(input: HandsFreeTurnInput): void {
   policyRef.current = policy;
 
   useEffect(() => {
-    if (!enabled || speaking || awaitingReply) return;
+    if (!enabled || speaking || awaitingReply || audioPending) return;
 
     const mic = micRef.current;
     let cancelled = false;
@@ -134,7 +146,7 @@ export function useHandsFreeTurn(input: HandsFreeTurnInput): void {
       void micRef.current.stop();
     };
     // `turnSeq` is in the list on purpose: a new tutor turn must restart the
-    // listen even when the three booleans happen to look unchanged between
+    // listen even when the four booleans happen to look unchanged between
     // renders.
-  }, [enabled, speaking, awaitingReply, turnSeq]);
+  }, [enabled, speaking, awaitingReply, audioPending, turnSeq]);
 }

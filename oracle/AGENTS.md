@@ -403,6 +403,18 @@ everything passes the blocked half perfectly and destroys the product.
    that was not there. Word an instruction about "whatever this activity
    actually involved," not about one shape you had in mind, whenever it is
    meant to apply to more than one segment type.
+15. **`audioUrl: null` on a `turn` frame means two different things, and the
+   client could not tell them apart.** It means "still coming" on ordinary
+   split delivery (§2.8) and "never coming" on a resume redraw, which
+   deliberately sends no `turn_audio` at all. `audioPending` on the `turn`
+   frame names the difference explicitly (true/false at the two send sites
+   in `ws/server.ts`) — found necessary by adversarial review, 2026-08-30
+   (HIGH), because `frontend/src/tutor/useHandsFreeTurn.ts` was opening the
+   microphone in the real, wall-clock gap between a turn's text landing and
+   its `turn_audio` settling, silently discarding whatever the learner said
+   in that window. If you add a field whose ABSENCE is ambiguous between two
+   states a client must act on differently, say which one explicitly rather
+   than letting the client infer it from timing.
 
 ---
 

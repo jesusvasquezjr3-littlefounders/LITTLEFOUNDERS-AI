@@ -78,6 +78,7 @@ const TURN: ServerMessage = {
   emotion: 'happy',
   action: 'nod',
   audioUrl: null,
+  audioPending: false,
   next: 'ask',
 };
 
@@ -142,6 +143,7 @@ describe('useTutorSocket', () => {
         emotion: 'happy',
         action: 'nod',
         audioUrl: null,
+        audioPending: false,
         next: 'ask',
       }),
     );
@@ -160,6 +162,7 @@ describe('useTutorSocket', () => {
         emotion: 'happy',
         action: 'nod',
         audioUrl: null,
+        audioPending: true,
         next: 'ask',
       }),
     );

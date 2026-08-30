@@ -27,6 +27,15 @@ export interface TutorTurnState {
   emotion: CharacterEmotion;
   action: CharacterAction;
   audioUrl: string | null;
+  /**
+   * False the instant this turn's audio question is settled — either a real
+   * clip arrived via `turn_audio`, or the server said up front none is coming
+   * (a resume redraw). True in the gap between this turn's TEXT landing and
+   * that answer. `audioUrl !== null` alone cannot tell "still coming" apart
+   * from "never coming", and `useHandsFreeTurn` needs exactly that
+   * distinction to know when it is safe to open the microphone again.
+   */
+  audioPending: boolean;
   next: 'ask' | 'segment' | 'close';
   /**
    * v3 turn policy, per pedagogical strategy. `idleNudgeMs` is how long to let
@@ -304,6 +313,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
             emotion: message.emotion,
             action: message.action,
             audioUrl: message.audioUrl,
+            audioPending: message.audioPending,
             next: message.next,
             policy: message.policy ?? null,
             demonstrate: message.demonstrate ?? null,
@@ -337,7 +347,9 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
           // a line the conversation has already moved past — dropped, so a slow
           // synthesis can never talk over a newer turn.
           setTurn((prev) =>
-            prev && prev.seq === message.seq ? { ...prev, audioUrl: message.audioUrl } : prev,
+            prev && prev.seq === message.seq
+              ? { ...prev, audioUrl: message.audioUrl, audioPending: false }
+              : prev,
           );
           break;
         case 'thinking':

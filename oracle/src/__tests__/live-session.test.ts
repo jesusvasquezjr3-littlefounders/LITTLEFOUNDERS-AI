@@ -361,6 +361,11 @@ describe('a real live session over a real websocket', () => {
 
     const greeting = opening.find((m) => m.type === 'turn');
     expect(greeting).toMatchObject({ emotion: 'happy', audioUrl: null });
+    // Ordinary delivery always promises a `turn_audio` frame will follow,
+    // even for a pre-generated scripted line — only a resume redraw says
+    // otherwise (see "audioPending" above). This is what lets the client
+    // tell "the voice is still coming" apart from "no voice is coming".
+    expect(greeting).toMatchObject({ audioPending: true });
     expect(String(greeting?.say)).not.toBe('');
     // WRITTEN, not generated: the opening line costs neither a model call nor
     // a synthesis, in this session or in any session ever again.
@@ -733,10 +738,27 @@ describe('a dropped session can be resumed on a fresh token', () => {
 
     // The turn that was on screen is re-sent as text (no audio replay), and
     // it is the SAME turn — same words, same seq — not a new greeting.
-    const redrawn = rejoined.find((m) => m.type === 'turn') as { say: string; seq: number; audioUrl: unknown };
+    const redrawn = rejoined.find((m) => m.type === 'turn') as {
+      say: string;
+      seq: number;
+      audioUrl: unknown;
+      audioPending: boolean;
+    };
     expect(redrawn.say).toBe(reply.say);
     expect(redrawn.seq).toBe(reply.seq);
     expect(redrawn.audioUrl).toBeNull();
+    /*
+     * Found by adversarial review, 2026-08-30 (HIGH): a resume redraw sends
+     * no `turn_audio` at all (replaying a clip the learner already heard
+     * reads as a stutter), but `audioUrl: null` alone is indistinguishable
+     * from an ORDINARY turn whose voice simply has not arrived yet — the
+     * client used to wait for a `turn_audio` frame that this path never
+     * sends, opening hands-free listening only once that (never-coming)
+     * frame settled it, or — depending on the exact race — opening it too
+     * early in the gap of an ordinary turn for the identical reason. This
+     * frame must say up front that nothing more is coming.
+     */
+    expect(redrawn.audioPending).toBe(false);
     // The history's final tutor entry carries that same seq, so the caption
     // and the log cannot print the line twice.
     expect(history.turns.at(-1)).toMatchObject({ speaker: 'tutor', seq: reply.seq });

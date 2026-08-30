@@ -715,6 +715,16 @@ export function TutorExperience() {
     enabled: phase === 'conversing' && socket.microphone && !hasComposerDraft,
     speaking,
     awaitingReply,
+    /*
+     * Found by adversarial review, 2026-08-30 (HIGH): the current turn's text
+     * arrives, clearing `awaitingReply`, before its `turn_audio` frame sets
+     * `speaking` — a real gap, not one render. Without this, the microphone
+     * opened in that gap and silently discarded whatever the learner said.
+     * `interrupted` overrides it the same way it already overrides `speaking`
+     * above (`liveSpeechUrl`): a learner who explicitly cut the tutor off
+     * must not then wait on audio nobody is going to hear.
+     */
+    audioPending: !interrupted && (turn?.audioPending ?? false),
     policy: turn?.policy ?? null,
     turnSeq: turn?.seq ?? 0,
     microphone,

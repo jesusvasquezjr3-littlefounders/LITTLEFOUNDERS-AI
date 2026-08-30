@@ -56,6 +56,7 @@ const BASE = {
   enabled: true,
   speaking: false,
   awaitingReply: false,
+  audioPending: false,
   policy: null,
   turnSeq: 1,
 };
@@ -95,6 +96,39 @@ describe('the microphone opens only when it should', () => {
       renderHook(() => useHandsFreeTurn({ ...BASE, awaitingReply: true, microphone: mic, onTurn: vi.fn() }));
     });
     expect(mic.starts).toBe(0);
+  });
+
+  /*
+   * Found by adversarial review, 2026-08-30 (HIGH). A turn's TEXT arrives in
+   * its own frame, clearing `awaitingReply` — but its voice, if any, follows
+   * later in a SEPARATE `turn_audio` frame, and `speaking` only becomes true
+   * once that lands. In the gap between those two moments both `speaking`
+   * and `awaitingReply` read false, and the microphone used to open right
+   * there: whatever the learner said was captured and then silently
+   * discarded once the real audio arrived and closed the mic. `audioPending`
+   * exists specifically to hold that gap closed.
+   */
+  it('never opens while this turn’s own audio is still unresolved, even with nothing else blocking it', async () => {
+    const mic = fakeMic();
+    await act(async () => {
+      renderHook(() => useHandsFreeTurn({ ...BASE, audioPending: true, microphone: mic, onTurn: vi.fn() }));
+    });
+    expect(mic.starts).toBe(0);
+  });
+
+  it('opens once the audio question settles, without waiting for a new turn', async () => {
+    const mic = fakeMic();
+    const { rerender } = renderHook(
+      (props: Parameters<typeof useHandsFreeTurn>[0]) => useHandsFreeTurn(props),
+      { initialProps: { ...BASE, audioPending: true, microphone: mic, onTurn: vi.fn() } },
+    );
+    await act(async () => {});
+    expect(mic.starts).toBe(0);
+
+    // The `turn_audio` frame lands — same turnSeq, audioPending now false.
+    rerender({ ...BASE, audioPending: false, microphone: mic, onTurn: vi.fn() });
+    await act(async () => {});
+    expect(mic.starts).toBe(1);
   });
 
   it('never opens when the gate says no', async () => {

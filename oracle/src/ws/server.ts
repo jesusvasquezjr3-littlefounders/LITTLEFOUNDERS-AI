@@ -587,6 +587,10 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
         emotion: snapshot.lastTurn.turn.emotion,
         action: snapshot.lastTurn.turn.action,
         audioUrl: null,
+        // No `turn_audio` follows a resume redraw (see the comment above) —
+        // the client must not wait for one, or hold hands-free listening
+        // closed forever.
+        audioPending: false,
         next: snapshot.lastTurn.turn.next === 'close' ? 'ask' : snapshot.lastTurn.turn.next,
         ...(boardValues !== null && board ? { whiteboard: { ...board, values: boardValues } } : {}),
       });
@@ -1065,6 +1069,9 @@ async function deliver(
     emotion: emission.turn.emotion,
     action: emission.turn.action,
     audioUrl: null,
+    // `turn_audio` for this exact seq always follows — `emission.audio` never
+    // rejects (synthesis failures resolve to null, still sent as a frame).
+    audioPending: true,
     next: emission.turn.next,
     // v3 turn policy: per-strategy thinking time. Absent while dormant.
     ...(idleNudgeMs !== null && listenSilenceMs !== null

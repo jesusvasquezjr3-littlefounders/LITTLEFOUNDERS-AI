@@ -629,6 +629,39 @@ deliver its clip). Explicit push-to-talk is untouched — pressing the orb is
 a deliberate choice and always wins, draft or not; only the PASSIVE,
 automatic listen defers to a learner who is already answering the other way.
 
+**It opened in the gap between a turn's text and its own voice — found by
+adversarial review, 2026-08-30 (HIGH).** `speaking` and `awaitingReply`
+gate the microphone, but they answer two DIFFERENT questions than the one
+that matters here. A turn's text arrives in its own `turn` frame, which
+clears `awaitingReply` immediately; its voice, if any, follows LATER in a
+separate `turn_audio` frame (split delivery, §6 above), and `speaking` does
+not become true until THAT lands. In the gap between those two moments —
+real wall-clock time, the length of TTS synthesis — both `speaking` and
+`awaitingReply` read false, which was exactly the condition that opened
+hands-free listening. Whatever the learner said in that window was captured
+and then silently discarded the instant the real audio arrived and closed
+the microphone: no frame, no signal to anyone, the child's answer simply
+gone.
+
+`audioUrl: null` cannot distinguish "still coming" from "never coming" —
+both look identical on the wire, and a resume redraw deliberately sends the
+second kind (replaying a clip the learner already heard reads as a
+stutter, so no `turn_audio` follows it at all). Closed by naming the
+difference explicitly: the `turn` frame now carries `audioPending`, true
+on ordinary delivery and false on a resume redraw, and the client clears it
+the moment a matching `turn_audio` arrives (or never has to wait, on a
+redraw). `useHandsFreeTurn` gained this as a fourth blocking condition
+alongside `speaking`/`awaitingReply`/`enabled` — a learner who explicitly
+interrupts the tutor still overrides it, the same way an interrupt already
+overrides `speaking`, since someone who has just cut the tutor off is not
+waiting on audio nobody is going to hear. Proven with two tests: the mic
+stays closed while `audioPending` is true with nothing else blocking it,
+and opens the instant it clears WITHOUT waiting for a new turn — both
+confirmed to fail against the pre-fix hook first. The two send sites on the
+wire (`oracle/src/ws/server.ts`) are each covered by a `live-session.test.ts`
+assertion: ordinary delivery always says `audioPending: true`, a resume
+redraw always says `false`.
+
 ### §4.3 The consent gate
 
 A `kid` cannot open the microphone until a **verified guardian** has granted

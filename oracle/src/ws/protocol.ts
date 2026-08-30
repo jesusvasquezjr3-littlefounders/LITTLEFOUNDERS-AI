@@ -148,6 +148,19 @@ export type ServerMessage =
        * stays on this frame so a turn's shape is complete in one place.
        */
       audioUrl: string | null;
+      /**
+       * Whether a `turn_audio` frame for this SAME `seq` is still coming.
+       * True on ordinary delivery (synthesis is in flight); false on a resume
+       * redraw, which deliberately sends no `turn_audio` at all — replaying a
+       * clip the learner already heard reads as a stutter. Found by
+       * adversarial review, 2026-08-30 (HIGH): without this, the client could
+       * not tell "audio is on its way" from "no audio is coming, ever" just
+       * from `audioUrl: null`, and opened the hands-free microphone in the gap
+       * before a real clip's `turn_audio` arrived — silently discarding
+       * whatever the learner said in that window. See
+       * `frontend/src/tutor/useHandsFreeTurn.ts`.
+       */
+      audioPending: boolean;
       /** What the tutor intends next, so the UI can prepare the panel. */
       next: 'ask' | 'segment' | 'close';
       /**

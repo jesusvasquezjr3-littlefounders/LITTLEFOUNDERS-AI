@@ -121,6 +121,10 @@ export type ServerMessage =
       action: CharacterAction;
       /** Null on delivery; the voice follows in `turn_audio` (split delivery). */
       audioUrl: string | null;
+      /** Whether a `turn_audio` frame for this seq is still coming — false only
+       * on a resume redraw, which sends none. See `TutorTurnState.audioPending`
+       * in `useTutorSocket.ts` for why the client needs this distinction. */
+      audioPending: boolean;
       next: 'ask' | 'segment' | 'close';
       /** v3: per-strategy thinking time before any gentle nudge. */
       policy?: { idleNudgeMs: number; listenSilenceMs: number };

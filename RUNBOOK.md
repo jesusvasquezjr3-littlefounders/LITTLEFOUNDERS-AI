@@ -1939,3 +1939,63 @@ introduces a NEW call the old code never made (an RPC, a new table), that
 asymmetry is the thing to say out loud before pushing, and confirming the
 migration has already applied before relying on the new code path is worth
 the wait when the traffic pattern makes the window matter.
+
+## The hands-free microphone could silently discard what a child said — closed 2026-08-30
+
+**Found by adversarial review, round 10** (voice/turn-taking UX, a surface
+no prior round this session had touched), HIGH severity, and confirmed by
+building a harness that wired the real `useTutorSocket` + `useMicrophone` +
+`useHandsFreeTurn` together and drove it with a real `MediaRecorder`.
+
+`useHandsFreeTurn` opens the microphone once `speaking === false` and
+`awaitingReply === false`. Both looked like the right gate, but they answer
+two different questions than the one that actually matters: a tutor turn's
+TEXT arrives in its own `turn` frame, clearing `awaitingReply` immediately,
+while its VOICE — if any — follows later in a separate `turn_audio` frame
+(split delivery, `/ORACLE.md` §6); `speaking` does not become true until
+that second frame lands. In the real, wall-clock gap between those two
+moments — the length of TTS synthesis, which can run seconds — both flags
+read false, and the microphone opened right there. The harness confirmed
+the worst case directly: 4000 real bytes of audio captured and streamed
+into that gap, then the effect's own cleanup tore the recorder down via a
+bare `mic.stop()` whose resolved clip was never passed to `onTurn` — no
+frame, no signal, the learner's answer simply discarded the moment the real
+audio arrived and closed the microphone.
+
+The wire could not fix this on the client side alone: `audioUrl: null` on
+the `turn` frame means two different things — "the voice is still coming"
+on ordinary delivery, and "no voice is coming, ever" on a resume redraw
+(replaying a clip the learner already heard reads as a stutter, so resume
+deliberately sends no `turn_audio` at all). A client watching only
+`audioUrl` cannot tell those apart, and treating every `null` as "coming"
+would have held hands-free listening closed forever after any resume.
+
+Fixed by naming the difference on the wire: the `turn` frame now carries
+`audioPending` (true on ordinary delivery, false on a resume redraw, set at
+both of `oracle/src/ws/server.ts`'s two `type: 'turn'` send sites), and the
+client clears it locally the moment a matching `turn_audio` frame arrives.
+`useHandsFreeTurn` gained `audioPending` as a fourth blocking condition
+alongside `speaking`/`awaitingReply`/`enabled`; an explicit learner
+interrupt still overrides it, matching how an interrupt already overrides
+`speaking` — a learner who just cut the tutor off is not waiting on audio
+nobody will hear.
+
+Proven with permanent tests at both ends: `oracle/src/__tests__/live-session.test.ts`
+asserts each send site's `audioPending` value against a real websocket
+session; `frontend/src/tutor/__tests__/useHandsFreeTurn.test.tsx` asserts
+the hook stays closed while `audioPending` is true with nothing else
+blocking it, and opens the instant it clears without waiting for a new
+turn. All four assertions confirmed to fail against the pre-fix code before
+being trusted. Full suites green: oracle (429 tests), frontend (1403 tests).
+
+**What this incident adds to the pattern.** The same shape as several
+findings this session — a boolean whose name promised more than its
+implementation delivered, and a `null` used to mean two genuinely different
+things with nothing to tell them apart. The fix that closed the sibling
+composer-vs-microphone race in this same hook (`/ORACLE.md` §4.2b) added a
+gate for a channel this one did not know about; this one adds a gate for a
+TIMING window the existing flags could not express, because they were never
+built to answer "is this turn's own audio question settled yet" — only "is
+the tutor currently speaking" and "is a reply currently in flight". A
+boolean reused for a purpose slightly adjacent to the one it was named for
+is where this class of defect keeps coming from.
