@@ -5373,3 +5373,117 @@ an instruction the model actually generalizes from on the first try —
 the only way to know is to run it live and read the ACTUAL numbers
 produced, not just confirm the sentence changed shape. `oracle/AGENTS.md`
 item 50.
+
+## Round 53: the KC seed DATA itself, audited for the first time — a real tier inversion, and a genuinely undetectable misconception fixed, two more deferred
+
+A background adversarial review targeted something no prior round had:
+not the CODE around the Tutor v3 knowledge-component graph, but the
+actual CONTENT of `database/seeds/kc_graph.v1.json` (28 KCs, 36 edges,
+32 misconceptions) — BKT parameter sanity, graph structure, tier
+consistency, and whether the misconception catalog is actually
+reachable by the code that is supposed to detect it. Two real findings,
+both verified independently before fixing, one closed, one properly
+deferred with a spawned follow-up.
+
+**1. HIGH, FIXED — a tier inversion in the prerequisite graph.** The
+edge `money.savings-plan-math` (tier 2) → `biz.saving-goal` (tier 1)
+made a harder, later concept ("work out how many weeks of saving it
+takes to reach a goal") the PREREQUISITE for a simpler, earlier one
+("set a goal and decide how much to keep aside"). `assertAcyclic`
+(the seed script's own existing guard) let it through — it isn't a
+cycle — but `backend/src/services/pedagogy/sessionPlan.ts`'s
+`buildSessionPlan` filters KCs to `tier_min <= tier` BEFORE walking the
+graph, so the effect is tier-dependent and wrong both ways: for a
+tier-1 learner the tier-2 prerequisite is invisible, so the edge
+silently does nothing (dead data for exactly the population it reads
+as authored for); for a tier-2/3 learner it's enforced, gating the
+simpler concept behind the harder one — backwards from any real
+teaching order.
+
+Verified independently before fixing: built the graph from the real
+seed file and confirmed this is the ONLY tier-inverted edge among all
+36 (0 cycles, 0 orphans, 0 duplicates otherwise). Fixed by reversing
+the edge — `biz.saving-goal` → `money.savings-plan-math` — confirmed
+cycle-safe with a throwaway script before editing (no path already
+existed from `biz.saving-goal` back to `money.savings-plan-math`
+through either KC's other prerequisites). Closed the CLASS, not just
+the instance: added `assertTierOrder` to
+`backend/src/scripts/seed-kc-graph.ts`, called unconditionally right
+next to the existing `assertAcyclic`, so the seed script itself now
+refuses to load any future edge where a prerequisite requires a HIGHER
+tier than the KC it unlocks — the same posture the file already takes
+for a cycle. New `backend/src/__tests__/seedKcGraph.test.ts` (this
+seed file had zero test coverage before this round) runs the real
+guards against the REAL seed data, plus unit tests for
+`assertTierOrder` itself; confirmed to fail for the exact claimed
+reason pre-fix via `git stash` (`assertTierOrder` throwing the exact
+tier-inversion error against the unfixed seed). Verified end to end
+against REAL local Postgres: `npm run seed:kc` loaded all 28 KCs, 36
+edges and 32 misconceptions cleanly, and a direct query confirmed the
+edge now reads `biz.saving-goal (tier 1) -> money.savings-plan-math
+(tier 2)` in the live `kc_edge` table.
+
+**2. MEDIUM/HIGH, PARTIALLY FIXED — 3 misconceptions carried only an
+`option_tags` pattern, which `checkAttempt` never consults for the
+`kind: 'numeric'` attempts their own activities actually produce.**
+`backend/src/services/pedagogy/checkAnswer.ts`'s `checkAttempt` has two
+disjoint branches: `option_tags` is read ONLY for a `kind: 'option'`
+attempt (a single MCQ-style choice), `numeric` ONLY for `kind:
+'numeric'`. Three seeded misconceptions — `adds-digits-ignores-decimal`
+(`money.add-money`), `mixes-units` (`money.count-mixed-coins`), and
+`single-denomination-only` (`money.make-amount`) — carried only
+`option_tags`, despite each describing an exact, textbook NUMERIC wrong
+answer in its own `description` field. A learner who genuinely showed
+one of these wrong ideas was told nothing more specific than
+"incorrect" — precisely the failure mode the `misconception` table
+exists to prevent.
+
+Fixed `adds-digits-ignores-decimal`: `money.add-money`'s activities are
+a genuine two-operand arithmetic problem (not a coin-tray), so a new
+`decimal_misaligned` pattern was added to `checkAnswer.ts`'s closed
+`NUMERIC_PATTERNS` vocabulary — computing the whole and cents parts of
+two amounts separately, without carrying an overflowing cents sum into
+the whole part, exactly matching the catalog's own worked example
+("1.50 + 2.50 = 4 becomes 3.100"). Verified the formula reproduces that
+exact example (`decimal_misaligned(1.50, 2.50) = 3.1`) and a second,
+independent pair that needs a real carry, in a new
+`backend/src/__tests__/checkAnswer.test.ts` (this file, the deterministic
+misconception detector every graded activity runs through, had ZERO
+test coverage before this round). Confirmed to fail for the exact
+claimed reason pre-fix via `git stash`. Verified end to end against
+real local Postgres: the seed's own `distractor_patterns` for this
+misconception now reads `{"numeric": ["decimal_misaligned"],
+"option_tags": ["decimal-misaligned"]}` in the live `misconception`
+table (kept BOTH patterns — a legitimate MCQ presentation of the same
+wrong idea could still exist and use `option_tags`).
+
+**`mixes-units` and `single-denomination-only` are deliberately NOT
+fixed this round.** Both are attached to KCs whose real activities are
+coin-tray types (`coin_count` — confirmed by their `skill_key` titles,
+"la-gran-cosecha-de-monedas..." / "junto-monedas-para-llegar-a-un-numero"),
+whose submissions are a `picked: number[]` array of chosen coin
+denominations. `recordAttempt.ts`'s `numericSubmission()` sums that
+array into a single number before it ever reaches `checkAttempt` — so
+neither "all one denomination" nor "cents mixed with whole units" is
+computable from the sum alone, regardless of which pattern vocabulary
+is used. Closing this needs a real design change (threading per-coin
+detail through a new or extended attempt shape, plus verifying the
+`coin_count` segment contract even carries denomination-unit metadata
+today) rather than a same-session patch — spawned as its own follow-up
+task with the design groundwork already captured (`task_9952daeb`).
+
+Also confirmed sound by the same review, with real computation rather
+than inspection: BKT parameters for all 28 KCs produce sensible
+posteriors (5 straight wrong answers never reaches "known" for any KC;
+5 straight correct reaches display-mastery for all 28; no degenerate
+`p_g`/`p_l0` combination lets a lucky guess pass the prerequisite bar);
+zero tier-vocabulary leaks into any `kcObjective`/`misconceptionHint`
+text at any reachable tier; all 23 non-null `skill_key`s resolve to a
+real topic slug in the static curriculum source; no duplicate keys,
+codes, or schema-bound values anywhere in the seed.
+
+Verification: full backend suite green (41 files, 682 tests — 672
+existing + 10 new across two new test files, zero regressions), lint
+and type-check clean, root `docs:check`/`secrets:check` clean. No
+oracle/AGENTS.md item — this round touches only `backend/` and
+`database/seeds/`.

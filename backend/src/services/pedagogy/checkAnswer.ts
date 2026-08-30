@@ -78,6 +78,27 @@ const NUMERIC_PATTERNS: Record<string, (ops: Record<string, number>) => number |
     }
     return Number(out) / 100;
   },
+  /**
+   * Adds the whole-unit and fractional (cents) parts of two amounts
+   * SEPARATELY, without carrying an overflowing fractional sum into the
+   * whole part — the exact wrong idea `money.add-money`'s
+   * `adds-digits-ignores-decimal` catalog entry describes ("1.50 + 2.50 = 4
+   * becomes 3.100"). Found by adversarial review, round 52 (2026-08-30,
+   * MEDIUM/HIGH): that misconception carried ONLY an `option_tags` pattern,
+   * which `checkAttempt` never consults for a `kind: 'numeric'` attempt —
+   * the exact shape `money.add-money`'s own direct-amount-entry activities
+   * produce — so a learner showing this textbook wrong idea was told only
+   * "incorrect," never diagnosed. 1.50 -> whole 1, cents 50; 2.50 -> whole
+   * 2, cents 50; whole sum 3, cents sum 100 (no carry), read as the literal
+   * decimal string "3.100" -> 3.1, matching the catalog's own example digit
+   * for digit.
+   */
+  'decimal_misaligned': (o) => {
+    if (o.a === undefined || o.b === undefined) return null;
+    const wholeSum = Math.floor(o.a) + Math.floor(o.b);
+    const centsSum = Math.round((o.a - Math.floor(o.a)) * 100) + Math.round((o.b - Math.floor(o.b)) * 100);
+    return Number(`${wholeSum}.${centsSum}`);
+  },
 };
 
 /** Predicates that need the submitted value itself, not an equality target. */

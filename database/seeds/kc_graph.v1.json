@@ -685,8 +685,8 @@
       "biz.saving-goal"
     ],
     [
-      "money.savings-plan-math",
-      "biz.saving-goal"
+      "biz.saving-goal",
+      "money.savings-plan-math"
     ],
     [
       "biz.profit",
@@ -863,6 +863,9 @@
         "pt-BR": "Somem primeiro os centavos, troquem cada 100 centavos por um real, e depois somem os reais."
       },
       "distractor_patterns": {
+        "numeric": [
+          "decimal_misaligned"
+        ],
         "option_tags": [
           "decimal-misaligned"
         ]

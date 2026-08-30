@@ -23,7 +23,7 @@ import { resolveSkill } from '../services/tutorLadder.js';
 
 const Localized = z.record(z.enum(['en-US', 'es-MX', 'pt-BR']), z.string().min(1));
 
-const SeedSchema = z.object({
+export const SeedSchema = z.object({
   version: z.literal(1),
   kcs: z.array(
     z.object({
@@ -51,7 +51,7 @@ const SeedSchema = z.object({
   ),
 });
 
-function assertAcyclic(keys: Set<string>, edges: Array<[string, string]>): void {
+export function assertAcyclic(keys: Set<string>, edges: Array<[string, string]>): void {
   const adj = new Map<string, string[]>();
   for (const [from, to] of edges) {
     if (!keys.has(from)) throw new Error(`edge references unknown KC "${from}"`);
@@ -70,6 +70,37 @@ function assertAcyclic(keys: Set<string>, edges: Array<[string, string]>): void 
   for (const key of keys) visit(key, []);
 }
 
+/**
+ * A prerequisite can never require a HIGHER tier than the KC it unlocks.
+ *
+ * Found by adversarial review, round 52 (2026-08-30, HIGH): the edge
+ * `money.savings-plan-math` (tier 2) -> `biz.saving-goal` (tier 1) survived
+ * `assertAcyclic` (it is not a cycle) and every other gate, but
+ * `sessionPlan.ts`'s `buildSessionPlan` filters to `tier_min <= tier` BEFORE
+ * walking the graph — so for a tier-1 learner the prerequisite is invisible
+ * and the edge silently does nothing, while for a tier-2/3 learner it gates
+ * a genuinely SIMPLER concept ("set a goal and decide how much to keep
+ * aside") behind a harder, later one ("work out how many weeks it takes"),
+ * inverting the intended teaching order either way. Every edge in this graph
+ * is authored to teach easier ideas before harder ones; a prerequisite that
+ * needs a HIGHER tier than its dependent is never intentional, so this is an
+ * unconditional refusal, the same posture `assertAcyclic` already takes for
+ * a cycle.
+ */
+export function assertTierOrder(kcs: readonly { key: string; tier_min: number }[], edges: Array<[string, string]>): void {
+  const tierByKey = new Map(kcs.map((k) => [k.key, k.tier_min]));
+  for (const [from, to] of edges) {
+    const prereqTier = tierByKey.get(from);
+    const dependentTier = tierByKey.get(to);
+    if (prereqTier !== undefined && dependentTier !== undefined && prereqTier > dependentTier) {
+      throw new Error(
+        `tier inversion: "${from}" (tier ${prereqTier}) is a prerequisite for "${to}" (tier ${dependentTier}) — ` +
+          'a prerequisite can never require a HIGHER tier than the KC it unlocks',
+      );
+    }
+  }
+}
+
 async function main(): Promise<void> {
   const here = path.dirname(fileURLToPath(import.meta.url));
   const seedPath = path.resolve(here, '../../../database/seeds/kc_graph.v1.json');
@@ -78,6 +109,7 @@ async function main(): Promise<void> {
   const keys = new Set(seed.kcs.map((k) => k.key));
   if (keys.size !== seed.kcs.length) throw new Error('duplicate KC keys in seed');
   assertAcyclic(keys, seed.edges);
+  assertTierOrder(seed.kcs, seed.edges);
   for (const m of seed.misconceptions) {
     if (!keys.has(m.kc)) throw new Error(`misconception "${m.code}" references unknown KC "${m.kc}"`);
   }
