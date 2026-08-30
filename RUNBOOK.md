@@ -1525,3 +1525,108 @@ assuming a quality pass implies a safety pass, is exactly how Finding 1
 happened. And a judge's response schema must be checked for the PRESENCE
 and TYPE of the field a verdict depends on, not merely parsed as JSON —
 valid JSON is not the same guarantee as an interpretable answer.
+
+## A sixth adversarial review: an incomplete resume redraw, a skill spent before it was heard, and a locale gap in the tier-1 vocabulary gate — closed 2026-08-30
+
+**Found by a sixth independent adversarial code review**, this time pointed at
+the live whiteboard, the pedagogical skill-selection system, and age/tier
+vocabulary enforcement — three subsystems not yet independently reviewed this
+round. Three real, reproducible defects, none of them a child-safety
+exposure on their own, but each a real product/pedagogy correctness gap.
+Every fix proven with a permanent regression test confirmed to fail against
+the pre-fix code before being trusted.
+
+**Finding 1 (HIGH) — resuming a dropped session never redrew the open
+whiteboard or the open activity.** The resume redraw path
+(`oracle/src/ws/server.ts`, the `resumed` branch) rebuilt the `turn` frame by
+hand instead of routing through `deliver()` — the one function that
+recomputes and attaches a whiteboard — and never re-sent a `segment` frame
+at all. An ordinary reconnect (a sleeping phone, a wifi drop — precisely the
+case the park/resume mechanism exists to survive) while a growth story or a
+served activity was on screen left the learner staring at narration for a
+board or an exercise that had simply vanished: no board, no quiz, nothing to
+answer, no XP reachable, with no error either — just silence where content
+used to be.
+
+Fixed two ways: the whiteboard is now recomputed and attached in the redrawn
+`turn` frame the same way `deliver()` does it on every other turn; and a new
+field, `Live.lastSegmentFrame`, caches the exact last `segment` frame sent —
+carried across the park exactly like `transcriptSeq` already is, cleared the
+instant that segment is answered (graded, or resolved by voice-check) — and
+resends it VERBATIM on resume. It is never re-served by calling
+`serveSegment()` again, because that would produce a DIFFERENT exercise, not
+restore the one the learner was actually looking at.
+
+Proven with two permanent tests (`live-session.test.ts`): one drives a
+whiteboard-bearing turn, drops the socket before it's answered, resumes, and
+asserts the redrawn turn still carries the correct computed values; the
+other serves an activity, drops the socket before it's graded, resumes,
+asserts the SAME segment id is re-sent, and confirms it is still genuinely
+answerable — grading it after resume reaches the model exactly as it would
+have before the drop. Both confirmed to fail against the pre-fix code first.
+
+**Finding 2 (MEDIUM) — a once-per-session skill was marked spent at
+selection, not at delivery.** `oracle/src/tutor/skills.ts`'s own doc comment
+defines `usedSkillNames` as skill names already DELIVERED this session, but
+`orchestrator.ts`'s `strategyInstruction` added a skill to that set the
+moment it was SELECTED — before the model call it feeds even started. An
+interrupted turn (the learner cancels mid-production) or an exhausted retry
+that falls back to a scripted line burned the skill's ONE use for the whole
+session on a turn the child never actually heard, with nothing left to
+retry it. Since this is the general selection-to-bookkeeping mechanism, not
+specific to any one skill, it affects every current and future
+`once_per_session` skill the same way.
+
+Fixed by splitting proposal from commitment: `strategyInstruction` now
+returns a proposed `skillName` alongside its instruction text, and each of
+its three call sites (`handleSegmentResult`, `handleVoiceCheckResult`,
+`handleLearnerText`) commits it to `usedSkillNames` only once `produce()`
+resolves with `emission.source === 'model'` — a turn genuinely delivered
+using the skill's real procedure, never an interrupt or a scripted
+fallback.
+
+Proven with a permanent test (`orchestrator.test.ts`): a REMEDIATE turn
+diagnosing a catalogued misconception is interrupted mid-production; a later
+turn re-diagnoses the identical misconception. Against the pre-fix code, the
+skill was already marked spent by the interrupted attempt, so the later turn
+fell back to the generic REMEDIATE instruction instead of the skill's own
+procedure — confirmed directly in the request body sent to the model. Against
+the fix, the real procedure (`counterexample-confront`, "CONFRONT WITH A
+COUNTEREXAMPLE") is delivered.
+
+**Finding 3 (HIGH) — the tier-1 "no decimals" filter only recognized period
+decimals.** The deterministic vocabulary backstop that exists specifically to
+catch advanced-notation slips before a young child sees them (built after
+"10% cada año" reached a six-year-old with no gate holding an opinion) forbade
+`\d+\.\d{2,}` — a period-separated decimal — for tier 1, in both
+`oracle/src/tutor/prompt.ts` and its deliberate mirror,
+`backend/src/services/tutorLadder.ts`. pt-BR (and es-MX prose) conventionally
+writes a decimal amount with a COMMA, not a period — "3,50 reais," never
+"3.50 reais." On two of the platform's three locked, shipped locales, a
+decimal number sailed through this gate entirely unblocked — the exact
+vocabulary class it exists to catch.
+
+Fixed by adding a mirrored comma-decimal pattern (`\d+,\d{2,}`) to both
+copies, alongside the existing period pattern. This mirrors, rather than
+solves, the existing pattern's own known limitation: a period is ALSO
+ambiguous with a THOUSANDS separator in es-MX/pt-BR ("1.000 pesos" means one
+thousand, not the decimal 1.0), and this check has always accepted that
+trade-off as the cost of a cheap, always-on, locale-agnostic pass rather
+than a complete number parser.
+
+Proven with permanent tests in both services: `oracle/src/__tests__/hardening.test.ts`
+(the cross-service "the age-band vocabulary lists agree" test gained a
+comma-decimal probe) and a new `backend/src/__tests__/tutorLadder.test.ts`
+test verifying `verifyGeneratedSegment` refuses a tier-1 generated segment
+whose prompt carries a comma-decimal number. Both confirmed to fail against
+the pre-fix pattern first.
+
+**What these three share.** None is the "one rule enforced, one path
+forgotten" shape the last several incidents in this file were — they are
+each a case of an EXISTING mechanism's coverage being narrower than its own
+stated intent: a redraw that redraws less than a delivery does, a "spent"
+flag set at the wrong lifecycle moment, and a locale-blind pattern in a
+check whose whole job is catching a locale-specific notation. The common
+lesson is the same one anyway: measure the mechanism against the FULL
+range of real inputs and real interruption points it will actually see, not
+just the path that was originally tested.

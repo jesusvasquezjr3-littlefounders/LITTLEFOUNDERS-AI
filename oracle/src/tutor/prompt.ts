@@ -65,6 +65,21 @@ export const TIER_FORBIDDEN: Record<1 | 2 | 3, { pattern: RegExp; why: string }[
     { pattern: /\bporcentaje/i, why: 'the word "porcentaje"' },
     { pattern: /\bporcentagem/i, why: 'the word "porcentagem"' },
     { pattern: /\d+\.\d{2,}/, why: 'a multi-decimal number' },
+    /*
+     * pt-BR (and es-MX prose) writes a decimal amount with a COMMA, not a
+     * period — "3,50 reais", not "3.50 reais". Found by an adversarial
+     * review, 2026-08-30 (HIGH): the period-only pattern above let a decimal
+     * sail through on two of the platform's three locked locales, in the
+     * exact vocabulary class this deterministic backstop exists to catch
+     * (built after "10% cada año" reached a six-year-old with no gate
+     * holding an opinion). This mirrors the period pattern's own known
+     * limitation rather than solving general locale-aware number parsing: a
+     * period is ALSO ambiguous with a thousands separator in es-MX/pt-BR
+     * ("1.000 pesos" = one thousand, not the decimal 1.0), and this check
+     * has always accepted that trade-off as the cost of a cheap, always-on
+     * pass rather than a complete parser.
+     */
+    { pattern: /\d+,\d{2,}/, why: 'a multi-decimal number (comma decimal)' },
   ],
   2: [
     { pattern: /\bcompound\s+interest\b/i, why: 'the term "compound interest"' },

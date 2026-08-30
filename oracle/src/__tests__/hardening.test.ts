@@ -602,7 +602,7 @@ describe('the age-band vocabulary lists agree across services', () => {
 
     // Every word Core forbids for a band, Oracle must also catch for it.
     for (const [tier, probes] of [
-      [1, ['Ganas 10% al año.', 'Eso es un porcentaje.', 'Cuesta 3.1416 pesos.']],
+      [1, ['Ganas 10% al año.', 'Eso es un porcentaje.', 'Cuesta 3.1416 pesos.', 'Custa 3,1416 reais.']],
       [2, ['That is compound interest.', 'Eso es interés compuesto.']],
     ] as const) {
       for (const probe of probes) {

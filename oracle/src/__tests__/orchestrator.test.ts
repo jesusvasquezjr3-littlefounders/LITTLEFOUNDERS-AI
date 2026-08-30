@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TutorOrchestrator } from '../tutor/orchestrator.js';
 import { TUTOR_SYSTEM_PROMPT } from '../tutor/prompt.js';
 import type { SpeechResult } from '../voice/speech.js';
-import type { SessionContext } from '../core/client.js';
+import type { SessionContext, SessionPlanEntry, KcState } from '../core/client.js';
 
 /*
  * The turn pipeline, end to end, with the network stubbed at exactly one seam:
@@ -1393,5 +1393,92 @@ describe('saying the same thing again in different words', () => {
     expect(second.emission.turn.say).toBe(next);
     // Four calls: two turns, no retry bought for teaching well.
     expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
+});
+
+/*
+ * Found by an adversarial review, 2026-08-30 (MEDIUM): a `once_per_session`
+ * skill (skills.ts's own doc comment: names already DELIVERED this session)
+ * was marked spent at SELECTION time, inside strategyInstruction — before
+ * the model call it feeds even started. An interrupted turn burned the
+ * skill's one use on a turn the child never heard, with nothing to retry it.
+ */
+describe('a once-per-session skill is committed on DELIVERY, not on selection', () => {
+  const KC_ID = 'dddddddd-dddd-4ddd-8ddd-dddddddddd02';
+  const REMEDIATE_SESSION: SessionContext = {
+    ...KID,
+    sessionPlan: [
+      {
+        kcId: KC_ID,
+        kcKey: 'money.make-change-counting-up',
+        skillKey: null,
+        reason: 'frontier',
+        pKnown: 0.4,
+        targetDifficulty: 2,
+        objective: 'Dar el cambio contando hacia arriba.',
+        prereqKcIds: [],
+        misconceptions: [{ code: 'adds-instead-of-counts-up', hint: 'Cuenta hacia arriba, no sumes.' }],
+      } satisfies SessionPlanEntry,
+    ],
+    kcStates: [
+      { kcId: KC_ID, kcKey: 'money.make-change-counting-up', pKnown: 0.4, attempts: 0 } satisfies KcState,
+    ],
+  };
+
+  it('is not spent by an interrupted turn — the model never actually said it', async () => {
+    // A completion that hangs until the signal aborts it, exactly like a real
+    // learner interrupt (same technique as "emits NOTHING when the learner
+    // interrupts mid-completion" above).
+    fetchMock.mockImplementationOnce(
+      (_url: string, init: { signal?: AbortSignal }) =>
+        new Promise((_, reject) => {
+          init.signal?.addEventListener('abort', () =>
+            reject(new DOMException('The operation was aborted.', 'AbortError')),
+          );
+        }),
+    );
+
+    const orchestrator = new TutorOrchestrator(REMEDIATE_SESSION, Date.now(), silent);
+    const abortController = new AbortController();
+    const inFlight = orchestrator.handleSegmentResult('seg-1', 40, false, Date.now(), abortController.signal, {
+      misconceptionCode: 'adds-instead-of-counts-up',
+      attemptNumber: 1,
+    });
+    abortController.abort();
+    expect(await inFlight).toBeNull();
+
+    /*
+     * A CORRECT answer next, interrupted too — its only purpose is resetting
+     * the controller's consecutiveFailures streak (controller.ts: a correct
+     * answer zeroes it) so the THIRD call's wrong answer reads as the first
+     * failure again, not the second — which would otherwise trip RESCUE's
+     * own two-consecutive-failures rule ("safety rules always win", ranking
+     * above REMEDIATE unconditionally) for reasons unrelated to what this
+     * test checks. State updates happen synchronously before the network
+     * call, so an interrupted turn still resets the streak.
+     */
+    orchestrator.noteSegmentServed('seg-2', 'money.make-change-counting-up', 'quiz_mcq', 'prompt');
+    const alreadyAborted = new AbortController();
+    alreadyAborted.abort();
+    fetchMock.mockRejectedValueOnce(new DOMException('The operation was aborted.', 'AbortError'));
+    const resetInFlight = orchestrator.handleSegmentResult('seg-2', 100, true, Date.now(), alreadyAborted.signal);
+    expect(await resetInFlight).toBeNull();
+
+    // The THIRD activity, freshly diagnosed with the SAME misconception —
+    // REMEDIATE fires again and offers the SAME once-per-session skill,
+    // proving the FIRST (interrupted) attempt never actually spent it.
+    orchestrator.noteSegmentServed('seg-3', 'money.make-change-counting-up', 'quiz_mcq', 'prompt');
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    const delivered = await orchestrator.handleSegmentResult('seg-3', 40, false, Date.now(), undefined, {
+      misconceptionCode: 'adds-instead-of-counts-up',
+      attemptNumber: 1,
+    });
+    expect(delivered).not.toBeNull();
+    // The skill's own procedure text reached the model — proof it was
+    // actually selected and used on this delivered attempt, not skipped as
+    // already spent.
+    const [, init] = fetchMock.mock.calls.at(-2)!;
+    const body = JSON.stringify((init as RequestInit).body);
+    expect(body).toContain('CONFRONT WITH A COUNTEREXAMPLE');
   });
 });

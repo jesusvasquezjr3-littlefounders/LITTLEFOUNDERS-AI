@@ -192,3 +192,27 @@ describe('fill_blank verification — tying the key back to its own payload', ()
     expect(result.keyVerified).toBe(true);
   });
 });
+
+/*
+ * Found by an adversarial review, 2026-08-30 (HIGH): FORBIDDEN_BY_TIER's
+ * tier-1 decimal check was period-only (/\d+\.\d{2,}/), so pt-BR (and es-MX)
+ * prose writing a decimal with a COMMA — "3,50 reais", not "3.50 reais" —
+ * sailed through unblocked, on two of the platform's three locked locales.
+ * Mirrors the identical fix in oracle/src/tutor/prompt.ts's TIER_FORBIDDEN.
+ */
+describe('tier-1 vocabulary — the comma-decimal fix', () => {
+  it('catches a comma-decimal number in a generated tier-1 activity', () => {
+    const segment = {
+      id: 'seg-decimal-1',
+      type: 'quiz_mcq',
+      prompt_md: 'Custa 3,1416 reais o brinquedo. Quanto voce paga?',
+      difficulty: 1,
+      xp: 10,
+      payload: { options: [{ id: 'a', text_md: '3 reais', rationale_md: 'arredondado' }] },
+      answer: {},
+    } as unknown as SegmentBase;
+    const result = verifyGeneratedSegment(segment, 1);
+    expect(result.ok).toBe(false);
+    expect(result.failures.some((f) => f.includes('tier 1 vocabulary violation'))).toBe(true);
+  });
+});

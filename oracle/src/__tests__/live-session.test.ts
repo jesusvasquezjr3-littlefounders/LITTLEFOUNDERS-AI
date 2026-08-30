@@ -748,6 +748,77 @@ describe('a dropped session can be resumed on a fresh token', () => {
     expect(journal.closes.at(-1)).toMatchObject({ closeReason: 'completed' });
   });
 
+  /*
+   * Found by an adversarial review, 2026-08-30 (HIGH): the resume redraw
+   * rebuilt the `turn` frame by hand instead of going through `deliver()` —
+   * the one function that recomputes and attaches a whiteboard. A reconnect
+   * while a growth story was on screen left the learner staring at
+   * narration for a board that had simply vanished.
+   */
+  it('redraws the open WHITEBOARD on resume, not just the narration', async () => {
+    freshJournal();
+    const first = open(await socketUrl());
+    await collect(first.socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const boarded = collect(first.socket, (m) => m.some((x) => x.type === 'turn' && x.whiteboard != null));
+    first.socket.send(JSON.stringify({ type: 'learner_text', text: 'quieropizarron' }));
+    await boarded;
+
+    first.socket.terminate();
+    await first.closed();
+    await new Promise((r) => setTimeout(r, 100));
+
+    const second = open(await socketUrl());
+    const rejoined = await collect(second.socket, (m) => m.some((x) => x.type === 'state'));
+    const redrawn = rejoined.find((m) => m.type === 'turn') as { whiteboard?: { values: number[] } };
+    expect(redrawn.whiteboard).toBeDefined();
+    expect(redrawn.whiteboard?.values).toEqual([10, 12, 14]);
+
+    const ending = collect(second.socket, (m) => m.some((x) => x.type === 'closed'));
+    second.socket.send(JSON.stringify({ type: 'end_session' }));
+    await ending;
+  });
+
+  /*
+   * Found by the same review: the redraw never re-sent a `segment` frame
+   * either, so a reconnect while an activity was open left nothing to
+   * answer and no path to XP — with no error, just silence where the
+   * exercise used to be.
+   */
+  it('redraws the open ACTIVITY on resume, not just the narration', async () => {
+    freshJournal();
+    const first = open(await socketUrl());
+    await collect(first.socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const served = collect(first.socket, (m) => m.some((x) => x.type === 'segment'));
+    first.socket.send(JSON.stringify({ type: 'learner_text', text: 'quieropracticarya' }));
+    const original = (await served).find((m) => m.type === 'segment') as { segmentId: string };
+
+    // Dropped BEFORE the activity was answered — nothing graded it.
+    first.socket.terminate();
+    await first.closed();
+    await new Promise((r) => setTimeout(r, 100));
+
+    const second = open(await socketUrl());
+    const rejoined = await collect(second.socket, (m) => m.some((x) => x.type === 'state'));
+    const redrawn = rejoined.find((m) => m.type === 'segment') as { segmentId: string } | undefined;
+    expect(redrawn).toBeDefined();
+    expect(redrawn?.segmentId).toBe(original.segmentId);
+
+    // And it is answerable: grading it reaches the model exactly as before.
+    await new Promise((r) => setTimeout(r, 750));
+    const reacted = collect(second.socket, (m) => m.some((x) => x.type === 'turn'));
+    second.socket.send(
+      JSON.stringify({ type: 'segment_graded', segmentId: original.segmentId, score: 100, correct: true }),
+    );
+    expect((await reacted).find((m) => m.type === 'turn')).toBeDefined();
+
+    await new Promise((r) => setTimeout(r, 750));
+    const ending = collect(second.socket, (m) => m.some((x) => x.type === 'closed'));
+    second.socket.send(JSON.stringify({ type: 'end_session' }));
+    await ending;
+  });
+
   it('finalizes an unclaimed park as learner_left when the grace window passes', async () => {
     freshJournal();
     const { socket, closed } = open(await socketUrl());

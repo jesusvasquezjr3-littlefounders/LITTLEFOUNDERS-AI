@@ -488,7 +488,7 @@ export class TutorOrchestrator {
      * hint, RESCUE, PROBE into a prerequisite — replaces the generic
      * change-the-style line. Inactive controller = exactly the v2 path.
      */
-    const extra = this.strategyInstruction(
+    const { text: extra, skillName } = this.strategyInstruction(
       {
         kind: 'activity_result',
         correct,
@@ -503,7 +503,7 @@ export class TutorOrchestrator {
     const summary = correct
       ? `The learner completed the activity and scored ${score} out of 100.`
       : `The learner did not pass the activity; they scored ${score} out of 100.`;
-    return this.produce(
+    const outcome = await this.produce(
       /*
        * "Say what was good about their thinking" is what produced the
        * catchphrase. Asked for a general compliment about thinking, the model
@@ -519,6 +519,8 @@ export class TutorOrchestrator {
       nowMs,
       { isSystemPrompted: true, signal },
     );
+    this.commitSkillUse(skillName, outcome);
+    return outcome;
   }
 
   /**
@@ -608,7 +610,7 @@ export class TutorOrchestrator {
     recordGrade(this.plan, skillKey, result.correct);
     if (this.openCheckableSegment === segmentId) this.openCheckableSegment = null;
 
-    const extra = this.strategyInstruction(
+    const { text: extra, skillName } = this.strategyInstruction(
       { kind: 'voice_result', correct: result.correct, misconceptionCode: result.misconceptionCode },
       nowMs,
       result.correct ? null : () => stuckInstruction(this.plan, skillKey),
@@ -617,11 +619,13 @@ export class TutorOrchestrator {
     const summary = result.correct
       ? 'The learner just answered the current activity OUT LOUD, and their spoken answer was verified as CORRECT.'
       : 'The learner just answered the current activity OUT LOUD, and their spoken answer was verified as INCORRECT.';
-    return this.produce(
+    const outcome = await this.produce(
       `${summary} React as their tutor — acknowledge the spoken answer naturally, never mention any verification.${extra ? `\n\n${extra}` : ''}`,
       nowMs,
       { isSystemPrompted: true, signal },
     );
+    this.commitSkillUse(skillName, outcome);
+    return outcome;
   }
 
   /**
@@ -638,12 +642,24 @@ export class TutorOrchestrator {
    * The one-line instruction remains the fallback when no skill fits, which
    * keeps "catalogue problem" strictly cheaper than "no instruction at all".
    */
+  /**
+   * `skillName` is a PROPOSED use, not a committed one — the caller must
+   * confirm it with `commitSkillUse` only once the turn it was built for was
+   * actually DELIVERED (`emission.source === 'model'`). Found by an
+   * adversarial review, 2026-08-30 (MEDIUM): this used to add the skill to
+   * `usedSkillNames` here, at SELECTION time, before the model call it feeds
+   * even started — `skills.ts`'s own doc comment defines the set as names
+   * already "delivered", not merely selected. An interrupted turn (the
+   * learner cancels mid-production) or an exhausted retry that falls back to
+   * a scripted line burned a `once_per_session` skill's ONE use on a turn
+   * the child never heard, with nothing to retry it.
+   */
   private strategyInstruction(
     event: PedagogyEvent,
     nowMs: number,
     legacy: (() => string | null) | null,
-  ): string | null {
-    if (!this.controller.active) return legacy ? legacy() : null;
+  ): { text: string | null; skillName: string | null } {
+    if (!this.controller.active) return { text: legacy ? legacy() : null, skillName: null };
 
     const decision = this.controller.decide(event, nowMs);
     const skill = selectSkill({
@@ -653,8 +669,7 @@ export class TutorOrchestrator {
       misconceptionCode: decision.misconceptionCode,
       usedSkillNames: this.usedSkillNames,
     });
-    if (skill === null) return decision.instruction;
-    this.usedSkillNames.add(skill.name);
+    if (skill === null) return { text: decision.instruction, skillName: null };
     /*
      * The catalogued misconception hint still travels with the skill: the
      * skill says HOW to remediate, the hint says WHAT wrong idea this
@@ -664,7 +679,14 @@ export class TutorOrchestrator {
       decision.misconceptionCode !== null && decision.instruction !== null
         ? decision.instruction.match(/The specific wrong idea[^\n]*/)?.[0]
         : undefined;
-    return hint ? `${skill.body}\n\n${hint}` : skill.body;
+    return { text: hint ? `${skill.body}\n\n${hint}` : skill.body, skillName: skill.name };
+  }
+
+  /** Commits a proposed skill use — see `strategyInstruction`'s own comment. */
+  private commitSkillUse(skillName: string | null, outcome: TurnOutcome | null): void {
+    if (skillName !== null && outcome !== null && outcome.emission.source === 'model') {
+      this.usedSkillNames.add(skillName);
+    }
   }
 
   /**
@@ -868,7 +890,7 @@ export class TutorOrchestrator {
       verdict === null
         ? { kind: 'conversation_turn' }
         : { kind: 'voice_result', correct: verdict.correct, misconceptionCode: null };
-    const maneuver = this.strategyInstruction(pedagogyEvent, nowMs, null);
+    const { text: maneuver, skillName } = this.strategyInstruction(pedagogyEvent, nowMs, null);
     const maneuverNote = maneuver === null ? '' : `\n\n${maneuver}`;
     const finalNote = graceTurn
       ? '\n\nTHIS IS THE FINAL TURN of the session — time is up. Resolve the open question or activity in one or two warm sentences (give the answer if they did not reach it, credit what they did), then say goodbye. Do NOT ask anything new, do NOT request or promise any activity.'
@@ -878,6 +900,7 @@ export class TutorOrchestrator {
       signal,
       finalTurn: graceTurn,
     });
+    this.commitSkillUse(skillName, outcome);
     // A completed exchange moves the plan's talk-only steps along; an aborted
     // one does not — a question the tutor never answered was not an exchange.
     if (outcome !== null) noteConversationTurn(this.plan);

@@ -111,6 +111,21 @@ interface Live {
    * monotonic counter, incremented for every row, learner and tutor alike.
    */
   transcriptSeq: number;
+  /**
+   * The most recent `segment` frame actually sent, or `null` once it has been
+   * answered (graded, or resolved by voice-check) — a redraw target for
+   * resume, NOT a live "what's currently open" flag (that is
+   * `orchestrator.checkableSegmentId`/`servedSegmentSkills`).
+   *
+   * Found missing by an adversarial review, 2026-08-30 (HIGH): resume redrew
+   * the conversation's TEXT but never re-sent the segment frame, so an
+   * ordinary reconnect (a sleeping phone, a wifi drop — exactly what park
+   * exists to survive) while an activity was on screen left the learner
+   * staring at a tutor line that referenced an exercise with nothing to
+   * answer, no XP reachable, no way to recover except leaving and starting a
+   * new topic.
+   */
+  lastSegmentFrame: Extract<ServerMessage, { type: 'segment' }> | null;
   heartbeat: NodeJS.Timeout;
   /** Last pong seen. A socket that stops answering pings is dead, not idle. */
   lastPongAtMs: number;
@@ -178,6 +193,8 @@ interface ParkedSession {
    * hat.
    */
   transcriptSeq: number;
+  /** Carried across the park so a resume can redraw the open activity, if any. */
+  lastSegmentFrame: Extract<ServerMessage, { type: 'segment' }> | null;
 }
 
 const parkedSessions = new Map<string, ParkedSession>();
@@ -214,6 +231,7 @@ function parkSession(sessionId: string, live: Live): void {
     speech: live.speech,
     lastTurnAtMs: live.lastTurnAtMs,
     transcriptSeq: live.transcriptSeq,
+    lastSegmentFrame: live.lastSegmentFrame,
     timer: setTimeout(() => finalizeParked(sessionId), getConfig().SESSION_RESUME_GRACE_MS),
   };
   entry.timer.unref();
@@ -462,6 +480,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
     closing: false,
     persistFailures: 0,
     transcriptSeq: resumed?.transcriptSeq ?? 0,
+    lastSegmentFrame: resumed?.lastSegmentFrame ?? null,
     heartbeat: setInterval(() => {
       if (socket.readyState !== socket.OPEN) return;
       const now = Date.now();
@@ -550,6 +569,17 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
       }),
     });
     if (snapshot.lastTurn) {
+      /*
+       * The whiteboard, redrawn the SAME way `deliver()` sends it the first
+       * time — recomputed from the model's own `start`/`steps`, never
+       * trusted from wherever it was last computed. Found missing entirely
+       * by an adversarial review, 2026-08-30 (HIGH): this frame used to omit
+       * `whiteboard` outright, so an ordinary reconnect while a growth story
+       * was on screen left the learner staring at narration for a board that
+       * had simply vanished.
+       */
+      const board = snapshot.lastTurn.turn.whiteboard;
+      const boardValues = board ? computeSequence(board) : null;
       send(socket, {
         type: 'turn',
         seq: snapshot.lastTurn.seq,
@@ -558,8 +588,17 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
         action: snapshot.lastTurn.turn.action,
         audioUrl: null,
         next: snapshot.lastTurn.turn.next === 'close' ? 'ask' : snapshot.lastTurn.turn.next,
+        ...(boardValues !== null && board ? { whiteboard: { ...board, values: boardValues } } : {}),
       });
     }
+    /*
+     * The open activity, redrawn verbatim — same reason as the whiteboard
+     * above. Re-running `serveSegment()` here would serve a DIFFERENT
+     * exercise, not restore the one the learner was looking at, so the exact
+     * last-sent frame is cached (`Live.lastSegmentFrame`) and resent as-is
+     * rather than regenerated.
+     */
+    if (live.lastSegmentFrame) send(socket, live.lastSegmentFrame);
     const budget = live.orchestrator.budgetAt(Date.now());
     send(socket, {
       type: 'state',
@@ -651,6 +690,8 @@ async function onMessage(live: Live, raw: string): Promise<void> {
         });
         return;
       }
+      // Answered — no longer a redraw target for a future resume.
+      live.lastSegmentFrame = null;
       /*
        * THE SIGNED ECHO (v3). Core's grade response hands the client a signed
        * receipt; only a VALID one whose segmentId matches may feed the
@@ -950,6 +991,8 @@ async function handleLearnerTurn(
       strategy: live.orchestrator.activeStrategy,
     });
     if (result?.recognized === true && typeof result.correct === 'boolean') {
+      // Answered — no longer a redraw target for a future resume.
+      live.lastSegmentFrame = null;
       await deliver(
         live,
         await live.orchestrator.handleVoiceCheckResult(
@@ -1221,7 +1264,7 @@ async function serveSegment(
     // the learner typed or scored travels with it.
     typeof served.segment.prompt_md === 'string' ? served.segment.prompt_md : undefined,
   );
-  send(live.socket, {
+  const segmentFrame: Extract<ServerMessage, { type: 'segment' }> = {
     type: 'segment',
     segmentId: served.segmentId,
     seq: served.seq,
@@ -1229,7 +1272,10 @@ async function serveSegment(
     segment: served.segment,
     scoresXp: served.keyVerified,
     framing: requestInput.framing,
-  });
+  };
+  // A redraw target for resume — see `Live.lastSegmentFrame`'s own comment.
+  live.lastSegmentFrame = segmentFrame;
+  send(live.socket, segmentFrame);
 }
 
 async function finish(

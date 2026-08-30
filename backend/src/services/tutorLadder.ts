@@ -250,9 +250,20 @@ export interface VerificationResult {
   failures: string[];
 }
 
-/** Tier vocabulary bands, mirroring the Piaget gate Forge already applies. */
+/*
+ * Tier vocabulary bands, mirroring the Piaget gate Forge already applies.
+ *
+ * MIRRORS `TIER_FORBIDDEN` in oracle/src/tutor/prompt.ts byte-for-byte in
+ * intent — the two services share no library (§1.5), so this is a
+ * deliberate copy. `/\d+,\d{2,}/` was added 2026-08-30 (adversarial
+ * review, HIGH): pt-BR (and es-MX prose) writes a decimal with a COMMA, not
+ * a period, and the period-only pattern let a decimal sail through on two
+ * of the platform's three locked locales — the exact vocabulary class this
+ * check exists to catch. See oracle's copy for the full rationale,
+ * including the accepted period/thousands-separator trade-off this mirrors.
+ */
 const FORBIDDEN_BY_TIER: Record<number, RegExp[]> = {
-  1: [/\d+\s*%/, /\bpercent(age)?\b/i, /\bporcentaje\b/i, /\bporcentagem\b/i, /\d+\.\d{2,}/],
+  1: [/\d+\s*%/, /\bpercent(age)?\b/i, /\bporcentaje\b/i, /\bporcentagem\b/i, /\d+\.\d{2,}/, /\d+,\d{2,}/],
   2: [/\bcompound\s+interest\b/i, /\binterés\s+compuesto\b/i, /\bjuros\s+compostos\b/i],
   3: [],
 };

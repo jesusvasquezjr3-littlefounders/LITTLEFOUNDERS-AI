@@ -313,6 +313,25 @@ resumed on a fresh token" (all three tests) and `backend/src/__tests__/tutor.tes
 > never came) and a permanent one after (`live-session.test.ts` → "refuses a
 > second socket for a session whose first socket never actually closed").
 
+> **Fixed 2026-08-30 (a sixth adversarial review, HIGH): the redraw itself
+> was incomplete.** It rebuilt the `turn` frame by hand instead of going
+> through `deliver()` — the one function that recomputes and attaches a
+> whiteboard — and it never re-sent a `segment` frame at all. An ordinary
+> reconnect (a sleeping phone, a wifi drop — the exact case this whole
+> mechanism exists to survive) while a growth story or an open activity was
+> on screen left the learner staring at narration for a board or an
+> exercise that had simply vanished: no board, no quiz, no way to answer,
+> no XP. Fixed two ways: the whiteboard is now recomputed and attached the
+> SAME way `deliver()` does it, from `snapshot.lastTurn.turn.whiteboard`;
+> and a new field, `Live.lastSegmentFrame`, caches the exact last `segment`
+> frame sent (carried across the park like `transcriptSeq` already is,
+> cleared the moment that segment is answered) and resends it VERBATIM on
+> resume — never re-served, since re-running `serveSegment()` would produce
+> a DIFFERENT exercise, not restore the one the learner was looking at.
+> Proven by `live-session.test.ts` → "redraws the open WHITEBOARD on
+> resume" and "redraws the open ACTIVITY on resume", both confirmed to fail
+> against the pre-fix code first.
+
 ### §3.3 Inworld sits behind an interface, from day one
 
 The owner's stated intent is to replace Inworld with self-hosted STT/TTS once
@@ -2052,6 +2071,25 @@ misconception path and the generic one, falling through to the next-best
 candidate (`error-as-data`, the general remediation) — exactly
 counterexample-confront's own step 5: "if it does not land, stop — degrade to
 showing."
+
+> **Fixed 2026-08-30 (adversarial review, MEDIUM): "delivered" meant
+> "selected."** `skills.ts`'s own doc comment defines `usedSkillNames` as
+> skill names already DELIVERED this session — but `strategyInstruction`
+> added a skill to that set the moment it was SELECTED, before the model
+> call it feeds even started. An interrupted turn (the learner cancels
+> mid-production) or a retry exhaustion that falls back to a scripted line
+> burned the ONE use of a `once_per_session` skill on a turn the child
+> never actually heard, with nothing left to retry it. Fixed by splitting
+> selection from commitment: `strategyInstruction` now returns a PROPOSED
+> `skillName` alongside the instruction text, and each of its three call
+> sites commits it to `usedSkillNames` only after `produce()` resolves with
+> `emission.source === 'model'` — a turn genuinely delivered using the
+> skill's own procedure, not an interrupt, not a scripted fallback. Proven
+> with a throwaway test against the real orchestrator (an interrupted
+> REMEDIATE turn, then a later one re-diagnosing the same misconception,
+> confirmed against the pre-fix code to fall back to the generic REMEDIATE
+> instruction — the skill already marked spent — and against the fix to
+> deliver `counterexample-confront`'s real procedure again).
 
 **Governance (§15.1 of the harness doc): nothing autonomous reaches a child.**
 Today every skill is hand-written and enters through code review — the pull
