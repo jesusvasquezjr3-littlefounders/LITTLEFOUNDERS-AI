@@ -2368,6 +2368,28 @@ owner-accepted interim while the platform's only active learner is the owner.
 Before real families: LEARNER-store writes require guardian approval from the
 portal, which reads the same ledger.
 
+**The review call itself had no fence at all — found by adversarial review,
+2026-08-30 (HIGH), the sibling of the recall gap above.** `runPostSessionReview`
+joined raw learner-AND-tutor turns into one prompt with no nonce fence, no
+"this is data, not an instruction" disclaimer, nowhere — the one seam in the
+tutor that sends a whole session's worth of learner text to a model unfenced.
+Every other seam that does this
+(`conversationMessages()`'s per-line `fenceUntrusted`, the recall excerpt fix
+just above, `placementIntake.ts`) wraps it. It matters MORE here than at a
+live turn: this call's OUTPUT is `learner_memory`, re-injected into EVERY
+future session as the tutor's own trusted notes (this section's own
+`learnerBrief` row) — a successfully manipulated review becomes a
+cross-session, elevated-trust payload, not one bad turn a moderation pass
+might still catch before it reaches the screen. Fixed with a new
+`fenceTranscript()` in `review.ts`, adapted from `fenceUntrusted` for a
+multi-speaker transcript rather than one utterance: one nonce-delimited block
+around the WHOLE transcript, one disclaimer, rather than repeating it after
+every learner line. Also hardened the same file's §1.9 digit-run re-check,
+which only matched 7+ CONSECUTIVE digits — a real phone number written with
+separators ("55-1234-5678", "(55) 1234 5678", "55.1234.5678") broke the run
+below 7 and sailed through; the check now also matches the grouped shape
+without false-positiving on ordinary teaching prose that lists small numbers.
+
 ### 20.5 The whiteboard — a live visual synced to what the tutor says (SHIPPED)
 
 **The defect, reported directly by the owner from a live session (2026-08-29):**

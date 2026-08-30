@@ -455,7 +455,29 @@ everything passes the blocked half perfectly and destroys the product.
    on use. A prohibition written only in a prompt or a doc is a request the
    model can honor; the same prohibition enforced at the one call site a
    client message reaches is a guarantee.
-19. **A "must not be negative" guard on a floating-point running total needs
+19. **A model call that reads a whole session's transcript needs the SAME
+   fence as one that reads a single turn — the risk is bigger, not smaller.**
+   `session/review.ts`'s post-session review joined raw learner-and-tutor
+   history into one prompt with no nonce fence and no "this is data, not an
+   instruction" disclaimer at all, found by adversarial review 2026-08-30
+   (HIGH) — the one seam that sends a session's worth of learner text to a
+   model unfenced, while `conversationMessages()`, the episodic-recall
+   excerpt (item above it in `/ORACLE.md` §20.4) and `placementIntake.ts`
+   all wrap theirs. It is a BIGGER risk here, not a smaller one: this call's
+   OUTPUT is `learner_memory`, re-injected into EVERY future session as the
+   tutor's own trusted notes — a manipulated review is a cross-session,
+   elevated-trust payload, not one bad turn a moderation pass might still
+   catch. Fixed with `fenceTranscript()`, the same nonce/strip/disclaimer
+   shape as `fenceUntrusted` but ONE fence around the whole multi-speaker
+   transcript instead of one repeated per learner line, since the review
+   reads a "TUTOR:"/"LEARNER:"-labelled text blob rather than structured
+   chat messages. Same file's §1.9 digit-run re-check was ALSO too narrow —
+   `\b\d{7,}\b` only matches 7+ consecutive digits, and no one writes a real
+   phone number that way ("55-1234-5678" breaks the run at every hyphen) —
+   extended to match the grouped shape too. A model-facing prompt that reads
+   MORE learner text, not less, is the LAST place to skip the fence a single
+   utterance already gets.
+20. **A "must not be negative" guard on a floating-point running total needs
    a zero band, not a zero line.** `whiteboard.ts`'s `computeSequence` chains
    decimal `add`/`subtract`/`multiply_percent` steps (`value` is
    `z.number()`, not an integer — money and fractions are legitimate), and

@@ -2386,3 +2386,46 @@ instead of `null`, and a sequence that goes meaningfully negative
 pre-fix guard for the claimed reason via `git stash`, pass against the fix.
 Full oracle suite green (435 tests), lint clean, type-check clean on all
 three tsconfigs.
+
+## The post-session review sent a whole transcript to a model with no injection fence at all — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 16 (HIGH): `oracle/src/session/review.ts`'s
+`runPostSessionReview` — the fire-and-forget call that reads a just-ended
+session and rewrites the two curated `learner_memory` notes — built its
+prompt by joining raw learner-and-tutor turns into one string with no nonce
+fence and no "this is data, not an instruction" disclaimer anywhere. Every
+other seam in the tutor that sends learner-authored text to a model wraps it
+(`orchestrator.ts`'s `conversationMessages()`, the episodic-recall excerpt,
+`placementIntake.ts`) — this was the one exception, and the highest-stakes
+one: its output is persisted and re-injected into EVERY future session as
+the tutor's own trusted notes (§4.1's fourteenth context field), so a
+successfully manipulated review becomes a cross-session, elevated-trust
+payload rather than a single bad turn a moderation pass might still catch.
+
+Fixed with a new `fenceTranscript()` in `review.ts`: the same
+nonce-per-call/invisible-character-stripped/explicit-disclaimer shape as
+`fenceUntrusted` (`../safety/untrusted.ts`), adapted for a multi-speaker
+transcript — one fence and one disclaimer around the whole session, rather
+than repeating the disclaimer after every individual learner line (which
+would bloat the prompt for no protective benefit, since tutor lines carry no
+injection risk from our own prior output).
+
+Same file's §1.9 identifier re-check was also found too narrow (MEDIUM): the
+digit-run regex (`\b\d{7,}\b`) only matches 7+ CONSECUTIVE digits, but real
+phone numbers carry separators ("55-1234-5678", "(55) 1234 5678",
+"55.1234.5678") that break the run below 7 on every format actually used in
+es-MX/en-US/pt-BR prose. Extended to also match the grouped shape (2-3
+digits, a separator, 3-4 digits, the same separator, 3-4 digits), narrow
+enough not to false-positive on ordinary teaching prose that lists small
+numbers with punctuation between them.
+
+Proven with 6 new tests in `review.test.ts`: the transcript sent to the
+model now carries the nonce fence and disclaimer with the real conversation
+content still inside it; an injection attempt embedded in a learner turn is
+confirmed to land INSIDE the fence rather than passing through raw; all
+three phone-number-with-separator formats are confirmed dropped whole; and
+a control test confirms ordinary numbered teaching prose is NOT
+false-positived. All 5 fence/regex-dependent tests confirmed to fail against
+the pre-fix code for the claimed reason via `git stash`, pass against the
+fix. Full oracle suite green (441 tests), lint clean, type-check clean on
+all three tsconfigs.
