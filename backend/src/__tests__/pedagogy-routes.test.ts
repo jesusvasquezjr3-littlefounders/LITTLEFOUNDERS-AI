@@ -157,6 +157,10 @@ function stub(opts: StubOpts = {}) {
         if (method === 'PATCH') return Promise.resolve(new Response(null, { status: 204 }));
         return Promise.resolve(jsonResponse(200, []));
       }
+      if (url.includes('/rpc/award_tutor_xp')) {
+        const requested = JSON.parse(String(init?.body ?? '{}')).p_requested as number;
+        return Promise.resolve(jsonResponse(200, requested));
+      }
       return Promise.resolve(jsonResponse(200, []));
     }),
   );

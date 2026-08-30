@@ -3262,6 +3262,16 @@ export type Database = {
           source_topic_title: Json
         }[]
       }
+      award_tutor_xp: {
+        Args: {
+          p_cap: number
+          p_requested: number
+          p_session_id: string
+          p_since: string
+          p_user_id: string
+        }
+        Returns: number
+      }
       get_completed_course_badges: {
         Args: { p_user_id: string }
         Returns: {

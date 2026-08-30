@@ -412,21 +412,52 @@ export async function listRecentSummaries(
 }
 
 /**
- * Adds XP to a session's running total.
+ * Credits XP against the learner's own daily cap, ATOMICALLY.
  *
- * READ-MODIFY-WRITE, and it REFUSES on a failed read rather than defaulting to
- * zero — §1.14's exact rule, and the exact shape of the bug that once erased a
- * child's XP, minutes, lessons and both streak columns behind a 200.
+ * Found by adversarial review, 2026-08-30 (CRITICAL): the previous shape was
+ * a plain application-level read-then-write — read "earned today" via a
+ * separate query, compute `min(requested, cap - earnedToday)` in JS, write it
+ * with an unconditional PATCH. Two concurrent grade requests for the SAME
+ * learner (a fast learner clearing two segments back-to-back, a retried
+ * request, two open tabs) both read the same stale total before either write
+ * landed, so both spent the full remaining cap. Core has no documented
+ * single-replica constraint (unlike Oracle — oracle/AGENTS.md), so an
+ * in-process lock cannot close this under horizontal scaling, and the cap
+ * spans every `tutor_sessions` row for a user on a given day, which a
+ * row-level conditional PATCH (the `ended_at=is.null` pattern
+ * `closeTutorSession` uses) cannot express across a multi-row aggregate.
+ *
+ * `award_tutor_xp` (migration 0055) does the read, the cap arithmetic and the
+ * write inside ONE Postgres function, serialized with an advisory lock keyed
+ * on the learner — correct under any number of Core replicas, because the
+ * lock lives in the database. Returns the amount ACTUALLY awarded (may be
+ * less than requested, or zero, once the cap is reached) — never null on
+ * success, matching `award_tutor_xp`'s own `RETURNS int` (never NULL). A
+ * `null` return here means the call itself failed, and the caller must
+ * refuse rather than assume zero was credited (§1.14) — treating a failed
+ * write as "nothing happened" would be indistinguishable from the very
+ * silent-loss bug this file's `closeTutorSession` comment already warns
+ * against, on the same table.
  */
-export async function addSessionXp(sessionId: string, delta: number): Promise<boolean> {
-  const session = await getTutorSession(sessionId);
-  if (session === null) return false;
-  const res = await serviceRest<unknown>(`/tutor_sessions?id=eq.${eu(sessionId)}`, {
-    method: 'PATCH',
-    headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify({ xp_awarded: session.xp_awarded + delta }),
+export async function awardTutorXp(input: {
+  sessionId: string;
+  userId: string;
+  sinceIso: string;
+  cap: number;
+  requested: number;
+}): Promise<number | null> {
+  if (input.requested <= 0) return 0;
+  const res = await serviceRest<number>('/rpc/award_tutor_xp', {
+    method: 'POST',
+    body: JSON.stringify({
+      p_session_id: input.sessionId,
+      p_user_id: input.userId,
+      p_since: input.sinceIso,
+      p_cap: input.cap,
+      p_requested: input.requested,
+    }),
   });
-  return res !== null;
+  return typeof res === 'number' ? res : null;
 }
 
 // ── Turns ───────────────────────────────────────────────────────────────────
@@ -706,11 +737,3 @@ export async function countSessionsSince(userId: string, sinceIso: string): Prom
   return rows.length;
 }
 
-/** XP already granted from tutor sessions since a cutoff, for the daily cap. */
-export async function tutorXpSince(userId: string, sinceIso: string): Promise<number | null> {
-  const rows = await serviceRest<{ xp_awarded: number }[]>(
-    `/tutor_sessions?user_id=eq.${eu(userId)}&started_at=gte.${encodeURIComponent(sinceIso)}&select=xp_awarded`,
-  );
-  if (rows === null) return null;
-  return rows.reduce((sum, r) => sum + (r.xp_awarded ?? 0), 0);
-}

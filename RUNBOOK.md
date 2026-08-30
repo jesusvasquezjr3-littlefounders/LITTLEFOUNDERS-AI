@@ -1852,3 +1852,68 @@ a pedagogical gap no unit test happened to probe for, and the adversarial
 review found a client-side race no amount of playing the product by hand was
 likely to trigger on demand, since it requires a grade response and a new
 served segment to race in a specific order.
+
+## The Tutor's daily XP cap could be exceeded by concurrency, and drained by replaying one grade — closed 2026-08-30
+
+**Found by a twelfth adversarial review**, this time pointed at Core's
+(`backend/`) tutor session lifecycle and XP crediting — a service that had
+not had a dedicated round yet this session, every prior one having targeted
+Oracle or the frontend client.
+
+**Finding 1 (CRITICAL) — the daily XP cap was enforced by a non-atomic
+read-then-write.** `POST /tutor/segments/:segmentId/grade` read "XP earned
+today" via a plain `SELECT`/sum over `tutor_sessions.xp_awarded`, computed
+`xp = min(baseXp, cap - earnedToday)` in application code, then wrote the
+result through a separate, unconditional PATCH. Two concurrent grade
+requests for the same learner — a fast learner clearing two segments
+back-to-back, a client retry after a flaky connection, or two open tabs —
+both read the same stale total before either write landed, so both
+independently believed the full remaining budget was theirs and both spent
+it. Reproduced: a session at 110/120 XP, two segments worth 20 XP each
+graded concurrently, both awarded the full 10 XP remaining — 20 total
+against a 10 XP budget.
+
+The fix could not be an in-process lock: Core carries no documented
+single-replica constraint the way Oracle deliberately does
+(`oracle/AGENTS.md`), so a Node-level mutex would not hold under horizontal
+scaling, and the cap spans every `tutor_sessions` row for a learner on a
+given day — a span the codebase's existing "first write wins" pattern
+(`closeTutorSession`'s `ended_at=is.null` conditional PATCH) cannot express,
+because that pattern guards ONE row, not a multi-row aggregate. Fixed with
+`award_tutor_xp` (migration `0055_atomic_tutor_xp.sql`): the read, the cap
+arithmetic and the write happen inside ONE `SECURITY DEFINER` Postgres
+function, serialized with `pg_advisory_xact_lock` keyed on the learner's own
+id — correct under any number of Core replicas, since the lock lives in the
+database rather than in a process. Verified against a real local Postgres
+instance, sequentially (a session at 110/120 correctly awarded 10 then 0 on
+repeat calls) and under genuine concurrency (two simultaneous `psql`
+connections racing the identical call settled at exactly 10 + 0, never
+exceeding the 120 cap) — before any application code was written against it.
+`backend/src/routes/tutor.ts` now trusts whatever the function reports as
+actually credited rather than computing its own capped amount, proven with a
+test asserting the route stores and returns the RPC's number even when it
+differs from what the route would have computed on its own.
+
+**Finding 2 (HIGH) — grading the same segment more than once paid its XP
+again each time.** The same route computed `xp` fresh from the current
+score on every call, with no memory of what that exact segment had already
+paid. Grading one 20-XP segment three times sequentially — no concurrency
+needed, just a retried request or a trivial replay — paid 20 XP three times,
+ending a session's total at 60 instead of 20. Fixed by capping each call's
+award at `baseXp - row.xp_awarded` (both already on hand from
+`getTutorSegment`), so a segment can never earn more than its own listed
+worth no matter how many times it is graded — while a genuine second
+attempt that IMPROVES on the first still earns the delta, since the cap is
+against the segment's remaining worth, not against "has this been graded
+before". Proven with a test seeding a segment already at 15 of 20 XP paid
+and asserting a fresh full-score grade earns only the remaining 5.
+
+**What this incident adds to the pattern.** Both findings share one root
+cause: XP crediting was an application-level, non-transactional
+read-then-write with no idempotency key, in a codebase that already has —
+and already uses, on the very same table — the correct alternative (a
+single conditional database operation). The general lesson for whoever
+touches this next: a cap or running total that spans more than one row
+cannot be made safe by careful code on the write side alone; the atomicity
+has to move into the database, because no amount of discipline in Node
+closes a race across two separate network round trips.

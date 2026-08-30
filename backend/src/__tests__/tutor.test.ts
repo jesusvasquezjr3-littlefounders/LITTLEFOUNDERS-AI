@@ -88,6 +88,10 @@ interface StubOpts {
   insertedSession?: unknown[];
   restFailures?: string[];
   calls?: { url: string; method: string; body?: string }[];
+  /** Overrides what `/rpc/award_tutor_xp` reports as actually credited — the
+   * daily cap already having been (partly or fully) spent, simulated at the
+   * boundary rather than by fabricating a real race. */
+  awardedXp?: number;
 }
 
 function stub(opts: StubOpts = {}) {
@@ -170,6 +174,12 @@ function stub(opts: StubOpts = {}) {
         if (method === 'PATCH') return Promise.resolve(new Response(null, { status: 204 }));
         if (url.includes('?id=eq.')) return Promise.resolve(jsonResponse(200, opts.session ?? [SESSION_ROW]));
         return Promise.resolve(jsonResponse(200, opts.sessions ?? []));
+      }
+      if (url.includes('/rpc/award_tutor_xp')) {
+        // Default: award exactly what was requested (no cap in play). A test
+        // exercising the cap passes `opts.awardedXp` to override this.
+        const requested = JSON.parse(String(init?.body ?? '{}')).p_requested as number;
+        return Promise.resolve(jsonResponse(200, opts.awardedXp ?? requested));
       }
       if (url.includes('/rest/v1/tutor_turns')) return Promise.resolve(jsonResponse(200, []));
       if (url.includes('/rest/v1/tutor_safety_flags')) return Promise.resolve(jsonResponse(200, []));
@@ -693,10 +703,10 @@ describe('grading a tutor segment', () => {
     expect(JSON.stringify(response.body)).not.toContain('correct_option_id');
   });
 
-  it('refuses rather than defaulting when today’s XP total cannot be read', async () => {
-    // §1.14 in its exact shape: defaulting "earned today" to zero on a
-    // transient read failure would make the daily cap bypassable at will.
-    stub({ segment: [verifiedRow], restFailures: ['started_at=gte'] });
+  it('refuses rather than defaulting when the atomic XP credit cannot be read', async () => {
+    // §1.14 in its exact shape: assuming zero was credited on a failed write
+    // would be indistinguishable from a silently lost one.
+    stub({ segment: [verifiedRow], restFailures: ['/rpc/award_tutor_xp'] });
 
     const response = await request(createApp())
       .post(`/api/v1/tutor/segments/${SEGMENT}/grade`)
@@ -704,6 +714,62 @@ describe('grading a tutor segment', () => {
       .send({ answer: { option_id: 'a' } });
 
     expect(response.status).toBe(502);
+  });
+
+  it('never pays a segment more than its own worth, no matter how many times it is graded', async () => {
+    /*
+     * Found by adversarial review, 2026-08-30 (HIGH): this route used to
+     * compute `xp` fresh from the CURRENT score on every call, with no memory
+     * of what this exact segment had already paid — so re-grading the same
+     * 20-XP segment (a retried request, a double-tap, a trivial replay) paid
+     * the full 20 XP again each time. Simulated here without any concurrency
+     * trick: `verifiedRow` already carries `xp_awarded: 15` from an earlier
+     * grade call on this SAME segment, so a fresh full-score grade must only
+     * be able to earn the remaining 5, not another 20.
+     */
+    const calls = stub({ segment: [{ ...verifiedRow, xp_awarded: 15 }] });
+
+    const response = await request(createApp())
+      .post(`/api/v1/tutor/segments/${SEGMENT}/grade`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ answer: { option_id: 'a' }, attemptNumber: 2 });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.xpAwarded).toBe(5);
+    const rpcCall = calls.find((c) => c.url.includes('/rpc/award_tutor_xp'));
+    expect(JSON.parse(rpcCall?.body ?? '{}').p_requested).toBe(5);
+    const patch = calls.find((c) => c.method === 'PATCH' && c.url.includes('tutor_segments'));
+    expect(JSON.parse(patch?.body ?? '{}').xp_awarded).toBe(20);
+  });
+
+  it('trusts what the atomic credit actually granted over what it locally computed', async () => {
+    /*
+     * Found by adversarial review, 2026-08-30 (CRITICAL): the previous shape
+     * computed the capped amount in application code from a separately-read
+     * "earned today", which a concurrent request could make stale by the
+     * time this one wrote — both could believe the full remaining cap was
+     * theirs. `award_tutor_xp` (migration 0055) now does the read, the cap
+     * arithmetic AND the write atomically in Postgres and reports back what
+     * it actually credited. This asserts the route reports and stores
+     * EXACTLY that number, not the score-derived amount it would have
+     * computed on its own — proving there is no second, independent XP
+     * calculation left in this route for a race to exploit.
+     */
+    const calls = stub({ segment: [verifiedRow], awardedXp: 3 });
+
+    const response = await request(createApp())
+      .post(`/api/v1/tutor/segments/${SEGMENT}/grade`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ answer: { option_id: 'a' }, attemptNumber: 1 });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.xpAwarded).toBe(3);
+    const rpcCall = calls.find((c) => c.url.includes('/rpc/award_tutor_xp'));
+    // The route still asked for the segment's full worth (20) — the cap was
+    // enforced INSIDE the atomic function, not by this route second-guessing it.
+    expect(JSON.parse(rpcCall?.body ?? '{}').p_requested).toBe(20);
+    const patch = calls.find((c) => c.method === 'PATCH' && c.url.includes('tutor_segments'));
+    expect(JSON.parse(patch?.body ?? '{}').xp_awarded).toBe(3);
   });
 });
 

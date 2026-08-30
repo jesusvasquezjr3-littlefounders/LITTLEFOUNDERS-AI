@@ -17,7 +17,7 @@ import {
   CHARACTERS,
   BACKDROPS,
   DIORAMAS,
-  addSessionXp,
+  awardTutorXp,
   closeTutorSession,
   countSessionSegments,
   countSessionsSince,
@@ -41,7 +41,6 @@ import {
   recordSegmentResult,
   revokeVoiceConsent,
   setSessionSummary,
-  tutorXpSince,
   upsertTutorPreferences,
   type SessionSummaryDigest,
   type TutorSegmentRow,
@@ -1410,28 +1409,59 @@ export function tutorRouter(): Router {
      * teaches — the learner sees the feedback — but it awards nothing, because
      * awarding progress for a result the server could not verify is how a
      * generated exercise quietly corrupts a child's record.
+     *
+     * NEVER PAY A SEGMENT MORE THAN ITS OWN WORTH, NO MATTER HOW MANY TIMES IT
+     * IS GRADED (found by adversarial review, 2026-08-30, HIGH). This route
+     * used to compute `xp` fresh from the CURRENT score on every call with no
+     * memory of what this segment had already paid — so grading the same
+     * 20-XP segment three times (a client retry after a timeout, a double-tap,
+     * a trivial replay) paid 20 XP three times, not once. `row.xp_awarded`
+     * (already on hand from `getTutorSegment`) is what this exact segment has
+     * paid so far across every previous grade call; the raw score can never
+     * earn more than what remains of the segment's OWN worth. This still lets
+     * a genuine second attempt earn the DELTA when it improves on the first —
+     * only a replay of an already-fully-paid segment is reduced to zero.
      */
     const baseXp = typeof segment.xp === 'number' ? segment.xp : 0;
-    let xp = row.key_verified ? Math.round((score / 100) * baseXp) : 0;
+    const rawXp = row.key_verified ? Math.round((score / 100) * baseXp) : 0;
+    const requestedXp = Math.max(0, Math.min(rawXp, baseXp - row.xp_awarded));
 
-    if (xp > 0) {
-      const earnedToday = await tutorXpSince(user.id, startOfTodayIso());
-      if (earnedToday === null) {
-        // Refuse rather than default to zero-earned-today, which would let the
-        // cap be bypassed by any transient read failure (§1.14).
-        return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read today’s tutor XP');
+    let xp = 0;
+    if (requestedXp > 0) {
+      /*
+       * ATOMIC AGAINST THE DAILY CAP (found by adversarial review, 2026-08-30,
+       * CRITICAL). The previous shape read "earned today" here, computed the
+       * capped amount in JS, then wrote it with a separate, unconditional
+       * PATCH — two concurrent grade requests for the same learner could both
+       * read the same stale total and both spend the full remaining cap.
+       * `awardTutorXp` does the read, the cap arithmetic and the write in one
+       * Postgres function serialized on the learner (migration 0055), so the
+       * amount it returns is what was ACTUALLY credited, never a value this
+       * route computed against data that may already be stale by the time it
+       * writes.
+       */
+      const awarded = await awardTutorXp({
+        sessionId: session.id,
+        userId: user.id,
+        sinceIso: startOfTodayIso(),
+        cap: MAX_TUTOR_XP_PER_DAY,
+        requested: requestedXp,
+      });
+      if (awarded === null) {
+        // Refuse rather than assume zero was credited — indistinguishable
+        // from a lost write otherwise (§1.14).
+        return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not credit tutor XP');
       }
-      xp = Math.max(0, Math.min(xp, MAX_TUTOR_XP_PER_DAY - earnedToday));
+      xp = awarded;
     }
 
     const recorded = await recordSegmentResult({
       segmentId: row.id,
       score,
-      xpAwarded: xp,
+      xpAwarded: row.xp_awarded + xp,
       attempts: parsed.data.attemptNumber,
     });
     if (!recorded) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the result');
-    if (xp > 0) await addSessionXp(session.id, xp);
 
     /*
      * THE V3 EVIDENCE JOIN. When the segment was served for a knowledge
