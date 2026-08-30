@@ -4272,3 +4272,63 @@ only, not the prompt, so its correctness is fully determined by
 unit tests against the real function; spending a paid conversation
 hoping to re-trigger a rare model mistake would be a worse test of a
 deterministic code path, not a better one.
+
+## A specific, labeled, tappable map node can silently start a fully generic chat — proven, deliberately NOT fixed, needs a product decision — round 39, 2026-08-30
+
+Round 39 reviewed the frontend learning-map surface
+(`frontend/src/tutor/map/MapGraph.tsx`, `OfferChips.tsx`) against the
+`/tutor/map` contract round 37 changed — genuinely unreviewed by this
+campaign since rounds 11/21, both of which predate round 37.
+
+**MEDIUM, proven, needs a human product call before fixing.**
+`TutorMapNode.skillKey` is `kc.skill_key`, which
+`database/migrations/0052_kc_graph.sql` documents as an ordinary,
+expected transient state: "Several KCs may share one skill_key; NULL
+means no published pool yet." Nothing in `deriveNodeState`
+(`backend/src/services/pedagogy/tutorMap.ts`) excludes an unbridged KC
+from rendering `available`/`in_progress`/`needs_review` — all tappable
+states — so a node can legitimately show a specific title as "Ready to
+learn" while carrying `skillKey: null`.
+
+`OfferChips.tsx`'s `pickNode`/`startInputForNode` turns a tap on such a
+node into `{ intent: 'open' }` — byte-identical to what the fully
+generic "Ask me anything" chip sends, with no `kcKey`, no title, nothing
+tying the new session back to what was tapped. A child sees "Dar
+cambio — Ready to learn," taps it expecting that lesson, and gets a
+topic-blind open conversation with no idea anything was tapped at all.
+Proven with a throwaway RTL test rendering the real `OfferChips`, a
+node with a real title and `skillKey: null`, clicking it, and reading
+the `onStart` spy's call: `{"intent":"open","wantsVoice":true}`.
+`continueTarget` (the map's own headline CONTINUE button) can degrade
+the identical way.
+
+**Why this is not fixed this round.** Every fix considered changes
+child-facing product behavior, not just code:
+- Restricting such a node's clickable states would hide content a
+  learner may legitimately be able to review/practice, contradicting
+  what `deriveNodeState` currently intends `available`/`needs_review`
+  to mean.
+- Showing an honest "not ready yet" message instead of launching a
+  session is a real UX/copy decision on a child-facing surface, not a
+  mechanical bugfix.
+- Threading the node's own `kcKey`/title into the session so the tutor
+  at least knows the intended topic even without a bridged skill pool
+  would be new data reaching the model's context — and this repo's own
+  documentation stewardship table is explicit: "a new field reaching
+  the model ALSO needs `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md`." That is a
+  legal-review-gated change, not a same-round fix.
+
+Left for a human to choose a direction (hide/gray the node, show an
+honest in-place message, or scope a `kcKey`-context-passing feature
+with its required legal review) before any of the three gets built.
+`git status --porcelain` confirmed clean after the review (the
+throwaway test and an incidental `frontend/package-lock.json` diff from
+a worktree `npm install` were both reverted).
+
+Also confirmed sound this round, no fix needed: round 37's `rankPlanKcs`
+contract shape is consumed correctly end to end; the already-fixed
+locked-node prerequisite-naming bug (commit `06e27d84`) holds under
+`MapGraph.tsx`'s current code; `refreshOffersAndMap` is wired into
+every phase transition that actually needs a re-fetch after grading;
+map nodes are real `<button>` elements with no synthetic-click or
+z-index concern; i18n parity holds for `tutor.map.*` in all 3 locales.
