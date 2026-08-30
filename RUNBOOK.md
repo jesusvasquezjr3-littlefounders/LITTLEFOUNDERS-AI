@@ -2817,3 +2817,45 @@ false})` simulates the consent-revocation transition and asserts
 pre-fix hook for the claimed reason (`expected [] to include 'audio'`) via
 `git stash`, pass against the fix. Full frontend suite green (1412
 tests), lint clean, type-check clean, i18n:check clean.
+
+## Ordinary counting content was blocked as a "phone number" — found live, testing as a struggling learner, closed 2026-08-30
+
+Found live, running a fresh `tutor:converse` pass after this window's
+other fixes (MEDIUM): the tutor's own reply to "¿cómo se da el cambio
+contando hacia arriba?" (how do you give change counting up) — exactly
+the FADED-strategy scenario built to test this — got blocked by
+`deterministicModeration`'s `contact_detail` check and replaced with a
+generic "let me say that differently" scripted line. The old pattern,
+`\b\+?\d[\d\s().-]{8,}\b`, matches ANY 9+ characters of
+digits/spaces/parens/dots/hyphens — which is exactly what a counting
+sequence or a price breakdown looks like in a MONEY tutor: "Empiezas en 6
+y vas sumando: 6 7 8 9 10" and "Contamos hacia atrás: 10 9 8 7 6 5 4 3 2
+1" both matched, both entirely ordinary teaching content, neither
+carrying any actual contact detail.
+
+A real phone number's digits are GROUPED into 2-4-digit chunks (an area
+code, an exchange, a line number); a spoken counting sequence is a run of
+ISOLATED single- or double-digit numbers, and this tutor's own tier rules
+already keep every number under 100 — a bare 3+ digit group essentially
+never appears in legitimate content at all. Fixed by requiring the
+pattern to have three groups, the middle and last each 3-4 digits
+(`\b\+?\d{2,4}[\s().-]{0,3}\d{3,4}[\s().-]{0,3}\d{3,4}\b`) — the shape a
+real phone number actually has and a counting sequence never does.
+
+Ratcheted into `oracle/src/safety/canary.ts`'s `BENIGN_OUTPUT` corpus
+(per the file's own header comment: "every real injection or safety miss
+found in the wild gets added... and from then on it cannot come back
+without turning this file red") with the exact two sentences the live run
+produced and had blocked. Verified the narrower pattern loses no real
+detection: the pre-existing `emits-phone` canary
+("+52 55 1234 5678") and the invisible-character-defeat test (a phone
+number with zero-width spaces planted between its groups, which
+`stripInvisible` collapses to a bare 10-digit run before the pattern
+runs) both still correctly match and remain blocked. Confirmed the two
+new canary entries fail against the pre-fix pattern for the claimed
+reason via `git stash`, pass against the fix. Full oracle suite green
+(452 tests), lint clean, type-check clean on all three tsconfigs,
+`verify:tutor` and `verify:pedagogy` green, and independently
+re-verified against a fresh `tutor:converse` run: the exact scenario
+that produced the live defect now delivers the real teaching turn
+instead of the scripted fallback.

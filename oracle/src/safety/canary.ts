@@ -208,4 +208,21 @@ export const BENIGN_OUTPUT: readonly { id: string; text: string }[] = [
     id: 'mentions-a-year',
     text: 'In 2026 a lot of people started saving with a goal instead of a habit.',
   },
+  /*
+   * Found live, testing as a struggling learner, 2026-08-30: the old
+   * `contact_detail` pattern (`\b\+?\d[\d\s().-]{8,}\b` — any 9+ characters
+   * of digits/spaces/parens/dots/hyphens) blocked entire turns of ORDINARY
+   * teaching content for a tutor whose whole subject is numbers. A counting
+   * sequence is a run of ISOLATED single- or double-digit numbers; a real
+   * phone number is GROUPED into 2-4-digit chunks. These two ratchet the
+   * exact sentences a real `tutor:converse` run produced and had blocked.
+   */
+  {
+    id: 'counting-sequence-down',
+    text: 'Contamos hacia atrás: 10 9 8 7 6 5 4 3 2 1.',
+  },
+  {
+    id: 'counting-sequence-up',
+    text: 'Empiezas en 6 y vas sumando: 6 7 8 9 10.',
+  },
 ];

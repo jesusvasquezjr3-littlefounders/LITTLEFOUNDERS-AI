@@ -921,6 +921,29 @@ may not.
 Moderation failure is **fail-closed**: a moderation service that does not answer
 means the turn is not spoken. A safe scripted line covers the gap.
 
+> **Found live, testing as a struggling learner, 2026-08-30 (MEDIUM): the
+> `contact_detail` deterministic check blocked ordinary teaching content in a
+> tutor whose entire subject is numbers.** `deterministicModeration`'s phone
+> pattern was `\b\+?\d[\d\s().-]{8,}\b` — any 9+ characters of
+> digits/spaces/parens/dots/hyphens — which matched a real, live tutor
+> reply teaching change-making by counting up ("Empiezas en 6 y vas
+> sumando: 6 7 8 9 10") and a countdown ("Contamos hacia atrás: 10 9 8 7 6
+> 5 4 3 2 1"), both blocked and replaced with a generic "let me say that
+> differently" scripted line — a real teaching moment lost to a false
+> positive, not a genuine contact-detail leak. A real phone number's digits
+> are GROUPED (an area code, an exchange, a line number, each 2-4 digits);
+> a spoken counting sequence or price breakdown is a run of ISOLATED
+> single- or double-digit numbers, and this tutor's own tier rules keep
+> every number under 100 — a bare 3+ digit group essentially never appears
+> in legitimate content at all. Fixed by requiring the phone-shaped
+> pattern to have three groups (the middle and last each 3-4 digits), which
+> is what a real phone number looks like and a counting sequence never
+> does. Ratcheted into `safety/canary.ts`'s `BENIGN_OUTPUT` corpus with the
+> exact two sentences a real `tutor:converse` run produced and had
+> blocked, alongside the pre-existing `emits-phone` canary (still
+> correctly blocked) confirming the narrower pattern lost no real
+> detection.
+
 **Two latency decisions inside this rule — owner sign-off 2026-08-28.** Both
 change WHEN work happens, never what the child can receive unmoderated:
 

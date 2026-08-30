@@ -586,7 +586,26 @@ everything passes the blocked half perfectly and destroys the product.
    actually runs, not just how OFTEN — a correct cadence checked at the
    wrong point in the sequence gates nothing for the turn that matters most,
    the one currently in flight.
-27. **A "must not be negative" guard on a floating-point running total needs
+27. **A pattern meant to catch a NARROW shape (a phone number) but written
+   as a BROAD one (any long digit run) will fire on the tutor's own core
+   content.** `moderation.ts`'s `contact_detail` check was
+   `\b\+?\d[\d\s().-]{8,}\b` — any 9+ characters of digits, spaces, parens,
+   dots or hyphens — found live, testing as a struggling learner,
+   2026-08-30 (MEDIUM): it blocked a real tutor turn teaching change-making
+   by counting up ("6 7 8 9 10") and a countdown ("10 9 8 7 6 5 4 3 2 1"),
+   both entirely ordinary content for a MONEY tutor whose whole subject is
+   small numbers. A real phone number's digits are GROUPED into 2-4-digit
+   chunks; a counting sequence is a run of ISOLATED single/double digits.
+   Fixed by requiring three groups (the middle and last each 3-4 digits) —
+   the shape a phone number actually has and a counting sequence never
+   does — and ratcheted into `safety/canary.ts`'s `BENIGN_OUTPUT` with the
+   exact blocked sentences. General lesson: a regex meant to detect one
+   SPECIFIC real-world shape (a phone number, an address, a date) should
+   encode that shape's actual structure, not a loose superset of
+   characters it happens to be made of — the superset will always contain
+   content the product's own domain produces routinely, and for a
+   money-and-numbers tutor specifically, digits ARE the domain.
+28. **A "must not be negative" guard on a floating-point running total needs
    a zero band, not a zero line.** `whiteboard.ts`'s `computeSequence` chains
    decimal `add`/`subtract`/`multiply_percent` steps (`value` is
    `z.number()`, not an integer — money and fractions are legitimate), and

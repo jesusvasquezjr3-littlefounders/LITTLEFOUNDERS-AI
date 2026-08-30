@@ -79,7 +79,22 @@ const CONTACT_DETAIL: readonly RegExp[] = [
   /\b[\w.+-]+@[\w-]+\.[\w.]{2,}\b/i,
   /\bhttps?:\/\/\S+/i,
   /\bwww\.[\w-]+\.\w{2,}/i,
-  /\b\+?\d[\d\s().-]{8,}\b/,
+  /*
+   * PHONE-SHAPED, NOT JUST DIGIT-SHAPED. Found live, testing as a struggling
+   * learner, 2026-08-30: this used to be `\b\+?\d[\d\s().-]{8,}\b` — any 9+
+   * characters of digits/spaces/parens/dots/hyphens — which blocked entire
+   * turns of ORDINARY teaching content for a tutor whose whole subject is
+   * numbers: "Contamos hacia atrás: 10 9 8 7 6 5 4 3 2 1" and "Empiezas en 6
+   * y vas sumando: 6 7 8 9 10" both matched. A real phone number's digits
+   * are GROUPED (an area code, an exchange, a line number — each 2-4 digits
+   * long); a spoken counting sequence or price breakdown is a run of
+   * ISOLATED single- or double-digit numbers. Requiring three groups, the
+   * middle and last each 3-4 digits, is what a phone number actually looks
+   * like and a counting sequence never does — this tutor's own tier rules
+   * keep every number under 100, so a bare 3+ digit group essentially never
+   * appears in legitimate content at all.
+   */
+  /\b\+?\d{2,4}[\s().-]{0,3}\d{3,4}[\s().-]{0,3}\d{3,4}\b/,
 ];
 
 /** The cheap, exact pass. Pure, synchronous, and never wrong about its own rules. */
