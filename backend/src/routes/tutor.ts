@@ -413,13 +413,20 @@ function internalRouter(): Router {
    */
   router.get('/recall', async (req, res) => {
     const Q = z
-      .object({ userId: z.uuid(), q: z.string().min(2).max(200) })
+      .object({
+        userId: z.uuid(),
+        q: z.string().min(2).max(200),
+        // Optional: an Oracle deployed ahead of this route degrades to the
+        // `searchOwnTurns` default (es-MX) rather than a refused request —
+        // round 29, 2026-08-30, see database/migrations/0056.
+        locale: z.enum(['en-US', 'es-MX', 'pt-BR']).optional(),
+      })
       .strict();
-    const parsed = Q.safeParse({ userId: req.query.userId, q: req.query.q });
+    const parsed = Q.safeParse({ userId: req.query.userId, q: req.query.q, locale: req.query.locale });
     if (!parsed.success) {
       return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid request');
     }
-    const excerpts = await searchOwnTurns(parsed.data.userId, parsed.data.q, 3);
+    const excerpts = await searchOwnTurns(parsed.data.userId, parsed.data.q, 3, parsed.data.locale);
     return ok(res, { excerpts });
   });
 

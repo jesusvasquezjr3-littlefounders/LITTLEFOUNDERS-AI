@@ -854,6 +854,33 @@ everything passes the blocked half perfectly and destroys the product.
    will paper over the exact failure the counter exists to catch, and only
    a live test that actually drives the counter to its threshold (not just
    asserts the call is now chained) will catch it before production does.
+39. **A design comment's own stated trade-off can be wrong once measured.**
+   `database/migrations/0053_learner_memory.sql` hardcoded the Spanish
+   Postgres text-search config for episodic recall's `text_tsv` and
+   `search_tutor_turns`, with an explicit, deliberate comment: "for en-US/
+   pt-BR content the match degrades to stemless term matching, which is
+   still useful and still indexed." Found by adversarial review, round 29
+   (2026-08-30, HIGH), measured against a real local Postgres:
+   `to_tsvector('spanish','remember')` and `to_tsvector('spanish',
+   'remembered')` produce two DIFFERENT stems for the SAME English root —
+   the Spanish stemmer does not merely skip stemming non-Spanish words, it
+   actively MISTRANSFORMS them, so a query built from one inflection could
+   not find text stored in another even under the identical config both
+   actually ran. Recall was not "degraded" for two of this product's three
+   locales, it was unpredictably broken, invisible in production because a
+   failed/empty recall degrades to the turn already in hand. Fixed in
+   `database/migrations/0056_recall_locale_aware_fts.sql`: `text_tsv`
+   converts from a GENERATED column (which cannot read the sibling
+   `tutor_sessions.locale` a correct config choice needs) to a
+   trigger-maintained one via `ALTER COLUMN ... DROP EXPRESSION` — kept the
+   column, its data and its GIN index in place, no drop/recreate — and
+   `search_tutor_turns` gained a `p_locale` parameter threaded all the way
+   from `orchestrator.ts`'s `this.session.locale` through Core. General
+   lesson: a code comment that explains and accepts a limitation is a
+   HYPOTHESIS about how bad that limitation is, not a verified fact — when
+   a surface built under that hypothesis later gets its own dedicated
+   review, re-measure the original trade-off rather than treating the
+   comment as settled just because it already gave a reason.
 
 ---
 

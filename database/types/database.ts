@@ -3315,7 +3315,12 @@ export type Database = {
         }[]
       }
       search_tutor_turns: {
-        Args: { p_limit?: number; p_query: string; p_user_id: string }
+        Args: {
+          p_limit?: number
+          p_locale?: string
+          p_query: string
+          p_user_id: string
+        }
         Returns: {
           rank: number
           said_at: string
@@ -3325,6 +3330,7 @@ export type Database = {
           turn_text: string
         }[]
       }
+      tutor_fts_config: { Args: { p_locale: string }; Returns: unknown }
     }
     Enums: {
       [_ in never]: never

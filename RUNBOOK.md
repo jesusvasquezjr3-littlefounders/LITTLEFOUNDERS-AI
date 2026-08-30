@@ -3449,3 +3449,80 @@ search configuration regardless of the session's actual locale, silently
 degrading or breaking recall for `en-US` and `pt-BR` sessions. That is a
 schema-level fix (a new migration) and is tracked and closed separately;
 see the entry below.
+
+## Episodic recall was unpredictably broken, not merely degraded, for two of the platform's three locales — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 29 (episodic recall), HIGH.
+`database/migrations/0053_learner_memory.sql` hardcoded the Spanish
+Postgres text-search configuration for both `tutor_turns.text_tsv` (a
+GENERATED column) and `search_tutor_turns()`'s query parsing, with an
+explicit design comment accepting the trade-off: "for en-US/pt-BR content
+the match degrades to stemless term matching, which is still useful and
+still indexed." Measured against a real local Postgres, that assumption
+does not hold: `to_tsvector('spanish', 'remember')` produces the stem
+`rememb`, but `to_tsvector('spanish', 'remembered')` produces the stem
+`remember` — two DIFFERENT stems for the SAME English root depending on
+inflection, because the Spanish snowball stemmer actively mistransforms
+English (and Portuguese) words rather than merely leaving them unstemmed.
+A query built from one inflection cannot find text stored in another,
+even though both ran under the identical config. Recall for `en-US`/
+`pt-BR` sessions was not degraded, it was unpredictably broken — and
+invisible in production, because a failed or empty recall degrades to
+"the turn we already had," exactly the behavior a genuinely-empty result
+also produces. On a platform whose recall trigger phrase list
+(`RECALL_TRIGGER`, `oracle/src/tutor/orchestrator.ts`) is deliberately
+trilingual, this silently defeated the feature for two of three locales.
+
+**The fix: `database/migrations/0056_recall_locale_aware_fts.sql`.**
+`text_tsv` cannot stay a GENERATED column — the correct config depends on
+`tutor_sessions.locale`, a sibling table a generated expression cannot
+read — so it converts to a plain, trigger-maintained column via `ALTER
+COLUMN ... DROP EXPRESSION`, which keeps the column, its stored data and
+its GIN index in place with no drop/recreate; only the "how is this
+computed" rule changes, from an expression to a `BEFORE INSERT OR UPDATE`
+trigger that looks up the row's own session's locale. Existing rows are
+backfilled once (their stored vectors were computed under the old
+always-Spanish rule). `search_tutor_turns()` gains a `p_locale` parameter,
+defaulted to `es-MX` so an un-updated caller keeps today's behavior, and a
+new `tutor_fts_config(locale)` helper maps all three locked locales
+(`en-US`→english, `es-MX`→spanish, `pt-BR`→portuguese) so both the
+storage side and the query side read from one mapping instead of two that
+could drift. `locale` is threaded end to end: `orchestrator.ts`'s
+`recallOwnHistory` call now passes `this.session.locale`, Core's `GET
+/tutor/recall` route accepts an optional `locale` query param, and
+`searchOwnTurns` forwards it to the RPC as `p_locale`.
+
+**Expand-safe either side of the code**, the same contract 0053/0054
+already use: a caller still sending only 3 arguments resolves via the
+new parameter's default; a caller sending 4 arguments against a database
+that has not yet run this migration gets an RPC failure that
+`recallOwnHistory`/`searchOwnTurns` already treat as "degrade to empty,"
+never a crash a learner could see.
+
+**Verified against a real local Postgres instance**, `npm run db:reset`
+succeeding twice: the exact round-29 repro (English text "I remembered
+the cookie problem..." against the query "remember cookie problem," with
+`locale: 'en-US'`) now returns the match it should; the equivalent es-MX
+case still matches (no regression); a fresh Portuguese case matches too;
+and a bare 3-argument call (no locale) still resolves via the default.
+Also confirmed directly: `text_tsv`'s `pg_attribute.attgenerated` is now
+empty (no longer a generated column) and `idx_tutor_turns_text_tsv`
+survived the conversion untouched.
+
+Proven at the application-code level with new tests in
+`oracle/src/__tests__/coreClient.test.ts` (each of the three locales
+reaches `recallOwnHistory`'s query string) and
+`backend/src/__tests__/tutorData.test.ts` (each locale reaches
+`searchOwnTurns`'s RPC body as `p_locale`, and an omitted locale defaults
+to `es-MX`) — these prove the WIRING; the SQL-level stemming behavior
+itself was proven directly against Postgres as described above, since
+this codebase's test suites intentionally never touch a real database.
+Both new test files confirmed to fail against the pre-fix code for the
+exact claimed reason via `git stash`, pass against the fix. Full oracle
+suite green (475 tests, up from 472), full backend suite green (635
+tests, up from 631), lint clean on both services, type-check clean on
+all tsconfigs in both, `verify:pedagogy` and `verify:tutor` both green,
+root `docs:check`/`secrets:check`/`provider:check` clean, and the root
+`tools:test` migration-ledger gate green after updating ROADMAP.md's
+declared pending-delta range to `0054`–`0056`. See `oracle/AGENTS.md`
+item 39 for the general lesson.

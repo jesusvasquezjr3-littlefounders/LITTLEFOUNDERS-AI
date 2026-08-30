@@ -399,17 +399,29 @@ export async function writeLearnerMemory(input: {
  * Episodic recall: literal excerpts from this learner's own past sessions.
  * ~20 ms of GIN index, zero model cost — the only memory cheap enough for
  * the conversation clock.
+ *
+ * `locale` picks the Postgres text-search configuration the QUERY text is
+ * parsed with — the language the recall question was actually asked in.
+ * Found by adversarial review, round 29 (2026-08-30, HIGH): this used to
+ * hardcode Spanish (`database/migrations/0053_learner_memory.sql`'s
+ * default), and Postgres's Spanish stemmer mistransforms English/
+ * Portuguese words rather than merely leaving them unstemmed, breaking
+ * recall unpredictably for `en-US`/`pt-BR` sessions. Defaults to `es-MX`
+ * so an OLDER caller that has not been updated to send it yet keeps
+ * today's (correct-for-Spanish) behaviour — see
+ * `database/migrations/0056_recall_locale_aware_fts.sql`.
  */
 export async function searchOwnTurns(
   userId: string,
   query: string,
   limit = 3,
+  locale: 'en-US' | 'es-MX' | 'pt-BR' = 'es-MX',
 ): Promise<{ speaker: string; turnText: string; saidAt: string }[]> {
   const rows = await serviceRest<
     { speaker: string; turn_text: string; said_at: string }[]
   >(`/rpc/search_tutor_turns`, {
     method: 'POST',
-    body: JSON.stringify({ p_user_id: userId, p_query: query, p_limit: limit }),
+    body: JSON.stringify({ p_user_id: userId, p_query: query, p_limit: limit, p_locale: locale }),
   });
   return (rows ?? []).map((r) => ({ speaker: r.speaker, turnText: r.turn_text, saidAt: r.said_at }));
 }

@@ -8,6 +8,7 @@ import {
   LOCALES,
   PreviousSessionSchema,
   SkillStateSchema,
+  type Locale,
 } from '../context/schema.js';
 
 /*
@@ -492,14 +493,27 @@ export async function updateLearnerMemory(input: {
 /**
  * V4 episodic recall: literal excerpts from this learner's own past sessions.
  * Failure degrades to an empty list — recall garnishes a turn, never blocks one.
+ *
+ * `locale` is the CURRENT session's — the language the "¿te acuerdas...?" /
+ * "do you remember...?" question was actually asked in — so the query text
+ * is parsed with the matching Postgres text-search configuration. Found by
+ * adversarial review, round 29 (2026-08-30, HIGH): the search used to
+ * hardcode Spanish regardless of locale, and Postgres's Spanish stemmer
+ * actively mistransforms English/Portuguese words rather than merely
+ * leaving them unstemmed — `to_tsvector('spanish','remember')` and
+ * `to_tsvector('spanish','remembered')` produce two DIFFERENT stems for the
+ * same root, so a query built from one inflection could not find text
+ * stored in another, breaking recall unpredictably for `en-US`/`pt-BR`
+ * sessions. See `database/migrations/0056_recall_locale_aware_fts.sql`.
  */
 export async function recallOwnHistory(
   userId: string,
   query: string,
+  locale: Locale,
 ): Promise<{ speaker: string; turnText: string; saidAt: string }[]> {
   try {
     const body = await coreFetch(
-      `/tutor/internal/recall?userId=${encodeURIComponent(userId)}&q=${encodeURIComponent(query)}`,
+      `/tutor/internal/recall?userId=${encodeURIComponent(userId)}&q=${encodeURIComponent(query)}&locale=${encodeURIComponent(locale)}`,
     );
     const parsed = Envelope(
       z.object({

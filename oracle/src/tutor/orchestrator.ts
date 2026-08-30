@@ -933,7 +933,7 @@ export class TutorOrchestrator {
         .replace(/\s+/g, ' ')
         .trim();
       if (query.length >= 3) {
-        const excerpts = await recallOwnHistory(this.session.userId, query);
+        const excerpts = await recallOwnHistory(this.session.userId, query, this.session.locale);
         if (excerpts.length > 0) {
           const quoted = excerpts
             .slice(0, 3)

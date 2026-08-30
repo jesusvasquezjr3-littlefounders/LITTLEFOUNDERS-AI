@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getLearnerMemory } from '../services/tutorData.js';
+import { getLearnerMemory, searchOwnTurns } from '../services/tutorData.js';
 
 /*
  * Found by adversarial review, round 28 (2026-08-30, HIGH): `getLearnerMemory`
@@ -50,5 +50,42 @@ describe('getLearnerMemory distinguishes a failed read from a genuinely empty on
       learner: 'Le motivan las metas concretas.',
       pedagogy: null,
     });
+  });
+});
+
+/*
+ * Found by adversarial review, round 29 (2026-08-30, HIGH): episodic
+ * recall's full-text search hardcoded the Spanish Postgres text-search
+ * configuration regardless of the session's actual locale, breaking recall
+ * unpredictably for en-US/pt-BR sessions — verified against a real local
+ * Postgres instance (see database/migrations/0056_recall_locale_aware_fts.sql
+ * and its RUNBOOK.md entry for the SQL-level proof). This proves the
+ * application-side wiring: the locale the caller passes reaches the RPC
+ * body as `p_locale`, and a caller that passes none still gets the
+ * es-MX default `search_tutor_turns` itself defaults to.
+ */
+describe('searchOwnTurns threads the caller\'s locale into the RPC call', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it.each(['en-US', 'es-MX', 'pt-BR'] as const)('sends p_locale: %s', async (locale) => {
+    const fetchMock = vi.fn((_url: string, _init?: RequestInit) =>
+      Promise.resolve(new Response(JSON.stringify([]), { status: 200 })),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    await searchOwnTurns('22222222-2222-4222-8222-222222222222', 'remember cookie problem', 3, locale);
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as { p_locale?: string };
+    expect(body.p_locale).toBe(locale);
+  });
+
+  it('defaults to es-MX when no locale is given, so an older caller keeps working', async () => {
+    const fetchMock = vi.fn((_url: string, _init?: RequestInit) =>
+      Promise.resolve(new Response(JSON.stringify([]), { status: 200 })),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    await searchOwnTurns('22222222-2222-4222-8222-222222222222', 'galletas problema');
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as { p_locale?: string };
+    expect(body.p_locale).toBe('es-MX');
   });
 });

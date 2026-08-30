@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { updateLearnerMemory } from '../core/client.js';
+import { recallOwnHistory, updateLearnerMemory } from '../core/client.js';
 
 /*
  * Found by adversarial review, round 28 (2026-08-30, HIGH): Core answers a
@@ -71,5 +71,47 @@ describe('updateLearnerMemory reflects the real per-store result, not just envel
       stores: { learner: 'Nueva nota.', pedagogy: null },
     });
     expect(result).toBe(true);
+  });
+});
+
+/*
+ * Found by adversarial review, round 29 (2026-08-30, HIGH): episodic
+ * recall's full-text search hardcoded the Spanish Postgres text-search
+ * configuration regardless of the session's actual locale. Postgres's
+ * Spanish stemmer mistransforms English/Portuguese words rather than
+ * merely leaving them unstemmed — `to_tsvector('spanish','remember')` and
+ * `to_tsvector('spanish','remembered')` produce two DIFFERENT stems for the
+ * same root, verified against a real local Postgres instance — so recall
+ * broke unpredictably for en-US/pt-BR sessions. Fixed in
+ * `database/migrations/0056_recall_locale_aware_fts.sql`, which needs the
+ * CALLING session's own locale threaded all the way from the orchestrator
+ * through Core to `search_tutor_turns`'s new `p_locale` parameter. This
+ * test proves ONLY the oracle-side half of that wiring — that the real
+ * locale reaches the query string `coreFetch` sends — since proving the
+ * Postgres stemming behavior itself needs a real database, which this
+ * suite intentionally never touches (see `admin.test.ts`-style tests
+ * elsewhere for the fetch-mocking convention this file follows).
+ */
+describe('recallOwnHistory sends the session\'s own locale, not a hardcoded one', () => {
+  const fetchMock = vi.fn();
+
+  beforeEach(() => {
+    vi.stubGlobal('fetch', fetchMock);
+    fetchMock.mockReset();
+  });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it.each(['en-US', 'es-MX', 'pt-BR'] as const)('passes %s through to the recall query string', async (locale) => {
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify({ data: { excerpts: [] }, error: null }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
+    await recallOwnHistory('22222222-2222-4222-8222-222222222222', 'remember cookie problem', locale);
+    const url = String(fetchMock.mock.calls[0]?.[0] ?? '');
+    expect(url).toContain(`locale=${encodeURIComponent(locale)}`);
   });
 });
