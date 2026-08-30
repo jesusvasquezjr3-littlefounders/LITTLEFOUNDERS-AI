@@ -777,6 +777,38 @@ describe('a dropped session can be resumed on a fresh token', () => {
     const replayed = open(url);
     expect(await replayed.closed()).toBe(4001);
   });
+
+  /*
+   * Found by an adversarial review, 2026-08-29 (HIGH): with no registry of
+   * genuinely-live sockets, a SECOND socket for a session whose first socket
+   * never actually closed found nothing in the park (there was nothing to
+   * find) and `handleConnection` spun up a second, independent
+   * TutorOrchestrator running in parallel — its own budget clock, its own
+   * turn cap, and (in production) a real Core resume endpoint that mints a
+   * fresh token for any session the caller owns with no live-socket check at
+   * all. Each extra socket bought another full session's worth of paid
+   * model/judge/TTS calls and defeated the daily-session cap.
+   */
+  it('refuses a second socket for a session whose first socket never actually closed', async () => {
+    freshJournal();
+    const first = open(await socketUrl());
+    await collect(first.socket, (m) => m.some((x) => x.type === 'turn'));
+
+    // The first socket is left OPEN — no terminate, no close frame — and a
+    // fresh token is minted for the SAME session, exactly what a resume
+    // endpoint would hand out to a caller who never let the first socket die.
+    const second = open(await socketUrl());
+    expect(await second.closed()).toBe(4009);
+
+    // The FIRST socket is unharmed: still open, still able to finish its own
+    // session normally.
+    expect(first.socket.readyState).toBe(first.socket.OPEN);
+    const ending = collect(first.socket, (m) => m.some((x) => x.type === 'closed'));
+    first.socket.send(JSON.stringify({ type: 'end_session' }));
+    await ending;
+    expect(journal.closes).toHaveLength(1);
+    expect(journal.closes[0]).toMatchObject({ closeReason: 'completed' });
+  });
 });
 
 describe('the socket refuses what it must', () => {

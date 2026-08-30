@@ -309,6 +309,7 @@
     "retentionNote": "Conversations are kept for 90 days and then deleted automatically."
   },
   "conversationError": {
+    "ALREADY_CONNECTED": "You're already talking to me somewhere else — check your other tab or device!",
     "BUDGET_EXHAUSTED": "That's all the time for this conversation. Come back soon!",
     "CONNECTION_LOST": "The connection dropped. Check your internet and try again.",
     "CONSENT_REQUIRED": "You need a grown-up's permission for the microphone. You can type in the meantime.",

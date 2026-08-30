@@ -285,6 +285,34 @@ constraint (§16). Proven by `live-session.test.ts` → "a dropped session can b
 resumed on a fresh token" (all three tests) and `backend/src/__tests__/tutor.test.ts`
 → "POST /api/v1/tutor/sessions/:id/resume".
 
+> **Fixed 2026-08-30 (adversarial review, HIGH): resume had no notion of
+> "already live".** `POST /sessions/:id/resume` minted a fresh token for any
+> session the caller owned with `ended_at IS NULL` — it never checked whether
+> a socket for that session was already open. If the client simply never let
+> the first socket close (or called resume while still connected), the second
+> socket found nothing parked (there was nothing to find — the first was
+> never dropped) and `handleConnection` spun up a SECOND, fully independent
+> `TutorOrchestrator` for the same session: its own budget clock, its own
+> turn cap, running in parallel. Each extra socket bought another full
+> session's worth of paid model/judge/TTS calls and defeated
+> `MAX_SESSIONS_PER_DAY`, the product's own anti-addiction control — and
+> `closeTutorSession`'s "first close wins" guard on `ended_at IS NULL` meant
+> every orchestrator but the first to close had its real, billed usage vanish
+> from Core's cost ledger, while both sockets' independently-restarting
+> `transcriptSeq` collided in `tutor_turns` and silently dropped one side's
+> rows — the "guardian can't read what their child said" failure this file
+> already fixed once, reopened by a different door. Fixed with a new
+> in-process registry, `liveSessions` (`ws/server.ts`), checked BEFORE
+> `takeParked`: a session already live refuses the new socket outright
+> (close code `4009`, mapped client-side to a plain "you're already talking
+> to me somewhere else" line, all three locales) rather than silently
+> duplicating it. A genuine resume is unaffected — it only ever reaches this
+> point after the ORIGINAL socket's `close` handler has already removed it
+> from `liveSessions`. Proven with a throwaway test before the fix (a second
+> socket for a still-open session hung forever waiting for a refusal that
+> never came) and a permanent one after (`live-session.test.ts` → "refuses a
+> second socket for a session whose first socket never actually closed").
+
 ### §3.3 Inworld sits behind an interface, from day one
 
 The owner's stated intent is to replace Inworld with self-hosted STT/TTS once

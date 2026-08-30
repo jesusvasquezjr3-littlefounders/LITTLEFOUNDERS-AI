@@ -182,6 +182,29 @@ interface ParkedSession {
 
 const parkedSessions = new Map<string, ParkedSession>();
 
+/*
+ * Every socket that is GENUINELY connected right now, keyed by session id —
+ * distinct from `parkedSessions`, which holds a session whose socket already
+ * closed. Found missing by an adversarial review, 2026-08-29 (HIGH): with no
+ * registry of live sockets, `POST /sessions/:id/resume` (backend) will mint a
+ * fresh token for any session the caller owns with `ended_at IS NULL`, with
+ * no way to know a socket for it is already open. A second socket opened
+ * with that token found nothing in `parkedSessions` (the first one never
+ * closed) and `handleConnection` happily spun up a SECOND, independent
+ * `TutorOrchestrator` for the same session — its own budget clock, its own
+ * turn cap, running in parallel. Each extra socket bought another full
+ * session's worth of paid model/judge/TTS calls, defeated the daily-session
+ * cap (`MAX_SESSIONS_PER_DAY`, the product's own anti-addiction control), and
+ * corrupted the record two ways at once: `closeTutorSession` guards on
+ * `ended_at IS NULL` (first close wins), so every orchestrator but the first
+ * to close had its real, billed usage vanish from Core's cost ledger; and
+ * both sockets' `transcriptSeq` restarted at 0, so their rows collided in
+ * `tutor_turns` and the `ignore-duplicates` constraint silently dropped one
+ * side — the "guardian can't read what their child said" failure this file
+ * already fixed once, reopened by a different door.
+ */
+const liveSessions = new Map<string, Live>();
+
 function parkSession(sessionId: string, live: Live): void {
   // A stale park for the same session (two sockets raced) is finalized first —
   // two parked orchestrators for one session would both write a close later.
@@ -380,6 +403,18 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
   const minorVoiceAllowed = getConfig().TUTOR_VOICE_FOR_MINORS;
   const microphone = voice && (!session.isMinor || (session.voiceConsent && minorVoiceAllowed));
 
+  /*
+   * SEVENTH GATE: the session must not already have a live socket. A genuine
+   * resume only ever reaches this point after the ORIGINAL socket's `close`
+   * handler has already removed it from `liveSessions` (and parked the
+   * orchestrator, below) — so a session that is still here is not a dropped
+   * connection being reclaimed, it is a second socket racing the first one.
+   */
+  if (liveSessions.has(session.sessionId)) {
+    socket.close(CLOSE_CODES.ALREADY_CONNECTED, 'this session already has an active connection');
+    return;
+  }
+
   // A parked orchestrator for this session means this socket is a RESUME:
   // same history, same budget clock, same paid-speech memo. Every gate above
   // already re-ran against a fresh token and a fresh Core context.
@@ -454,6 +489,8 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
     lastActivityAtMs: Date.now(),
   };
 
+  liveSessions.set(session.sessionId, live);
+
   socket.on('pong', () => {
     live.lastPongAtMs = Date.now();
   });
@@ -479,6 +516,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
 
   socket.on('close', () => {
     clearInterval(live.heartbeat);
+    liveSessions.delete(session.sessionId);
     if (!live.closing) {
       // The socket died without a farewell. The session is PARKED, not ended:
       // a sleeping phone or a proxy timeout should cost the connection, never

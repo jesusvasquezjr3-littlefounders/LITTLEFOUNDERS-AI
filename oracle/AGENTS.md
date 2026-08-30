@@ -332,7 +332,17 @@ everything passes the blocked half perfectly and destroys the product.
    session or not — pinned by a test), and nothing resumes silently (the
    client says "reconnecting" and the server redraws rather than replays).
    The park is process memory, like the nonce ledger: one more thing that
-   holds Oracle at a SINGLE replica.
+   holds Oracle at a SINGLE replica. **A single-use token is not the same
+   guarantee as "only one socket is ever live for this session"** (found by
+   an adversarial review, 2026-08-30, HIGH): the resume ENDPOINT never
+   checked whether a socket for the session was already open, only whether
+   the session itself was — so a client that never let its first socket close
+   could mint and use a second valid token, and `handleConnection` would
+   spin up a second, fully independent orchestrator running in parallel,
+   with its own budget clock and its own turn cap. Fixed with `liveSessions`
+   (`ws/server.ts`), checked BEFORE `takeParked`: a session already live
+   refuses the new socket (close code `4009`) rather than duplicating it.
+   See `RUNBOOK.md` for the full incident.
 9. **Never log a learner's utterance.** Not at debug level, not temporarily.
    Safety flags record a category and a severity and never the words — a flag
    is a signal to a human, not a second unregulated copy of what a distressed

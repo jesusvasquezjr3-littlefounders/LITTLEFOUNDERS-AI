@@ -1379,3 +1379,71 @@ entry point (a new turn type, a new intake flow, a new voice-adjacent
 reaction) that fences without also classifying reopens Finding 1 or Finding
 3's exact shape, and will not be caught by any test that only exercises the
 one path it was written against.
+
+## Resume could multiply a session into N parallel, independently-budgeted orchestrators — incident 2026-08-30, closed the same day
+
+**Found by another independent adversarial code review**, this time pointed
+at the session lifecycle, consent, and budget-enforcement layer — not by a
+report, not by a user. Proven with a throwaway test against the real
+WebSocket server before being trusted, then reverted.
+
+**What was wrong.** `POST /sessions/:id/resume` (Core) mints a fresh
+single-use token for any session the caller owns with `ended_at IS NULL`. It
+never checked whether a socket for that session was already open — only
+whether the session itself was still open in the database. Oracle's own
+`ws/server.ts` had a registry of PARKED sessions (`parkedSessions`, sockets
+that already dropped) but nothing tracking sockets that were still
+genuinely, currently connected. So a client that simply never let its first
+socket close — or called resume while still connected, deliberately or by a
+buggy retry — got a second valid token for the same session, opened a second
+socket, found nothing parked (there was nothing to find), and
+`handleConnection` spun up a second, fully independent `TutorOrchestrator`:
+its own `startedAtMs`, its own turn counter, running in parallel with the
+first for as long as both stayed open.
+
+**Why it mattered beyond "one extra socket."** Three separate harms
+compounded: (1) each parallel orchestrator bought its own full session's
+worth of paid model, judge and TTS calls, defeating `MAX_SESSIONS_PER_DAY` —
+described in this codebase's own routes as a deliberate anti-addiction
+control, not merely a cost cap; (2) `closeTutorSession` guards on `ended_at
+IS NULL`, "first close wins" — so every orchestrator except the first to
+close had its real, billed turn count and cost silently vanish from Core's
+cost ledger, the exact "blind flight" harm CLAUDE.md §1.14 names; (3) both
+sockets' `transcriptSeq` independently restarted at 0 and wrote colliding
+`(session_id, seq)` rows into `tutor_turns`, which the `ignore-duplicates`
+unique constraint silently resolved by dropping one side — reopening, from a
+different door, the "guardian cannot read what their child actually said"
+failure this project has already had to fix once before.
+
+**The fix.** A new in-process map, `liveSessions` (`oracle/src/ws/server.ts`),
+tracks every socket that is genuinely, currently connected — checked BEFORE
+`takeParked`, in `handleConnection`. A session already present there refuses
+the new socket outright, closing it with a new code (`4009`,
+`ALREADY_CONNECTED`) rather than silently starting a second orchestrator. A
+genuine resume is unaffected: it only ever reaches that check after the
+ORIGINAL socket's `close` handler has already deleted its entry from
+`liveSessions` (and parked its orchestrator, separately). The frontend maps
+the new code to a plain, translated line — "you're already talking to me
+somewhere else, check your other tab or device" — in all three locales,
+rather than falling through to the generic error the owner has already
+reported seeing once for an unmapped close code.
+
+**How it was verified.** A throwaway test opened one socket, deliberately
+left it open (no terminate, no close frame), minted a second fresh token for
+the identical session id, and opened a second socket — against the pre-fix
+code this hung forever waiting for a refusal that never came, because the
+second socket connected successfully instead. The same test, kept as a
+permanent regression (`live-session.test.ts` → "refuses a second socket for
+a session whose first socket never actually closed"), now asserts the second
+socket is closed with code `4009` and that the first socket is completely
+unharmed and can still finish its own session normally.
+
+**What this means for anyone touching resume, tokens, or session lifecycle
+again.** A token being single-use and correctly scoped to one session (both
+verified sound by this same review) is NOT the same guarantee as "only one
+socket can ever be live for this session" — the two are independent
+invariants, and this incident is what it looks like when only the first one
+is enforced. Any future change to how a session is resumed, migrated between
+processes, or reconnected must preserve the `liveSessions` check as the
+single place that answers "is this session already live", the same way
+`claimTurn` is the single place that answers "is a turn already in flight".

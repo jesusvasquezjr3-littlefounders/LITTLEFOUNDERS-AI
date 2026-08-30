@@ -309,6 +309,7 @@
     "retentionNote": "Las conversaciones se guardan 90 días y después se borran solas."
   },
   "conversationError": {
+    "ALREADY_CONNECTED": "Ya estás platicando conmigo en otro lado — ¡revisa tu otra pestaña o dispositivo!",
     "BUDGET_EXHAUSTED": "Se acabó el tiempo de esta conversación. ¡Vuelve pronto!",
     "CONNECTION_LOST": "Se cortó la conexión. Revisa tu internet e inténtalo de nuevo.",
     "CONSENT_REQUIRED": "Necesitas el permiso de un adulto para el micrófono. Mientras tanto puedes escribir.",

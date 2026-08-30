@@ -84,6 +84,7 @@ export type CloseReasonCode =
   | 'SESSION_NOT_FOUND'
   | 'CONSENT_REQUIRED'
   | 'BUDGET_EXHAUSTED'
+  | 'ALREADY_CONNECTED'
   | 'SERVICE_DEGRADED'
   | 'CONNECTION_LOST';
 
@@ -97,6 +98,15 @@ export function closeCodeToReason(code: number): CloseReasonCode {
       return 'SESSION_NOT_FOUND';
     case 4008:
       return 'BUDGET_EXHAUSTED';
+    /*
+     * A second tab or device with the same conversation open. Oracle refuses
+     * the SECOND socket outright (2026-08-29, adversarial review) rather than
+     * silently running two parallel, independently-budgeted sessions — which
+     * is what happened before the server-side fix. The first socket is
+     * untouched; only this later one sees this code.
+     */
+    case 4009:
+      return 'ALREADY_CONNECTED';
     case 4013:
       return 'SERVICE_DEGRADED';
     /*
