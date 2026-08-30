@@ -3165,3 +3165,70 @@ One self-caused regression along the way: the new fix comments in
 provider) while explaining the item-25 precedent, which
 `boundaries.test.ts` correctly caught — nothing outside `src/voice/` may
 name the provider. Reworded to "the voice provider" before committing.
+
+## Three session-lifecycle state bugs in the Tutor frontend — a stale resume could kill a healthy new session, and two flags never reset across a restart — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 25 (`TutorExperience.tsx`'s session
+lifecycle — the state machine behind starting, resuming, restarting and
+ending a Tutor session). All three are a variant of the same root cause:
+`oracle`'s orchestrator starts a brand-new session's turn-seq counter at
+0, so several pieces of CLIENT state that assumed seq numbers (or session
+identity) never repeat across a session boundary were wrong.
+
+**1. CRITICAL — a stale, refused resume for an abandoned session could
+force-close an unrelated, healthy new session.** The resume-driving
+effect's SUCCESS branch was already hardened (an earlier fix this
+session, see the "successful resume tore itself down" entry above) to
+check the resumed session is still the active one before touching state.
+Its FAILURE branch never got the same guard: `setPhase('closing')` ran
+unconditionally whenever a resume call resolved refused. Scenario: a
+session drops, the auto-resume call goes out, and BEFORE it resolves the
+learner presses Restart (or Exit → "Start Another") into a brand-new,
+healthy, currently-conversing session. If the original, now-abandoned
+resume call later resolves refused (park expired, token rejected), its
+failure branch ran anyway and slammed the brand-new session to the
+closing screen — for a reason that had nothing to do with it. Fixed with
+a `sessionRef` that mirrors the current `session` (for reading it from
+inside a closure that captured an older one) and a captured
+`resumeTargetId`: the failure branch now only closes the phase when the
+session that resume call was FOR is still the active one, mirroring the
+success branch's own already-proven pattern.
+
+**2. HIGH — an interrupted turn in one session could permanently mute
+every future session's first turn.** `interruptedSeq` is set once when
+the learner interrupts the tutor and compared directly against the
+current turn's `seq` — by design, so the NEXT turn in the same session
+plays normally. But it is never RESET, and a session's first turn is
+always `seq: 1` regardless of which session it is. A learner who ever
+interrupted an earlier session's opening line left `interruptedSeq: 1`
+set for the rest of the browser tab's visit: every later session's own,
+real, un-interrupted greeting (also `seq: 1`) silently played no audio at
+all, with no error and no warning.
+
+**3. MEDIUM — a stale "reply timed out" timer from an abandoned session
+could fire into a brand-new one.** `awaitingReply`/`replyTimedOut`'s
+reset effect is keyed on `[turnSeq]`, which does not change (stays 0) if
+a learner restarts before EITHER the old or the new session has received
+its first turn yet. A learner who triggered `awaitingReply` and then
+immediately restarted left the original 25-second timeout timer running
+against the OLD session; when it fired, it set `replyTimedOut` into the
+NEW session, showing a "reply timed out" caption for a message the new
+session never sent.
+
+Fixed by resetting all three (`interruptedSeq`, `awaitingReply`,
+`replyTimedOut`) explicitly inside `begin()`'s success branch — the one
+place a genuinely new session (and its own fresh seq counter) is
+established, whether reached via the first start, a mid-conversation
+restart, or "Start Another."
+
+Proven with a new `sessionLifecycleReset.test.tsx`: three behavioural
+harnesses (matching this codebase's established pattern — copying the
+exact logic slice from `TutorExperience.tsx` against the real
+`useTutorSocket` hook, rather than rendering the full component and its
+3D stage) reproduce all three scenarios end-to-end, plus three source-scan
+tests that assert the REAL file contains the actual fix (a harness alone
+cannot prove the real component is wired correctly). All three source-scan
+tests confirmed to fail against the pre-fix file for the exact claimed
+reason via `git stash`, pass against the fix. Full frontend suite green
+(1421 tests, up from 1415), lint clean, type-check clean, root
+`i18n:check` clean.

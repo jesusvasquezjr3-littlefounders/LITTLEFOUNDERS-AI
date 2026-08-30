@@ -307,6 +307,29 @@ export function TutorExperience() {
         }
         setSession(result.data);
         setPhase('conversing');
+        /*
+         * A FRESH SESSION STARTS A FRESH TURN-SEQ COUNTER, AND SOME STATE HERE
+         * DID NOT KNOW THAT. Found by adversarial review, 2026-08-30 (HIGH +
+         * MEDIUM): every new session's orchestrator starts its own `seq` at 0,
+         * so a brand-new session's first turn is `seq: 1` — the SAME number
+         * as any earlier session's first turn. `interruptedSeq` (below) is
+         * compared directly against `turnSeq` and is only ever SET, never
+         * reset, so a learner who ever interrupted an earlier session's
+         * opening line left the tutor permanently muted on the first turn of
+         * every session after it, for as long as the tab stayed open — no
+         * error, no warning, just silence. `awaitingReply`/`replyTimedOut`'s
+         * own reset effect is keyed on `[turnSeq]`, which has this exact
+         * problem in miniature: restarting before either session ever
+         * receives a first turn leaves `turnSeq` unchanged (0 → 0), so a
+         * stale "reply timed out" timer from the abandoned session could
+         * still fire into the new one. All three are reset explicitly here,
+         * at the one place a genuinely new session (and its own fresh seq
+         * counter) is established — first start, restart, or "Start Another"
+         * all funnel through this same success branch.
+         */
+        setInterruptedSeq(null);
+        setAwaitingReply(false);
+        setReplyTimedOut(false);
       });
     },
     [token],
@@ -395,6 +418,15 @@ export function TutorExperience() {
    */
   const [resuming, setResuming] = useState(false);
   const resumeAttemptedRef = useRef<string | null>(null);
+  /**
+   * Mirrors `session` for reading its CURRENT value from inside an async
+   * callback whose closure captured an OLDER one — see the resume-failure
+   * branch below.
+   */
+  const sessionRef = useRef(session);
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
 
   useEffect(() => {
     if (phase !== 'conversing') return;
@@ -413,6 +445,7 @@ export function TutorExperience() {
       resumeAttemptedRef.current !== session.sessionId
     ) {
       resumeAttemptedRef.current = session.sessionId;
+      const resumeTargetId = session.sessionId;
       setResuming(true);
       void resumeSession(token, session.sessionId).then((result) => {
         if (result.data) {
@@ -442,9 +475,21 @@ export function TutorExperience() {
           return;
         }
         // The park expired or the resume was refused — resuming is genuinely
-        // over. The conversation that did happen still gets its goodbye.
+        // over. The conversation that did happen still gets its goodbye —
+        // but ONLY if the learner is still on the session this call was
+        // for. Found by adversarial review, 2026-08-30 (CRITICAL): unlike
+        // the success branch just above (which already guards with this
+        // same comparison), this branch closed the phase unconditionally.
+        // A learner who restarted or started another session while this
+        // stale resume was still in flight had their brand-new, healthy,
+        // currently-conversing session torn down the moment the abandoned
+        // resume for the OLD session finally came back refused —
+        // `sessionRef` is read here specifically because the closure over
+        // `session` captured at effect-run time is the OLD one.
         setResuming(false);
-        setPhase('closing');
+        if (sessionRef.current?.sessionId === resumeTargetId) {
+          setPhase('closing');
+        }
       });
       return;
     }
