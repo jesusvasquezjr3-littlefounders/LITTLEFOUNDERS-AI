@@ -3940,3 +3940,93 @@ rather than a fix in this round: extending the gate to a second phase is
 a separate, larger task than the confirmed defect above, and no evidence
 of an actual reachability problem exists — only an absence of the proof
 that would rule one out.
+
+## Five real defects in segment grading and preferences — a score could regress, a crash could poison the mastery model, and a companion could become itself — found by adversarial review, closed 2026-08-30
+
+Round 36 reviewed `POST /tutor/segments/:segmentId/grade` and
+`PUT /tutor/preferences` end to end for the first time this campaign —
+everything on the grading route BEYOND the two issues already closed
+earlier today (XP could never exceed a segment's own worth; the daily
+XP cap is now atomic).
+
+**1. HIGH — the stored score could go DOWN.** `recordSegmentResult`
+overwrote `tutor_segments.score` unconditionally on every grade call,
+with no comparison against what was already recorded. A client retry, a
+double-tap, or a learner tapping back into an already-passed segment and
+answering worse the second time could flip a correct result to
+incorrect in both the guardian-visible session replay
+(`GET /sessions/:id`) and the cross-session memory digest's
+`gradedCorrect` count, which reads `score >= PASS_THRESHOLD`.
+
+**2. LOW/MEDIUM — `attempts` was the client's claim, not a server count.**
+The stored `attempts` column, and the ordinal fed into FSRS review
+scheduling (`ratingFromScore`), came straight from the client-supplied
+`attemptNumber` — a client could always claim 1 regardless of real retry
+count, and two submissions of the same ordinal recorded indistinguishable
+evidence twice.
+
+**3. MEDIUM — a crashing grader was invisible AND poisoned the mastery
+model.** `catch { outcome = { score: 0 }; }` swallowed the exception with
+no logging at all, and (for a KC-mapped segment) fed the forced
+`score: 0` into `recordAttempt` as if it were a genuine wrong answer —
+proven live: with the fix reverted, a crashing grader produced a real,
+signed pedagogy echo with `correct: false` and an updated `pKnownAfter`,
+corrupting BKT/misconception tracking with a false negative caused by a
+code bug, not the learner's understanding. A content/grader defect looked
+exactly like a learner who keeps failing, with zero server-side signal
+(§1.14 "blind flight").
+
+**4. MEDIUM/HIGH — the "companion can't be the tutor" invariant was
+checked against the wrong thing.** `PUT /tutor/preferences` compared
+`companion`/`character` only when BOTH were present in the same request
+body — so a two-step sequence (a PUT that sets `character`, then a later
+PUT that sets only `companion`) never tripped it, because the second
+request's body never mentioned `character` at all. The invariant is
+about the PERSISTED state, not one request body.
+
+Fixed:
+
+- `recordSegmentResult`'s `score` argument is now `Math.max(row.score ?? score, score)` —
+  the VERDICT returned to the learner still reflects what they just did
+  (honest immediate feedback); only the persisted record floors at the
+  best result ever seen for that segment.
+- `attempts` (both the stored column and the ordinal passed to
+  `recordAttempt`) is now derived from `row.attempts + 1`, capped at 3,
+  never from the client's `attemptNumber`. This does not by itself detect
+  a true network-level duplicate request (that needs a client-supplied
+  idempotency key, a larger change this round does not make), but it
+  closes the specific client-trust gap and gives every recorded attempt a
+  distinct, correctly ordered number.
+- A grader crash now logs `console.error` with the segment type and id,
+  and `recordAttempt` is skipped entirely when the grader threw
+  (`!graderCrashed` gate) — the learner still gets a safe, scored
+  response, but nothing reaches the mastery model on a turn that carried
+  no real evidence.
+- `PUT /tutor/preferences` now reads the learner's CURRENT stored
+  preferences first and validates the companion/character invariant
+  against the MERGED result (this patch applied on top of what is
+  already saved), exactly what `upsertTutorPreferences` is about to
+  write.
+
+Proven with five new tests in `backend/src/__tests__/tutor.test.ts`, one
+per finding, including a "sanity check" test proving the grader-crash
+fixture is genuinely capable of reaching `recordAttempt`'s `kc_attempt`
+insert when nothing crashes — so the negative result in the crash test
+means what it claims, not merely "the KC fixture was incomplete." All
+five confirmed to fail against the pre-fix code for the exact claimed
+reason via `git stash` (the pedagogy-poisoning test's pre-fix failure
+output shows the actual corrupted echo: `correct: false`, a real
+`pKnownAfter`, a validly signed token — not a hypothetical). Full backend
+suite green (650 tests, up from 644), lint clean, type-check clean, root
+`docs:check`/`secrets:check`/`i18n:check` all clean.
+
+**Verified sound in the same review, not re-fixed:** segment-creation
+IDOR (a browser has no path to fabricate a gradable segment — creation
+is internal-key-only); malformed/adversarial `answer` payloads (all
+seven grader families are defensively type-guarded, no `eval`/dynamic
+regex, body size capped globally at 64kb); rate limiting (the grading
+route is covered by the standard app-wide limiter, nothing exempts it);
+the closed vocabularies on `character`/`companion`/`diorama`/`backdrop`/`adaptations`
+(Zod-enum-validated against the same constants Core defines, rejected
+before ever reaching storage or Oracle); nickname moderation (already
+fixed earlier today, reconfirmed still in place by reading).

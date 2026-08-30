@@ -3,6 +3,7 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 import { jsonResponse, mintToken } from './helpers.js';
 import { startOfLocalDayIso, tierForBirthDate } from '../routes/tutor.js';
+import { GRADERS } from '../lesson-contract/registry.js';
 
 /*
  * The Tutor's Core surface (/ORACLE.md).
@@ -860,6 +861,139 @@ describe('grading a tutor segment', () => {
     const patch = calls.find((c) => c.method === 'PATCH' && c.url.includes('tutor_segments'));
     expect(JSON.parse(patch?.body ?? '{}').xp_awarded).toBe(3);
   });
+
+  /*
+   * Found by adversarial review, round 36 (2026-08-30, HIGH): `recordSegmentResult`
+   * used to overwrite `tutor_segments.score` unconditionally on every call.
+   * A client retry, a double-tap, or a learner tapping back into an
+   * already-passed segment and answering worse the second time could flip a
+   * correct result to incorrect in both the guardian-visible session replay
+   * and the cross-session memory digest's `gradedCorrect` count.
+   */
+  it('never lets the stored score go DOWN, even though the verdict still reflects this attempt', async () => {
+    const calls = stub({ segment: [{ ...verifiedRow, score: 100, xp_awarded: 20 }] });
+
+    const response = await request(createApp())
+      .post(`/api/v1/tutor/segments/${SEGMENT}/grade`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ answer: { option_id: 'b' }, attemptNumber: 2 });
+
+    expect(response.status).toBe(200);
+    // The learner is told the truth about what they just did...
+    expect(response.body.data.verdict.score).toBe(0);
+    // ...but the PERSISTED record keeps the best result this segment ever saw.
+    const patch = calls.find((c) => c.method === 'PATCH' && c.url.includes('tutor_segments'));
+    expect(JSON.parse(patch?.body ?? '{}').score).toBe(100);
+  });
+
+  /*
+   * Found by adversarial review, round 36 (2026-08-30, LOW/MEDIUM): the
+   * stored `attempts` column, and the ordinal fed into FSRS review
+   * scheduling, used to come straight from the client's own claimed
+   * `attemptNumber` — a client could always claim 1 regardless of real
+   * retry count.
+   */
+  it('derives the recorded attempt ordinal from the segment’s own count, not the client’s claim', async () => {
+    const calls = stub({ segment: [{ ...verifiedRow, attempts: 2 }] });
+
+    const response = await request(createApp())
+      .post(`/api/v1/tutor/segments/${SEGMENT}/grade`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ answer: { option_id: 'a' }, attemptNumber: 1 });
+
+    expect(response.status).toBe(200);
+    const patch = calls.find((c) => c.method === 'PATCH' && c.url.includes('tutor_segments'));
+    expect(JSON.parse(patch?.body ?? '{}').attempts).toBe(3);
+  });
+
+  /*
+   * Found by adversarial review, round 36 (2026-08-30, MEDIUM): a grader
+   * that threw was silently indistinguishable from a genuinely wrong
+   * answer — no log line anywhere, and (for a KC-mapped segment) the forced
+   * `score: 0` fed the mastery model as if it were real evidence of a
+   * misconception, corrupting BKT/FSRS with a false negative caused by our
+   * own bug rather than the learner's understanding.
+   */
+  describe('a grader that throws', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('is logged loudly instead of vanishing, and still answers the learner safely', async () => {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      vi.spyOn(GRADERS, 'quiz_mcq').mockImplementation(() => {
+        throw new Error('boom');
+      });
+      stub({ segment: [verifiedRow] });
+
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/segments/${SEGMENT}/grade`)
+        .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+        .send({ answer: { option_id: 'a' } });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.verdict.score).toBe(0);
+      expect(errorSpy).toHaveBeenCalled();
+      expect(String(errorSpy.mock.calls[0]?.[0])).toContain('quiz_mcq');
+    });
+
+    const KC_ID = '66666666-6666-4666-8666-666666666666';
+    // Everything `getKcById`'s SELECT names, so `recordAttempt` genuinely
+    // reaches its `kc_attempt` insert — otherwise a missing KC row alone
+    // would explain `pedagogy: null`, and the test would prove nothing
+    // about the crash gate specifically.
+    const KC_ROW = {
+      id: KC_ID,
+      key: 'financial-education.test-kc',
+      strand: 'money_math',
+      title: { 'es-MX': 'Prueba' },
+      objective: { 'es-MX': 'Prueba' },
+      tier_min: 1,
+      p_l0: 0.3,
+      p_t: 0.2,
+      p_g: 0.2,
+      p_s: 0.1,
+      skill_key: null,
+    };
+
+    it('is never fed to the pedagogy model as if it were a real wrong answer', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      vi.spyOn(GRADERS, 'quiz_mcq').mockImplementation(() => {
+        throw new Error('boom');
+      });
+      const calls = stub({
+        segment: [{ ...verifiedRow, provenance: { kc_id: KC_ID } }],
+        kcs: [KC_ROW],
+      });
+
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/segments/${SEGMENT}/grade`)
+        .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+        .send({ answer: { option_id: 'a' } });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.pedagogy).toBeNull();
+      expect(calls.some((c) => c.url.includes('kc_attempt'))).toBe(false);
+    });
+
+    it('sanity check: WITHOUT a crash, the same KC fixture actually reaches kc_attempt', async () => {
+      // Proves the fixture above is capable of making recordAttempt succeed
+      // at all — so the crash test's negative result means what it claims.
+      const calls = stub({
+        segment: [{ ...verifiedRow, provenance: { kc_id: KC_ID } }],
+        kcs: [KC_ROW],
+      });
+
+      const response = await request(createApp())
+        .post(`/api/v1/tutor/segments/${SEGMENT}/grade`)
+        .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+        .send({ answer: { option_id: 'a' } });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.pedagogy).not.toBeNull();
+      expect(calls.some((c) => c.url.includes('kc_attempt'))).toBe(true);
+    });
+  });
 });
 
 describe('the internal surface', () => {
@@ -1195,6 +1329,28 @@ describe('preferences', () => {
       .put('/api/v1/tutor/preferences')
       .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
       .send({ character: 'rho', companion: 'rho' });
+    expect(response.status).toBe(400);
+  });
+
+  /*
+   * Found by adversarial review, round 36 (2026-08-30, MEDIUM/HIGH): the
+   * check above only compared the two fields present in ONE request body,
+   * so it never fired unless a single PUT set both `character` and
+   * `companion` at once. A two-step sequence — a PUT that sets `character`,
+   * then a LATER PUT that sets only `companion` — never mentioned
+   * `character` in its own body, so the same-request check saw nothing to
+   * compare and silently landed a tutor whose companion is itself. The
+   * default stub's stored preferences already carry `character: 'rho'`
+   * (`getTutorPreferences`'s own "no row yet" default), so a bare
+   * `{ companion: 'rho' }` PUT reproduces the two-step sequence's second
+   * call without needing to actually perform the first.
+   */
+  it('rejects a companion equal to the CURRENTLY STORED character, even when this request never mentions the character', async () => {
+    stub();
+    const response = await request(createApp())
+      .put('/api/v1/tutor/preferences')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ companion: 'rho' });
     expect(response.status).toBe(400);
   });
 

@@ -1184,7 +1184,23 @@ export function tutorRouter(): Router {
     if (!parsed.success) return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid preferences');
     const user = authedUser(res);
 
-    if (parsed.data.companion && parsed.data.character && parsed.data.companion === parsed.data.character) {
+    /*
+     * Found by adversarial review, round 36 (2026-08-30, MEDIUM/HIGH): this
+     * check used to compare only the two fields present in THIS request
+     * body, so it never fired unless a single PUT set both at once — a
+     * two-step sequence (PUT `{character}`, then later PUT `{companion}`
+     * alone) silently landed a tutor whose companion is itself, because the
+     * second request's body never mentioned `character` at all. The
+     * invariant is about the PERSISTED state, not the request body, so it
+     * is checked against the MERGED result: the learner's current row with
+     * this patch applied on top, exactly what `upsertTutorPreferences` is
+     * about to write.
+     */
+    const current = await getTutorPreferences(user.id);
+    if (current === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read preferences');
+    const mergedCharacter = parsed.data.character ?? current.character;
+    const mergedCompanion = parsed.data.companion !== undefined ? parsed.data.companion : current.companion;
+    if (mergedCompanion !== null && mergedCompanion === mergedCharacter) {
       return fail(res, 400, VALIDATION, 'The companion cannot be the same character as the tutor');
     }
 
@@ -1530,18 +1546,64 @@ export function tutorRouter(): Router {
       return fail(res, 422, 'UNSUPPORTED_SEGMENT', 'This segment cannot be graded');
     }
 
+    /*
+     * Found by adversarial review, round 36 (2026-08-30, MEDIUM): a grader
+     * that throws used to be silently indistinguishable from a genuinely
+     * wrong answer — the SAME `{ score: 0 }` reached the learner, the
+     * guardian-visible history, and (uncaught, until the fix below) the
+     * pedagogical mastery model, with no log line anywhere. A content/grader
+     * bug looked exactly like a learner who keeps failing, with zero
+     * server-side signal (§1.14 "blind flight").
+     */
     let outcome: { score: number; feedback_md?: string };
+    let graderCrashed = false;
     try {
       outcome = grader(withKey, parsed.data.answer);
-    } catch {
+    } catch (error) {
       // A grader that throws is our bug, not the learner's. Score zero, allow
-      // a retry, and never surface a stack trace to a child.
+      // a retry, and never surface a stack trace to a child — but LOG it, and
+      // never let it feed the mastery model as if it were real evidence (see
+      // the `recordAttempt` gate below).
+      console.error(
+        `[tutor] grader for segment type "${segment.type}" threw on segment ${row.id}:`,
+        error instanceof Error ? error.message : error,
+      );
+      graderCrashed = true;
       outcome = { score: 0 };
     }
 
     const penalised = Math.round(outcome.score * (1 - Math.min(parsed.data.hintsUsed, 2) * 0.1));
     const score = Math.max(0, Math.min(100, penalised));
     const verdict = verdictFrom(score, PASS_THRESHOLD, outcome.feedback_md);
+    /*
+     * THE STORED SCORE NEVER GOES DOWN (found by adversarial review, round
+     * 36, 2026-08-30, HIGH). `recordSegmentResult` used to overwrite
+     * `tutor_segments.score` unconditionally on every call — a client retry,
+     * a double-tap, or a learner tapping back into an already-passed
+     * segment and answering worse the second time could flip a correct
+     * result to incorrect in both the guardian-visible session replay
+     * (`GET /sessions/:id`) and the cross-session memory digest
+     * (`memoryDigest()`'s `gradedCorrect`, which reads `score >=
+     * PASS_THRESHOLD`). The VERDICT returned to the learner this call still
+     * reflects what they just did — they need honest feedback on THIS
+     * attempt — only the PERSISTED record floors at the best result seen.
+     */
+    const bestScore = row.score === null ? score : Math.max(row.score, score);
+    /*
+     * `attempts` IS SERVER-DERIVED, NOT THE CLIENT'S CLAIM (found by
+     * adversarial review, round 36, 2026-08-30, LOW/MEDIUM). The client's
+     * `attemptNumber` fed both the stored `attempts` column AND
+     * `recordAttempt`'s FSRS rating unchecked — a client could always claim
+     * `attemptNumber: 1` regardless of real retry count, and two identical
+     * submissions (a genuine retry after a timeout, a double-tap) recorded
+     * the SAME ordinal twice, which is indistinguishable evidence duplicated
+     * into the mastery model. Deriving it from the segment's own previous
+     * count at least gives every recorded attempt a distinct, correctly
+     * ordered number; it does not by itself detect a true network-level
+     * duplicate request, which would need a client-supplied idempotency key
+     * — a larger change this round does not make.
+     */
+    const attemptOrdinal = Math.min(row.attempts + 1, 3);
 
     /*
      * XP is payable ONLY when the key survived re-execution (/ORACLE.md §8).
@@ -1597,9 +1659,9 @@ export function tutorRouter(): Router {
 
     const recorded = await recordSegmentResult({
       segmentId: row.id,
-      score,
+      score: bestScore,
       xpAwarded: row.xp_awarded + xp,
-      attempts: parsed.data.attemptNumber,
+      attempts: attemptOrdinal,
     });
     if (!recorded) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the result');
 
@@ -1611,6 +1673,11 @@ export function tutorRouter(): Router {
      * a pedagogy failure is logged loudly inside recordAttempt and costs
      * adaptation quality, never the learner's score or XP.
      *
+     * NEVER FED A CRASH AS EVIDENCE (round 36, 2026-08-30, MEDIUM). A grader
+     * that threw carries no information about the learner's understanding —
+     * treating its forced `score: 0` as a genuine wrong answer would corrupt
+     * BKT/misconception tracking with a false negative caused by our own bug.
+     *
      * The signed `echo` rides back through the client into Oracle's
      * segment_graded frame — that signature is what stops a client from
      * fabricating pedagogy events (it could already fabricate its own score;
@@ -1619,7 +1686,7 @@ export function tutorRouter(): Router {
     const provenance = row.provenance ?? {};
     const kcId = typeof provenance.kc_id === 'string' ? provenance.kc_id : null;
     let pedagogy: AttemptOutcome | null = null;
-    if (kcId && getConfig().TUTOR_V3_BRAIN) {
+    if (kcId && getConfig().TUTOR_V3_BRAIN && !graderCrashed) {
       pedagogy = await recordAttempt({
         userId: user.id,
         sessionId: row.session_id,
@@ -1628,7 +1695,7 @@ export function tutorRouter(): Router {
         segment: withKey,
         submission: parsed.data.answer,
         score,
-        attemptNumber: parsed.data.attemptNumber,
+        attemptNumber: attemptOrdinal,
         source: 'segment_grade',
         strategy: typeof provenance.strategy === 'string' ? provenance.strategy : null,
       });
