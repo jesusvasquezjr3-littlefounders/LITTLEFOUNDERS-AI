@@ -2859,3 +2859,46 @@ reason via `git stash`, pass against the fix. Full oracle suite green
 re-verified against a fresh `tutor:converse` run: the exact scenario
 that produced the live defect now delivers the real teaching turn
 instead of the scripted fallback.
+
+## The learning map went stale after the ordinary end of a session, and only the mid-conversation restart refreshed it — closed 2026-08-30
+
+Found by adversarial review, round 21 (the learning map — a surface that
+had not had a dedicated round yet this session, though `MapGraph.tsx`
+carried one prior fix from round 11), HIGH severity.
+
+`frontend/src/tutor/TutorExperience.tsx`'s mid-conversation "start over"
+button (`onRestart`) explicitly refetched both `getOffers` and `getMap`
+after ending a session, with its own comment explaining why: "the session
+that just ended changed mastery." But the ORDINARY way a session ends —
+the "Finish" button (`onExit`, which only calls `socket.endSession()` and
+sets `phase = 'closing'`) followed by `ClosingInWorld`'s "Start Another"
+button (`onStartAnother`), or the socket simply closing on its own and
+landing on the same closing screen — never refetched anything at all.
+Since `mapOpen` gates the whole map view on `phase === 'introducing'`, a
+learner who just finished a session that graded activities — moving a
+KC's mastery, resolving a due review, unlocking a dependent node — was
+shown a map still drawn from BEFORE the session: a just-mastered node
+still shown merely in-progress, a just-unlocked node still drawn locked
+against a prerequisite that no longer applies, a stale review count. No
+error, no warning — confidently wrong state shown to a child relying on
+the map to know what to do next, and "Finish → Start Another" is the
+PRIMARY loop this product is used through, not an edge case.
+
+Fixed by extracting the refetch into a shared `refreshOffersAndMap()`
+callback and calling it from BOTH `onRestart` (unchanged behavior) and
+`onStartAnother` (the fix) — the natural-end path (the socket closing on
+its own) already funnels into the same closing screen and the same
+"Start Another" button, so one fix covers every route into `'closing'`.
+
+Proven two ways in a new `mapRefreshAfterSession.test.tsx`: a behavioural
+harness (matching the established `resumeRace.test.tsx` pattern for logic
+embedded inside this one large component) proves BOTH the restart path
+and the Finish→closing→"Start Another" path call `getMap` and update the
+displayed state; a direct source-scan against the REAL `TutorExperience.tsx`
+asserts `onStartAnother`'s own block literally contains a call to
+`refreshOffersAndMap()`, since a harness alone cannot prove the actual
+file is wired correctly. The source-scan test is the one that actually
+proves the fix: confirmed to fail against the pre-fix file for the exact
+claimed reason (`onStartAnother`'s body did not contain the call) via
+`git stash`, pass against the fix. Full frontend suite green (1415
+tests), lint clean, type-check clean, i18n:check clean.

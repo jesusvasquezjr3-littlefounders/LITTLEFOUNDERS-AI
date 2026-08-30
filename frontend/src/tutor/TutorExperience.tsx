@@ -842,6 +842,33 @@ export function TutorExperience() {
         }
       : null;
 
+  /*
+   * Re-reads what a just-ended session could have moved: the daily offer
+   * count, and the learning map's mastery/lock state.
+   *
+   * Found by adversarial review, 2026-08-30 (HIGH): this refetch existed
+   * only inside `onRestart` (the mid-conversation "start over" button) —
+   * the ORDINARY end of a session (Finish → the closing screen → "Start
+   * Another", or the socket simply closing on its own) never called it at
+   * all. `mapOpen` gates the whole map view on `phase === 'introducing'`,
+   * so a learner who just finished a session that graded activities —
+   * moving a KC's mastery, resolving a due review, unlocking a dependent
+   * node — returned to a map still drawn from BEFORE the session: a
+   * just-mastered node still shown as merely in-progress, a just-unlocked
+   * node still drawn locked with a prerequisite that no longer applies, a
+   * stale review count. No error, no warning — confidently wrong state
+   * shown to a child relying on the map to know what to do next.
+   */
+  const refreshOffersAndMap = useCallback(() => {
+    if (!token) return;
+    void getOffers(token).then((result) => {
+      if (result.data) setOffers(result.data);
+    });
+    void getMap(token).then((result) => {
+      if (result.data) setMap(result.data);
+    });
+  }, [token]);
+
   const conversationLayer: ConversationLayerProps | null =
     session && token
       ? {
@@ -867,15 +894,7 @@ export function TutorExperience() {
             socket.endSession();
             setSession(null);
             setPhase('introducing');
-            if (token) {
-              void getOffers(token).then((result) => {
-                if (result.data) setOffers(result.data);
-              });
-              // The map moved too: the session that just ended changed mastery.
-              void getMap(token).then((result) => {
-                if (result.data) setMap(result.data);
-              });
-            }
+            refreshOffersAndMap();
           },
           onExit: () => {
             socket.endSession();
@@ -1108,6 +1127,9 @@ export function TutorExperience() {
             onStartAnother={() => {
               setSession(null);
               setPhase('introducing');
+              // The session that just ended may have moved the map and the
+              // daily offer count — see `refreshOffersAndMap`'s own comment.
+              refreshOffersAndMap();
             }}
             onReplay={openReplay}
           />
