@@ -1179,6 +1179,21 @@ export class TutorOrchestrator {
      * repair costs the improvement rather than the whole turn.
      */
     let repairable: TutorTurn | null = null;
+    /**
+     * Whether `repairable` was flagged as a REPEAT specifically. Found live,
+     * testing as a struggling learner, 2026-08-30: "a clumsy real sentence
+     * beats a scripted apology" is right for a vocabulary slip, a self-
+     * answered question, false praise — the delivered turn is imperfect but
+     * still teaches something new. It is wrong for a repeat, because the
+     * "clumsy real sentence" IS the exact defect the check exists to catch:
+     * delivering `repairable` here delivers the repeat itself, with 100%
+     * certainty, not a degraded-but-different turn. Confirmed live via a
+     * debug trace: `repeated` was correctly non-null at attempt 0, the retry
+     * came back an empty completion (a measured, common DeepSeek failure
+     * mode — see /AGENTS.md's empty-completion history — not a rare edge
+     * case), and the fallback delivered the flagged turn verbatim.
+     */
+    let repairableIsRepeat = false;
     try {
       for (let attempt = 0; attempt < 2 && turn === null; attempt += 1) {
         if (attempt > 0 && Date.now() >= retryDeadlineMs) {
@@ -1403,7 +1418,10 @@ export class TutorOrchestrator {
              * the fifth repair shipped. A clumsy real sentence beats a
              * scripted apology every time.
              */
-            if (repairable === null) repairable = parsed.turn;
+            if (repairable === null) {
+              repairable = parsed.turn;
+              repairableIsRepeat = repeated !== null;
+            }
 
             if (violation !== null && attempt === 0) {
               turnCorrection = `used ${violation}, which this learner's age band must never hear. Say the same idea again for their age, using only whole numbers and things they can picture`;
@@ -1499,8 +1517,17 @@ export class TutorOrchestrator {
       console.warn('[oracle] model unavailable:', error.message);
     }
 
-    if (turn === null && repairable !== null) {
-      // The repair did not land, but attempt 0 did. Deliver it.
+    if (turn === null && repairable !== null && repairableIsRepeat) {
+      // The repair did not land, and attempt 0 was a KNOWN repeat — the one
+      // repair failure "deliver the clumsy original" must not apply to,
+      // because the clumsy original is a verbatim repeat, not a merely
+      // imperfect turn. Falls through to the scripted line below instead.
+      console.warn(
+        '[oracle] repair attempt for a repeated sentence failed — scripted line instead of delivering the repeat',
+      );
+    } else if (turn === null && repairable !== null) {
+      // The repair did not land, but attempt 0 did, and it was not a repeat.
+      // Deliver it.
       console.warn('[oracle] repair attempt failed — delivering the original turn');
       turn = repairable;
     }

@@ -492,7 +492,30 @@ everything passes the blocked half perfectly and destroys the product.
    live `Live.session`. Whenever a new "when the session ends, also do X"
    requirement lands, check `ws/server.ts` for every place a session
    actually closes, not just the one that happens to be nearby.
-21. **A "must not be negative" guard on a floating-point running total needs
+21. **A generic "deliver the imperfect original rather than lose the turn"
+   fallback is not safe for every repair reason it covers.** `produce()`'s
+   repair loop keeps `repairable` (attempt 0's turn) so a failed retry
+   delivers it rather than a scripted apology — "a clumsy real sentence
+   beats a scripted apology every time," true for a vocabulary slip, a
+   self-answered question, false praise, because the delivered turn is
+   imperfect but still teaches something NEW. Found live, testing as a
+   struggling learner, 2026-08-30: it is the WRONG rule for a REPEAT
+   specifically, because delivering `repairable` there delivers the repeat
+   ITSELF, with 100% certainty — not a degraded turn, the exact defect the
+   check exists to catch. Confirmed via a temporary debug trace on a real
+   `tutor:converse` run: `repeated` was correctly non-null at attempt 0
+   (the checker worked), the retry came back an empty completion (a
+   measured, common DeepSeek failure mode — not a rare edge case, see the
+   empty-completion history elsewhere in this file), and the fallback
+   delivered the flagged repeat verbatim to a child who had just said "ya
+   entendí, dame otro" (I get it now, give me another). Fixed by tracking
+   `repairableIsRepeat` alongside `repairable` and routing the repeat case
+   to the scripted line instead. General lesson: a shared fallback covering
+   N distinct repair reasons needs to be re-examined per reason, not
+   assumed correct because it is correct for most of them — "imperfect but
+   new" and "guaranteed to reproduce the exact defect" are not the same
+   failure mode, even though both arrive at this one line of code.
+22. **A "must not be negative" guard on a floating-point running total needs
    a zero band, not a zero line.** `whiteboard.ts`'s `computeSequence` chains
    decimal `add`/`subtract`/`multiply_percent` steps (`value` is
    `z.number()`, not an integer — money and fractions are legitimate), and

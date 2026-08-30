@@ -2512,3 +2512,54 @@ record anything. Confirmed to fail against the pre-fix `finalizeParked`
 for the claimed reason via `git stash`, pass against the fix. Full oracle
 suite green (442 tests), lint clean, type-check clean on all three
 tsconfigs, `verify:pedagogy` green.
+
+## A failed repair for a REPEATED sentence delivered the repeat itself, verbatim — found live, closed 2026-08-30
+
+Found live, testing as a struggling learner, running a fixed-and-working
+local `tutor:converse` for the first time this session (moderation and the
+model were both misconfigured locally before that — see the local-env
+notes elsewhere in this session's work): the real conversational harness's
+own transcript review flagged "turn 8 repeats turn 7 with nothing changed
+(91% of its words)". A temporary debug trace inserted at the exact
+repeat-check computation in `orchestrator.ts`'s `produce()` confirmed the
+mechanism precisely — this was NOT a missed detection:
+
+- Attempt 0 of the candidate that became the repeated turn was correctly
+  flagged (`repeated` was non-null, an exact sentence match via
+  `repeatsEarlierSentence`).
+- The retry this correctly triggered (attempt 1) came back an empty
+  completion — a measured, common DeepSeek failure mode this codebase has
+  its own tracked history for, not a rare edge case.
+- The existing fallback — "a clumsy real sentence beats a scripted
+  apology," added deliberately so a failed repair costs the improvement
+  rather than the whole turn — then delivered `repairable` (attempt 0's
+  turn) exactly as flagged: the repeat itself, verbatim, to a child who had
+  just said "ya entendí, dame otro" (I get it now, give me another).
+
+The fallback rule is right for MOST repair reasons (a vocabulary slip, a
+self-answered question, false praise) because the delivered turn is
+imperfect but still teaches something new. It is wrong specifically for a
+repeat, because delivering the flagged original reproduces the EXACT
+defect the check exists to catch, with certainty, rather than merely
+degrading quality.
+
+Fixed by tracking `repairableIsRepeat` alongside `repairable` in
+`orchestrator.ts`: when the repair that failed was specifically for a
+repeat, the fallback now delivers the scripted line instead of the
+flagged repeat. Every other repair reason is unchanged — the "clumsy real
+sentence" rule still applies to them.
+
+Proven with two tests in `orchestrator.test.ts`: the pre-existing test for
+this fallback (which had asserted the OLD, now-wrong behavior) was
+rewritten to use a self-answered-question repair instead of a repeat, so
+it still proves the "clumsy original beats scripted apology" rule holds
+for non-repeat reasons; a new test proves that when the failed repair WAS
+a repeat, the outcome is now `source: 'scripted'`, never the repeated
+text. Confirmed to fail against the pre-fix fallback for the claimed
+reason via `git stash`, pass against the fix. Full oracle suite green
+(443 tests), lint clean, type-check clean on all three tsconfigs,
+`verify:pedagogy` green, and independently re-verified against the real
+`tutor:converse` harness: the exact log sequence that produced the live
+defect now ends in `[oracle] repair attempt for a repeated sentence
+failed — scripted line instead of delivering the repeat` followed by the
+scripted "Se me enredaron las ideas" line, never the repeat.

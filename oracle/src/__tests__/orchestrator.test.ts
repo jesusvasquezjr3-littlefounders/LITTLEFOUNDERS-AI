@@ -1417,7 +1417,45 @@ describe('a failed repair costs the improvement, never the turn', () => {
    *
    * A clumsy real sentence beats a scripted apology every time.
    */
-  it('delivers the original turn when the retry comes back empty', async () => {
+  it('delivers the original turn when the retry comes back empty, for a NON-repeat repair reason', async () => {
+    // A self-answered question, not a repeat: the "clumsy real sentence"
+    // fallback is right here, because the delivered turn is imperfect but
+    // still teaches something new rather than repeating what was already said.
+    const selfAnswered = 'Si tienes 8 y quitas 3, te quedan 5. ¿Cuánto es 8 menos 3?';
+    fetchMock
+      // First turn establishes unrelated history.
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Empecemos con algo sencillo.' }))
+      .mockResolvedValueOnce(judgeSays(true))
+      // Second turn answers its own question, triggering a repair — which fails.
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: selfAnswered }))
+      .mockResolvedValueOnce(modelReplies(''))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('ya', Date.now());
+    const second = (await orchestrator.handleLearnerText('otra vez', Date.now()))!;
+
+    // The self-answered turn, not the scripted apology — it is imperfect but
+    // new, not a repeat.
+    expect(second.emission.source).toBe('model');
+    expect(second.emission.turn.say).toBe(selfAnswered);
+  });
+
+  /*
+   * Found live, testing as a struggling learner, 2026-08-30: "a clumsy real
+   * sentence beats a scripted apology" is right for a vocabulary slip, a
+   * self-answered question, false praise — the delivered turn is imperfect
+   * but still teaches something NEW. It is wrong for a repeat, because
+   * delivering `repairable` here delivers the repeat itself, with 100%
+   * certainty — the exact defect the check exists to catch, not a merely
+   * degraded turn. Confirmed live: a real conversation had `repeated`
+   * correctly detected at attempt 0, the retry came back an empty
+   * completion (a measured, common DeepSeek failure mode, not a rare edge
+   * case), and the pre-fix fallback delivered the flagged repeat verbatim —
+   * a child who said "ya entendí, dame otro" (I get it now, give me
+   * another) got the SAME worked example, word for word, back.
+   */
+  it('falls back to the scripted line — NOT the repeat — when the repair for a REPEATED sentence fails', async () => {
     const stock = 'Eso es pensar como un científico de verdad.';
     fetchMock
       .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: stock }))
@@ -1431,9 +1469,9 @@ describe('a failed repair costs the improvement, never the turn', () => {
     await orchestrator.handleLearnerText('ya', Date.now());
     const second = (await orchestrator.handleLearnerText('otra vez', Date.now()))!;
 
-    // The repeated sentence, not the scripted apology.
-    expect(second.emission.source).toBe('model');
-    expect(second.emission.turn.say).toBe(stock);
+    // The scripted line, never the repeated sentence.
+    expect(second.emission.source).toBe('scripted');
+    expect(second.emission.turn.say).not.toBe(stock);
   });
 
   it('still falls back to the scripted line when NOTHING valid was produced', async () => {
