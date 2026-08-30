@@ -1,9 +1,10 @@
 import { getConfig } from '../env.js';
 import { withTimeout } from '../lib/http.js';
-import { complete, ModelUnavailableError } from '../model/provider.js';
+import { complete, CompletionAbortedError, ModelUnavailableError } from '../model/provider.js';
 import { sealGenerationBrief, type Locale } from '../context/schema.js';
 import { fenceUntrusted } from '../safety/untrusted.js';
 import { moderateTutorOutput } from '../safety/moderation.js';
+import { estimateCostUsd } from '../tutor/orchestrator.js';
 
 /*
  * Ladder tier 3: authoring one activity in the moment (/ORACLE.md §7.3).
@@ -41,6 +42,36 @@ export interface GenerationRequest {
   recentTutorLines: readonly string[];
   /** Whether the model safety pass is MANDATORY for this segment's text (§6). */
   isMinor: boolean;
+  /**
+   * The turn's own interrupt signal (`ws/server.ts`'s `live.abort?.signal`).
+   *
+   * Found by adversarial review, round 64 (2026-08-30, HIGH): a learner
+   * interrupting mid-generation genuinely called `AbortController.abort()`
+   * on the server's own controller, but nothing downstream ever read it —
+   * confirmed directly: an already-aborted signal has ZERO effect on this
+   * function, in direct contrast to the ordinary turn pipeline's `complete()`
+   * call, which throws instantly given the identical signal. Threaded into
+   * the author call and the quality judge the same way `complete()` already
+   * combines a caller signal with its own timeout (`AbortSignal.any`). The
+   * safety-moderation call below is deliberately left OUT of this signal —
+   * it is the one call every turn in the product goes through, not only
+   * tier-3, and is not touched here.
+   */
+  signal?: AbortSignal;
+  /**
+   * Reports the real cost of a call the moment it succeeds, regardless of
+   * whether generation ultimately produces a segment.
+   *
+   * Found by adversarial review, round 64 (2026-08-30, HIGH): tier-3's own
+   * author-model calls are the same paid model family
+   * `orchestrator.ts`'s `produce()` already costs, and nothing added them
+   * to the session's cost ledger — `modelUsd` had exactly one increment
+   * site in the whole service. A callback rather than a return-value field
+   * because a REJECTED candidate (the judge or moderation says no) still
+   * spent real money on the author call that produced it, and this function
+   * returns `null` on that path — the cost must not disappear with it.
+   */
+  onCost?: (usd: number) => void;
 }
 
 export interface GenerationResult {
@@ -136,7 +167,7 @@ interface JudgeVerdict {
   reason?: string;
 }
 
-async function judge(segment: unknown, tier: 1 | 2 | 3): Promise<JudgeVerdict> {
+async function judge(segment: unknown, tier: 1 | 2 | 3, signal?: AbortSignal): Promise<JudgeVerdict> {
   const config = getConfig();
   if (!config.JUDGE_API_KEY) {
     // No judge configured means tier 3 does not run. It does not mean tier 3
@@ -145,6 +176,7 @@ async function judge(segment: unknown, tier: 1 | 2 | 3): Promise<JudgeVerdict> {
     return { pass: false, reason: 'no independent judge is configured' };
   }
 
+  const timeoutSignal = AbortSignal.timeout(config.MODEL_TIMEOUT_MS);
   const response = await withTimeout(
     fetch(`${config.JUDGE_API_BASE}/chat/completions`, {
       method: 'POST',
@@ -153,7 +185,10 @@ async function judge(segment: unknown, tier: 1 | 2 | 3): Promise<JudgeVerdict> {
       // below only stops US from waiting on our own timeout — the real
       // request keeps running and can still be billed with nothing in our
       // ledger to show for it. The signal is what actually cancels it.
-      signal: AbortSignal.timeout(config.MODEL_TIMEOUT_MS),
+      // round 64 additionally combines the CALLER's own interrupt signal
+      // (a learner cutting in mid-generation) the same way `complete()`
+      // already does, so the judge call stops too, not only the timeout.
+      signal: signal ? AbortSignal.any([signal, timeoutSignal]) : timeoutSignal,
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.JUDGE_API_KEY}` },
       body: JSON.stringify({
         model: config.JUDGE_MODEL_NAME,
@@ -306,8 +341,12 @@ export async function generateSegment(request: GenerationRequest): Promise<Gener
               ]
             : []),
         ],
-        { temperature: attempts === 1 ? 0.7 : 0.2, maxTokens: 900 },
+        { temperature: attempts === 1 ? 0.7 : 0.2, maxTokens: 900, signal: request.signal },
       );
+      // Reported the moment the call SUCCEEDS, not once generation as a
+      // whole concludes — a candidate the judge or moderation later
+      // rejects still spent this, on the same paid call every attempt is.
+      request.onCost?.(estimateCostUsd(result.promptTokens, result.completionTokens));
 
       const match = /\{[\s\S]*\}/.exec(result.text);
       if (!match) continue;
@@ -321,6 +360,16 @@ export async function generateSegment(request: GenerationRequest): Promise<Gener
       }
     }
   } catch (error) {
+    /*
+     * The learner cut in mid-authoring (round 64, 2026-08-30). This
+     * function's own contract is "return null for every failure, the
+     * caller emits nothing" — an interrupt is exactly that, not a special
+     * case: `complete()` throws the same `CompletionAbortedError` here it
+     * throws for the ordinary turn pipeline, and left unhandled it would
+     * escape uncaught past this function's one caller (`ws/server.ts`'s
+     * `serveSegment`, which has never had to catch anything from here).
+     */
+    if (error instanceof CompletionAbortedError) return null;
     if (!(error instanceof ModelUnavailableError)) throw error;
     console.warn('[oracle] segment generation unavailable:', error.message);
     return null;
@@ -330,7 +379,7 @@ export async function generateSegment(request: GenerationRequest): Promise<Gener
 
   let verdict: JudgeVerdict;
   try {
-    verdict = await judge(candidate, request.tier);
+    verdict = await judge(candidate, request.tier, request.signal);
   } catch (error) {
     console.warn('[oracle] judge failed:', error instanceof Error ? error.message : error);
     return null;

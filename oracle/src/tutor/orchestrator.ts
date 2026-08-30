@@ -382,6 +382,23 @@ export class TutorOrchestrator {
   }
 
   /**
+   * Cost incurred OUTSIDE this class's own `produce()` loop, folded into the
+   * same `modelUsd` bucket `totalCostUsd` already sums.
+   *
+   * Found by adversarial review, round 64 (2026-08-30, HIGH): tier-3 live
+   * content generation (`content/generate.ts`'s `generateSegment`, called
+   * from `ws/server.ts`'s `serveSegment`) makes its own real, paid author
+   * model calls — the SAME model family `produce()` already costs — and
+   * nothing added them here. `modelUsd` had exactly one increment site in
+   * the whole service; every session that ever needed live-generated
+   * content under-reported its true spend to Core, permanently, with no
+   * error pointing at the gap.
+   */
+  noteGenerationCost(usd: number): void {
+    this.modelUsd += usd;
+  }
+
+  /**
    * Lines actually paid for, lines served free from the manifest or cache, and
    * speculative syntheses discarded because moderation blocked their turn —
    * paid for and delivered to nobody. `discarded` staying near zero is what

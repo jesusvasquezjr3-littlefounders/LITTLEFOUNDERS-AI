@@ -6262,3 +6262,102 @@ verified" outcome round 45 already set the precedent for. `type-check`
 (including `tsconfig.scripts.json`) and `lint` both clean. No
 `oracle/AGENTS.md` item — matches round 45's own precedent of living
 entirely in this file plus the probe's own header.
+
+## Round 64: tier-3 generation's real paid calls were invisible to the cost ledger, and a learner's interrupt could not actually stop them
+
+A background adversarial review targeted two direct cost-control
+surfaces that had never had a dedicated pass: session budget/cost
+enforcement, and the turn-pipeline interrupt/abort mechanics. Two real
+HIGH findings, both fixed this round, sharing one root cause.
+
+**HIGH, FIXED — tier-3 live content generation's real, paid model calls
+never reached the session's cost ledger.** `TutorOrchestrator.modelUsd`
+— the number that becomes `totalCostUsd` and is persisted permanently
+via `finish()` — had exactly ONE increment site in the entire service:
+inside `produce()`'s own turn-pipeline retry loop. Tier-3 generation
+(`content/generate.ts`'s `generateSegment`, invoked from
+`ws/server.ts`'s `serveSegment` whenever tiers 1-2 have nothing for a
+skill) makes its own real, separately-paid author-model calls — the
+SAME model family `produce()` already costs — and `GenerationResult`
+carried no cost or token field at all, so there was no number for the
+caller to add even if it had tried. Every session that ever needed
+live-generated content under-reported its true spend to Core,
+permanently, with no error pointing at the gap.
+
+Fixed by adding `TutorOrchestrator.noteGenerationCost(usd)`, folding
+into the SAME `modelUsd` bucket `totalCostUsd` already sums, and an
+`onCost` CALLBACK on `GenerationRequest` (not a return-value field,
+deliberately: a candidate the quality judge or safety moderation
+ultimately rejects still spent real money on the author call that
+produced it, and `generateSegment` returns `null` on that path — the
+cost must not disappear with the rejection). `ws/server.ts`'s
+`serveSegment` wires it to `live.orchestrator.noteGenerationCost`.
+Reuses the existing `estimateCostUsd` rather than inventing a second
+rate table, since the author call is the same pedagogical model family.
+
+**HIGH, FIXED — a learner's interrupt could not actually stop tier-3
+generation, and the client showed the mic as available while the
+server was still mid-generation and would refuse a new turn.**
+`live.abort`/`live.inFlight` already stay live for the whole `deliver()`
+call INCLUDING `await serveSegment(...)`, so an interrupt arriving
+during generation genuinely called `live.abort.abort()` — but nothing
+downstream (`generateSegment`, the internal `judge()`) ever read that
+signal. Verified directly: an already-aborted `AbortController` had
+ZERO effect on `generateSegment` — every upstream call still fired and
+a segment was still returned — in direct contrast to the ordinary turn
+pipeline's `complete()`, which, given the identical aborted signal,
+throws instantly with no network call. Reachable in ordinary play, not
+a contrived edge case: a turn's TTS audio is fired independently of
+`serveSegment` and can finish playing (mic shown `speaking`, the only
+state an interrupt fires from) while multi-second tier-3 generation is
+still running underneath.
+
+Fixed by threading `GenerationRequest.signal` (`live.abort?.signal`)
+into the author's `complete()` calls and the internal `judge()`'s own
+fetch, combined with each call's existing timeout via `AbortSignal.any`
+— the exact pattern `complete()` itself already establishes for the
+ordinary turn pipeline. `generateSegment`'s outer catch now explicitly
+handles `CompletionAbortedError` (previously only `ModelUnavailableError`
+was excluded from an automatic re-throw) so an abort resolves to `null`
+— this function's own established "return null for every failure, emit
+nothing" contract — rather than escaping uncaught past its one caller,
+which had never had to catch anything from here. The safety-moderation
+call inside `generateSegment` is DELIBERATELY left un-abortable: it is
+the one call every turn in the product goes through, not only tier-3,
+and touching it was judged out of scope for this round given its
+blast radius (every session, not only tier-3 ones).
+
+Proof: 5 new `generate.test.ts` tests. Three prove cost reporting —
+served, judge-rejected (money already spent), and both attempts costed
+when the first reply needs a retry. Two prove the interrupt — an
+already-aborted signal returns `null` before the judge is ever reached,
+and a signal that aborts BETWEEN the author call and the judge still
+reports the author's already-spent cost while stopping the judge call.
+The first abort test initially asserted only `result === null` and one
+fetch call — which an ordinary pre-fix transport failure ALSO produces,
+so it could not actually distinguish "the interrupt was honored" from
+"an unrelated network error happened" — caught by checking it against
+the unfixed code and finding it passed anyway; strengthened to assert
+the actual signal `fetch` received reports `aborted: true`, which only
+happens when the caller's signal is genuinely combined via
+`AbortSignal.any`. All 5 confirmed to fail for the exact claimed reason
+pre-fix via `git stash`.
+
+**Also confirmed sound by the same review:** `evaluateBudget` is a pure
+function of elapsed time and turn count, re-evaluated fresh every call
+— no latching, no stale-state path found; the grace-turn ticket
+(`graceTurnFor`/`commitGraceTurn`) is only spent on a genuinely
+delivered turn at all three call sites, no double-grant possible;
+`produce()`'s own cost accounting strictly follows a successful
+completion and precedes any repair/discard logic, so a transport
+failure or abort never adds cost and a legitimate two-attempt retry
+correctly accumulates both; `commitSkillUse` is gated on a genuinely
+delivered model turn, so an interrupted turn never marks a skill used;
+every websocket message handler's busy-flag check runs synchronously
+before any `await`, so no interleaving race was found between two
+client messages.
+
+Verification: full oracle suite green (26 files, 512 tests — 507
+existing + 5 new, zero regressions), lint and type-check clean,
+`verify:tutor` green. Root `docs:check`/`secrets:check` clean.
+`oracle/AGENTS.md` item 55.

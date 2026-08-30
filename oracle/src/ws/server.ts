@@ -1396,6 +1396,13 @@ async function serveSegment(
       allowedTypes: served.allowedTypes,
       recentTutorLines: live.orchestrator.recentTutorLines,
       isMinor: live.session.isMinor,
+      // Round 64 (2026-08-30, HIGH): neither of these reached tier-3
+      // generation before — a learner's interrupt could not actually stop
+      // the paid author/judge calls, and their real cost never reached the
+      // session's own ledger. `live.abort` is the SAME controller the
+      // ordinary turn pipeline is already interrupted through.
+      signal: live.abort?.signal,
+      onCost: (usd) => live.orchestrator.noteGenerationCost(usd),
     });
     served = candidate
       ? await verifyGeneratedSegment({

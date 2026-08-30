@@ -1453,6 +1453,41 @@ everything passes the blocked half perfectly and destroys the product.
    actually free. Both confirmed to fail/pass for the exact claimed reason
    via `git stash`. See `RUNBOOK.md` Round 60.
 
+55. **Tier-3 generation's own paid model calls were invisible to the
+   session cost ledger, and a learner's interrupt could not actually
+   stop them.** Found by adversarial review, round 64, 2026-08-30 (HIGH,
+   two findings sharing one root cause). `modelUsd` had exactly one
+   increment site in the whole service — inside `produce()`'s own
+   turn-pipeline loop — so `content/generate.ts`'s `generateSegment`
+   (tier-3 live authoring, the same paid model family) contributed
+   nothing to a session's recorded spend, ever. Separately, an interrupt
+   arriving during generation genuinely aborted the server's own
+   controller, but nothing downstream ever read it — an already-aborted
+   signal had zero effect, unlike the ordinary turn pipeline's
+   `complete()`, which throws instantly given the same signal.
+   Fixed with `TutorOrchestrator.noteGenerationCost(usd)` (folds into the
+   same `modelUsd` bucket) driven by a new `onCost` CALLBACK on
+   `GenerationRequest` — a callback rather than a return field because a
+   candidate the judge or moderation later rejects still spent real
+   money on the author call, and `generateSegment` returns `null` on
+   that path. The interrupt is fixed by threading `GenerationRequest
+   .signal` into the author's `complete()` calls and the internal
+   `judge()`'s fetch via the same `AbortSignal.any` pattern `complete()`
+   already establishes, plus an explicit `CompletionAbortedError` catch
+   so the abort resolves to `null` (this function's own "return null for
+   every failure" contract) instead of escaping uncaught past its one
+   caller. The safety-moderation call inside `generateSegment` is
+   DELIBERATELY left un-abortable — it is the one call every turn in the
+   product goes through, not only tier-3, and touching it was judged
+   out of scope given its blast radius. Proven with 5 new
+   `generate.test.ts` tests; the first abort test initially asserted
+   only `result === null` and one fetch call, which an ordinary pre-fix
+   transport failure ALSO produces — caught by running it against the
+   unfixed code and finding it passed anyway, then strengthened to
+   assert the signal `fetch` actually received reports `aborted: true`.
+   All 5 confirmed to fail for the exact claimed reason via `git stash`.
+   See `RUNBOOK.md` Round 64.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:
