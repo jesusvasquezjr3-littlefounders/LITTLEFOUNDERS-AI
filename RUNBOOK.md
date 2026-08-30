@@ -4594,3 +4594,81 @@ tests). Lint and type-check clean in both (including `tsconfig.test.json`
 and, for oracle, `tsconfig.scripts.json`). `verify:tutor` and
 `verify:pedagogy` green. Root `docs:check`, `secrets:check`,
 `provider:check`, and `tools:test` (26/26) all green.
+
+## The desktop caption-docking fix only covered the one state that isn't most of a lesson, and two new HUD surfaces from the same commit collided on mobile — found by adversarial review, closed 2026-08-30 (round 43)
+
+Round 43 reviewed the V4 "floating lesson" and its gate (commit
+`7389e3ac`) — the caption-docking mechanism and two new HUD surfaces
+that commit shipped, none of them re-reviewed since. Two real findings.
+
+**1. HIGH — the caption's `docked` prop gated `'panel'` on an activity
+being open, but the desktop panel is on screen unconditionally.**
+`ConversationView.tsx` computed `docked: 'panel'` only when
+`socket.segment !== null || turn?.whiteboard != null`. But
+`hud/LessonPlate.tsx`'s desktop panel (`inset-y-0 right-0`) renders
+UNCONDITIONALLY — activity or not — and only actually hides
+(`standDown`) during an adaptation offer. So during ORDINARY
+conversation with no exercise open, which is most of a lesson, the
+panel was on screen exactly as always, but the caption fell back to
+`ScreenAnchor`'s escape/clamp mechanism, whose budget cannot beat a
+full-height docked panel — the exact defect this docking mechanism
+exists to close, just outside the one condition that was checked. The
+gate that "grew eyes" for this (`scripts/verify-tutor-ui.mjs`'s
+`captionInPanel` check) never caught it because the lab's default
+scenario always has an active segment (`DEFAULT_LAB_ACTIVITY =
+'script'`).
+
+Fixed by hoisting `docked` to a real variable and changing its
+condition to `desktop && adaptation === null` — tracking whether the
+panel is actually VISIBLE, not whether an activity happens to be open.
+Three new tests in `conversationView.test.tsx` prove: the caption docks
+during plain conversation with nothing open, still docks once a
+segment opens (unchanged), and correctly undocks while the panel
+itself stands down for an adaptation offer. Confirmed to fail without
+the fix via `git stash`. Verified live in `/dev/tutor-lab` at desktop
+with the lab's activity switched to `none`: the full caption renders
+cleanly docked to the left of the always-present panel, not clipped or
+hidden underneath it.
+
+**2. MEDIUM — the same commit's lesson-thread chip and the docked-sheet
+caption both land on the identical `top-16`/`z-20` band on mobile.**
+The lesson-thread chip (`fixed left-4 top-16 z-20`) and the caption's
+`docked === 'sheet'` case (`inset-x-0 top-16`, up to
+`calc(100vw-2rem)` wide, centered) both activate whenever a lesson is
+active AND the mobile sheet reaches its FULL detent (reachable by drag
+or the documented keyboard `End` control). The caption's box can
+legitimately reach the chip's own `left-4` column on a phone-width
+screen. Both are `pointer-events-none` (nothing becomes unreachable,
+hence MEDIUM not HIGH), but the caption is the surface that "may never
+hide" for a deaf/hard-of-hearing learner (/ORACLE.md §1 step 4) — a
+visual collision there directly undermines the thing this whole
+mechanism protects. The `OVERLAPS` audit this same commit added to
+`verify-tutor-ui.mjs` cannot catch it: its selector list never matches
+the lesson-thread chip's own element.
+
+Fixed by having the chip yield: it now hides whenever
+`docked === 'sheet'`, since at FULL the sheet's own body already shows
+the lesson's topic and step directly, making the redundant top banner
+both unnecessary and the thing that had to move. Three new tests prove
+the chip shows at a resting detent, hides at FULL, and returns once the
+sheet leaves FULL again. Confirmed to fail without the fix via `git
+stash` (2 of 3 new tests failed — the chip stayed visible at FULL,
+pre-fix).
+
+Both fixes are frontend-only; no oracle/backend/database changes.
+Full frontend suite green (126 files, 1452 tests), lint and type-check
+clean. Also fixed in this round: `KidTutorPage.test.tsx`'s `BASE_SESSION`
+fixture was missing `endedAt`/`turnCount` — a real `tsc --noEmit`
+failure introduced by round 41's own new test and never caught there,
+because `type-check` was run once before that test was added and never
+re-run after. A gap in this session's own discipline, closed here.
+
+**Verification gap for finding 2, mobile specifically:** confirmed the
+mobile scene loads correctly in `/dev/tutor-lab` (assets present in
+this worktree, unlike the isolated review worktree), but a Browser-pane
+input-delivery issue (clicks/keyboard timing out with "pane is
+currently hidden" while screenshots kept succeeding — a tooling
+condition, not a code defect) prevented driving the resize handle to
+FULL detent live. Finding 2 rests on the RTL/git-stash proof above,
+which exercises the real component tree end to end; finding 1 (the
+more severe one) was independently confirmed live.

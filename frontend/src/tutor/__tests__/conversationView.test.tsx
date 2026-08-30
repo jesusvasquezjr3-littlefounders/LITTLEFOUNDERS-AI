@@ -894,6 +894,94 @@ describe('the tutor says it once', () => {
   });
 });
 
+/*
+ * THE DESKTOP PANEL IS ALWAYS THERE, ACTIVITY OR NOT (`hud/LessonPlate.tsx`'s
+ * `inset-y-0 right-0`) — it only hides during an adaptation offer
+ * (`standDown`). Found by adversarial review, round 43 (2026-08-30, HIGH):
+ * the caption's `docked` prop used to gate `'panel'` on `segment !== null ||
+ * whiteboard != null`, so during ORDINARY conversation with no exercise
+ * open — most of a desktop lesson — the always-visible panel got no
+ * reservation at all, and the caption fell back to an escape/clamp budget
+ * that cannot beat a full-height docked panel: the exact defect this
+ * mechanism exists to close, just outside the one condition it checked.
+ */
+describe('the caption docks to the desktop panel even with no activity open', () => {
+  function stubDesktop() {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: true,
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+  }
+
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('docks the caption to the panel during plain conversation, no segment and no whiteboard', () => {
+    stubDesktop();
+    const { container } = render(conversation(makeSocket(), true));
+    const caption = container.querySelector('.lf-speech.fixed');
+    expect(caption).not.toBeNull();
+    // Docked: reserves the panel's own width formula. Undocked (the pre-fix
+    // behaviour here) falls back to the free-floating anchor form instead.
+    expect(caption?.className).toContain('right-[min(27.5rem,34vw)]');
+    expect(caption?.className).not.toContain('left-0 top-0 w-max');
+  });
+
+  it('still docks once a segment opens, unchanged from before', () => {
+    stubDesktop();
+    const { container } = render(conversation(makeSocket({ segment: SEGMENT }), true));
+    const caption = container.querySelector('.lf-speech.fixed');
+    expect(caption?.className).toContain('right-[min(27.5rem,34vw)]');
+  });
+
+  it('undocks while the panel itself stands down for an adaptation offer', () => {
+    stubDesktop();
+    const { container } = render(
+      conversation(makeSocket({ adaptationOffer: 'slower_pacing' }), true),
+    );
+    const caption = container.querySelector('.lf-speech.fixed');
+    expect(caption?.className).not.toContain('right-[min(27.5rem,34vw)]');
+  });
+});
+
+/*
+ * Found by adversarial review, round 43 (2026-08-30, MEDIUM): the lesson-
+ * thread chip (`top-16 left-4 z-20`) and the docked-sheet caption
+ * (`SpeechCaption.tsx`'s `docked === 'sheet'`, `top-16` too) both land on the
+ * identical band whenever a lesson is active AND the mobile sheet reaches its
+ * FULL detent — reachable by the documented keyboard `End` control. The
+ * caption's box can span up to `calc(100vw-2rem)` centered, reaching the
+ * chip's own `left-4` column on a phone. The caption is the surface that
+ * "may never hide" for a deaf/hard-of-hearing learner, so the chip yields.
+ */
+describe('the lesson-thread chip yields the top band to the docked caption at FULL', () => {
+  const LESSON = { topic: 'Ahorro', step: 2, of: 4 };
+
+  it('shows the chip at a resting detent, with a lesson active', () => {
+    render(conversation(makeSocket({ lesson: LESSON }), true));
+    expect(screen.getByText(/Ahorro/)).toBeInTheDocument();
+  });
+
+  it('hides the chip once the sheet reaches FULL, where it would collide with the caption', () => {
+    render(conversation(makeSocket({ lesson: LESSON }), true));
+    expect(screen.queryByText(/Ahorro/)).not.toBeNull();
+
+    fireEvent.keyDown(resizeHandle(), { key: 'End' });
+
+    expect(screen.queryByText(/Ahorro/)).toBeNull();
+  });
+
+  it('brings the chip back once the sheet leaves FULL again', () => {
+    render(conversation(makeSocket({ lesson: LESSON }), true));
+    fireEvent.keyDown(resizeHandle(), { key: 'End' });
+    expect(screen.queryByText(/Ahorro/)).toBeNull();
+
+    fireEvent.keyDown(resizeHandle(), { key: 'Home' });
+    expect(screen.queryByText(/Ahorro/)).not.toBeNull();
+  });
+});
+
 describe('the bottom edge the sheet and the microphone share', () => {
   it('lifts the dock over the resting sheet, and hands the edge back when the sheet goes', () => {
     /*

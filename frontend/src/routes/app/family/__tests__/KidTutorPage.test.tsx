@@ -49,7 +49,9 @@ const BASE_SESSION = {
   diorama: 'diorama-a',
   intent: 'open' as const,
   startedAt: '2026-08-30T10:00:00Z',
+  endedAt: '2026-08-30T10:05:00Z',
   closeReason: null,
+  turnCount: 2,
   segmentCount: 0,
   xpAwarded: 0,
 };

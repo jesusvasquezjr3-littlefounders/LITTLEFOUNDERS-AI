@@ -490,6 +490,30 @@ export function ConversationView({
   const adaptationQuestion = adaptation ? t(`tutor.adaptationOffer.${adaptation}`) : '';
 
   /*
+   * V4: when a lesson surface owns the screen, the caption docks to the
+   * space that is left instead of losing an unwinnable escape against it
+   * (see SpeechCaptionProps.docked). The caller decides because the caller
+   * KNOWS — no geometry listening.
+   *
+   * Found by adversarial review, round 43 (2026-08-30, HIGH): this used to
+   * gate `'panel'` on `socket.segment !== null || turn?.whiteboard != null`
+   * — but `LessonPlate` renders its full-height desktop panel
+   * UNCONDITIONALLY (`hud/LessonPlate.tsx`, `inset-y-0 right-0`), activity
+   * or not, and only actually hides it (`standDown`) during an adaptation
+   * offer. So on desktop, during ORDINARY conversation with no exercise
+   * open — most of a lesson — the panel was on screen exactly as before,
+   * but the caption fell back to `ScreenAnchor`'s escape/clamp, whose
+   * budget cannot beat a full-height docked panel (the exact defect this
+   * docking mechanism exists to close, just outside the one condition that
+   * was checked). The condition now tracks whether the panel is actually
+   * VISIBLE — desktop and not standing down — not whether an activity
+   * happens to be open. Hoisted to its own variable (was inline on the
+   * prop) so the lesson-thread chip below can read it too.
+   */
+  const docked: 'panel' | 'sheet' | null =
+    desktop && adaptation === null ? 'panel' : !desktop && detent === 'full' ? 'sheet' : null;
+
+  /*
    * WHAT THE RESTING SHEET SAYS ABOUT ITSELF.
    *
    * Two strings for two jobs, and BOTH ARE ABSENT UNLESS SOMETHING HAPPENED.
@@ -600,32 +624,30 @@ export function ConversationView({
             the plan is actually on. Absent in open chat by construction (the
             server sends nothing), pointer-events-none, and small: it informs,
             it does not compete with the tutor.
+
+            Found by adversarial review, round 43 (2026-08-30, MEDIUM): this
+            and the docked-sheet caption (`SpeechCaption.tsx`'s `docked ===
+            'sheet'` case) both land on the identical `top-16`/`z-20` band
+            whenever a lesson is active AND the mobile sheet is at its FULL
+            detent — reachable by drag or the documented keyboard `End`
+            control. The caption's box can span up to `calc(100vw-2rem)`
+            centered, reaching this chip's own `left-4` column on a
+            phone-width screen. Both are `pointer-events-none` (nothing
+            becomes unreachable), but the caption is the surface that "may
+            never hide" for a deaf or hard-of-hearing learner (/ORACLE.md §1
+            step 4), so THIS chip yields: at FULL, the sheet's own body
+            already shows the lesson's topic and step directly, making the
+            redundant top banner both unnecessary and the thing that has to
+            move.
           */}
-          {socket.lesson !== null && (
+          {socket.lesson !== null && docked !== 'sheet' && (
             <div className="lf-caption pointer-events-none fixed left-4 top-16 z-20 max-w-[60vw] truncate rounded-full bg-[color:var(--lf-surface)]/70 px-3 py-1 text-[color:var(--lf-muted)] backdrop-blur-sm">
               {socket.lesson.topic !== null ? `${socket.lesson.topic} — ` : ''}
               {t('tutor.conversation.lessonThread', { step: socket.lesson.step, of: socket.lesson.of })}
             </div>
           )}
 
-          <SpeechCaption
-            text={turn?.text ?? null}
-            turnSeq={turnSeq}
-            face={face}
-            /*
-             * V4: when a lesson surface owns the screen, the caption docks to
-             * the space that is left instead of losing an unwinnable escape
-             * against it (see SpeechCaptionProps.docked). The caller decides
-             * because the caller KNOWS — no geometry listening.
-             */
-            docked={
-              (socket.segment !== null || turn?.whiteboard != null) && desktop
-                ? 'panel'
-                : !desktop && detent === 'full'
-                  ? 'sheet'
-                  : null
-            }
-          />
+          <SpeechCaption text={turn?.text ?? null} turnSeq={turnSeq} face={face} docked={docked} />
 
           {/*
             Time is a rune over the island, not a chip in a header bar, because
