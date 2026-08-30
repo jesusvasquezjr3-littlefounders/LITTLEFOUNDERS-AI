@@ -562,6 +562,41 @@ export class TutorOrchestrator {
     nowMs: number,
     signal?: AbortSignal,
   ): Promise<TurnOutcome | null> {
+    /*
+     * ── classify BEFORE the model, exactly as handleLearnerText does ──────
+     *
+     * A spoken answer is still learner-authored free text — a self-harm
+     * disclosure or a volunteered address said OUT LOUD while answering an
+     * activity is exactly as real as the same words typed in chat. This
+     * function used to skip straight from `utterance` to a model call with no
+     * gate at all: found by an adversarial review, 2026-08-29 (CRITICAL) — a
+     * second door into the model, bypassing the one invariant this file's own
+     * pipeline comment asserts as universal ("classify → BEFORE the model. A
+     * flagged utterance must never enter a context window"). Reachable from
+     * BOTH typed and voice-transcribed input, since `ws/server.ts` routes any
+     * short utterance against an open checkable segment here instead of
+     * through `handleLearnerText`.
+     */
+    const budget = this.currentBudget(nowMs);
+    const classification = classifyLearnerInput(utterance, this.session.locale);
+    if (classification.category !== null && classification.action !== 'allow') {
+      const stopping = classification.action === 'session_stopped';
+      if (stopping) this.stopped = true;
+      // Never added to `history` — same reason as handleLearnerText: even the
+      // sanitized text must not re-enter the model's context on a later turn.
+      return this.scriptedOutcome(
+        safetyResponse(classification.category, this.session.locale),
+        budget,
+        stopping ? 'safety_stop' : null,
+        {
+          category: classification.category,
+          severity: classification.severity,
+          handled: classification.action,
+          turnSeq: this.seq,
+        },
+      );
+    }
+
     // The learner's line enters the working history exactly as an ordinary
     // turn would — fenced first, so it stays data — or the model would answer
     // a verdict about words it never saw.

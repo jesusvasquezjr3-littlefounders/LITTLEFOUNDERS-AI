@@ -1290,3 +1290,92 @@ summary, anything) must carry the same `tutor_safety_flags` exclusion this
 migration added — it does not live in a view or a trigger, it lives in this
 one function, and a new query written against the base table directly will
 silently reopen this exact incident.
+
+## The injection/moderation stack had two unguarded doors and a universal blind spot — incident 2026-08-29, closed the same day
+
+**Found by the same kind of independent adversarial code review** as the
+recall incident above, this time deliberately pointed at `/ORACLE.md` §5's
+own layer list — not by a report, not by a user. Every finding was proven
+with a throwaway test against the real function before being trusted, then
+deleted; none was reasoned about without running it.
+
+**Finding 1 (CRITICAL) — a second, unguarded door into the model.**
+`classifyLearnerInput` (layer 4, "before the model") is called from exactly
+one place in the whole service: `orchestrator.ts`'s `handleLearnerText`. A
+spoken answer to an open checkable segment is routed through a DIFFERENT
+function, `handleVoiceCheckResult` — `ws/server.ts` sends both typed and
+voice-transcribed utterances there whenever a checkable segment is open,
+bypassing `handleLearnerText` entirely — and that function fenced the
+utterance (correctly) but never classified it, going straight to a model
+call. A self-harm disclosure or a volunteered phone number said OUT LOUD
+while answering an activity reached the model verbatim and received a
+model-generated reply instead of the mandated scripted safety response, with
+no `tutor_safety_flags` row (no guardian-visible flag) and no session stop.
+This is the identical shape as the recall incident above: an invariant
+stated once in a comment ("classify → BEFORE the model... a flagged
+utterance must never enter a context window") and enforced on only one of
+its call sites.
+
+**Finding 2 (CRITICAL) — the universal gate itself had a one-character
+bypass.** `classifyLearnerInput` matched against `text.normalize('NFC')` and
+nothing else. `stripInvisible` — the function that actually removes
+zero-width spaces, bidi overrides and other invisible codepoints, and this
+same file's own layer-2 fence — runs strictly AFTER classification, inside
+`fenceUntrusted`. A single zero-width space planted inside a trigger word (a
+one-paste evasion, not a novel attack) broke every regex's word-boundary
+match on the classifier, on EVERY learner turn — the primary, universal
+conversation path, not a conditional branch — while the text that actually
+reached the model was fully stripped and legible, since fencing happens
+downstream. A test in `safety.test.ts` already proved `stripInvisible` itself
+neutralizes exactly this obfuscation; it simply never asserted that
+`classifyLearnerInput` used it. State computed for one purpose (the cleaned
+text the model is shown) was never available to the component that was
+supposed to gate on the same text.
+
+**Finding 3 (HIGH) — a third, independent door, for real minors.**
+`runPlacementIntake` (course placement, offered to the 12-14 and 15-17
+bands) fences the learner's free text and sends it to the model; the only
+safety pass anywhere in the function ran on the model's REPLY. Nothing ever
+classified what the learner said. A disclosure or a volunteered phone number
+typed into a "tell me what you already know" placement conversation reached
+the model with no gate at all.
+
+**Finding 4 (LOW, closed as part of the same class).** Output-side
+deterministic moderation (`deterministicModeration`) had the identical
+raw-text gap on its nonce-echo, prompt-leak and contact-detail checks — rated
+lower because it requires the MODEL to emit or echo an invisible character
+(a compound scenario, not directly attacker-controlled the way Findings 1-3
+are), and the semantic judge pass still runs afterward for every minor
+session regardless.
+
+**The fix, all four the same shape:** classify (or moderate) the STRIPPED
+text, not the raw one, and give every path that sends learner-authored free
+text to the model the same gate the primary path already had.
+`handleVoiceCheckResult` gained the identical classify-before-fence block
+`handleLearnerText` already carried; `classifyLearnerInput` now runs against
+`stripInvisible(text)`; `runPlacementIntake` classifies `learnerText` before
+fencing it, falling back to the same neutral response every other refusal
+reason in that function already uses; `deterministicModeration` strips
+before its three regex passes.
+
+**How it was verified.** Each finding was reproduced against the real
+function: `classifyLearnerInput` called directly with a zero-width-space-
+obfuscated self-harm phrase and an obfuscated injection phrase, both
+returning `allow` before the fix and the correct category after;
+`handleVoiceCheckResult` called directly with a self-harm disclosure,
+confirmed to call `fetch` (the model) before the fix and to short-circuit
+into the scripted safety response after; `runPlacementIntake` called with a
+disclosure and a phone number, confirmed to reach `complete()` (the model)
+before the fix and to fall back to the neutral prior, uncalled, after.
+Stashing just the source fix and re-running each new test against the
+unpatched code reproduced the original failure exactly, before the fix was
+trusted.
+
+**What this means for anyone adding a new way to reach the model with
+learner-authored text.** `classifyLearnerInput` is not automatically applied
+by fencing, sealing, or any other layer in this stack — it is one function
+call that has to be made explicitly, at the top, before anything else. A new
+entry point (a new turn type, a new intake flow, a new voice-adjacent
+reaction) that fences without also classifying reopens Finding 1 or Finding
+3's exact shape, and will not be caught by any test that only exercises the
+one path it was written against.

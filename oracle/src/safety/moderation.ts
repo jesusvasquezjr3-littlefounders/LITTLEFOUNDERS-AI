@@ -1,6 +1,7 @@
 import { getConfig } from '../env.js';
 import { withTimeout } from '../lib/http.js';
 import type { Locale } from '../context/schema.js';
+import { stripInvisible } from './untrusted.js';
 
 /*
  * Moderation before the screen AND before the ear (/ORACLE.md §6).
@@ -83,16 +84,25 @@ const CONTACT_DETAIL: readonly RegExp[] = [
 
 /** The cheap, exact pass. Pure, synchronous, and never wrong about its own rules. */
 export function deterministicModeration(input: ModerationInput): ModerationVerdict {
-  if (input.nonce && input.text.includes(input.nonce)) {
+  // Stripped once, for the same reason `classifyLearnerInput` now does the
+  // same on the input side (adversarial review, 2026-08-29, LOW here
+  // specifically because it requires the MODEL to emit or echo an invisible
+  // character — a compound scenario, and the semantic judge pass still runs
+  // afterward for every minor session regardless): an invisible codepoint
+  // planted inside the nonce, a prompt-leak marker or a phone number breaks
+  // an exact/regex match without changing what a reader — or a reconstructed
+  // request body — actually sees.
+  const text = stripInvisible(input.text);
+  if (input.nonce && text.includes(input.nonce)) {
     return { allowed: false, reason: 'nonce_echo', detail: 'output echoed the turn fence nonce' };
   }
   for (const pattern of PROMPT_LEAK_MARKERS) {
-    if (pattern.test(input.text)) {
+    if (pattern.test(text)) {
       return { allowed: false, reason: 'prompt_leak', detail: `matched ${String(pattern)}` };
     }
   }
   for (const pattern of CONTACT_DETAIL) {
-    if (pattern.test(input.text)) {
+    if (pattern.test(text)) {
       return { allowed: false, reason: 'contact_detail', detail: `matched ${String(pattern)}` };
     }
   }

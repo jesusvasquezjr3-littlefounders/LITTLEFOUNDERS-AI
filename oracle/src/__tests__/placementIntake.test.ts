@@ -169,6 +169,32 @@ describe('runPlacementIntake — every failure is neutral, never loud and never 
     expect(complete).not.toHaveBeenCalled();
   });
 
+  /*
+   * Found by an adversarial review, 2026-08-29 (HIGH): this is a THIRD
+   * independent entry point sending learner-authored free text to the model
+   * (used for real minors, the 12-14 and 15-17 bands), and until this fix the
+   * only safety pass anywhere in this function ran on the model's REPLY —
+   * nothing ever classified what the learner said. A self-harm disclosure or
+   * a volunteered phone number typed here reached the model verbatim.
+   */
+  it('falls back on a self-harm disclosure without ever calling the model', async () => {
+    const result = await runPlacementIntake(
+      { ...INPUT, learnerText: 'no se nada de esto, la verdad ya no quiero vivir' },
+      NEUTRAL,
+    );
+    expect(result).toEqual({ priorFraction: 0.3, reflection: NEUTRAL, source: 'fallback' });
+    expect(complete).not.toHaveBeenCalled();
+  });
+
+  it('falls back on a volunteered phone number without ever calling the model', async () => {
+    const result = await runPlacementIntake(
+      { ...INPUT, learnerText: 'mi telefono es 555 234 9981 por si quieres saber mas' },
+      NEUTRAL,
+    );
+    expect(result.source).toBe('fallback');
+    expect(complete).not.toHaveBeenCalled();
+  });
+
   it('requires the moderation model pass for a minor, and not for an adult', async () => {
     modelReturns(JSON.stringify({ priorFraction: 0.5, reflection: 'Bien.' }));
     await runPlacementIntake({ ...INPUT, ageBand: '15-17' }, NEUTRAL);

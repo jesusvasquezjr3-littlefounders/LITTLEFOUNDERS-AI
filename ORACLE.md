@@ -609,6 +609,57 @@ they are.
 Bounds on top of the layers: per-turn length cap, per-session turn cap, per-user
 rate limit, and a hard session budget (§9.5).
 
+> **Three defects in this stack, found by one adversarial code review,
+> 2026-08-29, and closed the same day — each proven with a throwaway test
+> against the real function before being trusted.**
+>
+> **CRITICAL — layer 4 had a second, unguarded door.** `classifyLearnerInput`
+> is called from exactly one place in the whole service: `handleLearnerText`.
+> A spoken answer to an open checkable segment is routed through a DIFFERENT
+> function, `handleVoiceCheckResult` (`ws/server.ts` sends both typed and
+> voice-transcribed utterances there when a checkable segment is open,
+> bypassing `handleLearnerText` entirely) — and that function fenced the
+> utterance but never classified it, going straight to a model call. A
+> self-harm disclosure or a volunteered phone number said OUT LOUD while
+> answering an activity reached the model verbatim and got a model-generated
+> reply instead of the scripted safety response, with no guardian-visible flag
+> and no session stop. Fixed by adding the identical classify-before-fence gate
+> `handleLearnerText` already had, at the top of `handleVoiceCheckResult`.
+>
+> **CRITICAL — layer 4 itself matched RAW text, on the UNIVERSAL path.**
+> `classifyLearnerInput` did `text.normalize('NFC')` and nothing else before
+> running its regexes; `stripInvisible` (this file's own layer-2 fence, which
+> strips zero-width/bidi/control codepoints) runs strictly AFTER classification,
+> inside `fenceUntrusted`. A single zero-width space planted inside a trigger
+> word — a one-paste evasion — broke every regex's word-boundary match, on
+> EVERY learner turn, while the fenced text reaching the model was fully
+> reconstructed and legible: state computed for one purpose (the cleaned text
+> the model actually sees) was never available to the component supposed to
+> gate on it. A test already existed proving `stripInvisible` neutralizes this
+> exact obfuscation — it just never called `classifyLearnerInput` to check the
+> classifier used it too. Fixed by classifying `stripInvisible(text)` instead
+> of the raw string.
+>
+> **HIGH — a third, independent door into the model, for real minors.**
+> `runPlacementIntake` (course placement, ages 12+) fences the learner's free
+> text and sends it straight to the model; the only safety gate anywhere in
+> the function ran on the model's REPLY, never on what the learner said. Fixed
+> by classifying `input.learnerText` before the model call, landing on the
+> same neutral-fallback path every other refusal reason in that function
+> already uses.
+>
+> **LOW, closed as part of the same class:** output-side deterministic
+> moderation (`deterministicModeration`) had the identical raw-text gap on the
+> nonce-echo, prompt-leak and contact-detail checks — lower severity because it
+> requires the MODEL to emit or echo an invisible character, and the semantic
+> judge pass still runs afterward for every minor session regardless. Fixed the
+> same way: strip before matching.
+>
+> All four share the session's recurring shape — a rule enforced in one place
+> and silently absent from an adjacent one — and none was hypothetical: each
+> was reproduced with a real call against the real function, not reasoned
+> about. See `RUNBOOK.md` for the full incident writeup.
+
 ---
 
 ## §6 Moderation — before the screen and before the ear

@@ -211,6 +211,65 @@ describe('safety classification happens BEFORE the model', () => {
   });
 });
 
+/*
+ * Found by an adversarial review, 2026-08-29 (CRITICAL): `handleVoiceCheckResult`
+ * — the reaction to a spoken answer to an open checkable segment — went
+ * straight from the raw utterance to a model call, with no classification at
+ * all. Reachable through both typed and voice-transcribed input, since
+ * `ws/server.ts` routes a short utterance against an open checkable segment
+ * here instead of through `handleLearnerText`. A self-harm disclosure or a
+ * volunteered phone number said OUT LOUD while answering an activity used to
+ * reach the model verbatim and get a model-generated reply instead of the
+ * scripted safety response — the exact invariant `describe`d above, on a
+ * second, unguarded door.
+ */
+describe('a spoken answer is ALSO classified BEFORE the model', () => {
+  it('never calls the model when a voice-checked utterance is a self-harm disclosure', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleVoiceCheckResult(
+      'seg-1',
+      { correct: true, misconceptionCode: null },
+      'ya no quiero vivir',
+      Date.now(),
+    ))!;
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(outcome.emission.source).toBe('scripted');
+    expect(outcome.safety?.category).toBe('self_harm');
+    expect(outcome.closeReason).toBe('safety_stop');
+  });
+
+  it('never lets a flagged spoken utterance enter the working history a later turn could leak', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleVoiceCheckResult(
+      'seg-1',
+      { correct: true, misconceptionCode: null },
+      'mi telefono es 555 234 9981',
+      Date.now(),
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('hola', Date.now());
+    const [, init] = fetchMock.mock.calls[0]!;
+    const body = JSON.stringify((init as RequestInit).body);
+    expect(body).not.toContain('555 234 9981');
+  });
+
+  it('still reaches the model normally for an ordinary spoken answer', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    const outcome = (await orchestrator.handleVoiceCheckResult(
+      'seg-1',
+      { correct: true, misconceptionCode: null },
+      'quince',
+      Date.now(),
+    ))!;
+    expect(fetchMock).toHaveBeenCalled();
+    expect(outcome.safety).toBeNull();
+  });
+});
+
 describe('output moderation', () => {
   it('replaces a turn the judge marks unsafe with a scripted line', async () => {
     fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(false));

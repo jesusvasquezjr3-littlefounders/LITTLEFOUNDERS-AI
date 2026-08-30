@@ -35,6 +35,7 @@ import { z } from 'zod';
 import { complete, ModelUnavailableError } from '../model/provider.js';
 import { fenceUntrusted } from '../safety/untrusted.js';
 import { moderateTutorOutput } from '../safety/moderation.js';
+import { classifyLearnerInput } from '../safety/classifier.js';
 
 /** Learner text longer than this is truncated, never rejected — rambling is not misuse. */
 const MAX_LEARNER_CHARS = 600;
@@ -174,6 +175,28 @@ export async function runPlacementIntake(
   neutralReflection: string,
 ): Promise<PlacementIntakeResult> {
   const input = sealPlacementIntake(candidate);
+
+  /*
+   * ── classify BEFORE the model — the same gate every conversational turn
+   * in this service goes through, missing here entirely until an adversarial
+   * review found it (2026-08-29, HIGH): this is a THIRD independent entry
+   * point that sends learner-authored free text to the model, used for real
+   * minors (the 12-14 and 15-17 bands), and the only safety pass that used to
+   * run was on the model's REPLY — nothing ever looked at what the learner
+   * said. A self-harm disclosure or a volunteered phone number typed here
+   * reached the model verbatim and got a model-generated reflection back
+   * instead of being intercepted.
+   *
+   * This function's own contract is "never an unmoderated sentence, never a
+   * broken screen" — the neutral fallback already exists for every other
+   * refusal reason, so a flagged utterance takes the same path rather than a
+   * new one: no model call, no reflection about what was said, just the
+   * caller's neutral line.
+   */
+  if (classifyLearnerInput(input.learnerText, input.locale).action !== 'allow') {
+    return fallback(neutralReflection);
+  }
+
   const fenced = fenceUntrusted(input.learnerText, MAX_LEARNER_CHARS);
   if (fenced.cleaned.length === 0) return fallback(neutralReflection);
 

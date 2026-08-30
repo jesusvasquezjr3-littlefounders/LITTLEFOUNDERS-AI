@@ -345,6 +345,38 @@ traceable; they do not make it impossible.
 
 ---
 
+## §5a Input classification — screening what the learner says, added here 2026-08-29
+
+Distinct from §5 above (which is about content WE generate and show), and
+never previously described in this brief despite existing since before this
+document's original 2026-08-21 preparation date. Before a learner's words
+reach a language model, a deterministic, rule-based pass checks the text
+against patterns for self-harm, abuse disclosure, adult content, grooming
+patterns, personal data (an address, phone number, or school volunteered by
+the learner), and prompt-injection attempts. A match on the more serious
+categories (self-harm, abuse disclosure) **ends the session and never sends
+that text to the model** — the learner instead receives one of our own
+authored, non-model, age-appropriate responses; personal data and injection
+attempts are blocked for that turn only, and the session continues. Every
+block is recorded as a flag a verified guardian can read.
+
+**What counsel should know plainly:** this pass is a deterministic pattern
+matcher, not a model, and pattern matching cannot enumerate the full range of
+ways a child might express distress — it is a floor, not a guarantee, exactly
+as the tutor's own design intends (`/ORACLE.md` §5). It runs today on all
+three of the tutor's model-facing surfaces (ordinary conversation, a spoken
+answer to an activity, and the course-placement conversation offered to
+learners 12 and older); an engineering defect that let learner text reach a
+model on one of those surfaces without this screening was found by an
+internal review and closed the same day it was found (2026-08-29,
+`RUNBOOK.md`), with no report and no known instance of it having been
+exploited during the (believed to be brief) window it existed. **A self-harm
+disclosure from a minor may itself carry obligations under mandatory-reporter
+or child-welfare law depending on jurisdiction — engineering has taken no
+position on that and it belongs in §7 below.**
+
+---
+
 ## §6 Third-party processors
 
 | Processor | Role | Data | Contract status |
@@ -420,6 +452,13 @@ Engineering has no position on any of these.
     grant from any **verified** guardian and a revocation from any of them.
 11. Is anything additional required for a `bigfounder` (verified adult) or a
     guest account that later converts into a child account?
+
+**On a self-harm disclosure (added 2026-08-29, §5a)**
+13a. When the input classifier's self-harm pattern matches, does anything
+     beyond ending the session and flagging it for the guardian become
+     required — a mandatory report, a resource referral shown in-product,
+     anything time-sensitive — under Mexican, Brazilian or US law, and does
+     the answer depend on which of those the family is in?
 
 **On the documents**
 12. What must be added to the Terms and Conditions and the Privacy Notice, in

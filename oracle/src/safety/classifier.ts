@@ -1,4 +1,5 @@
 import type { Locale } from '../context/schema.js';
+import { stripInvisible } from './untrusted.js';
 
 /*
  * Layer 4 of the injection/safety stack (/ORACLE.md §5): classify the
@@ -167,7 +168,22 @@ const RULES: Rule[] = [
  * need it.
  */
 export function classifyLearnerInput(text: string, _locale: Locale): Classification {
-  const normalized = text.normalize('NFC');
+  /*
+   * MUST strip invisible codepoints before matching, not just normalize.
+   *
+   * Found by an adversarial review, 2026-08-29: a single zero-width space
+   * inserted inside a trigger word — a one-paste evasion, not a novel attack —
+   * breaks every regex's word-boundary/literal match here, while
+   * `fenceUntrusted`'s `stripInvisible` (this same function) reconstructs the
+   * exact, fully legible phrase before it reaches the model. `text.normalize`
+   * alone does nothing about it: NFC does not touch zero-width or bidi
+   * codepoints. The result was that the ONE universal, always-on gate this
+   * file exists to be could be defeated on the self-harm and prompt-injection
+   * rules by anyone who knows to pad a word with an invisible character —
+   * while the model still received the clean, readable phrase, since fencing
+   * happens downstream of this call and strips the same characters anyway.
+   */
+  const normalized = stripInvisible(text);
   // Highest-severity match wins, so "I want to die" is not downgraded by also
   // tripping a lower-severity rule later in the list.
   let worst: Classification | null = null;
