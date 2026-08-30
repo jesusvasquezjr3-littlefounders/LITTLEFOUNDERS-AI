@@ -739,6 +739,26 @@ tutor", not a checkbox buried inside a general terms acceptance. Consent is:
   turn on exactly the sessions where a child is speaking to a third party, which
   is the one place in this product where that is obviously worth paying for.
   Pinned by `hardening.test.ts`, confirmed to fail against the old interval.
+
+  **The recheck ran on the right cadence but the wrong side of the paid
+  call — found by adversarial review, 2026-08-30 (HIGH).** The fix above
+  closed how many EXTRA turns could leak after a revocation (four → zero);
+  it did not close the CURRENT turn's leak, because the fresh check lived
+  only inside `handleLearnerTurn`, which for a microphone turn runs only
+  AFTER `transcribe()` has already shipped that turn's audio to the STT
+  provider. No recheck cadence, however tight, can retroactively un-send
+  audio that already left — this was not a rare race, it fired on EVERY
+  microphone turn, deterministically, the instant a guardian revoked
+  during it. Fixed by moving the fresh check into `handleAudioClip`
+  itself, before `transcribe()` is ever called (`dueForMicConsentRecheck`/
+  `refreshMicConsent`); `handleLearnerTurn`'s own check is now skipped for
+  a turn that already passed it (`micConsentAlreadyChecked`), so a
+  microphone turn costs exactly one consent round trip, not two. A residual
+  race remains — consent revoked WHILE `transcribe()`'s own network call is
+  in flight — but that window is now bounded by one STT round trip rather
+  than an entire session's worth of turns, and closing it further would
+  mean cancelling an in-flight third-party call in real time, out of scope
+  for this fix.
 - **Recorded** in Vault with a timestamp and the granting guardian, and audited.
 - **Reflected in the legal documents** — all three `/LEGAL/` files in the same
   commit, then `npm run legal:sync` (§1.8, non-negotiable).

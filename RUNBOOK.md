@@ -2734,3 +2734,51 @@ the claimed reason (`expected undefined to be an instance of AbortSignal`
 — no `signal` property was ever passed) via `git stash`, pass against the
 fix. Full oracle suite green (449 tests), lint clean, type-check clean on
 all three tsconfigs.
+
+## A revoked minor's CURRENT-turn audio still reached the STT provider — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 19 (HIGH): `/ORACLE.md` §4.3 promises a
+guardian that revoking voice consent takes effect on the NEXT turn, backed
+by a per-turn recheck (`CONSENT_RECHECK_MINOR_MIC_TURNS = 1` — every turn,
+for exactly this population). That recheck lived only inside
+`handleLearnerTurn`, which for a MICROPHONE turn is only ever called AFTER
+`transcribe()` has already shipped the current turn's audio to the
+third-party STT provider. No recheck cadence, however tight, can
+retroactively un-send audio that already left — this was not the rare
+race the "every turn" cadence exists to close, but a 100%-reproducible
+structural gap one level up from it: a guardian revoking DURING a child's
+hands-free turn had that turn's audio reach the provider EVERY TIME, with
+the recheck only ever managing to close the mic for the turn AFTER.
+
+Fixed by extracting the recheck logic into two functions —
+`dueForMicConsentRecheck` (the cadence predicate, unchanged) and
+`refreshMicConsent` (performs the check, mutates `live.microphone`, sends
+`CONSENT_REVOKED`) — and calling `refreshMicConsent` from `handleAudioClip`
+itself, BEFORE `transcribe()` is ever invoked. `handleLearnerTurn` now
+accepts a `micConsentAlreadyChecked` option and skips its own check when
+set, so a microphone turn still costs exactly one consent round trip to
+Core, not two; a text-based turn (`micConsentAlreadyChecked` unset) is
+unaffected and still gets the check exactly where it always has. A
+residual race remains — consent revoked WHILE `transcribe()`'s own network
+call is already in flight — but that window is now bounded by one STT
+round trip rather than an entire session, and closing it further would
+mean cancelling an in-flight third-party call in real time, out of scope
+for this fix.
+
+Proven with a new end-to-end test in `hardening.test.ts`, driving a real
+WebSocket against fake Core/model/voice upstreams (the same harness the
+2026-08-23 security-audit regressions in this file already use): one
+ordinary turn establishes `turnCount > 0`, the fake Core then answers
+`{active: false}` for consent, and a `learner_audio` frame is sent. The
+decisive assertion is `counts.stt` — the number of times the fake STT
+server was actually invoked — which must be `0`. Confirmed to fail against
+the pre-fix code for the claimed reason (`expected 1 to be +0` — the STT
+provider WAS called before the revocation was ever noticed) via
+`git stash`, pass against the fix. Also fixed, in the same commit: a
+code comment introduced by this fix named the voice provider
+("Inworld") outside `oracle/src/voice/`, violating the architectural
+boundary `boundaries.test.ts` enforces (`/AGENTS.md` §1.2 — the provider
+is explicitly interim and nothing above the adapter may know its name);
+caught immediately by the full suite and reworded to "the provider"
+before committing. Full oracle suite green (450 tests), lint clean,
+type-check clean on all three tsconfigs, `verify:tutor` green.

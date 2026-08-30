@@ -553,6 +553,62 @@ describe('revocation takes effect on the NEXT turn, as promised', () => {
 
     expect(messages.some((m) => m.code === 'CONSENT_REVOKED')).toBe(true);
   });
+
+  /*
+   * Found by adversarial review, 2026-08-30 (HIGH): the recheck above ran
+   * only inside `handleLearnerTurn`, which for a MICROPHONE turn only runs
+   * AFTER `transcribe()` has already shipped the CURRENT turn's audio to the
+   * third-party STT provider. No recheck cadence, however tight, can
+   * retroactively un-send audio that already left — the promise "revocation
+   * takes effect on the next turn" was silently broken for the turn IN
+   * FLIGHT the moment the guardian revoked, every single time, not as an
+   * edge case. This asserts the audio for THIS turn — the one during which
+   * the revocation is discovered — never reaches the STT provider at all.
+   */
+  it('never sends the CURRENT turn’s audio to the STT provider once consent is already revoked', async () => {
+    const socket = await openReady();
+
+    // One ordinary turn with consent in force, so turnCount > 0 and the
+    // recheck (cadence = 1 for a minor's open mic) is actually due.
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'hola' }));
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    socket.removeAllListeners('message');
+    await new Promise((resolve) => setTimeout(resolve, 750));
+
+    // The guardian revokes BEFORE this next turn's audio is ever sent.
+    consentBody = { data: { active: false }, error: null };
+
+    socket.send(
+      JSON.stringify({
+        type: 'learner_audio',
+        audio: Buffer.from('fake-webm-bytes').toString('base64'),
+        mimeType: 'audio/webm;codecs=opus',
+      }),
+    );
+    // Any ERROR frame specifically — never `thinking`, which is sent before
+    // either the fix's pre-check or (pre-fix) the STT call, so waiting for it
+    // alone would resolve before `counts.stt` had a chance to settle and
+    // prove nothing either way. An error frame only arrives once the async
+    // chain has actually run its course: instantly with the fix (refused
+    // before any STT call), or only after `transcribe()` resolves without it
+    // (the fake STT server's response shape does not match Inworld's real
+    // one — a pre-existing fixture quirk this file's OTHER tests share — so
+    // it comes back as `STT_FAILED` pre-fix, never a usable transcript).
+    const messages = await collect(socket, (m) => m.some((x) => x.type === 'error'));
+    socket.close();
+
+    // THE actual defect, asserted first and foremost: the STT provider must
+    // never have been called for this turn's audio, not merely that the mic
+    // closed afterward.
+    expect(counts.stt).toBe(0);
+    // With the fix, the refusal is the CONSENT_REVOKED frame itself — no STT
+    // round trip happens, so there is no separate "did transcription fail"
+    // question. (Pre-fix, this same refusal instead arrives as STT_FAILED,
+    // because the fake STT server's response shape does not match Inworld's
+    // real one — a pre-existing fixture quirk this file's other tests also
+    // rely on `counts.stt` rather than a real transcript to see past.)
+    expect(messages.some((m) => m.code === 'CONSENT_REVOKED')).toBe(true);
+  }, 15_000);
 });
 
 describe('an unreadable consent answer is not a granted one', () => {

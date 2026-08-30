@@ -874,6 +874,58 @@ async function onMessage(live: Live, raw: string): Promise<void> {
  * run before any gate, so a burst of frames bought a burst of transcriptions
  * and discarded all but one.
  */
+/**
+ * Whether THIS turn is due a fresh, live consent check, per the cadence
+ * `/ORACLE.md` §4.3 sets — for a minor with the mic on, that cadence is
+ * "every turn" (`CONSENT_RECHECK_MINOR_MIC_TURNS = 1`).
+ */
+function dueForMicConsentRecheck(live: Live): boolean {
+  const recheckEvery =
+    live.microphone && live.session.isMinor
+      ? CONSENT_RECHECK_MINOR_MIC_TURNS
+      : CONSENT_RECHECK_EVERY_TURNS;
+  return (
+    live.microphone &&
+    live.session.isMinor &&
+    live.orchestrator.turnCount > 0 &&
+    live.orchestrator.turnCount % recheckEvery === 0
+  );
+}
+
+/**
+ * Performs the fresh check when one is due, mutating `live.microphone` and
+ * sending `CONSENT_REVOKED` on a revocation. Returns whether the mic is
+ * (still) usable for THIS turn.
+ *
+ * MUST run before the CURRENT turn's audio reaches the third-party STT
+ * provider, not only before the NEXT turn's — found by adversarial review,
+ * 2026-08-30 (HIGH). This check used to live only inside
+ * `handleLearnerTurn`, which for a microphone turn only ever runs AFTER
+ * `transcribe()` has already shipped the audio to the provider: no recheck
+ * cadence, however tight, can retroactively un-send audio that already
+ * left. `handleAudioClip` now calls this itself, before `transcribe()`, so
+ * a revocation observed on THIS turn refuses the STT call rather than only
+ * closing the mic for the next one.
+ */
+async function refreshMicConsent(live: Live): Promise<boolean> {
+  if (!dueForMicConsentRecheck(live)) return live.microphone;
+  /*
+   * `!== true`, NOT `=== false` — see the identical reasoning where this
+   * check used to live, a few lines below in `handleLearnerTurn`.
+   */
+  const active = await checkVoiceConsent(live.session.userId);
+  if (active !== true) {
+    live.microphone = false;
+    send(live.socket, {
+      type: 'error',
+      code: 'CONSENT_REVOKED',
+      message: 'The microphone was turned off. You can keep going by tapping.',
+    });
+    return false;
+  }
+  return true;
+}
+
 async function handleAudioClip(live: Live, audio: Buffer, mimeType: string): Promise<void> {
   if (!live.microphone) {
     send(live.socket, {
@@ -883,6 +935,11 @@ async function handleAudioClip(live: Live, audio: Buffer, mimeType: string): Pro
     });
     return;
   }
+  // Fresh, BEFORE anything is sent to the STT provider — see
+  // `refreshMicConsent`'s own comment for why this cannot live only inside
+  // `handleLearnerTurn`, downstream of `transcribe()`.
+  if (!(await refreshMicConsent(live))) return;
+
   const claim = claimTurn(live, Date.now());
   if (claim !== 'ok') return refuseTurn(live, claim);
   live.abort = new AbortController();
@@ -898,7 +955,13 @@ async function handleAudioClip(live: Live, audio: Buffer, mimeType: string): Pro
     // Echoed back so the learner can see what we heard. A misheard turn that
     // the learner cannot see is a tutor answering a question nobody asked.
     send(live.socket, { type: 'transcript', text });
-    await handleLearnerTurn(live, text, live.abort.signal, { viaMicrophone: true });
+    // Consent was already freshly checked above, for this exact turn — skip
+    // the redundant second round trip to Core `handleLearnerTurn` would
+    // otherwise make for every microphone turn.
+    await handleLearnerTurn(live, text, live.abort.signal, {
+      viaMicrophone: true,
+      micConsentAlreadyChecked: true,
+    });
   } finally {
     live.abort = null;
     releaseTurn(live);
@@ -909,27 +972,29 @@ async function handleLearnerTurn(
   live: Live,
   text: string,
   signal?: AbortSignal,
-  opts: { viaMicrophone?: boolean; edit?: boolean } = {},
+  opts: { viaMicrophone?: boolean; edit?: boolean; micConsentAlreadyChecked?: boolean } = {},
 ): Promise<void> {
   // The floor and the single-flight slot are the CALLER's, claimed before any
   // paid work — including the transcription that precedes an audio turn. This
   // function must not re-check the floor: `claimTurn` has already stamped
   // `lastTurnAtMs`, so a second check here would refuse every turn.
 
-  // Consent is re-checked periodically DURING a session, not only at the door.
-  // /ORACLE.md §4.3 requires revocation to take effect on the next turn, and a
-  // guardian who revokes while their child is mid-session means it now.
-  const recheckEvery =
-    live.microphone && live.session.isMinor
-      ? CONSENT_RECHECK_MINOR_MIC_TURNS
-      : CONSENT_RECHECK_EVERY_TURNS;
-
-  if (
-    live.microphone &&
-    live.session.isMinor &&
-    live.orchestrator.turnCount > 0 &&
-    live.orchestrator.turnCount % recheckEvery === 0
-  ) {
+  /*
+   * Consent is re-checked periodically DURING a session, not only at the
+   * door. /ORACLE.md §4.3 requires revocation to take effect on the next
+   * turn, and a guardian who revokes while their child is mid-session means
+   * it now.
+   *
+   * `micConsentAlreadyChecked` — `handleAudioClip` already ran this exact
+   * check, fresh, BEFORE calling `transcribe()` (found missing there by
+   * adversarial review, 2026-08-30, HIGH: this check used to run only here,
+   * always AFTER the audio had already reached the STT provider — no
+   * cadence, however tight, can retroactively un-send it). Skipping it here
+   * for that path avoids a second, redundant round trip to Core for the
+   * identical turn; a text-based turn (`micConsentAlreadyChecked` unset)
+   * still gets the check here as before.
+   */
+  if (!opts.micConsentAlreadyChecked && dueForMicConsentRecheck(live)) {
     /*
      * `!== true`, NOT `=== false`.
      *

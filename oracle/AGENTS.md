@@ -568,7 +568,25 @@ everything passes the blocked half perfectly and destroys the product.
    stops the request. Whenever wrapping a promise in a timeout race, check
    whether the promise's OWN constructor accepts a cancellation signal —
    racing it is not the same as cancelling it.
-26. **A "must not be negative" guard on a floating-point running total needs
+26. **A recheck placed after the call it is meant to gate cannot gate that
+   call, no matter how tight its cadence is.** `ws/server.ts`'s per-turn
+   voice-consent recheck lived only inside `handleLearnerTurn`, which for a
+   MICROPHONE turn runs only AFTER `transcribe()` has already shipped that
+   turn's audio to the third-party STT provider. Found by adversarial
+   review 2026-08-30 (HIGH): this meant the CURRENT turn's audio leaked to
+   the provider on every revocation, deterministically — not the rare race
+   the "every turn" cadence (`CONSENT_RECHECK_MINOR_MIC_TURNS = 1`) was
+   built to close, but a 100%-reproducible structural gap one level up from
+   it. Fixed by moving the check into `handleAudioClip`, before
+   `transcribe()` (`dueForMicConsentRecheck`/`refreshMicConsent`), with
+   `handleLearnerTurn` skipping its own now-redundant check via a
+   `micConsentAlreadyChecked` flag so a mic turn still costs exactly one
+   consent round trip. General lesson: when a guardrail is meant to gate an
+   expensive or sensitive call, check WHERE in the call sequence the guard
+   actually runs, not just how OFTEN — a correct cadence checked at the
+   wrong point in the sequence gates nothing for the turn that matters most,
+   the one currently in flight.
+27. **A "must not be negative" guard on a floating-point running total needs
    a zero band, not a zero line.** `whiteboard.ts`'s `computeSequence` chains
    decimal `add`/`subtract`/`multiply_percent` steps (`value` is
    `z.number()`, not an integer — money and fractions are legitimate), and
