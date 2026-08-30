@@ -428,6 +428,20 @@ everything passes the blocked half perfectly and destroys the product.
    counter... [because] one model turn legitimately produces two transcript
    rows"). Before wiring EITHER counter into something new, ask which
    question it actually answers.
+17. **A "no-repeat" checker scoped to the LAST turn only covers a repeat that
+   is adjacent.** `echoesPreviousTurn` compared a candidate turn against
+   `lastTutorSaid` alone. A RESCUE (or any turn with different numbers)
+   sitting between the original and its reworded repeat is correctly
+   untouched by every checker — a new problem is good teaching — but it also
+   resets the pairwise comparison, so a repeat TWO turns back slipped
+   through, found live testing as a struggling learner, 2026-08-30. This is
+   the identical shape `repeatsAnAnnouncement` was already built to fix for
+   announcing sentences ("both checks either side of this one miss it") —
+   the fix (`echoesEarlierTurn`, checking every earlier tutor turn) had just
+   never been generalized past that one category. Whenever a repetition or
+   consistency check compares against "the last turn," ask whether an
+   intervening, LEGITIMATELY-different turn could reset it while the thing
+   actually being repeated sits one turn further back.
 
 ---
 

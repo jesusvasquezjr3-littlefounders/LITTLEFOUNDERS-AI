@@ -1420,6 +1420,43 @@ describe('saying the same thing again in different words', () => {
     // Four calls: two turns, no retry bought for teaching well.
     expect(fetchMock).toHaveBeenCalledTimes(4);
   });
+
+  /*
+   * Found live, testing as a struggling learner, 2026-08-30. `echoesPreviousTurn`
+   * only ever compared against `lastTutorSaid` — the SINGLE immediately-preceding
+   * turn. A turn with DIFFERENT numbers sitting in between (a simplified example,
+   * exactly what a real conversation produces) is a legitimately new problem and
+   * must NOT itself be flagged — but it also resets the pairwise comparison, so a
+   * REWORDED (not exact) repeat of a turn from two turns back, not one, slipped
+   * through both existing checks: `echoesPreviousTurn` only looks one turn back,
+   * and `repeatsEarlierSentence` needs an exact sentence match, which rewording
+   * defeats by construction.
+   */
+  it('repairs a REWORDED repeat from several turns back, not just the last one', async () => {
+    const original = 'Casi, Robi. Si pagas 50 y cuesta 25, restamos 50 menos 25. ¿Cuánto queda?';
+    // A different problem in between — different numbers, so the immediate
+    // pairwise check correctly lets THIS one through untouched.
+    const different = 'Casi, Robi. Si pagas 30 y cuesta 20, restamos 30 menos 20. ¿Cuánto queda?';
+    // The model reworks the FIRST turn's exact numbers, two turns back — not
+    // an exact sentence match, so `repeatsEarlierSentence` alone would miss it.
+    const reworded = 'Casi, Robi. Restamos: 50 menos 25 cuando pagas 50 y cuesta 25. ¿Cuánto queda?';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: original }))
+      .mockResolvedValueOnce(judgeSays(true))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: different }))
+      .mockResolvedValueOnce(judgeSays(true))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: reworded }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Usa monedas: 2 de 10 y 1 de 5. ¿Cuántas son?' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('35', Date.now());
+    await orchestrator.handleLearnerText('25', Date.now());
+    const third = (await orchestrator.handleLearnerText('no sé', Date.now()))!;
+
+    expect(third.emission.turn.say).toContain('Usa monedas');
+    expect(third.emission.turn.say).not.toBe(reworded);
+  });
 });
 
 /*

@@ -31,7 +31,7 @@ import {
   contradictsCorrectAnswer,
   narratesUnshownGrowth,
   whiteboardUnitMismatch,
-  echoesPreviousTurn,
+  echoesEarlierTurn,
   repeatsEarlierSentence,
   promisesAnActivity,
   tierVocabularyViolation,
@@ -1335,7 +1335,6 @@ export class TutorOrchestrator {
             const priorTutorLines = this.history
               .filter((h) => h.speaker === 'tutor')
               .map((h) => h.text);
-            const lastTutorSaid = priorTutorLines.at(-1) ?? '';
             const repeated =
               repeatsEarlierSentence(parsed.turn.say, priorTutorLines) ??
               /*
@@ -1348,8 +1347,17 @@ export class TutorOrchestrator {
                * check we owned called the session clean.
                */
               repeatsAnAnnouncement(parsed.turn.say, priorTutorLines) ??
-              (lastTutorSaid !== '' && echoesPreviousTurn(parsed.turn.say, lastTutorSaid)
-                ? 'the same thing you just said, reworded'
+              /*
+               * The same WORKED EXAMPLE again, several turns later — not just
+               * the one right before it. Found live, testing as a struggling
+               * learner, 2026-08-30: a RESCUE turn with different numbers sat
+               * BETWEEN the original and its repeat, so comparing only against
+               * `lastTutorSaid` (the single immediately-preceding turn) let it
+               * through. Checked against every earlier tutor turn instead, the
+               * same shape as the announcement check just above.
+               */
+              (echoesEarlierTurn(parsed.turn.say, priorTutorLines)
+                ? 'the same thing you already said earlier, reworded'
                 : null);
             /*
              * KEEP IT. It is a VALID turn — parsed, in shape, teaching

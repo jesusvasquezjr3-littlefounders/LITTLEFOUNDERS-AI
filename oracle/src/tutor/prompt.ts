@@ -377,6 +377,34 @@ export function echoesPreviousTurn(say: string, previous: string): boolean {
 }
 
 /**
+ * THE SAME WORKED EXAMPLE AGAIN, SEVERAL TURNS LATER — not just the one right
+ * before it.
+ *
+ * Found live, testing as a struggling learner, 2026-08-30: `echoesPreviousTurn`
+ * only ever compares against `lastTutorSaid`, the SINGLE immediately-preceding
+ * turn. A RESCUE turn in between — a different, simplified problem, exactly as
+ * designed — resets that comparison, so a turn that repeats one from TWO turns
+ * back (not one) slips through untouched. Observed verbatim in production: turn
+ * 1 asked "Restar es quitar: si tienes 8 monedas y quitas 3, te quedan 5. Ahora
+ * dime: si tienes 7 monedas y quitas 2, ¿cuántas te quedan?"; a RESCUE turn with
+ * different numbers (3 monedas, quita 1) landed in between; the NEXT turn after
+ * the learner answered that RESCUE correctly repeated turn 1 almost word for
+ * word, same numbers and all — a learner who had just recovered from struggling
+ * was handed back the exact question they had already seen twice.
+ *
+ * This is the identical shape `repeatsAnAnnouncement` was already built to
+ * close for ANNOUNCING sentences, scoped to teaching turns instead: reuse
+ * `echoesPreviousTurn`'s own pairwise definition (same detector, same repair),
+ * just checked against EVERY earlier tutor turn rather than only the last one.
+ */
+export function echoesEarlierTurn(say: string, earlierTutorLines: readonly string[]): string | null {
+  for (const earlier of earlierTutorLines) {
+    if (echoesPreviousTurn(say, earlier)) return earlier;
+  }
+  return null;
+}
+
+/**
  * THE SAME ANNOUNCEMENT AGAIN, REWORDED.
  *
  * "You never announce the SAME activity twice" was a prompt rule with nothing
