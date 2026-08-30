@@ -2498,3 +2498,18 @@ content-pipeline feature (schema, CAS verifier, age classifier, content bank)
 needing its own scoping pass. Additional whiteboard `kind` values
 (two-quantity comparison, a marked number line) — same schema family,
 straightforward once `sequence` is proven live.
+
+**A valid decimal sequence could compute to "negative" by a hair and lose
+the whole board — found by adversarial review, 2026-08-30 (MEDIUM).**
+`WhiteboardStepSchema.value` is a plain `z.number()`, not an integer — money
+amounts and fractions are legitimate steps — and `computeSequence`'s guard
+was `current < 0`. In JS floating point, `0.3 - 0.1 - 0.1 - 0.1` is
+`-2.7755575615628914e-17`, not `0`; a perfectly valid "spend it down to
+zero" sequence with decimal steps landed a hair below zero and was dropped
+exactly as if the model had proposed a genuinely nonsense board. Fixed with
+a `ZERO_EPSILON` tolerance (`1e-9`): a running value within that band of
+zero is clamped TO zero rather than rejected; anything further negative is
+still refused, unchanged. `whiteboard.test.ts` covers both sides — the
+`0.3 − 0.1 − 0.1 − 0.1` sequence now computes to `[0.3, …, 0]`, and a
+sequence that goes genuinely negative (not floating-point noise) is still
+null.

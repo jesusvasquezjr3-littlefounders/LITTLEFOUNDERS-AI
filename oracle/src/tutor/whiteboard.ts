@@ -22,6 +22,16 @@ import type { Whiteboard } from './turnSchema.js';
 const MAX_VALUE = 10_000_000;
 
 /**
+ * A running value this close to zero is zero — floating-point noise from
+ * decimal subtraction (e.g. `0.3 - 0.1 - 0.1 - 0.1 === -2.7755575615628914e-17`
+ * in JS), not a negative amount. Found by adversarial review, 2026-08-30
+ * (MEDIUM): a valid "spend it down to zero" sequence with decimal steps
+ * landed a hair below zero and silently dropped the whole whiteboard, as if
+ * the model had never asked for one.
+ */
+const ZERO_EPSILON = 1e-9;
+
+/**
  * The running value after each step, `values[0]` being `start` itself. Null
  * if the proposal does not compute to a sane sequence.
  */
@@ -46,7 +56,8 @@ export function computeSequence(board: Pick<Whiteboard, 'start' | 'steps'>): num
         current += current * (step.value / 100);
         break;
     }
-    if (!Number.isFinite(current) || current < 0 || current > MAX_VALUE) return null;
+    if (!Number.isFinite(current) || current < -ZERO_EPSILON || current > MAX_VALUE) return null;
+    if (current < 0) current = 0;
     values.push(current);
   }
   return values;

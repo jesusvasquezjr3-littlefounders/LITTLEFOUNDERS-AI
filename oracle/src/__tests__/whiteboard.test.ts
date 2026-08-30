@@ -60,3 +60,33 @@ describe('refuses to draw a nonsense board', () => {
     expect(computeSequence({ start: 10, steps: [{ op: 'add', value: Number.NaN }] })).toBeNull();
   });
 });
+
+describe('decimal steps that land on zero via floating-point noise', () => {
+  /*
+   * Found by adversarial review, round 14, 2026-08-30 (MEDIUM): a valid
+   * "spend it down to zero" sequence with decimal steps computes, in JS
+   * floating point, to a hair below exactly zero — e.g.
+   * `0.3 - 0.1 - 0.1 - 0.1 === -2.7755575615628914e-17` — and the pre-fix
+   * `current < 0` check dropped the entire whiteboard, indistinguishable
+   * from a genuinely nonsense board.
+   */
+  it('treats a subtraction sequence that nets to zero as zero, not as negative', () => {
+    // In JS, 0.3 - 0.1 - 0.1 - 0.1 === -2.7755575615628914e-17 — a hair
+    // below zero, not a real negative amount, and must not drop the board.
+    const result = computeSequence({
+      start: 0.3,
+      steps: [
+        { op: 'subtract', value: 0.1 },
+        { op: 'subtract', value: 0.1 },
+        { op: 'subtract', value: 0.1 },
+      ],
+    });
+    expect(result).not.toBeNull();
+    expect(result).toHaveLength(4);
+    expect(result?.at(-1)).toBe(0);
+  });
+
+  it('still refuses a sequence that goes genuinely, meaningfully negative', () => {
+    expect(computeSequence({ start: 0.3, steps: [{ op: 'subtract', value: 0.31 }] })).toBeNull();
+  });
+});

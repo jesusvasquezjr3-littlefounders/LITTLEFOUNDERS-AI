@@ -2359,3 +2359,30 @@ learner accepts it" test was rewritten to first let a real model-produced
 turn record a genuine offer before accepting it, matching the new,
 correct contract. Full oracle suite green (433 tests), lint, type-check
 (all three tsconfigs), `verify:pedagogy`.
+
+## A valid decimal whiteboard sequence could silently disappear — found by adversarial review, closed 2026-08-30
+
+Found by adversarial review, round 14 (MEDIUM): `whiteboard.ts`'s
+`computeSequence` re-derives every running value on a whiteboard the model
+proposes, and drops the whole board — as if the model had never set one —
+the moment any intermediate value is non-finite, negative, or past the
+ceiling. `WhiteboardStepSchema.value` is a plain `z.number()`, not an
+integer, so decimal steps (money amounts, fractions) are legitimate. In JS
+floating point, `0.3 - 0.1 - 0.1 - 0.1` evaluates to
+`-2.7755575615628914e-17` — a hair below exactly zero, not a real negative
+amount — and the pre-fix `current < 0` guard treated it exactly like a
+genuinely nonsense board. A perfectly valid "spend it down to zero" story
+with decimal steps would have drawn no whiteboard at all.
+
+Fixed with a `ZERO_EPSILON` tolerance (`1e-9`): a running value within that
+band of zero is clamped to exactly zero rather than rejected; the ceiling
+and negative-range checks are otherwise unchanged, so a sequence that goes
+genuinely, meaningfully negative is still refused.
+
+Proven with two new tests in `whiteboard.test.ts`: the exact
+`0.3 - 0.1 - 0.1 - 0.1` repro now returns a 4-value sequence ending in `0`
+instead of `null`, and a sequence that goes meaningfully negative
+(`0.3 − 0.31`) is still correctly refused. Confirmed to fail against the
+pre-fix guard for the claimed reason via `git stash`, pass against the fix.
+Full oracle suite green (435 tests), lint clean, type-check clean on all
+three tsconfigs.

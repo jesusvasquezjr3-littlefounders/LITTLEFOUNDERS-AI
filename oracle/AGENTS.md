@@ -455,6 +455,22 @@ everything passes the blocked half perfectly and destroys the product.
    on use. A prohibition written only in a prompt or a doc is a request the
    model can honor; the same prohibition enforced at the one call site a
    client message reaches is a guarantee.
+19. **A "must not be negative" guard on a floating-point running total needs
+   a zero band, not a zero line.** `whiteboard.ts`'s `computeSequence` chains
+   decimal `add`/`subtract`/`multiply_percent` steps (`value` is
+   `z.number()`, not an integer — money and fractions are legitimate), and
+   its ceiling check was `current < 0`. In JS, `0.3 - 0.1 - 0.1 - 0.1` is
+   `-2.7755575615628914e-17`, not `0` — found by adversarial review
+   2026-08-30 (MEDIUM). A valid "spend it down to zero" sequence computed a
+   hair below zero and was dropped exactly as if the model had proposed a
+   nonsense board — same failure mode as item 17 (a checker only wrong in a
+   condition nobody hand-picks: whole-number examples never hit it, only
+   decimal ones do). Fixed with a `ZERO_EPSILON` (`1e-9`) that clamps a
+   near-zero running value TO zero rather than rejecting it, while a value
+   further negative than that is still refused unchanged. Any bound check
+   on a value that is the OUTPUT of chained floating-point arithmetic —
+   never one taken directly from input — needs to ask "how close" before it
+   asks "which side of the line."
 
 ---
 
