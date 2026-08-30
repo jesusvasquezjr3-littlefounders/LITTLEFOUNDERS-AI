@@ -1364,6 +1364,63 @@ everything passes the blocked half perfectly and destroys the product.
    design question, not a one-line patch; spawned as its own follow-up
    (`task_b249a68e`) with the design groundwork already captured.
 
+53. **The session's own language was stated once, early in the prompt, and
+   never checked — one foreign-language learner utterance was enough to
+   make the tutor abandon it.** Found live, testing as a real logged-in kid
+   account with an en-US profile, 2026-08-30 (HIGH) — the first time any
+   round of this session's testing had used a locale other than es-MX,
+   because every `tutor:converse` fixture locks `locale: 'es-MX'` and this
+   path had therefore never been live-exercised at all. The learner typed
+   ONE Spanish sentence ("que es un precio?"); the tutor correctly answered
+   turn 1 in English, then on turn 2 — replying to a bare "8", no language
+   cue of its own — switched entirely to Spanish and stayed there until
+   explicitly told "please explain in English." Every OTHER prompt-adherence
+   property this session has hardened (tier vocabulary, false praise,
+   repeated sentences, missed whiteboards, unkept promises) has its own
+   deterministic check wired into the repair-retry loop; language adherence
+   had none — `buildContextMessage`'s "Language: ${locale}. Answer entirely
+   in this language" was pure aspiration. For the exact persona this session
+   tests as — a struggling child, not one who would think to ask for
+   English — this is not a stylistic flaw, it is the tutor becoming
+   instantly incomprehensible.
+   Fixed with `languageViolation()` (`prompt.ts`), deliberately narrow
+   rather than a full language detector: `¿`/`¡` (Spanish-exclusive
+   orthography, zero false-positive risk since neither ever occurs in
+   genuine English or Portuguese) plus a short list of MULTI-WORD phrases
+   per locale pair, chosen for no plausible loanword collision in this
+   product's own tutoring domain. Wired into the SAME repair-retry
+   machinery as `tierVocabularyViolation`: a drift on attempt 0 asks for
+   the same idea again in the right language; a drift that SURVIVES the
+   retry (or whose retry transport-fails) joins item 51's bucket — false
+   praise, false correction, forbidden vocabulary — falling back to the
+   scripted line rather than being delivered, because a turn in the wrong
+   language gives a non-speaking child zero value, not a "clumsy but still
+   teaches something" one.
+   **Caught and corrected before shipping, by this codebase's OWN
+   pre-existing test suite:** the first version of the marker list included
+   the bare word "the" as an English signal. `hardening.test.ts`'s canary
+   payload `'PAYLOAD-THE-JUDGE-MUST-SEE'` matched `\bthe\b` case-
+   insensitively — a hyphen is a word boundary — the exact false-positive
+   class this file's own `TIER_FORBIDDEN` header already warns about for
+   its siblings. Every marker is now a multi-word phrase specifically
+   because a single common word is too easy to find inside an unrelated
+   identifier or payload.
+   Proven with 6 new `prompt.test.ts` unit tests (the exact real sentence
+   that surfaced this, both cross-locale directions, and three "never
+   flags genuine prose, including a loanword" cases) and 3 new
+   `orchestrator.test.ts` tests reproducing the live scenario end to end
+   with the ACTUAL sentences observed; all confirmed to fail for the exact
+   claimed reason pre-fix via `git stash`. A third live re-repro was
+   blocked by the SAME test account correctly hitting its own daily
+   session cap (429) mid-verification — the fix's proof rests on the
+   git-stash-confirmed orchestrator test built from the real observed
+   sentences instead, the same substitute-evidence standard already used
+   for prompt-wording fixes elsewhere in this file. General lesson: a
+   deterministic check exists for every OTHER prompt-adherence property in
+   this file, and the one nobody wrote was the one no test could reach —
+   language correctness needs a locale other than the harness's own
+   default before it can even be WRONG.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:

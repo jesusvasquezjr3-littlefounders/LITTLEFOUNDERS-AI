@@ -1861,6 +1861,49 @@ describe('a failed repair costs the improvement, never the turn', () => {
     expect(second.emission.turn.say).not.toContain('interés compuesto');
   });
 
+  /*
+   * Found live, testing as a real logged-in kid account with an en-US
+   * profile, 2026-08-30 (HIGH): a single Spanish learner utterance was
+   * enough to make the tutor's NEXT turn — replying to a bare "8" with no
+   * language cue of its own — switch entirely to Spanish and stay there.
+   * `KID`'s locale is es-MX, so this test proves the mirror case: an
+   * es-MX session whose turn drifted into English gets caught and repaired.
+   */
+  it('asks again when a turn drifts into a different language than the session\'s own locale', async () => {
+    const englishSay = 'Of course! You have 3 pesos, and the pencil costs 5. How many more do you need?';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: englishSay }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Claro. Tienes 3 pesos y el lápiz cuesta 5. ¿Cuántos más necesitas?' }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('que es un precio?', Date.now()))!;
+
+    const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(retryBody).toContain('drifted into a different language');
+    expect(outcome.emission.source).toBe('model');
+    expect(outcome.emission.turn.say).not.toBe(englishSay);
+  });
+
+  it('falls back to the scripted line when a language-drift retry STILL answers in the wrong language', async () => {
+    const englishSay = 'Of course! You have 3 pesos, and the pencil costs 5. How many more do you need?';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Empecemos con algo sencillo.' }))
+      .mockResolvedValueOnce(judgeSays(true))
+      // Second turn drifts into English, triggering a repair — and the
+      // retry answers in English again instead of switching back.
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: englishSay }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: englishSay }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('ya', Date.now());
+    const second = (await orchestrator.handleLearnerText('que es un precio?', Date.now()))!;
+
+    expect(second.emission.source).toBe('scripted');
+    expect(second.emission.turn.say).not.toBe(englishSay);
+  });
+
   it('still falls back to the scripted line when NOTHING valid was produced', async () => {
     // No usable turn at any attempt — that is a real outage, and the scripted
     // line is the honest answer to it. A fresh Response per call: a Response

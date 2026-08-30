@@ -1,4 +1,4 @@
-import type { TutorContext } from '../context/schema.js';
+import type { TutorContext, Locale } from '../context/schema.js';
 import { EMOTIONS, ACTIONS } from './turnSchema.js';
 
 /*
@@ -92,6 +92,71 @@ export const TIER_FORBIDDEN: Record<1 | 2 | 3, { pattern: RegExp; why: string }[
 /** The first tier violation in a learner-visible string, or null. */
 export function tierVocabularyViolation(text: string, tier: 1 | 2 | 3): string | null {
   for (const { pattern, why } of TIER_FORBIDDEN[tier]) {
+    if (pattern.test(text)) return why;
+  }
+  return null;
+}
+
+/**
+ * A NARROW, high-confidence signal that a turn drifted into a DIFFERENT
+ * language than the session's own locale — not a full language detector,
+ * on purpose, only the handful of orthographic/lexical markers that
+ * essentially never occur by coincidence in genuine text of another one of
+ * this product's three locked locales.
+ *
+ * Found live, testing as a real logged-in kid account with an en-US
+ * profile, 2026-08-30 (HIGH): the context message states "Language: en-US.
+ * Answer entirely in this language" exactly once, early in the prompt
+ * (`buildContextMessage`, below); nothing ever checked it. The learner typed
+ * ONE Spanish sentence ("que es un precio?"); the tutor correctly answered
+ * turn 1 in English, then on turn 2 — replying to a bare "8", no language
+ * cue of its own at all — switched ENTIRELY to Spanish ("Casi, Explorer.
+ * Piensa: el lápiz cuesta 5...") and stayed there until explicitly told
+ * "please explain in English". The exact "a later, conflicting signal in
+ * history outweighs an earlier static instruction" shape this file has
+ * already found for other checks (item 46's activity mismatch, item 50's
+ * worked example) — except here nothing was checking at all, so it was
+ * never caught until a live session used a locale the Spanish-only
+ * `tutor:converse` harness structurally could never exercise. For the exact
+ * persona this product is built around — a struggling child, not one who
+ * would think to say "please explain in English" — this is not a stylistic
+ * flaw, it is the tutor becoming instantly incomprehensible.
+ *
+ * `¿`/`¡` are Spanish-exclusive orthography: they do not occur in genuine
+ * English or Portuguese text under any circumstance, so they carry zero
+ * false-positive risk. The lexical markers are deliberately short LISTS of
+ * MULTI-WORD phrases with no plausible loanword collision in this product's
+ * own tutoring domain (money, prices, activities) — not a stopword-density
+ * heuristic, which would flag legitimate code-switched loanwords like
+ * "pesos" or "ok".
+ *
+ * A bare, single-word "the" was in the first version of this list and this
+ * codebase's OWN pre-existing test suite caught it before this ever shipped:
+ * `hardening.test.ts`'s canary payload `'PAYLOAD-THE-JUDGE-MUST-SEE'`
+ * matched `\bthe\b` case-insensitively, because a hyphen is a word boundary
+ * — the exact false-positive class this file's own header comment already
+ * warns about for `tierVocabularyViolation`'s siblings. Every marker here is
+ * now multi-word specifically because a single common word is too easy to
+ * find inside an unrelated identifier, payload, or proper noun.
+ */
+const LANGUAGE_MARKERS: Record<Locale, { pattern: RegExp; why: string }[]> = {
+  'en-US': [
+    { pattern: /[¿¡]/, why: 'Spanish punctuation (¿ or ¡)' },
+    { pattern: /\b(então|não é|você|está bem|isso mesmo)\b/i, why: 'Portuguese words' },
+  ],
+  'es-MX': [
+    { pattern: /\b(how many|of course|you have|let's|that's right)\b/i, why: 'English words' },
+    { pattern: /\b(então|não é|você|está bem|isso mesmo)\b/i, why: 'Portuguese words' },
+  ],
+  'pt-BR': [
+    { pattern: /[¿¡]/, why: 'Spanish punctuation (¿ or ¡)' },
+    { pattern: /\b(how many|of course|you have|let's|that's right)\b/i, why: 'English words' },
+  ],
+};
+
+/** The first cross-locale language marker in a learner-visible string, or null. */
+export function languageViolation(text: string, locale: Locale): string | null {
+  for (const { pattern, why } of LANGUAGE_MARKERS[locale]) {
     if (pattern.test(text)) return why;
   }
   return null;

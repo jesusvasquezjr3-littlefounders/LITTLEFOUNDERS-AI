@@ -5706,3 +5706,133 @@ could disrupt an in-flight lesson plan built from the original value.
 Spawned as its own follow-up (`task_b249a68e`) with the design
 groundwork already captured rather than risking a same-round patch that
 trades one staleness bug for a different one.
+
+## Round 57: logged in as a real kid account and the Tutor could not be reached at all — a shared secret with an insecure default, and a close code nothing ever logged
+
+Per the standing mandate, this round used a genuine browser session — logged
+in as the seeded `kid@email.com` test account, not the Oracle-only
+`tutor:converse` harness — to use the product the way a real learner would.
+Clicking any Tutor offer produced "The tutor is resting. Try again soon."
+every time, with nothing in the browser console explaining why.
+
+**Root cause, found by minting a session token directly and connecting to
+Oracle's websocket by hand:** the handshake closed with `4001 session token
+bad_signature`. `backend/src/config.ts`'s `TUTOR_SESSION_SECRET` — the
+secret Core signs every Tutor session token with, which Oracle independently
+verifies against its own copy — had `.default('replace-me-with-a-64-char-
+random-string-0000')`, a value checked into this repository's own git
+history. `oracle/src/env.ts` requires the SAME shared secret with no
+default at all. With this machine's `backend/.env` genuinely missing the
+var (confirmed directly), Core silently signed every token with the public
+placeholder while Oracle verified against its own real secret — every
+single websocket handshake failed, silently, with no error at boot. This
+is a security control, not an availability one (§1.14 draws exactly this
+line for a different case): it must fail CLOSED, the same way Oracle's own
+copy of this field already does.
+
+**Fixed:** removed the default so `getConfig()` now throws at boot if the
+var is missing, matching Oracle's own posture for the identical field.
+Confirmed the fix itself works correctly and safely: after removing the
+default, the local backend process (still missing the var in `.env` at
+that exact moment) crashed immediately at boot — the intended, LOUD
+failure mode — and came back healthy the instant the real secret was
+added to `backend/.env` locally. `backend/.env.example`'s own comment
+already said this must be byte-identical to Oracle's copy; it's now also
+enforced in code, not just documented.
+
+**A second, compounding gap in the SAME incident:** `frontend/src/tutor/
+useTutorSocket.ts`'s `onclose` handler had a comment reading "the raw code
+stays in `message` — never shown, always logged" — and zero `console.*`
+calls anywhere in the entire file. This is exactly why diagnosing the
+original failure took a manual Node websocket connection instead of simply
+reading the browser console — the one piece of information that would
+have named the actual problem (`4001`, `session token bad_signature`) was
+being thrown away by the UI on every unclean close, for every learner,
+always. Fixed by adding the `console.error` call the comment already
+claimed existed.
+
+Proof: new `backend/src/__tests__/config.test.ts` — `getConfig()` throws
+when the var is missing, and never silently becomes the old placeholder
+even when a real value is set; confirmed to fail for the exact claimed
+reason pre-fix via `git stash`. New `frontend/src/tutor/__tests__
+/useTutorSocket.test.ts` — a minimal fake `WebSocket` proves an unclean
+close (4001) logs the code and reason, and a clean close (1000) logs
+nothing; confirmed to fail (`expect(console.error).toHaveBeenCalledWith
+(...)` — 0 calls) pre-fix via `git stash`.
+
+Verification: full backend suite green (42 files, 684 tests, zero
+regressions), full frontend suite green (127 files, 1462 tests, zero
+regressions), lint and type-check clean in both services. Re-verified
+live in the browser after the fix: the SAME account, the SAME offer,
+started a real Tutor session end to end — a genuine greeting, a
+real turn budget, a real lesson plan header — for the first time all
+session. This finding was only reachable through an actual browser
+session; nothing about it could have surfaced from `tutor:converse`,
+which never opens a real websocket at all.
+
+## Round 58: a single learner utterance in a different language could make the tutor abandon the session's own configured language, silently, for a real logged-in en-US kid account
+
+Continuing the SAME live browser session once the connection was fixed:
+played the mandate's persona, typed "que es un precio?" in Spanish to an
+en-US-locale account. Turn 1 correctly answered in English. Turn 2 — a
+reply to a bare "8", carrying no language cue of its own — switched
+ENTIRELY to Spanish ("Casi, Explorer. Piensa: el lápiz cuesta 5, tú
+tienes 3...") and stayed there until explicitly told "please explain in
+English." A struggling child — the exact persona this session tests
+as — would not think to say that; they would just be lost.
+
+**Root cause:** `buildContextMessage` states the session's language
+exactly once, early in the prompt ("Language: en-US. Answer entirely in
+this language"), and nothing ever checked it. Every OTHER prompt-
+adherence property this session has hardened (tier vocabulary, false
+praise, repeated sentences, missed whiteboards, unkept promises) has its
+own deterministic check wired into the repair-retry loop; language
+adherence had none. The Spanish-only `tutor:converse` harness could
+never have caught this — every one of its fixtures locks `locale:
+'es-MX'`, so this locale path had never been live-exercised at all
+before this session, by any prior round of testing.
+
+**Fixed:** a new `languageViolation()` check (`oracle/src/tutor/
+prompt.ts`), deliberately narrow rather than a full language detector —
+`¿`/`¡` (Spanish-exclusive orthography, zero false-positive risk) plus a
+short list of MULTI-WORD phrases per locale pair, chosen to have no
+plausible loanword collision in this product's own tutoring domain.
+Wired into `orchestrator.ts`'s repair loop exactly like `tierVocabulary
+Violation`: on attempt 0, a drift asks for the same idea again in the
+right language; if the retry ALSO drifts (or transport-fails after an
+attempt-0 drift), it joins `falsePraise`/`falseCorrection`/forbidden-
+vocabulary in falling back to the scripted line rather than being
+delivered — a turn in the wrong language gives a non-speaking child ZERO
+value, the same reasoning round 55 already applied to forbidden
+vocabulary.
+
+**Caught and corrected before shipping:** the first version of the
+marker list included the bare word "the" as an English signal. This
+codebase's OWN pre-existing test suite caught it immediately —
+`hardening.test.ts`'s canary payload `'PAYLOAD-THE-JUDGE-MUST-SEE'`
+matched `\bthe\b` case-insensitively, since a hyphen is a word boundary.
+Every marker is now a multi-word phrase specifically because a single
+common word is too easy to find inside an unrelated identifier or
+payload — the exact false-positive class this file's own `TIER_FORBIDDEN`
+header comment already warns about for its siblings.
+
+Proof: 6 new `prompt.test.ts` unit tests — the exact real sentence that
+surfaced this (Spanish delivered to en-US), English-into-es-MX,
+Portuguese-into-en-US, and three "never flags genuine `<locale>` prose,
+including a peso/real loanword" cases per locale. 3 new
+`orchestrator.test.ts` tests reproducing the live scenario end to end
+(drift triggers a same-language retry; a retry that also drifts falls
+back to scripted) using the ACTUAL sentences observed live. All
+confirmed to fail for the exact claimed reason pre-fix via `git stash`.
+
+Verification: full oracle suite green (26 files, 505 tests — 495
+existing + 10 new, zero regressions, including the `hardening.test.ts`
+regression caught and fixed before this was ever committed), lint and
+type-check clean, `verify:pedagogy` and `verify:tutor` both green. A
+third live browser reproduction was not possible in this session — the
+same test account correctly hit its own daily session cap (429, working
+exactly as designed) partway through re-verification — so the fix's
+proof rests on the git-stash-confirmed orchestrator test built from the
+real observed sentences, the same substitute-evidence standard this
+session has used for every prompt-wording fix whose live re-trigger is
+otherwise blocked. `oracle/AGENTS.md` item 53.

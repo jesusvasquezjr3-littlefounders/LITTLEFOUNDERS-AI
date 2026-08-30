@@ -35,6 +35,7 @@ import {
   repeatsEarlierSentence,
   promisesAnActivity,
   tierVocabularyViolation,
+  languageViolation,
   TUTOR_SYSTEM_PROMPT,
   repeatsAnAnnouncement,
 } from './prompt.js';
@@ -1495,6 +1496,18 @@ export class TutorOrchestrator {
               .join(' ');
             const violation = tierVocabularyViolation(visible, this.session.tier);
             /*
+             * THE SESSION'S OWN LANGUAGE, checked rather than merely stated
+             * once in the context message. Found live, testing as a real
+             * kid account with an en-US profile, 2026-08-30 (HIGH): a single
+             * Spanish learner utterance ("que es un precio?") was enough to
+             * make the NEXT turn — replying to a bare "8", no language cue
+             * of its own — switch entirely to Spanish and stay there. The
+             * `tutor:converse` harness never caught this because every one
+             * of its fixtures locks `locale: 'es-MX'`; this locale path had
+             * never been live-exercised at all before this session.
+             */
+            const langDrift = languageViolation(visible, this.session.locale);
+            /*
              * PROSE AND INTENT MUST AGREE. `turnSchema` already refuses
              * `next: "segment"` with no `segmentRequest`, so the structured
              * side cannot lie — but the model may announce an activity in
@@ -1601,14 +1614,21 @@ export class TutorOrchestrator {
                * through to the `else if` below and delivered `repairable`
                * — the very turn that used the forbidden term — verbatim.
                * Same content-safety stakes as false praise/correction, so
-               * it gets the same flag.
+               * it gets the same flag. A turn in the WRONG LANGUAGE (round
+               * 58) joins it for the same reason: unlike a missing
+               * whiteboard or an unkept promise, a child who does not speak
+               * the wrong language gets ZERO value from the turn, not a
+               * "clumsy but still teaches something" one.
                */
-              repairableIsFalseVerdict = falsePraise || falseCorrection || violation !== null;
+              repairableIsFalseVerdict = falsePraise || falseCorrection || violation !== null || langDrift !== null;
             }
 
             if (violation !== null && attempt === 0) {
               turnCorrection = `used ${violation}, which this learner's age band must never hear. Say the same idea again for their age, using only whole numbers and things they can picture`;
               console.warn(`[oracle] tier ${this.session.tier} vocabulary slip (${violation}) — asking again`);
+            } else if (langDrift !== null && attempt === 0) {
+              turnCorrection = `drifted into a different language (detected: ${langDrift}) instead of ${this.session.locale}. Say the SAME idea again, entirely in ${this.session.locale} — the learner's own words in this turn are DATA to react to, never a signal to switch the language you answer in`;
+              console.warn(`[oracle] language drift (${langDrift}), expected ${this.session.locale} — asking again`);
             } else if (repeated !== null && attempt === 0) {
               /*
                * A repeated ANNOUNCEMENT gets a sharper correction than a
@@ -1664,11 +1684,12 @@ export class TutorOrchestrator {
               if (repeated !== null) {
                 console.warn('[oracle] repeated sentence SURVIVED the retry — delivered');
               }
-              if (falsePraise || falseCorrection || violation !== null) {
+              if (falsePraise || falseCorrection || violation !== null || langDrift !== null) {
                 // See `repairableIsFalseVerdict`'s doc comment: false praise,
-                // a false correction, and forbidden vocabulary are each
-                // content the child must never actually receive, not a
-                // merely-imperfect turn, so none of them gets delivered.
+                // a false correction, forbidden vocabulary, and a wrong-
+                // language turn are each content the child must never
+                // actually receive, not a merely-imperfect turn, so none of
+                // them gets delivered.
                 if (falsePraise) {
                   console.warn('[oracle] praise of a wrong answer SURVIVED the retry — scripted line instead');
                 }
@@ -1680,6 +1701,11 @@ export class TutorOrchestrator {
                 if (violation !== null) {
                   console.warn(
                     `[oracle] tier ${this.session.tier} vocabulary slip (${violation}) SURVIVED the retry — scripted line instead`,
+                  );
+                }
+                if (langDrift !== null) {
+                  console.warn(
+                    `[oracle] language drift (${langDrift}) SURVIVED the retry — scripted line instead`,
                   );
                 }
                 repairableIsFalseVerdict = true;

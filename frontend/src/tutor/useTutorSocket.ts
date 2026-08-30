@@ -457,6 +457,18 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
       const clean = event.code === 1000 || event.code === 1005;
       setConnection((prev) => (prev === 'failed' ? 'failed' : 'closed'));
       if (!clean) {
+        /*
+         * THE COMMENT BELOW SAID "ALWAYS LOGGED" AND NOTHING EVER LOGGED IT.
+         * Found live, testing as a real logged-in kid account, 2026-08-30
+         * (MEDIUM): this whole file has zero `console.*` calls — confirmed
+         * by grep — so a failed handshake (e.g. a `TUTOR_SESSION_SECRET`
+         * mismatch between Core and Oracle, closing 4001 with reason
+         * "session token bad_signature") surfaced to the UI as the generic
+         * "the tutor is resting" line with NOTHING in the browser console to
+         * diagnose it from — the exact gap that made this specific incident
+         * slower to root-cause than it needed to be.
+         */
+        console.error(`[tutor] socket closed ${event.code}: ${event.reason || '(no reason given)'}`);
         setError((prev) =>
           prev ?? {
             code: closeCodeToReason(event.code),
