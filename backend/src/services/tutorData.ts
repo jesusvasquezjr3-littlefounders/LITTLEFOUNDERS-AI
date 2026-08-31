@@ -305,16 +305,54 @@ export async function listTutorSessions(userId: string, limit = 30): Promise<Tut
   );
 }
 
+/**
+ * `'closed'` — this call's own write was the one that landed.
+ * `'already-closed'` — the `ended_at=is.null` filter matched ZERO rows: some
+ * other close (almost always `finalizeParked`, racing a busy turn past
+ * `SESSION_RESUME_GRACE_MS`) already landed first, and this call's
+ * `closeReason`/`costUsd` were NOT persisted.
+ * `'failed'` — the HTTP call itself failed (network, parse, non-2xx).
+ */
+export type CloseTutorSessionOutcome = 'closed' | 'already-closed' | 'failed';
+
+/**
+ * Closes a session — but "closed" and "somebody already closed it" are not
+ * the same outcome, and `Prefer: return=minimal` used to make them
+ * indistinguishable: a 204 with an empty body comes back whether the
+ * `ended_at=is.null` filter matched the one row this call meant to close, or
+ * matched nothing because a previous call already had. `res !== null` was
+ * `true` either way, so the caller (the `/sessions/:id/close` route) reported
+ * success on a write that never happened.
+ *
+ * Found by adversarial review, round 98 (2026-08-31, MEDIUM,
+ * tutor-review-sweep-92): `oracle/src/ws/server.ts`'s `finish()` calls this
+ * unconditionally once a busy turn it was waiting on finally clears the
+ * floor, and never checked what came back. When `finalizeParked`'s own
+ * `SESSION_RESUME_GRACE_MS` timer wins the race — reachable because a busy
+ * turn's own retries and tier-3 generation chain can, on their own, already
+ * approach or exceed that window, with no farewell slowness involved at all
+ * (`farewell()` is a fully scripted turn with no model call) — the session is
+ * already recorded `learner_left` with whatever cost existed at that
+ * mid-turn moment by the time `finish()`'s own `completed` close arrives.
+ * That second write matched zero rows and was silently reported as a
+ * success: the more accurate close reason and the turn's true final cost
+ * were discarded with no trace anywhere. Exactly the §1.14 "failure
+ * collapsed into emptiness" shape.
+ *
+ * `Prefer: return=representation` is what makes the two cases visible: an
+ * empty array is a real, honest "matched nothing"; a one-row array is a real
+ * update. See `RUNBOOK.md` Round 98.
+ */
 export async function closeTutorSession(input: {
   sessionId: string;
   closeReason: string;
   turnCount: number;
   segmentCount: number;
   costUsd: number;
-}): Promise<boolean> {
-  const res = await serviceRest<unknown>(`/tutor_sessions?id=eq.${eu(input.sessionId)}&ended_at=is.null`, {
+}): Promise<CloseTutorSessionOutcome> {
+  const rows = await serviceRest<{ id: string }[]>(`/tutor_sessions?id=eq.${eu(input.sessionId)}&ended_at=is.null`, {
     method: 'PATCH',
-    headers: { Prefer: 'return=minimal' },
+    headers: { Prefer: 'return=representation' },
     body: JSON.stringify({
       ended_at: new Date().toISOString(),
       close_reason: input.closeReason,
@@ -323,7 +361,8 @@ export async function closeTutorSession(input: {
       cost_usd: input.costUsd,
     }),
   });
-  return res !== null;
+  if (rows === null) return 'failed';
+  return rows.length > 0 ? 'closed' : 'already-closed';
 }
 
 /**

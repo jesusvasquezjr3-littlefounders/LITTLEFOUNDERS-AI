@@ -9621,3 +9621,114 @@ No `frontend/AGENTS.md` item: this is locale-content correctness, not a
 new invariant — `AGENTS.md` §1.8 (i18n zero tolerance, 3-locale
 QUALITY parity) and §1.9 (no gender collected on a kid account) already
 covered this in full; the gap was in the copy, not in the rule.
+## Round 98: the loser of a session-close race reported its own defeat as a success, because a bare 2xx cannot tell "I closed it" from "somebody already had"
+
+**MEDIUM, FIXED — the one contested finding of adversarial review sweep
+tutor-review-sweep-92 (all three independent verifiers' votes read before
+confirming).** The finding's own first draft blamed a slow FAREWELL for
+this race, and that specific claim is wrong: `farewell()`
+(`orchestrator.ts`) calls `scriptedOutcome()` with `moderation: {source:
+'scripted'}` and no model call in it at all, so it adds no latency worth
+naming. The real mechanism, confirmed by reading the call chain rather
+than trusting the paraphrase, is the BUSY TURN ahead of the farewell: one
+learner turn can already chain `MODEL_TIMEOUT_MS` (20s) across up to two
+attempts, a tier-3 segment-generation chain (`requestSegment` →
+`generateSegment` → `verifyGeneratedSegment`, each independently capped),
+and moderation's own `RETRY_DEADLINE_MS`-gated retry clock — and under
+ordinary, non-contrived provider slowness those stack close enough to
+`SESSION_RESUME_GRACE_MS` (90s) that a ONE-turn conversation can outlast
+it before any farewell is ever reached, with no `end_session` involved at
+all.
+
+**The shape, once that turn is running behind a socket that has already
+dropped.** `parkSession` (`ws/server.ts`) stores the live orchestrator BY
+REFERENCE and arms a `SESSION_RESUME_GRACE_MS` timer. If the busy turn
+outlasts that timer, `finalizeParked` fires first: it closes the session
+`learner_left` with whatever cost existed at that mid-turn moment (its
+own doc comment already says cost "only increments when a synthesis
+promise actually settles" — this turn's own eventual cost is not in it)
+and deletes the park entry. The turn eventually resolves, defers into the
+farewell (round 90's own mechanism), and `finish()` — finding nothing
+left in `parkedSessions` for its own `takeParked` to cancel — called
+`closeTutorSession` unconditionally and never inspected what came back.
+Core's `ended_at=is.null` PATCH matched zero rows, `Prefer:
+return=minimal` made that indistinguishable from a real update at the
+HTTP layer (a 204 either way), and `closeTutorSession`'s `res !== null`
+was `true` for both — so `finish()` reported the session `completed`
+successfully while Core's own row stayed `learner_left` with the earlier,
+possibly-incomplete cost. A real close was silently discarded with no
+trace anywhere: the exact §1.14 "failure collapsed into emptiness" shape,
+on the one ledger CLAUDE.md §1.0 names by name.
+
+**The fix makes the two outcomes visible at the one place that can tell
+them apart: the PostgREST response itself.** `closeTutorSession`
+(`backend/src/services/tutorData.ts`) switches from `Prefer:
+return=minimal` to `Prefer: return=representation` and now returns a
+three-state `'closed' | 'already-closed' | 'failed'` instead of a bare
+boolean — an empty array is a real, honest "matched nothing"; a one-row
+array is a real update. The `/sessions/:id/close` route
+(`backend/src/routes/tutor.ts`) keeps `closed: boolean` exactly as it was
+(still true whenever the row ends up closed by anyone, which is what the
+memory-digest write already keyed off) and adds `alreadyClosed: boolean`
+as a new, purely additive signal. `oracle/src/core/client.ts`'s
+`closeSession` mirrors the three states (`alreadyClosed` is read with
+`.optional()` so an Oracle deployed ahead of Core degrades to the old
+`'closed'`-only behavior rather than misreading a missing field as a
+race). `finish()` (`ws/server.ts`) now reads the outcome: on
+`'already-closed'` it logs a LOUD, named warning — session id, the
+close reason that was lost, and this turn's true final cost, so a
+material loss can be reconciled by hand — instead of proceeding in
+silence; on `'failed'` (the HTTP call itself failing) it now also warns,
+where before that was silent too.
+
+**Two things deliberately left undone, named rather than silently
+skipped (§1.12.7).** Cost reconciliation is LOGGING-ONLY this round, not
+automatic: computing a correction that does not double-count
+`finalizeParked`'s own snapshot needs either a fresh authoritative read of
+the row Core already holds (a new internal endpoint) or a new
+migration-backed atomic op, and this ledger's own header comment already
+calls it an ESTIMATE, not an invoice — bigger than this round's scope for
+a value nobody bills against. And `finish()` still fires
+`runPostSessionReview` unconditionally even on `'already-closed'`, which
+means a REAL, avoidable second paid model call: `finalizeParked` already
+ran that review once, on a mid-turn snapshot missing exactly the reply
+this function is closing out, so suppressing the second (more complete)
+run would leave only the stale one as this session's lasting memory —
+worse than paying twice. Choosing between "skip and keep the wrong one"
+and "run both and pay for both" is a sharper, separate question than this
+round's ledger-visibility fix and is left for a follow-up round.
+
+**Verified, not asserted.** A new oracle test
+(`live-session.test.ts`, next to round 90's own two) drives the CORRECTED
+reachability mechanism directly: a learner turn whose own fake-model delay
+(`slowTurnDelayMs`, a new per-test knob) is set to 3.5s — comfortably past
+this suite's 1.5s `SESSION_RESUME_GRACE_MS` — with `end_session` sent and
+the socket torn down immediately behind it, exactly as the real frontend
+does. No part of the test's timing depends on the farewell. The fake
+Core's own `/close` handler was corrected in the same commit to actually
+emulate `ended_at IS NULL` (only the FIRST call is journaled; every later
+one reports `alreadyClosed`, matching real Postgres) — it used to accept
+and journal every call unconditionally, which made the race
+unobservable even by a test that reproduced it. Confirmed to fail
+pre-fix for the exact claimed reason (`git stash` on the four source
+files, test re-run: `journal.closes` still recorded the correct single
+`learner_left` row — proving the fixture change alone was not what made
+this pass — but no warning was ever logged, because pre-fix `closeSession`
+discarded `alreadyClosed` entirely), passes post-fix. Two new backend
+route tests (`tutor.test.ts`) assert `alreadyClosed: true` when the fake
+Core's `ended_at=is.null` filter matches a row that already carries one,
+and `alreadyClosed: false` for an ordinary first close.
+
+Full oracle suite green: 27 files, 635 tests (up from 634 — one new),
+re-run twice under normal load after an unrelated 29-test cascade of
+`RATE_LIMITED` timeouts on a heavily-loaded machine turned out to be
+transient system noise, not a regression — confirmed by re-running the
+SAME unmodified pre-fix code under the same load and reproducing the
+identical cascade, then re-running the fixed code cleanly at normal
+timing (43s) twice in a row. Full backend suite green: 42 files, 713
+tests (up from 711 — two new). `npm run type-check` (including
+`tsconfig.scripts.json` and `tsconfig.test.json` in both services),
+`npm run lint`, and `npm run build` all clean in both services. `npm run
+verify:tutor` and `npm run verify:pedagogy` (oracle) both green. Root
+`npm run docs:check`, `npm run secrets:check`, `npm run provider:check`
+and `npm run tools:test` all green.

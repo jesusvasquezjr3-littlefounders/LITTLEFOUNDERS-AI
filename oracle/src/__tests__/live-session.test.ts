@@ -113,6 +113,18 @@ let segmentFailureShape: 'empty' | 'needs_generation' = 'empty';
  * session with no plan, which is the shape they were written against.
  */
 let servedSessionPlan: unknown[] | null = null;
+/**
+ * How long the fake model sits on a `cuentamelotodomuydespacio` completion.
+ * 1.5s by default — long enough to prove a turn is genuinely still busy, but
+ * short enough that it resolves comfortably inside this suite's
+ * `SESSION_RESUME_GRACE_MS` (also 1.5s) when a park races it. Round 98's own
+ * test raises this well past that window, on purpose: the reachability
+ * mechanism it proves is a busy turn's OWN duration outlasting the grace
+ * window, with no farewell involved at all — `farewell()` is fully scripted
+ * (see its own doc comment in `orchestrator.ts`) and adds no model latency,
+ * so making IT slow would test the wrong thing.
+ */
+let slowTurnDelayMs = 1_500;
 
 function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve) => {
@@ -136,8 +148,18 @@ function startFakeCore(): Promise<Server> {
       const body = req.method === 'POST' ? await readBody(req) : '';
 
       if (url.includes(`/tutor/internal/sessions/${SESSION_ID}/close`)) {
-        journal.closes.push(JSON.parse(body) as CoreJournal['closes'][number]);
-        return json(res, { closed: true });
+        /*
+         * Real PostgREST's `ended_at=is.null` filter (`closeTutorSession`,
+         * backend/src/services/tutorData.ts) means the FIRST close wins and
+         * every later one matches zero rows — so this fake only ever
+         * JOURNALS the first call, exactly as the real row would only ever
+         * reflect the first write. `alreadyClosed` is what round 98's fix
+         * reads back to tell a real update apart from a no-op that a bare
+         * 2xx cannot distinguish (see `closeTutorSession`'s own comment).
+         */
+        const alreadyClosed = journal.closes.length > 0;
+        if (!alreadyClosed) journal.closes.push(JSON.parse(body) as CoreJournal['closes'][number]);
+        return json(res, { closed: true, alreadyClosed });
       }
       if (url.includes(`/tutor/internal/sessions/${SESSION_ID}`)) {
         return json(res, {
@@ -246,7 +268,7 @@ function startFakeModel(): Promise<Server> {
       }
       // A deliberately slow completion, so a test can interrupt mid-thought.
       if (!isJudge && body.includes('cuentamelotodomuydespacio')) {
-        await new Promise((r) => setTimeout(r, 1_500));
+        await new Promise((r) => setTimeout(r, slowTurnDelayMs));
       }
       // A learner asking to practise gets a turn that requests an activity.
       const wantsActivity = !isJudge && body.includes('quieropracticarya');
@@ -470,6 +492,7 @@ afterEach(async () => {
   servedSessionPlan = null;
   segmentFailuresLeft = 0;
   segmentFailureShape = 'empty';
+  slowTurnDelayMs = 1_500;
   vi.restoreAllMocks();
   const { nonceLedger } = await import('../session/token.js');
   nonceLedger.clear();
@@ -1319,6 +1342,92 @@ describe('the turn pipeline is split, acknowledged, and interruptible', () => {
     expect(journal.closes.at(-1)).toMatchObject({ closeReason: 'completed' });
     expect(journal.closes).toHaveLength(1);
   });
+
+  /*
+   * THE REVERSE ORDERING of the race the test above closes — round 98
+   * (2026-08-31, MEDIUM, adversarial review sweep tutor-review-sweep-92).
+   *
+   * That test's own comment already explains the shape: the learner's real
+   * socket tears down immediately behind `end_session`, `live.closing` is
+   * still false when the `close` handler runs, and `parkSession` arms a
+   * `SESSION_RESUME_GRACE_MS` timer exactly as it would an honest dropped
+   * connection. Above, the busy turn ahead of the deferred farewell resolves
+   * WELL inside that window, so `finish()`'s own `takeParked` cancels the
+   * dangling park before it ever fires.
+   *
+   * The original finding blamed a slow FAREWELL for the reverse case — wrong:
+   * `farewell()` calls a fully scripted outcome (`orchestrator.ts`, see its
+   * own doc comment) with no model call at all, so it adds no latency worth
+   * naming. The real mechanism, confirmed by reading the actual call chain,
+   * is that the BUSY TURN ahead of the farewell can, on its own — via
+   * stacked `MODEL_TIMEOUT_MS` retries, a tier-3 segment-generation chain and
+   * moderation's own retry deadline — already plausibly approach or exceed
+   * `SESSION_RESUME_GRACE_MS` before the farewell is ever reached. This test
+   * reproduces exactly that: `slowTurnDelayMs` outlasts the grace window on
+   * its own, with the farewell playing no part in the timing at all.
+   *
+   * When `finalizeParked`'s timer wins, it closes the session as
+   * `learner_left` with whatever cost existed at THAT moment (its own doc
+   * comment: cost "only increments when a synthesis promise actually
+   * settles" — this turn's real cost is not in it yet) and deletes the park
+   * entry. The slow turn eventually resolves, defers into the farewell, and
+   * `finish()` — finding nothing left in `parkedSessions` for `takeParked`
+   * to cancel — used to call `closeSession` unconditionally and never look
+   * at what came back: `closeTutorSession`'s `ended_at=is.null` PATCH
+   * matched zero rows, `Prefer: return=minimal` made that indistinguishable
+   * from a real update, and the caller reported success anyway — a real,
+   * unlogged close (a more accurate `completed` reason, this turn's true
+   * final cost) silently discarded. Exactly the §1.14 "failure collapsed
+   * into emptiness" shape.
+   */
+  it("does not silently report success when finalizeParked's grace-window timer wins the close race against a busy turn that outlasts it on its own", async () => {
+    freshJournal();
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    slowTurnDelayMs = 3_500;
+    try {
+      const { socket, closed } = open(await socketUrl());
+      await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+      // This turn's OWN processing — no farewell involved yet — will take
+      // 3.5s, comfortably longer than this suite's 1.5s
+      // `SESSION_RESUME_GRACE_MS`. That gap alone is the whole mechanism.
+      socket.send(JSON.stringify({ type: 'learner_text', text: 'cuentamelotodomuydespacio' }));
+      await new Promise((r) => setTimeout(r, 100));
+      // A deliberate leave, deferred by round 90's fix rather than refused —
+      // but it is the SLOW TURN ahead of it, not this farewell, that blows
+      // through the grace window.
+      socket.send(JSON.stringify({ type: 'end_session' }));
+      // Torn down immediately, exactly as the real frontend does. This arms
+      // `finalizeParked`'s grace-window timer starting NOW, at ~100ms into a
+      // turn that will not resolve for another 3.4s.
+      socket.close();
+      await closed();
+
+      // Long enough for finalizeParked's 1.5s timer to fire FIRST (closing
+      // the session as `learner_left` with whatever cost existed at that
+      // moment), and then for the slow turn to finally resolve, defer into
+      // the farewell, and reach finish()'s own close attempt against a
+      // session Core already considers closed.
+      await new Promise((r) => setTimeout(r, 5_000));
+
+      // The database's real, permanent state — first close wins — is
+      // `learner_left`, exactly once. finish()'s later attempt must not
+      // have duplicated it or silently overwritten it.
+      expect(journal.closes).toHaveLength(1);
+      expect(journal.closes[0]).toMatchObject({ closeReason: 'learner_left' });
+
+      // And finish()'s own losing attempt must not be a SILENT no-op: it is
+      // told by Core that its write matched zero rows, and must say so
+      // loudly, naming the session, rather than reporting completion.
+      const warned = warnSpy.mock.calls.some(
+        ([message]) =>
+          typeof message === 'string' && message.includes(SESSION_ID) && message.includes('already closed'),
+      );
+      expect(warned).toBe(true);
+    } finally {
+      warnSpy.mockRestore();
+    }
+  }, 10_000);
 
   it('holds the streamed-audio doors to the same gates as the whole clip', async () => {
     freshJournal();

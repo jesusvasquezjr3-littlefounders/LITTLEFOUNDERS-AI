@@ -202,7 +202,26 @@ function stub(opts: StubOpts = {}) {
         return Promise.resolve(jsonResponse(200, opts.segments ?? []));
       }
       if (url.includes('/rest/v1/tutor_sessions')) {
-        if (method === 'PATCH') return Promise.resolve(new Response(null, { status: 204 }));
+        if (method === 'PATCH') {
+          /*
+           * `closeTutorSession` (round 98) reads back `Prefer:
+           * return=representation` to tell a real update apart from a
+           * zero-row no-op — a bare 204 (what this used to always answer)
+           * cannot express that distinction at all. The `ended_at=is.null`
+           * filter is the one that can actually miss: it matches nothing
+           * once `opts.session` already carries a real `ended_at`, exactly
+           * as it would for a real row `finalizeParked` already closed.
+           * Every OTHER PATCH here (e.g. `setSessionSummary`, no such
+           * filter) always "matches" by id alone.
+           */
+          if (url.includes('ended_at=is.null')) {
+            const alreadyEnded = (opts.session ?? [SESSION_ROW]).some(
+              (s) => (s as { ended_at?: string | null }).ended_at != null,
+            );
+            return Promise.resolve(jsonResponse(200, alreadyEnded ? [] : [{ id: SESSION }]));
+          }
+          return Promise.resolve(jsonResponse(200, [{ id: SESSION }]));
+        }
         if (url.includes('?id=eq.')) return Promise.resolve(jsonResponse(200, opts.session ?? [SESSION_ROW]));
         return Promise.resolve(jsonResponse(200, opts.sessions ?? []));
       }
@@ -1506,6 +1525,49 @@ describe('the internal surface', () => {
       'topic',
       'topicId',
     ]);
+  });
+
+  /*
+   * Found by adversarial review, round 98 (2026-08-31, MEDIUM,
+   * tutor-review-sweep-92): `closed: boolean` used to be `true` for BOTH a
+   * real update AND a zero-row no-op, because `Prefer: return=minimal`
+   * comes back 204/empty either way and `res !== null` cannot tell them
+   * apart. `ended_at=is.null` matching zero rows means some OTHER close
+   * already landed — reachable in production when `oracle/src/ws/server.ts`'s
+   * `finalizeParked` wins a race against a busy turn's own `finish()` (see
+   * `RUNBOOK.md` Round 98) — and Oracle needs to know which of those
+   * happened, not just whether the HTTP call itself succeeded.
+   */
+  it('reports alreadyClosed, not just closed, when the ended_at=is.null filter matches zero rows', async () => {
+    stub({
+      // A row somebody else already closed — exactly what `finalizeParked`
+      // leaves behind when it wins the race this round fixes.
+      session: [{ ...SESSION_ROW, ended_at: '2026-08-21T10:00:05Z', close_reason: 'learner_left' }],
+    });
+
+    const response = await request(createApp())
+      .post(`/api/v1/tutor/internal/sessions/${SESSION}/close`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ sessionId: SESSION, closeReason: 'completed', turnCount: 8, segmentCount: 1, costUsd: 0.02 });
+
+    expect(response.status).toBe(200);
+    // `closed` stays true (an HTTP-level success, matching this route's
+    // long-standing behavior of still writing the memory digest whenever the
+    // row ends up closed, whoever closed it) — `alreadyClosed` is the NEW
+    // signal that this specific call's write did not apply.
+    expect(response.body.data).toEqual({ closed: true, alreadyClosed: true });
+  });
+
+  it('reports alreadyClosed:false for an ordinary first close, whose write really applies', async () => {
+    stub({ session: [SESSION_ROW] }); // ended_at: null — nobody has closed it yet.
+
+    const response = await request(createApp())
+      .post(`/api/v1/tutor/internal/sessions/${SESSION}/close`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ sessionId: SESSION, closeReason: 'completed', turnCount: 3, segmentCount: 0, costUsd: 0.005 });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual({ closed: true, alreadyClosed: false });
   });
 
   it('hands Oracle the previous sessions as digests, shaped for the sealed context', async () => {

@@ -275,16 +275,36 @@ export interface CloseSessionInput {
   costUsd: number;
 }
 
-export async function closeSession(input: CloseSessionInput): Promise<boolean> {
+/**
+ * `'closed'` — this call's `closeReason`/`costUsd` are the session's real,
+ * permanent record. `'already-closed'` — Core's `ended_at=is.null` filter
+ * matched zero rows: some other close (almost always `finalizeParked`, whose
+ * `SESSION_RESUME_GRACE_MS` timer won a race a busy turn made reachable —
+ * see `finish()`'s own comment) already landed, and what this call sent was
+ * NOT persisted. `'failed'` — the HTTP call itself failed.
+ *
+ * Found by adversarial review, round 98 (2026-08-31, MEDIUM): this used to
+ * return a bare `boolean`, `true` for BOTH a real update and a zero-row
+ * no-op alike (Core's own `Prefer: return=minimal` made the two
+ * indistinguishable at the HTTP layer). `finish()` awaited this and never
+ * even read the result, so a lost race reported success with no trace
+ * anywhere. See `RUNBOOK.md` Round 98.
+ */
+export type CloseSessionOutcome = 'closed' | 'already-closed' | 'failed';
+
+export async function closeSession(input: CloseSessionInput): Promise<CloseSessionOutcome> {
   try {
     const body = await coreFetch(`/tutor/internal/sessions/${encodeURIComponent(input.sessionId)}/close`, {
       method: 'POST',
       body: JSON.stringify(input),
     });
-    const parsed = Envelope(z.object({ closed: z.boolean() })).safeParse(body);
-    return parsed.success && parsed.data.data?.closed === true;
+    const parsed = Envelope(
+      z.object({ closed: z.boolean(), alreadyClosed: z.boolean().optional() }),
+    ).safeParse(body);
+    if (!parsed.success || parsed.data.data?.closed !== true) return 'failed';
+    return parsed.data.data.alreadyClosed === true ? 'already-closed' : 'closed';
   } catch {
-    return false;
+    return 'failed';
   }
 }
 
