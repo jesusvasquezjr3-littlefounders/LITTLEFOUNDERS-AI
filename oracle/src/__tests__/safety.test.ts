@@ -339,4 +339,36 @@ describe('a refusal must name a harm', () => {
     expect(verdict.allowed).toBe(false);
     expect(verdict.allowed === false && verdict.reason).toBe('moderator_unavailable');
   });
+
+  /*
+   * Found by adversarial review, round 66 (2026-08-30, CRITICAL). A judge
+   * that correctly identified real harm and named its own category with any
+   * formatting deviation from the exact lowercase-snake-case token — a
+   * leading/trailing space, Title Case, no separator at all — fell into the
+   * "refused without a recognised harm category" branch above and was
+   * silently converted to `{ allowed: true }`, bypassing `requireModelPass`
+   * for a minor. Reproduced against the real code for every variant below
+   * before the fix; each one pins a formatting deviation this codebase's own
+   * model provider is plausibly likely to produce, not a contrived string.
+   */
+  it.each([
+    ' self_harm',
+    'self_harm ',
+    'Self_harm',
+    'Self_Harm',
+    'SELF_HARM',
+    'self harm',
+    'self-harm',
+    'Sexual',
+    'dangerous instructions',
+  ])('still REFUSES real harm even when the judge names the category as %j', async (category) => {
+    judgeReturns({ safe: false, category, reason: 'graphic self-harm description' });
+    const verdict = await moderateTutorOutput(TEXT);
+    expect(verdict.allowed).toBe(false);
+  });
+
+  it('still ALLOWS a genuinely off-vocabulary category after normalizing — the fix must not over-correct', async () => {
+    judgeReturns({ safe: false, category: 'pedagogically weak', reason: 'confusing example' });
+    expect((await moderateTutorOutput(TEXT)).allowed).toBe(true);
+  });
 });

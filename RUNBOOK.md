@@ -6480,3 +6480,81 @@ touches this change directly, run per the standard gate checklist). Root
 throwaway reproduction script used to characterize the defect (mirroring
 `scripts/converse.ts`'s own pattern, never committed) was deleted before
 this round closed.
+
+## Round 66: a judge that correctly caught real harm was silently overruled by an exact-string typo in its OWN category name
+
+A background adversarial review targeted content moderation's own
+FAILURE modes — not what it correctly blocks, but what happens when
+the mechanism itself degrades, times out, or errors — the most
+safety-critical surface reviewed by this campaign so far. One
+CRITICAL finding, fixed immediately; everything else about the
+fail-closed posture (retry/deadline boundary logic, `requireModelPass`
+enforcement, malformed-HTTP-body handling, cross-call-site consistency
+across all four callers) confirmed sound.
+
+**CRITICAL, FIXED — a judge that correctly identified real harm was
+silently converted to `{ allowed: true }` if its own `category` string
+didn't byte-for-byte match the closed vocabulary.**
+`safety/moderation.ts`'s `modelModeration` read `parsed.category`
+verbatim from the judge's JSON — no trim, no case-fold, no separator
+normalization — before an exact-string `Array.includes` check against
+`HARM_CATEGORIES` (`sexual`, `violence`, `self_harm`, `hate`,
+`dangerous_instructions`, `personal_information`, `secrecy`,
+`contact_details`, `off_platform`). A category that failed this check
+fell into the branch built for a DIFFERENT, deliberate case — "the
+judge refused for a teaching reason, not a safety one, so allow it
+through" — collapsing that intentional path with an unintentional one:
+"the judge found REAL harm but formatted the token differently."
+
+Reproduced directly against the real code: stubbing the judge to
+return `{"safe": false, "category": "<variant>", "reason": "graphic
+self-harm description"}` for `requireModelPass: true` (a minor
+session), every one of `" self_harm"`, `"self_harm "`, `"Self_harm"`,
+`"Self_Harm"`, `"SELF_HARM"`, `"self harm"`, `"self-harm"`, `"Sexual"`
+and `"dangerous instructions"` flipped the verdict from refused to
+allowed — for a judge that had already, correctly, named the harm.
+Five of the nine categories are multi-word compound terms — exactly
+the shape free-text generation tends to render with a space or Title
+Case instead of a literal snake_case token, and this exact model
+family already has a documented history in this same file (rounds
+covering the `{}`/wrong-field-name shape fixes) of not matching a
+requested JSON shape precisely. The bug lives inside the one shared
+`modelModeration()` function, so it reached all four call sites
+equally — the live spoken-turn pipeline, tier-3 generated segment
+content, the permanently-persisted post-session memory notes
+(`requireModelPass: true` unconditionally there), and placement-intake
+reflections. Not a "one call site weaker than its siblings" shape this
+campaign has repeatedly found elsewhere — a single defect with no
+protected caller at all.
+
+Fixed by normalizing the category (trim, lowercase, collapse
+spaces/hyphens to underscore) before the membership check, matching
+exactly how a genuinely off-vocabulary category (the intended
+"pedagogical objection, not a safety one" case) still correctly falls
+through unchanged — verified by a dedicated regression test asserting
+`category: 'pedagogically weak'` still allows through post-fix, so the
+fix closes the gap without weakening the intentional escape hatch.
+
+Proof: 10 new `safety.test.ts` tests (9 parametrized on the exact
+formatting variants reproduced above, 1 confirming the fix does not
+over-correct a genuinely unrecognized category) — all confirmed to
+fail for the exact claimed reason pre-fix via `git stash` (`allowed:
+true` instead of `false`), all pass post-fix. Full oracle suite green
+(26 files, 539 tests — 529 existing + 10 new, zero regressions), lint
+and type-check clean, `verify:tutor` green. Root
+`docs:check`/`secrets:check` clean. `oracle/AGENTS.md` item 57.
+
+**Also confirmed sound by the same review:** the retry/deadline
+boundary logic correctly skips a retry the instant a live deadline
+check finds it already past, with no stale-verdict-delivered-late
+path; `requireModelPass` is unreachable-past a genuine `{safe: true}`
+verdict on every other branch (every throw and every no-verdict path
+routes through `moderator_unavailable` first — this finding bypassed
+that gate from a different angle, not by breaking it); a malformed
+HTTP body (a non-JSON 200 response) fails closed for a minor and falls
+back to the deterministic-only pass for an adult, matching documented
+policy; all four call sites scope `requireModelPass` correctly to who
+is actually listening and uniformly treat a rejected or `null` verdict
+as "emit nothing," never as "deliver the unmoderated text anyway";
+timeout wiring on the judge's own fetch (round 24) is intact and
+exercised by the existing `timeout-cancellation.test.ts`.

@@ -1546,6 +1546,36 @@ everything passes the blocked half perfectly and destroys the product.
    `orchestrator.test.ts` end-to-end tests; all confirmed to fail for the
    exact claimed reason pre-fix via `git stash`. See `RUNBOOK.md` Round 65.
 
+57. **A judge that correctly identified real harm was silently overruled by
+   an exact-string typo in its OWN category name.** Found by adversarial
+   review, round 66, 2026-08-30 (CRITICAL) — the most safety-critical gap
+   this campaign has found. `safety/moderation.ts`'s `modelModeration`
+   checked `parsed.category` against the closed `HARM_CATEGORIES`
+   vocabulary with an untouched exact-string `includes` — no trim, no
+   case-fold, no separator normalization. A category that missed the exact
+   match fell into the branch built for a DELIBERATELY different case ("the
+   judge objected on teaching grounds, not safety — allow it"), silently
+   collapsing a genuine safety refusal into the same bucket whenever the
+   judge spelled its own category with a stray space, Title Case, or a
+   hyphen instead of an underscore. Reproduced directly: `" self_harm"`,
+   `"Self_Harm"`, `"SELF_HARM"`, `"self harm"`, `"self-harm"`, `"Sexual"`
+   and `"dangerous instructions"` all flipped a judge verdict that had
+   already, correctly, named real harm from refused to `{ allowed: true }`
+   — for a minor, with `requireModelPass: true` in effect. The bug lives in
+   the ONE shared function every call site uses, so it reached all four
+   equally (the live turn pipeline, tier-3 generation, the permanently-
+   persisted post-session memory write, and placement intake) — not the
+   usual "one caller weaker than its siblings" shape, a single defect with
+   no protected caller at all. Fixed by normalizing the category (trim,
+   lowercase, spaces/hyphens to underscore) before the membership check,
+   with a dedicated test confirming a genuinely off-vocabulary category
+   still correctly falls through afterward — the fix closes the gap
+   without touching the intentional escape hatch it sits next to. Proven
+   with 10 new `safety.test.ts` tests (9 parametrized on the exact
+   formatting variants reproduced live, 1 anti-over-correction guard), all
+   confirmed to fail for the exact claimed reason pre-fix via `git stash`.
+   See `RUNBOOK.md` Round 66.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:

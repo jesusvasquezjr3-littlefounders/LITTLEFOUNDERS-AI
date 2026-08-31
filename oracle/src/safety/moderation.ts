@@ -285,7 +285,32 @@ async function modelModeration(input: ModerationInput): Promise<ModerationVerdic
   if (parsed.safe === true) return { allowed: true };
 
   const detail = typeof parsed.reason === 'string' ? parsed.reason.slice(0, 200) : 'judge marked unsafe';
-  const category = typeof parsed.category === 'string' ? parsed.category : '';
+  const rawCategory = typeof parsed.category === 'string' ? parsed.category : '';
+  /*
+   * NORMALIZED BEFORE THE MEMBERSHIP CHECK (round 66, 2026-08-30, CRITICAL).
+   * This exact-string `includes` used to run on `parsed.category` untouched.
+   * Reproduced live: a judge that correctly identified real harm — "graphic
+   * self-harm description" — and named its own category as `" self_harm"`,
+   * `"Self_Harm"`, `"SELF_HARM"`, or `"self harm"` (space instead of the
+   * literal underscore) all missed the exact-match check and fell into the
+   * branch below, silently becoming `{ allowed: true }` — bypassing
+   * `requireModelPass` for a minor, for content the judge itself had already
+   * flagged as unsafe. This is the SAME shape as the `{}`/no-`safe`-field
+   * fix already documented above (a malformed response must fail closed,
+   * not fall through to "no opinion"), one field deeper: it hit the harm
+   * CATEGORY rather than the JSON structure. Three of the nine categories
+   * are multi-word compound terms (`self_harm`, `dangerous_instructions`,
+   * `personal_information`, `contact_details`, `off_platform`) — exactly
+   * the shape free-text generation renders with a space or Title Case
+   * instead of the literal snake_case token, and this model family already
+   * has a documented history in this file of not matching the requested
+   * JSON shape precisely. Normalizing case, surrounding whitespace, and
+   * space/hyphen-vs-underscore before the check closes the gap without
+   * weakening it: a category that is genuinely off-vocabulary (the
+   * intended "quality objection, not a safety one" case immediately below)
+   * still falls through exactly as before.
+   */
+  const category = rawCategory.trim().toLowerCase().replace(/[\s-]+/g, '_');
   if (!(HARM_CATEGORIES as readonly string[]).includes(category)) {
     /*
      * A refusal that names no recognised harm is not a safety refusal. Allowed,
@@ -293,7 +318,7 @@ async function modelModeration(input: ModerationInput): Promise<ModerationVerdic
      * it is worth knowing how often this happens, but it must not cost a child
      * their answer.
      */
-    console.warn(`[oracle] judge refused without a harm category (${category || 'none'}): ${detail}`);
+    console.warn(`[oracle] judge refused without a harm category (${rawCategory || 'none'}): ${detail}`);
     return { allowed: true };
   }
   return { allowed: false, reason: 'unsafe_content', detail: `${category}: ${detail}` };
