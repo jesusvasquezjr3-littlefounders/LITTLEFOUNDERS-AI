@@ -10211,3 +10211,128 @@ were expected to be no-ops and were.
 result type that only has room for one failure state will eventually
 carry two, and the second one arrives as a silent behavioral bug, not a
 type error).
+## Round 103: the same pause budget for a child meeting a skill for the first time and one who has answered it a dozen times — found by adversarial review sweep tutor-review-sweep-101 (voice-audio-quality dimension), MEDIUM, closed 2026-08-31
+
+**MEDIUM, FIXED.** `controller.ts`'s `LISTEN_SILENCE_MS` — how much
+silence, after the learner has actually spoken, means their turn is over
+(the blueprint's §6.2 turn policy) — is a fixed lookup keyed ONLY by
+pedagogical strategy: 900ms for FLUENCY up to 3,500ms for SOCRATIC/
+ELABORATE, with no axis for the LEARNER at all. A genuine speech-timing
+difference — a stutter block, real processing delay, a child who needs a
+beat before answering — produces silence that is, at the exact instant the
+threshold is crossed, indistinguishable from "done talking." This product
+explicitly serves learners for whom that difference is real rather than a
+rare edge case, and the table gave every one of them the identical budget
+a fluent, familiar learner gets.
+
+**Investigated and rejected: a grace window inside the turn detector's own
+timer** (`frontend/src/tutor/turnDetector.ts`, the actual client-side
+mechanism that ends a turn — `createTurnDetector`'s `observe()` closes a
+turn the instant accumulated silence reaches `policy.silenceMs` after real
+speech; `oracle/`'s table only supplies that number over the wire). The
+task's own suggested mechanism — "if the child has been mid-utterance
+(partial transcript already received) when silence starts, extend the
+window once" — does not exist to build on: NO interim or partial transcript
+is produced anywhere in this pipeline. Audio is transcribed exactly once,
+on COMMIT (`oracle/AGENTS.md` §2.7 — the streamed `learner_audio_begin`/
+`_chunk` frames claim nothing; only `learner_audio_commit` "claims,
+transcribes and pays"), and that commit is triggered BY the client's own
+amplitude-based turn detector deciding the turn already ended. By the time
+any transcript could exist, the cutoff this fix needs to prevent has
+already happened. Confirmed by reading `handleAudioClip`/`transcribe()` in
+`ws/server.ts` and the whole of `voice/` end to end — there is no earlier
+hook to extend from.
+
+Nor is an UNCONDITIONAL grace inside the detector's own timer viable, once
+built: `observe()` has exactly one comparison that ends a turn
+(`speechMs >= minSpeechMs && silenceMs >= policy.silenceMs`), and it cannot
+tell a mid-answer stutter from a learner who has genuinely finished at the
+exact moment that threshold is reached — extending it would have to extend
+EVERY silence run by the same amount, including one that really is over.
+Proven concretely against `frontend/src/tutor/__tests__/turnDetector.test.ts`'s
+own existing fixtures: its `'ends after the silence budget once they have
+actually spoken'` case (`silenceMs: 2_000`, 2.1s of quiet) and its `'ends
+only after the pause that follows the WHOLE utterance'` case both assert a
+learner who has genuinely stopped ends their turn at the CURRENT,
+untouched threshold — a flat additive grace would have pushed both from
+`'ended'` to `'speaking'`, silently keeping the microphone open on a
+learner who was done. That is the opposite of §1.14's "cost of waiting too
+long is one awkward beat" tradeoff once the wait stops being bounded to a
+population that actually needs it.
+
+**The fix instead adds the missing axis where the table itself lives.**
+`listenSilenceMsFor(strategy, opportunitiesOnKc)` extends
+`LISTEN_SILENCE_MS[strategy]` by a fixed 40% (`NEW_TO_SKILL_SILENCE_GRACE`,
+a fraction of the strategy's OWN budget, not a second hand-authored table —
+`/AGENTS.md` item 32's derive-don't-duplicate lesson) whenever the learner
+has fewer than `NEW_TO_SKILL_OPPORTUNITIES` (2) EVER-assessed opportunities
+on the active knowledge component. "Ever" is load-bearing: `opportunities`
+is seeded in the constructor from Core's persisted `kcStates.attempts` —
+the learner's whole history, not this session's — so a learner returning
+to a partially-learned skill on day two is not treated as new just because
+the process restarted, and a learner who has genuinely never seen a
+knowledge component (including its very first turn, `entry_opened`, before
+any grading has happened) gets the extension from turn one. First exposure
+is exactly when working memory is doing the most and the tutor is LEAST
+entitled to read a pause as "done"; a learner three or more opportunities
+in gets the byte-identical original number, so nothing about this changes
+for anyone the finding was never about.
+
+This needed zero new plumbing and zero frontend changes: `opportunities`
+was already tracked (the BKT mirror's own "how much have we seen of them"
+counter, `/AGENTS.md`'s own doc comment on the field), and the frontend
+already accepts whatever `policy.listenSilenceMs` the wire sends with only
+a MIN floor (round 38) and no MAX cap — a larger number for a first-
+exposure learner flows through unchanged.
+
+**Proof, TDD, in `oracle/src/__tests__/controller.test.ts`.** A `wouldEndTurn`
+helper reproduces — without a cross-package import, since `frontend/` and
+`oracle/` are separate npm packages (`/AGENTS.md` §1.2) — the ONE
+comparison `createTurnDetector` actually uses to close a turn, so the proof
+is grounded in the real cutoff condition and not the abstract constant
+alone. Six new tests: the fixed DIRECT budget alone (1,500ms) would end a
+turn at a 1.9s pause (confirmed `true` — this is the pre-fix defect,
+reproduced); `listenSilenceMsFor('DIRECT', 0)` extends the SAME 1.9s pause
+past the new threshold (confirmed `false`, with real margin to resume, not
+a hair short); every strategy is extended in exact proportion to its own
+budget, at both opportunity 0 and 1; every strategy AT and BEYOND
+`NEW_TO_SKILL_OPPORTUNITIES` returns the byte-identical original constant —
+including the same concrete 1.9s pause still ending an experienced
+learner's turn exactly as before; the extension flows end-to-end through a
+real `PedagogicalController` seeded with `kcStates.attempts: 6` (a
+genuinely seasoned learner gets the unextended budget on turn one of a NEW
+session); and a brand-new knowledge component with no persisted history at
+all gets the extended budget on its very first turn (`entry_opened`, before
+any grading). All 63 tests in the file pass, including the 57 pre-existing
+ones — this is a new, additive field on `ControllerDecision` with no
+existing test anywhere asserting an exact `listenSilenceMs` value out of a
+real `decide()` call (only `LISTEN_SILENCE_MS` the raw table was asserted
+directly), so nothing needed retuning.
+
+`npm run type-check` (including `tsconfig.scripts.json` and
+`tsconfig.test.json`), `npm run lint`, `npm run build` all clean.
+`npm run verify:pedagogy` — identical strategy sequences for all six
+learner profiles, unchanged: this fix touches only `listenSilenceMs`, never
+`strategy`, `scaffolding`, `difficulty`, `instruction`, `pKnown` or
+`misconceptionCode`. `npm run verify:tutor` — privacy boundary and canary
+corpus both green, untouched by this surface. `npm test` for
+`controller.test.ts` in isolation: 63/63 green.
+
+**A note on this worktree, for whoever reconciles the branches.** At the
+time of this fix, the working tree also carried unrelated, uncommitted
+changes to `oracle/src/ws/server.ts` and `backend/src/routes/tutor.ts` —
+sibling findings from the SAME review sweep (`tutor-review-sweep-101`'s
+"voice-audio-quality" STT-outcome fix and its "guardian-dashboard-depth"
+dossier-route fix respectively), evidently being closed concurrently by
+other sessions sharing this checkout. This fix's own `npm test` run showed
+one unrelated failure (`boundaries.test.ts`'s provider-name check tripping
+on a comment in the OTHER session's dirty `ws/server.ts`) that disappears
+once that file is back to either its committed state or its own finished
+fix — confirmed by diffing it: zero lines of this fix touch `ws/server.ts`
+or `backend/`. Multiple sessions from the same sweep will independently
+reach for "Round 101" in this file; whoever merges second should renumber
+rather than overwrite.
+
+`oracle/AGENTS.md` item 73 records the general lesson: a table indexed by
+one axis is not automatically complete just because that axis is the one
+the feature was designed around.

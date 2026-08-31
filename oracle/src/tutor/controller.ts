@@ -525,7 +525,10 @@ export class PedagogicalController {
       pKnown: p,
       misconceptionCode: this.misconceptionCode,
       idleNudgeMs: IDLE_NUDGE_MS[strategy],
-      listenSilenceMs: LISTEN_SILENCE_MS[strategy],
+      // Extended for a learner new to THIS knowledge component — see
+      // `listenSilenceMsFor`. The CELEBRATE/no-entry fallback above stays on
+      // the raw table: with no active KC there is nothing to be "new" to.
+      listenSilenceMs: listenSilenceMsFor(strategy, this.opportunities.get(entry.kcId) ?? 0),
     };
   }
 
@@ -948,6 +951,71 @@ export const LISTEN_SILENCE_MS: Record<Strategy, number> = {
   TRANSFER: 3_000,
   CELEBRATE: 1_200,
 };
+
+/**
+ * Below this many EVER-assessed opportunities on the active knowledge
+ * component — a lifetime count, seeded in the constructor from Core's
+ * persisted history (`kcStates`), not merely this session's — a learner
+ * counts as NEW to the skill, for the one purpose of listening a little
+ * longer. See `NEW_TO_SKILL_SILENCE_GRACE` for why.
+ */
+export const NEW_TO_SKILL_OPPORTUNITIES = 2;
+
+/**
+ * How much longer to listen for a learner new to the active knowledge
+ * component, as a FRACTION of the strategy's own budget rather than a
+ * second hand-authored table — derived, so it cannot drift out of ratio
+ * with `LISTEN_SILENCE_MS` the way two independently-tuned tables would
+ * (`/AGENTS.md` item 32's lesson).
+ *
+ * THE GAP THIS CLOSES. `LISTEN_SILENCE_MS` above is a fixed, strategy-only
+ * lookup — the identical pause budget for a learner meeting a knowledge
+ * component for the very first time and one who has answered it a dozen
+ * times, with no per-learner adjustment at all. Confirmed MEDIUM finding,
+ * adversarial review sweep tutor-review-sweep-101 (voice-audio-quality
+ * dimension), 2026-08-31: a genuine speech-timing difference — a stutter
+ * block, real processing delay, a child who needs a beat before answering —
+ * produces silence indistinguishable from "done talking," and this product
+ * explicitly serves learners for whom that difference is real, not a rare
+ * edge case. First exposure to a skill is exactly when working memory is
+ * doing the most and the tutor is LEAST entitled to read a pause as "done."
+ *
+ * NOT keyed off a partial or interim transcript, because none exists
+ * anywhere in this pipeline. Audio is transcribed exactly once, on COMMIT
+ * (`/AGENTS.md` §2.7 — the streamed `learner_audio_begin`/`_chunk` frames
+ * claim nothing; only `learner_audio_commit` "claims, transcribes and
+ * pays"), and that commit is triggered BY the client's own amplitude-based
+ * turn detector (`frontend/src/tutor/turnDetector.ts`) deciding the turn
+ * already ended. By the time any transcript — partial or final — could
+ * exist, the cutoff this fix needs to prevent has already happened; there
+ * is nothing upstream of it to read. `opportunities` is this file's own
+ * closest available analogue to "have they shown me this before": a real,
+ * persisted-history-aware signal that needs no new plumbing, no per-turn
+ * peek into the future, and no ML.
+ *
+ * DELIBERATELY NOT a flat grace added inside the turn detector's own timer
+ * instead: that mechanism cannot tell a mid-answer stutter from a learner
+ * who has genuinely finished at the exact instant the ordinary silence
+ * threshold is reached, so extending it unconditionally would extend EVERY
+ * silence run by the same amount — including one that really is over,
+ * which is the one behaviour this fix must leave untouched. Gating the
+ * extension on knowledge-component exposure instead confines it to a
+ * bounded, identifiable population (new to THIS skill) and leaves every
+ * already-covered case — an experienced learner's threshold, and this same
+ * learner's own third opportunity onward — exactly as it was.
+ */
+export const NEW_TO_SKILL_SILENCE_GRACE = 0.4;
+
+/**
+ * `LISTEN_SILENCE_MS[strategy]`, extended for a learner new to the active
+ * knowledge component. See `NEW_TO_SKILL_SILENCE_GRACE` for the rationale
+ * and why the turn detector's own timer is not the lever instead.
+ */
+export function listenSilenceMsFor(strategy: Strategy, opportunitiesOnKc: number): number {
+  const base = LISTEN_SILENCE_MS[strategy];
+  if (opportunitiesOnKc >= NEW_TO_SKILL_OPPORTUNITIES) return base;
+  return Math.round(base * (1 + NEW_TO_SKILL_SILENCE_GRACE));
+}
 
 /**
  * The per-strategy instruction the turn's prompt carries. Constant strings —
