@@ -76,6 +76,18 @@ export interface ReplayBeat {
   kind: ReplayBeatKind;
   /** Where this beat sits in the performance, 0-based. */
   index: number;
+  /**
+   * The schema `seq` this beat was ordered by — `TranscriptTurn.seq` for a
+   * turn, `TranscriptSegment.seq` for an activity (the seq of the turn that
+   * served it, per `compare`'s own comment above). NOT the same number as
+   * `index`: `index` is this beat's position in the sorted performance,
+   * `seq` is the row's own identity, and the two only coincide by accident.
+   * Found by adversarial review, round 67 (2026-08-30, HIGH): the guardian
+   * transcript viewer (`KidTutorPage.tsx`) needs the real row `seq` to match
+   * a safety flag's `turn_seq` against the correct beat — the review's own
+   * fix for that finding is what this field exists for.
+   */
+  seq: number;
   /** The words. Empty only for an activity whose payload carried no prompt. */
   text: string;
   /**
@@ -317,6 +329,7 @@ export function buildReplayScript(transcript: SessionTranscript): ReplayScript {
         id: `segment:${entry.row.segmentId}`,
         kind: 'activity',
         index,
+        seq: entry.seq,
         text: prompt,
         ...POSE.activity,
         audioUrl: null,
@@ -344,6 +357,7 @@ export function buildReplayScript(transcript: SessionTranscript): ReplayScript {
         id: `turn:${row.id}`,
         kind,
         index,
+        seq: entry.seq,
         text: row.text,
         // The stored performance, exactly. `neutral`/`idle` only where the
         // column really is null — which is what a turn written before the
@@ -361,6 +375,7 @@ export function buildReplayScript(transcript: SessionTranscript): ReplayScript {
       id: `turn:${row.id}`,
       kind,
       index,
+      seq: entry.seq,
       text: row.text,
       ...POSE[kind],
       // Never the learner's. There is no such recording anywhere in this

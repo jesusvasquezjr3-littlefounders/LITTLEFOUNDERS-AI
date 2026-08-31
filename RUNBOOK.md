@@ -6908,3 +6908,93 @@ directory — mid-task, this round's own edits to `plan.ts`/
 `orchestrator.ts`/`ws/server.ts` were found reverted by a SIBLING
 round's own stash operation; recaptured and re-verified before
 finishing, the same near-miss Rounds 68-69 already recorded.
+
+## Round 71: the guardian transcript viewer never showed how a child did on any graded activity, and a voice-checked safety flag pointed at the wrong turn
+
+A round-67 background adversarial review targeted the guardian-facing
+Tutor transcript viewer for CONTENT correctness (access control was
+already reviewed in an earlier round). Two real HIGH findings, both
+fixed.
+
+**HIGH, FIXED — the transcript viewer fetched segment results but never
+rendered them.** `frontend/src/routes/app/family/KidTutorPage.tsx`
+destructures `transcript.segments` into the `SessionTranscript` type but
+never referenced it anywhere in the render body — only `transcript.turns`
+was mapped. Reproduced directly: rendering `<KidTutorPage>` with a
+`SessionTranscript` whose `segments` array carries a real graded
+activity (`{segmentId, seq, score:0, xpAwarded:0, segment:{type,
+prompt}}`) alongside ordinary turns, `document.body.textContent` after
+opening the transcript contained NONE of the segment's prompt, type,
+score, or XP. `/ORACLE.md` §12 explicitly documents this data as
+persisted FOR guardian visibility ("the segments are shown alongside
+how the learner did on them"), and the page's own header comment
+claimed "not a summary, not a redaction" — false in practice: a
+guardian reading any session saw only conversational text, never
+whether an activity was answered correctly, attempts, or XP earned.
+
+Fixed by reusing `buildReplayScript()` (`frontend/src/tutor/replay/
+replayScript.ts`) — the SAME pure ordering function the 3D replay
+stage already trusts to interleave turns and activities by real `seq`
+— instead of writing a second, independent sort inside the guardian
+page. `ReplayBeat` gained a `seq: number` field (populated at all three
+construction sites) so the guardian page can match a safety flag's
+`turn_seq` against the correct beat — the beat's array `index` is only
+its position, not its schema `seq`, and conflating the two would have
+been a new bug in the same shape as finding 2 below. `Transcript`'s
+render now maps over `beats` instead of raw `turns`: an activity beat
+shows its prompt plus "scored X out of 100" / "didn't answer this one"
+and XP, reusing this page's own existing i18n strings (no new keys
+needed) — the answer key is structurally unreachable, since
+`ReplayActivity` has no `answer` field at all (verified with a fixture
+that plants a spurious `answer` in the raw payload and asserts it never
+renders). Non-activity beats keep the exact prior visual/highlight
+logic, now keyed on `beat.seq` instead of `turn.seq`, so round 41's
+flagged-turn highlight is untouched.
+
+**HIGH, FIXED — a safety flag raised via a spoken/voice-checked answer
+was persisted against the WRONG turn, silently defeating the guardian
+page's flagged-turn highlight for that whole class of flag.** The
+voice-check branch in `oracle/src/ws/server.ts` called `deliver(live,
+outcome)` with only two arguments, omitting `deliver`'s third parameter
+`learnerTurnSeq` — unlike the ordinary text/edit path a few lines above,
+which captures and passes it. `deliver`'s own comment claimed a
+voice-check verdict "cannot produce a `safety` flag in the first
+place" — false: `handleVoiceCheckResult`'s classify-before-model gate
+reacts to self-harm, personal data and the rest of the closed
+vocabulary in a SPOKEN answer exactly as the text path does for a typed
+one (confirmed by the pre-existing test at `orchestrator.test.ts:227-257`).
+Because `learnerTurnSeq` was always absent for this path,
+`persistSafetyFlag`'s `turnSeq: learnerTurnSeq ?? safety.turnSeq`
+always fell back to `safety.turnSeq` — the orchestrator's own internal
+per-model-turn counter, a completely different numbering space from
+`tutor_turns.seq`, the transcript's own per-row counter. A guardian who
+clicked into a flag raised through a spoken answer (e.g. "Your child
+said something about hurting themselves") got no ring-warning highlight
+and no auto-scroll to the actual line — round 41's fix silently did not
+apply to this whole class of flags. The same wrong `turn_seq`
+independently defeats migration 0054's recall-exclusion for this class
+of flagged rows too (noted, not addressed here — out of scope for the
+guardian-display surface this round targeted).
+
+Fixed by capturing and passing `learnerTurnSeq` at the voice-check call
+site, mirroring the ordinary text/edit path exactly, and correcting
+`deliver`'s own now-proven-false comment. New full-stack test in
+`live-session.test.ts` drives a real websocket through a served
+CHECKABLE segment, a self-harm spoken utterance, and asserts the
+persisted flag's `turnSeq` equals the utterance's REAL `tutor_turns`
+row — confirmed to fail (`expected 2 to be 4`, the exact mismatch
+described above) pre-fix via `git stash -- oracle/src/ws/server.ts`,
+pass post-fix.
+
+Verification: frontend suite for the touched files green (15
+`KidTutorPage.test.tsx` tests + 17 `replayScript.test.ts` tests),
+type-check and lint clean; oracle's `live-session.test.ts` green (30
+tests including the new one), type-check clean. Not run: in-browser
+mobile/desktop screenshot verification of `KidTutorPage.tsx` (§1.11) —
+the same documented gap round 41 itself left, since this route needs a
+real authenticated parent/verified-kid session with no seed script
+available; the new markup reuses only existing classes/tokens already
+on this exact page, so no new responsive surface was introduced. No
+`oracle/AGENTS.md` item for the `ws/server.ts` half — the fix is a
+call-site correction to existing, already-documented machinery, not a
+new Tutor behavior or invariant.

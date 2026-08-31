@@ -39,7 +39,7 @@ interface CoreJournal {
     seq: number;
     whiteboard?: { values: number[] } | null;
   }[];
-  flags: { category: string; handled: string }[];
+  flags: { category: string; handled: string; turnSeq: number | null }[];
   closes: { closeReason: string; turnCount: number }[];
   segmentRequests: number;
 }
@@ -60,6 +60,22 @@ let sessionIsMinor = false;
 const sessionConsent = true;
 /** Flipped per test to make the fake Core refuse every safety-flag write. */
 let flagsShouldFail = false;
+/**
+ * The `type` the fake Core serves on `/tutor/internal/segments`. Most tests
+ * want the default (`quiz_mcq`, ungraded by voice) — round 67's own test
+ * flips this to a CHECKABLE type (`orchestrator.ts`'s `CHECKABLE_TYPES`) so a
+ * spoken answer routes through `handleVoiceCheckResult` instead of the
+ * ordinary text path.
+ */
+let servedSegmentType = 'quiz_mcq';
+/**
+ * The fake voice-check verdict. Round 67's own test needs `recognized: true`
+ * with a real boolean `correct` — `ws/server.ts` only calls
+ * `handleVoiceCheckResult` when both are present — regardless of what the
+ * learner's utterance actually says, so the SAME utterance can carry a
+ * self-harm disclosure and still be treated as "an answer was checked".
+ */
+let voiceCheckRecognized = true;
 
 function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve) => {
@@ -113,6 +129,16 @@ function startFakeCore(): Promise<Server> {
         journal.flags.push(JSON.parse(body) as CoreJournal['flags'][number]);
         return json(res, { recorded: !flagsShouldFail });
       }
+      // MUST be checked before the plain `/tutor/internal/segments` branch
+      // below — a voice-check URL (`/segments/:id/voice-check`) also
+      // contains that substring, and the wrong branch would swallow it.
+      if (url.includes('/voice-check')) {
+        return json(res, {
+          checkable: true,
+          recognized: voiceCheckRecognized,
+          correct: true,
+        });
+      }
       if (url.includes('/tutor/internal/segments')) {
         journal.segmentRequests += 1;
         return json(res, {
@@ -121,7 +147,7 @@ function startFakeCore(): Promise<Server> {
           origin: 'catalog',
           segment: {
             id: 'seg-1',
-            type: 'quiz_mcq',
+            type: servedSegmentType,
             prompt_md: '¿Cuánto juntas en 4 semanas?',
             difficulty: 2,
             xp: 20,
@@ -313,6 +339,8 @@ afterAll(async () => {
 
 afterEach(async () => {
   flagsShouldFail = false;
+  servedSegmentType = 'quiz_mcq';
+  voiceCheckRecognized = true;
   const { nonceLedger } = await import('../session/token.js');
   nonceLedger.clear();
   // Tests share one session id, and a socket closed without a farewell PARKS
@@ -595,6 +623,53 @@ describe('a real live session over a real websocket', () => {
     expect(String(turn?.say)).toContain('adulta');
     await new Promise((r) => setTimeout(r, 150));
     expect(journal.flags.at(-1)).toMatchObject({ category: 'self_harm', handled: 'session_stopped' });
+
+    await closed();
+  });
+
+  /*
+   * Found by adversarial review, round 67 (2026-08-30, HIGH): the SAME
+   * self-harm classification as the test above, raised through
+   * `handleVoiceCheckResult` (a spoken/checked answer to an open CHECKABLE
+   * activity) instead of `handleLearnerText`. The voice-check `deliver()`
+   * call used to omit `learnerTurnSeq` entirely, so the persisted flag's
+   * `turnSeq` fell back to `safety.turnSeq` — the orchestrator's own
+   * internal per-model-turn counter, a completely different numbering space
+   * from `tutor_turns.seq` — silently defeating the guardian page's
+   * flagged-turn highlight (round 41) and migration 0054's recall exclusion
+   * for every flag raised this way.
+   */
+  it('persists a voice-checked safety flag under the REAL transcript row, not the model-turn counter', async () => {
+    freshJournal();
+    // A CHECKABLE type, so the next utterance routes through
+    // `handleVoiceCheckResult` rather than the ordinary text path.
+    servedSegmentType = 'number_input';
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const served = collect(socket, (m) => m.some((x) => x.type === 'segment'));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quieropracticarya' }));
+    await served;
+    // Past MIN_TURN_GAP_MS (700ms), same as every other multi-turn test.
+    await new Promise((r) => setTimeout(r, 750));
+
+    const FLAGGED_TEXT = 'ya no quiero vivir';
+    const stopping = collect(socket, (m) => m.some((x) => x.type === 'closed'));
+    socket.send(JSON.stringify({ type: 'learner_text', text: FLAGGED_TEXT }));
+    await stopping;
+    await new Promise((r) => setTimeout(r, 150));
+
+    const learnerRow = journal.turns.find((t) => t.speaker === 'learner' && t.text === FLAGGED_TEXT);
+    expect(learnerRow).toBeDefined();
+
+    const flag = journal.flags.at(-1);
+    expect(flag).toMatchObject({ category: 'self_harm', handled: 'session_stopped' });
+    // THE ASSERTION THAT MATTERS: the flag names the utterance's OWN
+    // transcript row, not the orchestrator's internal turn counter (a much
+    // smaller number at this point in the session — greeting, one exchange,
+    // then this one — that used to leak into `turnSeq` and never matched a
+    // real row).
+    expect(flag?.turnSeq).toBe(learnerRow?.seq);
 
     await closed();
   });

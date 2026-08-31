@@ -320,3 +320,93 @@ describe('KidTutorPage — a safety flag opens the exact transcript it happened 
     expect(screen.getByText('How are you feeling today?').className).not.toContain('ring-warning');
   });
 });
+
+/*
+ * Found by adversarial review, round 67 (2026-08-30, HIGH): `SessionTranscript
+ * .segments` was fetched and typed and never once read anywhere in this file
+ * — only `transcript.turns` was rendered. A guardian reading any session
+ * transcript saw every word exchanged and NOTHING about the graded activities
+ * served in between: no prompt, no score, no XP. `/ORACLE.md` §12 documents
+ * segments as persisted precisely FOR this view.
+ */
+describe('KidTutorPage — a graded activity is part of the transcript, not invisible', () => {
+  it('renders a segment’s prompt, score and XP, and never its answer key', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValue({
+      data: {
+        sessions: [{ ...BASE_SESSION }],
+        safetyFlags: [],
+      },
+      error: null,
+    });
+    vi.mocked(getTranscript).mockResolvedValue({
+      data: {
+        session: BASE_SESSION,
+        turns: [
+          { id: 't1', seq: 1, speaker: 'tutor', text: 'Let’s try one.', emotion: null, action: null, audio_path: null, source: 'model', created_at: '2026-08-30T10:00:00Z', whiteboard: null },
+          { id: 't2', seq: 2, speaker: 'tutor', text: 'Nicely done.', emotion: null, action: null, audio_path: null, source: 'model', created_at: '2026-08-30T10:02:00Z', whiteboard: null },
+        ],
+        segments: [
+          {
+            segmentId: 'seg-1',
+            seq: 1,
+            origin: 'live',
+            // `answer` should never reach the wire at all (/ORACLE.md §8,
+            // migration 0047) — it is included here anyway, as if Core had
+            // leaked it, so the test proves the RENDER path never surfaces
+            // it even if the payload somehow carried it, not merely that the
+            // type declares no such field.
+            segment: { type: 'quiz_mcq', prompt_md: 'How much after 4 weeks?', answer: '100 pesos' },
+            // Served and never answered — `score` is null, not zero.
+            score: null,
+            xpAwarded: 0,
+          },
+        ],
+      },
+      error: null,
+    });
+
+    renderPage();
+    await waitFor(() => screen.getByText(/2 messages/));
+
+    fireEvent.click(screen.getByText('Read it'));
+
+    // The prompt, the outcome and the XP all reach the screen now.
+    await waitFor(() => screen.getByText('How much after 4 weeks?'));
+    expect(screen.getByText(/didn.t answer this one/i)).toBeInTheDocument();
+
+    // Never the answer key, even though this fixture's payload carries one.
+    expect(screen.queryByText(/100 pesos/)).toBeNull();
+  });
+
+  it('shows a real score and XP for an answered activity', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValue({
+      data: { sessions: [{ ...BASE_SESSION }], safetyFlags: [] },
+      error: null,
+    });
+    vi.mocked(getTranscript).mockResolvedValue({
+      data: {
+        session: BASE_SESSION,
+        turns: [],
+        segments: [
+          {
+            segmentId: 'seg-2',
+            seq: 1,
+            origin: 'catalog',
+            segment: { type: 'number_input', prompt_md: 'How many coins?' },
+            score: 100,
+            xpAwarded: 20,
+          },
+        ],
+      },
+      error: null,
+    });
+
+    renderPage();
+    await waitFor(() => screen.getByText(/2 messages/));
+    fireEvent.click(screen.getByText('Read it'));
+
+    await waitFor(() => screen.getByText('How many coins?'));
+    expect(screen.getByText(/scored 100 out of 100/i)).toBeInTheDocument();
+    expect(screen.getByText(/20 XP/)).toBeInTheDocument();
+  });
+});

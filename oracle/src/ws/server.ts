@@ -1141,6 +1141,24 @@ async function handleLearnerTurn(
     if (result?.recognized === true && typeof result.correct === 'boolean') {
       // Answered — no longer a redraw target for a future resume.
       live.lastSegmentFrame = null;
+      /*
+       * `learnerTurnSeq`, THE SAME WAY THE ORDINARY TEXT/EDIT CALL BELOW
+       * PASSES IT — round 67 (2026-08-30, HIGH). This call used to omit the
+       * third argument entirely, on the reasoning (recorded on `deliver`'s
+       * own parameter below, and now corrected) that a voice-check verdict
+       * can never raise a safety flag. It can:
+       * `handleVoiceCheckResult`'s own classify-before-model gate reacts to
+       * self-harm, personal data and the rest of the closed vocabulary in a
+       * SPOKEN answer exactly as `handleLearnerText` does for a typed one.
+       * Omitting `learnerTurnSeq` here meant `deliver`'s
+       * `turnSeq: learnerTurnSeq ?? safety.turnSeq` always fell back to
+       * `safety.turnSeq` for this path — the orchestrator's own internal
+       * per-model-turn counter, a different numbering space from
+       * `tutor_turns.seq` — so a flag raised through a checked answer was
+       * persisted against a row that does not exist, silently defeating
+       * both the guardian page's flagged-turn highlight (round 41) and
+       * migration 0054's recall exclusion for this class of flag.
+       */
       await deliver(
         live,
         await live.orchestrator.handleVoiceCheckResult(
@@ -1150,6 +1168,7 @@ async function handleLearnerTurn(
           Date.now(),
           signal,
         ),
+        learnerTurnSeq,
       );
       return;
     }
@@ -1172,11 +1191,20 @@ async function deliver(
   outcome: TurnOutcome | null,
   /**
    * The transcript row `seq` the learner's own utterance was just persisted
-   * under, when this call is the direct result of one (text or edit).
-   * Absent for every other caller of `deliver` (greet, farewell,
-   * consent-revoked, a voice-check verdict, an unavailable segment) — none
-   * of which can produce a `safety` flag in the first place, since that
-   * only ever comes from classifying learner TEXT.
+   * under, when this call is the direct result of one — text, edit, OR a
+   * voice-check verdict (`handleVoiceCheckResult`'s own classify-before-model
+   * gate reacts to a spoken utterance exactly as `handleLearnerText` does to
+   * a typed one, so it can produce a `safety` flag too). Absent for every
+   * OTHER caller of `deliver` (greet, farewell, consent-revoked, an
+   * unavailable segment) — none of those react to fresh learner-authored
+   * text, so none of them can produce a `safety` flag.
+   *
+   * Found by adversarial review, round 67 (2026-08-30, HIGH): this comment
+   * used to claim a voice-check verdict "cannot produce a `safety` flag in
+   * the first place" — false, and the voice-check call site omitted this
+   * parameter on that same false premise, so a flag raised through a spoken
+   * answer was persisted under the orchestrator's internal turn counter
+   * (`safety.turnSeq` below) instead of its real transcript row.
    */
   learnerTurnSeq?: number,
 ): Promise<void> {
@@ -1278,18 +1306,23 @@ async function deliver(
 
   if (safety) {
     /*
-     * `learnerTurnSeq` — the TRANSCRIPT row's own seq — wins when this
-     * `deliver` call came from a learner's text/edit turn, which is the
-     * only place a `safety` flag is ever produced. `safety.turnSeq` (the
-     * orchestrator's internal turn counter, a DIFFERENT numbering space
-     * from `tutor_turns.seq`) is kept only as a fallback for a caller
-     * this function does not currently have — recording SOMETHING is
-     * still better than dropping the flag, but it will not match a real
-     * transcript row, so `search_tutor_turns` (migration 0054) can only
-     * exclude a flagged turn from episodic recall when the accurate seq
-     * reached here. See the `learnerTurnSeq` capture above for the
-     * incident this closes: a flagged utterance's OWN transcript row was
-     * never identifiable from the flag record at all.
+     * `learnerTurnSeq` — the TRANSCRIPT row's own seq — wins whenever this
+     * `deliver` call came from fresh learner-authored text: an ordinary
+     * text/edit turn OR a voice-check verdict, the two places a `safety`
+     * flag can actually be produced (both callers now pass it — see the
+     * voice-check call site's own comment, round 67, 2026-08-30, HIGH).
+     * `safety.turnSeq` (the orchestrator's internal turn counter, a
+     * DIFFERENT numbering space from `tutor_turns.seq`) is kept only as a
+     * fallback for a caller this function does not currently have —
+     * recording SOMETHING is still better than dropping the flag, but it
+     * will not match a real transcript row, so `search_tutor_turns`
+     * (migration 0054) can only exclude a flagged turn from episodic recall
+     * when the accurate seq reached here. Until round 67's fix, the
+     * voice-check caller silently WAS that fallback case on every call —
+     * omitting `learnerTurnSeq` for a path that can and does raise flags — so
+     * a flagged spoken utterance's OWN transcript row was never identifiable
+     * from the flag record at all. See the `learnerTurnSeq` capture above
+     * for the original incident this comment already described.
      */
     /*
      * CHAINED THROUGH noteFlagPersist — its OWN counter, not `notePersist`'s.

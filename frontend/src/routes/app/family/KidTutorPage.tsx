@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { Button, Card, Icon, LoadingOverlay } from '@/components/ui';
+import { MarkdownLite } from '@/lesson-engine/core/MarkdownLite';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { buildReplayScript } from '@/tutor/replay/replayScript';
 import { getKidTutorHistory, getTranscript, type KidTutorHistory } from '@/tutor/tutorApi';
 import type { SessionTranscript } from '@/tutor/types';
 
@@ -15,6 +17,21 @@ import type { SessionTranscript } from '@/tutor/types';
  * that invariant becoming a surface. It shows the FULL transcript — not a
  * summary, not a redaction. A guardian who can only see that a conversation
  * happened has not been given visibility; they have been given a receipt.
+ *
+ * ACTIVITIES ARE PART OF THE TRANSCRIPT, NOT A FOOTNOTE TO IT. Found by
+ * adversarial review, round 67 (2026-08-30, HIGH): `SessionTranscript.segments`
+ * was fetched and typed and never once read in this file — only `turns` was
+ * rendered, so a guardian saw every word the child and the tutor exchanged but
+ * NOTHING about the graded activities served in between: no prompt, no score,
+ * no XP. `/ORACLE.md` §12 documents the segments as persisted precisely FOR
+ * this view. Fixed by reusing `buildReplayScript` (`tutor/replay/replayScript`)
+ * — the SAME pure ordering function the 3D replay stage already trusts to
+ * interleave a session's turns and activities by their real `seq`, not by
+ * inventing a second sort here — and rendering each `activity` beat with the
+ * same "scored X out of 100 · N XP" language `ReplayInWorld`'s `ActivitySummary`
+ * already uses. The answer key never travels with it: `TranscriptSegment` has
+ * no `answer` field on the wire (/ORACLE.md §8, migration 0047), so there is
+ * nothing here to accidentally show.
  *
  * Safety flags are surfaced FIRST and deliberately prominently. A child
  * disclosing distress to a tutor is precisely the case where a parent must
@@ -253,25 +270,58 @@ function Transcript({
     if (highlightRef.current) highlightRef.current.scrollIntoView({ block: 'center' });
   }, [transcript]);
 
+  /*
+   * The turns AND the activities, interleaved in the order they actually
+   * happened — `buildReplayScript`'s own job, reused rather than re-sorted
+   * here. `seq` on each beat is the row's real schema seq (not `index`,
+   * which is only the beat's position in this array), and it is what lets
+   * `highlightSeq` — a safety flag's `turn_seq` — find the one turn it names
+   * even though a segment can share a `seq` with the turn that served it.
+   */
+  const beats = useMemo(() => (transcript ? buildReplayScript(transcript).beats : []), [transcript]);
+
   if (failed) return <p className="lf-body mt-4 text-content-muted">{t('tutor.guardian.loadFailed')}</p>;
   if (!transcript) return <p className="lf-body mt-4 text-content-muted">{t('tutor.guardian.loading')}</p>;
 
   return (
     <div className="mt-4 space-y-2 border-t border-outline pt-4">
-      {transcript.turns.map((turn) => {
-        const isFlagged = highlightSeq !== null && turn.seq === highlightSeq;
+      {beats.map((beat) => {
+        if (beat.kind === 'activity') {
+          // No answer key here, ever: `TranscriptSegment` never carries
+          // `answer` over the wire (/ORACLE.md §8, migration 0047) — the same
+          // reason the 3D replay's own `ActivityDetail` cannot show one.
+          const activity = beat.activity;
+          return (
+            <div key={beat.id} className="lf-body rounded-md bg-surface-sunken px-3 py-2 text-content">
+              <p className="lf-label text-content-muted">{t('tutor.replay.activity')}</p>
+              {activity && activity.prompt !== '' && (
+                <MarkdownLite text={activity.prompt} className="lf-body mt-1 text-content" />
+              )}
+              <p className="lf-caption mt-1 text-content-muted">
+                {activity && activity.score === null
+                  ? t('tutor.replay.activityUnanswered')
+                  : t('tutor.replay.activityScored', { score: activity?.score ?? 0 })}
+                {activity && activity.xpAwarded > 0
+                  ? ` · ${t('tutor.history.xp', { count: activity.xpAwarded })}`
+                  : ''}
+              </p>
+            </div>
+          );
+        }
+
+        const isFlagged = highlightSeq !== null && beat.seq === highlightSeq;
         return (
           <p
-            key={turn.id}
+            key={beat.id}
             ref={isFlagged ? highlightRef : undefined}
             className={
-              (turn.speaker === 'tutor'
+              (beat.kind === 'tutor'
                 ? 'lf-body rounded-md bg-surface-sunken px-3 py-2 text-content'
                 : 'lf-body ml-auto max-w-[85%] rounded-md bg-accent-soft px-3 py-2 text-content') +
               (isFlagged ? ' ring-2 ring-warning' : '')
             }
           >
-            {turn.text}
+            {beat.text}
           </p>
         );
       })}
