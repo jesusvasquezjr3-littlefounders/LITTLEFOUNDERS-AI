@@ -797,13 +797,31 @@ export class TutorOrchestrator {
    * hand. So the miss becomes an ordinary system-prompted turn, and the model
    * is told to carry on WITHOUT narrating our plumbing: a child does not need
    * to hear that a content lookup failed, they need the next question.
+   *
+   * `lastAttempt` says that this recovery turn's OWN `segmentRequest`, if it
+   * produces one, will be refused rather than served — `ws/server.ts` bounds
+   * how many times one learner utterance may re-enter the ladder (round 76,
+   * 2026-08-30, HIGH). Telling the model so is not the bound (an instruction
+   * has never been one; that is the whole lesson of the defect) — it is what
+   * keeps the LEARNER's last turn coherent, so the tutor teaches by hand
+   * instead of promising an activity that the server has already decided will
+   * never arrive.
    */
-  async handleSegmentUnavailable(nowMs: number, signal?: AbortSignal): Promise<TurnOutcome | null> {
+  async handleSegmentUnavailable(
+    nowMs: number,
+    signal?: AbortSignal,
+    options: { lastAttempt?: boolean } = {},
+  ): Promise<TurnOutcome | null> {
     return this.produce(
       'The activity you asked for is not available right now. Do NOT mention this, do not apologise, ' +
         'and never say anything about activities, screens, loading or technical problems. Simply teach ' +
         'the same idea yourself in this turn: give one concrete example a child can picture and ask them ' +
-        'one question about it.',
+        'one question about it.' +
+        (options.lastAttempt
+          ? ' Teach it in conversation only: do NOT request or promise any activity, exercise or game in ' +
+            'this turn — there is none to give, and promising one and then not delivering it is worse ' +
+            'than never offering.'
+          : ''),
       nowMs,
       { isSystemPrompted: true, signal },
     );

@@ -84,6 +84,23 @@ let voiceCheckRecognized = true;
  */
 let servedSegmentDifficulty: number | null = null;
 /**
+ * How many of the next `/tutor/internal/segments` calls the fake Core should
+ * answer WITHOUT a segment — the state most skills are actually in, and the
+ * one `serveSegment`'s recovery path exists for (round 76).
+ * `Number.POSITIVE_INFINITY` is a ladder that never has anything.
+ */
+let segmentFailuresLeft = 0;
+/**
+ * WHICH KIND of miss those calls are, because they cost very different money.
+ *
+ * `empty` is Core answering "nothing here" — one round trip and no model call.
+ * `needs_generation` is the ladder handing tier 3 back to Oracle, which then
+ * pays for REAL author completions before it can conclude the same thing. Both
+ * land in the same `serveSegment` branch, and the bound has to hold for the
+ * expensive one or it is not a cost bound at all.
+ */
+let segmentFailureShape: 'empty' | 'needs_generation' = 'empty';
+/**
  * A session plan for the fake Core's session response, so the v3 brain is
  * ACTIVE. Off by default: every other test in this file describes an open
  * session with no plan, which is the shape they were written against.
@@ -155,6 +172,27 @@ function startFakeCore(): Promise<Server> {
       }
       if (url.includes('/tutor/internal/segments')) {
         journal.segmentRequests += 1;
+        if (segmentFailuresLeft > 0) {
+          segmentFailuresLeft -= 1;
+          if (segmentFailureShape === 'needs_generation') {
+            return json(res, {
+              needsGeneration: true,
+              skillKey: 'money.saving',
+              tier: 3,
+              locale: 'es-MX',
+              difficulty: 2,
+              // The fake model answers with a TURN, never a segment of this
+              // type, so authoring exhausts its two attempts and gives up —
+              // the ordinary "tier 3 could not produce one either" ending.
+              allowedTypes: ['quiz_mcq'],
+            });
+          }
+          // A well-formed envelope carrying no segment: `requestSegment`
+          // returns `null` through its PARSE branch, which is Core saying
+          // "nothing here" rather than Core being unreachable.
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ data: null, error: { code: 'NOT_FOUND', message: 'no segment' } }));
+        }
         return json(res, {
           segmentId: SEGMENT_ID,
           seq: 0,
@@ -274,6 +312,45 @@ function collect(
   });
 }
 
+/**
+ * Collects frames until the server has said NOTHING for `quietMs`.
+ *
+ * `collect()` waits for a predicate, which cannot express the question round
+ * 75 asks: not "did the expected frame arrive" but "how much did the server do
+ * off ONE learner frame, and did it ever stop". A predicate that matched the
+ * first `NO_SEGMENT` would have passed happily on the runaway, because the
+ * first one was always correct — it was the nineteen after it that cost money.
+ *
+ * `capMs` RESOLVES rather than rejects, on purpose: an unbounded loop must
+ * still hand back its evidence (a count in the dozens) instead of failing as a
+ * timeout that says nothing about why.
+ */
+function untilQuiet(socket: WebSocket, quietMs = 600, capMs = 25_000): Promise<Record<string, unknown>[]> {
+  return new Promise((resolve, reject) => {
+    const messages: Record<string, unknown>[] = [];
+    let quiet: NodeJS.Timeout;
+    const cap = setTimeout(() => {
+      clearTimeout(quiet);
+      resolve(messages);
+    }, capMs);
+    const done = (): void => {
+      clearTimeout(cap);
+      resolve(messages);
+    };
+    quiet = setTimeout(done, quietMs);
+    socket.on('message', (data) => {
+      messages.push(JSON.parse(String(data)) as Record<string, unknown>);
+      clearTimeout(quiet);
+      quiet = setTimeout(done, quietMs);
+    });
+    socket.on('error', (error) => {
+      clearTimeout(quiet);
+      clearTimeout(cap);
+      reject(error);
+    });
+  });
+}
+
 /*
  * A socket that REMEMBERS it closed.
  *
@@ -358,6 +435,8 @@ afterEach(async () => {
   voiceCheckRecognized = true;
   servedSegmentDifficulty = null;
   servedSessionPlan = null;
+  segmentFailuresLeft = 0;
+  segmentFailureShape = 'empty';
   vi.restoreAllMocks();
   const { nonceLedger } = await import('../session/token.js');
   nonceLedger.clear();
@@ -616,6 +695,154 @@ describe('a real live session over a real websocket', () => {
 
     socket.close();
   });
+
+  /*
+   * ══ ROUND 76: ONE UTTERANCE, A BOUNDED NUMBER OF LADDER ATTEMPTS ══
+   *
+   * `deliver()` and `serveSegment()` are mutually recursive, and until round 76
+   * nothing counted the trips. A turn asks for an activity; the ladder has
+   * none; `handleSegmentUnavailable()` produces a recovery turn; that turn goes
+   * out through the SAME `deliver()` and can ask for an activity of its own —
+   * forever. Reproduced by stashing the fix and running the first test below:
+   * a single `learner_text` frame produced 20 ladder requests and 21 turns,
+   * each cycle a real model completion, a real judge completion and a real
+   * Core round trip.
+   *
+   * WHAT STOPPED IT AT TWENTY WAS THIS HARNESS, NOT THE PRODUCT — worth
+   * knowing before trusting any number this file reports about a runaway.
+   * `SESSION_MAX_TURNS` is 120 and the run ended at turn 22 with the budget
+   * still `running`; `TURN_HISTORY_WINDOW` is also 20, so the learner's line
+   * scrolled out of the model's context and the fake model's keyword trigger
+   * (`quieropracticarya`) went with it. Round 74 filed the defect as "bounded
+   * only by the session turn cap" on exactly this evidence, and that was an
+   * inference from two numbers that happen to be equal.
+   *
+   * The fake model here is the adversarial case ON PURPOSE: it keeps asking
+   * for an activity while the learner's line is in the working history, and it
+   * ignores the recovery instruction entirely — which is what makes the fix a
+   * bound rather than a request. The four tests below are the two halves of
+   * the claim: the runaway is capped (in both the cheap and the EXPENSIVE
+   * failure shape), and the legitimate paths are untouched.
+   */
+  it('bounds an empty ladder: one utterance cannot buy an unbounded run of turns', async () => {
+    freshJournal();
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    segmentFailuresLeft = Number.POSITIVE_INFINITY;
+
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    const modelCallsBefore = modelJournal.bodies.length;
+
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quieropracticarya' }));
+    const frames = await untilQuiet(socket);
+
+    // MAX_SEGMENT_RETRIES is 1, so one utterance reaches the ladder twice —
+    // the original request and the single retry the bound deliberately keeps.
+    expect(journal.segmentRequests).toBe(2);
+
+    // Three turns reach the child: the one that asked, and the two recovery
+    // turns that teach the idea by hand. The third refusal never produces a
+    // fourth, which is where the loop used to live.
+    expect(frames.filter((f) => f.type === 'turn')).toHaveLength(3);
+
+    // THE COST, stated as a number rather than as a hope. One author
+    // completion per turn, and nothing else off this one utterance.
+    const authored = modelJournal.bodies
+      .slice(modelCallsBefore)
+      .filter((b) => !b.includes('child-safety reviewer'));
+    expect(authored).toHaveLength(3);
+
+    // Nothing is silently dropped: the client's "preparing something"
+    // placeholder is cleared every time, including on the refused attempt.
+    expect(frames.filter((f) => f.type === 'error' && f.code === 'NO_SEGMENT').length).toBeGreaterThanOrEqual(2);
+
+    // LOUD, not silent — the refusal names itself in the log (§1.0).
+    const lines = warn.mock.calls.map((c) => String(c[0]));
+    expect(lines.some((l) => l.includes('refused segment request #3'))).toBe(true);
+
+    socket.close();
+  }, 30_000);
+
+  /*
+   * THE SAME BOUND, ON THE SHAPE THAT ACTUALLY COSTS MONEY. `empty` is one
+   * Core round trip; `needsGeneration` hands tier 3 back to Oracle, which pays
+   * for real author completions before reaching the same conclusion. A bound
+   * proved only on the cheap shape is not a cost bound.
+   */
+  it('bounds a ladder that keeps handing tier 3 back, PAID author calls included', async () => {
+    freshJournal();
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    segmentFailuresLeft = Number.POSITIVE_INFINITY;
+    segmentFailureShape = 'needs_generation';
+
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    const modelCallsBefore = modelJournal.bodies.length;
+
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quieropracticarya' }));
+    const frames = await untilQuiet(socket);
+
+    expect(journal.segmentRequests).toBe(2);
+    expect(frames.filter((f) => f.type === 'turn')).toHaveLength(3);
+
+    // 3 turn completions + 2 generation attempts × 2 author tries each. Every
+    // one of those seven is billed; before the bound there was no ceiling on
+    // any of them.
+    const authored = modelJournal.bodies
+      .slice(modelCallsBefore)
+      .filter((b) => !b.includes('child-safety reviewer'));
+    expect(authored).toHaveLength(7);
+
+    socket.close();
+  }, 30_000);
+
+  /*
+   * THE CONTROL. The bound is about REPEATED FAILURES within one utterance,
+   * never about the ladder's own internal rungs (nearest-band, the
+   * prerequisite walk, the frontier fallback — round 59), which all live
+   * inside a single `requestSegment` call. A segment that IS available still
+   * costs exactly one call and produces exactly one activity.
+   */
+  it('leaves the ordinary success alone: one ladder call, one activity, no recovery turn', async () => {
+    freshJournal();
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quieropracticarya' }));
+    const frames = await untilQuiet(socket);
+
+    expect(journal.segmentRequests).toBe(1);
+    expect(frames.filter((f) => f.type === 'segment')).toHaveLength(1);
+    expect(frames.filter((f) => f.type === 'turn')).toHaveLength(1);
+    expect(frames.filter((f) => f.type === 'error')).toHaveLength(0);
+
+    socket.close();
+  }, 15_000);
+
+  /*
+   * THE OTHER CONTROL, and the reason the bound is ONE retry rather than zero:
+   * a ladder that misses once and then serves must still reach the child. This
+   * is the path that would break if a fix simply refused every recovery turn's
+   * request.
+   */
+  it('still serves an activity when the ladder misses once and then finds one', async () => {
+    freshJournal();
+    segmentFailuresLeft = 1;
+
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quieropracticarya' }));
+    const frames = await untilQuiet(socket);
+
+    expect(journal.segmentRequests).toBe(2);
+    // The retry landed: the learner gets the activity, one recovery turn later.
+    expect(frames.filter((f) => f.type === 'segment')).toHaveLength(1);
+    expect(frames.filter((f) => f.type === 'turn')).toHaveLength(2);
+    expect(frames.filter((f) => f.type === 'error' && f.code === 'NO_SEGMENT')).toHaveLength(1);
+
+    socket.close();
+  }, 15_000);
 
   it('lets the learner rephrase their last message — the working history rewinds one exchange', async () => {
     freshJournal();

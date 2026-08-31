@@ -7403,3 +7403,139 @@ by hand against the live instance, which is the whole of its DDL
 (`CREATE OR REPLACE FUNCTION` plus REVOKE/GRANT, no `CREATE TABLE`).
 The probe learner and every row it wrote were deleted from that stack
 afterwards.
+
+## Round 76: one learner utterance could re-enter the empty content ladder forever — twenty paid cycles off a single frame
+
+Round 74's own closing note, filed rather than folded in and picked up
+here in an isolated worktree, 2026-08-30 (HIGH).
+
+**The defect, and the exact call graph.** `serveSegment()` and
+`deliver()` in `oracle/src/ws/server.ts` are mutually recursive by
+design, and nothing counted the trips:
+
+```
+deliver(outcome)
+  └─ turn.next === 'segment' && turn.segmentRequest
+       └─ serveSegment(request)
+            ├─ requestSegment()  → a segment          → send it, done
+            ├─ requestSegment()  → needsGeneration    → generateSegment()
+            │                                            + verifyGeneratedSegment()
+            └─ null / still needsGeneration
+                 ├─ send NO_SEGMENT
+                 └─ deliver(handleSegmentUnavailable())   ← back to the top
+```
+
+`handleSegmentUnavailable()` is an ordinary `produce()` call, so its
+recovery turn can carry a `segmentRequest` of its own. Its instruction
+asks the model not to — "teach the same idea yourself in this turn" —
+but an instruction has never been a bound, and until this round it was
+the only thing standing between an ordinary content gap and an
+unbounded loop. Every cycle costs one model completion, one judge
+completion and one Core round trip, plus a paid author call (two, with
+its shape retry) whenever the ladder answers `needsGeneration`.
+
+**What actually happened, measured rather than reasoned about.** With
+the fix stashed and the fake Core answering "nothing here" every time,
+a SINGLE `learner_text` frame produced **20 ladder requests and 21
+turns** off one utterance — the same twenty round 74 observed in
+passing. Each cycle is a real model completion, a real judge completion
+and a real Core round trip, plus paid author calls on the
+`needsGeneration` path. §1.0's "money leaves DIRECTLY" shape exactly:
+an uncached retry loop that multiplies real spend per learner
+utterance, invisible until the invoice — and, for a real child, a long
+confusing burst of tutor turns.
+
+**And round 74's own explanation of what stopped it was wrong, which is
+the more useful half of this entry.** It filed the defect as "bounded
+only by the session turn cap". Probed directly rather than inferred:
+the run ended at `turnCount` 22, with `budget: 'running'`, no close
+frame, and `SESSION_MAX_TURNS` at its default of **120**. The cap was
+never reached. What actually ended it was `TURN_HISTORY_WINDOW`, which
+is also 20 — the learner's own line scrolled out of the context window
+and the harness's model, whose "ask for an activity" trigger is a
+phrase in that line, stopped asking. **Nothing in the product stopped
+it.** A real model that wants an activity because of the CONVERSATION
+rather than one keyword in it had the entire turn cap to spend: 120
+completions, 120 judge calls and 120 Core round trips off one child
+saying one thing. Two numbers that happened to be equal made an
+unbounded loop look like a bounded one, and the inference was recorded
+as a fact.
+
+**The fix, and the three decisions inside it.**
+
+*Where the bound sits.* `MAX_SEGMENT_RETRIES = 1` in `ws/server.ts`,
+enforced in `deliver()` rather than inside `serveSegment()`, because
+`deliver()` is the edge the recursion actually crosses — the request is
+refused BEFORE it costs a Core round trip, a tier-3 author call or a
+judge call. `deliver()` gained a `segmentAttempt` parameter (default 0
+for every entry point: greet, farewell, learner text/edit, a graded
+result, a voice-check verdict, consent revoked) and `serveSegment()` an
+`attempt` one; only `serveSegment`'s own recovery `deliver()` call
+increments it, which is what confines the count to a single recursion
+chain and lets the next utterance start clean.
+
+*Why ONE retry and not more.* Arithmetic, not taste. When the
+pedagogical brain is awake, `serveSegment` overrides both the skill key
+and the difficulty with the controller's own (`activeSkillKey`,
+`activeDifficulty`), so a second request built from the same
+conversational state is very often the IDENTICAL request the ladder
+just refused — paying twice for a guaranteed answer. The one retry that
+IS kept covers the case where the recovery turn moved the conversation
+somewhere the ladder can reach, and that case has its own test. This
+bounds REPEATED FAILURES within one utterance and nothing else: the
+ladder's own internal rungs (nearest-band search, the prerequisite
+walk, the frontier fallback — round 59) all live inside a SINGLE
+`requestSegment` call and are untouched.
+
+*What the learner gets at the bound.* Not a dropped turn and not a raw
+error. The recovery turn has already gone out — a real turn whose
+instruction is to teach the idea by hand — and only the ask behind it
+is refused. `handleSegmentUnavailable()` now takes a `lastAttempt`
+flag and, when set, appends "do NOT request or promise any activity,
+exercise or game in this turn", so a compliant model produces a
+coherent conversational turn instead of a promise the server has
+already decided will never be kept. That instruction is NOT the bound
+(the whole defect is what happens when an instruction is all there is);
+the refusal in `deliver()` is. The `NO_SEGMENT` frame is still sent on
+the refused attempt for the reason the failure path already sends it —
+it is what clears the client's "preparing something" placeholder, and
+without it the panel waits forever. The refusal also `console.warn`s:
+reaching it means the model ignored an explicit instruction AND the
+ladder had nothing twice in a row, which is a content gap worth a line
+(§1.0, blind flight), in the same spirit as the ladder's own
+prerequisite and frontier warnings.
+
+**Proof.** 4 new tests in `oracle/src/__tests__/live-session.test.ts`,
+all over the real socket against the real orchestrator, plus a fake
+Core that can miss a chosen number of times in either of the two
+shapes that cost different money. A new `untilQuiet()` helper replaces
+a predicate wait, because the question here is not "did the expected
+frame arrive" but "how much did the server do off ONE frame, and did it
+ever stop" — a predicate matching the first `NO_SEGMENT` would have
+passed happily on the runaway, since the first one was always correct.
+Verified in three directions:
+
+1. *Pre-fix, via `git stash` of the two source files only.* Both
+   runaway tests fail with `expected 20 to be 2` — the loop itself, in
+   the assertion. Both control tests PASS pre-fix, which is what a
+   control is for, and saying so is more useful than pretending
+   otherwise.
+2. *Against a deliberately over-tight implementation.*
+   `MAX_SEGMENT_RETRIES` temporarily set to 0 — the shape a fix that
+   simply refused every recovery turn's request would take — and "still
+   serves an activity when the ladder misses once and then finds one"
+   fails with `expected 1 to be 2`. The suite can tell a bound from a
+   ban.
+3. *On the EXPENSIVE failure shape, not only the cheap one.* The
+   `needsGeneration` test asserts the paid author completions off one
+   utterance are exactly 7 (3 turn completions + 2 generation attempts
+   × 2 author tries), where the cheap-shape test asserts 3. A bound
+   proved only where nothing is billed is not a cost bound.
+
+Full oracle suite green (27 files, 610 tests — 606 before, zero
+regressions), `type-check` (all three tsconfigs), `lint`, `build`,
+`verify:tutor` and `verify:pedagogy` all green.
+
+**No deploy ordering constraint.** Unlike round 74, nothing crosses a
+service boundary: the change is entirely inside `oracle/`, adds no
+field to any wire or HTTP schema, and Core is untouched.
