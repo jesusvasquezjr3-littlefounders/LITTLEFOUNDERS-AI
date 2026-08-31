@@ -37,6 +37,28 @@ export interface LessonPlan {
   failures: Map<string, number>;
   stuckSkillKey: string | null;
   stylesTried: Adaptation[];
+  /**
+   * Adaptation KINDS the learner has already been offered and DECLINED for
+   * the current stuck skill (/ORACLE.md §11). Scoped and reset exactly like
+   * `stylesTried` above — cleared the moment this skill is mastered
+   * (`recordGrade`) — because it lives only in-memory on this session's plan
+   * and never reaches the profile or any persisted store: §11's "declining is
+   * not recorded as a fact about them" is about a permanent label, not about
+   * remembering, for the length of one struggling episode, that the learner
+   * already said no to this. A later, genuinely new struggle — this same
+   * skill again after being fixed, or a different skill, or a whole new
+   * session — starts with a clean slate.
+   *
+   * Found by adversarial review, round 67 (2026-08-30, MEDIUM): before this
+   * field existed, a decline left zero trace anywhere — `ws/server.ts`'s own
+   * comment on the decline branch was "local state only, no upstream call" —
+   * so `stuckInstruction` re-issued the IDENTICAL free-choice offer
+   * instruction on the very next failure of the same skill, and the model's
+   * own transcript didn't even show a decline had happened (`orchestrator.ts`
+   * only pushes learner-text and tutor-say turns into `history`, never an
+   * `adaptation_response` of either polarity).
+   */
+  declinedAdaptations: Adaptation[];
 }
 
 /**
@@ -98,6 +120,7 @@ export function buildPlan(
     failures: new Map(),
     stuckSkillKey: null,
     stylesTried: [],
+    declinedAdaptations: [],
   };
 }
 
@@ -116,6 +139,7 @@ export function recordGrade(plan: LessonPlan, skillKey: string, correct: boolean
     if (plan.stuckSkillKey === skillKey) {
       plan.stuckSkillKey = null;
       plan.stylesTried = [];
+      plan.declinedAdaptations = [];
     }
     advance(plan);
     return;
@@ -151,6 +175,17 @@ export function nextStyle(plan: LessonPlan): Adaptation | null {
   return ADAPTATIONS.find((style) => !plan.stylesTried.includes(style)) ?? null;
 }
 
+/**
+ * The learner declined an offered adaptation — called from
+ * `TutorOrchestrator.declineAdaptation`, the decline-side sibling of
+ * `applyAdaptation` (both consume `lastOfferedAdaptation` there; this is only
+ * the plan-side bookkeeping). See `LessonPlan.declinedAdaptations` for scope
+ * and why this is safe under §11.
+ */
+export function recordDeclinedAdaptation(plan: LessonPlan, adaptation: Adaptation): void {
+  if (!plan.declinedAdaptations.includes(adaptation)) plan.declinedAdaptations.push(adaptation);
+}
+
 /** The strict projection that is allowed to reach the model (schema.ts). */
 export function planState(plan: LessonPlan): PlanState {
   const stuckCount = plan.stuckSkillKey ? (plan.failures.get(plan.stuckSkillKey) ?? 0) : 0;
@@ -183,9 +218,39 @@ export function stuckInstruction(plan: LessonPlan, skillKey: string): string | n
       `with a completely different concrete example. Do not request another activity this turn.`
     );
   }
+  /*
+   * DECLINED ADAPTATIONS MUST NOT BE RE-OFFERED (/ORACLE.md §11, item found by
+   * adversarial review, round 67, 2026-08-30). Without this, a learner who
+   * declines "slower pacing" and then fails the same skill again was offered
+   * "slower pacing" again, verbatim — thrashing, not adapting. This is a
+   * prompt-level exclusion, the same enforcement style §11 already uses for
+   * "the offer must stand alone in its turn" (not a deterministic gate on the
+   * model's output) — deliberately, since `offerAdaptation` is a genuinely
+   * free choice among the closed vocabulary and there is no wrong value to
+   * reject the way there is for e.g. `stylesTried`'s deterministic rotation.
+   */
+  const declined = plan.declinedAdaptations;
+  const offerable = ADAPTATIONS.filter((kind) => !declined.includes(kind));
+  if (declined.length === 0) {
+    return (
+      `The learner has now missed this skill ${failures} times and different explanations were tried. ` +
+      `Reassure them warmly that this one is genuinely tricky, and offer ONE adaptation via offerAdaptation ` +
+      `(pick the one you judge most likely to help). Do not request another activity this turn.`
+    );
+  }
+  const declinedList = declined.map((kind) => kind.replace(/_/g, ' ')).join(', ');
+  if (offerable.length === 0) {
+    return (
+      `The learner has now missed this skill ${failures} times, different explanations were tried, and they ` +
+      `already declined every adaptation available (${declinedList}). Do NOT offer another adaptation — ` +
+      `reassure them warmly that this one is genuinely tricky and keep teaching directly, patiently, with a ` +
+      `fresh concrete example. Do not request another activity this turn.`
+    );
+  }
   return (
-    `The learner has now missed this skill ${failures} times and different explanations were tried. ` +
-    `Reassure them warmly that this one is genuinely tricky, and offer ONE adaptation via offerAdaptation ` +
-    `(pick the one you judge most likely to help). Do not request another activity this turn.`
+    `The learner has now missed this skill ${failures} times and different explanations were tried. They already ` +
+    `DECLINED this adaptation, so do NOT offer it again: ${declinedList}. Reassure them warmly that this one is ` +
+    `genuinely tricky, and offer ONE DIFFERENT adaptation via offerAdaptation (pick the one you judge most likely ` +
+    `to help, never one already declined). Do not request another activity this turn.`
   );
 }

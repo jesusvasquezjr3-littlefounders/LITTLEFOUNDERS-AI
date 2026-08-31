@@ -744,7 +744,15 @@ async function onMessage(live: Live, raw: string): Promise<void> {
 
     case 'adaptation_response':
       // Local state only — no upstream call, so no slot to claim.
+      //
+      // Found by adversarial review, round 67 (2026-08-30, MEDIUM): a decline
+      // used to be dropped entirely here — "local state only" meant no state
+      // at all — so the tutor re-offered the identical adaptation on the very
+      // next failure of the same skill. `declineAdaptation` now records it on
+      // the plan (see `LessonPlan.declinedAdaptations`), the same way
+      // `applyAdaptation` already records an acceptance.
       if (message.data.accepted) live.orchestrator.applyAdaptation(message.data.adaptation);
+      else live.orchestrator.declineAdaptation(message.data.adaptation);
       return;
 
     case 'segment_graded': {

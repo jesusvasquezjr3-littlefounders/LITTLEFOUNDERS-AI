@@ -1315,6 +1315,110 @@ describe('adaptation', () => {
     // Still present exactly once — the first acceptance, never duplicated.
     expect(contextMessage.match(/Go slower/g)).toHaveLength(1);
   });
+
+  /*
+   * Confirmed finding (MEDIUM), adversarial review round 67, 2026-08-30:
+   * declining an adaptation offer left zero trace anywhere —
+   * `ws/server.ts`'s own comment on the decline branch was "local state
+   * only ... no slot to claim" — so the tutor re-offered the IDENTICAL
+   * adaptation, verbatim, on the very next failure of the same skill. This
+   * is a DISTINCT gap from the accept-side enforcement covered by the tests
+   * above: those stop a stray frame from applying an unoffered/stale
+   * adaptation; nothing analogous stopped the tutor from re-offering a
+   * just-declined one.
+   */
+  it('does not re-offer the identical adaptation on the very next failure of the same skill after a decline', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const skillKey = 'financial-education/ahorro';
+    orchestrator.noteSegmentServed('seg-1', skillKey, 'quiz_mcq', 'prompt');
+
+    /*
+     * Each mocked reply uses its OWN `say` text — reusing the exact same
+     * sentence across consecutive turns trips the unrelated repeat-turn
+     * defence ("the tutor may not reuse its own sentences"), which forces a
+     * retry and would confuse this test's own model-response bookkeeping
+     * with a different mechanism entirely.
+     */
+    // Two ordinary misses cross STUCK_THRESHOLD but stay in the earlier
+    // "change explanation approach" branch (stylesTried), not the offer one.
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Vamos a intentarlo de nuevo.' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleSegmentResult('seg-1', 40, false, Date.now());
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Probemos de otra manera esta vez.' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleSegmentResult('seg-1', 40, false, Date.now());
+
+    // Third miss crosses OFFER_ADAPTATION_THRESHOLD: the tutor is instructed
+    // to offer, and (per this fixture's model reply) actually offers.
+    fetchMock.mockClear();
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({ ...GOOD_TURN, say: '¿Te ayudaría ir más despacio?', offerAdaptation: 'slower_pacing' }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleSegmentResult('seg-1', 40, false, Date.now());
+    const offerBody = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as {
+      messages: { content: string }[];
+    };
+    const offerReaction = offerBody.messages.at(-2)!.content;
+    expect(offerReaction).toContain('offerAdaptation');
+    expect(offerReaction).not.toContain('DECLINED');
+
+    // The learner declines it — exactly what `ws/server.ts`'s
+    // `adaptation_response` handler now calls on `{ accepted: false }`.
+    orchestrator.declineAdaptation('slower_pacing');
+
+    // A fourth miss on the SAME skill. Before the fix, this repeated the
+    // free-choice offer instruction byte-for-byte, with no mention that
+    // anything had ever been declined.
+    fetchMock.mockClear();
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Sigamos intentando juntos.' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleSegmentResult('seg-1', 40, false, Date.now());
+    const declineBody = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as {
+      messages: { content: string }[];
+    };
+    const declineReaction = declineBody.messages.at(-2)!.content;
+
+    expect(declineReaction).not.toBe(offerReaction);
+    expect(declineReaction).toContain('DECLINED');
+    expect(declineReaction).toContain('slower pacing');
+  });
+
+  it('refuses a decline naming an adaptation that was never offered — mirrors the accept-side check', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    // Nothing has ever been offered in this fresh session.
+    orchestrator.declineAdaptation('more_visual');
+
+    const skillKey = 'financial-education/ahorro';
+    orchestrator.noteSegmentServed('seg-1', skillKey, 'quiz_mcq', 'prompt');
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Vamos a intentarlo de nuevo.' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleSegmentResult('seg-1', 40, false, Date.now());
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'Probemos de otra manera esta vez.' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleSegmentResult('seg-1', 40, false, Date.now());
+
+    fetchMock.mockClear();
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: '¿Seguimos con otro intento?' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleSegmentResult('seg-1', 40, false, Date.now());
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as {
+      messages: { content: string }[];
+    };
+    const reaction = body.messages.at(-2)!.content;
+    // The bogus decline named nothing that was ever offered, so it must not
+    // silently exclude a style nobody offered — the free-choice offer is
+    // exactly as it would have been with no decline at all.
+    expect(reaction).toContain('offerAdaptation');
+    expect(reaction).not.toContain('DECLINED');
+  });
 });
 
 describe('what actually reaches the provider', () => {

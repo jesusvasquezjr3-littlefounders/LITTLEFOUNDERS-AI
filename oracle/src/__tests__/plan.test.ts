@@ -4,11 +4,12 @@ import {
   noteConversationTurn,
   OFFER_ADAPTATION_THRESHOLD,
   planState,
+  recordDeclinedAdaptation,
   recordGrade,
   STUCK_THRESHOLD,
   stuckInstruction,
 } from '../tutor/plan.js';
-import { PlanStateSchema } from '../context/schema.js';
+import { ADAPTATIONS, PlanStateSchema } from '../context/schema.js';
 
 /*
  * The lesson plan is the difference between a lesson and a playlist
@@ -107,6 +108,89 @@ describe('the stuck instruction', () => {
     // yes or no (/ORACLE.md §11). The instruction must never say "apply".
     expect(instruction).toContain('offerAdaptation');
     expect(instruction).not.toContain('apply the adaptation');
+  });
+});
+
+/*
+ * Confirmed finding (MEDIUM), adversarial review round 67, 2026-08-30:
+ * declining an adaptation offer left zero trace anywhere — `stylesTried` is
+ * written only by the earlier "change explanation approach" branch, never by
+ * the offer-adaptation branch itself — so a learner who declined an
+ * adaptation and then failed the same skill again was offered the IDENTICAL
+ * adaptation, verbatim, on the very next `stuckInstruction()` call. Two
+ * consecutive `recordGrade(plan, skill, false)` calls crossing the threshold,
+ * with nothing recorded for the decline in between (since nothing upstream
+ * recorded it at all), produced structurally identical output both times.
+ */
+describe('declining an adaptation is remembered for this stuck skill', () => {
+  it('does not re-offer the exact same adaptation on the next failure of the same skill', () => {
+    const plan = buildPlan('course_topic', COURSE, null);
+    for (let i = 0; i < OFFER_ADAPTATION_THRESHOLD; i += 1) recordGrade(plan, 'money.saving', false);
+    const firstOffer = stuckInstruction(plan, 'money.saving');
+    expect(firstOffer).toContain('offerAdaptation');
+    expect(firstOffer).not.toContain('DECLINED');
+
+    // The learner declines whatever was offered — this is exactly what
+    // `TutorOrchestrator.declineAdaptation` calls once a real
+    // `adaptation_response` frame confirms the decline; plan.ts owns the
+    // bookkeeping as plain arithmetic, so no model or socket is needed here.
+    recordDeclinedAdaptation(plan, 'slower_pacing');
+
+    // The learner fails the SAME skill again.
+    recordGrade(plan, 'money.saving', false);
+    const secondOffer = stuckInstruction(plan, 'money.saving');
+
+    // Before the fix this was byte-for-byte the SAME free-choice text as
+    // `firstOffer` — nothing recorded the decline, so the tutor could (and
+    // in a real session, would) re-offer the identical adaptation.
+    expect(secondOffer).not.toBe(firstOffer);
+    expect(secondOffer).toContain('slower pacing');
+    expect(secondOffer).toMatch(/DECLINED/);
+    expect(secondOffer).toContain('do NOT offer it again');
+  });
+
+  it('still offers freely, with no mention of a decline, when nothing has been declined yet', () => {
+    const plan = buildPlan('course_topic', COURSE, null);
+    for (let i = 0; i < OFFER_ADAPTATION_THRESHOLD; i += 1) recordGrade(plan, 'money.saving', false);
+    const instruction = stuckInstruction(plan, 'money.saving');
+    expect(instruction).toContain('offerAdaptation');
+    expect(instruction).not.toContain('DECLINED');
+  });
+
+  it('stops asking for an adaptation once every kind in the closed set has been declined', () => {
+    const plan = buildPlan('course_topic', COURSE, null);
+    for (let i = 0; i < OFFER_ADAPTATION_THRESHOLD; i += 1) recordGrade(plan, 'money.saving', false);
+    stuckInstruction(plan, 'money.saving');
+    for (const kind of ADAPTATIONS) recordDeclinedAdaptation(plan, kind);
+
+    recordGrade(plan, 'money.saving', false);
+    const instruction = stuckInstruction(plan, 'money.saving');
+    expect(instruction).not.toContain('offerAdaptation');
+    expect(instruction).toContain('Do NOT offer another adaptation');
+  });
+
+  it('forgets a decline once the skill is mastered, so a later genuinely new struggle starts fresh', () => {
+    const plan = buildPlan('course_topic', COURSE, null);
+    for (let i = 0; i < OFFER_ADAPTATION_THRESHOLD; i += 1) recordGrade(plan, 'money.saving', false);
+    stuckInstruction(plan, 'money.saving');
+    recordDeclinedAdaptation(plan, 'slower_pacing');
+
+    recordGrade(plan, 'money.saving', true); // mastered — the stuck episode ends
+
+    for (let i = 0; i < OFFER_ADAPTATION_THRESHOLD; i += 1) recordGrade(plan, 'money.saving', false);
+    const instruction = stuckInstruction(plan, 'money.saving');
+    expect(instruction).not.toContain('DECLINED');
+    expect(instruction).toContain('offerAdaptation');
+  });
+
+  it('leaves the ordinary "change explanation approach" branch (stylesTried) untouched', () => {
+    const plan = buildPlan('course_topic', COURSE, null);
+    recordGrade(plan, 'money.saving', false);
+    recordGrade(plan, 'money.saving', false);
+    const instruction = stuckInstruction(plan, 'money.saving');
+    expect(instruction).toContain('change the approach');
+    expect(instruction).not.toContain('DECLINED');
+    expect(plan.declinedAdaptations).toHaveLength(0);
   });
 });
 

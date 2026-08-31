@@ -6832,3 +6832,79 @@ committed each round's work immediately upon verification specifically
 to shrink this exposure window — once a fix is committed, a sibling
 round's stash operation (which only ever touches the UNCOMMITTED
 working tree) can no longer touch it.
+
+## Round 70: declining an adaptation offer left zero trace, so the tutor could re-offer the identical one on the very next failure
+
+A round-67 background adversarial review targeted the adaptation-offer
+mechanism (`oracle/src/tutor/plan.ts`'s `stuckInstruction`, the accept/
+decline path in `oracle/src/ws/server.ts`).
+
+**MEDIUM, FIXED.** The already-fixed accept-side enforcement (item 18/
+§11 — `applyAdaptation` only honors a value matching
+`lastOfferedAdaptation`) stops a stray frame from *applying* an
+unoffered or stale adaptation. Nothing analogous stopped the tutor from
+*re-offering* a just-declined one. `ws/server.ts`'s decline branch did
+nothing at all — its own comment read "Local state only — no upstream
+call, so no slot to claim" — so `LessonPlan` had no field recording
+which adaptation(s) were already offered-and-declined for a stuck
+skill; `stylesTried` (the sibling field for the earlier "change
+explanation approach" branch) is never touched by the offer-adaptation
+branch. Reproduced directly: two `recordGrade(plan, skill, false)`
+calls crossing `OFFER_ADAPTATION_THRESHOLD`, with nothing simulated in
+between for a decline (since the real code path does nothing), produce
+STRUCTURALLY IDENTICAL `stuckInstruction()` output both times — the
+free-choice instruction ("pick the one you judge most likely to help")
+with no exclusion and no mention anything was declined. The model's own
+conversation transcript doesn't even show the decline happened
+(`history.push` only fires for learner-text/tutor-say turns, never for
+`adaptation_response` of either polarity), so it has no way to
+voluntarily avoid repeating itself either. A learner who declines
+"slower pacing" could be offered "slower pacing" again immediately on
+their very next stumble — thrashing, not adapting.
+
+Fixed with `LessonPlan.declinedAdaptations`, scoped and reset exactly
+like the existing sibling field `stylesTried`: it accumulates declined
+adaptation kinds while a given skill is `stuckSkillKey`, and clears the
+moment that skill is mastered — so a later, genuinely new struggle
+(the same skill again, or a different one) starts fresh, and nothing
+persists past the session at all (`LessonPlan` is in-memory per
+session). This is consistent with `/ORACLE.md` §11's own rule that
+declining is not recorded as a fact ABOUT THE LEARNER (a permanent
+profile label) — this is transient scratch state for one struggling
+episode, the same category `stylesTried` already occupies safely. The
+field was deliberately NOT added to the strict, sealed model-context
+schema, since the decline only needs to influence the model at the
+exact moment `stuckInstruction()` fires (already free text) — extending
+the `.strict()` privacy-boundary schema would have triggered the full
+§4.1/legal-review process for no real need.
+
+`stuckInstruction()`'s offer branch now has three cases: nothing
+declined yet (the original free-choice text, unchanged), some declined
+(names them, tells the model not to re-offer, asks for a different
+one), and all five declined (tells the model to stop offering
+entirely and keep teaching directly). `TutorOrchestrator` gained
+`declineAdaptation(adaptation)` — the decline-side sibling of
+`applyAdaptation`, same "must match `lastOfferedAdaptation`" check and
+same one-time consumption — and `ws/server.ts`'s decline branch now
+calls it instead of doing nothing.
+
+Proof: 5 new `plan.test.ts` tests (the exact repro — decline then fail
+the same skill again, confirm the instruction now differs; the
+no-decline case unaffected; all-five-declined stops offering; the
+decline is forgotten after mastery; the ordinary `stylesTried` branch
+left untouched) and 2 new `orchestrator.test.ts` end-to-end tests (the
+full path via `handleSegmentResult`/`declineAdaptation` showing the
+next reaction names the declined adaptation; a decline naming something
+never offered is refused, mirroring the accept-side check). The
+pre-fix error, captured directly, literally names the missing
+mechanism: `declineAdaptation is not a function`. Full oracle suite
+green (565 tests), type-check (all three tsconfigs) and lint clean,
+`verify:pedagogy` green.
+
+Verified via a scoped `git stash push` on this round's own 5 files
+specifically (not a bare `git stash`), since this round ran
+concurrently with several sibling rounds sharing the same working
+directory — mid-task, this round's own edits to `plan.ts`/
+`orchestrator.ts`/`ws/server.ts` were found reverted by a SIBLING
+round's own stash operation; recaptured and re-verified before
+finishing, the same near-miss Rounds 68-69 already recorded.

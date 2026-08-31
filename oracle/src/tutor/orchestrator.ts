@@ -4,6 +4,7 @@ import {
   buildPlan,
   noteConversationTurn,
   planState,
+  recordDeclinedAdaptation,
   recordGrade,
   stuckInstruction,
   type LessonPlan,
@@ -530,6 +531,29 @@ export class TutorOrchestrator {
     if (adaptation !== this.lastOfferedAdaptation) return;
     this.lastOfferedAdaptation = null;
     if (!this.adaptations.includes(adaptation)) this.adaptations.push(adaptation);
+  }
+
+  /**
+   * The learner DECLINED an offered adaptation — the decline-side sibling of
+   * `applyAdaptation` above, checked the same way and for the same reason
+   * (§11 is "offered, never imposed" in both directions: an unoffered
+   * acceptance must not silently apply, and a decline of something never
+   * offered must not silently exclude a style nobody offered). Consumed on
+   * use like an acceptance is, so a second `adaptation_response` for the same
+   * now-closed offer — accept or decline — is a no-op either way.
+   *
+   * Found by adversarial review, round 67 (2026-08-30, MEDIUM): a decline
+   * used to leave zero trace anywhere (`ws/server.ts`'s own comment on that
+   * branch was "local state only, no upstream call, so no slot to claim"),
+   * so `stuckInstruction` re-issued the identical free-choice offer on the
+   * very next failure of the same skill. See `plan.ts`'s
+   * `LessonPlan.declinedAdaptations` for the memory this now writes into and
+   * how long it lasts.
+   */
+  declineAdaptation(adaptation: TutorContext['adaptations'][number]): void {
+    if (adaptation !== this.lastOfferedAdaptation) return;
+    this.lastOfferedAdaptation = null;
+    recordDeclinedAdaptation(this.plan, adaptation);
   }
 
   /**

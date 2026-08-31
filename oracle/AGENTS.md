@@ -1640,6 +1640,30 @@ everything passes the blocked half perfectly and destroys the product.
    `src/`+`skills/`, confirmed to fail/pass for the exact claimed reason
    via `git stash`. See `RUNBOOK.md` Round 69.
 
+60. **Declining an adaptation offer left zero trace, so the tutor could
+   re-offer the identical one on the very next failure.** Found by
+   adversarial review, round 70, 2026-08-30 (MEDIUM). The already-fixed
+   accept-side enforcement (item 18/§11) stops a stray frame from
+   *applying* an unoffered adaptation; nothing analogous stopped the
+   tutor from *re-offering* a just-declined one — `ws/server.ts`'s
+   decline branch did nothing at all, so two `recordGrade` failures
+   crossing the offer threshold with a decline in between produced
+   STRUCTURALLY IDENTICAL `stuckInstruction()` output, and the model's
+   own transcript never even showed the decline happened. Fixed with
+   `LessonPlan.declinedAdaptations`, scoped and reset exactly like the
+   sibling field `stylesTried` (clears on mastery, never persists past
+   the session) — deliberately NOT added to the strict sealed
+   model-context schema, since the decline only needs to reach the
+   model via `stuckInstruction()`'s own free text. `stuckInstruction()`
+   now has three cases (nothing declined, some declined — named and
+   excluded, all five declined — stop offering); `TutorOrchestrator`
+   gained `declineAdaptation()`, the decline-side sibling of
+   `applyAdaptation` with the same match-and-consume discipline. Proven
+   with 5 new `plan.test.ts` tests and 2 new `orchestrator.test.ts`
+   end-to-end tests; the pre-fix error literally names the missing
+   mechanism (`declineAdaptation is not a function`). See `RUNBOOK.md`
+   Round 70.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:
