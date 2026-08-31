@@ -643,6 +643,95 @@ describe('the whiteboard (V4) — spoken numbers vs. the board\'s own arithmetic
   });
 });
 
+/*
+ * THE SAME DEFECT, A DIFFERENT PHRASING — round 67 (2026-08-30, HIGH), the
+ * day after round 65 shipped. The owner-observed live turn narrated a bare
+ * comma list ending in a bald "So 12 dollars" conclusion instead of round
+ * 65's ordinal-anchored "after the Nth ... you have VALUE" form, which
+ * `whiteboardNumberMismatch`'s pre-existing patterns never fired on. See
+ * that function's own doc comment (prompt.ts) for the full reproduction.
+ */
+describe('the whiteboard (V4) — a "for N periods ... so $X" conclusion vs. the board\'s own arithmetic', () => {
+  it('asks again when a bare list ending in a "so" conclusion contradicts the board', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          say: 'Imagina que consigues 3 pesos cada mes. Si ahorras durante 4 meses, ¿cuánto tendrías? Vamos a pensarlo: 3, luego 6, luego 9, luego 12. Entonces tendrías 12 pesos.',
+          whiteboard: {
+            kind: 'sequence',
+            start: 3,
+            unit: 'month',
+            steps: [
+              { op: 'add', value: 3 },
+              { op: 'add', value: 3 },
+              { op: 'add', value: 3 },
+              { op: 'add', value: 3 },
+            ],
+            label: 'Cada mes consigues 3 más',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          say: 'Imagina que consigues 3 pesos cada mes. Si ahorras durante 4 meses, ¿cuánto tendrías? Vamos a pensarlo: 3, luego 6, luego 9, luego 12. Entonces tendrías 12 pesos.',
+          whiteboard: {
+            kind: 'sequence',
+            start: 0,
+            unit: 'month',
+            steps: [
+              { op: 'add', value: 3 },
+              { op: 'add', value: 3 },
+              { op: 'add', value: 3 },
+              { op: 'add', value: 3 },
+            ],
+            label: 'Cada mes consigues 3 más',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = (await orchestrator.handleLearnerText('¿y si me dan cada mes?', Date.now()))!;
+
+    const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(retryBody).toContain('does NOT match what');
+    expect(outcome?.emission.turn.whiteboard?.start).toBe(0);
+    expect(outcome?.emission.source).toBe('model');
+  });
+
+  it('falls back to the scripted line if the retry ALSO disagrees with the board, rather than delivering a wrong number twice', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const buggyTurn = () =>
+      modelReplies({
+        ...GOOD_TURN,
+        say: 'Imagina que consigues 3 pesos cada mes. Si ahorras durante 4 meses, ¿cuánto tendrías? Vamos a pensarlo: 3, luego 6, luego 9, luego 12. Entonces tendrías 12 pesos.',
+        whiteboard: {
+          kind: 'sequence',
+          start: 3,
+          unit: 'month',
+          steps: [
+            { op: 'add', value: 3 },
+            { op: 'add', value: 3 },
+            { op: 'add', value: 3 },
+            { op: 'add', value: 3 },
+          ],
+          label: 'Cada mes consigues 3 más',
+          currency: 'MXN',
+        },
+      });
+    fetchMock
+      .mockResolvedValueOnce(buggyTurn())
+      .mockResolvedValueOnce(buggyTurn())
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = (await orchestrator.handleLearnerText('¿y si me dan cada mes?', Date.now()))!;
+
+    expect(outcome.emission.source).toBe('scripted');
+  });
+});
+
 describe('the whiteboard (V4) — verification and delivery', () => {
   it('a valid whiteboard reaches the turn untouched', async () => {
     const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);

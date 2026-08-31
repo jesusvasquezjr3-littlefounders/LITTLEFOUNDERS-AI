@@ -1612,9 +1612,16 @@ export class TutorOrchestrator {
              * first week you have 5, after the second 10...") paired with
              * `whiteboard.start` set to the per-week amount instead of zero,
              * shifting the whole drawn sequence one period ahead of the
-             * narration. See `whiteboardNumberMismatch`'s own doc comment
-             * (prompt.ts) for the full reproduction and the false-positive
-             * analysis behind its narrow scope.
+             * narration. Round 67 (2026-08-30, HIGH) found the SAME defect
+             * again a day later under a different phrasing this check's
+             * ordinal-anchored patterns could not see — a bare comma list
+             * ("3, then 6, then 9, then 12") ending in a bald conclusion
+             * ("So 12 dollars") rather than "after the Nth ... you have
+             * VALUE" — closed with a second, narrower anchor inside the same
+             * function (period COUNT, not ordinal, paired with a later
+             * concluding total). See `whiteboardNumberMismatch`'s own doc
+             * comment (prompt.ts) for both reproductions and the
+             * false-positive analysis behind each pattern's narrow scope.
              */
             const numberMismatch = whiteboardNumberMismatch(parsed.turn.say, parsed.turn.whiteboard);
             /*

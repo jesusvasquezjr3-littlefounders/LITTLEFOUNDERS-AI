@@ -6558,3 +6558,125 @@ is actually listening and uniformly treat a rejected or `null` verdict
 as "emit nothing," never as "deliver the unmoderated text anyway";
 timeout wiring on the judge's own fetch (round 24) is intact and
 exercised by the existing `timeout-cancellation.test.ts`.
+
+## Round 67: the same whiteboard-vs-story defect, confirmed live again the next day under a phrasing round 65's fix could not see
+
+Started from a CONFIRMED live reproduction, not a hypothesis, in a real
+browser session as a real `admin` account, en-US locale — the exact bug
+class round 65 fixed the day before (item 56), recurring under different
+words. Typing "what if i get 3 dollars every month" delivered, in full:
+
+**`say`:** "Imagine you get 3 dollars every month. If you save for 4
+months, how much would you have? Let's think: 3, then 6, then 9, then 12.
+So 12 dollars. Now, what if you spend 2 dollars each month? How much
+would you have after 3 months?"
+
+**`whiteboard`:** `{start: 3, steps: [add 3, add 3, add 3, add 3]}`, whose
+own `computeSequence` is 3, 6, 9, 12, 15 — one period ahead of the
+narrated 3, 6, 9, 12, the SAME root cause round 65 already diagnosed (a
+story with no pre-existing amount has no worked example to generalize
+`start:0` from). Round 65's `whiteboardNumberMismatch` never fired: its
+`PERIOD_CLAIM_PATTERNS` anchor on an ORDINAL word immediately before a
+cumulative-total verb ("after the first ... you have"), and this turn
+never says that — it narrates the sequence as a bare comma list ending in
+a bald "So 12 dollars", with the period COUNT ("for 4 months") and the
+concluding total separated by a full question mark and the list itself.
+
+**Confirming it was real and recurring before writing any fix**, this
+session's own mandate and round 65's own precedent: ~95 real turns
+against the actual `TutorOrchestrator` and the real model (no mocks),
+across en-US/es-MX/pt-BR, via a throwaway harness mirroring
+`scripts/converse.ts`'s own construction. Three phases, escalating like
+round 65's did: a bare single first turn (never elicited a worked
+walkthrough — the model only asks, never answers, on turn one); a "show
+me the steps" follow-up (the shape that actually elicits one); and 15
+identical repeats of the exact live prompt plus that follow-up, matching
+round 65's own tactic of hammering one line once variety came back clean.
+Findings:
+
+- The bare-list/"so"-concluded PHRASING itself is common — roughly 1 in 8
+  of the 55 turns where a walkthrough was elicited — confirming this is a
+  real, recurring gap in what the check could SEE, independent of whether
+  the sampled numbers happened to agree.
+- One of the 15 identical repeats reproduced a genuine NUMBER mismatch a
+  second time, independent of the owner's own turn: `whiteboard.start` at
+  3 against a spoken "month one you have 3, month two you have 6, month
+  three you have 9, month four you have 12" — the exact round-65 shift,
+  one phrasing further.
+- That THIRD phrasing is deliberately left uncaught. A consistent, correct
+  turn sampled in the SAME run ("month 1 you have 3, month 2 you add 3
+  more, month 3 you add 3 again" against a board whose `start` genuinely
+  was 3) uses the identical bare "unit N you have/add VALUE" surface shape
+  to mean the OPPOSITE thing — a stated starting balance, not a
+  first-period result — and no wording distinguishes the two readings well
+  enough to anchor on safely. Per this file's own repeatedly-stated
+  doctrine, silence beats a false alarm; a lower-confidence heuristic here
+  would flag the second, correct turn as often as it catches the first.
+  Left as a documented, deliberate gap rather than forced in.
+- Widening the check's own verb list surfaced a SECOND, unrelated latent
+  bug, caught while extending it rather than assumed away: the existing
+  `'ve saved` alternative was nested inside a group requiring a literal
+  SPACE before the apostrophe (`you 've saved`), which no real contraction
+  ever has (`you've saved` has none) — never exercised by a passing test,
+  so it never mattered until this round tried to add two more apostrophe
+  forms (`you'd have`, `you'll have`) the same broken way. Fixed by giving
+  every contraction its own alternative outside the space-requiring group.
+
+**Fixed, two complementary angles, matching this file's own "tell AND
+check" pairing (item 39's `TIER_GUIDANCE` + `tierVocabularyViolation`):**
+
+*Detection.* A new, narrow anchor inside the SAME `whiteboardNumberMismatch`
+(`prompt.ts`) rather than a sibling check — a period COUNT ("for 4
+months"/"after 3 weeks", naming how many periods elapse, never an
+ordinal) bound to a LATER concluding total introduced by "so"/"entonces"/
+"então", compared against `computeSequence(board)[N]`. Two guards found
+necessary while characterizing this, not assumed: the captured total must
+not be immediately followed by a time-unit word (without this, a real
+sampled turn — "...after week 2 you have 10. So after 3 weeks, how many
+do you have?" — would misread the "3" in "so after 3 weeks" as a
+concluding total, when it is the start of a NEW question); and the search
+for one anchor's total stops at the start of the NEXT period-count anchor
+and within a bounded character window, since the live-observed turn
+narrates a SECOND, unrelated scenario later in the same turn. Plus the
+contraction-verb widening and its own latent-bug fix, above.
+
+*Prevention.* `TUTOR_SYSTEM_PROMPT`'s whiteboard worked example (item 50's
+neighbour) now states explicitly what `start` must be when a story has NO
+pre-existing amount — 0, never the per-step rate — closing the root cause
+round 65 diagnosed rather than only detecting its symptom after the fact.
+Not expected to reach 100% alone (this file is the record of instructions
+that did not, on their own); the detector stays in place regardless.
+
+**Proof.** 14 new `contradiction.test.ts` unit tests: the exact live
+turn, a genuinely-wrong "so" total with no list, Spanish and Portuguese
+equivalents, several genuinely consistent real transcripts from this
+round's own characterization run that must NOT fire (including the
+two-scenario turn, the "so after 3 weeks" false-lead guard, and the
+`'d have` contraction), a hyphenated-identifier canary, and BOTH sides of
+the deliberately-uncaught ambiguous "month N you have X" shape — the
+mismatched sample and the correct one, side by side, as the documented
+reason no anchor was added for it. 2 new `orchestrator.test.ts`
+end-to-end tests, mirroring round 65's own pair exactly: one proving the
+attempt-0 retry fires and corrects the board for this new phrasing, one
+proving a mismatch that survives both attempts falls back to the scripted
+line. All 16 confirmed to fail for the exact claimed reason pre-fix via
+`git stash` (5 unit-test assertions false instead of true; both
+end-to-end tests delivering `model` instead of retrying/falling back to
+`scripted`), all pass post-fix.
+
+Verification: full oracle suite green (26 files, 555 tests — 539
+existing + 16 new, zero regressions), lint and type-check clean (all
+three tsconfigs — src, scripts, test), `verify:tutor` and
+`verify:pedagogy` green (both deterministic, unaffected by this change
+as expected). Root `docs:check`/`secrets:check`/`paths:check`/
+`tools:test`/`provider:check` clean. A fresh local `npm run
+tutor:converse` run (7 real scenarios, $0.0627, zero empty completions)
+came back "nothing a person would notice went wrong" — the paid `gh
+workflow run tutor-deploy.yml -f step=converse` gate runs against
+whatever is on `main`, so it cannot evidence an uncommitted fix before
+the commit that carries it; the local run is the same substitute
+evidence round 42 already used under this exact constraint.
+`oracle/AGENTS.md` item 58. The throwaway reproduction/validation scripts
+used to characterize the defect (mirroring `scripts/converse.ts`'s own
+pattern, four files across three phases plus one regex-validation
+script) were deleted before this round closed; none were committed.

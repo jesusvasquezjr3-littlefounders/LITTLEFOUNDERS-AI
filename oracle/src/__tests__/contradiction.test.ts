@@ -345,3 +345,176 @@ describe("the board's own numbers disagreeing with the story it just told", () =
     ).toBe(false);
   });
 });
+
+/*
+ * THE SAME DEFECT, A DIFFERENT PHRASING. Found live by the owner, round 67
+ * (2026-08-30, HIGH), the day after round 65 shipped: "what if i get 3
+ * dollars every month" produced a turn narrating a bare comma list ending in
+ * a bald "So 12 dollars" conclusion, which the ordinal-anchored patterns
+ * above never fire on. See `PERIOD_COUNT_THEN_TOTAL_PAIRS`'s own doc comment
+ * (prompt.ts) for the full characterization: ~95 real turns against the
+ * real `TutorOrchestrator`, confirming both that this phrasing is common
+ * (roughly 1 in 8 of the turns where a worked walkthrough was elicited) and
+ * a second, independent live reproduction of the actual number disagreeing
+ * (a THIRD phrasing this round found and deliberately left unaddressed —
+ * see the "ambiguous phrasing" tests below).
+ */
+describe('the board\'s own numbers disagreeing with a "for N periods ... so $X" conclusion', () => {
+  it('catches the exact live-observed turn: a bare list ending in "So 12 dollars", one period ahead of the story', () => {
+    expect(
+      whiteboardNumberMismatch(
+        "Imagine you get 3 dollars every month. If you save for 4 months, how much would you have? Let's think: " +
+          '3, then 6, then 9, then 12. So 12 dollars. Now, what if you spend 2 dollars each month? How much would ' +
+          'you have after 3 months?',
+        { start: 3, steps: [{ op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }] },
+      ),
+    ).toBe(true);
+  });
+
+  it('catches a genuinely wrong "so" total even with no list before it', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Imagine you get 4 dollars every month. If you save for 3 months, how much would you have? So 20 dollars.',
+        { start: 0, steps: [{ op: 'add', value: 4 }, { op: 'add', value: 4 }, { op: 'add', value: 4 }] },
+      ),
+    ).toBe(true);
+  });
+
+  it('catches the Spanish equivalent: "durante 4 meses ... Entonces tendrías 12 pesos"', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Imagina que consigues 3 pesos cada mes. Si ahorras durante 4 meses, ¿cuánto tendrías? Vamos a pensarlo: ' +
+          '3, luego 6, luego 9, luego 12. Entonces tendrías 12 pesos.',
+        { start: 3, steps: [{ op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }] },
+      ),
+    ).toBe(true);
+  });
+
+  it('catches the Portuguese equivalent: "durante 4 meses ... Então 12 reais"', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Imagine que você ganha 3 reais todo mês. Se você guardar durante 4 meses, quanto teria? Vamos pensar: 3, ' +
+          'depois 6, depois 9, depois 12. Então 12 reais.',
+        { start: 3, steps: [{ op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }] },
+      ),
+    ).toBe(true);
+  });
+
+  it('leaves a genuinely consistent bare-list-and-conclude turn alone (a real sample from this round\'s own characterization run)', () => {
+    expect(
+      whiteboardNumberMismatch(
+        "Of course! Watch the board: you start with 8 dollars, and each month you add 3. After three months, it " +
+          "shows 8, then 11, then 14, then 17. So you'd have 17 dollars. Now, what if you started with 5 dollars " +
+          'and got 4 each month for two months? How much would you have?',
+        { start: 8, steps: [{ op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }] },
+      ),
+    ).toBe(false);
+  });
+
+  it('leaves a consistent turn narrating a SECOND, unrelated scenario alone — the second scenario is never checked against the first board', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Of course. Watch: month one you have 3, month two you add 3 more to make 6, month three makes 9, month ' +
+          "four makes 12. So after 4 months you'd have 12 dollars. Now you try: what if you got 5 dollars every " +
+          'month for 3 months? How many would you have?',
+        { start: 0, steps: [{ op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }] },
+      ),
+    ).toBe(false);
+  });
+
+  // The exact false lead found WHILE characterizing this check, not assumed:
+  // an earlier draft captured any number within 25 characters of "so", which
+  // misread the "3" in "so after 3 weeks" (the start of a NEW question about
+  // a period count) as if it were a concluding total.
+  it('does not misread "so after 3 weeks, how many do you have?" as a concluding total', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Watch the board: you start with 0, and each week adds 5. After week 1 you have 5, after week 2 you have ' +
+          '10. So after 3 weeks, how many do you have?',
+        { start: 0, steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }, { op: 'add', value: 5 }] },
+      ),
+    ).toBe(false);
+  });
+
+  it('leaves alone a "so" that only leads into a question, not a stated total', () => {
+    expect(
+      whiteboardNumberMismatch(
+        "Of course. Watch the board — each month you add 3. After month 1 you have 3, after month 2 you have 6. " +
+          "So after month 3, how many do you think you'll have?",
+        { start: 0, steps: [{ op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }] },
+      ),
+    ).toBe(false);
+  });
+
+  it('never flags ordinary correct arithmetic narration with a comma list and no period-count anchor', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Great! 3 plus 3 is 6, 6 plus 3 is 9, and 9 plus 3 is 12 — nice counting.',
+        { start: 0, steps: [{ op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }] },
+      ),
+    ).toBe(false);
+  });
+
+  it('does not spuriously match inside a hyphenated identifier', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'PAYLOAD-FOR-4-MONTHS-SO-YOU-HAVE-999-TOKEN and a real board follows: imagine you save 8 pesos each month.',
+        { start: 0, steps: [{ op: 'add', value: 8 }] },
+      ),
+    ).toBe(false);
+  });
+
+  // The contraction gap found while widening PERIOD_CLAIM_PATTERNS for this
+  // round: "you'd have"/"you'll have"/"you've saved" now match the same
+  // tight ordinal anchor the full forms already did.
+  it('catches an ordinal-anchored mismatch stated with the "you\'d have" contraction', () => {
+    expect(
+      whiteboardNumberMismatch(
+        "Imagine you save 5 pesos each week. After the first week you'd have 5, after the second you'd have 10.",
+        { start: 5, steps: [{ op: 'add', value: 5 }] },
+      ),
+    ).toBe(true);
+  });
+
+  it('leaves a genuinely consistent "you\'d have" turn alone', () => {
+    expect(
+      whiteboardNumberMismatch(
+        "Of course. Watch the board: you start with 0, and each month you add 3. After 4 months, you'd have 12 " +
+          'dollars. Now, if you saved 3 dollars each month for 5 months, how many would you have?',
+        { start: 0, steps: [{ op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }] },
+      ),
+    ).toBe(false);
+  });
+
+  /*
+   * A THIRD phrasing this round found live — and deliberately left
+   * unaddressed. "month one you have 3, month two you have 6, month three
+   * you have 9, month four you have 12" against `start: 3` is the exact
+   * round-65 shift, reproduced independently of the owner's own turn during
+   * this round's own characterization run. It stays uncaught because the
+   * IDENTICAL bare "unit N you have/add VALUE" surface shape is used by a
+   * genuinely CORRECT turn from the same run to mean the OPPOSITE thing — a
+   * stated starting balance, not a first-period result (the next test).
+   * No wording distinguishes the two readings well enough to anchor on
+   * safely, so per this file's own doctrine, silence beats a false alarm.
+   */
+  it('does NOT catch the ambiguous "month N you have X" shape — a documented, deliberate gap', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Watch the board: month one you have 3, month two you have 6, month three you have 9, month four you ' +
+          'have 12. So four months. Now you try: if you get 4 dollars each month, how many months to reach 20?',
+        { start: 3, steps: [{ op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }] },
+      ),
+    ).toBe(false);
+  });
+
+  it('the SAME ambiguous shape, used correctly, from the same characterization run — why no anchor was added', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Watch the jar grow: month 1 you have 3, month 2 you add 3 more, month 3 you add 3 again. What number ' +
+          'do you see at the end?',
+        { start: 3, steps: [{ op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }] },
+      ),
+    ).toBe(false);
+  });
+});

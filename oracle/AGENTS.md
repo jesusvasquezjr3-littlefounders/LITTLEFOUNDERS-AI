@@ -1576,6 +1576,51 @@ everything passes the blocked half perfectly and destroys the product.
    confirmed to fail for the exact claimed reason pre-fix via `git stash`.
    See `RUNBOOK.md` Round 66.
 
+58. **The SAME whiteboard-vs-story defect (item 56), confirmed live again
+   the next day under a phrasing the round-65 fix could not see.** Found
+   live by the owner, round 67, 2026-08-30 (HIGH). "What if i get 3
+   dollars every month" produced `say` narrating a bare comma list ending
+   in a bald conclusion — "Let's think: 3, then 6, then 9, then 12. So 12
+   dollars" — paired with `whiteboard: {start: 3, steps: [add 3 ×4]}`
+   (computed 3, 6, 9, 12, 15: one period ahead), the exact root cause item
+   56 already diagnosed. `whiteboardNumberMismatch`'s existing patterns
+   never fired: they anchor on an ORDINAL word immediately before a
+   cumulative-total verb ("after the first ... you have"), and this turn
+   never says that. Confirmed real and recurring before writing a fix,
+   ~95 real turns against the real model: the bare-list/"so"-concluded
+   phrasing appeared in roughly 1 in 8 of the turns where a worked
+   walkthrough was elicited, and one of 15 identical repeats of the exact
+   live prompt reproduced a genuine number mismatch a SECOND time under a
+   THIRD phrasing ("month one you have 3, month two you have 6...") —
+   deliberately left uncaught, because the identical bare "unit N you
+   have/add VALUE" surface shape was also used, correctly, by a different
+   real turn in the same run to mean a stated STARTING balance rather than
+   a first-period result; no wording distinguishes the two readings well
+   enough to anchor on safely, so per this file's own doctrine, silence
+   beat forcing in a pattern that would misfire as often as it caught.
+   Fixed on two fronts: a new, narrow anchor inside the SAME
+   `whiteboardNumberMismatch` binding an explicit period COUNT ("for 4
+   months"/"after 3 weeks", never an ordinal) to a LATER concluding total
+   introduced by "so"/"entonces"/"então" — guarded against misreading "so
+   after 3 weeks, how many do you have?" as a total (a real false lead
+   found while characterizing this) and against pairing across a SECOND,
+   unrelated scenario narrated later in the same turn; and
+   `TUTOR_SYSTEM_PROMPT`'s own worked example now states explicitly that
+   `start` must be 0, never the per-step rate, when a story has no
+   pre-existing amount — closing the root cause rather than only
+   detecting its symptom, the same "tell AND check" pairing as
+   `TIER_GUIDANCE`/`tierVocabularyViolation`. Also caught and fixed while
+   widening the check's verb list: the pre-existing `'ve saved` verb form
+   required a literal SPACE before the apostrophe (`you 've saved`, which
+   no real contraction has), a latent bug never exercised by a passing
+   test until this round tried to add `'d have`/`'ll have` the same way.
+   14 new `contradiction.test.ts` unit tests and 2 new
+   `orchestrator.test.ts` end-to-end tests (mirroring item 56's own pair),
+   including both sides of the deliberately-uncaught ambiguous phrasing
+   side by side as the documented reason no anchor was added for it — all
+   confirmed to fail for the exact claimed reason pre-fix via `git stash`.
+   See `RUNBOOK.md` Round 67.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:
@@ -1604,5 +1649,5 @@ with `emission.source === 'model'`. See `RUNBOOK.md`.
 - **`learnerBrief`** renders as the tutor's OWN notes, never as the learner's words — text derived from a child's speech must never be readable as instructions. Any change to what reaches the model still walks the full §4.1 chain (schema, ORACLE.md, legal review, the field-count test).
 - **Episodic recall** triggers on a CLOSED phrase list only — no model ever decides whether to look — and failure degrades to the turn we had before.
 - **The grace turn** (`closeGraceUsed`) is minted exactly once per session; the turn after it closes scripted no matter what the model did.
-- **The whiteboard** (`src/tutor/whiteboard.ts`) — `values` are ALWAYS server-computed from the model's own `start`/`steps`, recomputed a second time at the wire (`ws/server.ts`) rather than trusted from wherever they were last computed, and dropped WHOLE (fail-open) on a non-finite/negative/out-of-range result — never shown as authored. A turn may never carry both `whiteboard` and `segmentRequest`; the schema refuses it. `whiteboard.unit` (`day`/`week`/`month`/`year`, closed vocabulary) must agree with whichever cadence word the model's own `say` used — found live, drawing "Día 1/2" under a story that said "cada semana" three times. `narratesUnshownGrowth()`, `whiteboardUnitMismatch()` and `whiteboardNumberMismatch()` in `src/tutor/prompt.ts` are deterministic checks feeding the standard repair loop (§9), same pattern as `falsePraise` — the instruction alone did not reliably get the real model to set the field at all. `whiteboardNumberMismatch()` catches the narrowest of the three: `say` and `whiteboard` each individually well-formed, but disagreeing on the actual running totals — `start` silently absorbing a period's worth of growth the narration had already attributed to "after the first period" (item 56).
+- **The whiteboard** (`src/tutor/whiteboard.ts`) — `values` are ALWAYS server-computed from the model's own `start`/`steps`, recomputed a second time at the wire (`ws/server.ts`) rather than trusted from wherever they were last computed, and dropped WHOLE (fail-open) on a non-finite/negative/out-of-range result — never shown as authored. A turn may never carry both `whiteboard` and `segmentRequest`; the schema refuses it. `whiteboard.unit` (`day`/`week`/`month`/`year`, closed vocabulary) must agree with whichever cadence word the model's own `say` used — found live, drawing "Día 1/2" under a story that said "cada semana" three times. `narratesUnshownGrowth()`, `whiteboardUnitMismatch()` and `whiteboardNumberMismatch()` in `src/tutor/prompt.ts` are deterministic checks feeding the standard repair loop (§9), same pattern as `falsePraise` — the instruction alone did not reliably get the real model to set the field at all. `whiteboardNumberMismatch()` catches the narrowest of the three: `say` and `whiteboard` each individually well-formed, but disagreeing on the actual running totals — `start` silently absorbing a period's worth of growth the narration had already attributed to "after the first period" (item 56), or to a later concluding "so"/"entonces"/"então" total following an explicit period count, the same defect confirmed live again under a different phrasing the next day (item 58).
 

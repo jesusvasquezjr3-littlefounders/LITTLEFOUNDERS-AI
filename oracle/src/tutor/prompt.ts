@@ -480,15 +480,198 @@ const NUMBER_TOLERANCE = 0.6;
  * same clause, per locale. `tienes`/`você tem`/`fica com` name the running
  * balance; `ahorras`/`guardas`/`coloca` (the RATE) are deliberately excluded
  * — see the doc comment above.
+ *
+ * The English verb alternation now also accepts the contractions `you'd
+ * have`/`you'll have`/`you've saved` — added round 67 (2026-08-30) after
+ * characterizing a live, owner-observed turn (see
+ * `PERIOD_COUNT_THEN_TOTAL_PAIRS`'s own doc comment below): a real model
+ * repro produced "After 4 months,
+ * you'd have 12" and "So you'd have 17 dollars", neither of which the
+ * pre-existing `will have|would have|have saved|'ve saved` list matched —
+ * not only a contraction the original list never anticipated, but a latent
+ * bug in that list itself, caught while widening it rather than assumed
+ * away: `you (?:...|'ve saved)` requires a literal SPACE between "you" and
+ * the apostrophe ("you 've saved"), which no real contraction ever has
+ * ("you've saved" has none). Never exercised by a passing test, so it never
+ * mattered until this round tried to add two more apostrophe forms the same
+ * broken way. Fixed by giving every contraction its own alternative outside
+ * the space-requiring `you ` group, rather than nesting it inside one.
  */
 const PERIOD_CLAIM_PATTERNS: RegExp[] = [
-  // English: "after the first week you have 5" / "after one week you have 35" / "after 1 week you have 5"
-  /\bafter (?:the )?(first|second|third|fourth|fifth|one|two|three|four|five|\d)\b[^.!?]{0,25}?\b(?:you (?:have|will have|would have|have saved|'ve saved))\b[^.!?]{0,10}?(\d+(?:\.\d+)?)/gi,
+  // English: "after the first week you have 5" / "after one week you have 35" / "after 1 week you have 5" / "after 4 months you'd have 12"
+  /\bafter (?:the )?(first|second|third|fourth|fifth|one|two|three|four|five|\d)\b[^.!?]{0,25}?\b(?:you (?:have|will have|would have|have saved)|you've saved|you'd have|you'll have)\b[^.!?]{0,10}?(\d+(?:\.\d+)?)/gi,
   // Spanish: "después de una semana ... tienes 43" / "después de la tercera ... tendrías 59"
   /\bdespu[ée]s de (?:la |una )?(primera|segunda|tercera|cuarta|quinta|una|dos|tres|cuatro|cinco)\b[^.!?]{0,30}?\b(?:tienes|tendr[íi]as|tendr[áa]s)\b[^.!?]{0,15}?(\d+(?:\.\d+)?)/gi,
   // Portuguese: "na primeira semana ... fica com 8" / "na segunda ... você tem 13"
   /\bn[ao] (primeira|segunda|terceira|quarta|quinta)\b[^.!?]{0,45}?\b(?:voc[êe]\s+(?:tem|teria)|fica(?:m)?\s+com)\b[^.!?]{0,10}?(\d+(?:\.\d+)?)/gi,
 ];
+
+/**
+ * THE SAME DEFECT, A DIFFERENT PHRASING — found live by the owner, round 67
+ * (2026-08-30, HIGH), the day after round 65 shipped. Asking "what if i get
+ * 3 dollars every month" produced: `say` = "Imagine you get 3 dollars every
+ * month. If you save for 4 months, how much would you have? Let's think: 3,
+ * then 6, then 9, then 12. So 12 dollars. Now, what if you spend 2 dollars
+ * each month? How much would you have after 3 months?" paired with
+ * `whiteboard: {start: 3, steps: [add 3, add 3, add 3, add 3]}` — the SAME
+ * root cause round 65 already diagnosed (a story with no pre-existing
+ * amount has no worked example to generalize `start` from, so the model
+ * intermittently reaches for the per-period rate instead of zero), but
+ * `PERIOD_CLAIM_PATTERNS` above never fires: it anchors on an ORDINAL word
+ * immediately before a cumulative-total verb ("after the first ... you
+ * have"), and this turn never says that — it narrates the sequence as a
+ * bare comma list ("3, then 6, then 9, then 12") ending in a bald
+ * conclusion ("So 12 dollars"), with the period COUNT ("for 4 months") and
+ * the concluding total separated by a full question mark and the list
+ * itself.
+ *
+ * Confirmed real and recurring before writing this fix, matching round 65's
+ * own discipline: ~95 real turns against the actual `TutorOrchestrator` and
+ * the real model (no mocks), across en-US/es-MX/pt-BR, a bare single first
+ * turn, a "show me the steps" follow-up (the shape that actually elicits a
+ * worked walkthrough — a bare first turn never did), and 15 identical
+ * repeats of the exact live prompt plus that same follow-up. The bare-list/
+ * "so"-concluded PHRASING itself is common — it appeared in roughly 1 in 8
+ * of the 55 turns where a walkthrough was elicited — and one of the 15
+ * identical repeats reproduced a genuine NUMBER mismatch a second time,
+ * independent of the owner's own observation: `whiteboard.start` at 3
+ * against a spoken "month one you have 3, month two you have 6, month three
+ * you have 9, month four you have 12" — the exact round-65 shift, one more
+ * phrasing again. That THIRD phrasing is deliberately left uncaught here: a
+ * consistent, correct turn sampled in the same run ("month 1 you have 3,
+ * month 2 you add 3 more, month 3 you add 3 again" against a board whose
+ * `start` genuinely was 3) uses the identical bare "unit N you have/add
+ * VALUE" surface shape to mean the OPPOSITE thing — a stated starting
+ * balance, not a first-period result — and no wording distinguishes the two
+ * readings well enough to anchor on safely. Per this file's own doctrine,
+ * silence beats a false alarm; a lower-confidence heuristic here would
+ * flag the second, correct turn as often as it catches the first.
+ *
+ * DELIBERATELY NARROW, the same posture as every check in this file:
+ * anchors on an explicit PERIOD COUNT ("for 4 months" / "after 3 weeks" —
+ * naming how many periods elapse, never an ordinal) followed LATER in the
+ * turn by an explicit CONCLUDING TOTAL introduced by "so"/"entonces"/
+ * "então" — never a bare "X, then Y, then Z" list on its own, which is
+ * completely ordinary, correct arithmetic narration in a math-tutoring
+ * product and would be exactly the false alarm this file's whole posture
+ * exists to avoid (a real consistent turn from this same characterization
+ * run: "After three months, it shows 8, then 11, then 14, then 17. So
+ * you'd have 17 dollars" — a bare list AND a "so"-conclusion, and correct).
+ * Two guards found necessary WHILE characterizing this, not assumed:
+ *
+ * - The captured "total" must NOT be immediately followed by a time-unit
+ *   word (day/week/month/year, per locale). Without this, a real sampled
+ *   turn — "After week 1 you have 5, after week 2 you have 10. So after 3
+ *   weeks, how many do you have?" — would have misread the "3" in "so after
+ *   3 weeks" as a concluding total, when it is actually the start of a NEW
+ *   question about a period count, not an answer to one.
+ * - The concluding-total search for one period-count anchor stops at the
+ *   START of the NEXT period-count anchor (if any) and within
+ *   `MAX_PERIOD_TOTAL_WINDOW` characters — the live-observed turn narrates a
+ *   SECOND, unrelated scenario ("what if you spend 2 dollars each month?")
+ *   later in the same turn, and a claim about that second scenario must
+ *   never be checked against the first scenario's board.
+ *
+ * Like the patterns above, this only fires when a `computeSequence` ground
+ * truth already exists, and a spoken value within `NUMBER_TOLERANCE` of the
+ * board's own float is a rounding choice, never a contradiction.
+ */
+const MAX_PERIOD_TOTAL_WINDOW = 220;
+
+/**
+ * Cardinal (never ordinal) period counts, self-contained rather than reusing
+ * `PERIOD_WORD` above: that map's Spanish/Portuguese keys were tuned for
+ * ordinal-anchored claims and do not cover every cardinal form this pattern
+ * needs (`un`, `um`/`uma`, `dois`/`duas`), and keeping the two maps separate
+ * means a future edit to one can never silently change the other's tested
+ * behaviour.
+ */
+const PERIOD_COUNT_WORD: Record<string, number> = {
+  '1': 1,
+  '2': 2,
+  '3': 3,
+  '4': 4,
+  '5': 5,
+  one: 1,
+  two: 2,
+  three: 3,
+  four: 4,
+  five: 5,
+  un: 1,
+  una: 1,
+  dos: 2,
+  tres: 3,
+  cuatro: 4,
+  cinco: 5,
+  um: 1,
+  uma: 1,
+  dois: 2,
+  duas: 2,
+  três: 3,
+  quatro: 4,
+};
+
+interface PeriodCountThenTotalPair {
+  /** Captures a cardinal period count in group 1: "for 4 months", "durante 3 semanas". */
+  readonly periodCount: RegExp;
+  /**
+   * Captures a concluding total in group 1, anchored on "so"/"entonces"/
+   * "então" — never immediately followed by a time-unit word (see doc
+   * comment above).
+   */
+  readonly concludingTotal: RegExp;
+}
+
+const PERIOD_COUNT_THEN_TOTAL_PAIRS: readonly PeriodCountThenTotalPair[] = [
+  {
+    // English: "for 4 months" / "after 3 weeks" / "for three days"
+    periodCount: /\b(?:for|after) (\d+|one|two|three|four|five) (?:months?|weeks?|days?|years?)\b/gi,
+    // "so 12 dollars" / "so you'd have 17 dollars" — never "so after 3 weeks"
+    concludingTotal:
+      /\bso\b[^.!?\d]{0,25}?\$?\s*(\d+(?:\.\d+)?)(?!\s*(?:months?|weeks?|days?|years?)\b)/gi,
+  },
+  {
+    // Spanish: "durante 4 meses" / "por tres semanas" / "después de 3 meses"
+    periodCount:
+      /\b(?:durante|por|despu[ée]s de) (\d+|un|una|dos|tres|cuatro|cinco) (?:meses?|semanas?|d[ií]as?|a[ñn]os?)\b/gi,
+    concludingTotal:
+      /\bentonces\b[^.!?\d]{0,25}?\$?\s*(\d+(?:\.\d+)?)(?!\s*(?:meses?|semanas?|d[ií]as?|a[ñn]os?)\b)/gi,
+  },
+  {
+    // Portuguese: "durante 4 meses" / "por três semanas" / "depois de 3 meses"
+    periodCount:
+      /\b(?:durante|por|depois de) (\d+|um|uma|dois|duas|tr[êe]s|quatro|cinco) (?:meses?|semanas?|dias?|anos?)\b/gi,
+    concludingTotal:
+      /\bent[ãa]o\b[^.!?\d]{0,25}?\$?\s*(\d+(?:\.\d+)?)(?!\s*(?:meses?|semanas?|dias?|anos?)\b)/gi,
+  },
+];
+
+/** See `PERIOD_COUNT_THEN_TOTAL_PAIRS`'s doc comment for the full reproduction and false-positive analysis. */
+function periodCountThenTotalMismatch(say: string, values: readonly number[]): boolean {
+  for (const { periodCount, concludingTotal } of PERIOD_COUNT_THEN_TOTAL_PAIRS) {
+    const anchors = [...say.matchAll(periodCount)];
+    if (anchors.length === 0) continue;
+    const totals = [...say.matchAll(concludingTotal)];
+    if (totals.length === 0) continue;
+
+    for (let i = 0; i < anchors.length; i += 1) {
+      const anchor = anchors[i]!;
+      const anchorEnd = anchor.index! + anchor[0].length;
+      // Stop before the NEXT period-count anchor (a later, unrelated
+      // scenario in the same turn) and within the bounded window either way.
+      const nextAnchorStart = anchors[i + 1]?.index ?? Infinity;
+      const windowEnd = Math.min(nextAnchorStart, anchorEnd + MAX_PERIOD_TOTAL_WINDOW);
+      const total = totals.find((t) => t.index! >= anchorEnd && t.index! + t[0].length <= windowEnd);
+      if (total === undefined) continue;
+
+      const periodIndex = PERIOD_COUNT_WORD[anchor[1]!.toLowerCase()];
+      const claimed = Number(total[1]);
+      if (periodIndex === undefined || !Number.isFinite(claimed) || periodIndex >= values.length) continue;
+      if (Math.abs(values[periodIndex]! - claimed) > NUMBER_TOLERANCE) return true;
+    }
+  }
+  return false;
+}
 
 export function whiteboardNumberMismatch(
   say: string,
@@ -509,7 +692,7 @@ export function whiteboardNumberMismatch(
       if (Math.abs(values[periodIndex]! - claimed) > NUMBER_TOLERANCE) return true;
     }
   }
-  return false;
+  return periodCountThenTotalMismatch(say, values);
 }
 
 export function contradictsCorrectAnswer(say: string, learnerText: string): boolean {
@@ -708,6 +891,19 @@ export function repeatsEarlierSentence(say: string, earlierTutorLines: readonly 
  * example itself, naming the exact numbers to avoid — this is STILL the
  * static, prefix-cached prompt (unchanged across every call, per rule #1),
  * so the fix is wording, never per-call randomization.
+ *
+ * TELL, AS WELL AS CHECK. Round 67 (2026-08-30) closed the same root cause
+ * `whiteboardNumberMismatch` only ever caught after the fact (see that
+ * function's own doc comment, further down this file, for the live
+ * reproduction): the ONE worked example above always narrates `start` as a
+ * PRE-EXISTING amount ("guardas 10 pesos" already in the jar, then it
+ * grows), so a story with nothing pre-existing at all has no example to
+ * generalize `start:0` from. The instruction below states that case
+ * explicitly, the same "tell AND check" pairing this file already uses for
+ * tier vocabulary (`TIER_GUIDANCE` + `tierVocabularyViolation`) — telling it
+ * once is not expected to reach 100% on its own (this file's whole existence
+ * is the record of instructions that did not), which is why the detector
+ * stays in place rather than being retired in favor of the instruction.
  */
 export const TUTOR_SYSTEM_PROMPT: string = [
   'You are a tutor character inside LittleFounders, an educational product that',
@@ -824,6 +1020,17 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '  MUST NOT REACH FOR — a real invented amount looks like 35, 8, 120, 6:',
   '  specific and a little odd, not the two round numbers already sitting in',
   '  front of you.',
+  '  IF YOUR STORY HAS NO AMOUNT THAT ALREADY EXISTED BEFORE THE GROWTH',
+  '  BEGINS — you only stated a RATE ("you get X every month"), with nothing',
+  '  already saved or owed before that first period — `start` MUST be 0,',
+  '  never the per-step amount X itself. The first step is what PRODUCES the',
+  '  first period\'s result, so a rate with no prior amount is `start:0` with',
+  '  one {op:"add",value:X} step per period, reaching X, then 2X, then 3X —',
+  '  never `start:X`, which claims the first period\'s money already existed',
+  '  before the story began and leaves every number on the board one period',
+  '  ahead of what you just said. Only set `start` above 0 when your OWN',
+  '  words say so explicitly — an amount stated as ALREADY there before the',
+  '  growth starts ("you already have 8 pesos saved").',
   '  Never set BOTH `whiteboard` and `segmentRequest` on the same turn — the',
   '  schema refuses it. Choose one surface for this turn.',
   '- A wrong answer is information, never a failure. Say what was right about',
