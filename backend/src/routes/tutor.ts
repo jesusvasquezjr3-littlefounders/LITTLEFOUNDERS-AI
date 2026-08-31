@@ -31,7 +31,7 @@ import {
   insertTutorTurn,
   listRecentSummaries,
   getLearnerMemory,
-  writeLearnerMemory,
+  writeLearnerMemoryPair,
   searchOwnTurns,
   listSafetyFlags,
   listTutorSegments,
@@ -532,7 +532,7 @@ function internalRouter(): Router {
    * shaped identifiers, and (round 42, 2026-08-30) a content-moderation
    * judge catches what the regex cannot (a surname or a school name has
    * neither shape). This endpoint's own job is only the length caps and the
-   * atomic write (`writeLearnerMemory`, `tutorData.ts`) — it does not, and
+   * atomic write (`writeLearnerMemoryPair`, `tutorData.ts`) — it does not, and
    * should not, re-run content checks Oracle already ran.
    */
   /*
@@ -569,20 +569,24 @@ function internalRouter(): Router {
       return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid request');
     }
     const { userId, sessionId, stores, expectedBefore } = parsed.data;
-    const results: Record<string, boolean> = {};
-    for (const store of ['learner', 'pedagogy'] as const) {
-      const content = stores[store];
-      if (content === null) continue; // null = no update proposed for this store
-      results[store] = await writeLearnerMemory({
-        userId,
-        store,
-        content,
-        expectedBefore: expectedBefore[store],
-        actor: 'oracle-post-session-review',
-        sessionId,
-      });
-    }
-    return ok(res, { written: results });
+    /*
+     * ONE call, not one per store — round 61 (2026-08-30, MEDIUM), closed as
+     * round 75. This used to loop and await `writeLearnerMemory` once per
+     * store, which is two transactions with a real window between them, and a
+     * session starting in that window read one brand-new note beside one
+     * stale one. A `null` store still means "this review proposed nothing
+     * here" and is still absent from `written`; that skip now happens inside
+     * the RPC (a NULL proposal, never a NULL write) instead of here. See
+     * `writeLearnerMemoryPair` and migration 0061.
+     */
+    const written = await writeLearnerMemoryPair({
+      userId,
+      stores,
+      expectedBefore,
+      actor: 'oracle-post-session-review',
+      sessionId,
+    });
+    return ok(res, { written });
   });
 
   /*

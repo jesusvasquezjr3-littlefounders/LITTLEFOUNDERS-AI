@@ -82,7 +82,8 @@ describe('updateLearnerMemory reflects the real per-store result, not just envel
    * function used to send only `stores`, so Core had nothing to compare a
    * write against except a value it read itself, moments before writing —
    * which can never detect a genuinely concurrent session's earlier write
-   * (see `updateLearnerMemory`'s own comment, and `writeLearnerMemory`'s in
+   * (see `updateLearnerMemory`'s own comment, and
+   * `writeLearnerMemoryPair`'s in
    * `backend/src/services/tutorData.ts`). `expectedBefore` must reach the
    * wire body verbatim, unmodified, for Core's compare-and-swap to mean
    * anything.

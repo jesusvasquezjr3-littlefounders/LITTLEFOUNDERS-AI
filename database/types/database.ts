@@ -3398,6 +3398,22 @@ export type Database = {
         }
         Returns: string
       }
+      write_learner_memory_pair_checked: {
+        Args: {
+          p_actor: string
+          p_learner_after_hash: string
+          p_learner_before_hash: string
+          p_learner_expected: string
+          p_learner_new: string
+          p_pedagogy_after_hash: string
+          p_pedagogy_before_hash: string
+          p_pedagogy_expected: string
+          p_pedagogy_new: string
+          p_session_id: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

@@ -158,7 +158,7 @@ describe('what it forwards to Core', () => {
    * session's earlier write. `brief` (this session's OWN start-of-session
    * snapshot — the SAME value `userContent`, above, built the model's
    * prompt from) must reach Core as `expectedBefore`, verbatim, or the fix
-   * in `writeLearnerMemory` (tutorData.ts) has nothing real to compare.
+   * in `writeLearnerMemoryPair` (tutorData.ts) has nothing real to compare.
    */
   it('sends its OWN session-start belief as expectedBefore, not a value invented at write time', async () => {
     fetchMock
