@@ -809,17 +809,44 @@ export function ConversationView({
             {desktop && budgetRune && (
               <span className="lf-caption whitespace-nowrap text-content-muted">{budgetRune}</span>
             )}
+            {/*
+             * DISABLED WHILE THE TUTOR IS STILL ANSWERING (found by
+             * adversarial review, round 90, 2026-08-31, MEDIUM). Every other
+             * way to speak over the tutor already refuses to fire during
+             * `awaitingReply` — the composer's send button a few lines down,
+             * the "explain differently" chip — but these two had no such
+             * guard, and unlike those, the actual cost of firing anyway is
+             * not a duplicate turn: `end_session` claims the SAME turn slot
+             * the tutor's reply is still holding, `oracle/src/ws/server.ts`'s
+             * `claimTurn` sees it busy, and (before the server-side half of
+             * this fix, RUNBOOK.md Round 90) the request was refused
+             * outright while this file's `onRestart`/`onExit`
+             * (`TutorExperience.tsx`) tear the socket down regardless,
+             * without waiting to find out — recording a deliberate "Start
+             * over"/"Finish" as `learner_left` instead of `completed` and
+             * skipping the tutor's farewell entirely (/ORACLE.md §9.5). The
+             * server now defers rather than drops a busy `end_session`, but
+             * a learner who can never trigger the race in the first place is
+             * the cheaper and clearer fix, so both ship together.
+             */}
             <HudPlate
               as="button"
               shape="chip"
               onClick={onRestart}
+              disabled={awaitingReply}
               aria-label={t('tutor.conversation.startOver')}
               title={t('tutor.conversation.startOver')}
               className="pointer-events-auto shrink-0"
             >
               <Icon name="refresh" className="!text-[18px]" />
             </HudPlate>
-            <HudPlate as="button" shape="chip" onClick={onExit} className="pointer-events-auto shrink-0">
+            <HudPlate
+              as="button"
+              shape="chip"
+              onClick={onExit}
+              disabled={awaitingReply}
+              className="pointer-events-auto shrink-0"
+            >
               <span className="lf-action">{t('tutor.conversation.finish')}</span>
             </HudPlate>
           </>

@@ -1234,6 +1234,92 @@ describe('the turn pipeline is split, acknowledged, and interruptible', () => {
     socket.close();
   });
 
+  /*
+   * Found by adversarial review, round 90 (2026-08-31, MEDIUM): a learner
+   * pressing "Start over"/"Finish" on the frontend during the ORDINARY
+   * `awaitingReply` window — the tutor still producing its reply, which
+   * happens on every single turn — sent `end_session` straight into a turn
+   * slot `claimTurn` correctly reports `'busy'`. The handler used to answer
+   * that with `refuseTurn` and nothing else: `farewell()`/`finish()` were
+   * never reached, so the session recorded `learner_left` once the resume
+   * grace window passed instead of `completed`, and no farewell turn was
+   * ever produced — contradicting /ORACLE.md §9.5's "not a timeout that
+   * kills a socket" for a learner who left on purpose. `end_session` now
+   * DEFERS on a busy floor (`Live.endSessionRequested`) instead of
+   * refusing, and the busy turn's own `releaseTurn` retries it the instant
+   * the floor frees. This proves the whole chain with the client still
+   * listening: the slow reply still lands, no `RATE_LIMITED` refusal ever
+   * fires for the deferred request, the farewell follows as its own real
+   * turn, and the close is recorded `completed`.
+   */
+  it('defers an end_session that lands mid-turn instead of dropping it, and still delivers the farewell', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    // The marker makes the fake model sit for 1.5 s; `end_session` sent
+    // partway through that window is guaranteed to land while `claimTurn`
+    // still reports the floor busy.
+    const outcome = collect(socket, (m) => m.some((x) => x.type === 'closed'), 4_000);
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'cuentamelotodomuydespacio' }));
+    await new Promise((r) => setTimeout(r, 300));
+    socket.send(JSON.stringify({ type: 'end_session' }));
+    const messages = await outcome;
+
+    // Never refused: the request was deferred, not dropped on the floor.
+    expect(messages.some((m) => m.type === 'error' && m.code === 'RATE_LIMITED')).toBe(false);
+
+    // The slow turn's own reply still lands, and the farewell follows it as
+    // its own real turn — two turns in this one run, not a dropped request.
+    expect(messages.filter((m) => m.type === 'turn').length).toBeGreaterThanOrEqual(2);
+    expect(messages.find((m) => m.type === 'closed')).toMatchObject({ reason: 'completed' });
+
+    await new Promise((r) => setTimeout(r, 150));
+    expect(journal.closes.at(-1)).toMatchObject({ closeReason: 'completed' });
+
+    await closed();
+  });
+
+  /*
+   * The realistic shape of the race, not just the wire-level one above: the
+   * frontend's actual `onRestart`/`onExit` (`TutorExperience.tsx`) fire
+   * `end_session` and tear their OWN socket down immediately, without
+   * waiting to learn whether the request succeeded. That close reaches this
+   * socket's `close` handler while the busy turn is still running — well
+   * before the deferred farewell has had a chance to set `live.closing` —
+   * so it parks the session exactly as it would an honest dropped
+   * connection. `finish()` now cancels that dangling park the moment the
+   * deferred `end_session` actually completes; without it, the session's
+   * OWN grace window (`SESSION_RESUME_GRACE_MS`, 1.5 s in this suite) would
+   * finalize the same session a second time as `learner_left` — overwriting
+   * nothing in a real Postgres row (`closeTutorSession`'s `ended_at IS NULL`
+   * guard makes the reason itself a no-op), but still paying for a second,
+   * pointless `runPostSessionReview` model call on a session that already
+   * got its real one.
+   */
+  it('still closes completed, exactly once, when the learner\'s own socket tears down right behind end_session', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'cuentamelotodomuydespacio' }));
+    await new Promise((r) => setTimeout(r, 400));
+    // Fire and abandon, exactly as `TutorExperience.tsx` does today: no
+    // acknowledgement is awaited before the socket goes.
+    socket.send(JSON.stringify({ type: 'end_session' }));
+    socket.close();
+    await closed();
+
+    // Long enough for the busy turn to finish, the deferred farewell to run
+    // and close gracefully, AND for the session's own resume grace window to
+    // fully elapse — the window an uncancelled park would need to finalize
+    // itself as `learner_left` behind the graceful close.
+    await new Promise((r) => setTimeout(r, 3_000));
+
+    expect(journal.closes.at(-1)).toMatchObject({ closeReason: 'completed' });
+    expect(journal.closes).toHaveLength(1);
+  });
+
   it('holds the streamed-audio doors to the same gates as the whole clip', async () => {
     freshJournal();
     const { socket } = open(await socketUrl());

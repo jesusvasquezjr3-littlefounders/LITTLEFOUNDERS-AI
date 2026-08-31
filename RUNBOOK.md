@@ -8098,6 +8098,7 @@ code that has not been proven broken.
 Proof: 3 tests in `useTutorSocket.test.ts` (1 pre-existing pair
 untouched, 1 new `StrictMode` test), full frontend suite re-run clean
 (127 files, 1470 tests), type-check and lint clean.
+
 ## Round 83: the guardian dashboard's consent toggle had zero test coverage for the one property its own comment promises
 
 **LOW, FIXED — `frontend/src/routes/app/family/FamilyPage.tsx` had no test
@@ -8713,3 +8714,91 @@ rounds in the same fast-moving review campaign), full backend suite
 green (42 files, 711 tests, up from 710), type-check clean on both
 (backend including its test tree), lint clean on both, both builds
 green, root `docs:check`/`secrets:check`/`i18n:check` clean.
+
+## Round 90: a deliberate "Start over"/"Finish" during the ordinary awaitingReply window recorded as an accidental drop, farewell and all
+
+**MEDIUM, FIXED — a learner's own decision to leave was indistinguishable
+from a dropped connection.** `ConversationView.tsx`'s "Start over" and
+"Finish" `HudPlate` buttons carried no `disabled` prop at all, unlike
+every OTHER way to speak over the tutor in this same file (the
+composer's send button, `awaitingReply`-gated since round 26). Their
+handlers (`TutorExperience.tsx`'s `onRestart`/`onExit`) are synchronous:
+they call `socket.endSession()` — a fire-and-forget `send()` — and
+immediately flip `phase`/`session`, which tears the client's own socket
+down on the very next render, without ever waiting to learn whether the
+request worked. On the server, `oracle/src/ws/server.ts`'s `end_session`
+case claimed with `enforceFloor=false` (leaving is never gated on the
+700 ms floor) but still respected the single in-flight-turn slot — and
+on `'busy'`, the ORDINARY state during `awaitingReply`, which exists on
+every single turn, it called `refuseTurn` and returned. `farewell()` and
+`finish()` were never reached. The socket's own `close` handler then saw
+`live.closing` still `false` — nothing had set it — and ran `parkSession`
+exactly as it would an honest dropped connection, and once
+`SESSION_RESUME_GRACE_MS` passed with nobody resuming, `finalizeParked`
+recorded the session with `closeReason: 'learner_left'`. A learner who
+deliberately, successfully ended their own session got the accidental-
+drop outcome /ORACLE.md §9.5 exists to distinguish it from, farewell
+turn included — "Ending is a first-class turn... not a timeout that
+kills a socket," violated by the one control whose entire job is
+ending the session on purpose.
+
+**The client half: a learner cannot trigger the race through the UI in
+the ordinary case.** Both buttons now carry `disabled={awaitingReply}`,
+matching the exact pattern the composer's send button already
+established. Cheap, and it closes the common path outright — but a
+click can still land in the split second between the request firing and
+the disabled state applying, and a fix that only worked "most of the
+time" was not the bar, so the floor itself had to close too.
+
+**The server half, which closes the race regardless of client timing.**
+`end_session` no longer refuses a busy floor — it DEFERS. A new
+`Live.endSessionRequested` flag is set instead of calling `refuseTurn`,
+and `releaseTurn` — the ONE place every turn's `finally` in this file
+already funnels through, by the same design that makes `claimTurn` the
+one place every turn claims its slot — checks the flag the instant the
+floor frees and fires the farewell (`attemptEndSession`, factored out of
+the original inline `end_session` body so both the immediate and the
+deferred path share it) synchronously enough that nothing else can claim
+the floor in between. A busy `end_session` is no longer dropped; it is
+served the moment the turn holding the floor lets go of it.
+
+**A second race this created, closed in the same commit rather than
+left for the next round.** Deferring the farewell is real async time —
+long enough for the client's OWN immediate socket teardown (unchanged;
+see the client half above) to reach the `close` handler BEFORE the
+deferred farewell has run, which still parks the session exactly as
+today. The park is harmless AS LONG AS the deferred farewell's own
+`finish()` cancels it once it actually completes — which it did not,
+before this fix. `finish()` now calls `takeParked(sessionId)` the
+moment `live.closing` is set, defensively, for every close reason, not
+only this one. Left unfixed, the dangling park's own grace-window timer
+would fire `finalizeParked` behind the graceful close: harmless to the
+recorded `closeReason` (`closeTutorSession`'s `ended_at IS NULL` guard
+makes that second write a no-op — first close wins), but NOT harmless
+to `runPostSessionReview`, which `finalizeParked` also fires — paying
+for a second, pointless model call to grade a conversation `finish()`
+already graded correctly moments before. §1.0's "money leaves DIRECTLY"
+shape, on a session that already closed the honest way.
+
+**Verified, not asserted.** Both oracle tests fail pre-fix for the exact
+claimed reason (`git apply -R` on the `ws/server.ts` diff, tests
+re-run): the first times out on a `RATE_LIMITED` refusal with the
+`'closed'` frame never arriving at all; a manual check of the second
+scenario against the unfixed source reproduces the stray `learner_left`
+close behind the graceful one. The four frontend tests fail pre-fix the
+same way, `toBeDisabled()` failing outright and `onRestart`/`onExit`
+observed to fire.
+
+Proof: 2 new tests in `live-session.test.ts` (one with the test client
+kept open through the whole exchange, proving the farewell turn and the
+`completed` close arrive on the wire with no `RATE_LIMITED` in between;
+one reproducing the REAL frontend's immediate-teardown timing end to
+end, proving the close is recorded exactly once and stays `completed`
+past the full resume grace window) — full oracle suite green (27 files,
+634 tests, zero regressions). 4 new tests in `conversationView.test.tsx`
+(both buttons disabled, neither handler fires on a click while disabled,
+both re-enable once `awaitingReply` clears) — full frontend suite green
+(129 files, 1486 tests, zero regressions). Type-check, lint and build
+clean in both services; `docs:check`, `secrets:check`, `i18n:check`,
+`paths:check`, `seo:check`, `provider:check` and `tools:test` all green
+at the root.

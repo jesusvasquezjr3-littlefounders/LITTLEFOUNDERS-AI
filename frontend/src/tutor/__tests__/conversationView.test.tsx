@@ -388,6 +388,81 @@ describe('the composer refuses to submit while a reply is already pending', () =
 });
 
 /*
+ * Found by adversarial review, round 90 (2026-08-31, MEDIUM): "Start over"
+ * and "Finish" reach `onRestart`/`onExit` (`TutorExperience.tsx`) with no
+ * `awaitingReply` guard at all — unlike the composer's send button just
+ * above, or the "explain differently" chip. The actual cost of firing
+ * anyway is worse than a duplicate turn: `onRestart`/`onExit` call
+ * `socket.endSession()` and then tear the socket down immediately, without
+ * waiting to see whether it worked. `end_session` claims the SAME turn
+ * slot the tutor's reply is still holding, and while the server was
+ * refusing that outright (`oracle/src/ws/server.ts`'s `claimTurn` reports
+ * `'busy'`), the session recorded a deliberate "Start over"/"Finish" as
+ * `learner_left` instead of `completed`, skipping the tutor's farewell
+ * entirely (/ORACLE.md §9.5). The server now defers rather than drops a
+ * busy `end_session` (RUNBOOK.md Round 90), but a learner who can never
+ * trigger the race through the UI in the first place is the cheaper and
+ * clearer half of the fix, so both ship together.
+ */
+describe('Start over and Finish refuse to fire while a reply is already pending', () => {
+  function conversationAwaitingReply(
+    socket: TutorSocket,
+    overrides: { onRestart?: () => void; onExit?: () => void } = {},
+  ) {
+    return (
+      <ConversationView
+        phase="conversing"
+        ready={false}
+        session={SESSION}
+        socket={socket}
+        token="test-token"
+        speaking={false}
+        awaitingReply
+        onAwaitReply={vi.fn()}
+        onDraftChange={vi.fn()}
+        resuming={false}
+        replyTimedOut={false}
+        onRestart={overrides.onRestart ?? vi.fn()}
+        onExit={overrides.onExit ?? vi.fn()}
+      />
+    );
+  }
+
+  it('disables Start over', () => {
+    render(conversationAwaitingReply(makeSocket()));
+    expect(screen.getByRole('button', { name: 'Start over' })).toBeDisabled();
+  });
+
+  it('disables Finish', () => {
+    render(conversationAwaitingReply(makeSocket()));
+    expect(screen.getByRole('button', { name: 'Finish' })).toBeDisabled();
+  });
+
+  it('does not call onRestart or onExit even if clicked', () => {
+    const onRestart = vi.fn();
+    const onExit = vi.fn();
+    render(conversationAwaitingReply(makeSocket(), { onRestart, onExit }));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Start over' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Finish' }));
+
+    expect(onRestart).not.toHaveBeenCalled();
+    expect(onExit).not.toHaveBeenCalled();
+  });
+
+  it('re-enables both once the reply lands and awaitingReply clears', () => {
+    const { rerender } = render(conversationAwaitingReply(makeSocket()));
+    expect(screen.getByRole('button', { name: 'Start over' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Finish' })).toBeDisabled();
+
+    rerender(conversation(makeSocket(), false));
+
+    expect(screen.getByRole('button', { name: 'Start over' })).not.toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Finish' })).not.toBeDisabled();
+  });
+});
+
+/*
  * Found by adversarial review, round 26 (2026-08-30, HIGH): the transcript's
  * own edit affordance refuses to START a rephrase once an activity or
  * whiteboard is open, but `submitTyped` never re-checked that at SEND time —

@@ -89,6 +89,25 @@ interface Live {
   microphone: boolean;
   closing: boolean;
   /**
+   * An `end_session` arrived while another turn held the floor (`claimTurn`
+   * returned `'busy'`) and was DEFERRED rather than refused — see the
+   * `end_session` case and `releaseTurn`'s own comment.
+   *
+   * Found by adversarial review, round 90 (2026-08-31, MEDIUM): before this
+   * flag existed, a busy `end_session` was refused outright — the ordinary
+   * outcome of a learner pressing "Start over"/"Finish" on the frontend's
+   * OWN `awaitingReply` window, which exists on every single turn — and
+   * `farewell()`/`finish()` were never called at all. The client tears its
+   * own socket down unconditionally, without waiting to find out whether
+   * the request worked (`TutorExperience.tsx`'s `onRestart`/`onExit`), so
+   * the socket's `close` handler saw `live.closing` still false and parked
+   * the session exactly as it would an honest dropped connection — a
+   * deliberate ending recorded as `learner_left` after the resume grace
+   * window, with no farewell ever delivered, contradicting /ORACLE.md
+   * §9.5's "not a timeout that kills a socket" outright.
+   */
+  endSessionRequested: boolean;
+  /**
    * Consecutive transcript writes that Core did not confirm. `persistTurn`
    * has always RETURNED whether the record was kept "so the caller can count
    * failures and close the session if the record is systematically not being
@@ -383,6 +402,28 @@ function claimTurn(live: Live, now: number, enforceFloor = true): 'ok' | 'busy' 
 
 function releaseTurn(live: Live): void {
   live.inFlight = false;
+  /*
+   * A LEARNER WHO ASKED TO LEAVE WHILE SOMEONE ELSE'S TURN HELD THE FLOOR IS
+   * NOT MADE TO ASK AGAIN (round 90, 2026-08-31, MEDIUM — see
+   * `Live.endSessionRequested`'s own comment for the failure this closes).
+   *
+   * This is the ONE place every turn's `finally` already funnels through
+   * (`claimTurn`'s own comment says so), which is what makes it the right
+   * place to notice the floor just freed and a farewell is waiting for it —
+   * the alternative would be teaching every future `finally` block to check
+   * this flag itself, which is exactly how the analogous gap in `claimTurn`
+   * happened in the first place.
+   *
+   * Fired rather than awaited: this function runs inside a `finally` and
+   * must stay synchronous. `attemptEndSession` claims and releases its own
+   * slot, and does so SYNCHRONOUSLY up to its first `await` — nothing else
+   * can run between `live.inFlight = false` above and its own `claimTurn`
+   * call below, so it always wins the floor it was just handed.
+   */
+  if (live.endSessionRequested && !live.closing) {
+    live.endSessionRequested = false;
+    void attemptEndSession(live);
+  }
 }
 
 /** Refuses a claim out loud. Both refusals read as one moment, deliberately. */
@@ -417,6 +458,36 @@ export function send(socket: WebSocket, message: ServerMessage): void {
   console.warn(
     `[oracle] dropped a "${message.type}" message — socket was not open (readyState=${socket.readyState})`,
   );
+}
+
+/**
+ * The farewell turn plus the graceful close — the whole body of ending a
+ * session, factored out so it can run from two places: the `end_session`
+ * case when the floor is free on arrival, and `releaseTurn` when a deferred
+ * request (`Live.endSessionRequested`) finds the floor free after the fact.
+ *
+ * Claims its own slot with `enforceFloor=false`, exactly as the ORIGINAL
+ * `end_session` handling always did — leaving is never gated on the 700 ms
+ * floor, only on the single-turn slot every production shares.
+ */
+async function attemptEndSession(live: Live): Promise<void> {
+  const claim = claimTurn(live, Date.now(), false);
+  if (claim !== 'ok') {
+    /*
+     * Something else claimed the floor in the gap between `endSessionRequested`
+     * being read and this call running — a fresh learner frame that arrived
+     * on the same tick, most likely. Re-arm rather than dropping the
+     * learner's request a second time; the NEXT `releaseTurn` retries it.
+     */
+    live.endSessionRequested = true;
+    return;
+  }
+  try {
+    await deliver(live, await live.orchestrator.farewell(Date.now(), 'soft'));
+    await finish(live, 'completed');
+  } finally {
+    releaseTurn(live);
+  }
 }
 
 /** After this many consecutive unconfirmed transcript writes, the session ends. */
@@ -644,6 +715,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
     assembly: null,
     microphone,
     closing: false,
+    endSessionRequested: false,
     persistFailures: 0,
     flagPersistFailures: 0,
     transcriptSeq: resumed?.transcriptSeq ?? 0,
@@ -824,19 +896,31 @@ async function onMessage(live: Live, raw: string): Promise<void> {
       if (live.inFlight) live.abort?.abort();
       return;
 
-    case 'end_session': {
-      // Claimed so a burst of `end_session` cannot produce a pile of
-      // farewells, but exempt from the floor: nobody is made to wait to leave.
-      const claim = claimTurn(live, Date.now(), false);
-      if (claim !== 'ok') return refuseTurn(live, claim);
-      try {
-        await deliver(live, await live.orchestrator.farewell(Date.now(), 'soft'));
-        await finish(live, 'completed');
-      } finally {
-        releaseTurn(live);
-      }
+    case 'end_session':
+      /*
+       * `attemptEndSession` claims with `enforceFloor=false` — nobody is
+       * made to wait to leave — but still respects the single-turn slot.
+       * Busy is the ORDINARY case, not an edge one: it is exactly what a
+       * learner pressing "Start over"/"Finish" finds on every single turn,
+       * during the `awaitingReply` window while the tutor is still
+       * producing its reply. `refuseTurn` used to be called here on
+       * anything but `'ok'`, which dropped the request outright —
+       * `farewell()`/`finish()` were simply never reached — while the
+       * client tears its own socket down regardless, without waiting to
+       * find out (`TutorExperience.tsx`'s `onRestart`/`onExit`). Found by
+       * adversarial review, round 90 (2026-08-31, MEDIUM): the session's
+       * own `close` handler then saw `live.closing` still false and parked
+       * it exactly as an honest dropped connection, so a DELIBERATE ending
+       * recorded as `learner_left` after the resume grace window, with no
+       * farewell ever delivered — contradicting /ORACLE.md §9.5's "not a
+       * timeout that kills a socket" outright. `attemptEndSession` re-arms
+       * `Live.endSessionRequested` on anything but `'ok'` instead of
+       * refusing, and `releaseTurn` — the one place every turn's `finally`
+       * already funnels through — retries it the instant the busy turn
+       * frees the floor.
+       */
+      await attemptEndSession(live);
       return;
-    }
 
     case 'adaptation_response':
       // Local state only — no upstream call, so no slot to claim.
@@ -1676,6 +1760,28 @@ async function finish(
   if (live.closing) return;
   live.closing = true;
   clearInterval(live.heartbeat);
+
+  /*
+   * A GRACEFUL CLOSE CAN RACE AN ALREADY-PARKED SOCKET (round 90,
+   * 2026-08-31, MEDIUM — the deferred `end_session` this fixes is the
+   * reason it becomes reachable). Deferring `end_session` until a busy
+   * turn's `finally` frees the floor is real async time — long enough for
+   * the client's own socket teardown (`TutorExperience.tsx` closes
+   * immediately after sending `end_session`, without waiting for any
+   * reply) to reach this socket's `close` handler FIRST. That handler
+   * cannot know a graceful close is already in flight — `live.closing` is
+   * exactly what it checks, and this function had not set it yet — so it
+   * parks the session on a timer, exactly as it would an honest dropped
+   * connection. Canceling that park HERE, the moment a graceful close
+   * actually lands, is what keeps `finalizeParked` from firing
+   * `learner_left` over this same session `SESSION_RESUME_GRACE_MS` later.
+   * Core's own `ended_at IS NULL` guard (`closeTutorSession`) would no-op
+   * that second write's close REASON — first close wins — but would NOT
+   * no-op its fire-and-forget `runPostSessionReview` call, which would pay
+   * a second time to grade a conversation this function is already
+   * grading below.
+   */
+  takeParked(live.session.sessionId);
 
   /*
    * Found by adversarial review, round 24 (2026-08-30, MEDIUM): a blocked
