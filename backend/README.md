@@ -44,7 +44,7 @@ It exists as its own script because `seed:kc`'s audit only ever ran when a
 human re-seeded — nothing re-checked the bridge when the CATALOG moved
 instead (a course unpublished, a topic archived, a lesson's skill tags
 edited). `.github/workflows/tutor-content-bridge.yml` runs this daily against
-production and on any push touching the mapping (RUNBOOK.md Round 101). Fails
+production and on any push touching the mapping (RUNBOOK.md Round 105). Fails
 loud — `::error::` per broken bridge — and exits non-zero if anything no
 longer carries traffic.
 

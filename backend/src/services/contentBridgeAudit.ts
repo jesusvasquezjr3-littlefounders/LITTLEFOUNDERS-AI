@@ -28,7 +28,7 @@ import { resolveSkill } from './tutorLadder.js';
  * topic's lessons archived, a lesson's skill tags edited — none of those touch
  * `database/seeds/kc_graph.v1.json`, so none of them would ever prompt anyone
  * to re-seed. Found by adversarial review sweep tutor-review-sweep-101
- * (content-ladder-correctness dimension), MEDIUM, closed round 101
+ * (content-ladder-correctness dimension), MEDIUM, closed round 105
  * (2026-08-31) — see RUNBOOK.md.
  *
  * It is now called from two places, both idempotent and read-mostly:

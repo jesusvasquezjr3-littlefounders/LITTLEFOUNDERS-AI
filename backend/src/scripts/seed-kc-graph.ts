@@ -182,7 +182,7 @@ async function main(): Promise<void> {
   );
 
   // THE BRIDGE AUDIT — moved to services/contentBridgeAudit.ts (RUNBOOK.md
-  // Round 101) so it can ALSO run standalone, on a schedule, against whatever
+  // Round 105) so it can ALSO run standalone, on a schedule, against whatever
   // is currently live in Vault (`npm run audit:content-bridge`), independent
   // of a human remembering to re-seed. It runs AFTER the upserts above
   // because they are idempotent: a red audit is a report about data that is

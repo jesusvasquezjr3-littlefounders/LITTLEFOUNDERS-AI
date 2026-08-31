@@ -4,7 +4,7 @@
  * (`../services/contentBridgeAudit.ts`) against whatever is CURRENTLY live in
  * Vault, independent of `database/seeds/kc_graph.v1.json`.
  *
- * WHY THIS EXISTS SEPARATELY FROM `seed:kc`. Until RUNBOOK.md Round 101 the
+ * WHY THIS EXISTS SEPARATELY FROM `seed:kc`. Until RUNBOOK.md Round 105 the
  * bridge audit only ever ran as a side effect of a human dispatching
  * `tutor-deploy.yml`'s `seed-kc` step — the ONLY trigger for the exact defect
  * this audit exists to catch (a `kc.skill_key` that no longer reaches

@@ -10008,7 +10008,7 @@ shape, and the cue is released on unmount.
 `tools:test` (26/26) and `provider:check` all green; `npm run repo:map`
 regenerated for the one new test file.
 
-## Round 101: the content-bridge audit that catches a broken tutor-to-catalog mapping only ever ran when a human remembered to re-seed — found by adversarial review sweep tutor-review-sweep-101 (content-ladder-correctness dimension), MEDIUM, closed 2026-08-31
+## Round 105: the content-bridge audit that catches a broken tutor-to-catalog mapping only ever ran when a human remembered to re-seed — found by adversarial review sweep tutor-review-sweep-101 (content-ladder-correctness dimension), MEDIUM, closed 2026-08-31
 
 **MEDIUM, FIXED.** `auditContentBridge` (then a private function inside
 `backend/src/scripts/seed-kc-graph.ts`) is the check this repository built

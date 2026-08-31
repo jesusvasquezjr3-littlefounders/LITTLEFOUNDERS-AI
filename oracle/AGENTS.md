@@ -125,7 +125,7 @@ text ever saw (`moderateTutorOutput` was never called on it at all). See
 `RUNBOOK.md` for both incidents.
 
 **The judge sees more than one turn ONLY on purpose, and only a little.**
-`ModerationInput.recentTutorLines` (round 104, 2026-08-31, item 73) is a
+`ModerationInput.recentTutorLines` (round 104, 2026-08-31, item 75) is a
 bounded window of the tutor's OWN already-spoken lines, given to the judge
 so a "crescendo" spread across a few turns is not structurally invisible
 to a per-turn, zero-memory check. It is not a full transcript and not a new
@@ -2230,10 +2230,10 @@ everything passes the blocked half perfectly and destroys the product.
    against the safety gate itself, a strictly worse trade than the gap this
    closes. See `RUNBOOK.md` Round 104.
 
-73. **A one-shot audit run BY A HUMAN is not a standing check, no matter
+76. **A one-shot audit run BY A HUMAN is not a standing check, no matter
    how good the audit is.** Found by adversarial review sweep tutor-
    review-sweep-101 (content-ladder-correctness dimension), MEDIUM,
-   closed round 101 (2026-08-31). `auditContentBridge` (then inside
+   closed round 105 (2026-08-31). `auditContentBridge` (then inside
    `seed-kc-graph.ts`) proves every mapped `kc.skill_key` still resolves
    to a PUBLISHED course/topic AND that the topic still carries at
    least one published lesson — exactly the class of defect this
@@ -2270,7 +2270,7 @@ everything passes the blocked half perfectly and destroys the product.
    part of its correctness, not an operational afterthought — a check
    that only runs when someone remembers to run it protects exactly
    until the first time nobody does, and the more useful the audit, the
-   more silently that protection lapses. See `RUNBOOK.md` Round 101.
+   more silently that protection lapses. See `RUNBOOK.md` Round 105.
 
 ---
 

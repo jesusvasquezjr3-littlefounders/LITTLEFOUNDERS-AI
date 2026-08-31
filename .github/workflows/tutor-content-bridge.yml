@@ -1,7 +1,7 @@
 name: Tutor content bridge audit
 
 # DOES THE KNOWLEDGE-COMPONENT GRAPH STILL REACH PUBLISHED CONTENT?
-# (RUNBOOK.md Round 101, oracle/AGENTS.md #73)
+# (RUNBOOK.md Round 105, oracle/AGENTS.md #73)
 #
 # `backend/src/services/contentBridgeAudit.ts` is the ONLY thing that answers
 # this — it proves every mapped `kc.skill_key` still resolves to a published
