@@ -321,6 +321,25 @@ describe('startOfLocalDayIso — the cap window is the LEARNER’s day, not the 
     // different calendar days for the two locales at the same instant.
     expect(startOfLocalDayIso('es-MX', now)).not.toBe(startOfLocalDayIso('pt-BR', now));
   });
+
+  /*
+   * `daysAhead` is the SESSION_LIMIT refusal's reset instant: exactly the
+   * next local midnight, computed the same way `sinceIso` (daysAhead: 0)
+   * already is, so the two can never drift apart.
+   */
+  it('daysAhead:1 is exactly the NEXT local midnight, 24 hours after daysAhead:0', () => {
+    const now = new Date('2026-08-30T20:00:00Z'); // 14:00 in Mexico City (UTC-6)
+    const today = startOfLocalDayIso('es-MX', now);
+    const tomorrow = startOfLocalDayIso('es-MX', now, 1);
+    expect(new Date(tomorrow).getTime() - new Date(today).getTime()).toBe(24 * 60 * 60 * 1000);
+  });
+
+  it('daysAhead:1 rolls over a month boundary correctly', () => {
+    // 2026-08-31T23:00Z is 2026-08-31 17:00 in Mexico City — still August
+    // locally, so "tomorrow" must cross into September.
+    const now = new Date('2026-08-31T23:00:00Z');
+    expect(startOfLocalDayIso('es-MX', now, 1)).toBe('2026-09-01T06:00:00.000Z');
+  });
 });
 
 describe('GET /api/v1/tutor/preferences — the server-side picker marker', () => {
@@ -508,6 +527,46 @@ describe('POST /api/v1/tutor/sessions — the microphone gate', () => {
 
     expect(response.status).toBe(429);
     expect(response.body.error.code).toBe('SESSION_LIMIT');
+  });
+
+  /*
+   * tutor-review-sweep-92, session-cap-ux, MEDIUM: the SESSION_LIMIT copy
+   * said only "come back tomorrow", with no clock time, no countdown, and no
+   * reference to the local-midnight boundary the server actually computes.
+   * A child with a weak sense of relative time cannot tell a 10-minute wait
+   * from a 24-hour one from that sentence alone. The fix puts the server's
+   * OWN computed reset instant on the wire so the client renders a real
+   * time-remaining rather than inventing a client-side guess at midnight —
+   * client and server clocks/timezones can disagree, and the server's
+   * `KID_PROFILE.locale` (es-MX / America/Mexico_City) is the only correct
+   * source of truth for what "tomorrow" means for THIS learner.
+   */
+  it('carries the actual reset instant on the SESSION_LIMIT refusal, not just the bare code', async () => {
+    vi.useFakeTimers();
+    try {
+      const now = new Date('2026-08-30T20:00:00Z'); // 14:00 in Mexico City
+      vi.setSystemTime(now);
+      stub({ sessions: [{ id: 'a' }, { id: 'b' }] });
+
+      const response = await request(createApp())
+        .post('/api/v1/tutor/sessions')
+        .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+        .send({ intent: 'course_topic' });
+
+      expect(response.status).toBe(429);
+      expect(response.body.error.code).toBe('SESSION_LIMIT');
+      // The exact next local midnight for the LEARNER's locale (es-MX,
+      // KID_PROFILE above) — computed independently here via the same
+      // exported helper the route itself uses, so this test would fail if
+      // the route's `daysAhead` argument ever silently changed.
+      expect(response.body.error.resetAt).toBe(startOfLocalDayIso('es-MX', now, 1));
+      // Genuinely in the future, and a real ISO instant — not a placeholder
+      // or a string the client would have to parse defensively.
+      expect(new Date(response.body.error.resetAt).getTime()).toBeGreaterThan(now.getTime());
+      expect(response.body.error.resetAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   /*

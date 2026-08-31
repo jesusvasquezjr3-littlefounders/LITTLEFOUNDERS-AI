@@ -9260,3 +9260,100 @@ default rather than introducing a new invariant, and the generated
 `database/types/database.ts` is unaffected — `companion` was already
 optional in the `Insert`/`Update` shapes purely because the column is
 nullable, independent of whether it carries a `DEFAULT`.
+## Round 95: "come back tomorrow" told a child nothing about whether the wait was ten minutes or nearly a day — tutor-review-sweep-92, session-cap-ux, MEDIUM, closed 2026-08-31
+
+**The defect.** The `SESSION_LIMIT` refusal — what a learner sees after the
+daily two-session cap turns them away — was a fixed sentence in all three
+locales (`en-US`: "You've used today's tutor time. Come back tomorrow!";
+`es-MX`: "...¡Vuelve mañana!"; `pt-BR`: "...Volte amanhã!"), with no clock
+time, no countdown, and no relation to the boundary Core actually computes
+for the reset. §1.9's "no dark patterns aimed at kids" is about intent, but
+the effect here needed none: a child with a weak sense of relative time
+cannot tell a refusal that clears in ten minutes from one that clears in
+twenty-three hours, and "tomorrow" reads identically in both cases. The
+route already computed the real boundary — `startOfLocalDayIso(locale)`,
+the learner's own local midnight (round 34's fix) — for the CAP CHECK
+itself; nothing carried that computation the one extra step to the client
+that has to explain the wait to a person.
+
+**The fix adds the reset instant to the wire, then renders a DURATION from
+it, not a clock time.** The reset is always exactly local midnight, so
+formatting it as a clock ("12:00 AM" / "00:00") would be technically true
+and practically useless — midnight is not a time anyone is expected to be
+awake starting a tutor session, so a duration ("in about 6 hours") says
+something a bare timestamp cannot.
+
+- **Backend** (`backend/src/routes/tutor.ts`). `startOfLocalDayIso` gained
+  a third parameter, `daysAhead` (default 0, unchanged for every existing
+  caller): `Date.UTC`'s own out-of-range-day rollover means `daysAhead: 1`
+  is "tomorrow's local midnight" from the exact same offset arithmetic the
+  cap check already trusts, so the two can never drift apart — a request on
+  the last day of a month needs no special case. The `cap_reached` branch
+  now computes `resetAt = startOfLocalDayIso(locale, new Date(), 1)`,
+  validated through a new local `SessionLimitResetAt` Zod schema
+  (`z.string().datetime().refine(iso => new Date(iso).getTime() >
+  Date.now())`) before it goes out — not decorative: a future regression in
+  the `daysAhead` arithmetic (dropped, sign-flipped, or applied to the wrong
+  `now`) throws a loud 500 here instead of shipping a countdown to an
+  instant already in the past onto a child's screen. `fail()`
+  (`backend/src/lib/http.ts`) gained an optional fifth `extra` parameter,
+  merged onto the `error` object — the envelope shape itself is unchanged
+  (`{ data, error }`). 377 `fail()` calls exist across the backend today
+  (counted, not estimated); this is the only one that passes `extra`, so
+  every other call site is unaffected.
+- **Frontend.** `ApiError` (`frontend/src/lib/api.ts`) gained an optional
+  `resetAt?: string`, present only on this one refusal.
+  `TutorExperience.tsx`'s `begin()` now captures it alongside the error
+  code into a new `startErrorResetAt` state, reset to `null` on every fresh
+  attempt so a stale value from an earlier refusal can never survive into a
+  different one. `OfferChips.tsx` (via `OfferLayerProps`, extended in
+  `stage/StageShell.tsx`) formats it with `formatResetWhen`:
+  `Intl.RelativeTimeFormat(i18n.language, { numeric: 'auto', style: 'long'
+  })` on minutes under an hour, hours otherwise, `Math.ceil`'d so the
+  reported wait never reads shorter than the real one — the safe direction
+  for a promise made to a child about when something becomes available
+  again. The interpolated result reads as a natural clause in all three
+  locales: "Come back in 6 hours!" / "¡Vuelve dentro de 6 horas!" / "Volte em
+  6 horas!". A missing or already-past `resetAt` (an older deploy, clock
+  skew, a degraded response) falls back to a new `sessionLimitWhenFallback`
+  key — the exact word the old copy used ("tomorrow" / "mañana" / "amanhã")
+  — rather than leaking a raw `{{when}}` onto the screen.
+
+**Scope discipline.** Two sibling findings from the same review sweep
+(`GET /offers` not reflecting the cap; the transient refusal state not
+surviving a refresh) were being closed concurrently by other agents against
+`backend/src/routes/tutor.ts`'s `/offers` handler and the `localStorage`
+persistence in `TutorExperience.tsx`. Neither is touched here beyond the
+one `TutorExperience.tsx` state addition this fix itself needed — `/offers`
+was read, not written, to confirm it carries no cap information today (so
+the POST `/sessions` 429 remains the only place this fix could attach the
+reset instant).
+
+**Verified, not asserted.** `git stash` on `OfferChips.tsx` and the three
+locale files (keeping the new test file) reproduces the OLD component
+against the SAME props: the three duration assertions
+(`describe('the SESSION_LIMIT refusal names a real time...')` in
+`offerChips.test.tsx`) fail for the exact claimed reason — the old code
+renders the fixed "tomorrow" / "mañana" / "amanhã" regardless of
+`startErrorResetAt` — while the two fallback tests, which exercise
+behaviour the old code already had by coincidence, stay green throughout;
+`git stash pop` restores the fix and all five pass. The es-MX and pt-BR
+tests assert the SAME 6-hour interval renders in that locale's own words
+("dentro de 6 horas", "em 6 horas") and explicitly assert the ABSENCE of
+the English phrase, which is what actually distinguishes real
+`Intl.RelativeTimeFormat` formatting from a hardcoded English string that
+happened to satisfy only the first test.
+
+Proof: 3 new backend tests in `tutor.test.ts` (`daysAhead:1` is exactly 24h
+after `daysAhead:0`; a month-boundary rollover to the correct September
+date; the live route's 429 body carries the exact `resetAt` the exported
+helper computes, under `vi.useFakeTimers()`) — full backend suite green (42
+files, 714 tests, up from 711). 5 new frontend tests in `offerChips.test.tsx`
+(en-US/es-MX/pt-BR duration rendering, the no-`resetAt` fallback, the
+already-past-`resetAt` fallback) — full frontend suite green (130 files,
+1506 tests, up from 1501). Type-check (backend including its test tree),
+lint and build clean in both services; root `docs:check`, `secrets:check`,
+`i18n:check`, `paths:check`, `provider:check`, `seo:check` and `tools:test`
+all green. No `oracle/AGENTS.md` or `/ORACLE.md` item: the daily cap's
+enforcement (round 34) and its exemptions are unchanged — this closes only
+how the refusal is EXPLAINED to the person it refuses.

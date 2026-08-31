@@ -1,5 +1,6 @@
 import { act, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import i18n from '@/i18n';
 import { OfferChips } from '../OfferChips';
 import type { TutorOffers } from '../types';
 
@@ -72,6 +73,7 @@ function renderChips(offers: Partial<TutorOffers> = {}, props: Record<string, un
       offers={{ ...OFFERS, ...offers }}
       starting={false}
       startError={null}
+      startErrorResetAt={null}
       onStart={onStart}
       onPersonalize={vi.fn()}
       onReplay={vi.fn()}
@@ -91,8 +93,12 @@ function openings(container: HTMLElement): string[] {
   );
 }
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.stubGlobal('Audio', SilentAudio);
+  // Deterministic default: several tests below assert against real English
+  // strings, and a test in an EARLIER file that changed the active language
+  // and never changed it back must not leak into this one.
+  await i18n.changeLanguage('en-US');
 });
 
 afterEach(() => {
@@ -232,6 +238,91 @@ describe('refusals', () => {
     const lines = screen.getAllByRole('status').map((node) => node.textContent ?? '');
     expect(lines.join(' ')).not.toContain('tutor.startError.');
     expect(lines.join(' ')).not.toContain('SESSION_LIMIT');
+  });
+
+  /*
+   * tutor-review-sweep-92, session-cap-ux, MEDIUM. The OLD copy was a static
+   * "come back tomorrow", with no clock time, no countdown, and no relation
+   * to the local-midnight boundary Core actually computes for the reset — a
+   * child with a weak sense of relative time cannot tell a 10-minute wait
+   * from a 24-hour one from that sentence. `startErrorResetAt` is Core's own
+   * computed reset instant; without this fix nothing on this component ever
+   * read it, so it could not have changed what rendered here.
+   *
+   * Verified failing pre-fix, not merely reasoned about: `git stash` on
+   * `OfferChips.tsx` and the three locale files (keeping this test) re-runs
+   * the OLD code against the SAME props — it renders the fixed "tomorrow" /
+   * "mañana" regardless of `startErrorResetAt`, so the assertions on the
+   * concrete duration below fail for the exact reason this fix exists to
+   * close; `git stash pop` restores the fix and they pass again.
+   */
+  describe('the SESSION_LIMIT refusal names a real time, not just "tomorrow"', () => {
+    // A round 6 hours away, in UTC, so the arithmetic is identical regardless
+    // of which locale's own clock is asked — only the WORDS should vary.
+    const NOW = new Date('2026-08-30T18:00:00.000Z');
+    const RESET_AT = new Date('2026-08-31T00:00:00.000Z').toISOString();
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(NOW);
+    });
+
+    it('renders a concrete duration in en-US ("in 6 hours"), not the old static "tomorrow"', () => {
+      renderChips({}, { startError: 'SESSION_LIMIT', startErrorResetAt: RESET_AT });
+
+      const lines = screen.getAllByRole('status').map((node) => node.textContent ?? '');
+      const text = lines.join(' ');
+      expect(text).toContain('in 6 hours');
+      expect(text).not.toContain('tomorrow');
+    });
+
+    /*
+     * The SAME props, a DIFFERENT active language — proving the duration is
+     * genuinely produced by `Intl.RelativeTimeFormat(i18n.language, ...)`
+     * rather than a hardcoded English string that happens to satisfy the
+     * en-US assertion above. A fix that hardcodes "in 6 hours" and ignores
+     * locale would pass the test above and fail only this one.
+     */
+    it('renders the SAME duration in es-MX ("dentro de 6 horas"), proving real per-locale formatting', async () => {
+      await i18n.changeLanguage('es-MX');
+      renderChips({}, { startError: 'SESSION_LIMIT', startErrorResetAt: RESET_AT });
+
+      const lines = screen.getAllByRole('status').map((node) => node.textContent ?? '');
+      const text = lines.join(' ');
+      expect(text).toContain('dentro de 6 horas');
+      expect(text).not.toContain('mañana');
+      expect(text).not.toContain('in 6 hours');
+    });
+
+    it('renders the same duration in pt-BR ("em 6 horas") too', async () => {
+      await i18n.changeLanguage('pt-BR');
+      renderChips({}, { startError: 'SESSION_LIMIT', startErrorResetAt: RESET_AT });
+
+      const lines = screen.getAllByRole('status').map((node) => node.textContent ?? '');
+      const text = lines.join(' ');
+      expect(text).toContain('em 6 horas');
+      expect(text).not.toContain('amanhã');
+    });
+
+    it('falls back to the plain "tomorrow" copy when Core omits resetAt, rather than a broken "{{when}}"', () => {
+      renderChips({}, { startError: 'SESSION_LIMIT', startErrorResetAt: null });
+
+      const lines = screen.getAllByRole('status').map((node) => node.textContent ?? '');
+      const text = lines.join(' ');
+      expect(text).toContain('tomorrow');
+      expect(text).not.toContain('{{when}}');
+    });
+
+    it('falls back to "tomorrow" when resetAt is already in the past (clock skew, a stale prop)', () => {
+      renderChips(
+        {},
+        { startError: 'SESSION_LIMIT', startErrorResetAt: new Date('2026-08-30T00:00:00.000Z').toISOString() },
+      );
+
+      const lines = screen.getAllByRole('status').map((node) => node.textContent ?? '');
+      const text = lines.join(' ');
+      expect(text).toContain('tomorrow');
+    });
   });
 });
 
