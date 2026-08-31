@@ -10883,3 +10883,130 @@ No `frontend/AGENTS.md` item: this closes a gap against an invariant
 comment already state (a legitimate zero is a designed case, not an edge
 case) — the gap was in the client's rendering floor never being told about
 it, not in either document's rule.
+## Round 108: the composer — the ONLY channel with no voice provider — could splice a stranger's remembered words into a child's own message, mid-word, before a line of our code ever ran, found by genuine live testing, HIGH, closed 2026-08-31
+
+**HIGH, FIXED (corruption). INVESTIGATED, NOT REPRODUCED (the reported
+Enter-key symptom).** Found by live testing against the real oracle-backed
+dev stack, logged in as a real test account, with the microphone genuinely
+blocked in the browser — this product's own documented text fallback,
+`/ORACLE.md` §4.2b — which is exactly the condition that puts a learner in
+front of `ConversationView.tsx`'s composer with no other way to speak to
+the tutor at all.
+
+**What was reported.** Typing "i dont know money is confusing" and
+pressing Return appeared to do nothing — no bubble, no feedback, the tutor's
+last line unchanged. A second message, "what is saving," sent normally by
+clicking Send. Reading the DOM transcript afterward showed the first
+message had not been lost: it came back as `"i dont know money is
+confwhat is savingusing"` — the second message's text spliced into the
+middle of the first, mid-word.
+
+**Reproduced live, twice, independently, with the exact corruption class
+confirmed.** Typing a clean message character-by-character into a freshly
+mounted composer and reading `input.value` directly from the DOM (not a
+screenshot) showed unrelated text already present, or inserted mid-string,
+before Send was ever pressed. Two concrete captures: a clean "message alpha
+first" reached the transcript as `"savings practice with a number pad
+pmessage alpha firstlease"` — the substring `"savings practice with a
+number pad p"` + `"message alpha first"` + `"lease"`, i.e. an entirely
+different, plausible-sounding tutor-conversation sentence sliced open and
+my own message posted into the wound. None of the intruding strings across
+several captures — `"I want to practice adding money I save each week"`,
+`"Can I try a practice question with the number pad"`, `"please give me a
+number pad question to answer"`, `"savings practice with a number pad
+please"` — exist anywhere in this repository (`grep -rn` across `frontend/`
+and the whole tree, zero matches); none are canned copy, none are
+LLM-generated content this session ever saw the model produce.
+
+**Root cause: real, live browser autofill, not application state.**
+`ConversationView.tsx`'s composer `<input>` carried no `autoComplete`
+attribute, no `name`, and no `id` — nothing telling any browser this field's
+values must never be remembered or replayed. `submitTyped` and
+`useTutorSocket.ts`'s `sendText` were both read end to end and neither
+buffers, debounces, throttles, or shares mutable state across calls:
+`submitTyped` reads the exact `typed` React state holds at call time,
+`sendText` fires exactly one `JSON.stringify` frame per call. This was
+confirmed directly, live: sending two ordinary messages back to back
+produced two DISTINCT transcript entries, never one merged string — only
+the FIRST carried the splice, the SECOND arrived clean, which is the
+opposite of what a React-state race or a socket-level buffering bug would
+produce (a race would corrupt whichever call loses a timing window, not
+deterministically the first one into a fresh field). That shape — corrupt
+only on a field's first population, clean on every write after — is exactly
+what a browser's autofill dropdown does: it offers (or on some heuristics,
+inserts) a saved prior value the moment a matching, unlabelled text field
+is focused and takes its first keystroke, and stays quiet afterward. This
+dev environment's browser pane turned out to be a single Chrome profile
+shared by several concurrent tabs on the same `localhost:5173` origin at
+once (`tabs_context` showed six), which is exactly the substrate that
+accumulates "prior values typed into this shape of field" fastest — but the
+missing `autoComplete="off"` is what made the field eligible at all, and it
+would be exactly as eligible on a single family's own repeatedly-used
+browser. Confirmed independently that real Chrome-native autofill was
+active in this same session: the LOGIN form's username field, which
+correctly carries `autocomplete="username"`, recalled a genuine
+previously-typed email on a bare focus click with zero typing — the
+mechanism is real, not a sandbox artifact, and the composer's own field was
+simply never told to opt out of it.
+
+**The reported Enter-key symptom was investigated and could not be
+reproduced as an application defect.** `ConversationView.tsx` already wires
+`onKeyDown={(event) => event.key === 'Enter' && submitTyped()}` — this was
+true before this round's fix, unrelated to it, and never touched. A genuine
+`new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })` dispatched
+directly at the live composer submitted and cleared the field correctly,
+every time it was tried. The one inconsistent result came from this
+session's own browser-automation tool's built-in "Return" key action, which
+submitted correctly on one trial and silently did nothing on another,
+against IDENTICAL application code — a testing-tool key-delivery
+inconsistency, not a product regression: a real keyboard's Enter key always
+produces a `key: 'Enter'` event, which this component has always handled
+correctly. Recorded honestly, per AGENTS.md §1.12, rather than claimed
+fixed: nothing in `ConversationView.tsx`'s Enter handling changed this
+round, and no test in this round was written to prove a behavior that was
+never broken — the new Enter tests below exist as permanent regression
+coverage, confirmed to already pass pre-fix via `git stash`.
+
+**Fixed with one attribute.** `autoComplete="off"` on the composer's
+`<input>` (`frontend/src/tutor/ConversationView.tsx`) — the one signal a
+browser's own autofill is obliged to honour for a plain text field.
+Verified live: after the fix, on a fresh page load with the exact same
+blocked-microphone condition, typing "i dont know money is confusing"
+character-by-character into the composer produced `input.value ===
+"i dont know money is confusing"` with zero intrusion, and Send delivered
+it unmodified. This also closes a real §1.9 gap independent of the
+corruption: without it, a child's own typed words — or a PRIOR user's, on a
+shared or public family device — are exactly what a browser remembers and
+can resurface, unprompted, in a later session; `name`/`id` are deliberately
+left unset alongside it, since either is exactly the hook a browser could
+use to key a saved-value association for a field with no autocomplete
+category of its own.
+
+**Proof.** Four new tests in `conversationView.test.tsx`: the composer's
+input carries `autocomplete="off"`; an ordinary Enter press sends the
+trimmed text and clears the field (any other key does nothing); two
+ordinary messages sent one after another produce exactly two `sendText`
+calls, in order, as two distinct uncorrupted strings, never one merged
+call. Confirmed via `git stash` on `ConversationView.tsx` alone: only the
+`autoComplete="off"` test fails red pre-fix (`1 failed | 64 passed`), for
+the exact claimed reason (`received: null`); the Enter and double-send
+tests already passed pre-fix, which is the honest confirmation that
+sub-issue was never broken. All 65 tests in the file pass post-fix.
+`npm run type-check`, `npm run lint`, `npm run build` clean in `frontend/`.
+Root `docs:check`, `secrets:check`, `i18n:check` all green (no new
+user-facing strings — this is a DOM attribute, not copy). Full suite: 134
+files / 1549 tests, 1540 passed / 9 failed on the first run — all 9
+failures were in `AdminUsersPage.test.tsx`, `AnalyticsGeoMap.test.tsx`,
+`CoursePage.test.tsx` and `PlacementPage.test.tsx` (7 files by name, none
+in `src/tutor/`), plus one post-teardown `ReferenceError` in
+`DrRhoCharacter.tsx`'s blink timer; re-running those exact 4 files in
+isolation immediately afterward passed all 29 tests cleanly, confirming
+pre-existing full-suite-under-load flake (jsdom timer/media teardown
+racing test-file boundaries), not a regression from this change, which
+touches only `frontend/src/tutor/ConversationView.tsx` and its own test
+file.
+
+No `frontend/AGENTS.md` item: the invariant this closes ("a browser must
+never be told to remember a child's message") is a straightforward
+consequence of `/ORACLE.md` §4.1's existing child-privacy floor, not a new
+rule of its own.

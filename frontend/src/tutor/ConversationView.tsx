@@ -569,6 +569,28 @@ export function ConversationView({
           disabled={ended}
           placeholder={t(editing ? 'tutor.conversation.editPlaceholder' : 'tutor.conversation.typePlaceholder')}
           aria-label={t(editing ? 'tutor.conversation.editPlaceholder' : 'tutor.conversation.typePlaceholder')}
+          /*
+           * NO BROWSER AUTOFILL ON THIS FIELD — found live, round 108
+           * (2026-08-31): with no `autoComplete` at all, Chrome treated this
+           * as an ordinary saved-text field and, on focus/keystroke, spliced
+           * an unrelated remembered value INTO the middle of whatever the
+           * learner was actively typing — not appended, not offered as a
+           * dismissible suggestion, already merged into `value` by the time
+           * our own `onChange` ever saw it. `React state itself was never
+           * wrong: `submitTyped` reads the exact `typed` React already holds,
+           * and `sendText` fires one JSON frame per call with no buffering
+           * (verified by reading both end to end) — the corruption lands
+           * in the DOM's native value before any of our code runs a single
+           * line. `off` is the one signal a browser's own autofill is
+           * expected to honour for a plain text field, and it is also a
+           * privacy floor per §1.9: a child's own typed words must never be
+           * remembered or resurfaced by the browser, on this device or the
+           * next session on a shared one. `name`/`id` are deliberately left
+           * unset alongside it, since either one is exactly the hook Chrome
+           * uses to key a saved-value association for a field with no
+           * autocomplete category of its own.
+           */
+          autoComplete="off"
           className="lf-body h-11 min-w-0 flex-1 bg-transparent text-content placeholder:text-content-muted focus:outline-none disabled:opacity-60"
         />
         <button
