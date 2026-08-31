@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createHash } from 'node:crypto';
-import { serviceRest } from './supabaseRest.js';
+import { countServiceRows, serviceRest } from './supabaseRest.js';
 
 /*
  * The Tutor's data plane (migration 0047, /ORACLE.md).
@@ -343,6 +343,36 @@ export type CloseTutorSessionOutcome = 'closed' | 'already-closed' | 'failed';
  * empty array is a real, honest "matched nothing"; a one-row array is a real
  * update. See `RUNBOOK.md` Round 98.
  */
+
+/**
+ * How many sessions this learner has already started since `sinceIso`, or
+ * `null` on a read failure.
+ *
+ * Found by adversarial review, round 99 (2026-08-31, HIGH): `GET /offers`
+ * had no way to tell the offer screen the learner's daily cap was already
+ * spent — its `canStart`/`startBlockedBy` fields reflected only Oracle's own
+ * health, never `MAX_SESSIONS_PER_DAY`, so a learner who had used every
+ * session today saw the identical inviting screen as one who had used none,
+ * discovering the refusal only after tapping an opening and having `POST
+ * /sessions` bounce them with `SESSION_LIMIT`.
+ *
+ * This is the SAME predicate `start_tutor_session_checked` (migration 0057)
+ * evaluates inside its own advisory-locked transaction — `user_id = X AND
+ * started_at >= since` — read here through PostgREST's own exact-count
+ * idiom (`countServiceRows`, already used for follower counts and admin
+ * dashboards) rather than a second SQL function, so there is exactly one
+ * definition of "sessions today" for the two call sites to agree on. This
+ * read is advisory only and never what ENFORCES the cap — that stays
+ * atomic, inside the SQL function, at session-start time — it only lets the
+ * offer screen say so honestly before a learner taps in and gets bounced.
+ * `null` on failure is deliberate (§1.14): this is a display-only read, so
+ * the caller may treat "unknown" as "not reached" rather than collapsing a
+ * transient PostgREST failure into a false, and much worse, "cap reached".
+ */
+export function countTutorSessionsSince(userId: string, sinceIso: string): Promise<number | null> {
+  return countServiceRows(`/tutor_sessions?user_id=eq.${eu(userId)}&started_at=gte.${es(sinceIso)}&select=id`);
+}
+
 export async function closeTutorSession(input: {
   sessionId: string;
   closeReason: string;

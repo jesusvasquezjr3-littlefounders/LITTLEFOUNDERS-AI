@@ -69,9 +69,24 @@ export interface TutorOffers {
   } | null;
   /** True when personalization could not be read — the UI says so honestly. */
   intelDegraded: boolean;
-  /** Whether Oracle can serve at all right now. */
+  /**
+   * Whether a session can be started at all right now — Oracle's own health
+   * AND the learner's daily session cap folded into one answer (round 99:
+   * this used to reflect only Oracle's health, so a learner who had used
+   * every session today saw the same inviting screen as one who had used
+   * none). `startBlockedBy` names the reason; `'SESSION_LIMIT'` is the SAME
+   * code `POST /sessions` returns for the identical refusal.
+   */
   canStart: boolean;
   startBlockedBy: string | null;
+  /**
+   * When `startBlockedBy` is `'SESSION_LIMIT'`, the learner's next local
+   * midnight — the SAME reset instant `POST /sessions`'s own 429 `resetAt`
+   * carries (round 95), exposed here too so the proactive refusal on this
+   * screen and the post-tap one never disagree about how long the wait is.
+   * Null whenever the cap is not what is blocking (or not reached at all).
+   */
+  sessionCapResetAt: string | null;
   voiceAvailable: boolean;
   /**
    * Why the microphone is off, when it is. Resolved BEFORE the session starts,

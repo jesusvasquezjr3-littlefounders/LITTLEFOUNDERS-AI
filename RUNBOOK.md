@@ -9357,6 +9357,7 @@ lint and build clean in both services; root `docs:check`, `secrets:check`,
 all green. No `oracle/AGENTS.md` or `/ORACLE.md` item: the daily cap's
 enforcement (round 34) and its exemptions are unchanged — this closes only
 how the refusal is EXPLAINED to the person it refuses.
+
 ## Round 96: a SESSION_LIMIT refusal lived only in memory, so a refresh repainted the exact same cheerful, tappable chips — found by adversarial review (tutor-review-sweep-92, session-cap-ux dimension), MEDIUM, closed 2026-08-31
 
 `TutorExperience.tsx`'s daily-cap refusal — the server's `429
@@ -9732,3 +9733,169 @@ tests (up from 711 — two new). `npm run type-check` (including
 verify:tutor` and `npm run verify:pedagogy` (oracle) both green. Root
 `npm run docs:check`, `npm run secrets:check`, `npm run provider:check`
 and `npm run tools:test` all green.
+
+## Round 99: the offer screen invited a child into a tutor session it had already used up, and only said so after the tap — found by review sweep tutor-review-sweep-92, HIGH, closed 2026-08-31
+
+`GET /api/v1/tutor/offers` (`backend/src/routes/tutor.ts`) is the ONLY
+service the offer screen calls before a learner picks an opening, and its
+`canStart`/`startBlockedBy` pair is exactly what the client trusts to
+decide whether to render an invitation at all (`OfferChips.tsx`'s
+`cannotServe`, `mic.ts`'s `micBlockedForOffers`). Both fields were computed
+ONLY from `preflight()` — Oracle's own health — and never consulted
+`MAX_SESSIONS_PER_DAY`, the daily session cap `POST /sessions` already
+enforces atomically (migration `0057`, round 34). So a learner who had
+already used both of today's sessions saw the identical "let's learn!"
+screen, four chips and a live microphone orb included, as one who had used
+none — and discovered the refusal only after tapping an opening and having
+`POST /sessions` bounce them with a 429 `SESSION_LIMIT`, the exact
+tap-then-refuse shape this review sweep's session-cap-ux dimension exists
+to catch. This is not a cosmetic gap: the daily cap is a promise to
+parents (§8's own comment on it: "the tutor is a deliberate anti-addiction
+control"), and a product that keeps inviting past its own limit undermines
+the ONE thing that promise is supposed to guarantee.
+
+**The fix reuses, rather than re-derives, both moving parts the cap
+depends on.** `countTutorSessionsSince` (`backend/src/services/tutorData.ts`)
+is a new READ-ONLY count over `tutor_sessions`, using `countServiceRows` —
+the same exact-count-via-`Content-Range` idiom already serving follower
+counts and admin dashboards — filtered on `user_id = X AND started_at >=
+since`, the IDENTICAL predicate `start_tutor_session_checked` evaluates
+inside its own advisory-locked transaction. No second SQL function and no
+migration: this is a plain filtered count over a table that already
+carries everything it needs, so there is exactly one definition of
+"sessions today" for the two call sites to ever disagree about. `/offers`
+calls it with the SAME `startOfLocalDayIso(locale)` boundary `POST
+/sessions` already uses (round 34's local-midnight fix), and the SAME
+staff exemption (`isStaff` was computed in `POST /sessions` but never in
+`/offers` — added here too, so the person iterating on the Tutor is not
+locked out of its own offer screen the moment they are locked out of
+starting one). The count is advisory only — it never enforces anything,
+that stays atomic at session-start time — so a `null` read (an upstream
+failure) degrades to "cap not reached" rather than lying that a full cap
+is empty; acceptable ONLY because `/offers` never writes anything (§1.14:
+"defaulting is acceptable only for display-only reads").
+
+**The cap is folded into the EXISTING `canStart`/`startBlockedBy` pair,
+not a new field in a new shape.** `canStart: runtime.canStart &&
+!sessionCapReached`; `startBlockedBy` names `'SESSION_LIMIT'` when the cap
+is what is refusing — the SAME code `POST /sessions` already returns for
+the identical refusal, so no new wire vocabulary was invented and no new
+frontend field had to be read. This was the deliberate choice over adding
+a third boolean pair (mirroring `voiceAvailable`/`microphoneBlockedBy`):
+`mic.ts`'s own `micBlockedForOffers` already says, in its own comment,
+"a tutor that cannot open a session at all cannot open a spoken one
+either" — folding the cap into `canStart` means the microphone orb is
+ALSO correctly dashed and disabled when the cap is spent, for free,
+through code this fix never touched (`TutorExperience.tsx`'s `starting:
+starting || !offers.canStart` already disables every opening chip the
+same way).
+
+**One frontend gap remained: the status COPY, not the disabling.**
+`OfferChips.tsx`'s `cannotServe` branch rendered ONE message regardless of
+reason — `tutor.page.tutorUnavailable`, "The tutor is resting. Try again
+soon." — which is honest for an Oracle outage and actively WRONG for a
+learner who simply used today's two sessions; it reads as an outage the
+product will fix, not as the cap the product deliberately enforces. Fixed
+by reading `startBlockedBy` back: `sessionCapReached = offers.startBlockedBy
+=== 'SESSION_LIMIT'` selects `tutor.startError.SESSION_LIMIT` instead of the
+generic message.
+
+**Reconciled mid-flight with round 95, which landed on `main` while this
+fix was in progress.** Round 95 closed the SAME review sweep's third
+finding — the SESSION_LIMIT copy said only a static "come back tomorrow",
+telling a child nothing about whether the wait was ten minutes or nearly a
+day — by having `POST /sessions`'s 429 carry a real `resetAt` instant and
+changing `tutor.startError.SESSION_LIMIT` itself to require a `{{when}}`
+interpolation (`"...Come back {{when}}!"`, `sessionLimitWhenFallback:
+"tomorrow"` as the fallback word). Rebasing this fix onto that one meant
+the naive proactive message from the paragraph above would have rendered
+the literal, untranslated `"{{when}}"` on a child's screen — the exact
+class of defect round 95 exists to prevent, reintroduced by a fix landing
+beside it. Round 95's own commit deliberately scoped around this
+("Scope: deliberately does not touch `/offers`'s cap-reporting logic...
+two sibling findings... are being closed concurrently elsewhere"), so
+closing the gap properly meant reusing what it built rather than either
+shipping the broken placeholder or reverting to a plain fallback the
+post-tap refusal no longer uses. `GET /offers` now also computes and
+returns `sessionCapResetAt` — reusing round 95's OWN `SessionLimitResetAt`
+Zod schema and `startOfLocalDayIso(locale, new Date(), 1)` arithmetic
+(same file, same constants, not a second copy) — null whenever the cap is
+not what is blocking; `OfferChips.tsx`'s proactive branch now calls the
+SAME `formatResetWhen` helper round 95 added, so the proactive and
+post-tap refusals can never disagree about how long the wait is, only
+about whether a tap already happened.
+
+**Proof, test-first.** `backend/src/__tests__/tutor.test.ts` gained a new
+describe block: with `sessionsToday: 2` (the cap), `GET /offers` now
+answers `canStart: false, startBlockedBy: 'SESSION_LIMIT'` and a
+`sessionCapResetAt` that is a real, FUTURE ISO datetime (not merely
+truthy) — confirmed to FAIL against the pre-fix code first, via `git
+stash` of just `tutor.ts`/`tutorData.ts`, with the exact wrong answer the
+finding describes (`canStart: true`); passes after. Five more: still
+invites under the cap, keeps an ordinary Oracle-health refusal
+(`MODEL_UNAVAILABLE`) distinct from a spent cap, exempts staff exactly as
+`POST /sessions` already does, does not misreport the cap as reached when
+the count read itself fails, and carries no reset instant when the cap
+has not been reached. `frontend/src/tutor/__tests__/offerChips.test.tsx`
+gained three: the SESSION_LIMIT copy renders (and the generic "resting"
+line does not) when `startBlockedBy` names the cap, the SAME proactive
+message names a concrete duration ("in 6 hours") rather than the bare
+fallback when `sessionCapResetAt` is set — proving the reconciliation
+actually wires through rather than merely compiling — and the generic
+line still renders for an ordinary Oracle outage. All confirmed to fail
+against the pre-fix component via `git stash` before passing after.
+
+Verified against Oracle's own service boundary, not skipped: no
+`oracle/AGENTS.md` or `/ORACLE.md` change was made, by judgment rather than
+oversight — nothing in `oracle/` was touched, no prompt, context field or
+content-ladder rule changed, and `/ORACLE.md §9.2`/`§15` make no claim
+about the offer screen already reflecting the cap that this fix would now
+be correcting. This is a Core API + frontend consistency fix around a cap
+`/ORACLE.md §15` already documents, the same shape as round 88 (pure
+frontend arithmetic, no doc change) rather than round 78 (a runtime
+contract change).
+
+**Rebased a second time onto round 96, also part of this sweep, which
+persists a SESSION_LIMIT `startError` across a refresh via
+`localStorage`.** No file this fix touches overlapped round
+96's own file (`TutorExperience.tsx`) at the git level, so that rebase
+was a clean auto-merge with no conflict to resolve in this fix's own
+logic — only round 96's OWN new test fixture
+(`sessionLimitMemory.test.tsx`) needed the new `sessionCapResetAt: null`
+field to keep compiling, the same class of fixture gap `type-check`
+caught for the other three files below. The two fixes are complementary
+rather than overlapping: round 96 makes a REMEMBERED refusal survive a
+refresh; this fix makes the SERVER tell the truth proactively on every
+single `/offers` read, including the one right after that refresh — so
+in the common case round 96's localStorage marker and this fix's live
+`canStart: false` agree, and neither depends on the other to be correct
+on its own.
+
+Backend: `npm run type-check` (including the test tree), `npm run lint`,
+`npm test` — 42 files, 726 tests green (six new: five daily-cap cases
+plus the `sessionCapResetAt`-null case), `npm run build` all clean.
+Frontend: `npm run type-check`, `npm run lint`, `npm test -- --run` —
+133 files, 1538 tests green (three new — the reconciliation's duration
+test included), `npm run build` clean (SEO prerender: 6 pages, 4
+indexable, unaffected; four `TutorOffers` test fixtures elsewhere —
+`mapRefreshAfterSession.test.tsx`, `mic.test.ts`, `lab/labFixtures.ts`,
+and round 96's own `sessionLimitMemory.test.tsx` — needed the new
+`sessionCapResetAt: null` field to keep compiling, caught by
+`type-check` rather than guessed at). Root `npm run docs:check`, `npm
+run secrets:check`, `npm run i18n:check` (3-locale parity — no new
+strings; both `SESSION_LIMIT` and `sessionLimitWhenFallback` already
+existed in all three, added by round 95), `npm run paths:check`, `npm run
+provider:check`, `npm run seo:check`, and `npm run tools:test` (26/26,
+including the migration-ledger consistency check — correctly green with
+zero new migrations, since this fix added no schema) all green. No
+Tutor-HUD-layout or lesson-engine `verify:*` gate applies: this is a
+same-position text/logic change on an existing status plate, not a
+structural, 3D, or pointer-reachability change, so none of those
+specialized harnesses exercise the surface this touched. Live in-browser
+mobile/desktop screenshots were not taken for this round — the shared
+`/dev/tutor-lab` preview port was occupied by a concurrent sibling session
+from the same review sweep, and forcing it risked interfering with that
+session's own verification — so this relies instead on jsdom coverage of
+the exact rendered `role="status"` text in the same untouched
+`HudPlate`/position/className the pre-existing "Core cannot serve" message
+already ships in production through.
