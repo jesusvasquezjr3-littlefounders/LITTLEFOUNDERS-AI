@@ -70,6 +70,33 @@ describe('languageViolation catches a turn that drifted away from the session\'s
 });
 
 /*
+ * Found live, testing as a real logged-in kid account, 2026-08-30 (MEDIUM):
+ * a turn that set `next: "segment"` also narrated a fully-specified example
+ * in `say` — "if you have 10 coins and each sticker costs 5" — before the
+ * activity existed. The content ladder then served a published bank lesson
+ * (`backend/src/routes/tutor.ts`'s `/segments` handler never reads the
+ * `framing`/`rationale` fields it accepts) with its own numbers: "8 coins,
+ * toy car, 4 each". The learner read one problem and was shown a different
+ * one with no acknowledgment of the switch — to a struggling child this
+ * reads as the product being broken, not as a second example. Tier-3
+ * (freshly generated) content coincidentally matched because
+ * `content/generate.ts` feeds the tutor's own `framing` into the author
+ * brief — but nothing does that for tier-1/2 bank content, and the model had
+ * no instruction telling it the numbers it invents here go nowhere.
+ */
+describe('a turn that requests a segment keeps its own transition generic', () => {
+  it('tells the model the upcoming activity does not exist yet and to stay generic', () => {
+    expect(TUTOR_SYSTEM_PROMPT).toContain('the activity does not exist yet');
+    expect(TUTOR_SYSTEM_PROMPT).toContain('keep your');
+    expect(TUTOR_SYSTEM_PROMPT).toContain('transition GENERIC');
+  });
+
+  it('carves the segment case out of the "numbers are invented" instruction', () => {
+    expect(TUTOR_SYSTEM_PROMPT).toContain('narrating AND immediately following through on in the SAME turn');
+  });
+});
+
+/*
  * `buildContextMessage` had no direct unit coverage before this file — every
  * prior check exercised it indirectly through a full orchestrator turn. The
  * fix this file proves (round 48, 2026-08-30) is specific to how ONE plan

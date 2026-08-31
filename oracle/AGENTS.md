@@ -1898,6 +1898,39 @@ everything passes the blocked half perfectly and destroys the product.
    closed session, which is what made attributing this cost home the
    boring option rather than a new ledger. See `RUNBOOK.md` Round 78.
 
+67. **A turn that promises an activity is composed BEFORE the activity
+   exists, so a specific invented example in that same turn is a
+   promise about numbers nobody chose yet.** Found live, testing as a
+   real logged-in kid account through the actual UI, round 79,
+   2026-08-30 (MEDIUM). The tutor said "if you have 10 coins and each
+   sticker costs 5…"; the activity that rendered right after asked
+   about "8 coins, toy car, 4 each" — same skill, different numbers,
+   no acknowledgment of the switch. `ws/server.ts`'s `deliver()` sends
+   `say` to the client BEFORE calling `serveSegment()`, so the model
+   commits to a worked example while the segment is still unchosen.
+   Whether this is visible depends on which tier answers: tier 3
+   (`content/generate.ts`) feeds the tutor's own `framing` into the
+   author's brief, so freshly generated content tends to match by
+   construction; tier 1/2 bank content is selected by `skillKey` +
+   `difficulty` alone (`backend/src/routes/tutor.ts`'s `/segments`
+   handler validates `framing`/`rationale` and never reads either), so
+   a bank lesson's numbers have no connection to anything the tutor
+   said. Fixed as a prompt constraint rather than a turn-ordering
+   change — inverting the turn to select-before-speak would need a
+   second model call, which the Oracle exception's latency budget
+   (§1.5) does not have room for. `prompt.ts`'s `next: "segment"`
+   paragraph now says the activity does not exist yet and the
+   transition must stay generic; the "numbers are invented" bullet
+   gets a carve-out that its license is for a hypothetical narrated
+   AND resolved in the SAME turn, not one still to come. Different bug
+   from item 58 (that one is the tutor's reaction to an activity
+   ALREADY on screen, a turn later — `openActivity` cannot see a
+   mismatch that happens before the segment is chosen). The general
+   lesson: when two independent surfaces each produce a number for the
+   same moment, check whether anything actually connects them, or
+   whether one is just early and hoping the other agrees. See
+   `RUNBOOK.md` Round 79.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:

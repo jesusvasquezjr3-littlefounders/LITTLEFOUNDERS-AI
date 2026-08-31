@@ -7758,6 +7758,74 @@ different blast radius (every turn in the product, not one background
 task), and it wants its own round rather than being smuggled into this
 one.
 
+## Round 79: a turn that promised an activity narrated its own invented numbers, and the numbers on screen were somebody else's
+
+Found live, testing as a real logged-in kid account through the actual
+UI — not a fixture, not `tutor:converse` — 2026-08-30 (MEDIUM). The
+tutor's own reply said: *"Now try this: if you have 10 coins and each
+sticker costs 5, how many stickers can you buy?"* The activity that
+rendered on screen immediately after asked: *"You have 8 coins. Each
+toy car costs 4 coins. How many toy cars can you buy?"* Same skill,
+completely different numbers and a different item, with nothing in
+the chat or the UI acknowledging the switch. The turn before it did
+not have this problem — the model's opening line ("imagine you have 6
+coins, and a cookie costs 2 coins") matched the widget that served
+right after it, exactly.
+
+**Root cause, confirmed by reading the code rather than guessed from
+the symptom.** `ws/server.ts`'s `deliver()` sends the model's `say`
+text to the client BEFORE it ever looks at
+`emission.turn.segmentRequest` — only afterward does it call
+`serveSegment()`, which is what actually reaches Core's content
+ladder. The model composes its spoken transition, invented numbers
+included, with zero knowledge of what will actually be served,
+because nothing has been served yet. Whether the mismatch is visible
+depends entirely on WHICH tier answers: `content/generate.ts` (tier 3,
+fresh generation) documents `framing` as "the learner-facing framing
+the tutor already said out loud" and feeds it straight into the
+author's brief — a soft nudge that happened to make the FIRST activity
+match. Published bank content (tier 1/2) has no such nudge:
+`backend/src/routes/tutor.ts`'s `/segments` handler accepts `framing`
+and `rationale` in its Zod schema and never reads either one — a bank
+lesson is selected purely by `skillKey` + `difficulty`, with its own
+fixed numbers that have no connection whatsoever to what the tutor
+just said. The SECOND activity hit a bank lesson, and the mismatch was
+the predictable result, not a fluke.
+
+**Fixed as a prompt-only constraint, not a turn-ordering change.** The
+alternative — select the segment first, then tell the model its real
+numbers to narrate — means inverting the turn (a second model call, or
+restructuring one call into two phases), which conflicts with the
+latency-is-the-product constraint this exact socket already carries
+(`AGENTS.md` §1.5, the Oracle exception: relaying through Core was
+rejected because two internal hops double the latency budget of the
+one feature where latency IS the product). Cheaper and sufficient:
+`oracle/src/tutor/prompt.ts`'s `next: "segment"` paragraph now states
+plainly that the activity does not exist yet when this turn is
+composed, so the transition must stay generic — "let's try one like
+that on the screen" — never a specific worked example. The "THE
+NUMBERS ARE INVENTED" bullet gets the matching carve-out: that
+instruction is for a hypothetical the model narrates AND immediately
+follows through on in the SAME turn (no upcoming segment); when this
+turn sets `next: "segment"` instead, any numbers invented here are for
+an activity already seen, never for the one still to come. This is a
+DIFFERENT bug from the one item 58/Round 67 fixed (the tutor's
+REACTION to an activity already on screen, in the FOLLOWING turn) —
+this one happens in the SAME turn that requests the segment, before it
+exists, so that fix's mechanism (`openActivity`) cannot see it.
+
+Proof: 2 new `prompt.test.ts` assertions on the exact instruction text
+added (`the activity does not exist yet`, `transition GENERIC`,
+`narrating AND immediately following through on in the SAME turn`).
+This is a static, prefix-cached system-prompt change with no runtime
+branch to unit-test against a fixture — the same category `verify:
+pedagogy`'s own doc note already accepts for whiteboard/language
+instructions in this file, proven live instead of by fixture. Full
+suite re-run clean after the edit: 627/627 tests, 27/27 files,
+type-check and lint clean.
+
+See `oracle/AGENTS.md` item 67.
+
 Verification (re-run after rebasing onto rounds 76 and 77): full
 oracle suite green (27 files, 625 tests — 615 existing + 10 new, zero
 regressions), full backend suite green (42 files, 710 tests — 702 + 8
