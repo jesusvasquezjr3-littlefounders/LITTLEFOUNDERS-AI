@@ -7070,3 +7070,110 @@ green after `ROADMAP.md`'s pending-delta range was extended to include
 green). `database/types/database.ts` regenerated via `npm run
 db:types`. No `oracle/AGENTS.md` item — touches only `backend/` and
 `database/`.
+
+## Round 73: a whiteboard drew twice as many steps as real periods, and three locale-coverage gaps in the same neighborhood
+
+The final piece of round 67's background review, combined with a
+live-caught defect the owner found testing round 65's own fix the
+next day. Four findings, all in `oracle/src/tutor/prompt.ts`/
+`orchestrator.ts`, all fixed.
+
+**HIGH, FIXED — a growth story with BOTH an income and an expense per
+period drew TWICE as many whiteboard steps as periods actually
+elapsed.** Live reproduction: "what if i get 3 dollars every month"
+then "how much after 3 months, spending 2?" produced a turn whose
+spoken correction and whiteboard LABEL both said "3 months," while the
+whiteboard itself drew SIX steps (+3,-2,+3,-2,+3,-2 → Start=$3, Month
+1=$6 ... Month 6=$6) — one step per individual arithmetic operation
+instead of one step per period's NET change. The schema's own step
+vocabulary is one operator per step; nothing in the prompt ever told
+the model whether a period with two operations should collapse to one
+net step. Confirmed real and recurring before fixing, matching rounds
+65/67's own discipline: a fixed trigger phrase reproduced it 5 of 6
+fresh tries; a varied-phrasing batch (currency/period-word/framing
+across all three locales) reproduced it in 4 of 5 income+expense
+whiteboards — a HIGHER rate than either whiteboard-number-agreement
+bug this campaign already closed.
+
+Fixed on both fronts. Prevention: `TUTOR_SYSTEM_PROMPT`'s whiteboard
+instruction now states the net-change rule explicitly and adds a
+second worked example (fresh numbers, 9/4, distinct from the existing
+10/2 example and its own "do not reach for these" list) showing an
+income-and-expense story collapsed to one net step per period.
+Detection: `whiteboardDoubledPeriodSteps()` — deliberately structural
+rather than prose-parsed, to keep the false-positive risk low: it
+requires an EXACT repeating add/subtract 2-cycle (same two values,
+opposite ops, length ≥4) across the WHOLE step list, plus both an
+inflow word and an outflow word in the board's own label — a
+genuinely valid multi-period story with varying amounts per period
+cannot match. Wired into the orchestrator's repair-retry loop in the
+same bucket as `missedWhiteboard`/`wrongUnit` (deliver-anyway, not
+never-deliver), since every individual number on a doubled board is
+still arithmetically correct — it is a mislabelled SHAPE, not a wrong
+fact. A 2-step board (the minimum one real period could produce) is a
+DELIBERATE, documented gap: it is indistinguishable from a genuinely
+valid 2-period story where period 1 is a gain and period 2 is a loss,
+so detection relies on the prevention-side fix alone for that case —
+silence over a false alarm, this file's own established doctrine.
+
+**HIGH, FIXED — `whiteboardNumberMismatch`'s Portuguese anchor missed
+the real model's own idiomatic phrasing.** A real live pt-BR
+conversation produced a genuine growth story using "vira" (becomes)
+and bare "fica" (without "com") — calling the check directly against
+this exact sentence paired with a wildly wrong whiteboard returned
+`false`, since `PERIOD_CLAIM_PATTERNS`'s Portuguese entry only anchored
+on `você tem`/`teria`/`fica(m) com`. Separately, in the same table,
+`PERIOD_WORD` was missing the Portuguese ordinal `quarta` (fourth) —
+Spanish's is spelled `cuarta`, a different string, so periods 1/2/3/5
+correctly caught an identical contradiction shape while period 4
+silently didn't. Fixed by widening the regex to also accept "vira" and
+bare "fica," and adding `quarta: 4` to the lookup table.
+
+**MEDIUM, FIXED — `RECALL_TRIGGER`'s phrase list was Spanish-heavy and
+asymmetric across locales.** 6 distinct Spanish temporal idioms
+against only 2 apiece for English and Portuguese, with 3 Spanish-only
+idioms ("the other time"/"the other day"/"last week") never given
+equivalents at all — confirmed live: "Remember the cookie problem?"
+and "What did we do last time?" both made zero calls to the recall
+endpoint. Fixed by giving English and Portuguese the same coverage
+Spanish already had, plus the Spanish voseo "te acordás" (the
+`te acuerdas` form alone never matched the Argentine/Central American
+second-person). `you recall` (not bare "recall") was the one
+deliberately narrower choice, since bare "recall" collides with this
+product's own domain ("a product recall"). A related LOW finding
+(the trigger firing on ordinary chit-chat that merely contains a
+substring, not an actual memory question) was deliberately left
+unfixed — no safe way was found to require an actual question shape
+without risking missed genuine requests, and English/Portuguese now
+simply inherit the SAME accepted risk Spanish already carried, which
+is what parity means here.
+
+**MEDIUM, FIXED — `promisesAnActivity`'s "already happened" verb list
+had zero Portuguese entries.** A genuine pt-BR narration of a
+just-completed activity ("Na tela, você colocou a moeda na cesta do
+que você quer.") was misread as an unkept PROMISE, because
+`ALREADY_DID` only recognized Spanish past-tense verbs — the guard
+clause never fired, falling through to `FUTURE_OFFER`'s bare "quer"
+(want) match. This gates a real repair-retry decision, so the shape
+spent an unnecessary paid model call and risked replacing a correct
+turn with a worse one. Fixed by adding the Portuguese past-tense
+translations of the existing Spanish verb list.
+
+Proof: 10 new unit tests + 2 orchestrator-level tests for the doubled-
+steps finding; 7 new tests for the Portuguese whiteboard-anchor gap; 6
+new tests for the recall-trigger asymmetry (regex-level across all
+three locales plus one full end-to-end orchestrator test proving the
+wiring, not just the pattern); 1 new test for the Portuguese
+`ALREADY_DID` gap. All confirmed to fail for the exact claimed reason
+pre-fix, pass post-fix. Full oracle suite green (27 files, 590 tests —
+zero regressions), type-check (all three tsconfigs), lint, `build`,
+`verify:tutor` and `verify:pedagogy` all green, root `docs:check`/
+`secrets:check` clean.
+
+This closes out every finding from round 67's own background review
+batch (rounds 68 through 73), plus the one live-caught defect found
+testing round 67's own fix the next day. All seven fixes ran
+concurrently against the same shared working directory — see Rounds
+68-71's own notes on the `git stash` near-misses that produced; each
+was committed individually as soon as verified, in file-disjoint
+groups, specifically to keep that exposure window short.

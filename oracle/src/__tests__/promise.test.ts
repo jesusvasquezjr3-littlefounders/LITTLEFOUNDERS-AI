@@ -54,6 +54,21 @@ describe('what counts as announcing an activity', () => {
   it('is silent about a turn that offers nothing at all', () => {
     expect(promisesAnActivity('¿Cuánto es 10 más 5?')).toBe(false);
   });
+
+  /*
+   * ITEM 4: ALREADY_DID HAD ZERO PORTUGUESE ENTRIES. A genuine pt-BR
+   * narration of a just-completed activity was misread as an unkept
+   * promise: `SCREEN_MENTION` matched "na tela", the all-Spanish
+   * `ALREADY_DID` guard never fired for the Portuguese past tense
+   * "colocou," and the sentence fell through to `FUTURE_OFFER`, which
+   * matched the entirely coincidental "quer" ("want") sitting later in the
+   * same ordinary sentence.
+   */
+  it('leaves the tutor describing what the child ALREADY did, in Portuguese too', () => {
+    expect(
+      promisesAnActivity('Na tela, você colocou a moeda na cesta do que você quer.'),
+    ).toBe(false);
+  });
 });
 
 describe('the same announcement again, reworded', () => {

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TutorOrchestrator } from '../tutor/orchestrator.js';
+import { RECALL_TRIGGER, TutorOrchestrator } from '../tutor/orchestrator.js';
 import { TUTOR_SYSTEM_PROMPT } from '../tutor/prompt.js';
 import type { SpeechResult } from '../voice/speech.js';
 import type { SessionContext, SessionPlanEntry, KcState } from '../core/client.js';
@@ -562,6 +562,80 @@ describe('the whiteboard (V4) — unit mismatch repair', () => {
 });
 
 /*
+ * ITEM 1: A GROWTH STORY WITH BOTH AN INCOME AND AN EXPENSE PER PERIOD
+ * DRAWING TWICE AS MANY WHITEBOARD STEPS AS REAL PERIODS. See
+ * `whiteboardDoubledPeriodSteps`'s own doc comment (prompt.ts) for the full
+ * live reproduction and false-positive analysis. Bucketed with
+ * `missedWhiteboard`/`wrongUnit` — an imperfect SHAPE, not a wrong fact — so
+ * a retry that still doubles is delivered rather than replaced by the
+ * scripted line, mirroring this file's own "unit mismatch repair" block
+ * immediately above rather than the "falls back to the scripted line"
+ * pattern used for `numberMismatch`.
+ */
+describe('the whiteboard (V4) — doubled step-per-period repair', () => {
+  const doubledBoard = {
+    kind: 'sequence' as const,
+    start: 0,
+    unit: 'month' as const,
+    steps: [
+      { op: 'add' as const, value: 3 },
+      { op: 'subtract' as const, value: 2 },
+      { op: 'add' as const, value: 3 },
+      { op: 'subtract' as const, value: 2 },
+      { op: 'add' as const, value: 3 },
+      { op: 'subtract' as const, value: 2 },
+    ],
+    label: 'Each month you get 3, spend 2',
+    currency: 'USD',
+  };
+  const netBoard = {
+    kind: 'sequence' as const,
+    start: 0,
+    unit: 'month' as const,
+    steps: [
+      { op: 'add' as const, value: 1 },
+      { op: 'add' as const, value: 1 },
+      { op: 'add' as const, value: 1 },
+    ],
+    label: 'Each month you keep 1',
+    currency: 'USD',
+  };
+
+  it('asks again when the board doubles one step into two per period', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, whiteboard: doubledBoard }))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, whiteboard: netBoard }))
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = (await orchestrator.handleLearnerText('hola', Date.now()))!;
+
+    const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(retryBody).toContain('ONE step for that period');
+    expect(outcome?.emission.turn.whiteboard?.steps).toHaveLength(3);
+    expect(outcome?.emission.source).toBe('model');
+  });
+
+  it('delivers the turn anyway if the retry ALSO doubles — an imperfect shape, not a wrong fact', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'attempt zero', whiteboard: doubledBoard }))
+      // The retry ALSO doubles — same shape, still delivered (never the
+      // scripted line). Distinct `say` text from attempt 0 so a delivered
+      // turn PROVES the retry actually ran and its output was kept, rather
+      // than attempt 0 slipping through with no retry ever having fired.
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'attempt one, still doubled', whiteboard: doubledBoard }))
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = (await orchestrator.handleLearnerText('hola', Date.now()))!;
+
+    // Delivered as-is — NOT replaced by the scripted fallback line, unlike
+    // `numberMismatch`'s own bucket.
+    expect(outcome?.emission.source).toBe('model');
+    expect(outcome?.emission.turn.say).toBe('attempt one, still doubled');
+    expect(outcome?.emission.turn.whiteboard?.steps).toHaveLength(6);
+  });
+});
+
+/*
  * Found live, testing as a real seeded account, round 65 (2026-08-30, HIGH):
  * a whiteboard and the `say` text right next to it can each look correct in
  * isolation and still tell two different arithmetic stories — `start`
@@ -922,6 +996,78 @@ describe('episodic recall (V4)', () => {
     await orchestrator.handleLearnerText('quiero aprender a ahorrar', Date.now());
     const first = String(fetchMock.mock.calls[0]?.[0] ?? '');
     expect(first).not.toContain('/recall');
+  });
+});
+
+/*
+ * ITEM 3: RECALL_TRIGGER WAS SPANISH-HEAVY AND ASYMMETRIC ACROSS LOCALES.
+ *
+ * The original list carried 6 distinct Spanish temporal-reference idioms but
+ * only 2 apiece for English and Portuguese. Verified live:
+ * `handleLearnerText('Remember the cookie problem?', ...)` and `('What did
+ * we do last time?', ...)` both made ZERO calls to the recall endpoint —
+ * an en-US or pt-BR child asking to recall a past lesson in ordinary
+ * phrasing simply never got episodic recall. See `RECALL_TRIGGER`'s own doc
+ * comment (orchestrator.ts) for the full list of previously-missed real
+ * phrasings and the rationale behind each addition.
+ *
+ * Direct regex tests exercise every phrase cheaply and exhaustively; one
+ * full orchestrator-level test (mirroring the describe block above) proves
+ * a previously-missed phrase now reaches the real `/tutor/internal/recall`
+ * call end to end, not just the regex in isolation.
+ */
+describe('RECALL_TRIGGER — locale coverage (item 3)', () => {
+  it('still catches every phrase that already worked (no regression)', () => {
+    const alreadyWorked = [
+      'te acuerdas',
+      'recuerdas',
+      'acuérdate',
+      'la otra vez',
+      'el otro día',
+      'la semana pasada',
+      'do you remember',
+      'remember when',
+      'lembra',
+      'você lembra',
+    ];
+    for (const phrase of alreadyWorked) {
+      expect(RECALL_TRIGGER.test(phrase)).toBe(true);
+    }
+  });
+
+  it('catches the previously-missed English phrasings', () => {
+    expect(RECALL_TRIGGER.test('Remember the cookie problem?')).toBe(true);
+    expect(RECALL_TRIGGER.test('What did we do last time?')).toBe(true);
+    expect(RECALL_TRIGGER.test('Can you recall the story about the farm?')).toBe(true);
+    expect(RECALL_TRIGGER.test('The other day we talked about fractions, right?')).toBe(true);
+    expect(RECALL_TRIGGER.test('Last week we did a lesson about saving money')).toBe(true);
+  });
+
+  it('catches the previously-missed Portuguese phrasing', () => {
+    // Informal pt-BR, no "você" — the pre-existing list only ever had
+    // "lembra"/"você lembra", never the "recordar" verb family at all.
+    expect(RECALL_TRIGGER.test('Recorda daquele problema?')).toBe(true);
+  });
+
+  it('catches the voseo Spanish variant', () => {
+    expect(RECALL_TRIGGER.test('¿Te acordás de la vez que hablamos de fracciones?')).toBe(true);
+  });
+
+  it('does not regress on a bare "product recall" — the narrower reason "you recall" was chosen over bare "recall"', () => {
+    expect(RECALL_TRIGGER.test('The toy company issued a product recall last year.')).toBe(false);
+  });
+
+  it('a previously-missed English phrase reaches the real recall endpoint end to end', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify({ data: { excerpts: [] }, error: null }), { status: 200 }),
+    );
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+
+    await orchestrator.handleLearnerText('Remember the cookie problem?', Date.now());
+
+    const recallUrl = String(fetchMock.mock.calls[0]?.[0] ?? '');
+    expect(recallUrl).toContain('/tutor/internal/recall');
   });
 });
 

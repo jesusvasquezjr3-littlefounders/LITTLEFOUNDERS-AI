@@ -209,9 +209,29 @@ const SCREEN_MENTION: RegExp[] = [
  * would also catch `triste`, `chiste` and `existe`, and a checker that
  * misreads "estás triste" as past tense is the same class of bug one level
  * down. These are the verbs a tutor actually uses to narrate an activity.
+ *
+ * PORTUGUESE HAD ZERO ENTRIES HERE — found live, 2026-08-30 (MEDIUM): a
+ * genuine pt-BR narration of a just-completed activity, "Na tela, você
+ * colocou a moeda na cesta do que você quer." (past tense "colocou" = "you
+ * placed"), was misread as an UNKEPT PROMISE. `SCREEN_MENTION` matched "na
+ * tela"; this all-Spanish guard never fired for the Portuguese past tense,
+ * so the sentence fell through to `FUTURE_OFFER`, which matched the
+ * entirely coincidental "quer" ("want") sitting later in the same ordinary
+ * sentence — the exact false-positive shape this guard exists to prevent,
+ * just never given the vocabulary to prevent it in this locale. Each new
+ * entry is the direct Portuguese translation of an existing Spanish verb
+ * above (colocaste→colocou, hiciste→fez, contaste→contou, elegiste/
+ * escogiste→escolheu, juntaste→juntou, lograste→conseguiu, armaste→montou,
+ * ordenaste→ordenou, acomodaste→acomodou, encontraste→encontrou,
+ * completaste→completou, marcaste→marcou, seleccionaste→selecionou,
+ * uniste→uniu, resolviste→resolveu, pagaste→pagou; `pusiste` and
+ * `colocaste` both already map to the same Portuguese verb, `colocou`), so
+ * this list stays the same explicit, no-suffix-pattern shape as the
+ * Spanish half — never a wider risk of matching something that merely
+ * LOOKS like one of these verbs.
  */
 const ALREADY_DID =
-  /\b(pusiste|hiciste|contaste|elegiste|escogiste|juntaste|lograste|armaste|ordenaste|acomodaste|encontraste|completaste|marcaste|seleccionaste|uniste|resolviste|pagaste|colocaste)\b/i;
+  /\b(pusiste|hiciste|contaste|elegiste|escogiste|juntaste|lograste|armaste|ordenaste|acomodaste|encontraste|completaste|marcaste|seleccionaste|uniste|resolviste|pagaste|colocaste|colocou|fez|contou|escolheu|juntou|conseguiu|montou|ordenou|acomodou|encontrou|completou|marcou|selecionou|uniu|resolveu|pagou)\b/i;
 
 /** A cue that what follows is about to happen rather than has happened. */
 const FUTURE_OFFER =
@@ -463,6 +483,18 @@ const PERIOD_WORD: Record<string, number> = {
   primeira: 1,
   terceiro: 3,
   terceira: 3,
+  /*
+   * `quarta` ("fourth", feminine, agreeing with "semana") was never added
+   * for Portuguese — Spanish's own fourth-ordinal key is spelled `cuarta`
+   * (with a c), a different string, so it never covered this one by
+   * accident the way `segunda`/`quinta` happen to (identical spelling in
+   * both languages). Found alongside item 2's Portuguese verb-coverage gap,
+   * 2026-08-30 (MEDIUM): a period-4 claim using an otherwise fully-covered
+   * verb form ("você tem") still returned `periodIndex: undefined` and was
+   * silently skipped, while periods 1/2/3/5 of the identical shape correctly
+   * fired.
+   */
+  quarta: 4,
 };
 
 /**
@@ -496,14 +528,34 @@ const NUMBER_TOLERANCE = 0.6;
  * mattered until this round tried to add two more apostrophe forms the same
  * broken way. Fixed by giving every contraction its own alternative outside
  * the space-requiring `you ` group, rather than nesting it inside one.
+ *
+ * The Portuguese verb alternation now also accepts `vira` ("becomes") and a
+ * BARE `fica` (without a trailing "com") — found by re-running round 67's
+ * own adversarial-review workflow against this check, 2026-08-30 (HIGH): a
+ * genuine, correct pt-BR growth narration — "Imagine que você guarda 10
+ * reais, e a cada semana isso cresce 10%. Na primeira semana, vira 11. Na
+ * segunda, cresce 10% em cima de 11, e fica 12,10." — called directly
+ * against a deliberately wrong board returned `false`, no contradiction
+ * detected, because the verb list only ever recognized `você tem/teria` and
+ * `fica(m) com` (WITH the trailing "com"). A parallel es-MX sentence using
+ * the analogous "tienes" construction against an equally wrong board
+ * correctly returns `true`, proving this was a pt-BR-specific coverage gap
+ * in the verb list, not a general failure of the surrounding mechanism.
+ * Both new verbs stay INSIDE the same bounded, ordinal-anchored clause
+ * window every pattern in this list already requires (an ordinal within 45
+ * characters, the verb, then a number within 10 more) — `vira` and bare
+ * `fica` are both common standalone Portuguese words outside this domain
+ * ("vira à direita", "ele fica triste"), so the residual false-positive
+ * risk is the same accepted, bounded-by-a-real-whiteboard-and-clause risk
+ * this file's other narrow anchors already carry, not a new, larger one.
  */
 const PERIOD_CLAIM_PATTERNS: RegExp[] = [
   // English: "after the first week you have 5" / "after one week you have 35" / "after 1 week you have 5" / "after 4 months you'd have 12"
   /\bafter (?:the )?(first|second|third|fourth|fifth|one|two|three|four|five|\d)\b[^.!?]{0,25}?\b(?:you (?:have|will have|would have|have saved)|you've saved|you'd have|you'll have)\b[^.!?]{0,10}?(\d+(?:\.\d+)?)/gi,
   // Spanish: "después de una semana ... tienes 43" / "después de la tercera ... tendrías 59"
   /\bdespu[ée]s de (?:la |una )?(primera|segunda|tercera|cuarta|quinta|una|dos|tres|cuatro|cinco)\b[^.!?]{0,30}?\b(?:tienes|tendr[íi]as|tendr[áa]s)\b[^.!?]{0,15}?(\d+(?:\.\d+)?)/gi,
-  // Portuguese: "na primeira semana ... fica com 8" / "na segunda ... você tem 13"
-  /\bn[ao] (primeira|segunda|terceira|quarta|quinta)\b[^.!?]{0,45}?\b(?:voc[êe]\s+(?:tem|teria)|fica(?:m)?\s+com)\b[^.!?]{0,10}?(\d+(?:\.\d+)?)/gi,
+  // Portuguese: "na primeira semana ... fica com 8" / "na segunda ... você tem 13" / "vira 11" / bare "fica 12"
+  /\bn[ao] (primeira|segunda|terceira|quarta|quinta)\b[^.!?]{0,45}?\b(?:voc[êe]\s+(?:tem|teria)|vira(?:m)?|fica(?:m)?(?:\s+com)?)\b[^.!?]{0,10}?(\d+(?:\.\d+)?)/gi,
 ];
 
 /**
@@ -693,6 +745,111 @@ export function whiteboardNumberMismatch(
     }
   }
   return periodCountThenTotalMismatch(say, values);
+}
+
+/**
+ * ONE STEP PER OPERATION INSTEAD OF ONE STEP PER PERIOD — a growth story
+ * with BOTH an income and an expense every period drawing TWICE as many
+ * whiteboard steps as real periods elapsed.
+ *
+ * Found live, a real browser session as a real admin account, en-US
+ * (HIGH): asking "what if i get 3 dollars every month" then, a turn later,
+ * "idk maybe 6" in reply to "how much would you have after 3 months?"
+ * spending 2/month, produced `say` that correctly narrated THREE months —
+ * "You start with 3 dollars. Spend 2, you have 1. Next month you get 3
+ * more, that's 4, spend 2, you have 2. Third month you get 3, that's 5,
+ * spend 2, you have 3." — paired with a `whiteboard` of SIX steps
+ * (+3,-2,+3,-2,+3,-2), drawn and labelled as Month 1 through Month 6: twice
+ * as many drawn periods as the three the story (and the board's own label,
+ * "Each month you get 3, spend 2") names. The step vocabulary
+ * (`turnSchema.ts`) is one operator per step by design, and nothing in the
+ * prompt ever told the model whether ONE step should be a whole period's
+ * NET change or one step per individual operation, when a period has both
+ * an inflow and an outflow — the ONE worked example in the prompt below has
+ * always been single-operation-per-period ("cada semana la alcancía te da 2
+ * más"), with no example at all for a story naming both a get and a spend
+ * in the same breath.
+ *
+ * Confirmed real and recurring before writing this fix, matching this
+ * file's own established discipline: real turns against the actual
+ * `TutorOrchestrator` and the real model (no mocks), across en-US/es-MX/
+ * pt-BR, reusing the exact live phrasing plus variants (a different
+ * currency word, a different period word, a different framing — an
+ * allowance minus a fixed deduction). Of the whiteboards produced for a
+ * story naming both an inflow and an outflow per period, MOST doubled the
+ * step count relative to the periods actually elapsed — one fixed phrasing,
+ * repeated six times fresh and single-turn, reproduced the doubling 5 of 6
+ * times, and the varied-phrasing batch reproduced it in es-MX and pt-BR as
+ * well as en-US. This is a materially HIGHER recurrence rate than either of
+ * `whiteboardNumberMismatch`'s own two prior reproductions (roughly 1-in-8
+ * to 1-in-15) — the defect this function exists for is closer to "usually"
+ * than "occasionally."
+ *
+ * DETECTION SIDE, DELIBERATELY STRUCTURAL RATHER THAN PROSE-PARSED. Every
+ * real reproduction shared the same STRUCTURED shape regardless of locale
+ * or wording, so this checks the whiteboard OBJECT directly instead of
+ * re-parsing how many periods the spoken prose names — sidestepping the
+ * fragile, locale-dependent work of extracting a period count from
+ * freeform narration that is `whiteboardNumberMismatch`'s own two-round
+ * history above:
+ *
+ * - `label` names BOTH an inflow and an outflow ("earn 5, spend 2", "gana
+ *   4, gasta 1") — a direct read of the board's OWN caption, never a
+ *   re-derivation from `say`.
+ * - `steps` is an EXACT, repeating two-cycle of `add`/`subtract` — the same
+ *   two `{op, value}` pairs, in the same order, at least twice
+ *   (`steps.length >= 4` and even) — restricted to `add`/`subtract` only,
+ *   the exact and only operator pair every real reproduction used. A
+ *   percent-plus-fee compound story (`multiply_percent` then `subtract` —
+ *   a genuinely different, valid two-operation-per-period shape this
+ *   product's schema also allows) can never match, because one of its two
+ *   alternating operators is never `add` or `subtract` together.
+ *
+ * A TWO-STEP BOARD (one add, one subtract) IS A DELIBERATE, DOCUMENTED GAP,
+ * for the same reason round 67 left its own ambiguous shape uncaught: it
+ * cannot be told apart from a genuinely different, valid two-PERIOD story
+ * where period 1 is a plain gain and period 2 is a plain loss ("first month
+ * you earn 5, second month you spend 2") — a single repeat of the pair is
+ * not enough evidence that the same two values are a fixed, recurring
+ * per-period rule rather than two distinct one-time events, and per this
+ * file's own doctrine, silence beats a false alarm on that ambiguity. A
+ * live-observed instance of exactly this shorter, two-step shape (a single
+ * period drawn with 2 ops instead of 1 net op) is left to the
+ * prevention-side fix in `TUTOR_SYSTEM_PROMPT` alone, below — requiring
+ * `steps.length >= 4` is what keeps this function silent on it.
+ *
+ * Bucketed with `missedWhiteboard`/`wrongUnit` in the orchestrator's repair
+ * loop, not with `numberMismatch`: every individual number on a doubled
+ * board is still arithmetically correct (each step really is the income or
+ * the expense actually named), so this is a mislabelled SHAPE — twice as
+ * many periods drawn as real ones elapsed — not a wrong FACT. A retry that
+ * still doubles is delivered rather than replaced by a scripted line, the
+ * same call this file already makes for a missing board or a wrong axis
+ * label.
+ */
+const INFLOW_WORD = /\b(get|earn|gana|ganas|gano|ganha|ganhar)\b/i;
+const OUTFLOW_WORD = /\b(spend|pay|gasta|gastas|gasto|paga|pagas)\b/i;
+
+export function whiteboardDoubledPeriodSteps(
+  whiteboard: Pick<Whiteboard, 'steps' | 'label'> | null | undefined,
+): boolean {
+  if (whiteboard == null) return false;
+  const { steps, label } = whiteboard;
+  if (steps.length < 4 || steps.length % 2 !== 0) return false;
+  if (!INFLOW_WORD.test(label) || !OUTFLOW_WORD.test(label)) return false;
+
+  const first = steps[0]!;
+  const second = steps[1]!;
+  const ops = new Set([first.op, second.op]);
+  if (first.op === second.op || !ops.has('add') || !ops.has('subtract')) return false;
+
+  for (let i = 0; i < steps.length; i += 2) {
+    const a = steps[i]!;
+    const b = steps[i + 1]!;
+    if (a.op !== first.op || a.value !== first.value) return false;
+    if (b.op !== second.op || b.value !== second.value) return false;
+  }
+  return true;
 }
 
 export function contradictsCorrectAnswer(say: string, learnerText: string): boolean {
@@ -904,6 +1061,19 @@ export function repeatsEarlierSentence(say: string, earlierTutorLines: readonly 
  * once is not expected to reach 100% on its own (this file's whole existence
  * is the record of instructions that did not), which is why the detector
  * stays in place rather than being retired in favor of the instruction.
+ *
+ * THE SAME "TELL AND CHECK" PAIRING, FOR A DIFFERENT GAP IN THE SAME
+ * EXAMPLE. Found live (HIGH): a story with BOTH an income and an expense
+ * every period doubled its whiteboard's step count — one add and one
+ * subtract per period instead of one net step — because the one worked
+ * example above has always been single-operation-per-period, with no
+ * example at all for a story naming both a get and a spend in the same
+ * breath. See `whiteboardDoubledPeriodSteps`'s own doc comment (further
+ * down this file) for the full reproduction. The instruction below adds
+ * the missing case explicitly, with its own worked example using numbers
+ * distinct from every other example in this file (per this file's own
+ * established anti-copying discipline) — the detector is added alongside
+ * it rather than instead of it, for the identical reason stated just above.
  */
 export const TUTOR_SYSTEM_PROMPT: string = [
   'You are a tutor character inside LittleFounders, an educational product that',
@@ -1031,6 +1201,22 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '  ahead of what you just said. Only set `start` above 0 when your OWN',
   '  words say so explicitly — an amount stated as ALREADY there before the',
   '  growth starts ("you already have 8 pesos saved").',
+  '  WHEN A PERIOD HAS BOTH AN INCOME AND AN EXPENSE, ONE STEP IS THAT',
+  '  PERIOD\'S NET CHANGE — never two separate steps (one add for the income,',
+  '  one subtract for the expense) for the same period. A story with three',
+  '  real months, where each month you get some amount AND spend some',
+  '  amount, has THREE steps on the board — matching the three months you',
+  '  are narrating — never six. Work out the net yourself before choosing',
+  '  the op: if the income is larger, one {op:"add",value:NET} step; if the',
+  '  expense is larger, one {op:"subtract",value:NET} step. Example: you say',
+  '  "cada semana cobras 9 pesos por cuidar el jardín, y gastas 4 en',
+  '  herramientas — ¿cuánto te quedaría después de 3 semanas?" and set',
+  '  `whiteboard: {kind:"sequence", start:0, unit:"week",',
+  '  steps:[{op:"add",value:5},{op:"add",value:5},{op:"add",value:5}],',
+  '  label:"Cada semana te quedan 5", currency:"MXN"}` — ONE step per week,',
+  '  each worth the NET 9-4=5, never four steps that alternate +9 and -4.',
+  '  The board is drawn from what is LEFT after each period, not from every',
+  '  operation that happened inside it.',
   '  Never set BOTH `whiteboard` and `segmentRequest` on the same turn — the',
   '  schema refuses it. Choose one surface for this turn.',
   '- A wrong answer is information, never a failure. Say what was right about',

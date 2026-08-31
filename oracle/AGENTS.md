@@ -1664,6 +1664,43 @@ everything passes the blocked half perfectly and destroys the product.
    mechanism (`declineAdaptation is not a function`). See `RUNBOOK.md`
    Round 70.
 
+61. **A growth story with an income AND an expense per period drew
+   TWICE as many whiteboard steps as periods actually elapsed, plus
+   three narrower locale-coverage gaps in the same neighborhood.**
+   Found live and by adversarial review, round 73, 2026-08-30 (HIGH +
+   3×MEDIUM). "What if I get 3 dollars every month" then "spending 2,
+   how much after 3 months?" drew SIX steps (+3,-2 ×3) for a story both
+   the spoken correction and the board's own label called "3 months" —
+   one step per individual operation instead of one net step per
+   period; nothing in the prompt ever said which. Confirmed real at a
+   HIGHER rate (4 of 5 fresh income+expense tries) than either
+   whiteboard-number-agreement bug items 56/58 already closed. Fixed on
+   both fronts: the prompt's worked-example section now states the
+   net-change rule explicitly with a second example, and a new
+   `whiteboardDoubledPeriodSteps()` check — deliberately structural
+   (an exact repeating add/subtract 2-cycle across the WHOLE step list
+   plus both an inflow and outflow word in the label), never
+   prose-parsed, to keep false-positive risk low — joins the
+   deliver-anyway bucket alongside `missedWhiteboard`/`wrongUnit`,
+   since every individual number on a doubled board is still correct;
+   only the SHAPE is wrong. A 2-step board is a deliberate, documented
+   gap (indistinguishable from a genuinely valid 2-period gain-then-loss
+   story), relying on the prevention-side fix alone.
+   Alongside it: `whiteboardNumberMismatch`'s Portuguese anchor (item
+   58) missed the model's own "vira"/bare-"fica" phrasing and its
+   `PERIOD_WORD` table was missing `quarta` (fourth) entirely —
+   Spanish's own spelling, `cuarta`, is a different string; `
+   RECALL_TRIGGER` was Spanish-heavy and asymmetric (6 Spanish temporal
+   idioms against 2 apiece for English/Portuguese, three with no
+   equivalent at all — confirmed live, zero recall calls for "Remember
+   the cookie problem?"); and `promisesAnActivity`'s `ALREADY_DID` had
+   zero Portuguese past-tense verbs, misreading a genuine completed-
+   activity narration as an unkept promise and spending a needless paid
+   repair-retry. All three widened with the missing coverage. 26 new
+   tests total across the four findings, all confirmed to fail for the
+   exact claimed reason pre-fix via `git stash`. See `RUNBOOK.md`
+   Round 73.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:

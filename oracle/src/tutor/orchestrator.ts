@@ -33,6 +33,7 @@ import {
   narratesUnshownGrowth,
   whiteboardUnitMismatch,
   whiteboardNumberMismatch,
+  whiteboardDoubledPeriodSteps,
   echoesEarlierTurn,
   repeatsEarlierSentence,
   promisesAnActivity,
@@ -120,9 +121,43 @@ const RETRY_DEADLINE_MS = 9_000;
 /**
  * What counts as asking about the past (V4 episodic recall). A closed list on
  * purpose: the fast chamber never runs a model to decide whether to look.
+ *
+ * SPANISH-HEAVY, ASYMMETRIC COVERAGE — found by adversarial review,
+ * 2026-08-30 (MEDIUM). The original list carried 6 distinct Spanish
+ * temporal-reference idioms but only 2 apiece for English and Portuguese,
+ * and three of the Spanish-only idioms ("the other time"/"the other
+ * day"/"last week") had no English or Portuguese equivalent at all.
+ * Verified live: `handleLearnerText('Remember the cookie problem?', ...)`,
+ * `('What did we do last time?', ...)`, `('Can you recall the story about
+ * the farm?', ...)`, `('The other day we talked about fractions, right?',
+ * ...)`, `('Last week we did a lesson about saving money', ...)`, `('Recorda
+ * daquele problema?', ...)` (informal pt-BR, no "você"), and `('¿Te acordás
+ * de la vez que hablamos de fracciones?', ...)` (voseo) all made ZERO calls
+ * to the recall endpoint before this fix — an en-US or pt-BR child asking to
+ * recall a past lesson in ordinary phrasing simply never got episodic
+ * recall, while equivalent es-MX phrasing almost always did. Per this
+ * file's own doc comment above `recallOwnHistory`'s call site, "failure or
+ * no match degrades to exactly the turn we had before" — silent by design,
+ * so this gap cost a feature, never a crash, which is exactly why nothing
+ * ever surfaced it.
+ *
+ * Fixed by giving English and Portuguese roughly the same COVERAGE the
+ * Spanish list already had — an equivalent of "the other day"/"last
+ * week"/"that time"/"recall" in each — plus the voseo "te acordás" variant
+ * for Spanish (`te acuerdas` alone never matched the Argentine/Central
+ * American second-person form). `remember` and `you recall` are
+ * deliberately bare, single/short-phrase markers, matching the SAME
+ * substrings-not-questions trade-off `recuerdas`/`la semana pasada` (a
+ * statement like "la semana pasada fui a la playa" already over-triggers,
+ * per this file's own LOW-priority note elsewhere) already accepted for
+ * Spanish — parity means inheriting the identical accepted risk, not a new
+ * one. `you recall` (rather than bare `recall`) is the one narrower choice
+ * made here: bare "recall" collides with an ordinary phrase in THIS
+ * product's own domain ("a product recall"), which the "the other
+ * day"/"last week"/"that time" equivalents do not.
  */
-const RECALL_TRIGGER =
-  /\b(te acuerdas|recuerdas|acu[ée]rdate|la otra vez|el otro d[íi]a|la semana pasada|do you remember|remember when|lembra|voc[êe] lembra)\b/i;
+export const RECALL_TRIGGER =
+  /\b(te acuerdas|te acord[aá]s|recuerdas|acu[ée]rdate|la otra vez|el otro d[íi]a|la semana pasada|do you remember|remember when|remember|last time|the other day|last week|that time|you recall|lembra|voc[êe] lembra|recorda|outro dia|semana passada|daquela vez|aquela vez)\b/i;
 
 const TURN_HISTORY_WINDOW = 20;
 
@@ -1649,6 +1684,20 @@ export class TutorOrchestrator {
              */
             const numberMismatch = whiteboardNumberMismatch(parsed.turn.say, parsed.turn.whiteboard);
             /*
+             * ONE STEP PER OPERATION INSTEAD OF ONE STEP PER PERIOD — a
+             * growth story with BOTH an income and an expense every period
+             * drawing TWICE as many whiteboard steps as periods actually
+             * elapsed (found live, HIGH; see `whiteboardDoubledPeriodSteps`'s
+             * own doc comment in prompt.ts for the full reproduction and the
+             * false-positive analysis behind its structural, prose-free
+             * detection). Bucketed with `missedWhiteboard`/`wrongUnit` rather
+             * than with `numberMismatch`: every individual number on a
+             * doubled board is still arithmetically correct, so this is a
+             * mislabelled SHAPE — twice as many periods drawn as real ones —
+             * not a wrong fact a child could be taught.
+             */
+            const doubledSteps = whiteboardDoubledPeriodSteps(parsed.turn.whiteboard);
+            /*
              * §9.4 of the blueprint, stated as a hard rule: never give the
              * final answer while asking. Detected by computing the question's
              * answer and looking for it in the lead-in, which is exact where a
@@ -1771,6 +1820,10 @@ export class TutorOrchestrator {
               turnCorrection =
                 'set "whiteboard.unit" to a value that does not match the cadence word your own story used ("cada día" needs "day", "cada semana" needs "week", "cada mes" needs "month", "cada año" needs "year"). Say the SAME story again with "unit" corrected to match your own words';
               console.warn('[oracle] whiteboard unit did not match the story\'s own cadence word — asking again');
+            } else if (doubledSteps && attempt === 0) {
+              turnCorrection =
+                'drew TWO whiteboard steps (one add for the income, one subtract for the expense) for every single period, instead of ONE step for that period\'s NET change. Say the SAME story again, but this time set "whiteboard.steps" to exactly one step per period — work out the net (income minus expense) yourself and use one {op:"add"|"subtract",value:NET} step per period, never two';
+              console.warn('[oracle] whiteboard drew two steps per period instead of one net step — asking again');
             } else if (falsePraise && attempt === 0) {
               turnCorrection =
                 "congratulated the learner for an answer that was WRONG, and then stated the right one. Say \"casi\" instead, show the correct result and how to reach it, and do not tell them they are doing well at something they just got wrong";
@@ -1788,6 +1841,9 @@ export class TutorOrchestrator {
               }
               if (wrongUnit) {
                 console.warn('[oracle] whiteboard unit mismatch SURVIVED the retry — delivered as-is');
+              }
+              if (doubledSteps) {
+                console.warn('[oracle] whiteboard doubled-step-per-period SURVIVED the retry — delivered as-is');
               }
               if (givesAwayAnswer) {
                 console.warn('[oracle] self-answered question SURVIVED the retry — delivered');

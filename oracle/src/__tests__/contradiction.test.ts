@@ -3,6 +3,7 @@ import {
   contradictsCorrectAnswer,
   narratesUnshownGrowth,
   praiseContradictsAnswer,
+  whiteboardDoubledPeriodSteps,
   whiteboardNumberMismatch,
   whiteboardUnitMismatch,
 } from '../tutor/prompt.js';
@@ -515,6 +516,256 @@ describe('the board\'s own numbers disagreeing with a "for N periods ... so $X" 
           'do you see at the end?',
         { start: 3, steps: [{ op: 'add', value: 3 }, { op: 'add', value: 3 }, { op: 'add', value: 3 }] },
       ),
+    ).toBe(false);
+  });
+});
+
+/*
+ * ITEM 1: A GROWTH STORY WITH BOTH AN INCOME AND AN EXPENSE PER PERIOD
+ * DRAWING TWICE AS MANY WHITEBOARD STEPS AS REAL PERIODS.
+ *
+ * Found live, a real browser session as a real admin account, en-US: "what
+ * if i get 3 dollars every month" then, a turn later, "idk maybe 6" in reply
+ * to "how much would you have after 3 months?" spending 2/month, produced a
+ * whiteboard of SIX steps (+3,-2,+3,-2,+3,-2) for a story both the spoken
+ * narrative and the board's own label called THREE months. Confirmed real
+ * and recurring against the real `TutorOrchestrator` and the real model — a
+ * single fixed phrasing repeated six times fresh reproduced the doubling 5
+ * of 6 times, and a varied-phrasing batch (different currency, different
+ * period word, a different framing) reproduced it in es-MX and pt-BR too.
+ * See `whiteboardDoubledPeriodSteps`'s own doc comment (prompt.ts) for the
+ * full characterization and the false-positive analysis behind checking the
+ * whiteboard OBJECT directly rather than re-parsing the spoken prose.
+ */
+describe('a whiteboard drawing two steps per period instead of one net step', () => {
+  it('catches the exact live-observed shape: get 3, spend 2, six steps for three months', () => {
+    expect(
+      whiteboardDoubledPeriodSteps({
+        label: 'Each month you get 3, spend 2',
+        steps: [
+          { op: 'add', value: 3 },
+          { op: 'subtract', value: 2 },
+          { op: 'add', value: 3 },
+          { op: 'subtract', value: 2 },
+          { op: 'add', value: 3 },
+          { op: 'subtract', value: 2 },
+        ],
+      }),
+    ).toBe(true);
+  });
+
+  it('catches the same shape reproduced live in en-US, a different amount and period word', () => {
+    expect(
+      whiteboardDoubledPeriodSteps({
+        label: 'Each week: earn 5, spend 2',
+        steps: [
+          { op: 'add', value: 5 },
+          { op: 'subtract', value: 2 },
+          { op: 'add', value: 5 },
+          { op: 'subtract', value: 2 },
+          { op: 'add', value: 5 },
+          { op: 'subtract', value: 2 },
+          { op: 'add', value: 5 },
+          { op: 'subtract', value: 2 },
+        ],
+      }),
+    ).toBe(true);
+  });
+
+  it('catches the same shape reproduced live in pt-BR', () => {
+    expect(
+      whiteboardDoubledPeriodSteps({
+        label: 'Ganha 6, gasta 2 a cada semana',
+        steps: [
+          { op: 'add', value: 6 },
+          { op: 'subtract', value: 2 },
+          { op: 'add', value: 6 },
+          { op: 'subtract', value: 2 },
+          { op: 'add', value: 6 },
+          { op: 'subtract', value: 2 },
+        ],
+      }),
+    ).toBe(true);
+  });
+
+  it('catches the same shape reproduced live in es-MX', () => {
+    expect(
+      whiteboardDoubledPeriodSteps({
+        label: 'Ganas 4, gastas 1 cada mes',
+        steps: [
+          { op: 'add', value: 4 },
+          { op: 'subtract', value: 1 },
+          { op: 'add', value: 4 },
+          { op: 'subtract', value: 1 },
+        ],
+      }),
+    ).toBe(true);
+  });
+
+  it('leaves a correctly net-computed board alone — one add per period, no expense word in the label', () => {
+    // The real, correct board this round also observed: the model computed
+    // the net (10 - 4 = 6) itself and drew ONE step per week.
+    expect(
+      whiteboardDoubledPeriodSteps({
+        label: 'Each week you keep 6',
+        steps: [
+          { op: 'add', value: 6 },
+          { op: 'add', value: 6 },
+          { op: 'add', value: 6 },
+          { op: 'add', value: 6 },
+          { op: 'add', value: 6 },
+        ],
+      }),
+    ).toBe(false);
+  });
+
+  it('leaves alone a genuinely different two-op-per-period story: percent growth plus a flat fee', () => {
+    // A valid, different use of the same "more than one op per period"
+    // schema capability — restricted to add/subtract only, so this never
+    // matches even though the label happens to name both an inflow and an
+    // outflow word.
+    expect(
+      whiteboardDoubledPeriodSteps({
+        label: 'You earn 10% growth, but pay a fee each month',
+        steps: [
+          { op: 'multiply_percent', value: 10 },
+          { op: 'subtract', value: 2 },
+          { op: 'multiply_percent', value: 10 },
+          { op: 'subtract', value: 2 },
+        ],
+      }),
+    ).toBe(false);
+  });
+
+  it('never fires when the label names no expense at all', () => {
+    expect(
+      whiteboardDoubledPeriodSteps({
+        label: 'Each week you get 5 more',
+        steps: [
+          { op: 'add', value: 5 },
+          { op: 'add', value: 5 },
+          { op: 'add', value: 5 },
+          { op: 'add', value: 5 },
+        ],
+      }),
+    ).toBe(false);
+  });
+
+  it('never fires when there is no whiteboard at all', () => {
+    expect(whiteboardDoubledPeriodSteps(null)).toBe(false);
+    expect(whiteboardDoubledPeriodSteps(undefined)).toBe(false);
+  });
+
+  // A DELIBERATE, DOCUMENTED GAP (see the function's own doc comment): a
+  // two-step board cannot be told apart from a genuinely different, valid
+  // two-period story where period 1 is a plain gain and period 2 is a plain
+  // loss. `steps.length >= 4` is what keeps this silent here.
+  it('does NOT catch a two-step board — a documented, deliberate gap (relies on the prevention-side fix alone)', () => {
+    expect(
+      whiteboardDoubledPeriodSteps({
+        label: 'Ganas 4, gastas 1 cada mes',
+        steps: [
+          { op: 'add', value: 4 },
+          { op: 'subtract', value: 1 },
+        ],
+      }),
+    ).toBe(false);
+  });
+
+  it('never fires on a repeating pair whose values change each cycle — not the same fixed rule repeated', () => {
+    expect(
+      whiteboardDoubledPeriodSteps({
+        label: 'You earn some, then spend some, each week',
+        steps: [
+          { op: 'add', value: 5 },
+          { op: 'subtract', value: 3 },
+          { op: 'add', value: 7 },
+          { op: 'subtract', value: 1 },
+        ],
+      }),
+    ).toBe(false);
+  });
+});
+
+/*
+ * ITEM 2: whiteboardNumberMismatch's PORTUGUESE ANCHOR MISSED THE MODEL'S
+ * OWN IDIOMATIC PHRASING.
+ *
+ * Found by re-running round 67's own adversarial-review workflow: a genuine,
+ * correct pt-BR growth narration using "vira" (becomes) and a bare "fica"
+ * (without "com") called directly against a wildly wrong whiteboard
+ * returned `false` — no contradiction detected — because the verb list only
+ * ever recognized "você tem/teria" and "fica(m) com". A parallel es-MX
+ * sentence using the analogous "tienes" construction against an equally
+ * wrong board already correctly returns `true`, proving this was a
+ * pt-BR-specific coverage gap. Separately, `quarta` (Portuguese "fourth")
+ * was never in `PERIOD_WORD` at all — Spanish's own fourth-ordinal key is
+ * spelled `cuarta` (with a c), a different string.
+ */
+describe('whiteboardNumberMismatch — Portuguese "vira" and bare "fica"', () => {
+  it('catches the exact real pt-BR sentence against a wildly wrong board (this used to return false)', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Imagine que você guarda 10 reais, e a cada semana isso cresce 10%. Na primeira semana, vira 11. Na ' +
+          'segunda, cresce 10% em cima de 11, e fica 12,10.',
+        { start: 999, steps: [{ op: 'add', value: 1 }, { op: 'add', value: 1 }] },
+      ),
+    ).toBe(true);
+  });
+
+  it('the parallel es-MX "tienes" construction already works, confirming this was pt-BR-specific', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Imagina que guardas 10 pesos, y cada semana crece 10%. Después de la primera semana, tienes 11. ' +
+          'Después de la segunda semana, tienes 12.10.',
+        { start: 999, steps: [{ op: 'add', value: 1 }, { op: 'add', value: 1 }] },
+      ),
+    ).toBe(true);
+  });
+
+  it('leaves a genuinely consistent pt-BR "vira" narration alone', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Vamos ver: você começa com 10. Na primeira semana, vira 12. Na segunda, vira 14.',
+        { start: 10, steps: [{ op: 'add', value: 2 }, { op: 'add', value: 2 }] },
+      ),
+    ).toBe(false);
+  });
+
+  it('leaves a genuinely consistent pt-BR bare "fica" narration alone', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Vamos ver: você começa com 10. Na primeira semana, fica 12. Na segunda, fica 14.',
+        { start: 10, steps: [{ op: 'add', value: 2 }, { op: 'add', value: 2 }] },
+      ),
+    ).toBe(false);
+  });
+
+  it('catches a period-4 claim now that "quarta" is a known ordinal word', () => {
+    expect(
+      whiteboardNumberMismatch('Na quarta semana, você tem 999.', {
+        start: 0,
+        steps: [
+          { op: 'add', value: 5 },
+          { op: 'add', value: 5 },
+          { op: 'add', value: 5 },
+          { op: 'add', value: 5 },
+        ],
+      }),
+    ).toBe(true);
+  });
+
+  it('leaves a genuinely consistent "quarta" claim alone', () => {
+    expect(
+      whiteboardNumberMismatch('Na quarta semana, você tem 20.', {
+        start: 0,
+        steps: [
+          { op: 'add', value: 5 },
+          { op: 'add', value: 5 },
+          { op: 'add', value: 5 },
+          { op: 'add', value: 5 },
+        ],
+      }),
     ).toBe(false);
   });
 });
