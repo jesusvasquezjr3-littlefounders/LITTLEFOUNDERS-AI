@@ -8364,3 +8364,71 @@ change, confirmed rather than assumed) and `verify:pedagogy` green (the
 controller's own sequencing is untouched — this fix sits entirely
 inside `produce()`'s post-model turn shaping). `oracle/AGENTS.md` item
 69.
+
+## Round 86: a replayed whiteboard could vanish mid-reveal, because its beat's duration knew nothing about it
+
+MEDIUM, FIXED. Found by adversarial review this session, independently
+confirmed by 3 of 3 skeptics reading the actual code and the exact
+arithmetic, not just the report of it.
+
+`frontend/src/tutor/replay/replayScript.ts`'s `estimateBeatMs` timed a
+replayed tutor beat purely off `row.text`'s word count (380ms/word, a
+1500ms floor) — with zero awareness of `row.whiteboard`, V4's live
+sequence board (Round 35). `oracle/src/tutor/turnSchema.ts` allows up
+to 8 whiteboard steps alongside a `say` with no minimum length tied to
+step count, and this pairing — a short line, a many-step board — is
+this feature's OWN DESIGNED usage, not a rare edge case: `say`
+narrates and asks, the board carries the running values, so an
+intermediate number is deliberately not spoken AND drawn (`/ORACLE.md`'s
+own whiteboard section). `TutorWhiteboard.tsx` reveals one bar every
+`GROW_STEP_MS` (550ms), so an 8-step board (9 values —
+`whiteboard.ts`'s `computeSequence`: the start plus one per step) needs
+4400ms to finish growing in. A short `say` routinely hit the 1500ms
+floor instead, `useReplayDirector.ts`'s per-beat timer advanced on it —
+on the no-audio path directly, and on the with-audio path the instant a
+short real clip fired `ended`, since nothing there checked the board
+either — and the very next beat's mount unmounted `TutorWhiteboard`
+mid-reveal. The board's OWN FINAL total, usually the point of the whole
+exercise, was exactly the value most likely to never have drawn.
+
+Fixed on both of `useReplayDirector`'s two clocks, since `durationMs` is
+read by both. `replayScript.ts` gained `whiteboardMinMs()`: `(values.length
+- 1) * GROW_STEP_MS` for a beat that carries a board, `0` for one that
+doesn't, taken as a `Math.max()` against the existing word-count estimate
+at the tutor-beat call site — so a beat with no whiteboard is byte-for-byte
+unchanged, and one with a short line and a full 8-step board gets at
+least 4400ms regardless of how few words it spoke. `GROW_STEP_MS` is
+imported from `TutorWhiteboard.tsx` rather than re-picked as a second
+number, so the two constants cannot drift apart — the one narrow,
+declared exception to this file's own "no React" purity rule, called
+out in its own header comment. On the no-audio path this reaches
+`useReplayDirector`'s existing per-beat timer for free, since it already
+reads `durationMs` directly. The with-audio path needed real new logic:
+`handleSpeechEnd` (fired by the stage's `<audio>` `ended`/`error`, a real
+event about the CLIP, not about the board's reveal) now checks, for a
+beat that carries a whiteboard, how much real wall-clock time has
+elapsed since the beat started (`beatStartRef`, set in the same effect
+that arms the per-beat timer) against `durationMs`; if time remains, it
+defers `advance()` to a second timer (`holdTimerRef`) for the remainder
+instead of calling it immediately. That deferred timer is cleared by the
+SAME cleanup that already clears the per-beat timer, so any state change
+that would invalidate one — a pause, a jump, a new beat — invalidates
+the other for the same reason, with no extra bookkeeping needed. A beat
+with no whiteboard, or one whose real clip already outlasted
+`durationMs`, is untouched: `handleSpeechEnd` still advances immediately,
+exactly as before.
+
+Proof: 2 new tests in `replayScript.test.ts` (an 8-step board with a
+one-word `say` gets `durationMs >= 8 * GROW_STEP_MS`, not the old
+1500ms floor; an ordinary whiteboard-free beat's `durationMs` is
+provably unchanged — same value `estimateBeatMs` alone would produce),
+2 new tests in `useReplayDirector.test.ts` (a short real clip's `ended`
+event does not advance a whiteboard beat until the reveal's own time has
+fully elapsed, down to the millisecond; a pause during that held window
+cancels the deferred advance rather than letting it fire underneath a
+stopped replay). Full frontend suite re-run clean (128 files, 1480
+tests — 1476 existing (including Round 83's own new file) + 4 new,
+zero regressions in ordinary non-whiteboard beat timing), plus
+`replayInWorld.test.tsx`'s existing coverage untouched and green;
+type-check, lint, build, i18n:check, docs:check, secrets:check,
+paths:check, seo:check, provider:check and tools:test all clean.

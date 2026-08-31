@@ -1,4 +1,5 @@
 import type { CharacterAction, CharacterEmotion } from '@/components/characters/control/types';
+import { GROW_STEP_MS } from '../TutorWhiteboard';
 import type { SessionSummary, SessionTranscript, TranscriptSegment, TranscriptTurn } from '../types';
 
 /*
@@ -16,7 +17,9 @@ import type { SessionSummary, SessionTranscript, TranscriptSegment, TranscriptTu
  * milliseconds — which matters here more than usual, because the alternative
  * way to find out that a replay skipped a line is to sit and watch a whole
  * conversation. `useReplayDirector` owns the clock and `ReplayInWorld` owns the
- * surfaces; neither of them decides what the session WAS.
+ * surfaces; neither of them decides what the session WAS. The one narrow
+ * exception is `GROW_STEP_MS`, a plain number imported from `TutorWhiteboard`
+ * so the two never drift apart — see `whiteboardMinMs` below for why.
  *
  * WHY THE LEARNER IS A BEAT TOO. /ORACLE.md §12 calls replay a reconstruction
  * of the SESSION, and a session is two people. A performance that plays only
@@ -197,6 +200,28 @@ export function estimateBeatMs(text: string, kind: ReplayBeatKind): number {
   return Math.min(MAX_LINE_MS, Math.max(floor, words * MS_PER_WORD));
 }
 
+/**
+ * The shortest a beat can honestly last when it drew a `TutorWhiteboard`.
+ *
+ * `TutorWhiteboard` reveals its bars one at a time, `GROW_STEP_MS` apart,
+ * starting from the first value already shown — so N values need
+ * `(N - 1) * GROW_STEP_MS` to finish growing in. `estimateBeatMs` above times
+ * the CAPTION, purely off word count, with no idea a board exists at all: a
+ * short `say` paired with a many-step board is the whiteboard's DESIGNED
+ * usage (`say` narrates and asks; the board carries the running values — see
+ * /ORACLE.md's whiteboard section), not a rare edge case, so this is not a
+ * defensive floor for an unlikely input, it is the common one.
+ *
+ * Found by adversarial review (see RUNBOOK.md): with no minimum tied to the
+ * board's own value count, the caption's floor alone could end a beat, and
+ * unmount the board, before its final bars — often the FINAL total, usually
+ * the point of the whole exercise — had ever drawn.
+ */
+function whiteboardMinMs(whiteboard: TranscriptTurn['whiteboard']): number {
+  if (!whiteboard) return 0;
+  return Math.max(0, whiteboard.values.length - 1) * GROW_STEP_MS;
+}
+
 // ── The poses nothing recorded ──────────────────────────────────────────────
 
 /**
@@ -366,7 +391,10 @@ export function buildReplayScript(transcript: SessionTranscript): ReplayScript {
         emotion: row.emotion ?? 'neutral',
         action: row.action ?? 'idle',
         audioUrl: row.audio_path,
-        durationMs: estimateBeatMs(row.text, kind),
+        // Whichever needs longer: the caption's own pace, or the board's own
+        // reveal — see `whiteboardMinMs`. `row.whiteboard` is null on every
+        // beat that drew no board, where this is a no-op (`Math.max(x, 0)`).
+        durationMs: Math.max(estimateBeatMs(row.text, kind), whiteboardMinMs(row.whiteboard)),
         activity: null,
         whiteboard: row.whiteboard,
       };

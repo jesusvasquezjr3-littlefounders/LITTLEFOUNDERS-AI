@@ -2,6 +2,7 @@ import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { buildReplayScript } from '../replayScript';
 import { useReplayDirector } from '../useReplayDirector';
+import { GROW_STEP_MS } from '../../TutorWhiteboard';
 import type { SessionSummary, SessionTranscript, TranscriptTurn } from '../../types';
 
 /*
@@ -61,6 +62,33 @@ const WITH_AUDIO: SessionTranscript = {
   session: OTHER_SESSION,
   turns: [
     turn({ id: 't1', seq: 1, speaker: 'tutor', text: 'one', audio_path: 'https://depot.invalid/one.mp3' }),
+    turn({ id: 't2', seq: 2, speaker: 'tutor', text: 'two', audio_path: 'https://depot.invalid/two.mp3' }),
+  ],
+  segments: [],
+};
+
+/** A THIRD conversation: a short `say` with real audio AND a full 8-step board. */
+const WHITEBOARD_SESSION: SessionSummary = { ...SESSION, id: '99999999-8888-4777-8666-555555555555' };
+
+const WITH_AUDIO_WHITEBOARD: SessionTranscript = {
+  session: WHITEBOARD_SESSION,
+  turns: [
+    turn({
+      id: 't1',
+      seq: 1,
+      speaker: 'tutor',
+      text: 'Hi.',
+      audio_path: 'https://depot.invalid/one.mp3',
+      whiteboard: {
+        kind: 'sequence',
+        start: 0,
+        steps: Array.from({ length: 8 }, () => ({ op: 'add' as const, value: 2 })),
+        unit: 'day',
+        values: [0, 2, 4, 6, 8, 10, 12, 14, 16],
+        label: 'Cada día te dan 2 más',
+        currency: null,
+      },
+    }),
     turn({ id: 't2', seq: 2, speaker: 'tutor', text: 'two', audio_path: 'https://depot.invalid/two.mp3' }),
   ],
   segments: [],
@@ -168,6 +196,48 @@ describe('useReplayDirector', () => {
     const { result } = renderHook(() => useReplayDirector(buildReplayScript(WITH_AUDIO)));
     act(() => result.current?.handleSpeechEnd());
     expect(result.current?.beat?.text).toBe('two');
+  });
+
+  /*
+   * Found by adversarial review, 3/3 skeptics confirmed (MEDIUM): a real clip
+   * of a short `say` fires `ended` well before `TutorWhiteboard`'s bars finish
+   * growing in, `handleSpeechEnd` used to advance on it immediately, and the
+   * NEXT beat's mount unmounted the board mid-reveal — losing values it never
+   * finished drawing, often the FINAL total, usually the point of the whole
+   * exercise. `durationMs` already carries the whiteboard's own reveal time as
+   * a floor (`whiteboardMinMs` in `replayScript.ts`); this is the with-audio
+   * half of enforcing it.
+   */
+  it('holds a whiteboard beat open past a short clip until the reveal has had time to finish', () => {
+    const script = buildReplayScript(WITH_AUDIO_WHITEBOARD);
+    const { result } = renderHook(() => useReplayDirector(script));
+    const beat = script.beats[0];
+    expect(beat?.durationMs).toBe(8 * GROW_STEP_MS);
+
+    // The real clip ends almost at once — long before the board could finish.
+    act(() => result.current?.handleSpeechEnd());
+    expect(result.current?.index, 'the board is still revealing').toBe(0);
+
+    // Not yet the full reveal time.
+    tick((beat?.durationMs ?? 0) - 1);
+    expect(result.current?.index, 'one millisecond of reveal time still owed').toBe(0);
+
+    // Now the board has had exactly the time it needs.
+    tick(1);
+    expect(result.current?.index).toBe(1);
+  });
+
+  it('cancels a whiteboard beat\'s deferred advance if the learner pauses during the hold', () => {
+    // The sibling of "stops the clock as well as the sound when the learner
+    // pauses", for the deferred timer this fix adds: pausing during the hold
+    // must not leave it armed to fire underneath a paused replay.
+    const script = buildReplayScript(WITH_AUDIO_WHITEBOARD);
+    const { result } = renderHook(() => useReplayDirector(script));
+    act(() => result.current?.handleSpeechEnd());
+    act(() => result.current?.pause());
+
+    tick(60_000);
+    expect(result.current?.index).toBe(0);
   });
 
   it('steps by line without changing whether it is playing', () => {

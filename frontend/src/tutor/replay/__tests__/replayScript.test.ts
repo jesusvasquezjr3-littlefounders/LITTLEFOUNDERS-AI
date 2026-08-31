@@ -7,6 +7,7 @@ import {
   progressOf,
   type ReplayBeat,
 } from '../replayScript';
+import { GROW_STEP_MS } from '../../TutorWhiteboard';
 import type { SessionSummary, SessionTranscript, TranscriptSegment, TranscriptTurn } from '../../types';
 
 /*
@@ -196,6 +197,57 @@ describe('buildReplayScript', () => {
       ]),
     );
     expect(script.beats[0]?.whiteboard).toEqual(BOARD);
+  });
+
+  /*
+   * Found by adversarial review, 3/3 skeptics confirmed (MEDIUM): a replayed
+   * beat's duration came ONLY from `row.text`'s word count, with zero
+   * awareness of `row.whiteboard`'s value count. A short `say` paired with a
+   * many-step board is the DESIGNED usage of the whiteboard, per /ORACLE.md's
+   * own section on it ("say narrates and asks; the board carries the running
+   * values") — not a rare edge case — so the 1500ms word-count floor routinely
+   * won, `useReplayDirector` advanced on it, and `TutorWhiteboard` unmounted
+   * mid-reveal, before its final bars — often the FINAL total — ever drew.
+   */
+  it('gives a whiteboard beat enough time to finish revealing, even with a one-word "say"', () => {
+    // 8 steps is `turnSchema.ts`'s own `.max(8)` ceiling, which `whiteboard.ts`'s
+    // `computeSequence` turns into 9 values (the start, plus one per step).
+    const values = [0, 2, 4, 6, 8, 10, 12, 14, 16];
+    const script = buildReplayScript(
+      transcript([
+        turn({
+          id: 't1',
+          seq: 1,
+          speaker: 'tutor',
+          text: 'Hi.',
+          whiteboard: {
+            kind: 'sequence',
+            start: 0,
+            steps: Array.from({ length: 8 }, () => ({ op: 'add' as const, value: 2 })),
+            unit: 'day',
+            values,
+            label: 'Cada día te dan 2 más',
+            currency: null,
+          },
+        }),
+      ]),
+    );
+
+    const durationMs = script.beats[0]?.durationMs ?? 0;
+    // Not the old word-count floor: `estimateBeatMs('Hi.', 'tutor')` is 1500,
+    // and 8 * GROW_STEP_MS is comfortably longer than that.
+    expect(durationMs).toBeGreaterThanOrEqual(8 * GROW_STEP_MS);
+    expect(durationMs).toBe((values.length - 1) * GROW_STEP_MS);
+  });
+
+  it('leaves an ordinary tutor beat with no whiteboard on its word-count timing, unchanged', () => {
+    // The whiteboard-driven minimum must be a no-op — `Math.max(x, 0)` — for
+    // every beat that never carried a board, or every existing replay's
+    // caption pacing would have moved.
+    const script = buildReplayScript(
+      transcript([turn({ id: 't1', seq: 1, speaker: 'tutor', text: 'one two three four five six' })]),
+    );
+    expect(script.beats[0]?.durationMs).toBe(estimateBeatMs('one two three four five six', 'tutor'));
   });
 
   it('never puts a whiteboard on a learner or note beat — nothing was ever recorded for those', () => {
