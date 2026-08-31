@@ -63,6 +63,27 @@ export interface TutorWhiteboardProps {
  */
 export const GROW_STEP_MS = 550;
 
+/**
+ * A running value this close to zero is drawn as zero height, not a bar with
+ * the visibility floor below.
+ *
+ * Mirrors `oracle/src/tutor/whiteboard.ts`'s own `ZERO_EPSILON` (same value,
+ * duplicated rather than imported — this package has no dependency on
+ * `oracle/`, same posture as `TutorWhiteboardData` above hand-mirroring the
+ * wire shape instead of importing it). That module clamps a running value
+ * NEGATIVE by a hair of floating-point noise up to exact `0`, for a
+ * legitimate "spend it down to zero" sequence — a designed case, not an edge
+ * case. It does not clamp noise on the POSITIVE side (e.g. `1e-16` from a
+ * different step ordering), so a value can still arrive here a hair above
+ * zero. Found by adversarial review, round 107, RUNBOOK.md: this component's
+ * `Math.max(6, …)` visibility floor — added so a genuinely small nonzero bar
+ * stays visible — did not carve out true zero, so a value the label above it
+ * showed as "$0" still drew a bar with real height, contradicting its own
+ * label on exactly the story beat ("spend it down to zero") this feature was
+ * built to narrate correctly.
+ */
+const ZERO_EPSILON = 1e-9;
+
 function useValueFormat(currency: string | null): (n: number) => string {
   const { i18n } = useTranslation();
   return useMemo(() => {
@@ -125,7 +146,7 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
       <div className="flex min-h-0 flex-1 items-end gap-2 overflow-x-auto px-1 pb-1">
         {board.values.map((value, i) => {
           const grown = i < shown;
-          const heightPct = Math.max(6, Math.round((value / max) * 100));
+          const heightPct = value <= ZERO_EPSILON ? 0 : Math.max(6, Math.round((value / max) * 100));
           return (
             <div key={i} className="flex min-w-[3.5rem] flex-1 flex-col items-center gap-1">
               <span className="lf-number lf-title text-content" aria-hidden="true">
