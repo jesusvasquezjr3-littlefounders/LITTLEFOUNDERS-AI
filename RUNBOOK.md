@@ -7539,3 +7539,100 @@ regressions), `type-check` (all three tsconfigs), `lint`, `build`,
 **No deploy ordering constraint.** Unlike round 74, nothing crosses a
 service boundary: the change is entirely inside `oracle/`, adds no
 field to any wire or HTTP schema, and Core is untouched.
+
+## Round 77: a resumed session kept enforcing the FIRST connection's `isMinor`, while every gate around it already used the fresh one
+
+Round 56 found this and deliberately deferred it (`task_b249a68e`),
+because deciding which fields on `SessionContext` should refresh on a
+resume and which must stay pinned is a real design question and a
+same-round patch risked trading one staleness bug for a worse one. A
+background review then audited every field on that type and came back
+with a single answer: `isMinor` is the ONLY one where the
+orchestrator's pin-at-first-connection behaviour disagrees with the
+field's own live, safety-relevant nature. Every other field is
+architecturally immutable for the life of a session, has its own live
+shadow, is checked freshly somewhere else, or is a deliberate
+decision-clock snapshot. That is what made this closable as a
+three-line change rather than a redesign.
+
+**The defect.** `TutorOrchestrator`'s `private readonly session` is set
+once in the constructor and never reassigned — confirmed rather than
+assumed (`grep -n "this\.session\s*=" orchestrator.ts` has no hits).
+`ws/server.ts`'s handshake re-fetches a fresh `SessionContext` on
+EVERY connection including a resume, but the resume branch re-attaches
+the SAME orchestrator instance
+(`resumed?.orchestrator ?? new TutorOrchestrator(...)`), so anything
+read through `this.session` stays pinned to whatever the FIRST
+connection fetched — for the 90-second grace window, and indefinitely
+for a long-lived session parked and resumed repeatedly, since nothing
+ever re-fetched it.
+
+`isMinor` is the sole input to `requireModelPass`
+(`orchestrator.ts`, the per-turn `moderateTutorOutput` call), which
+decides whether a turn no judge could clear is REFUSED or delivered on
+the deterministic pass alone (/ORACLE.md §6). So the one stale reader
+was a child-safety gate — and it was stale while its own siblings on
+the same reconnect were not: the door gate a few lines above it reads
+`moderationReadiness(session.isMinor)` off the freshly fetched
+context, the microphone gate reads `session.isMinor`/`voiceConsent`
+off the same one, and `refreshMicConsent` makes a brand-new live HTTP
+call to Core every turn a minor's microphone is open. This is the
+"state read back out of a kept object is the PREVIOUS holder's state"
+class `/AGENTS.md` §1.14 already names for the 3D rig, one subsystem
+over.
+
+Narrow, and stated as such: it needs a learner whose role or age
+genuinely changes between an original connection and a resume of the
+same session. It is not a defect anyone would hit by accident. It is
+also exactly the kind of gate that must not be the last thing in the
+building still believing yesterday's answer.
+
+**Fixed with one explicit mutable slot, not a mutable `session`.** A
+`private minorPosture: boolean`, seeded from `session.isMinor` in the
+constructor, is what `requireModelPass` now reads;
+`refreshIsMinor(isMinor: boolean)` is called by `handleConnection`'s
+resume branch with the value that connection's own
+`fetchSessionContext` just returned — the same value the door and
+microphone gates beside it are already using. It takes a BOOLEAN
+rather than a `SessionContext` on purpose, so it cannot quietly become
+the seam through which the pinned fields start refreshing too. A
+change in either direction logs, because a learner's role changing
+inside one session's lifecycle should never be silent. `sessionContext`
+(read by `finalizeParked` for the post-session review) overlays the
+live posture on the otherwise-pinned context, so no future caller can
+read out of it a value the orchestrator itself has stopped using.
+
+Nothing else moved: the connection-layer mic/consent gating was
+already fresh and was not touched, and the deliberately-pinned fields
+(`tier`, `courseContext`, `locale`, the FSM's own snapshots) are still
+pinned — a test asserts that explicitly rather than leaving it to the
+reader.
+
+**Proof, and both halves were needed.** Four unit tests in
+`orchestrator.test.ts` drive the same unreachable judge on either side
+of a simulated resume: a learner who BECOMES a minor is now refused
+(the safety-critical direction), one who stops being a minor stops
+being refused, the ordinary resume with an unchanged value behaves
+identically, and a fourth proves `tier`/`courseContext`/`locale` and
+the derived lesson thread survive a refresh untouched. One end-to-end
+test in `live-session.test.ts` drives a REAL socket through a real
+park and resume with the fake Core flipping its answer between the two
+connections and the fake judge answering 500 — because the unit tests
+prove `refreshIsMinor` works and only this one proves
+`handleConnection` actually calls it.
+
+Confirmed to fail for the exact claimed reason pre-fix, twice, for the
+two different reasons the fix has: with `requireModelPass` restored to
+`this.session.isMinor`, both direction tests flip (`model` where
+`scripted` is expected and the reverse) while the ordinary-case and
+pinned-field tests still pass; with `ws/server.ts` stashed and the
+orchestrator's half intact, the end-to-end test delivers the model
+turn to a minor with a dead judge, exactly as production would have.
+
+Verification: full oracle suite green (27 files, 615 tests — 610
+existing + 5 new, zero regressions), type-check clean on all three
+tsconfigs (src, scripts, test), lint clean, `verify:tutor` green (this
+touches the moderation path, so that gate is the one that matters
+here) and `verify:pedagogy` green. Root `docs:check`/`secrets:check`/
+`paths:check`/`seo:check`/`tools:test`/`provider:check` clean.
+`oracle/AGENTS.md` item 65.

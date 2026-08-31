@@ -415,6 +415,131 @@ describe('output moderation', () => {
   });
 });
 
+/*
+ * ROUND 77, 2026-08-30 (MEDIUM) — round 56's deferred finding.
+ *
+ * `ws/server.ts` re-fetches a fresh `SessionContext` on EVERY connection,
+ * including a resume, and that fresh value already drives the door gate and
+ * the microphone gate on the same reconnect. But a resume re-attaches the SAME
+ * orchestrator instance, whose `session` is set once at construction and never
+ * reassigned — so `requireModelPass`, the one thing `isMinor` decides, kept
+ * enforcing whatever the FIRST connection fetched, for the whole grace window
+ * and indefinitely across repeated parks and resumes.
+ *
+ * The observable difference is the judge-unavailable branch, and only that
+ * one: a minor's turn is REFUSED, an adult's runs on the deterministic pass
+ * (/ORACLE.md §6). So these drive the same unreachable judge on either side of
+ * a simulated resume and read which answer came back.
+ *
+ * `ADULT_ES` rather than the file's `ADULT`: this needs the two sessions to
+ * differ in `isMinor` and NOTHING ELSE, so the model turn is judged by the
+ * same tier and the same language gate in both halves.
+ */
+const ADULT_ES: SessionContext = { ...KID, isMinor: false };
+
+/**
+ * The model answers with `say`, then every judge attempt (there are two, one
+ * retry) fails.
+ *
+ * `say` is a parameter rather than a constant because these tests take TWO
+ * turns on one orchestrator, and a tutor repeating itself verbatim is a defect
+ * this file already tests for elsewhere — the repeat repair would fire and
+ * make the second turn scripted for a reason that has nothing to do with the
+ * moderation posture.
+ */
+function modelThenDeadJudge(say: string): void {
+  fetchMock
+    .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say }))
+    .mockRejectedValueOnce(new Error('judge network down'))
+    .mockRejectedValueOnce(new Error('judge network down'));
+}
+
+const FIRST_SAY = '¡Buena idea! ¿Cuánto juntarías en cuatro semanas?';
+const SECOND_SAY = 'Perfecto. ¿Y qué harías con ese dinero al final del mes?';
+
+describe('a resumed session re-reads the moderation posture', () => {
+  it('a learner who becomes a MINOR across a resume is judged as one — the safety-critical direction', async () => {
+    const orchestrator = new TutorOrchestrator(ADULT_ES, Date.now(), silent);
+
+    // First connection: not a minor. An unreachable judge is survivable.
+    modelThenDeadJudge(FIRST_SAY);
+    const before = (await orchestrator.handleLearnerText('quiero ahorrar', Date.now()))!;
+    expect(before.emission.source).toBe('model');
+
+    // The socket drops, the session parks, and the resume's own
+    // `fetchSessionContext` comes back saying this learner IS a minor.
+    orchestrator.refreshIsMinor(true);
+
+    modelThenDeadJudge(SECOND_SAY);
+    const after = (await orchestrator.handleLearnerText('y luego que hago', Date.now()))!;
+
+    // Pre-fix this delivered the model turn: `this.session.isMinor` was still
+    // the first connection's `false`, so the judge's silence was tolerated for
+    // a child.
+    expect(after.emission.source).toBe('scripted');
+    expect(after.safety?.handled).toBe('turn_blocked');
+  });
+
+  it('a learner who stops being a minor across a resume stops being refused', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+
+    modelThenDeadJudge(FIRST_SAY);
+    const before = (await orchestrator.handleLearnerText('quiero ahorrar', Date.now()))!;
+    expect(before.emission.source).toBe('scripted');
+    expect(before.safety?.handled).toBe('turn_blocked');
+
+    orchestrator.refreshIsMinor(false);
+
+    modelThenDeadJudge(SECOND_SAY);
+    const after = (await orchestrator.handleLearnerText('y luego que hago', Date.now()))!;
+    expect(after.emission.source).toBe('model');
+    expect(after.safety).toBeNull();
+  });
+
+  it('the ORDINARY resume — same value on both connections — changes nothing', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+
+    modelThenDeadJudge(FIRST_SAY);
+    const before = (await orchestrator.handleLearnerText('quiero ahorrar', Date.now()))!;
+    expect(before.emission.source).toBe('scripted');
+
+    // What every real resume does: Core says the same thing it said before.
+    orchestrator.refreshIsMinor(true);
+
+    modelThenDeadJudge(SECOND_SAY);
+    const after = (await orchestrator.handleLearnerText('y luego que hago', Date.now()))!;
+    expect(after.emission.source).toBe('scripted');
+    expect(after.safety?.handled).toBe('turn_blocked');
+  });
+
+  it('refreshes ONLY isMinor — every other field stays pinned to the first connection', () => {
+    const pinned: SessionContext = {
+      ...KID,
+      tier: 1,
+      courseContext: {
+        courseId: '44444444-4444-4444-8444-444444444444',
+        courseTitle: 'Educación financiera',
+        topicId: '55555555-5555-4555-8555-555555555555',
+        topicTitle: 'Ahorrar para una meta',
+      },
+    };
+    const orchestrator = new TutorOrchestrator(pinned, Date.now(), silent);
+
+    orchestrator.refreshIsMinor(false);
+
+    // The refreshed field is live…
+    expect(orchestrator.sessionContext.isMinor).toBe(false);
+    // …and everything the audit confirmed should stay pinned, stayed pinned —
+    // a refresh that quietly rebuilt the whole context would disrupt the
+    // lesson plan already built from `courseContext` and move the band the
+    // vocabulary gate judges this session's turns against.
+    expect(orchestrator.sessionContext.tier).toBe(1);
+    expect(orchestrator.sessionContext.courseContext).toEqual(pinned.courseContext);
+    expect(orchestrator.sessionContext.locale).toBe(pinned.locale);
+    expect(orchestrator.lessonThread?.topic).toBe('Ahorrar para una meta');
+  });
+});
+
 describe('when the model misbehaves', () => {
   it('retries ONCE on a malformed shape, then accepts the corrected turn', async () => {
     fetchMock

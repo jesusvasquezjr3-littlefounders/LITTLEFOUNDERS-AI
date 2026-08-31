@@ -1819,6 +1819,49 @@ everything passes the blocked half perfectly and destroys the product.
    `needsGeneration` shape and not only the cheap one. See `RUNBOOK.md`
    Round 76.
 
+65. **A resumed session kept enforcing the FIRST connection's `isMinor`,
+   while every gate around it on the same reconnect already used a
+   freshly re-verified one.** Found by adversarial review as round 56's
+   deferred MEDIUM, closed as round 77, 2026-08-30. `TutorOrchestrator`'s
+   `private readonly session` is set once at construction and never
+   reassigned (verified, not assumed: `this.session =` has no hits), and
+   `handleConnection`'s resume branch re-attaches the SAME instance — so
+   `requireModelPass: this.session.isMinor`, the one thing that decides
+   whether a turn no judge could clear is REFUSED or delivered on the
+   deterministic pass alone (/ORACLE.md §6), stayed pinned to whatever
+   the first connection fetched: for the 90-second grace window, and
+   indefinitely for a session parked and resumed repeatedly, since
+   nothing ever re-fetched it. Its siblings on that same reconnect were
+   all fresh — the door's `moderationReadiness(session.isMinor)`, the
+   microphone gate, and `refreshMicConsent`'s live per-turn call to
+   Core — which is what makes this the §1.14 "state read back out of a
+   kept object is the PREVIOUS holder's state" class rather than a
+   design choice.
+   Round 56 deferred it because `this.session` is used pervasively and
+   deciding what refreshes on a resume is a real design question. The
+   answer, from a full audit of every field on `SessionContext`:
+   `isMinor` is the ONLY one where pinning disagrees with the field's
+   own live, safety-relevant nature — every other field is immutable for
+   the session, has its own live shadow, is checked freshly elsewhere,
+   or is a deliberate decision-clock snapshot. So the fix is one
+   explicit mutable slot (`minorPosture`) plus
+   `refreshIsMinor(isMinor: boolean)`, called only from the resume
+   branch, taking a BOOLEAN rather than a `SessionContext` precisely so
+   it cannot become the seam through which the pinned fields start
+   refreshing too. `sessionContext` overlays the live posture so no
+   future caller can read a value the orchestrator itself stopped using;
+   a change in either direction logs, because a learner's role changing
+   inside one session's lifecycle should never be silent.
+   Proven both halves: 4 unit tests in `orchestrator.test.ts` (both
+   directions across a simulated resume, the unchanged ordinary case,
+   and `tier`/`courseContext`/`locale` still pinned) and 1 end-to-end
+   test in `live-session.test.ts` driving a real socket through a real
+   park and resume with Core flipping its answer between connections —
+   because the unit tests prove the method works and only the socket
+   test proves `handleConnection` calls it. Confirmed to fail pre-fix
+   for the exact claimed reason twice, once per half. See `RUNBOOK.md`
+   Round 77.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:

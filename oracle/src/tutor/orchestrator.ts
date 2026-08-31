@@ -294,6 +294,34 @@ export class TutorOrchestrator {
   private readonly servedSegmentSkills = new Map<string, string>();
   /** When each open segment went on screen, for the §8.3 latency signal. */
   private readonly segmentServedAt = new Map<string, number>();
+  /**
+   * THE ONE FIELD OF `session` THAT IS LIVE RATHER THAN PINNED — the
+   * moderation posture, and nothing else.
+   *
+   * `session` is `readonly` on purpose and stays pinned to the connection that
+   * built this orchestrator, because a resume re-attaches the SAME instance
+   * (`ws/server.ts`'s `resumed?.orchestrator`) and refreshing the rest of it
+   * mid-conversation would tear up work already built from the original
+   * values: `courseContext` feeds a lesson plan that is already in flight,
+   * `tier` is the band the vocabulary gate is judging this session's turns
+   * against, and the FSM's own snapshots are deliberate decision-clock reads.
+   * An audit of every field on `SessionContext` (2026-08-30) confirmed each of
+   * those is correctly pinned, given its own live shadow, or checked freshly
+   * somewhere else.
+   *
+   * `isMinor` is the exception, because it is not a preference — it is the
+   * ONLY input to `requireModelPass`, which decides whether a turn no judge
+   * could clear is refused or delivered (/ORACLE.md §6). Every sibling gate on
+   * the SAME reconnect already reads a freshly re-verified value: the door's
+   * `moderationReadiness(session.isMinor)`, the microphone gate, and
+   * `refreshMicConsent`'s live per-turn call to Core. Leaving this one pinned
+   * made the orchestrator's own moderation decision the last stale reader of a
+   * value everything around it had already updated — the same "state read back
+   * out of a kept object is the previous holder's state" class `/AGENTS.md`
+   * §1.14 already names. Found by adversarial review as round 56's deferred
+   * MEDIUM, closed as round 77 (2026-08-30).
+   */
+  private minorPosture: boolean;
 
   constructor(
     private readonly session: SessionContext,
@@ -305,6 +333,30 @@ export class TutorOrchestrator {
     this.plan = buildPlan(session.intent, session.courseContext, session.skillKey ?? null);
     this.skillStates = session.skillStates.slice(0, 12).map((s) => ({ ...s }));
     this.controller = new PedagogicalController(session.sessionPlan ?? [], session.kcStates ?? []);
+    this.minorPosture = session.isMinor;
+  }
+
+  /**
+   * Re-pins the moderation posture to a FRESHLY fetched session context.
+   *
+   * Called by `ws/server.ts` on a resume, with the `isMinor` that same
+   * reconnect's `fetchSessionContext` just returned — the very value the door
+   * gate and the microphone gate on that reconnect are already using. A first
+   * connection needs no call: the constructor was handed that same fresh
+   * context.
+   *
+   * Deliberately takes the ONE field rather than a whole `SessionContext`, so
+   * it cannot quietly become the seam through which the rest of the pinned
+   * context starts refreshing too.
+   */
+  refreshIsMinor(isMinor: boolean): void {
+    if (isMinor === this.minorPosture) return;
+    // LOUD, in both directions: a learner's role changing inside one session's
+    // lifecycle is rare enough that it should never happen silently.
+    console.warn(
+      `[oracle] session ${this.session.sessionId}: isMinor ${this.minorPosture} -> ${isMinor} on resume — moderation posture refreshed`,
+    );
+    this.minorPosture = isMinor;
   }
 
   /** Whether the v3 brain is steering this session. */
@@ -378,9 +430,15 @@ export class TutorOrchestrator {
    * by its grace-window timeout, for one (`ws/server.ts`'s `finalizeParked`),
    * which needs it to run the post-session review the same way a graceful
    * `finish()` does.
+   *
+   * `isMinor` is overlaid from the LIVE posture (`minorPosture`) so that no
+   * caller can read, out of this getter, a value this orchestrator itself has
+   * already stopped using. Every other field is the pinned original — which is
+   * what the post-session review wants, and what `minorPosture`'s own comment
+   * explains.
    */
   get sessionContext(): SessionContext {
-    return this.session;
+    return { ...this.session, isMinor: this.minorPosture };
   }
 
   /**
@@ -2023,7 +2081,11 @@ export class TutorOrchestrator {
         retryDeadlineMs,
         // A minor's session always requires the model pass. An adult's may
         // run on the deterministic pass alone (/ORACLE.md §6).
-        requireModelPass: this.session.isMinor,
+        //
+        // `minorPosture`, NOT `this.session.isMinor`: on a resume the socket
+        // re-attaches this same orchestrator, and the pinned context is the
+        // one the FIRST connection fetched. See `minorPosture`'s own comment.
+        requireModelPass: this.minorPosture,
       });
 
       if (!verdict.allowed) {

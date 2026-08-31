@@ -921,6 +921,23 @@ may not.
 Moderation failure is **fail-closed**: a moderation service that does not answer
 means the turn is not spoken. A safe scripted line covers the gap.
 
+> **Fixed 2026-08-30 (adversarial review, MEDIUM): "is this a minor's session"
+> was answered from the FIRST connection, on a session that had since been
+> resumed.** Everything above turns on `requireModelPass`, and its only input
+> is the session's `isMinor`. A dropped socket parks the orchestrator and a
+> resume re-attaches the SAME instance (§ the resume grace window), whose
+> `session` is set once at construction and never reassigned — so this gate
+> kept using whatever the first connection fetched, for the whole grace window
+> and indefinitely across repeated parks and resumes, while every gate around
+> it on that same reconnect (the door's moderation-readiness refusal, the
+> microphone gate, §4.3's per-turn consent recheck) already used a freshly
+> re-verified value. Fixed by giving the orchestrator one explicit live slot
+> for this single field, refreshed from the resume's own fetched context;
+> every other field stays deliberately pinned to the original connection,
+> because an in-flight lesson plan and the tier the vocabulary gate judges
+> against must not change under a conversation already in progress. See
+> `RUNBOOK.md` Round 77.
+
 > **Found live, testing as a struggling learner, 2026-08-30 (MEDIUM): the
 > `contact_detail` deterministic check blocked ordinary teaching content in a
 > tutor whose entire subject is numbers.** `deterministicModeration`'s phone

@@ -57,6 +57,12 @@ let journal: CoreJournal;
 let modelJournal: ModelJournal;
 /** Flipped per test to shape what the fake Core reports about the learner. */
 let sessionIsMinor = false;
+/**
+ * Flipped per test to make the fake judge answer `500` on every call. Round
+ * 76's resume test is the only one that wants it: an unavailable judge is the
+ * ONE condition under which `isMinor` changes what a learner receives.
+ */
+let judgeShouldFail = false;
 const sessionConsent = true;
 /** Flipped per test to make the fake Core refuse every safety-flag write. */
 let flagsShouldFail = false;
@@ -225,6 +231,18 @@ function startFakeModel(): Promise<Server> {
       const body = await readBody(req);
       modelJournal.bodies.push(body);
       const isJudge = body.includes('child-safety reviewer');
+      /*
+       * A judge that is simply DOWN — the one condition under which
+       * `requireModelPass` (and therefore `isMinor`) changes what a learner
+       * actually receives: a minor's turn is refused, an adult's runs on the
+       * deterministic pass alone (/ORACLE.md §6). Round 77's resume test is
+       * the only one that turns this on.
+       */
+      if (isJudge && judgeShouldFail) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'judge is down' }));
+        return;
+      }
       // A deliberately slow completion, so a test can interrupt mid-thought.
       if (!isJudge && body.includes('cuentamelotodomuydespacio')) {
         await new Promise((r) => setTimeout(r, 1_500));
@@ -235,6 +253,14 @@ function startFakeModel(): Promise<Server> {
       // and gets a turn carrying a whiteboard — proving the FRAME (not just
       // the orchestrator) delivers server-computed values over a real socket.
       const wantsBoard = !isJudge && body.includes('quieropizarron');
+      /*
+       * A DIFFERENT sentence, for a test that needs two model turns on one
+       * orchestrator. The tutor repeating itself verbatim is a real defect
+       * this suite tests for elsewhere, and the repair it triggers would end
+       * the second turn as `scripted` for a reason that has nothing to do
+       * with what that test is measuring.
+       */
+      const wantsSecondLine = !isJudge && body.includes('otrapreguntadistinta');
       const content = isJudge
         ? JSON.stringify({ safe: true })
         : JSON.stringify({
@@ -242,7 +268,9 @@ function startFakeModel(): Promise<Server> {
               ? 'Imaginemos que guardas 10 pesos y cada día te dan 2 más.'
               : wantsActivity
                 ? '¡Vamos a intentarlo!'
-                : '¡Buena pregunta! ¿Cuánto crees que juntarías?',
+                : wantsSecondLine
+                  ? 'Perfecto. ¿Y qué harías con ese dinero al final del mes?'
+                  : '¡Buena pregunta! ¿Cuánto crees que juntarías?',
             emotion: 'happy',
             action: 'nod',
             next: wantsActivity ? 'segment' : 'ask',
@@ -431,6 +459,8 @@ afterAll(async () => {
 
 afterEach(async () => {
   flagsShouldFail = false;
+  sessionIsMinor = false;
+  judgeShouldFail = false;
   servedSegmentType = 'quiz_mcq';
   voiceCheckRecognized = true;
   servedSegmentDifficulty = null;
@@ -1406,6 +1436,79 @@ describe('a dropped session can be resumed on a fresh token', () => {
     await ending;
     expect(journal.closes).toHaveLength(1);
     expect(journal.closes[0]).toMatchObject({ closeReason: 'completed' });
+  });
+
+  /*
+   * ROUND 77, 2026-08-30 (MEDIUM) — round 56's deferred finding, over a real
+   * socket rather than against the orchestrator directly.
+   *
+   * A resume re-attaches the SAME `TutorOrchestrator`, whose `session` is set
+   * once at construction and never reassigned. `isMinor` is the sole input to
+   * `requireModelPass` — whether a turn no judge could clear is refused or
+   * delivered — so the orchestrator kept enforcing the FIRST connection's
+   * answer while every gate around it on the same reconnect (the door's
+   * `moderationReadiness`, the microphone gate, the per-turn consent recheck)
+   * already used the freshly fetched one.
+   *
+   * This is the end-to-end half of the proof: the unit tests in
+   * `orchestrator.test.ts` show `refreshIsMinor` works, and this one shows
+   * `handleConnection` actually calls it on the resume path.
+   */
+  it('re-reads isMinor from the RESUME’s own fresh context, not the first connection’s', async () => {
+    freshJournal();
+    judgeShouldFail = true;
+    sessionIsMinor = false;
+
+    const first = open(await socketUrl());
+    await collect(first.socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const answered = collect(first.socket, (m) => m.some((x) => x.type === 'turn'));
+    first.socket.send(JSON.stringify({ type: 'learner_text', text: 'quiero ahorrar para una bici' }));
+    await answered;
+    // The turn frame reaches the client before the transcript row reaches
+    // Core — the persist is fire-and-forget, deliberately.
+    await new Promise((r) => setTimeout(r, 150));
+
+    // Not a minor, judge unreachable: §6 says the deterministic pass alone is
+    // enough, and the model's own words were delivered.
+    expect(journal.turns.at(-1)).toMatchObject({ speaker: 'tutor', source: 'model' });
+    expect(journal.flags).toHaveLength(0);
+
+    // The connection dies without a farewell — the session parks.
+    first.socket.terminate();
+    await first.closed();
+    await new Promise((r) => setTimeout(r, 100));
+    expect(journal.closes).toHaveLength(0);
+
+    // BETWEEN the two connections, Core's answer about this learner changes.
+    sessionIsMinor = true;
+
+    const second = open(await socketUrl());
+    await collect(second.socket, (m) => m.some((x) => x.type === 'state'));
+
+    // `lastTurnAtMs` is carried across the park on purpose, so a turn sent
+    // immediately after a resume is refused by the same `MIN_TURN_GAP_MS`
+    // floor an ordinary too-fast turn is.
+    await new Promise((r) => setTimeout(r, 750));
+    const replied = collect(second.socket, (m) => m.some((x) => x.type === 'turn'));
+    second.socket.send(JSON.stringify({ type: 'learner_text', text: 'otrapreguntadistinta' }));
+    await replied;
+    await new Promise((r) => setTimeout(r, 150));
+
+    /*
+     * Pre-fix this delivered the model turn exactly as the first connection
+     * did: the resumed orchestrator still held `isMinor: false`. Now the same
+     * unavailable judge refuses the turn and the scripted line goes out
+     * instead, with the safety flag that says why.
+     */
+    expect(journal.turns.at(-1)).toMatchObject({ speaker: 'tutor', source: 'scripted' });
+    expect(journal.flags.at(-1)).toMatchObject({ category: 'model_output_blocked' });
+
+    // AWAITED: a socket left open here stays in `liveSessions`, and the next
+    // test's handshake is then refused as ALREADY_CONNECTED rather than
+    // failing on its own terms.
+    second.socket.close();
+    await second.closed();
   });
 });
 
