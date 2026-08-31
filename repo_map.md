@@ -7333,18 +7333,18 @@ import { GRADERS } from '../lesson-contract/registry.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   getLearnerMemory,
+  getTutorPreferences,
   grantVoiceConsent,
   insertTutorTurn,
   listTutorTurns,
   searchOwnTurns,
+  upsertTutorPreferences,
   writeLearnerMemoryPair,
 } from '../services/tutorData.js';
 
 /*
  * Found by adversarial review, round 28 (2026-08-30, HIGH): `getLearnerMemory`
  * used to collapse "the read failed" and "this learner genuinely has no
- * memory yet" into the identical `{ learner: null, pedagogy: null }` shape
- * via `rows ?? []` — throwing away the one signal (`serviceRest` returning
 ```
 
 ### backend/src/__tests__/tutorLadder.test.ts
@@ -13127,6 +13127,26 @@ BEGIN
 -- It makes its own real call to the pedagogical model — same model, same
 -- provider, same invoice — and it is fired FIRE-AND-FORGET *after*
 -- `closeSession` has already persisted `cost_usd`, in both the graceful
+```
+
+### database/migrations/0063_tutor_preferences_default_companion.sql
+
+```
+-- 0063_tutor_preferences_default_companion.sql — a brand-new learner's FIRST
+-- preferences save must persist the documented default companion, never NULL.
+-- @phase: expand
+--
+-- FOUND BY ADVERSARIAL REVIEW SWEEP tutor-review-sweep-92 (onboarding
+-- dimension), HIGH. `tutor_preferences.companion` (0047) carries no DEFAULT —
+-- only `character` does (`DEFAULT 'rho'`) — while `upsertTutorPreferences`
+-- (backend/src/services/tutorData.ts) sends a PARTIAL body:
+-- `{user_id, ...patch, updated_at}`, whatever `patch` happens to include.
+-- Through `on_conflict=user_id, resolution=merge-duplicates`, PostgREST turns
+-- an omitted field into a column simply absent from the INSERT's target
+-- list, so it lands on the column's own DEFAULT — 'rho' for `character`, and
+-- (nothing declared, until this migration) NULL for `companion`.
+--
+-- That collides with the SERVICE layer's own documented default:
 ```
 
 ### database/package.json
@@ -28494,6 +28514,7 @@ import { Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from './HudPlate';
+import { MIC_ORB_SIZE_PX } from './MicOrb';
 
 /*
  * The surface a live lesson runs on, floating over the island.
@@ -28502,7 +28523,6 @@ import { HudPlate } from './HudPlate';
  * superseding two earlier positions in turn). The 2026-08-21 build put the
  * stage in one half of a `lg:grid-cols-[1fr_1fr]` split and was rejected for
  * its SILHOUETTE — a near-opaque slab down half the screen reads as a
- * dashboard. The correction floated a content-fitted 420 px plate in the
 ```
 
 ### frontend/src/tutor/hud/MicOrb.tsx
@@ -28570,7 +28590,7 @@ import { resolveBackdrop, SCENE_BACKDROP_IDS } from '@/tutor-scene/backdrops';
 ```
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { detentHeights, LessonPlate } from '../LessonPlate';
+import { detentHeights, DOCK_CLEARANCE_PX, LessonPlate } from '../LessonPlate';
 
 /*
  * Found by adversarial review, round 88 (2026-08-31, HIGH). `detentHeights()`

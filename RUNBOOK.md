@@ -9120,3 +9120,143 @@ all green. `npm run verify:tutor-ui` was not run: it drives the
 CONVERSING phase's HUD stack specifically, and this fix touches only the
 PERSONALIZING phase's own panel — no shared HUD/dock/canvas layout
 changed.
+## Round 94: a brand-new learner's very first save silently discarded the tutor's default companion, and it never came back
+
+**HIGH, FIXED — found by adversarial review sweep tutor-review-sweep-92
+(onboarding dimension).** `tutor_preferences.companion`
+(`database/migrations/0047_tutor_oracle.sql`) carried no `DEFAULT` —
+unlike `character`, which has `DEFAULT 'rho'` — while
+`upsertTutorPreferences` (`backend/src/services/tutorData.ts`) sends a
+deliberately PARTIAL upsert body, `{user_id, ...patch, updated_at}`,
+whatever `patch` happens to include. Through
+`on_conflict=user_id, resolution=merge-duplicates`, PostgREST turns an
+omitted field into a column simply absent from the INSERT's target
+list, so it lands on the column's own default — 'rho' for `character`,
+and (nothing declared) NULL for `companion`.
+
+That collided with the service layer's OWN documented default:
+`getTutorPreferences` returns `{character: 'rho', companion: 'liruf',
+...}` for a learner who has never saved anything — the exact pairing
+the onboarding picker shows on the island before a single tap.
+`frontend/src/tutor/PersonalizeInWorld.tsx`'s `chooseTutor` — the
+handler behind picking a tutor character, the routine first onboarding
+action — sends ONLY `{character: id}` unless the newly chosen
+character happens to collide with the CURRENT companion. So nearly
+every brand-new account's first-ever `PUT /preferences` inserted a row
+with `companion: null`, silently discarding the default the moment ANY
+field other than `companion` itself was first saved. This was not
+cosmetic: once that row exists, `getTutorPreferences`'s synthetic
+"never saved anything" default never applies again (`rows[0] ??
+default` — `rows[0]` now exists), so the companion a learner was shown
+on the island before saving anything quietly vanishes and never returns
+unless they separately discover and use the companion picker — a
+permanent, silent regression on the very first save nearly every new
+account makes.
+
+**Why the obvious fix is wrong, and costs more than the bug it
+replaces.** The natural instinct is to coalesce the missing value in
+JavaScript — have `upsertTutorPreferences` (or the route, which already
+reads the learner's `current` row for an unrelated collision check)
+inject `companion: 'liruf'` into the patch whenever the caller omits it
+and no row exists yet. Traced through two concurrent first-ever saves
+for the same brand-new user — one device sending `{character: 'dina'}`
+with no opinion on companion, another concurrently sending
+`{companion: 'zara'}` with no opinion on character, the exact "dropped
+connection, quick retry, two open tabs" shape rounds 34/36/42/51/59/61
+in this same file already found and closed — both requests would read
+"no row yet" in the same race window, both would inject their own
+belief about the default, and whichever request's upsert resolves
+SECOND (now an `ON CONFLICT DO UPDATE`, since the other already landed)
+would send `companion: 'liruf'` explicitly in its own body purely
+because IT injected that default, clobbering the other request's
+genuine, already-persisted `companion: 'zara'` with a synthetic value
+the learner never asked for. Introducing a new lost-update race while
+fixing a HIGH finding, in the one file this campaign has already
+hardened against exactly that class of bug six separate times, would
+have been a worse trade than the defect it replaced.
+
+**The fix instead lives entirely in the schema**
+(`database/migrations/0063_tutor_preferences_default_companion.sql`),
+where Postgres can already tell "omitted" (→ the column's own DEFAULT)
+apart from "explicit null" (→ the given value; an explicit value always
+wins over a column DEFAULT) without any read-then-decide step at all.
+`companion` gets the same treatment `character`/`diorama`/`backdrop`/
+`adaptations` already have — a real column `DEFAULT 'liruf'` — and
+because `resolution=merge-duplicates` only ever references
+`EXCLUDED.<col>` for columns present in the CALLER's own JSON body,
+this cannot touch the partial-UPDATE path at all: a field omitted from
+a second-or-later save still leaves the existing stored value
+untouched, exactly as before. It cannot resurrect a companion a learner
+has since, deliberately, cleared, and it introduces no read-then-write
+of its own to race.
+
+One wrinkle a plain `DEFAULT` cannot express: `companion` must differ
+from `character` (`tutor_preferences_companion_differs`, 0047), and the
+default companion IS one of the four selectable characters — so a
+first-ever save that picks Liruf as the TUTOR, without also naming a
+companion, would default `companion` into `'liruf'` too and fail that
+CHECK outright, trading a silent NULL for a hard `502 DATA_UNAVAILABLE`
+on exactly the combination that most needs to succeed. (The shipped
+picker already avoids this on its own — `chooseTutor` sends an explicit
+`companion: null` whenever the newly chosen character collides with the
+current companion — but nothing downstream of Core should depend on
+one specific client happening to do that.) A `BEFORE INSERT` trigger
+closes exactly that gap and nothing more: it only fires on a genuine
+INSERT (the `ON CONFLICT DO UPDATE` branch never re-derives a row from
+the table's own DEFAULT), and it only overrides a companion that took
+the new DEFAULT and now collides with the character just chosen — in
+which case there is no valid non-null default left, so it falls back to
+NULL, a documented, legitimate "no companion" state (`/ORACLE.md` §10:
+"any other character, or none") rather than raising a constraint
+violation.
+
+Deliberately NOT backfilling existing NULL rows already in the
+database: a NULL companion has two indistinguishable causes after the
+fact — this bug, and a learner who explicitly removed their companion
+via the picker's own toggle (`toggleCompanion`, which sends `companion:
+null` on purpose) — and guessing which is which per row would silently
+overwrite a real, deliberate choice for an unknown fraction of them.
+This migration only changes what a FUTURE first-ever save persists.
+
+**Verified against a real, disposable local Postgres instance**
+(`postgres:16-alpine` on a throwaway port, never the shared local dev
+stack, specifically to avoid disturbing concurrent sibling fixes from
+the same review sweep sharing that stack): a first save touching only
+`character` landed with `companion = NULL` before this migration and
+`companion = 'liruf'` after it; a first save picking Liruf as the
+tutor with no companion named landed with `companion = NULL` (no CHECK
+violation) both before and after; an explicit `companion: null` on a
+first save was honored as NULL both before and after; a later save
+touching only `diorama` left an already-chosen companion (`'zara'`)
+untouched both before and after, on the SAME row across three
+successive saves; and a genuine explicit collision (`character` and
+`companion` both given as the same value outright) still correctly
+failed the CHECK, unaffected by the new trigger. This is schema/trigger
+behaviour a mocked `fetch` cannot exercise, so it is not repeated as an
+automated `backend/` test — what backend/src/__tests__/tutorData.test.ts
+gained instead is the JS-level contract the fix depends on:
+`upsertTutorPreferences` still OMITS a field the caller did not set
+(never substitutes an explicit value in its place, which would look
+identical to a learner's own deliberate choice and defeat the DB
+default), still sends an explicit `null` when the caller deliberately
+clears the companion, and `getTutorPreferences` still returns a stored
+`null` verbatim once a row exists rather than re-applying its own
+synthetic "never saved anything" default — the mechanism that made the
+original bug permanent rather than a one-read glitch.
+
+`npm run type-check`, `npm run lint`, `npm test` (715 tests across 42
+files, up from 711 — 4 new, zero regressions) and `npm run build` all
+green in `backend/`; `npm test` green in `database/` (63 migration
+files, the new one correctly classified `expand`, idempotency and
+release-gate checks unaffected); root `npm run docs:check`,
+`npm run secrets:check`, `npm run tools:test` (ROADMAP's declared
+`0054`–`0063` pending range updated to match) and `npm run repo:map`
+all green. No `oracle/AGENTS.md`/`/ORACLE.md` item: nothing in
+`oracle/` changed, and no context field, prompt, or content-ladder rule
+moved — this is a Core/Vault data-integrity fix to what a first save
+persists, not a change to the Tutor's own runtime. No
+`database/AGENTS.md` item either: the fix corrects one column's
+default rather than introducing a new invariant, and the generated
+`database/types/database.ts` is unaffected — `companion` was already
+optional in the `Insert`/`Update` shapes purely because the column is
+nullable, independent of whether it carries a `DEFAULT`.
