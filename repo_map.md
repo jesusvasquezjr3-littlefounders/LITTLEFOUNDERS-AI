@@ -847,6 +847,26 @@ on:
   push:
 ```
 
+### .github/workflows/tutor-content-bridge.yml
+
+```
+name: Tutor content bridge audit
+
+# DOES THE KNOWLEDGE-COMPONENT GRAPH STILL REACH PUBLISHED CONTENT?
+# (RUNBOOK.md Round 101, oracle/AGENTS.md #73)
+#
+# `backend/src/services/contentBridgeAudit.ts` is the ONLY thing that answers
+# this — it proves every mapped `kc.skill_key` still resolves to a published
+# course/topic AND that the topic still carries at least one published lesson
+# (a topic can resolve perfectly and hold zero lessons, which is worse than a
+# null skill_key because the mapping then LOOKS done while carrying no
+# traffic). Until this workflow existed, the audit only ever ran as a side
+# effect of a human dispatching `tutor-deploy.yml`'s `seed-kc` step — the
+# ONLY trigger for the exact defect this audit exists to catch (RUNBOOK.md's
+# original content-bridge fix: the tutor unable to reach ANY published
+# lesson because `kc.skill_key` was null on every row) was a human choosing
+```
+
 ### .github/workflows/tutor-deploy.yml
 
 ```
@@ -6847,6 +6867,26 @@ import { getConfig, resetConfigForTests } from '../config.js';
  * like every other required secret in this file, never default to a value
 ```
 
+### backend/src/__tests__/contentBridgeAudit.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
+import { auditContentBridge } from '../services/contentBridgeAudit.js';
+
+/*
+ * RUNBOOK.md Round 101 (adversarial review sweep tutor-review-sweep-101,
+ * content-ladder-correctness dimension, MEDIUM): the bridge audit that
+ * catches "a mapped skill_key no longer reaches published content" — the
+ * EXACT class of defect that made the tutor unable to reach any published
+ * lesson before RUNBOOK.md's original content-bridge fix — only ever ran as
+ * a side effect of a human dispatching `seed:kc`. Nothing proved the audit
+ * ITSELF actually catches the gap it exists for. These tests do, against the
+ * real `resolveSkill` path (not a stub of it) via the shared fake PostgREST.
+ */
+
+```
+
 ### backend/src/__tests__/cors.test.ts
 
 ```
@@ -8027,6 +8067,26 @@ import {
  * POST /api/v1/verification/parent — the universal → parent (Tutor) upgrade.
 ```
 
+### backend/src/scripts/audit-content-bridge.ts
+
+```
+#!/usr/bin/env node
+/*
+ * `npm run audit:content-bridge` — re-runs THE BRIDGE AUDIT
+ * (`../services/contentBridgeAudit.ts`) against whatever is CURRENTLY live in
+ * Vault, independent of `database/seeds/kc_graph.v1.json`.
+ *
+ * WHY THIS EXISTS SEPARATELY FROM `seed:kc`. Until RUNBOOK.md Round 101 the
+ * bridge audit only ever ran as a side effect of a human dispatching
+ * `tutor-deploy.yml`'s `seed-kc` step — the ONLY trigger for the exact defect
+ * this audit exists to catch (a `kc.skill_key` that no longer reaches
+ * published content) was a human choosing to re-seed. Nothing re-checked it
+ * when the CATALOG changed instead of the KC graph: a course unpublished, a
+ * topic's lessons archived, a lesson's skill tags edited. All three change
+ * what `resolveSkill` and the published-lesson count return WITHOUT touching
+ * the seed file, so `git blame` on the seed would never point at the commit
+```
+
 ### backend/src/scripts/seed-kc-graph.ts
 
 ```
@@ -8044,7 +8104,7 @@ import {
  *
  * Operator tool, not CI (needs credentials), same posture as placement:verify:
  *   SUPABASE_URL=… SUPABASE_ANON_KEY=… SUPABASE_SERVICE_ROLE_KEY=… npm run seed:kc
- */
+ *
 ```
 
 ### backend/src/scripts/verify-placement.ts
@@ -8185,6 +8245,26 @@ import { serviceRest } from './supabaseRest.js';
  * catches the large, well-behaved majority — search engines, SEO and uptime
  * crawlers, preview bots, scripted clients — which is exactly the traffic that
  * quietly inflates a funnel. Anything cleverer than that is an arms race we
+```
+
+### backend/src/services/contentBridgeAudit.ts
+
+```
+import { serviceRest } from './supabaseRest.js';
+import { resolveSkill } from './tutorLadder.js';
+
+/**
+ * THE BRIDGE AUDIT — does each mapped KC actually reach published content?
+ *
+ * `kc.skill_key` is the ONLY thing connecting the knowledge graph to the
+ * catalog. While it was null on all 28 rows the tutor could not reach tier 1
+ * or tier 2 for anything, so EVERY activity fell through to live generation —
+ * the most fragile rung of the ladder — and the first activity of the first
+ * real session failed in front of the owner with "that activity is no longer
+ * ready". A null here is a deliberate, readable gap. A WRONG value is worse
+ * than null: the ladder tries, misses, falls through to generation anyway, and
+ * the mapping reads as done while carrying nothing.
+ *
 ```
 
 ### backend/src/services/courseTree.ts
@@ -8552,7 +8632,7 @@ const es = (val: string) => encodeURIComponent(val.toString());
 ```
 import { z } from 'zod';
 import { createHash } from 'node:crypto';
-import { serviceRest } from './supabaseRest.js';
+import { countServiceRows, serviceRest } from './supabaseRest.js';
 
 /*
  * The Tutor's data plane (migration 0047, /ORACLE.md).

@@ -1,0 +1,111 @@
+name: Tutor content bridge audit
+
+# DOES THE KNOWLEDGE-COMPONENT GRAPH STILL REACH PUBLISHED CONTENT?
+# (RUNBOOK.md Round 101, oracle/AGENTS.md #73)
+#
+# `backend/src/services/contentBridgeAudit.ts` is the ONLY thing that answers
+# this — it proves every mapped `kc.skill_key` still resolves to a published
+# course/topic AND that the topic still carries at least one published lesson
+# (a topic can resolve perfectly and hold zero lessons, which is worse than a
+# null skill_key because the mapping then LOOKS done while carrying no
+# traffic). Until this workflow existed, the audit only ever ran as a side
+# effect of a human dispatching `tutor-deploy.yml`'s `seed-kc` step — the
+# ONLY trigger for the exact defect this audit exists to catch (RUNBOOK.md's
+# original content-bridge fix: the tutor unable to reach ANY published
+# lesson because `kc.skill_key` was null on every row) was a human choosing
+# to re-seed.
+#
+# THAT DOES NOT CLOSE THE GAP, BECAUSE THE CATALOG MOVES WITHOUT ANYONE
+# TOUCHING THE SEED. A course getting unpublished, a topic's lessons being
+# archived, or a lesson's skill tags being edited are all PRODUCTION DATA
+# changes — none of them are a git commit, so no CI gate keyed on a diff can
+# see them. Only asking production itself, on a cadence, closes this: the
+# same shape `vault-drift.yml` already uses for "is production's schema
+# where the repository thinks it is?".
+#
+# WHY THIS RUNS ON THE PLAIN RUNNER RATHER THAN OVER `railway ssh`, UNLIKE
+# vault-drift.yml/tutor-retention.yml. The audit is a handful of read-only
+# PostgREST calls (HTTPS to Supabase's public gateway), not a database
+# session or a container-local API — exactly what `tutor-deploy.yml`'s own
+# `seed-kc` step already does. Credentials are pulled from Railway's service
+# variables straight onto the runner's environment for the one `npm run`
+# call and never written to disk or printed, the same mechanism that step
+# already uses; there is no SSH key to write because there is no container to
+# reach into.
+#
+# IT ALSO RUNS ON A PUSH THAT TOUCHES THE MAPPING, for the same reason
+# vault-drift.yml runs on push to migrations: a bad edit to
+# database/seeds/kc_graph.v1.json is caught in minutes rather than waiting
+# for the next scheduled run. This is defense in depth, not the primary
+# value — a push trigger cannot see the data-level drift described above,
+# only a schedule against live production can.
+#
+# LOUD ON FAILURE, MATCHING THIS REPO'S OWN CONVENTION (no external
+# alerting exists in this repository — insights-maintenance.yml and
+# tutor-retention.yml rely on the same two signals): `::error::` annotations
+# naming every broken bridge (from `audit-content-bridge.ts` itself) and a
+# failed job, which is what actually pages GitHub's own notification/commit-
+# status surface.
+
+on:
+  schedule:
+    # 06:50 UTC daily — clear of the 07:30 pack (insights-maintenance,
+    # vault-drift) and the 08:00/08:30 backups, so this has the gateway to
+    # itself and its own step summary is not interleaved with theirs.
+    - cron: '50 6 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'database/seeds/kc_graph.v1.json'
+      - 'backend/src/services/contentBridgeAudit.ts'
+      - 'backend/src/services/tutorLadder.ts'
+      - 'backend/src/services/pedagogy/kcData.ts'
+      - 'backend/src/scripts/audit-content-bridge.ts'
+      - 'backend/src/scripts/seed-kc-graph.ts'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+env:
+  ENVIRONMENT: production
+
+jobs:
+  audit:
+    name: Every mapped KC still reaches a published lesson
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install the Railway CLI
+        run: npm i -g @railway/cli@5.43.1
+
+      # Same five variables, same `read_var` shape as tutor-deploy.yml's
+      # `seed-kc` step — this reads the CURRENT `kc` table (getActiveKcs()),
+      # never the seed file, so it needs nothing beyond what that step
+      # already proves is sufficient for a plain PostgREST-over-HTTPS run.
+      - name: Read production credentials and run the audit
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          set -euo pipefail
+          read_var() {
+            railway variable list --service littlefounders-backend --environment "$ENVIRONMENT" --json 2>/dev/null \
+              | jq -r --arg k "$1" '.[$k] // ""'
+          }
+          export SUPABASE_URL="$(read_var SUPABASE_URL)"
+          export SUPABASE_ANON_KEY="$(read_var SUPABASE_ANON_KEY)"
+          export SUPABASE_SERVICE_ROLE_KEY="$(read_var SUPABASE_SERVICE_ROLE_KEY)"
+          export SUPABASE_JWT_SECRET="$(read_var SUPABASE_JWT_SECRET)"
+          export INTERNAL_API_KEY="$(read_var INTERNAL_API_KEY)"
+          for v in SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY SUPABASE_JWT_SECRET INTERNAL_API_KEY; do
+            [ -n "${!v}" ] || { echo "::error::backend variable $v is empty"; exit 1; }
+          done
+          echo "Auditing the content bridge against $SUPABASE_URL"
+          npm ci --prefix backend --no-audit --no-fund >/dev/null
+          npm run --prefix backend audit:content-bridge

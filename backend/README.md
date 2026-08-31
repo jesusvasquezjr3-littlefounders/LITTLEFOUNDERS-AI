@@ -31,6 +31,23 @@ catalog republish, and any `graph:backfill`.
 A LARGE error at the top of a course is the cap signature. A small residual
 error is correct: the search will not credit past a topic it could not verify.
 
+## `npm run audit:content-bridge` — does the KC graph still reach published content?
+
+Operator tool (needs `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`; read-only,
+calls no model, costs nothing). Re-runs the same check `seed:kc` runs after
+every seed (`services/contentBridgeAudit.ts`) against whatever is CURRENTLY
+live in Vault instead of the seed file: every mapped `kc.skill_key` must
+resolve to a published course/topic AND that topic must carry at least one
+published lesson.
+
+It exists as its own script because `seed:kc`'s audit only ever ran when a
+human re-seeded — nothing re-checked the bridge when the CATALOG moved
+instead (a course unpublished, a topic archived, a lesson's skill tags
+edited). `.github/workflows/tutor-content-bridge.yml` runs this daily against
+production and on any push touching the mapping (RUNBOOK.md Round 101). Fails
+loud — `::error::` per broken bridge — and exits non-zero if anything no
+longer carries traffic.
+
 ## Routes
 
 | Method | Path | Auth | Description |
