@@ -13109,6 +13109,26 @@ BEGIN
 -- PostgREST calls and therefore two transactions with a real, network-sized
 ```
 
+### database/migrations/0062_add_tutor_session_cost.sql
+
+```
+-- 0062_add_tutor_session_cost.sql — a paid model call that happens AFTER a
+-- session's cost has already been written needs a way to be added to it.
+-- @phase: expand
+--
+-- FOUND BY ADVERSARIAL REVIEW, round 78 (2026-08-30, MEDIUM). Round 64 closed
+-- the same CLASS of gap for tier-3 generation — a real, separately-billed
+-- model call whose price never reached `tutor_sessions.cost_usd` — but that
+-- one happens DURING an active session, so folding it into the orchestrator's
+-- own running total (`noteGenerationCost`) was enough: the total is read once,
+-- at close, after every contributor has already added to it.
+--
+-- The post-session review (`oracle/src/session/review.ts`) is the other shape.
+-- It makes its own real call to the pedagogical model — same model, same
+-- provider, same invoice — and it is fired FIRE-AND-FORGET *after*
+-- `closeSession` has already persisted `cost_usd`, in both the graceful
+```
+
 ### database/package.json
 
 ```
@@ -30268,6 +30288,7 @@ describe('the whiteboard example tells the model not to copy its own numbers', (
 ```
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fenceTranscript, runPostSessionReview } from '../session/review.js';
+import { estimateCostUsd } from '../tutor/orchestrator.js';
 import type { SessionContext } from '../core/client.js';
 
 /*
@@ -30280,7 +30301,6 @@ import type { SessionContext } from '../core/client.js';
  */
 
 const SESSION = {
-  sessionId: '11111111-1111-4111-8111-111111111111',
 ```
 
 ### oracle/src/__tests__/safety.test.ts
@@ -30788,9 +30808,10 @@ import { getConfig } from '../env.js';
 ```
 import crypto from 'crypto';
 import { getConfig } from '../env.js';
-import { updateLearnerMemory } from '../core/client.js';
+import { addSessionCost, updateLearnerMemory } from '../core/client.js';
 import { stripInvisible } from '../safety/untrusted.js';
 import { moderateTutorOutput } from '../safety/moderation.js';
+import { estimateCostUsd } from '../tutor/orchestrator.js';
 import type { SessionContext } from '../core/client.js';
 
 /*
@@ -30800,7 +30821,6 @@ import type { SessionContext } from '../core/client.js';
  * "she needs to see it before she hears it", and next week's session starts
  * from that. This is that walk. After a session closes, one cheap model call
  * reads the conversation that just happened plus what we already believed,
- * and rewrites the two curated stores — LEARNER (who this child is) and
 ```
 
 ### oracle/src/session/token.ts

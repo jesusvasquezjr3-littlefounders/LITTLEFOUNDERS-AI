@@ -1,8 +1,9 @@
 import crypto from 'crypto';
 import { getConfig } from '../env.js';
-import { updateLearnerMemory } from '../core/client.js';
+import { addSessionCost, updateLearnerMemory } from '../core/client.js';
 import { stripInvisible } from '../safety/untrusted.js';
 import { moderateTutorOutput } from '../safety/moderation.js';
+import { estimateCostUsd } from '../tutor/orchestrator.js';
 import type { SessionContext } from '../core/client.js';
 
 /*
@@ -33,6 +34,16 @@ import type { SessionContext } from '../core/client.js';
  *
  * - NOTHING HERE BLOCKS, THROWS UPWARD, OR RETRIES IN A LOOP. One call, one
  *   validation, one PUT to Core. Core owns the schema caps and the ledger.
+ *
+ * - ITS OWN CALL IS BILLED, AND IT SAYS SO. The call below is a real,
+ *   separately-paid completion against the same pedagogical model an ordinary
+ *   turn uses, and nothing read its `usage` until round 78 — so a cost every
+ *   session with a real conversation in it incurs was invisible to the ledger,
+ *   permanently. It is now added to that session's own recorded cost (§15)
+ *   from `runPostSessionReview`'s `finally`, so it is reported on EVERY path
+ *   out of the review and not only the one where a note is written — the money
+ *   is spent whatever happens to the answer, which is the same reason round 64
+ *   made tier-3's cost a callback rather than a return value.
  */
 
 const REVIEW_SYSTEM = [
@@ -133,15 +144,107 @@ function parseProposal(raw: string): ReviewProposal | null {
 }
 
 /**
+ * Sends this review's own model spend to the session it belongs to.
+ *
+ * Found by adversarial review, round 78 (2026-08-30, MEDIUM): this call's
+ * `usage` was never even read. The sibling gap round 64 closed (tier-3
+ * generation) happens DURING a session, so it could be folded into the
+ * orchestrator's running total; this one happens after `closeSession` has
+ * already written `costUsd` in BOTH close paths (`ws/server.ts`'s `finish()`
+ * and `finalizeParked()` each fire the review only after their close), so
+ * there is no running total left and it needs Core's own additive route.
+ *
+ * Reuses `estimateCostUsd` — the same rate table, in the same one place,
+ * exactly as `content/generate.ts` does. A second table is a second thing to
+ * forget when a price changes.
+ *
+ * NEVER THROWS, never retries, and swallows nothing quietly: a provider that
+ * reports no usage at all is LOUD rather than counted as zero (§1.14 — an
+ * uncounted call and a free one are different facts), and a Core write that
+ * does not land says so. This function's failure mode is "this one review's
+ * cost is uncounted", never "the review failed".
+ */
+/**
+ * What the model call actually spent, filled in by `review()` and read by the
+ * wrapper below. A mutable box rather than a return value for the same reason
+ * round 64 made tier-3's cost a CALLBACK: the money is spent long before the
+ * function knows whether it has anything worth returning, and every one of the
+ * six ways this review can decide "nothing to write" is a `return null`.
+ */
+interface ReviewSpend {
+  /** Whether the paid completion actually answered (a 200 we read a body from). */
+  modelAnswered: boolean;
+  usage: { prompt_tokens?: number; completion_tokens?: number } | null;
+}
+
+async function reportReviewCost(sessionId: string, spend: ReviewSpend): Promise<void> {
+  // Nothing was billed: a short session, a degraded brief, a refused call, a
+  // dead transport. Silence here is correct — the failure paths log their own.
+  if (!spend.modelAnswered) return;
+
+  const promptTokens = spend.usage?.prompt_tokens ?? 0;
+  const completionTokens = spend.usage?.completion_tokens ?? 0;
+  if (promptTokens === 0 && completionTokens === 0) {
+    // A call we made and cannot price is NOT a free call (§1.14). Saying so is
+    // the whole difference between a known gap and blind flight.
+    console.warn(
+      '[oracle] post-session review reported no token usage — its real cost is UNCOUNTED for this session',
+    );
+    return;
+  }
+  const costUsd = estimateCostUsd(promptTokens, completionTokens);
+  if (!(costUsd > 0)) return;
+  const recorded = await addSessionCost({ sessionId, costUsd, reason: 'post_session_review' });
+  if (!recorded) {
+    console.warn(
+      `[oracle] post-session review cost ($${costUsd.toFixed(6)}) did not reach the session ledger — it is uncounted`,
+    );
+  }
+}
+
+/**
  * Run the review for a finished session and persist what it learned.
  *
  * Fire-and-forget from the socket's finish path: `void runPostSessionReview(…)`.
  * Returns what it wrote, for the tests and for nothing else.
+ *
+ * The `finally` is the whole point of this wrapper (round 78): the review's own
+ * paid model call must reach the session's cost ledger on EVERY path out of
+ * `review()` below — a malformed proposal, an identifier-shaped note, a judge
+ * refusal, a Core write that did not land — because all of them happen after
+ * the money is already gone. Reporting is awaited (this function is the
+ * fire-and-forget one; nothing is waiting on it) and can neither throw nor
+ * change what the review returns.
  */
 export async function runPostSessionReview(input: {
   session: SessionContext;
   history: readonly { speaker: 'learner' | 'tutor'; text: string }[];
 }): Promise<ReviewProposal | null> {
+  const spend: ReviewSpend = { modelAnswered: false, usage: null };
+  try {
+    return await review(input, spend);
+  } finally {
+    try {
+      await reportReviewCost(input.session.sessionId, spend);
+    } catch (error) {
+      // Impossible by construction — `addSessionCost` swallows its own
+      // failures. Caught anyway because a throw out of a `finally` REPLACES
+      // the result, which would turn an accounting slip into a lost review.
+      console.warn(
+        '[oracle] post-session review cost reporting crashed:',
+        error instanceof Error ? error.message : error,
+      );
+    }
+  }
+}
+
+async function review(
+  input: {
+    session: SessionContext;
+    history: readonly { speaker: 'learner' | 'tutor'; text: string }[];
+  },
+  spend: ReviewSpend,
+): Promise<ReviewProposal | null> {
   const config = getConfig();
   if (!config.MODEL_API_KEY) return null;
   // A session with no real exchange teaches nothing — do not spend a call.
@@ -210,8 +313,22 @@ export async function runPostSessionReview(input: {
       console.warn(`[oracle] post-session review call failed: ${response.status}`);
       return null;
     }
-    const body = (await response.json()) as { choices?: { message?: { content?: unknown } }[] };
+    /*
+     * THE MONEY IS SPENT HERE, whatever happens to the answer below (round 78,
+     * 2026-08-30) — so it is marked spent BEFORE the body is read, not after.
+     * A 200 we then fail to parse is still a billed completion, and marking it
+     * afterwards would lose exactly the call whose reply went wrong. Recorded
+     * on the box the wrapper reads in its `finally`, so the cost reaches the
+     * session ledger even though every remaining way out of this function
+     * discards the reply entirely.
+     */
+    spend.modelAnswered = true;
+    const body = (await response.json()) as {
+      choices?: { message?: { content?: unknown } }[];
+      usage?: { prompt_tokens?: number; completion_tokens?: number };
+    };
     raw = typeof body.choices?.[0]?.message?.content === 'string' ? body.choices[0].message.content : '';
+    spend.usage = body.usage ?? null;
   } catch (error) {
     console.warn('[oracle] post-session review transport failed:', error instanceof Error ? error.message : error);
     return null;

@@ -288,6 +288,40 @@ export async function closeSession(input: CloseSessionInput): Promise<boolean> {
   }
 }
 
+/**
+ * Adds an already-spent amount to a session's recorded cost, AFTER the close
+ * that wrote it (round 78, 2026-08-30).
+ *
+ * `closeSession` above is the session's own economics, read once from the
+ * orchestrator at the moment the socket closes. This is for the paid work a
+ * session causes but does not finish paying for by then — today exactly one
+ * caller, `session/review.ts`, whose model call is fired fire-and-forget after
+ * `finish()`/`finalizeParked()` have already persisted `costUsd`. Round 64's
+ * `noteGenerationCost` covers the other shape (a paid call DURING the
+ * session), where the running total is still there to add to.
+ *
+ * Best-effort like every other write here: `false` means the cost is
+ * uncounted, and the caller says so loudly rather than retrying. It never
+ * throws, because its one caller must not be able to fail a review — let
+ * alone a session close — over accounting.
+ */
+export async function addSessionCost(input: {
+  sessionId: string;
+  costUsd: number;
+  reason: 'post_session_review';
+}): Promise<boolean> {
+  try {
+    const body = await coreFetch(`/tutor/internal/sessions/${encodeURIComponent(input.sessionId)}/cost`, {
+      method: 'POST',
+      body: JSON.stringify({ costUsd: input.costUsd, reason: input.reason }),
+    });
+    const parsed = Envelope(z.object({ recorded: z.boolean() })).safeParse(body);
+    return parsed.success && parsed.data.data?.recorded === true;
+  } catch {
+    return false;
+  }
+}
+
 /** A client-safe segment: Core has already stripped the answer key. */
 const ServedSegmentSchema = z
   .object({

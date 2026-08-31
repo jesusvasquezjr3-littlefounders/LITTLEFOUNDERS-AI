@@ -17,6 +17,7 @@ import {
   CHARACTERS,
   BACKDROPS,
   DIORAMAS,
+  addTutorSessionCost,
   awardTutorXp,
   closeTutorSession,
   countSessionSegments,
@@ -669,6 +670,50 @@ function internalRouter(): Router {
       }
     }
     return ok(res, { closed });
+  });
+
+  /*
+   * A PAID CALL THAT LANDS AFTER THE CLOSE STILL BELONGS TO THE SESSION.
+   *
+   * Round 78 (2026-08-30). The post-session review makes its own real call to
+   * the pedagogical model, and Oracle fires it fire-and-forget AFTER
+   * `closeSession` has already persisted `cost_usd` — in the graceful
+   * `finish()` path and in the dropped-connection `finalizeParked()` path
+   * alike. So the one number §15 promises measures the session's spend
+   * ("before it is a surprise") was, for every session with a real
+   * conversation in it, missing that call. This route is how the cost gets
+   * home: an ADDITION, done in Postgres (migration `0062`), never a
+   * read-add-write here.
+   *
+   * `reason` is a closed vocabulary rather than free text so a second
+   * background contributor has to be added deliberately — and so this log
+   * line says which surface spent the money.
+   */
+  const SessionCostBody = z
+    .object({
+      costUsd: z.number().positive().finite(),
+      reason: z.enum(['post_session_review']),
+    })
+    .strict();
+
+  router.post('/sessions/:id/cost', async (req, res) => {
+    const sessionId = z.string().uuid().safeParse(req.params.id);
+    if (!sessionId.success) return fail(res, 400, VALIDATION, 'Invalid session id');
+    const parsed = SessionCostBody.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid cost');
+
+    const total = await addTutorSessionCost(sessionId.data, parsed.data.costUsd);
+    if (total === null) {
+      // LOUD, and never a 500: the caller is a best-effort background task
+      // that must not retry, so this line is the only trace an uncounted
+      // cost leaves (§1.0, "in blind flight").
+      console.warn(
+        `[tutor] session cost NOT recorded (${parsed.data.reason}, $${parsed.data.costUsd.toFixed(6)}) ` +
+          `for session ${sessionId.data} — no such session, or the write failed`,
+      );
+      return ok(res, { recorded: false, costUsd: null });
+    }
+    return ok(res, { recorded: true, costUsd: total });
   });
 
   router.get('/consent/:userId', async (req, res) => {

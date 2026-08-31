@@ -326,6 +326,34 @@ export async function closeTutorSession(input: {
   return res !== null;
 }
 
+/**
+ * Adds a real, already-spent amount to a session's recorded cost.
+ *
+ * For the paid calls a session causes but does not finish paying for before
+ * `closeTutorSession` writes `cost_usd` — today exactly one, the post-session
+ * review's own model call (`oracle/src/session/review.ts`), which Oracle fires
+ * fire-and-forget AFTER the close in both its close paths. Round 64 fixed the
+ * same class for tier-3 generation, but that cost happens DURING the session,
+ * so folding it into the orchestrator's running total was enough; there is no
+ * running total left by the time this one is known.
+ *
+ * ADDITION IN POSTGRES, NOT HERE (migration `0062`). PostgREST can only PATCH
+ * a literal, so doing this in application code would mean read-add-write —
+ * the §1.14 shape that erased a child's XP behind a 200, and the shape
+ * migrations 0055/0057/0059 have each already moved into the database.
+ *
+ * Returns the session's NEW total, or `null` when nothing was added (no such
+ * session, a non-positive amount, or the call failed) — never a zero that a
+ * caller could read as "recorded".
+ */
+export async function addTutorSessionCost(sessionId: string, costUsd: number): Promise<number | null> {
+  const total = await serviceRest<number | null>('/rpc/add_tutor_session_cost', {
+    method: 'POST',
+    body: JSON.stringify({ p_session_id: sessionId, p_amount: costUsd }),
+  });
+  return typeof total === 'number' ? total : null;
+}
+
 /** Writes the memory digest onto a session that has already closed. */
 export async function setSessionSummary(
   sessionId: string,

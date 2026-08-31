@@ -7636,3 +7636,133 @@ touches the moderation path, so that gate is the one that matters
 here) and `verify:pedagogy` green. Root `docs:check`/`secrets:check`/
 `paths:check`/`seo:check`/`tools:test`/`provider:check` clean.
 `oracle/AGENTS.md` item 65.
+## Round 78: the post-session review's own paid model call never reached the cost ledger, because it happens after the ledger is written
+
+Round 64 closed the tier-3 half of this: a real, separately-billed
+model call whose price never reached `tutor_sessions.cost_usd`. This
+round closes the other half, and the reason it needed a different fix
+is the whole finding.
+
+**MEDIUM, FIXED — the post-session review's own model call was
+invisible to the session cost ledger.** `oracle/src/session/review.ts`
+makes a direct `fetch` to `${MODEL_API_BASE}/chat/completions` — the
+same model, the same provider and the same invoice as an ordinary turn
+— to compute the learner/pedagogy memory proposal. `body.usage` was
+never even accessed in the response-parsing code, so the cost of that
+call existed nowhere: not in `modelUsd`, not in `totalCostUsd`, not in
+the row Core persists. It is not a rare path. The review runs for every
+session with at least two learner turns, in BOTH close paths, so the
+one number §15 promises makes a session's economics "measurable before
+they are a surprise" was systematically short by one call per real
+conversation, permanently, with nothing anywhere pointing at the gap
+(§1.0, "in blind flight").
+
+**Why round 64's fix could not be reused, verified rather than
+assumed.** Tier-3 generation happens DURING a turn, so
+`noteGenerationCost` could fold it into the orchestrator's running
+total, which nobody reads until the socket closes. This call is the
+opposite shape, and `ws/server.ts` says so in both paths:
+`finish()` awaits `closeSession({..., costUsd:
+live.orchestrator.totalCostUsd })` and only THEN fires `void
+runPostSessionReview(...)`; `finalizeParked()` fires `void
+closeSession({..., costUsd: entry.orchestrator.totalCostUsd })` and
+then `void runPostSessionReview(...)` immediately after. By the time
+the review's tokens are known, the number is already written, and the
+orchestrator is about to be discarded. There is no running total left
+to add to.
+
+**So the cost is ADDED to the row, and the addition happens in
+Postgres.** `cost_usd = cost_usd + x` is precisely what PostgREST
+cannot express — a PATCH sets a literal — so doing this in Core would
+have meant read-add-write, the §1.14 shape that erased a child's XP
+behind a 200 and that migrations `0055`, `0057` and `0059` have each
+already moved into the database. Migration `0062` adds
+`add_tutor_session_cost(uuid, numeric)`: one `UPDATE ... SET cost_usd =
+cost_usd + p_amount ... RETURNING cost_usd`, whose own row lock
+serializes concurrent additions. It returns the new total, or NULL when
+there is no such session or the amount is not positive — never 0, which
+a caller could read as "recorded" (§1.14). It is deliberately NOT
+guarded on `ended_at`: a closed session row is already not immutable
+here (`setSessionSummary` writes the memory digest onto one), and
+refusing when the close itself failed would drop a cost at exactly the
+moment the record is least trustworthy.
+
+The wire is `POST /api/v1/tutor/internal/sessions/:id/cost` with
+`{costUsd, reason}`, `reason` a closed vocabulary of one
+(`post_session_review`) so a second background contributor has to be
+added deliberately and the log line says which surface spent the money.
+Oracle reaches it through `addSessionCost` in `core/client.ts`, priced
+with the SAME `estimateCostUsd` round 64 established — one rate table,
+not two.
+
+**Reported from a `finally`, which is the load-bearing detail.** The
+money is spent the moment the provider answers, and four of the ways
+this review can still end return `null` and discard the reply: an
+unparseable shape, an identifier-shaped note, a judge refusal, a Core
+write that does not land. A cost recorded only on the success path
+would therefore miss exactly the cases worth seeing. `spend` is marked
+before the response body is even read, so a 200 we then fail to parse
+is still counted, and `runPostSessionReview` is now a thin wrapper
+whose `finally` reports it. The review's own documented invariant is
+unchanged and re-tested: fire-and-forget, never blocks, never throws
+upward, never retries. A cost-recording failure degrades to "this
+review's cost is uncounted, logged loudly", never to a lost review —
+including the case where the memory note was already written before the
+report was attempted.
+
+**A call we cannot price is not a free call.** When the provider
+returns 200 with no `usage` block at all, nothing is recorded and the
+line says `UNCOUNTED` rather than quietly adding zero — the same §1.14
+distinction the rest of this file keeps making, applied to money.
+
+Proof: 10 new `review.test.ts` tests and 8 new `tutor.test.ts` (Core)
+tests. Six of the ten fail pre-fix for the exact claimed reason
+(`git stash` on `review.ts` + `core/client.ts`: four report an empty
+cost-report list, one finds no `UNCOUNTED` warning, one finds the
+report missing on the Core-write-failed path); the other four are
+deliberate controls that must pass BOTH ways — a session too short to
+spend a call, a refused model call, a dead transport, and "never throws
+out of the review" — since each asserts that nothing is recorded.
+Seven of the eight Core tests fail pre-fix because the route does not
+exist. The pre-existing 19 `review.test.ts` tests also pass against the
+UNFIXED source after their refactor, which is what proves the refactor
+(counting `fetch` calls → asserting which URLs were called) did not
+quietly change what they check.
+
+Migration verified against a real Postgres — a disposable
+`postgres:16-alpine` carrying the `tutor_sessions` columns and CHECK
+this function touches, rather than the shared local stack: applied
+twice for idempotency; an addition onto an already-CLOSED session
+returning the new total; all four refusals (no such session, zero,
+negative, NULL) returning NULL with the row unchanged; and under
+genuine concurrency, two simultaneous `psql` connections each adding
+0.001 inside overlapping transactions settling at the full sum — while
+the read-add-write shape this replaces, run the same way on the same
+instance, lost one of the two additions (0.021000 where 0.022000 was
+owed).
+
+**Deploy order.** Migration first (or at least before the value
+matters), then Core, then Oracle — but nothing breaks if it lags:
+while `0062` is unapplied the RPC simply fails, `addTutorSessionCost`
+returns null, Core answers `recorded: false`, and Oracle logs the cost
+as uncounted. An Oracle deployed ahead of Core gets a 404 from
+`coreFetch`, which `addSessionCost` catches, with the same result. The
+failing direction is a missing number in the ledger, never a failed
+review or a failed close.
+
+**Found and NOT fixed this round, deliberately.** The independent
+safety judge (`safety/moderation.ts`, Qwen) is also a real paid call
+and its cost reaches no ledger anywhere — not here, and not on the
+ordinary turn path either. That is a different, wider gap with a
+different blast radius (every turn in the product, not one background
+task), and it wants its own round rather than being smuggled into this
+one.
+
+Verification (re-run after rebasing onto rounds 76 and 77): full
+oracle suite green (27 files, 625 tests — 615 existing + 10 new, zero
+regressions), full backend suite green (42 files, 710 tests — 702 + 8
+new), type-check clean in both services
+including their script and test trees, lint clean in both, both builds
+green, `verify:tutor` and `verify:pedagogy` green, and
+`repo-consistency` green against the widened `0054`–`0062` pending
+range. `oracle/AGENTS.md` item 66.

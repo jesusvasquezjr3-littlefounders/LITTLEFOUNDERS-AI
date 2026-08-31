@@ -1806,6 +1806,24 @@ text-to-speech rate as a named constant beside the model rates in
 gives. Free paths add zero, which is what makes the saving visible: two
 sessions with the same turn count and very different voice costs is the signal.
 
+**And so does the work a session causes AFTER it closes (round 78,
+2026-08-30).** Two paid calls used to happen outside the one place the ledger
+was written. Round 64 caught the first — tier-3 live generation, which happens
+DURING a session and so could simply be folded into the orchestrator's running
+total (`noteGenerationCost`). The second is the post-session review
+(§20, the slow chamber): one real, separately-billed call to the same
+pedagogical model, fired fire-and-forget AFTER `closeSession` has already
+persisted `costUsd` — in the graceful close and in the dropped-connection one
+alike — so there is no running total left to add to and the ledger simply never
+saw it, for every session with a real conversation in it. It now goes to Core's
+own additive route (`POST /tutor/internal/sessions/:id/cost`, migration `0062`,
+`cost_usd = cost_usd + x` inside Postgres), reported from the review's own
+`finally` so it lands whether or not the proposal it paid for survives
+moderation. A closed session row is not immutable here, and never was: Core's
+memory digest is already written onto one. Failure degrades LOUDLY and only for
+the accounting — a call we cannot price is logged as UNCOUNTED rather than
+recorded as zero (§1.14), and no cost report can fail a review or a close.
+
 **Reuse and deletion are the same question, and the bucket name answers it.**
 A clip reused across sessions is ONE content-addressed Depot object that many
 transcripts point at, so it either outlives §12's 90-day promise or is deleted

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fenceTranscript, runPostSessionReview } from '../session/review.js';
+import { estimateCostUsd } from '../tutor/orchestrator.js';
 import type { SessionContext } from '../core/client.js';
 
 /*
@@ -35,12 +36,41 @@ const EXCHANGE = [
 
 const fetchMock = vi.fn();
 
-function modelSays(payload: unknown): Response {
+/**
+ * The review's own paid call, answered the way the provider really answers it:
+ * with a `usage` block. Round 78 made that block load-bearing — it is what the
+ * session's cost ledger is now fed from — so the DEFAULT fixture carries one,
+ * and a test that wants the "provider told us nothing" case says so by passing
+ * `usage: null` rather than by inheriting it from a fixture that forgot.
+ */
+const REVIEW_USAGE = { prompt_tokens: 1_800, completion_tokens: 240 };
+
+function modelSays(
+  payload: unknown,
+  usage: { prompt_tokens: number; completion_tokens: number } | null = REVIEW_USAGE,
+): Response {
   return new Response(
-    JSON.stringify({ choices: [{ message: { content: JSON.stringify(payload) } }] }),
+    JSON.stringify({
+      choices: [{ message: { content: JSON.stringify(payload) } }],
+      ...(usage ? { usage } : {}),
+    }),
     { status: 200, headers: { 'Content-Type': 'application/json' } },
   );
 }
+
+/**
+ * Which calls actually went where. Counting `fetchMock` calls stopped being
+ * expressive once the review made a THIRD kind of call (the cost report, round
+ * 78) — "no PUT" is what those assertions always meant, so they say it.
+ */
+function callsTo(fragment: string): [string, RequestInit | undefined][] {
+  return fetchMock.mock.calls
+    .map((call) => [String(call[0]), call[1] as RequestInit | undefined] as [string, RequestInit | undefined])
+    .filter(([url]) => url.includes(fragment));
+}
+
+const memoryWrites = () => callsTo('/tutor/internal/learner-memory');
+const costReports = () => callsTo('/cost');
 
 /** Matches `orchestrator.test.ts`'s own helper — the same judge, the same shape. */
 function judgeSays(safe: boolean, category = 'personal_information'): Response {
@@ -56,6 +86,16 @@ beforeEach(() => {
   process.env.JUDGE_API_KEY = 'test-judge-key-0123';
   vi.stubGlobal('fetch', fetchMock);
   fetchMock.mockReset();
+  /*
+   * The FALLBACK, under every `mockResolvedValueOnce` queue below. The cost
+   * report is the LAST call the review makes on every path, so it falls
+   * through to this once a test's own queue is spent — which is what keeps
+   * eighteen tests written before round 78 arranging exactly the responses
+   * they always did.
+   */
+  fetchMock.mockImplementation(() =>
+    Promise.resolve(new Response(JSON.stringify({ data: { recorded: true }, error: null }), { status: 200 })),
+  );
 });
 afterEach(() => {
   delete process.env.MODEL_API_KEY;
@@ -127,7 +167,7 @@ describe('when it refuses to run', () => {
       history: EXCHANGE,
     });
     expect(result).toEqual({ learner: 'Nueva nota.', pedagogy: null });
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(memoryWrites()).toHaveLength(1);
   });
 });
 
@@ -169,7 +209,7 @@ describe('what it forwards to Core', () => {
       );
     await runPostSessionReview({ session: SESSION, history: EXCHANGE });
 
-    const putBody = JSON.parse(String(fetchMock.mock.calls[2]?.[1]?.body ?? '{}')) as {
+    const putBody = JSON.parse(String(memoryWrites()[0]?.[1]?.body ?? '{}')) as {
       expectedBefore: { learner: string | null; pedagogy: string | null };
     };
     // SESSION.learnerBrief = { learner: null, pedagogy: 'Responde bien a ejemplos con comida.' }
@@ -180,7 +220,7 @@ describe('what it forwards to Core', () => {
     fetchMock.mockResolvedValueOnce(modelSays({ learner: null, pedagogy: null }));
     const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
     expect(result).toEqual({ learner: null, pedagogy: null });
-    expect(fetchMock).toHaveBeenCalledTimes(1); // no PUT
+    expect(memoryWrites()).toHaveLength(0);
   });
 
   /*
@@ -203,7 +243,7 @@ describe('what it forwards to Core', () => {
       .mockResolvedValueOnce(judgeSays(false, 'personal_information'));
     const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
     expect(result).toBeNull();
-    expect(fetchMock).toHaveBeenCalledTimes(2); // no PUT
+    expect(memoryWrites()).toHaveLength(0);
   });
 
   /*
@@ -220,7 +260,8 @@ describe('what it forwards to Core', () => {
     try {
       const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
       expect(result).toBeNull();
-      expect(fetchMock).toHaveBeenCalledTimes(1); // no judge call attempted, no PUT
+      expect(callsTo('dashscope')).toHaveLength(0); // no judge call attempted
+      expect(memoryWrites()).toHaveLength(0);
     } finally {
       process.env.JUDGE_API_KEY = 'test-judge-key-0123';
       resetConfigCache();
@@ -235,7 +276,7 @@ describe('what it forwards to Core', () => {
     );
     const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
     expect(result).toBeNull();
-    expect(fetchMock).toHaveBeenCalledTimes(1); // no PUT
+    expect(memoryWrites()).toHaveLength(0);
   });
 
   it('a malformed model reply is dropped, never guessed at', async () => {
@@ -319,7 +360,7 @@ describe('the identifier re-check catches a phone number written with separators
     fetchMock.mockResolvedValueOnce(modelSays({ learner: phoneLine, pedagogy: 'Ritmo lento.' }));
     const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
     expect(result).toBeNull();
-    expect(fetchMock).toHaveBeenCalledTimes(1); // no PUT
+    expect(memoryWrites()).toHaveLength(0);
   });
 
   it('does not false-positive on ordinary teaching prose that lists small numbers with punctuation', async () => {
@@ -331,5 +372,167 @@ describe('the identifier re-check catches a phone number written with separators
       .mockResolvedValueOnce(new Response('{}', { status: 200 }));
     const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
     expect(result?.learner).toContain('números');
+  });
+});
+
+/*
+ * ROUND 78 (2026-08-30, MEDIUM). This review makes its OWN real, separately
+ * paid call to the pedagogical model — the same model, the same provider, the
+ * same invoice as an ordinary turn — and nothing anywhere read its `usage`.
+ *
+ * It is the sibling of round 64's tier-3 gap with one architectural difference,
+ * and that difference decided the fix: tier-3 generation happens DURING a
+ * session, before `finish()` reads `totalCostUsd`, so folding it into the
+ * orchestrator's running total was enough. This call happens AFTER — verified
+ * in `ws/server.ts`, where BOTH close paths (`finish()` and `finalizeParked()`)
+ * persist `costUsd` via `closeSession` and only then fire this review
+ * fire-and-forget. There is no running total left to add to, so the cost goes
+ * to Core's own additive route (`POST /tutor/internal/sessions/:id/cost`,
+ * migration `0062`) instead.
+ */
+describe('the review pays for its own model call, and now says so', () => {
+  it('sends the call’s REAL token usage, priced by the one rate table, to the session that caused it', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelSays({ learner: 'Le motivan las metas concretas.', pedagogy: null }))
+      .mockResolvedValueOnce(judgeSays(true))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ data: { written: { learner: true } }, error: null }), { status: 200 }),
+      );
+
+    const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
+    expect(result?.learner).toContain('metas');
+
+    const reports = costReports();
+    expect(reports).toHaveLength(1);
+    const [url, init] = reports[0]!;
+    // The SESSION's own row — this cost belongs to the conversation that
+    // caused it, not to a platform bucket nobody can attribute.
+    expect(url).toContain(`/tutor/internal/sessions/${SESSION.sessionId}/cost`);
+    expect(init?.method).toBe('POST');
+    expect(JSON.parse(String(init?.body ?? '{}'))).toEqual({
+      // `estimateCostUsd`, not a number written out here: a second rate table
+      // is a second thing to forget when a price changes (round 64's rule).
+      costUsd: estimateCostUsd(REVIEW_USAGE.prompt_tokens, REVIEW_USAGE.completion_tokens),
+      reason: 'post_session_review',
+    });
+  });
+
+  /*
+   * THE ROUND-64 LESSON, IN ITS SECOND HOME: a candidate the judge rejects
+   * still spent real money on the call that produced it. Every one of this
+   * function's "nothing worth writing" exits happens AFTER the completion is
+   * billed, so the cost must survive all of them — which is why the report
+   * lives in `runPostSessionReview`'s `finally` and not on the success path.
+   */
+  it('reports the cost even when the proposal is dropped whole by the content judge', async () => {
+    fetchMock
+      .mockResolvedValueOnce(modelSays({ learner: 'Se llama Sofía Hernández López.', pedagogy: null }))
+      .mockResolvedValueOnce(judgeSays(false, 'personal_information'));
+
+    const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
+    expect(result).toBeNull();
+    expect(memoryWrites()).toHaveLength(0);
+    expect(costReports()).toHaveLength(1);
+  });
+
+  it('reports the cost even when the reply is unusable and nothing is written', async () => {
+    fetchMock.mockResolvedValueOnce(modelSays({ learner: 42, pedagogy: 'x' }));
+    const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
+    expect(result).toBeNull();
+    expect(costReports()).toHaveLength(1);
+  });
+
+  /*
+   * A double-null proposal is the COMMON case ("most short sessions teach
+   * nothing durable") and it is not free: the call was still made and still
+   * billed. It is the one path that returns a proposal without writing one.
+   */
+  it('reports the cost of a session that proposed nothing at all', async () => {
+    fetchMock.mockResolvedValueOnce(modelSays({ learner: null, pedagogy: null }));
+    const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
+    expect(result).toEqual({ learner: null, pedagogy: null });
+    expect(memoryWrites()).toHaveLength(0);
+    expect(costReports()).toHaveLength(1);
+  });
+
+  it('records NOTHING for a session too short to spend a call on — no phantom cost', async () => {
+    const result = await runPostSessionReview({
+      session: SESSION,
+      history: [{ speaker: 'tutor', text: 'hola' }, { speaker: 'learner', text: 'adiós' }],
+    });
+    expect(result).toBeNull();
+    // Not merely "no cost report": no call of ANY kind was made, so there is
+    // nothing to report and nothing that could have been billed.
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('records nothing when the model call itself is refused — a 402 is not a purchase', async () => {
+    fetchMock.mockResolvedValueOnce(new Response('no balance', { status: 402 }));
+    const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
+    expect(result).toBeNull();
+    expect(costReports()).toHaveLength(0);
+  });
+
+  it('records nothing when the transport dies before an answer', async () => {
+    fetchMock.mockRejectedValueOnce(new Error('boom'));
+    const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
+    expect(result).toBeNull();
+    expect(costReports()).toHaveLength(0);
+  });
+
+  /*
+   * §1.14, exactly: a call we MADE and cannot price is not a call that was
+   * free. Recording zero would be a lie the ledger cannot be talked out of, so
+   * this path records nothing and is LOUD instead.
+   */
+  it('refuses to invent a cost when the provider reports no usage, and says so loudly', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      fetchMock.mockResolvedValueOnce(modelSays({ learner: null, pedagogy: null }, null));
+      await runPostSessionReview({ session: SESSION, history: EXCHANGE });
+      expect(costReports()).toHaveLength(0);
+      expect(warn.mock.calls.flat().join(' ')).toContain('UNCOUNTED');
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  /*
+   * The invariant this whole organ is built on (`review.ts`'s own header):
+   * fire-and-forget, never blocks, never throws upward, never retries. A
+   * cost-recording failure degrades to "this review's cost is uncounted,
+   * logged loudly" — never to a lost review, and never to a lost memory note
+   * that had already been written before the report was even attempted.
+   */
+  it('a cost report that does not land costs the ledger a number, never the review', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      fetchMock
+        .mockResolvedValueOnce(modelSays({ learner: 'Le gustan los juegos.', pedagogy: null }))
+        .mockResolvedValueOnce(judgeSays(true))
+        .mockResolvedValueOnce(
+          new Response(JSON.stringify({ data: { written: { learner: true } }, error: null }), { status: 200 }),
+        );
+      // Everything after the queue above — i.e. the cost report — fails.
+      fetchMock.mockImplementation(() => Promise.resolve(new Response('nope', { status: 500 })));
+
+      const result = await runPostSessionReview({ session: SESSION, history: EXCHANGE });
+      // The review still did its job: the note was proposed AND written.
+      expect(result?.learner).toContain('juegos');
+      expect(memoryWrites()).toHaveLength(1);
+      expect(costReports()).toHaveLength(1);
+      expect(warn.mock.calls.flat().join(' ')).toContain('uncounted');
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it('never throws out of the review, whatever the cost report does', async () => {
+    fetchMock.mockResolvedValueOnce(modelSays({ learner: null, pedagogy: null }));
+    fetchMock.mockImplementation(() => Promise.reject(new Error('core unreachable')));
+    await expect(runPostSessionReview({ session: SESSION, history: EXCHANGE })).resolves.toEqual({
+      learner: null,
+      pedagogy: null,
+    });
   });
 });
