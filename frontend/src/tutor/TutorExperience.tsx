@@ -278,9 +278,45 @@ export function TutorExperience() {
     };
   }, [getToken]);
 
+  /**
+   * THE LATEST CALL'S OWN ID — not a boolean, because "is a save in flight"
+   * cannot tell an OLD in-flight call from a NEW one that superseded it.
+   *
+   * Found by adversarial review, round 83 (2026-08-31, MEDIUM):
+   * `PersonalizeInWorld.tsx` fires `persistPreferences` from five
+   * independent axes with no ordering at all — `chooseTutor`,
+   * `toggleCompanion`, `goToIsland`, `setLight`, `toggleAdaptation` — each an
+   * unguarded `void onSave({...})`, and this function had no request
+   * ordering, cancellation, or "is this the latest call" tracking of its
+   * own. `savePreferences` is a bare `fetch` (`frontend/src/lib/api.ts`'s
+   * `api()` takes no `signal`), and the backend does its own independent
+   * read-merge-validate-write-reread per request, so two concurrent calls'
+   * responses can resolve OUT OF ORDER on ordinary network/server jitter.
+   *
+   * Whichever response resolved LAST used to win outright, silently: a late
+   * SUCCESS could full-object-overwrite (`setPreferences(result.data)`) a
+   * newer, already-confirmed choice with a stale one (tap Zara, then Dina —
+   * if Zara's response lands after Dina's, the learner ends up on Zara
+   * despite having last tapped and seen Dina selected); a late FAILURE's
+   * rollback (`setPreferences(previous)`, a snapshot of the WHOLE object
+   * from before THAT call started) could discard a DIFFERENT axis's
+   * already-confirmed change that happened to land in between (an island
+   * choice a concurrent call already confirmed, wiped out by an unrelated,
+   * later-resolving companion-toggle's rollback). `saving` had the same
+   * defect in miniature — cleared by whichever call resolved FIRST,
+   * regardless of whether others were still outstanding.
+   *
+   * This class of bug — a stale response overwriting newer state — is
+   * already fixed elsewhere in this file for sockets and transcripts
+   * (`resumeAttemptedRef`/`sessionRef` above, `wantedReplayRef` below); this
+   * is the same fix applied to preference saves.
+   */
+  const preferencesCallIdRef = useRef(0);
+
   const persistPreferences = useCallback(
     (patch: Partial<TutorPreferences>): Promise<boolean> => {
       if (!token) return Promise.resolve(false);
+      const callId = ++preferencesCallIdRef.current;
       setSaving(true);
       /*
        * Applied OPTIMISTICALLY, which is what makes the picker a picker: the
@@ -297,6 +333,18 @@ export function TutorExperience() {
         return prev ? { ...prev, ...patch } : prev;
       });
       return savePreferences(token, patch).then((result) => {
+        /*
+         * A NEWER call has been issued since this one started — this
+         * response is STALE. Applying it now, success or rollback, would
+         * overwrite whatever the newer call has already applied or is still
+         * applying, so it is discarded here: neither `setPreferences` call
+         * below runs, and `saving` is left exactly as the newer call wants
+         * it (only the LATEST call gets to decide when the picker stops
+         * showing "Saving…"). The caller of THIS call still learns the true
+         * server-side outcome of its own request.
+         */
+        if (preferencesCallIdRef.current !== callId) return result.data !== null;
+
         setSaving(false);
         if (result.data) {
           setPreferences(result.data);
