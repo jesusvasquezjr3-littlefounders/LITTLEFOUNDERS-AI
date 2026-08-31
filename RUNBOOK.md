@@ -9517,3 +9517,107 @@ phrase rather than the bare fallback) — each reverted independently and
 confirmed to fail for the exact claimed reason before being restored.
 Final count: 132 files, 1530 tests (seven in this file, one more than
 originally authored).
+## Round 97: the Add-a-child form told every pt-BR parent their kid was a boy, and told them so inconsistently
+
+**MEDIUM, FIXED — found by `tutor-review-sweep-92` (i18n-quality
+dimension), verified for real by an independent adversarial pass.**
+`frontend/src/i18n/pt-BR/common.json`'s `family.addKid`/`family.manageKid`
+copy hardcoded masculine-only Portuguese for the child on every account
+this product's Add-a-child and Manage-kid flows touch — "Adicionar um
+filho" (add a SON), "seu filho... tudo o que ELE faz," "O primeiro nome
+DELE," "chamá-LO," "Mudar o nome DELE," "Mudar a senha DELE," "Diga a
+ELE qual é a nova senha," "tudo o que ELE fez" — even though gender is
+never collected on a kid account anywhere in the product: no such
+column exists in `database/`'s schema, and `backend/src/routes/family.ts`'s
+`POST /kids` body accepts exactly `displayName`/`username`/`passphrase`/
+`birthDate`/`locale`, nothing resembling sex or gender. Every family
+whose child is not a boy was told, by the product itself, on the one
+screen a parent uses to create the account, that their child is one.
+
+**Not just wrong — internally inconsistent within the same locale
+file, which is what made it a defect rather than a debatable style
+choice.** `frontend/src/i18n/pt-BR/tutor.json` already speaks of "seu
+filho ou filha" (your son or daughter) for the identical concept, nine
+separate times, everywhere the Tutor's own consent and transcript
+copy needs to name the child. `common.json`'s Add-a-child form,
+covering the exact same referent one layer up the same flow, silently
+defaulted to the masculine-only noun instead — the same product
+disagreeing with itself about a fact it never actually has.
+
+**The fix anchors on Portuguese's existing epicene noun for "child"
+instead of inventing a new "filho ou filha" pattern for every string.**
+"a criança" is grammatically feminine as a WORD regardless of the
+referent's actual sex — the same category as "a pessoa" or "a
+vítima" — and this exact file already used it, correctly, in
+`family.emptyTitle`/`emptyBody` ("Nenhuma criança vinculada ainda").
+`family.addKid.cta`/`title`/`body`/`displayNameHint` now anchor on "a
+criança" (with its naturally concording "ela") instead of the
+sex-marked "filho," which is both shorter than a "filho ou filha ...
+ele ou ela" rewrite and matches the English source string exactly
+("Add a child," not "Add a son"). Two keys with NO local "criança"
+antecedent to concord with — `manageKid`'s `rename`/`rotate`, which
+live on a specific kid's own management panel, not inside the
+Add-a-child form — simply drop the possessive pronoun entirely
+("Mudar o nome," "Mudar a senha"), matching the terse label style
+every sibling field in the same form already used and the "Remover
+esta conta" precedent already in the same object, rather than
+guessing a gender to fill the slot. `rotateDone` and `removeWarning`
+were restructured the same way ("Agora é só compartilhar a nova
+senha"; "tudo o que **essa conta** fez," reusing the demonstrative
+already established by `remove`'s own copy two lines above it) instead
+of substituting a different pronoun for the one removed — swapping
+"ele" for "ela" everywhere would have been the identical defect
+wearing the other gender, not a fix.
+
+**The same root defect, found during this sweep and fixed in the same
+commit per §1.8's 3-locale QUALITY parity requirement.**
+`frontend/src/i18n/es-MX/common.json`'s `family.addKid` carried the
+identical shape: "Agregar a un hijo" (add a SON), "tu hijo no
+necesita correo electrónico," "Así **lo** van a llamar los mentores"
+(the masculine object clitic) — confirmed the same class of bug, not
+a coincidence, because es-MX's OWN `tutor.json` already establishes
+"hijo o hija" as this product's accepted inclusive phrasing for the
+identical concept. Fixed to mirror that established precedent exactly:
+"Agregar a un hijo o una hija," "tu hijo o hija," and the clitic
+rewritten to name the object directly ("los mentores van a llamar a tu
+hijo o hija") rather than leaving an ambiguous pronoun. `es-MX`'s
+`manageKid` object and all of `en-US` ("child," "they/their")
+were already gender-neutral and are untouched.
+
+**Proof.** New test file
+`frontend/src/routes/app/family/__tests__/FamilyKidCopyGenderNeutrality.test.tsx`
+is the one file in this directory that deliberately does NOT mock
+`react-i18next` — every sibling test file here stubs `t()` to return
+the raw key, which is correct for behavior tests but cannot see actual
+translated text at all. This one renders `AddKidCard` and
+`ManageKidPanel` against the app's real `@/i18n` singleton, switches it
+to `pt-BR` (and, in a second `describe`, `es-MX`) with
+`i18n.changeLanguage`, and asserts on the literal rendered strings:
+the corrected copy is present, and `/\bdele\b/`, `/\bele fez\b/`,
+`chamá-lo`, and `/\blo van a llamar\b/` are absent from
+`document.body.textContent`. Confirmed to fail for the exact claimed
+reason pre-fix (`git stash` on just the two locale JSON files, test run
+red — all 5 assertions failed against the old copy, including
+`getByRole` no longer finding a button named "Adicionar uma criança" at
+all), pass after `git stash pop` restored the fix.
+
+Full frontend suite green (131 files, 1506 tests, up from 130/1501 —
+this fix contributes the 5 new tests), type-check clean, lint clean,
+build green, root `npm run i18n:check` green (key-parity structure is
+unchanged; only values changed, so Phase 1 was never at risk — the
+actual regression class this fix closes is a content check no existing
+gate performs, which is exactly why the new test file exists). Verified
+live in-browser at 375px and 1280px, both locales, via a temporary
+harness rendering the real components with the real compiled CSS
+against a manually-started dev server (deleted before commit, never
+part of the diff): the longest new string, es-MX's "Agregar a un hijo o
+una hija," renders on one line with no overflow or truncation even at
+the tightest 375px breakpoint — the form has no fixed-width or
+`truncate` classes on any of the touched strings, so length was never
+actually at risk, but the campaign's own §1.11 discipline is to check
+rather than assume.
+
+No `frontend/AGENTS.md` item: this is locale-content correctness, not a
+new invariant — `AGENTS.md` §1.8 (i18n zero tolerance, 3-locale
+QUALITY parity) and §1.9 (no gender collected on a kid account) already
+covered this in full; the gap was in the copy, not in the rule.
