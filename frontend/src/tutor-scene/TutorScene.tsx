@@ -114,6 +114,13 @@ export interface TutorSceneProps {
   action?: CharacterAction;
   actionKey?: number;
   /**
+   * The syllabic articulation heuristic (`Character3D`'s `speaking`),
+   * forwarded to every standing character exactly as `emotion`/`action`
+   * already are. See `TutorStageProps.characterSpeaking` for why this exists
+   * alongside `viseme` rather than instead of it.
+   */
+  characterSpeaking?: boolean;
+  /**
    * Index into VISEMES (mouthAtlas.ts), for characters that have a mouth card.
    * This is the seam lip-sync plugs into — see /TUTOR_3D.md §7.1.
    */
@@ -407,6 +414,7 @@ function Cast({
   emotion,
   action,
   actionKey,
+  characterSpeaking,
   viseme,
   backdrop,
   onPlaced,
@@ -420,6 +428,7 @@ function Cast({
   emotion: CharacterEmotion;
   action: CharacterAction;
   actionKey: number;
+  characterSpeaking: boolean;
   viseme: number;
   /** Passed straight through to the mouth card, which is unlit. */
   backdrop: SceneBackdropId;
@@ -619,6 +628,7 @@ function Cast({
             emotion={emotion}
             action={action}
             actionKey={actionKey}
+            speaking={characterSpeaking}
             viseme={viseme}
             backdrop={backdrop}
           />
@@ -704,6 +714,7 @@ export function TutorScene({
   emotion = 'neutral',
   action = 'idle',
   actionKey = 0,
+  characterSpeaking = false,
   viseme = 0,
   shot,
   framing,
@@ -847,6 +858,7 @@ export function TutorScene({
                 emotion={emotion}
                 action={action}
                 actionKey={actionKey}
+                characterSpeaking={characterSpeaking}
                 viseme={viseme}
                 backdrop={backdrop}
                 onPlaced={onPlaced}

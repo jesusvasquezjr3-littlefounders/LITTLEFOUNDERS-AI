@@ -114,6 +114,7 @@ export function ConversationView({
   onRestart,
   onExit,
   onDraftChange,
+  onCharacterCue,
 }: ConversationViewProps) {
   const { t } = useTranslation();
   const safeArea = useSafeArea();
@@ -917,6 +918,11 @@ export function ConversationView({
             onGraded={socket.reportGrade}
             // v3: a turn may carry tray-demonstration steps for the open activity.
             demo={turn?.demonstrate ? { seq: turn.seq, steps: turn.demonstrate } : null}
+            // A `story` family segment has no character layer of its own here —
+            // see `LiveSegmentPanel`'s own doc comment. Bubbled straight up:
+            // this layer does not drive the scene (see the file header note
+            // above), so the cue passes through to whoever does, one level up.
+            onCharacterCue={onCharacterCue}
             // The one child of the column that takes the free height and scrolls.
             className="min-h-0 flex-auto"
           />

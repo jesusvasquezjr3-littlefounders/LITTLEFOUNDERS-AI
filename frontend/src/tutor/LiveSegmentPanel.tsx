@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { MarkdownLite } from '@/lesson-engine/core/MarkdownLite';
 import { REGISTRY } from '@/lesson-engine/registry';
-import type { SegmentBase, Verdict } from '@/lesson-engine/core/types';
+import type { CharacterCue, SegmentBase, Verdict } from '@/lesson-engine/core/types';
 import { HudPlate } from './hud/HudPlate';
 import { useScrollEdges } from './hud/useScrollEdges';
 import { gradeSegment } from './tutorApi';
@@ -67,6 +67,15 @@ export interface LiveSegmentPanelProps {
    */
   demo?: { seq: number; steps: TrayDemoStep[] } | null;
   /**
+   * Present because this panel has no `CharacterLayerProvider` of its own
+   * (LESSON_ENGINE.md §9.1) — a `story` family segment (`story_dialogue`,
+   * `story_scene`, `eavesdrop`) fires this instead of drawing its own
+   * character, and the Tutor's stage (`TutorExperience.tsx`) portrays it on
+   * the persistent island rather than falling back to the flat 2D rig. Every
+   * other segment type ignores this prop entirely.
+   */
+  onCharacterCue?: (cue: CharacterCue | null) => void;
+  /**
    * Sizing from the plate. It is expected to be `flex-auto min-h-0`: this panel
    * is the ONE child of the lesson plate's column that owns the free height and
    * scrolls (`LessonPlate` -> `bodyLayout`).
@@ -75,7 +84,7 @@ export interface LiveSegmentPanelProps {
 }
 
 
-export function LiveSegmentPanel({ live, token, onGraded, demo, className }: LiveSegmentPanelProps) {
+export function LiveSegmentPanel({ live, token, onGraded, demo, onCharacterCue, className }: LiveSegmentPanelProps) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState<unknown>(undefined);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
@@ -169,6 +178,13 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, className }: Liv
   // A new segment resets everything. Without this, the previous activity's
   // draft and verdict bleed into the next one — which looks like the tutor
   // marking an answer the learner never gave.
+  //
+  // The character cue is reset here too, belt-and-suspenders alongside each
+  // story renderer's own unmount cleanup: a segment that stays the SAME
+  // registry type across a change (e.g. one `story_dialogue` replaced by
+  // another) reuses the same component instance, so no unmount ever runs, and
+  // the stage would otherwise keep portraying the FINISHED segment's last
+  // speaker until the new one's own effect happens to fire.
   useEffect(() => {
     setDraft(undefined);
     setVerdict(null);
@@ -176,7 +192,8 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, className }: Liv
     setChecking(false);
     setFailed(false);
     setXpAwarded(null);
-  }, [live.segmentId]);
+    onCharacterCue?.(null);
+  }, [live.segmentId, onCharacterCue]);
 
   /*
    * Mirrors `live.segmentId` on every render, independent of which `submit`
@@ -403,6 +420,7 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, className }: Liv
             verdict={verdict}
             onFinish={(answer) => void submit(answer)}
             onContentDone={() => onGraded(live.segmentId, 100, true)}
+            onCharacterCue={onCharacterCue}
           />
         </div>
       </div>

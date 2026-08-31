@@ -96,6 +96,7 @@ function conversation(
       awaitingReply={false}
       onAwaitReply={vi.fn()}
       onDraftChange={overrides.onDraftChange ?? vi.fn()}
+      onCharacterCue={vi.fn()}
       resuming={false}
       replyTimedOut={false}
       onRestart={vi.fn()}
@@ -360,6 +361,7 @@ describe('the composer refuses to submit while a reply is already pending', () =
         awaitingReply
         onAwaitReply={vi.fn()}
         onDraftChange={vi.fn()}
+        onCharacterCue={vi.fn()}
         resuming={false}
         replyTimedOut={false}
         onRestart={vi.fn()}
@@ -420,6 +422,7 @@ describe('Start over and Finish refuse to fire while a reply is already pending'
         awaitingReply
         onAwaitReply={vi.fn()}
         onDraftChange={vi.fn()}
+        onCharacterCue={vi.fn()}
         resuming={false}
         replyTimedOut={false}
         onRestart={overrides.onRestart ?? vi.fn()}

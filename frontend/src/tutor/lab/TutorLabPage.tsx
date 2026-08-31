@@ -503,6 +503,10 @@ export default function TutorLabPage() {
     // The lab has no hands-free listener to gate — there is no real turn
     // loop here, only fixed fixtures — so there is nothing to do with this.
     onDraftChange: () => {},
+    // The lab mounts no live segment fixture yet (`LiveSegmentPanel` never
+    // renders here — see `LiveSegmentPanel.characterCue.test.tsx` for the
+    // real integration coverage), so there is nothing for this to drive.
+    onCharacterCue: () => {},
     // There is no wire here, so there is nothing to resume and no wait to
     // outlive; the affordances still render, which is what the lab is for.
     resuming: false,
