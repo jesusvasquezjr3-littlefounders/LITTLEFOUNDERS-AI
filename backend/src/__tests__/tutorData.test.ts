@@ -1,10 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   getLearnerMemory,
+  getTutorPreferences,
   grantVoiceConsent,
   insertTutorTurn,
   listTutorTurns,
   searchOwnTurns,
+  upsertTutorPreferences,
   writeLearnerMemoryPair,
 } from '../services/tutorData.js';
 
@@ -256,6 +258,128 @@ describe('the whiteboard survives the round trip through Core’s own data layer
 
     const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
     expect(rows?.[0]?.whiteboard).toEqual(BOARD);
+  });
+});
+
+/*
+ * FOUND BY ADVERSARIAL REVIEW SWEEP tutor-review-sweep-92 (onboarding
+ * dimension), HIGH: `tutor_preferences.companion` (migration 0047) carried
+ * no DEFAULT, unlike `character` (`DEFAULT 'rho'`). `upsertTutorPreferences`
+ * sends a PARTIAL body — `{user_id, ...patch, updated_at}` — so an omitted
+ * field is simply absent from the upsert's column list; through
+ * `on_conflict=user_id, resolution=merge-duplicates` that is exactly what
+ * lets a SECOND-OR-LATER save leave an untouched field alone. But on a
+ * learner's FIRST-EVER save (a genuine INSERT, no existing row to fall back
+ * on), an absent column lands on the column's own DEFAULT — 'rho' for
+ * `character`, and (with no DEFAULT declared) NULL for `companion`, even
+ * though `getTutorPreferences` documents 'liruf' as the pairing a brand-new
+ * learner is shown before saving anything. `PersonalizeInWorld.tsx`'s
+ * `chooseTutor` sends ONLY `{character: id}` on the very first pick, so
+ * nearly every new account's first-ever `PUT /preferences` silently and
+ * permanently lost its companion this way.
+ *
+ * Fixed in `database/migrations/0063_tutor_preferences_default_companion.sql`
+ * — a real column DEFAULT plus a BEFORE INSERT trigger for the one collision
+ * a plain DEFAULT cannot express (picking Liruf as the TUTOR would otherwise
+ * default the companion into Liruf too and fail the existing
+ * `tutor_preferences_companion_differs` CHECK). Verified against a real,
+ * disposable local Postgres instance (not exercised here, since it is
+ * schema/trigger behaviour a mocked `fetch` cannot run): a first save
+ * touching only `character` landed with `companion = NULL` before the
+ * migration and `companion = 'liruf'` after it, while a second save that
+ * only touches another field still leaves an already-set companion
+ * untouched, both before and after.
+ *
+ * What IS in scope for a unit test at this layer is the JS-level contract
+ * the fix depends on: `upsertTutorPreferences` must keep OMITTING a field
+ * the caller did not set, rather than "helpfully" substituting an explicit
+ * value — the DB can only tell "omitted" (→ its own DEFAULT) apart from
+ * "explicit null" (→ the given value, defaults never override an explicit
+ * one) if Core keeps sending the former as a genuinely absent key. Sending
+ * an explicit `companion: null` in its place would look identical to a
+ * learner's own deliberate "no companion" choice and defeat the DB default
+ * outright — the exact class of well-intentioned "fix" this test guards
+ * against — and sending an explicit default value back in would reintroduce
+ * the lost-update race rounds 34/36/42/51/59/61 already closed elsewhere in
+ * this same file, since a second save's PATCH must never carry a field the
+ * caller never mentioned.
+ */
+describe('upsertTutorPreferences leaves an omitted field genuinely absent — the DB (0063) owns the first-row default', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const USER = '22222222-2222-4222-8222-222222222222';
+
+  it('omits companion entirely when the caller does not set it', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve(new Response(null, { status: 204 })),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await upsertTutorPreferences(USER, { character: 'dina' });
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as Record<string, unknown>;
+    expect('companion' in body).toBe(false);
+    expect(body.character).toBe('dina');
+  });
+
+  it('still sends an explicit null when the caller deliberately clears the companion', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve(new Response(null, { status: 204 })),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await upsertTutorPreferences(USER, { companion: null });
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? 'null')) as Record<string, unknown>;
+    expect('companion' in body).toBe(true);
+    expect(body.companion).toBeNull();
+  });
+
+  it('still sends the given value when the caller sets a companion explicitly', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve(new Response(null, { status: 204 })),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await upsertTutorPreferences(USER, { companion: 'zara' });
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as Record<string, unknown>;
+    expect(body.companion).toBe('zara');
+  });
+
+  /*
+   * The other half of why the bug was PERMANENT rather than a one-read
+   * glitch: once a row exists at all, `getTutorPreferences`'s synthetic
+   * "never saved anything yet" default (`rows[0] ?? {..., companion:
+   * 'liruf', ...}`) never applies again — whatever is actually stored,
+   * `null` included, is authoritative forever after the first save.
+   */
+  it('getTutorPreferences returns a stored null companion verbatim once a row exists — the synthetic default never overrides real data', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve(
+        new Response(
+          JSON.stringify([
+            {
+              user_id: USER,
+              character: 'dina',
+              companion: null,
+              diorama: 'diorama-a',
+              backdrop: 'auto',
+              nickname: null,
+              adaptations: [],
+              updated_at: '2026-08-31T00:00:00.000Z',
+            },
+          ]),
+          { status: 200 },
+        ),
+      ),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const prefs = await getTutorPreferences(USER);
+    expect(prefs?.companion).toBeNull();
   });
 });
 
