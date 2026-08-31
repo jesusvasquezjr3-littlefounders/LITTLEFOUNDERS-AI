@@ -8170,3 +8170,104 @@ Verification: `npm run type-check`, `npm run lint` and `npm test -- --run`
 all green in `frontend/` (128 test files, 1471 tests — 1465 existing + 6
 new, zero regressions); root `npm run docs:check` and `npm run
 secrets:check` green.
+
+## Round 84: the onboarding picker's rapid taps could resolve out of order and silently overwrite a newer, already-confirmed choice
+
+**MEDIUM, FIXED — `persistPreferences` (`frontend/src/tutor/TutorExperience.tsx`)
+had no request ordering, cancellation, or "is this the latest call" tracking,
+while the surface calling it is explicitly built for the opposite assumption.**
+`PersonalizeInWorld.tsx` (the Tutor's onboarding picker) fires this function
+from five independent axes — `chooseTutor`, `toggleCompanion`, `goToIsland`,
+`setLight`, `toggleAdaptation` — each an unguarded `void onSave({...})` with no
+check of whether a previous call is still in flight, and the picker's whole
+design (§10) is rapid, sequential taps across the world while it changes under
+the learner's finger. `savePreferences` is a bare `fetch` — `frontend/src/lib/
+api.ts`'s `api()` takes no `signal`, so nothing can be cancelled — and the
+backend does its own independent read-merge-validate-write-reread per request,
+so two concurrent calls' responses can resolve OUT OF ORDER on ordinary
+network or server-timing jitter that neither side controls.
+
+Every call captured the WHOLE `preferences` object as `previous` before its
+own optimistic patch, and resolved with a FULL-OBJECT overwrite —
+`setPreferences(result.data)` on success, `setPreferences(previous)` on
+failure — never a per-field update. Whichever response resolved LAST won
+outright, silently, regardless of which one the learner actually meant to
+land on last:
+
+- A late SUCCESS could clobber a newer, already-confirmed choice with a stale
+  one — tap Zara, then quickly tap Dina; if Zara's response resolved after
+  Dina's, the learner ended up on Zara despite having last tapped and seen
+  Dina selected.
+- A late FAILURE's rollback — a snapshot of the WHOLE object from before THAT
+  call started — could discard a DIFFERENT axis's already-confirmed change
+  that happened to land in between: an island choice a different concurrent
+  call had already confirmed, wiped out by an unrelated, later-resolving
+  companion-toggle's rejection.
+
+`saving` (a single un-reference-counted boolean) had the same defect in
+miniature: cleared by whichever call resolved FIRST, regardless of whether
+other calls were still outstanding, so it could not be used as an in-flight
+guard for a new call either.
+
+This is a recognized, previously-fixed pattern in this exact file, missed
+here: `resumeRace.test.tsx`, `adaptationOfferStale.test.tsx`,
+`mapRefreshAfterSession.test.tsx` and `sessionLifecycleReset.test.tsx` all
+guard variants of "a stale response must not overwrite newer state" for the
+socket and the replay transcript; preference saves had never received the
+same treatment.
+
+**Fixed with the standard shape already used elsewhere in this file: a
+monotonically-increasing request id, held in a ref, naming the LATEST call.**
+`preferencesCallIdRef` increments on every call; each call captures its own
+id and, when its response resolves, checks whether it is still the latest
+before touching state at all. A stale response — one issued before a newer
+call was issued — is discarded outright: neither the success path nor the
+rollback path runs, so it can neither win a race nor roll back over what a
+newer call has since applied. `saving` is cleared only by the branch that
+already gates on being the latest call, so only the LATEST call decides when
+the picker stops showing "Saving…" This is a pure ordering fix with no
+behavior change on the ordinary, non-racing path: a single in-flight call is
+always its own latest call.
+
+The caller of a stale call still learns the true server-side outcome of ITS
+OWN request (`result.data !== null`), even though that outcome is not applied
+to shared state — `PersonalizeInWorld.tsx`'s `commitNickname` is the one
+caller that reads this return value, and a superseded nickname save reporting
+its real pass/fail is more honest than silently discarding the answer.
+
+**Request cancellation was considered and deliberately not added.** Adding an
+`AbortController` would mean threading a `signal` option through `api()`,
+`savePreferences`, and every other caller of `api()`, for a correctness
+property the sequence-number guard already provides on its own — the task
+explicitly does not require it, and the minimal fix is the one that carries no
+risk to the eleven other call sites of `api()`.
+
+**One known, accepted residual gap, not fixed this round.** A stale FAILURE
+still cannot roll back only the field IT touched once a newer call has
+superseded it — the function has only ever done a whole-object rollback (the
+round-38 fix above), and rolling back just one field would need per-field
+patch tracking this round does not add. In the narrow window where an older
+call's own field fails after a newer, unrelated call has already landed, that
+field's optimistic (unconfirmed) value can linger briefly rather than
+reverting. What this round guarantees, and what the two new tests prove, is
+the more serious half: a NEWER, CONFIRMED choice can never be destroyed by an
+OLDER call's late response, success or failure.
+
+Proof: two new tests in `frontend/src/tutor/__tests__/preferencesRace.test.tsx`,
+following this file's established pattern (`resumeRace.test.tsx`,
+`mapRefreshAfterSession.test.tsx`) of copying the exact function verbatim into
+a harness rather than mounting the full component (the 3D stage and its large
+tree of unrelated children). One reproduces the Zara/Dina success race
+exactly as described above, and also asserts `saving` is not reawakened by
+the stale response; the other reproduces the rollback-clobbers-a-different-
+axis scenario (an island choice confirmed by a newer call, surviving an
+older, unrelated companion-toggle's later-arriving failure). Both confirmed
+to fail against the pre-fix logic — with the sequence-number guard manually
+removed from the test's own copy of the function, since the harness does not
+import `TutorExperience.tsx` — reproducing exactly the two clobbers described
+above (`character` reverting to 'zara', `diorama` reverting to 'island-a').
+
+Full frontend suite green (128 files, 1472 tests, zero regressions),
+type-check and lint clean, build green, `docs:check`, `secrets:check` and
+`i18n:check` all green (no i18n surface touched), `repo_map.md` regenerated
+for the new test file.
