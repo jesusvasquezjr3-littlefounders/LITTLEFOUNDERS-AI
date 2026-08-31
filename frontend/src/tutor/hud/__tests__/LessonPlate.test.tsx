@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { detentHeights, LessonPlate } from '../LessonPlate';
+import { detentHeights, DOCK_CLEARANCE_PX, LessonPlate } from '../LessonPlate';
 
 /*
  * Found by adversarial review, round 88 (2026-08-31, HIGH). `detentHeights()`
@@ -53,10 +53,24 @@ describe('detentHeights, the mobile sheet arithmetic', () => {
       expect(heights.half).toBeGreaterThanOrEqual(220);
       expect(heights.full).toBeGreaterThanOrEqual(220);
 
-      // And each step has to show a REAL chunk more content — not a few
+      // HALF still has to show a REAL chunk more than PEEK — not a few
       // clipped pixels that technically differ.
       expect(heights.half - heights.peek).toBeGreaterThanOrEqual(80);
-      expect(heights.full - heights.half).toBeGreaterThanOrEqual(80);
+
+      /*
+       * FULL vs HALF no longer has an 80px floor at this exact viewport — that
+       * number came from round 88, which only ever asked "does FULL clear
+       * HALF by a real step". Round 91 (2026-08-31, HIGH) found the sharper
+       * constraint: FULL must ALSO leave `DOCK_CLEARANCE_PX` above the sheet
+       * for the microphone dock, and on a 375px-tall viewport there is
+       * physically not enough room to hold `ACTIVITY_FLOOR_PX` (HALF's own
+       * floor, also non-negotiable) AND an 80px FULL/HALF step AND the dock's
+       * real reserve at once — 240 + 80 + 124 = 444 is taller than the
+       * viewport itself. The dock reserve wins: see the dedicated assertion
+       * below, which is the one this round actually exists to prove. FULL
+       * still has to be a REAL, non-collapsed step past HALF.
+       */
+      expect(heights.full).toBeGreaterThan(heights.half);
     });
 
     it('holds on the taller landscape phone too (iPhone 14 Pro Max, innerHeight 430)', () => {
@@ -70,8 +84,42 @@ describe('detentHeights, the mobile sheet arithmetic', () => {
       expect(heights.half).toBeGreaterThanOrEqual(220);
       expect(heights.full).toBeGreaterThanOrEqual(220);
       expect(heights.half - heights.peek).toBeGreaterThanOrEqual(80);
-      expect(heights.full - heights.half).toBeGreaterThanOrEqual(80);
+      // See the 375px test above for why this is no longer a flat ">= 80":
+      // the taller the viewport, the more of that 80px this constraint can
+      // actually afford without cutting into the dock's reserve (66px here,
+      // vs 11px at 375 — asserted exactly in the dedicated test below).
+      expect(heights.full).toBeGreaterThan(heights.half);
     });
+
+    it(
+      'ROUND 91: FULL never grows into the room the microphone dock needs above the sheet, ' +
+        'at either landscape phone height',
+      () => {
+        /*
+         * The actual regression, live-verified on `/dev/tutor-lab` at
+         * 667x375 (conversing, an activity open, sheet dragged to FULL):
+         * `getBoundingClientRect()` on the mic orb read `top: -89, bottom: 7`
+         * — 89 of its 96px were off the TOP of the viewport — and the
+         * composer's input read `top: -63, bottom: -19`, entirely negative.
+         * Not an overlap with the sheet (`StageShell.tsx` rides the dock
+         * ABOVE the sheet's published footprint, so the two never share a
+         * pixel); the dock was simply pushed off-screen because nothing
+         * capped how far FULL could grow. Asserted against the real
+         * exported constant, not a copy of its number, so a future change to
+         * `DOCK_CLEARANCE_PX` re-proves itself here rather than silently
+         * going stale.
+         */
+        for (const height of [375, 430]) {
+          setViewportHeight(height);
+          const heights = detentHeights();
+          expect(
+            height - heights.full,
+            `FULL leaves only ${height - heights.full}px above it at innerHeight=${height}, ` +
+              `less than the ${DOCK_CLEARANCE_PX}px the microphone dock needs`,
+          ).toBeGreaterThanOrEqual(DOCK_CLEARANCE_PX);
+        }
+      },
+    );
   });
 
   describe('unchanged where it was already correct: portrait phones and desktop-height viewports', () => {
@@ -101,6 +149,24 @@ describe('detentHeights, the mobile sheet arithmetic', () => {
       const heights = detentHeights();
       expect(heights.peek, `peek < half failed at innerHeight=${height}`).toBeLessThan(heights.half);
       expect(heights.half, `half < full failed at innerHeight=${height}`).toBeLessThan(heights.full);
+    }
+  });
+
+  it('ROUND 91: never lets FULL grow into the microphone dock reserve, at every height a real device actually ships in', () => {
+    // Starting at 375 rather than 350: below the shortest phone this product
+    // targets, `full`'s own `half + 1` floor (see `detentHeights`'s comment)
+    // is allowed to intrude a single pixel into the dock's reserve rather
+    // than collapse FULL onto HALF — an honest tradeoff below any real
+    // device, not something this assertion should paper over by starting
+    // there. From 375 up, the reserve holds with no exception.
+    for (let height = 375; height <= 1400; height += 5) {
+      setViewportHeight(height);
+      const heights = detentHeights();
+      expect(
+        height - heights.full,
+        `FULL leaves only ${height - heights.full}px above it at innerHeight=${height}, ` +
+          `less than the ${DOCK_CLEARANCE_PX}px the microphone dock needs`,
+      ).toBeGreaterThanOrEqual(DOCK_CLEARANCE_PX);
     }
   });
 });
@@ -136,8 +202,18 @@ describe('LessonPlate renders the fixed arithmetic, not only computes it', () =>
       </LessonPlate>,
     );
     const fullHeight = Number.parseInt(plate().style.height, 10);
-    // Pre-fix this rendered '88px' too — the sheet never actually grew.
-    expect(fullHeight).toBeGreaterThanOrEqual(220 + 80);
+    /*
+     * Pre-fix this rendered '88px' too — the sheet never actually grew. The
+     * bound here used to be a flat `220 + 80`; round 91 (2026-08-31) capped
+     * FULL below that on this exact viewport so the microphone dock has room
+     * above it (see `DOCK_CLEARANCE_PX` in `LessonPlate.tsx` and the
+     * dedicated `detentHeights` tests above for why). Comparing against the
+     * SAME arithmetic the component renders from, rather than a second
+     * hand-picked number, is what keeps this test from drifting out of sync
+     * with that tradeoff the next time either changes.
+     */
+    expect(fullHeight).toBe(detentHeights().full);
+    expect(fullHeight).toBeGreaterThanOrEqual(220);
   });
 
   it('keeps HALF and FULL distinct from each other on the same short viewport', () => {

@@ -168,8 +168,21 @@ export function useStageDock(): StageDockValue | null {
   return useContext(StageDockContext);
 }
 
-/** Breathing room between the top of a bottom surface and the dock above it. */
-const DOCK_GAP_PX = 12;
+/**
+ * Breathing room between the top of a bottom surface and the dock above it.
+ *
+ * Exported (not imported elsewhere on purpose — see `LessonPlate.tsx`'s
+ * `MIC_DOCK_GAP_PX`, which mirrors this number rather than importing it, so
+ * that file's tests never have to load this one's three.js stage graph): the
+ * dock rides `bottom: sheetFootprint + DOCK_GAP_PX` with nothing clamping how
+ * far up that can push it, so `LessonPlate`'s own ceiling arithmetic has to
+ * know this number too. Found by adversarial review, round 91 (2026-08-31,
+ * HIGH): a landscape phone's FULL detent could grow tall enough that this
+ * offset pushed the mic orb and composer entirely off the top of the
+ * viewport — not an overlap with the sheet (this gap is exactly what
+ * prevents that), but off-screen above it, which is worse.
+ */
+export const DOCK_GAP_PX = 12;
 
 // ── The shell ───────────────────────────────────────────────────────────────
 
