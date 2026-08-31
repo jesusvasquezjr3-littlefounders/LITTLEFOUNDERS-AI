@@ -6,6 +6,22 @@
  * out of this", and the caller MUST treat that as a no-op conversation turn,
  * never as a wrong answer. Child speech through STT is noisy; an unparseable
  * utterance must not decrement anyone's mastery.
+ *
+ * Two subtleties this posture directly bears on (round-67 review, findings
+ * 1 and 2):
+ *   - "un"/"una" (es-MX) and "um"/"uma" (pt-BR) double as indefinite
+ *     articles in ordinary speech ("un momento", "uma pergunta"). A bare,
+ *     isolated one is trusted as the numeral 1 only when it extends an
+ *     already-started count (a real compound, "treinta y un") or sits next
+ *     to a currency/counting marker ("un peso", "un cincuenta"); otherwise
+ *     it is filler and the whole utterance reads as null, per the posture
+ *     above, rather than a guessed 1.
+ *   - a low unit or teen word (0-19) immediately followed by a round
+ *     multiple of ten (20-90) — "tres cincuenta", "twelve fifty" — is never
+ *     a valid standalone integer compound in any of the three languages
+ *     (that reading is always tens-first: "cincuenta y tres"). It is
+ *     instead the idiomatic way to speak a sub-hundred price, so it is read
+ *     as a decimal (3.50, 12.50) rather than summed into an invalid 53/62.
  */
 
 const UNITS: Record<string, Record<string, number>> = {
@@ -52,6 +68,24 @@ const WHOLE_WORDS = new Set([
 /** Cents words: the number parsed so far was cents. */
 const CENTS_WORDS = new Set(['centavo', 'centavos', 'cent', 'cents', 'centimo', 'centimos']);
 
+/**
+ * Words that mean "one" AND double as an indefinite article ("a"/"an") in
+ * ordinary speech — "un momento", "uma pergunta". English has no entry here:
+ * "a"/"an" are never in UNITS, so they were never ambiguous with a number.
+ * "uno" (es-MX) is deliberately excluded — it is never used as an article,
+ * only ever as the standalone numeral, so it stays unambiguous.
+ */
+const ARTICLE_OVERLAP: Record<string, Set<string>> = {
+  'es-MX': new Set(['un', 'una']),
+  'pt-BR': new Set(['um', 'uma']),
+};
+
+/** 0–19: the range that can open the "low-unit + round-ten = decimal" read. */
+const isLowUnit = (value: number): boolean => value >= 0 && value < 20;
+
+/** 20, 30, ..., 90: a round ten — the second half of that same read. */
+const isRoundTen = (value: number): boolean => value >= 20 && value <= 90 && value % 10 === 0;
+
 const stripDiacritics = (s: string): string => s.normalize('NFD').replace(/[̀-ͯ]/g, '');
 
 /**
@@ -82,10 +116,16 @@ export function normalizeSpokenNumber(utterance: string, locale: string): number
   // 2) Word forms — a small state machine. Numbers accumulate into `acc`;
   // a currency word banks the accumulated number as whole units or cents.
   const units: Record<string, number> = UNITS[locale] ?? UNITS['en-US'] ?? {};
+  const articleOverlap = ARTICLE_OVERLAP[locale];
   const words = cleaned.split(' ');
 
   let acc = 0;
   let hasAcc = false;
+  // True exactly when `acc` holds ONE fresh low-unit/teen value (0-19) with
+  // nothing added to it yet — the pending left half of a possible "tres
+  // cincuenta" (finding 2) decimal read. Cleared by bank() and by any word
+  // that turns `acc` into something else.
+  let accIsBareLowUnit = false;
   let wholePart: number | null = null;
   let centsPart: number | null = null;
 
@@ -93,10 +133,12 @@ export function normalizeSpokenNumber(utterance: string, locale: string): number
     const v = acc;
     acc = 0;
     hasAcc = false;
+    accIsBareLowUnit = false;
     return v;
   };
 
-  for (const word of words) {
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i] ?? '';
     if (WHOLE_WORDS.has(word)) {
       if (hasAcc && wholePart === null) wholePart = bank();
       continue;
@@ -114,10 +156,50 @@ export function normalizeSpokenNumber(utterance: string, locale: string): number
       if (hasAcc || wholePart !== null || centsPart !== null) break;
       continue;
     }
+
+    // Finding 1: "un"/"una"/"um"/"uma" opening a fresh count is genuinely
+    // ambiguous with the indefinite article. Trust it as 1 only when it is
+    // extending an already-open count (handled below, since `hasAcc` is
+    // already true and this branch is skipped) or the very next word marks
+    // a count/currency context. Otherwise treat this word as non-numeric
+    // filler, exactly like any other unrecognized word.
+    if (articleOverlap?.has(word) && !hasAcc) {
+      const next = words[i + 1];
+      const nextValue = next !== undefined ? units[next] : undefined;
+      const isCountContext =
+        next !== undefined &&
+        (WHOLE_WORDS.has(next) || CENTS_WORDS.has(next) || (nextValue !== undefined && isRoundTen(nextValue)));
+      if (!isCountContext) {
+        if (wholePart !== null || centsPart !== null) break;
+        continue;
+      }
+    }
+
+    // Finding 2: a bare low unit/teen immediately followed by a round ten
+    // ("tres" + "cincuenta", "twelve" + "fifty") is never a valid standalone
+    // compound (that would be spoken tens-first) — it is sub-hundred price
+    // shorthand for a decimal, not two addends.
+    if (accIsBareLowUnit && wholePart === null && isRoundTen(value)) {
+      wholePart = acc;
+      centsPart = value;
+      acc = 0;
+      hasAcc = false;
+      accIsBareLowUnit = false;
+      continue;
+    }
+
+    const wasFreshStart = !hasAcc;
     hasAcc = true;
-    if (value === 1000) acc = (acc || 1) * 1000;
-    else if (value === 100) acc = (acc || 1) * 100;
-    else acc += value;
+    if (value === 1000) {
+      acc = (acc || 1) * 1000;
+      accIsBareLowUnit = false;
+    } else if (value === 100) {
+      acc = (acc || 1) * 100;
+      accIsBareLowUnit = false;
+    } else {
+      acc += value;
+      accIsBareLowUnit = wasFreshStart && isLowUnit(value);
+    }
   }
 
   const leftover = hasAcc ? acc : null;

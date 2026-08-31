@@ -148,6 +148,66 @@ describe('normalizeSpokenNumber', () => {
   it('keeps trailing chatter from erasing a parsed number', () => {
     expect(normalizeSpokenNumber('cuarenta y dos creo yo', 'es-MX')).toBe(42);
   });
+
+  // Round-67 finding 1 (HIGH): "un"/"una"/"um"/"uma" are indefinite articles
+  // AND the numeral 1 — ordinary filler speech was being extracted and
+  // graded as the answer "1". A child's mic opens hands-free, so
+  // thinking-aloud filler is a realistic capture, not an edge case.
+  it('never reads an ordinary filler phrase as the numeral 1 — finding 1', () => {
+    expect(normalizeSpokenNumber('espera, dame un momento', 'es-MX')).toBeNull();
+    expect(normalizeSpokenNumber('un segundo por favor', 'es-MX')).toBeNull();
+    expect(normalizeSpokenNumber('tengo una pregunta', 'es-MX')).toBeNull();
+    expect(normalizeSpokenNumber('espera, um momento', 'pt-BR')).toBeNull();
+    expect(normalizeSpokenNumber('tenho uma pergunta', 'pt-BR')).toBeNull();
+    // en-US control: "a"/"an" were never in the number-word table, so this
+    // side already returned null before the fix — kept here to document
+    // parity across the three locales, not as pre/post-fix proof.
+    expect(normalizeSpokenNumber('just a moment', 'en-US')).toBeNull();
+  });
+
+  it('still trusts "un"/"una"/"um"/"uma" as 1 in a genuine counted answer', () => {
+    // Unambiguous standalone numeral (never used as an article) — untouched.
+    expect(normalizeSpokenNumber('uno', 'es-MX')).toBe(1);
+    // Compound continuation ("thirty-one") — extends an already-open count.
+    expect(normalizeSpokenNumber('treinta y un', 'es-MX')).toBe(31);
+    expect(normalizeSpokenNumber('trinta e um', 'pt-BR')).toBe(31);
+    // Adjacent to a currency/counting marker.
+    expect(normalizeSpokenNumber('un peso', 'es-MX')).toBe(1);
+    expect(normalizeSpokenNumber('um real', 'pt-BR')).toBe(1);
+  });
+
+  it('fails safe to null for a bare, context-free "un"/"uma" — a deliberate trade-off', () => {
+    // A bare "um"/"una" alone is exactly as ambiguous with the article as
+    // the filler phrases above; per this file's own failure posture, a
+    // real but unrecoverable one-item answer said this way returns null
+    // (a no-op retry) rather than risk the false extraction finding 1 fixed.
+    expect(normalizeSpokenNumber('um', 'pt-BR')).toBeNull();
+    expect(normalizeSpokenNumber('una', 'es-MX')).toBeNull();
+  });
+
+  // Round-67 finding 2 (HIGH): natural spoken currency shorthand ("three
+  // fifty" style) was summed as a plain compound integer (3+50=53) instead
+  // of read as a decimal (3.50) — a confident, silent, WRONG extraction
+  // that inverts a correct spoken price into an incorrect grade.
+  it('reads "low unit + round ten" as a decimal price, never a compound sum — finding 2', () => {
+    expect(normalizeSpokenNumber('tres cincuenta', 'es-MX')).toBe(3.5);
+    expect(normalizeSpokenNumber('son tres cincuenta', 'es-MX')).toBe(3.5);
+    expect(normalizeSpokenNumber('tres cinquenta', 'pt-BR')).toBe(3.5);
+    expect(normalizeSpokenNumber('tres e cinquenta', 'pt-BR')).toBe(3.5);
+    expect(normalizeSpokenNumber('twelve fifty', 'en-US')).toBe(12.5);
+    expect(normalizeSpokenNumber('three fifty', 'en-US')).toBe(3.5);
+  });
+
+  it('still sums a genuine tens-first compound number — finding 2 regression guard', () => {
+    // The valid order ("fifty-three", tens word first) must keep summing.
+    expect(normalizeSpokenNumber('cincuenta y tres', 'es-MX')).toBe(53);
+    expect(normalizeSpokenNumber('treinta y cinco', 'es-MX')).toBe(35);
+    expect(normalizeSpokenNumber('twenty two', 'en-US')).toBe(22);
+    expect(normalizeSpokenNumber('one hundred and five', 'en-US')).toBe(105);
+    // A hundred-multiple followed by a bare tens word is a real compound
+    // too (530), not a decimal — the low-unit range (0-19) never reaches it.
+    expect(normalizeSpokenNumber('quinientos treinta', 'es-MX')).toBe(530);
+  });
 });
 
 describe('checkAttempt', () => {

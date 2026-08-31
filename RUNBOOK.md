@@ -6680,3 +6680,81 @@ evidence round 42 already used under this exact constraint.
 used to characterize the defect (mirroring `scripts/converse.ts`'s own
 pattern, four files across three phases plus one regex-validation
 script) were deleted before this round closed; none were committed.
+
+## Round 68: "un"/"una"/"um"/"uma" are indefinite articles AND the numeral 1 — filler speech was graded as an answer, and a correct spoken price was graded wrong
+
+A round-67 background adversarial review targeted `voice-check`'s spoken-
+answer normalizer (`backend/src/services/pedagogy/normalizeSpoken.ts`),
+whose own docstring promises "unparseable is a no-op, never wrong." Two
+real HIGH findings in the same file, both fixed this round.
+
+**HIGH, FIXED — ordinary filler speech was extracted and graded as the
+numeral 1.** `un`/`una` (es-MX) and `um`/`uma` (pt-BR) are indefinite
+articles in ordinary speech ("un momento", "uma pergunta") as well as the
+word for the numeral 1 — and the normalizer trusted a bare one as 1
+unconditionally. Reproduced directly: `normalizeSpokenNumber('espera,
+dame un momento', 'es-MX')`, `('un segundo por favor', 'es-MX')`,
+`('tengo una pregunta', 'es-MX')`, `('espera, um momento', 'pt-BR')` and
+`('tenho uma pergunta', 'pt-BR')` all returned `1` — none of these
+utterances state a number. The en-US control (`'just a moment'`)
+correctly returned `null`, confirming this is genuinely locale-specific
+(English's "a"/"an" were never in the numeral table to begin with). This
+matters because this product's voice UX opens the mic hands-free right
+after the tutor's turn (`oracle/src/ws/server.ts`'s `voiceCheck()` runs
+this normalizer on any utterance ≤120 chars with no digit-likelihood
+pre-filter), so a child thinking aloud mid-answer is a realistic capture
+— and a confident, silent `1` flows straight into the real grader,
+producing a genuine right/wrong verdict against an answer the learner
+never actually gave.
+
+Fixed by trusting a bare `un`/`una`/`um`/`uma` as the numeral 1 only when
+it extends an already-open compound (preserving `treinta y un` → 31) or
+sits immediately next to a currency/counting marker (preserving `un
+peso` → 1) — otherwise it is read as ordinary non-numeric filler, and a
+truly bare, context-free `un`/`uma` now fails safe to `null` rather than
+guessing, matching the file's own stated posture.
+
+**HIGH, FIXED — a demonstrably correct spoken price was silently graded
+wrong.** The idiomatic way to state a sub-hundred price by voice —
+"tres cincuenta" (es-MX), "tres cinquenta" (pt-BR), "three fifty"
+(en-US), all meaning $3.50 — was read as a plain compound integer sum
+(3+50=53) instead of a decimal, because the accumulator adds any two
+consecutive number-table values it sees, a rule that is CORRECT for a
+genuine compound ("treinta y cinco" = 30+5 = 35, tens-first) and WRONG
+for this shape, since units-then-round-ten is never a valid standalone
+integer compound in any of the three languages — the valid form is
+always tens-first ("cincuenta y tres"). Reproduced directly: `('tres
+cincuenta', 'es-MX')` → `53`, `('twelve fifty', 'en-US')` → `62`, and
+four more locale variants, all wrong. This lands squarely on the money-
+tray segment types (`coin_count`, `make_change`), which grade via a
+0.005 tolerance against the expected decimal — `53` against an expected
+`3.50` is unambiguously WRONG, with `recognized: true` and no signal
+anything was misread. Unlike finding 1, this is not the documented
+"unparseable, never wrong" failure mode — it is a confident, silent,
+WRONG extraction that inverts a correct answer into an incorrect
+verdict, the more serious of the two failure shapes this file's own
+docstring exists to prevent.
+
+Fixed by recognizing "a fresh low-unit/teen value (0-19) immediately
+followed by a round ten" as a decimal (whole.cents) read rather than a
+sum, since that word order is never a legitimate standalone compound —
+the check only fires when the FIRST value is low/teen, leaving the
+legitimate tens-first compound path untouched.
+
+Proof: 6 new `pedagogy.test.ts` tests covering both findings across all
+three locales, plus independent verification of every phrase from the
+original reproduction, pre- and post-fix. All pre-existing tests in the
+file (31 total) still pass unchanged, confirming no regression to
+legitimate compound numbers (`quinientos treinta`→530, `cuarenta y
+dos`→42), explicit-currency phrasing (`tres pesos con cincuenta
+centavos`→3.5), or the null-controls. Verified via a manual pre/post
+file-swap rather than `git stash`, because this round ran concurrently
+with several other background fixes sharing the same working directory
+and an early `git stash` attempt briefly (harmlessly) captured a
+sibling agent's own in-progress files — recovered cleanly by extracting
+only this round's own blob and never touching the sibling's changes.
+Backend type-check and this file's own test suite verified clean in
+isolation (a full-suite run was deliberately deferred until the other
+concurrent fixes landed, since their own incomplete intermediate states
+would otherwise produce unrelated transient failures). No
+`oracle/AGENTS.md` item — touches only `backend/`.
