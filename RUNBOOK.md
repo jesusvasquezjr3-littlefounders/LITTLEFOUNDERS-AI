@@ -8917,3 +8917,106 @@ Verification: `npm run type-check`, `npm run lint`, `npm test -- --run`
 `npm run secrets:check` green. No `frontend/AGENTS.md` item, for the same
 reason round 88 recorded none: this is this one sheet's own detent
 arithmetic, not a reusable invariant elsewhere in the codebase.
+
+## Round 92: the admin console's own word for a human guardian and its own word for the AI Tutor feature were the same word, in the same locale — found by the i18n-quality review sweep (tutor-review-sweep-92), verified by an independent adversarial pass, MEDIUM, closed 2026-08-31
+
+**MEDIUM, FIXED — a Spanish-speaking staff member could not tell a
+guardian account from the AI Tutor feature by its name alone.**
+`RoleChip` (`frontend/src/routes/admin/adminShared.tsx:89-99`) renders
+`common.json`'s `roles.parent` verbatim — it is what `AdminRolesPage`'s
+role-distribution chart, its role filter chips, its grant dropdown, and
+every role badge on `AdminUsersPage` show for a `parent` account. In
+`es-MX/common.json:28` that value is `"Tutor"`. In the SAME locale,
+`admin.json`'s adoption table ("Roles against surfaces", the literal
+"is anyone using this thing we built" view) and its "Where time goes"
+navigation breakdown both rendered the unrelated AI Tutor feature as
+the bare word `"Tutor"` too
+(`analytics.usage.surfaces.tutor`/`insights.surfaces.tutor`,
+`frontend/src/routes/admin/analytics/ProductUsageSection.tsx:117,240`).
+One admin console, one locale, one word for two different things — a
+human guardian and a product feature — with no way to tell them apart
+on screen.
+
+**GLOSSARY.md was already wrong about the other two locales, in two
+different directions.** Its line 11 documented `roles.parent` as
+rendering `"Tutor"` in all three locales. `pt-BR/common.json:28`
+actually rendered `"Responsável"` — disagreeing with both es-MX and the
+glossary — while `en-US/common.json:28` rendered `"Parent"`, also
+disagreeing with the glossary. Neither of those two was a literal
+character-for-character collision with its own locale's AI-Tutor
+surface labels (`"Responsável" ≠ "Tutor"`, `"Parent" ≠ "Tutor"`), which
+is exactly why only es-MX had been caught by casual inspection — but
+both were still the wrong fix waiting to happen, since `pt-BR` and
+`en-US` each independently reach the same "Tutor" collision risk the
+moment anyone "fixes" `GLOSSARY.md` by making the three locales agree
+with what it already claimed.
+
+**The decision: keep "Tutor" as the `parent` role's name in all three
+locales, and qualify the AI-feature label instead — not the other way
+around.** Grepping every other place each locale's OWN product already
+names this role settled it: the Terms & Conditions synced from
+`/LEGAL/` define the account type as "Cuenta TUTOR" (es-MX), "TUTOR
+Account" (en-US), "Conta TUTOR" (pt-BR); the identity-verification flow
+in `auth.json` says "Conviértete en Tutor" / "Become a Tutor" / "Torne-
+se um Tutor"; and `dashboard.json`'s own upgrade CTA says "Convertirme
+en Tutor" / "Become a Tutor" / "Tornar-me Tutor" in every locale,
+already. Renaming the ROLE away from "Tutor" would have meant either
+touching `/LEGAL/` (explicitly out of scope, and a much stricter sync
+mechanism than this one) or leaving the admin console's role name
+permanently out of step with the account type the product's own legal
+terms, sign-up flow and upgrade CTA already call it in every locale.
+So `roles.parent` becomes `"Tutor"` in `en-US` and `pt-BR` too (`es-MX`
+was already correct), restoring exactly what `GLOSSARY.md` always
+claimed, and for once making it true.
+
+That reintroduces the same bare-word collision for `en-US` and `pt-BR`
+that `es-MX` already had — so the actual fix lands on the AI-feature
+side: `admin.json`'s two bare `"tutor": "Tutor"` surface labels, in all
+three locales, are qualified to match the disambiguation
+`dashboard.json`'s own main-nav `nav.tutor` key already used, in the
+SAME locale, before this round ever touched anything — `"AI Tutor"` in
+`en-US`, `"Tutor IA"` in `es-MX` and `pt-BR`. No term was invented: the
+fix is applying a disambiguation the product had already settled on, to
+the two admin-console places that had missed it. `dashboard.json`'s
+`tutorBadge` and `nav.lockedBadge` (also bare `"Tutor"`, all three
+locales) needed no change — they refer to the SAME `parent`-role
+upgrade the badge and CTA already describe, so once `roles.parent`
+agrees with them there is nothing left to reconcile there.
+
+**GLOSSARY.md line 11** now states the corrected, actually-verified
+value per locale, names the "never render this word bare for anything
+else in the same locale" rule explicitly, and records the two
+`admin.json` keys that violated it before this round as the concrete
+example — so the next person adding an admin surface label reads the
+rule before reusing the bare word "Tutor" for a third thing.
+
+**Proof, TDD.** `frontend/src/i18n/roleLabels.test.ts` (new, 10 tests)
+loads `common.json`, `admin.json` and `dashboard.json` directly for all
+three locales — the `i18n:check` gate only diffs KEYS, never values, so
+it could not have caught this — and asserts `roles.parent` is never
+equal to either `admin.json` AI-Tutor surface label or to
+`dashboard.json`'s `nav.tutor`, plus that all three locales currently
+agree on the same word. Verified red before green: `git stash push
+--keep-index` on the five edited locale JSON files (leaving the new
+test in place) reproduced the pre-fix state exactly, and 3 of the 10
+tests failed for the exact claimed reason — both es-MX collision
+assertions (`expected 'Tutor' not to be 'Tutor'`) and the cross-locale
+agreement assertion (`expected 3 to be 1`, from `"Tutor"` / `"Parent"`
+/ `"Responsável"`) — while `git stash pop` restored all 10 to green.
+
+**Verification.** `npm run type-check` and `npm run lint` clean in
+`frontend/`; `npm test -- --run` green, 131 files / 1511 tests (up from
+130 files / 1501 tests — the 10 new tests, zero regressions); `npm run
+build` green, including the `seo` prerender step (unaffected — no
+public page, route or `site.mjs` value changed). At the root: `npm run
+i18n:check` (3-locale key parity, hardcoded-string scan, and referenced-
+key existence all OK — this change touches only VALUES, so parity was
+never at risk, but the gate was run anyway), `npm run docs:check`, `npm
+run secrets:check`, `npm run seo:check`, `npm run paths:check`, `npm
+run tools:test` (26/26) and `npm run provider:check` all green. No
+backend change, so no backend suite. No `oracle/AGENTS.md` or
+`/ORACLE.md` item: this is an admin-console and marketing-adjacent i18n
+naming defect, not a Tutor runtime, prompt, context-field or content-
+ladder change, and the `/LEGAL/` documents that also use "Tutor" for
+this role were read for consistency but deliberately left untouched —
+they already agreed with the fix.
