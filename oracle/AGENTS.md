@@ -1739,6 +1739,57 @@ everything passes the blocked half perfectly and destroys the product.
    implementation, and — for the end-to-end one — with only the WS
    argument removed. See `RUNBOOK.md` Round 74.
 
+63. **`serveSegment()` and `deliver()` are mutually recursive, and
+   nothing counted the trips — one learner utterance could re-enter an
+   empty content ladder forever.** Found in passing by round 74, closed
+   round 75 (2026-08-30, HIGH). A turn that asks for an activity is
+   served by `serveSegment`; when the ladder has nothing,
+   `handleSegmentUnavailable()` produces a recovery turn that goes out
+   through the SAME `deliver()` — and that turn can carry a
+   `segmentRequest` of its own. The recovery instruction asks the model
+   not to, and that instruction was the only thing standing between an
+   ordinary content gap (five of twenty-eight KCs carry `skill_key`
+   null on purpose) and an unbounded loop. Measured with the fix
+   stashed: **20 ladder requests and 21 turns off a single
+   `learner_text` frame**, each cycle a model completion, a judge
+   completion and a Core round trip, plus a paid author call (two, with
+   its shape retry) whenever the ladder answered `needsGeneration` —
+   §1.0's "money leaves DIRECTLY" shape exactly, and a burst of
+   confusing turns for a real child. **Round 74 filed this as "bounded
+   only by the session turn cap"; that was an inference and it was
+   wrong.** Probed: the run ended at `turnCount` 22 with the budget
+   still `running` and no close frame, against a `SESSION_MAX_TURNS` of
+   120. What ended it was `TURN_HISTORY_WINDOW`, also 20 — the
+   learner's line scrolled out of context and the harness model's
+   keyword trigger went with it. Nothing in the PRODUCT stopped it, and
+   a real model wanting an activity because of the conversation rather
+   than one keyword had all 120 turns to spend.
+   `MAX_SEGMENT_RETRIES = 1`, enforced in `deliver()` rather than
+   inside `serveSegment()` because that is the edge the recursion
+   crosses, so the refusal lands BEFORE it buys a Core round trip, an
+   author call or a judge call. ONE retry for a reason that is
+   arithmetic and not taste: while the brain is awake `serveSegment`
+   overrides both skill key and difficulty with the controller's own,
+   so a second request from the same conversational state is very often
+   the IDENTICAL one the ladder just refused. **This bounds repeated
+   FAILURES within one utterance and nothing else** — the ladder's own
+   rungs (nearest-band, prerequisite walk, frontier fallback, item 62 /
+   round 59) live inside a single `requestSegment` call and are
+   untouched. At the bound nothing is dropped: the recovery turn is
+   already on the child's screen and only the ask behind it is refused,
+   `handleSegmentUnavailable`'s new `lastAttempt` flag tells the model
+   not to promise an activity so the turn reads coherently, the
+   `NO_SEGMENT` frame still clears the client's "preparing something"
+   placeholder, and the refusal `console.warn`s because reaching it
+   means the model ignored an explicit instruction AND the ladder
+   missed twice. The instruction is not the bound; the refusal is. 4
+   new live-session tests, confirmed to fail pre-fix via `git stash`
+   (`expected 20 to be 2`), to fail against a deliberately over-tight
+   `MAX_SEGMENT_RETRIES = 0` (`expected 1 to be 2`, the legitimate
+   miss-then-serve path), and to hold on the EXPENSIVE
+   `needsGeneration` shape and not only the cheap one. See `RUNBOOK.md`
+   Round 75.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:

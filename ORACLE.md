@@ -1070,6 +1070,26 @@ emit NOTHING rather than something generic, because a confident wrong
 explanation misleads where an absent one merely omits. The tutor falls back to
 tier 1 and says so honestly.
 
+**And the whole ladder is entered a BOUNDED number of times per learner
+utterance.** When every rung misses, the tutor teaches the idea by hand instead
+of stopping — an ordinary system-prompted recovery turn, which is a model call
+like any other and can therefore ask for an activity of its own, which re-enters
+the ladder. `ws/server.ts`'s `deliver()`/`serveSegment()` recursion had no guard
+until round 75 (2026-08-30, HIGH): a single learner utterance produced **20**
+ladder requests, each one a model completion, a judge completion, a Core round
+trip and — on the `needsGeneration` path — paid author calls. Nothing in the
+product stopped it (the run ended well short of `SESSION_MAX_TURNS`, on an
+artifact of the test harness), so the real ceiling was the whole session turn
+cap. `MAX_SEGMENT_RETRIES = 1` now caps it at one retry per utterance, refused
+in `deliver()` before the request costs anything. The
+recovery turn itself is unaffected and still reaches the learner; only the ask
+behind it is declined, and `handleSegmentUnavailable`'s `lastAttempt` flag tells
+the model to stay in conversation rather than promise an activity that will not
+arrive. This bounds repeated FAILURES within one utterance and nothing else —
+the ladder's own internal rungs (§7.1→§7.3, the prerequisite walk and the
+frontier fallback) all live inside a single request and are untouched. See
+`RUNBOOK.md` Round 75.
+
 ---
 
 ## §8 Grading, XP and progress

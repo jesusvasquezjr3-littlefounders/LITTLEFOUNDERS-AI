@@ -159,6 +159,57 @@ interface Live {
 
 /** Minimum gap between learner turns. Not a rate limit — a sanity floor. */
 const MIN_TURN_GAP_MS = 700;
+
+/**
+ * HOW MANY TIMES ONE LEARNER UTTERANCE MAY RE-ENTER THE CONTENT LADDER AFTER
+ * IT HAS ALREADY COME BACK EMPTY.
+ *
+ * `deliver()` and `serveSegment()` are mutually recursive by design: a turn
+ * that asks for an activity is served by `serveSegment`, and when the ladder
+ * has nothing, `handleSegmentUnavailable()` produces a recovery turn that is
+ * delivered through the SAME `deliver()` — which can itself carry a
+ * `segmentRequest`. The recovery instruction asks the model not to, and until
+ * this constant existed that instruction was the ONLY thing standing between a
+ * content gap and an unbounded loop.
+ *
+ * Found by adversarial review, round 75 (2026-08-30, HIGH), and reproduced
+ * rather than reasoned about: a SINGLE `learner_text` frame produced twenty
+ * `turn` + `NO_SEGMENT` pairs, each pair a real model completion, a real judge
+ * completion and a real Core round trip, plus paid author calls whenever the
+ * ladder answered `needsGeneration`. That is the §1.0 "money leaves DIRECTLY"
+ * shape exactly — an uncached retry loop that multiplies real spend per
+ * learner utterance — and a real child would meanwhile have watched a long,
+ * confusing burst of tutor turns scroll past.
+ *
+ * WHAT STOPPED IT AT TWENTY WAS NOT A GUARD, and the correction matters more
+ * than the number. Round 74 filed this defect as "bounded only by the session
+ * turn cap"; measured, it was not — `SESSION_MAX_TURNS` is 120, the run ended
+ * at turn 22 with the budget still `running` and no close frame. It stopped
+ * because `TURN_HISTORY_WINDOW` is also 20, so the learner's own line
+ * eventually scrolled out of the context and the harness's model stopped
+ * asking. Nothing in the product ended it. A real model wanting an activity
+ * because of the CONVERSATION rather than one phrase in it had the whole turn
+ * cap to spend.
+ *
+ * ONE retry, and the reason is arithmetic rather than taste. When the
+ * pedagogical brain is awake, `serveSegment` overrides both the skill key and
+ * the difficulty with the controller's own (`activeSkillKey`,
+ * `activeDifficulty`), so a second request built from the same conversational
+ * state is very often the IDENTICAL request the ladder just refused — paying
+ * twice for a guaranteed answer. The one retry that IS kept covers the case
+ * where the recovery turn moves the conversation somewhere the ladder can
+ * reach. Past that the tutor keeps its recovery turn — a real, honest turn
+ * that teaches the idea by hand — and simply stops asking, which is the same
+ * "emit nothing rather than something generic" posture /ORACLE.md §7.3 already
+ * takes for an exhausted ladder.
+ *
+ * This bounds REPEATED FAILURES within one utterance and nothing else. The
+ * ladder's own internal rungs (nearest-band search, the prerequisite walk, the
+ * frontier fallback — round 59) all live inside a SINGLE `requestSegment` call
+ * and are untouched by this: a segment that is found, however many rungs down,
+ * costs one attempt and serves normally.
+ */
+const MAX_SEGMENT_RETRIES = 1;
 /**
  * How often a live session re-checks that consent is still in force.
  *
@@ -1207,6 +1258,15 @@ async function deliver(
    * (`safety.turnSeq` below) instead of its real transcript row.
    */
   learnerTurnSeq?: number,
+  /**
+   * How many times the content ladder has ALREADY come back empty inside the
+   * handling of this one learner utterance — see `MAX_SEGMENT_RETRIES`. Zero
+   * for every entry point (greet, farewell, learner text/edit, a graded
+   * result, a voice-check verdict, consent revoked); only `serveSegment`'s own
+   * recovery call increments it, which is what confines the count to a single
+   * recursion chain and lets the next utterance start fresh.
+   */
+  segmentAttempt = 0,
 ): Promise<void> {
   if (outcome === null) {
     // An interrupted production. Nothing to say — but the client's thinking
@@ -1357,7 +1417,42 @@ async function deliver(
   }
 
   if (emission.turn.next === 'segment' && emission.turn.segmentRequest) {
-    await serveSegment(live, emission.turn.segmentRequest);
+    if (segmentAttempt > MAX_SEGMENT_RETRIES) {
+      /*
+       * THE BOUND, and it is here rather than inside `serveSegment` because
+       * this is the edge the recursion actually crosses: the request is
+       * refused BEFORE it costs a Core round trip, a tier-3 author call or a
+       * judge call. See `MAX_SEGMENT_RETRIES` for the reproduction.
+       *
+       * The learner is not left hanging and nothing is silently dropped. The
+       * turn above has already gone out — a real, honest recovery turn whose
+       * own instruction told the model to teach the idea by hand and (on this
+       * last attempt) not to promise an activity at all. What is refused is
+       * only the ask behind it, and the `NO_SEGMENT` frame is still sent for
+       * exactly the reason the ladder-failure path sends it: it is what clears
+       * the client's "preparing something" placeholder, and without it the
+       * panel would wait forever for a segment the server has already decided
+       * will never come.
+       *
+       * LOUD, not silent (§1.0 "blind flight"): reaching this line means the
+       * model ignored an explicit instruction AND the ladder had nothing for
+       * this learner twice in a row, which is a content gap worth a line in
+       * the log — in the same spirit as the ladder's own prerequisite and
+       * frontier warnings.
+       */
+      console.warn(
+        `[oracle] refused segment request #${segmentAttempt + 1} in one turn for session ` +
+          `${live.session.sessionId} (skill ${emission.turn.segmentRequest.skillKey}): ` +
+          `the ladder came back empty ${segmentAttempt} times already`,
+      );
+      send(live.socket, {
+        type: 'error',
+        code: 'NO_SEGMENT',
+        message: 'No activity was available for that just now.',
+      });
+    } else {
+      await serveSegment(live, emission.turn.segmentRequest, segmentAttempt);
+    }
   }
 
   send(live.socket, {
@@ -1386,6 +1481,14 @@ async function serveSegment(
     rationale: string;
     preferredTypes?: readonly string[] | null;
   },
+  /**
+   * How many times the ladder has already come back empty inside this one
+   * learner utterance's handling — see `MAX_SEGMENT_RETRIES`. `deliver()`
+   * refuses the call outright once it exceeds the bound, so this value is only
+   * ever passed on: it is what the recovery turn is delivered with, and what
+   * decides whether that turn is told it is the last one.
+   */
+  attempt = 0,
 ): Promise<void> {
   /*
    * The ladder, from this side (/ORACLE.md §7).
@@ -1470,7 +1573,22 @@ async function serveSegment(
       code: 'NO_SEGMENT',
       message: 'No activity was available for that just now.',
     });
-    await deliver(live, await live.orchestrator.handleSegmentUnavailable(Date.now(), live.abort?.signal));
+    /*
+     * THE RECURSION, now counted (round 75, 2026-08-30, HIGH). This recovery
+     * turn goes out through the same `deliver()` as every other, so it can ask
+     * for an activity of its own — and used to be able to do so for as long as
+     * the model kept asking. `attempt + 1` is what `deliver()` measures against
+     * `MAX_SEGMENT_RETRIES`; `lastAttempt` tells the model, in the SAME breath,
+     * that a request in this turn will not be served, so the child hears a
+     * tutor teaching rather than a promise nobody will keep.
+     */
+    const lastAttempt = attempt + 1 > MAX_SEGMENT_RETRIES;
+    await deliver(
+      live,
+      await live.orchestrator.handleSegmentUnavailable(Date.now(), live.abort?.signal, { lastAttempt }),
+      undefined,
+      attempt + 1,
+    );
     return;
   }
 
