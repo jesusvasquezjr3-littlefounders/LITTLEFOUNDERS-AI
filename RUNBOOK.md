@@ -6758,3 +6758,77 @@ isolation (a full-suite run was deliberately deferred until the other
 concurrent fixes landed, since their own incomplete intermediate states
 would otherwise produce unrelated transient failures). No
 `oracle/AGENTS.md` item — touches only `backend/`.
+
+## Round 69: "a malformed skill file fails deploy, never a turn" was aspirational — nothing at boot ever read the catalogue
+
+A round-67 background adversarial review targeted the pedagogical
+skills system's boot-time loading (`oracle/skills/moves/*.md`, loaded
+via `oracle/src/tutor/skills.ts`'s `skillCatalogue()`).
+
+**HIGH, FIXED — the catalogue was never read at boot, only lazily on
+the first live turn.** `skills.ts`'s own comment claims "Read once at
+boot... a broken catalogue must fail deploy, not a turn," and
+`oracle/AGENTS.md`'s V4 section makes the identical claim — neither was
+true. `skillCatalogue()` lazily memoizes on its first call, and the
+only real call sites were `orchestrator.ts`'s `strategyInstruction()`
+(invoked mid-turn, on essentially every graded turn) and the test/
+verify scripts. Reproduced directly: booting the real oracle entrypoint
+with a malformed skill file sitting in `skills/moves/` and curling
+`/health` returns full `"status":"ok"` — the file sits untouched,
+nothing at boot ever reads it. A direct call to `skillCatalogue()`
+against the same file throws correctly, proving the parser itself was
+never the problem. Today's CI/CD pipeline happens to catch this only
+incidentally, because `skills.test.ts` (part of `npm test`, which runs
+before deploy) eagerly calls `skillCatalogue()` — but a malformed skill
+file reaching production by ANY path that skips `npm test` (a hotfix, a
+CI flake, or the self-authoring skill pipeline this catalogue's own
+comment anticipates) would boot "healthy," and the real failure would
+land on a real child's first graded turn of a normal session: `selectSkill()`
+throws inside `strategyInstruction()`, caught by `ws/server.ts`'s
+message-handler `.catch()`, delivered as a live in-session
+`{code:'INTERNAL', message:'Something went wrong on our side.'}`.
+
+Fixed with one line — an eager, synchronous `skillCatalogue()` call in
+`oracle/src/index.ts`, right after `getConfig()` and before the listener
+opens. Deliberately the OPPOSITE posture from the Redis/model/voice
+checks immediately below it in the same file: those are genuinely
+optional (every one has a supported degraded mode), so they warn and
+keep serving; a skill is not optional — `selectSkill()` runs on
+essentially every graded turn, with no degraded posture for "some
+turns can't be strategized" — so failing loudly and refusing to boot is
+what turns a bad skill file into a blocked deploy rather than a session
+someone is mid-lesson in.
+
+Proof: 2 new tests (`oracle/src/__tests__/boot-skills.test.ts`) that
+spawn the real entrypoint as a child process against an isolated temp
+copy of `src/`+`skills/` (never the repo's own `skills/moves/`, so a
+deliberately-malformed file can never race the real `skills.test.ts`
+running in-process against the real directory) — one asserts a
+malformed skill file crashes the boot (exit non-zero, never reaches
+"listening") within 10s and names the offending file on stderr; the
+other asserts the real, valid skill set still boots normally. Confirmed
+to fail/pass for the exact claimed reason via `git stash`
+(pre-fix: boots "healthy" and times out waiting for a crash that never
+comes; post-fix: crashes in ~500-800ms). Full oracle suite, type-check
+(all three tsconfigs), lint, `verify:pedagogy` and `verify:tutor` all
+green, verified in isolation against just this fix's own files — the
+full-suite run surfaced one unrelated transient failure from a
+different concurrent round's own in-progress work sharing the same
+tree, confirmed unrelated by inspection (this round touches only
+`oracle/src/index.ts` and its own new test file).
+
+**Operational note, worth recording for future concurrent rounds:**
+partway through this round, `oracle/src/index.ts`'s fix was found
+reverted to its pre-fix state on disk with no corresponding edit in
+this round's own history — traced to a SIBLING round's `git stash`
+operation (used for that round's own pre/post proof) sweeping the
+WHOLE uncommitted working tree rather than only its own files, since
+several rounds were genuinely running concurrently against the same
+checkout this session. Recovered by reapplying the one-line fix and
+re-verifying its presence before every subsequent gate run; no data
+was lost, but this is the second round in this batch to hit the same
+class of near-miss (see Round 68's own note). The orchestrating session
+committed each round's work immediately upon verification specifically
+to shrink this exposure window — once a fix is committed, a sibling
+round's stash operation (which only ever touches the UNCOMMITTED
+working tree) can no longer touch it.

@@ -6,8 +6,36 @@ import { attachTutorSocket, closeAllSockets } from './ws/server.js';
 import { modelConfigured } from './model/provider.js';
 import { getVoiceProvider } from './voice/index.js';
 import { moderationReadiness } from './safety/moderation.js';
+import { skillCatalogue } from './tutor/skills.js';
 
 const config = getConfig();
+
+/*
+ * PEDAGOGICAL SKILLS ARE CONTENT, NOT OPTIONAL INFRASTRUCTURE — load them
+ * eagerly, and let a malformed one crash the boot.
+ *
+ * `skills.ts`'s own comment already claimed this: "Read once at boot; loud on
+ * ANY malformed file — a broken catalogue must fail deploy, not a turn." That
+ * was aspirational, not true — `skillCatalogue()` lazily memoizes on its
+ * FIRST call, and the only call sites were `orchestrator.ts`'s
+ * `strategyInstruction()` (mid-turn, on essentially every graded turn) and
+ * test/verify scripts. Nothing at boot ever called it, so a malformed skill
+ * file shipped by any path that skips `npm test` — a hotfix, a CI flake, the
+ * self-authoring pipeline this catalogue's own comment anticipates — would
+ * boot "healthy" and throw inside `selectSkill()` on the first real child's
+ * turn, caught by `ws/server.ts`'s message-handler `.catch()` and delivered
+ * as a live in-session `{code:'INTERNAL', ...}` instead of a blocked deploy.
+ *
+ * This is the OPPOSITE posture from Redis/model/voice below (/AGENTS.md
+ * §1.14): those are genuinely optional — every one has a supported degraded
+ * mode (rate limiting passes through, sessions run text-only or silent) — so
+ * they warn and keep serving. A skill is not optional: `strategyInstruction`
+ * calls `selectSkill` on essentially every graded turn, and there is no
+ * degraded posture for "some turns can't be strategized." Failing loudly here
+ * and refusing to boot is what turns that into a blocked deploy rather than a
+ * session someone is mid-lesson in.
+ */
+skillCatalogue();
 
 /*
  * The listener opens FIRST, before any optional dependency is touched

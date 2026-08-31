@@ -1621,6 +1621,25 @@ everything passes the blocked half perfectly and destroys the product.
    confirmed to fail for the exact claimed reason pre-fix via `git stash`.
    See `RUNBOOK.md` Round 67.
 
+59. **"A malformed skill file fails deploy, never a turn" was
+   aspirational — nothing at boot ever read the catalogue.** Found by
+   adversarial review, round 69, 2026-08-30 (HIGH). `skillCatalogue()`
+   lazily memoized on its first call, and the only real call site was
+   `orchestrator.ts`'s `strategyInstruction()` — mid-turn, on essentially
+   every graded turn. A malformed skill file reaching production by any
+   path that skips `npm test` (a hotfix, a CI flake, the self-authoring
+   skill pipeline this file's own comment anticipates) would boot
+   "healthy" and throw on a real child's first graded turn instead of
+   blocking the deploy. Fixed with one eager `skillCatalogue()` call in
+   `index.ts`, right after `getConfig()` and before the listener opens —
+   deliberately the OPPOSITE posture from the Redis/model/voice checks
+   immediately below it (those are genuinely optional with a supported
+   degraded mode; a skill is not — there is no degraded posture for "some
+   turns can't be strategized"). Proven with 2 new `boot-skills.test.ts`
+   tests spawning the real entrypoint against an isolated temp copy of
+   `src/`+`skills/`, confirmed to fail/pass for the exact claimed reason
+   via `git stash`. See `RUNBOOK.md` Round 69.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:
