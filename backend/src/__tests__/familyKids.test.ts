@@ -32,6 +32,7 @@ interface StubOptions {
   existingKids?: number;
   linkedKidId?: string;
   linkFails?: boolean;
+  profilePatchFails?: boolean;
   createStatus?: number;
   calls?: string[];
   writes?: { url: string; method: string; body: unknown }[];
@@ -75,6 +76,10 @@ function stub(opts: StubOptions = {}) {
       if (url.includes('/rest/v1/guardian_links') && method === 'POST') {
         if (opts.linkFails) return Promise.resolve(jsonResponse(500, { message: 'nope' }));
         return Promise.resolve(new Response(null, { status: 201 }));
+      }
+      if (url.includes('/rest/v1/profiles?user_id=eq.') && method === 'PATCH') {
+        if (opts.profilePatchFails) return Promise.resolve(jsonResponse(500, { message: 'nope' }));
+        return Promise.resolve(new Response(null, { status: 204 }));
       }
       return Promise.resolve(new Response(null, { status: 201 }));
     }),
@@ -154,6 +159,42 @@ describe('POST /api/v1/family/kids', () => {
     // §1.3: the account must not outlive a failure to link it.
     expect(calls).toContain(`DELETE /auth/v1/admin/users/${KID_ID}`);
     expect(calls.some((c) => c.includes('user_roles?on_conflict'))).toBe(false);
+  });
+
+  it('deletes the account again when the profile patch fails, leaving no orphaned verified link', async () => {
+    // The identical §1.3 orphan the test above proves for the LINK failure,
+    // one step later: `profiles.username` has no NOT NULL constraint
+    // (database/migrations/0005_profile_identity.sql), so a bare `if (!profiled)
+    // return fail(...)` here — with the guardian link already written and
+    // committed — would leave a verified `guardian_links` row pointing at a
+    // kid whose profile.username is permanently null. That kid is
+    // un-renameable (username is fixed once set) and, on the frontend,
+    // unremovable through ManageKidPanel.tsx's "type the username to
+    // confirm" gate, since there is no username to type. The auth-user
+    // rollback CASCADEs through profiles, user_roles and guardian_links
+    // (§1.3), so this must undo the guardian link too, not just the
+    // auth user.
+    const writes: { url: string; method: string; body: unknown }[] = [];
+    const calls = stub({ profilePatchFails: true, writes });
+    const res = await post();
+
+    expect(res.status).toBe(502);
+    expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
+    // The rollback that already exists for the link-failure branch must ALSO
+    // fire here: the auth user (and, by cascade, the guardian_links row and
+    // the profile row it just failed to complete) is removed rather than
+    // left behind half-created.
+    expect(calls).toContain(`DELETE /auth/v1/admin/users/${KID_ID}`);
+    expect(calls.some((c) => c.includes('user_roles?on_conflict'))).toBe(false);
+
+    const rollbackAudit = writes.find(
+      (w) => w.url.includes('audit_logs') && JSON.stringify(w.body).includes('kid_create.rolled_back'),
+    );
+    expect(rollbackAudit).toBeDefined();
+    expect(rollbackAudit?.body).toMatchObject({
+      action: 'family.kid_create.rolled_back',
+      detail: { rollbackSucceeded: true, stage: 'profile_patch' },
+    });
   });
 
   it('rejects a username the database would reject, but NORMALISES case', async () => {

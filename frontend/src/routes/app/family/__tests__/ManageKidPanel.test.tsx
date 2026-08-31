@@ -109,4 +109,32 @@ describe('ManageKidPanel', () => {
     await waitFor(() => expect(screen.getByText(/DATA_UNAVAILABLE/)).toBeInTheDocument());
     expect(onRemoved).not.toHaveBeenCalled();
   });
+
+  it('never enables removal for a null username, even with a blank confirm field', async () => {
+    // `profiles.username` has no NOT NULL constraint (database/migrations/
+    // 0005_profile_identity.sql), so a kid can genuinely reach this panel with
+    // `username: null` — a real orphan a failed mid-creation write can leave
+    // behind (backend/src/routes/family.ts POST /kids), not just a hand-edited
+    // row. The confirm field starts blank (`''`), and the OLD guard compared
+    // `confirm.trim().toLowerCase() !== (kid.username ?? '')` — `'' !== ''` is
+    // `false`, so an UNTOUCHED field satisfied the gate and enabled an
+    // irreversible hard delete with zero characters typed.
+    const onRemoved = vi.fn();
+    open('remove', { onRemoved, kid: { userId: 'kid-1', displayName: 'Sofía', username: null } });
+    const button = screen.getByRole('button', { name: /family.manageKid.removeCta/ });
+
+    // Blank, untouched field: must stay disabled.
+    expect(button).toBeDisabled();
+
+    // No username field is offered to type into at all.
+    expect(screen.queryByLabelText(/family.manageKid.removeConfirm/)).toBeNull();
+    expect(screen.getByText(/family.manageKid.removeBlocked/)).toBeInTheDocument();
+
+    // Clicking a disabled button is a no-op, but assert the API was never
+    // reached, closing off any path that relies solely on the `disabled`
+    // attribute rendering rather than the underlying guard actually refusing.
+    fireEvent.click(button);
+    expect(mockApi).not.toHaveBeenCalled();
+    expect(onRemoved).not.toHaveBeenCalled();
+  });
 });
