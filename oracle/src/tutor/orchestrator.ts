@@ -2151,6 +2151,13 @@ export class TutorOrchestrator {
         // re-attaches this same orchestrator, and the pinned context is the
         // one the FIRST connection fetched. See `minorPosture`'s own comment.
         requireModelPass: this.minorPosture,
+        // TRAJECTORY CONTEXT (round 104, 2026-08-31): the SAME already-spoken
+        // tutor lines the generator's own "do not repeat this" hint already
+        // reads (never the learner's words — see `ModerationInput
+        // .recentTutorLines`'s own doc comment for why). Read here BEFORE
+        // this turn is pushed to history below, so it is exactly the prior
+        // turns and never includes the one being judged right now.
+        recentTutorLines: this.recentTutorLines,
       });
 
       if (!verdict.allowed) {

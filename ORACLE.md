@@ -961,6 +961,44 @@ means the turn is not spoken. A safe scripted line covers the gap.
 > correctly blocked) confirming the narrower pattern lost no real
 > detection.
 
+> **Confirmed MEDIUM, adversarial review sweep tutor-review-sweep-101
+> (moderation-edge-cases dimension), 2026-08-31: the output judge evaluated
+> every candidate turn in COMPLETE ISOLATION from the conversation.** No
+> prior turns were ever sent to `modelModeration`. Harm that only becomes
+> apparent from the SEQUENCE of turns — a multi-turn "crescendo", where no
+> single turn looks unsafe alone but the trajectory across several does —
+> was structurally invisible to both the per-utterance input classifier
+> (`safety/classifier.ts`, also judged one utterance at a time) and this
+> per-turn, context-free output judge.
+>
+> **Investigated, and scoped deliberately rather than over-built (full
+> reasoning in `RUNBOOK.md` Round 104).** A full transcript on every judge
+> call, or a separate periodic trajectory-level check across a session,
+> would each answer a broader, adversarial multi-party jailbreak threat —
+> not the realistic one this product actually has. This tutor's content is
+> the PEDAGOGICAL MODEL's own generated text on a narrow subject (financial
+> literacy for children); a self-harm or grooming disclosure from the
+> LEARNER is already caught turn-by-turn by the input classifier regardless
+> of trajectory (its rules stop the session on the first matching
+> utterance, sequence or not), and the plausible drift here is the model's
+> own output wandering across a few turns toward a harm category, which a
+> SHORT look-back already covers.
+>
+> Fixed by adding `ModerationInput.recentTutorLines` — a bounded window of
+> the tutor's own last few already-spoken lines (the SAME lines
+> `orchestrator.ts`'s existing `recentTutorLines` getter already exposes for
+> the generator's "do not repeat this" hint), handed to the judge on the
+> SAME call it already makes every turn. No extra round trip; a few hundred
+> extra input tokens only once there is history to show, and byte-identical
+> to the pre-fix request on a session's first turn or any caller that omits
+> the field. Deliberately NEVER the learner's own words: those are
+> untrusted input with nothing to fence them inside a judge prompt, the same
+> reasoning that keeps them out of the generator's own authoring brief.
+> `content/generate.ts` (one independently-generated activity, not a
+> conversational sequence) and `tutor/placementIntake.ts` (explicitly
+> stateless, one call, "no history" by design per its own header comment)
+> are unaffected — there is no trajectory for either of them to have.
+
 **Two latency decisions inside this rule — owner sign-off 2026-08-28.** Both
 change WHEN work happens, never what the child can receive unmoderated:
 

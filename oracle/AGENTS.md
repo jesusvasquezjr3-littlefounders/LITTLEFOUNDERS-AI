@@ -124,6 +124,14 @@ with a different rubric, and it used to be the ONLY one a tier-3 segment's
 text ever saw (`moderateTutorOutput` was never called on it at all). See
 `RUNBOOK.md` for both incidents.
 
+**The judge sees more than one turn ONLY on purpose, and only a little.**
+`ModerationInput.recentTutorLines` (round 104, 2026-08-31, item 73) is a
+bounded window of the tutor's OWN already-spoken lines, given to the judge
+so a "crescendo" spread across a few turns is not structurally invisible
+to a per-turn, zero-memory check. It is not a full transcript and not a new
+call path — both were considered and rejected on cost grounds — and it
+never carries the learner's words, which have nothing to fence them here.
+
 ### §2.5 The voice provider stays behind its interface
 
 Nothing outside `src/voice/` may import a provider SDK or name a provider, and
@@ -2187,6 +2195,40 @@ everything passes the blocked half perfectly and destroys the product.
    actually free to vary; a table that looks complete because it covers
    its own named axis exhaustively can still be flat across an axis nobody
    thought to ask about. See `RUNBOOK.md` Round 103.
+
+75. **A per-turn safety judge with zero memory of the conversation cannot
+   see a harm that only exists as a SEQUENCE — and the fix for that is not
+   automatically "give it everything."** Found by review sweep tutor-
+   review-sweep-101 (moderation-edge-cases dimension), round 104,
+   2026-08-31 (MEDIUM). `moderateTutorOutput`'s model pass judged one
+   candidate turn with no prior turns in the request at all, so a
+   "crescendo" — several turns each individually benign, the trajectory
+   unsafe only together — was structurally invisible to it, and to the
+   per-utterance input classifier one layer earlier, which has the identical
+   shape. Three fixes were weighed, not just the obvious one: a full
+   transcript on every judge call turns a flat per-turn cost into one that
+   grows QUADRATICALLY with session length, for a benefit a short window
+   already captures; a separate periodic trajectory pass is a NEW call path
+   with its own retry/fail-closed/cost-ledger policy to build, answering a
+   broader "is this whole session unsafe" question than the one raised
+   here. The one shipped is a bounded look-back — `recentTutorLines`, the
+   SAME already-spoken lines the generator's own "do not repeat this" hint
+   already reads — handed to the judge on the SAME call it already makes
+   every turn: no new call path, no added latency, and byte-identical to
+   the pre-fix request whenever there is no history yet to show. The
+   general lesson: a per-item check with no memory of the sequence it sits
+   inside has a class of harm it cannot see BY CONSTRUCTION, and the right
+   response is to size the fix to the actual threat model (here: the
+   PEDAGOGICAL MODEL's own output drifting across a few turns on a narrow
+   subject, not a persistent adversarial user — the learner side of a
+   crescendo is already caught turn-by-turn, sequence or not, by the input
+   classifier's session-stopping rules) rather than reaching for the
+   biggest mechanism that would technically cover it. Deliberately never
+   the learner's own words in the added context, for the same reason they
+   are already excluded from the generator's authoring brief: unfenced
+   untrusted text inside a judge prompt would open a NEW injection surface
+   against the safety gate itself, a strictly worse trade than the gap this
+   closes. See `RUNBOOK.md` Round 104.
 
 ---
 

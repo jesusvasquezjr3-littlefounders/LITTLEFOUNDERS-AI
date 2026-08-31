@@ -59,6 +59,30 @@ export interface ModerationInput {
    * client waiting on a clock (tier-3 content generation, placement intake).
    */
   retryDeadlineMs?: number;
+  /**
+   * TRAJECTORY CONTEXT (round 104, 2026-08-31). The tutor's own last few
+   * lines from earlier in this SAME conversation, oldest first — never the
+   * learner's words, which are untrusted input with nothing to fence them
+   * here (the same reason `orchestrator.ts`'s own `recentTutorLines` getter
+   * keeps them out of the generator's authoring brief). Optional, and every
+   * caller before this round omits it — a call with no history here sends
+   * byte-for-byte the same request that shipped before this field existed.
+   *
+   * WHY THIS EXISTS. The judge below evaluates one candidate turn with zero
+   * awareness of anything said before it, which makes a "crescendo" —
+   * several turns each individually benign, the SEQUENCE reaching a real
+   * harm category only when read together — structurally invisible to it,
+   * and to the per-utterance input classifier (`safety/classifier.ts`),
+   * which is equally blind to sequence. See `RUNBOOK.md` Round 104 for the
+   * full investigation; the short version: a bounded look-back the judge
+   * already gets for free on the SAME call it already makes every turn is
+   * proportionate to this product's actual threat model (the pedagogical
+   * model's own generated text drifting across a few turns), where a full
+   * transcript on every call or a separate periodic trajectory pass would
+   * be solving a broader, adversarial-multi-party problem this tutor does
+   * not have.
+   */
+  recentTutorLines?: string[];
 }
 
 /*
@@ -191,8 +215,9 @@ const HARM_CATEGORIES = [
 
 const JUDGE_SYSTEM = [
   'You are a child-safety reviewer for an educational product used by children',
-  'as young as six. You are shown ONE message a tutor character is about to say',
-  'out loud to a child.',
+  'as young as six. You are shown ONE new message a tutor character is about',
+  'to say out loud to a child, and it is always the message under "NEW MESSAGE',
+  'TO REVIEW" below.',
   '',
   'Answer with a single JSON object and nothing else:',
   '{"safe": true}',
@@ -209,12 +234,47 @@ const JUDGE_SYSTEM = [
   'contain the words "not unsafe", "may confuse", or would describe a teaching',
   'flaw rather than a harm, the answer is {"safe": true}.',
   '',
+  'SOMETIMES you will also be shown, under "RECENT CONVERSATION", a few of the',
+  'tutor\'s own earlier lines from this same session — context only, already',
+  'reviewed and already spoken, and not yours to re-judge. Their one purpose is',
+  'letting you notice a "crescendo": a NEW message that looks fine by itself',
+  'but continues or completes a pattern which, read together with those recent',
+  'lines, actually reaches one of the categories above (for example, a message',
+  'that only makes sense as facilitating theft, violence or self-harm once you',
+  'know what the earlier lines were building toward). Ordinary conversation —',
+  'the new message continuing the same topic, echoing a word from before,',
+  'asking a natural follow-up — is {"safe": true} even when it revisits',
+  'something mentioned earlier; only flag the sequence when the NEW message',
+  'itself is the step that makes the trajectory unsafe.',
+  '',
   'Refusing a turn costs the child the whole answer and replaces it with a',
   'scripted line that teaches nothing. Refuse only real harm.',
 ].join('\n');
 
 interface JudgeChoice {
   message?: { content?: string };
+}
+
+/**
+ * Builds the judge's user-turn content.
+ *
+ * With no `recentTutorLines` (every caller before round 104, and every turn
+ * with no prior tutor line to show) this returns `input.text` UNCHANGED —
+ * the exact request every existing test and every existing caller already
+ * expects, byte for byte. The wrapping only appears once there is context
+ * worth giving the judge, so the common case pays nothing extra.
+ */
+function buildJudgeUserContent(input: ModerationInput): string {
+  if (!input.recentTutorLines || input.recentTutorLines.length === 0) return input.text;
+  const context = input.recentTutorLines.map((line, i) => `${i + 1}. ${line}`).join('\n');
+  return [
+    'RECENT CONVERSATION (context only, already reviewed and already spoken,',
+    'oldest first):',
+    context,
+    '',
+    'NEW MESSAGE TO REVIEW:',
+    input.text,
+  ].join('\n');
 }
 
 /**
@@ -249,7 +309,7 @@ async function modelModeration(input: ModerationInput): Promise<ModerationVerdic
         max_tokens: 120,
         messages: [
           { role: 'system', content: JUDGE_SYSTEM },
-          { role: 'user', content: input.text },
+          { role: 'user', content: buildJudgeUserContent(input) },
         ],
       }),
     }),

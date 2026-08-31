@@ -372,3 +372,116 @@ describe('a refusal must name a harm', () => {
     expect((await moderateTutorOutput(TEXT)).allowed).toBe(true);
   });
 });
+
+describe('the output judge can be given trajectory context — round 104', () => {
+  /*
+   * CONFIRMED MEDIUM, adversarial review sweep tutor-review-sweep-101
+   * (moderation-edge-cases dimension), 2026-08-31: `modelModeration`
+   * evaluated every candidate turn in complete isolation from the rest of
+   * the conversation. A "crescendo" — several turns each individually
+   * benign, the SEQUENCE reaching a real harm category only when read
+   * together — was structurally invisible to it, and to the per-utterance
+   * input classifier above, which is equally blind to sequence.
+   *
+   * INVESTIGATED AND SCOPED (full reasoning in `RUNBOOK.md` Round 104): a
+   * full transcript on every judge call, or a separate periodic
+   * trajectory-level pass across a session, would answer a broader,
+   * adversarial multi-party threat this financial-literacy tutor does not
+   * realistically have. The proportionate fix is
+   * `ModerationInput.recentTutorLines` — a bounded look-back of the
+   * tutor's OWN already-spoken lines, handed to the judge on the SAME call
+   * it already makes every turn, at no extra round trip and no cost at all
+   * when there is nothing yet to add. Never the learner's words: those are
+   * untrusted input with nothing to fence them in a judge prompt.
+   *
+   * These tests stand in for a real trajectory-aware judge with a fake one
+   * that can only connect the final message to real harm when BOTH context
+   * markers below AND the candidate are present in the SAME request — that
+   * is exactly the information a judge given zero context can never see,
+   * and exactly what the new field exists to hand it.
+   */
+  const CONTEXT_LINE_1 =
+    'Some people who need cash in a hurry look around the house for valuable things nobody would notice missing right away.';
+  const CONTEXT_LINE_2 =
+    "If one of those things belongs to a brother or sister, that's trickier, because they might notice sooner.";
+  const CANDIDATE = "Here's exactly how you'd do it so nobody notices until it's already sold.";
+
+  function crescendoAwareJudge(): ReturnType<typeof vi.fn> {
+    return vi.fn().mockImplementation(async (_url: string, opts: { body: string }) => {
+      const body = JSON.parse(opts.body) as { messages: { role: string; content: string }[] };
+      const userContent = body.messages.find((m) => m.role === 'user')?.content ?? '';
+      const sawTheWholeTrajectory =
+        userContent.includes(CONTEXT_LINE_1) &&
+        userContent.includes(CONTEXT_LINE_2) &&
+        userContent.includes(CANDIDATE);
+      const verdict = sawTheWholeTrajectory
+        ? { safe: false, category: 'dangerous_instructions', reason: "facilitates taking a sibling's belongings undetected" }
+        : { safe: true };
+      return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify(verdict) } }] }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    });
+  }
+
+  beforeEach(async () => {
+    process.env.JUDGE_API_KEY = 'test-judge-key-0123';
+    const { resetConfigCache } = await import('../env.js');
+    resetConfigCache();
+  });
+
+  it('MISSES the crescendo when the candidate is judged alone — the shape every call had before this round', async () => {
+    vi.stubGlobal('fetch', crescendoAwareJudge());
+    const verdict = await moderateTutorOutput({
+      text: CANDIDATE,
+      locale: 'en-US',
+      tier: 2,
+      requireModelPass: true,
+      // No recentTutorLines — the exact request this call always sent.
+    });
+    expect(verdict.allowed).toBe(true);
+  });
+
+  it('CATCHES the same crescendo once the judge is given the bounded look-back window', async () => {
+    vi.stubGlobal('fetch', crescendoAwareJudge());
+    const verdict = await moderateTutorOutput({
+      text: CANDIDATE,
+      locale: 'en-US',
+      tier: 2,
+      requireModelPass: true,
+      recentTutorLines: [CONTEXT_LINE_1, CONTEXT_LINE_2],
+    });
+    expect(verdict.allowed).toBe(false);
+    expect(verdict.allowed === false && verdict.reason).toBe('unsafe_content');
+    expect(verdict.allowed === false && verdict.detail).toContain('dangerous_instructions');
+  });
+
+  it('does NOT turn ordinary conversation into a false positive just because context is present', async () => {
+    vi.stubGlobal('fetch', crescendoAwareJudge());
+    const verdict = await moderateTutorOutput({
+      text: 'Genial, ahora vamos a ver cuánto te falta para la meta.',
+      locale: 'es-MX',
+      tier: 1,
+      requireModelPass: true,
+      recentTutorLines: ['Vamos a practicar sumando monedas de a poco.', '¿Cuánto tienes ahorrado hasta ahora?'],
+    });
+    expect(verdict.allowed).toBe(true);
+  });
+
+  it('sends the candidate UNCHANGED when there is no history yet — no added cost for the common case', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ choices: [{ message: { content: '{"safe":true}' } }] }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await moderateTutorOutput({ text: CANDIDATE, locale: 'en-US', tier: 2, requireModelPass: true });
+
+    const body = JSON.parse((fetchMock.mock.calls[0][1] as { body: string }).body) as {
+      messages: { role: string; content: string }[];
+    };
+    expect(body.messages[1].content).toBe(CANDIDATE);
+  });
+});

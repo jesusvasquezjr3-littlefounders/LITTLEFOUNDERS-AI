@@ -413,6 +413,53 @@ describe('output moderation', () => {
 
     expect(outcome.emission.source).toBe('model');
   });
+
+  /*
+   * ROUND 101, 2026-08-31 (MEDIUM, adversarial review sweep
+   * tutor-review-sweep-101, moderation-edge-cases dimension) — the output
+   * judge evaluated every candidate turn in complete isolation from the rest
+   * of the conversation, which makes a "crescendo" (several turns each
+   * individually benign, the sequence reaching real harm only together)
+   * structurally invisible to it. The fix threads `this.recentTutorLines` —
+   * the SAME already-spoken lines the generator's own "do not repeat this"
+   * hint already reads — into `moderateTutorOutput`'s new
+   * `recentTutorLines` field. This proves the wiring at the REAL call site,
+   * not just at `moderateTutorOutput` itself: `safety.test.ts` proves the
+   * mechanism catches a constructed crescendo; this proves the orchestrator
+   * actually hands it the right lines, in the right order, only once they
+   * exist.
+   */
+  it('hands the judge the tutor’s OWN prior lines as trajectory context, not just the newest one', async () => {
+    const firstSay = '¡Buena idea! ¿Cuánto juntarías en cuatro semanas?';
+    const secondSay = 'Perfecto. ¿Y qué harías con ese dinero al final del mes?';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: firstSay }))
+      .mockResolvedValueOnce(judgeSays(true))
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: secondSay }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    await orchestrator.handleLearnerText('quiero ahorrar', Date.now());
+    await orchestrator.handleLearnerText('y luego que hago', Date.now());
+
+    // Call 0 = model (turn 1), call 1 = judge (turn 1). No tutor line exists
+    // yet, so the request must be EXACTLY the candidate — byte for byte the
+    // same shape every caller sent before this field existed. No added cost
+    // for the turn where there is nothing yet to add.
+    const firstJudgeBody = JSON.parse(fetchMock.mock.calls[1][1].body) as {
+      messages: { role: string; content: string }[];
+    };
+    expect(firstJudgeBody.messages[1].content).toBe(firstSay);
+
+    // Call 2 = model (turn 2), call 3 = judge (turn 2). Turn 1's line is now
+    // in history and must reach the judge as context alongside the new
+    // candidate — this is the fact the wiring exists to deliver.
+    const secondJudgeBody = JSON.parse(fetchMock.mock.calls[3][1].body) as {
+      messages: { role: string; content: string }[];
+    };
+    expect(secondJudgeBody.messages[1].content).toContain(firstSay);
+    expect(secondJudgeBody.messages[1].content).toContain(secondSay);
+  });
 });
 
 /*

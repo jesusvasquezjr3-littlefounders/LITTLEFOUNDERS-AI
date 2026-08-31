@@ -10336,3 +10336,169 @@ rather than overwrite.
 `oracle/AGENTS.md` item 73 records the general lesson: a table indexed by
 one axis is not automatically complete just because that axis is the one
 the feature was designed around.
+## Round 104: the output judge could not see a "crescendo" — several turns each looking fine alone, unsafe only as a sequence — found by review sweep tutor-review-sweep-101 (moderation-edge-cases dimension), MEDIUM, closed 2026-08-31
+
+**MEDIUM, FIXED after genuine investigation into whether a fix was
+justified at all.** `oracle/src/safety/moderation.ts`'s `modelModeration`
+evaluated every candidate tutor turn with `messages: [{ role: 'system',
+content: JUDGE_SYSTEM }, { role: 'user', content: input.text }]` — the
+CURRENT turn's text and nothing else. No prior turn, from either the tutor
+or the learner, was ever part of that request. The per-utterance input
+classifier (`safety/classifier.ts`'s `classifyLearnerInput`) has the same
+shape one level earlier: it judges one learner utterance at a time, with no
+memory of what came before it. So a harm that only becomes visible from the
+SEQUENCE of turns — a multi-turn "crescendo," where no single line looks
+unsafe alone but the trajectory across several does — was structurally
+invisible to both gates: there was no code path anywhere in the pipeline
+that could ever see more than one turn at once.
+
+**The investigation, because this finding's own framing deliberately left
+the answer open.** The task was not "add a fix," it was "decide whether one
+is justified, and if so, how much of one" — three shapes were on the table
+and each was evaluated on its own cost against this product's actual
+threat model, not a generic chatbot's.
+
+1. **A separate, periodic trajectory-level check across a session** — e.g.
+   re-judging the whole transcript every N turns. Rejected: it is a NEW
+   call path (a new judge invocation this service does not make today),
+   with its own retry/timeout/fail-closed policy to design and its own
+   line in the session cost ledger. That is real engineering weight for a
+   pattern this product has never actually observed in the wild, and it
+   answers a broader question — "is this WHOLE conversation, read as a
+   transcript, unsafe" — than the one this finding raises.
+2. **The full transcript on every judge call.** Rejected on cost grounds
+   specifically: `JUDGE_SYSTEM` already runs on every single model-authored
+   turn (`orchestrator.ts`'s moderation call, `content/generate.ts`'s tier-3
+   segment check, `session/review.ts`'s memory-write check), and a session
+   can run for the better part of `SESSION_HARD_BUDGET_MS`. Re-sending
+   everything said so far, every turn, turns a call whose cost is currently
+   flat per turn into one that grows QUADRATICALLY with session length —
+   exactly the "an uncached call... spends real money per learner, forever"
+   shape `/AGENTS.md` §1.0 item 5 names by name, for a benefit a bounded
+   window already captures.
+3. **A bounded look-back window handed to the SAME per-turn call.** Chosen.
+   It costs a few hundred extra input tokens per turn, ONLY once a prior
+   tutor line exists to show (a session's very first moderated turn is
+   unaffected), on a call this service already makes every turn regardless
+   — no new call path, no new retry policy, no new ledger line, no added
+   latency (nothing here is a second round trip; it is more text in the
+   SAME request). This is the §1.0 "boring, cheap, verifiable path."
+
+**The threat model this product actually has, stated explicitly rather
+than assumed.** A general-purpose chatbot's crescendo risk is usually
+framed as an adversarial USER patiently walking the model somewhere over
+many turns. That is a narrower risk here than it sounds in the abstract,
+for two reasons specific to this product. First, the learner side of a
+crescendo is already covered independently of sequence: `classifyLearnerInput`
+stops the SESSION outright (`action: 'session_stopped'`) on the first
+matching self-harm, abuse-disclosure or grooming-pattern utterance,
+regardless of how many turns preceded it — a learner attempting a slow
+build-up toward one of those categories is caught on the FIRST utterance
+that trips the pattern, not after a trajectory completes. Second, the
+realistic drift this product can actually produce is the PEDAGOGICAL
+MODEL's own generated text wandering across a few turns on a narrow subject
+(financial literacy for children as young as six) — a teaching example that
+escalates in specificity turn over turn without any single turn crossing a
+threshold, not a persistent human adversary. A short, bounded look-back at
+the model's OWN recent output is proportionate to that risk; it is not
+proportionate to a multi-party jailbreak campaign this tutor is not
+positioned to face, because there is no second party in the room besides
+the child and the character — the "adversary," if one exists at all, is
+usually the model's own unattended drift, not a bad actor probing it.
+
+**The fix.** `ModerationInput` gained an optional `recentTutorLines?:
+string[]` field. `modelModeration`'s request body now calls a new
+`buildJudgeUserContent(input)` instead of using `input.text` directly: with
+no `recentTutorLines` (every existing caller, and every turn with no prior
+tutor line yet) it returns `input.text` completely unchanged — the exact
+request every test and every caller already sent — and only wraps the text
+in a labeled `RECENT CONVERSATION` / `NEW MESSAGE TO REVIEW` structure once
+there is history worth showing. `JUDGE_SYSTEM` gained one new paragraph
+explaining the context block's purpose and its one boundary: judge the NEW
+message only, use the context solely to notice a message that completes an
+unsafe trajectory, and do not let an ordinary continued topic read as unsafe
+on its own — a false-positive guard stated as explicitly as the existing
+"a mathematical error is not a safety problem" paragraph already is for a
+different failure mode.
+
+The context itself is **the tutor's own last few lines, never the
+learner's.** `orchestrator.ts`'s existing `recentTutorLines` getter — the
+SAME one the generator's own "do not repeat this" hint already reads — is
+passed straight through at the one real call site
+(`TutorOrchestrator.produce()`'s `moderateTutorOutput` call), read BEFORE
+the current turn is pushed to history, so it is exactly the prior turns and
+never includes the one being judged. The getter's own doc comment already
+states why the learner's words are excluded from an authoring brief —
+"untrusted input... where nothing fences them" — and the identical
+reasoning applies here: wrapping raw, unfenced learner text into a JUDGE
+prompt would open a new prompt-injection surface against the SAFETY GATE
+ITSELF (a learner could try to plant instructions in their own turn hoping
+a later "context" block would carry them into the judge's read), which is a
+strictly worse trade than the crescendo gap this round closes. Restricting
+the window to the tutor's OWN already-produced, already-reviewed text sides
+around that risk entirely rather than requiring a second fencing mechanism.
+
+**Two other callers of `moderateTutorOutput`, deliberately left unchanged
+(§1.12.7 — named, not silently dropped).** `content/generate.ts` moderates
+one independently-generated activity's prose per call; it is not part of a
+conversational sequence, so there is no trajectory for a look-back window
+to capture. `tutor/placementIntake.ts` is explicitly stateless by design —
+its own header comment says "No name, no id, no location, no history" as a
+§1.9 privacy property, not an oversight — so it structurally has no
+"recent turns" to offer even if this fix wanted to reach it. Neither omission
+is a coverage gap for THIS finding: both lack the one precondition a
+crescendo needs, a sequence of turns to escalate across.
+
+**Not a new field reaching the pedagogical model, and not a new PII
+category anywhere.** `/AGENTS.md` §8's documentation table requires a
+`/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` update for "a new field reaching the
+model" — checked and judged not to apply here: `recentTutorLines` reaches
+the JUDGE (a DashScope call that already receives per-turn model output
+today), never the DeepSeek/Qwen pedagogical model, and it carries no data
+category that call did not already see — it is a bounded REPEAT of the
+tutor's own text, each line of which already crossed that exact boundary
+in its own earlier, separate judge call. No new consent surface, no new
+learner-identifying data, nothing §4.1 does not already cover.
+
+**Proof.** `oracle/src/__tests__/safety.test.ts` gained a new describe
+block, `'the output judge can be given trajectory context — round 101'`,
+with a constructed crescendo built for this product's own domain: two
+context lines about looking around the house for valuable things nobody
+would miss and noting that a sibling's belongings are "trickier" to take
+unnoticed, followed by a candidate line — `"Here's exactly how you'd do it
+so nobody notices until it's already sold."` — that reads as genuinely
+ambiguous alone (no explicit object, no named act) and unambiguous only
+once read against the two lines before it. The test judge is a fake that
+can only connect the candidate to real harm (`dangerous_instructions`) when
+BOTH context markers and the candidate text are present in the SAME
+request — precisely the information a zero-context call structurally
+cannot supply. Four tests: the crescendo is MISSED when the candidate is
+judged alone (the exact pre-fix shape, still reachable by any caller that
+omits the new field); the SAME crescendo is CAUGHT once `recentTutorLines`
+carries the two context lines; an unrelated, ordinary two-line context plus
+an unrelated safe candidate produces no false positive even though context
+is present; and a call with no history sends `input.text` completely
+unwrapped, proving zero shape change for the common case. A fifth test in
+`oracle/src/__tests__/orchestrator.test.ts` (`'output moderation'` describe
+block) drives the REAL `TutorOrchestrator` through two consecutive learner
+turns and inspects the actual judge request bodies via `fetchMock.mock
+.calls`: the first turn's judge call carries the candidate byte-for-byte
+unwrapped (no tutor line exists yet), and the second turn's judge call
+contains BOTH the first turn's `say` and the second turn's candidate —
+proving the wiring at the real production call site, not only at
+`moderateTutorOutput` in isolation.
+
+Full oracle suite green: 27 files, 640 tests (up from 635 recorded in
+Round 98, the last round to touch oracle's own test count — five new: four
+in `safety.test.ts`, one in `orchestrator.test.ts`). `npm run type-check`
+(including `tsconfig.scripts.json` and `tsconfig.test.json`), `npm run
+lint`, and `npm run build` all clean. `npm run verify:tutor` green — the
+`.strict()` context gate and the full injection/output-moderation canary
+corpus, unaffected by this change, still pass unchanged.
+
+No `/ORACLE.md` content-ladder or context-schema change: this touches only
+the OUTPUT JUDGE's own request shape, documented in `/ORACLE.md` §6 inline
+alongside the round's own reasoning. `oracle/AGENTS.md` item 73 records the
+scoping decision (why a bounded window, not a full transcript or a
+periodic pass) for a future reader who might otherwise reach for the
+bigger mechanism by default.
