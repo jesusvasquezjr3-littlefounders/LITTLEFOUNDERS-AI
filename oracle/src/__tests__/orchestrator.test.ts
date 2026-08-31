@@ -1314,6 +1314,129 @@ describe('the budget', () => {
 });
 
 /*
+ * Found by adversarial review, round 85, 2026-08-31 (MEDIUM): a turn could
+ * carry BOTH `next: 'segment'` (a real `segmentRequest`) AND a non-null
+ * `closeReason` at the same time, because `closeReason` is computed from the
+ * SAME budget verdict `produce()` already has in hand but never consulted
+ * before deciding whether to let the request through. `ws/server.ts`'s
+ * `deliver()` served the segment unconditionally whenever `next === 'segment'`
+ * — it only looked at `closeReason` afterwards, to decide whether to close the
+ * socket — so a real activity reached the learner's screen immediately before
+ * the session closed under it: promised, and then abandoned, without the
+ * learner ever getting a chance to attempt it.
+ *
+ * Two independently reachable triggers, both closed by the SAME check inside
+ * `produce()` (never in `ws/server.ts` — every caller of `produce()` benefits
+ * automatically): the one grace turn an ended budget grants, when the model
+ * ignores its prose-only "do NOT request or promise any activity" instruction;
+ * and an ordinary turn that crosses `SESSION_MAX_TURNS` mid-call, entering
+ * under the merely-advisory 'wrapping' state and exiting 'ended' from the
+ * turn-count increment alone, with the model called under no constraint at
+ * all. Each test below reproduces one trigger from the outside — driving
+ * `handleLearnerText` exactly as a real socket would, never calling `produce`
+ * directly — because the fix belongs to `produce()`'s own outcome, not to a
+ * special case in either caller.
+ */
+describe('a segment request the budget already refused is suppressed before delivery', () => {
+  afterEach(() => {
+    delete process.env.SESSION_MAX_TURNS;
+    delete process.env.SESSION_SOFT_BUDGET_MS;
+  });
+
+  const DISOBEDIENT_SEGMENT_REQUEST = {
+    skillKey: 'financial-education/ahorro',
+    difficulty: 2,
+    framing: 'Una actividad más antes de terminar',
+    rationale: 'one more rep before the session ends',
+  };
+
+  it('strips an ordinary turn\'s segment request when SESSION_MAX_TURNS is crossed mid-call', async () => {
+    // SESSION_MAX_TURNS=1 and a soft budget already crossed by construction
+    // time reproduce the EXACT entry condition the bug report names: the
+    // call starts 'wrapping' (soft-budget window, advisory only — the model
+    // is free to do anything) and the turn-count increment alone pushes the
+    // exit state to 'ended'/'turn_cap' — a fact `produce()` knows and the
+    // model was never told.
+    process.env.SESSION_MAX_TURNS = '1';
+    process.env.SESSION_SOFT_BUDGET_MS = '1';
+    const { resetConfigCache } = await import('../env.js');
+    resetConfigCache();
+
+    const now = Date.now();
+    const orchestrator = new TutorOrchestrator(KID, now - 5, silent);
+
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({ ...GOOD_TURN, next: 'segment', segmentRequest: DISOBEDIENT_SEGMENT_REQUEST }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const outcome = await orchestrator.handleLearnerText('hola', now);
+
+    // Confirms the entry state really was 'wrapping' — the advisory-only
+    // instruction, not a refusal — so the model's freedom to ask for an
+    // activity was real, not already blocked at the door.
+    const body = String(fetchMock.mock.calls[0]?.[1]?.body ?? '');
+    expect(body).toContain('Begin wrapping up now');
+
+    // The turn-count crossed the cap DURING this call, so the session is
+    // closing — the activity the model just asked for would never be
+    // attempted, and must never reach the learner's screen.
+    expect(outcome?.closeReason).toBe('turn_cap');
+    expect(outcome?.emission.turn.next).toBe('ask');
+    expect(outcome?.emission.turn.segmentRequest).toBeNull();
+    // The tutor's own words are untouched — only the promise behind them is
+    // cut, exactly like every other repair in this file.
+    expect(outcome?.emission.turn.say).toBe(GOOD_TURN.say);
+  });
+
+  it('strips the ONE GRACE TURN\'s segment request when the model ignores "do NOT request or promise any activity"', async () => {
+    const now = Date.now();
+    const orchestrator = new TutorOrchestrator(KID, now, silent);
+    // Open a thread: an ordinary exchange whose tutor turn ends in `ask`.
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('quiero ahorrar', now);
+
+    // The hard budget expires with that question still open. The grace turn
+    // fires — and the model disobeys its own final-turn instruction, asking
+    // for one more activity instead of just saying goodbye.
+    fetchMock.mockClear();
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          say: '¡Cuarenta pesos! Practiquemos un poco más antes de despedirnos.',
+          next: 'segment',
+          segmentRequest: DISOBEDIENT_SEGMENT_REQUEST,
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const late = now + 60 * 60 * 1000;
+    const grace = await orchestrator.handleLearnerText('cuarenta', late);
+
+    // Confirms this really was the grace turn — the model was told, in
+    // prose, not to do exactly what it then did.
+    const body = String(fetchMock.mock.calls[0]?.[1]?.body ?? '');
+    expect(body).toContain('FINAL TURN');
+
+    // A real, warm turn is still delivered (the grace turn's whole point) —
+    // but the activity it asked for must never reach the ladder, because the
+    // socket closes right behind it.
+    expect(grace?.emission.source).toBe('model');
+    expect(grace?.emission.turn.next).toBe('ask');
+    expect(grace?.emission.turn.segmentRequest).toBeNull();
+    expect(grace?.closeReason).toBe('hard_budget');
+
+    // And the grace ticket is still spent exactly once, same as every other
+    // grace-turn test in this file — this fix does not change that contract.
+    fetchMock.mockClear();
+    const after = await orchestrator.handleLearnerText('y ahora?', late + 1000);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(after?.emission.turn.next).toBe('close');
+  });
+});
+
+/*
  * Found by adversarial review, round 33, 2026-08-30 (HIGH): the grace turn's
  * own `openThread` condition names "an activity still on screen" as HALF of
  * what qualifies — but `handleSegmentResult` and `handleVoiceCheckResult`

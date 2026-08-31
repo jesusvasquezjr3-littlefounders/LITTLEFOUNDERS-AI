@@ -1956,6 +1956,46 @@ everything passes the blocked half perfectly and destroys the product.
    symptom recurs, it leaves a line instead of a silence. See
    `RUNBOOK.md` Round 81.
 
+69. **A turn's `next: 'segment'` and its `closeReason` are computed from
+   the SAME budget verdict, but nothing checked them against each
+   other before delivery.** Found by adversarial review, 2026-08-31
+   (MEDIUM). `ws/server.ts`'s `deliver()` called `serveSegment()`
+   whenever `emission.turn.next === 'segment'`, and only looked at
+   `closeReason` several lines later, to decide whether to close the
+   socket — so a turn carrying BOTH a real `segmentRequest` and a
+   non-null `closeReason` served a real activity one line before the
+   `closed` frame followed it, with the learner never given a chance
+   to attempt it. Two independently reachable triggers: the ONE grace
+   turn `graceTurnFor()` grants on an already-`'ended'` budget tells
+   the model, in PROSE ONLY, not to request an activity — and
+   `turnSchema.ts` enforces no structural rule tying `next` to budget
+   state, so a model that ignores the instruction (this file's own
+   item 67 and `MAX_SEGMENT_RETRIES`'s comment in `ws/server.ts`
+   already document this exact codebase's model ignoring other
+   prose-only instructions) sails through; and an ordinary turn that
+   crosses `SESSION_MAX_TURNS` mid-call enters `produce()` under the
+   merely-advisory `'wrapping'` state and can exit `'ended'` from the
+   turn-count increment alone, with the model called under no
+   constraint at all. Fixed inside `produce()`, not in `ws/server.ts`,
+   so every caller (greet, farewell, an activity result, a voice-check
+   verdict) inherits the guard automatically: the budget verdict is
+   now computed ONCE, right after the turn slot is reserved, and
+   reused both for `closeReason` (unchanged) and for a new check —
+   once the retry loop and the `modelDownResponse` fallback have all
+   settled on a `turn`, a surviving `next: 'segment'` against an
+   already-`'ended'` budget is corrected in place (`next` → `'ask'`,
+   `segmentRequest` → `null`) before moderation ever sees it. Not
+   routed through the existing `turnCorrection` retry-and-ask-again
+   mechanism this file's repair loop uses for a model's other
+   mistakes: this is a structural fact about the session's own clock,
+   not something a sharper prompt fixes, so retrying would spend a
+   real model call on a question the model has no way to answer — the
+   same reasoning the whiteboard/open-activity-conflict check one
+   function up already uses. `next` moves to `'ask'` rather than
+   `'close'` deliberately, so a budget-driven end still reports as
+   `turn_cap`/`hard_budget` rather than being misreported as
+   `completed`. See `RUNBOOK.md` Round 85.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:
