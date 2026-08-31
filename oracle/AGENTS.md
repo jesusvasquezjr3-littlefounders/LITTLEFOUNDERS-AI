@@ -1996,6 +1996,40 @@ everything passes the blocked half perfectly and destroys the product.
    `turn_cap`/`hard_budget` rather than being misreported as
    `completed`. See `RUNBOOK.md` Round 85.
 
+70. **A busy floor and a refused floor are not the same thing when the
+   caller is asking to LEAVE.** Found by adversarial review, round 87
+   (2026-08-31, MEDIUM): `end_session` claims with `enforceFloor=false`
+   — leaving is never gated on the 700 ms floor — but still respected
+   the single in-flight-turn slot, and on `'busy'` (the ORDINARY state
+   during the frontend's own `awaitingReply` window, which exists on
+   EVERY turn) it called `refuseTurn` and returned, exactly as every
+   other frame type correctly does. `farewell()`/`finish()` were never
+   reached. The client (`TutorExperience.tsx`'s `onRestart`/`onExit`)
+   tears its own socket down immediately after sending `end_session`,
+   without waiting to learn whether it worked, so the socket's `close`
+   handler saw `live.closing` still false and parked the session
+   exactly as an honest dropped connection — a deliberate "Start
+   over"/"Finish" recorded `learner_left` after the resume grace window,
+   with no farewell ever produced, contradicting /ORACLE.md §9.5's "not
+   a timeout that kills a socket" for the one control whose entire job
+   is ending the session on purpose. Fixed on both sides: the frontend
+   now disables both buttons for the duration of `awaitingReply`
+   (`ConversationView.tsx`, matching the composer's send button); and
+   `end_session` now DEFERS rather than refuses a busy floor
+   (`Live.endSessionRequested`), served by `releaseTurn` — the one place
+   every turn's `finally` already funnels through — the instant the
+   floor that refused it frees. A second race the deferral itself opens
+   (the client's immediate teardown reaching `close` before the deferred
+   farewell runs, parking the session anyway) is closed by having
+   `finish()` cancel any dangling park (`takeParked`) the moment it
+   actually completes — otherwise the park's own grace-window timer
+   would fire a redundant `learner_left` `finalizeParked` behind the
+   graceful close, harmless to the recorded reason (`closeTutorSession`'s
+   `ended_at IS NULL` guard makes it a no-op) but not to
+   `runPostSessionReview`, which pays for a second, pointless model call
+   to grade a session already graded correctly. See `RUNBOOK.md` Round
+   90.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:
