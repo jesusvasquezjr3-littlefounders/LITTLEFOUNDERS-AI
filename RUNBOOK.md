@@ -10034,3 +10034,75 @@ No `frontend/AGENTS.md` item: LESSON_ENGINE.md §9.1 and TUTOR_3D.md §6.2
 already state the invariants this closes a gap in; the gap was in the
 Tutor's OWN tree never wiring up to them, not in either document's rule.
 `oracle/AGENTS.md` item 72 records the investigation and the corollary.
+
+## Round 101: the whiteboard's accessible name dropped every time-step caption a sighted user reads under each bar — found by adversarial review sweep tutor-review-sweep-101 (whiteboard-at-scale dimension), MEDIUM, closed 2026-08-31
+
+**MEDIUM, FIXED.** `TutorWhiteboard.tsx`'s `aria-label` was built from
+`board.values` alone — `` `${board.label}. ${board.values.slice(0,
+shown).map(format).join(', ')}` `` — a flat, comma-separated list of
+formatted numbers with no notion of what any one of them represents in
+time. Every bar underneath it, though, already carries its own
+`aria-hidden` caption ("Start" / "Semana 1" / "Semana 2"…,
+`tutor.whiteboard.step.<unit>`), computed from exactly the `unit` field
+§20.5 added specifically so the board's time axis could never contradict
+the tutor's own spoken cadence word (Round history: `oracle/AGENTS.md`,
+"cada semana" spoken three times over a board labeled "Día 1 / Día 2"). A
+sighted user reads the full "Start / Week 1 / Week 2" story under the
+bars; a screen-reader user got "10, 18, 26" with no way to tell these were
+week-by-week savings totals rather than three unrelated numbers — the
+exact story-cadence match §20.5 exists to guarantee, lost for assistive
+tech alone, on a feature whose entire purpose is that match.
+
+**The fix reuses the exact caption a sighted user already reads, rather
+than inventing new wording for the accessible name.** The per-bar caption
+computation — `i === 0 ? t('tutor.whiteboard.start') :
+t(`tutor.whiteboard.step.${unit}`, {n: i})` — is now a single
+`captionFor(i)` function, called from BOTH the visible `aria-hidden`
+caption span in the bar loop and the `aria-label` at the top of the same
+render. The two literally cannot drift apart again because they are now
+the same call site, not two copies of the same ternary. New format:
+`"<label>. <caption0>: <value0>, <caption1>: <value1>, …"` — e.g.
+`"Cada semana ahorras más. Start: MX$10, Week 1: MX$18, Week 2: MX$26"`
+— replacing the old `"Cada semana ahorras más. MX$10, MX$18, MX$26"`. No
+new i18n keys: `tutor.whiteboard.start` and `tutor.whiteboard.step.<unit>`
+already exist in all three locales from §20.5 and are only reused, never
+duplicated.
+
+**Scope, for the three sibling fixes landing on this same file
+concurrently** (live-region mechanism, label content — this one, zero-
+value bar height, growth-reveal race): every touched line is inside
+`frontend/src/tutor/TutorWhiteboard.tsx`'s `TutorWhiteboard` function
+body, between the `max = Math.max(...)` line and the closing `</div>` of
+the bar-caption `<span>` — the new `captionFor` declaration, the
+`aria-label` template literal on the outer `role="img"` div, and the
+caption `<span>` in the `board.values.map` loop, which now calls
+`captionFor(i)` instead of inlining the ternary it used to carry. No
+other line in the file was touched, and the `unit`/`values`/`format`
+computation (`useValueFormat`, the `shown`/`GROW_STEP_MS` reveal timers)
+is completely unrelated code, above where this diff starts.
+
+**Proof, TDD.** New test `gives the accessible name the SAME per-bar
+time-step captions a sighted user sees, not bare numbers`
+(`frontend/src/tutor/__tests__/tutorWhiteboard.test.tsx`) renders a
+weekly board (`values: [10, 18, 26]`, `unit: 'week'`) and asserts the
+aria-label contains `"Start: MX$10"`, `"Week 1: MX$18"`, `"Week 2:
+MX$26"` — the caption PAIRED with its own value, not merely present
+somewhere in the string, and explicitly refutes the bug's exact shape
+(`not.toBe('Cada día te dan 2 más. MX$10, MX$18, MX$26')`). Confirmed red
+first: `git stash` on `TutorWhiteboard.tsx` alone (the test file left in
+its fixed state) reproduced the defect precisely — 3 of 6 tests in the
+file failed, including the new one, each with the received string a bare
+number list and the expected string carrying a caption; `git stash pop`
+restored the fix and all 6 passed. Two pre-existing EXACT-match
+assertions in the same file (`'...2 más. MX$10'`,
+`'Otra historia. MX$20'`) needed updating to the new caption-prefixed
+format since they asserted the whole string, not a substring; every
+`toContain`-style assertion elsewhere in the file needed no change — the
+numbers are still present, just no longer alone.
+
+**Gates run in `frontend/`:** `npm run type-check` clean; `npm run lint`
+clean; `npm test` — 134 files, 1546 tests, all green, including the new
+test; `npm run build` — exit 0, SEO prerender step completed (6 pages, 4
+indexable) same as before this change. `npm run i18n:check` (root) —
+clean; no i18n keys were added, changed, or removed, so this was run for
+safety rather than because it was required.

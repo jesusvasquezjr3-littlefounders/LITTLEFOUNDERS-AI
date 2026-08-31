@@ -56,14 +56,39 @@ describe('what it draws', () => {
     expect(img.getAttribute('aria-label')).not.toContain('$');
     expect(img.getAttribute('aria-label')).toContain('10');
   });
+
+  /*
+   * RUNBOOK.md Round 101: a screen-reader user got a bare "10, 12, 14" with
+   * no idea these were week-by-week totals, while a sighted user saw the
+   * full "Start / Week 1 / Week 2" story under each bar — the exact
+   * story-cadence match the `unit` field (§20.5) exists to guarantee, lost
+   * for assistive tech. The accessible name must carry the SAME per-bar
+   * caption a sighted user reads (reusing the visible strings, not inventing
+   * new wording), not merely the numbers.
+   */
+  it('gives the accessible name the SAME per-bar time-step captions a sighted user sees, not bare numbers', () => {
+    stubMatchMedia(true);
+    const weeklyBoard = { ...BOARD, unit: 'week' as const, values: [10, 18, 26] };
+    render(<TutorWhiteboard board={weeklyBoard} seq={1} />);
+    const img = screen.getByRole('img');
+    const label = img.getAttribute('aria-label');
+    // The exact visible captions ("Start", "Week 1", "Week 2" in en-US, the
+    // test suite's active locale) must appear paired with their own value —
+    // not just present somewhere, and not just the bare numbers alone.
+    expect(label).toContain('Start: MX$10');
+    expect(label).toContain('Week 1: MX$18');
+    expect(label).toContain('Week 2: MX$26');
+    // The old bug's exact shape: numbers with no captions at all.
+    expect(label).not.toBe('Cada día te dan 2 más. MX$10, MX$18, MX$26');
+  });
 });
 
 describe('the growth animation', () => {
   it('reveals one bar at a time under normal motion', () => {
     stubMatchMedia(false);
     render(<TutorWhiteboard board={BOARD} seq={1} />);
-    // Only the first value is announced at first.
-    expect(screen.getByRole('img').getAttribute('aria-label')).toBe('Cada día te dan 2 más. MX$10');
+    // Only the first value is announced at first, WITH its time-step caption.
+    expect(screen.getByRole('img').getAttribute('aria-label')).toBe('Cada día te dan 2 más. Start: MX$10');
   });
 
   it('reveals the whole board immediately under reduced motion', () => {
@@ -90,7 +115,7 @@ describe('the growth animation', () => {
     await act(async () => {
       rerender(<TutorWhiteboard board={nextBoard} seq={2} />);
     });
-    // Fresh turn: back to one bar, the new board's own first value.
-    expect(screen.getByRole('img').getAttribute('aria-label')).toBe('Otra historia. MX$20');
+    // Fresh turn: back to one bar, the new board's own first value and caption.
+    expect(screen.getByRole('img').getAttribute('aria-label')).toBe('Otra historia. Start: MX$20');
   });
 });
