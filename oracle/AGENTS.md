@@ -2150,6 +2150,43 @@ everything passes the blocked half perfectly and destroys the product.
    failure to be absorbed into whichever falsy value already exists,
    silently, with no compiler error to catch it. See `RUNBOOK.md` Round
    101.
+74. **A table indexed by one axis is not automatically complete just
+   because that axis is the one the feature was designed around.** Found
+   by adversarial review sweep tutor-review-sweep-101 (voice-audio-quality
+   dimension), round 103, 2026-08-31 (MEDIUM). `LISTEN_SILENCE_MS` — how
+   much silence after the learner speaks means their turn is over — is
+   keyed by pedagogical STRATEGY, which is exactly right for the question
+   it was built to answer ("is this a Socratic pause or a fluency drill?")
+   and silently wrong for a different, equally real question it was never
+   asked: a stutter block, real processing delay, or a child who needs a
+   beat before answering looks, for one silent instant, identical to
+   "done talking," and the strategy axis alone cannot tell the two apart —
+   it gave a learner meeting a knowledge component for the very first time
+   the identical budget as one who has answered it a dozen times.
+   Investigated and rejected first: extending the client's turn-detector
+   timer itself (`frontend/src/tutor/turnDetector.ts`) on a "partial
+   transcript" signal, because no interim or partial transcript exists
+   anywhere in this pipeline — audio is transcribed exactly once, on
+   COMMIT (§2.7), which is triggered BY that same detector deciding the
+   turn already ended; by the time any transcript could exist, the cutoff
+   already happened. An UNCONDITIONAL grace inside that same timer was
+   rejected next: its one ending comparison cannot tell a mid-answer pause
+   from a learner who has genuinely finished at the exact moment the
+   threshold is reached, so extending it would have delayed the genuinely-
+   finished case by the same amount, which is not bounded to a population
+   that needs it. Fixed by adding the missing axis where the table itself
+   lives instead: `listenSilenceMsFor(strategy, opportunitiesOnKc)`
+   extends the strategy's own budget by a fixed fraction — derived from
+   `LISTEN_SILENCE_MS[strategy]` itself, not a second hand-authored table
+   (item 32's lesson) — only below `NEW_TO_SKILL_OPPORTUNITIES`, seeded
+   from Core's PERSISTED `kcStates.attempts` so a returning learner is
+   never treated as new just because a session restarted. General lesson:
+   when a lookup table is keyed by the one dimension a feature's design
+   doc names, check whether a DIFFERENT dimension the same value also
+   depends on — here, the learner, not just the strategy — was ever
+   actually free to vary; a table that looks complete because it covers
+   its own named axis exhaustively can still be flat across an axis nobody
+   thought to ask about. See `RUNBOOK.md` Round 103.
 
 ---
 

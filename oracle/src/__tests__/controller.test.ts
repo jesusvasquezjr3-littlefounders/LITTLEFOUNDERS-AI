@@ -2,11 +2,14 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   IDLE_NUDGE_MS,
   LISTEN_SILENCE_MS,
+  listenSilenceMsFor,
   MASTERY_MIN_OPPORTUNITIES,
   mirrorBktUpdate,
+  NEW_TO_SKILL_OPPORTUNITIES,
+  NEW_TO_SKILL_SILENCE_GRACE,
   PedagogicalController,
 } from '../tutor/controller.js';
-import type { SessionPlanEntry } from '../core/client.js';
+import type { KcState, SessionPlanEntry } from '../core/client.js';
 import { mintGradeEcho, verifyGradeEcho } from '../session/gradeEcho.js';
 
 /*
@@ -664,6 +667,94 @@ describe('per-strategy listening budgets', () => {
     for (const s of Object.keys(IDLE_NUDGE_MS)) {
       expect(LISTEN_SILENCE_MS[s as keyof typeof LISTEN_SILENCE_MS]).toBeDefined();
     }
+  });
+});
+
+/*
+ * A LEARNER NEW TO A KNOWLEDGE COMPONENT GETS A LITTLE LONGER TO ANSWER IT.
+ *
+ * Round 103 (RUNBOOK.md), confirmed MEDIUM, adversarial review sweep
+ * tutor-review-sweep-101 (voice-audio-quality dimension): `LISTEN_SILENCE_MS`
+ * above is a fixed, strategy-only table with NO per-learner adjustment, so a
+ * genuine speech-timing difference — a stutter block, real processing delay,
+ * a child who needs a beat before answering, all real for the learners this
+ * product serves — produces silence the turn detector cannot tell apart from
+ * "done talking." `listenSilenceMsFor` closes that gap for the population
+ * most likely to need it: a learner meeting a knowledge component for the
+ * first time or two.
+ *
+ * `wouldEndTurn` mirrors — without importing, since `frontend/` is a
+ * separate package with no shared code (`/AGENTS.md` §1.2) — the ONE
+ * comparison `createTurnDetector` in `frontend/src/tutor/turnDetector.ts`
+ * actually uses to close a turn: `speechMs >= minSpeechMs && silenceMs >=
+ * policy.silenceMs`. Real speech is a given in every case below, so only the
+ * silence side of that comparison is exercised here — this grounds the proof
+ * in the real cutoff condition rather than in the abstract constant alone.
+ */
+describe('a learner new to a knowledge component gets a longer listening budget', () => {
+  const wouldEndTurn = (silenceMs: number, budgetMs: number) => silenceMs >= budgetMs;
+  const strategies = Object.keys(LISTEN_SILENCE_MS) as (keyof typeof LISTEN_SILENCE_MS)[];
+
+  it('the fixed table alone would cut off a first-exposure learner mid-pause', () => {
+    // A child new to DIRECT instruction on this KC pauses 1.9s — a stutter
+    // block, or a beat to gather their words. Against the OLD, fixed budget
+    // alone that already crosses the line, so the turn would end right there.
+    const pauseMs = 1_900;
+    expect(wouldEndTurn(pauseMs, LISTEN_SILENCE_MS.DIRECT)).toBe(true);
+  });
+
+  it('the fix extends the window in that exact case, so the SAME pause does not end it', () => {
+    const pauseMs = 1_900;
+    const extended = listenSilenceMsFor('DIRECT', 0); // first-ever opportunity on this KC
+    expect(wouldEndTurn(pauseMs, extended)).toBe(false);
+    expect(extended).toBeGreaterThan(pauseMs); // real room to resume, not a hair short
+  });
+
+  it('extends every strategy in proportion to its own budget, not by a flat constant', () => {
+    for (const strategy of strategies) {
+      const base = LISTEN_SILENCE_MS[strategy];
+      const expected = Math.round(base * (1 + NEW_TO_SKILL_SILENCE_GRACE));
+      expect(listenSilenceMsFor(strategy, 0)).toBe(expected);
+      expect(listenSilenceMsFor(strategy, NEW_TO_SKILL_OPPORTUNITIES - 1)).toBe(expected);
+    }
+  });
+
+  it('leaves genuinely-experienced silence ending the turn exactly as before', () => {
+    // At and beyond the threshold, the budget is byte-identical to the
+    // original fixed table — the same silence that ended an experienced
+    // learner's turn before this fix still ends it, at the exact same
+    // millisecond. This is the population the finding explicitly says must
+    // be left untouched.
+    for (const strategy of strategies) {
+      expect(listenSilenceMsFor(strategy, NEW_TO_SKILL_OPPORTUNITIES)).toBe(LISTEN_SILENCE_MS[strategy]);
+      expect(listenSilenceMsFor(strategy, NEW_TO_SKILL_OPPORTUNITIES + 5)).toBe(LISTEN_SILENCE_MS[strategy]);
+    }
+    // Concretely: the exact 1.9s pause a first-exposure learner is now
+    // rescued from still, correctly, ends an experienced learner's turn.
+    expect(wouldEndTurn(1_900, listenSilenceMsFor('DIRECT', NEW_TO_SKILL_OPPORTUNITIES))).toBe(true);
+  });
+
+  it('flows end to end through the real controller, seeded from PERSISTED history', () => {
+    // A learner returning to a KC they have already been assessed on many
+    // times before — Core's persisted `attempts`, not this session's own
+    // count — must not be treated as new just because this is a fresh
+    // session. `opportunities` is seeded from `kcStates` in the constructor.
+    const seasoned: KcState[] = [
+      { kcId: KC_A, kcKey: 'money.make-change-counting-up', pKnown: 0.4, attempts: 6 },
+    ];
+    const c = new PedagogicalController([entry()], seasoned);
+    const decision = c.decide(
+      { kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1 },
+      NOW,
+    );
+    expect(decision.listenSilenceMs).toBe(LISTEN_SILENCE_MS[decision.strategy]);
+  });
+
+  it('a brand-new KC — no persisted history at all — gets the extended budget on its very first turn', () => {
+    const c = new PedagogicalController([entry()]); // no kcStates: never seen before
+    const decision = c.decide({ kind: 'entry_opened' }, NOW);
+    expect(decision.listenSilenceMs).toBe(listenSilenceMsFor(decision.strategy, 0));
+    expect(decision.listenSilenceMs).toBeGreaterThan(LISTEN_SILENCE_MS[decision.strategy]);
   });
 });
 
