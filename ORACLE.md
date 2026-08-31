@@ -1075,7 +1075,7 @@ utterance.** When every rung misses, the tutor teaches the idea by hand instead
 of stopping — an ordinary system-prompted recovery turn, which is a model call
 like any other and can therefore ask for an activity of its own, which re-enters
 the ladder. `ws/server.ts`'s `deliver()`/`serveSegment()` recursion had no guard
-until round 75 (2026-08-30, HIGH): a single learner utterance produced **20**
+until round 76 (2026-08-30, HIGH): a single learner utterance produced **20**
 ladder requests, each one a model completion, a judge completion, a Core round
 trip and — on the `needsGeneration` path — paid author calls. Nothing in the
 product stopped it (the run ended well short of `SESSION_MAX_TURNS`, on an
@@ -1088,7 +1088,7 @@ the model to stay in conversation rather than promise an activity that will not
 arrive. This bounds repeated FAILURES within one utterance and nothing else —
 the ladder's own internal rungs (§7.1→§7.3, the prerequisite walk and the
 frontier fallback) all live inside a single request and are untouched. See
-`RUNBOOK.md` Round 75.
+`RUNBOOK.md` Round 76.
 
 ---
 

@@ -1739,10 +1739,39 @@ everything passes the blocked half perfectly and destroys the product.
    implementation, and — for the end-to-end one — with only the WS
    argument removed. See `RUNBOOK.md` Round 74.
 
-63. **`serveSegment()` and `deliver()` are mutually recursive, and
+63. **Two writes that are each individually atomic are not one atomic
+   write, and the damage shows up on the READ side.** Found by
+   adversarial review, round 61 and closed as round 75, 2026-08-30
+   (MEDIUM). Item 49 and migration `0059` made ONE learner-memory
+   store's compare-and-swap correct against concurrent writers of that
+   store. The post-session review writes TWO — and Core wrote them by
+   looping and awaiting one RPC per store, which is two transactions
+   with a real, network-sized window between the first COMMIT and the
+   second. `getLearnerMemory` is the FIRST thing the next session for
+   the same learner does, so a session could start on half of a review:
+   the brand-new learner note beside the pedagogy note that same review
+   had already decided to replace. Nothing in the write path looks
+   wrong when you read it — each call is correct, the loop is correct,
+   and every per-store test passes — because the defect is not in
+   either write but in the gap between them, and only a READER can see
+   it. Fixed by `write_learner_memory_pair_checked` (migration `0061`),
+   one call for the pair, deliberately a thin wrapper calling `0059`'s
+   function twice (a plpgsql call runs inside its caller's transaction,
+   so that alone is the whole fix and there is still only ONE copy of
+   the compare-and-swap and the ledger insert). Oracle needed no
+   change: same body, same per-store `written` answer. The corollaries:
+   when a unit of meaning spans two rows, ask what a concurrent reader
+   sees BETWEEN the writes, not only whether each write is safe; write
+   the regression from the reader's side, since a test that only calls
+   the writer cannot fail; and the fix depends on the reader staying a
+   SINGLE statement — split `getLearnerMemory` into two SELECTs and the
+   same window reopens with a write path that still looks correct. See
+   `RUNBOOK.md` Round 75.
+
+64. **`serveSegment()` and `deliver()` are mutually recursive, and
    nothing counted the trips — one learner utterance could re-enter an
    empty content ladder forever.** Found in passing by round 74, closed
-   round 75 (2026-08-30, HIGH). A turn that asks for an activity is
+   round 76 (2026-08-30, HIGH). A turn that asks for an activity is
    served by `serveSegment`; when the ladder has nothing,
    `handleSegmentUnavailable()` produces a recovery turn that goes out
    through the SAME `deliver()` — and that turn can carry a
@@ -1788,7 +1817,7 @@ everything passes the blocked half perfectly and destroys the product.
    `MAX_SEGMENT_RETRIES = 0` (`expected 1 to be 2`, the legitimate
    miss-then-serve path), and to hold on the EXPENSIVE
    `needsGeneration` shape and not only the cheap one. See `RUNBOOK.md`
-   Round 75.
+   Round 76.
 
 ---
 

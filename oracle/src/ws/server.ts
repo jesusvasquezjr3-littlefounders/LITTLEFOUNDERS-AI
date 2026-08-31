@@ -172,7 +172,7 @@ const MIN_TURN_GAP_MS = 700;
  * this constant existed that instruction was the ONLY thing standing between a
  * content gap and an unbounded loop.
  *
- * Found by adversarial review, round 75 (2026-08-30, HIGH), and reproduced
+ * Found by adversarial review, round 76 (2026-08-30, HIGH), and reproduced
  * rather than reasoned about: a SINGLE `learner_text` frame produced twenty
  * `turn` + `NO_SEGMENT` pairs, each pair a real model completion, a real judge
  * completion and a real Core round trip, plus paid author calls whenever the
@@ -1574,7 +1574,7 @@ async function serveSegment(
       message: 'No activity was available for that just now.',
     });
     /*
-     * THE RECURSION, now counted (round 75, 2026-08-30, HIGH). This recovery
+     * THE RECURSION, now counted (round 76, 2026-08-30, HIGH). This recovery
      * turn goes out through the same `deliver()` as every other, so it can ask
      * for an activity of its own — and used to be able to do so for as long as
      * the model kept asking. `attempt + 1` is what `deliver()` measures against

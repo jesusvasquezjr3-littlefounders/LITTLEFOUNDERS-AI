@@ -800,7 +800,7 @@ export class TutorOrchestrator {
    *
    * `lastAttempt` says that this recovery turn's OWN `segmentRequest`, if it
    * produces one, will be refused rather than served — `ws/server.ts` bounds
-   * how many times one learner utterance may re-enter the ladder (round 75,
+   * how many times one learner utterance may re-enter the ladder (round 76,
    * 2026-08-30, HIGH). Telling the model so is not the bound (an instruction
    * has never been one; that is the whole lesson of the defect) — it is what
    * keeps the LEARNER's last turn coherent, so the tutor teaches by hand

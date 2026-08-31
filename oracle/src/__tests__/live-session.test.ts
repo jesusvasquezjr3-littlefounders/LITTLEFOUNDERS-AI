@@ -86,7 +86,7 @@ let servedSegmentDifficulty: number | null = null;
 /**
  * How many of the next `/tutor/internal/segments` calls the fake Core should
  * answer WITHOUT a segment — the state most skills are actually in, and the
- * one `serveSegment`'s recovery path exists for (round 75).
+ * one `serveSegment`'s recovery path exists for (round 76).
  * `Number.POSITIVE_INFINITY` is a ladder that never has anything.
  */
 let segmentFailuresLeft = 0;
@@ -697,9 +697,9 @@ describe('a real live session over a real websocket', () => {
   });
 
   /*
-   * ══ ROUND 75: ONE UTTERANCE, A BOUNDED NUMBER OF LADDER ATTEMPTS ══
+   * ══ ROUND 76: ONE UTTERANCE, A BOUNDED NUMBER OF LADDER ATTEMPTS ══
    *
-   * `deliver()` and `serveSegment()` are mutually recursive, and until round 75
+   * `deliver()` and `serveSegment()` are mutually recursive, and until round 76
    * nothing counted the trips. A turn asks for an activity; the ladder has
    * none; `handleSegmentUnavailable()` produces a recovery turn; that turn goes
    * out through the SAME `deliver()` and can ask for an activity of its own —

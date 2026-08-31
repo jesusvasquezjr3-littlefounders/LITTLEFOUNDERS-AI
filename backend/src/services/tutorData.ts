@@ -391,8 +391,9 @@ export async function getLearnerMemory(userId: string): Promise<LearnerBrief | n
 }
 
 /**
- * Write one store and its ledger row, ATOMICALLY, with the check-then-write
- * as one Postgres call.
+ * Write BOTH memory stores and their ledger rows, ATOMICALLY — the two
+ * compare-and-swaps and the two ledger rows are one Postgres call, so they
+ * are one transaction.
  *
  * Found by adversarial review, round 42 (2026-08-30, MEDIUM/HIGH): this used
  * to be a plain read-then-write — GET the current content, then an
@@ -434,37 +435,94 @@ export async function getLearnerMemory(userId: string): Promise<LearnerBrief | n
  * fetched at session start, the actual belief `content` was computed from —
  * so two overlapping sessions' proposals are compared against what each one
  * genuinely started from, and the loser correctly reports 'conflict'.
+ *
+ * ROUND 61 (2026-08-30, MEDIUM — deferred that round, closed here as round
+ * 75) then found the remaining gap, and it was on the READ side. Both of the
+ * fixes above make ONE store's write correct; this route writes TWO. It used
+ * to do that by looping and awaiting `writeLearnerMemory` once per store —
+ * two PostgREST calls, so two transactions, with a real network-sized window
+ * between the first COMMIT and the second. `getLearnerMemory`, run at the
+ * START of the next session for the same learner and by the guardian dossier
+ * view, could land in that window and read a TORN pair: the brand-new learner
+ * note beside the pedagogy note the same review had already decided to
+ * replace. Reproduced by holding the `pedagogy` call open on a
+ * manually-resolved promise while the `learner` call completed and a
+ * concurrent read ran — it returned `{ learner: 'NEW…', pedagogy: 'OLD…' }`.
+ * It self-corrects the moment the second write lands and never crosses
+ * learners, which is why it is MEDIUM; what makes it worth closing is that
+ * the pair IS the next session's model prompt, and that session's own review
+ * then writes its next proposal back down from it.
+ *
+ * `write_learner_memory_pair_checked` (migration 0061) takes both proposals
+ * in ONE call. It is a thin wrapper that calls 0059's function twice — a
+ * plpgsql function runs inside its caller's transaction, so that alone is the
+ * whole fix, and it keeps ONE copy of the compare-and-swap, the verdict
+ * vocabulary and the ledger insert rather than a second copy to drift.
+ * `getLearnerMemory` reads both rows in a SINGLE statement, so it sees one
+ * snapshot and therefore either both-before or both-after; splitting that
+ * read into two SELECTs would reopen the same window from the other side.
+ *
+ * Per-store semantics are deliberately unchanged: each store is still judged
+ * against its OWN `expectedBefore`, a store whose row moved under it still
+ * reports 'conflict' and is still not written, and the other store still
+ * lands. Only the VISIBILITY changed — the writes commit together. The
+ * returned map carries one entry per store actually PROPOSED (a `null`
+ * proposal means the review had nothing to say about that store, never "erase
+ * it"), which is the same shape the route's own per-store loop produced and
+ * the shape Oracle's `updateLearnerMemory` already checks store by store.
  */
-export async function writeLearnerMemory(input: {
+export async function writeLearnerMemoryPair(input: {
   userId: string;
-  store: 'learner' | 'pedagogy';
-  content: string;
-  expectedBefore: string | null;
+  stores: { learner: string | null; pedagogy: string | null };
+  expectedBefore: { learner: string | null; pedagogy: string | null };
   actor: string;
   sessionId: string | null;
-}): Promise<boolean> {
+}): Promise<Partial<Record<'learner' | 'pedagogy', boolean>>> {
   const sha = (text: string) => createHash('sha256').update(text, 'utf8').digest('hex');
-  const outcome = await serviceRest<string>('/rpc/write_learner_memory_checked', {
-    method: 'POST',
-    body: JSON.stringify({
-      p_user_id: input.userId,
-      p_store: input.store,
-      p_expected_before: input.expectedBefore,
-      p_new_content: input.content,
-      p_before_hash: input.expectedBefore === null ? null : sha(input.expectedBefore),
-      p_after_hash: sha(input.content),
-      p_actor: input.actor,
-      p_session_id: input.sessionId,
-    }),
-  });
-  if (outcome === null) return false; // transport failure
-  if (outcome === 'conflict') {
-    console.warn(
-      `[tutor] learner_memory write for user ${input.userId} store ${input.store} lost a concurrent write race — dropped, not overwritten`,
-    );
-    return false;
+  const proposed = (['learner', 'pedagogy'] as const).filter((store) => input.stores[store] !== null);
+  if (proposed.length === 0) return {};
+
+  const outcomes = await serviceRest<Partial<Record<'learner' | 'pedagogy', string>>>(
+    '/rpc/write_learner_memory_pair_checked',
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        p_user_id: input.userId,
+        p_learner_expected: input.expectedBefore.learner,
+        p_learner_new: input.stores.learner,
+        p_learner_before_hash:
+          input.expectedBefore.learner === null ? null : sha(input.expectedBefore.learner),
+        p_learner_after_hash: input.stores.learner === null ? null : sha(input.stores.learner),
+        p_pedagogy_expected: input.expectedBefore.pedagogy,
+        p_pedagogy_new: input.stores.pedagogy,
+        p_pedagogy_before_hash:
+          input.expectedBefore.pedagogy === null ? null : sha(input.expectedBefore.pedagogy),
+        p_pedagogy_after_hash: input.stores.pedagogy === null ? null : sha(input.stores.pedagogy),
+        p_actor: input.actor,
+        p_session_id: input.sessionId,
+      }),
+    },
+  );
+
+  /*
+   * A transport failure is reported as "no proposed store landed" rather than
+   * as an empty map: an absent key means "nothing was proposed for that
+   * store" to every caller here, so collapsing a failed call into one would
+   * read as success (§1.14 — failure must be distinguishable from emptiness).
+   * The same reasoning covers a verdict this layer does not recognise: only
+   * the two the function documents count as landed.
+   */
+  const written: Partial<Record<'learner' | 'pedagogy', boolean>> = {};
+  for (const store of proposed) {
+    const outcome = outcomes === null ? null : outcomes[store];
+    if (outcome === 'conflict') {
+      console.warn(
+        `[tutor] learner_memory write for user ${input.userId} store ${store} lost a concurrent write race — dropped, not overwritten`,
+      );
+    }
+    written[store] = outcome === 'written' || outcome === 'unchanged';
   }
-  return true; // 'written' or 'unchanged'
+  return written;
 }
 
 /**

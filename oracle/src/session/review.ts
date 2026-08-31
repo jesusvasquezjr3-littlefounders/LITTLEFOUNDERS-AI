@@ -292,8 +292,9 @@ export async function runPostSessionReview(input: {
   /*
    * `expectedBefore: brief` — the SAME session-start snapshot `userContent`
    * built the model's prompt from, above — is what makes Core's
-   * compare-and-swap (`write_learner_memory_checked`, migration 0059)
-   * actually able to detect a concurrent session's write. Found by
+   * compare-and-swap (`write_learner_memory_pair_checked`, migration 0061,
+   * wrapping `write_learner_memory_checked`, migration 0059) actually able
+   * to detect a concurrent session's write. Found by
    * adversarial review, round 51 (2026-08-30, MEDIUM): this used to be
    * omitted entirely, so Core computed its own "expected before" from a
    * fresh read taken immediately before the RPC call — a value that, by
