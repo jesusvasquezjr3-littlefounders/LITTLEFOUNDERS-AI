@@ -340,6 +340,7 @@
     "SESSION_EXPIRED": "This conversation expired. Start a new one to keep going.",
     "SESSION_NOT_FOUND": "We couldn't find this conversation. Start a new one.",
     "STT_FAILED": "I didn't quite catch that. Try again, a little closer to the microphone.",
+    "STT_UNAVAILABLE": "Something went wrong on our end. Try again in a moment.",
     "VALIDATION_ERROR": "I didn't understand that. Want to try saying it another way?",
     "generic": "Something didn't work just then. Try again."
   },

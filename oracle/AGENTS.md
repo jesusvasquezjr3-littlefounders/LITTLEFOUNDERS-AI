@@ -2118,6 +2118,38 @@ everything passes the blocked half perfectly and destroys the product.
    narrower than the course player's simultaneous-cast presentation, but
    never the flat 2D rig for the character that actually matters at any
    given instant. See `RUNBOOK.md` Round 100.
+73. **A result type with room for only one failure state will eventually
+   carry two, and the second one arrives as a silent behavioral bug, not a
+   type error.** Found by adversarial review sweep tutor-review-sweep-101
+   (voice-audio-quality dimension, 3/3 skeptics), round 102, 2026-08-31
+   (HIGH). `transcribe()`'s (`ws/server.ts`) return type was `string |
+   null`, which has exactly one falsy state — so when `provider.transcribe()`
+   grew a SECOND failure mode over time (a `VoiceUnavailableError` thrown
+   on a timeout, a dropped connection, or a provider 5xx — none of which
+   existed when `null` was chosen as "nothing to say") the `catch` block
+   had nowhere to put it except the same `null` a genuinely silent child
+   already produced. `handleAudioClip` could not tell "the provider never
+   answered" from "the child said nothing" because the type it read from
+   had already erased the difference before the caller ever saw it — the
+   two facts were distinguishable at the throw site and nowhere after.
+   Every learner-visible symptom followed from that one erasure:
+   `STT_FAILED`'s own copy, "try again, a little closer to the
+   microphone," is sound advice for the second case and actively
+   misleading for the first, telling a child their technique caused an
+   outage they could not have fixed by speaking louder. Fixed by widening
+   the return type to a discriminated `{ text: string } | { unavailable:
+   true }`, which has a distinct member for each fact instead of one
+   falsy value doing double duty, and adding `STT_UNAVAILABLE` alongside
+   `STT_FAILED` in `tutor.conversationError.*` (item 2 above already
+   states the rule this follows: a new code needs its three translated
+   strings in the same commit). General lesson: when a function's result
+   type has exactly one way to signal "nothing," ask whether that one way
+   is being asked to mean more than one thing NOW, and re-ask the same
+   question every time a callee gains a new failure mode — a `string |
+   null` or a bare boolean is a standing invitation for the next distinct
+   failure to be absorbed into whichever falsy value already exists,
+   silently, with no compiler error to catch it. See `RUNBOOK.md` Round
+   101.
 
 ---
 

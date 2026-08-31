@@ -1311,6 +1311,7 @@ describe('the soft keyboard and the lesson plate', () => {
 describe('a failure says what actually failed', () => {
   const CODES = [
     'STT_FAILED',
+    'STT_UNAVAILABLE',
     'CONNECTION_LOST',
     'SESSION_EXPIRED',
     'SESSION_NOT_FOUND',
@@ -1343,5 +1344,28 @@ describe('a failure says what actually failed', () => {
     // The old behaviour rendered errors.api.INTERNAL — "something went wrong on
     // our side" — for this. The new line is about the microphone.
     expect(text).toMatch(/didn't quite catch that/i);
+  });
+
+  /*
+   * ROUND 101: `STT_FAILED` and `STT_UNAVAILABLE` are two different facts
+   * that used to arrive at the client as the identical `null` from
+   * `transcribe()` (`oracle/src/ws/server.ts`) — "the child said nothing
+   * intelligible" and "the call to the STT provider itself never came back"
+   * (a timeout, a dropped connection, an Inworld 5xx). Oracle now tells
+   * them apart on the wire; this asserts the client renders them as two
+   * different sentences, neither of which blames the child's microphone
+   * technique for an outage that was never theirs to fix.
+   */
+  it('does not blame the microphone when the STT provider itself is unreachable', () => {
+    const { container } = renderConversation(
+      makeSocket({ error: { code: 'STT_UNAVAILABLE', message: 'inworld stt responded 500' } }),
+      { ready: true },
+    );
+    const text = container.textContent ?? '';
+    // Never STT_FAILED's "try again closer to the microphone" copy, and
+    // never the wire message.
+    expect(text).not.toMatch(/closer to the microphone/i);
+    expect(text).not.toContain('inworld stt responded 500');
+    expect(text).toMatch(/something went wrong on our end/i);
   });
 });
