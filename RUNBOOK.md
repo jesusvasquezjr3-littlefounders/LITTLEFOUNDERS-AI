@@ -7293,3 +7293,113 @@ judge completion and a Core round trip. Bounded only by the session
 turn cap, not by anything about the failure. Left out of this round on
 purpose — it is a different defect with a different fix — and filed
 rather than folded in.
+
+## Round 75: the two learner-memory stores were each atomic and the PAIR was not, so a session could start on half of a review
+
+Round 61 found this and deliberately deferred it, because closing it
+needed a migration rather than a same-session patch. This is that
+migration and its wiring. One MEDIUM finding, fixed; nothing else in
+scope.
+
+**MEDIUM, FIXED — a session or guardian read could observe a torn
+dossier mid-review.** `0059` made ONE learner-memory store's write
+atomic against concurrent writers of THAT store (rounds 42/51), and
+the post-session review writes TWO. `PUT
+/internal/tutor/learner-memory` did that by looping over `['learner',
+'pedagogy']` and awaiting `writeLearnerMemory` once per store — two
+PostgREST calls, therefore two transactions, with a real
+network-sized window between the first COMMIT and the second.
+`getLearnerMemory` runs in exactly that window's blast radius: it is
+the FIRST thing the next session for the same learner does, and it is
+what the guardian dossier view reads. Landing there it got a torn
+pair — the brand-new learner note beside the pedagogy note the same
+review had already decided to replace. The blast radius is contained
+(one learner, self-corrects the moment the second write lands, never
+a cross-learner leak), which is why it stayed MEDIUM; what makes it
+worth closing rather than tolerating is that the pair IS the next
+session's model prompt, and that session's own review then computes
+its next proposal from the brief it was handed and writes it back
+down as if it were coherent.
+
+Reproduced twice, both times as the real thing rather than as
+reasoning about it. Against a real local Postgres (the 60-migration
+dev stack, `docker exec … psql`): calling `write_learner_memory_checked`
+for `learner`, reading, then calling it for `pedagogy` returned
+`learner = NEW … | pedagogy = OLD …` to the reader in between —
+verbatim the round-61 finding. And through the real Express route in
+`tutor.test.ts`, with a stub that holds any write touching the
+pedagogy store open on a manually-released gate while a write touching
+only the learner store is applied at once, and one shared `stored`
+object answering the genuine `/learner_memory` read: pre-fix that read
+returned `{ learner: 'NEW learner note', pedagogy: 'OLD pedagogy
+note' }`, confirmed by `git stash` of the two source files with the
+test left in place.
+
+Fixed with `0061_atomic_learner_memory_pair_write.sql` —
+`write_learner_memory_pair_checked`, which takes both proposals in ONE
+call. It is deliberately a thin wrapper that calls `0059`'s function
+twice rather than a second implementation of the compare-and-swap: a
+plpgsql function runs inside its CALLER's transaction, so calling it
+twice from here is already the entire fix, and it leaves exactly one
+copy of the compare, the `written`/`unchanged`/`conflict` vocabulary
+and the append-only ledger insert. The advisory lock is taken once up
+front with `0059`'s own learner-keyed salt so a pair serializes as a
+unit whichever stores it carries. Per-store semantics are unchanged on
+purpose — each store is still judged against its OWN `expectedBefore`,
+a store whose row moved under it still reports `conflict` and is still
+not written, the other still lands — and a NULL proposal still means
+"this review said nothing about that store", never "erase it"
+(`learner_memory.content` is NOT NULL). Only the VISIBILITY changed:
+the two writes commit together, or neither does. `0059`'s single-store
+function is deliberately NOT dropped even though Core now calls only
+the pair — a `DROP FUNCTION` is a contraction, and one contraction
+blocks the whole additive batch from auto-applying.
+
+**What the fix leans on, written down because a later change could
+quietly remove it:** `getLearnerMemory` reads both rows in a SINGLE
+statement, so it sees one snapshot and therefore either both-before or
+both-after. Splitting that read into two SELECTs would reopen the same
+window from the other side, with the write side looking perfectly
+correct.
+
+Core side: `writeLearnerMemory` becomes `writeLearnerMemoryPair` (one
+RPC, per-store verdicts, a transport failure reported as "no proposed
+store landed" rather than as an empty map — §1.14: an absent key means
+"nothing was proposed for it"), and the route's loop becomes one call.
+The wire contract is untouched, so `oracle/` needed no change:
+`updateLearnerMemory` still PUTs the same body and still requires
+every PROPOSED store to come back `true`.
+
+Verification. Real local Postgres, migration applied through the
+project's own migrator (`npm run db:migrate`, then again to prove the
+recorded-skip path, plus the raw file replayed twice to prove the DDL
+is idempotent): six sequential cases (both written; `learner`
+conflicting while `pedagogy` still lands, in one transaction; both
+unchanged with ZERO ledger rows; a NULL store skipped and its row
+untouched; nothing proposed at all → `{}`; a first write for a learner
+with no stored memory) and a genuine concurrency case — two
+simultaneous `psql` connections, one holding its transaction open for
+3s, a third connection reading in the middle. The reader saw the pair
+fully-old during the open transaction and fully-new after commit,
+never a mix; a second writer racing the same call off the same belief
+blocked on the advisory lock and then correctly reported `conflict`
+on BOTH stores, leaving exactly one session's pair whole. Types
+regenerated (`npm run db:types`, additive-only diff). Backend suite
+green (42 files, 698 tests), type-check (both tsconfigs), lint and
+build clean; `database` gates green (20 tests, migration sequence and
+phase classifiers); root `docs:check`/`secrets:check`/`tools:test`
+clean.
+
+**NOT run, and stated rather than glossed:** `npm run db:reset` twice.
+The only local Supabase stack on this machine belongs to the user's
+main checkout — this isolated worktree has no materialized
+`database/supabase/` clone of its own — and `database/AGENTS.md` §6
+explicitly permits an isolated disposable stack INSTEAD of a reset and
+forbids nuking a shared development database. `db:reset` would have
+regenerated that stack's secrets and destroyed its volume. What a
+from-zero reset actually gates for a delta like this one — that the
+DDL replays cleanly — was covered instead by applying the file twice
+by hand against the live instance, which is the whole of its DDL
+(`CREATE OR REPLACE FUNCTION` plus REVOKE/GRANT, no `CREATE TABLE`).
+The probe learner and every row it wrote were deleted from that stack
+afterwards.

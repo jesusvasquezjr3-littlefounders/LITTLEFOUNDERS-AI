@@ -3,6 +3,7 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 import { jsonResponse, mintToken } from './helpers.js';
 import { startOfLocalDayIso, tierForBirthDate } from '../routes/tutor.js';
+import { getLearnerMemory } from '../services/tutorData.js';
 import { GRADERS } from '../lesson-contract/registry.js';
 
 /*
@@ -215,6 +216,19 @@ function stub(opts: StubOpts = {}) {
         const existing = (opts.sessions ?? []).length;
         if (existing >= cap) return Promise.resolve(jsonResponse(200, []));
         return Promise.resolve(jsonResponse(200, opts.insertedSession ?? [SESSION_ROW]));
+      }
+      if (url.includes('/rpc/write_learner_memory_pair_checked')) {
+        /*
+         * The real function (migration 0061) takes both stores and answers
+         * with one verdict per store ACTUALLY PROPOSED — a NULL proposal is
+         * skipped and its key is absent, which is what lets the route report
+         * "nothing was asked of that store" apart from "that store failed".
+         */
+        const body = JSON.parse(String(init?.body ?? '{}')) as Record<string, string | null>;
+        const verdicts: Record<string, string> = {};
+        if (body.p_learner_new !== null) verdicts.learner = 'written';
+        if (body.p_pedagogy_new !== null) verdicts.pedagogy = 'written';
+        return Promise.resolve(jsonResponse(200, verdicts));
       }
       if (url.includes('/rpc/award_tutor_xp')) {
         // Default: award exactly what was requested (no cap in play). A test
@@ -1606,11 +1620,124 @@ describe('PUT /api/v1/tutor/internal/learner-memory', () => {
       });
 
     expect(response.status).toBe(200);
-    const rpcCall = calls.find((c) => c.url.includes('/rpc/write_learner_memory_checked'));
+    const rpcCall = calls.find((c) => c.url.includes('/rpc/write_learner_memory_pair_checked'));
     expect(rpcCall).toBeDefined();
     const rpcBody = JSON.parse(String(rpcCall?.body ?? '{}'));
-    expect(rpcBody.p_expected_before).toBe('Nota original de la sesión.');
-    expect(rpcBody.p_new_content).toBe('Nueva nota.');
+    expect(rpcBody.p_learner_expected).toBe('Nota original de la sesión.');
+    expect(rpcBody.p_learner_new).toBe('Nueva nota.');
+    // The store this review proposed nothing for is passed as NULL — "skip",
+    // never "store null" (migration 0061) — and reports no verdict at all.
+    expect(rpcBody.p_pedagogy_new).toBeNull();
+    expect(response.body.data.written).toEqual({ learner: true });
+  });
+
+  /*
+   * THE ROUND-61 FINDING, closed here as round 75 (MEDIUM). This route wrote
+   * the two stores as two independently-atomic, sequentially-awaited RPC
+   * calls — two transactions — so a `getLearnerMemory` landing between the
+   * first COMMIT and the second read a TORN pair: the brand-new learner note
+   * beside the pedagogy note the same review had already decided to replace.
+   * That reader is not hypothetical: it is the very next session's own
+   * learner brief, and the guardian dossier view.
+   *
+   * The stub below is round 61's own reproduction technique, written so it
+   * runs against EITHER implementation: a write that touches the pedagogy
+   * store is held open on a manually-released gate, a write that touches only
+   * the learner store is applied at once, and one shared `stored` object
+   * answers the real `/learner_memory` read exactly as PostgREST would. Under
+   * the old loop that means the learner write commits, the pedagogy write
+   * blocks, and the reader sees one of each — the test fails for precisely
+   * the reason claimed. Under the single pair call there is no such moment to
+   * catch: both stores move when the one call resolves, or neither does.
+   */
+  it('a read landing mid-write can never see one brand-new note beside one stale one', async () => {
+    const stored: Record<string, string> = {
+      learner: 'OLD learner note',
+      pedagogy: 'OLD pedagogy note',
+    };
+    let releaseWrite: () => void = () => undefined;
+    const gate = new Promise<void>((resolve) => {
+      releaseWrite = resolve;
+    });
+    let signalPedagogyWriteStarted: () => void = () => undefined;
+    const pedagogyWriteStarted = new Promise<void>((resolve) => {
+      signalPedagogyWriteStarted = resolve;
+    });
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        if (url.includes('/rest/v1/learner_memory?')) {
+          return jsonResponse(
+            200,
+            Object.entries(stored).map(([store, content]) => ({ store, content })),
+          );
+        }
+        // Both the old per-store RPC and the new pair RPC, so the same test
+        // exercises whichever one the route under test actually calls.
+        if (url.includes('/rpc/write_learner_memory')) {
+          const body = JSON.parse(String(init?.body ?? '{}')) as Record<string, string | null>;
+          const single = (store: string, content: string | null | undefined) =>
+            content === null || content === undefined ? undefined : { store, content };
+          const writes = [
+            body.p_store === undefined
+              ? single('learner', body.p_learner_new)
+              : body.p_store === 'learner'
+                ? single('learner', body.p_new_content)
+                : undefined,
+            body.p_store === undefined
+              ? single('pedagogy', body.p_pedagogy_new)
+              : body.p_store === 'pedagogy'
+                ? single('pedagogy', body.p_new_content)
+                : undefined,
+          ].filter((w): w is { store: string; content: string } => w !== undefined);
+
+          if (writes.some((w) => w.store === 'pedagogy')) {
+            signalPedagogyWriteStarted();
+            await gate;
+          }
+          const verdicts: Record<string, string> = {};
+          for (const w of writes) {
+            stored[w.store] = w.content;
+            verdicts[w.store] = 'written';
+          }
+          return jsonResponse(200, body.p_store === undefined ? verdicts : 'written');
+        }
+        return jsonResponse(200, []);
+      }),
+    );
+
+    // `.then()` — not a bare `.send()` — because supertest does not actually
+    // dispatch until the Test is awaited, and this test has to look at the
+    // world WHILE the request is in flight.
+    const pending = request(createApp())
+      .put('/api/v1/tutor/internal/learner-memory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: KID,
+        sessionId: SESSION,
+        stores: { learner: 'NEW learner note', pedagogy: 'NEW pedagogy note' },
+        expectedBefore: { learner: 'OLD learner note', pedagogy: 'OLD pedagogy note' },
+      })
+      .then((res) => res);
+
+    await pedagogyWriteStarted;
+    const midWrite = await getLearnerMemory(KID);
+
+    releaseWrite();
+    const response = await pending;
+
+    // The whole finding in one assertion: never a mix.
+    expect(midWrite).not.toEqual({ learner: 'NEW learner note', pedagogy: 'OLD pedagogy note' });
+    expect(midWrite).toEqual({ learner: 'OLD learner note', pedagogy: 'OLD pedagogy note' });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.written).toEqual({ learner: true, pedagogy: true });
+    await expect(getLearnerMemory(KID)).resolves.toEqual({
+      learner: 'NEW learner note',
+      pedagogy: 'NEW pedagogy note',
+    });
   });
 });
 

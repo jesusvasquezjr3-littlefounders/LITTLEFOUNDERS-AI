@@ -475,7 +475,7 @@ export async function voiceCheck(input: {
  * `expectedBefore` is THIS SESSION'S OWN belief — `learnerBrief.learner`/
  * `.pedagogy`, read at session START — not a value re-derived at write time.
  * Found by adversarial review, round 51 (2026-08-30, MEDIUM): Core's
- * `writeLearnerMemory` used to read the CURRENT row itself, immediately
+ * memory write used to read the CURRENT row itself, immediately
  * before its own compare-and-swap call, and compare against THAT — which by
  * construction always matches whatever is currently stored (barring a
  * sub-second race), so the optimistic-concurrency check 0059 added could
