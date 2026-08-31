@@ -390,6 +390,86 @@ describe('the composer refuses to submit while a reply is already pending', () =
 });
 
 /*
+ * Found by LIVE testing against the real oracle-backed dev stack, round 108
+ * (2026-08-31): with the microphone blocked or unavailable — this product's
+ * own documented text fallback, /ORACLE.md §4.2b — a clean message typed
+ * character-by-character into the composer could come back with an
+ * unrelated remembered string spliced INTO the middle of it before this
+ * component ever saw a keystroke. Reproduced twice against the running dev
+ * stack: typing "i dont know money is confusing" and pressing Send produced
+ * the sent turn "savings practice with a number pad pmessage alpha
+ * firstlease" — the intruding text belonging to an entirely different,
+ * unrelated earlier submission, spliced in mid-word. `submitTyped` below and
+ * `useTutorSocket.ts`'s `sendText` were both read end-to-end and neither
+ * buffers, debounces, or shares state across submissions — each call sends
+ * exactly one JSON frame for exactly the string React's own `typed` state
+ * holds at that instant. The corruption lands in the DOM's OWN `.value`
+ * before `onChange` ever fires, which is exactly the shape of a browser (or,
+ * as this dev stack's own browser pane turned out to be, a single browser
+ * profile shared by many concurrent automated tabs on the same origin)
+ * treating an unlabelled, autocomplete-less `<input>` as an ordinary
+ * saved-text field and replaying a PRIOR typed value into a fresh one.
+ * `autoComplete="off"` is the one signal a browser's autofill is obliged to
+ * honour for a plain text field, and it closes a real §1.9 gap on its own
+ * terms even where autofill never fires: without it, a child's own typed
+ * words — or a PRIOR user's, on a shared or public device — are exactly what
+ * a browser remembers and can resurface, unprompted, in a later session.
+ *
+ * A genuine `key: 'Enter'` keyboard event was separately confirmed, live, to
+ * submit correctly every time it was dispatched — the composer's Enter
+ * wiring itself is not the defect; a corrupted DOM value reaching a correct
+ * handler is.
+ */
+describe('the composer opts out of browser autofill', () => {
+  it('marks its text input autoComplete="off", so no browser can remember or replay a prior message into it', () => {
+    render(conversation(makeSocket(), false));
+
+    expect(screen.getByRole('textbox')).toHaveAttribute('autocomplete', 'off');
+  });
+});
+
+describe('an ordinary Enter key press sends the typed message, exactly as the Send button does', () => {
+  it('sends the trimmed text and clears the field', () => {
+    const sendText = vi.fn();
+    render(conversation(makeSocket({ sendText }), false));
+    const input = screen.getByRole('textbox');
+
+    fireEvent.change(input, { target: { value: '  what is saving  ' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(sendText).toHaveBeenCalledWith('what is saving');
+    expect(input).toHaveValue('');
+  });
+
+  it('does nothing for any other key', () => {
+    const sendText = vi.fn();
+    render(conversation(makeSocket({ sendText }), false));
+    const input = screen.getByRole('textbox');
+
+    fireEvent.change(input, { target: { value: 'what is saving' } });
+    fireEvent.keyDown(input, { key: 'Tab' });
+
+    expect(sendText).not.toHaveBeenCalled();
+  });
+});
+
+describe('two ordinary messages sent one after another never merge into one', () => {
+  it('sends each exactly once, in order, as two distinct uncorrupted strings', () => {
+    const sendText = vi.fn();
+    render(conversation(makeSocket({ sendText }), false));
+    const input = screen.getByRole('textbox');
+
+    fireEvent.change(input, { target: { value: 'i dont know money is confusing' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    fireEvent.change(input, { target: { value: 'what is saving' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(sendText.mock.calls).toEqual([['i dont know money is confusing'], ['what is saving']]);
+  });
+});
+
+/*
  * Found by adversarial review, round 90 (2026-08-31, MEDIUM): "Start over"
  * and "Finish" reach `onRestart`/`onExit` (`TutorExperience.tsx`) with no
  * `awaitingReply` guard at all — unlike the composer's send button just
