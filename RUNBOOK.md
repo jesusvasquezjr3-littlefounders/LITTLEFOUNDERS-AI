@@ -11390,3 +11390,128 @@ responsive pattern was introduced, only a reuse of existing ones.
 (§8). No `/ORACLE.md` or `oracle/AGENTS.md` item: this is a list-pagination
 fix to an existing Core route, not a change to Tutor behaviour, a prompt, a
 context field, or a content-ladder rule.
+## Round 111: a reported "the number pad does not respond" investigated — no code defect found in `LiveSegmentPanel`'s draft handling, one refuted hypothesis, one narrow unrelated timing window found and left open
+
+A report described reaching a live, socket-backed `number_input` activity
+mid-conversation ("You save 8 pesos... how many pesos have you saved in
+total?"), where tapping a digit on the numeric keypad never updated the
+on-screen answer and the Check button never enabled — with `.disabled`
+confirmed `false` and `document.elementFromPoint` confirmed the tapped
+digit topmost, ruling out the AGENTS.md §1.14 canvas-overlay class by the
+reporter's own account. The suspected mechanism: `LiveSegmentPanel.tsx`'s
+own segment-reset effect —
+`useEffect(() => { setDraft(undefined); ...; onCharacterCue?.(null) },
+[live.segmentId, onCharacterCue])` — refiring on every one of a live
+socket's continuous, unrelated frames (a mic-level tick, a budget/state
+update) rather than only on a genuinely new segment, wiping a digit the
+instant after it registered.
+
+**The hypothesis does not hold, on two independent lines of evidence.**
+First, by reading the actual wiring rather than the shape of the effect
+alone: `ConversationView.tsx` passes `onCharacterCue={onCharacterCue}`
+straight through from `TutorExperience.tsx`'s `onCharacterCue:
+setSegmentCue` — a React `useState` setter, which React guarantees stays
+referentially identical for the life of the component — so the effect's
+second dependency cannot be the unstable reference the hypothesis needs.
+Second, `live.segmentId` (the effect's other dependency) is a plain
+string, set once per genuinely new activity: `oracle/src/ws/server.ts`'s
+`deliver()` sends exactly one `type: 'segment'` frame per served
+activity, and `useTutorSocket.ts`'s `case 'segment'` is the only place
+`setSegment` is ever called — nothing re-serves the SAME activity under a
+fresh id on an ordinary turn.
+
+**A new test proves it rather than arguing it, using the REAL, unmocked
+registry** (`LiveSegmentPanel.numberPadDraft.test.tsx`, deliberately
+*not* added to this directory's existing `LiveSegmentPanel.test.tsx`,
+which stands in a fake renderer on purpose because its own questions are
+about the staleness guard, not a real exercise). A helper component
+mirrors production exactly — a stable `onCharacterCue` from `useState`'s
+own setter, an unrelated sibling counter that re-renders on demand — and
+drives the REAL `number_input` renderer (`NumberInput` from
+`lesson-engine/registry.ts`) with `fireEvent.click`. A tap updates the
+readout; the readout survives an unrelated re-render through the actual
+production wiring; it survives even the deliberately WORSE case of a
+brand-new `live` object built fresh on every render with the SAME
+`segmentId` (harder than anything a real socket does, since `useTutorSocket`
+only replaces its `segment` state on a genuine `'segment'` frame); digits
+still accumulate and the Check button still enables afterward; and a
+GENUINELY new segment (a different `segmentId`) still correctly resets
+the draft, proving the test is not merely inert. Five tests, all green.
+`isSegmentLocked` (`segmentLock.ts`), `inputCanSubmit.number_input` /
+`parseableNumber` and `NumberPad`'s own `onClick` (`primitives.tsx`) were
+each read in full and are correct on inspection — no `disabled`
+miscomputation, no stale-closure risk, no answer-shape mismatch.
+
+**One real, narrow, already-self-mitigated timing window found along the
+way, and deliberately left untouched.** `StageShell.tsx` draws a
+full-screen `data-tutor-veil` over the ENTIRE stage — by the file's own
+comment, "a transparent full-screen div left over the stage swallows
+every tap" — that only becomes `pointer-events-none` once
+`useStageAnnouncement`'s `ready` flips true: on the 3D scene's first
+rendered frame, or an 8-second (`VEIL_TIMEOUT_MS`) fallback, whichever
+comes first. `ready` is a plain `useState(false)` with no reset path once
+true, so this window exists ONLY in the first few seconds after the stage
+mounts — confirmed directly with `document.elementFromPoint` against a
+real running dev server: a click on the Tutor's own opening chips ("My
+courses") landed on `DIV:Your island is arriving…` (the veil) rather than
+the chip underneath, seconds after navigating to `/tutor`, while the SAME
+coordinate against a `number_input` activity served later in an
+established conversation correctly hit-tested to the digit button itself,
+with the veil's `pointer-events` already `none`. This does not match the
+reported symptom (deep into a conversation, well past both the first
+frame and the 8s deadline, with no character-cue-driven scene remount in
+a plain arithmetic word problem) and is not touched here — noted because
+it is real, and because the file's own comment already shows the authors
+knew the failure mode and mitigated it with a deadline rather than a
+promise that never breaks; a future case where the STAGE re-mounts
+mid-conversation (a character-cue change, `TUTOR_3D.md`'s own remount
+class) would reopen it for as long as 8 seconds over a docked activity
+that looks, and mostly is, fully interactive underneath.
+
+**Live reproduction was attempted and could not be completed to a clean
+conclusion in this session, and that is reported rather than papered
+over (§1.12).** The dev browser used for verification in this session
+is shared with other concurrent agent sessions in this batch (confirmed:
+the tab's own origin drifted to an unrelated port mid-session with no
+navigation issued from here, text typed into the Tutor's composer arrived
+concatenated with sentences never typed by this session, and an
+in-progress conversation ended abruptly — "See you soon!" — with no
+action taken here to end it), which independently explains several of
+the anomalies encountered while trying to reach a live `number_input`
+screen, separately from anything in `LiveSegmentPanel` itself. A second,
+fully isolated headless-Chrome harness (this repo's own
+`scripts/lesson-engine/browser.mjs` convention, real
+`Input.dispatchMouseEvent`, never `element.click()`) reached login and
+the Tutor's opening screen reliably but could not reliably progress
+`onClick("My courses")` into a conversation; `npm run verify:tutor-ui`,
+run fresh in this same session on unrelated code, independently timed
+out at the identical step ("timed out waiting for stage ready") that
+round 100 already attributed to this specific sandbox's headless browser
+being unable to initialize a real WebGL context — the Tutor's stage
+never fully "arrives" here regardless of which harness drives it. One
+live attempt, at a viewport later found to be shorter than several of the
+Tutor's own on-screen controls (a harness defect in the exact shape
+AGENTS.md §1.14 names, not a product one), did show a digit staying
+un-registered after a real click — but given the above, that single
+observation is not treated as confirming evidence here.
+
+**No production code changed.** The evidence available in this session
+— a correct reading of the actual dependency chain, and a real-component
+test that specifically targets the hypothesized failure mode and does
+not reproduce it — does not support changing already-correct code on a
+guess, per AGENTS.md §1.0's own rule that a wrong diagnosis costs more
+than none. If the reported symptom is real, the most likely next step is
+a clean reproduction outside this session's contended, WebGL-impaired
+sandbox — ideally with browser DevTools open on the live session so the
+network frames and React commit that precede the stuck tap are captured
+directly, rather than inferred after the fact.
+
+`npm run type-check`, `npm run lint`, `npm test` (135 files, 1550 tests,
+5 new) and `npm run build` all clean in `frontend/`. `npm run
+verify:lesson-engine` and `npm run verify:tutor-ui` were both attempted
+and both failed to reach a conclusion in this sandbox — the former on
+"No fixtures found in /dev/lesson-lab", the latter on the same "timed out
+waiting for stage ready" round 100 already documented — consistent with
+that round's own finding that this environment cannot reliably
+initialize WebGL, and reported here rather than silently skipped or
+claimed green.
