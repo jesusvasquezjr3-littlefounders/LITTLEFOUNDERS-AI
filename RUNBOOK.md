@@ -8098,7 +8098,6 @@ code that has not been proven broken.
 Proof: 3 tests in `useTutorSocket.test.ts` (1 pre-existing pair
 untouched, 1 new `StrictMode` test), full frontend suite re-run clean
 (127 files, 1470 tests), type-check and lint clean.
-
 ## Round 83: the guardian dashboard's consent toggle had zero test coverage for the one property its own comment promises
 
 **LOW, FIXED — `frontend/src/routes/app/family/FamilyPage.tsx` had no test
@@ -8271,3 +8270,97 @@ Full frontend suite green (128 files, 1472 tests, zero regressions),
 type-check and lint clean, build green, `docs:check`, `secrets:check` and
 `i18n:check` all green (no i18n surface touched), `repo_map.md` regenerated
 for the new test file.
+
+## Round 85: a segment request could ride out on the SAME turn that closed the session under it
+
+Found by adversarial review, 2026-08-31 (MEDIUM), confirmed by three
+independent readings of the exact reachable call paths before any code
+changed.
+
+**MEDIUM, FIXED — `deliver()` could serve a real activity one turn
+before closing the socket on the learner who just received it.**
+`ws/server.ts`'s `deliver()` decides whether to call `serveSegment()`
+by looking at `emission.turn.next === 'segment'` alone, and only
+consults `closeReason` — computed from the SAME `outcome` — several
+lines later, to decide whether to close the socket. Nothing between
+those two checks asked whether the two facts contradicted each other.
+`orchestrator.ts`'s `closeReason` computation
+(`turn.next === 'close' ? 'completed' : afterBudget.state === 'ended'
+? ... : null`) never special-cases `turn.next === 'segment'`, so a
+turn could legitimately carry a real `segmentRequest` AND a non-null
+`closeReason` at the same time. When that happened, `serveSegment()`
+ran, Core's real content ladder answered, a `{type: 'segment', ...}`
+frame reached the learner's screen — and the very next thing to arrive
+was `{type: 'closed'}`. The frontend's `phase` flips to `'closing'` on
+that frame and unmounts the conversing-phase layer, activity panel
+included, so the learner never got to attempt what was just served.
+XP is not lost (grading POSTs to Core independently of the Oracle
+session), but the session ends by contradicting its own turn's promise
+— the "promised something and abandoned" defect class this file's own
+Round 33 and 76 entries already named, reached here through a trigger
+neither of those guards was built to cover.
+
+**Two independently reachable triggers, both closed by ONE check.**
+`orchestrator.ts`'s `graceTurnFor()` — the ONE grace turn an ended
+budget grants when the tutor's own last turn left a question or
+activity open — tells the model, in PROSE ONLY, "do NOT request or
+promise any activity." `turnSchema.ts` enforces no structural rule
+tying `next`/`segmentRequest` to budget state, so a model that ignores
+that instruction (this file's own entries already document this exact
+codebase's model ignoring other prose-only instructions —
+`MAX_SEGMENT_RETRIES`'s own comment in `ws/server.ts`) can return
+`next: 'segment'` on the grace turn itself, with `afterBudget` still
+reporting `'ended'` from the same already-expired clock. Separately, an
+ORDINARY turn that crosses `SESSION_MAX_TURNS` mid-call enters
+`produce()` under `'wrapping'` — an ADVISORY state only
+(`WRAP_UP_INSTRUCTION`, no refusal) — and can exit `'ended'` purely
+from the turn-count increment that happens at entry, with the model
+called under no constraint at all and free to ask for an activity
+nobody told it would never be served.
+
+**Fixed inside `produce()`, not in `ws/server.ts`, so every caller
+inherits it for free.** `currentBudget(nowMs)` is a pure function of
+`nowMs` (fixed for the whole call) and `this.seq` (reserved once, at
+entry, and never touched again before the turn returns) — so its
+answer is byte-identical whether read right after the reservation or
+after the retry loop and moderation have both finished. `produce()` now
+computes it ONCE, immediately after reserving the turn slot, and reuses
+that same value both for the final `closeReason` (unchanged behavior)
+and for a new check: once every attempt, the repair loop, and the
+`modelDownResponse` fallback have all settled on a `turn`, if that turn
+still carries `next: 'segment'` while the budget is already `'ended'`,
+it is corrected in place — `next` moves to `'ask'` and `segmentRequest`
+to `null` — before moderation ever sees it. Not routed through the
+existing retry-and-correct mechanism (`turnCorrection`) that the rest
+of this file's repair loop uses for a model's OTHER mistakes: this is a
+STRUCTURAL fact about the session's own clock, not something a sharper
+prompt fixes, so a retry would spend a real model call asking the
+model a question it has no way to answer — the same reasoning
+`parsed.turn.whiteboard`'s own open-activity-conflict check already
+uses one function up. `next` moves to `'ask'` rather than `'close'`
+deliberately: `closeReason` already reports the real reason
+(`turn_cap`/`hard_budget`) whenever `turn.next !== 'close'`, so forcing
+`'close'` here would have reported a budget-driven end as `completed`
+instead — a second, quieter misreport layered on top of the one this
+fixes.
+
+Proof: 2 new `orchestrator.test.ts` tests (one drives an ordinary turn
+across `SESSION_MAX_TURNS` mid-call, one drives a disobedient model
+through the grace turn itself) and 1 new `live-session.test.ts` test
+driving a REAL websocket through the grace-turn trigger against a fake
+model that has no idea a grace turn exists — it answers by keyword
+alone, which is exactly the uncooperative model this bug needed. All 3
+fail pre-fix for the exact claimed reason (`git stash` on
+`orchestrator.ts` alone: the two unit tests assert `next` stays
+`'segment'` where the fix expects `'ask'`, and the live-session test
+fails on the identical assertion after a real turn/judge/Core round
+trip). The live-session test also asserts `journal.segmentRequests`
+stays `0` — proof the content ladder was never even asked, not merely
+that the frame was hidden from the wire. Full oracle suite green (27
+files, 632 tests — 629 existing + 3 new, zero regressions), type-check
+clean on all three tsconfigs (src, scripts, test), lint clean,
+`verify:tutor` green (context/injection surface untouched by this
+change, confirmed rather than assumed) and `verify:pedagogy` green (the
+controller's own sequencing is untouched — this fix sits entirely
+inside `produce()`'s post-model turn shaping). `oracle/AGENTS.md` item
+69.

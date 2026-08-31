@@ -1468,6 +1468,40 @@ export class TutorOrchestrator {
     this.seq += 1;
 
     /*
+     * COMPUTED HERE, ONCE, AND REUSED AS THE TURN'S FINAL BUDGET VERDICT
+     * BELOW — never recomputed a second time (round 85, 2026-08-31, MEDIUM).
+     * `currentBudget` is a pure function of `nowMs` (fixed for this whole
+     * call) and `this.seq` (just reserved above and never touched again
+     * before this turn returns), so its answer here is byte-identical to
+     * whatever a second call after the retry loop and moderation would give.
+     *
+     * Computing it early — before the model has even been asked — is what
+     * lets the check below (search `afterBudget.state === 'ended'` further
+     * down) act on a FACT instead of a guess. Without it, a turn could carry
+     * both `next: 'segment'` (with a real `segmentRequest`) and an ended
+     * budget at the same time, and `ws/server.ts`'s `deliver()` served the
+     * segment before ever consulting `closeReason` — a real activity handed
+     * to the learner immediately followed by the socket closing under it.
+     * Reachable two ways, and this single hoist closes both because every
+     * path to a delivered `turn` passes through the check below:
+     *
+     *  1. The one grace turn `graceTurnFor` grants when the budget is
+     *     already 'ended' tells the model, in PROSE ONLY ("do NOT request or
+     *     promise any activity"), not to do this — and a prose-only
+     *     instruction is exactly the class of thing this file's own repair
+     *     loop exists to catch a model ignoring elsewhere in this same
+     *     function. Trusting it here, uniquely, would have been the one
+     *     guardrail in `produce()` that took the model's word for something
+     *     checkable instead of checking it.
+     *  2. An ordinary turn that crosses `SESSION_MAX_TURNS` mid-call enters
+     *     under 'wrapping' — an ADVISORY state (`WRAP_UP_INSTRUCTION` only,
+     *     no refusal) — and can exit 'ended' from the `this.seq += 1` above
+     *     alone, with the model called under no constraint at all and free
+     *     to request an activity nobody told it would never be served.
+     */
+    const afterBudget = this.currentBudget(nowMs);
+
+    /*
      * ONE RETRY, NOW FOR A TRANSPORT FAILURE AS WELL AS A SHAPE ONE.
      *
      * It used to be shape-only, reasoning that "a model that is down will
@@ -2023,6 +2057,37 @@ export class TutorOrchestrator {
       source = 'scripted';
     }
 
+    /*
+     * A SEGMENT REQUEST THIS TURN WILL NEVER DELIVER (round 85, 2026-08-31,
+     * MEDIUM) — see `afterBudget`'s own doc comment above for the two
+     * reachable triggers and why a retry cannot be trusted to catch this the
+     * way the rest of the repair loop catches a model's other mistakes.
+     *
+     * Corrected silently in place rather than retried, on the same
+     * reasoning `parsed.turn.whiteboard` already gets above for an
+     * open-activity conflict: this is a STRUCTURAL fact about the session's
+     * own clock, not something the model said wrong that a sharper prompt
+     * fixes, so spending a retry on it would ask the model a question it has
+     * no way to answer and no way to have known to ask about.
+     *
+     * Checked here — after every attempt, the repair loop, and the
+     * `modelDownResponse` fallback have all already settled on a `turn`, and
+     * before moderation — so it catches whichever one of them actually wins,
+     * not just the model's first attempt. `next` moves to 'ask' rather than
+     * 'close': the `closeReason` computed below from `afterBudget` already
+     * reports the real reason (`turn_cap`/`hard_budget`) whenever
+     * `turn.next !== 'close'`, so forcing 'close' here would make this
+     * budget-driven end report as `completed` instead — a second, quieter
+     * lie about why the session ended, layered on top of the one this fixes.
+     */
+    if (turn.next === 'segment' && afterBudget.state === 'ended') {
+      console.warn(
+        '[oracle] suppressed a segment request on a turn whose budget is already ended — the session is ' +
+          'about to close and the activity would never be attempted',
+      );
+      turn = { ...turn, next: 'ask', segmentRequest: null };
+    }
+
     // ── moderation: whole turn, before screen and before speech ──────────────
     //
     // ONLY generated turns are moderated. A scripted line is text a person
@@ -2140,7 +2205,10 @@ export class TutorOrchestrator {
      */
     this.lastOfferedAdaptation = turn.offerAdaptation ?? null;
 
-    const afterBudget = this.currentBudget(nowMs);
+    // `afterBudget` is NOT recomputed here — it was already read, once, right
+    // after `this.seq` was reserved above (see that computation's own doc
+    // comment for why a second read here would always agree with the first
+    // and why an intervening disagreement would itself be the bug).
     const closeReason =
       turn.next === 'close'
         ? 'completed'

@@ -580,6 +580,73 @@ describe('a real live session over a real websocket', () => {
     await closed();
   });
 
+  /*
+   * Found by adversarial review, round 85, 2026-08-31 (MEDIUM) — the end-to-end
+   * proof for the unit-level fix in `orchestrator.test.ts`'s "a segment
+   * request the budget already refused is suppressed before delivery". A
+   * turn could carry BOTH `next: 'segment'` (a real `segmentRequest`) and an
+   * ended budget, and `deliver()` served the segment unconditionally before
+   * ever consulting `closeReason` — a real activity handed to the learner
+   * immediately followed by the socket closing under it. This drives the
+   * ONE GRACE TURN trigger over a REAL socket: the fake model here has no
+   * idea a grace turn even exists (it answers by keyword alone), so it is
+   * exactly the disobedient model the bug needed — proof the fix holds
+   * without any cooperation from what the model says.
+   */
+  it('never delivers a `segment` frame for an activity the closing session will never let the learner attempt', async () => {
+    freshJournal();
+    // A hard budget short enough to expire from a real wall-clock wait, but
+    // long enough that the handshake, greeting and first exchange below
+    // never race it — see the wait after the first exchange for the margin.
+    process.env.SESSION_SOFT_BUDGET_MS = '300';
+    process.env.SESSION_HARD_BUDGET_MS = '600';
+    const { resetConfigCache } = await import('../env.js');
+    resetConfigCache();
+
+    try {
+      const { socket, closed } = open(await socketUrl());
+      await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+      // An ordinary exchange whose tutor turn ends in `ask` — the open
+      // thread the ONE grace turn exists to resolve rather than cut off.
+      const opened = collect(socket, (m) => m.filter((x) => x.type === 'turn').length >= 1);
+      socket.send(JSON.stringify({ type: 'learner_text', text: 'quierosaber mas' }));
+      const openTurn = (await opened).find((m) => m.type === 'turn');
+      expect(openTurn?.next).toBe('ask');
+
+      // The hard budget expires with that question still open.
+      await new Promise((r) => setTimeout(r, 700));
+
+      // The learner answers — the grace turn fires, and the fake model (which
+      // answers this exact phrase with next:"segment" on ANY turn, grace or
+      // not) asks for one more activity instead of just saying goodbye.
+      const frames = untilQuiet(socket);
+      socket.send(JSON.stringify({ type: 'learner_text', text: 'quieropracticarya' }));
+      const collected = await frames;
+
+      // The grace turn is still delivered — a real, in-character line — and
+      // the session still closes for the real reason. What must never
+      // appear is a `segment` frame: the activity the model asked for would
+      // never have been attempted before the socket closed under it.
+      const graceTurn = collected.find((m) => m.type === 'turn');
+      expect(graceTurn?.next).toBe('ask');
+      expect(collected.some((m) => m.type === 'segment')).toBe(false);
+      expect(collected.some((m) => m.type === 'closed')).toBe(true);
+      expect(collected.find((m) => m.type === 'closed')).toMatchObject({ reason: 'hard_budget' });
+      // The strongest proof available: the content ladder was never even
+      // asked. A frame-shape assertion alone could pass on a fix that only
+      // hid the segment from the WIRE while still paying for it.
+      expect(journal.segmentRequests).toBe(0);
+
+      socket.close();
+      await closed();
+    } finally {
+      delete process.env.SESSION_SOFT_BUDGET_MS;
+      delete process.env.SESSION_HARD_BUDGET_MS;
+      resetConfigCache();
+    }
+  });
+
   it('the whiteboard reaches the client with SERVER-COMPUTED values (V4)', async () => {
     freshJournal();
     const { socket, closed } = open(await socketUrl());
