@@ -108,6 +108,22 @@ export interface ModerationInput {
  * system-prompt text into EVERY future session — a successful escape here
  * is a cross-session, elevated-trust payload, not one turn a later pass
  * might still catch.
+ *
+ * A THIRD FENCE VOCABULARY, for the same reason. Found by adversarial review
+ * sweep `tutor-review-sweep-101` (moderation-edge-cases), 2026-08-31 (HIGH):
+ * `orchestrator.ts`'s `openActivity.prompt` — a served activity's own text,
+ * restated to the model on a LATER turn so it can react to what is actually
+ * on screen — was replayed unfenced, both in `prompt.ts`'s
+ * `buildContextMessage` ("ON THE LEARNER'S SCREEN RIGHT NOW") and in the
+ * grade-reaction turn's own `activityFact`. For a tier-1/2 catalog segment
+ * this text is human-authored and reviewed; for a tier-3 segment it is MODEL
+ * output (`content/generate.ts`'s `generateSegment`), shaped by this
+ * session's own `framing`/`rationale` and therefore indirectly by what the
+ * learner said — and neither the harm-category judge nor the pedagogy judge
+ * that screens a generated segment before it is served has any category for
+ * "reads as an instruction to a later call". Fixed with `fenceActivityContent`
+ * (`safety/untrusted.ts`), its own `ACTIVITY_CONTENT_<nonce>` marker, added
+ * here the same way `SESSION_TRANSCRIPT` was added alongside `LEARNER_INPUT`.
  */
 const PROMPT_LEAK_MARKERS: readonly RegExp[] = [
   /\bsystem\s+(prompt|instructions?|message)\b/i,
@@ -117,6 +133,8 @@ const PROMPT_LEAK_MARKERS: readonly RegExp[] = [
   /\bLEARNER_INPUT_[A-Za-z0-9_-]+\b/,
   /<<<(?:END_)?SESSION_TRANSCRIPT/i,
   /\bSESSION_TRANSCRIPT_[A-Za-z0-9_-]+\b/,
+  /<<<(?:END_)?ACTIVITY_CONTENT/i,
+  /\bACTIVITY_CONTENT_[A-Za-z0-9_-]+\b/,
   /\bas\s+an\s+ai\s+(language\s+)?model\b/i,
   /\bmis\s+instrucciones\s+(dicen|son)\b/i,
   /\bminhas\s+instru[çc][õo]es\s+(dizem|s[ãa]o)\b/i,
