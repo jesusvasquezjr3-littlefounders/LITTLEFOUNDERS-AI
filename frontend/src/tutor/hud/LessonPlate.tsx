@@ -108,21 +108,95 @@ const DRAG_SLOP_PX = 4;
  */
 const STAGE_RESERVE_PX = 300;
 
+/**
+ * Found by adversarial review, round 88 (2026-08-31, HIGH). `STAGE_RESERVE_PX`
+ * is a flat 300px regardless of viewport, and the media query that decides
+ * whether this is a sheet at all (`DESKTOP_QUERY`) is WIDTH-only — so any phone
+ * turned sideways stays in sheet mode with a viewport height far shorter than
+ * the 812px this file's other comments measure against. On an iPhone SE in
+ * landscape (`innerHeight` 375) the old `ceiling = max(88, 375 - 300) = 88`
+ * left NOTHING above PEEK for HALF or FULL to grow into: all three detents
+ * collapsed to the identical 88px, so tapping a graded activity open changed
+ * `resting` from true to false — un-hiding the body — without the sheet
+ * actually growing, and the exercise rendered entirely below the fold of an
+ * `overflow-hidden` wrapper. Reachable by an ordinary device rotation, with no
+ * orientation lock anywhere in the app and no on-screen explanation.
+ *
+ * The two floors below exist because raising the ceiling alone does not fix
+ * this: HALF's OWN fraction (`375 * 0.45 = 169`) is what is too small on a
+ * short viewport, independent of any ceiling, and a ceiling raised without
+ * also floor-and-stepping HALF just lets HALF float up to meet FULL at the
+ * SAME raised ceiling — a collapse one detent later. `ACTIVITY_FLOOR_PX` is
+ * the minimum HALF may ever be, sized to physically hold a graded activity's
+ * prompt, its answers and the Check control; `DETENT_STEP_PX` is the minimum
+ * gap the code guarantees between every adjacent pair. Both are enforced
+ * structurally (HALF is clamped to `ceiling - DETENT_STEP_PX`, FULL is
+ * clamped to `[half + DETENT_STEP_PX, ceiling]`), not by picking numbers that
+ * happen to work for two named devices, so PEEK < HALF < FULL by a real
+ * margin at every viewport height, not only the ones measured here.
+ *
+ * `MIN_STAGE_RESERVE_PX` is the floor on the OTHER side: even the shortest
+ * viewport this trades room from must never be asked to give up literally
+ * everything above the sheet.
+ *
+ * NONE of this changes the /DESIGN.md `sheet-detents` token (`{peek: 88px,
+ * half: 45vh, full: 88vh}`) on a portrait phone or a desktop-height viewport:
+ * `Math.max(viewport - STAGE_RESERVE_PX, ...)` keeps the original 300px
+ * reserve wherever it already produced a bigger ceiling than the new floor
+ * needs (measured: 375x812 still yields exactly half=365, full=512, byte for
+ * byte, and so does the 1280x900 desktop-height case). Only a viewport short
+ * enough that 300px would have swallowed the whole screen gives up part of
+ * that reserve — a landscape phone genuinely does not have 300px of stage to
+ * spare above an 88px PEEK and still leave room for the one surface the
+ * activity actually lives on.
+ */
+const MIN_STAGE_RESERVE_PX = 24;
+const ACTIVITY_FLOOR_PX = 240;
+const DETENT_STEP_PX = 100;
+
 type DetentHeights = Record<LessonPlateDetent, number>;
 
-function detentHeights(): DetentHeights {
+/**
+ * Exported for direct testing, the same reason `nearestDetent` is: this is
+ * pure arithmetic over `window.innerHeight`, and a real assertion needs to
+ * drive it at specific viewport heights (a landscape phone, a portrait one)
+ * rather than trust a live `matchMedia`/layout pass in jsdom to reproduce one.
+ */
+export function detentHeights(): DetentHeights {
   // 812 is a phone, and it is only ever used where there is no window at all
   // (a server render, a test). Every real caller measures.
   const viewport = typeof window !== 'undefined' && window.innerHeight > 0 ? window.innerHeight : 812;
-  const ceiling = Math.max(PEEK_PX, viewport - STAGE_RESERVE_PX);
-  const detent = (fraction: number) =>
-    Math.min(ceiling, Math.max(PEEK_PX, Math.round(viewport * fraction)));
 
-  return {
-    peek: PEEK_PX,
-    half: detent(HALF_FRACTION),
-    full: detent(FULL_FRACTION),
-  };
+  // The ceiling: the original 300px-reserved target, UNLESS the viewport is so
+  // short that target would leave less than a real HALF+FULL pair can use —
+  // in which case the reserve shrinks, down to a hard floor of
+  // `MIN_STAGE_RESERVE_PX` above the sheet.
+  const ceiling = Math.max(
+    PEEK_PX,
+    Math.min(
+      viewport - MIN_STAGE_RESERVE_PX,
+      Math.max(viewport - STAGE_RESERVE_PX, ACTIVITY_FLOOR_PX + DETENT_STEP_PX),
+    ),
+  );
+
+  // HALF: the /DESIGN.md fraction, floored so it is never a sliver on a short
+  // viewport, and capped a full step below the ceiling so FULL always has a
+  // real step of its own left to open into.
+  const half = Math.max(
+    PEEK_PX,
+    Math.min(ceiling - DETENT_STEP_PX, Math.max(ACTIVITY_FLOOR_PX, Math.round(viewport * HALF_FRACTION))),
+  );
+
+  // FULL: the /DESIGN.md fraction, floored to HALF's own height plus a real
+  // step (not HALF's pre-floor fraction — that is what let the two collapse
+  // together right at the boundary where the fraction alone had just cleared
+  // the floor), and capped at the ceiling exactly as before.
+  const full = Math.max(
+    half,
+    Math.min(ceiling, Math.max(half + DETENT_STEP_PX, Math.round(viewport * FULL_FRACTION))),
+  );
+
+  return { peek: PEEK_PX, half, full };
 }
 
 function sameHeights(a: DetentHeights, b: DetentHeights): boolean {
