@@ -8098,3 +8098,75 @@ code that has not been proven broken.
 Proof: 3 tests in `useTutorSocket.test.ts` (1 pre-existing pair
 untouched, 1 new `StrictMode` test), full frontend suite re-run clean
 (127 files, 1470 tests), type-check and lint clean.
+
+## Round 83: the guardian dashboard's consent toggle had zero test coverage for the one property its own comment promises
+
+**LOW, FIXED — `frontend/src/routes/app/family/FamilyPage.tsx` had no test
+file at all.** `frontend/src/routes/app/family/__tests__/` covered
+`AddKidCard`, `KidTutorPage` and `ManageKidPanel` — every sibling in the
+directory except the page that hosts them. That left the "share usage
+insights" switch, its `toggleConsent()` handler, and the whole kid list
+completely unexercised, including the one line in the whole file that
+carries a deliberate design decision rather than a description:
+
+```ts
+if (error || !data) return; // the switch simply stays put — state is server truth
+```
+
+That comment is not describing an ordinary optimistic-update pattern. A
+real optimistic update flips the switch immediately and rolls it back on
+error; this code never flips it until the server has actually confirmed the
+new value, so a failed request leaves nothing to roll back. The two are
+indistinguishable once a failed request has finished — the switch reads the
+same either way — which is exactly why a refactor that "simplified" this
+into flip-then-rollback would pass every existing gate (type-check, lint,
+build) and would have passed this file too, if the file had only checked
+the settled end state.
+
+**Verified against the actual code, not assumed from the comment.** Before
+writing the fix, the comment's claim was checked the way §1.12 asks:
+temporarily rewrote `toggleConsent` into the naive flip-then-rollback shape
+it warns against, ran the new test file against that mutant, watched the
+"never flips optimistically" test fail for the exact predicted reason
+(`aria-checked="true"` while the request was still in flight, before the
+server had said anything), then reverted the mutation with `git checkout
+--` and confirmed the test passes again against the real, unmodified
+source. **The code's behavior matches its own comment. This is a coverage
+gap, not a live bug** — no production code changed in this round.
+
+New `frontend/src/routes/app/family/__tests__/FamilyPage.test.tsx`, six
+tests, following this directory's existing convention (`vi.mock` on
+`@/lib/api` and `@/auth/AuthContext`, a raw-key `react-i18next` stub,
+matched against `ManageKidPanel.test.tsx` and `AddKidCard.test.tsx`):
+initial `aria-checked` reflects server data for two kids in one render;
+toggling calls `POST .../analytics-consent` to grant and `DELETE
+.../analytics-consent` to revoke; a successful toggle updates the switch;
+a failed toggle leaves the switch at its pre-toggle value, checked WHILE
+the request is still pending (a controlled, manually-resolved promise
+stands in for the real one so the test can inspect the in-flight state,
+not just the settled one); and `busyKid` (`FamilyPage.tsx` ~lines 136-152)
+disables only the one kid whose request is in flight — confirmed against
+the real code rather than assumed, including the real, slightly
+surprising consequence that `busyKid` is also a single global latch
+(`if (state.status !== 'ready' || busyKid) return;`), so clicking a
+sibling kid's switch while it is NOT disabled and another kid's toggle is
+in flight is a silent no-op rather than a second concurrent request — the
+mock's call count does not move. `AddKidCard`, `ManageKidPanel` and
+`VoiceConsentControl` are stubbed to `null` in this file so every call the
+shared `mockApi` records is unambiguously about the analytics-consent
+toggle; each already has its own dedicated coverage.
+
+One incidental fix needed to get here: `frontend/` had no installed
+`node_modules` in this worktree, so `npm install` was required before any
+gate could run. `npm install` also perturbed `frontend/package-lock.json`
+with cosmetic `"peer": true` flag churn from a different local npm version
+resolving the same dependency graph slightly differently — no dependency,
+version or integrity hash changed. Reverted with `git checkout --
+frontend/package-lock.json` before committing, since that noise carries no
+information and would only obscure a real lockfile change in a future
+diff.
+
+Verification: `npm run type-check`, `npm run lint` and `npm test -- --run`
+all green in `frontend/` (128 test files, 1471 tests — 1465 existing + 6
+new, zero regressions); root `npm run docs:check` and `npm run
+secrets:check` green.
