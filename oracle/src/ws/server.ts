@@ -558,6 +558,30 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
   // same history, same budget clock, same paid-speech memo. Every gate above
   // already re-ran against a fresh token and a fresh Core context.
   const resumed = takeParked(session.sessionId);
+  /*
+   * THE ONE FIELD THE RE-ATTACHED ORCHESTRATOR RE-READS from this connection's
+   * own fresh context.
+   *
+   * Found by adversarial review as round 56's deferred MEDIUM, closed as round
+   * 77 (2026-08-30): the orchestrator's `session` is set once at construction
+   * and never reassigned, so a resumed instance kept enforcing whatever
+   * `isMinor` the FIRST connection fetched — for the whole grace window, and
+   * indefinitely across repeated parks and resumes, since nothing ever
+   * re-fetched it. Every gate AROUND it on this same reconnect already uses
+   * the fresh value: `moderationReadiness(session.isMinor)` a few lines above,
+   * the `microphone` computation below it, and `refreshMicConsent`'s live
+   * per-turn call. `isMinor` is the sole input to `requireModelPass` — whether
+   * a turn no judge could clear is refused or delivered — so this one being
+   * stale is a safety gate reading last connection's answer.
+   *
+   * Only `isMinor`. Every other field on `SessionContext` was audited the same
+   * day and is correctly pinned to the original connection (an in-flight
+   * `courseContext` lesson plan, the `tier` the vocabulary gate judges against,
+   * the FSM's deliberate decision-clock snapshots) or checked freshly
+   * elsewhere. `refreshIsMinor` takes a boolean rather than a context so this
+   * cannot drift into refreshing them too.
+   */
+  if (resumed) resumed.orchestrator.refreshIsMinor(session.isMinor);
   const speech = resumed?.speech ?? newSpeechScope(session);
   const live: Live = {
     socket,
