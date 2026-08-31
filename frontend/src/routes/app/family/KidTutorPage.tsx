@@ -57,6 +57,18 @@ export function KidTutorPage() {
   const [token, setToken] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [openFlagId, setOpenFlagId] = useState<string | null>(null);
+  /*
+   * Found by adversarial review, round 110 (2026-08-31, MEDIUM,
+   * guardian-dashboard-depth): the sessions list was hardcoded to the 30
+   * most recent, with no pagination anywhere on this page — a guardian who
+   * skipped a few weeks lost UI access to every older, non-flagged session,
+   * even though it was still inside the 90-day retention window (§1.9).
+   * `loadingMore`/`loadMoreFailed` are local to the "Load more" affordance
+   * only; they never touch the `loading`/`error` states above, which stay
+   * about the FIRST page.
+   */
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadMoreFailed, setLoadMoreFailed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -73,6 +85,8 @@ export function KidTutorPage() {
     setState({ status: 'loading' });
     setOpenId(null);
     setOpenFlagId(null);
+    setLoadingMore(false);
+    setLoadMoreFailed(false);
     void (async () => {
       const authToken = await getToken();
       if (!authToken || cancelled) return;
@@ -90,10 +104,37 @@ export function KidTutorPage() {
     };
   }, [kidId, getToken]);
 
+  const handleLoadMore = async () => {
+    if (!token || state.status !== 'ready') return;
+    setLoadingMore(true);
+    setLoadMoreFailed(false);
+    const result = await getKidTutorHistory(token, kidId, { offset: state.history.sessions.length });
+    setLoadingMore(false);
+    if (result.error || !result.data) {
+      setLoadMoreFailed(true);
+      return;
+    }
+    const nextPage = result.data;
+    setState((prev) =>
+      prev.status === 'ready'
+        ? {
+            status: 'ready',
+            history: {
+              sessions: [...prev.history.sessions, ...nextPage.sessions],
+              hasMore: nextPage.hasMore,
+              // Refreshed rather than kept stale: a page turn is also a
+              // chance to surface a flag raised since the first load.
+              safetyFlags: nextPage.safetyFlags,
+            },
+          }
+        : prev,
+    );
+  };
+
   if (state.status === 'loading') return <LoadingOverlay label={t('tutor.guardian.loading')} />;
   if (state.status === 'error') return <ErrorBanner code={state.code} />;
 
-  const { sessions, safetyFlags } = state.history;
+  const { sessions, hasMore, safetyFlags } = state.history;
   const formatter = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'medium', timeStyle: 'short' });
 
   /*
@@ -230,6 +271,19 @@ export function KidTutorPage() {
             </li>
           ))}
         </ul>
+      )}
+
+      {hasMore && (
+        <div className="flex flex-col items-center gap-2">
+          <Button variant="secondary" onClick={() => void handleLoadMore()} disabled={loadingMore}>
+            {loadingMore ? t('tutor.guardian.loadingMore') : t('tutor.guardian.loadMore')}
+          </Button>
+          {loadMoreFailed && (
+            <p role="alert" className="lf-caption text-error-strong">
+              {t('tutor.guardian.loadMoreFailed')}
+            </p>
+          )}
+        </div>
       )}
 
       <p className="lf-caption text-content-muted">{t('tutor.guardian.retentionNote')}</p>

@@ -4,6 +4,7 @@ import {
   getTutorPreferences,
   grantVoiceConsent,
   insertTutorTurn,
+  listTutorSessions,
   listTutorTurns,
   searchOwnTurns,
   upsertTutorPreferences,
@@ -625,5 +626,96 @@ describe('writeLearnerMemoryPair reports a lost concurrent-write race, never sil
     });
     expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('lost a concurrent write race'));
     warnSpy.mockRestore();
+  });
+});
+
+/*
+ * Found by adversarial review sweep tutor-review-sweep-101
+ * (guardian-dashboard-depth dimension), round 110 (2026-08-31, MEDIUM):
+ * `listTutorSessions` hardcoded `limit=30` with no `offset` parameter
+ * anywhere in its signature. The row was still in the database — RLS still
+ * allowed reading it, the 90-day retention window (§1.9) still held it —
+ * but no caller, with any query string, could ever have asked for anything
+ * past the 30 most recent sessions. A family that did not open the Tutor
+ * page in the last ~30 sessions silently lost UI access to every older,
+ * non-flagged one.
+ *
+ * The fake PostgREST below actually honours `limit`/`offset` from the URL
+ * (unlike a stub that just returns a fixed fixture regardless of the query),
+ * because the whole point under test is the ARITHMETIC this function does
+ * with those two numbers — a mock that ignored them could not tell the old
+ * behaviour from the new one.
+ */
+describe('listTutorSessions pages past the old hardcoded 30-row ceiling', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const USER = '22222222-2222-4222-8222-222222222222';
+
+  function jsonResponse(body: unknown, status = 200): Response {
+    return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+  }
+
+  // 35 rows, newest first (index 0 = most recently started) — Zod-valid
+  // UUIDv4-shaped fixtures per §1.14, never placeholder strings like "s1".
+  const ALL_SESSIONS = Array.from({ length: 35 }, (_, i) => ({
+    id: `bbbbbbbb-bbbb-4bbb-8bbb-${(i + 1).toString(16).padStart(12, '0')}`,
+    started_at: new Date(Date.UTC(2026, 7, 1, 0, 35 - i)).toISOString(),
+  }));
+  // The 31st-most-recent session: the first one the OLD hardcoded `limit=30`
+  // had no way to ever reach, under any call.
+  const SESSION_31 = ALL_SESSIONS[30]!;
+
+  function stubPostgrest() {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL) => {
+        const url = String(input);
+        const limit = Number(/[?&]limit=(\d+)/.exec(url)?.[1] ?? ALL_SESSIONS.length);
+        const offset = Number(/[?&]offset=(\d+)/.exec(url)?.[1] ?? 0);
+        return Promise.resolve(jsonResponse(ALL_SESSIONS.slice(offset, offset + limit)));
+      }),
+    );
+  }
+
+  it('the default call — the OLD signature’s only mode, since it took no offset at all — cannot reach the 31st-most-recent session', async () => {
+    stubPostgrest();
+    const page = await listTutorSessions(USER);
+    expect(page).not.toBeNull();
+    expect(page!.sessions).toHaveLength(30);
+    expect(page!.sessions.map((s) => s.id)).not.toContain(SESSION_31.id);
+    expect(page!.hasMore).toBe(true);
+  });
+
+  it('an explicit offset reaches the 31st-most-recent session — a capability the old signature never had', async () => {
+    stubPostgrest();
+    const page = await listTutorSessions(USER, { offset: 30 });
+    expect(page).not.toBeNull();
+    expect(page!.sessions).toHaveLength(5); // sessions 31..35, most-recent-first
+    expect(page!.sessions[0]!.id).toBe(SESSION_31.id);
+    expect(page!.hasMore).toBe(false);
+  });
+
+  it('clamps an out-of-range limit rather than trusting the caller (min 1, max 100)', async () => {
+    stubPostgrest();
+    const tooBig = await listTutorSessions(USER, { limit: 9999 });
+    expect(tooBig).not.toBeNull();
+    // Clamped to 100, which is still more than the 35 seeded rows — so
+    // every one of them comes back and there is nothing further.
+    expect(tooBig!.sessions).toHaveLength(35);
+    expect(tooBig!.hasMore).toBe(false);
+
+    const tooSmall = await listTutorSessions(USER, { limit: 0 });
+    expect(tooSmall).not.toBeNull();
+    // Clamped to 1, not 0 — a page must never silently mean "nothing".
+    expect(tooSmall!.sessions).toHaveLength(1);
+    expect(tooSmall!.sessions[0]!.id).toBe(ALL_SESSIONS[0]!.id);
+    expect(tooSmall!.hasMore).toBe(true);
+  });
+
+  it('returns null — not an empty page — when the read itself fails (§1.14)', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(new Response(null, { status: 500 }))));
+    await expect(listTutorSessions(USER)).resolves.toBeNull();
   });
 });

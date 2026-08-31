@@ -11235,3 +11235,158 @@ persisted, not a change to what the ladder is allowed to select or why.
 "atomic claim via `pg_advisory_xact_lock`" pattern `0055`/`0057`/`0059`/
 `0061` already document as the house answer to this exact defect class,
 applied to a fifth piece of state.
+## Round 110: a guardian who skipped a few weeks lost UI access to every older Tutor session, because `listTutorSessions` hardcoded `limit=30` with no way to ask for anything past it — found by adversarial review sweep tutor-review-sweep-101 (guardian-dashboard-depth dimension), MEDIUM, closed 2026-08-31
+
+**MEDIUM, FIXED.** `backend/src/services/tutorData.ts:302`'s
+`listTutorSessions(userId: string, limit = 30)` capped every read at the 30
+most recent `tutor_sessions` rows for a learner, with no `offset` parameter
+anywhere in its signature. Both callers — `GET /tutor/sessions` (the
+learner's own history) and `GET /tutor/kids/:kidUserId/sessions` (the
+guardian dashboard, `/ORACLE.md` §12) — inherited the ceiling with no way to
+move past it, and neither route nor either frontend consumer exposed any
+pagination control. The row itself was never at risk: RLS still allowed
+reading it, and the 90-day retention window (§1.9) still held it. What was
+missing was a MECHANISM — nothing between the database and a guardian's
+screen could ask for a session older than the 30 most recent. A family that
+opened the Tutor page every session or two never noticed. A family that
+checked in every few weeks silently lost the ability to review anything
+past the newest 30 — non-flagged sessions only, since a safety flag stays
+reachable through the safety-flags list's own `session_id`
+(`KidTutorPage.tsx`'s "a safety flag opens the exact transcript it happened
+in", round 41), independent of whether its session appears in the capped
+list.
+
+**Fix.** `listTutorSessions` now takes `{ limit?, offset? }` and returns
+`{ sessions, hasMore } | null`, following the same `limit`/`offset`
+convention `listAudit` (`backend/src/services/adminData.ts`) already
+established elsewhere in this codebase, rather than inventing a new
+pagination shape. `hasMore` is derived by requesting `limit + 1` rows and
+checking whether the extra one came back, not a second exact-count query —
+cheaper for a list that is realistically a few hundred rows per learner at
+most, and the answer never needs to be exact, only "is there at least one
+more." `GET /tutor/kids/:kidUserId/sessions` (`backend/src/routes/tutor.ts`)
+now accepts `?limit=1-100&offset>=0` (Zod `.strict()`, default 30/0) and
+returns `hasMore` alongside `sessions`. `GET /tutor/sessions` (the learner's
+own history, used by the in-session "Past conversations" list,
+`SessionHistory.tsx`) keeps its existing response shape and default
+behaviour unchanged — this finding's dimension was specifically
+guardian-dashboard-depth, and that surface has no pagination UI to receive
+a `hasMore` field yet; adding one there with nothing to consume it would be
+undocumented, unused surface. The service function's new `{limit, offset}`
+signature is available to it the moment that changes.
+
+`frontend/src/tutor/tutorApi.ts`'s `getKidTutorHistory` takes an optional
+`{ offset }` and its response type grows `hasMore: boolean`.
+`frontend/src/routes/app/family/KidTutorPage.tsx` — the guardian's "Tutor
+conversations" page — gained a "Load older conversations" button beneath
+the session list, rendered only while `hasMore` is true. Clicking it
+requests the next page at `offset = sessions.length` and APPENDS the result
+to what is already on screen, never replacing it, and refreshes
+`safetyFlags` on the same round trip so a flag raised since the first load
+is not missed. A failed page turn leaves the existing sessions exactly as
+they were and keeps the button available to retry, rather than either
+blanking out a successful first page or stranding the guardian with no way
+back in. No new pagination UI pattern was invented: `/DESIGN.md` documents
+no pagination component, and the only existing precedent in this codebase
+(`AdminAuditPage.tsx`'s Prev/Next, backed by `listAudit`) is a
+table-oriented admin pattern built around a fixed page replaced in place —
+"Load more" (accumulate, never replace) fits the card-list, mobile-first
+shape of this consumer-facing guardian page better than a page-replacing
+control would. i18n: `tutor.guardian.loadMore`, `loadingMore`,
+`loadMoreFailed` added to `en-US`, `es-MX` and `pt-BR` in the same commit
+(§1.8).
+
+**Proof, TDD.** `backend/src/__tests__/tutorData.test.ts` seeds 35
+Zod-valid-UUID-shaped sessions (§1.14 — no `s1`/`s2` placeholders) against a
+fake PostgREST that actually HONOURS `limit`/`offset` from the URL, because
+a mock that ignored them (as the shared `stub()` helper in
+`tutor.test.ts` used to) could not tell the old behaviour from the new one —
+the whole point under test is the arithmetic `listTutorSessions` does with
+those two numbers. Confirmed RED against the pre-fix source (`git stash --
+src/services/tutorData.ts src/routes/tutor.ts`, tests re-run): 6 of the 8
+new tests failed for the exact claimed reasons — the default call could not
+exclude the 31st-most-recent session, `hasMore` came back `undefined`,
+`offset=30` still returned the first 30 rows, and the route accepted a
+negative offset instead of rejecting it — then GREEN after restoring the
+fix (`git stash pop`). `backend/src/__tests__/tutor.test.ts`'s `guardian
+visibility` describe block repeats the proof at the ROUTE level (auth +
+verified-guardian-link check + pagination all together, against a real
+Supertest request), including a negative-offset rejection and a "still
+refuses a stranger even with pagination params present" boundary check —
+and its shared `stub()` helper was upgraded to actually slice
+`/rest/v1/tutor_sessions` GETs by `limit`/`offset` from the URL rather than
+always returning the whole fixture regardless of the query, which every
+pre-existing test in that 2,680-line file still passes unchanged (none of
+them seeds more than 2 sessions, so the new slicing is a no-op for all of
+them). `frontend/src/routes/app/family/__tests__/KidTutorPage.test.tsx`
+adds two tests for the "Load more" control: one confirms it requests the
+correct next `offset` and appends rather than replaces the first page, the
+other confirms a failed page turn never blanks out an already-successful
+first page and leaves the retry control in place. The file's ten
+pre-existing `getKidTutorHistory` fixtures all gained an explicit
+`hasMore: false` — TypeScript enforced this at every call site the moment
+the interface grew the field, which is exactly the kind of drift-catching
+this stack is meant to provide (§1.14 corollary: a fixture that satisfies
+the type it claims cannot silently stop matching it).
+
+**Verification.** Backend, in `backend/`: `npm run type-check`
+(`tsc --noEmit` + `tsconfig.test.json`), `npm run lint`, `npm run build`
+all clean. `npm test`: 734 tests, 1 pre-existing failure unrelated to this
+change (`bot-detection.test.ts`'s crawler-batch test times out against its
+own hardcoded 5000ms ceiling under this sandbox's load — reproduced
+identically on the pre-fix tree during the `git stash` round-trip above,
+so it predates and is independent of this round). Frontend, in `frontend/`:
+`npm run type-check`, `npm run lint`, `npm run build` all clean.
+`npx vitest run` (full suite, twice, to distinguish real regressions from
+sandbox flakiness under full parallel load): first run 8 failures, second
+run 4 failures, ZERO overlap with `KidTutorPage.test.tsx` or any file this
+round touches, every failure the identical "Test timed out in 5000ms"
+symptom, spread across unrelated files (`LegalPage`, `stageMic`,
+`AuthLayout`, `PlacementPage`, `AdminContentPage`, `LearnPage`,
+`OnboardingPage`, `AdminGovernancePages`) with a DIFFERENT set failing each
+run — confirmed pre-existing sandbox flakiness, not a regression, by
+re-running the two files that recurred across both runs (`App.test.tsx`,
+`PlacementPage.test.tsx`) in isolation: both pass cleanly (27/27) outside
+the full-parallel-suite resource contention.
+`frontend/src/routes/app/family/__tests__/KidTutorPage.test.tsx` itself:
+17/17, run both standalone and inside both full-suite passes. Root gates
+from the repo root: `docs:check`, `secrets:check`, `i18n:check`
+(3-locale parity + hardcoded-string scan), `paths:check`, `seo:check`,
+`provider:check` and `tools:test` (26/26) all green.
+
+**Not run: in-browser mobile/desktop screenshot verification (§1.11) of
+the new "Load more" control.** This is the SAME documented gap
+`KidTutorPage.tsx` has carried across at least two prior rounds (67, 72) —
+this route needs a real authenticated guardian session over a real
+verified-kid link with no seed script available for either in this
+environment. A genuine attempt was made this round specifically because,
+unlike those two, this change adds NEW visible markup rather than only
+reordering or reading existing fields: a temporary, fully-reverted
+component-level state seed (bypassing the fetch effect to render a
+`hasMore: true` page directly) got as far as proving `RequireAuth` gates on
+`session` truthy from `AuthContext` with no network round trip of its own —
+but the sandbox's shared browser tooling resolves every `localhost` origin
+to one canonical dev server outside this worktree, so no locally-started
+server on another port, and therefore none of this worktree's own edits,
+was ever actually reachable from it. Mitigating facts, not a substitute for
+the real check: the new elements reuse ONLY pre-existing, already-verified
+primitives already live elsewhere on this exact page — the `Button`
+component (`variant="secondary"`, identical to the existing "Read it"/
+"Hide" toggles above it), the `lf-caption`/`text-error-strong` typography
+tokens (identical to the existing `flagSeverity`/`closeReason` captions on
+this same page), and a plain `flex flex-col items-center gap-2` wrapper —
+no new grid, no new fixed width, no new breakpoint-specific class, and the
+page's own responsive shell (`mx-auto flex w-full max-w-3xl flex-col gap-5
+px-4 py-6 md:px-6`) is untouched. `KidTutorPage.test.tsx`'s two new tests
+exercise the exact same JSX and conditional-rendering logic through
+testing-library, which confirms structure and text content but cannot
+confirm visual layout at a breakpoint — a person with a real browser and a
+seeded guardian/kid pair with 31+ sessions should verify this control at
+~375px and ~1280px before it ships. No `frontend/AGENTS.md` item: no new
+responsive pattern was introduced, only a reuse of existing ones.
+
+`backend/README.md`'s route table updated for `GET
+/tutor/kids/:kidUserId/sessions`'s new query params and `hasMore` field
+(§8). No `/ORACLE.md` or `oracle/AGENTS.md` item: this is a list-pagination
+fix to an existing Core route, not a change to Tutor behaviour, a prompt, a
+context field, or a content-ladder rule.

@@ -292,7 +292,19 @@ function stub(opts: StubOpts = {}) {
             new Response(null, { status: 200, headers: { 'Content-Range': `0-${Math.max(0, n - 1)}/${n}` } }),
           );
         }
-        return Promise.resolve(jsonResponse(200, opts.sessions ?? []));
+        /*
+         * The plain list read, honouring `limit`/`offset` like real PostgREST
+         * would (round 110, 2026-08-31 — `listTutorSessions` pagination).
+         * Every existing fixture here carries at most a couple of rows, well
+         * under any caller's limit, so this slicing is a no-op for them; it
+         * only matters for a fixture that seeds more than a page.
+         */
+        const limitMatch = /[?&]limit=(\d+)/.exec(url);
+        const offsetMatch = /[?&]offset=(\d+)/.exec(url);
+        const all = opts.sessions ?? [];
+        const limit = limitMatch ? Number(limitMatch[1]) : all.length;
+        const offset = offsetMatch ? Number(offsetMatch[1]) : 0;
+        return Promise.resolve(jsonResponse(200, all.slice(offset, offset + limit)));
       }
       if (url.includes('/rpc/start_tutor_session_checked')) {
         /*
@@ -2149,6 +2161,90 @@ describe('guardian visibility', () => {
     expect(response.status).toBe(200);
     expect(response.body.data).toHaveProperty('sessions');
     expect(response.body.data).toHaveProperty('safetyFlags');
+  });
+
+  /*
+   * Found by adversarial review, round 110 (2026-08-31, MEDIUM,
+   * guardian-dashboard-depth): `listTutorSessions` hardcoded `limit=30` with
+   * NO `offset` parameter anywhere in its signature, so no request — no
+   * matter what query string it carried — could ever have reached a
+   * session past the 30 most recent. The row was still there (RLS still
+   * allowed reading it, the 90-day retention window §1.9 still held it),
+   * but nothing upstream of the database had any way to ASK for it. A
+   * family that did not open this page in the last ~30 sessions lost UI
+   * access to every older, non-flagged one, silently.
+   *
+   * This seeds 35 sessions for a verified guardian/kid pair and proves the
+   * 31st-most-recent one — unreachable under the old signature by
+   * construction, since it took no offset at all — is now reachable through
+   * `?offset=30`, and that `hasMore` tells the truth on both pages.
+   */
+  describe('pagination — a guardian can page past the first 30 sessions', () => {
+    const THIRTY_FIVE_SESSIONS = Array.from({ length: 35 }, (_, i) => {
+      const n = i + 1; // 1..35; n=35 started most recently.
+      const hex = n.toString(16).padStart(12, '0');
+      return {
+        ...SESSION_ROW,
+        id: `aaaaaaaa-aaaa-4aaa-8aaa-${hex}`,
+        started_at: new Date(Date.UTC(2026, 7, 1, 0, n)).toISOString(),
+        ended_at: new Date(Date.UTC(2026, 7, 1, 0, n, 30)).toISOString(),
+        close_reason: 'completed',
+      };
+    }).sort((a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime());
+    // Index 0 is the most recent session; index 30 is the 31st-most-recent —
+    // the first one the OLD hardcoded `limit=30` could never reach.
+    const SESSION_31 = THIRTY_FIVE_SESSIONS[30]!;
+
+    it('the default (first) page has 30 sessions, none of them the 31st-most-recent one, and says there is more', async () => {
+      stub({
+        guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }],
+        sessions: THIRTY_FIVE_SESSIONS,
+      });
+      const response = await request(createApp())
+        .get(`/api/v1/tutor/kids/${KID}/sessions`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+      expect(response.status).toBe(200);
+      const ids = (response.body.data.sessions as { id: string }[]).map((s) => s.id);
+      expect(ids).toHaveLength(30);
+      expect(ids).not.toContain(SESSION_31.id);
+      expect(response.body.data.hasMore).toBe(true);
+    });
+
+    it('offset=30 reaches the 31st-most-recent session and reports no further page', async () => {
+      stub({
+        guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }],
+        sessions: THIRTY_FIVE_SESSIONS,
+      });
+      const response = await request(createApp())
+        .get(`/api/v1/tutor/kids/${KID}/sessions?offset=30`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+      expect(response.status).toBe(200);
+      const ids = (response.body.data.sessions as { id: string }[]).map((s) => s.id);
+      expect(ids).toHaveLength(5); // the remaining 31st..35th-most-recent sessions
+      expect(ids[0]).toBe(SESSION_31.id);
+      expect(response.body.data.hasMore).toBe(false);
+    });
+
+    it('rejects a negative offset rather than silently clamping it', async () => {
+      stub({
+        guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }],
+        sessions: THIRTY_FIVE_SESSIONS,
+      });
+      const response = await request(createApp())
+        .get(`/api/v1/tutor/kids/${KID}/sessions?offset=-1`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+      expect(response.status).toBe(400);
+    });
+
+    it('still refuses a stranger even when pagination params are present', async () => {
+      stub({ guardianLinks: [], sessions: THIRTY_FIVE_SESSIONS });
+      const response = await request(createApp())
+        .get(`/api/v1/tutor/kids/${KID}/sessions?offset=30`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+      expect(response.status).toBe(403);
+    });
   });
 });
 

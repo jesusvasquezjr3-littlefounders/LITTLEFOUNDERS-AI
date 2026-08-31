@@ -66,6 +66,7 @@ describe('KidTutorPage — safety flags are severity-first, not just chronologic
     vi.mocked(getKidTutorHistory).mockResolvedValue({
       data: {
         sessions: [],
+        hasMore: false,
         safetyFlags: [
           {
             id: 'flag-low-newer',
@@ -105,6 +106,7 @@ describe('KidTutorPage — an in-progress session is not reported as 0 messages'
     vi.mocked(getKidTutorHistory).mockResolvedValue({
       data: {
         sessions: [{ ...BASE_SESSION, endedAt: null, turnCount: 0 }],
+        hasMore: false,
         safetyFlags: [],
       },
       error: null,
@@ -120,6 +122,7 @@ describe('KidTutorPage — an in-progress session is not reported as 0 messages'
     vi.mocked(getKidTutorHistory).mockResolvedValue({
       data: {
         sessions: [{ ...BASE_SESSION, endedAt: '2026-08-30T10:05:00Z', turnCount: 6 }],
+        hasMore: false,
         safetyFlags: [],
       },
       error: null,
@@ -146,6 +149,7 @@ describe('KidTutorPage — a session that did not end normally says so', () => {
     vi.mocked(getKidTutorHistory).mockResolvedValue({
       data: {
         sessions: [{ ...BASE_SESSION, closeReason: 'completed', endedAt: '2026-08-30T10:05:00Z', turnCount: 6 }],
+        hasMore: false,
         safetyFlags: [],
       },
       error: null,
@@ -169,6 +173,7 @@ describe('KidTutorPage — a session that did not end normally says so', () => {
     vi.mocked(getKidTutorHistory).mockResolvedValue({
       data: {
         sessions: [{ ...BASE_SESSION, closeReason, endedAt: '2026-08-30T10:05:00Z', turnCount: 6 }],
+        hasMore: false,
         safetyFlags: [],
       },
       error: null,
@@ -208,6 +213,7 @@ describe('KidTutorPage — switching kidId without a remount does not leak the p
         return Promise.resolve({
           data: {
             sessions: [],
+            hasMore: false,
             safetyFlags: [
               {
                 id: 'flag-a',
@@ -256,7 +262,7 @@ describe('KidTutorPage — switching kidId without a remount does not leak the p
     // (and its resolver) only exists a tick later — wait for it rather than
     // racing it, or this resolves a stale placeholder and hangs forever.
     await waitFor(() => expect(resolveKidB).not.toBeNull());
-    resolveKidB!({ data: { sessions: [], safetyFlags: [] }, error: null });
+    resolveKidB!({ data: { sessions: [], hasMore: false, safetyFlags: [] }, error: null });
 
     await waitFor(() => expect(screen.queryByText('Loading…')).toBeNull());
     expect(screen.queryByText(/hurting themselves/)).toBeNull();
@@ -279,6 +285,7 @@ describe('KidTutorPage — a safety flag opens the exact transcript it happened 
         // older incident outside the capped "recent sessions" list, exactly
         // the orphaned-reference scenario the review proved is real.
         sessions: [],
+        hasMore: false,
         safetyFlags: [
           {
             id: 'flag-1',
@@ -334,6 +341,7 @@ describe('KidTutorPage — a graded activity is part of the transcript, not invi
     vi.mocked(getKidTutorHistory).mockResolvedValue({
       data: {
         sessions: [{ ...BASE_SESSION }],
+        hasMore: false,
         safetyFlags: [],
       },
       error: null,
@@ -381,7 +389,7 @@ describe('KidTutorPage — a graded activity is part of the transcript, not invi
 
   it('shows a real score and XP for an answered activity', async () => {
     vi.mocked(getKidTutorHistory).mockResolvedValue({
-      data: { sessions: [{ ...BASE_SESSION }], safetyFlags: [] },
+      data: { sessions: [{ ...BASE_SESSION }], hasMore: false, safetyFlags: [] },
       error: null,
     });
     vi.mocked(getTranscript).mockResolvedValue({
@@ -410,5 +418,77 @@ describe('KidTutorPage — a graded activity is part of the transcript, not invi
     await waitFor(() => screen.getByText('How many coins?'));
     expect(screen.getByText(/scored 100 out of 100/i)).toBeInTheDocument();
     expect(screen.getByText(/20 XP/)).toBeInTheDocument();
+  });
+});
+
+/*
+ * Found by adversarial review sweep tutor-review-sweep-101
+ * (guardian-dashboard-depth dimension), round 110 (2026-08-31, MEDIUM):
+ * `getKidTutorHistory` always fetched exactly one, hardcoded page with no
+ * "Load more" anywhere on this page — a guardian who accumulated more than
+ * one page's worth of sessions since their last visit had NO way, from
+ * here, to reach anything older. The server-side fix (`listTutorSessions`
+ * pagination) is proven separately in `backend/src/__tests__/tutor.test.ts`
+ * and `tutorData.test.ts`; this proves the CLIENT actually asks for the
+ * next page and appends it rather than replacing what is already on screen.
+ */
+describe('KidTutorPage — paging past the first page of sessions', () => {
+  const OLD_SESSION = { ...BASE_SESSION, id: 's31', startedAt: '2026-07-01T09:00:00Z' };
+
+  it('shows "Load more" only while the server reports more, fetches the NEXT offset, and appends rather than replaces', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValueOnce({
+      data: { sessions: [{ ...BASE_SESSION }], hasMore: true, safetyFlags: [] },
+      error: null,
+    });
+
+    renderPage();
+
+    await waitFor(() => screen.getByText(/2 messages/));
+    const loadMore = await screen.findByText('Load older conversations');
+
+    vi.mocked(getKidTutorHistory).mockResolvedValueOnce({
+      data: { sessions: [OLD_SESSION], hasMore: false, safetyFlags: [] },
+      error: null,
+    });
+
+    fireEvent.click(loadMore);
+
+    // Asked for the NEXT page — offset is how many sessions are already on
+    // screen — not the same first page again.
+    await waitFor(() =>
+      expect(getKidTutorHistory).toHaveBeenLastCalledWith('tok', 'kid-1', { offset: 1 }),
+    );
+
+    // Both sessions are now visible — the older one was APPENDED, not a
+    // replacement of the first page — and the control disappears once the
+    // server says there is nothing further.
+    await waitFor(() => expect(screen.queryByText('Load older conversations')).toBeNull());
+    expect(screen.getAllByText(/messages$/)).toHaveLength(2);
+  });
+
+  it('leaves the existing sessions on screen and offers a retry when the next page fails to load', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValueOnce({
+      data: { sessions: [{ ...BASE_SESSION }], hasMore: true, safetyFlags: [] },
+      error: null,
+    });
+
+    renderPage();
+    await waitFor(() => screen.getByText(/2 messages/));
+    const loadMore = await screen.findByText('Load older conversations');
+
+    vi.mocked(getKidTutorHistory).mockResolvedValueOnce({
+      data: null,
+      error: { code: 'DATA_UNAVAILABLE', message: 'nope' },
+    });
+
+    fireEvent.click(loadMore);
+
+    await waitFor(() => screen.getByText(/couldn.t load more conversations/i));
+    // The first page's session is still right there — a failed page turn
+    // must never blank out what was already successfully shown.
+    expect(screen.getByText(/2 messages/)).toBeInTheDocument();
+    // And the control is still there to retry, rather than stranding the
+    // guardian on an incomplete list forever.
+    expect(screen.getByText('Load older conversations')).toBeInTheDocument();
   });
 });
