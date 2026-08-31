@@ -340,6 +340,7 @@
     "SESSION_EXPIRED": "Esta conversación caducó. Empieza una nueva para seguir.",
     "SESSION_NOT_FOUND": "No encontramos esta conversación. Empieza una nueva.",
     "STT_FAILED": "No alcancé a escucharte. Inténtalo otra vez, un poquito más cerca del micrófono.",
+    "STT_UNAVAILABLE": "Algo no funcionó de nuestro lado. Inténtalo de nuevo en un momento.",
     "VALIDATION_ERROR": "No entendí eso. ¿Lo intentas de otra forma?",
     "generic": "Algo no funcionó en ese intento. Inténtalo de nuevo."
   },

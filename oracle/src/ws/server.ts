@@ -1185,8 +1185,21 @@ async function handleAudioClip(live: Live, audio: Buffer, mimeType: string): Pro
   // starts the moment they release the button, not when STT returns.
   send(live.socket, { type: 'thinking' });
   try {
-    const text = await transcribe(audio, mimeType, live.session);
-    if (text === null || text.trim() === '') {
+    const outcome = await transcribe(audio, mimeType, live.session);
+    if ('unavailable' in outcome) {
+      // The STT call itself never came back — a timeout, a dropped
+      // connection, a provider 5xx. Never told as "I did not catch that":
+      // the child did nothing wrong here, and a mic-technique apology for an
+      // outage we caused is the exact defect this code distinguishes.
+      send(live.socket, {
+        type: 'error',
+        code: 'STT_UNAVAILABLE',
+        message: 'The speech-to-text provider did not respond.',
+      });
+      return;
+    }
+    const text = outcome.text;
+    if (text.trim() === '') {
       send(live.socket, { type: 'error', code: 'STT_FAILED', message: 'I did not catch that.' });
       return;
     }
@@ -1895,23 +1908,38 @@ async function finish(
   live.socket.close(reason === 'completed' ? CLOSE_CODES.NORMAL : CLOSE_CODES.BUDGET_EXHAUSTED, reason);
 }
 
+/**
+ * `transcribe()`'s two failure shapes look identical to a caller that only
+ * gets a `string | null` back, and that collapse WAS the bug (found by
+ * adversarial review sweep tutor-review-sweep-101, voice-audio-quality
+ * dimension, 3/3 skeptics, HIGH; see RUNBOOK.md Round 102). "The child said
+ * nothing intelligible" (a real call, a real empty transcript) and "the call
+ * to the voice provider itself never came back" (a timeout, a dropped
+ * connection, a provider 5xx — everything `VoiceUnavailableError` wraps, per
+ * `voice/provider.ts`) are different facts, and only one of them is something
+ * a child can fix by speaking louder. `unavailable: true` keeps the second
+ * fact alive for `handleAudioClip` to act on separately, instead of both
+ * arriving at the caller as the same `null`.
+ */
+type TranscribeOutcome = { text: string } | { unavailable: true };
+
 async function transcribe(
   audio: Buffer,
   mimeType: string,
   session: SessionContext,
-): Promise<string | null> {
+): Promise<TranscribeOutcome> {
   const provider = getVoiceProvider();
-  if (!provider.available) return null;
+  if (!provider.available) return { unavailable: true };
   try {
     const result = await provider.transcribe({
       audio,
       mimeType,
       locale: session.locale,
     });
-    return result.text;
+    return { text: result.text };
   } catch (error) {
     console.warn('[oracle] transcription failed:', error instanceof Error ? error.message : error);
-    return null;
+    return { unavailable: true };
   }
 }
 

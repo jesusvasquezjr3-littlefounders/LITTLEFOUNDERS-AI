@@ -8552,7 +8552,7 @@ const es = (val: string) => encodeURIComponent(val.toString());
 ```
 import { z } from 'zod';
 import { createHash } from 'node:crypto';
-import { serviceRest } from './supabaseRest.js';
+import { countServiceRows, serviceRest } from './supabaseRest.js';
 
 /*
  * The Tutor's data plane (migration 0047, /ORACLE.md).
@@ -30545,6 +30545,26 @@ import type { SessionContext } from '../core/client.js';
  *
  * Three properties, and every one of them was a real invoice before:
  *
+```
+
+### oracle/src/__tests__/sttFailureKind.test.ts
+
+```
+import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
+import type { AddressInfo } from 'node:net';
+import { WebSocket } from 'ws';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+
+/*
+ * REGRESSION TEST for adversarial review sweep tutor-review-sweep-101
+ * (voice-audio-quality dimension), 3/3 independent skeptics, HIGH.
+ *
+ * `transcribe()` (`ws/server.ts`) used to collapse two unrelated facts into
+ * the identical `null`: "the child said nothing intelligible" (a real STT
+ * call, a real empty transcript) and "the call to the STT provider itself
+ * never came back" (a timeout, a dropped connection, an Inworld 5xx — every
+ * shape `VoiceUnavailableError` wraps, per `voice/inworld.ts`). Both then
+ * reached the learner as the SAME `STT_FAILED` — "try again, a little closer
 ```
 
 ### oracle/src/__tests__/timeout-cancellation.test.ts

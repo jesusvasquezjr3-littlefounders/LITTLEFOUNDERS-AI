@@ -10106,3 +10106,108 @@ test; `npm run build` — exit 0, SEO prerender step completed (6 pages, 4
 indexable) same as before this change. `npm run i18n:check` (root) —
 clean; no i18n keys were added, changed, or removed, so this was run for
 safety rather than because it was required.
+## Round 102: a microphone outage and a child's own silence sounded like the same sentence, because `transcribe()` answered both with the identical `null` — found by adversarial review sweep tutor-review-sweep-101 (voice-audio-quality dimension), 3/3 independent skeptics, HIGH, closed 2026-08-31
+
+**HIGH, FIXED.** `transcribe()` (`oracle/src/ws/server.ts`) wrapped every
+call to the voice provider's `transcribe()` in one `try`/`catch` and
+returned `null` from BOTH branches that can produce it: the `catch`, which
+fires on a timeout, a dropped connection, or a provider 5xx (everything
+`VoiceUnavailableError` wraps, per `voice/inworld.ts` and `voice/provider.ts`),
+and the ordinary success path when the provider genuinely heard nothing
+usable. `handleAudioClip`'s caller then read `text === null` and
+`text.trim() === ''` as the SAME condition, sending the identical
+`STT_FAILED` — "I did not catch that" — for both. `ConversationView.tsx`
+renders that code as "Try again, a little closer to the microphone,"
+which is honest advice for a child who mumbled and actively wrong advice
+for a child whose sentence never had a chance to be heard at all, because
+the round trip to the provider itself never came back. A network blip is
+not fixed by speaking louder, and telling a child it is teaches them the
+wrong lesson about what just happened.
+
+**The fix keeps the distinction alive at the one place that already knew
+it and previously discarded it.** `transcribe()` now returns a small
+discriminated result, `{ text: string } | { unavailable: true }`, instead
+of `string | null`. The `unavailable: true` case fires from the existing
+`catch` block (a real call that never came back, or that returned an
+error status) AND from `!provider.available` (no voice provider
+configured at the moment of the call) — both are "our infrastructure
+could not answer," not "the child said nothing," and both used to
+collapse into the same `null`. `handleAudioClip` (`oracle/src/ws/server.ts`)
+checks the new shape first: `unavailable` sends a NEW code,
+`STT_UNAVAILABLE`, and returns before ever reaching the empty-string
+check; anything else is the ORIGINAL success path, `text.trim() === ''`
+still sends `STT_FAILED`, byte-for-byte the code and copy a child already
+hears for genuine silence. Nothing about the silence case changed.
+
+**The wire message for the new code deliberately does not name the
+provider.** `boundaries.test.ts`'s "names the provider ONLY inside
+src/voice/" check caught this on the first pass: an early draft's code
+comments said "Inworld" twice, outside `src/voice/`, which is exactly the
+leak `/AGENTS.md` §1.2 and §2.5 exist to prevent (the provider is
+interim, and nothing above the interface should have to change when it is
+replaced). Both comments were reworded to "the voice provider" / "a
+provider 5xx" — the wire `message` field was never provider-specific to
+begin with, since `ConversationView.tsx`'s own doc comment already states
+the message field is never rendered to a learner, only the `code` is.
+
+**i18n, three locales, one commit (§1.8).** `tutor.conversationError.STT_UNAVAILABLE`
+joins the existing `STT_FAILED` sibling in `frontend/src/i18n/{en-US,es-MX,pt-BR}/tutor.json`:
+"Something went wrong on our end. Try again in a moment." / "Algo no
+funcionó de nuestro lado. Inténtalo de nuevo en un momento." / "Algo não
+funcionou do nosso lado. Tente de novo daqui a pouco." — none of the three
+mention a microphone, a connection, or a technique, on purpose. No change
+was needed in `ConversationView.tsx` itself: its `errorLine` computation
+already resolves ANY `socket.error.code` through
+`t(\`tutor.conversationError.${code}\`, { defaultValue: ... })` generically
+(oracle/AGENTS.md §5 item 2's own point — "a code with no key falls
+through to a generic apology" — is precisely why adding the key alone is
+sufficient; the component has no per-code branch to touch beyond its
+existing `CONSENT_REVOKED` special case, which this code is not).
+
+**Verified test-first, red then green — WITHOUT `git stash`.** A
+mid-session discovery: `refs/stash` is a single ref shared across every
+worktree in this fleet, not scoped per worktree, and a sibling agent's
+own concurrent `git stash pop` consumed this fix's stash entry while a
+different sibling's entry landed here instead. Recovered by reverting the
+foreign diff (`git checkout HEAD -- <path>`) and re-verifying red/green
+by writing the pre-fix file directly (`git show HEAD:<path> > <path>`,
+restored afterward from a plain file copy) — a method that touches no
+ref any other worktree can observe. `oracle/src/__tests__/sttFailureKind.test.ts`
+(new, 2 tests) drives a REAL socket against a REAL fake Inworld-shaped STT
+endpoint: one test sets the fake endpoint to answer 200 with an empty
+transcript and asserts `STT_FAILED`, unchanged; the other sets it to
+answer 500 with Inworld's own documented error shape
+(`{"code":13,"message":"proxy has failed to process your request"}`,
+`voice/inworld.ts`'s own comment) and asserts `STT_UNAVAILABLE`, never
+`STT_FAILED`. Confirmed both tests pass against the ORIGINAL code first
+(no assertion failure) and only the second fails without the fix, then
+both pass with it. `frontend/src/tutor/__tests__/conversationView.test.tsx`
+gained `STT_UNAVAILABLE` in its existing `CODES` table (every code renders
+a real sentence, never a raw key) plus one dedicated test asserting the
+rendered copy neither repeats `STT_FAILED`'s "closer to the microphone"
+line nor leaks the raw wire message.
+
+**Gates.** `oracle/`: `npm run type-check` (including `tsconfig.scripts.json`
+and `tsconfig.test.json`), `npm run lint`, `npm run build` all clean;
+`npm test` — 28 files, 637 tests green (one new file, two new tests);
+`npm run verify:tutor` green (context boundary + canary corpus both
+hold). `frontend/`: `npm run type-check`, `npm run lint` clean; `npm test -- --run` —
+134 files, 1547 tests, two new (both in the existing
+`conversationView.test.tsx`) — one unrelated file
+(`LegalPage.test.tsx`, its own long-standing "renders every paragraph"
+test) hit a transient 5000ms timeout under full-suite load and passed
+cleanly in isolation immediately after, the same "heavily-loaded machine,
+not a regression" shape Round 98 already documented; re-running the full
+suite a second time reproduced it in a DIFFERENT file each time,
+confirming it is machine load rather than this change. Root: `docs:check`,
+`secrets:check`, `i18n:check` (3-locale parity — the new key exists in
+all three, verified directly since it is reached through a template
+literal `i18n:check` itself cannot follow), `paths:check`, `seo:check`,
+`provider:check`, and `tools:test` (26/26) all green — none of this
+touches the public marketing surface or a provider setting, so all five
+were expected to be no-ops and were.
+
+`oracle/AGENTS.md` item 73 records the general lesson (a caller-facing
+result type that only has room for one failure state will eventually
+carry two, and the second one arrives as a silent behavioral bug, not a
+type error).
