@@ -2454,6 +2454,7 @@ export type Database = {
           segment_type: string
           seq: number
           session_id: string
+          voice_checked_at: string | null
           xp_awarded: number
         }
         Insert: {
@@ -2471,6 +2472,7 @@ export type Database = {
           segment_type: string
           seq: number
           session_id: string
+          voice_checked_at?: string | null
           xp_awarded?: number
         }
         Update: {
@@ -2488,6 +2490,7 @@ export type Database = {
           segment_type?: string
           seq?: number
           session_id?: string
+          voice_checked_at?: string | null
           xp_awarded?: number
         }
         Relationships: [

@@ -1,0 +1,31 @@
+-- 0060_tutor_segment_voice_checked.sql — the one flag that stops a spoken
+-- answer and its own widget echo from paying for the mastery model twice.
+-- @phase: expand
+--
+-- FOUND BY ADVERSARIAL REVIEW, 2026-08-30 (HIGH). `POST
+-- /tutor/internal/segments/:id/voice-check` calls `recordAttempt` and writes
+-- real BKT/FSRS evidence (`learner_kc_mastery`, `memory_card`, `kc_attempt`)
+-- for a spoken answer, but never calls `recordSegmentResult` — so
+-- `tutor_segments.score`/`xp_awarded`/`attempts` stay exactly as they were.
+-- If the SAME segment is then also graded through the ordinary widget path
+-- (`POST /tutor/segments/:id/grade`), that route had no way to know
+-- voice-check already recorded evidence for this segment: it only reads
+-- `row.score`/`row.xp_awarded` (the existing best-score/no-double-XP floors),
+-- never whether pedagogy evidence already exists, and called `recordAttempt`
+-- a second time for the identical real answer — reproduced directly, one
+-- correct spoken "son tres pesos" leaving `pKnownAfter` at 0.664, then an
+-- immediate /grade call for the same segment and the same answer pushing it
+-- to 0.954 from a single real child interaction. The XP twin of this
+-- (`row.xp_awarded` capping `requestedXp`) was already closed; the evidence
+-- itself was not.
+--
+-- One additive, nullable timestamp. NULL means "no voice-check has recorded
+-- evidence for this segment yet" — true for every row written before this
+-- migration, exactly the state they are already in. Set once, the first time
+-- voice-check's own `recordAttempt` call actually succeeds (never on a
+-- failed upstream read, which recorded nothing); `/grade` reads it to skip
+-- its OWN `recordAttempt` call for a segment voice-check already covered,
+-- while still recording the score, XP and attempt count the widget path is
+-- responsible for either way.
+ALTER TABLE public.tutor_segments
+    ADD COLUMN IF NOT EXISTS voice_checked_at timestamptz NULL;

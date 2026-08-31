@@ -37,6 +37,7 @@ import {
   listTutorSegments,
   listTutorSessions,
   listTutorTurns,
+  markSegmentVoiceChecked,
   recordSegmentResult,
   revokeVoiceConsent,
   setSessionSummary,
@@ -1131,6 +1132,20 @@ function internalRouter(): Router {
         source: 'voice_check',
         strategy: parsed.data.strategy ?? null,
       });
+      /*
+       * THE MARKER `/grade` READS TO AVOID DOUBLE-COUNTING THIS SAME ANSWER
+       * (found by adversarial review, 2026-08-30, HIGH). Only set once
+       * `recordAttempt` has actually written evidence — never on its `null`
+       * (a failed upstream read recorded nothing, and there is nothing here
+       * to guard `/grade` against). Best-effort: logged, not fatal, because
+       * the learner's spoken answer was already verified and the evidence it
+       * DID write already landed — a lost PATCH here only reopens the
+       * double-count window for a subsequent `/grade` call, it does not
+       * undo real evidence.
+       */
+      if (pedagogy && !(await markSegmentVoiceChecked(row.id))) {
+        console.error(`[tutor] voice-check: could not mark segment ${row.id} voice-checked — a later /grade call could double-count this evidence`);
+      }
     }
 
     return ok(res, {
@@ -1955,11 +1970,31 @@ export function tutorRouter(): Router {
      * segment_graded frame — that signature is what stops a client from
      * fabricating pedagogy events (it could already fabricate its own score;
      * it must not be able to steer the strategy machine too).
+     *
+     * NEVER FED THE SAME REAL ANSWER TWICE (found by adversarial review,
+     * 2026-08-30, HIGH). A spoken answer checked by voice
+     * (`/internal/segments/:id/voice-check`) already ran `recordAttempt` for
+     * this exact segment — real BKT/FSRS evidence for one real child
+     * interaction — but voice-check never touches `score`/`xp_awarded`
+     * above, so nothing stopped this route from independently running
+     * `recordAttempt` a SECOND time for the identical answer when the same
+     * segment was then also graded through the widget. Reproduced directly:
+     * a correct spoken answer alone landed `pKnownAfter` at 0.664; the same
+     * segment graded again right after pushed it to 0.954 from one real
+     * interaction. `row.voice_checked_at` (migration 0060,
+     * `markSegmentVoiceChecked`) is the marker voice-check sets the moment
+     * its OWN evidence write actually succeeds — when it is already set,
+     * this route still does everything else it owns (the score/XP/attempts
+     * bookkeeping above already ran, unconditionally), it just does not
+     * hand the SAME answer to the mastery model a second time. A segment
+     * graded through the widget alone, with no prior voice-check, is
+     * unaffected — `voice_checked_at` stays null and this records exactly as
+     * it always has.
      */
     const provenance = row.provenance ?? {};
     const kcId = typeof provenance.kc_id === 'string' ? provenance.kc_id : null;
     let pedagogy: AttemptOutcome | null = null;
-    if (kcId && getConfig().TUTOR_V3_BRAIN && !graderCrashed) {
+    if (kcId && getConfig().TUTOR_V3_BRAIN && !graderCrashed && row.voice_checked_at === null) {
       pedagogy = await recordAttempt({
         userId: user.id,
         sessionId: row.session_id,

@@ -6998,3 +6998,75 @@ on this exact page, so no new responsive surface was introduced. No
 `oracle/AGENTS.md` item for the `ws/server.ts` half — the fix is a
 call-site correction to existing, already-documented machinery, not a
 new Tutor behavior or invariant.
+
+## Round 72: a single answer checked by voice AND on the widget recorded pedagogy evidence twice
+
+A round-67 background adversarial review targeted the BKT/FSRS mastery
+model's own evidence-recording paths (`backend/src/routes/tutor.ts`'s
+voice-check and grade handlers, `recordAttempt.ts`).
+
+**HIGH, FIXED.** `POST /tutor/internal/segments/:id/voice-check` calls
+`recordAttempt` and writes real BKT/FSRS evidence
+(`learner_kc_mastery`, `memory_card`, `kc_attempt`) for a spoken
+answer, but never calls `recordSegmentResult` — so
+`tutor_segments.score`/`xp_awarded`/`attempts` stay exactly as they
+were. If the SAME segment is then also graded through the ordinary
+widget path, `POST /tutor/segments/:id/grade` had no way to know
+voice-check already recorded evidence for it: the route only reads
+`row.score`/`row.xp_awarded` (the existing best-score/no-double-XP
+floors), never whether pedagogy evidence already exists, and called
+`recordAttempt` a second time for the identical real answer. Reproduced
+directly: a correct spoken "son tres pesos" alone left `pKnownAfter`
+at 0.664; grading the SAME segment again right after, with the same
+answer, pushed it to 0.954 — one real child interaction, two
+independent BKT posterior updates and two FSRS memory-card writes. XP
+double-payment for this exact scenario was already guarded elsewhere in
+the same file (voice-check pays no XP by design; `/grade` caps
+`requestedXp` at `baseXp - row.xp_awarded`) — the same double-entry-
+point problem was solved for money but left open for the mastery/
+spaced-review model itself, the actual pedagogical instrument the
+product is judged on.
+
+Fixed with one additive, nullable column
+(`database/migrations/0060_tutor_segment_voice_checked.sql`,
+`tutor_segments.voice_checked_at`) and a new
+`markSegmentVoiceChecked(segmentId)` — a guarded PATCH
+(`voice_checked_at=is.null`) so a later call can never clobber an
+earlier real timestamp — called from the voice-check handler ONLY
+after its own `recordAttempt` call has actually succeeded (never on a
+failed upstream read, which recorded nothing to guard against; a
+failed marker write is logged loudly, not fatal, since it only reopens
+the double-count window rather than undoing evidence already
+recorded). The grade handler's `recordAttempt` gate now also requires
+`row.voice_checked_at === null` — everything else `/grade` owns (the
+grader run, the best-score floor, the XP-cap-aware award,
+`recordSegmentResult`) still runs unconditionally; only the second
+pedagogy write is skipped. A segment graded through the widget alone,
+with no prior voice-check, is unaffected.
+
+Proof: a new Supertest test with a stateful stub (so the marker
+`/grade` sees is the one voice-check itself just wrote) reproduces the
+original scenario exactly — pre-fix, `/grade`'s response for the second
+call still carries a full second `pedagogy` object (`pKnownAfter:
+0.664` → `0.954`, mastery/`kc_attempt` write counts at 2); post-fix,
+the marker PATCH fires once, mastery/`kc_attempt` writes stay at 1,
+and `/grade`'s `pedagogy` field is `null` for the already-covered
+segment while the grading verdict and XP award are still correct. A
+companion test confirms the common path — `/grade` alone, no prior
+voice-check — is unaffected. Two existing test fixtures (`tutor.test.ts`'s
+`verifiedRow`, `pedagogy-routes.test.ts`'s `CHANGE_SEGMENT_ROW`)
+predated the new column and needed `voice_checked_at: null` added
+explicitly, since `undefined !== null` would have wrongly skipped
+`recordAttempt` for the EXISTING grade-alone tests — caught by running
+the full suite, not just the new tests, before calling this done.
+
+Verification: full backend suite green (694 tests), type-check, lint
+and build clean; `database/`'s `npm run db:reset` succeeded twice
+against a real local Postgres, migration confirmed present via
+`\d public.tutor_segments`; root `docs:check`/`secrets:check`/
+`paths:check` clean and `npm run tools:test`'s repo-consistency check
+green after `ROADMAP.md`'s pending-delta range was extended to include
+`0060` (required — this check fails otherwise, confirmed red then
+green). `database/types/database.ts` regenerated via `npm run
+db:types`. No `oracle/AGENTS.md` item — touches only `backend/` and
+`database/`.

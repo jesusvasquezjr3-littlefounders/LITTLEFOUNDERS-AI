@@ -661,6 +661,15 @@ export interface TutorSegmentRow {
   provenance: Record<string, unknown>;
   review_status: string | null;
   created_at: string;
+  /**
+   * Set once `/internal/segments/:id/voice-check` has actually recorded real
+   * pedagogy evidence for this segment (migration 0060) — never on a failed
+   * upstream read, which recorded nothing. `/grade` reads this to avoid
+   * calling `recordAttempt` a second time for the same real answer; see
+   * `markSegmentVoiceChecked`'s own comment for the double-evidence bug this
+   * closes.
+   */
+  voice_checked_at: string | null;
 }
 
 /*
@@ -772,6 +781,36 @@ export async function recordSegmentResult(input: {
       xp_awarded: input.xpAwarded,
       attempts: input.attempts,
     }),
+  });
+  return res !== null;
+}
+
+/**
+ * THE ONE-TIME EVIDENCE MARKER (found by adversarial review, 2026-08-30,
+ * HIGH). A spoken answer checked by voice records real BKT/FSRS evidence
+ * through `recordAttempt`, but never touches `tutor_segments.score` — so
+ * nothing on the row told `/grade` this segment's answer had already been
+ * scored for the mastery model when the SAME segment was then also graded
+ * through the ordinary widget path. That second call ran `recordAttempt`
+ * again for the identical real answer, double-counting one child's
+ * interaction into the BKT posterior and the FSRS card. `/grade` now checks
+ * `voice_checked_at` before calling `recordAttempt` and skips it when
+ * already set — this is the write that sets it.
+ *
+ * Called ONLY after voice-check's own `recordAttempt` call has actually
+ * succeeded (never after a failed upstream read, which recorded nothing to
+ * guard against) — and guarded to a currently-null row so a later call never
+ * clobbers an earlier, real timestamp. Best-effort like the rest of this
+ * file's pedagogy writes: a failed PATCH here does not un-record the
+ * evidence `recordAttempt` already wrote, it only means a subsequent
+ * `/grade` call could still double-count on retry, which is why it is
+ * logged loudly at the call site rather than silently swallowed.
+ */
+export async function markSegmentVoiceChecked(segmentId: string): Promise<boolean> {
+  const res = await serviceRest<unknown>(`/tutor_segments?id=eq.${eu(segmentId)}&voice_checked_at=is.null`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({ voice_checked_at: new Date().toISOString() }),
   });
   return res !== null;
 }

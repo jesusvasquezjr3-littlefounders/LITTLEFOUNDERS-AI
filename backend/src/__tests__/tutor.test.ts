@@ -912,6 +912,8 @@ describe('grading a tutor segment', () => {
     provenance: {},
     review_status: null,
     created_at: 'x',
+    // No prior voice-check for this fixture's default shape (migration 0060).
+    voice_checked_at: null,
   };
 
   it('awards XP for a verified key', async () => {

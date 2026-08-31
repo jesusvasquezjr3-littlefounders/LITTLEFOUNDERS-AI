@@ -108,6 +108,9 @@ const CHANGE_SEGMENT_ROW = {
   provenance: { kc_id: KC_CHANGE, strategy: 'SOCRATIC' },
   review_status: null,
   created_at: '2026-08-28T10:01:00Z',
+  // No prior voice-check for this fixture's default shape (migration 0060) —
+  // every row a real, migrated database returns carries this column.
+  voice_checked_at: null,
 };
 
 interface StubOpts {
@@ -362,6 +365,133 @@ describe('the grade route pedagogy join', () => {
     expect(pedagogy.misconceptionCode).toBeNull();
     expect(pedagogy.pKnownAfter).toBeGreaterThan(0.15);
     expect(typeof pedagogy.reviewDueAt).toBe('string');
+  });
+});
+
+describe('voice-check + grade must not double-record pedagogy evidence for one answer', () => {
+  /*
+   * Found by adversarial review, 2026-08-30 (HIGH): voice-check runs
+   * `recordAttempt` (real BKT/FSRS evidence) but never touches
+   * `tutor_segments.score`/`xp_awarded`/`attempts` — so `/grade`, called
+   * afterwards for the SAME segment and the SAME real answer, had no way to
+   * know evidence already existed and ran `recordAttempt` again. Unlike
+   * `stub()` above, this stub keeps a MUTABLE segment row, because the fix
+   * itself is a value (`voice_checked_at`) written by one call and read by
+   * the next — a static fixture that always answers the same row would make
+   * this reproduction (and the regression test that replaces it)
+   * structurally unable to see the bug OR the fix.
+   */
+  function stubSequential() {
+    const writes: { url: string; method: string; body?: string }[] = [];
+    let segmentRow: Record<string, unknown> = { ...CHANGE_SEGMENT_ROW, voice_checked_at: null };
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        const method = init?.method ?? 'GET';
+        if (method !== 'GET') writes.push({ url, method, body: init?.body as string | undefined });
+
+        if (url.includes('/rest/v1/kc_edge')) return Promise.resolve(jsonResponse(200, EDGE_ROWS));
+        if (url.includes('/rest/v1/kc_attempt')) return Promise.resolve(jsonResponse(200, []));
+        if (url.includes('/rest/v1/kc?')) {
+          if (url.includes('id=eq.')) {
+            const row = KC_ROWS.find((k) => url.includes(k.id));
+            return Promise.resolve(jsonResponse(200, row ? [row] : []));
+          }
+          return Promise.resolve(jsonResponse(200, KC_ROWS));
+        }
+        if (url.includes('/rest/v1/misconception')) return Promise.resolve(jsonResponse(200, MISCONCEPTION_ROWS));
+        if (url.includes('/rest/v1/learner_kc_mastery')) {
+          if (method === 'POST') return Promise.resolve(new Response(null, { status: 204 }));
+          return Promise.resolve(jsonResponse(200, []));
+        }
+        if (url.includes('/rest/v1/memory_card')) {
+          if (method === 'POST') return Promise.resolve(new Response(null, { status: 204 }));
+          return Promise.resolve(jsonResponse(200, []));
+        }
+        if (url.includes('/rest/v1/learner_misconception')) {
+          return Promise.resolve(method === 'GET' ? jsonResponse(200, []) : new Response(null, { status: 204 }));
+        }
+        if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'kid' }]));
+        if (url.includes('/rest/v1/tutor_segments')) {
+          if (method === 'PATCH') {
+            if (url.includes('voice_checked_at=is.null')) {
+              segmentRow = { ...segmentRow, voice_checked_at: new Date().toISOString() };
+            } else {
+              const body = JSON.parse(String(init?.body ?? '{}')) as Record<string, unknown>;
+              segmentRow = { ...segmentRow, ...body };
+            }
+            return Promise.resolve(new Response(null, { status: 204 }));
+          }
+          if (url.includes('?id=eq.')) return Promise.resolve(jsonResponse(200, [segmentRow]));
+          return Promise.resolve(jsonResponse(200, []));
+        }
+        if (url.includes('/rest/v1/tutor_sessions')) {
+          if (url.includes('?id=eq.')) return Promise.resolve(jsonResponse(200, [SESSION_ROW]));
+          if (method === 'PATCH') return Promise.resolve(new Response(null, { status: 204 }));
+          return Promise.resolve(jsonResponse(200, []));
+        }
+        if (url.includes('/rpc/award_tutor_xp')) {
+          const requested = JSON.parse(String(init?.body ?? '{}')).p_requested as number;
+          return Promise.resolve(jsonResponse(200, requested));
+        }
+        return Promise.resolve(jsonResponse(200, []));
+      }),
+    );
+    return writes;
+  }
+
+  it('a spoken correct answer, immediately followed by /grade for the same segment and the same answer, records evidence exactly once', async () => {
+    const writes = stubSequential();
+
+    const voice = await request(createApp())
+      .post(`/api/v1/tutor/internal/segments/${SEGMENT}/voice-check`)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ sessionId: SESSION, utterance: 'son tres pesos' });
+    expect(voice.status).toBe(200);
+    expect(voice.body.data).toMatchObject({ recognized: true, correct: true });
+    expect(voice.body.data.pKnownAfter).toBeGreaterThan(0.15);
+
+    // The marker landed: `/grade` will have something real to read.
+    expect(
+      writes.some(
+        (w) => w.method === 'PATCH' && w.url.includes('/rest/v1/tutor_segments') && w.url.includes('voice_checked_at=is.null'),
+      ),
+    ).toBe(true);
+
+    const masteryWritesAfterVoice = writes.filter((w) => w.url.includes('/rest/v1/learner_kc_mastery')).length;
+    const attemptWritesAfterVoice = writes.filter((w) => w.url.includes('/rest/v1/kc_attempt')).length;
+    expect(masteryWritesAfterVoice).toBe(1);
+    expect(attemptWritesAfterVoice).toBe(1);
+
+    const grade = await request(createApp())
+      .post(`/api/v1/tutor/segments/${SEGMENT}/grade`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ answer: { value: 3 }, attemptNumber: 1 });
+    expect(grade.status).toBe(200);
+    // /grade still does everything ELSE it owns: the real verdict and XP
+    // (voice-check itself pays none).
+    expect(grade.body.data.verdict.correct).toBe(true);
+    expect(grade.body.data.xpAwarded).toBeGreaterThan(0);
+    // But NOT a second pedagogy event for the same answer.
+    expect(grade.body.data.pedagogy).toBeNull();
+
+    expect(writes.filter((w) => w.url.includes('/rest/v1/learner_kc_mastery')).length).toBe(masteryWritesAfterVoice);
+    expect(writes.filter((w) => w.url.includes('/rest/v1/kc_attempt')).length).toBe(attemptWritesAfterVoice);
+  });
+
+  it('a segment graded via /grade ALONE, with no prior voice-check, still records evidence normally', async () => {
+    const writes = stubSequential();
+    const response = await request(createApp())
+      .post(`/api/v1/tutor/segments/${SEGMENT}/grade`)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ answer: { value: 3 }, attemptNumber: 1 });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.pedagogy).not.toBeNull();
+    expect(response.body.data.pedagogy.correct).toBe(true);
+    expect(writes.some((w) => w.url.includes('/rest/v1/learner_kc_mastery'))).toBe(true);
+    expect(writes.some((w) => w.url.includes('/rest/v1/kc_attempt'))).toBe(true);
   });
 });
 
