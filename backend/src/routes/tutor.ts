@@ -1877,6 +1877,12 @@ export function tutorRouter(): Router {
         segment: stripCandidate(s.payload as unknown as SegmentBase),
         score: s.score,
         xpAwarded: s.xp_awarded,
+        // `seq` here is this segment's own per-session ordinal
+        // (`countSessionSegments`), NOT the seq of the turn that requested
+        // it — the two are separate counters. `createdAt` is what actually
+        // lets a replay place this activity among the turns; see
+        // `replayScript.ts`'s comparator.
+        createdAt: s.created_at,
       })),
     });
   });

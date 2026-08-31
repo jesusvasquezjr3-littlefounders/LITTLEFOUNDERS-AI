@@ -78,10 +78,11 @@ export interface ReplayBeat {
   index: number;
   /**
    * The schema `seq` this beat was ordered by — `TranscriptTurn.seq` for a
-   * turn, `TranscriptSegment.seq` for an activity (the seq of the turn that
-   * served it, per `compare`'s own comment above). NOT the same number as
-   * `index`: `index` is this beat's position in the sorted performance,
-   * `seq` is the row's own identity, and the two only coincide by accident.
+   * turn, `TranscriptSegment.seq` for an activity (that segment's OWN
+   * per-session ordinal, not the seq of the turn that served it — see
+   * `compare`'s own comment above). NOT the same number as `index`: `index`
+   * is this beat's position in the sorted performance, `seq` is the row's own
+   * identity, and the two only coincide by accident.
    * Found by adversarial review, round 67 (2026-08-30, HIGH): the guardian
    * transcript viewer (`KidTutorPage.tsx`) needs the real row `seq` to match
    * a safety flag's `turn_seq` against the correct beat — the review's own
@@ -234,11 +235,17 @@ const POSE: Record<Exclude<ReplayBeatKind, 'tutor'>, { emotion: CharacterEmotion
  * is a coin flip that decides whether a replay shows the answer before the
  * question.
  *
- * So the comparator is three-deep: `seq`, then the wall clock the row was
- * written at, then a rank that puts an activity after the turn it was served
- * with. The last one is not a tie-break of convenience — a segment's `seq` IS
- * the seq of the turn that handed it over (`ws/server.ts`), so "same number"
- * means "this came next", every time.
+ * `seq` is only comparable WITHIN one kind's own numbering space — a segment's
+ * `seq` is its own per-session ordinal (`countSessionSegments`, the 1st, 2nd,
+ * 3rd... activity served), a completely different counter from a turn's `seq`,
+ * and the two coincide only by accident. Found live, testing as a real logged-
+ * in kid account, 2026-08-30 (HIGH): a session's SECOND activity carried
+ * `seq: 1` (its own ordinal), which sorted it ahead of turn `seq: 1` (the
+ * session's opening greeting) — the guardian transcript viewer showed both
+ * activities before any dialogue at all, in an order no parent could follow.
+ * `TURN_RANK`/`SEGMENT_RANK` exist for exactly this: `seq` is compared ONLY
+ * between two rows of the same rank; a turn against a segment skips straight
+ * to `at`, the real wall clock, which both kinds now carry for real.
  */
 interface Ordered {
   seq: number;
@@ -250,7 +257,7 @@ const TURN_RANK = 0;
 const SEGMENT_RANK = 1;
 
 function compare(a: Ordered, b: Ordered): number {
-  if (a.seq !== b.seq) return a.seq - b.seq;
+  if (a.rank === b.rank && a.seq !== b.seq) return a.seq - b.seq;
   if (a.at !== b.at) return a.at - b.at;
   return a.rank - b.rank;
 }
@@ -306,17 +313,11 @@ export function buildReplayScript(transcript: SessionTranscript): ReplayScript {
         kind: 'segment',
         row,
         seq: row.seq,
-        /*
-         * A segment carries no timestamp on the wire — Core's replay projection
-         * serves `segmentId, seq, origin, segment, score, xpAwarded` and no
-         * clock. Sorting it at the epoch would put it BEFORE the turn that
-         * handed it over, because that turn shares its seq; sorting it at
-         * infinity puts it after every turn of the same number, which is where
-         * it happened. The rank is then the tie-break between two activities
-         * served against one turn, and the sort is stable, so they keep the
-         * order Core listed them in.
-         */
-        at: Number.POSITIVE_INFINITY,
+        // `seq` here is this segment's own ordinal, not the requesting turn's
+        // — see the comparator's own comment. `at` is what actually places it
+        // among the turns; two activities served against one turn keep the
+        // order Core listed them in via their own distinct `createdAt`.
+        at: millis(row.createdAt),
         rank: SEGMENT_RANK,
       }),
     ),

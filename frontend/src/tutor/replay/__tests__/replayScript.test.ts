@@ -53,6 +53,7 @@ function segment(over: Partial<TranscriptSegment> & Pick<TranscriptSegment, 'seg
     segment: { prompt_md: 'How much after 4 weeks?' },
     score: 100,
     xpAwarded: 20,
+    createdAt: '2026-08-14T16:20:00.000Z',
     ...over,
   };
 }
@@ -100,19 +101,61 @@ describe('buildReplayScript', () => {
   });
 
   it('puts an activity after the turn that handed it over, not before it', () => {
-    // A segment's `seq` IS the seq of the turn that served it (`ws/server.ts`),
-    // and it carries no timestamp of its own on the wire.
     const script = buildReplayScript(
       transcript(
         [
           turn({ id: 't1', seq: 4, speaker: 'tutor', text: "Let's try one.", created_at: '2026-08-14T16:25:00.000Z' }),
           turn({ id: 't2', seq: 5, speaker: 'tutor', text: 'Well done.', created_at: '2026-08-14T16:27:00.000Z' }),
         ],
-        [segment({ segmentId: 's1', seq: 4 })],
+        [segment({ segmentId: 's1', seq: 4, createdAt: '2026-08-14T16:26:00.000Z' })],
       ),
     );
 
     expect(script.beats.map((beat) => beat.kind)).toEqual(['tutor', 'activity', 'tutor']);
+  });
+
+  it('never sorts a segment by comparing its own ordinal against a turn seq', () => {
+    /*
+     * THE DEFECT THIS EXISTS FOR. Found live, testing as a real logged-in kid
+     * account, 2026-08-30 (HIGH): `tutor_segments.seq` is this segment's own
+     * per-session ordinal (`countSessionSegments` — the 1st, 2nd, 3rd...
+     * activity served), not the seq of the turn that requested it. A
+     * session's SECOND activity legitimately carries `seq: 1` (its own
+     * ordinal) while the conversation's turns were already up to `seq: 5` or
+     * beyond — comparing the two numbers directly sorted the activity into
+     * the middle of turn 1, long before it actually happened. The guardian
+     * transcript viewer (`KidTutorPage.tsx`) showed both of a session's
+     * activities before any dialogue at all.
+     */
+    const script = buildReplayScript(
+      transcript(
+        [
+          turn({ id: 't1', seq: 1, speaker: 'tutor', text: 'Good to see you.', created_at: '2026-08-14T16:20:00.000Z' }),
+          turn({ id: 't2', seq: 2, speaker: 'learner', text: 'how do I save money', created_at: '2026-08-14T16:21:00.000Z' }),
+          turn({
+            id: 't3',
+            seq: 3,
+            speaker: 'tutor',
+            text: "Let's try one on the screen.",
+            created_at: '2026-08-14T16:22:00.000Z',
+          }),
+          turn({ id: 't4', seq: 4, speaker: 'tutor', text: 'Well done.', created_at: '2026-08-14T16:24:00.000Z' }),
+        ],
+        // This segment's own ordinal (1, its SECOND ever) numerically matches
+        // no turn's seq here, but a naive cross-kind comparison of raw `seq`
+        // values would still place it by that meaningless number rather than
+        // by when it actually happened.
+        [segment({ segmentId: 's1', seq: 1, createdAt: '2026-08-14T16:23:00.000Z' })],
+      ),
+    );
+
+    expect(script.beats.map((beat) => [beat.kind, beat.text])).toEqual([
+      ['tutor', 'Good to see you.'],
+      ['learner', 'how do I save money'],
+      ['tutor', "Let's try one on the screen."],
+      ['activity', 'How much after 4 weeks?'],
+      ['tutor', 'Well done.'],
+    ]);
   });
 
   it('replays the stored performance, and invents one only where none exists', () => {

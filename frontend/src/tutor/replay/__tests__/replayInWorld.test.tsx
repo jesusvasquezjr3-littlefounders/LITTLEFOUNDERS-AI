@@ -70,11 +70,12 @@ const TRANSCRIPT: SessionTranscript = {
   segments: [
     {
       segmentId: 'b1d5f8a2-6c14-4f0e-9a3b-0d2e5c7f4a18',
-      seq: 3,
+      seq: 0,
       origin: 'live',
       segment: { prompt_md: 'Save $5 a week. How much after 4 weeks?' },
       score: 100,
       xpAwarded: 20,
+      createdAt: '2026-08-14T16:24:00.000Z',
     },
   ],
 };

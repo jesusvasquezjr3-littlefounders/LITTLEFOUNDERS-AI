@@ -249,11 +249,19 @@ export interface TranscriptTurn {
 
 export interface TranscriptSegment {
   segmentId: string;
+  /**
+   * This segment's own per-session ordinal (`countSessionSegments` on the
+   * backend) — the 1st, 2nd, 3rd... activity served in this session. It is
+   * NOT the seq of the turn that requested it; the two are separate counters
+   * that only coincide by accident. Use `createdAt`, not this field, to place
+   * an activity among the conversation's turns — see `replayScript.ts`.
+   */
   seq: number;
   origin: 'catalog' | 'bank' | 'live';
   segment: Record<string, unknown>;
   score: number | null;
   xpAwarded: number;
+  createdAt: string;
 }
 
 export interface SessionTranscript {

@@ -359,6 +359,7 @@ describe('KidTutorPage — a graded activity is part of the transcript, not invi
             // Served and never answered — `score` is null, not zero.
             score: null,
             xpAwarded: 0,
+            createdAt: '2026-08-30T10:01:00Z',
           },
         ],
       },
@@ -395,6 +396,7 @@ describe('KidTutorPage — a graded activity is part of the transcript, not invi
             segment: { type: 'number_input', prompt_md: 'How many coins?' },
             score: 100,
             xpAwarded: 20,
+            createdAt: '2026-08-30T10:01:00Z',
           },
         ],
       },

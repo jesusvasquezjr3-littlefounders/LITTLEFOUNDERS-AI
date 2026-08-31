@@ -7834,3 +7834,88 @@ including their script and test trees, lint clean in both, both builds
 green, `verify:tutor` and `verify:pedagogy` green, and
 `repo-consistency` green against the widened `0054`–`0062` pending
 range. `oracle/AGENTS.md` item 66.
+
+## Round 80: a parent reading "everything your child and their tutor said, in full" saw both activities before the conversation had even started
+
+Found live, testing the GUARDIAN transcript viewer as a real logged-in
+parent account reading a real conversation their kid had just had —
+not a fixture, not a unit test — 2026-08-30 (HIGH). The screen, in
+order top to bottom: an activity ("You have 10 cookies...", scored
+100/100), then the session's own OPENING GREETING ("Good to see you.
+Let us start with something small..."), then a SECOND activity ("You
+have 12 stickers...", also scored 100/100), then the learner's first
+typed message, then the rest of the conversation in its real order.
+Both activities sorted to the very front, ahead of the greeting that
+started everything. This is the one surface `/ORACLE.md` §1.9 names as
+a non-negotiable product invariant ("parent visibility into kid
+activity"), and it was showing a parent a conversation their child
+never had.
+
+**Root cause, confirmed by reading the code that writes the number,
+not by guessing from the symptom.** `frontend/src/tutor/replay/
+replayScript.ts`'s `buildReplayScript` interleaves a session's turns
+and activities with a comparator that checked `seq` FIRST, on the
+documented (and, it turns out, false) assumption that "a segment's
+`seq` IS the seq of the turn that handed it over." It is not.
+`backend/src/routes/tutor.ts`'s `/segments` POST route stamps every
+new segment's `seq` from `countSessionSegments()`
+(`backend/src/services/tutorData.ts:904-910`), which returns "one more
+than the highest existing segment seq for this session" — a segment-
+only ordinal (this session's 1st, 2nd, 3rd... activity), completely
+unrelated to the turn-seq counter Oracle keeps for the conversation
+itself. A session's SECOND activity legitimately carries `seq: 1` (its
+own ordinal) while the conversation was already many turns in — and
+comparing that `1` directly against turn `seq: 1` (the opening
+greeting) sorted the activity into the greeting's own slot, because to
+the old comparator "same number" meant "this came right after," full
+stop, regardless of which counter either number actually came from.
+Both of this test session's activities happened to land on segment
+ordinals (0 and 1) that collided with early turn numbers, which is why
+BOTH jumped to the front rather than just drifting a little — the
+general defect scales with session length: a segment's own ordinal
+grows far more slowly than the conversation's turn count, so the more
+a session progresses, the further forward a later activity is dragged.
+
+**Why nothing caught this earlier.** The existing test for this exact
+code path (`replayScript.test.ts`, "puts an activity after the turn
+that handed it over, not before it") asserted the right OUTCOME while
+encoding the wrong REASON: its fixture set the segment's `seq` to
+literally match the surrounding turn's `seq`, which is real production
+data only by coincidence, never by contract. A fixture built to match
+its own author's incorrect mental model of the wire format cannot
+catch that model being wrong — it can only ever confirm it.
+
+**Fixed by giving a segment a REAL clock, and only comparing `seq`
+within one kind's own numbering space.** Segments already carry a
+`created_at` timestamp in Postgres; it simply never reached the wire
+(the `/sessions/:id` transcript route's projection listed `segmentId,
+seq, origin, segment, score, xpAwarded` and stopped there). Added
+`createdAt: s.created_at` to that projection and to
+`TranscriptSegment` on the frontend. `compare()`'s three-deep check
+(`seq`, then wall clock, then rank) now only compares `seq` when
+`a.rank === b.rank` — turn against turn, or segment against segment,
+where the numbers actually share a namespace — and falls straight to
+the wall clock otherwise. Two segments served against the same turn
+still keep the order Core listed them in via their own distinct
+timestamps, and the existing "an answer never precedes its question"
+guarantee for two turns sharing one seq is untouched, since that path
+never crosses kinds.
+
+Proof: `replayScript.test.ts` gained a test built from THIS session's
+own real numbers (a segment whose ordinal is `1` sorted correctly
+between turns `seq: 3` and `seq: 4`, where the old comparator would
+have placed it inside turn `seq: 1`); the pre-existing "puts an
+activity after the turn" test kept its outcome but lost its wrong
+premise (fixture now gives the segment its own `createdAt` between the
+two turns, and the misleading "same number as the turn" comment is
+gone from both the test and `ReplayBeat.seq`'s own doc comment). Full
+suites re-run clean: frontend 127 files / 1466 tests, backend 42 files
+/ 710 tests, both type-checks and lints clean.
+
+**Blast radius.** This one code path serves BOTH the guardian
+transcript view (`KidTutorPage.tsx`, the surface this was found on)
+and the learner's own "Past conversations" replay
+(`useReplayDirector`/`ReplayInWorld`) — every session with two or more
+activities was affected in both places, for as long as
+`buildReplayScript` has existed. Not scoped to intent, locale, or
+account type.

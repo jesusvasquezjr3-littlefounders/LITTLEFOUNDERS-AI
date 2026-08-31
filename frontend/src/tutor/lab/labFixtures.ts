@@ -678,9 +678,10 @@ export function labTranscript(locale: Locale): SessionTranscript {
     segments: [
       {
         segmentId: 'b1d5f8a2-6c14-4f0e-9a3b-0d2e5c7f4a18',
-        // The same number as the turn that handed it over, exactly as Oracle
-        // writes it — which is the case the running order has to get right.
-        seq: 4,
+        // This segment's own per-session ordinal, unrelated to any turn's
+        // seq — `createdAt` below, not this, is what places it after the
+        // turn that handed it over.
+        seq: 0,
         origin: 'live',
         segment: {
           id: 'b1d5f8a2-6c14-4f0e-9a3b-0d2e5c7f4a18',
@@ -691,6 +692,7 @@ export function labTranscript(locale: Locale): SessionTranscript {
         },
         score: 100,
         xpAwarded: 20,
+        createdAt: at(6),
       },
     ],
   };
