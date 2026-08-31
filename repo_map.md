@@ -27969,7 +27969,7 @@ import { getVoiceConsent, grantVoiceConsent, revokeVoiceConsent } from './tutorA
 
 ```
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
 import { LiveSegmentPanel } from '../LiveSegmentPanel';
 import { gradeSegment } from '../tutorApi';
@@ -28565,6 +28565,26 @@ import { resolveBackdrop, SCENE_BACKDROP_IDS } from '@/tutor-scene/backdrops';
  * floor, on the grounds that a translucent plate over an orbiting camera has no
 ```
 
+### frontend/src/tutor/hud/__tests__/LessonPlate.test.tsx
+
+```
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
+import { detentHeights, LessonPlate } from '../LessonPlate';
+
+/*
+ * Found by adversarial review, round 88 (2026-08-31, HIGH). `detentHeights()`
+ * decides how tall the mobile lesson sheet is at PEEK/HALF/FULL from
+ * `window.innerHeight` alone — and `DESKTOP_QUERY` (the media query that
+ * decides whether this is a sheet at all) is WIDTH-only, so any phone turned
+ * sideways stays in sheet mode with a viewport far shorter than the 375x812
+ * portrait phone every other gate in this codebase measures against.
+ *
+ * Pre-fix, on an iPhone SE in landscape (`innerHeight` 375) the flat 300px
+ * `STAGE_RESERVE_PX` left a ceiling of `max(88, 375 - 300) = 88` — so HALF and
+ * FULL both clamped down to the SAME 88px as PEEK. A graded activity arriving
+```
+
 ### frontend/src/tutor/hud/__tests__/MicOrb.test.tsx
 
 ```
@@ -28797,12 +28817,12 @@ import {
   progressOf,
   type ReplayBeat,
 } from '../replayScript';
+import { GROW_STEP_MS } from '../../TutorWhiteboard';
 import type { SessionSummary, SessionTranscript, TranscriptSegment, TranscriptTurn } from '../../types';
 
 /*
  * The running order of a replayed conversation, tested headless.
  *
- * These are the assertions that cannot be made by looking. A replay plays one
 ```
 
 ### frontend/src/tutor/replay/__tests__/useReplayDirector.test.ts
@@ -28812,6 +28832,7 @@ import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { buildReplayScript } from '../replayScript';
 import { useReplayDirector } from '../useReplayDirector';
+import { GROW_STEP_MS } from '../../TutorWhiteboard';
 import type { SessionSummary, SessionTranscript, TranscriptTurn } from '../../types';
 
 /*
@@ -28822,13 +28843,13 @@ import type { SessionSummary, SessionTranscript, TranscriptTurn } from '../../ty
  * over minutes and the failures are all of the form "it stopped". A beat that
  * never advances, a pause that stops the sound but not the clock, an audio
  * `ended` arriving after the learner paused and stepping the performance
- * forward underneath them — none of those are visible in a screenshot, and
 ```
 
 ### frontend/src/tutor/replay/replayScript.ts
 
 ```
 import type { CharacterAction, CharacterEmotion } from '@/components/characters/control/types';
+import { GROW_STEP_MS } from '../TutorWhiteboard';
 import type { SessionSummary, SessionTranscript, TranscriptSegment, TranscriptTurn } from '../types';
 
 /*
@@ -28842,7 +28863,6 @@ import type { SessionSummary, SessionTranscript, TranscriptSegment, TranscriptTu
  *
  * IT IS PURE, AND THAT IS THE POINT. No React, no audio element, no camera, no
  * `three`. The whole question "what happens, in what order, for how long" is
- * arithmetic over two arrays, so it is checkable in a unit test that runs in
 ```
 
 ### frontend/src/tutor/replay/useReplayDirector.ts

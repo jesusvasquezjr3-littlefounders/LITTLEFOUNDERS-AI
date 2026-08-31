@@ -8540,3 +8540,93 @@ fixes merged), which is why this entry is numbered 87 rather than the
 siblings touched `LiveSegmentPanel.tsx`, `ConversationView.tsx`, or
 their test files. No `oracle/AGENTS.md` item — touches only
 `frontend/`.
+
+## Round 88: a phone turned sideways collapsed the Tutor's own graded-activity sheet to a single 88px row it could never grow out of
+
+**HIGH, FIXED — `frontend/src/tutor/hud/LessonPlate.tsx`'s three sheet
+detents (PEEK/HALF/FULL) all collapsed to the identical 88px on any phone
+in landscape orientation.** `detentHeights()` derives the sheet's ceiling
+as `Math.max(88, window.innerHeight - STAGE_RESERVE_PX)` with
+`STAGE_RESERVE_PX` a flat 300px, and the media query deciding whether this
+is a bottom sheet at all (`DESKTOP_QUERY`, `(min-width: 1024px)`) is
+WIDTH-only — so a phone rotated to landscape stays in sheet mode with a
+viewport far shorter than the 375x812 portrait phone every other comment
+in this file measures against. On an iPhone SE in landscape
+(`innerHeight` 375): `ceiling = max(88, 375 - 300) = 88`, and both HALF
+(`round(375 * 0.45) = 169`, clamped down to 88) and FULL (`round(375 *
+0.88) = 330`, clamped down to 88) landed on exactly 88 — the same value as
+PEEK. On the iPhone 14 Pro Max in landscape (`innerHeight` 430) the
+ceiling widens to 130 but HALF and FULL still clamp within 2px of each
+other, barely above PEEK.
+
+**Why this reached the one surface a graded activity lives on.**
+`ConversationView.tsx` sets `peekOpensTo="full"` when a graded activity
+arrives, and tapping the resting row moves `detent` to `'full'`. That
+flips `resting` (`!desktop && detent === 'peek'`) from true to false,
+which un-hides the sheet's body — but with all three detents equal, the
+sheet's actual rendered height never grew. The header/grab-handle row
+alone consumes over 44px (`min-h-11` plus padding), leaving under 50px for
+everything the body renders: the exercise prompt, its answer options, the
+Check control and the transcript, all still `overflow-hidden` and now
+clipped below a sheet that visually never moved. The activity was
+reachable, focusable and completely invisible. There is no orientation
+lock anywhere in the app (confirmed by grep) and no on-screen explanation
+— an ordinary device rotation during a lesson was enough to trigger it,
+with zero in-app recovery.
+
+**The fix keeps the existing `STAGE_RESERVE_PX` behavior byte-for-byte on
+every viewport where it already worked, and only trades reserve for sheet
+room where the viewport is too short to have both.** Raising the ceiling
+alone does not fix this: HALF's own fraction (`375 * 0.45 = 169`) is what
+is too small on a short viewport, independent of any ceiling, so a
+ceiling raised without also flooring HALF just lets HALF float up to meet
+FULL at the same raised ceiling — a collapse one detent later. Two new
+constants floor and step the detents structurally rather than by
+hand-tuning numbers for two named devices: `ACTIVITY_FLOOR_PX` (240) is
+the minimum HALF may ever be, sized to physically hold a graded activity's
+prompt, its answers and the Check control; `DETENT_STEP_PX` (100) is the
+minimum gap enforced between every adjacent pair (HALF is clamped to
+`ceiling - DETENT_STEP_PX`, FULL is clamped to `[half + DETENT_STEP_PX,
+ceiling]`). A third constant, `MIN_STAGE_RESERVE_PX` (24), keeps even the
+shortest viewport this trades room from from being asked to give up
+literally everything above the sheet. The ceiling itself now takes
+whichever is bigger: the original 300px-reserved target, or the minimum
+the detents actually need (`ACTIVITY_FLOOR_PX + DETENT_STEP_PX`) — capped
+so it never asks for more than the viewport can give.
+
+Measured, not assumed: at 375x812 (the existing `verify-tutor-ui.mjs`
+mobile gate) and at 1280x900 (its desktop-height gate) the new formula
+reproduces `{ peek: 88, half: 365, full: 512 }` and `{ peek: 88, half:
+405, full: 600 }` respectively — identical to the pre-fix numbers, because
+`STAGE_RESERVE_PX` already produced a bigger ceiling than the new floor
+needs there. Only genuinely short viewports move: at both 375 (iPhone SE
+landscape) and 430 (iPhone 14 Pro Max landscape) the new numbers are `{
+peek: 88, half: 240, full: 340 }` — a 152px step from PEEK to HALF and a
+100px step from HALF to FULL, both comfortably inside a phone screen and
+both large enough to actually lay out an exercise.
+
+New `frontend/src/tutor/hud/__tests__/LessonPlate.test.tsx` (this file had
+no test coverage of any kind before this round): `detentHeights()` is
+exported for direct testing, the same reason `nearestDetent` already was.
+Eight tests — the exact regression reproduced and refused at
+`innerHeight` 375 and 430 (all three detents no longer collapse, HALF and
+FULL both clear a 220px usable-content floor, every adjacent pair is at
+least 80px apart); the pre-existing 375x812 and 1280x900 numbers asserted
+byte-for-byte unchanged; a sweep from `innerHeight` 350 to 1400 asserting
+PEEK < HALF < FULL structurally rather than only at the four measured
+checkpoints; and two real-render tests against `<LessonPlate>` itself
+(not only the pure function) confirming the actual DOM `style.height`
+differs between PEEK/HALF/FULL on a landscape-height viewport. All eight
+fail against the unfixed source for the exact claimed reason (`git stash`
+on `LessonPlate.tsx`: `detentHeights` is not exported yet, and the two
+render tests that survive that failure mode assert `88px`/equal heights
+where the fix asserts real ones).
+
+Verification: `npm run type-check`, `npm run lint`, `npm test -- --run`
+(129 test files, 1484 tests, zero regressions) and `npm run build` all
+green in `frontend/`; root `npm run docs:check` and `npm run
+secrets:check` green. No `frontend/AGENTS.md` item — touches only
+`frontend/`, and the lesson here (a width-only breakpoint combined with
+height-derived arithmetic) is specific enough to this one sheet's own
+detent math that it does not read as a reusable invariant the way this
+file's other frontend rounds have.
