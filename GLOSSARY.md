@@ -8,7 +8,7 @@
 |---|---|
 | **universal** | Default role at signup, any age — created to minimize registration friction. Upgrades to parent/kid/bigfounder via verification. |
 | **parent** | Verified guardian/tutor. Manages kid accounts and families; assigns tasks. A family may have **multiple** parents. |
-| **Tutor** | The **user-facing name** for the `parent` role in all product copy/UI (es-MX: "Tutor", en-US: "Tutor", pt-BR: "Tutor"). Code, DB, and API always say `parent`. |
+| **Tutor** | The **user-facing name** for the `parent` role in all product copy/UI (es-MX: "Tutor", en-US: "Tutor", pt-BR: "Tutor" — `common.json` `roles.parent`, verified live 2026-08-31, Round 92). Code, DB, and API always say `parent`. **Never render this word bare for anything else in the same locale.** The AI Tutor product feature (`tutor/` service, the `tutor/` frontend route) MUST carry an explicit qualifier wherever its label could appear near a role name — "AI Tutor" (en-US), "Tutor IA" (es-MX, pt-BR), exactly as `dashboard.json`'s `nav.tutor` already does. Before Round 92, `admin.json`'s `analytics.usage.surfaces.tutor` and `insights.surfaces.tutor` rendered the bare word "Tutor" for the AI feature in the SAME admin console where `RoleChip` renders "Tutor" for the `parent` role, and `pt-BR` additionally disagreed with this row by rendering `roles.parent` as "Responsável" — both fixed in the same round. |
 | **kid** | Verified child under parental control; advanced features depend on their guardian. Must always have ≥1 verified guardian link. |
 | **bigfounder** | Verified adult; future exclusive features. |
 | **admin** | Edits courses and platform content; provides tech support. |

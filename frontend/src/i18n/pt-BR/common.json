@@ -25,7 +25,7 @@
   },
   "roles": {
     "universal": "Universal",
-    "parent": "Responsável",
+    "parent": "Tutor",
     "kid": "Criança",
     "bigfounder": "Bigfounder",
     "admin": "Admin",
