@@ -8012,3 +8012,89 @@ sent by the server during a hang, which would definitively separate
 "never sent" (gap 2, or something upstream of it) from "sent but never
 rendered" (gap 1, the WebGL/StrictMode candidate) — is the fastest
 remaining way to close this without more speculation.
+
+## Round 82: took the recommended next step from Round 81 — and it closed two suspects instead of the mystery
+
+Continuation of Round 81's hang, same day. The recommended next step
+was taken: reproduced live once more with the server's own stdout
+directly visible (not the browser console) and the client's
+`window.WebSocket` constructor instrumented to log every socket
+event. Two of Round 81's three open suspects are now closed —
+correctly, by proof, not by argument — and the third is narrowed
+further, with an honest new caveat about the tool this investigation
+was run through.
+
+**`send()`'s silent-drop path: ruled out for this occurrence.** With
+the Round 81 logging fix live and the server's stdout directly
+watched, the hang reproduced again (turn written to Postgres 3 seconds
+after session start, nothing on screen) and the new
+`[oracle] dropped a "..." message` warning never fired. `send()` is
+called unconditionally for a `turn` message with no guard before it
+(`ws/server.ts` ~line 1352), so its silence here means the socket WAS
+open and the message WAS actually written to the wire — this
+mechanism did not eat it.
+
+**Instrumenting the real socket in the browser: a striking observation,
+and a caveat about trusting it.** A `Proxy` around `window.WebSocket`
+logging every `created`/`open`/`message`/`close` event showed, on the
+next reproduction: TWO real sockets constructed with the IDENTICAL
+session token, BOTH reaching `open`, BOTH receiving every one of
+`ready`/`turn`/`state`/`turn_audio` — the `turn` message's `say` field
+correctly containing "Good to see you..." on both — and NEITHER ever
+closing within the observation window. This is consistent with React
+`StrictMode` (confirmed present at `frontend/src/main.tsx`)
+double-invoking `useTutorSocket`'s connecting effect and the discarded
+first socket's `.close()` call not actually taking the connection down
+in this specific browser. But — and this is why it is reported as an
+observation and not a conclusion — a `.close()` called while a socket
+is still `CONNECTING` is explicitly implementation-defined by spec as
+to whether an in-flight handshake is allowed to complete first, and
+this exact automation tool has ALREADY been documented earlier this
+same round of testing as behaving unlike an ordinary browser for two
+OTHER real-time mechanisms (`document.hidden` staying `true` even when
+the tab is explicitly "fronted," throttling `requestAnimationFrame`;
+`THREE.WebGLRenderer: Context Lost` appearing under normal navigation).
+A tool with two independently-confirmed real-time quirks is not a
+reliable instrument for confirming or refuting a third one just by
+watching it happen once more.
+
+**So the question was moved out of the browser entirely, and answered
+there instead.** `frontend/src/tutor/__tests__/useTutorSocket.test.ts`
+gained a `FakeSocket`-based test wrapping the hook in a REAL
+`<StrictMode>` render — the same technique Round 81 already proved out
+against `useStageAnnouncement.ts`. The fake socket's own `close()`
+tracks whether it was called and mutates its own `readyState`
+realistically, with no real network, no real timing, and no browser
+involved. Result: **the double-invoke calls `close()` on the FIRST
+instance exactly once, and the SECOND instance's `close()` is never
+called** — precisely the correct StrictMode-safe behavior. The
+cleanup at `useTutorSocket.ts` (~line 482-491) is exonerated the same
+way `useStageAnnouncement.ts` already was: by a deterministic test,
+not by re-reading the same source and hoping harder.
+
+**Where this leaves the investigation, going into a further round.**
+Two of Round 81's three candidates are now closed: `useStageAnnouncement`
+(Round 81) and `useTutorSocket`'s connection lifecycle (this round) are
+both proven correct under `StrictMode` by test. `send()`'s silent-drop
+path is separately ruled out for this specific occurrence (though the
+observability fix stays — it is correct regardless). What remains,
+unchanged from Round 81 and still the most likely remaining explanation:
+`TutorScene`'s REAL react-three-fiber `<Canvas>`/WebGL context surviving
+(or not) `StrictMode`'s mount-dispose-remount churn on a cold route
+mount — a class of problem this repository's jsdom test suite cannot
+exercise (`HTMLCanvasElement.prototype.getContext` does not exist
+there) and that this session's own browser-automation tool cannot be
+trusted to answer either, for the same double-quirk reason given above.
+Reproducing with an ACTUAL browser's devtools open — not headless
+automation — watching the Network tab's WS frames and the Elements/
+Console panels directly during a cold-mount reproduction, remains the
+fastest way to close this. Deliberately not attempted with a guessed
+fix in its place: a change to `TutorScene`'s mount lifecycle made
+without being able to reproduce the failure under real devtools would
+be exactly the kind of fix this campaign's own doctrine warns against
+— one that cannot be verified to have changed anything, made against
+code that has not been proven broken.
+
+Proof: 3 tests in `useTutorSocket.test.ts` (1 pre-existing pair
+untouched, 1 new `StrictMode` test), full frontend suite re-run clean
+(127 files, 1470 tests), type-check and lint clean.
