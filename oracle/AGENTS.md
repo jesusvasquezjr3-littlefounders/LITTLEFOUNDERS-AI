@@ -2230,6 +2230,48 @@ everything passes the blocked half perfectly and destroys the product.
    against the safety gate itself, a strictly worse trade than the gap this
    closes. See `RUNBOOK.md` Round 104.
 
+73. **A one-shot audit run BY A HUMAN is not a standing check, no matter
+   how good the audit is.** Found by adversarial review sweep tutor-
+   review-sweep-101 (content-ladder-correctness dimension), MEDIUM,
+   closed round 101 (2026-08-31). `auditContentBridge` (then inside
+   `seed-kc-graph.ts`) proves every mapped `kc.skill_key` still resolves
+   to a PUBLISHED course/topic AND that the topic still carries at
+   least one published lesson — exactly the class of defect this
+   repository already learned from once (a null `skill_key` on all 28
+   rows sent every activity to live generation). But it only ever ran
+   as a side effect of `npm run seed:kc`, which in production only ever
+   ran when a human dispatched `tutor-deploy.yml`'s `seed-kc` step.
+   Nothing re-checked the bridge when the CATALOG moved instead of the
+   graph: a course unpublished, a topic's lessons archived, a lesson's
+   skill tags edited — none of those touch
+   `database/seeds/kc_graph.v1.json`, so none of them would ever prompt
+   anyone to re-seed, and the exact defect this audit exists to catch
+   could regress silently between manual runs. **The fix is not a
+   stronger check, it is a trigger the check never had.** The audit
+   logic moved, unchanged, to `services/contentBridgeAudit.ts` so it
+   could be called two ways: `seed-kc-graph.ts` still calls it
+   post-upsert against the seed's own KC list, and a new standalone
+   entry point, `scripts/audit-content-bridge.ts`
+   (`npm run audit:content-bridge`), calls it against whatever is
+   CURRENTLY live in Vault via `getActiveKcs()` — the same reader the
+   pedagogy engine itself uses — needing nothing the seed step doesn't
+   already need. `.github/workflows/tutor-content-bridge.yml` runs that
+   standalone script daily against PRODUCTION, the same shape
+   `vault-drift.yml` already uses for schema drift, plus on any push
+   touching the mapping or the resolution path as defense in depth — a
+   push trigger alone would still miss the data-level drift this exists
+   for, since none of it is a git commit. A CI gate keyed on a diff was
+   considered and rejected for that reason: the defect this closes has
+   no diff to key on. On failure it names every broken bridge with
+   `::error::` annotations and fails the job — this repository's own
+   convention for a loud, un-ignorable signal (`tutor-
+   retention.yml`, `insights-maintenance.yml`), since no external
+   alerting exists here. The general lesson: an audit's schedule is
+   part of its correctness, not an operational afterthought — a check
+   that only runs when someone remembers to run it protects exactly
+   until the first time nobody does, and the more useful the audit, the
+   more silently that protection lapses. See `RUNBOOK.md` Round 101.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:

@@ -10008,6 +10008,130 @@ shape, and the cue is released on unmount.
 `tools:test` (26/26) and `provider:check` all green; `npm run repo:map`
 regenerated for the one new test file.
 
+## Round 101: the content-bridge audit that catches a broken tutor-to-catalog mapping only ever ran when a human remembered to re-seed — found by adversarial review sweep tutor-review-sweep-101 (content-ladder-correctness dimension), MEDIUM, closed 2026-08-31
+
+**MEDIUM, FIXED.** `auditContentBridge` (then a private function inside
+`backend/src/scripts/seed-kc-graph.ts`) is the check this repository built
+specifically to catch the defect its own docstring names: a `kc.skill_key`
+that looks mapped but does not actually reach a published lesson — either
+because it resolves to nothing, or the worse case, because it resolves to a
+real, published topic that has been archived down to zero lessons, which
+LOOKS done while carrying no traffic. That check is real and it works. What
+was missing was a reason for it to ever run again after the day someone
+authored the mapping.
+
+**Verified before touching anything, per the finding's own instruction.**
+The audit's only call site was `seed-kc-graph.ts`'s `main()`, invoked at
+module scope — so it runs exactly when `npm run seed:kc` runs. Grepping
+production's own operator surface confirms the ONLY thing that ever
+dispatches that script is `tutor-deploy.yml`'s `seed-kc` step
+(`workflow_dispatch`, `inputs.step == 'seed-kc'`) — a human choosing that
+step from the Actions UI. Nothing else in this repository calls `seed:kc` or
+imports `auditContentBridge`. So the exact defect this audit exists to catch
+— this repository's own original content-bridge incident, `kc.skill_key`
+null on all 28 rows, every tutor activity falling through to live generation
+until someone happened to notice — could regress silently between manual
+runs, and specifically could regress from a cause the seed step cannot see
+at all: a course unpublished, a topic's lessons archived, or a lesson's
+skill tags edited are all **production data changes**, none of them a git
+commit, so re-running `seed:kc` on every push to the seed file (a CI gate
+keyed on a diff) would still miss the actual failure mode. Only asking
+production itself, on a cadence, closes this — the same reasoning
+`vault-drift.yml` already applies to "is production's schema where the
+repository thinks it is?".
+
+**The fix is a trigger, not a stronger check — the audit logic is
+unchanged.** It moved, verbatim, from `seed-kc-graph.ts` into a new shared
+module, `backend/src/services/contentBridgeAudit.ts` (`auditContentBridge`,
+`suggestAlternatives`), parameterized over a plain `{key, skill_key}[]`
+instead of the seed's own Zod-inferred shape, so it no longer cares where
+its input came from. Two callers:
+
+1. `seed-kc-graph.ts`'s `main()` — unchanged behavior, still runs
+   post-upsert against the seed file's own KC list.
+2. A new standalone entry point, `backend/src/scripts/audit-content-bridge.ts`
+   (`npm run audit:content-bridge`), which reads the CURRENTLY active `kc`
+   rows straight out of Vault via `getActiveKcs()` — the exact same reader
+   `services/pedagogy/kcData.ts` already exposes for the pedagogy engine
+   itself — rather than the seed JSON. A `null` read (the upstream did not
+   answer) throws explicitly rather than falling through to "zero active
+   KCs, therefore nothing broken" (`/AGENTS.md` §1.14): collapsing the two
+   would report a healthy bridge on an unanswered query, which is exactly
+   the silent-miss shape this whole audit exists to prevent.
+
+**`.github/workflows/tutor-content-bridge.yml`** runs the standalone script
+daily against production (`50 6 * * *` UTC, clear of the existing
+07:30/08:00/08:30 pack) plus on any push touching the mapping or the
+resolution path (`database/seeds/kc_graph.v1.json`,
+`contentBridgeAudit.ts`, `tutorLadder.ts`, `pedagogy/kcData.ts`, both
+scripts) as defense in depth — a push trigger alone cannot see the
+data-level drift this exists for, since none of it is a git commit; the
+schedule is the part doing the actual work. Credentials come from
+`railway variable list --service littlefounders-backend`, read straight
+onto the runner for one `npm run` call and never written to disk — the
+identical mechanism `tutor-deploy.yml`'s own `seed-kc` step already uses,
+chosen over `railway ssh` into a container (`vault-drift.yml`'s and
+`tutor-retention.yml`'s pattern) because the audit is a handful of
+read-only PostgREST calls over HTTPS, not a database session or a
+container-local API, and because the deployed backend container does not
+carry `database/seeds/kc_graph.v1.json` at all (`railway up backend
+--path-as-root` uploads only `backend/`) — irrelevant to this script since
+it never reads that file, but confirms an SSH-based approach would have
+needed to invent a reason to reach the file anyway. On failure it prints
+`::error::` per broken bridge and exits non-zero, the same loud-not-silent
+convention `tutor-retention.yml` and `insights-maintenance.yml` already
+use — no other alerting exists in this repository, and none was invented
+for this.
+
+**Proof, against the real `resolveSkill` path, not a stub of it.**
+`backend/src/__tests__/contentBridgeAudit.test.ts` (5 tests, new) drives
+`auditContentBridge` through the shared fake PostgREST
+(`fakePostgrest.ts`, the same harness `placement.test.ts`/`family.test.ts`
+already use) rather than mocking `resolveSkill` itself, so the test proves
+the real resolution chain and not an assumption about it: a clean mapping
+(a topic that resolves and carries a published lesson) resolves without
+throwing and reports zero broken; a deliberately-unmapped KC
+(`skill_key: null`) is reported separately and never counted as broken; a
+skill_key that resolves to a real, published topic archived down to ZERO
+lessons throws, naming the exact KC and skill_key and the phrase "0
+published lessons"; a skill_key that resolves to no course/topic at all
+throws with "no published course/topic"; and — the test most directly
+answering the finding's own ask — a single broken bridge mixed into an
+otherwise-healthy batch is named ALONE in the thrown message
+("1 of 2 content bridges do not carry traffic"), with the clean KC's key
+never appearing in it. All five confirmed to exercise the real code path
+(no mocks of the function under test), asserting the returned
+`{mappedCount, unmappedKeys, broken}` report and/or the thrown message
+rather than console output.
+
+**Verified against Oracle's own service boundary.** No context field, no
+model-facing schema and no content-ladder RULE changed — this is an
+operational trigger around an existing, unchanged check, so `/ORACLE.md`
+§4.1's field-count test and `verify:tutor`/`verify:pedagogy` do not apply
+and were not run for that reason (their surface is untouched). `/ORACLE.md`
+§19.1's knowledge-component-graph row and `oracle/AGENTS.md` (new item
+#73) were updated in this commit per the stewardship table, since this is a
+content-ladder-correctness rule even though every touched file lives under
+`backend/` and `.github/` — Oracle has no database credentials and cannot
+run this check itself (§1 of that file).
+
+Backend: `npm run type-check` (including the test tree), `npm run lint`,
+`npm test` — 43 files, 731 tests green (5 new, zero regressions),
+`npm run build` clean. Root `npm run docs:check`, `npm run secrets:check`,
+`npm run paths:check`, `npm run seo:check`, `npm run provider:check` and
+`npm run tools:test` (26/26, including the migration-ledger consistency
+check, correctly green with zero new migrations) all green; `npm run
+repo:map` regenerated for the three new files (two scripts/services, one
+test) plus the one new workflow. `i18n:check` was not run — no
+user-facing string was added or changed, frontend was not touched. No
+Tutor 3D, lesson-engine or Tutor-UI `verify:*` gate applies: nothing under
+`frontend/` or the 3D stage changed. The new workflow's YAML was validated
+for syntax (`python3 -c "yaml.safe_load(...)"`, matching every existing
+workflow's own `on:`/`True` PyYAML quirk) but could not be dry-run against
+real Railway credentials from this environment — its steps reuse
+`tutor-deploy.yml`'s own `seed-kc` step's exact credential-pull shape,
+already proven live in production, verbatim.
+
 **`npm run verify:lesson-engine` and `npm run verify:tutor-ui` could not
 be evaluated to a real pass/fail conclusion in this session's sandbox, and
 that is recorded honestly rather than papered over.** Both are real-
