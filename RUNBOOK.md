@@ -8802,3 +8802,118 @@ both re-enable once `awaitingReply` clears) — full frontend suite green
 clean in both services; `docs:check`, `secrets:check`, `i18n:check`,
 `paths:check`, `seo:check`, `provider:check` and `tools:test` all green
 at the root.
+
+## Round 91: round 88's own fix for a phone in landscape could push the microphone dock entirely off the top of the screen at the FULL detent
+
+**HIGH, FIXED — found by manual live testing (not an automated review),
+immediately after re-verifying round 88 on `/dev/tutor-lab`.** Round 88
+gave `frontend/src/tutor/hud/LessonPlate.tsx`'s `detentHeights()` a real
+ceiling on a landscape phone so HALF and FULL stop collapsing to PEEK's
+88px — and that fix is genuinely correct and untouched by this round: at
+667x375 (iPhone SE landscape), measured live, HALF renders at 240px and
+the microphone orb sits with `top: 11`, safely on screen. What round 88
+never asked is a different question: `StageShell.tsx` does not lay the
+microphone dock (the hero control, plus the composer sharing its row)
+out against fixed chrome. It reads the sheet's own published footprint
+(`onFootprint`, `LessonPlate.tsx`) and sets the dock's `bottom` CSS
+property to `footprint + DOCK_GAP_PX`, with nothing anywhere clamping
+how far that can push it. The dock therefore never overlaps the
+sheet — it is shoved by it, unconditionally — and round 88's ceiling only
+ever reasoned about HALF and FULL against EACH OTHER, never about
+whether there was still room for the thing riding above FULL.
+
+**Live-verified on `/dev/tutor-lab`, conversing phase, an activity open,
+at 667x375 with the sheet dragged to its FULL detent (340px pre-fix):**
+`getBoundingClientRect()` on the microphone orb read `top: -89, bottom:
+7` — 89 of its 96px were off the TOP of the viewport, leaving a 7px
+sliver — and the composer's text input, the ONLY channel with no voice
+provider configured, read `top: -63, bottom: -19`, entirely negative and
+completely invisible. This is reachable through the product's own
+ordinary flow, not only through a deliberate manual drag past HALF:
+`ConversationView.tsx` sets `peekOpensTo="full"`, so the FIRST tap on a
+resting "Activity ready" row — the routine way a learner opens an
+announced activity — lands directly on FULL. The dock's own bottom
+offset (`sheetHeight + SHEET_INSET_PX + DOCK_GAP_PX` = `340 + 16 + 12 =
+368`) exceeded the 375px viewport by 89 more than the dock's own 96px
+height could absorb, computed identically in a plain Node script before
+touching any source, then reproduced byte-for-byte live in the browser
+by disabling the sheet's and dock's CSS transitions (both animate on
+this route) and reading `style.height`/`style.bottom` directly rather
+than a mid-animation `getBoundingClientRect()`.
+
+**The fix adds a second ceiling that the first one did not know to
+ask for, and it can only ever tighten the existing one, never loosen
+it.** `DOCK_CLEARANCE_PX` (124) is the microphone dock's real minimum
+reserve: `MIC_ORB_SIZE_PX` (96, newly exported from `MicOrb.tsx` — the
+number that file's own header comment already stated, "96px at 375px",
+reused rather than re-guessed) plus `SHEET_INSET_PX` (16, already local
+to `LessonPlate.tsx`) plus `MIC_DOCK_GAP_PX` (12, mirroring
+`StageShell.tsx`'s own newly-exported `DOCK_GAP_PX` by literal rather
+than by import — that file pulls in the full three.js/`TutorStage`
+scene graph, and `LessonPlate.test.tsx` exercises `detentHeights()` as
+plain arithmetic with no renderer at all; importing it would have made
+that impossible). It covers the ORDINARY dock — the orb sharing a row
+with the composer, no adaptation offer — which is the only content the
+dock can carry while the sheet is even visible: an offer stands the
+sheet down entirely (`standDown`), so the two never compete for the
+same pixels.
+
+`dockSafeCeiling = min(ceiling, viewport - DOCK_CLEARANCE_PX)` sits
+between round 88's `ceiling` and the two detents that are bounded by it.
+On every viewport where `STAGE_RESERVE_PX` already produced a
+comfortable ceiling (a portrait phone, a desktop height), this new
+clamp never binds and nothing changes — confirmed byte-for-byte at
+375x812 and 1280x900, the exact numbers round 88 asserted
+(`{ half: 365, full: 512 }` and `{ half: 405, full: 600 }`). Where it
+DOES bind — the two landscape phones round 88 itself named — HALF's own
+cap changes from a flat `ceiling - DETENT_STEP_PX` to
+`max(dockSafeCeiling - DETENT_STEP_PX, ACTIVITY_FLOOR_PX)`, bounded by
+`dockSafeCeiling`: the activity floor (240px, round 88's own fix, still
+non-negotiable) now wins over "leave FULL a full 100px step", because on
+a 375px-tall screen there is not physically enough room to hold
+`ACTIVITY_FLOOR_PX` (240) AND an 80px FULL/HALF step AND the dock's real
+124px reserve at once — 240 + 80 + 124 = 444 is taller than the viewport
+itself. FULL is capped at `dockSafeCeiling` instead of the plain
+`ceiling`, with one further floor of `half + 1` (not merely `half`) so
+that a viewport shorter than any phone this product targets — the
+existing test sweep stress-tests down to 350, ten pixels under the
+shortest supported device on purpose — cannot collapse FULL onto HALF,
+the identical-detents defect round 88 closed; below that floor the fix
+accepts a one-pixel intrusion into the dock's own reserve rather than
+resurrecting that defect, and says so in the source.
+
+Measured, not assumed, at every viewport this round touches: 375 now
+yields `{ peek: 88, half: 240, full: 251 }` (FULL leaves exactly
+`DOCK_CLEARANCE_PX`, 124px, above it — the microphone orb's top lands at
+0 on an unscaled viewport, not -89) and 430 yields `{ peek: 88, half:
+240, full: 306 }` (66px of margin past the 240px floor, again exactly
+124px of dock clearance). Both reproduced live on `/dev/tutor-lab` after
+the fix: `aside.style.height` read `"251px"`/`"306px"` and the dock's
+`style.bottom` read `"279px"`/`"334px"` exactly — `251 + 16 + 12 = 279`
+and `306 + 16 + 12 = 334` — matching the plain-arithmetic prediction to
+the pixel, with no rendering-pane scaling artifact in the numbers React
+itself commits.
+
+**Two of round 88's own numeric assertions had to change, honestly, not
+be papered over.** `LessonPlate.test.tsx` asserted
+`heights.full - heights.half >= 80` at both 375 and 430; that specific
+number is no longer achievable at 375 (the true value is 11, forced by
+the three-way conflict above) so it is replaced with a comment
+explaining exactly why, plus a new dedicated assertion —
+`viewport - heights.full >= DOCK_CLEARANCE_PX`, checked against the real
+exported constant rather than a copied number — at both named phones
+AND swept across every height from 375 to 1400. The render-level test
+that hardcoded `220 + 80` as FULL's minimum on 375 now compares against
+`detentHeights().full` directly, so it can never drift out of sync with
+the arithmetic it is supposed to be checking. Every OTHER assertion round
+88 added — the collapse regression, the 220px usable-content floor, the
+byte-identical 812/900 numbers, the PEEK<HALF<FULL structural sweep — is
+unchanged and still green.
+
+Verification: `npm run type-check`, `npm run lint`, `npm test -- --run`
+(130 files, 1501 tests, zero regressions — includes 3 new
+`detentHeights`/render assertions on top of round 88's eight) and
+`npm run build` all green in `frontend/`; root `npm run docs:check` and
+`npm run secrets:check` green. No `frontend/AGENTS.md` item, for the same
+reason round 88 recorded none: this is this one sheet's own detent
+arithmetic, not a reusable invariant elsewhere in the codebase.

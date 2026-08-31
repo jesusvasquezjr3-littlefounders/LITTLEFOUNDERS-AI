@@ -4,6 +4,7 @@ import { Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from './HudPlate';
+import { MIC_ORB_SIZE_PX } from './MicOrb';
 
 /*
  * The surface a live lesson runs on, floating over the island.
@@ -154,6 +155,52 @@ const MIN_STAGE_RESERVE_PX = 24;
 const ACTIVITY_FLOOR_PX = 240;
 const DETENT_STEP_PX = 100;
 
+/**
+ * `StageShell.tsx`'s own `DOCK_GAP_PX`, mirrored rather than imported.
+ *
+ * The dock (the microphone orb, and the composer sharing its row) rides
+ * `bottom: sheetFootprint + DOCK_GAP_PX` — see `StageShell.tsx` and
+ * `onFootprint` below — so this file's ceiling arithmetic needs the same
+ * number to know how much room the dock actually needs above the sheet.
+ * Not a live import: `StageShell.tsx` pulls in the full 3D stage
+ * (`TutorStage`, react-three-fiber, the GLB pipeline), and this file's own
+ * test suite (`LessonPlate.test.tsx`) exercises `detentHeights()` as plain
+ * arithmetic with no renderer at all — importing the stage to reuse one
+ * constant would make that impossible. Keep the two literals in sync by
+ * hand; each file pins its own value in its own tests.
+ */
+const MIC_DOCK_GAP_PX = 12;
+
+/**
+ * Found by adversarial review, round 91 (2026-08-31, HIGH). `StageShell.tsx`
+ * does not lay the microphone dock out against fixed chrome: it reads the
+ * sheet's own published footprint (`onFootprint`, below) and sets its
+ * `bottom` CSS property to `footprint + DOCK_GAP_PX`, with nothing clamping
+ * how far that can push it. So the dock never overlaps the sheet — it is
+ * shoved by it, unconditionally, and round 88's ceiling only ever asked "is
+ * there room for a real step between HALF and FULL", never "is there still
+ * room for the thing riding above FULL".
+ *
+ * Measured live on `/dev/tutor-lab`, conversing phase, an activity open, at
+ * 667x375 (iPhone SE landscape) with the sheet dragged to FULL:
+ * `getBoundingClientRect()` on the mic orb read `top: -89, bottom: 7` — 89 of
+ * its 96px were off the TOP of the viewport — and the composer's input read
+ * `top: -63, bottom: -19`, entirely negative and entirely invisible. Round
+ * 88's own fix was real and is untouched by this one: at HALF on the same
+ * viewport the orb measured `top: 11`, safely on screen. FULL is what grew
+ * past what the dock needs.
+ *
+ * `DOCK_CLEARANCE_PX` is that real minimum: the orb's own height
+ * (`MIC_ORB_SIZE_PX`, the tallest thing in the shared mobile row — see
+ * `MicOrb.tsx`) plus the sheet's own bottom inset (`SHEET_INSET_PX`) plus the
+ * dock's own gap above it (`MIC_DOCK_GAP_PX`). It covers the ORDINARY dock —
+ * the orb sharing a row with the composer, no adaptation offer — which is
+ * the only content the dock can carry while the sheet is actually visible:
+ * an offer stands the sheet down entirely (`standDown`, below), so the two
+ * never compete for the same pixels.
+ */
+export const DOCK_CLEARANCE_PX = MIC_ORB_SIZE_PX + SHEET_INSET_PX + MIC_DOCK_GAP_PX;
+
 type DetentHeights = Record<LessonPlateDetent, number>;
 
 /**
@@ -179,21 +226,57 @@ export function detentHeights(): DetentHeights {
     ),
   );
 
-  // HALF: the /DESIGN.md fraction, floored so it is never a sliver on a short
-  // viewport, and capped a full step below the ceiling so FULL always has a
-  // real step of its own left to open into.
+  /*
+   * ROUND 91: neither detent may grow into the room the microphone dock
+   * actually needs above the sheet — see `DOCK_CLEARANCE_PX`. `ceiling` above
+   * only ever reasoned about HALF and FULL against each other; this reasons
+   * about the dock against whichever of them ends up tallest. It can only
+   * ever tighten `ceiling` further, never loosen it, so a viewport where the
+   * 300px reserve was already generous enough (a portrait phone, a desktop
+   * height) is completely unaffected — `viewport - DOCK_CLEARANCE_PX` only
+   * binds once `ceiling` has already been pulled down near the short-viewport
+   * floor above.
+   */
+  const dockSafeCeiling = Math.max(PEEK_PX, Math.min(ceiling, viewport - DOCK_CLEARANCE_PX));
+
+  /*
+   * HALF: the /DESIGN.md fraction, floored so it is never a sliver on a short
+   * viewport. Capped a full step below `dockSafeCeiling` so FULL normally has
+   * a real step of its own left to open into — UNLESS that would push the cap
+   * below `ACTIVITY_FLOOR_PX`, which is what `dockSafeCeiling` being tighter
+   * than a plain `ceiling` can now do on the shortest landscape phones. The
+   * activity floor wins that conflict: a HALF too small to hold a graded
+   * activity is the exact defect round 88 fixed, and it outranks FULL getting
+   * a full 100px step over it. `Math.min(dockSafeCeiling, ...)` still bounds
+   * the whole expression, so HALF itself never exceeds what the dock needs
+   * either.
+   */
+  const halfCap = Math.min(dockSafeCeiling, Math.max(dockSafeCeiling - DETENT_STEP_PX, ACTIVITY_FLOOR_PX));
   const half = Math.max(
     PEEK_PX,
-    Math.min(ceiling - DETENT_STEP_PX, Math.max(ACTIVITY_FLOOR_PX, Math.round(viewport * HALF_FRACTION))),
+    Math.min(halfCap, Math.max(ACTIVITY_FLOOR_PX, Math.round(viewport * HALF_FRACTION))),
   );
 
-  // FULL: the /DESIGN.md fraction, floored to HALF's own height plus a real
-  // step (not HALF's pre-floor fraction — that is what let the two collapse
-  // together right at the boundary where the fraction alone had just cleared
-  // the floor), and capped at the ceiling exactly as before.
+  /*
+   * FULL: the /DESIGN.md fraction, floored to HALF's own height plus a real
+   * step (not HALF's pre-floor fraction — that is what let the two collapse
+   * together right at the boundary where the fraction alone had just cleared
+   * the floor), and capped at `dockSafeCeiling` rather than the plain
+   * `ceiling` — this is the actual fix: FULL may no longer grow into the
+   * dock's own reserve.
+   *
+   * The outer floor is `half + 1`, not `half`, and only the `+ 1` is new.
+   * `dockSafeCeiling` can itself equal `half` on a viewport shorter than any
+   * phone this product targets (the sweep test below stress-tests down to
+   * 350, ten pixels under the shortest supported device, on purpose) — at
+   * that extreme, honouring the dock reserve exactly would collapse FULL onto
+   * HALF, which is the identical-detents defect round 88 closed. A one-pixel
+   * intrusion into the dock's reserve, only below the shortest device this
+   * product supports, is the smaller of the two failures.
+   */
   const full = Math.max(
-    half,
-    Math.min(ceiling, Math.max(half + DETENT_STEP_PX, Math.round(viewport * FULL_FRACTION))),
+    half + 1,
+    Math.min(dockSafeCeiling, Math.max(half + DETENT_STEP_PX, Math.round(viewport * FULL_FRACTION))),
   );
 
   return { peek: PEEK_PX, half, full };

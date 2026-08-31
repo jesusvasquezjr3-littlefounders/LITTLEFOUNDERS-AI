@@ -50,6 +50,20 @@ import type { Microphone } from '../useMicrophone';
 
 export type MicOrbState = 'unavailable' | 'idle' | 'listening' | 'thinking' | 'speaking';
 
+/**
+ * The orb's diameter on a phone, in CSS pixels.
+ *
+ * This is the number the header comment above already states ("96px at
+ * 375px") and the `h-24 w-24` Tailwind class below renders (`24 * 0.25rem` at
+ * the default 16px root). Exported so `LessonPlate`'s sheet-ceiling
+ * arithmetic can reserve the orb's REAL height above itself — found by
+ * adversarial review, round 91 (2026-08-31) — rather than guessing a second
+ * number that could drift from this one. Keep it in sync with the Tailwind
+ * class by hand; there is no way to read a utility class's pixel value back
+ * out of Tailwind at build time.
+ */
+export const MIC_ORB_SIZE_PX = 96;
+
 /** Core's answers, verbatim (backend/src/routes/tutor.ts `microphoneBlockedBy`). */
 export type MicBlockedReason = 'POLICY_BLOCKED' | 'CONSENT_REQUIRED' | 'VOICE_UNAVAILABLE';
 
