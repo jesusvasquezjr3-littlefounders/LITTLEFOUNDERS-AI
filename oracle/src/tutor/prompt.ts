@@ -1,5 +1,6 @@
 import type { TutorContext, Locale } from '../context/schema.js';
-import { EMOTIONS, ACTIONS } from './turnSchema.js';
+import { EMOTIONS, ACTIONS, type Whiteboard } from './turnSchema.js';
+import { computeSequence } from './whiteboard.js';
 
 /*
  * The pedagogical system prompt.
@@ -373,6 +374,142 @@ export function whiteboardUnitMismatch(
   const named = UNIT_WORD.find(([re]) => re.test(say));
   if (!named) return false;
   return named[1] !== whiteboard.unit;
+}
+
+/**
+ * A GROWTH STORY'S SPOKEN NUMBERS DISAGREEING WITH ITS OWN BOARD.
+ *
+ * `narratesUnshownGrowth` catches a board that never got drawn;
+ * `whiteboardUnitMismatch` catches a board drawn on the wrong time axis.
+ * Neither asks whether the NUMBERS the story tells out loud are the numbers
+ * the board actually computes — and a real session showed the two can
+ * disagree even when both exist and each looks fine read on its own. Found
+ * live, testing as a real seeded account, round 65 (2026-08-30, HIGH):
+ * "Imagine you save 5 pesos each week. After the first week you have 5,
+ * after the second you have 10, after the third you have 15" — an
+ * unambiguous, internally consistent, ZERO-based story — paired with
+ * `whiteboard: {start: 5, steps: [add 5, add 5, add 5]}`, whose OWN
+ * `computeSequence` is 5, 10, 15, 20: the board absorbed the first week's
+ * deposit into `start`, so every number it draws afterward is one week
+ * ahead of what was just said. A child watching the screen sees numbers
+ * that contradict the sentence they were just told.
+ *
+ * Reproduced twice more against the real model in the same investigation,
+ * at roughly 1 in 15 fresh single-turn samples of the identical prompt —
+ * real and recurring, not a one-off: `start: 35` against a spoken "after
+ * one week you have 35, after two weeks 70, after three weeks 105" (board:
+ * 35, 70, 105, 140), and `start: 5` again against "after one week you have
+ * 5, after two weeks 10, after three weeks 15" (board: 5, 10, 15, 20). The
+ * prompt's own worked example a few paragraphs below always narrates
+ * `start` as a PRE-EXISTING amount ("guardas 10 pesos" already in the jar,
+ * and THEN it grows) — a story with no pre-existing amount at all has no
+ * example to generalize from, and the model intermittently reaches for the
+ * per-step value instead of zero.
+ *
+ * DELIBERATELY NARROW, matching this file's whole posture and the
+ * project's own stated preference for silence over a false alarm (a
+ * one-word marker false-positived on an unrelated payload before — see
+ * `languageViolation`'s doc comment): this only fires on an EXPLICIT
+ * "after period N ... you have/tienes/tem VALUE" construction — a clear,
+ * confident anchor naming a CUMULATIVE TOTAL, never a guess at arbitrary
+ * prose, and never the per-period RATE ("you save/ahorras/coloca X", which
+ * names how much moves each step, not the running balance — an earlier
+ * draft of this check anchored on that verb too and mis-extracted a PT-BR
+ * transcript's deposit amount as if it were the period's total). It only
+ * fires when a `computeSequence` ground truth already exists to compare
+ * against, so a false positive would require BOTH a real whiteboard AND a
+ * sentence spelling out a total for a period that contradicts it. The
+ * window between the period marker and its number is bounded to the
+ * surrounding clause (`[^.!?]`), and each pattern requires the LITERAL
+ * words "after the "/"you have " rather than a bare `\b` boundary, so a
+ * hyphenated identifier or an unrelated later number several clauses away
+ * can never be misread as this period's claim. A spoken value within
+ * `NUMBER_TOLERANCE` of the board's own float is treated as a rounding
+ * choice, not a contradiction — a `multiply_percent` board computes
+ * fractional pesos nobody would speak aloud as-is.
+ */
+const PERIOD_WORD: Record<string, number> = {
+  first: 1,
+  second: 2,
+  third: 3,
+  fourth: 4,
+  fifth: 5,
+  one: 1,
+  two: 2,
+  three: 3,
+  four: 4,
+  five: 5,
+  '1': 1,
+  '2': 2,
+  '3': 3,
+  '4': 4,
+  '5': 5,
+  primer: 1,
+  primera: 1,
+  segundo: 2,
+  segunda: 2,
+  tercer: 3,
+  tercera: 3,
+  cuarto: 4,
+  cuarta: 4,
+  quinto: 5,
+  quinta: 5,
+  una: 1,
+  dos: 2,
+  tres: 3,
+  cuatro: 4,
+  cinco: 5,
+  primeiro: 1,
+  primeira: 1,
+  terceiro: 3,
+  terceira: 3,
+};
+
+/**
+ * A spoken value this close to the board's own computed float is a rounding
+ * choice, not a contradiction (see doc comment above) — chosen larger than
+ * the largest fractional remainder a single-digit `multiply_percent` step
+ * on a whole-peso `start` can leave (at most 0.5, e.g. 35 growing 10%
+ * lands on 38.5) while staying far below the smallest real gap this check
+ * has ever needed to catch (5, the smallest step value in any reproduction).
+ */
+const NUMBER_TOLERANCE = 0.6;
+
+/**
+ * Each pattern anchors a period marker to a CUMULATIVE-TOTAL verb in the
+ * same clause, per locale. `tienes`/`você tem`/`fica com` name the running
+ * balance; `ahorras`/`guardas`/`coloca` (the RATE) are deliberately excluded
+ * — see the doc comment above.
+ */
+const PERIOD_CLAIM_PATTERNS: RegExp[] = [
+  // English: "after the first week you have 5" / "after one week you have 35" / "after 1 week you have 5"
+  /\bafter (?:the )?(first|second|third|fourth|fifth|one|two|three|four|five|\d)\b[^.!?]{0,25}?\b(?:you (?:have|will have|would have|have saved|'ve saved))\b[^.!?]{0,10}?(\d+(?:\.\d+)?)/gi,
+  // Spanish: "después de una semana ... tienes 43" / "después de la tercera ... tendrías 59"
+  /\bdespu[ée]s de (?:la |una )?(primera|segunda|tercera|cuarta|quinta|una|dos|tres|cuatro|cinco)\b[^.!?]{0,30}?\b(?:tienes|tendr[íi]as|tendr[áa]s)\b[^.!?]{0,15}?(\d+(?:\.\d+)?)/gi,
+  // Portuguese: "na primeira semana ... fica com 8" / "na segunda ... você tem 13"
+  /\bn[ao] (primeira|segunda|terceira|quarta|quinta)\b[^.!?]{0,45}?\b(?:voc[êe]\s+(?:tem|teria)|fica(?:m)?\s+com)\b[^.!?]{0,10}?(\d+(?:\.\d+)?)/gi,
+];
+
+export function whiteboardNumberMismatch(
+  say: string,
+  whiteboard: Pick<Whiteboard, 'start' | 'steps'> | null | undefined,
+): boolean {
+  if (whiteboard == null) return false;
+  const values = computeSequence(whiteboard);
+  if (values == null) return false;
+  for (const pattern of PERIOD_CLAIM_PATTERNS) {
+    // Module-level `/g` regex — reset before every scan, since a prior call
+    // left `lastIndex` wherever its last match (or non-match) landed.
+    pattern.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    while ((m = pattern.exec(say)) !== null) {
+      const periodIndex = PERIOD_WORD[m[1]!.toLowerCase()];
+      const claimed = Number(m[2]);
+      if (periodIndex === undefined || !Number.isFinite(claimed) || periodIndex >= values.length) continue;
+      if (Math.abs(values[periodIndex]! - claimed) > NUMBER_TOLERANCE) return true;
+    }
+  }
+  return false;
 }
 
 export function contradictsCorrectAnswer(say: string, learnerText: string): boolean {

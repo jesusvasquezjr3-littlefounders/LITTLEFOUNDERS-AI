@@ -561,6 +561,88 @@ describe('the whiteboard (V4) — unit mismatch repair', () => {
   });
 });
 
+/*
+ * Found live, testing as a real seeded account, round 65 (2026-08-30, HIGH):
+ * a whiteboard and the `say` text right next to it can each look correct in
+ * isolation and still tell two different arithmetic stories — `start`
+ * absorbed a period's worth of growth the narration had already attributed
+ * to "after the first period". See `whiteboardNumberMismatch`'s own doc
+ * comment (prompt.ts) for the full reproduction.
+ */
+describe('the whiteboard (V4) — spoken numbers vs. the board\'s own arithmetic', () => {
+  it('asks again when the board\'s numbers contradict the story it just told', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          say: 'Imagina que ahorras 5 pesos cada semana. Después de una semana tienes 5, después de la segunda tienes 10, después de la tercera tienes 15. ¿Cuántos tendrías en total?',
+          whiteboard: {
+            kind: 'sequence',
+            start: 5,
+            unit: 'week',
+            steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }, { op: 'add', value: 5 }],
+            label: 'Cada semana ahorras 5 más',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          say: 'Imagina que ahorras 5 pesos cada semana. Después de una semana tienes 5, después de la segunda tienes 10, después de la tercera tienes 15. ¿Cuántos tendrías en total?',
+          whiteboard: {
+            kind: 'sequence',
+            start: 0,
+            unit: 'week',
+            steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }, { op: 'add', value: 5 }],
+            label: 'Cada semana ahorras 5 más',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = (await orchestrator.handleLearnerText('¿y si ahorro cada semana?', Date.now()))!;
+
+    const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(retryBody).toContain('does NOT match what');
+    expect(outcome?.emission.turn.whiteboard?.start).toBe(0);
+    expect(outcome?.emission.source).toBe('model');
+  });
+
+  /*
+   * Matches this file's own established treatment of falsePraise/
+   * falseCorrection/forbidden vocabulary/language drift (round 51/55/58):
+   * a wrong number taught to a child learning arithmetic is actively wrong,
+   * not a stylistic imperfection a child can still learn from, so a mismatch
+   * that SURVIVES the one retry falls back to the scripted line rather than
+   * being delivered a second time.
+   */
+  it('falls back to the scripted line if the retry ALSO contradicts its own board, rather than delivering a wrong number twice', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const buggyTurn = () =>
+      modelReplies({
+        ...GOOD_TURN,
+        say: 'Imagina que ahorras 5 pesos cada semana. Después de una semana tienes 5, después de la segunda tienes 10, después de la tercera tienes 15. ¿Cuántos tendrías en total?',
+        whiteboard: {
+          kind: 'sequence',
+          start: 5,
+          unit: 'week',
+          steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }, { op: 'add', value: 5 }],
+          label: 'Cada semana ahorras 5 más',
+          currency: 'MXN',
+        },
+      });
+    fetchMock
+      .mockResolvedValueOnce(buggyTurn())
+      .mockResolvedValueOnce(buggyTurn())
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = (await orchestrator.handleLearnerText('¿y si ahorro cada semana?', Date.now()))!;
+
+    expect(outcome.emission.source).toBe('scripted');
+  });
+});
+
 describe('the whiteboard (V4) — verification and delivery', () => {
   it('a valid whiteboard reaches the turn untouched', async () => {
     const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);

@@ -3,6 +3,7 @@ import {
   contradictsCorrectAnswer,
   narratesUnshownGrowth,
   praiseContradictsAnswer,
+  whiteboardNumberMismatch,
   whiteboardUnitMismatch,
 } from '../tutor/prompt.js';
 
@@ -158,5 +159,189 @@ describe('a board labelled with the wrong unit of time', () => {
   it('catches a mismatch under NATURAL Portuguese phrasing, not just the calqued form', () => {
     expect(whiteboardUnitMismatch('Toda semana você ganha mais 5 reais.', { unit: 'day' })).toBe(true);
     expect(whiteboardUnitMismatch('Todo dia o cofrinho te dá mais 2 reais.', { unit: 'week' })).toBe(true);
+  });
+});
+
+/*
+ * THE BOARD'S OWN NUMBERS DISAGREEING WITH THE STORY IT JUST TOLD.
+ *
+ * Found live, testing as a real seeded account, round 65 (2026-08-30, HIGH):
+ * a whiteboard and its own turn's `say` can each look correct in isolation
+ * and still tell a child two different arithmetic stories. `start` absorbed
+ * one period's worth of growth that the narration had already attributed to
+ * "after the first period" — see `whiteboardNumberMismatch`'s own doc
+ * comment (prompt.ts) for the full reproduction, including two more
+ * instances caught live against the real model in the same investigation.
+ */
+describe("the board's own numbers disagreeing with the story it just told", () => {
+  it('catches the exact live-observed turn: start absorbed the first week\'s deposit', () => {
+    expect(
+      whiteboardNumberMismatch(
+        "That's a great idea, Explorer! Let's think about it together. Imagine you save 5 pesos each week. " +
+          'After the first week you have 5, after the second you have 10, after the third you have 15. So ' +
+          'after three weeks, how many pesos do you have saved?',
+        { start: 5, steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }, { op: 'add', value: 5 }] },
+      ),
+    ).toBe(true);
+  });
+
+  it('catches the SAME defect reproduced live a second time, with a different amount', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Great question, Explorer! Imagine you save 35 pesos each week. After one week you have 35, after ' +
+          'two weeks 70, after three weeks 105. How much would you have after four weeks?',
+        {
+          start: 35,
+          steps: [
+            { op: 'add', value: 35 },
+            { op: 'add', value: 35 },
+            { op: 'add', value: 35 },
+            { op: 'add', value: 35 },
+          ],
+        },
+      ),
+    ).toBe(true);
+  });
+
+  it('catches the SAME defect reproduced live a third time', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'A fine question, Explorer. Imagine you put away 5 coins each week. After one week you have 5, ' +
+          'after two weeks 10, after three weeks 15. What would you have after four weeks?',
+        {
+          start: 5,
+          steps: [
+            { op: 'add', value: 5 },
+            { op: 'add', value: 5 },
+            { op: 'add', value: 5 },
+            { op: 'add', value: 5 },
+          ],
+        },
+      ),
+    ).toBe(true);
+  });
+
+  it('leaves a genuinely consistent story alone — an explicit starting amount that matches', () => {
+    expect(
+      whiteboardNumberMismatch(
+        "Let's watch it grow step by step. You start with 20, and each month you add 5. After the first " +
+          'month, you have 25. After the second, 30. After the third, 35. Now, how much would you have ' +
+          'after the fourth month?',
+        { start: 20, steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }, { op: 'add', value: 5 }] },
+      ),
+    ).toBe(false);
+  });
+
+  it('leaves a consistent story alone under the digit-before-unit phrasing too', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Imagine you save 5 coins each week. After 1 week you have 5, after 2 weeks you have 10. How many ' +
+          'would you have after 3 weeks?',
+        { start: 0, steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }, { op: 'add', value: 5 }] },
+      ),
+    ).toBe(false);
+  });
+
+  it('leaves a genuinely consistent es-MX explanation alone', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Claro, vamos despacio. Mira en la pizarra: empiezas con 35. Después de una semana, sumamos 8 y ' +
+          'tienes 43. Después de otra semana, sumamos 8 y tienes 51. Después de la tercera, sumamos 8 y ' +
+          'tienes 59. ¿Ves cómo crece?',
+        { start: 35, steps: [{ op: 'add', value: 8 }, { op: 'add', value: 8 }, { op: 'add', value: 8 }] },
+      ),
+    ).toBe(false);
+  });
+
+  // A regression guard for a mistake made and caught WHILE BUILDING this
+  // check: an earlier draft anchored on "você coloca" (the RATE — how much
+  // moves each step) as well as "fica com" (the TOTAL). "coloca 5" here
+  // would have been misread as period 1's claimed total, contradicting the
+  // board (whose real value at period 1 is 8) even though the turn is
+  // actually correct. Only a cumulative-total verb may anchor a claim.
+  it('leaves a genuinely consistent pt-BR explanation alone, and does not confuse the deposit RATE for the TOTAL', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Claro, vamos devagar. Você começa com 3 reais. Na primeira semana, você coloca 5 reais, então fica ' +
+          'com 8. Na segunda, mais 5, fica com 13. Na terceira, mais 5, fica com 18.',
+        { start: 3, steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }, { op: 'add', value: 5 }] },
+      ),
+    ).toBe(false);
+  });
+
+  it('never fires when there is no whiteboard at all', () => {
+    expect(
+      whiteboardNumberMismatch('After the first week you have 5, after the second you have 10.', null),
+    ).toBe(false);
+  });
+
+  it('stays silent when the story never states a per-period total, only asks a question', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Imagine you save 5 pesos each week. How much would you have after 3 weeks?',
+        { start: 0, steps: [{ op: 'add', value: 5 }, { op: 'add', value: 5 }, { op: 'add', value: 5 }] },
+      ),
+    ).toBe(false);
+  });
+
+  it('forgives a spoken number that is a rounding of a percent-grown board, not a real contradiction', () => {
+    // 35 growing 10% is 38.5 — nobody speaks a half-peso aloud to a child.
+    expect(
+      whiteboardNumberMismatch(
+        'Imagine you save 35 pesos, growing 10% each week. After the first week you have 39 pesos.',
+        { start: 35, steps: [{ op: 'multiply_percent', value: 10 }] },
+      ),
+    ).toBe(false);
+  });
+
+  it('still catches a genuinely wrong number on a percent-grown board', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Imagine you save 35 pesos, growing 10% each week. After the first week you have 50 pesos.',
+        { start: 35, steps: [{ op: 'multiply_percent', value: 10 }] },
+      ),
+    ).toBe(true);
+  });
+
+  it('never flags genuine prose that merely contains an ordinal and a number, with no total verb', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'The first time I visited the zoo I saw 5 elephants. Imagine you save 8 pesos each week — after ' +
+          'three weeks, how much would you have?',
+        { start: 0, steps: [{ op: 'add', value: 8 }, { op: 'add', value: 8 }, { op: 'add', value: 8 }] },
+      ),
+    ).toBe(false);
+  });
+
+  it('never flags genuine Spanish prose that merely contains "la primera" and a number', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'Ayer fue mi cumpleaños, la primera persona en llegar tenía 5 años. Imagina que ahorras 8 pesos ' +
+          'cada semana.',
+        { start: 0, steps: [{ op: 'add', value: 8 }] },
+      ),
+    ).toBe(false);
+  });
+
+  // Round 58's lesson, reapplied: a hyphen is a `\b` word boundary, so a
+  // bare-boundary marker can match inside an unrelated hyphenated
+  // identifier. This check requires LITERAL SPACES ("after the ", "you have
+  // "), not just `\b`, so a hyphenated payload cannot satisfy it.
+  it('does not spuriously match inside a hyphenated identifier', () => {
+    expect(
+      whiteboardNumberMismatch(
+        'PAYLOAD-AFTER-THE-FIRST-YOU-HAVE-5-TOKEN and a real board follows: imagine you save 8 pesos each week.',
+        { start: 0, steps: [{ op: 'add', value: 8 }] },
+      ),
+    ).toBe(false);
+  });
+
+  it('never fires when the board itself does not compute to a sane sequence', () => {
+    expect(
+      whiteboardNumberMismatch('After the first week you have 5, after the second you have 10.', {
+        start: -1,
+        steps: [{ op: 'add', value: 5 }],
+      }),
+    ).toBe(false);
   });
 });

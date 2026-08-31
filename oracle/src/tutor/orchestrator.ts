@@ -31,6 +31,7 @@ import {
   contradictsCorrectAnswer,
   narratesUnshownGrowth,
   whiteboardUnitMismatch,
+  whiteboardNumberMismatch,
   echoesEarlierTurn,
   repeatsEarlierSentence,
   promisesAnActivity,
@@ -1601,6 +1602,22 @@ export class TutorOrchestrator {
             const missedWhiteboard = narratesUnshownGrowth(parsed.turn.say, parsed.turn.whiteboard);
             const wrongUnit = whiteboardUnitMismatch(parsed.turn.say, parsed.turn.whiteboard);
             /*
+             * THE BOARD'S OWN NUMBERS CONTRADICTING WHAT WAS JUST SAID
+             * (round 65, 2026-08-30, HIGH). `missedWhiteboard`/`wrongUnit`
+             * above catch a board that never got drawn or was drawn on the
+             * wrong axis; neither one asks whether the numbers the story
+             * tells out loud are the numbers `computeSequence` actually
+             * produces for the SAME board. Found live and reproduced twice
+             * more against the real model: a zero-based story ("after the
+             * first week you have 5, after the second 10...") paired with
+             * `whiteboard.start` set to the per-week amount instead of zero,
+             * shifting the whole drawn sequence one period ahead of the
+             * narration. See `whiteboardNumberMismatch`'s own doc comment
+             * (prompt.ts) for the full reproduction and the false-positive
+             * analysis behind its narrow scope.
+             */
+            const numberMismatch = whiteboardNumberMismatch(parsed.turn.say, parsed.turn.whiteboard);
+            /*
              * §9.4 of the blueprint, stated as a hard rule: never give the
              * final answer while asking. Detected by computing the question's
              * answer and looking for it in the lead-in, which is exact where a
@@ -1670,8 +1687,16 @@ export class TutorOrchestrator {
                * whiteboard or an unkept promise, a child who does not speak
                * the wrong language gets ZERO value from the turn, not a
                * "clumsy but still teaches something" one.
+               *
+               * `numberMismatch` (round 65) joins the same bucket for the
+               * same reason falseCorrection does: a wrong number taught to
+               * a child learning arithmetic is actively wrong, not a
+               * stylistic imperfection a child can still learn from — the
+               * board and the sentence next to it disagree about the exact
+               * thing this turn exists to teach.
                */
-              repairableIsFalseVerdict = falsePraise || falseCorrection || violation !== null || langDrift !== null;
+              repairableIsFalseVerdict =
+                falsePraise || falseCorrection || violation !== null || langDrift !== null || numberMismatch;
             }
 
             if (violation !== null && attempt === 0) {
@@ -1703,6 +1728,10 @@ export class TutorOrchestrator {
               turnCorrection =
                 'told the learner "casi" but its own reasoning arrived at THE NUMBER THE LEARNER SAID. Their answer was right. Confirm it plainly, give them credit, and continue — never mark a correct answer as almost';
               console.warn('[oracle] turn contradicted a correct answer — asking again');
+            } else if (numberMismatch && attempt === 0) {
+              turnCorrection =
+                'said a running total for one of the periods in its own story that does NOT match what "whiteboard" computes for that same period — the two must agree exactly. Say the SAME story again, and either correct the numbers you speak so they match the board\'s own running total at each period, or leave the running totals to the board and only narrate the situation and the question';
+              console.warn('[oracle] spoken running total disagreed with the whiteboard\'s own numbers — asking again');
             } else if (missedWhiteboard && attempt === 0) {
               turnCorrection =
                 'told a story about a quantity that changes every day/week/month/year, in words only. Say the SAME story again, but this time ALSO set "whiteboard" with the exact start value and step values your story used, and set "unit" to whichever of day/week/month/year your own words named — do not add a step count higher than what you already said';
@@ -1735,18 +1764,23 @@ export class TutorOrchestrator {
               if (repeated !== null) {
                 console.warn('[oracle] repeated sentence SURVIVED the retry — delivered');
               }
-              if (falsePraise || falseCorrection || violation !== null || langDrift !== null) {
+              if (falsePraise || falseCorrection || violation !== null || langDrift !== null || numberMismatch) {
                 // See `repairableIsFalseVerdict`'s doc comment: false praise,
-                // a false correction, forbidden vocabulary, and a wrong-
-                // language turn are each content the child must never
-                // actually receive, not a merely-imperfect turn, so none of
-                // them gets delivered.
+                // a false correction, forbidden vocabulary, a wrong-language
+                // turn, and a board that contradicts its own narration are
+                // each content the child must never actually receive, not a
+                // merely-imperfect turn, so none of them gets delivered.
                 if (falsePraise) {
                   console.warn('[oracle] praise of a wrong answer SURVIVED the retry — scripted line instead');
                 }
                 if (falseCorrection) {
                   console.warn(
                     '[oracle] contradiction of a correct answer SURVIVED the retry — scripted line instead',
+                  );
+                }
+                if (numberMismatch) {
+                  console.warn(
+                    '[oracle] spoken running total vs. whiteboard mismatch SURVIVED the retry — scripted line instead',
                   );
                 }
                 if (violation !== null) {

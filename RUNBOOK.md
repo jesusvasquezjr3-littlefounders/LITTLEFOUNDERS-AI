@@ -6361,3 +6361,122 @@ Verification: full oracle suite green (26 files, 512 tests — 507
 existing + 5 new, zero regressions), lint and type-check clean,
 `verify:tutor` green. Root `docs:check`/`secrets:check` clean.
 `oracle/AGENTS.md` item 55.
+
+## Round 65: a valid whiteboard and the sentence right next to it told two different arithmetic stories
+
+Investigated a live defect the owner observed directly, in a real browser
+session as a real seeded `admin` account: asking "what if i save money
+every week" produced a turn whose SPOKEN text and rendered whiteboard were
+both wrong TOGETHER, in a way neither `narratesUnshownGrowth` nor
+`whiteboardUnitMismatch` (item 54) could see, because both existed and each
+looked individually well-formed.
+
+**Observed turn.** `say`: "Imagine you save 5 pesos each week. After the
+first week you have 5, after the second you have 10, after the third you
+have 15." — an unambiguous, internally consistent, ZERO-based story.
+`whiteboard`: `{start: 5, steps: [add 5, add 5, add 5]}`, whose own
+`computeSequence` is 5, 10, 15, 20. The board absorbed the first week's
+deposit into `start`, so every number it drew afterward was one week ahead
+of the sentence the child had just been told — the whiteboard's entire
+purpose is showing the numbers the tutor narrates growing on screen, and
+here it showed a DIFFERENT, disagreeing sequence in the same turn.
+
+**Confirming it was real and recurring, not a one-off (this session's own
+mandate before writing any fix).** Ran ~50 real calls against the actual
+`TutorOrchestrator` and the real DeepSeek model (no mocks) via a throwaway
+script mirroring `scripts/converse.ts`'s own pattern, across locales
+(en-US/es-MX/pt-BR), tiers, conversation lengths, and phrasings, watching
+whether a growth story's spoken per-period numbers agreed with
+`computeSequence(whiteboard)` at the same position. The first four batches
+(single-turn, multi-turn, forced "explain step by step", long
+conversation histories) came back clean — every board and every narrated
+sequence agreed, including cases that explicitly narrated "after week 1
+you have 5, after week 2 you have 10" in the exact live-observed shape.
+Only a larger batch of identical single-line repeats (`what if i save
+money every week`, fresh session each time, temperature 0.6) surfaced the
+defect again — twice, at roughly 1 in 15 — with the identical shape both
+times: a zero-based spoken sequence paired with a `start` set to the
+per-step amount instead of zero, shifting the whole board one period ahead
+of the narration. Two independent real-model reproductions, on top of the
+owner's own live observation, closed the question: this is a real,
+recurring defect at a real (if low single-digit-percent) rate, not a
+fluke — and at product scale, serving a savings/growth story to many
+children, a rate like that surfaces regularly.
+
+**Root cause.** The prompt's own worked example (`prompt.ts`, item 50's
+neighbour) always narrates `start` as a PRE-EXISTING amount — "guardas 10
+pesos" already sitting in the jar, and THEN it grows by a fixed step. A
+story with no pre-existing amount at all — "you save 5 pesos each week,"
+full stop, no jar that already had something in it before week one — has
+no example in the prompt to generalize from, and the model intermittently
+reaches for the per-step value as `start` instead of zero. Both fields
+(`say` and `whiteboard`) are produced by the SAME autoregressive
+completion; nothing forces them to agree with each other once the model
+has already committed to a narrated sequence in `say`.
+
+**Fixed.** `whiteboardNumberMismatch(say, whiteboard)` in `prompt.ts` — a
+new deterministic check, mirroring `contradictsCorrectAnswer`/
+`whiteboardUnitMismatch`'s own style. It extracts the spoken per-period
+running totals from an EXPLICIT "after period N ... you have/tienes/tem
+VALUE" construction (English/Spanish/Portuguese) and compares each one
+against `computeSequence(whiteboard)` at the same index — the same ground
+truth `whiteboard.ts` already computes for delivery, never re-derived.
+
+Deliberately narrow, matching this file's own repeatedly-stated
+false-positive discipline (item 53's `languageViolation`, corrected after
+a single-word marker false-positived on an unrelated payload):
+
+- Anchors ONLY on a CUMULATIVE-TOTAL verb (`you have`/`tienes`/`tendrías`/
+  `você tem`/`fica com`), never a RATE verb (`you save`/`ahorras`/
+  `guardas`/`coloca`). Caught this distinction WHILE BUILDING the check,
+  before it shipped: an earlier draft anchored on the rate verb too, and
+  mis-extracted a real pt-BR transcript's deposit amount ("você coloca 5
+  reais") as if it were the period's running total — which would have
+  false-positived on a turn that was actually correct (the true total,
+  "fica com 8," was a few words later in the same sentence).
+- Requires the number within the SAME clause as the period marker
+  (bounded by `[^.!?]`), and requires LITERAL SPACES ("after the ", "you
+  have "), not a bare `\b` word boundary — verified rather than assumed
+  that a hyphenated identifier (`PAYLOAD-AFTER-THE-FIRST-YOU-HAVE-5-TOKEN`)
+  cannot satisfy it, the same lesson item 53 already learned once.
+- Only fires when a `computeSequence` ground truth already exists, so a
+  false positive needs BOTH a real whiteboard AND a sentence spelling out
+  a period total that contradicts it.
+- Tolerates a spoken value within 0.6 of the board's own float, since a
+  `multiply_percent` board computes fractional pesos (35 growing 10% is
+  38.5) nobody speaks aloud as-is — a genuinely wrong number (35 vs. a
+  claimed 50) is still caught.
+
+Wired into the same repair-retry loop as `whiteboardUnitMismatch`: a
+mismatch on attempt 0 asks the model to say the same story again with the
+numbers corrected either direction (match the board to the words, or the
+words to the board); a mismatch that SURVIVES the retry joins item 51's
+bucket — false praise, false correction, forbidden vocabulary, language
+drift — falling back to the scripted line rather than being delivered a
+second time, because a wrong number taught to a child learning arithmetic
+is actively wrong, not a stylistic imperfection a child can still learn
+from.
+
+**Proof.** 15 new `contradiction.test.ts` unit tests: all three real
+reproductions (verbatim, from the live observation and the two scripted
+repros), several genuinely consistent real transcripts across all three
+locales that must NOT fire (including the pt-BR rate-vs-total regression
+guard above), a percent-board rounding-tolerance pair, a "no whiteboard at
+all" case, a "question with no stated total" case, and the hyphenated-
+identifier canary. 2 new `orchestrator.test.ts` end-to-end tests: one
+proving the attempt-0 retry fires and corrects the board, one proving a
+mismatch that survives both attempts falls back to the scripted line
+rather than delivering a wrong number twice. All 17 confirmed to fail for
+the exact claimed reason pre-fix via `git stash` (an import error —
+`whiteboardNumberMismatch is not a function` — for the unit tests; the
+retry never firing and the turn delivering as `model` instead of
+`scripted` for the two end-to-end tests).
+
+Verification: full oracle suite green (26 files, 529 tests — 512
+existing + 17 new, zero regressions), lint and type-check clean,
+`verify:tutor` and `verify:pedagogy` green (both deterministic — neither
+touches this change directly, run per the standard gate checklist). Root
+`docs:check`/`secrets:check` clean. `oracle/AGENTS.md` item 56. The
+throwaway reproduction script used to characterize the defect (mirroring
+`scripts/converse.ts`'s own pattern, never committed) was deleted before
+this round closed.

@@ -1488,6 +1488,64 @@ everything passes the blocked half perfectly and destroys the product.
    All 5 confirmed to fail for the exact claimed reason via `git stash`.
    See `RUNBOOK.md` Round 64.
 
+56. **A valid whiteboard and the sentence sitting right next to it can each
+   look correct alone and still tell a child two different arithmetic
+   stories.** Found live, testing as a real seeded account, round 65
+   (2026-08-30, HIGH). `narratesUnshownGrowth`/`whiteboardUnitMismatch`
+   (item 54) check that a board exists and is labelled with the right time
+   axis; neither ever asked whether the NUMBERS the story tells out loud
+   are the numbers `computeSequence(whiteboard)` actually produces for the
+   same board. Observed turn: `say` narrated "Imagine you save 5 pesos each
+   week. After the first week you have 5, after the second you have 10,
+   after the third you have 15" — an unambiguous, internally consistent,
+   ZERO-based story — paired with `whiteboard: {start: 5, steps: [add 5,
+   add 5, add 5]}`, whose own `computeSequence` is 5, 10, 15, 20: `start`
+   absorbed the first week's deposit, so the board drawn on screen was one
+   week ahead of the sentence the child had just heard. Confirmed as a
+   real, recurring defect rather than a one-off before any fix was
+   written: reproduced twice more against the real model in the same
+   investigation (a `start: 35` case and a second `start: 5` case, each
+   with the identical one-period shift), at roughly 1 in 15 fresh
+   single-turn samples of the identical prompt across ~50 real model calls
+   run to characterize it. Root cause traced to this file's OWN worked
+   example (item 50's neighbour, `prompt.ts`): it always narrates `start`
+   as a PRE-EXISTING amount ("guardas 10 pesos" already in the jar, THEN it
+   grows) — a story with no pre-existing amount at all has no example to
+   generalize from, and the model intermittently reaches for the per-step
+   value instead of zero.
+   Fixed with `whiteboardNumberMismatch(say, whiteboard)` (`prompt.ts`),
+   deliberately as narrow as item 53's `languageViolation`: it only fires
+   on an EXPLICIT "after period N ... you have/tienes/tem VALUE"
+   construction naming a CUMULATIVE TOTAL — never a guess at arbitrary
+   prose, and never the per-period RATE ("you save/ahorras/coloca X", how
+   much moves each step rather than the running balance). Caught while
+   BUILDING the check, before it shipped: an earlier draft anchored on the
+   RATE verb too and mis-extracted a real pt-BR transcript's deposit amount
+   as if it were the period's total, which would have false-positived on a
+   turn that was actually correct — the check now anchors ONLY on
+   `tienes`/`tendrías`/`você tem`/`fica com`-class verbs. It only fires when
+   a `computeSequence` ground truth already exists to compare against, so a
+   false positive needs BOTH a real whiteboard AND a sentence spelling out
+   a period total that contradicts it; the marker requires LITERAL spaces
+   ("after the ", "you have "), not a bare `\b`, so a hyphenated identifier
+   cannot satisfy it (item 53's lesson, reapplied and verified rather than
+   assumed); and a spoken value within a small tolerance of the board's own
+   float is treated as a rounding choice, not a contradiction, since a
+   `multiply_percent` board computes fractional pesos nobody speaks aloud.
+   Wired into the SAME repair-retry machinery as `whiteboardUnitMismatch`:
+   a mismatch on attempt 0 asks for the same story again with the numbers
+   corrected either way; a mismatch that SURVIVES the retry joins item 51's
+   bucket — false praise, false correction, forbidden vocabulary, language
+   drift — falling back to the scripted line rather than being delivered,
+   because a wrong number taught to a child learning arithmetic is actively
+   wrong, not a stylistic imperfection a child can still learn from.
+   Proven with 15 new `prompt.test.ts`/`contradiction.test.ts` unit tests
+   (all three real reproductions, several genuinely consistent real
+   transcripts across all three locales that must NOT fire, a percent-board
+   rounding-tolerance pair, and the hyphenated-identifier canary) and 2 new
+   `orchestrator.test.ts` end-to-end tests; all confirmed to fail for the
+   exact claimed reason pre-fix via `git stash`. See `RUNBOOK.md` Round 65.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:
@@ -1516,5 +1574,5 @@ with `emission.source === 'model'`. See `RUNBOOK.md`.
 - **`learnerBrief`** renders as the tutor's OWN notes, never as the learner's words — text derived from a child's speech must never be readable as instructions. Any change to what reaches the model still walks the full §4.1 chain (schema, ORACLE.md, legal review, the field-count test).
 - **Episodic recall** triggers on a CLOSED phrase list only — no model ever decides whether to look — and failure degrades to the turn we had before.
 - **The grace turn** (`closeGraceUsed`) is minted exactly once per session; the turn after it closes scripted no matter what the model did.
-- **The whiteboard** (`src/tutor/whiteboard.ts`) — `values` are ALWAYS server-computed from the model's own `start`/`steps`, recomputed a second time at the wire (`ws/server.ts`) rather than trusted from wherever they were last computed, and dropped WHOLE (fail-open) on a non-finite/negative/out-of-range result — never shown as authored. A turn may never carry both `whiteboard` and `segmentRequest`; the schema refuses it. `whiteboard.unit` (`day`/`week`/`month`/`year`, closed vocabulary) must agree with whichever cadence word the model's own `say` used — found live, drawing "Día 1/2" under a story that said "cada semana" three times. `narratesUnshownGrowth()` and `whiteboardUnitMismatch()` in `src/tutor/prompt.ts` are deterministic checks feeding the standard repair loop (§9), same pattern as `falsePraise` — the instruction alone did not reliably get the real model to set the field at all.
+- **The whiteboard** (`src/tutor/whiteboard.ts`) — `values` are ALWAYS server-computed from the model's own `start`/`steps`, recomputed a second time at the wire (`ws/server.ts`) rather than trusted from wherever they were last computed, and dropped WHOLE (fail-open) on a non-finite/negative/out-of-range result — never shown as authored. A turn may never carry both `whiteboard` and `segmentRequest`; the schema refuses it. `whiteboard.unit` (`day`/`week`/`month`/`year`, closed vocabulary) must agree with whichever cadence word the model's own `say` used — found live, drawing "Día 1/2" under a story that said "cada semana" three times. `narratesUnshownGrowth()`, `whiteboardUnitMismatch()` and `whiteboardNumberMismatch()` in `src/tutor/prompt.ts` are deterministic checks feeding the standard repair loop (§9), same pattern as `falsePraise` — the instruction alone did not reliably get the real model to set the field at all. `whiteboardNumberMismatch()` catches the narrowest of the three: `say` and `whiteboard` each individually well-formed, but disagreeing on the actual running totals — `start` silently absorbing a period's worth of growth the narration had already attributed to "after the first period" (item 56).
 
