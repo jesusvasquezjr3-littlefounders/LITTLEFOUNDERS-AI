@@ -152,7 +152,27 @@ const LOCALE_TIMEZONE: Record<'en-US' | 'es-MX' | 'pt-BR', string> = {
   'en-US': 'America/New_York',
 };
 
-export function startOfLocalDayIso(locale: 'en-US' | 'es-MX' | 'pt-BR', now: Date = new Date()): string {
+/**
+ * `daysAhead` (default 0, "today") lets the SAME offset-derivation serve the
+ * daily cap's own reset instant: `daysAhead: 1` is "tomorrow's local
+ * midnight" — the exact moment `MAX_SESSIONS_PER_DAY` allows another session,
+ * because `sinceIso` above is this same function's `daysAhead: 0`. `Date.UTC`
+ * accepts an out-of-range day and rolls the month/year forward correctly, so
+ * a request on the last day of the month needs no special case.
+ *
+ * Reuses `now`'s own UTC offset for the target day rather than recomputing
+ * it for that day specifically — the same approximation this function's own
+ * header comment already accepts for `daysAhead: 0` (no DST-transition-day
+ * correction). A SESSION_LIMIT reset estimate off by an hour on the handful
+ * of nights a locale's clocks change is a UI approximation, not a cap
+ * enforcement bug — the cap itself is still enforced against the real
+ * boundary computed fresh on the request that matters.
+ */
+export function startOfLocalDayIso(
+  locale: 'en-US' | 'es-MX' | 'pt-BR',
+  now: Date = new Date(),
+  daysAhead = 0,
+): string {
   const timeZone = LOCALE_TIMEZONE[locale];
   const parts = Object.fromEntries(
     new Intl.DateTimeFormat('en-US', {
@@ -183,9 +203,25 @@ export function startOfLocalDayIso(locale: 'en-US' | 'es-MX' | 'pt-BR', now: Dat
   );
   const offsetMs = asIfUtcMs - now.getTime();
   const localMidnightUtcMs =
-    Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day), 0, 0, 0) - offsetMs;
+    Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day) + daysAhead, 0, 0, 0) - offsetMs;
   return new Date(localMidnightUtcMs).toISOString();
 }
+
+/**
+ * The wire shape of the SESSION_LIMIT refusal's one extra field (§1.9
+ * clarity — a vague "come back tomorrow" cannot tell a child whether the
+ * wait is ten minutes or nearly a day).
+ *
+ * Kept as a validated schema rather than a bare `.toISOString()` call so a
+ * regression in the day-ahead arithmetic above — `daysAhead` silently
+ * dropped, a sign flip, `now` passed instead of the intended instant — fails
+ * LOUDLY here (a 500, caught by every gate that hits this route) instead of
+ * reaching a child's screen as a countdown to a moment already in the past.
+ */
+const SessionLimitResetAt = z
+  .string()
+  .datetime()
+  .refine((iso) => new Date(iso).getTime() > Date.now(), 'resetAt must be in the future');
 
 /**
  * Tier band from a birth date. Mirrors `tierForBirthDate` in
@@ -1778,7 +1814,13 @@ export function tutorRouter(): Router {
     });
     if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not start the session');
     if (result.status === 'cap_reached') {
-      return fail(res, 429, 'SESSION_LIMIT', 'You have used all of today’s tutor sessions');
+      // The reset instant, not a fixed "come back tomorrow": the client
+      // formats this into a concrete time-remaining rather than guessing at
+      // local midnight with its own clock and timezone, which can disagree
+      // with the server's (§1.9 — a vague wait reads the same whether it is
+      // ten minutes or a day to a child with a weak sense of relative time).
+      const resetAt = SessionLimitResetAt.parse(startOfLocalDayIso(locale, new Date(), 1));
+      return fail(res, 429, 'SESSION_LIMIT', 'You have used all of today’s tutor sessions', { resetAt });
     }
     const session = result.session;
 

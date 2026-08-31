@@ -76,6 +76,35 @@ const SETTLE_STEPS = ['', 'lf-settle-2', 'lf-settle-3'] as const;
 const settleStep = (index: number): string => SETTLE_STEPS[Math.min(index, SETTLE_STEPS.length - 1)] ?? '';
 
 /**
+ * "In about N hours/minutes" for the SESSION_LIMIT refusal (§1.9 clarity —
+ * found by review sweep tutor-review-sweep-92, session-cap-ux). The old
+ * copy said only "come back tomorrow", which cannot tell a child whether the
+ * wait is ten minutes or nearly a day.
+ *
+ * A DURATION rather than a clock time, deliberately: `resetAtIso` is always
+ * the learner's next LOCAL MIDNIGHT (`startOfLocalDayIso(locale, now, 1)` on
+ * the server), so a clock-time rendering would read "12:00 AM" or "00:00"
+ * for every single refusal — true, but useless, since midnight is not itself
+ * a time anyone is expected to be awake and starting a tutor session. "In
+ * about 6 hours" says something a clock stamp of the boundary itself cannot.
+ *
+ * `Math.ceil` rather than rounding to nearest: the reported wait never reads
+ * shorter than the real one, which is the safe direction for a promise made
+ * to a child about when something becomes available again.
+ */
+function formatResetWhen(resetAtIso: string | null, fallback: string, locale: string): string {
+  if (!resetAtIso) return fallback;
+  const resetAt = new Date(resetAtIso);
+  const diffMs = resetAt.getTime() - Date.now();
+  if (!Number.isFinite(diffMs) || diffMs <= 0) return fallback;
+
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto', style: 'long' });
+  const diffMinutes = diffMs / 60_000;
+  if (diffMinutes < 60) return rtf.format(Math.max(1, Math.ceil(diffMinutes)), 'minute');
+  return rtf.format(Math.max(1, Math.ceil(diffMinutes / 60)), 'hour');
+}
+
+/**
  * One opening the tutor can offer.
  *
  * A CLOSED SET, ALWAYS (/ORACLE.md §9.2). Four ways in, and the first three are
@@ -139,6 +168,7 @@ export function OfferChips({
   offers,
   starting,
   startError,
+  startErrorResetAt,
   onStart,
   onPersonalize,
   token,
@@ -148,7 +178,7 @@ export function OfferChips({
   nickname,
   map,
 }: OfferChipsProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dock = useStageDock();
 
   /*
@@ -383,8 +413,15 @@ export function OfferChips({
           <span className="lf-body" role="status">
             {/* An error CODE, never a wire message: an untranslated server
                 string on a child's screen is both an i18n violation and a leak
-                of internal wording. */}
-            {t(`tutor.startError.${startError}`, { defaultValue: t('tutor.startError.INTERNAL') })}
+                of internal wording. `when` only matters to SESSION_LIMIT's own
+                key — every other key ignores an interpolation var it does not
+                reference. Falls back to `sessionLimitWhenFallback` ("tomorrow")
+                when the server omitted `resetAt`, rather than leaking a raw
+                "{{when}}" onto the screen. */}
+            {t(`tutor.startError.${startError}`, {
+              when: formatResetWhen(startErrorResetAt, t('tutor.startError.sessionLimitWhenFallback'), i18n.language),
+              defaultValue: t('tutor.startError.INTERNAL'),
+            })}
           </span>
         </HudPlate>
       )}

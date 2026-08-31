@@ -1000,6 +1000,14 @@ export interface OfferLayerProps extends StageLayerCommonProps {
    * screen is both an i18n violation and a leak of internal wording.
    */
   startError: string | null;
+  /**
+   * The daily-cap reset instant, present only alongside `startError ===
+   * 'SESSION_LIMIT'` (§1.9 clarity — a bare "come back tomorrow" cannot tell
+   * a child whether the wait is ten minutes or nearly a day). An ISO string
+   * from the SERVER's own computed local midnight, never guessed client-side
+   * — client and server clocks/timezones can disagree.
+   */
+  startErrorResetAt: string | null;
   onStart: (input: StartSessionInput) => void;
   /** Back to picking, in the world. */
   onPersonalize: () => void;

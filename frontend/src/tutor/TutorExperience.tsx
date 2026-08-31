@@ -166,6 +166,14 @@ export function TutorExperience() {
   const [saving, setSaving] = useState(false);
   const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
+  /**
+   * The SESSION_LIMIT refusal's own reset instant (§1.9 clarity — see
+   * `OfferChips`'s use of it). Null for every other error, and for
+   * SESSION_LIMIT itself if the server ever omits it (an older deploy, a
+   * degraded response) — `OfferChips` falls back to the plain, timeless copy
+   * rather than rendering a broken interpolation.
+   */
+  const [startErrorResetAt, setStartErrorResetAt] = useState<string | null>(null);
   const [stageReady, setStageReady] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   /*
@@ -370,10 +378,12 @@ export function TutorExperience() {
       if (!token) return;
       setStarting(true);
       setStartError(null);
+      setStartErrorResetAt(null);
       void startSession(token, input).then((result) => {
         setStarting(false);
         if (result.error || !result.data) {
           setStartError(result.error?.code ?? 'INTERNAL');
+          setStartErrorResetAt(result.error?.resetAt ?? null);
           return;
         }
         setSession(result.data);
@@ -951,6 +961,7 @@ export function TutorExperience() {
           offers,
           starting: starting || !offers.canStart,
           startError,
+          startErrorResetAt,
           onStart: begin,
           onPersonalize: () => setPhase('personalizing'),
           token,

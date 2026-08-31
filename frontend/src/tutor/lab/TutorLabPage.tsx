@@ -483,6 +483,7 @@ export default function TutorLabPage() {
     offers,
     starting: false,
     startError: null,
+    startErrorResetAt: null,
     onStart: () => setSurface('conversing'),
     onPersonalize: () => setSurface('personalizing'),
     // The lab's stand-in token. It never leaves the page — the shim in

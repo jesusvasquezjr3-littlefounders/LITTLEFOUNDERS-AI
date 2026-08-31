@@ -11,6 +11,14 @@ export const BASE_URL: string = import.meta.env.VITE_BACKEND_URL ?? 'http://loca
 export interface ApiError {
   code: string;
   message: string;
+  /**
+   * An ISO instant, present ONLY on the Tutor's `SESSION_LIMIT` refusal — the
+   * server's own computed daily-cap reset time (next local midnight for the
+   * learner's locale), so the client can render a real time-remaining
+   * instead of guessing at midnight with its own clock/timezone. Absent on
+   * every other error code; do not depend on it existing.
+   */
+  resetAt?: string;
 }
 
 export type ApiResult<T> = { data: T; error: null } | { data: null; error: ApiError };

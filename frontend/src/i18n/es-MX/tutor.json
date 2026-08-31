@@ -270,7 +270,8 @@
     "ORACLE_UNAVAILABLE": "Tu tutor está descansando. Vuelve pronto.",
     "POLICY_BLOCKED": "Todavía no ofrecemos eso para los más pequeños.",
     "RATE_LIMITED": "Demasiados intentos seguidos. Espera un momento e inténtalo otra vez.",
-    "SESSION_LIMIT": "Ya usaste el tiempo de hoy. ¡Vuelve mañana!",
+    "SESSION_LIMIT": "Ya usaste el tiempo de hoy. ¡Vuelve {{when}}!",
+    "sessionLimitWhenFallback": "mañana",
     "VALIDATION_ERROR": "Algo en esa solicitud no estuvo bien. Inténtalo de nuevo."
   },
   "consent": {

@@ -270,7 +270,8 @@
     "ORACLE_UNAVAILABLE": "The tutor is resting. Try again soon.",
     "POLICY_BLOCKED": "We don't offer that for younger learners yet.",
     "RATE_LIMITED": "Too many tries at once. Wait a moment and try again.",
-    "SESSION_LIMIT": "You've used today's tutor time. Come back tomorrow!",
+    "SESSION_LIMIT": "You've used today's tutor time. Come back {{when}}!",
+    "sessionLimitWhenFallback": "tomorrow",
     "VALIDATION_ERROR": "Something about that request wasn't right. Try again."
   },
   "consent": {
