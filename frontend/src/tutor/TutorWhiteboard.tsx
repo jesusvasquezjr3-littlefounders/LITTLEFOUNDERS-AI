@@ -47,7 +47,21 @@ export interface TutorWhiteboardProps {
   className?: string;
 }
 
-const GROW_STEP_MS = 550;
+/**
+ * How long each bar takes to grow in, one at a time.
+ *
+ * Exported so `replayScript.ts` can compute how long a replayed beat that
+ * drew a whiteboard must stay on screen at minimum — the reveal this
+ * constant paces is real work this component does AFTER the beat has
+ * already started, and nothing else in the replay knew how long it takes.
+ * Found by adversarial review (see RUNBOOK.md): a replayed beat's duration
+ * was driven purely by the tutor's spoken word count, with zero awareness
+ * of this number, so a short `say` paired with a many-step board — the
+ * DESIGNED usage, per /ORACLE.md's whiteboard section, not a rare one —
+ * could end the beat, and unmount this component, before the bars had
+ * finished growing.
+ */
+export const GROW_STEP_MS = 550;
 
 function useValueFormat(currency: string | null): (n: number) => string {
   const { i18n } = useTranslation();

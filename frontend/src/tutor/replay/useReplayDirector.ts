@@ -22,7 +22,12 @@ import { backstopMsFor, beatAt, progressOf, type ReplayBeat, type ReplayScript }
  *
  *   1. The clip finishes. `handleSpeechEnd` — which the stage now also calls on
  *      a media ERROR, so a URL that 404s after retention swept the bucket ends
- *      its beat immediately instead of hanging the show.
+ *      its beat immediately instead of hanging the show. UNLESS the beat drew a
+ *      whiteboard and the clip finished before `durationMs` — its own bar-reveal
+ *      floor, from `replayScript.ts` — has actually elapsed: then `handleSpeechEnd`
+ *      defers to a timer for whatever remains, rather than unmounting the board
+ *      mid-reveal on the strength of a clip that simply happened to be short.
+ *      Found by adversarial review (see RUNBOOK.md).
  *   2. The timer expires. This is the ONLY clock for a beat with no audio — a
  *      learner's own line, an activity, a tutor line whose clip aged out — and
  *      it is the BACKSTOP for one that has audio, because `play()` can be
@@ -188,6 +193,33 @@ export function useReplayDirector(script: ReplayScript | null): ReplayDirector |
   const beat = script ? beatAt(script, index) : null;
 
   /*
+   * WHEN THIS PLAYTHROUGH OF THE CURRENT BEAT BEGAN, real wall-clock time.
+   *
+   * Read only by `handleSpeechEnd`, below, for a beat that drew a whiteboard:
+   * the stage's `<audio>` firing `ended` is a real event about the CLIP, not
+   * about `TutorWhiteboard`'s own bar-by-bar reveal, and a short clip of a
+   * short `say` can finish well before the board has. Set every time the
+   * timer effect right below (re-)arms — a fresh mount, a jump, or "again"
+   * bumping `beatKey` — which is exactly when a beat starts being played.
+   */
+  const beatStartRef = useRef(0);
+
+  /*
+   * A DEFERRED `advance()`, armed by `handleSpeechEnd` when a whiteboard
+   * beat's clip ended before its reveal did. It is cleared by the SAME
+   * cleanup that clears the per-beat timer just below, so any state change
+   * that would already invalidate that timer — a pause, a jump, a new beat —
+   * invalidates this one too, for the same reason.
+   */
+  const holdTimerRef = useRef<number | null>(null);
+  const clearHoldTimer = useCallback(() => {
+    if (holdTimerRef.current !== null) {
+      window.clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+  }, []);
+
+  /*
    * THE TIMER. One per beat, armed on the beat KEY so that replaying the same
    * line re-arms it, and cleared by the cleanup on every change — including a
    * pause, which is what makes pausing actually stop the clock rather than
@@ -198,20 +230,45 @@ export function useReplayDirector(script: ReplayScript | null): ReplayDirector |
     const current = beatAt(script, index);
     if (!current) return;
 
+    beatStartRef.current = Date.now();
     const ms = current.audioUrl !== null ? backstopMsFor(current) : current.durationMs;
     const timer = window.setTimeout(advance, ms);
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      clearHoldTimer();
+    };
     // `beatKey` is a dependency on purpose: pressing "again" on the current
     // line does not change the index, and the timer has to start over with it.
-  }, [script, playing, index, beatKey, advance]);
+  }, [script, playing, index, beatKey, advance, clearHoldTimer]);
 
   const handleSpeechEnd = useCallback(() => {
     // A clip that ends while the learner has paused is a clip whose beat they
     // already stopped; advancing here would step the performance forward
     // underneath them.
     if (!playing) return;
+
+    /*
+     * A WHITEBOARD BEAT MUST OUTLAST ITS OWN REVEAL, EVEN WHEN THE REAL CLIP
+     * IS SHORT. `durationMs` already carries `TutorWhiteboard`'s own reveal
+     * time as a floor for a beat that drew one (`whiteboardMinMs` in
+     * `replayScript.ts`) — but until now that floor only ever reached the
+     * NO-AUDIO clock in the effect above. A real clip of a short `say` paired
+     * with a many-step board — the board's designed usage, not an edge case —
+     * fires `ended` well before the bars finish growing, and the very next
+     * beat's mount unmounts `TutorWhiteboard` mid-reveal. Found by
+     * adversarial review (see RUNBOOK.md).
+     */
+    const current = scriptRef.current ? beatAt(scriptRef.current, indexRef.current) : null;
+    if (current?.whiteboard) {
+      const remaining = current.durationMs - (Date.now() - beatStartRef.current);
+      if (remaining > 0) {
+        clearHoldTimer();
+        holdTimerRef.current = window.setTimeout(advance, remaining);
+        return;
+      }
+    }
     advance();
-  }, [playing, advance]);
+  }, [playing, advance, clearHoldTimer]);
 
   const play = useCallback(() => {
     const current = scriptRef.current;
