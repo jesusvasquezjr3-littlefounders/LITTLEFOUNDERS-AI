@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
 import { LiveSegmentPanel } from '../LiveSegmentPanel';
 import { gradeSegment } from '../tutorApi';
@@ -202,5 +202,72 @@ describe('LiveSegmentPanel — a tray demo must not freeze when an unrelated anc
     } finally {
       vi.useRealTimers();
     }
+  });
+});
+
+/*
+ * Found by adversarial review, round 87 (2026-08-31, MEDIUM): the ONLY
+ * screen-reader announcement that a graded/practice activity had arrived
+ * lived in `LessonPlate`'s `peekStatus` span, gated on `resting =
+ * !desktop && detent === 'peek'` — unconditionally `false` on the docked
+ * desktop panel, the default state for essentially every ordinary desktop
+ * conversation (`ConversationView.tsx`'s own round-61 finding on that exact
+ * variable). `window.matchMedia` is stubbed here to report the desktop
+ * breakpoint that `useDesktopPlate` queries, specifically so this suite
+ * cannot pass by accident on an assumption that only holds on a phone —
+ * `LiveSegmentPanel` itself never reads that query at all, which is the
+ * whole point of the fix: its own live region reaches a learner regardless
+ * of which form `LessonPlate` happens to be in.
+ */
+describe('LiveSegmentPanel — the arrival announcement reaches a screen reader on any breakpoint', () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn().mockImplementation((query: string) => ({
+        matches: query === '(min-width: 1024px)',
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })),
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('announces once, in words, the moment a new segment mounts', () => {
+    render(<LiveSegmentPanel live={segmentState('segment-a')} token="tok" onGraded={vi.fn()} />);
+
+    // `getByRole` is accessibility-aware: it would refuse to resolve to a
+    // single node if this span were hidden the way `LessonPlate`'s own
+    // resting-only span is, which is exactly the property this fix adds.
+    expect(screen.getByRole('status', { name: '' })).toHaveTextContent('An activity is ready.');
+  });
+
+  it('does not re-announce a re-render of the SAME segment, only a genuinely new one', () => {
+    const { rerender, container } = render(
+      <LiveSegmentPanel live={segmentState('segment-a')} token="tok" onGraded={vi.fn()} />,
+    );
+    const firstNode = container.querySelector('[role="status"][aria-live="polite"]');
+    expect(firstNode).not.toBeNull();
+
+    // A re-render carrying the identical `segmentId` — a fresh object
+    // reference, exactly what an ancestor re-rendering for an unrelated
+    // reason (a composer keystroke, a mic-level update) produces — must
+    // leave this exact DOM node in place. `key={live.segmentId}` is what
+    // gives this guarantee; without it a naive implementation could
+    // recreate the node (and re-announce) on every unrelated re-render.
+    rerender(<LiveSegmentPanel live={segmentState('segment-a')} token="tok" onGraded={vi.fn()} />);
+    expect(container.querySelector('[role="status"][aria-live="polite"]')).toBe(firstNode);
+
+    // A GENUINELY new segment, by contrast, must remount the node — this is
+    // the mechanism the announcement actually relies on to reach assistive
+    // tech for the next activity, proven rather than assumed.
+    rerender(<LiveSegmentPanel live={segmentState('segment-b')} token="tok" onGraded={vi.fn()} />);
+    const secondNode = container.querySelector('[role="status"][aria-live="polite"]');
+    expect(secondNode).not.toBeNull();
+    expect(secondNode).not.toBe(firstNode);
+    expect(secondNode).toHaveTextContent('An activity is ready.');
   });
 });

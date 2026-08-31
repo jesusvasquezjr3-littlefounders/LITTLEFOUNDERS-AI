@@ -284,6 +284,67 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, className }: Liv
      * form has when it is built properly.
      */
     <section className={cn('flex min-h-0 flex-col gap-3', className)}>
+      {/*
+        THE ARRIVAL ANNOUNCEMENT, REACHABLE ON EVERY BREAKPOINT.
+
+        Found by adversarial review, round 87 (2026-08-31, MEDIUM). Before
+        this, the ONLY spoken notice that a graded/practice activity had
+        arrived was `LessonPlate`'s own `peekStatus` span, and that span is
+        gated on `resting = !desktop && detent === 'peek'` — unconditionally
+        `false` on the docked desktop panel, which `ConversationView.tsx`'s
+        own round-61 finding names as the DEFAULT state for essentially
+        every ordinary desktop conversation. A screen-reader user on desktop
+        therefore had no proactive indication a new activity was on screen —
+        they would only find one by tabbing into the panel by chance. On
+        mobile the same span could also be torn down within roughly one
+        paint of mounting, whenever the tutor's own turn requested the
+        segment out loud (`ConversationView.tsx`'s "segment arrives while
+        the sheet borrows PEEK" effect raises the detent, which flips
+        `resting` false and unmounts the span before assistive tech
+        necessarily gets to it).
+
+        This component mounts identically inside `LessonPlate` on BOTH
+        forms — the desktop panel never hides its body at all, and this is
+        the one surface an arriving activity is guaranteed to be inside on
+        either breakpoint — so its own live region is what actually
+        reaches a learner regardless of viewport, rather than depending on
+        a sheet detent that only exists on a phone.
+
+        `key={live.segmentId}` rather than a `useEffect` writing local
+        state: changing a React element's `key` unmounts the old DOM node
+        and mounts a fresh one, which is exactly "announce once for a
+        genuinely NEW segment, never on a re-render of the one already on
+        screen" — the same guarantee the reset effect above gets from its
+        own `[live.segmentId]` deps, applied to a DOM node instead of
+        component state. A re-render of the SAME segment (a composer
+        keystroke elsewhere, a tray-demo step, a verdict arriving) leaves
+        this key untouched, so the node is never re-created and nothing is
+        re-announced.
+
+        REUSES `tutor.conversation.peekActivityWaiting` rather than a new
+        i18n key: it is the exact sentence the (unreachable-on-desktop,
+        sometimes-too-brief-on-mobile) peek row already speaks for this
+        same event, so this is a second, reliably reachable PLACE the
+        product says it — not a new fact for a learner to be told.
+
+        NOT A DUPLICATE OF THE PEEK ROW'S OWN SPAN, even though both can
+        exist in the tree for the same arrival, and deliberately kept
+        rather than removed. `LessonPlate` hides this entire component's
+        subtree behind `hidden`/`display:none` while `resting` is true,
+        which removes it from the accessibility tree — so on mobile, while
+        the sheet is genuinely resting (an activity arrived without the
+        tutor asking for it out loud, and the learner has not opened the
+        sheet), only the peek row's span is reachable; this one is inert
+        because its ancestor is hidden, so there is nothing here to say
+        "twice." The peek row's span stays because it is the one mechanism
+        proven to reach a learner while the sheet is still collapsed — this
+        span cannot substitute for it there, only alongside it once the
+        sheet (or the desktop panel, which never collapses) is open.
+      */}
+      <span key={live.segmentId} role="status" aria-live="polite" className="sr-only">
+        {t('tutor.conversation.peekActivityWaiting')}
+      </span>
+
       <header className="shrink-0 space-y-1">
         {/*
           "TRY THIS" IS GONE, AND IT WAS THE ONLY UPPERCASE LABEL ON THE ROUTE

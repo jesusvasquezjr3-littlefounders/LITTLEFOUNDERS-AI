@@ -8432,3 +8432,111 @@ zero regressions in ordinary non-whiteboard beat timing), plus
 `replayInWorld.test.tsx`'s existing coverage untouched and green;
 type-check, lint, build, i18n:check, docs:check, secrets:check,
 paths:check, seo:check, provider:check and tools:test all clean.
+
+## Round 87: a new activity's arrival was unannounced on the docked desktop panel — the default state for essentially every ordinary desktop conversation
+
+A background adversarial review targeted the Tutor's accessibility
+surface directly, reading `hud/LessonPlate.tsx`, `ConversationView.tsx`
+and `LiveSegmentPanel.tsx` end to end. One MEDIUM finding, confirmed
+3/3 by independent skeptics each reading the actual code, fixed this
+round.
+
+**MEDIUM, FIXED — the ONLY screen-reader announcement that a graded or
+practice activity had arrived was unreachable on desktop, and could be
+torn down within one paint on mobile.** `hud/LessonPlate.tsx` defines
+`const resting = !desktop && detent === 'peek'` and gates its one
+arrival announcement — an sr-only `role="status"` span carrying
+`peekStatus` ("An activity is ready.") — behind `resting`. The
+`!desktop &&` makes that expression unconditionally `false` on the
+docked desktop panel, and this file's own round-61 finding already
+established that `docked === 'panel'` is the state for essentially
+every ordinary desktop conversing screen, not an edge case — so a
+screen-reader user on desktop had ZERO proactive indication a new
+activity had appeared; the only way to discover one was to tab into the
+panel by chance. `LiveSegmentPanel.tsx`, the component that actually
+renders the arriving activity's `framing`/`prompt_md`, carried no live
+region of its own at all — its only `aria-live` announces the
+post-grading verdict, which fires after the learner has already
+answered, not on arrival. `SpeechCaption.tsx`'s persistent
+`aria-live="polite"` region announces the tutor's spoken `turn.text`,
+a different field from the segment's own framing/prompt per that
+file's own comment distinguishing them, so it does not substitute for
+telling a learner the activity itself is now present.
+
+On mobile the same peek-row span was not reliably better off. When the
+tutor's own turn requests a segment out loud (`next: 'segment'`, the
+standard promise shape per `oracle/src/tutor/prompt.ts`),
+`ConversationView.tsx`'s effect at (then) lines 345–353 fires the
+instant `segmentId` becomes non-null and raises the detent off PEEK —
+flipping `resting` to `false` on the very next render and unmounting
+the span within roughly one paint of it ever mounting, well before
+assistive tech can be relied on to have read it.
+
+**Fixed by giving `LiveSegmentPanel.tsx` its own `role="status"
+aria-live="polite"` live region, keyed on `live.segmentId`.** Changing
+a React element's `key` unmounts the old DOM node and mounts a fresh
+one on the next commit — exactly "announce once for a genuinely NEW
+segment, never on a re-render of the one already on screen," the same
+guarantee this file's own segment-reset effect already gets from its
+`[live.segmentId]` deps, applied to a DOM node instead of component
+state. No effect or extra state was needed. This component mounts
+identically inside `LessonPlate` on BOTH its desktop and mobile forms —
+the desktop panel never hides its body at all — so it is the one
+surface an arriving activity is guaranteed to sit inside on either
+breakpoint, unlike a mechanism keyed to a sheet detent that exists only
+on a phone.
+
+**Reuses the existing `tutor.conversation.peekActivityWaiting` string
+rather than adding a new i18n key.** It is already the exact sentence
+the peek row speaks for this same event, present and correct in all
+three locales (`en-US`: "An activity is ready.", `es-MX`: "Ya hay una
+actividad.", `pt-BR`: "Já tem uma atividade."), so this is a second,
+reliably reachable PLACE the product says it rather than a new fact for
+a learner to be told. `npm run i18n:check` (root) stayed green with no
+locale files touched.
+
+**`LessonPlate`'s own peek-row span was deliberately kept, not
+removed, and the two are not a duplicate announcement for the same
+arrival.** That span's entire subtree sits inside the sheet's own
+`hidden`/`display:none` body wrapper while `resting` is true, which
+removes anything inside it — including the new span, since
+`LiveSegmentPanel` is one of that wrapper's children — from the
+accessibility tree entirely. So while the sheet is genuinely resting
+(an activity arrived without the tutor asking for it out loud, and the
+learner has not opened the sheet), only the peek row's OWN span,
+rendered outside that hidden wrapper, is reachable; the new span is
+inert because its ancestor is hidden, and there is nothing here to say
+twice. The two mechanisms are therefore close to structurally mutually
+exclusive — the hidden wrapper is exactly the peek row's own render
+condition, inverted — rather than a pair that fires together. Removing
+the peek row's span on the theory that the new one "now covers it"
+would have left the genuinely-resting state with no reliable
+announcement at all, which is why it stays.
+
+Proof: `LiveSegmentPanel.test.tsx` gains a describe block, with
+`window.matchMedia` stubbed to report the desktop breakpoint
+`useDesktopPlate` queries — specifically so the suite cannot pass by
+accident on an assumption that only holds on a phone, even though
+`LiveSegmentPanel` itself never reads that query at all — proving the
+live region announces the moment a new segment mounts, that a
+re-render carrying the identical `segmentId` leaves the exact same DOM
+node in place (no re-announcement), and that a genuinely new
+`segmentId` remounts it. `conversationView.test.tsx` gains an
+integration-level describe block driving the real `LessonPlate`
+wrapper with desktop stubbed, confirming the mobile-only resize handle
+(and with it the peek row's own span) does not render at all on
+desktop, and that the new live region is nonetheless reachable and
+carries the announcement there — the exact gap this round closes.
+
+Verification: full frontend suite green (127 files, 1471 tests — 1470
+existing + 1 net new file-level pass, with 4 new test cases across the
+two touched files and zero regressions), type-check clean, lint clean,
+root `i18n:check` clean (no new key, 3-locale parity unaffected by
+construction). Rebased repeatedly before merge as sibling rounds from
+the same review batch landed in parallel (82, then 83 the guardian
+consent-toggle coverage fix, then 84–86 as three more independent
+fixes merged), which is why this entry is numbered 87 rather than the
+83 it started as. No code conflicts at any point, since none of those
+siblings touched `LiveSegmentPanel.tsx`, `ConversationView.tsx`, or
+their test files. No `oracle/AGENTS.md` item — touches only
+`frontend/`.
