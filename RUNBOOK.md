@@ -9899,3 +9899,138 @@ session's own verification — so this relies instead on jsdom coverage of
 the exact rendered `role="status"` text in the same untouched
 `HudPlate`/position/className the pre-existing "Core cannot serve" message
 already ships in production through.
+## Round 100: three story segment types spoke through a flat 2D rig inside the Tutor's own 3D world, because nothing in the Tutor's tree could show them any other way — found by review sweep tutor-review-sweep-92 (segment-type-coverage dimension), HIGH, closed 2026-08-31
+
+**HIGH, FIXED.** `LiveSegmentPanel.tsx` — the Tutor's live activity plate
+— reuses the SAME registry the course player uses (`REGISTRY[segment.type]`),
+by design: "a lesson type improved for courses improves here on the same
+commit." For `story_dialogue`, `story_scene` and `eavesdrop` (LESSON_ENGINE.md
+§5.1's `story` family, the only three types that draw a character directly)
+that registry component is `CharacterActor3D`, which stands in for the flat
+2D rig only while its `CharacterLayerProvider` is still loading, or draws it
+outright when no provider is above it at all — a deliberate design choice
+documented at LESSON_ENGINE.md §9.1: "a caller that forgets the provider
+gets a working character rather than an empty box." The Tutor's route
+(`StageShell` → `ConversationView` → `LiveSegmentPanel`) never mounts one
+anywhere, so for these three types the fallback was not "while loading" —
+it was permanent, on every session, directly contradicting §9.1's owner
+decision that "**every** character in the Lesson Engine is the 3D model,
+not half of them."
+
+**Investigated and rejected: mounting `CharacterLayerProvider` in the
+Tutor, unchanged.** Two independent reasons, either one sufficient alone.
+(1) `StageShell.tsx`'s own header is explicit that `TutorStage` is "ONE
+MOUNT, NEVER A REMOUNT" — its `<SceneCanvas>` is a real WebGL context, live
+for the WHOLE route including every moment an activity plate is open.
+`CharacterLayerProvider` always mounts its OWN separate `<Canvas>`
+(`CharacterLayerCanvas.tsx`) the instant it renders — never conditionally —
+so adding it anywhere in the Tutor's tree runs TWO WebGL contexts at once,
+exactly the leak TUTOR_3D.md §6.2 exists to prevent ("browsers cap contexts
+around sixteen and silently drop the oldest"). (2) Even granting a second
+context, the activity plate (`LessonPlate.tsx`) is explicitly "Lumen
+material over the island, never an opaque slab" — a blurred, translucent
+glass panel. A character drawn by a canvas BEHIND that panel renders
+blurred through its own `backdrop-filter`; a canvas raised ABOVE the panel
+to draw crisply would have to sit above the WHOLE persistent island too,
+painting over the mic dock, the exit chip and the veil that must stay
+visually on top of it. A single `<canvas>` cannot occupy "behind
+everything" (the persistent island) and "in front of the activity plate's
+glass" (a crisp embedded avatar) at the same time — the two roles are not
+reconcilable inside one DOM stacking position, independent of the
+WebGL-context question.
+
+**The fix routes the segment's speaker through the SAME 3D character
+machinery the Tutor's own live turns already use — the persistent island —
+never a second canvas.** `story_dialogue`, `story_scene` and `eavesdrop`
+(`frontend/src/lesson-engine/families/story/components.tsx`) accept a new
+optional `onCharacterCue` on `ExerciseProps`
+(`frontend/src/lesson-engine/core/types.ts`, new `CharacterCue` type:
+`{character, emotion, action, actionKey, speaking}`). Present ONLY on the
+Tutor — the course player's `LessonPlayer` never passes it, so its own
+`CharacterLayerProvider`-drawn presentation is byte-for-byte unchanged —
+each renderer suppresses its own `CharacterActor3D` entirely and fires the
+cue for whichever line is CURRENTLY active instead. The cue bubbles
+`LiveSegmentPanel` → `ConversationView` (unread there — that file's own
+header rule is "IT DOES NOT DRIVE THE SCENE") → `TutorExperience.tsx`, the
+one place already computing `character`/`emotion`/`action` for
+`StageShell`'s single canvas, where it OVERRIDES the ordinary turn-driven
+pose for as long as the segment is live and is released (`null`) the
+instant the line changes, the segment changes, or the panel unmounts. A new
+`characterSpeaking` prop, threaded `TutorStage` → `TutorScene` → `Cast` →
+`Character3D`, drives the same non-lip-synced syllabic-cadence heuristic
+`CharacterActor3D` uses elsewhere (`applySpeaking`) — the segment's own
+narration plays through Echo's separate, pre-rendered pipeline
+(`useNarration`), never through this stage's `speechUrl`/viseme, so there is
+no waveform here to lip-sync from either way; this is the identical,
+deliberate treatment the course player's own `CharacterLayerCanvas` already
+gives every `story` family character (`mouth={false}` there).
+
+**`eavesdrop` is the one type built for MULTIPLE simultaneous speakers** —
+the course player accumulates one avatar per revealed line via its own
+multi-slot scissor layer (TUTOR_3D.md §6.2). The persistent island has
+exactly one lead stand-in, so in cue mode it portrays only the CURRENTLY
+revealed line's speaker; earlier lines render as plain text with no avatar
+at all — they were already portrayed, in 3D, when they were current. This
+is a narrower presentation than the course player's own, not a fallback:
+the character that matters at any instant, the one actually speaking, is
+always the genuine 3D model on the island, never the flat rig.
+
+**Proof, TDD.** Confirmed red against the pre-fix source first (`git
+stash` on every touched file, tests re-run): all new tests exercising
+`onCharacterCue` failed for the exact claimed reason (`[data-render="2d"]`
+present where none was expected), while the pre-existing `StoryScene` art
+tests in the same file stayed green throughout. `frontend/src/lesson-
+engine/families/story/components.test.tsx` gained 4 tests against the
+REAL `StoryDialogue`/`StoryScene`/`Eavesdrop` components: each suppresses
+its own character AND fires the correctly-shaped cue; `StoryDialogue`'s
+cue tracks the line as the learner taps through and releases it (`null`)
+between lines and again once finished; `Eavesdrop` cues only the currently-
+revealed speaker as it advances; and one test pins that a caller with no
+`onCharacterCue` (the course player) is completely unaffected — the exact
+2D fallback `tutor-scene/__tests__/CharacterLayer.test.tsx` already
+documents for that case, unchanged.
+`frontend/src/tutor/__tests__/LiveSegmentPanel.characterCue.test.tsx`
+(new, 3 tests) is the integration proof this finding specifically needed:
+it renders the REAL `LiveSegmentPanel` — the actual Tutor component, with
+NO `CharacterLayerProvider` anywhere above it, exactly as the real route
+never mounts one — against the REAL, unmocked registry
+(`LiveSegmentPanel.test.tsx`'s own existing suite deliberately mocks the
+registry for its own, unrelated staleness-guard tests, so it could never
+have caught this), and proves the whole chain end to end: no
+`[data-character]`/`[data-render]` node ever reaches the DOM for a live
+`story_dialogue` segment, the host is cued instead with the exact expected
+shape, and the cue is released on unmount.
+
+**Verification.** `npm run type-check` and `npm run lint` clean in
+`frontend/`. Full suite green: 134 files, 1542 tests (up from 133/1535 —
+7 new tests, zero regressions). `npm run build` green. Root
+`docs:check`, `secrets:check`, `i18n:check`, `paths:check`, `seo:check`,
+`tools:test` (26/26) and `provider:check` all green; `npm run repo:map`
+regenerated for the one new test file.
+
+**`npm run verify:lesson-engine` and `npm run verify:tutor-ui` could not
+be evaluated to a real pass/fail conclusion in this session's sandbox, and
+that is recorded honestly rather than papered over.** Both are real-
+browser gates that require a working WebGL context. `verify:lesson-engine`
+failed identically before AND after this fix — the exact same
+`SlotCharacter` crash at `CharacterLayerCanvas.tsx` (a file this change
+never touches), on ALL 57 fixtures without exception, spanning every
+family (`quiz_mcq`, `balance_scale`, `debug_hunt`, `machine_io` — none of
+them `story` types), with the gate's own counter reading `most WebGL
+contexts at once: 0` both times: not a second context this change might
+have introduced, but ZERO ever successfully created, in either direction.
+`verify:tutor-ui` timed out waiting for the stage/lab chrome to report
+ready, again both before and after, on the same underlying cause. Both
+symptoms are consistent with this specific sandbox's headless browser
+being unable to initialize WebGL at all — a known category TUTOR_3D.md
+§6.2 itself already flags ("a real device number still needs a real
+device") — rather than a regression: the one invariant this round was
+explicitly asked to protect, "never a second WebGL context," is the exact
+number both runs report as zero, in both the fixed and the pre-fix tree.
+Reported here rather than claimed green, per AGENTS.md §1.12 — a person
+with a real browser should re-run both before this ships.
+
+No `frontend/AGENTS.md` item: LESSON_ENGINE.md §9.1 and TUTOR_3D.md §6.2
+already state the invariants this closes a gap in; the gap was in the
+Tutor's OWN tree never wiring up to them, not in either document's rule.
+`oracle/AGENTS.md` item 72 records the investigation and the corollary.

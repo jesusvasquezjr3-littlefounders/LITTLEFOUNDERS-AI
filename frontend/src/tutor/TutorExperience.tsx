@@ -40,6 +40,7 @@ import { useHandsFreeTurn } from './useHandsFreeTurn';
 import { useMicrophone, type Microphone } from './useMicrophone';
 import { useTutorSocket } from './useTutorSocket';
 import type { SessionSummary, StartedSession, TutorCatalog, TutorOffers, TutorPreferences } from './types';
+import type { CharacterCue } from '@/lesson-engine/core/types';
 
 /*
  * The Tutor, as the learner meets it (/ORACLE.md §1).
@@ -278,6 +279,27 @@ export function TutorExperience() {
 
   const [token, setToken] = useState<string | null>(null);
   const [phase, setPhase] = useState<StagePhase>('arriving');
+  /*
+   * WHO A LIVE `story` FAMILY SEGMENT IS PORTRAYING, RIGHT NOW.
+   *
+   * THIS COMPONENT DRIVES THE SCENE; `ConversationView` DOES NOT (see its own
+   * file header). `LiveSegmentPanel` has no `CharacterLayerProvider` of its
+   * own to draw a `story_dialogue`/`story_scene`/`eavesdrop` segment's
+   * character into — a second one would either need a second WebGL context
+   * (TUTOR_3D.md §6.2's one-canvas invariant) or render blurred behind the
+   * activity plate's own Lumen glass. So the cue bubbles up, unread, through
+   * `ConversationView`, and lands here: the one place already computing
+   * `character`/`emotion`/`action` for the single canvas below. While a cue
+   * is set it OVERRIDES those three for the stage, so the segment's speaker
+   * is the SAME 3D model the Tutor's own turns already use, not a flat rig.
+   */
+  const [segmentCue, setSegmentCue] = useState<CharacterCue | null>(null);
+  // Defensive, alongside `LiveSegmentPanel`'s own unmount/segment-change
+  // clears: leaving the conversation any other way (a restart, the session
+  // ending) must not leave a stale cue pinned to the next phase's cast.
+  useEffect(() => {
+    if (phase !== 'conversing') setSegmentCue(null);
+  }, [phase]);
   const [preferences, setPreferences] = useState<TutorPreferences | null>(null);
   const [catalog, setCatalog] = useState<TutorCatalog | null>(null);
   const [offers, setOffers] = useState<TutorOffers | null>(null);
@@ -1196,6 +1218,7 @@ export function TutorExperience() {
           awaitingReply,
           onAwaitReply: () => setAwaitingReply(true),
           onDraftChange: setHasComposerDraft,
+          onCharacterCue: setSegmentCue,
           resuming,
           replyTimedOut,
           onRestart: () => {
@@ -1346,7 +1369,17 @@ export function TutorExperience() {
       }
       audition={audition}
       scene={scene}
-      character={character}
+      /*
+       * A LIVE `story` SEGMENT'S SPEAKER STEPS INTO THE LEAD SPOT. `segmentCue`
+       * is set only during `conversing` (see its own declaration above), so it
+       * can never fire mid-replay or collide with the personalization
+       * audition. Swapping `character` here — rather than adding the speaker
+       * as a THIRD standee — is deliberate: the persistent island has one lead
+       * stand-in, and portraying the segment's speaker there is what makes
+       * this the SAME 3D character machinery the Tutor's own turns use,
+       * instead of a second, independent one.
+       */
+      character={segmentCue?.character ?? character}
       companion={companion}
       backdrop={backdrop}
       /*
@@ -1354,11 +1387,24 @@ export function TutorExperience() {
        * socket just delivered; in a replay it is the emotion and the action the
        * character ORIGINALLY carried, read straight off the stored row. That is
        * the sentence /ORACLE.md §12 has been promising since the schema was
-       * written, and it needed no contract change to keep.
+       * written, and it needed no contract change to keep. A live `story`
+       * segment's cue outranks both — it is a THIRD performer, momentarily.
        */
-      emotion={director?.beat?.emotion ?? turn?.emotion ?? 'neutral'}
-      action={director?.beat?.action ?? turn?.action ?? 'idle'}
-      actionKey={phase === 'replaying' ? replayKey : turnSeq}
+      emotion={segmentCue?.emotion ?? director?.beat?.emotion ?? turn?.emotion ?? 'neutral'}
+      action={segmentCue?.action ?? director?.beat?.action ?? turn?.action ?? 'idle'}
+      actionKey={segmentCue ? segmentCue.actionKey : phase === 'replaying' ? replayKey : turnSeq}
+      /*
+       * THE ARTICULATION HEURISTIC, not real lip-sync — exactly `speaking` on
+       * `CharacterActor3D` elsewhere in the Lesson Engine (`applySpeaking`):
+       * a syllabic head/chest cadence, never a mouth shape. A live segment's
+       * own lines narrate through Echo's separate, pre-rendered pipeline
+       * (`useNarration`), not through this stage's audio-driven viseme —
+       * exactly the same non-lip-synced treatment the course player's own
+       * `CharacterLayerCanvas` gives every `story` family character
+       * (`mouth={false}` there; `viseme` here is untouched and already
+       * resolves to closed whenever this stage's own audio is not playing).
+       */
+      characterSpeaking={segmentCue?.speaking ?? false}
       speechUrl={speechUrl}
       audioKey={audioKey}
       shot={shot}

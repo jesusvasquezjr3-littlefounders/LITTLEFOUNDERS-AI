@@ -42,6 +42,20 @@ export interface TutorStageProps {
   /** Bump to replay the same one-shot action twice in a row. */
   actionKey?: number;
   /**
+   * Drives the syllabic articulation heuristic (`Character3D`'s `speaking`),
+   * INDEPENDENT of this stage's own audio-driven viseme.
+   *
+   * A live `story` family segment (`story_dialogue`, `story_scene`,
+   * `eavesdrop`) narrates through Echo's pre-rendered, disposable pipeline
+   * (`useNarration`) rather than through `speechUrl`/`useLipSync` — so while
+   * one is speaking there is no waveform here to drive a viseme from, and
+   * without this the on-stage character would stand inertly posed while its
+   * own line plays elsewhere on screen. Forwarded verbatim to every standing
+   * character, the same way `emotion`/`action` already are: this stage has
+   * one shared pose per frame, not one per character.
+   */
+  characterSpeaking?: boolean;
+  /**
    * Audio for the character to speak, or null when silent.
    *
    * Changing it starts the new clip immediately: an interruption is a new URL,
@@ -136,6 +150,7 @@ export function TutorStage({
   emotion = 'neutral',
   action = 'idle',
   actionKey = 0,
+  characterSpeaking = false,
   speechUrl = null,
   audioKey = 0,
   onSpeechEnd,
@@ -259,6 +274,7 @@ export function TutorStage({
         emotion={emotion}
         action={action}
         actionKey={actionKey}
+        characterSpeaking={characterSpeaking}
         viseme={speaking ? viseme : VISEME_CLOSED}
         shot={activeShot}
         backdrop={backdrop}

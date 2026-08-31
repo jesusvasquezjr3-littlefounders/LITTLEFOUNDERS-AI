@@ -21,6 +21,7 @@ import { atmosphereFor } from '@/tutor-scene/atmosphere';
 import type { QualitySettings } from '@/tutor-scene/quality';
 import { HudPlate } from '@/tutor/hud/HudPlate';
 import { MicOrb, type MicBlockedReason, type MicOrbState } from '@/tutor/hud/MicOrb';
+import type { CharacterCue } from '@/lesson-engine/core/types';
 import type { Microphone } from '@/tutor/useMicrophone';
 import type { StagePhase } from './phases';
 import type { ReplayDirector } from '@/tutor/replay/useReplayDirector';
@@ -1081,6 +1082,16 @@ export interface ConversationLayerProps extends StageLayerCommonProps {
    * the STT call.
    */
   onDraftChange: (hasDraft: boolean) => void;
+  /**
+   * Bubbled straight up from `LiveSegmentPanel`, unread here — see this
+   * file's own "IT DOES NOT DRIVE THE SCENE" rule above the layer's props.
+   * A `story` family segment (`story_dialogue`, `story_scene`, `eavesdrop`)
+   * has no `CharacterLayerProvider` of its own on this route, so it fires
+   * this cue instead of drawing its own character; the caller one level up
+   * (`TutorExperience.tsx`, which already owns `character`/`emotion`/
+   * `action` for the single canvas) is the only place allowed to act on it.
+   */
+  onCharacterCue: (cue: CharacterCue | null) => void;
   /**
    * True while a dropped connection is being resumed with a fresh token. The
    * layer says so in place, because a silent gap between "the socket died" and

@@ -2,7 +2,7 @@
 // Payload/answer shapes per type live in families/*/schema.ts (Zod-inferred).
 
 import type { ComponentType } from 'react'
-import type { CharacterEmotion, CharacterId } from '@/components/characters/control/types'
+import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types'
 
 export const LESSON_LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const
 export type LessonLocale = (typeof LESSON_LOCALES)[number]
@@ -119,6 +119,37 @@ export function verdictFrom(score: number, passThreshold: number, feedback_md?: 
 
 export type SegmentKind = 'content' | 'input' | 'flow'
 
+/**
+ * Who a `story` family renderer is portraying RIGHT NOW, for a host that has
+ * no `CharacterLayerProvider` of its own to draw it (LESSON_ENGINE.md §9.1,
+ * `oracle/AGENTS.md` — the Tutor's live activity plate).
+ *
+ * `CharacterActor3D`/`CharacterSlot` fall back to the flat 2D rig OUTSIDE a
+ * provider by design (a caller that forgets the provider still gets a working
+ * character rather than an empty box) — which is correct for a surface that
+ * simply forgot to mount one, and wrong for a surface that structurally has
+ * nowhere honest to put one. The Tutor's activity panel is Lumen glass over a
+ * persistent, already-mounted 3D island (`TutorScene`): a second character
+ * canvas embedded inside that glass would either need a second WebGL context
+ * (the ONE-CONTEXT invariant §6.2 of TUTOR_3D.md exists to prevent) or would
+ * render blurred behind the panel's own `backdrop-filter`. Neither is a fix.
+ *
+ * So a story renderer that receives `onCharacterCue` does NOT render its own
+ * `CharacterActor3D` at all — it fires this cue instead, and the host
+ * portrays it through whatever 3D character machinery it already owns. Every
+ * other consumer of `ExerciseProps` (all 50+ non-story types, and the course
+ * player's `LessonPlayer`, which never passes this prop) is unaffected.
+ */
+export interface CharacterCue {
+  character: CharacterId
+  emotion: CharacterEmotion
+  action: CharacterAction
+  /** Bump per beat so a one-shot action (e.g. a new line) replays. */
+  actionKey: number
+  /** Drives the syllabic articulation heuristic, never real lip-sync — see `applySpeaking`. */
+  speaking: boolean
+}
+
 export interface ExerciseProps<S extends SegmentBase = SegmentBase> {
   segment: S
   /** Controlled draft (input kind). Shape is per-type; starts undefined. */
@@ -131,6 +162,12 @@ export interface ExerciseProps<S extends SegmentBase = SegmentBase> {
   onContentDone?: (signal?: 'got_it' | 'review') => void
   /** Last verdict for this segment, if any (renderers may highlight correct/wrong). */
   verdict?: Verdict | null
+  /**
+   * Present ONLY on a host with no `CharacterLayerProvider` of its own (the
+   * Tutor's live activity plate). A `story` family renderer that receives this
+   * MUST NOT render its own `CharacterActor3D` — see `CharacterCue`.
+   */
+  onCharacterCue?: (cue: CharacterCue | null) => void
 }
 
 export interface RegistryEntry {

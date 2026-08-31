@@ -2073,6 +2073,52 @@ everything passes the blocked half perfectly and destroys the product.
    success. The fix is never a lock; it is asking the write itself how
    many rows it actually touched. See `RUNBOOK.md` Round 98.
 
+72. **A surface with no character-rendering layer of its own does not get
+   to borrow one — it has to be TOLD who to portray, by whatever
+   machinery it already owns.** Found by review sweep tutor-review-
+   sweep-92 (segment-type-coverage dimension), round 100, 2026-08-31
+   (HIGH). `story_dialogue`, `story_scene` and `eavesdrop` draw their
+   speaking character with `CharacterActor3D`, which stands in with the
+   flat 2D rig whenever no `CharacterLayerProvider` is above it — right
+   for a caller that forgot to mount one, permanently wrong for the
+   Tutor's live activity plate (`LiveSegmentPanel.tsx`), which structurally
+   has nowhere to put one: `StageShell.tsx`'s `TutorStage` keeps ONE
+   WebGL context live for the whole route ("ONE MOUNT, NEVER A
+   REMOUNT"), and `CharacterLayerProvider` always mounts a SECOND,
+   independent one the instant it renders — never conditionally. The
+   investigation is the part worth keeping: a second canvas was rejected
+   on TWO independent grounds, and either alone was sufficient. The
+   WebGL-context argument is the one everyone reaches for first
+   (TUTOR_3D.md §6.2's "one canvas for a screenful of characters"), but
+   the DOM-stacking argument is the one that actually can't be worked
+   around by being careful: the activity plate is explicitly "Lumen
+   material... never an opaque slab," so a canvas drawing a character
+   BEHIND it renders blurred through its own `backdrop-filter`, and a
+   canvas raised ABOVE it to draw crisply would have to sit above the
+   WHOLE persistent island too — painting over the mic dock, the exit
+   chip and the veil that must stay visually on top of it. One `<canvas>`
+   cannot be both "the base layer behind everything" and "a crisp overlay
+   in front of one piece of chrome" at once; no z-index or context-count
+   fix repairs that, because it is a fact about having exactly one
+   element occupying exactly one stacking position, not a resource limit.
+   The fix does not give these three types a character layer at all — it
+   gives the HOST (`TutorExperience.tsx`, which already computes
+   `character`/`emotion`/`action` for the one canvas that exists) a cue
+   to act on: a new optional `onCharacterCue` on `ExerciseProps`, read
+   only by these three renderers, which suppresses their own
+   `CharacterActor3D` and reports who is speaking instead of trying to
+   draw them. The general lesson: when a surface's own architecture rules
+   out reusing another surface's mechanism (a provider, a cache, a
+   layer), the fix is rarely "make the mechanism work here too" — it is
+   finding the SEAM the excluded surface already has for the same fact,
+   and wiring the fact through it instead. `eavesdrop`'s multi-speaker
+   transcript is handled the same way: the Tutor portrays only the
+   CURRENTLY active line's speaker on the one stand-in it has, and
+   earlier lines fall back to plain text rather than a repeated avatar —
+   narrower than the course player's simultaneous-cast presentation, but
+   never the flat 2D rig for the character that actually matters at any
+   given instant. See `RUNBOOK.md` Round 100.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:

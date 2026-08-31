@@ -1080,7 +1080,7 @@ colors:
 |---|---|
 | **universal** | Default role at signup, any age — created to minimize registration friction. Upgrades to parent/kid/bigfounder via verification. |
 | **parent** | Verified guardian/tutor. Manages kid accounts and families; assigns tasks. A family may have **multiple** parents. |
-| **Tutor** | The **user-facing name** for the `parent` role in all product copy/UI (es-MX: "Tutor", en-US: "Tutor", pt-BR: "Tutor"). Code, DB, and API always say `parent`. |
+| **Tutor** | The **user-facing name** for the `parent` role in all product copy/UI (es-MX: "Tutor", en-US: "Tutor", pt-BR: "Tutor" — `common.json` `roles.parent`, verified live 2026-08-31, Round 92). Code, DB, and API always say `parent`. **Never render this word bare for anything else in the same locale.** The AI Tutor product feature (`tutor/` service, the `tutor/` frontend route) MUST carry an explicit qualifier wherever its label could appear near a role name — "AI Tutor" (en-US), "Tutor IA" (es-MX, pt-BR), exactly as `dashboard.json`'s `nav.tutor` already does. Before Round 92, `admin.json`'s `analytics.usage.surfaces.tutor` and `insights.surfaces.tutor` rendered the bare word "Tutor" for the AI feature in the SAME admin console where `RoleChip` renders "Tutor" for the `parent` role, and `pt-BR` additionally disagreed with this row by rendering `roles.parent` as "Responsável" — both fixed in the same round. |
 | **kid** | Verified child under parental control; advanced features depend on their guardian. Must always have ≥1 verified guardian link. |
 | **bigfounder** | Verified adult; future exclusive features. |
 | **admin** | Edits courses and platform content; provides tech support. |
@@ -7712,15 +7712,19 @@ export const GRADERS: Record<string, FamilyGrader> = {
 ```
 import type { Response } from 'express';
 
-/** Envelope error response (/AGENTS.md §1.6). */
-export function fail(res: Response, status: number, code: string, message: string): Response {
-  return res.status(status).json({ data: null, error: { code, message } });
-}
-
-/** Envelope success response. */
-export function ok<T>(res: Response, data: T, status = 200): Response {
-  return res.status(status).json({ data, error: null });
-}
+/**
+ * Envelope error response (/AGENTS.md §1.6).
+ *
+ * `extra` merges additional, typed fields onto `error` alongside `code` and
+ * `message` — the envelope shape itself (`{ data: null, error: {...} }`)
+ * never changes, only what `error` carries. Used sparingly: today, only the
+ * Tutor's `SESSION_LIMIT` refusal, which needs the actual computed reset
+ * instant on the wire rather than making the client guess at local midnight
+ * with its own (possibly wrong) clock and timezone.
+ */
+export function fail(
+  res: Response,
+  status: number,
 ```
 
 ### backend/src/lib/jwt.ts
@@ -17675,6 +17679,26 @@ import enErrors from './en-US/errors.json';
     "replayControls": "Controles da repetição",
 ```
 
+### frontend/src/i18n/roleLabels.test.ts
+
+```
+/**
+ * THE `parent` ROLE'S LABEL MUST NOT COLLIDE WITH THE AI-TUTOR FEATURE'S OWN
+ * LABEL, IN THE SAME LOCALE.
+ *
+ * `common.json`'s `roles.parent` is rendered verbatim by `RoleChip`
+ * (`routes/admin/adminShared.tsx`) on `AdminRolesPage` and `AdminUsersPage` —
+ * the admin console's role-distribution chart, filter chips, and per-user role
+ * badges. GLOSSARY.md documents "Tutor" as the intended user-facing name for
+ * that role in all three locales, matching what the product's own Terms &
+ * Conditions ("Cuenta TUTOR" / "TUTOR Account" / "Conta TUTOR"), identity
+ * verification flow ("Become a Tutor"), and dashboard upgrade CTA already call
+ * it, in every locale.
+ *
+ * Round 92 found that reality disagreed with the glossary on two fronts:
+ *   - es-MX correctly rendered "Tutor" for `roles.parent`, but the SAME
+```
+
 ### frontend/src/index.css
 
 ```
@@ -18042,7 +18066,7 @@ export function stripAnswers(doc: LessonDocument): LessonDocument {
 // Payload/answer shapes per type live in families/*/schema.ts (Zod-inferred).
 
 import type { ComponentType } from 'react'
-import type { CharacterEmotion, CharacterId } from '@/components/characters/control/types'
+import type { CharacterAction, CharacterEmotion, CharacterId } from '@/components/characters/control/types'
 
 export const LESSON_LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const
 export type LessonLocale = (typeof LESSON_LOCALES)[number]
@@ -18788,9 +18812,9 @@ export const coinCount = segmentSchema(
 // and must keep its glyph size, so the two paths genuinely differ.
 
 import { describe, expect, it, vi } from 'vitest'
-import { render } from '@testing-library/react'
-import { StoryScene } from './components'
-import type { ExerciseProps } from '../../core/types'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { Eavesdrop, StoryDialogue, StoryScene } from './components'
+import type { CharacterCue, ExerciseProps } from '../../core/types'
 
 vi.mock('../../player/narration', () => ({
 ```
@@ -19364,8 +19388,8 @@ export const BASE_URL: string = import.meta.env.VITE_BACKEND_URL ?? 'http://loca
 export interface ApiError {
   code: string;
   message: string;
-}
-
+  /**
+   * An ISO instant, present ONLY on the Tutor's `SESSION_LIMIT` refusal — the
 ```
 
 ### frontend/src/lib/avatarOptions.ts
@@ -24758,6 +24782,26 @@ import { AddKidCard } from '../AddKidCard';
 const { mockApi, mockGetToken } = vi.hoisted(() => ({
 ```
 
+### frontend/src/routes/app/family/__tests__/FamilyKidCopyGenderNeutrality.test.tsx
+
+```
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import i18n from '@/i18n';
+import { AddKidCard } from '../AddKidCard';
+import { ManageKidPanel } from '../ManageKidPanel';
+
+/*
+ * tutor-review-sweep-92 (i18n-quality): pt-BR's Add-a-child / Manage-kid copy
+ * hardcoded masculine-only pronouns and nouns for the child ("um filho",
+ * "ele", "dele", the "-lo" clitic) even though no gender is ever collected on
+ * a kid account anywhere in the product (database/, backend/src/routes/
+ * family.ts). Worse, it was internally inconsistent: this SAME pt-BR locale's
+ * tutor.json already spoke of "seu filho ou filha" for the identical concept.
+ *
+ * Unlike the OTHER files in this directory, this one deliberately does NOT
+```
+
 ### frontend/src/routes/app/family/__tests__/FamilyPage.test.tsx
 
 ```
@@ -27793,7 +27837,7 @@ import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { MarkdownLite } from '@/lesson-engine/core/MarkdownLite';
 import { REGISTRY } from '@/lesson-engine/registry';
-import type { SegmentBase, Verdict } from '@/lesson-engine/core/types';
+import type { CharacterCue, SegmentBase, Verdict } from '@/lesson-engine/core/types';
 import { HudPlate } from './hud/HudPlate';
 import { useScrollEdges } from './hud/useScrollEdges';
 import { gradeSegment } from './tutorApi';
@@ -27985,6 +28029,26 @@ import { getVoiceConsent, grantVoiceConsent, revokeVoiceConsent } from './tutorA
  * So: turning it ON opens the text and requires a second, deliberate press.
 ```
 
+### frontend/src/tutor/__tests__/LiveSegmentPanel.characterCue.test.tsx
+
+```
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+import { LiveSegmentPanel } from '../LiveSegmentPanel';
+import type { LiveSegmentState } from '../useTutorSocket';
+
+/*
+ * THE ACTUAL TUTOR MOUNT TREE (tutor-review-sweep-92, HIGH,
+ * LESSON_ENGINE.md §9.1).
+ *
+ * `LiveSegmentPanel.test.tsx` mocks `@/lesson-engine/registry` with a
+ * minimal test-only entry — correctly, since that suite is about the panel's
+ * OWN staleness guard, not about any of the 57 shared exercise components.
+ * This file does the opposite on purpose: it imports the REAL registry, so
+ * `story_dialogue` resolves to the REAL `StoryDialogue` renderer
+ * (`families/story/components.tsx`), rendered inside the REAL
+```
+
 ### frontend/src/tutor/__tests__/LiveSegmentPanel.test.tsx
 
 ```
@@ -28170,6 +28234,7 @@ import { useTutorSocket } from '../useTutorSocket';
 ```
 import { act, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import i18n from '@/i18n';
 import { OfferChips } from '../OfferChips';
 import type { TutorOffers } from '../types';
 
@@ -28182,7 +28247,6 @@ import type { TutorOffers } from '../types';
  * and the microphone is present and honest instead of being a checkbox that
  * disappears when the answer is no.
  *
- * The in-scene arrangement needs a camera to hang off, so what runs here is the
 ```
 
 ### frontend/src/tutor/__tests__/personalizeInWorld.test.tsx

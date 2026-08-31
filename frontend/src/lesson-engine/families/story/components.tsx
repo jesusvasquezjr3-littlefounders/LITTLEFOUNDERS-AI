@@ -49,13 +49,17 @@ function useDoneOnMount(onContentDone: ContentDone) {
 
 // ---- story_dialogue --------------------------------------------------------------
 
-export function StoryDialogue({ segment, disabled, onContentDone }: ExerciseProps) {
+export function StoryDialogue({ segment, disabled, onContentDone, onCharacterCue }: ExerciseProps) {
   const { t } = useTranslation()
   const { lines } = segment.payload as StoryDialogueSegment['payload']
   const [index, setIndex] = useState(0)
   const [finished, setFinished] = useState(false)
   const markDone = useContentDoneOnce(onContentDone)
   const narration = useNarration()
+  // Non-null once, always: `lines` is schema-min(1), so this index is always
+  // in range. Computed before every hook below so the rules-of-hooks order
+  // never depends on it (see the guard further down).
+  const line = lines[Math.min(index, lines.length - 1)]
 
   // Voice each line as it appears (Echo narrates dialogue per line, in the
   // line's own character voice — unit `<segment_id>.line.<n>`). The scene-setup
@@ -69,7 +73,33 @@ export function StoryDialogue({ segment, disabled, onContentDone }: ExerciseProp
     }
   }, [narration, segment.id, index, finished])
 
-  const line = lines[Math.min(index, lines.length - 1)]
+  /*
+   * THE CUE, for a host with no `CharacterLayerProvider` of its own (see
+   * `CharacterCue`). Present only on the Tutor's live activity plate — the
+   * course player never passes this, so its own `CharacterActor3D` below is
+   * untouched there. Cleared on every dependency change, not only on unmount:
+   * advancing a line hands the PREVIOUS line's character back before handing
+   * the new one over, and finishing the dialogue hands the stage back for good.
+   */
+  // Depends on the line's own PRIMITIVE fields, not the `line` object itself:
+  // `segment` is a fresh cast on every render of the caller
+  // (`LiveSegmentPanel`'s `segment = live.segment as unknown as SegmentBase`),
+  // and an effect keyed on an object built that way re-fires on every
+  // unrelated re-render rather than on an actual change — the same class of
+  // defect `ConversationView.tsx`'s own `demo` prop hit (2026-08-30, HIGH).
+  useEffect(() => {
+    if (!onCharacterCue || !line) return
+    if (finished) return
+    onCharacterCue({
+      character: line.character,
+      emotion: line.emotion ?? 'neutral',
+      action: line.action ?? 'idle',
+      actionKey: index,
+      speaking: true,
+    })
+    return () => onCharacterCue(null)
+  }, [onCharacterCue, line?.character, line?.emotion, line?.action, index, finished])
+
   if (!line) return null
   const isLast = index >= lines.length - 1
 
@@ -86,15 +116,22 @@ export function StoryDialogue({ segment, disabled, onContentDone }: ExerciseProp
   return (
     <div className="space-y-4">
       <div className="flex flex-col items-center gap-3 md:flex-row md:items-center md:gap-4">
-        <CharacterActor3D
-          character={line.character}
-          emotion={line.emotion ?? 'neutral'}
-          action={line.action ?? 'idle'}
-          actionKey={index}
-          speaking={!finished}
-          presence="scene"
-          className="shrink-0"
-        />
+        {/*
+          Suppressed in cue mode (see the effect above): this box has no
+          `CharacterLayerProvider` to draw into there, and the character is
+          portrayed on the host's own stage instead — never as a flat 2D rig.
+        */}
+        {!onCharacterCue && (
+          <CharacterActor3D
+            character={line.character}
+            emotion={line.emotion ?? 'neutral'}
+            action={line.action ?? 'idle'}
+            actionKey={index}
+            speaking={!finished}
+            presence="scene"
+            className="shrink-0"
+          />
+        )}
         {/* Speech card — tapping it also advances (≥44px target). */}
         <button
           type="button"
@@ -160,7 +197,7 @@ const ART_TINT_CLASSES: Record<string, string> = {
   delight: 'text-secondary',
 }
 
-export function StoryScene({ segment, onContentDone }: ExerciseProps) {
+export function StoryScene({ segment, onContentDone, onCharacterCue }: ExerciseProps) {
   const payload = segment.payload as StorySceneSegment['payload']
   useDoneOnMount(onContentDone)
   // Voice the scene: prompt (the setup) then the body — the body is the whole
@@ -169,10 +206,24 @@ export function StoryScene({ segment, onContentDone }: ExerciseProps) {
   useEffect(() => {
     narration.playSequence([narrationUnitId(segment.id, 'prompt'), narrationUnitId(segment.id, 'body')])
   }, [narration, segment.id])
+  // The cue for a host with no `CharacterLayerProvider` of its own — see
+  // `CharacterCue` and `StoryDialogue`'s own copy of this note. One beat, not
+  // per-line, so `actionKey` never needs to bump.
+  useEffect(() => {
+    if (!onCharacterCue || !payload.character) return
+    onCharacterCue({
+      character: payload.character,
+      emotion: payload.emotion ?? 'neutral',
+      action: payload.action ?? 'idle',
+      actionKey: 0,
+      speaking: true,
+    })
+    return () => onCharacterCue(null)
+  }, [onCharacterCue, payload.character, payload.emotion, payload.action])
   return (
     <div className={cn('rounded-xl p-6 md:p-8', BACKDROP_CLASSES[payload.backdrop])}>
       <div className="flex flex-col items-center gap-4 text-center">
-        {payload.character ? (
+        {payload.character && !onCharacterCue ? (
           <CharacterActor3D
             character={payload.character}
             emotion={payload.emotion ?? 'neutral'}
@@ -430,7 +481,7 @@ function splitHighlights(text: string): Array<{ kind: 'text' | 'term'; value: st
  * TAP targets (never hover-only, §1.11) that open the line's pre-generated
  * note. The whole artifact passed gates+judge before the kid saw turn one.
  */
-export function Eavesdrop({ segment, disabled, onContentDone }: ExerciseProps) {
+export function Eavesdrop({ segment, disabled, onContentDone, onCharacterCue }: ExerciseProps) {
   const { t } = useTranslation()
   const { context_md, lines } = segment.payload as EavesdropSegment['payload']
   const [revealed, setRevealed] = useState(1)
@@ -438,6 +489,7 @@ export function Eavesdrop({ segment, disabled, onContentDone }: ExerciseProps) {
   const [openNote, setOpenNote] = useState<{ line: number; term: number } | null>(null)
   const markDone = useContentDoneOnce(onContentDone)
   const narration = useNarration()
+  const activeLine = lines[revealed - 1]
 
   // Context narrates with the prompt before line 0; each new line voices on reveal.
   useEffect(() => {
@@ -452,6 +504,32 @@ export function Eavesdrop({ segment, disabled, onContentDone }: ExerciseProps) {
       narration.play(narrationUnitId(segment.id, `line.${revealed - 1}`))
     }
   }, [narration, segment.id, revealed, finished])
+
+  /*
+   * THE CUE, for a host with no `CharacterLayerProvider` of its own (see
+   * `CharacterCue`). An eavesdrop transcript can carry several DISTINCT
+   * speakers at once in the course player's own scissored layer (§9.1/§6.2 of
+   * TUTOR_3D.md) — the Tutor's persistent island has exactly one stand-in for
+   * "who is on stage right now", so only the CURRENTLY REVEALED line's speaker
+   * is portrayed there; earlier lines stay on screen as plain text (they were
+   * already portrayed when they were the active line). This is a narrower
+   * presentation than the course player's, not a 2D fallback: the character
+   * that matters — the one actually speaking — is always the real 3D model.
+   */
+  useEffect(() => {
+    if (!onCharacterCue || !activeLine) return
+    if (finished) return
+    onCharacterCue({
+      character: activeLine.character,
+      emotion: activeLine.emotion ?? 'neutral',
+      action: 'idle',
+      actionKey: revealed,
+      speaking: true,
+    })
+    return () => onCharacterCue(null)
+    // Primitive fields, not the `activeLine` object — see `StoryDialogue`'s
+    // matching note.
+  }, [onCharacterCue, activeLine?.character, activeLine?.emotion, revealed, finished])
 
   const advance = () => {
     if (disabled || finished) return
@@ -475,14 +553,22 @@ export function Eavesdrop({ segment, disabled, onContentDone }: ExerciseProps) {
       <ul className="space-y-3" aria-live="polite">
         {lines.slice(0, revealed).map((line, lineIndex) => (
           <li key={lineIndex} className="flex items-end gap-3">
-            <CharacterActor3D
-              character={line.character}
-              emotion={line.emotion ?? 'neutral'}
-              action="idle"
-              speaking={!finished && lineIndex === revealed - 1}
-              presence="inline"
-              className="shrink-0"
-            />
+            {/*
+              Suppressed in cue mode (see the effect above): no
+              `CharacterLayerProvider` to draw into here, and the CURRENTLY
+              active line's speaker is portrayed on the host's own stage
+              instead of as a flat 2D rig per line.
+            */}
+            {!onCharacterCue && (
+              <CharacterActor3D
+                character={line.character}
+                emotion={line.emotion ?? 'neutral'}
+                action="idle"
+                speaking={!finished && lineIndex === revealed - 1}
+                presence="inline"
+                className="shrink-0"
+              />
+            )}
             <div className="lf-slab min-h-12 flex-1 rounded-lg rounded-bl-sm p-3">
               <p className="lf-body text-content">
                 {splitHighlights(line.text_md).map((part, i) =>
