@@ -83,6 +83,42 @@ describe('what it draws', () => {
   });
 });
 
+describe('the zero-value bar height', () => {
+  /*
+   * ZERO_EPSILON (oracle/src/tutor/whiteboard.ts) exists precisely because a
+   * legitimate "spend it down to zero" sequence is a designed case, not an
+   * edge case — round 107, RUNBOOK.md. The bar for a value that landed at
+   * (or a hair within floating-point noise of) zero must be visually flush,
+   * not the same 6% floor a genuinely small nonzero value gets — a child
+   * seeing "$0" in text right above a bar that still has height is exactly
+   * the contradiction this feature exists to prevent.
+   */
+  it('renders a running value that computed to exactly zero as visually flush, not the 6% visibility floor', () => {
+    stubMatchMedia(true);
+    const spentDown = { ...BOARD, start: 10, values: [10, 5, 0], label: 'Te la gastas toda' };
+    const { container } = render(<TutorWhiteboard board={spentDown} seq={1} />);
+    const bars = container.querySelectorAll('.rounded-t-md');
+    expect(bars).toHaveLength(3);
+    expect(bars[2]).toHaveStyle({ height: '0%' });
+  });
+
+  it('still treats a value within ZERO_EPSILON of zero (floating-point noise, not a real amount) as flush', () => {
+    stubMatchMedia(true);
+    const noisy = { ...BOARD, start: 10, values: [10, 1e-10], label: 'Ruido de punto flotante' };
+    const { container } = render(<TutorWhiteboard board={noisy} seq={1} />);
+    const bars = container.querySelectorAll('.rounded-t-md');
+    expect(bars[1]).toHaveStyle({ height: '0%' });
+  });
+
+  it('keeps the 6% visibility floor for a genuinely small but nonzero value', () => {
+    stubMatchMedia(true);
+    const almostGone = { ...BOARD, start: 1000, values: [1000, 5], label: 'Casi nada, pero no cero' };
+    const { container } = render(<TutorWhiteboard board={almostGone} seq={1} />);
+    const bars = container.querySelectorAll('.rounded-t-md');
+    expect(bars[1]).toHaveStyle({ height: '6%' });
+  });
+});
+
 describe('the growth animation', () => {
   it('reveals one bar at a time under normal motion', () => {
     stubMatchMedia(false);

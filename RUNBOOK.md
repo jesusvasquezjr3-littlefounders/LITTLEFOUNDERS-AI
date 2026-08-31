@@ -10773,3 +10773,113 @@ established fencing, and it was reachable specifically because the two
 gates guarding it (a pedagogy judge and a harm-category judge) each check
 a real, different property that is neither "is this phrased as an
 instruction."
+## Round 107: a value the label already called "$0" still drew a bar with real height, because the visibility floor never carved out true zero — found by adversarial review sweep tutor-review-sweep-101 (whiteboard-at-scale dimension), MEDIUM, closed 2026-08-31
+
+**MEDIUM, FIXED.** `TutorWhiteboard.tsx:109` computed every bar's height as
+`Math.max(6, Math.round((value / max) * 100))` — a floor added, reasonably,
+so a genuinely small nonzero value still draws a bar a child can see and
+tap. The floor had no exception for value `0` itself, so a running value
+that legitimately reached exactly zero — the "spend it down to zero" story
+beat `oracle/src/tutor/whiteboard.ts`'s own `ZERO_EPSILON` exists precisely
+to support, per that file's header comment (`/ORACLE.md` §20.5 tells the
+same story: a valid decimal sequence landing a hair below zero used to lose
+the WHOLE board, fixed by clamping into exact `0` rather than rejecting it)
+— still drew a 6%-tall bar directly under a text label reading "$0". A
+child sees the number say zero and the picture say otherwise, on the exact
+feature this whole surface exists to keep in sync (§20.5's own opening
+line).
+
+**Why a plain `value === 0` check was not quite enough, and the fix uses
+`ZERO_EPSILON` instead.** `computeSequence` clamps a running value NEGATIVE
+by a hair of floating-point noise up to exact `0` — `if (current < 0)
+current = 0` — but it does not clamp noise on the POSITIVE side. A
+different step ordering of the same kind of decimal arithmetic
+(`0.1 + 0.1 + 0.1 - 0.3`, rather than the header comment's own
+`0.3 - 0.1 - 0.1 - 0.1`) can land a hair ABOVE zero instead of below it,
+and nothing anywhere clamps that case to exact `0` — it reaches the wire
+and the client as a genuinely tiny positive float. `Intl.NumberFormat`
+with `maximumFractionDigits: 0` still displays that as "$0", so the same
+label-contradicts-bar defect reappears through a path a bare `=== 0` check
+would have missed entirely. The fix mirrors oracle's own tolerance instead
+of reinventing one: `frontend/src/tutor/TutorWhiteboard.tsx` gains a local
+`const ZERO_EPSILON = 1e-9`, duplicated rather than imported — this
+package has no dependency on `oracle/` (11 independent packages, no
+workspaces, §1.2), the same posture `TutorWhiteboardData` already takes by
+hand-mirroring the wire shape instead of importing the oracle type — and
+line 109 becomes `value <= ZERO_EPSILON ? 0 : Math.max(6, Math.round((value
+/ max) * 100))`. A value at or within that tolerance of zero draws at
+exactly `0%` height; anything above it, however small, still gets the
+6% floor unchanged — the floor's own original purpose survives untouched.
+
+**Scope note for the three sibling fixes landing on this same file
+concurrently (live-region mechanism, label content, growth-reveal race):
+the only lines touched are the new `ZERO_EPSILON` constant block (inserted
+directly after `GROW_STEP_MS`) and the single `heightPct` assignment line
+inside the `board.values.map` callback** — no other line in
+`TutorWhiteboard.tsx` was read for editing, so a merge conflict here should
+be a one-line, mechanical resolution.
+
+**Verified, TDD, red then green.** `frontend/src/tutor/__tests__/
+tutorWhiteboard.test.tsx` gained a new `describe('the zero-value bar
+height', …)` block, three tests, confirmed to fail for the exact claimed
+reason before the fix (`height: 6%` where `height: 0%` was expected) and
+pass after, with no change to any other test in the suite:
+- a sequence `[10, 5, 0]` — a value that computed to exactly zero — asserts
+  the third bar's inline `style.height` is `'0%'`, not the floor.
+- a sequence `[10, 1e-10]` — inside `ZERO_EPSILON`, standing in for the
+  positive-side floating-point noise `computeSequence` does not clamp —
+  asserts the same `'0%'`, proving the fix is a tolerance check and not a
+  literal `=== 0`.
+- a sequence `[1000, 5]` — genuinely small but real — asserts the second
+  bar still renders at the unchanged `'6%'` floor, so the fix is proven to
+  narrow the floor's gap rather than remove the floor itself.
+
+**Verified live, not only in tests, at both breakpoints (§1.11).** This
+sandbox's own scripted `verify:tutor-ui` gate could not be evaluated to a
+pass/fail conclusion this session for reasons unrelated to this fix — see
+the note below — so the actual rendering was checked directly instead:
+`/dev/tutor-lab`'s `whiteboard` lab activity was temporarily edited
+in-memory (never committed; reverted with `git checkout --` immediately
+after, confirmed by `git diff --stat` showing only the two files above) to
+a `[10, 5, 0]` sequence, loaded against the real production Depot CDN
+(`VITE_SCENE_ASSET_BASE=https://media-b2c.littlefounders.ai/files/
+tutor-scenes` — public, PII-free static scene assets, the same ones a real
+session fetches), and inspected via the browser's own DOM: `document.
+querySelectorAll('[data-tutor-whiteboard] .rounded-t-md')` reported
+`style.height` of `["100%", "50%", "0%"]` for the `[10, 5, 0]` board — the
+zero bar flush, matching its own "$0" label — at both `1280×800` (desktop)
+and `375×812` (mobile), screenshotted at each. No other visible change to
+the whiteboard's layout, spacing or the surrounding `LessonPlate` at
+either width.
+
+**`npm run verify:tutor-ui` (frontend) could not be evaluated to a real
+pass/fail conclusion in this session's sandbox, and that is recorded
+honestly rather than papered over, per the exact precedent Round 100
+already set for this same gate.** The script's own first wait — for
+`[data-lab-chrome]` to exist, before any 3D/WebGL content is even
+relevant — timed out after 60s against this session's own freshly spawned,
+correctly-bound dev server (confirmed serving on `127.0.0.1:5173`, not a
+stale process). This is the identical symptom Round 100 already documented
+for this gate in this sandbox ("`verify:tutor-ui` timed out waiting for
+the stage/lab chrome to report ready … both before and after, on the same
+underlying cause"), and this change cannot plausibly be its cause: it adds
+no element, removes no element, and changes no class, position or
+stacking-context property anywhere in the tree — the only thing it changes
+is a numeric `style.height` percentage already being set on an existing
+element, which is exactly the kind of change the manual DOM inspection
+above already confirmed directly. This gate specifically protects control
+REACHABILITY and surface OVERLAP (§1.14's synthetic-click lesson) — this
+fix touches neither. A person with a working local Chrome/WebGL should
+still re-run `npm run verify:tutor-ui` before this ships, per §1.12.
+
+**Gates run and green in `frontend/`:** `npm run type-check`, `npm run
+lint`, `npm run build`. Full suite green: 134 files, 1548 tests (up from
+134/1545 — 3 new, zero regressions). Root gates green: `docs:check`,
+`secrets:check`, `i18n:check`, `paths:check`, `seo:check`, `provider:check`,
+`tools:test` (26/26).
+
+No `frontend/AGENTS.md` item: this closes a gap against an invariant
+`/ORACLE.md` §20.5 and `oracle/src/tutor/whiteboard.ts`'s own header
+comment already state (a legitimate zero is a designed case, not an edge
+case) — the gap was in the client's rendering floor never being told about
+it, not in either document's rule.
