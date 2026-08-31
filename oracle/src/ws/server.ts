@@ -1482,6 +1482,15 @@ async function serveSegment(
     // narrating an activity it has never read. Our own catalog text — nothing
     // the learner typed or scored travels with it.
     typeof served.segment.prompt_md === 'string' ? served.segment.prompt_md : undefined,
+    /*
+     * WHAT THE LADDER ACTUALLY SERVED, which is not necessarily the
+     * `difficulty` we sent it a few lines above: the nearest-match search and
+     * the prerequisite/frontier fallbacks can all answer with another band,
+     * correctly. Reported by Core since round 74 (2026-08-30) precisely so
+     * the controller's ratchet stops adjusting from its own guess. The `??`
+     * covers a Core that predates the field — see `ServedSegmentSchema`.
+     */
+    served.servedDifficulty ?? null,
   );
   const segmentFrame: Extract<ServerMessage, { type: 'segment' }> = {
     type: 'segment',

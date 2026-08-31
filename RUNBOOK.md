@@ -7177,3 +7177,119 @@ concurrently against the same shared working directory — see Rounds
 68-71's own notes on the `git stash` near-misses that produced; each
 was committed individually as soon as verified, in file-disjoint
 groups, specifically to keep that exposure window short.
+
+## Round 74: the ladder can serve a different difficulty than it was asked for, and never said so
+
+Round 59's third finding, deliberately deferred there because it needed
+a design decision rather than a mechanical patch. Picked up and closed
+in an isolated worktree, 2026-08-30 (MEDIUM).
+
+**The defect.** `serveFromCatalog` and `serveFromBank`
+(`backend/src/services/tutorLadder.ts`) order candidates by difficulty
+DISTANCE and take the nearest, so a request for band 4 answered with
+the band-2 segment that is the only one the topic has is CORRECT
+behaviour — and the prerequisite-walk and frontier-fallback rungs
+(round 59's own second fix) reach into an entirely different topic,
+whose bands were never chosen with this request in mind. What was
+missing was SAYING SO: every `difficulty` in `POST /segments` was the
+REQUESTED value, and the response carried no served one at all.
+Downstream, `oracle/src/tutor/orchestrator.ts`'s `noteSegmentServed`
+took no difficulty parameter, so
+`oracle/src/tutor/controller.ts`'s `lastDifficulty` ratchet kept
+adjusting from what it had ASKED for rather than from what actually
+reached the child's screen — and every adjustment in `decide()` is made
+RELATIVE to that field ("never raise after a failure" lowers from it;
+the mastery branch raises from it), so the gap survived for the rest of
+the session. Core's BKT posterior is difficulty-agnostic, so nothing
+PERSISTED was ever corrupted; only Oracle's local, session-scoped
+adaptive state.
+
+**The fix, and the three decisions inside it.**
+
+*Where the number comes from.* `servedDifficultyOf()` reads
+`candidate.segment.difficulty` off the chosen segment or pack row, in
+`persistAndServe` — the single funnel both the ladder path and the
+tier-3 verify path already return through, so tier 3 reports its own
+authored band for free. It is `null`, never a default, when the chosen
+segment declares no usable difficulty: `orderCandidates` defaults a
+missing one to 3 for SORTING, where a tie-break guess costs nothing,
+but reporting that 3 would be indistinguishable from a segment
+genuinely authored at band 3 and the consumer would reconcile to a
+number nobody wrote down (§1.14).
+
+*What the controller does with it.*
+`PedagogicalController.reconcileServedDifficulty()` corrects the
+ratchet's MEMORY, not the plan. `decide()` re-bases on
+`entry.targetDifficulty` every turn, so a reconcile down to 1 does not
+pin a learner at 1 — it only stops the next relative adjustment being
+computed from a band nobody was ever shown. It refuses anything outside
+the closed 1–5 band and refuses `null`, and it is a no-op while the
+brain is dormant, because `ws/server.ts` then sends the MODEL's own
+asked-for band and the served value says nothing about a field nothing
+reads.
+
+*Whether a mismatch logs.* Deliberately asymmetric. A ONE-band
+substitution is silent — that is the ladder doing its job on a topic
+whose segments do not cover every band, and a line per occurrence is
+noise that teaches people to skip the line. TWO or more bands apart is
+a different claim (the ladder had nothing anywhere near this learner's
+level, which is a content gap worth surfacing) and warns, in the same
+spirit as the prerequisite/frontier rungs' own `console.warn`s.
+Recorded inline at the method.
+
+**DEPLOY ORACLE BEFORE CORE — this one is load-bearing, and the
+pre-fix test run demonstrated it live.** Oracle's `ServedSegmentSchema`
+is `.strict()`, so the dangerous direction is a NEW Core meeting an OLD
+Oracle: the unknown `servedDifficulty` key fails the parse,
+`requestSegment` returns `null`, and every activity in every session
+becomes `NO_SEGMENT`. Making the field optional only covers the
+opposite pairing (this Oracle against a Core that predates it). This is
+not theoretical — running the new live-session test against
+deliberately un-fixed Oracle source produced exactly that: twenty
+consecutive `NO_SEGMENT` frames off a single learner utterance.
+
+**Proof.** 4 new backend tests in `tutor.test.ts` (`describe('the
+response reports the difficulty that was SERVED, not the one
+requested')`) and 16 new oracle tests — 12 in `controller.test.ts`, 3
+in `orchestrator.test.ts`, 1 end-to-end in `live-session.test.ts`.
+Verified in three separate ways rather than one:
+
+1. *Pre-fix, via `git stash` of the source files only.* All 4 backend
+   tests fail (`expected undefined to be 1`) — the field did not exist.
+   All 12 controller tests fail (`reconcileServedDifficulty is not a
+   function`) and the orchestrator's `corrects the ratchet when the
+   ladder substituted another band` fails with `expected 4 to be 2`,
+   which is the drift itself. Its two siblings (served == requested,
+   and `null`) correctly PASS pre-fix — they are the controls, and
+   saying so is more useful than pretending otherwise.
+2. *Against a deliberately WRONG implementation.* `servedDifficultyOf`
+   temporarily stubbed to return the requested band: 3 of the 4 backend
+   tests fail and only the control (served == requested) passes. That
+   is the check round 64 learned to run — a test suite that cannot tell
+   "reads the segment" from "echoes the request" would have passed
+   happily on the obvious wrong fix.
+3. *Isolating the WS argument specifically.* With both the schema and
+   the controller fixed but `served.servedDifficulty ?? null` removed
+   from the `noteSegmentServed` call, the live-session test fails
+   (`expected false to be true`) — proving the end-to-end test really
+   gates the argument-passing line and not just the two halves either
+   side of it.
+
+Full backend suite green (42 files, 698 tests), full oracle suite green
+(27 files, 606 tests), zero regressions in either. `type-check` (both
+services, every tsconfig), `lint`, `build`, `verify:tutor` and
+`verify:pedagogy` all green; root `docs:check`/`secrets:check` clean.
+
+**Found in passing, NOT fixed here, spawned as its own task.**
+`serveSegment()` and `deliver()` in `oracle/src/ws/server.ts` are
+mutually recursive with no guard: when the ladder returns nothing,
+`serveSegment` delivers `handleSegmentUnavailable`'s turn, and if THAT
+turn carries a `segmentRequest` — the system instruction asks the model
+not to, but nothing enforces it — `deliver` calls `serveSegment` again.
+Observed while running the new live-session test against un-fixed
+source: one `learner_text` frame produced turns seq 2 through 21,
+twenty `turn` + `NO_SEGMENT` pairs, each costing a model completion, a
+judge completion and a Core round trip. Bounded only by the session
+turn cap, not by anything about the failure. Left out of this round on
+purpose — it is a different defect with a different fix — and filed
+rather than folded in.

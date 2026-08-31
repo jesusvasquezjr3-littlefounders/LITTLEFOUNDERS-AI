@@ -296,6 +296,51 @@ export class PedagogicalController {
     return this.lastDifficulty;
   }
 
+  /**
+   * Correct the ratchet to the band that ACTUALLY reached the screen.
+   *
+   * `lastDifficulty` is this controller's memory of where the learner
+   * currently is, and every adjustment in `decide()` is made RELATIVE to it —
+   * "never raise after a failure" lowers from it, the mastery branch raises
+   * from it. Core's content ladder, though, answers a request for a band with
+   * the NEAREST segment it has, and its prerequisite and frontier fallbacks
+   * reach into a different topic entirely: asking for band 4 and being handed
+   * band 2 is ordinary, correct behaviour there. Without this, the ratchet
+   * kept adjusting from its own guess rather than from the thing the child was
+   * actually looking at, and the gap survived for the rest of the session.
+   * Found by adversarial review, round 59, deferred; fixed round 74
+   * (2026-08-30, MEDIUM).
+   *
+   * It corrects the MEMORY, not the plan. `decide()` re-bases on
+   * `entry.targetDifficulty` every turn, so a reconcile down to 1 does not pin
+   * a learner at 1 — it only stops the next relative adjustment being computed
+   * from a band nobody was ever shown.
+   *
+   * Silent for a substitution of one band: that is the ladder doing its job on
+   * a topic whose segments simply do not cover every band, and a line per
+   * occurrence would be noise that teaches people to skip the line. TWO or
+   * more bands apart is a different claim — the ladder had nothing anywhere
+   * near this learner's level — so that one is logged, in the same spirit as
+   * the fallback rungs' own `console.warn`s in `backend/src/routes/tutor.ts`.
+   */
+  reconcileServedDifficulty(served: number | null | undefined): void {
+    // While the brain is off, the request never came from this ratchet in the
+    // first place (`ws/server.ts` sends the model's own asked-for band), so
+    // the served value says nothing about a number nothing reads.
+    if (!this.active) return;
+    // `null` is "the segment declared no difficulty" — a real answer, and not
+    // one that licenses moving the ratchet anywhere (§1.14).
+    if (typeof served !== 'number' || !Number.isInteger(served) || served < 1 || served > 5) return;
+    const requested = this.lastDifficulty;
+    if (served === requested) return;
+    if (Math.abs(served - requested) >= 2) {
+      console.warn(
+        `[oracle] the ladder served difficulty ${served} for a request at ${requested} — a content gap at this learner's level`,
+      );
+    }
+    this.lastDifficulty = band(served);
+  }
+
   /** The content-pool bridge for the active KC, when the catalog mapped one. */
   get activeSkillKey(): string | null {
     return this.activeEntry?.skillKey ?? null;

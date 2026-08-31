@@ -1701,6 +1701,44 @@ everything passes the blocked half perfectly and destroys the product.
    exact claimed reason pre-fix via `git stash`. See `RUNBOOK.md`
    Round 73.
 
+62. **The content ladder can serve a DIFFERENT difficulty than the one
+   requested — correctly — and the controller's adaptive state was
+   never told.** Found by adversarial review, round 59, deferred;
+   closed round 74 (2026-08-30, MEDIUM). `serveFromCatalog`/
+   `serveFromBank` pick by difficulty DISTANCE, and the prerequisite
+   and frontier fallback rungs reach into another topic entirely, so
+   "asked for 4, served 2" is ordinary behaviour there. But every
+   `difficulty` in Core's `POST /segments` was the REQUESTED value and
+   `noteSegmentServed` took no difficulty parameter at all, so
+   `controller.ts`'s `lastDifficulty` kept ratcheting off its own
+   guess. That field is not decoration: EVERY adjustment in `decide()`
+   is made relative to it, so the gap persisted for the rest of the
+   session. Core's BKT posterior is difficulty-agnostic, so nothing
+   PERSISTED was corrupted — only Oracle's session-scoped state, which
+   is exactly the kind of drift no database query would ever reveal.
+   Fixed with a `servedDifficulty` field on the response (read off the
+   chosen segment in `persistAndServe`, `null` rather than a default
+   when it declares none — `orderCandidates`' `?? 3` is a SORTING
+   tie-break and reporting it would be indistinguishable from a real
+   band 3), threaded through `ws/server.ts` into a fifth
+   `noteSegmentServed` parameter, and applied by
+   `PedagogicalController.reconcileServedDifficulty()`. Three
+   deliberate calls, all documented at their call sites: the reconcile
+   corrects the MEMORY and not the plan (`decide()` re-bases on
+   `entry.targetDifficulty` each turn, so it cannot pin a learner low);
+   it is a no-op while the brain is dormant, because the request did
+   not come from this ratchet then; and it logs ONLY at a gap of two
+   bands or more, because a one-band substitution is the ladder working
+   and a line per occurrence trains people to skip the line.
+   **`ServedSegmentSchema` is `.strict()`, so DEPLOY ORACLE BEFORE
+   CORE** — a new Core meeting an old Oracle fails the parse and turns
+   every activity into `NO_SEGMENT`, which the pre-fix test run
+   demonstrated live. 20 new tests (4 backend, 12 controller, 3
+   orchestrator, 1 end-to-end over the real socket), confirmed to fail
+   pre-fix via `git stash`, against a deliberately request-echoing
+   implementation, and — for the end-to-end one — with only the WS
+   argument removed. See `RUNBOOK.md` Round 74.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:
