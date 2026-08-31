@@ -2030,6 +2030,49 @@ everything passes the blocked half perfectly and destroys the product.
    to grade a session already graded correctly. See `RUNBOOK.md` Round
    90.
 
+71. **The loser of a race that writes to a shared, conditionally-updated
+   row cannot tell it lost unless the write itself says so — a bare 2xx
+   is not enough.** Found by adversarial review, round 98 (2026-08-31,
+   MEDIUM; the one contested finding of its sweep). Item 70's OWN second
+   race — `finalizeParked`'s grace-window timer firing before a deferred
+   `finish()` reaches its close — has a reverse ordering item 70 did not
+   cover: when the busy turn ahead of the farewell outlasts
+   `SESSION_RESUME_GRACE_MS` ON ITS OWN, with no farewell slowness
+   involved at all (`farewell()` is fully scripted, no model call —
+   verify this before blaming it; the original finding did not, and was
+   wrong), `finalizeParked` closes the session first. `finish()`'s later
+   `closeSession` call then races Core's `ended_at=is.null` filter and
+   loses: the PATCH matches zero rows, but `Prefer: return=minimal`
+   returns the identical 204/empty body a REAL update would, so
+   `res !== null` was `true` either way and `finish()` reported
+   `completed` while Core kept `learner_left` with a possibly-incomplete
+   cost — a real close silently discarded, no trace anywhere.
+   The fix is not a new lock or a retry; it is making the ALREADY-CHOSEN
+   conditional filter (`ended_at IS NULL`) legible to its own caller.
+   `closeTutorSession` switched to `Prefer: return=representation` and
+   returns `'closed' | 'already-closed' | 'failed'` instead of a
+   boolean — an empty array IS the zero-row case, with no probing
+   required. The route response gained one purely additive field
+   (`alreadyClosed`) rather than changing the meaning of `closed`, so
+   nothing that already read the old shape breaks. `finish()` now warns
+   loudly, naming the session and the cost that was lost, instead of
+   reporting a lost race as a success — but deliberately does NOT attempt
+   automatic cost reconciliation this round (would need either a fresh
+   authoritative read or a new atomic op, and this ledger is already
+   documented as an estimate, not an invoice) and deliberately does NOT
+   suppress the resulting double `runPostSessionReview` call either
+   (the SECOND call has the more complete history; skipping it would
+   keep only the stale one). Both are named as open follow-ups rather
+   than silently resolved by guessing.
+   The general lesson: any code that already relies on a conditional
+   write to arbitrate a race (`ended_at IS NULL`, `WHERE version = ?`,
+   any "first writer wins" filter) has, by construction, a LOSER — and a
+   caller that cannot distinguish its own win from its own loss will
+   report both as success, every time, forever, because a conditional
+   UPDATE and an unconditional one return the identical transport-level
+   success. The fix is never a lock; it is asking the write itself how
+   many rows it actually touched. See `RUNBOOK.md` Round 98.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:

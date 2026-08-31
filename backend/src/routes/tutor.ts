@@ -680,8 +680,11 @@ function internalRouter(): Router {
     if (!parsed.success) return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid close');
     // `ended_at IS NULL` in the update means the FIRST close wins. A socket
     // that dies after a graceful farewell must not rewrite `completed` into
-    // `learner_left`.
-    const closed = await closeTutorSession(parsed.data);
+    // `learner_left` — and, since round 98, the caller is told WHICH of
+    // those happened rather than only whether the HTTP call itself
+    // succeeded (`closeTutorSession`'s own comment).
+    const outcome = await closeTutorSession(parsed.data);
+    const closed = outcome !== 'failed';
 
     /*
      * THE MEMORY DIGEST, written when a close actually landed (/ORACLE.md
@@ -705,7 +708,10 @@ function internalRouter(): Router {
         );
       }
     }
-    return ok(res, { closed });
+    // `alreadyClosed` is new (round 98): `closed` alone cannot tell Oracle's
+    // `finish()` apart from a real update, which is exactly the signal it
+    // needs to stop reporting a lost race as a success.
+    return ok(res, { closed, alreadyClosed: outcome === 'already-closed' });
   });
 
   /*

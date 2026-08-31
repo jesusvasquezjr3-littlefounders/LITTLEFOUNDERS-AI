@@ -1813,7 +1813,7 @@ async function finish(
       `speech paid=${speech.paid} free=${speech.free} discarded=${speech.discarded}`,
   );
 
-  await closeSession({
+  const closeOutcome = await closeSession({
     sessionId: live.session.sessionId,
     closeReason: reason,
     // The transcript's own row count (both speakers), not the model-turn
@@ -1825,12 +1825,64 @@ async function finish(
   });
 
   /*
+   * FINALIZEPARKED WON THE RACE (round 98, 2026-08-31, MEDIUM). `takeParked`
+   * above only cancels a park whose timer has not fired YET; here it already
+   * has — `parkedSessions` had nothing left for it to cancel, `finish()`
+   * proceeded anyway, and Core's `ended_at=is.null` filter matched zero rows
+   * because `finalizeParked` already wrote `learner_left` with whatever cost
+   * existed at THE MOMENT its timer fired (its own doc comment: cost "only
+   * increments when a synthesis promise actually settles" — this turn's own
+   * eventual cost is not in that snapshot).
+   *
+   * This is reachable with NO farewell slowness at all — `farewell()` calls
+   * a fully scripted outcome with no model call (see its own doc comment) —
+   * because the turn that was already occupying the floor when the learner
+   * asked to leave can, on its own, chain enough `MODEL_TIMEOUT_MS` retries,
+   * tier-3 segment generation and moderation retry time to approach or
+   * exceed `SESSION_RESUME_GRACE_MS` before the farewell is ever reached.
+   *
+   * Logged LOUDLY rather than treated as a success: a silent no-op here is
+   * exactly the "failure collapsed into emptiness" shape §1.14 forbids.
+   * Cost reconciliation is deliberately NOT attempted here — computing a
+   * correction that does not double-count `finalizeParked`'s own snapshot
+   * would need either a fresh authoritative read of the row Core already
+   * holds (a new internal endpoint, for a value this ledger's own header
+   * comment already calls an ESTIMATE, not an invoice) or a new
+   * migration-backed atomic op — both bigger than this round's scope. The
+   * true final cost is named in the log below so it can be reconciled by
+   * hand if it is ever material.
+   */
+  if (closeOutcome === 'already-closed') {
+    console.warn(
+      `[oracle] session ${live.session.sessionId}'s '${reason}' close lost a race to finalizeParked — ` +
+        `Core reports the session was already closed (its 'ended_at IS NULL' write matched zero rows), so ` +
+        `this close's reason and cost were NOT persisted. The busy turn ahead of it outlasted ` +
+        `SESSION_RESUME_GRACE_MS on its own, with no farewell involved. This turn's true final cost was ` +
+        `$${live.orchestrator.totalCostUsd.toFixed(5)} — reconcile manually if material. See RUNBOOK Round 98.`,
+    );
+  } else if (closeOutcome === 'failed') {
+    console.warn(
+      `[oracle] session ${live.session.sessionId}'s '${reason}' close call to Core failed outright — ` +
+        `the close reason and the final cost of $${live.orchestrator.totalCostUsd.toFixed(5)} were NOT persisted.`,
+    );
+  }
+
+  /*
    * V4: THE SLOW CHAMBER WAKES UP AS THE FAST ONE GOES TO SLEEP.
    *
    * Fire-and-forget on purpose: the learner's socket must close now, and the
    * review is between-sessions work by definition. It reads the conversation
    * that just ended and rewrites the two curated memory stores — which is
    * what makes the NEXT session start where a human tutor would start.
+   *
+   * Deliberately NOT skipped when `closeOutcome === 'already-closed'` above:
+   * `finalizeParked` already ran this same review once, on a snapshot from
+   * mid-turn — missing exactly the reply this function is closing out — and
+   * suppressing the more complete run here would leave ONLY the stale one as
+   * this session's lasting memory, which is worse than paying for both.
+   * Running both IS a real, avoidable extra model call (§1.0's "directly"
+   * cost) with no dedup between them; left open for a follow-up round rather
+   * than resolved by guessing at which of the two writes should win.
    */
   void runPostSessionReview({
     session: live.session,
