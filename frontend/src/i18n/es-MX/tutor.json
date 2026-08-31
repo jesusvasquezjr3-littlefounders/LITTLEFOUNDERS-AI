@@ -74,6 +74,7 @@
     "nicknameHint": "Elige un apodo, no tu nombre real. Es el único nombre que tu tutor llega a saber.",
     "nicknameInvalid": "Usa letras, números, espacios, apóstrofos o guiones.",
     "nicknameRejected": "Ese apodo no funcionó. Intenta con otro.",
+    "pickRejected": "Eso no se guardó. Intenta de nuevo.",
     "adaptTitle": "Cómo te explico",
     "saving": "Guardando…",
     "aboutYou": "Sobre ti",

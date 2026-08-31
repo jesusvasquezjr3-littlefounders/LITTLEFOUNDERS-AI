@@ -9020,3 +9020,103 @@ naming defect, not a Tutor runtime, prompt, context-field or content-
 ladder change, and the `/LEGAL/` documents that also use "Tutor" for
 this role were read for consistency but deliberately left untouched —
 they already agreed with the fix.
+## Round 93: five of the six onboarding-picker axes threw away the one piece of information that says a save failed — found by review sweep `tutor-review-sweep-92` (onboarding dimension), MEDIUM, closed 2026-08-31
+
+**`PersonalizeInWorld.tsx`'s `onSave` prop resolves `Promise<boolean>`
+precisely because round 38 (2026-08-30) needed it to: a rejected save
+has to be distinguishable from a successful one, or the picker closes as
+if it worked while the server refused it.** That fix landed on exactly
+one of the layer's six axes — `commitNickname` awaits the promise and,
+on `false`, sets `nicknameError` and refuses to let "I'm ready" proceed.
+The other five — `chooseTutor`, `toggleCompanion`, `goToIsland`,
+`setLight`, `toggleAdaptation` — never got the same treatment. Every one
+of them called `void onSave(patch)` and threw the return value away.
+`persistPreferences` (`TutorExperience.tsx`) already rolls a rejected
+patch back to the exact prior value — so the ISLAND itself always
+recovered — but nothing on screen ever told the learner their tap had
+done nothing, and the picker read as working on a save that was silently
+discarded.
+
+**Why five axes and not one bug.** The five share a mechanical property
+the nickname does not: none of them holds a value this component owns.
+Each writes straight to `preferences` through `onSave`, applied
+optimistically one tick before the network call resolves. A rejection on
+any of them is therefore never a truth/display mismatch the way an
+unsaved nickname draft is — `preferences` is already correct again by
+the time the promise settles — but the absence of the fire-and-forget
+call's result was the same shape of mistake, repeated five times.
+
+**The fix reuses the nickname's own feedback mechanism rather than
+inventing a second one.** A single `pickError` state
+(`PersonalizeInWorld.tsx:172`) and one `reportIfRejected` helper
+(`:348`) are now shared by all five handlers: each clears `pickError`,
+awaits `onSave`, and on `false` sets the same
+`role="alert"`/`lf-caption text-error-strong` treatment
+`components/ui/Field.tsx` already uses for the nickname's own error —
+standing on its own in the panel (`:727`) instead of riding a specific
+field, since none of these five axes has one. `reportIfRejected` also
+forces the panel open, because four of the five have a WORLD control
+reachable while the panel is closed (`chooseTutor`, `toggleCompanion`,
+`goToIsland`, `setLight`; `toggleAdaptation` is panel-only) and a
+message rendered only inside a closed panel is feedback nobody sees.
+
+**One new i18n key, not five.** The nickname's own rejection string —
+"That nickname didn't work. Try a different one." — names "nickname"
+literally in the copy, so it cannot be reused verbatim for a rejected
+tutor pick or a rejected island move. None of the five discrete axes
+carries axis-specific validation content the way the nickname's
+real-name check does, so a single generic key,
+`tutor.personalize.pickRejected` ("That didn't save. Try again." /
+"Eso no se guardó. Intenta de nuevo." / "Isso não foi salvo. Tente de
+novo."), covers all five rather than inventing five near-duplicate
+sentences that would say the same thing five times over in three
+locales. Added to `en-US`, `es-MX` and `pt-BR` in this commit;
+`npm run i18n:check` green.
+
+**Deliberately does NOT block "I'm ready" the way a rejected nickname
+does — a judgment call, stated here rather than left silent.** Nickname
+blocks continuing because leaving would carry an OPTIMISTIC value the
+server never actually stored — the draft and the truth disagree, and
+"I'm ready" would paper over that. The five discrete axes have no draft:
+by the time `reportIfRejected` runs, `persistPreferences`'s own rollback
+has already put `preferences` back to the true, previously-saved value.
+There is no stale state left for "I'm ready" to carry forward on any of
+these five — only a message worth showing, which is what this fix adds.
+
+**Proof: `frontend/src/tutor/__tests__/personalizeInWorld.test.tsx`
+gained a new `describe('a rejected discrete pick', …)` block** — one
+test per axis (`reports a rejected tutor pick, from the world`; `…a
+rejected companion invite, from the panel list`; `…a rejected walk to
+the other island, from the world`; `…a rejected light change, from the
+world`; `…a rejected adaptation toggle, from the panel`), each mocking
+`onSave` to resolve `false` and asserting both the `role="alert"` text
+and, for the four world-reachable axes, that the panel was forced open
+— plus a sixth asserting the negative (`does not report anything for a
+pick the server actually accepted`) so a future change to the suite's
+own default mock cannot make every test here pass for the wrong reason.
+A seventh, in the existing `'the one plate'` block, is the regression
+check: nickname's own rejection wording stays distinct from the five
+axes' shared one. All five new rejection tests confirmed to fail against
+the pre-fix source for the exact claimed reason (`git stash` on
+`PersonalizeInWorld.tsx` and the three i18n files, tests re-run: no
+`role="alert"` anywhere in the document); the negative and the
+regression test both pass unchanged pre-fix, as they should. The
+suite's shared `renderLayer()` helper's default `onSave` mock was
+changed from a bare `vi.fn()` (implicitly resolving `undefined`, which
+is falsy) to `vi.fn().mockResolvedValue(true)` — otherwise every
+ordinary successful pick in the other 26 pre-existing tests would now
+misreport as rejected the instant those five handlers started looking
+at the return value, which is exactly the class of test-fixture drift
+`AGENTS.md` §1.14's "harness that cannot operate a surface" bullet
+warns about, just on a mock's return value instead of a driver's click.
+
+Full frontend suite green (130 files, 1508 tests, up from round 91's own
+1501 — 7 new: five per-axis rejection tests, the accepted-pick negative,
+and the nickname-wording regression check), `npm run type-check` and
+`npm run lint` clean, `npm run build` green. Root `npm run docs:check`,
+`npm run secrets:check`, `npm run i18n:check`, `npm run paths:check`,
+`npm run seo:check`, `npm run provider:check` and `npm run tools:test`
+all green. `npm run verify:tutor-ui` was not run: it drives the
+CONVERSING phase's HUD stack specifically, and this fix touches only the
+PERSONALIZING phase's own panel — no shared HUD/dock/canvas layout
+changed.
