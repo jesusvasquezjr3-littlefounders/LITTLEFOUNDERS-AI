@@ -95,11 +95,30 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
 
   const max = Math.max(...board.values, 1);
 
+  /**
+   * The SAME per-bar time-step caption a sighted user reads under each bar
+   * ("Start" / "Week 1" / "Week 2"…) — shared with the visual render below
+   * rather than recomputed, so the two can never drift apart.
+   *
+   * Found by adversarial review (RUNBOOK.md Round 101): the aria-label was
+   * built from `board.values` alone, so a screen-reader user heard a bare
+   * "10, 18, 26" with no notion these were week-by-week totals, while a
+   * sighted user saw the full "Start / Week 1 / Week 2" story the `unit`
+   * field (§20.5) was added specifically to guarantee. The caption is exactly
+   * what makes the board answer "what story is this", so leaving it out of
+   * the accessible name loses the one thing this feature exists to convey.
+   */
+  const captionFor = (i: number) =>
+    i === 0 ? t('tutor.whiteboard.start') : t(`tutor.whiteboard.step.${board.unit}`, { n: i });
+
   return (
     <div
       data-tutor-whiteboard
       role="img"
-      aria-label={`${board.label}. ${board.values.slice(0, shown).map(format).join(', ')}`}
+      aria-label={`${board.label}. ${board.values
+        .slice(0, shown)
+        .map((value, i) => `${captionFor(i)}: ${format(value)}`)
+        .join(', ')}`}
       className={cn('flex min-h-0 flex-col gap-3', className)}
     >
       <p className="lf-caption shrink-0 text-content-muted">{board.label}</p>
@@ -120,9 +139,7 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
                 style={{ height: grown ? `${heightPct}%` : '0%' }}
               />
               <span className="lf-caption text-content-muted" aria-hidden="true">
-                {i === 0
-                  ? t('tutor.whiteboard.start')
-                  : t(`tutor.whiteboard.step.${board.unit}`, { n: i })}
+                {captionFor(i)}
               </span>
             </div>
           );
