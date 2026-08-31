@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   IDLE_NUDGE_MS,
   LISTEN_SILENCE_MS,
@@ -731,5 +731,107 @@ describe('the backward walk is a diagnosis, not a guess', () => {
     const controller = new PedagogicalController(planWith([STRONG, WEAK]));
     failInto(controller);
     expect(controller.activeKcId).toBe(STRONG);
+  });
+});
+
+/*
+ * WHAT THE LADDER ACTUALLY SERVED, NOT WHAT WE ASKED FOR.
+ *
+ * Found by adversarial review, round 59 (2026-08-30, MEDIUM), deferred to
+ * round 74. `lastDifficulty` is this controller's memory of where the learner
+ * is, and every adjustment in `decide()` is made RELATIVE to it. Core's
+ * content ladder answers a request for a band with the NEAREST segment it has,
+ * and its prerequisite and frontier fallbacks reach into another topic
+ * entirely — so "asked for 4, served 2" is ordinary, correct behaviour there.
+ * The ratchet never heard about it, so from that turn on it was adjusting from
+ * a band the child was never shown.
+ */
+describe('the ratchet is reconciled to the band that actually reached the screen', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  const HARD = (): SessionPlanEntry => entry({ targetDifficulty: 4, pKnown: 0.4 });
+
+  it('moves to the served band when the ladder substituted a different one', () => {
+    const c = new PedagogicalController([HARD()]);
+    expect(c.targetDifficulty).toBe(4);
+    c.reconcileServedDifficulty(2);
+    expect(c.targetDifficulty).toBe(2);
+  });
+
+  it('stays exactly where it was when served and requested agree', () => {
+    const c = new PedagogicalController([HARD()]);
+    c.reconcileServedDifficulty(4);
+    expect(c.targetDifficulty).toBe(4);
+  });
+
+  /*
+   * The drift this whole fix exists for, stated as behaviour rather than as a
+   * field read. "Never raise after a failure" lowers RELATIVE to
+   * `lastDifficulty`, so the same failing answer produces a different next
+   * band depending on whether the ratchet knows what the learner was actually
+   * given. Without the reconcile both runs answer the same thing.
+   */
+  it('changes the NEXT adjustment, which is the whole reason it matters', () => {
+    const drifting = new PedagogicalController([HARD()]);
+    const reconciled = new PedagogicalController([HARD()]);
+    reconciled.reconcileServedDifficulty(2);
+
+    const fail = { kind: 'activity_result', correct: false, misconceptionCode: null, attemptNumber: 1 } as const;
+    // Lowers one band from what it BELIEVES the learner is on: 4 → 3…
+    expect(drifting.decide(fail, NOW).difficulty).toBe(3);
+    // …versus one band from the 2 they were actually shown.
+    expect(reconciled.decide(fail, NOW).difficulty).toBe(1);
+  });
+
+  /*
+   * The correction is to the MEMORY, not to the plan. `decide()` re-bases on
+   * `entry.targetDifficulty` every turn, so a reconcile down to 1 must not pin
+   * a learner at 1 for the rest of the session.
+   */
+  it('does not pin the learner: the plan\'s own target still drives the next turn', () => {
+    const c = new PedagogicalController([HARD()]);
+    c.reconcileServedDifficulty(1);
+    const next = c.decide({ kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1 }, NOW);
+    expect(next.difficulty).toBe(4);
+  });
+
+  /*
+   * `null` is a real answer from Core — "the chosen segment declares no
+   * difficulty" — and it is NOT a licence to move the ratchet anywhere
+   * (§1.14). Neither is anything outside the closed 1–5 band.
+   */
+  it.each([[null], [undefined], [0], [6], [2.5], [Number.NaN]])(
+    'moves nothing for %p — an unusable value is not a measurement',
+    (value) => {
+      const c = new PedagogicalController([HARD()]);
+      c.reconcileServedDifficulty(value);
+      expect(c.targetDifficulty).toBe(4);
+    },
+  );
+
+  it('leaves a dormant controller alone — the request never came from this ratchet', () => {
+    // With no plan the brain is off and `ws/server.ts` sends the MODEL's own
+    // asked-for band, so a served value says nothing about this field.
+    const c = new PedagogicalController([]);
+    const before = c.targetDifficulty;
+    c.reconcileServedDifficulty(5);
+    expect(c.targetDifficulty).toBe(before);
+  });
+
+  /*
+   * A one-band substitution is the ladder doing its job on a topic whose
+   * segments do not cover every band — logging each one would be noise that
+   * teaches people to skip the line. Two or more bands apart is a different
+   * claim: nothing anywhere near this learner's level existed.
+   */
+  it('is silent about a one-band substitution and loud about a two-band one', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    new PedagogicalController([HARD()]).reconcileServedDifficulty(3);
+    expect(warn).not.toHaveBeenCalled();
+
+    new PedagogicalController([HARD()]).reconcileServedDifficulty(2);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(String(warn.mock.calls[0]?.[0])).toContain('served difficulty 2');
   });
 });

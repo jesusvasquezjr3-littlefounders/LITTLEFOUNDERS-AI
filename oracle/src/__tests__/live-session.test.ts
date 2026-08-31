@@ -1,7 +1,7 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { WebSocket } from 'ws';
-import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 /*
  * A REAL session, end to end.
@@ -76,6 +76,19 @@ let servedSegmentType = 'quiz_mcq';
  * self-harm disclosure and still be treated as "an answer was checked".
  */
 let voiceCheckRecognized = true;
+/**
+ * What the fake Core reports as the band it ACTUALLY served (round 74). `null`
+ * omits the field entirely, which is both the default here and the shape an
+ * older Core produces — `ServedSegmentSchema` is `.strict()`, so every other
+ * test in this file doubles as the proof that omitting it still parses.
+ */
+let servedSegmentDifficulty: number | null = null;
+/**
+ * A session plan for the fake Core's session response, so the v3 brain is
+ * ACTIVE. Off by default: every other test in this file describes an open
+ * session with no plan, which is the shape they were written against.
+ */
+let servedSessionPlan: unknown[] | null = null;
 
 function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve) => {
@@ -119,6 +132,7 @@ function startFakeCore(): Promise<Server> {
           isMinor: sessionIsMinor,
           voiceConsent: sessionConsent,
           intelDegraded: false,
+          ...(servedSessionPlan ? { sessionPlan: servedSessionPlan } : {}),
         });
       }
       if (url.includes('/tutor/internal/turns')) {
@@ -154,6 +168,7 @@ function startFakeCore(): Promise<Server> {
             payload: { options: [{ id: 'a', text_md: '100' }] },
           },
           keyVerified: true,
+          ...(servedSegmentDifficulty === null ? {} : { servedDifficulty: servedSegmentDifficulty }),
         });
       }
       if (url.includes('/tutor/internal/consent/')) {
@@ -341,6 +356,9 @@ afterEach(async () => {
   flagsShouldFail = false;
   servedSegmentType = 'quiz_mcq';
   voiceCheckRecognized = true;
+  servedSegmentDifficulty = null;
+  servedSessionPlan = null;
+  vi.restoreAllMocks();
   const { nonceLedger } = await import('../session/token.js');
   nonceLedger.clear();
   // Tests share one session id, and a socket closed without a farewell PARKS
@@ -550,6 +568,51 @@ describe('a real live session over a real websocket', () => {
     // The model was told the outcome, so it can praise the thinking rather
     // than read the number out.
     expect(modelJournal.bodies.join('\n')).toContain('scored 100');
+
+    socket.close();
+  });
+
+  /*
+   * ROUND 74: THE BAND CORE ACTUALLY SERVED CROSSES THE SOCKET.
+   *
+   * The controller and the response schema each have their own unit tests.
+   * What neither can see is the ARGUMENT — `ws/server.ts` reading
+   * `served.servedDifficulty` off Core's answer and handing it to
+   * `noteSegmentServed`. A line that silently never happens is exactly the
+   * class §1.14 keeps paying for, so it is asserted here, over the real
+   * socket, against the real ladder response.
+   *
+   * The observable is the controller's own two-band content-gap warning: the
+   * plan asks for band 5, the fake Core answers with band 1, and nothing can
+   * produce that line unless the value travelled the whole way.
+   */
+  it('carries the difficulty Core actually served into the controller', async () => {
+    freshJournal();
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    servedSessionPlan = [
+      {
+        kcId: '55555555-5555-4555-8555-555555555555',
+        kcKey: 'money.saving',
+        skillKey: null,
+        reason: 'frontier',
+        pKnown: 0.4,
+        targetDifficulty: 5,
+        objective: 'Ahorrar un poco cada semana.',
+        prereqKcIds: [],
+        misconceptions: [],
+      },
+    ];
+    servedSegmentDifficulty = 1;
+
+    const { socket } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const servedAt = collect(socket, (m) => m.some((x) => x.type === 'segment'));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quieropracticarya' }));
+    await servedAt;
+
+    const lines = warn.mock.calls.map((c) => String(c[0]));
+    expect(lines.some((l) => l.includes('the ladder served difficulty 1 for a request at 5'))).toBe(true);
 
     socket.close();
   });

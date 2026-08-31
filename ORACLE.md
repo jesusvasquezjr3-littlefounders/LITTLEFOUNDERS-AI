@@ -2645,6 +2645,31 @@ are the wrong shape whenever the field they gate is a preference rather
 than something the turn's correctness depends on — sanitize after parsing,
 don't reject at parse time.
 
+**`servedDifficulty` — the ladder now says which band it ACTUALLY served
+(round 74, 2026-08-30).** The ordering above picks by difficulty DISTANCE and
+takes the nearest, and the prerequisite and frontier fallbacks reach into an
+entirely different topic — so answering a request for band 4 with a band-2
+segment is ordinary, correct behaviour. It was also invisible: every
+`difficulty` in `POST /segments` was the REQUESTED value, so Oracle's own
+`lastDifficulty` ratchet kept adjusting from its own guess rather than from
+what reached the child's screen, and since every adjustment in `decide()` is
+made relative to that field the gap survived the rest of the session. Core's
+BKT posterior is difficulty-agnostic, so nothing persisted was corrupted —
+this was Oracle's local adaptive state alone. The response now carries
+`servedDifficulty`, read off the chosen segment or pack row, and `null`
+rather than a default when the segment declares none (the sort's own `?? 3`
+tie-break must never be reported as a fact about the content). `ws/server.ts`
+hands it to `noteSegmentServed`, which passes it to
+`PedagogicalController.reconcileServedDifficulty()`. The reconcile corrects
+the ratchet's MEMORY and not the plan — `decide()` re-bases on
+`entry.targetDifficulty` every turn, so it cannot pin a learner low — and it
+warns only at a gap of two bands or more, since a one-band substitution is
+the ladder working as designed. Nothing new reaches the model: this steers
+which band the NEXT request asks for, and never enters the sealed context, so
+§4.1 is untouched. `ServedSegmentSchema` is `.strict()`, which makes the
+deploy order load-bearing: **Oracle before Core**, or an old Oracle rejects
+the new key and every activity becomes `NO_SEGMENT`.
+
 **Still out of scope, backlog, not silently dropped:** a general free-form
 canvas ("UI generativa acotada", blueprint §10.4) — a multi-week
 content-pipeline feature (schema, CAS verifier, age classifier, content bank)

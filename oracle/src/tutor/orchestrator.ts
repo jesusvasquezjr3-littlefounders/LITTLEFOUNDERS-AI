@@ -494,6 +494,13 @@ export class TutorOrchestrator {
     skillKey: string,
     segmentType?: string,
     prompt?: string,
+    /**
+     * The band the ladder ACTUALLY served, from Core's own response — not the
+     * one this session asked for. `null`/omitted means nobody could say, and
+     * the ratchet is then left exactly as it was rather than nudged toward a
+     * guess. See `PedagogicalController.reconcileServedDifficulty`.
+     */
+    servedDifficulty?: number | null,
   ): void {
     this.segmentCount += 1;
     this.servedSegmentSkills.set(segmentId, skillKey);
@@ -527,6 +534,14 @@ export class TutorOrchestrator {
       segmentType && text !== ''
         ? { type: segmentType, prompt: text.slice(0, 400) }
         : null;
+    /*
+     * AND AT WHAT LEVEL — because the ladder does not always give us the band
+     * we asked for, and the controller's whole adaptive state is relative to
+     * the band it believes the learner is on. This is the one moment we learn
+     * what actually happened, so it is the one moment the belief can be
+     * corrected. Round 74 (2026-08-30, MEDIUM).
+     */
+    this.controller.reconcileServedDifficulty(servedDifficulty);
   }
 
   /*

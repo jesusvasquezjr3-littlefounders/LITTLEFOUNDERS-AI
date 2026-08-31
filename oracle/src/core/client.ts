@@ -297,6 +297,22 @@ const ServedSegmentSchema = z
     /** The stripped Lesson Engine segment, shape-checked by the frontend. */
     segment: z.record(z.string(), z.unknown()),
     keyVerified: z.boolean(),
+    /**
+     * The band the segment Core ACTUALLY chose carries — not the one we asked
+     * for, which the ladder is free to miss (see `servedDifficultyOf` in
+     * `backend/src/routes/tutor.ts`). `null` means the chosen segment declares
+     * no usable difficulty, which is a different fact from "band 3" and is
+     * kept distinguishable from it (§1.14).
+     *
+     * OPTIONAL ON PURPOSE, and the direction matters. This object is
+     * `.strict()`, so it is the OLD-Oracle-meets-NEW-Core direction that is
+     * dangerous: an unknown key fails the parse, `requestSegment` returns
+     * `null`, and every single activity in every session becomes NO_SEGMENT.
+     * Optional here only covers the opposite pairing (this Oracle against a
+     * Core that predates the field), so the deploy ORDER is load-bearing —
+     * Oracle first, then Core. Recorded in `RUNBOOK.md` Round 74.
+     */
+    servedDifficulty: z.number().int().min(1).max(5).nullable().optional(),
   })
   .strict();
 

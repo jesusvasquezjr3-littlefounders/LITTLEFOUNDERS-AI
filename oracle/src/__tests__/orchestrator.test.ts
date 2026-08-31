@@ -2570,3 +2570,59 @@ describe('a once-per-session skill is committed on DELIVERY, not on selection', 
     expect(body).toContain('CONFRONT WITH A COUNTEREXAMPLE');
   });
 });
+
+/*
+ * Found by adversarial review, round 59 (2026-08-30, MEDIUM), deferred to
+ * round 74: Core's ladder can serve a segment at a DIFFERENT band than the one
+ * requested — correctly, via its nearest-match search or its prerequisite and
+ * frontier fallbacks — and `noteSegmentServed` had no way to hear about it.
+ * The controller's session-scoped ratchet therefore kept adjusting from what
+ * it had ASKED for rather than from what actually reached the screen, for the
+ * rest of the session. This is the seam where the fact arrives, so this is the
+ * test that it is not dropped on the floor between the socket and the brain.
+ */
+describe('the served band reaches the controller through noteSegmentServed', () => {
+  const KC_ID = 'dddddddd-dddd-4ddd-8ddd-dddddddddd03';
+  const PLANNED: SessionContext = {
+    ...KID,
+    sessionPlan: [
+      {
+        kcId: KC_ID,
+        kcKey: 'money.make-change-counting-up',
+        skillKey: null,
+        reason: 'frontier',
+        pKnown: 0.4,
+        targetDifficulty: 4,
+        objective: 'Dar el cambio contando hacia arriba.',
+        prereqKcIds: [],
+        misconceptions: [],
+      } satisfies SessionPlanEntry,
+    ],
+    kcStates: [
+      { kcId: KC_ID, kcKey: 'money.make-change-counting-up', pKnown: 0.4, attempts: 0 } satisfies KcState,
+    ],
+  };
+
+  const serve = (servedDifficulty?: number | null): TutorOrchestrator => {
+    const orchestrator = new TutorOrchestrator(PLANNED, Date.now(), silent);
+    // The band the socket would have asked Core for.
+    expect(orchestrator.activeDifficulty).toBe(4);
+    orchestrator.noteSegmentServed('seg-1', 'financial-education/x', 'quiz_mcq', 'prompt', servedDifficulty);
+    return orchestrator;
+  };
+
+  it('corrects the ratchet when the ladder substituted another band', () => {
+    expect(serve(2).activeDifficulty).toBe(2);
+  });
+
+  it('leaves it alone when the ladder served exactly what was asked', () => {
+    expect(serve(4).activeDifficulty).toBe(4);
+  });
+
+  it('leaves it alone when Core could not say — a missing fact is not a measurement', () => {
+    // `null` is what an older Core, or a segment with no authored difficulty,
+    // produces. Neither licenses moving a band (§1.14).
+    expect(serve(null).activeDifficulty).toBe(4);
+    expect(serve(undefined).activeDifficulty).toBe(4);
+  });
+});

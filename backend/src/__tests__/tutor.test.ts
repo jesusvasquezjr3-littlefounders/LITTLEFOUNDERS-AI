@@ -2045,6 +2045,134 @@ describe('preferredTypes — the ladder\'s visual-type hint (V4 sprint 2 backlog
   });
 });
 
+/*
+ * Found by adversarial review, round 59 (2026-08-30, MEDIUM), deferred to
+ * round 74: `serveFromCatalog`/`serveFromBank` order candidates by difficulty
+ * DISTANCE and take the nearest, so a request for one band is routinely,
+ * correctly answered with a segment at another — and the prerequisite and
+ * frontier fallback rungs reach into a whole different topic, whose bands were
+ * never chosen with this request in mind. The response never said so: every
+ * `difficulty` in the route was the REQUESTED value, so Oracle's own
+ * session-scoped ratchet kept adjusting from what it had ASKED for rather than
+ * from what actually reached the child's screen.
+ */
+describe('the response reports the difficulty that was SERVED, not the one requested', () => {
+  const COURSE = 'aa110000-0000-4000-8000-000000000001';
+  const TOPIC = 'aa110000-0000-4000-8000-000000000002';
+  const LESSON = 'aa110000-0000-4000-8000-000000000003';
+  const SAGA = 'aa110000-0000-4000-8000-000000000004';
+  const ROW = 'aa110000-0000-4000-8000-000000000005';
+
+  /** A topic whose ONLY segments are far from the band anyone will ask for. */
+  const catalogAt = (segments: unknown[]) => ({
+    segment: [{ id: ROW }],
+    courses: [{ id: COURSE, slug: 'financial-education' }],
+    topics: [{ id: TOPIC, slug: 'ahorro', saga_id: SAGA, status: 'published' }],
+    lessons: [{ id: LESSON, topic_id: TOPIC, position: 1, status: 'published' }],
+    lessonDocuments: [
+      {
+        lesson_id: LESSON,
+        locale: 'es-MX',
+        schema_version: 1,
+        audio: null,
+        updated_at: '2026-08-29T00:00:00.000Z',
+        document: { segments },
+        answer_keys: { 'seg-easy': { correct: 'a' }, 'seg-exact': { correct: 'a' } },
+      },
+    ],
+  });
+
+  const body = {
+    sessionId: SESSION,
+    skillKey: 'financial-education/ahorro',
+    difficulty: 5,
+    framing: 'Vamos a practicar.',
+    rationale: 'the learner is ready for something harder',
+  };
+
+  it('reports the SUBSTITUTED band when the ladder has nothing at the requested one', async () => {
+    // Asked for 5; the topic's only published segment is a 1. The ladder is
+    // right to serve it — and pre-fix the response was silent about the swap.
+    stub(catalogAt([{ id: 'seg-easy', type: 'quiz_mcq', difficulty: 1, prompt_md: '¿Cuál vale más?' }]));
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/segments')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(body);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.segment?.id).toBe('seg-easy');
+    // The point of the whole fix: NOT the 5 that was asked for.
+    expect(response.body.data.servedDifficulty).toBe(1);
+  });
+
+  it('reports the requested band when that is genuinely what was served', async () => {
+    stub(
+      catalogAt([
+        { id: 'seg-easy', type: 'quiz_mcq', difficulty: 1, prompt_md: '¿Cuál vale más?' },
+        { id: 'seg-exact', type: 'quiz_mcq', difficulty: 5, prompt_md: 'Un problema más difícil.' },
+      ]),
+    );
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/segments')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(body);
+
+    expect(response.body.data.segment?.id).toBe('seg-exact');
+    expect(response.body.data.servedDifficulty).toBe(5);
+  });
+
+  /*
+   * A segment that declares no difficulty is a real state in the catalog —
+   * `orderCandidates` has a `?? 3` for exactly that reason. That default is a
+   * SORTING tie-break and must never be reported as a fact about the content
+   * (§1.14): `null` says "nobody wrote one down", which is a different claim
+   * from "band 3" and is the only one a consumer can safely act on.
+   */
+  it('reports null — never a default, never the request — for a segment with no difficulty of its own', async () => {
+    stub(catalogAt([{ id: 'seg-easy', type: 'quiz_mcq', prompt_md: '¿Cuál vale más?' }]));
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/segments')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(body);
+
+    expect(response.body.data.segment?.id).toBe('seg-easy');
+    expect(response.body.data.servedDifficulty).toBeNull();
+  });
+
+  it('reports the BANK pack\'s own band too, not the request', async () => {
+    stub({
+      // No catalog content at all — tier 2 is the rung that answers.
+      segment: [{ id: ROW }],
+      courses: [{ id: COURSE, slug: 'financial-education' }],
+      topics: [],
+      packs: [
+        {
+          id: 'aa110000-0000-4000-8000-000000000006',
+          skill_key: 'financial-education/ahorro',
+          tier: 2,
+          locale: 'es-MX',
+          status: 'published',
+          pack: {
+            segments: [{ id: 'seg-bank', type: 'quiz_mcq', difficulty: 2, prompt_md: '¿Cuál vale más?' }],
+            answers: { 'seg-bank': { correct: 'a' } },
+          },
+        },
+      ],
+    });
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/segments')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(body);
+
+    expect(response.body.data.segment?.id).toBe('seg-bank');
+    expect(response.body.data.servedDifficulty).toBe(2);
+  });
+});
+
 describe('a tutor that admits it does not know which skill', () => {
   /*
    * In an open conversation there is no lesson plan and no skill state to copy

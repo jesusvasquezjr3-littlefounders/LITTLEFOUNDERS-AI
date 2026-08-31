@@ -1250,7 +1250,37 @@ async function persistAndServe(
     origin: candidate.origin,
     segment: stripCandidate(candidate.segment),
     keyVerified,
+    servedDifficulty: servedDifficultyOf(candidate.segment),
   });
+}
+
+/**
+ * The difficulty the SERVED segment actually carries — never the requested one.
+ *
+ * `serveFromCatalog` and `serveFromBank` order candidates by difficulty
+ * DISTANCE and take the nearest, so the ladder legitimately answers a request
+ * for band 4 with the band-2 segment that is the only one this topic has —
+ * and the prerequisite and frontier fallback rungs reach into an entirely
+ * different topic, whose bands were never chosen with this request in mind.
+ * That substitution is correct behaviour; what was missing is SAYING SO. Every
+ * `difficulty` in this route is the value the caller ASKED for, so Oracle's
+ * session-scoped ratchet (`oracle/src/tutor/controller.ts`'s `lastDifficulty`)
+ * kept ratcheting off its own guess rather than off what landed on the screen.
+ * Found by adversarial review, round 59, deferred; fixed round 74
+ * (2026-08-30, MEDIUM). Core's BKT posterior is difficulty-agnostic, so
+ * nothing PERSISTED was ever corrupted by this — only Oracle's local adaptive
+ * state, for the rest of the session.
+ *
+ * `null`, never a default, when the chosen segment declares no usable
+ * difficulty (§1.14: failure must be distinguishable from emptiness).
+ * `orderCandidates` defaults a missing difficulty to 3 for SORTING, where a
+ * tie-break guess costs nothing; reporting that same 3 here would be
+ * indistinguishable from a segment genuinely authored at band 3, and the
+ * consumer would reconcile its ratchet to a number nobody ever wrote down.
+ */
+function servedDifficultyOf(segment: SegmentBase): number | null {
+  const value = (segment as { difficulty?: unknown }).difficulty;
+  return typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 5 ? value : null;
 }
 
 function shouldSampleForReview(): boolean {
