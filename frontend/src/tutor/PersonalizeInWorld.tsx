@@ -152,6 +152,26 @@ export function PersonalizeInWorld({
   const [nicknameError, setNicknameError] = useState<string | null>(null);
 
   /*
+   * THE FIVE AXES WITH NO DRAFT SHARE ONE ERROR SLOT, because they share one
+   * failure mode. Unlike the nickname, none of `chooseTutor`, `toggleCompanion`,
+   * `goToIsland`, `setLight` or `toggleAdaptation` holds a value this component
+   * owns — each writes straight to `preferences` through `onSave`, which
+   * `persistPreferences` (`TutorExperience.tsx`) applies optimistically and
+   * ROLLS BACK to the exact prior value the instant the server refuses it. So a
+   * rejection here never leaves a truth/display mismatch behind the way an
+   * unsaved nickname draft would — `preferences` is already correct again by
+   * the time this runs. What was missing was never a state repair, only that
+   * the child was never told the tap did nothing, so the picker read as
+   * working when a save was silently discarded.
+   *
+   * Found by adversarial review, sweep 92 (2026-08-31, MEDIUM): every one of
+   * these five handlers fired `void onSave(...)` and never looked at the
+   * `Promise<boolean>` it got back — exactly the bug round 38 fixed for the
+   * nickname, on every OTHER axis at once.
+   */
+  const [pickError, setPickError] = useState<string | null>(null);
+
+  /*
    * WHAT THE PLATE PERSISTENTLY SHOWS: one press, and a way to open the rest.
    *
    * The plate was rejected as a form and then rebuilt as the same form in a
@@ -302,10 +322,40 @@ export function PersonalizeInWorld({
         // was told he talks with his whole body has been given a choice.
         t('tutor.personalize.bodyTalker');
 
-  const chooseTutor = (id: CharacterId) => {
+  /**
+   * Surfaces a rejected pick the same way `commitNickname` surfaces a rejected
+   * nickname: an inline alert, in the one panel every axis already renders
+   * into. Forces the panel open, because four of the five callers below have a
+   * WORLD control as well as a panel row (`chooseTutor`, `toggleCompanion`,
+   * `goToIsland`, `setLight`; `toggleAdaptation` is panel-only), and a message
+   * rendered only inside a closed panel is not feedback a learner can see.
+   *
+   * Deliberately does NOT block the "I'm ready" press the way a rejected
+   * nickname does. Nickname blocks continuing because leaving would carry an
+   * OPTIMISTIC value the server never actually stored. These five axes have no
+   * draft: `persistPreferences` (`TutorExperience.tsx`) rolls `preferences`
+   * back to the exact prior value the instant the server refuses a patch, so by
+   * the time this runs the displayed state is already true again — there is
+   * nothing stale left for "I'm ready" to carry forward, only a message worth
+   * showing.
+   *
+   * Found by adversarial review, sweep 92 (2026-08-31, MEDIUM): every one of
+   * `chooseTutor`, `toggleCompanion`, `goToIsland`, `setLight` and
+   * `toggleAdaptation` fired `void onSave(...)` and never looked at the
+   * `Promise<boolean>` it got back — exactly the bug round 38 fixed for the
+   * nickname, on every OTHER axis at once.
+   */
+  const reportIfRejected = (saved: boolean) => {
+    if (saved) return;
+    setPickError(t('tutor.personalize.pickRejected'));
+    setOpen(true);
+  };
+
+  const chooseTutor = async (id: CharacterId) => {
     if (id === lead) return;
     playPlatformSound('tutor_chip');
-    void onSave({
+    setPickError(null);
+    const saved = await onSave({
       character: id,
       /*
        * A companion who is also the tutor would put one character on the island
@@ -315,19 +365,24 @@ export function PersonalizeInWorld({
        */
       ...(companion === id ? { companion: null } : {}),
     });
+    reportIfRejected(saved);
   };
 
-  const toggleCompanion = (id: CharacterId) => {
+  const toggleCompanion = async (id: CharacterId) => {
     if (id === lead) return;
     playPlatformSound('tutor_chip');
-    void onSave({ companion: companion === id ? null : id });
+    setPickError(null);
+    const saved = await onSave({ companion: companion === id ? null : id });
+    reportIfRejected(saved);
   };
 
-  const goToIsland = (id: string) => {
+  const goToIsland = async (id: string) => {
     if (id === preferences.diorama) return;
     // The move is the choice, so it gets the travel cue rather than the pick one.
     playPlatformSound('tutor_camera');
-    void onSave({ diorama: id });
+    setPickError(null);
+    const saved = await onSave({ diorama: id });
+    reportIfRejected(saved);
   };
 
   /*
@@ -339,20 +394,24 @@ export function PersonalizeInWorld({
    * other light is. That deleted a rule, a sentence in three locales, and the
    * only affordance on this phase a learner could not see.
    */
-  const setLight = (id: string) => {
+  const setLight = async (id: string) => {
     if (id === preferences.backdrop) return;
     playPlatformSound('tutor_chip');
-    void onSave({ backdrop: id });
+    setPickError(null);
+    const saved = await onSave({ backdrop: id });
+    reportIfRejected(saved);
   };
 
-  const toggleAdaptation = (adaptation: Adaptation) => {
+  const toggleAdaptation = async (adaptation: Adaptation) => {
     playPlatformSound('tutor_chip');
+    setPickError(null);
     const on = preferences.adaptations.includes(adaptation);
-    void onSave({
+    const saved = await onSave({
       adaptations: on
         ? preferences.adaptations.filter((entry) => entry !== adaptation)
         : [...preferences.adaptations, adaptation],
     });
+    reportIfRejected(saved);
   };
 
   /**
@@ -430,7 +489,7 @@ export function PersonalizeInWorld({
                  * every candidate is reachable through anyway.
                  */
                 shape="chip"
-                onClick={() => chooseTutor(id)}
+                onClick={() => void chooseTutor(id)}
                 aria-label={t('tutor.personalize.chooseTutor', { name: nameOf(id) })}
                 aria-pressed={isLead}
                 // Through the material, never `ring-2`: a Tailwind ring writes
@@ -469,7 +528,7 @@ export function PersonalizeInWorld({
                 <HudPlate
                   as="button"
                   shape="orb"
-                  onClick={() => toggleCompanion(id)}
+                  onClick={() => void toggleCompanion(id)}
                   aria-label={t('tutor.personalize.dismissCompanion', { name: nameOf(id) })}
                   aria-pressed
                   selected
@@ -519,7 +578,7 @@ export function PersonalizeInWorld({
           {previousIsland && (
             <WorldChip
               slot="island.rim.left"
-              onSelect={() => goToIsland(previousIsland)}
+              onSelect={() => void goToIsland(previousIsland)}
               label={t('tutor.personalize.goToIsland', { name: islandName(previousIsland) })}
               /* See the note on the sun below: same set, same clearance. */
               stack
@@ -530,7 +589,7 @@ export function PersonalizeInWorld({
           {nextIsland && (
             <WorldChip
               slot="island.rim.right"
-              onSelect={() => goToIsland(nextIsland)}
+              onSelect={() => void goToIsland(nextIsland)}
               label={t('tutor.personalize.goToIsland', { name: islandName(nextIsland) })}
               /*
                * AND THE RIM PAD STACKS TOO, which is the sibling of the sun's
@@ -572,7 +631,7 @@ export function PersonalizeInWorld({
       {nextLight && (
         <WorldChip
           slot={SUN_MARK_ID}
-          onSelect={() => setLight(nextLight)}
+          onSelect={() => void setLight(nextLight)}
           label={t('tutor.personalize.lightNext', { name: lightName(nextLight) })}
           /*
            * IT STACKS, AND IT DID NOT, WHICH IS WHY IT LANDED ON DINA.
@@ -657,6 +716,21 @@ export function PersonalizeInWorld({
           >
             <div className="flex max-h-[38vh] flex-col gap-4 overflow-y-auto overscroll-contain lg:max-h-[52vh]">
               {/*
+                THE ONE ALERT EVERY OTHER PICK SHARES, first in the panel so it
+                is seen before any of the rows it is about. The nickname gets
+                its own error slot on its own `Field` because it is the one
+                axis with a field to attach one to; these five have none, so
+                this is the same `role="alert"` treatment
+                (`components/ui/Field.tsx`) standing on its own instead of
+                riding a specific control.
+              */}
+              {pickError && (
+                <p role="alert" className="lf-caption text-error-strong">
+                  {pickError}
+                </p>
+              )}
+
+              {/*
                 The nickname stays a real input, and its helper line stays with
                 it: it is the only name that ever reaches the model
                 (/ORACLE.md §4.1), and a learner who is not told that cannot
@@ -694,7 +768,7 @@ export function PersonalizeInWorld({
                     <PlateChip
                       key={adaptation}
                       selected={preferences.adaptations.includes(adaptation)}
-                      onSelect={() => toggleAdaptation(adaptation)}
+                      onSelect={() => void toggleAdaptation(adaptation)}
                     >
                       {t(`tutor.adaptation.${adaptation}`)}
                     </PlateChip>
@@ -718,7 +792,7 @@ export function PersonalizeInWorld({
                       <div key={id} className="flex items-center gap-2">
                         <PlateChip
                           selected={id === lead}
-                          onSelect={() => chooseTutor(id)}
+                          onSelect={() => void chooseTutor(id)}
                           label={t('tutor.personalize.chooseTutor', { name: nameOf(id) })}
                           className="flex-1"
                         >
@@ -738,7 +812,7 @@ export function PersonalizeInWorld({
                         {id !== lead && (
                           <PlateChip
                             selected={id === companion}
-                            onSelect={() => toggleCompanion(id)}
+                            onSelect={() => void toggleCompanion(id)}
                             label={
                               id === companion
                                 ? t('tutor.personalize.dismissCompanion', { name: nameOf(id) })
@@ -762,7 +836,7 @@ export function PersonalizeInWorld({
                       <PlateChip
                         key={id}
                         selected={id === preferences.diorama}
-                        onSelect={() => goToIsland(id)}
+                        onSelect={() => void goToIsland(id)}
                       >
                         {islandName(id)}
                       </PlateChip>
@@ -779,7 +853,7 @@ export function PersonalizeInWorld({
                       <PlateChip
                         key={id}
                         selected={preferences.backdrop === id}
-                        onSelect={() => setLight(id)}
+                        onSelect={() => void setLight(id)}
                       >
                         {/*
                           One word per row, "My theme" included. The sentence

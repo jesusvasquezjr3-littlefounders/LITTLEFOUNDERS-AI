@@ -74,6 +74,7 @@
     "nicknameHint": "Pick a nickname, not your real name. It's the only name your tutor is ever told.",
     "nicknameInvalid": "Use letters, numbers, spaces, apostrophes or hyphens.",
     "nicknameRejected": "That nickname didn't work. Try a different one.",
+    "pickRejected": "That didn't save. Try again.",
     "adaptTitle": "How I explain",
     "saving": "Saving…",
     "aboutYou": "About you",

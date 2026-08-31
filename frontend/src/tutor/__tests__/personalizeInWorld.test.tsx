@@ -80,7 +80,15 @@ function DockProbe({ rect }: { rect: { left: number; top: number; width: number;
 }
 
 function renderLayer(overrides: Partial<PersonalizeLayerProps> = {}) {
-  const onSave = vi.fn();
+  // Resolves `true` by default: `onSave` is `Promise<boolean>` in production
+  // (`persistPreferences` in `TutorExperience.tsx`), never a bare `vi.fn()`'s
+  // implicit `undefined` — and `undefined` is falsy, so once the five
+  // discrete-pick axes started awaiting this return value (sweep 92, MEDIUM),
+  // an unresolved default would misreport every ordinary successful pick in
+  // this suite as a REJECTED one. Tests that need to exercise a genuine
+  // rejection override this explicitly, the same way the nickname's own
+  // rejection test already does.
+  const onSave = vi.fn().mockResolvedValue(true);
   const onDone = vi.fn();
   const view = render(
     <SafeAreaProvider>
@@ -488,6 +496,27 @@ describe('the one plate', () => {
   });
 
   /*
+   * Sanity check for the fix below: nickname's OWN rejection message stays
+   * exactly what it was, distinct from the generic one the five discrete
+   * picks now share. If the fix had reused `nicknameRejected` verbatim for
+   * every axis, or collapsed both into one state slot, this would either
+   * show the wrong sentence or fail to compile.
+   */
+  it('keeps the nickname its own rejection wording, distinct from every other axis', async () => {
+    const onSave = vi.fn().mockResolvedValue(false);
+    const { onDone } = renderLayer({ onSave });
+    openPanel();
+    fireEvent.change(screen.getByLabelText('Nickname'), { target: { value: 'Ana Vasquez' } });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: "I'm ready" }));
+    });
+
+    expect(onDone).not.toHaveBeenCalled();
+    expect(screen.getByRole('alert')).toHaveTextContent("That nickname didn't work. Try a different one.");
+  });
+
+  /*
    * THE CAMERA HAS TO KNOW THIS THING IS HERE.
    *
    * It is the one large opaque surface on the screen and it had never
@@ -603,6 +632,104 @@ describe('the one plate', () => {
     const plate = screen.getByRole('complementary', { name: 'About you' });
     expect(plate.className).toContain('lg:w-[min(420px,calc(100vw-3rem))]');
     expect(plate.className).not.toMatch(/w-\[420px\]/);
+  });
+});
+
+/*
+ * THE FIVE AXES WITH NO DRAFT, AND WHAT THEY USED TO DO WITH A REJECTION:
+ * NOTHING. `chooseTutor`, `toggleCompanion`, `goToIsland`, `setLight` and
+ * `toggleAdaptation` each fired `void onSave(patch)` and threw away the
+ * `Promise<boolean>` it returned. `persistPreferences` (`TutorExperience.tsx`)
+ * always rolls a rejected patch back to the true prior value, so the ISLAND
+ * recovered on its own — but nothing on screen ever told the learner their tap
+ * had done nothing, and "I'm ready" was free to be pressed as if it had
+ * worked.
+ *
+ * Found by adversarial review, sweep 92 (2026-08-31, MEDIUM). Every test below
+ * fails against the pre-fix code for the same reason: `onSave` resolving
+ * `false` produced no `role="alert"` anywhere in the document.
+ */
+describe('a rejected discrete pick', () => {
+  it('reports a rejected tutor pick, from the world', async () => {
+    const onSave = vi.fn().mockResolvedValue(false);
+    renderLayer({ onSave });
+
+    await act(async () => {
+      fireEvent.click(worldButton('Talk with Zara Vex'));
+    });
+
+    expect(onSave).toHaveBeenCalledWith({ character: 'zara' });
+    expect(screen.getByRole('alert')).toHaveTextContent("That didn't save. Try again.");
+    // Forced open: this pick was made from a WORLD control with the panel
+    // closed, so the alert would otherwise be invisible.
+    expect(screen.getByRole('button', { name: 'Hide the list' })).toBeInTheDocument();
+  });
+
+  it('reports a rejected companion invite, from the panel list', async () => {
+    const onSave = vi.fn().mockResolvedValue(false);
+    renderLayer({ onSave });
+    openPanel();
+    const plate = screen.getByRole('complementary', { name: 'About you' });
+
+    await act(async () => {
+      fireEvent.click(within(plate).getByRole('button', { name: 'Ask Liruf to stay' }));
+    });
+
+    expect(onSave).toHaveBeenCalledWith({ companion: 'liruf' });
+    expect(screen.getByRole('alert')).toHaveTextContent("That didn't save. Try again.");
+  });
+
+  it('reports a rejected walk to the other island, from the world', async () => {
+    const onSave = vi.fn().mockResolvedValue(false);
+    renderLayer({ onSave });
+
+    await act(async () => {
+      fireEvent.click(worldButton(/^Go to /));
+    });
+
+    expect(onSave).toHaveBeenCalledWith({ diorama: 'diorama-b' });
+    expect(screen.getByRole('alert')).toHaveTextContent("That didn't save. Try again.");
+    expect(screen.getByRole('button', { name: 'Hide the list' })).toBeInTheDocument();
+  });
+
+  it('reports a rejected light change, from the world', async () => {
+    const onSave = vi.fn().mockResolvedValue(false);
+    renderLayer({ onSave, preferences: { ...PREFERENCES, backdrop: 'dusk' } });
+
+    await act(async () => {
+      fireEvent.click(worldButton(/^Move the sun to /));
+    });
+
+    expect(onSave).toHaveBeenCalledWith({ backdrop: 'night' });
+    expect(screen.getByRole('alert')).toHaveTextContent("That didn't save. Try again.");
+    expect(screen.getByRole('button', { name: 'Hide the list' })).toBeInTheDocument();
+  });
+
+  it('reports a rejected adaptation toggle, from the panel', async () => {
+    const onSave = vi.fn().mockResolvedValue(false);
+    renderLayer({ onSave });
+    openPanel();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Give me more examples' }));
+    });
+
+    expect(onSave).toHaveBeenCalledWith({ adaptations: ['more_examples'] });
+    expect(screen.getByRole('alert')).toHaveTextContent("That didn't save. Try again.");
+  });
+
+  it('does not report anything for a pick the server actually accepted', async () => {
+    // The default `renderLayer` mock already resolves `true`; this asserts the
+    // negative explicitly so a future change to that default cannot silently
+    // make every test in this file pass for the wrong reason.
+    const { onSave } = renderLayer();
+
+    await act(async () => {
+      fireEvent.click(worldButton('Talk with Zara Vex'));
+    });
+
+    expect(onSave).toHaveBeenCalledWith({ character: 'zara' });
+    expect(screen.queryByRole('alert')).toBeNull();
   });
 });
 
