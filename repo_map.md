@@ -28285,6 +28285,26 @@ import { resumeSession } from '../tutorApi';
  * `mapRefreshAfterSession.test.tsx` pattern).
 ```
 
+### frontend/src/tutor/__tests__/sessionLimitMemory.test.tsx
+
+```
+import { act, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { getOffers, startSession } from '../tutorApi';
+import type { StartSessionInput } from '../tutorApi';
+import { OfferChips } from '../OfferChips';
+import type { TutorOffers } from '../types';
+
+/*
+ * Confirmed defect, tutor-review-sweep-92 (MEDIUM, session-cap-ux dimension):
+ * a SESSION_LIMIT refusal is held ONLY in `TutorExperience.tsx`'s in-memory
+ * `startError` (`useState`), with no persistence. Refreshing the page, or
+```
+
 ### frontend/src/tutor/__tests__/speechCaptionFloor.test.tsx
 
 ```
