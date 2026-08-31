@@ -1818,7 +1818,6 @@ everything passes the blocked half perfectly and destroys the product.
    miss-then-serve path), and to hold on the EXPENSIVE
    `needsGeneration` shape and not only the cheap one. See `RUNBOOK.md`
    Round 76.
-
 65. **A resumed session kept enforcing the FIRST connection's `isMinor`,
    while every gate around it on the same reconnect already used a
    freshly re-verified one.** Found by adversarial review as round 56's
@@ -1861,6 +1860,43 @@ everything passes the blocked half perfectly and destroys the product.
    test proves `handleConnection` calls it. Confirmed to fail pre-fix
    for the exact claimed reason twice, once per half. See `RUNBOOK.md`
    Round 77.
+
+
+66. **A cost incurred AFTER the ledger is written needs a different fix
+   from one incurred before it, and the difference is not visible in
+   either call.** Found by adversarial review, round 78, 2026-08-30
+   (MEDIUM). Item 55 closed tier-3 generation's invisible paid calls by
+   folding them into `TutorOrchestrator.modelUsd`, which works because
+   that spending happens DURING a turn and nobody reads the total until
+   the socket closes. The post-session review makes a call that looks
+   identical from the outside — the same model, the same provider, the
+   same `${MODEL_API_BASE}/chat/completions` fetch — and its `usage` was
+   never even read, so the price of one call per real conversation
+   reached no ledger at all, forever. The same fix does NOT transfer:
+   `ws/server.ts` persists `costUsd` via `closeSession` and only THEN
+   fires `void runPostSessionReview(...)`, in the graceful `finish()`
+   path and the dropped-connection `finalizeParked()` path alike, so by
+   the time the tokens are known the number is written and the
+   orchestrator is about to be discarded. Fixed by ADDING to the row
+   instead: `add_tutor_session_cost` (migration `0062`) does
+   `cost_usd = cost_usd + x` in one statement — because a PATCH can only
+   set a literal, and doing the arithmetic in Core would be the
+   read-add-write §1.14 names — behind
+   `POST /tutor/internal/sessions/:id/cost`, reached from
+   `core/client.ts`'s `addSessionCost` and priced with the SAME
+   `estimateCostUsd` item 55 already established. The corollaries, and
+   they are the transferable part: ask WHEN a cost becomes known
+   relative to when the total is read, because two calls that look the
+   same can need opposite mechanisms; report it from a `finally`, since
+   the money is gone the instant the provider answers and four of this
+   function's five exits discard the reply it paid for (mark the spend
+   BEFORE reading the body, or a 200 you then fail to parse is the one
+   call you lose); a call you cannot price is not a free call, so no
+   `usage` block means a loud `UNCOUNTED` line and no write, never a
+   recorded zero; and a "closed" record is only immutable if something
+   actually enforces it — Core already writes the memory digest onto a
+   closed session, which is what made attributing this cost home the
+   boring option rather than a new ledger. See `RUNBOOK.md` Round 78.
 
 ---
 

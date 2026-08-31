@@ -96,6 +96,9 @@ interface StubOpts {
    * daily cap already having been (partly or fully) spent, simulated at the
    * boundary rather than by fabricating a real race. */
   awardedXp?: number;
+  /** Overrides what `/rpc/add_tutor_session_cost` answers (migration 0062):
+   * a number is the row's new total, `null` is "nothing was recorded". */
+  sessionCostTotal?: number | null;
 }
 
 function stub(opts: StubOpts = {}) {
@@ -229,6 +232,19 @@ function stub(opts: StubOpts = {}) {
         if (body.p_learner_new !== null) verdicts.learner = 'written';
         if (body.p_pedagogy_new !== null) verdicts.pedagogy = 'written';
         return Promise.resolve(jsonResponse(200, verdicts));
+      }
+      if (url.includes('/rpc/add_tutor_session_cost')) {
+        /*
+         * The real function (migration 0062) ADDS and returns the row's new
+         * total, or NULL when there is no such session / the amount is not
+         * positive. The mock keeps that distinction because it is the whole
+         * §1.14 point of the return value: `null` is "nothing was recorded",
+         * never "recorded zero".
+         */
+        const body = JSON.parse(String(init?.body ?? '{}')) as { p_session_id: string; p_amount: number };
+        if (opts.sessionCostTotal !== undefined) return Promise.resolve(jsonResponse(200, opts.sessionCostTotal));
+        if (body.p_session_id !== SESSION || !(body.p_amount > 0)) return Promise.resolve(jsonResponse(200, null));
+        return Promise.resolve(jsonResponse(200, Number((SESSION_ROW.cost_usd + body.p_amount).toFixed(6))));
       }
       if (url.includes('/rpc/award_tutor_xp')) {
         // Default: award exactly what was requested (no cap in play). A test
@@ -1592,6 +1608,93 @@ describe('the internal surface', () => {
  * detect a genuinely concurrent session (see `writeLearnerMemory`'s own
  * comment, tutorData.ts).
  */
+/*
+ * ROUND 78 (2026-08-30, MEDIUM). The post-session review's own paid model call
+ * lands AFTER `POST /sessions/:id/close` has already written `cost_usd` —
+ * Oracle fires it fire-and-forget from both of its close paths — so the number
+ * §15 promises measures a session's spend was missing it for every session
+ * with a real conversation in it. This route is how that cost gets home, and
+ * it ADDS rather than sets: the addition happens inside Postgres (migration
+ * 0062), never as a read-add-write here (§1.14).
+ */
+describe('POST /api/v1/tutor/internal/sessions/:id/cost', () => {
+  const COST_URL = `/api/v1/tutor/internal/sessions/${SESSION}/cost`;
+
+  it('adds the amount to the session that caused it, and answers with the new total', async () => {
+    const calls = stub();
+    const response = await request(createApp())
+      .post(COST_URL)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ costUsd: 0.000876, reason: 'post_session_review' });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual({ recorded: true, costUsd: 0.000876 });
+
+    // The ADDITIVE rpc, with the session from the PATH — not a PATCH that
+    // would have to read the row first and could write a stale sum back.
+    const rpc = calls.find((c) => c.url.includes('/rpc/add_tutor_session_cost'));
+    expect(rpc).toBeDefined();
+    expect(JSON.parse(String(rpc?.body ?? '{}'))).toEqual({
+      p_session_id: SESSION,
+      p_amount: 0.000876,
+    });
+    expect(calls.some((c) => c.method === 'PATCH' && c.url.includes('/tutor_sessions'))).toBe(false);
+  });
+
+  it('reports recorded:false — never a 500 — when there is no such session to add to', async () => {
+    // The RPC's own "nothing was recorded" answer (§1.14: not "recorded
+    // zero"). The caller is a background task that must not retry, so this
+    // has to be a plain, readable answer rather than an error to handle.
+    stub({ sessionCostTotal: null });
+    const response = await request(createApp())
+      .post(COST_URL)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ costUsd: 0.0005, reason: 'post_session_review' });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual({ recorded: false, costUsd: null });
+  });
+
+  it.each([
+    ['zero', { costUsd: 0, reason: 'post_session_review' }],
+    ['negative', { costUsd: -1, reason: 'post_session_review' }],
+    ['an unknown reason', { costUsd: 0.001, reason: 'because' }],
+    ['an extra field', { costUsd: 0.001, reason: 'post_session_review', sessionId: SESSION }],
+  ])('refuses %s rather than writing it', async (_label, body) => {
+    const calls = stub();
+    const response = await request(createApp())
+      .post(COST_URL)
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(body);
+
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('VALIDATION_ERROR');
+    expect(calls.some((c) => c.url.includes('/rpc/add_tutor_session_cost'))).toBe(false);
+  });
+
+  it('refuses a session id that is not a uuid', async () => {
+    stub();
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/sessions/not-a-uuid/cost')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ costUsd: 0.001, reason: 'post_session_review' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('is internal-only — a browser cannot write a session cost', async () => {
+    stub();
+    const response = await request(createApp())
+      .post(COST_URL)
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send({ costUsd: 0.001, reason: 'post_session_review' });
+
+    expect(response.status).toBe(403);
+    expect(response.body.error.code).toBe('FORBIDDEN');
+  });
+});
+
 describe('PUT /api/v1/tutor/internal/learner-memory', () => {
   it('rejects a request with no expectedBefore at all', async () => {
     stub();
