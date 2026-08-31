@@ -8630,3 +8630,86 @@ secrets:check` green. No `frontend/AGENTS.md` item — touches only
 height-derived arithmetic) is specific enough to this one sheet's own
 detent math that it does not read as a reusable invariant the way this
 file's other frontend rounds have.
+
+## Round 89: an untouched, blank confirmation field could satisfy the "type your child's username to delete them" safety gate — found by adversarial review (3/3 skeptics), MEDIUM, closed 2026-08-31
+
+`ManageKidPanel.tsx`'s remove-a-child flow is modeled on the GitHub
+"type the repo name to delete it" pattern (its own comment says so):
+the Remove button stays disabled until the parent types the child's
+username into a confirm field that starts empty. Both the button's
+`disabled` check and `submitRemove`'s own guard were exactly
+`confirm.trim().toLowerCase() !== (kid.username ?? '')`.
+
+**The defect.** When `kid.username` is `null`, that expression becomes
+`confirm.trim().toLowerCase() !== ''`. The confirm field's own initial
+state is `''`, so `'' !== ''` is `false` — the gate is SATISFIED, and
+the Remove button is enabled, by an UNTOUCHED field with zero
+characters typed. `?? ''` turned the one value a blank field always
+equals into the fallback for the one case the gate exists to guard
+against hitting by muscle memory.
+
+**Not a hypothetical `null`.** `profiles.username` carries no `NOT
+NULL` constraint (`database/migrations/0005_profile_identity.sql`) —
+only a format `CHECK` that a `NULL` value trivially satisfies. A real,
+currently-reachable path was traced in `backend/src/routes/family.ts`'s
+`POST /kids`: `adminCreateUser` creates the auth user (whose
+`handle_new_user` trigger, migration `0003`, auto-creates a `profiles`
+row with `username` left `NULL`), `insertVerifiedGuardianLink` commits
+next, and only THEN does `patchKidProfile` write the username onto the
+profile. The sibling failure branch one step earlier — the link itself
+failing — already rolls back by deleting the auth user
+(`adminDeleteUser`, logged as `family.kid_create.rolled_back`); the
+profile-patch failure branch had no such rollback, just
+`return fail(res, 502, ...)`, leaving the verified `guardian_links` row
+and the null-username profile both committed and permanent. `rest()`
+(`backend/src/services/supabaseRest.ts`) returns `null` on any
+transient network/PostgREST error, so this is an ordinary transient-
+failure shape, not a contrived one. A kid in this state is
+un-renameable (username is deliberately fixed once set — the same
+component's own `usernameFixed` copy says why) and, until this fix,
+unremovable through this exact gate — reachable forever from the
+parent's kid list (`GET /kids` forwards `username: ... ?? null`
+unchanged).
+
+**Fixed at both layers, since either alone leaves a real gap.**
+
+- **Frontend** (`ManageKidPanel.tsx`): the gate no longer degrades to a
+  string comparison against a fallback. `kid.username` is checked
+  STRUCTURALLY first — `!kid.username` now short-circuits both the
+  `disabled` expression and `submitRemove`'s own guard to a hard
+  refusal, so there is no string (blank or otherwise) that can ever
+  satisfy it. When the username is missing, the confirm `Field` is not
+  even rendered; a plain explanatory line
+  (`family.manageKid.removeBlocked`, all three locales) tells the
+  parent the account is missing information and to contact support,
+  rather than inventing a substitute confirmation phrase for a state
+  that is itself a data-integrity anomaly warranting a second look.
+- **Backend** (`family.ts`, `POST /kids`): the profile-patch failure
+  branch now rolls back exactly like its sibling above it — delete the
+  auth user via `adminDeleteUser`, log
+  `family.kid_create.rolled_back` with `stage: 'profile_patch'`. No new
+  rollback mechanism was invented: deleting the auth user CASCADEs
+  through `profiles`, `user_roles` and `guardian_links` (§1.3), so the
+  one call already used for the link-failure branch undoes this later
+  failure too.
+
+**Proof.** `frontend/src/routes/app/family/__tests__/ManageKidPanel.test.tsx`
+gained one test rendering the panel with `kid.username: null`: the
+Remove button stays disabled with the confirm field blank and
+untouched, no username field is offered at all, the "missing
+information" message shows, and clicking the (disabled) button reaches
+neither the API nor `onRemoved`. `backend/src/__tests__/familyKids.test.ts`
+gained a `profilePatchFails` stub option and a test asserting `POST
+/kids` still deletes the auth user and logs the rollback audit event
+when the profile PATCH fails after the guardian link has already
+committed. Both confirmed to fail against the pre-fix code for the
+exact claimed reason via `git stash` (frontend: the button rendered
+enabled; backend: no `DELETE /auth/v1/admin/users/:id` call was made),
+pass against the fix.
+
+Full frontend suite green (129 files, 1479 tests, up from 1478 — this
+fix contributes exactly one of those, the rest landed from sibling
+rounds in the same fast-moving review campaign), full backend suite
+green (42 files, 711 tests, up from 710), type-check clean on both
+(backend including its test tree), lint clean on both, both builds
+green, root `docs:check`/`secrets:check`/`i18n:check` clean.

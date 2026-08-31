@@ -88,7 +88,11 @@ export function ManageKidPanel({
   }
 
   async function submitRemove() {
-    if (confirm.trim().toLowerCase() !== (kid.username ?? '')) return;
+    // A missing username can NEVER be "confirmed" by any input, including a
+    // blank one - see the comment on the disabled check below for why this
+    // is a structural guard rather than a string comparison against `''`.
+    if (!kid.username) return;
+    if (confirm.trim().toLowerCase() !== kid.username) return;
     const done = await run(`/family/kids/${kid.userId}`, { method: 'DELETE' });
     if (!done) return;
     onRemoved(kid.userId);
@@ -196,21 +200,37 @@ export function ManageKidPanel({
           </div>
           {/* Typing the handle is the friction. A destructive action a person
               can reach by muscle memory is one they eventually reach by
-              accident. */}
-          <Field
-            label={t('family.manageKid.removeConfirm', { username: `@${kid.username ?? ''}` })}
-            autoCapitalize="none"
-            spellCheck={false}
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-          />
+              accident. `profiles.username` has no NOT NULL constraint
+              (database/migrations/0005_profile_identity.sql), so a kid row
+              can genuinely reach this screen with `username === null` - a
+              real orphan left behind by a mid-creation failure, not just a
+              hand-edited row. `?? ''` used to make that state MATCH a blank,
+              untouched field, which enabled the Remove button with zero
+              characters typed. There is no username to type in that case, so
+              the gate does not degrade to a weaker phrase - it refuses the
+              whole action and says why, structurally rather than by string
+              comparison against `null`. */}
+          {kid.username ? (
+            <Field
+              label={t('family.manageKid.removeConfirm', { username: `@${kid.username}` })}
+              autoCapitalize="none"
+              spellCheck={false}
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+            />
+          ) : (
+            <div className="flex items-start gap-3 rounded-md bg-surface-sunken px-4 py-3">
+              <Icon name="info" className="mt-0.5 shrink-0 text-content-muted" aria-hidden />
+              <p className="lf-caption text-content-muted">{t('family.manageKid.removeBlocked')}</p>
+            </div>
+          )}
           <div className="flex gap-3">
             <Button
               type="button"
               // `danger`, from the Action Color Contract, not a hand-rolled
               // background: the variant is chosen by what the action DOES.
               variant="danger"
-              disabled={busy || confirm.trim().toLowerCase() !== (kid.username ?? '')}
+              disabled={busy || !kid.username || confirm.trim().toLowerCase() !== kid.username}
               onClick={() => void submitRemove()}
             >
               {t('family.manageKid.removeCta')}

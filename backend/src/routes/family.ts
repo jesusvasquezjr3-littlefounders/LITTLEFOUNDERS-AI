@@ -119,9 +119,16 @@ export function familyRouter(): Router {
    * guardian link is a bug rather than a state, so the account may not outlive
    * a failure to link it. The username is checked first (the common rejection,
    * before anything is written), then the auth user is created, and if the LINK
-   * cannot be written the user is deleted again and the request fails. The role
-   * grant is last, because a kid with no link and no role is inert while a kid
-   * with a role and no link is exactly the state the invariant forbids.
+   * cannot be written the user is deleted again and the request fails. The
+   * PROFILE PATCH gets the same rollback: `profiles.username` has no NOT NULL
+   * constraint (0005), so leaving a verified link with an unpatched, null
+   * username is the identical orphan in a different shape - discovered
+   * 2026-08-31 as a real reachability path, not a hypothetical one, because a
+   * kid in that state can never be renamed (username is fixed) or removed
+   * (the confirm-by-username gate in ManageKidPanel.tsx has nothing to type).
+   * The role grant is last, because a kid with no link and no role is inert
+   * while a kid with a role and no link is exactly the state the invariant
+   * forbids.
    */
   const CreateKid = z.object({
     displayName: z.string().trim().min(1).max(80),
@@ -183,7 +190,25 @@ export function familyRouter(): Router {
       locale,
       birth_date: birthDate,
     });
-    if (!profiled) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the child profile');
+    if (!profiled) {
+      // The SAME §1.3 orphan this function already refuses to leave behind
+      // after a link failure, in a different shape: `profiles.username` has
+      // no NOT NULL constraint (0005_profile_identity.sql), so a kid can end
+      // up with a VERIFIED guardian link and a permanently null username -
+      // reachable by the parent forever, un-renameable (username is
+      // deliberately not editable, ManageKidPanel.tsx), and impossible to
+      // remove through the confirm-by-username safety gate on that same
+      // panel. Rolling back the auth user CASCADEs through profiles,
+      // user_roles and guardian_links (§1.3's own comment on DELETE
+      // /kids/:kidId), so one call undoes the whole sequence exactly like
+      // the insertVerifiedGuardianLink failure branch above.
+      const undone = await adminDeleteUser(kidId);
+      await insertAuditLog(parent.id, 'family.kid_create.rolled_back', kidId, {
+        rollbackSucceeded: undone.error === null,
+        stage: 'profile_patch',
+      });
+      return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the child profile');
+    }
 
     const granted = await grantRole(kidId, 'kid', parent.id);
     if (!granted) return fail(res, 502, DATA_UNAVAILABLE, 'Could not grant the child role');

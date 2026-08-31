@@ -85,6 +85,7 @@
       "remove": "Remove this account",
       "removeWarning": "This deletes {{name}} and everything they have done: their progress, their streak and their conversations. It cannot be undone.",
       "removeConfirm": "Type {{username}} to confirm",
+      "removeBlocked": "This account is missing some information, so it cannot be removed here. Contact support.",
       "removeCta": "Remove permanently",
       "cancel": "Cancel",
       "usernameFixed": "The username cannot be changed. It is how they sign in."

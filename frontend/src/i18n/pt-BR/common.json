@@ -85,6 +85,7 @@
       "remove": "Remover esta conta",
       "removeWarning": "Isto apaga {{name}} e tudo o que ele fez: o progresso, a sequência e as conversas. Não dá para desfazer.",
       "removeConfirm": "Digite {{username}} para confirmar",
+      "removeBlocked": "Faltam informações nesta conta, então ela não pode ser removida por aqui. Fale com o suporte.",
       "removeCta": "Remover para sempre",
       "cancel": "Cancelar",
       "usernameFixed": "O usuário não pode ser alterado. É com ele que entra."
