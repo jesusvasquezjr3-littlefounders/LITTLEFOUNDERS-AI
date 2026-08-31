@@ -86,6 +86,15 @@ interface StubOpts {
   session?: unknown[];
   segment?: unknown[];
   segments?: unknown[];
+  /** Sequential per-call overrides for `/rpc/insert_tutor_segment_checked`
+   *  (migration 0064) — see the branch that reads it for what each entry
+   *  means. Consumed (shifted) in call order; absent or exhausted falls
+   *  back to `segment`. */
+  segmentInsertResponses?: unknown[][];
+  /** Sequential per-call overrides for the "list already-served segments"
+   *  read — see the branch that reads it. Consumed in call order; absent or
+   *  exhausted falls back to `segments`. */
+  segmentsSequence?: unknown[][];
   guardianLinks?: unknown[];
   preferences?: unknown[];
   preflight?: unknown;
@@ -202,6 +211,23 @@ function stub(opts: StubOpts = {}) {
       if (url.includes('/rest/v1/tutor_preferences')) {
         return Promise.resolve(jsonResponse(200, opts.preferences ?? []));
       }
+      if (url.includes('/rpc/insert_tutor_segment_checked')) {
+        /*
+         * The real function (migration 0064, RUNBOOK.md Round 109) claims a
+         * fresh `seq` and re-checks "already served" atomically, answering
+         * either the inserted row or an EMPTY array meaning "a concurrent
+         * request already claimed this exact segment — reselect and retry".
+         * `opts.segmentInsertResponses` is a queue: the Nth call to this RPC
+         * returns its Nth entry (letting a test simulate a conflict on the
+         * first attempt and a real row on the retry), falling back to the
+         * ordinary `opts.segment` fixture once the queue is exhausted —
+         * which is every OTHER test's default, unchanged.
+         */
+        if (opts.segmentInsertResponses && opts.segmentInsertResponses.length > 0) {
+          return Promise.resolve(jsonResponse(200, opts.segmentInsertResponses.shift()));
+        }
+        return Promise.resolve(jsonResponse(200, opts.segment ?? []));
+      }
       if (url.includes('/rest/v1/tutor_segments')) {
         if (method === 'POST') return Promise.resolve(jsonResponse(200, opts.segment ?? []));
         if (method === 'PATCH') return Promise.resolve(new Response(null, { status: 204 }));
@@ -209,6 +235,21 @@ function stub(opts: StubOpts = {}) {
         // 'user_id=eq.' and 'session_id=eq.', so the single-row lookup would
         // swallow every list query.
         if (url.includes('?id=eq.')) return Promise.resolve(jsonResponse(200, opts.segment ?? []));
+        /*
+         * `opts.segmentsSequence` is the GET-side twin of
+         * `segmentInsertResponses`: the Nth call to "list already-served
+         * segments" returns its Nth entry, falling back to the ordinary
+         * `opts.segments` fixture once exhausted. A test that wants to prove
+         * the RETRY loop re-selects against a genuinely UPDATED exclusion
+         * set (rather than merely retrying the identical stale one) seeds
+         * this so the second read reflects what the first, successful
+         * claim actually served — the shape a real concurrent winner's
+         * insert would produce between one caller's stale snapshot and its
+         * own retry.
+         */
+        if (opts.segmentsSequence && opts.segmentsSequence.length > 0) {
+          return Promise.resolve(jsonResponse(200, opts.segmentsSequence.shift()));
+        }
         return Promise.resolve(jsonResponse(200, opts.segments ?? []));
       }
       if (url.includes('/rest/v1/tutor_sessions')) {
@@ -2426,11 +2467,14 @@ describe('a mismatched (skillKey, kcId) pair — PROBE\'s own shape — is corre
         rationale: 'probing a shaky prerequisite',
       });
 
-    const insert = calls.find((c) => c.url.includes('/rest/v1/tutor_segments') && c.method === 'POST');
+    // Migration 0064: the insert now goes through the atomic claim RPC, not
+    // a plain POST to `/tutor_segments` — the RPC's own params carry the
+    // same provenance and payload the old direct insert body did.
+    const insert = calls.find((c) => c.url.includes('/rpc/insert_tutor_segment_checked'));
     expect(insert).toBeDefined();
     const inserted = JSON.parse(String(insert?.body ?? '{}'));
-    expect(inserted.provenance?.kc_id).toBe(KC_B);
-    expect(inserted.payload?.id).toBe('seg-kc-b');
+    expect(inserted.p_provenance?.kc_id).toBe(KC_B);
+    expect(inserted.p_payload?.id).toBe('seg-kc-b');
   });
 });
 
@@ -2676,5 +2720,183 @@ describe('a tutor that admits it does not know which skill', () => {
     // No lookup for a course called "unknown": the sentinel means "you pick",
     // and a query for it would be a query for nothing.
     expect(calls.some((c) => c.url.includes('slug=eq.unknown'))).toBe(false);
+  });
+});
+
+/*
+ * FOUND BY ADVERSARIAL REVIEW SWEEP tutor-review-sweep-101
+ * (content-ladder-correctness dimension), 2026-08-31, HIGH — RUNBOOK.md
+ * Round 109. `POST /segments` used to compute "already served" and the next
+ * `seq` with a plain, non-atomic read BEFORE running the whole content
+ * ladder. Two concurrent requests for the same session could both read the
+ * identical snapshot, both deterministically pick the SAME catalog
+ * candidate (the tier-1 rotation is seeded on the session id, never on
+ * wall-clock time), and both try to insert at the SAME `seq` — the loser's
+ * perfectly valid catalog hit was then rejected by `UNIQUE (session_id,
+ * seq)` and reported to the learner as a manufactured `502
+ * DATA_UNAVAILABLE`, indistinguishable from a real outage.
+ *
+ * Fixed by migration 0064 (`insert_tutor_segment_checked`): the final claim
+ * — assign the next seq, but only if nobody already served this exact
+ * segment to this session — is one atomic, session-locked compare-and-claim
+ * in Postgres. An empty result means a concurrent winner got there first,
+ * and the route's own retry loop (backend/src/routes/tutor.ts) re-runs its
+ * ladder selection against the freshly current exclusion set rather than
+ * surfacing the conflict as a hard failure.
+ */
+describe('POST /api/v1/tutor/internal/segments — a claimed candidate is never discarded as a false 502', () => {
+  const TOPIC = 'aaaaaaaa-1111-4111-8111-aaaaaaaaaaa1';
+  const LESSON = 'aaaaaaaa-1111-4111-8111-aaaaaaaaaaa2';
+  const COURSE = 'aaaaaaaa-1111-4111-8111-aaaaaaaaaaa3';
+  const SAGA = 'aaaaaaaa-1111-4111-8111-aaaaaaaaaaa4';
+
+  const catalog = {
+    courses: [{ id: COURSE, slug: 'financial-education' }],
+    topics: [{ id: TOPIC, slug: 'ahorrar-round101', saga_id: SAGA, status: 'published' }],
+    lessons: [{ id: LESSON, topic_id: TOPIC, position: 1, status: 'published' }],
+    lessonDocuments: [
+      {
+        lesson_id: LESSON,
+        locale: 'es-MX',
+        schema_version: 1,
+        audio: null,
+        updated_at: '2026-08-31T00:00:00.000Z',
+        // TWO segments at the same difficulty: `orderCandidates`' stable sort
+        // picks seg-a first every time neither is excluded, and seg-b once
+        // seg-a is — the "next genuinely distinct candidate" a retry must land
+        // on rather than looping back onto seg-a itself.
+        document: {
+          segments: [
+            { id: 'seg-a', type: 'quiz_mcq', difficulty: 2, prompt_md: 'A' },
+            { id: 'seg-b', type: 'quiz_mcq', difficulty: 2, prompt_md: 'B' },
+          ],
+        },
+        answer_keys: { 'seg-a': { correct: 'a' }, 'seg-b': { correct: 'a' } },
+      },
+    ],
+  };
+
+  const body = {
+    sessionId: SESSION,
+    skillKey: 'financial-education/ahorrar-round101',
+    difficulty: 2,
+    framing: 'Vamos a practicar.',
+    rationale: 'the learner asked for an exercise',
+  };
+
+  it('retries against the freshly current exclusion set on a conflict, and never answers 502', async () => {
+    /*
+     * Deterministic reproduction of ONE request losing a race: its first
+     * claim attempt (for seg-a, the ladder's stable first pick) reports the
+     * conflict a concurrent winner would produce, and the retry's OWN
+     * "already served" read is seeded to reflect that winner's landed row —
+     * exactly what a real concurrent insert would leave behind between one
+     * caller's stale snapshot and its retry.
+     */
+    const calls = stub({
+      ...catalog,
+      segmentInsertResponses: [[]], // attempt 1: a concurrent winner already claimed seg-a
+      segmentsSequence: [[], [{ payload: { id: 'seg-a' } }]], // read 1: nothing served yet; read 2 (the retry): seg-a now served
+      segment: [{ id: 'row-seg-b', seq: 1, payload: { id: 'seg-b' } }], // attempt 2's successful claim
+    });
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/segments')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(body);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.needsGeneration).toBeUndefined();
+    // Never the false 502 the non-atomic read used to produce for exactly
+    // this shape — the identical candidate lost its claim once, and the
+    // route retried rather than reporting a manufactured outage.
+    expect(response.body.data.segment?.id).toBe('seg-b');
+
+    const claimCalls = calls.filter((c) => c.url.includes('/rpc/insert_tutor_segment_checked'));
+    expect(claimCalls).toHaveLength(2);
+    expect(JSON.parse(claimCalls[0]!.body!).p_source_key).toBe('seg-a');
+    expect(JSON.parse(claimCalls[1]!.body!).p_source_key).toBe('seg-b');
+  });
+
+  it('gives up honestly after repeated conflicts, rather than retrying forever', async () => {
+    const calls = stub({
+      ...catalog,
+      // Every attempt reports a conflict — e.g. a torrent of identical
+      // concurrent requests that never stops winning against this one.
+      segmentInsertResponses: [[], [], [], []],
+    });
+
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/segments')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send(body);
+
+    expect(response.status).toBe(502);
+    const claimCalls = calls.filter((c) => c.url.includes('/rpc/insert_tutor_segment_checked'));
+    expect(claimCalls).toHaveLength(4); // MAX_CLAIM_ATTEMPTS, not unbounded
+  });
+
+  /*
+   * Genuine concurrency: two REAL, simultaneous HTTP requests for the same
+   * session (`Promise.all`), against a hand-rolled fetch fake that plays the
+   * part of the atomic Postgres function itself — a `claimed` set a request
+   * only ever joins once, checked and updated between each `await`, so
+   * whichever of the two requests' insert calls the Node event loop happens
+   * to run first wins a given segment id and the other observes it as
+   * already served on every subsequent read, regardless of which request
+   * "started" first. This is what proves the fix is order-independent
+   * rather than merely correct in the order this test happens to drive it.
+   */
+  it('two literally concurrent requests settle at exactly one winner each, never the same segment twice and never a 502', async () => {
+    const claimed: { id: string; seq: number }[] = [];
+    const calls: { url: string; method: string; body?: string }[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        const method = init?.method ?? 'GET';
+        calls.push({ url, method, body: init?.body as string | undefined });
+
+        if (url.includes('/rest/v1/courses')) return Promise.resolve(jsonResponse(200, catalog.courses));
+        if (url.includes('/rest/v1/topics')) return Promise.resolve(jsonResponse(200, catalog.topics));
+        if (url.includes('/rest/v1/lessons')) return Promise.resolve(jsonResponse(200, catalog.lessons));
+        if (url.includes('/rest/v1/lesson_documents')) return Promise.resolve(jsonResponse(200, catalog.lessonDocuments));
+        if (url.includes('/rpc/insert_tutor_segment_checked')) {
+          const parsedBody = JSON.parse(String(init?.body ?? '{}')) as { p_source_key: string | null };
+          if (parsedBody.p_source_key !== null && claimed.some((c) => c.id === parsedBody.p_source_key)) {
+            return Promise.resolve(jsonResponse(200, [])); // conflict: already claimed
+          }
+          const seq = claimed.length;
+          if (parsedBody.p_source_key !== null) claimed.push({ id: parsedBody.p_source_key, seq });
+          return Promise.resolve(jsonResponse(200, [{ id: `row-${parsedBody.p_source_key}`, seq, payload: { id: parsedBody.p_source_key } }]));
+        }
+        if (url.includes('/rest/v1/tutor_segments')) {
+          // "already served" derived LIVE from `claimed`, so a retry from
+          // EITHER request genuinely sees whatever has landed so far.
+          return Promise.resolve(jsonResponse(200, claimed.map((c) => ({ payload: { id: c.id }, seq: c.seq }))));
+        }
+        if (url.includes('/rest/v1/tutor_sessions')) return Promise.resolve(jsonResponse(200, [SESSION_ROW]));
+        return Promise.resolve(jsonResponse(200, []));
+      }),
+    );
+
+    const [a, b] = await Promise.all([
+      request(createApp())
+        .post('/api/v1/tutor/internal/segments')
+        .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+        .send(body),
+      request(createApp())
+        .post('/api/v1/tutor/internal/segments')
+        .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+        .send(body),
+    ]);
+
+    // Never the false 502 the non-atomic read used to produce for exactly
+    // this shape.
+    expect(a.status).toBe(200);
+    expect(b.status).toBe(200);
+    // Settles at EXACTLY one winner per candidate — never the same segment
+    // served to both, and never neither served at all.
+    expect([a.body.data.segment?.id, b.body.data.segment?.id].sort()).toEqual(['seg-a', 'seg-b']);
   });
 });

@@ -20,7 +20,6 @@ import {
   addTutorSessionCost,
   awardTutorXp,
   closeTutorSession,
-  countSessionSegments,
   countTutorSessionsSince,
   startTutorSessionChecked,
   getActiveVoiceConsent,
@@ -29,7 +28,7 @@ import {
   getTutorSession,
   grantVoiceConsent,
   insertSafetyFlag,
-  insertTutorSegment,
+  insertTutorSegmentChecked,
   insertTutorTurn,
   listRecentSummaries,
   getLearnerMemory,
@@ -837,136 +836,217 @@ function internalRouter(): Router {
     const session = await getTutorSession(parsed.data.sessionId);
     if (!session) return fail(res, 404, NOT_FOUND, 'No such session');
 
-    const served = await listTutorSegments(session.id);
-    if (served === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read served segments');
-    const alreadyServed = served.map((s) => String((s.payload as { id?: unknown }).id ?? ''));
-    const nextSeq = served.length;
+    /*
+     * RETRY-ON-CLAIM-CONFLICT (RUNBOOK.md Round 109). The ladder below
+     * reads a SNAPSHOT of "already served" that cannot cheaply be made
+     * atomic with it — three tiers of PostgREST round trips cannot run
+     * inside the Postgres function that claims the seq. So the atomicity
+     * lives entirely in the FINAL claim (`insertTutorSegmentChecked`,
+     * migration 0064): a concurrent winner is detected THERE, fresh, and
+     * reported back as 'conflict' rather than as a hard failure. This loop
+     * is what turns that signal into "reselect against the now-current
+     * exclusion set" instead of a manufactured 502 — bounded, so a ladder
+     * that keeps losing to a torrent of identical concurrent requests
+     * eventually says so honestly rather than retrying forever.
+     */
+    const MAX_CLAIM_ATTEMPTS = 4;
+    for (let attempt = 0; attempt < MAX_CLAIM_ATTEMPTS; attempt++) {
+      const served = await listTutorSegments(session.id);
+      if (served === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read served segments');
+      const alreadyServed = served.map((s) => String((s.payload as { id?: unknown }).id ?? ''));
 
-    /*
-     * `unknown` IS AN ANSWER, and a better one than a guess.
-     *
-     * In an open conversation the tutor has no lesson plan and no skill states
-     * to copy a key from, so it used to invent one — `making_change`,
-     * `matematicas/sumar-con-monedas`, plausible and naming nothing. The prompt
-     * now offers it this sentinel instead: say you do not know, and the system
-     * decides. Skipping the by-name tiers is not a loss, because a key that
-     * names nothing was never going to match them.
-     */
-    let namedSkill = parsed.data.skillKey === 'unknown' ? null : parsed.data.skillKey;
-    /*
-     * WHEN kcId IS PRESENT, THE CATALOG'S OWN skill_key WINS OVER WHATEVER
-     * skillKey THE CALLER SEPARATELY ASSERTED.
-     *
-     * Found by adversarial review, round 58 (2026-08-30, HIGH): Oracle's
-     * PROBE strategy (`controller.ts`'s `probeEntry()`) synthesizes a
-     * request naming the PREREQUISITE's real `kcId` alongside the
-     * INTERRUPTED (original) entry's own `skillKey` — the controller has no
-     * way to look up the prerequisite's own skill_key, since it only knows
-     * about KCs that are full entries in the session's own plan, not every
-     * node in the graph. Because the wrong-but-real skillKey almost always
-     * resolves immediately (it names the exact topic the learner was
-     * already being taught, which is WHY it has content in the first
-     * place), tier 1 served content about KC A while `stampPedagogy` (below)
-     * stamped the evidence against KC B — corrupting KC B's BKT posterior,
-     * misconception diagnosis and FSRS memory card with evidence that was
-     * actually about a different skill, silently, on the ordinary PROBE
-     * path that fires whenever a confident learner unexpectedly fails a
-     * question with prerequisites. `kcId`, when present, always originates
-     * from Core's own KC graph (via the v3 session plan Core itself
-     * computed) — strictly more authoritative than a client-asserted
-     * string — so resolving THIS KC's own catalog skill_key and using it
-     * for content selection guarantees whatever gets served is always about
-     * the exact KC the evidence will be attributed to. A no-op in the
-     * ordinary case, where the two already agree.
-     */
-    let kcCatalog: KcRow[] | null = null;
-    if (parsed.data.kcId) {
-      kcCatalog = await getActiveKcs();
-      const kc = kcCatalog?.find((k) => k.id === parsed.data.kcId);
-      if (kc?.skill_key) namedSkill = kc.skill_key;
-    }
-    const skill = namedSkill === null ? null : await resolveSkill(namedSkill);
-    if (!skill && namedSkill !== null) {
       /*
-       * A key that does not resolve is almost always one the MODEL invented.
-       * The prompt never told it what a skillKey looks like, so it produced
-       * things like `making_change` — and `resolveSkill` requires
-       * `course-slug/topic-slug`, so tier 1 and tier 2 could never match and
-       * every activity fell through to live generation. That is why the
-       * twenty-three mapped knowledge components went unused in open sessions,
-       * and why "Esa actividad ya no está lista" kept appearing.
+       * `unknown` IS AN ANSWER, and a better one than a guess.
        *
-       * Logged rather than rejected: the fallbacks below still have a chance,
-       * and refusing here would take away an activity rather than find one.
-       * The line is what makes the frequency visible if it starts again.
+       * In an open conversation the tutor has no lesson plan and no skill states
+       * to copy a key from, so it used to invent one — `making_change`,
+       * `matematicas/sumar-con-monedas`, plausible and naming nothing. The prompt
+       * now offers it this sentinel instead: say you do not know, and the system
+       * decides. Skipping the by-name tiers is not a loss, because a key that
+       * names nothing was never going to match them.
        */
-      console.warn(`[tutor] segment request named an unresolvable skill: ${parsed.data.skillKey}`);
-    }
+      let namedSkill = parsed.data.skillKey === 'unknown' ? null : parsed.data.skillKey;
+      /*
+       * WHEN kcId IS PRESENT, THE CATALOG'S OWN skill_key WINS OVER WHATEVER
+       * skillKey THE CALLER SEPARATELY ASSERTED.
+       *
+       * Found by adversarial review, round 58 (2026-08-30, HIGH): Oracle's
+       * PROBE strategy (`controller.ts`'s `probeEntry()`) synthesizes a
+       * request naming the PREREQUISITE's real `kcId` alongside the
+       * INTERRUPTED (original) entry's own `skillKey` — the controller has no
+       * way to look up the prerequisite's own skill_key, since it only knows
+       * about KCs that are full entries in the session's own plan, not every
+       * node in the graph. Because the wrong-but-real skillKey almost always
+       * resolves immediately (it names the exact topic the learner was
+       * already being taught, which is WHY it has content in the first
+       * place), tier 1 served content about KC A while `stampPedagogy` (below)
+       * stamped the evidence against KC B — corrupting KC B's BKT posterior,
+       * misconception diagnosis and FSRS memory card with evidence that was
+       * actually about a different skill, silently, on the ordinary PROBE
+       * path that fires whenever a confident learner unexpectedly fails a
+       * question with prerequisites. `kcId`, when present, always originates
+       * from Core's own KC graph (via the v3 session plan Core itself
+       * computed) — strictly more authoritative than a client-asserted
+       * string — so resolving THIS KC's own catalog skill_key and using it
+       * for content selection guarantees whatever gets served is always about
+       * the exact KC the evidence will be attributed to. A no-op in the
+       * ordinary case, where the two already agree.
+       */
+      let kcCatalog: KcRow[] | null = null;
+      if (parsed.data.kcId) {
+        kcCatalog = await getActiveKcs();
+        const kc = kcCatalog?.find((k) => k.id === parsed.data.kcId);
+        if (kc?.skill_key) namedSkill = kc.skill_key;
+      }
+      const skill = namedSkill === null ? null : await resolveSkill(namedSkill);
+      if (!skill && namedSkill !== null) {
+        /*
+         * A key that does not resolve is almost always one the MODEL invented.
+         * The prompt never told it what a skillKey looks like, so it produced
+         * things like `making_change` — and `resolveSkill` requires
+         * `course-slug/topic-slug`, so tier 1 and tier 2 could never match and
+         * every activity fell through to live generation. That is why the
+         * twenty-three mapped knowledge components went unused in open sessions,
+         * and why "Esa actividad ya no está lista" kept appearing.
+         *
+         * Logged rather than rejected: the fallbacks below still have a chance,
+         * and refusing here would take away an activity rather than find one.
+         * The line is what makes the frequency visible if it starts again.
+         */
+        console.warn(`[tutor] segment request named an unresolvable skill: ${parsed.data.skillKey}`);
+      }
 
-    let candidate: LadderCandidate | null = null;
-    if (skill) {
-      candidate = await serveFromCatalog({
-        skill,
-        locale: session.locale,
-        difficulty: parsed.data.difficulty,
-        excludeSegmentIds: alreadyServed,
-        // Seeded on the session so a learner does not get lesson 1 every time,
-        // but the sequence within one session stays stable.
-        rotationSeed: hashSeed(session.id),
-        preferredTypes: parsed.data.preferredTypes,
-      });
-    }
-    if (!candidate) {
-      candidate = namedSkill === null ? null : await serveFromBank({
-        skillKey: namedSkill,
-        tier: session.tier,
-        locale: session.locale,
-        preferredTypes: parsed.data.preferredTypes,
-        difficulty: parsed.data.difficulty,
-        excludeSegmentIds: alreadyServed,
-      });
-    }
+      let candidate: LadderCandidate | null = null;
+      if (skill) {
+        candidate = await serveFromCatalog({
+          skill,
+          locale: session.locale,
+          difficulty: parsed.data.difficulty,
+          excludeSegmentIds: alreadyServed,
+          // Seeded on the session so a learner does not get lesson 1 every time,
+          // but the sequence within one session stays stable.
+          rotationSeed: hashSeed(session.id),
+          preferredTypes: parsed.data.preferredTypes,
+        });
+      }
+      if (!candidate) {
+        candidate = namedSkill === null ? null : await serveFromBank({
+          skillKey: namedSkill,
+          tier: session.tier,
+          locale: session.locale,
+          preferredTypes: parsed.data.preferredTypes,
+          difficulty: parsed.data.difficulty,
+          excludeSegmentIds: alreadyServed,
+        });
+      }
 
-    /*
-     * THE GRAPH EARNS ITS KEEP: A PREREQUISITE THAT DOES HAVE CONTENT.
-     *
-     * Five of the twenty-eight knowledge components have no published topic
-     * that teaches them — `kc.skill_key` is null on purpose, because mapping
-     * one to an unrelated topic would serve confidently wrong content. Before
-     * this, landing on one of those five meant tier 1 and tier 2 both missed,
-     * live generation was the only path left, and when it failed the learner
-     * got "Esa actividad ya no está lista" — observed on 2026-08-29 the moment
-     * a conversation drifted onto goods-versus-services.
-     *
-     * But a knowledge component that nothing teaches almost always has a
-     * PREREQUISITE that something does, and practising the prerequisite is a
-     * pedagogically sound answer to "I have nothing at your level" — it is
-     * what a human tutor does when the next step is not ready. So before
-     * falling through to generation, walk one edge back and try the mapped
-     * prerequisites of the KC this turn is about.
-     *
-     * ONE edge, not the transitive closure. Two steps back from what the tutor
-     * just said is no longer about the conversation the learner is in, and a
-     * recursive walk over a graph with cycles-by-mistake is a way to hang a
-     * request rather than answer it.
-     */
-    if (!candidate && parsed.data.kcId) {
-      // `kcCatalog` was already fetched above when kcId is present — reused
-      // here rather than fetched twice, with one retry if that first read
-      // itself failed (a transient hiccup should not cost this whole rung).
-      const [edges, kcs] = await Promise.all([getKcEdges(), kcCatalog ?? getActiveKcs()]);
-      if (edges && kcs) {
-        const byId = new Map(kcs.map((k) => [k.id, k]));
-        const prerequisiteKeys = edges
-          .filter((e) => e.dependent_kc_id === parsed.data.kcId)
-          .map((e) => byId.get(e.prerequisite_kc_id)?.skill_key)
-          .filter((k): k is string => typeof k === 'string' && k !== '');
+      /*
+       * THE GRAPH EARNS ITS KEEP: A PREREQUISITE THAT DOES HAVE CONTENT.
+       *
+       * Five of the twenty-eight knowledge components have no published topic
+       * that teaches them — `kc.skill_key` is null on purpose, because mapping
+       * one to an unrelated topic would serve confidently wrong content. Before
+       * this, landing on one of those five meant tier 1 and tier 2 both missed,
+       * live generation was the only path left, and when it failed the learner
+       * got "Esa actividad ya no está lista" — observed on 2026-08-29 the moment
+       * a conversation drifted onto goods-versus-services.
+       *
+       * But a knowledge component that nothing teaches almost always has a
+       * PREREQUISITE that something does, and practising the prerequisite is a
+       * pedagogically sound answer to "I have nothing at your level" — it is
+       * what a human tutor does when the next step is not ready. So before
+       * falling through to generation, walk one edge back and try the mapped
+       * prerequisites of the KC this turn is about.
+       *
+       * ONE edge, not the transitive closure. Two steps back from what the tutor
+       * just said is no longer about the conversation the learner is in, and a
+       * recursive walk over a graph with cycles-by-mistake is a way to hang a
+       * request rather than answer it.
+       */
+      if (!candidate && parsed.data.kcId) {
+        // `kcCatalog` was already fetched above when kcId is present — reused
+        // here rather than fetched twice, with one retry if that first read
+        // itself failed (a transient hiccup should not cost this whole rung).
+        const [edges, kcs] = await Promise.all([getKcEdges(), kcCatalog ?? getActiveKcs()]);
+        if (edges && kcs) {
+          const byId = new Map(kcs.map((k) => [k.id, k]));
+          const prerequisiteKeys = edges
+            .filter((e) => e.dependent_kc_id === parsed.data.kcId)
+            .map((e) => byId.get(e.prerequisite_kc_id)?.skill_key)
+            .filter((k): k is string => typeof k === 'string' && k !== '');
 
-        for (const key of prerequisiteKeys) {
-          const fallbackSkill = await resolveSkill(key);
-          if (fallbackSkill) {
+          for (const key of prerequisiteKeys) {
+            const fallbackSkill = await resolveSkill(key);
+            if (fallbackSkill) {
+              candidate = await serveFromCatalog({
+                skill: fallbackSkill,
+                locale: session.locale,
+                difficulty: parsed.data.difficulty,
+                excludeSegmentIds: alreadyServed,
+                rotationSeed: hashSeed(session.id),
+                preferredTypes: parsed.data.preferredTypes,
+              });
+            }
+            /*
+             * TIER 2 FOR THE PREREQUISITE TOO. Found by adversarial review,
+             * round 58 (2026-08-30, MEDIUM): this fallback only ever tried
+             * `serveFromCatalog`, unlike the named-skill path above, which
+             * tries the human-published bank when the catalog misses. A
+             * prerequisite whose only real content lives in the bank was
+             * unreachable from here — the ladder silently narrowed to
+             * "catalog or generate" the moment it needed this rung, with no
+             * signal that the bank was never even asked.
+             */
+            if (!candidate) {
+              candidate = await serveFromBank({
+                skillKey: key,
+                tier: session.tier,
+                locale: session.locale,
+                preferredTypes: parsed.data.preferredTypes,
+                difficulty: parsed.data.difficulty,
+                excludeSegmentIds: alreadyServed,
+              });
+            }
+            if (candidate) {
+              console.warn(
+                `[tutor] no content for the active KC; served its prerequisite ${key} instead`,
+              );
+              break;
+            }
+          }
+        }
+      }
+
+      /*
+       * LAST RESORT BEFORE GENERATION: WHAT THE LEARNER IS ACTUALLY READY FOR.
+       *
+       * The model names the skill, and it can name one that does not exist. The
+       * prompt now states the format and tells it to copy a key from its
+       * context — but an OPEN conversation has no lesson plan and no skill
+       * states to copy from, so it invents a plausible one. Observed 2026-08-29:
+       * `mathematics/sumar-con-monedas`, correct in shape and naming a course
+       * that has never existed.
+       *
+       * Rather than fall through to generation — the most fragile rung, and the
+       * one that produced "Esa actividad ya no está lista" — ask the pedagogy
+       * layer what this learner should be doing next. `continueTarget` is the
+       * planner's own first pick: review debt if any is due, otherwise the
+       * frontier. Serving that is not a guess, it is the answer the product
+       * already computes for the CONTINUE button.
+       *
+       * It is deliberately LAST. A key that resolved, a bank pack, and the KC's
+       * own prerequisites all describe what the tutor was talking about; this
+       * one describes the learner instead, and is right only when nothing better
+       * is available.
+       */
+      if (!candidate) {
+        const map = await buildTutorMap(session.user_id, session.tier, session.locale);
+        const frontierKey = map?.continueTarget?.skillKey ?? null;
+        if (frontierKey !== null && frontierKey !== namedSkill) {
+          const frontierSkill = await resolveSkill(frontierKey);
+          if (frontierSkill) {
             candidate = await serveFromCatalog({
-              skill: fallbackSkill,
+              skill: frontierSkill,
               locale: session.locale,
               difficulty: parsed.data.difficulty,
               excludeSegmentIds: alreadyServed,
@@ -974,19 +1054,12 @@ function internalRouter(): Router {
               preferredTypes: parsed.data.preferredTypes,
             });
           }
-          /*
-           * TIER 2 FOR THE PREREQUISITE TOO. Found by adversarial review,
-           * round 58 (2026-08-30, MEDIUM): this fallback only ever tried
-           * `serveFromCatalog`, unlike the named-skill path above, which
-           * tries the human-published bank when the catalog misses. A
-           * prerequisite whose only real content lives in the bank was
-           * unreachable from here — the ladder silently narrowed to
-           * "catalog or generate" the moment it needed this rung, with no
-           * signal that the bank was never even asked.
-           */
+          // Tier 2 for the frontier fallback too (round 58, 2026-08-30,
+          // MEDIUM) — see the identical comment on the prerequisite rung
+          // above; this rung had the same catalog-only gap.
           if (!candidate) {
             candidate = await serveFromBank({
-              skillKey: key,
+              skillKey: frontierKey,
               tier: session.tier,
               locale: session.locale,
               preferredTypes: parsed.data.preferredTypes,
@@ -996,85 +1069,31 @@ function internalRouter(): Router {
           }
           if (candidate) {
             console.warn(
-              `[tutor] no content for the active KC; served its prerequisite ${key} instead`,
+              `[tutor] "${parsed.data.skillKey}" found nothing; served the learner's own next step ${frontierKey}`,
             );
-            break;
           }
         }
       }
-    }
 
-    /*
-     * LAST RESORT BEFORE GENERATION: WHAT THE LEARNER IS ACTUALLY READY FOR.
-     *
-     * The model names the skill, and it can name one that does not exist. The
-     * prompt now states the format and tells it to copy a key from its
-     * context — but an OPEN conversation has no lesson plan and no skill
-     * states to copy from, so it invents a plausible one. Observed 2026-08-29:
-     * `mathematics/sumar-con-monedas`, correct in shape and naming a course
-     * that has never existed.
-     *
-     * Rather than fall through to generation — the most fragile rung, and the
-     * one that produced "Esa actividad ya no está lista" — ask the pedagogy
-     * layer what this learner should be doing next. `continueTarget` is the
-     * planner's own first pick: review debt if any is due, otherwise the
-     * frontier. Serving that is not a guess, it is the answer the product
-     * already computes for the CONTINUE button.
-     *
-     * It is deliberately LAST. A key that resolved, a bank pack, and the KC's
-     * own prerequisites all describe what the tutor was talking about; this
-     * one describes the learner instead, and is right only when nothing better
-     * is available.
-     */
-    if (!candidate) {
-      const map = await buildTutorMap(session.user_id, session.tier, session.locale);
-      const frontierKey = map?.continueTarget?.skillKey ?? null;
-      if (frontierKey !== null && frontierKey !== namedSkill) {
-        const frontierSkill = await resolveSkill(frontierKey);
-        if (frontierSkill) {
-          candidate = await serveFromCatalog({
-            skill: frontierSkill,
-            locale: session.locale,
-            difficulty: parsed.data.difficulty,
-            excludeSegmentIds: alreadyServed,
-            rotationSeed: hashSeed(session.id),
-            preferredTypes: parsed.data.preferredTypes,
-          });
-        }
-        // Tier 2 for the frontier fallback too (round 58, 2026-08-30,
-        // MEDIUM) — see the identical comment on the prerequisite rung
-        // above; this rung had the same catalog-only gap.
-        if (!candidate) {
-          candidate = await serveFromBank({
-            skillKey: frontierKey,
-            tier: session.tier,
-            locale: session.locale,
-            preferredTypes: parsed.data.preferredTypes,
-            difficulty: parsed.data.difficulty,
-            excludeSegmentIds: alreadyServed,
-          });
-        }
-        if (candidate) {
-          console.warn(
-            `[tutor] "${parsed.data.skillKey}" found nothing; served the learner's own next step ${frontierKey}`,
-          );
-        }
+      if (!candidate) {
+        return ok(res, {
+          needsGeneration: true,
+          skillKey: parsed.data.skillKey,
+          tier: session.tier,
+          locale: session.locale,
+          difficulty: parsed.data.difficulty,
+          allowedTypes: [...LIVE_TYPE_ALLOWLIST],
+        });
       }
-    }
 
-    if (!candidate) {
-      return ok(res, {
-        needsGeneration: true,
-        skillKey: parsed.data.skillKey,
-        tier: session.tier,
-        locale: session.locale,
-        difficulty: parsed.data.difficulty,
-        allowedTypes: [...LIVE_TYPE_ALLOWLIST],
-      });
+      candidate.provenance = stampPedagogy(candidate.provenance, parsed.data);
+      const result = await persistAndServe(res, session.id, candidate, session.tier);
+      if (result !== 'conflict') return result;
+      // A concurrent request already claimed this exact candidate for this
+      // session (migration 0064's fresh re-check) — loop and reselect
+      // against the now-current exclusion set rather than surfacing a 502.
     }
-
-    candidate.provenance = stampPedagogy(candidate.provenance, parsed.data);
-    return persistAndServe(res, session.id, nextSeq, candidate, session.tier);
+    return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the segment after concurrent retries');
   });
 
   const VerifyBody = z.object({
@@ -1105,24 +1124,32 @@ function internalRouter(): Router {
       return ok(res, { accepted: false, failures: verification.failures });
     }
 
-    const seq = (await countSessionSegments(session.id)) ?? 0;
-    return persistAndServe(
-      res,
-      session.id,
-      seq,
-      {
-        origin: 'live',
-        lessonId: null,
-        segment,
-        answer: (segment.answer as Record<string, unknown> | undefined) ?? null,
-        provenance: stampPedagogy(
-          { ...parsed.data.provenance, tier: 3, verification: verification.failures },
-          parsed.data,
-        ),
-      },
-      session.tier,
-      verification.keyVerified,
-    );
+    const candidate: LadderCandidate = {
+      origin: 'live',
+      lessonId: null,
+      segment,
+      answer: (segment.answer as Record<string, unknown> | undefined) ?? null,
+      provenance: stampPedagogy(
+        { ...parsed.data.provenance, tier: 3, verification: verification.failures },
+        parsed.data,
+      ),
+    };
+
+    /*
+     * The SAME atomic claim `/segments` uses (migration 0064, RUNBOOK.md
+     * Round 109) — this route used to compute its own `seq` with a separate
+     * plain read (`countSessionSegments`), sharing the identical race. A
+     * conflict here would mean this EXACT generated segment id was already
+     * served to this session; two bounded retries recompute a fresh seq
+     * rather than looping forever chasing a distinct candidate this route
+     * has no way to re-author (unlike `/segments`, there is no ladder here
+     * to re-run — the candidate is whatever Oracle already generated).
+     */
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const result = await persistAndServe(res, session.id, candidate, session.tier, verification.keyVerified);
+      if (result !== 'conflict') return result;
+    }
+    return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the segment');
   });
 
   /**
@@ -1306,21 +1333,39 @@ function hashSeed(value: string): number {
   return hash;
 }
 
+/**
+ * Persists a chosen candidate through the atomic claim (migration 0064,
+ * RUNBOOK.md Round 109) and answers the client — or reports `'conflict'`
+ * without sending a response, so a caller with a ladder to re-run (`POST
+ * /segments`) can reselect and retry instead of surfacing a manufactured
+ * 502 for a concurrent request that legitimately lost a race it should
+ * never have needed to run in the first place.
+ *
+ * `seq` is no longer a parameter: it used to be the CALLER's own
+ * pre-ladder snapshot (`served.length`), which is exactly what raced under
+ * concurrency. The atomic function now assigns it fresh, inside its own
+ * lock, and this function reports back whatever it actually assigned
+ * (`row.seq`) rather than a value computed before the claim.
+ */
 async function persistAndServe(
   res: Parameters<typeof ok>[0],
   sessionId: string,
-  seq: number,
   candidate: LadderCandidate,
   tier: number,
   keyVerifiedOverride?: boolean,
-): Promise<unknown> {
+): Promise<unknown | 'conflict'> {
   // A catalog or bank segment was human-published, so its key is verified by
   // construction. A live one is verified only if re-execution said so.
   const keyVerified = keyVerifiedOverride ?? candidate.origin !== 'live';
+  // Every real segment carries a non-empty `id` (serveFromCatalog/serveFromBank
+  // filter on it, and SegmentBase declares it required) — the `null` branch is
+  // defensive only, and skips the atomic function's duplicate-serve check
+  // rather than ever comparing against an empty string.
+  const sourceKey = typeof candidate.segment.id === 'string' && candidate.segment.id !== '' ? candidate.segment.id : null;
 
-  const row = await insertTutorSegment({
+  const row = await insertTutorSegmentChecked({
     sessionId,
-    seq,
+    sourceKey,
     origin: candidate.origin,
     lessonId: candidate.lessonId,
     segmentType: candidate.segment.type,
@@ -1333,12 +1378,13 @@ async function persistAndServe(
     // defect before it reaches the thousandth.
     reviewStatus: candidate.origin === 'live' && shouldSampleForReview() ? 'pending' : null,
   });
-  if (!row) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the segment');
+  if (row === 'conflict') return 'conflict';
+  if (row === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the segment');
 
   void tier;
   return ok(res, {
     segmentId: row.id,
-    seq,
+    seq: row.seq,
     origin: candidate.origin,
     segment: stripCandidate(candidate.segment),
     keyVerified,

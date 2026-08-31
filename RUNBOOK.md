@@ -10230,6 +10230,7 @@ test; `npm run build` — exit 0, SEO prerender step completed (6 pages, 4
 indexable) same as before this change. `npm run i18n:check` (root) —
 clean; no i18n keys were added, changed, or removed, so this was run for
 safety rather than because it was required.
+
 ## Round 102: a microphone outage and a child's own silence sounded like the same sentence, because `transcribe()` answered both with the identical `null` — found by adversarial review sweep tutor-review-sweep-101 (voice-audio-quality dimension), 3/3 independent skeptics, HIGH, closed 2026-08-31
 
 **HIGH, FIXED.** `transcribe()` (`oracle/src/ws/server.ts`) wrapped every
@@ -10335,6 +10336,7 @@ were expected to be no-ops and were.
 result type that only has room for one failure state will eventually
 carry two, and the second one arrives as a silent behavioral bug, not a
 type error).
+
 ## Round 103: the same pause budget for a child meeting a skill for the first time and one who has answered it a dozen times — found by adversarial review sweep tutor-review-sweep-101 (voice-audio-quality dimension), MEDIUM, closed 2026-08-31
 
 **MEDIUM, FIXED.** `controller.ts`'s `LISTEN_SILENCE_MS` — how much
@@ -10460,6 +10462,7 @@ rather than overwrite.
 `oracle/AGENTS.md` item 73 records the general lesson: a table indexed by
 one axis is not automatically complete just because that axis is the one
 the feature was designed around.
+
 ## Round 104: the output judge could not see a "crescendo" — several turns each looking fine alone, unsafe only as a sequence — found by review sweep tutor-review-sweep-101 (moderation-edge-cases dimension), MEDIUM, closed 2026-08-31
 
 **MEDIUM, FIXED after genuine investigation into whether a fix was
@@ -11010,3 +11013,225 @@ No `frontend/AGENTS.md` item: the invariant this closes ("a browser must
 never be told to remember a child's message") is a straightforward
 consequence of `/ORACLE.md` §4.1's existing child-privacy floor, not a new
 rule of its own.
+
+## Round 109: the content ladder claimed a segment with a plain read, so a concurrent winner's valid catalog hit was discarded as a manufactured 502
+
+**HIGH, FIXED — found by adversarial review sweep tutor-review-sweep-101
+(content-ladder-correctness dimension), independently verified.** `POST
+/api/v1/tutor/segments` (`backend/src/routes/tutor.ts`) read "segments
+already served" for a session with a plain `SELECT`, computed the next
+`seq` as `served.length` in application code, ran the ENTIRE three-tier
+content ladder (catalog → bank → KC-prerequisite fallback → frontier
+fallback) against that one snapshot, and only THEN inserted the chosen
+candidate with a SEPARATE, unconditional `POST` carrying the stale `seq`.
+This is the identical application-level read-then-write shape rounds that
+produced `0055`/`0057`/`0059`/`0061` already closed for other pieces of
+Tutor-session state — the daily XP cap, the daily session cap, and the two
+learner-memory stores — landing here a fifth time, on the segment-serving
+path specifically, where nobody had looked yet.
+
+Two concurrent requests for the SAME session — a double-tap on the "next
+activity" control, a flaky-connection retry, or Oracle re-requesting a
+segment around a resumed turn — both read the identical "already served"
+snapshot before either write lands. Because the tier-1 rotation is seeded
+on the session id (`hashSeed(session.id)`, never on wall-clock time) and
+every other input to the ladder (difficulty, exclusion set, preferred
+types) is also identical across the two reads, BOTH requests
+deterministically pick the SAME catalog or bank candidate, and both then
+try to insert it at the SAME `seq`. `tutor_segments` has carried `UNIQUE
+(session_id, seq)` since `0047_tutor_oracle.sql`, so the constraint was
+never silently violated — but the LOSER's insert was rejected outright by
+PostgREST, `insertTutorSegment` returned `null` exactly as it does on any
+other transport failure (§1.14: a rejected write and a dead network are
+indistinguishable through that return type), and the route answered a
+perfectly valid, correctly-selected catalog hit with `502
+DATA_UNAVAILABLE` — indistinguishable, from the learner's side, from a
+real outage. The identical shape existed a second time in the same file,
+sharing the same insert helper: `POST /segments/verify` (tier 3) computed
+its own `seq` with a separate plain read (`countSessionSegments`), and is
+fixed by this same migration with no wire or behaviour change of its own.
+
+**Why this is NOT the `award_tutor_xp` (0055) / `start_tutor_session_checked`
+(0057) shape, verified rather than assumed before writing a fix.** Those
+two migrations move an entire read-compare-write into ONE Postgres
+function because the "content" being compared is arithmetic Postgres can
+do itself — a sum, a count. Here the CANDIDATE is chosen by a multi-step
+Node process: three ladder tiers, each doing its own PostgREST round trips
+against `lessons`, `lesson_documents`, published packs and the KC graph.
+That selection cannot run inside a plpgsql function. So, matching
+`write_learner_memory_checked` (0059)'s answer to the identical
+constraint — the new CONTENT there comes from a model call that cannot run
+in Postgres either — the fix does not move selection into Postgres. It
+makes the FINAL claim atomic instead: "assign this candidate the next
+seq, but only if nobody already served this exact segment to this
+session," one serialized compare-and-claim, with the CALLER responsible
+for re-running its own ladder selection against the freshly current
+exclusion set on a reported conflict rather than trusting its stale read.
+
+**The fix.** `database/migrations/0064_atomic_tutor_segment_claim.sql`
+adds `insert_tutor_segment_checked`, a `SECURITY DEFINER` function that
+recomputes BOTH the next `seq` and the "already served" membership test
+fresh, inside a single `pg_advisory_xact_lock`. The lock is keyed on the
+**session**, not the learner — a deliberate departure from all three prior
+atomic functions, and the right one: the invariant being protected
+(`UNIQUE (session_id, seq)`, and the "never serve the same segment twice"
+rule the exclusion set already stated in application code but never
+enforced atomically) is scoped to one session, and two concurrent
+sessions for the same learner — which `start_tutor_session_checked`'s own
+daily cap does not forbid within a single day — must never wait on each
+other here. The salt is `3` — `hashtextextended(p_session_id::text, 3)`
+— a fourth, distinct value from `award_tutor_xp`'s learner-keyed `0`,
+`start_tutor_session_checked`'s learner-keyed `1`, and the learner-memory
+pair's learner-keyed `2` (shared by `write_learner_memory_checked` and
+`write_learner_memory_pair_checked`), so none of the four atomic paths
+ever contends with any other, and this one never contends with a sibling
+session's own claim.
+
+An EMPTY result set is the conflict signal: a concurrent winner already
+claimed the identical segment for this session, and nothing was inserted.
+A non-empty result is the inserted row, exactly as a plain `INSERT ...
+RETURNING` would have been. `backend/src/services/tutorData.ts`'s
+`insertTutorSegment` became `insertTutorSegmentChecked`, returning
+`TutorSegmentRow | 'conflict' | null` — `'conflict'` is a signal to retry,
+`null` is a genuine transport failure, and §1.14 is why those two must
+never collapse into the same value. `persistAndServe` no longer takes a
+caller-computed `seq` at all: the function assigns it fresh inside its own
+lock and the route reports back whatever it actually assigned
+(`row.seq`), never a value computed before the claim.
+
+**The retry loop, which is what turns a conflict into "the next distinct
+candidate" instead of a 502.** `POST /segments`'s handler wraps the whole
+read-ladder-claim sequence in a bounded loop (`MAX_CLAIM_ATTEMPTS = 4`):
+on `'conflict'` it re-reads "already served" (now reflecting the
+concurrent winner's landed row), re-runs the ladder against the updated
+exclusion set, and retries the claim — landing on a genuinely different
+segment rather than looping back onto the one that just lost. Exhausting
+every attempt (a torrent of identical concurrent requests that never
+stops winning against this one) still answers honestly with `502
+DATA_UNAVAILABLE` rather than retrying forever. `POST /segments/verify`
+gets a smaller, two-attempt version of the same retry — it shares the
+identical seq race but has no ladder of its own to re-run (the candidate
+is whatever Oracle already generated), so a conflict there can only mean
+this exact generated segment id was already served to this session, and
+two bounded attempts recompute a fresh seq rather than manufacturing an
+infinite loop chasing a candidate this route cannot re-author.
+
+**Verified against a real, disposable local Postgres instance**
+(`postgres:16-alpine` on a throwaway port, never the shared local dev
+stack — this worktree has no materialized `database/supabase/` clone of
+its own, and `database/AGENTS.md` §6 explicitly permits an isolated
+disposable stack instead of `db:reset`, the same precedent Round 94 used
+for the identical reason). The migration file applied cleanly against a
+minimal `tutor_segments` table carrying the real `UNIQUE (session_id,
+seq)` constraint, and applied a SECOND time without error (`CREATE OR
+REPLACE FUNCTION` plus idempotent `REVOKE`/`GRANT`, no `CREATE TABLE` to
+replay).
+
+Five sequential cases against that instance: a first claim for a
+brand-new session is assigned `seq 0`; a second, DISTINCT candidate for
+the same session gets `seq 1`; re-claiming the SAME source key
+(`seg-a`) for the SAME session is refused — zero rows returned, zero new
+rows written, confirmed by reading the table back (exactly two rows,
+`seg-a`/`seg-b`, after three claim attempts); a `NULL` source key
+(defensive only — every real segment carries a non-empty `id`) skips the
+duplicate check and still claims the next seq; and a DIFFERENT session's
+own first claim starts at its OWN `seq 0`, independent of how many
+segments the first session already has.
+
+Genuine concurrency, matching the exact "settling at exactly N, never
+exceeding" style `0055`/`0057`/`0059`/`0061` each used: two SIMULTANEOUS
+`psql` connections (dispatched from the same shell command with `&` and
+`wait`, confirmed to start within 43 MICROSECONDS of each other by
+`clock_timestamp()`) raced the IDENTICAL claim — same session, same
+candidate. One connection's transaction held the advisory lock for 2
+seconds (`pg_sleep(2)`, standing in for the real ladder's own multi-tier
+round trips) before committing its successful insert; the OTHER
+connection's call to the SAME function visibly BLOCKED for the full
+~2.09 seconds — proven by wall-clock timestamps taken immediately before
+and after the call, not inferred from the outcome — and, once unblocked,
+correctly re-checked FRESH and returned zero rows. Reading the table back
+afterward showed exactly ONE row for that session — never two, and never
+a `duplicate key value violates unique constraint` reaching a client. A
+third check confirmed the lock is genuinely session-scoped and not merely
+"correct because I keyed it right this once": a DIFFERENT session's claim,
+fired at the same instant a first session's lock was held for 2 seconds,
+returned in **13 milliseconds**, not 2 seconds — two unrelated sessions
+never wait on each other, exactly as the migration's own comment claims.
+
+**The OLD shape, reproduced on the same instance for contrast, the way
+Round 78's write-up did for `0062`.** Two connections ran the pre-fix
+pattern directly — a plain `SELECT COALESCE(MAX(seq)+1, 0)`, a simulated
+2-second ladder gap, then an unconditional `INSERT` carrying the
+already-stale seq, no advisory lock anywhere. Both read the identical
+`next_seq = 0` within 300 MICROSECONDS of each other (the real race, not
+a contrived one). The connection without the simulated gap inserted
+immediately and succeeded. The delayed connection's insert then hit
+Postgres head-on: `ERROR: duplicate key value violates unique constraint
+"tutor_segments_session_id_seq_key"`, and its enclosing transaction
+`ROLLBACK`ed — discarding a perfectly valid, correctly-selected catalog
+candidate ENTIRELY, not merely delaying it. This is the exact mechanism
+`insertTutorSegment`/`persistAndServe` turned into a `502
+DATA_UNAVAILABLE` in production: a genuine Postgres error, silently
+reinterpreted by `serviceRest`'s `!res.ok → null` contract as
+indistinguishable from a dead network.
+
+**Backend regression suite: failing-first, confirmed by `git stash`
+before writing this paragraph, not asserted from reasoning about the
+diff.** Three new tests in `backend/src/__tests__/tutor.test.ts`, added
+to a `describe` block naming this exact round. Stashing only the two
+source files (`routes/tutor.ts`, `services/tutorData.ts`) and running the
+new tests against the UNFIXED code with the test file left in place
+failed all three, each for the specific reason the fix addresses: the
+deterministic retry-and-reselect test got the STALE candidate (`seg-a`)
+back instead of the freshly-selected distinct one (`seg-b`) because
+nothing retried; the bounded-give-up test found ZERO claim attempts
+instead of four, because the unfixed route never calls the new RPC at
+all; and the genuine `Promise.all` concurrency test — a hand-rolled fetch
+fake playing the part of the atomic Postgres function itself, so the
+result is order-independent rather than lucky timing — got a flat `502`
+for one of the two real, simultaneous requests. Restoring the fix (`git
+stash pop`) turned all three green, and the full backend suite (`npm
+test`) passed at **729 tests across 42 files**, including the existing
+`/segments` and `/segments/verify` coverage this migration touches —
+their fixtures needed no changes beyond adding the new RPC branch to the
+shared `stub()` test helper (mirroring `opts.segment ?? []`, the exact
+convention every other atomic-RPC mock in this file already uses) and
+updating ONE assertion (`stamps the persisted evidence against the SAME
+KC...`) that had matched the insert by its old raw-table URL.
+
+`npm run type-check` (both `tsconfig.json` and `tsconfig.test.json`),
+`npm run lint` and `npm run build` all green in `backend/`. `database`'s
+own gate (`npm test`) reports **64 file(s)** — sequential numbering, RLS
+coverage, append-only audit and release-gate pins all still satisfied —
+and `migration-phase` correctly classifies the new file `expand` (53
+expand / 11 contract overall, `0064`'s own header agreeing with what its
+SQL actually does: a new function, no `DROP`, no narrowed `CHECK`). Root
+`npm run tools:test`, `npm run docs:check` and `npm run secrets:check`
+all green; `ROADMAP.md`'s declared `0054`–`0063` pending range extended to
+`0054`–`0064` in the same commit, per its own established convention.
+
+**Deploy order.** Migration first (or at least before the code that calls
+it), then Core. Nothing breaks if it lags: while `0064` is unapplied the
+RPC simply 404s, `insertTutorSegmentChecked` returns `null` (a genuine
+transport failure, never silently read as `'conflict'`), and the route
+answers the same `502 DATA_UNAVAILABLE` it always has — a missing
+migration degrades to the PRE-FIX behaviour, never to a worse one.
+
+**Not in scope, and named so it is not confused with the same finding.**
+A sibling finding — `liveSessions.has`'s in-process-only guard providing
+no cross-replica protection against a duplicate live socket for the same
+session — is a related but architecturally larger, single-replica-pinning
+question, tracked separately. This round is the segment-selection race
+specifically, within a single process or across any number of Core
+replicas (Core is stateless; the atomicity lives in Postgres, not in a
+process-local guard) — it does not touch, and does not depend on,
+whatever the cross-replica finding eventually decides.
+
+No `oracle/AGENTS.md`/`/ORACLE.md` item: nothing in `oracle/` changed, and
+no context field, prompt, voice behaviour or content-ladder RULE moved —
+this is a Core/Vault atomicity fix to how an already-selected candidate is
+persisted, not a change to what the ladder is allowed to select or why.
+`database/AGENTS.md` gains no new invariant line either: this is the same
+"atomic claim via `pg_advisory_xact_lock`" pattern `0055`/`0057`/`0059`/
+`0061` already document as the house answer to this exact defect class,
+applied to a fifth piece of state.
