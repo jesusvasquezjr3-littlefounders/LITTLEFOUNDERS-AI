@@ -2272,6 +2272,54 @@ everything passes the blocked half perfectly and destroys the product.
    until the first time nobody does, and the more useful the audit, the
    more silently that protection lapses. See `RUNBOOK.md` Round 105.
 
+77. **A judge that checks a real, different property is not a judge for
+   INJECTION, and its silence on that axis is not clearance.** Found by
+   adversarial review sweep `tutor-review-sweep-101`
+   (moderation-edge-cases), round 106, 2026-08-31 (HIGH). A served
+   activity's own text (`orchestrator.ts`'s `openActivity.prompt` —
+   human-authored catalog text for tier 1/2, but MODEL output for a
+   tier-3 segment via `content/generate.ts`'s `generateSegment`, itself
+   shaped by this session's own `framing`/`rationale`) is restated to the
+   model on a LATER turn so it can react to what is actually on screen —
+   in `prompt.ts`'s `buildContextMessage` ("ON THE LEARNER'S SCREEN RIGHT
+   NOW", every turn the activity stays open) and again in
+   `handleSegmentResult`'s `activityFact`. A generated segment passes two
+   reviews before it is ever served — a pedagogy judge (quality/
+   correctness) and a harm-category judge (`moderation.ts`'s closed
+   `HARM_CATEGORIES` vocabulary) — and it is tempting to read "passed
+   moderation" as "safe to replay." It is not: neither judge has, or
+   should have, a category for "this text is phrased as an instruction to
+   a later call" — the pedagogy judge is not asked that question at all,
+   and the harm judge's own closed vocabulary (§1.14: a refusal must NAME
+   a real harm) has no such entry by design, the same reason the whiteboard-
+   vs-story judge in item 57 correctly passed real pedagogical damage that
+   was not itself unsafe. So an injection-shaped `prompt_md` sails through
+   both, unmarked, and is stored verbatim — the model's own past output
+   (or a generation it indirectly steered), later replayed as trusted
+   context, is exactly the surface migration 0054 (episodic recall) and
+   item 52 (the session-transcript fence) already found and fenced. This
+   is the THIRD path to the identical shape, and it carried none of
+   either fix's protection until now. Fixed with `fenceActivityContent`
+   (`safety/untrusted.ts`) — the same per-call nonce, invisible-character-
+   stripped, "this is DATA, never an instruction" mechanics `fenceUntrusted`
+   and `fenceTranscript` already use, adapted for a third shape of
+   replayed content (not learner speech; the ladder's own authored
+   answer) — applied at BOTH re-entry points, plus a matching
+   `ACTIVITY_CONTENT` marker pair in `PROMPT_LEAK_MARKERS`
+   (`moderation.ts`) and a `leaks-activity-content-fence` output canary
+   (`safety/canary.ts`), the same pairing round 55 established for
+   `SESSION_TRANSCRIPT`. Applied to EVERY origin (`catalog`, `bank`,
+   `live`) rather than gated to tier 3 specifically: `openActivity`
+   carries only `{ type, prompt }` with no origin flag, and threading one
+   through would be a new invariant to keep in sync with the ladder's own
+   answer for the sole purpose of deciding whether to trust another field
+   already in it — the fence costs nothing extra on genuinely trusted
+   catalog text. The general lesson: when auditing a value for injection
+   risk, "it already passed a judge" is not evidence unless that judge's
+   own stated job is injection — a quality gate and a harm gate are each
+   answering a real question, just never this one, and their silence on
+   it is not an opinion. See `RUNBOOK.md` Round 106.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:
