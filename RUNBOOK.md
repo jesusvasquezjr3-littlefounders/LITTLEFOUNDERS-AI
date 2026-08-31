@@ -8532,7 +8532,11 @@ Verification: full frontend suite green (127 files, 1471 tests — 1470
 existing + 1 net new file-level pass, with 4 new test cases across the
 two touched files and zero regressions), type-check clean, lint clean,
 root `i18n:check` clean (no new key, 3-locale parity unaffected by
-construction). Rebased onto round 82 before opening the PR; no
-conflicts, since that round touched replay/labs/socket files this
-change does not. No `oracle/AGENTS.md` item — touches only
+construction). Rebased repeatedly before merge as sibling rounds from
+the same review batch landed in parallel (82, then 83 the guardian
+consent-toggle coverage fix, then 84–86 as three more independent
+fixes merged), which is why this entry is numbered 87 rather than the
+83 it started as. No code conflicts at any point, since none of those
+siblings touched `LiveSegmentPanel.tsx`, `ConversationView.tsx`, or
+their test files. No `oracle/AGENTS.md` item — touches only
 `frontend/`.

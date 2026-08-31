@@ -206,7 +206,7 @@ describe('LiveSegmentPanel — a tray demo must not freeze when an unrelated anc
 });
 
 /*
- * Found by adversarial review, round 83 (2026-08-31, MEDIUM): the ONLY
+ * Found by adversarial review, round 87 (2026-08-31, MEDIUM): the ONLY
  * screen-reader announcement that a graded/practice activity had arrived
  * lived in `LessonPlate`'s `peekStatus` span, gated on `resting =
  * !desktop && detent === 'peek'` — unconditionally `false` on the docked

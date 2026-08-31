@@ -831,7 +831,7 @@ describe('the resting lesson sheet', () => {
 /*
  * THE ARRIVAL ANNOUNCEMENT ON THE DOCKED DESKTOP PANEL.
  *
- * Found by adversarial review, round 83 (2026-08-31, MEDIUM): every test in
+ * Found by adversarial review, round 87 (2026-08-31, MEDIUM): every test in
  * "the resting lesson sheet" above stubs no `matchMedia` at all, so they all
  * run against the MOBILE sheet form — exactly the breakpoint `resting` can
  * ever be `true` on (`hud/LessonPlate.tsx`'s `resting = !desktop && detent

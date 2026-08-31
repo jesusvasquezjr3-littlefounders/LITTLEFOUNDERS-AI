@@ -287,7 +287,7 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, className }: Liv
       {/*
         THE ARRIVAL ANNOUNCEMENT, REACHABLE ON EVERY BREAKPOINT.
 
-        Found by adversarial review, round 83 (2026-08-31, MEDIUM). Before
+        Found by adversarial review, round 87 (2026-08-31, MEDIUM). Before
         this, the ONLY spoken notice that a graded/practice activity had
         arrived was `LessonPlate`'s own `peekStatus` span, and that span is
         gated on `resting = !desktop && detent === 'peek'` — unconditionally
