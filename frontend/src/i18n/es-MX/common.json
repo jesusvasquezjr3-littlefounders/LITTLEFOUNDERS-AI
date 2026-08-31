@@ -53,11 +53,11 @@
       "hint": "Ayuda a mejorar las lecciones con señales de uso. Puedes desactivarlo cuando quieras."
     },
     "addKid": {
-      "cta": "Agregar a un hijo",
-      "title": "Agregar a un hijo",
-      "body": "Tú creas la cuenta, así que tu hijo no necesita correo electrónico. Desde aquí puedes ver todo lo que hace.",
+      "cta": "Agregar a un hijo o una hija",
+      "title": "Agregar a un hijo o una hija",
+      "body": "Tú creas la cuenta, así que tu hijo o hija no necesita correo electrónico. Desde aquí puedes ver todo lo que hace.",
       "displayName": "Su nombre",
-      "displayNameHint": "Solo el nombre. Así lo van a llamar los mentores.",
+      "displayNameHint": "Solo el nombre. Así es como los mentores van a llamar a tu hijo o hija.",
       "username": "Usuario para entrar",
       "usernameHint": "Minúsculas, números y _ . De tres a veinte caracteres.",
       "passphrase": "Contraseña",
