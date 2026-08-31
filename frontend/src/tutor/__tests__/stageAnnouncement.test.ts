@@ -1,4 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
+import { createElement, StrictMode, type ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useStageAnnouncement } from '../stage/useStageAnnouncement';
 
@@ -79,6 +80,109 @@ describe('when the frame never comes', () => {
     renderHook(() => useStageAnnouncement(vi.fn(), TIMEOUT));
     act(() => void vi.advanceTimersByTime(TIMEOUT + 1));
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('never reported a first frame'));
+  });
+});
+
+describe('a fresh mount after an old one tears down', () => {
+  // Investigating a live 2026-08-29 report: a session hung with nothing on
+  // screen for 30+ seconds after a learner ended one session and immediately
+  // started another. The suspects were (a) this deadline depending on
+  // `requestAnimationFrame`/tab visibility the way the first-frame path does,
+  // and (b) a stale timer or stale `announced` flag from the OLD instance
+  // leaking into the NEW one across the remount. Neither holds: `StageShell`
+  // is documented as "THE ONE MOUNT" that nothing above it may key or
+  // conditionally render (stage/StageShell.tsx ~line 557), so in the real
+  // control flow this hook is never actually remounted between sessions — but
+  // this test proves the hook would still behave correctly even if it were.
+  it('does not let the old instance announce into the new instance, and the new instance gets its own full deadline', () => {
+    const onReadyOld = vi.fn();
+    const { result: oldResult, unmount } = renderHook(() =>
+      useStageAnnouncement(onReadyOld, TIMEOUT),
+    );
+
+    // The old canvas is torn down BEFORE its own frame or deadline ever
+    // fired — e.g. the learner navigated away 3s into an 8s deadline.
+    act(() => void vi.advanceTimersByTime(3_000));
+    expect(onReadyOld).not.toHaveBeenCalled();
+    unmount();
+
+    // A new instance mounts (the new session's canvas). If the old timer
+    // were not cleared on unmount, it would fire 5s from now into a
+    // component that no longer exists.
+    const onReadyNew = vi.fn();
+    const { result: newResult } = renderHook(() => useStageAnnouncement(onReadyNew, TIMEOUT));
+
+    // Advance past when the OLD timer would have fired (3s + 5s = 8s from
+    // its own mount) but short of the NEW instance's own deadline.
+    act(() => void vi.advanceTimersByTime(5_000));
+    expect(onReadyOld).not.toHaveBeenCalled(); // old timer was cleared, not fired late
+    expect(onReadyNew).not.toHaveBeenCalled(); // new instance has its own, fresh 8s budget
+    expect(newResult.current.ready).toBe(false);
+
+    // The new instance's own deadline, timed from ITS mount, still fires.
+    act(() => void vi.advanceTimersByTime(3_001));
+    expect(onReadyNew).toHaveBeenCalledTimes(1);
+    expect(newResult.current.ready).toBe(true);
+    expect(newResult.current.timedOut).toBe(true);
+
+    // Sanity: the old, unmounted instance's own state never moved.
+    expect(oldResult.current.ready).toBe(false);
+  });
+});
+
+describe('under React.StrictMode (frontend/src/main.tsx wraps the whole app in it)', () => {
+  // StrictMode double-invokes effects on the FIRST mount of a subtree in
+  // development: render, run effects, immediately run their cleanup, then run
+  // the effects again — synchronously, in one commit. `renderHook`'s default
+  // wrapper does not add StrictMode, so the six tests above never exercised
+  // this. Live evidence (2026-08-31) narrowed the hang to specifically a COLD
+  // route mount (a fresh `navigate` to /tutor, which is exactly when
+  // StrictMode's double-invoke runs) versus an in-place SPA transition
+  // between sessions on an already-mounted route (which never re-triggers
+  // it) — 3/3 cold mounts hung, 1/1 warm transition worked.
+  it('arms exactly one live timer across the double-invoke and announces exactly once', () => {
+    const onReady = vi.fn();
+    const setTimeoutSpy = vi.spyOn(window, 'setTimeout');
+    const clearTimeoutSpy = vi.spyOn(window, 'clearTimeout');
+
+    const { result } = renderHook(() => useStageAnnouncement(onReady, TIMEOUT), {
+      wrapper: ({ children }: { children: ReactNode }) => createElement(StrictMode, null, children),
+    });
+
+    // The discard-then-redo cycle already happened by the time renderHook
+    // returns. Two timers were armed and exactly one was cleared — the
+    // first-pass timer, torn down by its own cleanup — leaving exactly one
+    // live.
+    expect(setTimeoutSpy).toHaveBeenCalledTimes(2);
+    expect(clearTimeoutSpy).toHaveBeenCalledTimes(1);
+
+    act(() => void vi.advanceTimersByTime(TIMEOUT + 1));
+    expect(onReady).toHaveBeenCalledTimes(1);
+    expect(result.current.ready).toBe(true);
+    expect(result.current.timedOut).toBe(true);
+  });
+
+  it('a first frame delivered to the callback still opens the gate exactly once', () => {
+    // Proves the callback identity itself survives the double-invoke intact:
+    // `onFirstFrame` is a `useCallback` over `announce`, which is ALSO a
+    // `useCallback` with an empty dependency array closing over a `useRef` —
+    // hook state (refs/state) is not reset by StrictMode's replay, only
+    // effects are re-run, so this is the same function and the same
+    // `announced` ref throughout both passes, not two independent ones.
+    const onReady = vi.fn();
+    const { result } = renderHook(() => useStageAnnouncement(onReady, TIMEOUT), {
+      wrapper: ({ children }: { children: ReactNode }) => createElement(StrictMode, null, children),
+    });
+
+    act(() => result.current.onFirstFrame());
+    expect(onReady).toHaveBeenCalledTimes(1);
+    expect(result.current.ready).toBe(true);
+    expect(result.current.timedOut).toBe(false);
+
+    // The (already-cleared) first-pass timer reaching its original deadline
+    // must not announce a second time.
+    act(() => void vi.advanceTimersByTime(TIMEOUT + 1));
+    expect(onReady).toHaveBeenCalledTimes(1);
   });
 });
 

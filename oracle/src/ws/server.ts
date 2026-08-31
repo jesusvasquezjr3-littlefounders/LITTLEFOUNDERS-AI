@@ -394,8 +394,29 @@ function refuseTurn(live: Live, why: 'busy' | 'too-soon'): void {
   });
 }
 
-function send(socket: WebSocket, message: ServerMessage): void {
-  if (socket.readyState === socket.OPEN) socket.send(JSON.stringify(message));
+/**
+ * Exported only so a test can call it directly against a socket it has
+ * already closed — the case this guard exists for.
+ *
+ * A dropped send here used to be silent: no log, no error, nothing. Found by
+ * adversarial review, round 81 (2026-08-31, MEDIUM), chasing a live,
+ * intermittently-reproducing symptom (a turn written to Postgres within
+ * seconds of a session starting, never reaching the screen, with a live
+ * connection count that never dropped) — never conclusively pinned on this
+ * function, but the silence itself was a real, independent gap: §1.0 ("make
+ * failure LOUD and distinguishable from emptiness") does not carve out an
+ * exception for a socket that closed a moment before its last message tried
+ * to leave. Every one of this file's other failure paths already logs;
+ * this was the one that didn't.
+ */
+export function send(socket: WebSocket, message: ServerMessage): void {
+  if (socket.readyState === socket.OPEN) {
+    socket.send(JSON.stringify(message));
+    return;
+  }
+  console.warn(
+    `[oracle] dropped a "${message.type}" message — socket was not open (readyState=${socket.readyState})`,
+  );
 }
 
 /** After this many consecutive unconfirmed transcript writes, the session ends. */

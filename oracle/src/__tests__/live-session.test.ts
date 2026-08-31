@@ -55,6 +55,7 @@ let modelServer: Server;
 let oraclePort = 0;
 let journal: CoreJournal;
 let modelJournal: ModelJournal;
+let send: (typeof import('../ws/server.js'))['send'];
 /** Flipped per test to shape what the fake Core reports about the learner. */
 let sessionIsMinor = false;
 /**
@@ -438,7 +439,9 @@ beforeAll(async () => {
   resetConfigCache();
 
   const { createApp } = await import('../app.js');
-  const { attachTutorSocket } = await import('../ws/server.js');
+  const wsServer = await import('../ws/server.js');
+  const { attachTutorSocket } = wsServer;
+  send = wsServer.send;
 
   oracleServer = createServer();
   attachTutorSocket(oracleServer);
@@ -1561,5 +1564,39 @@ describe('the socket refuses what it must', () => {
       resetConfigCache();
       sessionIsMinor = false;
     }
+  });
+});
+
+/*
+ * Found chasing a live, intermittently-reproducing symptom, round 81
+ * (2026-08-31, MEDIUM): a session whose first turn was written to Postgres
+ * within seconds of starting, never once reached the screen, with no error
+ * anywhere and the live-connection count never dropping. The root cause was
+ * never conclusively pinned on `send()` specifically, but along the way this
+ * function's own guard turned out to drop a message with total silence — no
+ * log, no error — which is a real, independent gap on its own merits (§1.0)
+ * and exactly the kind of gap that turns "why did nothing arrive" into a
+ * permanent mystery instead of a line in the logs.
+ */
+describe('a dropped send is never silent', () => {
+  it('warns, naming the message type and the actual readyState, when the socket is not open', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const closedSocket = { readyState: WebSocket.CLOSED, OPEN: WebSocket.OPEN, send: vi.fn() } as unknown as WebSocket;
+
+    send(closedSocket, { type: 'error', code: 'RATE_LIMITED', message: 'One moment.' });
+
+    expect(closedSocket.send).not.toHaveBeenCalled();
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('dropped a "error" message'));
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining(`readyState=${WebSocket.CLOSED}`));
+  });
+
+  it('sends normally, and warns nothing, when the socket is actually open', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const openSocket = { readyState: WebSocket.OPEN, OPEN: WebSocket.OPEN, send: vi.fn() } as unknown as WebSocket;
+
+    send(openSocket, { type: 'error', code: 'RATE_LIMITED', message: 'One moment.' });
+
+    expect(openSocket.send).toHaveBeenCalledTimes(1);
+    expect(warn).not.toHaveBeenCalled();
   });
 });

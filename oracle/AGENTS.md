@@ -1931,6 +1931,31 @@ everything passes the blocked half perfectly and destroys the product.
    whether one is just early and hoping the other agrees. See
    `RUNBOOK.md` Round 79.
 
+68. **`ws/server.ts`'s `send()` dropped a message with total silence when
+   the socket was not open — no log, no error, nothing.** Found chasing
+   a live, intermittently-reproducing symptom, round 81 (2026-08-31,
+   MEDIUM): a session whose first turn was written to Postgres within
+   seconds of starting never once reached the screen, with the live
+   connection count never dropping and no error anywhere. Two
+   background investigations (one confirming `useStageAnnouncement.ts`
+   is StrictMode-safe via 9 new deterministic tests, one narrowing the
+   live reproduction to "fresh full-page navigation" vs "in-place SPA
+   transition") never conclusively pinned this function as THE cause —
+   the remaining live-only candidate is `TutorScene`'s real WebGL
+   canvas under React StrictMode's mount-churn, which needs a browser
+   this session's testing tools cannot fully exercise (headless
+   automation reports `document.hidden: true` even when "fronted",
+   throttling the render loop this exact mechanism depends on). What
+   IS certain, independent of whether it explains this specific hang:
+   a socket that closes a moment before its last message tries to
+   leave should never fail in silence. `send()` now logs
+   `[oracle] dropped a "<type>" message — socket was not open
+   (readyState=<n>)` on every guard-caught drop — every OTHER failure
+   path in this file already logs; this was the one that didn't. Fixed
+   observability, not a confirmed root-cause fix: the next time this
+   symptom recurs, it leaves a line instead of a silence. See
+   `RUNBOOK.md` Round 81.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:

@@ -7919,3 +7919,96 @@ and the learner's own "Past conversations" replay
 activities was affected in both places, for as long as
 `buildReplayScript` has existed. Not scoped to intent, locale, or
 account type.
+
+## Round 81: a session's first turn reached Postgres and never reached the screen, and no error said so — root cause open, one real gap closed along the way
+
+Found live, testing as a real logged-in kid account, 2026-08-31
+(MEDIUM, ONGOING — this round closes what could be confirmed and is
+honest about what could not). Starting a Tutor session by clicking a
+topic offer sometimes left the screen showing only the loading chrome
+("Your island is arriving…", a "Lesson · step N of M" chip) with no
+tutor line ever appearing — not slow, just never. Direct Postgres
+queries during two separate hangs confirmed a real `tutor_turns` row
+(the scripted opening greeting) was written within 1–2 seconds of
+session start both times, and `oracle`'s own `/health` reported
+`liveSessions: 1` throughout — the session was alive, billed, and
+correct server-side; the client simply never showed it.
+
+**The pattern, from four live attempts.** Every attempt that began
+with a FRESH FULL PAGE NAVIGATION to `/tutor` hung (3 of 3). The one
+attempt that started from an ALREADY-MOUNTED `/tutor` page — clicking
+a second topic offer on the same page load, no navigation in between —
+worked immediately. This is the strongest signal produced this round:
+whatever is wrong is specific to the route's COLD MOUNT, not to
+starting a session in general.
+
+**Two background investigations, and what each one actually
+established.** The first investigation's static reading proposed that
+`ConversationView`'s render branch and the loading veil share one
+boolean (`stageReady`, flipped once by either the 3D scene's real
+first frame or an 8-second deadline in `useStageAnnouncement.ts`), and
+that if it never flips, nothing can render — a plausible mechanism,
+not yet a confirmed one. Live evidence gathered immediately after
+falsified the strong form of it: in a THIRD hang, the console line
+`[tutor] the 3D stage never reported a first frame; releasing the
+speech gate on the timeout` was confirmed to actually fire, and the
+tutor's line still never appeared afterward. The deadline path
+executing was not sufficient. A second investigation then wrote 9 new
+deterministic tests against `useStageAnnouncement.ts` itself —
+including one that wraps the hook in a REAL `<StrictMode>` render to
+force React's dev-only mount→cleanup→remount cycle — and every one
+passed against the current code: the timer clears and re-arms
+correctly across a remount, the first-frame callback identity survives
+a `StrictMode` double-invoke intact, and the deadline still announces
+exactly once either way. **This hook is exonerated, by test, not by
+argument.**
+
+**What remains open, honestly.** `frontend/src/main.tsx` does wrap the
+app in `<StrictMode>` (confirmed by reading it), so the cold-mount
+correlation is real; it just is not explained by the one hook already
+cleared. The two live candidates neither investigation could close:
+(1) `TutorScene`'s REAL react-three-fiber `<Canvas>`/WebGL context
+going through `StrictMode`'s mount-dispose-remount churn on a cold
+mount specifically — a known-hard problem class for real GPU resources
+that this repository's jsdom-based test environment cannot exercise at
+all (confirmed: `HTMLCanvasElement.prototype.getContext` does not
+exist in this suite's jsdom), and that this SESSION's own testing tool
+could not cleanly exercise either — the headless browser automation
+used for live verification reports `document.hidden: true` even when
+explicitly "fronted," which throttles the exact `requestAnimationFrame`
+loop the first-frame signal depends on, confounding any live timing
+measurement taken through it; (2) `oracle/src/ws/server.ts`'s `send()`
+silently dropping a message when the socket is not `OPEN` yet on a
+just-opened connection — a plausible mechanism for "DB has the turn,
+screen gets nothing, no error," but with no code path found tying it
+to a cold client mount specifically. Neither is disproven; neither is
+confirmed. This is deliberately reported as open rather than closed —
+§1.12 forbids presenting a guess as a fix, and every fix attempted
+against a hypothesis nobody could reproduce on demand risks quietly
+breaking something real to patch something imagined.
+
+**What WAS fixed this round, on its own independent merits.** Gap (2)
+above is real regardless of whether it explains this hang: `send()`
+dropped a message in total silence — no log, no error — when its
+socket was not open, the only function in this whole file that failed
+that way. Every other failure path here already logs (§1.0: make
+failure loud). Fixed: a caught drop now logs
+`[oracle] dropped a "<type>" message — socket was not open
+(readyState=<n>)`, naming both the message that was lost and why.
+This does not claim to fix the hang; it claims that if this exact
+mechanism is ever involved again, in this session's remaining
+investigation or in production, it now leaves a line instead of a
+silence.
+
+Proof: 2 new tests in `live-session.test.ts` (`send()` warns and drops
+when the socket is not open; sends normally and warns nothing when it
+is), full oracle suite re-run clean (27 files, 629 tests), type-check
+and lint clean.
+
+**Next step, not yet taken.** Reproducing this live with actual
+browser devtools open (not headless automation) — watching the Network
+tab's WS frames directly for whether a `type: "turn"` frame is ever
+sent by the server during a hang, which would definitively separate
+"never sent" (gap 2, or something upstream of it) from "sent but never
+rendered" (gap 1, the WebGL/StrictMode candidate) — is the fastest
+remaining way to close this without more speculation.
