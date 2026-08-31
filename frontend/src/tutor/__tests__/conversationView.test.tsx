@@ -829,6 +829,53 @@ describe('the resting lesson sheet', () => {
 });
 
 /*
+ * THE ARRIVAL ANNOUNCEMENT ON THE DOCKED DESKTOP PANEL.
+ *
+ * Found by adversarial review, round 83 (2026-08-31, MEDIUM): every test in
+ * "the resting lesson sheet" above stubs no `matchMedia` at all, so they all
+ * run against the MOBILE sheet form — exactly the breakpoint `resting` can
+ * ever be `true` on (`hud/LessonPlate.tsx`'s `resting = !desktop && detent
+ * === 'peek'`). None of them exercised the docked desktop panel, which
+ * `useDesktopPlate` reports for `(min-width: 1024px)` and which never
+ * collapses at all — so `resting` is unconditionally `false` there, the
+ * peek row's own live region never renders, and a screen-reader user on
+ * desktop — the DEFAULT state for essentially every ordinary desktop
+ * conversation, per this file's own round-61 finding a few hundred lines up
+ * — had no reachable announcement whatsoever that an activity had arrived.
+ */
+describe('the arrival announcement reaches a screen reader on the docked desktop panel', () => {
+  function stubDesktop() {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: true,
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+  }
+
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('never renders the mobile peek row at all on desktop, confirming the gap this fix closes', () => {
+    stubDesktop();
+    render(conversation(makeSocket({ segment: SEGMENT }), true));
+    // The mobile-only resize handle (and with it the peek row's own
+    // `peekStatus` span) does not exist on the desktop form at all.
+    expect(screen.queryByRole('button', { name: /Resize this panel/ })).toBeNull();
+  });
+
+  it('still announces the arrival, from `LiveSegmentPanel`s own live region', () => {
+    stubDesktop();
+    render(conversation(makeSocket({ segment: SEGMENT }), true));
+
+    // Accessibility-aware: this resolves to exactly one node only because it
+    // is actually reachable — the desktop panel never hides its body, unlike
+    // the mobile sheet at PEEK (`plateBodyShown`/`the resting lesson sheet`
+    // above).
+    expect(screen.getByRole('status', { name: '' })).toHaveTextContent('An activity is ready.');
+  });
+});
+
+/*
  * ONE SENTENCE, ONE PRINTING, TWO CHANNELS (/DESIGN.md §Lumen).
  *
  * The owner's accessibility requirement is a caption above the speaker's head
