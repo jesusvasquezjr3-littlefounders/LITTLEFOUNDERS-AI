@@ -9357,3 +9357,163 @@ lint and build clean in both services; root `docs:check`, `secrets:check`,
 all green. No `oracle/AGENTS.md` or `/ORACLE.md` item: the daily cap's
 enforcement (round 34) and its exemptions are unchanged — this closes only
 how the refusal is EXPLAINED to the person it refuses.
+## Round 96: a SESSION_LIMIT refusal lived only in memory, so a refresh repainted the exact same cheerful, tappable chips — found by adversarial review (tutor-review-sweep-92, session-cap-ux dimension), MEDIUM, closed 2026-08-31
+
+`TutorExperience.tsx`'s daily-cap refusal — the server's `429
+SESSION_LIMIT` from `POST /tutor/sessions`, the anti-addiction promise
+`/AGENTS.md` §1.5 calls "a product promise to parents, not a rate
+limit" — landed in exactly one place: `const [startError, setStartError]
+= useState<string | null>(null)`. Nothing wrote it anywhere else.
+
+**The defect.** A refresh, or navigating away from `/tutor` and back,
+tears down and remounts the whole component tree — `startError` starts
+back at `null` on every fresh mount, by construction. `GET /tutor/offers`
+(the route this refusal has nothing to do with — it does not check the
+daily cap at all, today or after the sibling fix landing separately in
+this same review sweep) answers exactly as it always does, `canStart:
+true`, and the arrival screen repaints the identical fully-enabled,
+inviting offer chips a learner had just been refused on. A child with
+weak object permanence for "this already happened" reads that as the
+refusal having been a glitch and taps right back in — to be refused
+again, by the same server check, for the same reason, having learned
+nothing from the round trip in between. The cap itself was never at
+risk (`start_tutor_session_checked` is atomic in Postgres and nothing
+here touches it); what was missing was the client remembering a FACT it
+had already been told.
+
+**Also true, less obviously: the SAME tab, no refresh, already had a
+milder version of this.** `startError` truthy never fed into the
+`starting` boolean `offerLayer` passes down as `OfferChips`'s own
+`starting` prop — only `!offers.canStart` did. So even mid-tab, the
+instant a `SESSION_LIMIT` response landed, the status line appeared
+but the chips themselves went right back to fully tappable. The fix
+below closes both shapes of the same defect with the same change.
+
+**The fix is a client-side ECHO of a fact, not a second cap.** A
+`lf.tutor.sessionLimitDay.<userId>` `localStorage` entry — following
+the exact convention `PERSONALIZED_KEY_PREFIX` above it already
+established (per-user key, wrapped in try/catch, never worth failing a
+session over) — stores the ISO string of the LOCAL DAY the refusal
+happened on. `startOfLocalDayIso`, `backend/src/routes/tutor.ts`'s own
+boundary function (round 34's fix: the learner's own timezone, not the
+server's UTC day, per `LOCALE_TIMEZONE`), is mirrored into
+`TutorExperience.tsx` byte-for-byte in algorithm — there is no shared
+package (`/AGENTS.md` §1.2) — the same way `tierForBirthDate` is
+already mirrored into `oracle/src/context/schema.ts`. On mount, in the
+SAME tick `setOffers(...)` runs (before `OfferChips` ever has a phase
+to render into, so there is no flash of a cheerful screen to correct a
+beat later), the bootstrap effect recomputes today's boundary from
+`offers.locale` and checks the stored key: a match seeds `startError`
+to `'SESSION_LIMIT'` immediately; a mismatch (a genuinely new day, or
+nothing stored) clears the stale entry. `begin()` writes the key at
+the moment of an actual refusal and clears it unconditionally the
+moment a session actually starts — a success is unambiguous proof
+today is not (or is no longer) capped, whatever an earlier refusal
+today might still claim. `offerLayer`'s `starting` now also folds in
+`startError === 'SESSION_LIMIT'` specifically (not `startError` merely
+being truthy — every OTHER refusal code, a transient network failure
+say, deliberately leaves the chips tappable, because retrying THOSE is
+exactly right).
+
+**This stays entirely a local echo, never enforcement.** The real cap
+check is still `POST /tutor/sessions`, still server-side, still
+atomic; this fix only pre-fills what the screen shows before or
+without that round trip, and a day-boundary mismatch always wins over
+a stale flag rather than the flag ever overriding a fresh answer.
+
+**A real bug in the mirrored function was caught building the test for
+it, and would have made the whole fix flaky.** `startOfLocalDayIso`
+resolves `Intl.DateTimeFormat` to whole-second precision and then
+subtracts `now.getTime()` — which carries real milliseconds — to
+derive the timezone offset. The server's own use (`sinceIso` in a `>=`
+range filter) never notices: a few hundred milliseconds of jitter
+around local midnight cannot change which side of a daily boundary a
+session's timestamp falls on. This file's use is different in kind —
+`refusedToday` is an exact STRING EQUALITY check — and two independent
+`startOfLocalDayIso(locale)` calls (no explicit `now`, i.e. two real
+`new Date()`s a fraction of a second apart, exactly what a mount-time
+read and an earlier refusal's write are) leaked `now`'s own arbitrary
+millisecond into the result and disagreed at the millisecond digit
+essentially every time — measured directly in Node before writing a
+single test assertion: `...T06:00:00.516Z` against `...T06:00:00.030Z`
+for the identical calendar day, half a second apart. Flooring `now` to
+the whole second before the subtraction (`Math.floor(now.getTime() /
+1000) * 1000`) fixes it in both copies (`TutorExperience.tsx` and the
+test file's own verbatim copy of the function) and is documented at
+the call site as a deliberate, narrow divergence from the server's
+version — correct for a range filter, silently wrong for an equality
+key, and the server's copy is left exactly as it was because nothing
+there compares this value for equality.
+
+**Proof — a genuine red-then-green, twice over.**
+`frontend/src/tutor/__tests__/sessionLimitMemory.test.tsx` follows this
+exact directory's own two-part convention (`resumeRace.test.tsx`,
+`preferencesRace.test.tsx`, `sessionLifecycleReset.test.tsx`,
+`mapRefreshAfterSession.test.tsx`): four source-scan tests read
+`TutorExperience.tsx` directly and confirmed failing (`git stash` on
+just that file) before the fix existed, passing after; a behavioural
+harness copies the bootstrap-effect read and `begin()`'s write/clear
+verbatim and drives the real `OfferChips` component through an actual
+first-mount refusal, an `unmount()` (the harness's stand-in for a page
+reload — only `window.localStorage`, real in jsdom, survives that
+boundary) and a fresh `render()`, asserting the refused state — chips
+carrying a real, native `disabled` attribute, not merely a status line
+— appears on the SECOND mount with no further tap. That case was
+confirmed failing against a temporarily-reverted, pre-fix copy of the
+harness logic (chips came back fully tappable, exactly the reported
+defect) before being restored to green. A second case seeds
+`localStorage` with a refusal dated 2020-01-15 and confirms a fresh
+day's offer renders fully enabled and the stale entry is cleaned up —
+also confirmed failing (the stale flag DID suppress the offer) against
+the same reverted logic.
+
+**Sibling scope, checked and not touched.** A concurrent review-sweep
+fix targets `GET /tutor/offers` never proactively reflecting the daily
+cap in `canStart`/`startBlockedBy` — a related but distinct backend
+finding. `origin/main` at merge time (`b2a285a1`, round 91) carries no
+such change yet; this fix does not depend on it and is written to be
+correct either way, since it never reads `offers.canStart` to decide
+whether to trust or clear the local echo — only the recomputed day
+boundary does that, which is unaffected by whatever `/offers` returns.
+
+Verification: `npm run type-check`, `npm run lint`, `npm test -- --run`
+(131 files, 1507 tests, up from 130/1501 — this fix contributes the one
+new file, six tests) and `npm run build` all green in `frontend/`; root
+`npm run docs:check`, `npm run secrets:check`, `npm run i18n:check`
+(no new user-facing strings — the existing `tutor.startError.
+SESSION_LIMIT` key is reused, not duplicated), `npm run paths:check`,
+`npm run seo:check`, `npm run provider:check` and `npm run tools:test`
+all green; `npm run repo:map` regenerated for the new test file. No
+`frontend/AGENTS.md` item: this is a client-side memory aid for one
+named refusal code, not a reusable pattern documented as an invariant
+elsewhere.
+
+**A merge-time gap, found and closed during this round's own review.**
+This branch and round 95 (the duration-message fix, `startErrorResetAt`)
+were authored concurrently from the same pre-round-92 `main`, so neither
+saw the other's `TutorExperience.tsx` change. Rebasing this branch onto
+`main` after round 95 had already merged surfaced a REAL conflict — not
+a mechanical one — in `begin()`'s refusal branch, correctly resolved by
+keeping both halves (`setStartErrorResetAt` from round 95 alongside
+`rememberSessionLimit` from this round). But the restore-time echo above
+(`setStartError('SESSION_LIMIT')` on a matching persisted flag) only
+seeded `startError`, never `startErrorResetAt` — a real composition gap
+neither round's own tests could have caught, since each was written and
+tested against a `main` where the other's change did not yet exist. Left
+alone, a page reload that restored a persisted refusal would have shown
+round 95's bare "tomorrow" fallback, while a LIVE refusal in the same
+session showed the real duration — the same message reading differently
+depending on which of two equally-true paths produced it. Fixed at merge
+time: the restore branch now also computes an ESTIMATE (today's boundary
++ 24h in UTC, exact but for a DST-transition day, and superseded the
+moment any real server `resetAt` arrives) and seeds `startErrorResetAt`
+alongside `startError`. Two new tests were added and confirmed
+red-then-green independently for each of this fix's two copies — the
+real `TutorExperience.tsx` (via a source-scan asserting `setStartErrorResetAt`
+sits inside the same `if (refusedToday(...))` branch as `setStartError`)
+and the test file's own harness copy (via the existing remount test,
+extended to assert the restored message is a real "in N hours/minutes"
+phrase rather than the bare fallback) — each reverted independently and
+confirmed to fail for the exact claimed reason before being restored.
+Final count: 132 files, 1530 tests (seven in this file, one more than
+originally authored).

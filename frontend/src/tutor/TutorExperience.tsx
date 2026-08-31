@@ -135,6 +135,127 @@ function rememberPicker(userId: string | undefined): void {
   }
 }
 
+/**
+ * The daily session cap's own boundary, mirrored from the server.
+ *
+ * `backend/src/routes/tutor.ts`'s `startOfLocalDayIso` is the actual source of
+ * truth — the calendar day, IN THE LEARNER's OWN TIMEZONE, a session counts
+ * against (round 34, 2026-08-30: a UTC-midnight or browser-local-midnight
+ * boundary disagrees with it for the large majority of real users). There is
+ * no shared package (§1.2), so this is duplicated rather than imported — the
+ * same way `tierForBirthDate` is mirrored into `oracle/src/context/schema.ts`:
+ * the ALGORITHM travels, the function itself does not. `SESSION_CAP_TIMEZONE`
+ * and the default fallback ('es-MX') are copied byte-for-byte from the same
+ * source, including `normalizeLocale`'s own default, so a value this client
+ * has never seen degrades exactly the way the server's own default does.
+ */
+const SESSION_CAP_TIMEZONE: Record<string, string> = {
+  'es-MX': 'America/Mexico_City',
+  'pt-BR': 'America/Sao_Paulo',
+  'en-US': 'America/New_York',
+};
+
+function startOfLocalDayIso(locale: string, now: Date = new Date()): string {
+  const timeZone = SESSION_CAP_TIMEZONE[locale] ?? SESSION_CAP_TIMEZONE['es-MX'];
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    })
+      .formatToParts(now)
+      .map((p) => [p.type, p.value]),
+  ) as Record<string, string>;
+  // Same derivation as the server: the clock reading `now` HAS in `timeZone`,
+  // reinterpreted as UTC, reveals that zone's current offset — correct across
+  // a DST transition because it is derived from `now` rather than a fixed
+  // table. `% 24` guards `Intl`'s documented midnight-as-"24" quirk.
+  const asIfUtcMs = Date.UTC(
+    Number(parts.year),
+    Number(parts.month) - 1,
+    Number(parts.day),
+    Number(parts.hour) % 24,
+    Number(parts.minute),
+    Number(parts.second),
+  );
+  /*
+   * FLOORED TO THE WHOLE SECOND, which the server's own version is not —
+   * caught here because THIS caller, unlike the server's, compares the
+   * result for exact equality (`refusedToday`) rather than using it as a
+   * `>=` range boundary. `Intl.formatToParts` only resolves to the second,
+   * so subtracting `now.getTime()` (which carries real milliseconds) from a
+   * millisecond-less `asIfUtcMs` leaks `now`'s own arbitrary millisecond
+   * into the result — two calls a few hundred ms apart on the SAME
+   * calendar day then disagree at the millisecond digit and never compare
+   * equal. Harmless for a range filter's `sinceIso`; fatal for a stored key
+   * this file re-derives on every mount and expects to match byte-for-byte.
+   */
+  const offsetMs = asIfUtcMs - Math.floor(now.getTime() / 1000) * 1000;
+  const localMidnightUtcMs =
+    Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day), 0, 0, 0) - offsetMs;
+  return new Date(localMidnightUtcMs).toISOString();
+}
+
+/**
+ * Where we remember that the daily session cap already refused this learner
+ * TODAY (/AGENTS.md §1.14's "a surface that opts out of a system must be told
+ * what the system decided", applied to the client rather than a 3D rig — but
+ * the same shape: `startError` alone lives in `useState` and a refresh, or
+ * navigating away and back, forgets a refusal that is still true, repainting
+ * the exact same fully-enabled, inviting offer chips as if nothing had
+ * happened).
+ *
+ * THIS IS NOT CAP ENFORCEMENT — that stays entirely server-authoritative
+ * (`start_tutor_session_checked`, atomic, in Postgres). This is the client
+ * remembering a FACT it was already told, so a reload shows the same refused
+ * state immediately instead of a falsely cheerful screen while the real
+ * `GET /offers` round trip is still in flight. Keyed on `startOfLocalDayIso`
+ * above rather than on a fixed TTL: a stale flag from a PREVIOUS day must never
+ * suppress a fresh day's offer, and comparing against a freshly computed
+ * boundary on every read (mount, and again at the next refusal) is what makes
+ * that true without a clock-watching timer — the boundary "rolling over" is
+ * simply the next comparison finding a different string.
+ *
+ * Local rather than a server field, for the same reason `PERSONALIZED_KEY_PREFIX`
+ * above is: the failure mode of losing it is one extra tap that gets refused
+ * again by the real, still-authoritative server check — never a false refusal,
+ * since nothing here ever BLOCKS a start on its own, it only pre-fills the
+ * screen that would otherwise flash cheerful and then correct itself.
+ */
+const SESSION_LIMIT_KEY_PREFIX = 'lf.tutor.sessionLimitDay.';
+
+function refusedToday(userId: string | undefined, todayIso: string): boolean {
+  if (!userId) return false;
+  try {
+    return window.localStorage.getItem(SESSION_LIMIT_KEY_PREFIX + userId) === todayIso;
+  } catch {
+    return false;
+  }
+}
+
+function rememberSessionLimit(userId: string | undefined, todayIso: string): void {
+  if (!userId) return;
+  try {
+    window.localStorage.setItem(SESSION_LIMIT_KEY_PREFIX + userId, todayIso);
+  } catch {
+    /* See PERSONALIZED_KEY_PREFIX above: never worth failing a session over. */
+  }
+}
+
+function clearSessionLimit(userId: string | undefined): void {
+  if (!userId) return;
+  try {
+    window.localStorage.removeItem(SESSION_LIMIT_KEY_PREFIX + userId);
+  } catch {
+    /* ditto */
+  }
+}
+
 /** How long to wait for the voice before calling a turn silent — the `turn`
  * frame always arrives with a null URL and the audio follows separately. */
 const SILENCE_REPORT_DELAY_MS = 6_000;
@@ -267,6 +388,39 @@ export function TutorExperience() {
       setOffers(offersResult.data);
       setMap(mapResult.data ?? null);
       /*
+       * THE OPTIMISTIC LOCAL ECHO OF A REFUSAL ALREADY GIVEN — found by
+       * adversarial review, tutor-review-sweep-92 (MEDIUM). `startError`
+       * (below, `useState`) held the SESSION_LIMIT refusal only in memory, so
+       * a refresh or a navigate-away-and-back forgot it completely and
+       * repainted the exact same fully-enabled, inviting offer chips as if
+       * the cap had never been hit — a child with weak object permanence for
+       * "this already happened" could tap right back in and be refused
+       * again. This runs in the SAME tick `setOffers` does, before
+       * `OfferChips` ever gets a phase to render into, so there is no flash
+       * of a cheerful screen to correct later. It is still only an echo: the
+       * cap itself stays entirely server-authoritative, and a genuinely new
+       * day (`startOfLocalDayIso` disagreeing with what was stored) clears
+       * the stale flag rather than trusting it.
+       */
+      const todayIso = startOfLocalDayIso(offersResult.data.locale);
+      if (refusedToday(userIdRef.current, todayIso)) {
+        setStartError('SESSION_LIMIT');
+        /*
+         * Seeds the SAME duration message a live refusal shows (round 95),
+         * not just the disabled chips — otherwise a restored refusal would
+         * silently fall back to the generic "tomorrow" wording the moment a
+         * page reload is what surfaced it, even though the live path right
+         * below always has a real server-computed `resetAt`. `todayIso` is
+         * already this locale's local midnight; stepping it by exactly 24h
+         * in UTC is tomorrow's for all but a DST-transition day, an
+         * estimate that only feeds an optimistic ECHO (never enforcement)
+         * and is superseded the moment any real `resetAt` arrives.
+         */
+        setStartErrorResetAt(new Date(new Date(todayIso).getTime() + 24 * 60 * 60 * 1000).toISOString());
+      } else {
+        clearSessionLimit(userIdRef.current);
+      }
+      /*
        * The picker opens on the first visit and never again — and the SERVER
        * remembers now (`personalized`: a preferences row exists, which the
        * picker's Done guarantees). The nickname and the localStorage marker
@@ -382,10 +536,29 @@ export function TutorExperience() {
       void startSession(token, input).then((result) => {
         setStarting(false);
         if (result.error || !result.data) {
-          setStartError(result.error?.code ?? 'INTERNAL');
+          const code = result.error?.code ?? 'INTERNAL';
+          setStartError(code);
           setStartErrorResetAt(result.error?.resetAt ?? null);
+          /*
+           * PERSISTED, not merely held in `startError` — the write side of
+           * the fix above. Keyed on the SAME boundary the server enforces
+           * (`startOfLocalDayIso`) rather than on this instant, so a mount
+           * hours from now on a genuinely NEW day never mistakes itself for
+           * the one that was capped.
+           */
+          if (code === 'SESSION_LIMIT') {
+            rememberSessionLimit(userIdRef.current, startOfLocalDayIso(offers?.locale ?? 'es-MX'));
+          }
           return;
         }
+        /*
+         * A session just started — unambiguous proof today is not (or is no
+         * longer) capped, whatever a persisted refusal from earlier today
+         * might still claim. Cleared unconditionally: a no-op when there was
+         * nothing to clear, the same "the real outcome wins" rule the read
+         * side above applies.
+         */
+        clearSessionLimit(userIdRef.current);
         setSession(result.data);
         setPhase('conversing');
         /*
@@ -413,7 +586,10 @@ export function TutorExperience() {
         setReplyTimedOut(false);
       });
     },
-    [token],
+    // `offers` only for its `.locale` (read at the moment of a SESSION_LIMIT
+    // refusal, above) — a rare, harmless identity change for callers of this
+    // memoized function, not a dependency that could ever loop back into it.
+    [token, offers],
   );
 
   /*
@@ -959,7 +1135,20 @@ export function TutorExperience() {
       ? {
           ...common,
           offers,
-          starting: starting || !offers.canStart,
+          /*
+           * `startError === 'SESSION_LIMIT'` folded in here — the OTHER half
+           * of the tutor-review-sweep-92 fix. Before this, a SESSION_LIMIT
+           * refusal only ever added a status LINE (`OfferChips`'s own
+           * `{startError && ...}` block); the chips themselves stayed fully
+           * tappable, live tab or fresh reload alike, so a learner who had
+           * just been told no could tap right back in and be told no again.
+           * Every OTHER `startError` (a transient network failure, say)
+           * deliberately keeps the chips enabled — retrying THOSE is exactly
+           * what a learner should be able to do — so this checks the one
+           * code that means "the day is over" rather than gating on
+           * `startError` being merely truthy.
+           */
+          starting: starting || !offers.canStart || startError === 'SESSION_LIMIT',
           startError,
           startErrorResetAt,
           onStart: begin,
