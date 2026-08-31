@@ -145,6 +145,7 @@ const OFFERS: TutorOffers = {
   intelDegraded: false,
   canStart: true,
   startBlockedBy: null,
+  sessionCapResetAt: null,
   voiceAvailable: true,
   microphoneBlockedBy: null,
   weakSkills: [],

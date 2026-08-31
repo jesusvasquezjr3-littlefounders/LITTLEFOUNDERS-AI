@@ -385,6 +385,26 @@ export function OfferChips({
 
   /** True when Oracle cannot serve at all, as opposed to a start in flight. */
   const cannotServe = !offers.canStart;
+  /*
+   * Found by adversarial review, round 99 (2026-08-31, HIGH), a sibling
+   * finding of the daily-cap fix on `GET /offers` itself: `cannotServe`
+   * used to render ONE message no matter why — "the tutor is resting" —
+   * which is honest for an Oracle outage and actively WRONG for a learner
+   * who simply used today's two sessions. `startBlockedBy` already carries
+   * the distinction (the offers route folds the cap into the same
+   * `canStart`/`startBlockedBy` pair Oracle's own health uses, reusing the
+   * exact `SESSION_LIMIT` code `POST /sessions` returns for the identical
+   * refusal), so this reads it back rather than inventing new wire
+   * vocabulary — the existing `tutor.startError.SESSION_LIMIT` copy already
+   * says the right thing, it was just never shown before a tap.
+   *
+   * Reuses round 95's `formatResetWhen` and `offers.sessionCapResetAt` (the
+   * SAME reset-instant computation `POST /sessions`'s own `resetAt` uses,
+   * exposed proactively) rather than the plain fallback word, so this
+   * screen and the post-tap refusal never disagree about HOW LONG the wait
+   * is — only about whether a tap already happened.
+   */
+  const sessionCapReached = offers.startBlockedBy === 'SESSION_LIMIT';
   const disabled = starting;
 
   const choose = useCallback(
@@ -404,7 +424,15 @@ export function OfferChips({
       {cannotServe && (
         <HudPlate shape="plate" className="pointer-events-none self-center">
           <span className="lf-body" role="status">
-            {t('tutor.page.tutorUnavailable')}
+            {sessionCapReached
+              ? t('tutor.startError.SESSION_LIMIT', {
+                  when: formatResetWhen(
+                    offers.sessionCapResetAt,
+                    t('tutor.startError.sessionLimitWhenFallback'),
+                    i18n.language,
+                  ),
+                })
+              : t('tutor.page.tutorUnavailable')}
           </span>
         </HudPlate>
       )}

@@ -99,6 +99,16 @@ interface StubOpts {
   /** Overrides what `/rpc/add_tutor_session_cost` answers (migration 0062):
    * a number is the row's new total, `null` is "nothing was recorded". */
   sessionCostTotal?: number | null;
+  /**
+   * Overrides the exact-count `GET /offers` reads to check the daily session
+   * cap (`countTutorSessionsSince`, round 99). Defaults to `(opts.sessions ??
+   * []).length`, the same convention `start_tutor_session_checked`'s own mock
+   * above already uses for "sessions already exist today" — set this
+   * explicitly only when a test needs the two questions to answer
+   * differently (e.g. `opts.sessions` is shaped as continuity digests, not a
+   * count fixture).
+   */
+  sessionsToday?: number;
 }
 
 function stub(opts: StubOpts = {}) {
@@ -223,6 +233,24 @@ function stub(opts: StubOpts = {}) {
           return Promise.resolve(jsonResponse(200, [{ id: SESSION }]));
         }
         if (url.includes('?id=eq.')) return Promise.resolve(jsonResponse(200, opts.session ?? [SESSION_ROW]));
+        /*
+         * `GET /offers`'s daily-cap read (`countTutorSessionsSince`, round
+         * 99) asks with `Prefer: count=exact` and reads back `Content-Range`
+         * rather than a JSON body — mirrored here exactly as
+         * `countServiceRows`'s other real callers already are elsewhere
+         * (`fakePostgrest.ts`, `admin.test.ts`), rather than actually
+         * filtering `started_at`, and defaulting to the SAME `opts.sessions`
+         * length `start_tutor_session_checked`'s mock above already treats
+         * as "sessions today" so one fixture describes the answer for both
+         * call sites unless a test overrides it (`opts.sessionsToday`).
+         */
+        const prefer = (init?.headers as Record<string, string> | undefined)?.Prefer;
+        if (prefer?.includes('count=exact')) {
+          const n = opts.sessionsToday ?? (opts.sessions ?? []).length;
+          return Promise.resolve(
+            new Response(null, { status: 200, headers: { 'Content-Range': `0-${Math.max(0, n - 1)}/${n}` } }),
+          );
+        }
         return Promise.resolve(jsonResponse(200, opts.sessions ?? []));
       }
       if (url.includes('/rpc/start_tutor_session_checked')) {
@@ -807,6 +835,103 @@ describe('POST /api/v1/tutor/sessions — the microphone gate', () => {
         expect(response.status).toBe(201);
       },
     );
+  });
+});
+
+describe('GET /api/v1/tutor/offers — the daily cap the offer screen used to be silent about', () => {
+  /*
+   * Found by adversarial review, sweep tutor-review-sweep-92 (2026-08-31,
+   * HIGH). `canStart`/`startBlockedBy` reflected ONLY Oracle's own health
+   * (`preflight`), never `MAX_SESSIONS_PER_DAY` — so a learner who had
+   * already used every session today saw the exact same inviting offer
+   * screen as one who had used none, discovering the refusal only after
+   * tapping an opening and having `POST /sessions` bounce them with
+   * `SESSION_LIMIT` (429). Before the fix in this same commit, this exact
+   * assertion failed: the route answered `canStart: true, startBlockedBy:
+   * null` here regardless of `sessionsToday`.
+   */
+  it('says the cap is reached, honestly, before any tap — not just after one', async () => {
+    stub({ sessionsToday: 2 }); // MAX_SESSIONS_PER_DAY
+
+    const response = await request(createApp())
+      .get('/api/v1/tutor/offers')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.canStart).toBe(false);
+    // The SAME code POST /sessions already returns for this refusal (round
+    // 99's whole point): one piece of client copy serves both moments.
+    expect(response.body.data.startBlockedBy).toBe('SESSION_LIMIT');
+    /*
+     * Reconciled with round 95's SESSION_LIMIT-duration fix, merged onto
+     * `main` while this fix was in flight: `tutor.startError.SESSION_LIMIT`
+     * now needs a `{{when}}` interpolation, so a proactive refusal with no
+     * reset instant would render a broken placeholder on a child's screen.
+     * `sessionCapResetAt` reuses round 95's own `SessionLimitResetAt` schema
+     * and `startOfLocalDayIso(locale, now, 1)` arithmetic — a valid,
+     * FUTURE, ISO datetime, not merely truthy.
+     */
+    expect(response.body.data.sessionCapResetAt).toEqual(expect.any(String));
+    expect(new Date(response.body.data.sessionCapResetAt).getTime()).toBeGreaterThan(Date.now());
+  });
+
+  it('carries no reset instant when the cap has not been reached', async () => {
+    stub({ sessionsToday: 1 });
+
+    const response = await request(createApp())
+      .get('/api/v1/tutor/offers')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+
+    expect(response.body.data.sessionCapResetAt).toBeNull();
+  });
+
+  it('still invites while a session is left today', async () => {
+    stub({ sessionsToday: 1 });
+
+    const response = await request(createApp())
+      .get('/api/v1/tutor/offers')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+
+    expect(response.body.data.canStart).toBe(true);
+    expect(response.body.data.startBlockedBy).toBeNull();
+  });
+
+  it('keeps Oracle-health refusals distinct from a spent cap', async () => {
+    stub({
+      sessionsToday: 0,
+      preflight: { canStart: false, blockedBy: 'MODEL_UNAVAILABLE', voiceAvailable: false, microphoneAvailable: false },
+    });
+
+    const response = await request(createApp())
+      .get('/api/v1/tutor/offers')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+
+    expect(response.body.data.canStart).toBe(false);
+    // Not SESSION_LIMIT: the cap was never touched, Oracle itself is down.
+    expect(response.body.data.startBlockedBy).toBe('MODEL_UNAVAILABLE');
+  });
+
+  it('exempts staff, matching the exemption POST /sessions already grants — the person fixing the Tutor is not locked out of its own offer screen', async () => {
+    stub({ sessionsToday: 2, roles: [{ role: 'admin' }] });
+
+    const response = await request(createApp())
+      .get('/api/v1/tutor/offers')
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+    expect(response.body.data.canStart).toBe(true);
+    expect(response.body.data.startBlockedBy).toBeNull();
+  });
+
+  it('does not misreport the cap as reached when the count read fails (§1.14: display-only, fails open)', async () => {
+    stub({ sessionsToday: 2, restFailures: ['/rest/v1/tutor_sessions'] });
+
+    const response = await request(createApp())
+      .get('/api/v1/tutor/offers')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.canStart).toBe(true);
+    expect(response.body.data.startBlockedBy).toBeNull();
   });
 });
 

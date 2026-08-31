@@ -44,6 +44,7 @@ const OFFERS: TutorOffers = {
   intelDegraded: false,
   canStart: true,
   startBlockedBy: null,
+  sessionCapResetAt: null,
   voiceAvailable: true,
   microphoneBlockedBy: null,
   weakSkills: [
@@ -323,6 +324,58 @@ describe('refusals', () => {
       const text = lines.join(' ');
       expect(text).toContain('tomorrow');
     });
+  });
+
+  /*
+   * Found by adversarial review, round 99 (2026-08-31, HIGH), a sibling
+   * finding of the backend fix that folds the daily cap into
+   * `canStart`/`startBlockedBy` (`backend/src/routes/tutor.ts`). Before this
+   * fix, `cannotServe` rendered "The tutor is resting" for ANY refusal,
+   * which is wrong copy for a learner who simply used today's two sessions
+   * — it reads as an outage rather than as the cap the product deliberately
+   * enforces. The offer screen must tell the two apart on sight, not only
+   * after a tap into `POST /sessions` bounces with the same code.
+   *
+   * These three run AFTER round 95's fix landed above, and reconcile with
+   * it rather than duplicate it: `tutor.startError.SESSION_LIMIT` now needs
+   * a `{{when}}` interpolation, so this proactive message reuses the SAME
+   * `formatResetWhen` helper and `offers.sessionCapResetAt` (the offers
+   * route's own `resetAt`, round 99) rather than the plain static word —
+   * the fallback and the precise-duration cases are both exercised, so a
+   * fix that renders a broken `{{when}}` here would fail visibly.
+   */
+  it('says the daily cap is spent, not that the tutor is resting, when startBlockedBy is SESSION_LIMIT', () => {
+    const { container } = renderChips({ canStart: false, startBlockedBy: 'SESSION_LIMIT' }, { starting: true });
+
+    for (const chip of container.querySelectorAll<HTMLElement>('[data-opening]')) {
+      expect(chip).toBeDisabled();
+    }
+    const lines = screen.getAllByRole('status').map((node) => node.textContent ?? '');
+    expect(lines.join(' ')).toContain("You've used today's tutor time. Come back tomorrow!");
+    expect(lines.join(' ')).not.toContain('The tutor is resting');
+  });
+
+  it('names a real duration on the proactive cap message too, not just the post-tap one', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-08-30T18:00:00.000Z'));
+    renderChips({
+      canStart: false,
+      startBlockedBy: 'SESSION_LIMIT',
+      sessionCapResetAt: new Date('2026-08-31T00:00:00.000Z').toISOString(),
+    });
+
+    const lines = screen.getAllByRole('status').map((node) => node.textContent ?? '');
+    const text = lines.join(' ');
+    expect(text).toContain('in 6 hours');
+    expect(text).not.toContain('tomorrow');
+  });
+
+  it('still says the tutor is resting for an ordinary Oracle outage, unrelated to the cap', () => {
+    renderChips({ canStart: false, startBlockedBy: 'MODEL_UNAVAILABLE' }, { starting: true });
+
+    const lines = screen.getAllByRole('status').map((node) => node.textContent ?? '');
+    expect(lines.join(' ')).toContain('The tutor is resting');
+    expect(lines.join(' ')).not.toContain("You've used today's tutor time");
   });
 });
 

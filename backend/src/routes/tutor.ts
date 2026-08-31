@@ -21,6 +21,7 @@ import {
   awardTutorXp,
   closeTutorSession,
   countSessionSegments,
+  countTutorSessionsSince,
   startTutorSessionChecked,
   getActiveVoiceConsent,
   getTutorPreferences,
@@ -1610,6 +1611,45 @@ export function tutorRouter(): Router {
     const consent = isMinor ? await getActiveVoiceConsent(user.id) : null;
     const runtime = await preflight(isMinor, true);
 
+    /*
+     * THE CAP THE OFFER SCREEN USED TO BE SILENT ABOUT. Found by adversarial
+     * review, round 99 (2026-08-31, HIGH): `canStart`/`startBlockedBy` below
+     * reflected ONLY `runtime` — Oracle's own health — never
+     * `MAX_SESSIONS_PER_DAY`, so a learner who had already used every
+     * session today saw the exact same inviting offer screen as one who had
+     * used none, discovering the refusal only after tapping an opening and
+     * having `POST /sessions` bounce them with `SESSION_LIMIT`.
+     *
+     * This reuses the SAME cap constants and the SAME local-midnight
+     * boundary (`startOfLocalDayIso`) that `POST /sessions` enforces
+     * atomically below, and the SAME staff exemption, via a read-only count
+     * over the identical predicate `start_tutor_session_checked` (migration
+     * 0057) evaluates inside its own advisory lock — see
+     * `countTutorSessionsSince`'s own comment for why a second SQL function
+     * was not needed. This read is advisory only: a `null` count (an
+     * upstream failure) degrades to "not reached" rather than lying that a
+     * full cap is empty, which is acceptable ONLY because this endpoint
+     * never writes anything (§1.14) — the actual enforcement never moved
+     * off the atomic path below.
+     */
+    const isStaff = roles.includes('admin') || roles.includes('superadmin');
+    const sessionsToday = await countTutorSessionsSince(user.id, startOfLocalDayIso(locale));
+    const sessionCapReached = sessionsToday !== null && sessionsToday >= (isStaff ? STAFF_SESSION_CAP : MAX_SESSIONS_PER_DAY);
+    /*
+     * The SAME reset instant round 95's fix computes for `POST /sessions`'s
+     * own 429 `resetAt` — exposed here too, proactively, so this screen and
+     * the post-tap refusal never disagree about HOW LONG the wait is. Reuses
+     * `SessionLimitResetAt` (defined above) rather than a bare
+     * `.toISOString()`, for the same reason round 95 introduced it: a
+     * regression in the day-ahead arithmetic fails loudly here instead of
+     * shipping a countdown to the past onto a child's screen. Only computed
+     * when the cap is actually what is blocking — never a meaningless value
+     * for every other visit.
+     */
+    const sessionCapResetAt = sessionCapReached
+      ? SessionLimitResetAt.parse(startOfLocalDayIso(locale, new Date(), 1))
+      : null;
+
     const states = await getOwnLearnerIntelligence(user.id);
 
     // Cold start is the NORMAL case right now, not an edge case: the courses
@@ -1657,9 +1697,17 @@ export function tutorRouter(): Router {
           }
         : null,
       intelDegraded: states === null,
-      /** Whether Oracle can serve at all right now — the button is honest about it. */
-      canStart: runtime.canStart,
-      startBlockedBy: runtime.canStart ? null : runtime.blockedBy,
+      /**
+       * Whether a session can be started at all right now — Oracle's own
+       * health AND the learner's daily cap folded into ONE answer, because a
+       * learner cannot tell (and should not have to) which one is refusing
+       * them. `startBlockedBy` names the reason; `SESSION_LIMIT` reuses the
+       * exact code `POST /sessions` already returns for the same refusal
+       * (round 99), so one piece of client copy serves both moments.
+       */
+      canStart: runtime.canStart && !sessionCapReached,
+      startBlockedBy: !runtime.canStart ? runtime.blockedBy : sessionCapReached ? 'SESSION_LIMIT' : null,
+      sessionCapResetAt,
       voiceAvailable: runtime.voiceAvailable,
       /** Distinct reasons deserve distinct copy: no consent vs no provider. */
       microphoneBlockedBy: microphoneBlockedBy(isMinor, consent !== null, runtime),
