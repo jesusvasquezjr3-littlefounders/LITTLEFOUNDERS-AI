@@ -2347,6 +2347,48 @@ everything passes the blocked half perfectly and destroys the product.
    outside, like a policy that was always going to apply everywhere, and
    it rarely was. See `RUNBOOK.md` Round 116.
 
+79. **A guard scoped to "one process" is not incomplete just because a
+   fleet exists in theory — check whether the fleet exists in fact before
+   reaching for a distributed lock, and if it doesn't, check what the
+   nearest "optional store" actually promises before borrowing it anyway.**
+   Adversarial review sweep `tutor-review-sweep-101` flagged `liveSessions`
+   (`ws/server.ts:644`) as providing no protection across multiple Oracle
+   replicas or a rolling-redeploy overlap — true as a description of what
+   the code does, and NOT reachable today: Oracle runs, and is explicitly
+   committed to keep running, as a SINGLE Railway replica
+   (`oracle/railway.json` sets no scale-up, no CD workflow ever calls
+   `railway scale` for this service, and `DEPLOYMENT.md` §6's own
+   scaling-levers table omits Oracle entirely) until the ENTIRE class of
+   in-process, per-session state — the `jti` nonce ledger, `parkedSessions`,
+   `liveSessions`, and item 24's speech de-dup maps — moves to a shared
+   store together (`/ORACLE.md` §16's own unticked checklist item). Fixing
+   `liveSessions` alone would not have made Oracle safe to scale, since the
+   other three would still break instantly on a second replica. The second
+   half of the investigation matters more than the first: Oracle already
+   has a wired, optional Redis client (`lib/redis.ts`), so "we'd have to add
+   new infrastructure" was not the reason to hold off. The reason is that
+   `redisGet`/`redisSetEx`'s own contract — "nothing here throws, a miss is
+   never an error" — is exactly right for a cache or a rate limiter and
+   exactly wrong for a mutual-exclusion lock, which has no correct default
+   answer for "Redis is unreachable" (fail open = zero protection in
+   precisely the instability a lock exists for; fail closed = an optional
+   dependency becoming load-bearing for the platform's most
+   latency-sensitive feature, the exact coupling `AGENTS.md` §1.14's
+   "Liveness Must Not Depend On Optional Infrastructure" rule forbids).
+   Silently inheriting the cache's "miss is safe"
+   answer for a lock is choosing fail-open without anyone deciding to. A
+   TTL-based claim would also regress the service's actual common failure
+   mode: `restartPolicyMaxRetries: 10` treats crash-and-restart as routine,
+   and today a crash simply erases the in-process Maps with it, so a
+   legitimate resume against the freshly-restarted process succeeds
+   immediately — a durable claim would outlive the crash it needs to
+   forgive. General lesson: "this shared resource has no cross-process
+   guard" is only a defect once the process count can actually exceed one;
+   until then, verify the deployment rather than the code, and when a
+   fix does become due, ask what an existing helper's failure semantics
+   were built for before reusing it for something with different stakes.
+   See `RUNBOOK.md` Round 119.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:
