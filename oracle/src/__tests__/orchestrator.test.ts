@@ -702,7 +702,7 @@ describe('the whiteboard (V4)', () => {
 
     const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
     expect(retryBody).toContain('ALSO set');
-    expect(asSequenceBoard(outcome?.emission.turn.whiteboard)?.start).toBe(10);
+    expect(outcome?.emission.turn.whiteboard).toMatchObject({ kind: 'sequence', start: 10 });
   });
 });
 
@@ -743,7 +743,7 @@ describe('the whiteboard (V4) — unit mismatch repair', () => {
 
     const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
     expect(retryBody).toContain('does not match the cadence word');
-    expect(asSequenceBoard(outcome?.emission.turn.whiteboard)?.unit).toBe('week');
+    expect(outcome?.emission.turn.whiteboard).toMatchObject({ kind: 'sequence', unit: 'week' });
   });
 });
 
@@ -1058,6 +1058,92 @@ describe('the whiteboard (V4) — verification and delivery', () => {
     await orchestrator.handleLearnerText('hola', Date.now());
     const judgeBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
     expect(judgeBody).toContain('Cada día te dan 2 más');
+  });
+
+  /*
+   * `categories` — the first bounded slice of "UI generativa acotada"
+   * (blueprint §10.4, ORACLE.md §20.5). Same verification-and-delivery
+   * contract as `sequence` above: computed/re-verified server-side, dropped
+   * whole on any doubt, and — the one genuinely NEW safety surface a second
+   * kind introduces — every per-category label is free text reaching a
+   * child's screen, so it must reach the SAME moderation call `say` and the
+   * board's own top-level `label` already go through.
+   */
+  it('a valid categories whiteboard reaches the turn untouched', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          whiteboard: {
+            kind: 'categories',
+            categories: [
+              { label: 'Necesito', value: 40 },
+              { label: 'Quiero', value: 35 },
+              { label: 'Ahorré', value: 25 },
+            ],
+            label: 'Cómo repartiste tus 100 pesos',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = (await orchestrator.handleLearnerText('hola', Date.now()))!;
+    const survivingBoard = outcome?.emission.turn.whiteboard;
+    expect(survivingBoard).toMatchObject({ kind: 'categories', label: 'Cómo repartiste tus 100 pesos' });
+    if (survivingBoard?.kind === 'categories') expect(survivingBoard.categories).toHaveLength(3);
+  });
+
+  it('a categories board whose own shape does not check out (two bars sharing a label) is dropped, and the turn still delivers', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          whiteboard: {
+            kind: 'categories',
+            categories: [
+              { label: 'Renta', value: 40 },
+              { label: 'Renta', value: 20 },
+            ],
+            label: 'Gastos del mes',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = (await orchestrator.handleLearnerText('hola', Date.now()))!;
+    // Fail-open, same posture as a sequence whose own arithmetic is invalid:
+    // the turn is not thrown away, only the board.
+    expect(outcome).not.toBeNull();
+    expect(outcome?.emission.turn.whiteboard).toBeNull();
+  });
+
+  it("a categories board's own per-category labels are moderated in the same call as say, not left unchecked", async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          whiteboard: {
+            kind: 'categories',
+            categories: [
+              { label: 'Necesito clasificado unico', value: 40 },
+              { label: 'Quiero clasificado unico', value: 35 },
+            ],
+            label: 'Cómo repartiste tus 100 pesos',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('hola', Date.now());
+    const judgeBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    // Both per-category labels, not only the board's own top-level label —
+    // an injection that reaches a category label must not have an easier
+    // ride than one that reaches `say` or the board's own caption.
+    expect(judgeBody).toContain('Necesito clasificado unico');
+    expect(judgeBody).toContain('Quiero clasificado unico');
   });
 
   /*

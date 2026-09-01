@@ -391,6 +391,25 @@ const LAB_WHITEBOARD_TEXT: Readonly<Record<Locale, { say: string; label: string 
   },
 };
 
+/** A category-comparison story, for the `whiteboard-categories` lab activity (V4 backlog slice). */
+const LAB_CATEGORIES_TEXT: Readonly<Record<Locale, { say: string; label: string; categories: [string, string, string] }>> = {
+  'en-US': {
+    say: 'Imagine you got $100. You spend $40 on something you need, $35 on something you want, and save the rest.',
+    label: 'How you split your $100',
+    categories: ['Need', 'Want', 'Saved'],
+  },
+  'es-MX': {
+    say: 'Imagina que te dieron 100 pesos. Gastas 40 en algo que necesitas, 35 en algo que quieres, y guardas el resto.',
+    label: 'Cómo repartiste tus 100 pesos',
+    categories: ['Necesito', 'Quiero', 'Ahorré'],
+  },
+  'pt-BR': {
+    say: 'Imagine que você ganhou 100 reais. Gasta 40 em algo que precisa, 35 em algo que quer, e guarda o resto.',
+    label: 'Como você dividiu seus 100 reais',
+    categories: ['Preciso', 'Quero', 'Guardei'],
+  },
+};
+
 /**
  * `activity === 'compare'` (V4 backlog: "same schema family, straightforward
  * once sequence is proven live") — the lab's own fixture for the SECOND
@@ -453,8 +472,10 @@ const LAB_CURRENCY: Readonly<Record<Locale, 'USD' | 'MXN' | 'BRL'>> = {
  * to close the owner's reported defect: a growth story narrated in pure text
  * beside an unrelated activity. `verify-tutor-ui.mjs` opens this scenario to
  * audit the board for overlaps the same way it already does for a segment.
- * `'compare'`/`'marked-line'` are the same idea for the two ADDITIONAL
- * whiteboard kinds (V4 backlog).
+ * `'compare'`/`'marked-line'`/`'categories'` are the same idea for the three
+ * ADDITIONAL whiteboard kinds — `categories` is the first bounded slice of
+ * "UI generativa acotada" (blueprint §10.4, ORACLE.md §20.5), a comparison
+ * across 2-6 named things at one moment rather than one quantity over time.
  */
 export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY): TutorTurnState {
   if (activity === 'whiteboard') {
@@ -537,6 +558,33 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
       },
     };
   }
+  if (activity === 'categories') {
+    const text = LAB_CATEGORIES_TEXT[locale];
+    return {
+      seq: 4,
+      text: text.say,
+      emotion: 'happy',
+      action: 'nod',
+      audioUrl: null,
+      audioPending: false,
+      next: 'ask',
+      policy: null,
+      demonstrate: null,
+      whiteboard: {
+        kind: 'categories',
+        categories: [
+          { label: text.categories[0], value: 40 },
+          { label: text.categories[1], value: 35 },
+          { label: text.categories[2], value: 25 },
+        ],
+        // Server-computed, one-to-one with `categories` (`whiteboard.ts`'s
+        // `computeCategories`) — hand-set here since the lab has no server.
+        values: [40, 35, 25],
+        label: text.label,
+        currency: LAB_CURRENCY[locale],
+      },
+    };
+  }
   return {
     seq: 4,
     text: LAB_SCRIPTS[locale].turn,
@@ -580,10 +628,11 @@ export const LAB_ACTIVITIES: readonly string[] = [
   'script',
   'none',
   'whiteboard',
-  // V4 backlog: the same lab-fixture treatment for the two ADDITIONAL
-  // whiteboard kinds (/ORACLE.md §20.5).
+  // The same lab-fixture treatment for the three ADDITIONAL whiteboard
+  // kinds (/ORACLE.md §20.5).
   'compare',
   'marked-line',
+  'categories',
   // The TYPE LIST is locale-independent by construction (registry.test.tsx
   // proves it), so building it from one locale is not a choice with a
   // consequence — it is the same list in all three.
@@ -594,7 +643,13 @@ export const DEFAULT_LAB_ACTIVITY = 'script';
 
 /** The activity the plate should hold, for whatever the switch is on. */
 export function labActivity(locale: Locale, activity: string): LiveSegmentState | null {
-  if (activity === 'none' || activity === 'whiteboard' || activity === 'compare' || activity === 'marked-line') {
+  if (
+    activity === 'none' ||
+    activity === 'whiteboard' ||
+    activity === 'compare' ||
+    activity === 'marked-line' ||
+    activity === 'categories'
+  ) {
     return null;
   }
   if (activity === 'script') return labSegment(locale);

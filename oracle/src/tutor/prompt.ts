@@ -424,11 +424,14 @@ export function narratesUnshownGrowth(say: string, whiteboard: unknown): boolean
 
 /**
  * SEQUENCE-ONLY BY CONTRACT — `unit` (a cadence over TIME) exists on no
- * other `kind`. Callers narrow `Whiteboard` down to `WhiteboardSequence`
+ * other `kind`; a `categories` board has no time axis for a unit to be wrong
+ * about either. Callers narrow `Whiteboard` down to `WhiteboardSequence`
  * before calling this (orchestrator.ts's own `kind === 'sequence'` check),
  * the same way they already decide whether to call `computeSequence` at
  * all — this function was never meant to learn about every kind that gets
- * added to the union, only to keep checking the one it was written for.
+ * added to the union, only to keep checking the one it was written for. It
+ * keeps its original loose parameter shape (just `unit`, not the whole
+ * board) since that is all it has ever needed.
  */
 export function whiteboardUnitMismatch(
   say: string,
@@ -770,9 +773,22 @@ function periodCountThenTotalMismatch(say: string, values: readonly number[]): b
 }
 
 /**
- * SEQUENCE-ONLY BY CONTRACT — a `compare`/`marked_line` board has no running
- * total to contradict. See `whiteboardUnitMismatch`'s own comment: callers
- * narrow to `WhiteboardSequence` before calling this.
+ * SEQUENCE-ONLY BY CONTRACT — a `compare`/`marked_line`/`categories` board
+ * has no running total to contradict. See `whiteboardUnitMismatch`'s own
+ * comment: callers narrow to `WhiteboardSequence` before calling this.
+ *
+ * Deliberately not generalized to `categories` (or the other kinds) yet.
+ * Every drift detector in this file — this one included — was written AFTER
+ * a real production session showed the model's spoken words disagreeing
+ * with its own board in one specific, reproduced way; none of them were
+ * theorized ahead of evidence. `categories` has no live sessions behind it
+ * yet, so there is no reproduced failure shape to detect — writing one now
+ * would be guessing at a defect that may not be the one that actually
+ * occurs, or may occur in a shape this guess does not cover. Once
+ * `categories` is proven live (the same bar this file's own comments hold
+ * `sequence`'s remaining backlog to), the right next step is the same one
+ * that built every check below: run it, read the transcripts, detect the
+ * ACTUAL drift.
  */
 export function whiteboardNumberMismatch(
   say: string,
@@ -881,9 +897,10 @@ const OUTFLOW_WORD = /\b(spend|pay|gasta|gastas|gasto|paga|pagas)\b/i;
 
 /**
  * SEQUENCE-ONLY BY CONTRACT — "one step per period" has no meaning for
- * `compare`/`marked_line`, neither of which has `steps` at all. See
- * `whiteboardUnitMismatch`'s own comment: callers narrow to
- * `WhiteboardSequence` before calling this.
+ * `compare`/`marked_line`/`categories`, none of which has `steps` at all.
+ * See `whiteboardNumberMismatch`'s doc comment above for why a `categories`
+ * counterpart is deferred rather than guessed at. Callers narrow to
+ * `WhiteboardSequence` before calling this, same as every sibling detector.
  */
 export function whiteboardDoubledPeriodSteps(
   whiteboard: Pick<WhiteboardSequence, 'steps' | 'label'> | null | undefined,
@@ -1176,6 +1193,7 @@ export const TUTOR_SYSTEM_PROMPT: string = [
     + ' "steps": 1-8 of { "op": "add"|"subtract"|"multiply_percent", "value" }, "label", "currency" }',
   '    { "kind": "compare", "left": { "label", "value" }, "right": { "label", "value" }, "label", "currency" }',
   '    { "kind": "marked_line", "min", "max", "marks": 1-4 of { "value", "label" }, "label", "currency" },',
+  '    { "kind": "categories", "categories": 2-6 of { "label", "value" }, "label", "currency" }',
   '}',
   '',
   'Use "demonstrate" ONLY while a coin/money activity is on screen and a small',
@@ -1321,6 +1339,20 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '  min:0, max:40, marks:[{value:22, label:"Lo que tienes"},{value:35,',
   '  label:"Los audífonos"}], label:"¿Cuánto te falta para los audífonos?",',
   '  currency:"MXN"}`.',
+  '  Use `kind:"categories"` instead when the story is not one quantity',
+  '  changing over TIME, but several DIFFERENT named things compared side by',
+  '  side at the SAME moment — what you spent on rent vs. food vs. fun, two',
+  '  savings goals, three products\' prices. 2 to 6 categories, each a short',
+  '  `label` (a few words, never a full sentence) and its own `value`. Example:',
+  '  you say "imagina que te dieron 100 pesos de domingo. gastaste 40 en algo',
+  '  que necesitabas, 35 en algo que querías, y guardaste el resto" and set',
+  '  `whiteboard: {kind:"categories", categories:[{label:"Necesito",value:40},',
+  '  {label:"Quiero",value:35},{label:"Ahorré",value:25}], label:"Cómo',
+  '  repartiste tus 100 pesos", currency:"MXN"}` — invent your OWN names and',
+  '  amounts every time, the same rule as the sequence example above. If your',
+  '  story is instead ONE quantity growing or shrinking over several',
+  '  days/weeks/months/years, use `kind:"sequence"` above, never `categories`',
+  '  — a changing quantity over time is a sequence, not a set of named things.',
   '- A wrong answer is information, never a failure. Say what was right about',
   '  the thinking before correcting the result. Never mock, never sigh, never',
   '  say "wrong".',

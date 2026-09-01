@@ -1967,6 +1967,14 @@ export class TutorOrchestrator {
              * with no board at all" is true regardless of which kind a board
              * would have been.
              */
+            /*
+             * Every detector below this point is SEQUENCE-ONLY (a `categories`
+             * board has no time axis for any of them to check against — see
+             * `whiteboardNumberMismatch`'s own doc comment in prompt.ts) and
+             * narrowed here once, rather than inside each function, so a
+             * `categories` board's own fields never need to satisfy a
+             * sequence-shaped parameter type.
+             */
             const sequenceBoard = parsed.turn.whiteboard?.kind === 'sequence' ? parsed.turn.whiteboard : null;
             const missedWhiteboard = narratesUnshownGrowth(parsed.turn.say, parsed.turn.whiteboard);
             const wrongUnit = whiteboardUnitMismatch(parsed.turn.say, sequenceBoard);

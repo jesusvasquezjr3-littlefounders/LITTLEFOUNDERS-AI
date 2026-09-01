@@ -262,6 +262,200 @@ describe('the whiteboard survives the round trip through Core’s own data layer
     const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
     expect(rows?.[0]?.whiteboard).toEqual(BOARD);
   });
+
+  /*
+   * `categories` — the first bounded slice of "UI generativa acotada"
+   * (blueprint §10.4, ORACLE.md §20.5): same round-trip contract as
+   * `sequence` above, proven independently rather than assumed to follow
+   * from it.
+   */
+  const CATEGORIES_BOARD = {
+    kind: 'categories' as const,
+    categories: [
+      { label: 'Necesito', value: 40 },
+      { label: 'Quiero', value: 35 },
+      { label: 'Ahorré', value: 25 },
+    ],
+    values: [40, 35, 25],
+    label: 'Cómo repartiste tus 100 pesos',
+    currency: 'MXN' as const,
+  };
+
+  it('insertTutorTurn sends a categories board exactly as given, not re-derived', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve(new Response(null, { status: 204 })),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await insertTutorTurn({
+      sessionId: '22222222-2222-4222-8222-222222222222',
+      seq: 5,
+      speaker: 'tutor',
+      text: 'Imaginemos que repartes 100 pesos entre lo que necesitas, lo que quieres y lo que ahorras.',
+      source: 'model',
+      whiteboard: CATEGORIES_BOARD,
+    });
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as { whiteboard?: unknown };
+    expect(body.whiteboard).toEqual(CATEGORIES_BOARD);
+  });
+
+  it('listTutorTurns returns a stored categories board, not only a sequence one', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve(
+        new Response(
+          JSON.stringify([
+            {
+              id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+              session_id: '22222222-2222-4222-8222-222222222222',
+              seq: 5,
+              speaker: 'tutor',
+              text: 'Imaginemos que repartes 100 pesos...',
+              emotion: 'happy',
+              action: 'nod',
+              audio_path: null,
+              source: 'model',
+              created_at: '2026-08-31T00:00:00.000Z',
+              whiteboard: CATEGORIES_BOARD,
+            },
+          ]),
+          { status: 200 },
+        ),
+      ),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+    expect(rows?.[0]?.whiteboard).toEqual(CATEGORIES_BOARD);
+  });
+
+  /*
+   * `compare` and `marked_line` — SHIPPED 2026-09-01 (ORACLE.md §20.5's "Two
+   * more kinds"), same round-trip contract as `sequence`/`categories` above,
+   * proven independently. Found missing entirely during the `categories`
+   * merge (2026-09-01): these two kinds shipped without this package ever
+   * gaining a persistence type for either — `insertTutorTurn`'s own input
+   * type only accepted `sequence`/`categories`, so a `compare`/`marked_line`
+   * turn could not even be CALLED with its real board without a TypeScript
+   * error, let alone round-trip one.
+   */
+  const COMPARE_BOARD = {
+    kind: 'compare' as const,
+    left: { label: 'Tienda A', value: 45 },
+    right: { label: 'Tienda B', value: 28 },
+    difference: 17,
+    greater: 'left' as const,
+    label: '¿Cuál playera es más barata?',
+    currency: 'MXN' as const,
+  };
+
+  it('insertTutorTurn sends a compare board exactly as given, not re-derived', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve(new Response(null, { status: 204 })),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await insertTutorTurn({
+      sessionId: '22222222-2222-4222-8222-222222222222',
+      seq: 6,
+      speaker: 'tutor',
+      text: '¿Cuál playera es más barata?',
+      source: 'model',
+      whiteboard: COMPARE_BOARD,
+    });
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as { whiteboard?: unknown };
+    expect(body.whiteboard).toEqual(COMPARE_BOARD);
+  });
+
+  it('listTutorTurns returns a stored compare board, not only a sequence one', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve(
+        new Response(
+          JSON.stringify([
+            {
+              id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+              session_id: '22222222-2222-4222-8222-222222222222',
+              seq: 6,
+              speaker: 'tutor',
+              text: '¿Cuál playera es más barata?',
+              emotion: 'happy',
+              action: 'nod',
+              audio_path: null,
+              source: 'model',
+              created_at: '2026-08-31T00:00:00.000Z',
+              whiteboard: COMPARE_BOARD,
+            },
+          ]),
+          { status: 200 },
+        ),
+      ),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+    expect(rows?.[0]?.whiteboard).toEqual(COMPARE_BOARD);
+  });
+
+  const MARKED_LINE_BOARD = {
+    kind: 'marked_line' as const,
+    min: 0,
+    max: 40,
+    marks: [
+      { value: 22, label: 'Lo que tienes', position: 0.55 },
+      { value: 35, label: 'Los audífonos', position: 0.875 },
+    ],
+    label: '¿Cuánto te falta para los audífonos?',
+    currency: 'MXN' as const,
+  };
+
+  it('insertTutorTurn sends a marked_line board exactly as given, not re-derived', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve(new Response(null, { status: 204 })),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await insertTutorTurn({
+      sessionId: '22222222-2222-4222-8222-222222222222',
+      seq: 7,
+      speaker: 'tutor',
+      text: '¿Cuánto te falta para los audífonos?',
+      source: 'model',
+      whiteboard: MARKED_LINE_BOARD,
+    });
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as { whiteboard?: unknown };
+    expect(body.whiteboard).toEqual(MARKED_LINE_BOARD);
+  });
+
+  it('listTutorTurns returns a stored marked_line board, not only a sequence one', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve(
+        new Response(
+          JSON.stringify([
+            {
+              id: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
+              session_id: '22222222-2222-4222-8222-222222222222',
+              seq: 7,
+              speaker: 'tutor',
+              text: '¿Cuánto te falta para los audífonos?',
+              emotion: 'happy',
+              action: 'nod',
+              audio_path: null,
+              source: 'model',
+              created_at: '2026-08-31T00:00:00.000Z',
+              whiteboard: MARKED_LINE_BOARD,
+            },
+          ]),
+          { status: 200 },
+        ),
+      ),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+    expect(rows?.[0]?.whiteboard).toEqual(MARKED_LINE_BOARD);
+  });
 });
 
 /*
@@ -379,6 +573,163 @@ describe('listTutorTurns re-validates the whiteboard JSONB at read time, not mer
 
     expect(rows?.[0]?.whiteboard).toBeNull();
     expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
+
+  /*
+   * `categories` — same read-time re-validation contract as `sequence`
+   * above, proven independently (the first bounded slice of "UI generativa
+   * acotada", blueprint §10.4, ORACLE.md §20.5).
+   */
+  const GOOD_CATEGORIES_BOARD = {
+    kind: 'categories' as const,
+    categories: [
+      { label: 'Necesito', value: 40 },
+      { label: 'Quiero', value: 35 },
+    ],
+    values: [40, 35],
+    label: 'Cómo repartiste tu dinero',
+    currency: 'MXN' as const,
+  };
+
+  it('still returns a well-formed categories board verbatim', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(GOOD_CATEGORIES_BOARD))));
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+    expect(rows?.[0]?.whiteboard).toEqual(GOOD_CATEGORIES_BOARD);
+  });
+
+  it('degrades a categories board with fewer than 2 categories to null', async () => {
+    const tooFew = { ...GOOD_CATEGORIES_BOARD, categories: [GOOD_CATEGORIES_BOARD.categories[0]], values: [40] };
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(tooFew))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.whiteboard).toBeNull();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('whiteboard'));
+    warnSpy.mockRestore();
+  });
+
+  it('degrades a categories board whose values array does not match categories.length to null', async () => {
+    const mismatched = { ...GOOD_CATEGORIES_BOARD, values: [40] };
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(mismatched))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.whiteboard).toBeNull();
+    warnSpy.mockRestore();
+  });
+
+  it('degrades a categories board carrying a sequence-only field to null — .strict() per kind', async () => {
+    const crossed = { ...GOOD_CATEGORIES_BOARD, unit: 'week' };
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(crossed))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.whiteboard).toBeNull();
+    warnSpy.mockRestore();
+  });
+
+  /*
+   * `compare` and `marked_line` — same read-time re-validation contract as
+   * `sequence`/`categories` above, proven independently. Found missing
+   * entirely during the `categories` merge (2026-09-01): both kinds shipped
+   * (ORACLE.md §20.5's "Two more kinds") without `TutorTurnWhiteboardRowSchema`
+   * ever gaining a branch for either — so a real `compare`/`marked_line`
+   * board, persisted by a live session, would have failed THIS schema on its
+   * very next read and been silently degraded to null, the exact round-35
+   * class this file's own header comment warns about.
+   */
+  const GOOD_COMPARE_BOARD = {
+    kind: 'compare' as const,
+    left: { label: 'Tienda A', value: 45 },
+    right: { label: 'Tienda B', value: 28 },
+    difference: 17,
+    greater: 'left' as const,
+    label: '¿Cuál playera es más barata?',
+    currency: 'MXN' as const,
+  };
+
+  it('still returns a well-formed compare board verbatim', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(GOOD_COMPARE_BOARD))));
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+    expect(rows?.[0]?.whiteboard).toEqual(GOOD_COMPARE_BOARD);
+  });
+
+  it('degrades a compare board with a side value past its own ceiling to null', async () => {
+    const malformed = { ...GOOD_COMPARE_BOARD, left: { ...GOOD_COMPARE_BOARD.left, value: 50_000_000 } };
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(malformed))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.whiteboard).toBeNull();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('whiteboard'));
+    warnSpy.mockRestore();
+  });
+
+  it('degrades a compare board carrying a sequence-only field to null — .strict() per kind', async () => {
+    const crossed = { ...GOOD_COMPARE_BOARD, unit: 'week' };
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(crossed))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.whiteboard).toBeNull();
+    warnSpy.mockRestore();
+  });
+
+  const GOOD_MARKED_LINE_BOARD = {
+    kind: 'marked_line' as const,
+    min: 0,
+    max: 40,
+    marks: [
+      { value: 22, label: 'Lo que tienes', position: 0.55 },
+      { value: 35, label: 'Los audífonos', position: 0.875 },
+    ],
+    label: '¿Cuánto te falta para los audífonos?',
+    currency: 'MXN' as const,
+  };
+
+  it('still returns a well-formed marked_line board verbatim', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(GOOD_MARKED_LINE_BOARD))));
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+    expect(rows?.[0]?.whiteboard).toEqual(GOOD_MARKED_LINE_BOARD);
+  });
+
+  it('degrades a marked_line board whose max does not exceed min to null', async () => {
+    const inverted = { ...GOOD_MARKED_LINE_BOARD, min: 50, max: 10 };
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(inverted))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.whiteboard).toBeNull();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('whiteboard'));
+    warnSpy.mockRestore();
+  });
+
+  it('degrades a marked_line board with a mark value outside [min, max] to null', async () => {
+    const outOfRange = { ...GOOD_MARKED_LINE_BOARD, marks: [{ value: 999, label: 'x', position: 1 }] };
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(outOfRange))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.whiteboard).toBeNull();
+    warnSpy.mockRestore();
+  });
+
+  it('degrades a marked_line board carrying a sequence-only field to null — .strict() per kind', async () => {
+    const crossed = { ...GOOD_MARKED_LINE_BOARD, unit: 'week' };
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(crossed))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.whiteboard).toBeNull();
     warnSpy.mockRestore();
   });
 });

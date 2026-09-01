@@ -28,7 +28,7 @@ import process from 'node:process';
 import { getConfig } from '../src/env.js';
 import { TutorOrchestrator } from '../src/tutor/orchestrator.js';
 import { tierVocabularyViolation, promisesAnActivity } from '../src/tutor/prompt.js';
-import { computeComparison, computeMarkedLine, computeSequence } from '../src/tutor/whiteboard.js';
+import { computeCategories, computeComparison, computeMarkedLine, computeSequence } from '../src/tutor/whiteboard.js';
 import type { Whiteboard } from '../src/tutor/turnSchema.js';
 import type { SessionContext, SessionPlanEntry, KcState } from '../src/core/client.js';
 import type { SpeechResult } from '../src/voice/speech.js';
@@ -304,7 +304,7 @@ interface Beat {
    * something PRESENT rather than merely absent-and-fine. `summary` is a
    * kind-specific, human-readable rendering of the SAME server-computed
    * values a real session would show (`summarizeWhiteboard`, below) — this
-   * harness prints and greps text, so one string covers all three kinds
+   * harness prints and greps text, so one string covers all four kinds
    * without every downstream check needing its own `kind` switch.
    */
   whiteboard: { label: string; summary: string } | null;
@@ -339,6 +339,11 @@ function summarizeWhiteboard(board: NonNullable<Whiteboard>): { label: string; s
           ? `[${board.min}..${board.max}] ${points.map((p) => `${p.label}=${p.value} (${Math.round(p.position * 100)}%)`).join(', ')}`
           : 'INVALID',
       };
+    }
+    case 'categories': {
+      const values = computeCategories(board);
+      const bars = board.categories.map((c) => `${c.label}=${c.value}`).join(', ');
+      return { label: board.label, summary: values ? bars : `${bars} (INVALID)` };
     }
   }
 }

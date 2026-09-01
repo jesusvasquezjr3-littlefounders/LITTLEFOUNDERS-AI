@@ -3004,13 +3004,93 @@ which band the NEXT request asks for, and never enters the sealed context, so
 deploy order load-bearing: **Oracle before Core**, or an old Oracle rejects
 the new key and every activity becomes `NO_SEGMENT`.
 
-**Still out of scope, backlog, not silently dropped:** a general free-form
-canvas ("UI generativa acotada", blueprint §10.4) — a multi-week
-content-pipeline feature (schema, CAS verifier, age classifier, content bank)
-needing its own scoping pass.
-
 **`compare` and `marked_line` — the two additional `kind` values, SHIPPED
 2026-09-01.** See "Two more kinds" below.
+
+**`categories` — a second bounded kind, the first slice of "UI generativa
+acotada" (SHIPPED).** Blueprint §10.4 and this section's own backlog note
+called for a general free-form canvas — a multi-week content-pipeline
+feature (schema, CAS verifier, age classifier, content bank) that a scoping
+pass (below) concluded is not buildable responsibly in one slice, because
+"free-form" at that scope means the model choosing an open-ended VISUAL
+LAYOUT, not merely open-ended numbers inside a fixed layout — a materially
+different, and materially riskier, kind of generation than anything else
+`whiteboard` does. What IS a genuinely bounded, closed-schema, useful-today
+next step is narrower: most of what a tutor narrates that `sequence` cannot
+draw is not a second TIME axis, it is a comparison across a handful of
+NAMED things at one instant — an allowance split across needs/wants/savings,
+three products' prices, two savings goals; `compare` already covers the
+fixed-two-sides case, so `categories` is that same idea generalized to 2-6.
+`WhiteboardSchema` (`turnSchema.ts`) is now a `z.discriminatedUnion('kind',
+[...])` and gained `{kind:'categories', categories: [{label, value}] (2-6),
+label, currency}` — the exact same closed-vocabulary posture `sequence`
+already uses: a bounded count, a bounded number per bar, one moderated short
+label per bar (folded into the SAME `orchestrator.ts` moderation call `say`
+and the board's own top-level `label` already join), and a server-side
+recompute-and-verify step (`whiteboard.ts`'s `computeCategories`, wired into
+`whiteboardComputesOk`'s and `toWireWhiteboard`'s per-kind switches
+alongside `computeSequence`/`computeComparison`/`computeMarkedLine`) that
+drops the WHOLE board — never partially trusts it — on any doubt, including
+the one thing a single category's own schema cannot see: two bars sharing a
+label. No new field reaches the model's sealed input context (§4.1
+untouched, same posture as `sequence`); this is exclusively an OUTPUT-side
+turn field. **Frontend:** `TutorWhiteboard.tsx` gives `categories` its OWN
+component (`CategoriesBoard`), the same posture `compare`/`marked_line`
+already established rather than a shared wrapper (see the "Frontend
+architecture note" below for the exact bug that posture avoids) — it renders
+fully immediately, no grow-in reveal, the same "a snapshot, not a process"
+reasoning as `compare`: several named things at one moment have no story
+unfolding over steps for a `sequence`-style reveal to pace against. It
+reuses the announcement/`role="img"` shell, the zero-height floor and the
+currency formatter as plain shared functions, the same way `compare`/
+`marked_line` do; only the per-bar CAPTION source is new — `categories[i].
+label`, a plain moderated string, no i18n key, unlike `sequence`'s
+translated day/week/month/year captions. Core's `POST /turns` body schema
+and `listTutorTurns`'s read-time re-validation (`backend/src/routes/
+tutor.ts`, `backend/src/services/tutorData.ts`) were widened the same way,
+so a categories board is not the ONE thing round 35's fix (below) was about
+all over again — reaching the learner's screen and nowhere else.
+**Deliberately NOT built in this slice, and why:** drift detectors analogous
+to `narratesUnshownGrowth`/`whiteboardNumberMismatch`/
+`whiteboardDoubledPeriodSteps` — every one of those was written AFTER a real
+production session showed a SPECIFIC, reproduced way the model's words
+disagreed with its own board; none were theorized ahead of evidence.
+`categories` has no live sessions behind it yet, so writing one now would be
+guessing at a defect that may not be the one that actually occurs. The right
+next step, once this is proven live, is the same one that built every
+existing detector: run it, read the transcripts, detect the ACTUAL drift. A
+dedicated `verify-tutor-ui.mjs` E2E lab scenario for this kind was also not
+added — the existing `whiteboard` lab scenario's overlap/hit-test coverage
+already exercises the shared container/DOM shape this kind renders into
+(the same `WhiteboardShell` wrapper every kind draws through), and a
+`/dev/tutor-lab` `categories` activity exists for manual verification, but
+the dedicated automated scenario is a reasonable, explicitly-flagged gap
+rather than a silently dropped requirement.
+
+**Scoping note on the remaining "general free-form canvas" (still backlog,
+blueprint §10.4).** Before building further along this axis, three product
+decisions need a human answer, not an agent's guess: (1) does "free-form"
+ever mean the model choosing among a small library of FIXED layout
+templates (closer to what `sequence`, `compare`, `marked_line` and
+`categories` already are, just more of them), or does it mean genuinely
+arbitrary visual composition (node/edge diagrams, icons, arbitrary
+positioning) — and if the latter, is that something this product wants for a
+minor's screen AT ALL, given §1.14's "generated content must be verified for
+SUBJECT, not only form" already describes exactly the failure mode an
+open-ended layout invites; (2) if any part of this ever involves an actual
+GENERATED IMAGE rather than a chart drawn from numbers, that is
+`picturegen`'s domain (the only image-generation path, §1.5) and needs its
+own art-director-judge + cache design, not a new one grown inside Oracle;
+(3) "CAS verifier, age classifier, content bank" in the original backlog
+line describes infrastructure that makes sense once there is a CONCRETE
+schema it verifies, classifies and banks — building it first, ahead of that
+schema, is the speculative-abstraction trap `/AGENTS.md`'s own philosophy
+warns against, so the next slice (if there is one) should again start from
+one narrow, closed schema, proven live, before any shared pipeline is built
+to serve it. Still backlog, not silently dropped, pending the three
+decisions above: whatever "free-form" turns out to responsibly mean beyond
+the closed family `sequence`, `compare`, `marked_line` and `categories`
+already cover.
 
 **A valid decimal sequence could compute to "negative" by a hair and lose
 the whole board — found by adversarial review, 2026-08-30 (MEDIUM).**
@@ -3337,163 +3417,3 @@ did. The gym's own population is deliberately small (four archetypes, one
 plan shape, one starting mastery each); a cross-product over starting
 mastery, plan shape and multi-attempt dynamics is a real, larger follow-up
 once this first slice earns it, not built speculatively now.
-**Two more kinds — `compare` and `marked_line`, SHIPPED 2026-09-01.** The
-backlog line above turned out accurate about the SCHEMA ("same family,
-straightforward") and understated everything downstream of it.
-
-`kind: 'compare'` is two SEPARATE, static quantities side by side —
-`{left: {label, value}, right: {label, value}, label, currency}` — for a
-story that puts two things next to each other ("¿cuál te conviene más?")
-rather than one quantity moving over time. Deliberately NOT two nested
-`sequence`s: the backlog line asked for two values side by side, not two
-growth stories side by side, and nothing observed live has asked for the
-richer shape yet. The schema gives the model no field to state the
-comparison's OWN conclusion — `whiteboard.ts`'s `computeComparison` derives
-`difference` and `greater` (`'left'|'right'|'tie'`) from the two raw values,
-and neither is ever taken on the model's word, the exact rule `values`
-already has for `sequence`, applied to a derivation with no fold to get
-wrong instead of an N-step one. `kind: 'marked_line'` is one or more values
-placed on a line between two references — `{min, max, marks: 1-4 of
-{value, label}, label, currency}` — for a story about WHERE a number sits
-("tienes 22, y algo cuesta 35 — ¿cuánto te falta?") rather than a moving
-quantity or two options with no shared line. `max > min` and every mark
-actually falling inside `[min, max]` are relationships between fields
-`z.discriminatedUnion` cannot carry a `.refine()` for (each member must
-stay a plain `ZodObject` for the discriminant to be readable) — exactly
-the split `sequence` already has between what the schema bounds per-field
-and what only `computeMarkedLine` can catch, run at authoring time
-(orchestrator.ts) and again at the wire (ws/server.ts), same as
-`computeSequence` always was. `computeMarkedLine` also derives each mark's
-`position` (0..1 along the line) — server-computed, the client (`Tutor
-Whiteboard.tsx`) only ever draws it, never re-deriving it from
-`value`/`min`/`max` itself.
-
-Named `marked_line`, never `number_line`: the Lesson Engine already has a
-GRADED segment type spelled `number_line` (`frontend/src/lesson-engine/
-families/arrange/schema.ts`), reached through `segmentRequest.
-preferredTypes` a few paragraphs above this one — an entirely different,
-pre-authored, scored activity. Reusing that string for this ungraded,
-live, tutor-drawn visual would put two unrelated concepts under one name
-in this same section.
-
-**Every prose field either kind adds joins the SAME moderation call `say`
-already goes through, from ONE place, not a hand list at each call site.**
-`turnSchema.ts`'s `whiteboardVisibleText(whiteboard)` returns every
-learner-facing string on a board regardless of `kind` — the top-level
-`label` plus `compare`'s two side labels or `marked_line`'s up to four mark
-labels — and both orchestrator.ts call sites that gather a turn's visible
-text (the moderation call, and the tier-vocabulary/language-drift checks
-beside it) go through it. Built this way FROM THE START, rather than found
-missing after the fact, because `segmentRequest.framing` and `whiteboard.
-label` had each already cost their own incident for exactly this shape of
-gap (this section and oracle/AGENTS.md §2.3).
-
-**The sequence-specific narrative-consistency repairs above this line —
-`narratesUnshownGrowth`, `whiteboardUnitMismatch`, `whiteboardNumberMismatch`,
-`whiteboardDoubledPeriodSteps` — are deliberately NOT reproduced for the two
-new kinds.** Every one of them exists because a REAL model, on a REAL
-session, was caught doing a specific wrong thing over several rounds of
-live observation (round 65, round 67, the owner's own transcripts). No
-such observation exists yet for `compare` or `marked_line` — building
-equivalent detectors now would be guessing at defects nobody has seen,
-which is the opposite of how every other repair in this file earned its
-place. What IS carried over unconditionally, because it is the safety
-property this whole feature exists for rather than a tuned heuristic: the
-fail-open posture (`parseTurn`'s per-field schema retry drops a malformed
-board, never the turn), the authoring-time AND wire-time recompute, and
-moderation of every prose field. `oracle/prompt.ts`'s "How you teach"
-section gained one worked example per kind (`45`/`28` for `compare`,
-`22`/`35`/`0`/`40` for `marked_line` — none reusing a number already
-spoken for in an earlier example, per this file's own anti-copy
-discipline), but **neither instruction has been measured against a real
-model conversation** the way `sequence`'s own "SHOW YOUR WORK" line was
-(`step=probe-prosody`-style measurement, or `tutor:converse`) — that is
-the same gap `sequence` itself had before round 74 found the instruction
-alone was not reliable, and it is left open here rather than closed on a
-guess.
-
-**Reusing the SAME rendering surface meant reworking IT, and reworking it
-found two defects already live in `sequence` — neither one from THIS
-change, both found only because a real browser, not a unit test, was asked
-whether the board a child sees actually has the numbers it claims to.**
-`TutorWhiteboard.tsx`'s bars are a value span above, a bar below, a caption
-below that, inside a flex ROW whose OWN `align-items: flex-end` was meant
-to sit every bar on a shared bottom baseline. It does the opposite: it also
-stops each bar-COLUMN from stretching to the row's own height, so the
-column's height becomes intrinsic/content-sized — not a definite
-containing block — and a bar's `height: N%` cannot resolve against an
-ancestor whose own height is still being derived FROM that percentage. Per
-the CSS sizing spec this behaves as `height: auto`, so every bar rendered
-at **zero pixels, in every real browser, since the feature shipped** —
-only the number above it and the caption below it were ever visible.
-Compounding it: the bar's fill was `bg-[color:var(--lf-accent)]/70`, an
-arbitrary-value utility referencing a design token that is a bare "R G B"
-triple (`--lf-accent: 79 70 229`, meant to be used inside `rgb(var(...) /
-<alpha>)`, exactly what `tailwind.config.js`'s own configured `accent`
-token does). Tailwind cannot decompose an opaque `var()` reference at
-build time to attach the `/70`, so it emitted `background-color:
-var(--lf-accent)` — an invalid color a browser silently discards — with no
-alpha applied either way. Both defects are invisible to jsdom (which never
-lays anything out at all, so every existing unit test's `toHaveStyle({
-height: '71%' })` was checking the intent, never the result) and to a
-screenshot nobody zoomed into closely enough to notice a bar occupying
-zero vertical pixels between a number and a caption that were themselves
-perfectly readable. Fixed for `sequence` and built correctly from the
-start for `compare` (the two kinds sharing this bar-chart shape): the bar
-sits inside its OWN track (`flex-1 min-h-0 items-end`), which is what now
-carries the row's stretched, definite height down to the bar, with
-`items-end` moved onto the track so the bar still grows from a shared
-bottom baseline; the fill is `bg-accent/70`, the CONFIGURED token, which
-Tailwind can correctly attach an alpha channel to. `verify-tutor-ui.mjs`'s
-whiteboard scenario now measures every percentage-height bar's actual
-`getBoundingClientRect().height` in the real browser it already opens, on
-top of the reachability/overlap checks it already ran — the only place a
-regression of this specific class could ever be caught. **The identical
-broken color pattern also appears once more, in `ConversationView.tsx`'s
-debug caption pill (`bg-[color:var(--lf-surface)]/70`) — untouched here,
-out of this lane's scope, flagged separately.**
-
-**Frontend architecture note:** `TutorWhiteboard.tsx` gives each `kind` its
-OWN component, wrapper included, rather than one shared wrapper with the
-visual swapped underneath. A first draft hoisted the announcement/`role=
-"img"` shell to a shared parent while leaving `sequence`'s reveal-animation
-state inside its own child — two independent copies of "how far has this
-reveal gotten," ticking on two separate effects with nothing keeping them
-in agreement, the exact shape of bug RUNBOOK.md round 101 already cost a
-round on for a stale `seq`. Caught before it shipped, not after: never
-give a second live copy of a value a component's own state already owns.
-`compare`/`marked_line` render fully immediately, no grow-in reveal at
-all — a snapshot, not a process — so neither needed that state to begin
-with.
-
-**Verification, and what it does not cover.** `oracle/src/__tests__/
-whiteboard.test.ts` covers `computeComparison`/`computeMarkedLine` the same
-way `computeSequence` was already covered (a real case, a boundary case
-per bound, the one cross-field case `marked_line` alone has). `session.
-test.ts` covers the schema and `parseTurn`'s fail-open behaviour for both
-new kinds, matching `sequence`'s own coverage shape. `orchestrator.test.ts`
-adds a verification-and-delivery pair for each new kind, including a
-moderation-inclusion proof for the nested labels. `live-session.test.ts`
-adds one real-socket test per new kind proving the WIRE (not just the
-in-process object) carries the server-computed fields. `tutorWhiteboard.
-test.tsx` covers both new render paths, including the position-trust proof
-(a deliberately wrong `position` on a valid `value`/`min`/`max` triple
-still draws at the WRONG-but-given spot, proving the client never
-re-derives it) and the edge-position clamp. None of this — nor any jsdom
-test — can observe real layout, which is exactly why the two bugs above
-survived until a real browser was asked to look. `npm run verify:tutor-ui`
-was updated to drive all three lab activities (`whiteboard`, `compare`,
-`marked-line`) at all three breakpoints, but **could not be run to a full
-pass in this environment**: `/dev/tutor-lab` needs the 3D scene, whose
-`.glb` assets are gitignored and absent from a fresh checkout (`frontend/
-.gitignore`, `public/scenes/`), and the lab's own `ErrorBoundary` unmounts
-the whole page rather than degrading when they fail to load — a
-pre-existing environment gap, not something this change caused or could
-fix from inside a text-editing session. Both new kinds were instead
-verified rendering correctly, at both light/dark themes and both mobile
-(375px) and desktop breakpoints, via a temporary, non-3D preview route
-(mounting `TutorWhiteboard` directly with fixture data) built for exactly
-this purpose and removed before this work was committed — real values,
-real currency formatting, real bar heights and dot positions, screenshotted
-and inspected via `getBoundingClientRect()`, which is what caught the two
-defects above in the first place.

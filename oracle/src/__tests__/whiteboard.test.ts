@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  computeCategories,
   computeComparison,
   computeMarkedLine,
   computeSequence,
@@ -157,6 +158,71 @@ describe('refuses to compare a nonsense value', () => {
 });
 
 /*
+ * `categories` (V4 backlog, "UI generativa acotada" first bounded slice —
+ * ORACLE.md §20.5): a comparison across named things at one moment, rather
+ * than one quantity over time. Same "computed, never taken on the model's
+ * word" discipline as `computeSequence` above, applied to the one thing a
+ * PER-CATEGORY schema cannot see on its own — two bars sharing a label.
+ */
+describe('a real categories board', () => {
+  it('returns one value per category, in the given order', () => {
+    expect(
+      computeCategories({
+        categories: [
+          { label: 'Necesito', value: 40 },
+          { label: 'Quiero', value: 35 },
+          { label: 'Ahorré', value: 25 },
+        ],
+      }),
+    ).toEqual([40, 35, 25]);
+  });
+
+  it('allows a category worth zero — a legitimate "you spent nothing here" bar', () => {
+    expect(
+      computeCategories({
+        categories: [
+          { label: 'Renta', value: 0 },
+          { label: 'Comida', value: 50 },
+        ],
+      }),
+    ).toEqual([0, 50]);
+  });
+});
+
+describe('refuses a nonsense categories board', () => {
+  it('two categories sharing the same label — a schema-valid pair no single category can flag alone', () => {
+    expect(
+      computeCategories({
+        categories: [
+          { label: 'Renta', value: 10 },
+          { label: 'Renta', value: 20 },
+        ],
+      }),
+    ).toBeNull();
+  });
+
+  it('a duplicate label caught case- and whitespace-insensitively', () => {
+    expect(
+      computeCategories({
+        categories: [
+          { label: 'Renta', value: 10 },
+          { label: '  RENTA  ', value: 20 },
+        ],
+      }),
+    ).toBeNull();
+  });
+
+  it('a non-finite or negative category value, as defense in depth even though the schema already excludes it', () => {
+    expect(
+      computeCategories({ categories: [{ label: 'A', value: Number.NaN }, { label: 'B', value: 5 }] }),
+    ).toBeNull();
+    expect(
+      computeCategories({ categories: [{ label: 'A', value: -1 }, { label: 'B', value: 5 }] }),
+    ).toBeNull();
+  });
+});
+
+/*
  * A MARKED NUMBER LINE (V4, /ORACLE.md §20.5 backlog). `max > min` and every
  * mark actually falling inside `[min, max]` are relationships BETWEEN
  * fields `WhiteboardMarkedLineSchema` cannot enforce itself (see that
@@ -267,6 +333,17 @@ describe('whiteboardComputesOk — the single validity gate, dispatched by kind'
         currency: null,
       }),
     ).toBe(true);
+    expect(
+      whiteboardComputesOk({
+        kind: 'categories',
+        categories: [
+          { label: 'Necesito', value: 40 },
+          { label: 'Quiero', value: 35 },
+        ],
+        label: 'x',
+        currency: null,
+      }),
+    ).toBe(true);
   });
 
   it('fails a board of each kind whose own numbers do not check out', () => {
@@ -286,6 +363,20 @@ describe('whiteboardComputesOk — the single validity gate, dispatched by kind'
         min: 10,
         max: 0,
         marks: [{ value: 5, label: 'x' }],
+        label: 'x',
+        currency: null,
+      }),
+    ).toBe(false);
+    // A `categories` board with two bars sharing the same (trimmed,
+    // case-folded) label — invalid the same way a broken sequence is, null
+    // rather than a thrown error.
+    expect(
+      whiteboardComputesOk({
+        kind: 'categories',
+        categories: [
+          { label: 'A', value: 1 },
+          { label: 'A', value: 2 },
+        ],
         label: 'x',
         currency: null,
       }),

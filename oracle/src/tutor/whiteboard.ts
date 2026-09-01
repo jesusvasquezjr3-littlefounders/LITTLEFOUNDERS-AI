@@ -1,4 +1,10 @@
-import type { Whiteboard, WhiteboardCompare, WhiteboardMarkedLine, WhiteboardSequence } from './turnSchema.js';
+import type {
+  Whiteboard,
+  WhiteboardCategories,
+  WhiteboardCompare,
+  WhiteboardMarkedLine,
+  WhiteboardSequence,
+} from './turnSchema.js';
 
 /*
  * THE NUMBERS ON THE BOARD ARE COMPUTED, NEVER TAKEN ON THE MODEL'S WORD.
@@ -164,5 +170,34 @@ export function whiteboardComputesOk(board: Whiteboard): boolean {
       return computeComparison(board) !== null;
     case 'marked_line':
       return computeMarkedLine(board) !== null;
+    case 'categories':
+      return computeCategories(board) !== null;
   }
+}
+
+/**
+ * The bar value for each named category, in the model's own order. Null
+ * drops the whole board — the same fail-open posture `computeSequence`
+ * gives a sequence whose arithmetic does not check out.
+ *
+ * `WhiteboardCategorySchema` already bounds each category's own `label` and
+ * `value` independently (turnSchema.ts), so the finite/non-negative checks
+ * below are defense in depth rather than this function's real job. What no
+ * PER-CATEGORY schema can see is a relationship ACROSS categories: two bars
+ * sharing the same label would draw two bars a learner cannot tell apart,
+ * and nothing about either category alone is invalid — the same reason
+ * `computeSequence` exists to catch a RUNNING total no single step's own
+ * bound can express.
+ */
+export function computeCategories(board: Pick<WhiteboardCategories, 'categories'>): number[] | null {
+  const seenLabels = new Set<string>();
+  const values: number[] = [];
+  for (const category of board.categories) {
+    if (!Number.isFinite(category.value) || category.value < 0 || category.value > MAX_VALUE) return null;
+    const key = category.label.trim().toLowerCase();
+    if (key.length === 0 || seenLabels.has(key)) return null;
+    seenLabels.add(key);
+    values.push(category.value);
+  }
+  return values;
 }

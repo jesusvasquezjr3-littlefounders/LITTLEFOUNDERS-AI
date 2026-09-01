@@ -19,10 +19,12 @@ import type { TutorWhiteboardWire } from './types';
  * owned entirely by the tutor surface (LESSON_ENGINE.md §4's family-boundary
  * convention: a family's files are its own, and this is not a family).
  *
- * THREE KINDS (/ORACLE.md §20.5): `sequence` (SHIPPED — a value that changes
- * over time), `compare` and `marked_line` (backlog: "same schema family,
- * straightforward once sequence is proven live"). `TutorWhiteboardWire`
- * (`./types`) is the single source for the wire shape of all three.
+ * FOUR KINDS (/ORACLE.md §20.5): `sequence` (a value that changes over
+ * time), `compare` (two named things at one moment), `marked_line` (values
+ * placed on a line between two references), and `categories` — `compare`
+ * generalized from a fixed two sides to 2-6 named things at that same one
+ * moment. `TutorWhiteboardWire` (`./types`) is the single source for the
+ * wire shape of all four.
  *
  * `values`/`difference`+`greater`/each mark's `position` ARE NEVER
  * RECOMPUTED HERE. Oracle already ran the same arithmetic server-side
@@ -183,6 +185,7 @@ function WhiteboardShell({
 type SequenceWire = Extract<TutorWhiteboardWire, { kind: 'sequence' }>;
 type CompareWire = Extract<TutorWhiteboardWire, { kind: 'compare' }>;
 type MarkedLineWire = Extract<TutorWhiteboardWire, { kind: 'marked_line' }>;
+type CategoriesWire = Extract<TutorWhiteboardWire, { kind: 'categories' }>;
 
 /**
  * `kind: 'sequence'` — a value that changes over time, drawn as bars that
@@ -260,8 +263,7 @@ function SequenceBoard({ board, seq, className }: { board: SequenceWire; seq: nu
    * what makes the board answer "what story is this", so leaving it out of
    * the accessible name loses the one thing this feature exists to convey.
    */
-  const captionFor = (i: number) =>
-    i === 0 ? t('tutor.whiteboard.start') : t(`tutor.whiteboard.step.${board.unit}`, { n: i });
+  const captionFor = (i: number) => (i === 0 ? t('tutor.whiteboard.start') : t(`tutor.whiteboard.step.${board.unit}`, { n: i }));
 
   const ariaLabel = `${board.label}. ${board.values
     .slice(0, safeShown)
@@ -452,6 +454,52 @@ function MarkedLineBoard({ board, seq, className }: { board: MarkedLineWire; seq
   );
 }
 
+/**
+ * `kind: 'categories'` — several DIFFERENT named things compared side by
+ * side at ONE moment (V4, /ORACLE.md §20.5) — `compare` generalized from a
+ * fixed two sides to 2-6. Renders immediately, same reasoning as
+ * `CompareBoard` above: a snapshot of several things has no story unfolding
+ * over steps for a `SequenceBoard`-style reveal to pace against. `values` is
+ * SERVER-COMPUTED, one-to-one with `categories` (`whiteboard.ts`'s
+ * `computeCategories`) — the schema gives the model no field to assert it
+ * directly, the same posture `sequence`'s own `values` already takes. Needs
+ * no i18n key for its per-bar captions: each one IS `categories[i].label`,
+ * the model's own (moderated) name for that bar, never a translated word.
+ */
+function CategoriesBoard({ board, seq, className }: { board: CategoriesWire; seq: number; className?: string }) {
+  const format = useValueFormat(board.currency);
+  const max = Math.max(...board.values, 1);
+
+  const ariaLabel = `${board.label}. ${board.categories
+    .map((category, i) => `${category.label}: ${format(board.values[i]!)}`)
+    .join(', ')}`;
+
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 gap-2 overflow-x-auto px-1 pb-1">
+        {board.categories.map((category, i) => {
+          const value = board.values[i]!;
+          const heightPct = value <= ZERO_EPSILON ? 0 : Math.max(6, Math.round((value / max) * 100));
+          return (
+            <div key={i} className="flex min-w-[3.5rem] flex-1 flex-col items-center gap-1">
+              <span className="lf-number lf-title text-content" aria-hidden="true">
+                {format(value)}
+              </span>
+              {/* The bar TRACK — see `SequenceBoard`'s own comment on why the bar itself cannot carry `flex-1`/`items-end`. */}
+              <div className="flex w-full min-h-0 flex-1 items-end">
+                <div className="w-full rounded-t-md bg-accent/70" style={{ height: `${heightPct}%` }} />
+              </div>
+              <span className="lf-caption text-content-muted text-center" aria-hidden="true">
+                {category.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
 export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps) {
   switch (board.kind) {
     case 'sequence':
@@ -460,5 +508,7 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
       return <CompareBoard board={board} seq={seq} className={className} />;
     case 'marked_line':
       return <MarkedLineBoard board={board} seq={seq} className={className} />;
+    case 'categories':
+      return <CategoriesBoard board={board} seq={seq} className={className} />;
   }
 }

@@ -751,10 +751,10 @@ export async function awardTutorXp(input: {
 /**
  * V4's live sequence board, exactly as it was shown — the server-computed
  * `values`, never recomputed. Mirrors `oracle/src/ws/protocol.ts`'s
- * `WireWhiteboard`; the two packages share no types, so the shape is
+ * `WireSequenceBoard`; the two packages share no types, so the shape is
  * duplicated deliberately rather than imported.
  */
-export interface TutorTurnWhiteboard {
+export interface TutorTurnSequenceBoard {
   kind: 'sequence';
   start: number;
   steps: { op: 'add' | 'subtract' | 'multiply_percent'; value: number }[];
@@ -763,6 +763,62 @@ export interface TutorTurnWhiteboard {
   label: string;
   currency: 'MXN' | 'USD' | 'BRL' | null;
 }
+
+/**
+ * A live comparison between two named things, exactly as it was shown.
+ * Mirrors `oracle/src/ws/protocol.ts`'s `WireWhiteboard`'s `compare` member.
+ *
+ * Found missing entirely during the `categories` merge (2026-09-01):
+ * `compare`/`marked_line` shipped (ORACLE.md §20.5's "Two more kinds")
+ * without ever gaining a persistence type or read-time re-validation branch
+ * here — so a live `compare`/`marked_line` turn would have failed
+ * `TutorTurnWhiteboardRowSchema` below and lost its board silently on
+ * replay, the exact round-35 class this file's own header comment warns
+ * about, for a kind added without the matching backend update.
+ */
+export interface TutorTurnCompareBoard {
+  kind: 'compare';
+  left: { label: string; value: number };
+  right: { label: string; value: number };
+  difference: number;
+  greater: 'left' | 'right' | 'tie';
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
+/**
+ * A live value placed on a line between two references, exactly as it was
+ * shown. Mirrors `oracle/src/ws/protocol.ts`'s `WireWhiteboard`'s
+ * `marked_line` member. See `TutorTurnCompareBoard`'s own comment above.
+ */
+export interface TutorTurnMarkedLineBoard {
+  kind: 'marked_line';
+  min: number;
+  max: number;
+  marks: { value: number; label: string; position: number }[];
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
+/**
+ * A live categories comparison, exactly as it was shown. Mirrors
+ * `oracle/src/ws/protocol.ts`'s `WireCategoriesBoard` — the first bounded
+ * slice of "UI generativa acotada" (blueprint §10.4, ORACLE.md §20.5).
+ */
+export interface TutorTurnCategoriesBoard {
+  kind: 'categories';
+  categories: { label: string; value: number }[];
+  values: number[];
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
+/** Every kind a persisted turn's `whiteboard` column may carry. */
+export type TutorTurnWhiteboard =
+  | TutorTurnSequenceBoard
+  | TutorTurnCompareBoard
+  | TutorTurnMarkedLineBoard
+  | TutorTurnCategoriesBoard;
 
 export interface TutorTurnRow {
   id: string;
@@ -790,7 +846,7 @@ const WhiteboardStepRowSchema = z
   .strict();
 
 /**
- * Re-derives oracle's `WhiteboardSchema` (`oracle/src/tutor/turnSchema.ts`)
+ * Re-derives oracle's `SequenceBoardSchema` (`oracle/src/tutor/turnSchema.ts`)
  * plus the extra bounds `computeSequence` (`oracle/src/tutor/whiteboard.ts`)
  * enforces on top of it, applied to the ALREADY-COMPUTED `values` this
  * package persists — see `TutorTurnWhiteboard`'s own comment on why the two
@@ -816,7 +872,7 @@ const WhiteboardStepRowSchema = z
  * well-formed whiteboard by construction, not to become a third copy of the
  * arithmetic that produced it.
  */
-const TutorTurnWhiteboardRowSchema = z
+const SequenceBoardRowSchema = z
   .object({
     kind: z.literal('sequence'),
     start: z.number().min(0).max(1_000_000),
@@ -827,18 +883,148 @@ const TutorTurnWhiteboardRowSchema = z
     label: z.string().min(1).max(60),
     currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
   })
-  .strict()
-  .refine((board) => board.values.length === board.steps.length + 1, {
-    message: 'values must carry exactly one entry per step plus the starting value',
-    path: ['values'],
+  .strict();
+
+const WhiteboardCompareSideRowSchema = z
+  .object({
+    label: z.string().min(1).max(60),
+    value: z.number().min(0).max(1_000_000),
   })
-  .refine(
-    (board) => board.steps.every((step) => step.op !== 'multiply_percent' || step.value <= 500),
-    {
-      message: "a multiply_percent step must not exceed 500 — computeSequence's own percentage ceiling",
-      path: ['steps'],
-    },
-  );
+  .strict();
+
+/**
+ * Re-derives oracle's `WhiteboardCompareSchema` the same way
+ * `SequenceBoardRowSchema` above re-derives `SequenceBoardSchema`. No
+ * cross-field check re-derives `difference`/`greater` from `left`/`right` —
+ * the same restraint `sequence`'s own schema below takes with `values`: this
+ * path validates the persisted shape is well-formed, not a third copy of
+ * the arithmetic that produced it.
+ */
+const CompareBoardRowSchema = z
+  .object({
+    kind: z.literal('compare'),
+    left: WhiteboardCompareSideRowSchema,
+    right: WhiteboardCompareSideRowSchema,
+    difference: z.number().min(0).max(1_000_000),
+    greater: z.enum(['left', 'right', 'tie']),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+const WhiteboardMarkRowSchema = z
+  .object({
+    value: z.number().min(0).max(1_000_000),
+    label: z.string().min(1).max(60),
+    position: z.number().min(0).max(1),
+  })
+  .strict();
+
+/**
+ * Re-derives oracle's `WhiteboardMarkedLineSchema` the same way
+ * `SequenceBoardRowSchema` above re-derives `SequenceBoardSchema`. `max >
+ * min` and every mark falling inside `[min, max]`, checked below in the
+ * `superRefine`, are relationships between fields oracle's OWN schema
+ * cannot express with a plain `.strict()` shape either
+ * (`z.discriminatedUnion` cannot carry a `.refine()` per member) — this is
+ * not a re-derivation of `position` itself, which stays untouched, same
+ * restraint `computeSequence`'s own values get here.
+ */
+const MarkedLineBoardRowSchema = z
+  .object({
+    kind: z.literal('marked_line'),
+    min: z.number().min(0).max(1_000_000),
+    max: z.number().min(0).max(1_000_000),
+    marks: z.array(WhiteboardMarkRowSchema).min(1).max(4),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+const WhiteboardCategoryRowSchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    value: z.number().min(0).max(1_000_000),
+  })
+  .strict();
+
+/**
+ * Re-derives oracle's `CategoriesBoardSchema` the same way
+ * `SequenceBoardRowSchema` above re-derives `SequenceBoardSchema` — the
+ * first bounded slice of "UI generativa acotada" (blueprint §10.4,
+ * ORACLE.md §20.5). `values` here has no separate ceiling of its own the
+ * way a sequence's running total does (each category's own `value` bound
+ * already IS the ceiling — there is no accumulation to overshoot it).
+ */
+const CategoriesBoardRowSchema = z
+  .object({
+    kind: z.literal('categories'),
+    categories: z.array(WhiteboardCategoryRowSchema).min(2).max(6),
+    values: z.array(z.number().min(0).max(1_000_000)).min(2).max(6),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/*
+ * The cross-field relationships no single branch's own `.strict()` shape
+ * can express are checked here, AFTER the discriminated union — `.refine()`
+ * on a MEMBER would wrap it in a `ZodEffects` that `z.discriminatedUnion`
+ * cannot accept as a branch (it requires a literal `ZodObject` per branch to
+ * read the discriminant key off), so the base shapes above stay plain and
+ * this `superRefine` is the one place every kind's extra invariants live.
+ * `compare` has none: nothing here relates `left`/`right` to
+ * `difference`/`greater` without re-deriving the comparison itself, which
+ * this path deliberately does not do (see `CompareBoardRowSchema`'s comment).
+ */
+const TutorTurnWhiteboardRowSchema = z
+  .discriminatedUnion('kind', [
+    SequenceBoardRowSchema,
+    CompareBoardRowSchema,
+    MarkedLineBoardRowSchema,
+    CategoriesBoardRowSchema,
+  ])
+  .superRefine((board, ctx) => {
+    if (board.kind === 'sequence') {
+      if (board.values.length !== board.steps.length + 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'values must carry exactly one entry per step plus the starting value',
+          path: ['values'],
+        });
+      }
+      if (board.steps.some((step) => step.op === 'multiply_percent' && step.value > 500)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "a multiply_percent step must not exceed 500 — computeSequence's own percentage ceiling",
+          path: ['steps'],
+        });
+      }
+    } else if (board.kind === 'marked_line') {
+      if (board.max <= board.min) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'max must exceed min',
+          path: ['max'],
+        });
+      }
+      if (board.marks.some((mark) => mark.value < board.min || mark.value > board.max)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'every mark value must fall within [min, max]',
+          path: ['marks'],
+        });
+      }
+    } else if (board.kind === 'categories') {
+      if (board.values.length !== board.categories.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'values must carry exactly one entry per category',
+          path: ['values'],
+        });
+      }
+    }
+  });
 
 /**
  * A malformed board on this DISPLAY-ONLY read degrades to no board rather

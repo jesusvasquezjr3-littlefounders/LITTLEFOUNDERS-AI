@@ -150,7 +150,7 @@ export type ServerMessage =
       /**
        * V4: a live whiteboard synced to this turn's story — SERVER-COMPUTED
        * fields included, never redone client-side (/ORACLE.md §20.5). See
-       * `TutorWhiteboardWire`, below, for the three shapes.
+       * `TutorWhiteboardWire`, below, for the four shapes.
        */
       whiteboard?: TutorWhiteboardWire;
     }
@@ -186,12 +186,13 @@ export interface TrayDemoStep {
 /**
  * V4's live whiteboard, exactly as it reaches the wire — mirrors Oracle's
  * `WireWhiteboard` (`ws/protocol.ts`). A discriminated union on `kind`, one
- * member per shape (/ORACLE.md §20.5): `sequence` (SHIPPED), `compare` and
- * `marked_line` (backlog, same schema family). Every field the model itself
- * sets, plus the ONE thing only the server ever adds per kind (`values` /
- * `difference`+`greater` / each mark's `position`) — the client renders
- * these as given and never redoes the arithmetic, exactly the posture
- * `checkAnswer`'s verdict already takes with a spoken answer.
+ * member per shape (/ORACLE.md §20.5): `sequence`, `compare`, `marked_line`
+ * and `categories` — the first bounded slice of "UI generativa acotada"
+ * (blueprint §10.4). Every field the model itself sets, plus the ONE thing
+ * only the server ever adds per kind (`values` / `difference`+`greater` /
+ * each mark's `position`) — the client renders these as given and never
+ * redoes the arithmetic, exactly the posture `checkAnswer`'s verdict already
+ * takes with a spoken answer.
  *
  * Defined ONCE here rather than duplicated a second time inside
  * `TutorWhiteboard.tsx` — that component imports this type directly. (The
@@ -226,6 +227,14 @@ export type TutorWhiteboardWire =
       max: number;
       /** `position` (0..1 along the line) is SERVER-COMPUTED from `value`/`min`/`max`. */
       marks: { value: number; label: string; position: number }[];
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'categories';
+      categories: { label: string; value: number }[];
+      /** SERVER-COMPUTED, one-to-one with `categories` — never taken from the model's own claim. */
+      values: number[];
       label: string;
       currency: 'MXN' | 'USD' | 'BRL' | null;
     };

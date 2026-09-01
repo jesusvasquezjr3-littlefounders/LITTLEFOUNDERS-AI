@@ -3,6 +3,7 @@ import { ADAPTATIONS } from '../context/schema.js';
 import {
   ACTIONS,
   EMOTIONS,
+  type WhiteboardCategories,
   type WhiteboardCompare,
   type WhiteboardMark,
   type WhiteboardMarkedLine,
@@ -131,7 +132,8 @@ export type BudgetState = 'running' | 'wrapping' | 'ended';
  * V4's live whiteboard, exactly as it reaches the wire — the model's own
  * fields for whichever `kind` it set, plus the server-COMPUTED fields
  * `ws/server.ts`'s `toWireWhiteboard` attaches (`computeSequence` /
- * `computeComparison` / `computeMarkedLine`, `tutor/whiteboard.ts`). Named
+ * `computeComparison` / `computeMarkedLine` / `computeCategories`,
+ * `tutor/whiteboard.ts`). Named
  * and exported so `core/client.ts`'s `PersistTurnInput` can persist the SAME
  * object a learner actually saw rather than a second, driftable shape — a
  * board replay must show, per /ORACLE.md §12, is the one that was drawn,
@@ -147,7 +149,8 @@ export type BudgetState = 'running' | 'wrapping' | 'ended';
 export type WireWhiteboard =
   | (WhiteboardSequence & { values: number[] })
   | (WhiteboardCompare & { difference: number; greater: 'left' | 'right' | 'tie' })
-  | (WhiteboardMarkedLine & { marks: Array<WhiteboardMark & { position: number }> });
+  | (WhiteboardMarkedLine & { marks: Array<WhiteboardMark & { position: number }> })
+  | (WhiteboardCategories & { values: number[] });
 
 export type ServerMessage =
   | {

@@ -221,14 +221,16 @@ describe('TutorWhiteboard — a screen reader is told when a NEW turn redraws th
 });
 
 /*
- * COMPARE AND MARKED_LINE (V4, /ORACLE.md §20.5 backlog: "same schema
- * family, straightforward once sequence is proven live"). Same care as the
- * `sequence` tests above: the numbers drawn are EXACTLY the server-computed
- * fields (`difference`/`greater`, each mark's `position`) — this component
- * never redoes that arithmetic — and both render fully immediately rather
- * than through `sequence`'s grow-in reveal (see `CompareBoard`'s and
- * `MarkedLineBoard`'s own doc comments for why: there is no story unfolding
- * over steps for an animation to pace against).
+ * COMPARE, MARKED_LINE AND CATEGORIES (V4, /ORACLE.md §20.5). Same care as
+ * the `sequence` tests above: the numbers drawn are EXACTLY the
+ * server-computed fields (`difference`/`greater`, each mark's `position`,
+ * `categories`' own `values`) — this component never redoes that arithmetic
+ * — and all three render fully immediately rather than through `sequence`'s
+ * grow-in reveal (see `CompareBoard`'s, `MarkedLineBoard`'s and
+ * `CategoriesBoard`'s own doc comments for why: there is no story unfolding
+ * over steps for an animation to pace against — each is a snapshot of named
+ * things at one moment, `categories` being `compare` generalized from a
+ * fixed two sides to 2-6).
  */
 const COMPARE_BOARD = {
   kind: 'compare' as const,
@@ -340,7 +342,60 @@ describe('marked_line — one or more values placed on a line (V4 backlog)', () 
   });
 });
 
-describe('the live announcement fires for compare and marked_line too — the mechanism is kind-agnostic', () => {
+const CATEGORIES_BOARD = {
+  kind: 'categories' as const,
+  categories: [
+    { label: 'Necesito', value: 40 },
+    { label: 'Quiero', value: 35 },
+    { label: 'Ahorré', value: 25 },
+  ],
+  values: [40, 35, 25],
+  label: 'Cómo repartiste tus 100 pesos',
+  currency: 'MXN' as const,
+};
+
+describe('categories — several named things at one moment (V4)', () => {
+  it('shows the board label and one bar per category, never more than the server sent', () => {
+    const { container } = render(<TutorWhiteboard board={CATEGORIES_BOARD} seq={1} />);
+    expect(screen.getByText('Cómo repartiste tus 100 pesos')).toBeInTheDocument();
+    const bars = container.querySelectorAll('.rounded-t-md');
+    expect(bars).toHaveLength(3);
+  });
+
+  it("captions each bar with the category's OWN label, never a translated time-axis word", () => {
+    render(<TutorWhiteboard board={CATEGORIES_BOARD} seq={1} />);
+    const label = screen.getByRole('img').getAttribute('aria-label');
+    // The sequence-only caption source ("Start", "Week 1"...) must not leak
+    // in here — a categories board has no time axis at all.
+    expect(label).toContain('Necesito: MX$40');
+    expect(label).toContain('Quiero: MX$35');
+    expect(label).toContain('Ahorré: MX$25');
+    expect(label).not.toContain('Start');
+    expect(label).not.toMatch(/Week \d/);
+  });
+
+  it('draws every bar proportional to its own value, the largest at 100% regardless of position', () => {
+    const { container } = render(<TutorWhiteboard board={CATEGORIES_BOARD} seq={1} />);
+    const bars = container.querySelectorAll('.rounded-t-md');
+    expect(bars).toHaveLength(3);
+    // 40 is the max of the three, so its bar is drawn full height.
+    expect(bars[0]).toHaveStyle({ height: '100%' });
+    expect(bars[1]).toHaveStyle({ height: `${Math.round((35 / 40) * 100)}%` });
+    expect(bars[2]).toHaveStyle({ height: `${Math.round((25 / 40) * 100)}%` });
+  });
+
+  it('renders immediately with no grow-in reveal — a snapshot, not a process', () => {
+    // Normal motion (not reduced) still shows every value at once: unlike
+    // `sequence`, `categories` has no `GROW_STEP_MS` reveal to skip.
+    render(<TutorWhiteboard board={CATEGORIES_BOARD} seq={1} />);
+    const label = screen.getByRole('img').getAttribute('aria-label');
+    expect(label).toContain('MX$40');
+    expect(label).toContain('MX$35');
+    expect(label).toContain('MX$25');
+  });
+});
+
+describe('the live announcement fires for compare, marked_line and categories too — the mechanism is kind-agnostic', () => {
   it('announces once on mount for a compare board', () => {
     render(<TutorWhiteboard board={COMPARE_BOARD} seq={1} />);
     expect(screen.getByRole('status')).toHaveTextContent('The whiteboard updated.');
@@ -348,6 +403,11 @@ describe('the live announcement fires for compare and marked_line too — the me
 
   it('announces once on mount for a marked_line board', () => {
     render(<TutorWhiteboard board={MARKED_LINE_BOARD} seq={1} />);
+    expect(screen.getByRole('status')).toHaveTextContent('The whiteboard updated.');
+  });
+
+  it('announces once on mount for a categories board', () => {
+    render(<TutorWhiteboard board={CATEGORIES_BOARD} seq={1} />);
     expect(screen.getByRole('status')).toHaveTextContent('The whiteboard updated.');
   });
 });

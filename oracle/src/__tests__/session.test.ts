@@ -629,6 +629,103 @@ describe('the closed turn schema', () => {
     expect(parsed.ok).toBe(true);
     if (parsed.ok) expect(parsed.turn.whiteboard).toBeNull();
   });
+
+  /*
+   * `categories` — the first bounded slice of "UI generativa acotada"
+   * (blueprint §10.4, ORACLE.md §20.5): a comparison across named things at
+   * one moment rather than one quantity over time, same closed-vocabulary
+   * discipline as `sequence` above. Nested in the SAME outer `describe('the
+   * closed turn schema', ...)` as the sequence block above it, so it shares
+   * that describe's `valid` base turn fixture rather than duplicating it.
+   */
+  describe('the whiteboard — categories kind (V4 backlog slice)', () => {
+    const categoriesBoard = {
+      kind: 'categories' as const,
+      categories: [
+        { label: 'Necesito', value: 40 },
+        { label: 'Quiero', value: 35 },
+        { label: 'Ahorré', value: 25 },
+      ],
+      label: 'Cómo repartiste tus 100 pesos',
+      currency: 'MXN' as const,
+    };
+
+    it('accepts a turn carrying a categories whiteboard', () => {
+      expect(TutorTurnSchema.safeParse({ ...valid, whiteboard: categoriesBoard }).success).toBe(true);
+    });
+
+    it('never both a categories whiteboard and a segment request on the same turn — same rule as sequence', () => {
+      const withBoth = {
+        ...valid,
+        next: 'segment' as const,
+        segmentRequest: {
+          skillKey: 'financial-education/necesidades-y-deseos',
+          difficulty: 2,
+          framing: 'Practiquemos distinguir necesidades de deseos.',
+          rationale: 'reinforce the idea just shown',
+        },
+        whiteboard: categoriesBoard,
+      };
+      expect(TutorTurnSchema.safeParse(withBoth).success).toBe(false);
+    });
+
+    it('refuses fewer than 2 categories — one bar is not a comparison', () => {
+      expect(
+        TutorTurnSchema.safeParse({
+          ...valid,
+          whiteboard: { ...categoriesBoard, categories: [categoriesBoard.categories[0]] },
+        }).success,
+      ).toBe(false);
+    });
+
+    it('refuses more than 6 categories — past a glance is not bounded', () => {
+      const seven = Array.from({ length: 7 }, (_, i) => ({ label: `Cat ${i}`, value: 1 }));
+      expect(
+        TutorTurnSchema.safeParse({ ...valid, whiteboard: { ...categoriesBoard, categories: seven } }).success,
+      ).toBe(false);
+    });
+
+    it('refuses an out-of-range category value', () => {
+      expect(
+        TutorTurnSchema.safeParse({
+          ...valid,
+          whiteboard: { ...categoriesBoard, categories: [{ label: 'A', value: -1 }, { label: 'B', value: 5 }] },
+        }).success,
+      ).toBe(false);
+    });
+
+    it('refuses an empty category label', () => {
+      expect(
+        TutorTurnSchema.safeParse({
+          ...valid,
+          whiteboard: { ...categoriesBoard, categories: [{ label: '', value: 5 }, { label: 'B', value: 5 }] },
+        }).success,
+      ).toBe(false);
+    });
+
+    it('refuses a categories board carrying a sequence-only field — .strict() closes the vocabulary per kind', () => {
+      expect(TutorTurnSchema.safeParse({ ...valid, whiteboard: { ...categoriesBoard, unit: 'week' } }).success).toBe(
+        false,
+      );
+    });
+
+    it('refuses a kind outside the two known values', () => {
+      expect(
+        TutorTurnSchema.safeParse({ ...valid, whiteboard: { ...categoriesBoard, kind: 'bar_chart' } }).success,
+      ).toBe(false);
+    });
+
+    it('keeps the lesson when only the CATEGORIES WHITEBOARD is malformed — same fail-open posture as sequence', () => {
+      const parsed = parseTurn(
+        JSON.stringify({ ...valid, whiteboard: { ...categoriesBoard, categories: [categoriesBoard.categories[0]] } }),
+      );
+      expect(parsed.ok).toBe(true);
+      if (parsed.ok) {
+        expect(parsed.turn.whiteboard).toBeNull();
+        expect(parsed.turn.say).toBe(valid.say);
+      }
+    });
+  });
 });
 
 /*

@@ -227,6 +227,23 @@ export const WhiteboardCompareSideSchema = z
   .strict();
 
 /**
+ * ONE NAMED BAR OF A `categories` BOARD.
+ *
+ * `label` is free text — a few words naming what this bar IS ("Renta",
+ * "Ahorro"), never a full sentence — so it joins `say` and the board's own
+ * top-level `label` in the same moderation call (orchestrator.ts) exactly
+ * like `WhiteboardSequenceSchema.label` already does. `value` is the bar's own
+ * bounded number; there is no arithmetic relating one category to another
+ * for the model to get wrong the way a running sequence total can be.
+ */
+export const WhiteboardCategorySchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    value: z.number().min(0).max(1_000_000),
+  })
+  .strict();
+
+/**
  * `kind: 'compare'` — TWO QUANTITIES, SIDE BY SIDE (V4, /ORACLE.md §20.5
  * backlog: "same schema family, straightforward once sequence is proven
  * live"). For a story that puts two things next to each other for the
@@ -257,6 +274,35 @@ export const WhiteboardCompareSchema = z
      * quantity (each side carries its own label). Free text, moderated
      * alongside `say` the same way `WhiteboardSequenceSchema.label` is.
      */
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/**
+ * A LIVE VISUAL COMPARING SEVERAL NAMED THINGS AT ONE MOMENT (V4 backlog,
+ * ROADMAP.md "UI generativa acotada" / blueprint §10.4 — the first bounded
+ * slice of it, scoped deliberately narrow; see that section's own comment
+ * for what remains explicitly out of scope).
+ *
+ * `sequence` covers ONE quantity moving through TIME; `compare` covers
+ * exactly TWO static quantities weighed against each other. This is a third,
+ * narrowly-scoped shape for a story that names SEVERAL things at once ("how
+ * did 100 pesos split across three things") without inventing a fake time
+ * axis or forcing a >2-way comparison into `compare`'s fixed two sides —
+ * same closed-vocabulary posture as every other field in this file: a
+ * bounded count of named, bounded-number bars, no free-form layout, no
+ * image, nothing the server does not independently re-verify before it
+ * reaches a child's screen (`whiteboard.ts`'s `computeCategories`, the same
+ * "never taken on the model's word" rule `computeSequence`/`computeComparison`
+ * already apply).
+ */
+export const WhiteboardCategoriesSchema = z
+  .object({
+    kind: z.literal('categories'),
+    /** 2-6 named bars — one is not a comparison, and past 6 stops being a glance. */
+    categories: z.array(WhiteboardCategorySchema).min(2).max(6),
+    /** A short caption above the board — see `WhiteboardSequenceSchema.label`. */
     label: z.string().min(1).max(60),
     currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
   })
@@ -324,12 +370,15 @@ export const WhiteboardMarkedLineSchema = z
  * (`WhiteboardSchema.safeParse`, below) validates whichever member `kind`
  * names and nulls the whole board on anything else, so an unrecognised
  * `kind` degrades exactly like a malformed `sequence` already does — never
- * a discarded turn.
+ * a discarded turn. Extended the same way each time a new bounded kind
+ * ships: one more closed schema, dispatched by `kind`, without touching the
+ * shape of any kind already shipped.
  */
 export const WhiteboardSchema = z.discriminatedUnion('kind', [
   WhiteboardSequenceSchema,
   WhiteboardCompareSchema,
   WhiteboardMarkedLineSchema,
+  WhiteboardCategoriesSchema,
 ]);
 
 export const TutorTurnSchema = z
@@ -363,10 +412,11 @@ export const TutorTurnSchema = z
      */
     demonstrate: z.array(DemoStepSchema).min(1).max(8).nullable().optional(),
     /**
-     * V4: a live sequence board synced to this turn's story. See
-     * `WhiteboardSchema`. Never both this AND a segment request in the same
-     * turn — a board and a graded activity competing for the plate in one
-     * turn is exactly the disconnected-surfaces bug this exists to close.
+     * V4: a live visual synced to this turn's story — a value sequence over
+     * time, or a comparison across named categories. See `WhiteboardSchema`.
+     * Never both this AND a segment request in the same turn — a board and a
+     * graded activity competing for the plate in one turn is exactly the
+     * disconnected-surfaces bug this exists to close.
      */
     whiteboard: WhiteboardSchema.nullable().optional(),
   })
@@ -393,7 +443,9 @@ export type WhiteboardCompareSide = z.infer<typeof WhiteboardCompareSideSchema>;
 export type WhiteboardCompare = z.infer<typeof WhiteboardCompareSchema>;
 export type WhiteboardMark = z.infer<typeof WhiteboardMarkSchema>;
 export type WhiteboardMarkedLine = z.infer<typeof WhiteboardMarkedLineSchema>;
-/** Any of the three closed board shapes — see `WhiteboardSchema`'s own comment. */
+export type WhiteboardCategory = z.infer<typeof WhiteboardCategorySchema>;
+export type WhiteboardCategories = z.infer<typeof WhiteboardCategoriesSchema>;
+/** Any of the four closed board shapes — see `WhiteboardSchema`'s own comment. */
 export type Whiteboard = z.infer<typeof WhiteboardSchema>;
 
 /**
@@ -417,6 +469,13 @@ export function whiteboardVisibleText(whiteboard: Whiteboard | null | undefined)
       return [whiteboard.label, whiteboard.left.label, whiteboard.right.label];
     case 'marked_line':
       return [whiteboard.label, ...whiteboard.marks.map((m) => m.label)];
+    case 'categories':
+      // A `categories` board's own per-bar labels are free text too (a few
+      // words each, but still model-authored prose reaching a child's
+      // screen) — a field moderated nowhere is a field an injection can use
+      // as freely as an unmoderated one, regardless of how short it is
+      // expected to stay.
+      return [whiteboard.label, ...whiteboard.categories.map((c) => c.label)];
   }
 }
 
