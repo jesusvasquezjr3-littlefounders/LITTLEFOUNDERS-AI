@@ -3028,14 +3028,6 @@ null.
 
 ### 20.6 The skill/KC curator — propose-only (SHIPPED)
 
-> Editor's note on section numbering: this subsection was added by one lane
-> of a parallel multi-lane push against the V4 harness backlog, in an
-> isolated worktree that could not see what number a sibling lane might
-> independently pick for its own new ORACLE.md subsection. If another lane
-> also landed a "20.6", the coordinator merging both should renumber one on
-> the way in — the same collision class this repo already handles by hand
-> for migration numbers.
-
 V4 harness backlog: "the skill distiller/curator loop." `backend/src/
 services/pedagogy/tutorCurator.ts` (pure, unit-tested, zero model calls) plus
 `backend/src/scripts/curate-tutor-skills.ts` (`npm run curate:tutor-skills`,
@@ -3077,3 +3069,109 @@ backlog this tool now makes visible instead of invisible. Not yet wired to a
 schedule (unlike `audit:content-bridge`'s daily drift check): its proposals
 are a standing backlog to work through, not a regression to catch, so an
 operator running it by hand is the right cadence for a first version.
+
+### 20.7 Trajectory emission and the simulated-student gym (2026-09-01, SHIPPED — backstage only)
+
+Two of ROADMAP.md's "Remaining harness phases," built as the smallest real
+slice of each rather than the harness doc's full design. Both are governed by
+the SAME rule that already covers every organ in this section: the harness
+doc's own §15.1, "nothing autonomous reaches a child." Neither piece adds a
+field to the sealed model context (§4.1), neither writes anything a live
+session reads back, and neither has any caller inside `ws/` or the per-turn
+orchestrator methods — a session behaves identically with or without either
+of them.
+
+**Trajectory emission** answers the question "what did the deterministic
+controller actually decide, across a real session, and why" — a durable,
+queryable record for offline pedagogy study, separate from `kc_attempt`
+(0052), which is the EVIDENCE ledger for graded attempts only and has no row
+at all for the `conversation_turn` events that turned out to be MOST of a
+session (§20.2). Migration `0066` adds `tutor_trajectory_step`: one row per
+real `PedagogicalController.decide()` call, closed-vocabulary throughout per
+§13 (strategy before/after, skill delivered, scaffolding, difficulty, mastery
+estimate, misconception code, KC, mode — never free text, never a JSONB
+blob). `TutorOrchestrator` accumulates each decision as a plain in-memory
+push at the SAME site `decide()` is already called
+(`strategyInstruction`) — no I/O, microseconds, unconditional (the
+controller's own state already moved the instant `decide()` returned,
+whether or not the turn it feeds is ever delivered) — and
+`oracle/src/session/trajectory.ts` flushes the WHOLE session's log in ONE
+batched call, fire-and-forget, from the exact same seam
+`runPostSessionReview` already uses (`ws/server.ts`'s `finish()` and
+`finalizeParked()`). Per-row idempotency (`UNIQUE (session_id, turn_seq)` +
+PostgREST's `on_conflict`/`ignore-duplicates`, the same idiom
+`insertTutorTurn` already uses) makes the documented finish/finalizeParked
+double-fire race a safe no-op rather than a duplicate audit trail — and,
+unlike the learner-memory review's own "pick one whole replacement" dilemma,
+a session closed by both paths simply has its later, more-complete log
+insert whichever rows are genuinely new. RLS enabled, ZERO client policies
+(the same posture as `misconception`, `picture_assets`, `generation_runs`):
+this is an internal engineering/research artifact about the controller's own
+state machine, not a fact a parent view surfaces, and has no reader anywhere
+in the app today. New internal route: `POST /tutor/internal/trajectory`
+(backend README route table).
+
+**The simulated-student gym** (`npm run gym:pedagogy`,
+`oracle/src/tutor/pedagogyGym.ts`) answers a different question: "how does
+the controller behave against a POPULATION of learner behaviours, before any
+of it reaches a real session." It is deliberately NOT a copy of either
+existing pedagogy tool: `verify-pedagogy.ts` drives the same real controller
+but against FIXED, hand-scripted event sequences that never react to what the
+controller just decided (a regression gate for specific transcripts the
+product has actually produced); `tutor:converse` (`converse.ts`) drives the
+real, BILLED orchestrator and judges the tutor's PROSE. This module's four
+student archetypes are REACTIVE — each decides its next answer from the
+strategy the controller just chose, closing the loop the way a real session
+does — and, like `verify-pedagogy.ts`, it costs nothing: no network, no
+model, pure controller arithmetic, so it is cheap enough to run on every
+pedagogy change. Its four shared sequence properties (no thrash, no
+repeated rescue without progress, no difficulty rise after a failure, no
+endless questioning without progress) are the same ones `verify-pedagogy.ts`
+checks, restated rather than imported — the two files serve different
+authoring shapes (fixed scripts vs. a reactive loop) and are meant to stay
+separately maintainable, not merged into one.
+
+**The gym found two genuine, real gaps in the shipped controller on its
+first run, neither fixed as part of this backlog slice (out of scope for
+harness tooling; both flagged as follow-up work).** First: `decide()`'s
+difficulty computation resets to `entry.targetDifficulty` on any turn that
+does not independently qualify for its own hold/lower branch (a failure, or
+a RESCUE/REMEDIATE/PROBE strategy) or its raise branch (`p ≥ 0.85`) — so a
+turn immediately after a support-strategy-driven LOW difficulty, whose own
+newly-decided strategy happens to be an ordinary teaching or questioning
+strategy, jumps back up to the plan's baseline rather than continuing to
+climb gradually from where the learner actually was. None of
+`verify-pedagogy.ts`'s six fixed scripts happen to produce this combination
+(their own recovery turns all land on a support strategy, which coincidentally
+also holds difficulty down); the gym's `'steady improver'` archetype does, on
+its very first correct answer. Second: `answeredHesitantly`'s "the learner's
+own median" is an UNBOUNDED, self-inclusive history — every correct latency
+for a KC, ever, including the current turn's own measurement — so for a
+learner whose slow phase is CONSISTENT rather than variable, the median
+mathematically converges toward that slow value once slow measurements
+outnumber the earlier fast ones, at which point the 2x-median check can no
+longer fire, independent of how extreme the original fast/slow gap was. The
+gym's `'fragile hesitant'` archetype is promoted (CELEBRATE) on exactly this
+mechanism despite never becoming genuinely fluent. Both are named explicitly
+in `oracle/src/__tests__/pedagogyGym.test.ts`'s own `KNOWN_GAPS`, with the
+full mechanism documented inline in `pedagogyGym.ts` beside each archetype —
+recorded rather than silently tolerated, and NOT fixed here on purpose: a
+`controller.ts` difficulty or mastery-detection change is a pedagogy change
+with real stakes (§5 of `/AGENTS.md`'s gate table), and the second finding in
+particular needs a genuine product decision (should "the learner's own
+median" use a fixed early baseline, a decaying window, or something else)
+that this backlog slice's scope — the harness TOOLING, not a mastery-model
+redesign — is not the place to make unilaterally.
+
+**The harness doc's remaining phases, updated as of this section's own
+merge:** the skill/KC curator loop is SHIPPED (§20.6, above); a scoped,
+buildable slice of Honcho-style dialectic memory is SHIPPED (§20.4, the
+memory-write revision guard); MCP/school integrations was investigated and
+resolved into a scoping document (`/MCP_SCHOOL_INTEGRATIONS_SCOPING.md`)
+rather than code, pending a human decision this codebase cannot make
+unilaterally — see that document directly rather than this line, which will
+otherwise go stale the same way an earlier version of this paragraph already
+did. The gym's own population is deliberately small (four archetypes, one
+plan shape, one starting mastery each); a cross-product over starting
+mastery, plan shape and multi-attempt dynamics is a real, larger follow-up
+once this first slice earns it, not built speculatively now.

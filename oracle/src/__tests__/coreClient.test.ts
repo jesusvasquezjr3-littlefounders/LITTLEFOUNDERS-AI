@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { recallOwnHistory, updateLearnerMemory } from '../core/client.js';
+import { persistTutorTrajectory, recallOwnHistory, updateLearnerMemory } from '../core/client.js';
+import type { TrajectoryStepInput } from '../core/client.js';
 
 /*
  * Found by adversarial review, round 28 (2026-08-30, HIGH): Core answers a
@@ -120,6 +121,89 @@ describe('updateLearnerMemory reflects the real per-store result, not just envel
  * suite intentionally never touches (see `admin.test.ts`-style tests
  * elsewhere for the fetch-mocking convention this file follows).
  */
+/*
+ * V4 harness backlog: TRAJECTORY EMISSION (/ORACLE.md §20, ROADMAP.md
+ * "Remaining harness phases", migration 0065). Same posture as every other
+ * write in this file: `false` means the batch did not land, and the caller
+ * (`session/trajectory.ts`) logs it rather than retrying.
+ */
+describe('persistTutorTrajectory', () => {
+  const fetchMock = vi.fn();
+
+  beforeEach(() => {
+    vi.stubGlobal('fetch', fetchMock);
+    fetchMock.mockReset();
+  });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const step: TrajectoryStepInput = {
+    turnSeq: 1,
+    eventKind: 'conversation_turn',
+    strategyBefore: 'SOCRATIC',
+    strategy: 'DIRECT',
+    skillName: null,
+    scaffolding: 3,
+    difficulty: 2,
+    pKnown: 0.4,
+    misconceptionCode: null,
+    kcId: null,
+    kcMode: 'new',
+  };
+
+  function coreSays(recorded: boolean): Response {
+    return new Response(JSON.stringify({ data: { recorded }, error: null }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  it('returns true when the batch lands', async () => {
+    fetchMock.mockResolvedValueOnce(coreSays(true));
+    const result = await persistTutorTrajectory({
+      userId: '22222222-2222-4222-8222-222222222222',
+      sessionId: '11111111-1111-4111-8111-111111111111',
+      steps: [step],
+    });
+    expect(result).toBe(true);
+  });
+
+  it('returns false — never throws — when Core reports the write did not land', async () => {
+    fetchMock.mockResolvedValueOnce(coreSays(false));
+    const result = await persistTutorTrajectory({
+      userId: '22222222-2222-4222-8222-222222222222',
+      sessionId: '11111111-1111-4111-8111-111111111111',
+      steps: [step],
+    });
+    expect(result).toBe(false);
+  });
+
+  it('returns false — never throws — on a transport failure', async () => {
+    fetchMock.mockRejectedValueOnce(new Error('network down'));
+    const result = await persistTutorTrajectory({
+      userId: '22222222-2222-4222-8222-222222222222',
+      sessionId: '11111111-1111-4111-8111-111111111111',
+      steps: [step],
+    });
+    expect(result).toBe(false);
+  });
+
+  it('sends the WHOLE batch to /tutor/internal/trajectory in one call', async () => {
+    fetchMock.mockResolvedValueOnce(coreSays(true));
+    await persistTutorTrajectory({
+      userId: '22222222-2222-4222-8222-222222222222',
+      sessionId: '11111111-1111-4111-8111-111111111111',
+      steps: [step, { ...step, turnSeq: 2, strategyBefore: 'DIRECT', strategy: 'CELEBRATE' }],
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toContain('/tutor/internal/trajectory');
+    const body = JSON.parse(String(init.body)) as { steps: unknown[] };
+    expect(body.steps).toHaveLength(2);
+  });
+});
+
 describe('recallOwnHistory sends the session\'s own locale, not a hardcoded one', () => {
   const fetchMock = vi.fn();
 

@@ -3192,6 +3192,84 @@ describe('a once-per-session skill is committed on DELIVERY, not on selection', 
 });
 
 /*
+ * V4 HARNESS BACKLOG: TRAJECTORY EMISSION (/ORACLE.md §20, ROADMAP.md
+ * "Remaining harness phases"). This is the in-memory half — the log
+ * `session/trajectory.ts` flushes to Core once a session ends. See
+ * `trajectory.test.ts` and `coreClient.test.ts` for the write path itself.
+ */
+describe('the trajectory log (V4 harness backlog)', () => {
+  const KC_ID = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeee01';
+  const TRAJECTORY_SESSION: SessionContext = {
+    ...KID,
+    sessionPlan: [
+      {
+        kcId: KC_ID,
+        kcKey: 'money.make-change-counting-up',
+        skillKey: null,
+        reason: 'frontier',
+        pKnown: 0.2,
+        targetDifficulty: 2,
+        objective: 'Dar el cambio contando hacia arriba.',
+        prereqKcIds: [],
+        misconceptions: [],
+      } satisfies SessionPlanEntry,
+    ],
+    kcStates: [
+      { kcId: KC_ID, kcKey: 'money.make-change-counting-up', pKnown: 0.2, attempts: 0 } satisfies KcState,
+    ],
+  };
+
+  it('stays empty for a session where the controller never activates (no session plan)', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent); // KID carries no sessionPlan
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('hola', Date.now());
+    expect(orchestrator.trajectorySteps).toEqual([]);
+  });
+
+  it('records one entry per real decide() call, in order, with the strategy TRANSITION visible', async () => {
+    const orchestrator = new TutorOrchestrator(TRAJECTORY_SESSION, Date.now(), silent);
+
+    // Turn 1: a wrong answer. One failure alone does not trip RESCUE (that
+    // needs two), so the controller stays in its low-mastery band.
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleSegmentResult('seg-1', 40, false, Date.now());
+
+    // Turn 2: a SECOND consecutive wrong answer trips rule 1 ("safety rules
+    // always win") — the controller's own real arithmetic moves it to
+    // RESCUE, which is the exact transition this test proves the log sees.
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleSegmentResult('seg-2', 40, false, Date.now());
+
+    const steps = orchestrator.trajectorySteps;
+    expect(steps).toHaveLength(2);
+    expect(steps[0]).toMatchObject({
+      turnSeq: 1,
+      eventKind: 'activity_result',
+      strategyBefore: 'DIRECT', // seeded by the constructor from pKnown=0.2
+      strategy: 'DIRECT',
+      kcId: KC_ID,
+    });
+    expect(steps[1]).toMatchObject({
+      turnSeq: 2,
+      eventKind: 'activity_result',
+      strategyBefore: 'DIRECT',
+      strategy: 'RESCUE',
+      kcId: KC_ID,
+    });
+  });
+
+  it('returns a copy — mutating the result cannot corrupt the live log', async () => {
+    const orchestrator = new TutorOrchestrator(TRAJECTORY_SESSION, Date.now(), silent);
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleSegmentResult('seg-1', 40, false, Date.now());
+
+    const first = [...orchestrator.trajectorySteps];
+    first.pop();
+    expect(orchestrator.trajectorySteps).toHaveLength(1);
+  });
+});
+
+/*
  * Found by adversarial review, round 59 (2026-08-30, MEDIUM), deferred to
  * round 74: Core's ladder can serve a segment at a DIFFERENT band than the one
  * requested — correctly, via its nearest-match search or its prerequisite and

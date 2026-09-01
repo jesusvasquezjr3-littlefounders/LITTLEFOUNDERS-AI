@@ -1321,5 +1321,70 @@ export async function listPlacementSafetyFlags(
   );
 }
 
+// ── Trajectory emission (V4 harness backlog — /ORACLE.md §20.7, migration 0066) ──
+
+export interface TrajectoryStepInput {
+  turnSeq: number;
+  eventKind: 'activity_result' | 'voice_result' | 'conversation_turn' | 'entry_opened';
+  strategyBefore: string;
+  strategy: string;
+  skillName: string | null;
+  scaffolding: number;
+  difficulty: number;
+  pKnown: number | null;
+  misconceptionCode: string | null;
+  kcId: string | null;
+  kcMode: 'new' | 'review' | 'probe' | 'remediation' | null;
+}
+
+/**
+ * Bulk-inserts one session's worth of controller decisions in ONE call.
+ * Oracle batches the whole session (fire-and-forget, after it ends — see
+ * `oracle/src/session/trajectory.ts`) rather than one call per turn, so this
+ * never adds a request to the live turn path (§2.7 of oracle/AGENTS.md).
+ *
+ * `on_conflict=session_id,turn_seq` + `resolution=ignore-duplicates` is the
+ * same idempotency idiom `insertTutorTurn` already uses against
+ * `tutor_turns`, required for the same reason: `ws/server.ts`'s `finish()`
+ * and `finalizeParked()` can both fire their own post-session work for one
+ * session on a documented race (see that file's own comment on
+ * `runPostSessionReview`), so this batch may legitimately be POSTed twice for
+ * one session — both times with byte-identical rows, since it is Oracle's own
+ * in-memory step log read twice, not two different reviews.
+ *
+ * `steps` is never empty by the time this is called (the emitter skips a
+ * session where the controller never decided anything), but an empty array
+ * is a safe no-op rather than an empty PostgREST bulk-insert body either way.
+ */
+export async function insertTutorTrajectory(
+  userId: string,
+  sessionId: string,
+  steps: readonly TrajectoryStepInput[],
+): Promise<boolean> {
+  if (steps.length === 0) return true;
+  const res = await serviceRest<unknown>('/tutor_trajectory_step?on_conflict=session_id,turn_seq', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal,resolution=ignore-duplicates' },
+    body: JSON.stringify(
+      steps.map((step) => ({
+        session_id: sessionId,
+        user_id: userId,
+        turn_seq: step.turnSeq,
+        event_kind: step.eventKind,
+        strategy_before: step.strategyBefore,
+        strategy: step.strategy,
+        skill_name: step.skillName,
+        scaffolding: step.scaffolding,
+        difficulty: step.difficulty,
+        p_known: step.pKnown,
+        misconception_code: step.misconceptionCode,
+        kc_id: step.kcId,
+        kc_mode: step.kcMode,
+      })),
+    ),
+  });
+  return res !== null;
+}
+
 // ── Daily budget (/ORACLE.md §15) ───────────────────────────────────────────
 

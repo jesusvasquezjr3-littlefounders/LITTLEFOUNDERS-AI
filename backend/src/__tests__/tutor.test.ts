@@ -2328,6 +2328,108 @@ describe('PUT /api/v1/tutor/internal/learner-memory', () => {
   });
 });
 
+describe('POST /api/v1/tutor/internal/trajectory — V4 harness backlog (trajectory emission)', () => {
+  const oneStep = {
+    turnSeq: 1,
+    eventKind: 'conversation_turn',
+    strategyBefore: 'SOCRATIC',
+    strategy: 'DIRECT',
+    skillName: 'worked-example-basic',
+    scaffolding: 3,
+    difficulty: 2,
+    pKnown: 0.42,
+    misconceptionCode: null,
+    kcId: '55555555-5555-4555-8555-555555555555',
+    kcMode: 'new',
+  };
+
+  it('rejects an empty steps array — nothing decided is nothing to record', async () => {
+    stub();
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/trajectory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ userId: KID, sessionId: SESSION, steps: [] });
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('rejects a strategy value outside the closed vocabulary', async () => {
+    stub();
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/trajectory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ userId: KID, sessionId: SESSION, steps: [{ ...oneStep, strategy: 'CHATTY' }] });
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('rejects an unknown field — the same .strict() posture every other internal body uses', async () => {
+    stub();
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/trajectory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ userId: KID, sessionId: SESSION, steps: [oneStep], extra: 'nope' });
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('bulk-inserts the whole batch in ONE call, carrying the ignore-duplicates idempotency key', async () => {
+    const calls = stub();
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/trajectory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({
+        userId: KID,
+        sessionId: SESSION,
+        steps: [oneStep, { ...oneStep, turnSeq: 2, strategyBefore: 'DIRECT', strategy: 'CELEBRATE', kcMode: null }],
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.recorded).toBe(true);
+
+    const writes = calls.filter((c) => c.url.includes('/rest/v1/tutor_trajectory_step'));
+    // ONE call for the whole session's batch, never one per step — the point
+    // of batching at session end is exactly zero extra requests per turn.
+    expect(writes).toHaveLength(1);
+    const write = writes[0]!;
+    expect(write.method).toBe('POST');
+    // The same on_conflict + ignore-duplicates idiom `insertTutorTurn` already
+    // uses against `tutor_turns` — required because `finish()`/`finalizeParked()`
+    // can both fire this batch for the same session (see the migration's own
+    // header comment).
+    expect(write.url).toContain('on_conflict=session_id,turn_seq');
+
+    const rows = JSON.parse(String(write.body ?? '[]')) as Record<string, unknown>[];
+    expect(rows).toHaveLength(2);
+    expect(rows[0]).toEqual({
+      session_id: SESSION,
+      user_id: KID,
+      turn_seq: 1,
+      event_kind: 'conversation_turn',
+      strategy_before: 'SOCRATIC',
+      strategy: 'DIRECT',
+      skill_name: 'worked-example-basic',
+      scaffolding: 3,
+      difficulty: 2,
+      p_known: 0.42,
+      misconception_code: null,
+      kc_id: '55555555-5555-4555-8555-555555555555',
+      kc_mode: 'new',
+    });
+    expect(rows[1]).toMatchObject({ turn_seq: 2, strategy_before: 'DIRECT', strategy: 'CELEBRATE', kc_mode: null });
+  });
+
+  it('a write failure is reported, never thrown — this is best-effort backstage tooling, not a live-turn dependency', async () => {
+    stub({ restFailures: ['/rest/v1/tutor_trajectory_step'] });
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/trajectory')
+      .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+      .send({ userId: KID, sessionId: SESSION, steps: [oneStep] });
+    expect(response.status).toBe(200);
+    expect(response.body.data.recorded).toBe(false);
+  });
+});
+
 describe('guardian visibility', () => {
   it('refuses a stranger', async () => {
     stub({ guardianLinks: [] });

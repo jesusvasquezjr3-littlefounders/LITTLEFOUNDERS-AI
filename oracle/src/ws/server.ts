@@ -18,6 +18,7 @@ import {
 import { verifyGradeEcho } from '../session/gradeEcho.js';
 import { runPostSessionReview } from '../session/review.js';
 import { spendGuard } from '../session/spend-guard.js';
+import { emitTutorTrajectory } from '../session/trajectory.js';
 import { getVoiceProvider } from '../voice/index.js';
 import { newSpeechScope, speakLine, type SpeechScope } from '../voice/speech.js';
 import { generateSegment } from '../content/generate.js';
@@ -504,6 +505,19 @@ function finalizeParked(
     history: entry.orchestrator.resumeSnapshot.turns,
   }).catch((error) =>
     console.warn('[oracle] post-session review crashed:', error instanceof Error ? error.message : error),
+  );
+
+  /*
+   * V4 harness backlog: TRAJECTORY EMISSION, for the session that ended THIS
+   * way too — the exact same fire-and-forget seam as the review just above.
+   * A no-op when the controller never activated this session (empty log).
+   */
+  void emitTutorTrajectory({
+    sessionId: entry.orchestrator.sessionContext.sessionId,
+    userId: entry.orchestrator.sessionContext.userId,
+    steps: entry.orchestrator.trajectorySteps,
+  }).catch((error) =>
+    console.warn('[oracle] trajectory emission crashed:', error instanceof Error ? error.message : error),
   );
 }
 
@@ -2254,6 +2268,23 @@ async function finish(
     history: live.orchestrator.resumeSnapshot.turns,
   }).catch((error) =>
     console.warn('[oracle] post-session review crashed:', error instanceof Error ? error.message : error),
+  );
+
+  /*
+   * V4 harness backlog: TRAJECTORY EMISSION. Unlike the review just above,
+   * firing this unconditionally (even when `finalizeParked` already ran it
+   * once) is never a double cost worth avoiding: this batch is per-row
+   * idempotent on (session_id, turn_seq) — see migration 0065 — so a session
+   * closed by both paths simply has its later, more-complete step log
+   * insert its NEW rows while the overlapping ones no-op, rather than the
+   * review's own "pick one whole replacement" dilemma.
+   */
+  void emitTutorTrajectory({
+    sessionId: live.session.sessionId,
+    userId: live.session.userId,
+    steps: live.orchestrator.trajectorySteps,
+  }).catch((error) =>
+    console.warn('[oracle] trajectory emission crashed:', error instanceof Error ? error.message : error),
   );
 
   send(live.socket, { type: 'closed', reason });

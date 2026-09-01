@@ -13313,6 +13313,26 @@ BEGIN
 -- "next activity" control, a flaky-connection retry, or Oracle re-requesting
 ```
 
+### database/migrations/0065_tutor_trajectory.sql
+
+```
+-- @phase: expand
+-- 0065_tutor_trajectory.sql — the Tutor V4 harness backlog, first slice:
+-- TRAJECTORY EMISSION. A durable, queryable, per-turn record of what the
+-- deterministic pedagogical controller (oracle/src/tutor/controller.ts)
+-- actually decided during a real session, so it can be studied offline.
+--
+-- Authoritative design: /ORACLE.md §20 (V4, the bicameral tutor). ROADMAP.md's
+-- "Remaining harness phases" line names trajectory emission as backlog, gated
+-- on the harness doc's own §15.1: "nothing autonomous reaches a child." This
+-- migration adds NO new reach to a model and NO new surface a learner sees —
+-- it is backstage-only, a record OF the controller, never an input TO it.
+--
+-- WHAT THIS ADDS AND WHY.
+--
+--   tutor_trajectory_step   One row per `PedagogicalController.decide()` call
+```
+
 ### database/package.json
 
 ```
@@ -29747,6 +29767,26 @@ export default tseslint.config(
  * the same parse, the same moderation, the same conversation history a learner
 ```
 
+### oracle/scripts/pedagogy-gym.ts
+
+```
+/*
+ * `npm run gym:pedagogy` — RUN REACTIVE SIMULATED STUDENTS AGAINST THE REAL
+ * CONTROLLER (V4 harness backlog, ROADMAP.md "Remaining harness phases").
+ *
+ * This is a thin CLI shell. All the real logic — the student archetypes, the
+ * driving loop, the checks — lives in `src/tutor/pedagogyGym.ts` (a real
+ * `src/` module, unlike `verify-pedagogy.ts`'s all-in-one script) so it has
+ * an actual vitest suite (`src/__tests__/pedagogyGym.test.ts`) rather than
+ * being provable only by running the CLI and reading its output.
+ *
+ * `--json` prints a machine-readable report instead of the human one — for a
+ * future consumer that wants to diff two runs (before/after a threshold
+ * change) rather than read a transcript.
+ */
+
+```
+
 ### oracle/scripts/pregenerate-guided-voice.ts
 
 ```
@@ -30411,7 +30451,8 @@ import { mintGradeEcho, verifyGradeEcho } from '../session/gradeEcho.js';
 
 ```
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { recallOwnHistory, updateLearnerMemory } from '../core/client.js';
+import { persistTutorTrajectory, recallOwnHistory, updateLearnerMemory } from '../core/client.js';
+import type { TrajectoryStepInput } from '../core/client.js';
 
 /*
  * Found by adversarial review, round 28 (2026-08-30, HIGH): Core answers a
@@ -30424,7 +30465,6 @@ import { recallOwnHistory, updateLearnerMemory } from '../core/client.js';
  * file's own doc comment promises "a false return means did not land",
  * which `session/review.ts` relies on to retry via the NEXT session's
  * review; silently returning true instead meant a curated memory note could
- * fail to persist with no retry and no warning, forever.
 ```
 
 ### oracle/src/__tests__/env-example.test.ts
@@ -30545,6 +30585,26 @@ import type { SessionContext, SessionPlanEntry, KcState } from '../core/client.j
 
 const KID: SessionContext = {
   sessionId: '11111111-1111-4111-8111-111111111111',
+```
+
+### oracle/src/__tests__/pedagogyGym.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import {
+  checkGymScenario,
+  GYM_SCENARIOS,
+  runGymScenario,
+  runPedagogyGym,
+  sequenceProblems,
+  STUDENT_ARCHETYPES,
+  type GymRunResult,
+  type GymScenario,
+} from '../tutor/pedagogyGym.js';
+import type { PedagogyEvent } from '../tutor/controller.js';
+import type { SessionPlanEntry } from '../core/client.js';
+
+/*
 ```
 
 ### oracle/src/__tests__/placementIntake.test.ts
@@ -30805,6 +30865,26 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
  * and none of them had gotten the fix.
  *
  * These tests assert only what a `git stash` of the fix can decisively
+```
+
+### oracle/src/__tests__/trajectory.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { emitTutorTrajectory } from '../session/trajectory.js';
+import type { TrajectoryStepInput } from '../core/client.js';
+
+/*
+ * V4 harness backlog: TRAJECTORY EMISSION (/ORACLE.md §20, ROADMAP.md
+ * "Remaining harness phases"). This is the fire-and-forget wrapper
+ * `ws/server.ts` calls from `finish()`/`finalizeParked()` — the sibling of
+ * `runPostSessionReview` for the CONTROLLER's own decisions rather than the
+ * learner's. Tested through the real `persistTutorTrajectory`, mocking only
+ * the network boundary (this suite's own house style — see `review.test.ts`).
+ */
+describe('emitTutorTrajectory', () => {
+  const fetchMock = vi.fn();
+
 ```
 
 ### oracle/src/__tests__/voice.test.ts
@@ -31247,6 +31327,26 @@ import { getConfig } from '../env.js';
  * - It names a session id, so a token cannot be pointed at someone else's
 ```
 
+### oracle/src/session/trajectory.ts
+
+```
+import { persistTutorTrajectory, type TrajectoryStepInput } from '../core/client.js';
+
+/*
+ * TRAJECTORY EMISSION — the V4 harness backlog's first slice (ROADMAP.md
+ * "Remaining harness phases", /ORACLE.md §20).
+ *
+ * WHAT THIS IS. A durable, queryable record of what
+ * `PedagogicalController.decide()` actually chose across a real session —
+ * which strategy fired, on which mastery estimate, which skill delivered it,
+ * which knowledge component it was about — so the Tutor's own pedagogy can
+ * be studied OFFLINE. This is the sibling of `session/review.ts`: that organ
+ * writes what a session taught US about the LEARNER; this one writes what it
+ * taught us about the CONTROLLER.
+ *
+ * WHY THIS IS BACKSTAGE-ONLY, BY CONSTRUCTION. Governance (the harness doc's
+```
+
 ### oracle/src/test-setup.ts
 
 ```
@@ -31309,7 +31409,7 @@ import type { KcState, SessionPlanEntry } from '../core/client.js';
 
 ```
 import { getConfig } from '../env.js';
-import { sealContext, type SkillState, type TutorContext } from '../context/schema.js';
+import { sealContext, type SkillState, type Strategy, type TutorContext } from '../context/schema.js';
 import {
   buildPlan,
   noteConversationTurn,
@@ -31323,6 +31423,26 @@ import {
   IDLE_NUDGE_MS,
   LISTEN_SILENCE_MS,
   PedagogicalController,
+```
+
+### oracle/src/tutor/pedagogyGym.ts
+
+```
+import { PedagogicalController, type PedagogyEvent } from './controller.js';
+import { selectSkill } from './skills.js';
+import type { Strategy } from '../context/schema.js';
+import type { SessionPlanEntry } from '../core/client.js';
+
+/*
+ * THE SIMULATED-STUDENT GYM — V4 harness backlog (ROADMAP.md "Remaining
+ * harness phases", /ORACLE.md §20). Governance: the harness doc's own §15.1,
+ * "nothing autonomous reaches a child" — this module is BACKSTAGE ONLY. It
+ * never runs against a real learner, never writes anything, and has no
+ * caller anywhere in the live session path (`ws/`, `orchestrator.ts`'s
+ * per-turn methods never import it). It exists to let a person iterating on
+ * pedagogy (a threshold, a new strategy, a skill file) see the effect on a
+ * POPULATION of learner behaviours before any of it ships.
+ *
 ```
 
 ### oracle/src/tutor/placementIntake.ts

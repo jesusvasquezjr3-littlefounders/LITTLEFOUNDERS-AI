@@ -185,3 +185,9 @@ A free, deterministic check the Preceptor runs on itself: before a proposed memo
 
 ### Skill/KC curator (V4)
 The propose-only tool (`npm run curate:tutor-skills`) that cross-references the misconception catalog, real attempt evidence, and `oracle/skills/moves/*.md` to surface authoring gaps and dead references — never writes to the KC graph or the skill catalogue. The "skill distiller/curator loop" backlog item. See /ORACLE.md §20.6.
+
+### Trajectory step (V4)
+One row of `tutor_trajectory_step` (migration `0066`): a single real `PedagogicalController.decide()` outcome — the strategy before and after, the skill delivered, mastery and misconception at decision time, the KC. Batched and flushed fire-and-forget after a session ends; backstage-only, never read back into a session. See /ORACLE.md §20.7.
+
+### Simulated-student gym (V4)
+`npm run gym:pedagogy` (`oracle/src/tutor/pedagogyGym.ts`): reactive simulated-student archetypes driven against the REAL controller — never a model, never a live session — to explore pedagogy behaviour across many turns before a change ships. Distinct from `verify:pedagogy` (fixed scripts, a regression gate) and `tutor:converse` (the real, billed orchestrator, judging prose). See /ORACLE.md §20.7.
