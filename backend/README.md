@@ -48,6 +48,24 @@ production and on any push touching the mapping (RUNBOOK.md Round 105). Fails
 loud — `::error::` per broken bridge — and exits non-zero if anything no
 longer carries traffic.
 
+## `npm run curate:tutor-skills` — the Tutor skill/KC curation report
+
+Operator tool (needs `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`, and a full
+monorepo checkout with `oracle/` present alongside `backend/` — read-only,
+calls no model, costs nothing). Reads the live KC graph, misconception
+catalog and real attempt/evidence aggregates from Vault, cross-references
+them against `oracle/skills/moves/*.md`, and prints a PROPOSE-ONLY markdown
+report: dead misconception references in a skill's own frontmatter,
+misconceptions with real evidence and no covering skill, KCs with no mapped
+`skill_key` receiving real attempts, and prerequisite edges the real data
+does not support. See `services/pedagogy/tutorCurator.ts` for the analysis
+(pure, unit-tested) and /ORACLE.md §20.6 for the full design note and its
+first real run against this repository's catalog.
+
+NEVER WRITES ANYTHING — applying a proposal is a human editing a skill file
+or `database/seeds/kc_graph.v1.json` in an ordinary reviewed commit. Not yet
+wired to a schedule; run it by hand as a standing curation backlog check.
+
 ## Routes
 
 | Method | Path | Auth | Description |

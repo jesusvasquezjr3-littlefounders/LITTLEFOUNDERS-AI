@@ -253,3 +253,85 @@ export function getKcTitlesByIds(kcIds: string[]): Promise<Array<{ id: string; t
     `/kc?id=in.(${kcIds.map(eu).join(',')})&select=id,title&limit=1000`,
   );
 }
+
+/*
+ * AGGREGATE READERS — ACROSS EVERY LEARNER, not one. Every other reader in
+ * this file is scoped `user_id=eq.<one learner>` because its caller is a live
+ * session or a guardian view. These two exist for `tutorCurator.ts`'s
+ * propose-only curation report (V4 harness backlog: "the skill distiller/
+ * curator loop") and are deliberately UNSCOPED — reading across all learners
+ * with the service role, the same posture `seed-kc-graph.ts` and
+ * `audit-content-bridge.ts` already use for their own operator-only reads.
+ * Nothing here writes; both tables' RLS still restricts every OTHER caller
+ * (a learner or their guardian) to their own rows (0052).
+ *
+ * Aggregated in application code rather than via a SQL view or RPC: table
+ * sizes here are small (an early-stage product) and this runs on an
+ * operator's own schedule, not a request path, so a second migration to add
+ * a view is not warranted for what a `.reduce()` already does correctly
+ * (§1.14 — prefer the boring, cheap, verifiable path).
+ */
+
+export interface KcMasteryAggregateRow {
+  kcId: string;
+  learnerCount: number;
+  totalAttempts: number;
+  totalCorrect: number;
+  /** Mean of each learner's own BKT posterior, not attempt-weighted — one learner's long streak should not drown out another's. */
+  avgPKnown: number;
+}
+
+/** Every `learner_kc_mastery` row with at least one real attempt, aggregated per KC. `null` on a failed read — never collapsed to an empty report (§1.14): a curation tool that cannot see real data must say so, not report a false "nothing to curate". */
+export async function getAggregateMasteryByKc(): Promise<KcMasteryAggregateRow[] | null> {
+  const rows = await serviceRest<{ kc_id: string; p_known: number; attempts: number; correct: number }[]>(
+    '/learner_kc_mastery?select=kc_id,p_known,attempts,correct&attempts=gt.0&limit=20000',
+  );
+  if (rows === null) return null;
+
+  const byKc = new Map<string, { learners: number; attempts: number; correct: number; pKnownSum: number }>();
+  for (const row of rows) {
+    const agg = byKc.get(row.kc_id) ?? { learners: 0, attempts: 0, correct: 0, pKnownSum: 0 };
+    agg.learners += 1;
+    agg.attempts += row.attempts;
+    agg.correct += row.correct;
+    agg.pKnownSum += Number(row.p_known);
+    byKc.set(row.kc_id, agg);
+  }
+  return [...byKc.entries()].map(([kcId, agg]) => ({
+    kcId,
+    learnerCount: agg.learners,
+    totalAttempts: agg.attempts,
+    totalCorrect: agg.correct,
+    avgPKnown: agg.pKnownSum / agg.learners,
+  }));
+}
+
+export interface MisconceptionEvidenceAggregateRow {
+  misconceptionId: string;
+  learnerCount: number;
+  totalEvidenceCount: number;
+  resolvedCount: number;
+}
+
+/** Every `learner_misconception` row across every learner, aggregated per misconception id. `null` on a failed read, for the same reason as `getAggregateMasteryByKc` above. */
+export async function getAggregateMisconceptionEvidence(): Promise<MisconceptionEvidenceAggregateRow[] | null> {
+  const rows = await serviceRest<{ misconception_id: string; evidence_count: number; resolved_at: string | null }[]>(
+    '/learner_misconception?select=misconception_id,evidence_count,resolved_at&limit=20000',
+  );
+  if (rows === null) return null;
+
+  const byMisconception = new Map<string, { learners: number; evidence: number; resolved: number }>();
+  for (const row of rows) {
+    const agg = byMisconception.get(row.misconception_id) ?? { learners: 0, evidence: 0, resolved: 0 };
+    agg.learners += 1; // one row IS one (learner, misconception) pair — the primary key of the table
+    agg.evidence += row.evidence_count;
+    if (row.resolved_at !== null) agg.resolved += 1;
+    byMisconception.set(row.misconception_id, agg);
+  }
+  return [...byMisconception.entries()].map(([misconceptionId, agg]) => ({
+    misconceptionId,
+    learnerCount: agg.learners,
+    totalEvidenceCount: agg.evidence,
+    resolvedCount: agg.resolved,
+  }));
+}

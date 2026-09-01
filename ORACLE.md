@@ -2821,6 +2821,40 @@ context (a new `sessionContext` getter on `TutorOrchestrator`, since a
 parked entry holds only the orchestrator, not a live `Live.session`) and
 its `resumeSnapshot.turns`.
 
+**The memory-write revision guard (V4 harness backlog: "Honcho-style
+dialectic memory" — SHIPPED as its scoped, buildable piece, 2026-09-01).**
+Honcho (Plastic Labs) names its user-memory endpoint "dialectic" because it
+answers a question about a person by reasoning ACROSS potentially
+conflicting evidence at query time, rather than trusting one flat, pre-baked
+summary — architecturally the opposite of `learnerBrief` above, which is
+deliberately a small, session-start-FROZEN note so the model's prompt prefix
+stays cacheable and the voice turn never waits on an extra reasoning pass
+(§19.1's three-clocks rule). Reimplementing Honcho's actual agentic
+query-time loop inside the fast chamber was considered and rejected for
+exactly that reason. What genuinely was missing, and fits this codebase's own
+grain: the post-session review already asks the model for a dialectical
+SYNTHESIS in prose ("carry forward what still holds... drop what it
+contradicted"), but nothing checked that synthesis before it was trusted
+forever. `oracle/src/session/memoryRevision.ts` is that check — free,
+deterministic, unit-tested, no model call — run immediately before the same
+`updateLearnerMemory` call the 0059/0061 compare-and-swap protects, on the
+same two values (`brief`, `proposal`): a bag-of-words comparison of each
+store's OLD content against the Preceptor's proposed REPLACEMENT. When most
+of a substantial prior note (≥2 observations) has no close counterpart
+anywhere in the replacement, it logs a `console.warn` naming the store, the
+survival ratio, and how many observations were dropped — never the note text
+itself (§1.9's "no free-text history" instinct applied to our own server
+logs, which carry weaker access control than the RLS-guarded table). It never
+blocks the write: a lexical-overlap heuristic cannot reliably tell a
+hallucinated reversal apart from a learner genuinely changing, and a false
+block would silently starve the one thing this memory system exists to do.
+The natural, costed escalation — a second judge call on a flagged revision
+ONLY, asking specifically whether it looks fabricated — is deliberately NOT
+built yet; see the module's own header for why (a new paid call per flagged
+session needs the same cost-accounting care round 78 already had to fix once
+for this exact review call, and it has no natural home in the child-safety
+moderation taxonomy, since this is not a child-safety concern).
+
 ### 20.5 The whiteboard — a live visual synced to what the tutor says (SHIPPED)
 
 **The defect, reported directly by the owner from a live session (2026-08-29):**
@@ -2991,3 +3025,55 @@ still refused, unchanged. `whiteboard.test.ts` covers both sides — the
 `0.3 − 0.1 − 0.1 − 0.1` sequence now computes to `[0.3, …, 0]`, and a
 sequence that goes genuinely negative (not floating-point noise) is still
 null.
+
+### 20.6 The skill/KC curator — propose-only (SHIPPED)
+
+> Editor's note on section numbering: this subsection was added by one lane
+> of a parallel multi-lane push against the V4 harness backlog, in an
+> isolated worktree that could not see what number a sibling lane might
+> independently pick for its own new ORACLE.md subsection. If another lane
+> also landed a "20.6", the coordinator merging both should renumber one on
+> the way in — the same collision class this repo already handles by hand
+> for migration numbers.
+
+V4 harness backlog: "the skill distiller/curator loop." `backend/src/
+services/pedagogy/tutorCurator.ts` (pure, unit-tested, zero model calls) plus
+`backend/src/scripts/curate-tutor-skills.ts` (`npm run curate:tutor-skills`,
+an operator tool — same posture as `seed:kc`/`audit:content-bridge`) read the
+live KC graph, the misconception catalog and real attempt/evidence
+aggregates from Vault, cross-reference them against
+`oracle/skills/moves/*.md`, and print a markdown report naming FOUR kinds of
+finding, each with its own evidence — exactly `coursegen`'s `forge:coach`
+propose-only pattern applied to the Tutor's curriculum instead of to Forge's
+lesson pipeline:
+
+1. **Dead misconception references** — a skill's own `misconceptions:`
+   frontmatter names a code that exists nowhere in the catalog, so
+   `selectSkill`'s dedicated-remediation path (§20.1) can never match it.
+2. **Coverage gaps** — a misconception code with real evidence and no skill
+   anywhere covering it, ranked by how often real learners actually show it.
+3. **Content gaps** — a KC with no mapped `skill_key` receiving real
+   attempts, so every one of them falls through to tier-3 live generation;
+   ranks the gap `audit:content-bridge` already names but does not order.
+4. **Questionable prerequisite edges** — a prerequisite whose real accuracy
+   is not clearly higher than its dependent's, gated on a minimum sample on
+   BOTH ends so this stays silent rather than noisy while usage is thin.
+
+NEVER WRITES ANYTHING — the ROADMAP.md §15.1 rule ("nothing autonomous
+reaches a child") extended here to the curriculum itself: applying a
+proposal means a human editing a skill file or `kc_graph.v1.json` in an
+ordinary reviewed commit, the exact PR-as-approval-gate §20.1 already
+established for hand-written skills. Verified against this repository's REAL
+catalog on 2026-09-01 (28 KCs, 36 edges, 32 misconception rows, 15 real
+skill files — no live attempt data was reachable from the environment that
+built this, so `masteryByKc`/`misconceptionEvidence` ran empty and only the
+catalog-only check had anything to find): it correctly caught a real,
+pre-existing defect on its very first run — `counterexample-confront.md`'s
+own frontmatter names two misconception codes
+(`more-parts-means-more`, `longer-number-is-bigger`) that exist nowhere in
+the seeded catalog — and reported that only 1 of 31 distinct cataloged
+misconception codes has any covering skill at all, a standing authoring
+backlog this tool now makes visible instead of invisible. Not yet wired to a
+schedule (unlike `audit:content-bridge`'s daily drift check): its proposals
+are a standing backlog to work through, not a regression to catch, so an
+operator running it by hand is the right cadence for a first version.

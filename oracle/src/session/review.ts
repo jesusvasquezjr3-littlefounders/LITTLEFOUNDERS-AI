@@ -5,6 +5,7 @@ import { stripInvisible } from '../safety/untrusted.js';
 import { moderateTutorOutput, deterministicModeration } from '../safety/moderation.js';
 import { estimateCostUsd } from '../tutor/orchestrator.js';
 import { spendGuard } from './spend-guard.js';
+import { describeDrasticRevision, evaluateMemoryRevision } from './memoryRevision.js';
 import type { SessionContext } from '../core/client.js';
 
 /*
@@ -471,6 +472,26 @@ async function review(
       );
       return null;
     }
+  }
+
+  /*
+   * THE DIALECTIC CHECK (V4 harness backlog: "Honcho-style dialectic
+   * memory") — free, deterministic, and advisory ONLY; see
+   * memoryRevision.ts's own header for why it never blocks a write. This
+   * compares the exact same `brief`/`proposal` pair the compare-and-swap
+   * below is keyed on (`expectedBefore: brief`), on the SAME two values, at
+   * the SAME moment, right before the SAME write — but on a different axis.
+   * The compare-and-swap protects against a CONCURRENT writer changing the
+   * row out from under this one (0059/0061); this protects against THIS
+   * review's own synthesis silently discarding most of what was believed
+   * before, with nothing to show for why. Different axis, same instinct:
+   * verify before a belief is trusted.
+   */
+  for (const store of ['learner', 'pedagogy'] as const) {
+    const proposed = proposal[store];
+    if (proposed === null) continue; // nothing proposed for this store — cannot be a revision of it
+    const revision = evaluateMemoryRevision(brief[store], proposed);
+    if (revision.isDrasticRevision) console.warn(`[oracle] ${describeDrasticRevision(store, revision)}`);
   }
 
   /*
