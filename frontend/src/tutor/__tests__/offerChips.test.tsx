@@ -425,4 +425,61 @@ describe('the arrival, once the island is on screen', () => {
     expect(toggle).toHaveAttribute('aria-expanded', 'true');
     expect(queryByText('Your past conversations')).not.toBeNull();
   });
+
+  /*
+   * A live browser test measured the openings (`chips`) and this "My
+   * island" / "Past conversations" pair painting at IDENTICAL y-coordinates,
+   * text interleaved and unreadable, right after a failed session-start
+   * attempt — the same `ready && !dockAbove` combination the test above
+   * already renders under (no `StageDockContext` provider), but that test
+   * only ever checked that the archive control WORKS, never that it and the
+   * openings are laid out as two distinguishable groups rather than one
+   * ambiguous run of chips. `StageShell.tsx`'s dock and this cluster are two
+   * layout systems that cannot see each other's rect — a `flex-col` keeps
+   * them from disagreeing WITHIN this render, but says nothing about a
+   * camera shot that puts this whole cluster where the dock also stands — so
+   * the mitigation is structural: the fallback pair rides its own divider,
+   * in its own wrapper, never as bare `chips` siblings with nothing marking
+   * the seam between "openings" and "other things".
+   */
+  it('keeps the openings and the "other things" pair as two distinguishable groups when the dock is absent', () => {
+    vi.useFakeTimers();
+    const { container, getByRole } = renderChips({}, { ready: true });
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    const openingButtons = openings(container);
+    expect(openingButtons.length).toBeGreaterThan(0);
+
+    const myIsland = getByRole('button', { name: 'My island' });
+    const pastConversations = getByRole('button', { name: 'Past conversations' });
+
+    // Neither secondary control is a bare sibling of an opening chip: both
+    // sit inside ONE wrapper — an ANCESTOR of the "other things" role=group,
+    // not that group itself — that carries a visible divider, so the two
+    // groups can never render as one undifferentiated run.
+    function dividerAncestorOf(node: HTMLElement): HTMLElement | null {
+      let current: HTMLElement | null = node.parentElement;
+      while (current) {
+        if (current.className.includes('border-t')) return current;
+        current = current.parentElement;
+      }
+      return null;
+    }
+    const secondaryGroup = dividerAncestorOf(myIsland);
+    expect(secondaryGroup).not.toBeNull();
+    expect(secondaryGroup).toBe(dividerAncestorOf(pastConversations));
+    expect(secondaryGroup?.contains(myIsland)).toBe(true);
+    expect(secondaryGroup?.contains(pastConversations)).toBe(true);
+    expect(secondaryGroup?.querySelector('[data-opening]')).toBeNull();
+
+    // And the wrapper is a SIBLING of the openings group, never an ancestor
+    // or descendant of it — the two are laid out one after the other, not
+    // nested inside each other where a collapsed margin could reunite them.
+    const chipsGroup = container.querySelector('[data-opening]')?.closest('[role="group"]');
+    expect(chipsGroup).not.toBeNull();
+    expect(secondaryGroup?.contains(chipsGroup as Node)).toBe(false);
+    expect(chipsGroup?.contains(secondaryGroup as Node)).toBe(false);
+  });
 });

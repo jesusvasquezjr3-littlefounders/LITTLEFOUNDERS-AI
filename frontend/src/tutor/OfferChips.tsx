@@ -781,33 +781,68 @@ export function OfferChips({
                   covered the dock and the microphone (measured: three overlaps
                   in the lab's own collision report). */}
               {chipsIn && !mapPanel && chips}
-              {chipsIn && !dockAbove && secondary}
               {/*
-                THE ARCHIVE IS DELIBERATELY NOT HERE WHILE THE DOCK EXISTS.
-                This cluster is the anchored node `ScreenAnchor` rewrites the
-                transform of on every frame; a 52vh scrolling sheet inside it
-                would be a list flying around the island — it belongs in the
-                portal below instead, beside `secondary`.
-               *
-               * But when there IS no dock, it needs a home here, matching
-               * `secondary` immediately above. Found by adversarial review,
-               * round 27 (2026-08-30, MEDIUM): this branch used to render
-               * `archive` ONLY inside `{chipsIn && dockAbove ? createPortal(...)
-               * : null}` below, with no fallback for `!dockAbove` — unlike
-               * `secondary`, which already has one. In that combination the
-               * "Past conversations" toggle still renders and still flips its
-               * own `aria-expanded`/label on tap, so every outward sign says it
-               * worked, but the archive list itself never appears anywhere:
-               * exactly the §1.14 shape of "a surface that opts out of a
-               * system must be told what the system decided" — this cluster
-               * opts the archive OUT of its own layout without checking
-               * whether the fallback layout (the guaranteed no-stage column
-               * below) actually has it either. No live caller currently hits
-               * `ready && !dockAbove` (the dock's portal target mounts before
-               * `chipsIn`'s reveal delay elapses), but nothing enforces that,
-               * and the existing tests never covered the combination.
-               */}
-              {chipsIn && !dockAbove && archive}
+                THE FALLBACK PAIR RIDES ITS OWN DIVIDER, DELIBERATELY, RATHER
+                THAN JOINING `chips` AS A PLAIN `flex-col` SIBLING.
+                A live browser test measured `chips` (the openings) and this
+                pair painting at IDENTICAL y-coordinates, text interleaved and
+                unreadable, immediately after a failed session-start attempt —
+                exactly the `ready && !dockAbove` combination round 27's own
+                comment below says "nothing enforces" stays unreached. The
+                dock (StageShell.tsx) is anchored by CSS against the viewport
+                and this cluster is anchored by the CAMERA against a point on
+                the character's chest — two independent layout systems that
+                cannot see each other's rect — so a `flex-col gap-2` on its
+                own only keeps them apart WITHIN one render; it says nothing
+                about whether this whole cluster's chest-projected position
+                happens to coincide with the dock's fixed one at a given
+                camera shot and viewport. A visible rule plus its own top
+                margin is the same belt-and-braces this file already applies
+                elsewhere (see `HudPlate`'s `floor="none"` sheets): even if
+                the two groups are ever pushed to occupy the same band again,
+                a rule between them keeps the SECOND group legible and
+                unambiguously "a different list", never text laid directly
+                over text with no seam.
+              */}
+              {chipsIn && !dockAbove && (secondary || archive) && (
+                <div
+                  className="mt-2 flex w-full flex-col items-stretch gap-2 border-t border-outline/50 pt-2 md:items-center"
+                >
+                  {secondary}
+                  {/*
+                    THE ARCHIVE IS DELIBERATELY NOT HERE WHILE THE DOCK EXISTS.
+                    This cluster is the anchored node `ScreenAnchor` rewrites the
+                    transform of on every frame; a 52vh scrolling sheet inside it
+                    would be a list flying around the island — it belongs in the
+                    portal below instead, beside `secondary`.
+                   *
+                   * But when there IS no dock, it needs a home here, matching
+                   * `secondary` immediately above. Found by adversarial review,
+                   * round 27 (2026-08-30, MEDIUM): this branch used to render
+                   * `archive` ONLY inside `{chipsIn && dockAbove ? createPortal(...)
+                   * : null}` below, with no fallback for `!dockAbove` — unlike
+                   * `secondary`, which already has one. In that combination the
+                   * "Past conversations" toggle still renders and still flips its
+                   * own `aria-expanded`/label on tap, so every outward sign says it
+                   * worked, but the archive list itself never appears anywhere:
+                   * exactly the §1.14 shape of "a surface that opts out of a
+                   * system must be told what the system decided" — this cluster
+                   * opts the archive OUT of its own layout without checking
+                   * whether the fallback layout (the guaranteed no-stage column
+                   * below) actually has it either. No live caller was PROVEN to
+                   * hit `ready && !dockAbove` when this was first written (the
+                   * dock's portal target mounts before `chipsIn`'s reveal delay
+                   * elapses) — a live test now has a measured collision that is
+                   * most consistent with exactly this combination, though the
+                   * precise trigger (a remount, a race, or simple camera-shot
+                   * coincidence with the dock's own rect) was not reproducible
+                   * on demand. The divider above is the mitigation that holds
+                   * either way; see StageShell.tsx's own dock-pointer-events fix
+                   * for the sibling defect this same live test found close by.
+                   */}
+                  {archive}
+                </div>
+              )}
             </div>
           </div>
 

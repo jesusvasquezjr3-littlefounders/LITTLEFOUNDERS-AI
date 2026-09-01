@@ -12414,3 +12414,80 @@ needed or added: `oracle/src/tutor/scripted.ts`'s own scripted lines
 live in code, not frontend i18n, and `brokenPromise` reuses an
 existing, already-trilingual line — there is no new user-facing
 string in any locale.
+
+## Round 123: the mic-status dock could swallow taps meant for a chip one layer underneath, found live, MEDIUM, closed 2026-08-31
+
+**MEDIUM, FIXED**, plus one MEDIUM mitigated interim and one LOW
+confirmed as working-as-intended. Found by genuine live testing (a
+real browser session at a short viewport, ~864×342).
+
+**Bug 1, FIXED: the dock's own empty padding could claim a tap meant
+for the world-anchored chip underneath it.** `StageShell.tsx`'s mic
+dock carried `pointer-events-auto` on the container itself, rather
+than this same file's own established contract (already used at its
+main HUD layer, and by every real control in `OfferChips.tsx` /
+`ConversationView.tsx` / `ReplayInWorld.tsx`): wrapper is `none`, each
+real control opts back in with its own `auto`. `flex-col` sizes the
+dock to the sum of its children, and a long `microphoneBlockedBy`
+sentence can grow that sum tall enough to geometrically reach into the
+offer chips above it — at which point a `pointer-events-auto`
+CONTAINER claims every pixel of its own empty padding for itself,
+including a pixel where the dock paints nothing but a chip sits one
+z-layer underneath. Confirmed live with `elementFromPoint`: a tap
+inside "Ask me anything" resolved to the dock, not the chip — the chip
+was unreachable, not merely visually covered.
+
+**Fix.** Dock container changed to `pointer-events-none`, made safe
+only by first auditing every consumer of its `above`/`below` portal
+slots: `OfferChips.tsx`, `ConversationView.tsx` and `ReplayInWorld.tsx`
+already marked every real control `auto` explicitly, but
+`ClosingInWorld.tsx` had none anywhere — its "Start another session"
+button, history toggle and archive sheet relied entirely on inheriting
+the dock's blanket `auto`, and would have gone silently unclickable
+the moment it changed. Fixed alongside, in the same commit, three
+explicit `pointer-events-auto` additions in `ClosingInWorld.tsx`.
+
+**Bug 2, MITIGATED (interim, not root-caused).** The same live test
+measured "Where to start" and "My island"/"Past conversations"
+painting at identical y-coordinates, text interleaved, right after a
+failed session-start attempt — the `ready && !dockAbove` combination
+round 27's own comment already flagged as unenforced. The exact
+trigger was not reproducible on demand in this pass (the seeded kid
+account was session-limit-capped, and forcing a fresh cap without
+mutating shared dev-database state that other concurrent work in this
+same tree depends on was correctly out of bounds for this fix).
+Applied the sanctioned interim: `OfferChips.tsx`'s `!dockAbove`
+fallback now wraps `secondary`+`archive` in their own bordered,
+margin-separated group instead of bare `chips` siblings, so the two
+clusters cannot render as one undifferentiated, illegible run even if
+the underlying race (two layout systems — CSS-fixed dock vs.
+camera-projected cluster — that cannot see each other's rect) still
+occurs. A new regression test (`offerChips.test.tsx`) asserts the
+structural separation directly (a shared divider ancestor for the
+fallback pair, never an ancestor/descendant relationship with the
+openings group), confirmed RED against the pre-fix render and GREEN
+after.
+
+**Bug 3, CONFIRMED WORKING AS INTENDED — left untouched.** Every tutor
+line appearing twice in `get_page_text` output is the correct,
+existing pattern: a visible `aria-hidden="true"` span plus a genuine
+`sr-only` echo, exactly what `SpeechCaption.tsx`'s own header comment
+already protects. A screen reader hears it once; `get_page_text`'s
+plain-text extraction simply does not know to skip `aria-hidden`
+content. No change made.
+
+**Found along the way, spawned as separate follow-ups, not fixed
+here:** the v3 learning-map panel clips to a ~30px scrolling window at
+short viewport heights, hiding its own buttons entirely (different
+root cause, same general area); and an automated collision check
+flagged `SpeechCaption` possibly overlapping the "Leave the tutor"
+exit chip during a real live conversation at 1280×900, despite having
+its own dedicated `avoid` mechanism for exactly that pair — worth
+confirming separately whether that is a regression.
+
+**Verification.** Independently re-run: `npm run type-check`, `npm run
+lint`, `npm run build` all clean in `frontend/`. Tutor-scoped suite
+41/41 files, 487/487 tests; full frontend suite 136/136 files,
+1569/1569 tests. Root `docs:check`, `secrets:check`, `i18n:check` all
+green (no i18n-relevant changes made). `oracle/` and `backend/` were
+not touched by this fix.

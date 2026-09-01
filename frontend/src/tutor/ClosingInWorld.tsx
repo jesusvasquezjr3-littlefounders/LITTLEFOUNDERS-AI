@@ -111,6 +111,7 @@ export function ClosingInWorld({ onStartAnother, token, onReplay, closedReason }
           floor="accent"
           onClick={onStartAnother}
           floorClassName="py-3"
+          className="pointer-events-auto"
         >
           <span className="lf-action">{t('tutor.page.startAnother')}</span>
         </HudPlate>
@@ -121,7 +122,7 @@ export function ClosingInWorld({ onStartAnother, token, onReplay, closedReason }
             shape="chip"
             aria-expanded={historyOpen}
             onClick={() => setHistoryOpen((open) => !open)}
-            className="lf-settle-2"
+            className="pointer-events-auto lf-settle-2"
           >
             <span className="lf-action">
               {historyOpen ? t('tutor.introduce.hideReplays') : t('tutor.introduce.replays')}
@@ -142,7 +143,7 @@ export function ClosingInWorld({ onStartAnother, token, onReplay, closedReason }
         first row off the top of the screen.
       */}
       {historyOpen && token && (
-        <HudPlate shape="sheet" className="max-h-[52vh] overflow-y-auto overscroll-contain">
+        <HudPlate shape="sheet" className="pointer-events-auto max-h-[52vh] overflow-y-auto overscroll-contain">
           <div className="flex w-full flex-col gap-3 text-left">
             <span className="lf-headline text-content">{t('tutor.history.title')}</span>
             <SessionHistory token={token} onReplay={onReplay} />
@@ -153,6 +154,16 @@ export function ClosingInWorld({ onStartAnother, token, onReplay, closedReason }
   );
 
   /*
+   * `pointer-events-auto` ON ALL THREE CONTROLS ABOVE, ADDED ALONGSIDE
+   * `StageShell.tsx`'s dock switching from `-auto` to `-none` on its own
+   * container. This file had none of its own anywhere — every control here
+   * relied ENTIRELY on inheriting the dock's blanket `pointer-events-auto`,
+   * unlike `OfferChips.tsx`'s identical `SessionHistory` sheet and
+   * `ReplayInWorld.tsx`'s transport, which already mark every control
+   * explicitly. Without this, "Start another session" — the one action of
+   * this whole phase — would have gone silently unclickable the moment the
+   * dock stopped claiming its own empty padding.
+   *
    * No dock means no shell: a unit test, or a device where the stage never
    * mounted. The goodbye renders where it stands rather than disappearing,
    * because a farewell that only exists inside one configuration is a farewell

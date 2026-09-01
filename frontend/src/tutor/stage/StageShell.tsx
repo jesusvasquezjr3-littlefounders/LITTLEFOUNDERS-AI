@@ -706,7 +706,40 @@ function StageShellInner({
           role="group"
           aria-label={dockLabel ?? t('tutor.stage.controlsLabel')}
           className={cn(
-            'pointer-events-auto fixed inset-x-0 z-30 mx-auto flex w-full max-w-[min(30rem,92vw)] flex-col items-stretch gap-2 px-1',
+            /*
+             * `pointer-events-none` ON THE DOCK ITSELF, not `-auto` — every
+             * interactive surface inside it (the orb, the composer, the
+             * secondary/archive chips, the goodbye's own controls) already
+             * opts back in explicitly, the same "wrapper is none, each
+             * control is auto" contract line 673's `{children}` layer uses.
+             *
+             * It used to be `-auto` on this container, which is `flex-col`
+             * and therefore no taller than the sum of its own children — but
+             * a long `microphoneBlockedBy` reason (a full safety-explanation
+             * sentence beside the 96 px orb) can make that sum tall enough to
+             * geometrically reach into the world-anchored offer chips above
+             * it, and a `pointer-events-auto` CONTAINER claims every pixel of
+             * its own empty padding for itself regardless of what is painted
+             * there — including a pixel that paints nothing but a world chip
+             * sitting one z-layer down. Confirmed live with `elementFromPoint`
+             * at a short viewport (~864x342, a long blocked-reason sentence):
+             * a point inside "Ask me anything" — a real, on-screen, correctly
+             * `pointer-events-auto` chip one layer below the dock — resolved
+             * to THIS container instead, at a pixel where the dock painted
+             * nothing at all. The chip was not merely covered; no click of it
+             * could ever land.
+             *
+             * MADE SAFE ONLY BY AUDITING EVERY CONSUMER OF `above`/`below`
+             * FIRST: `OfferChips.tsx` and `ConversationView.tsx` already mark
+             * every control `pointer-events-auto` (the composer, the
+             * adaptation answers, restart/exit, secondary/archive), and
+             * `ReplayInWorld.tsx`'s transport does too (`LeaveChip` carries
+             * its own). `ClosingInWorld.tsx` did not — its three controls
+             * relied ENTIRELY on inheriting this container's `-auto`, so this
+             * change ships together with theirs (see that file) rather than
+             * silently taking "Start another session" out of the click path.
+             */
+            'pointer-events-none fixed inset-x-0 z-30 mx-auto flex w-full max-w-[min(30rem,92vw)] flex-col items-stretch gap-2 px-1',
             // The resting inset. A bottom surface overrides it inline, above.
             'bottom-3 lg:bottom-6',
             'motion-safe:transition-[bottom] motion-safe:duration-300 motion-safe:ease-[var(--lf-ease)]',
@@ -735,6 +768,11 @@ function StageShellInner({
             The two portal slots stay mounted either way. A layer renders into
             them, so a target that disappeared with the orb would silently drop
             whatever a future phase contributed to the dock.
+
+            This row carries no `pointer-events` class of its own on purpose:
+            it inherits `none` from the dock above (see that container's own
+            comment), and `MicOrb`'s orb button and the composer each opt back
+            in explicitly, so nothing here needs its own override.
           */}
           <div className="flex w-full items-center justify-center gap-3 lg:flex-col lg:gap-2">
             {mic.present && (
