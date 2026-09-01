@@ -106,6 +106,81 @@ export function resolveCharacterVoice(
   return value && value.trim() !== '' ? value.trim() : null;
 }
 
+/*
+ * ONE BOUNDED RETRY FOR A TRANSPORT FAILURE — found by adversarial review
+ * (tutor-review-sweep-101, voice-audio-quality, MEDIUM). `transcribe()` and
+ * `synthesize()` each made exactly one network attempt, unlike the
+ * pedagogical model path (`orchestrator.produce`'s `RETRY_DEADLINE_MS`),
+ * which already treats a transient failure as recoverable rather than fatal.
+ * A school Wi-Fi handoff or a brief Inworld hiccup was permanently losing
+ * that turn's voice or transcript on the first bad packet, with no second
+ * attempt, even though the model call next to it in the same turn survives
+ * the identical failure class.
+ *
+ * The budget mirrors that constant's REASONING rather than copying its
+ * number, because the two calls sit in different places in a turn's own
+ * time budget. `VOICE_TIMEOUT_MS` defaults to 15 s per attempt, and a voice
+ * call is one leg of a turn that also carries a model call (up to
+ * `MODEL_TIMEOUT_MS`, 20 s, itself sometimes retried) under the client's
+ * single 25 s ceiling (`TutorExperience.tsx`, documented next to
+ * `RETRY_DEADLINE_MS` in `tutor/orchestrator.ts`). A retry is only worth
+ * buying if the FIRST attempt failed FAST — inside the first 6 s of its own
+ * 15 s budget — which is the signature of a real transport blip (refused
+ * connection, DNS hiccup, a dropped handoff) rather than a provider that is
+ * genuinely struggling. An attempt that instead burned through most or all
+ * of its own `VOICE_TIMEOUT_MS` is NOT retried: doubling an already-slow leg
+ * spends money and time on a turn the client may already have stopped
+ * waiting for, exactly the tradeoff `RETRY_DEADLINE_MS` already refuses on
+ * the model side.
+ *
+ * Scoped to the TRANSPORT failure only — a rejected `fetch`, or our own
+ * `AbortSignal.timeout` firing. A non-2xx response and a 200 that carries no
+ * usable content are NOT retried here, on purpose: an empty transcript is a
+ * FACT about what the learner said (or didn't), never an error, and it
+ * already returns normally without going anywhere near this retry; a
+ * non-2xx or a bodyless "success" is a definite answer from the provider
+ * that a second identical request would very likely repeat verbatim (the
+ * webm/OGG_OPUS 500 documented above this file is exactly that — retrying it
+ * would have doubled the cost of every broken call without recovering a
+ * single one). Both propagate exactly as they did before this fix.
+ */
+const VOICE_RETRY_DEADLINE_MS = 6_000;
+
+/**
+ * One POST to an Inworld endpoint, with ONE bounded retry for a transport
+ * failure. See `VOICE_RETRY_DEADLINE_MS` above for the budget and why only
+ * that failure class is retried.
+ *
+ * A fresh `AbortSignal.timeout` is created for EACH attempt — an
+ * already-fired one cannot be reused — which also preserves the fix above:
+ * `signal` is what actually cancels the request at the network layer the
+ * moment our own timeout fires, so a retried attempt never leaves the prior
+ * one running in the background to be billed on Inworld's side unseen.
+ */
+async function postWithRetry(
+  url: string,
+  init: { method: 'POST'; headers: Record<string, string>; body: string },
+  timeoutMs: number,
+  label: string,
+): Promise<Response> {
+  const retryDeadlineMs = Date.now() + VOICE_RETRY_DEADLINE_MS;
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return await withTimeout(
+        fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) }),
+        timeoutMs,
+        label,
+      );
+    } catch (error) {
+      if (attempt > 0 || Date.now() >= retryDeadlineMs) throw error;
+      console.warn(
+        `[oracle] ${label} transport failed on the first attempt — retrying once: ` +
+          `${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
+}
+
 interface RecognizeResponse {
   transcription?: {
     transcript?: string;
@@ -168,8 +243,9 @@ export class InworldVoiceProvider implements VoiceProvider {
 
     let response: Response;
     try {
-      response = await withTimeout(
-        fetch(`${config.INWORLD_API_BASE}${STT_PATH}`, {
+      response = await postWithRetry(
+        `${config.INWORLD_API_BASE}${STT_PATH}`,
+        {
           method: 'POST',
           headers: this.headers(),
           body: JSON.stringify({
@@ -182,14 +258,7 @@ export class InworldVoiceProvider implements VoiceProvider {
             },
             audioData: { content: request.audio.toString('base64') },
           }),
-          // Found by adversarial review, 2026-08-30 (LOW): `withTimeout` races
-          // an ALREADY-STARTED promise and cannot retroactively cancel it — on
-          // our own timeout the outbound request to Inworld kept running in
-          // the background, possibly completing (and billing) on their side,
-          // invisible to our cost ledger. `signal` actually aborts the
-          // request at the network layer the moment our timeout fires.
-          signal: AbortSignal.timeout(config.VOICE_TIMEOUT_MS),
-        }),
+        },
         config.VOICE_TIMEOUT_MS,
         'inworld speech-to-text',
       );
@@ -237,8 +306,9 @@ export class InworldVoiceProvider implements VoiceProvider {
 
     let response: Response;
     try {
-      response = await withTimeout(
-        fetch(`${config.INWORLD_API_BASE}${TTS_PATH}`, {
+      response = await postWithRetry(
+        `${config.INWORLD_API_BASE}${TTS_PATH}`,
+        {
           method: 'POST',
           headers: this.headers(),
           body: JSON.stringify({
@@ -248,9 +318,7 @@ export class InworldVoiceProvider implements VoiceProvider {
             language: request.locale,
             audioConfig: { audioEncoding: 'MP3' },
           }),
-          // See the identical comment on transcribe()'s fetch above.
-          signal: AbortSignal.timeout(config.VOICE_TIMEOUT_MS),
-        }),
+        },
         config.VOICE_TIMEOUT_MS,
         'inworld text-to-speech',
       );

@@ -11824,3 +11824,96 @@ in-progress reveal). Root gates `docs:check`, `secrets:check`,
 client-side render-timing fix to an existing component, not a change to
 what the whiteboard displays or why.
 
+
+
+## Round 116: the Tutor's voice calls made exactly one network attempt each, so a single dropped packet permanently lost that turn's speech or transcript — found by adversarial review sweep tutor-review-sweep-101 (voice-audio-quality dimension), MEDIUM, closed 2026-08-31
+
+**MEDIUM, FIXED.** `InworldVoiceProvider.transcribe()` and `.synthesize()`
+(`oracle/src/voice/inworld.ts`) each wrapped their single `fetch` in a
+try/catch that turned any transport failure straight into a
+`VoiceUnavailableError`, with no second attempt — unlike the pedagogical
+model path next to it in the same turn (`oracle/src/model/provider.ts`'s
+`complete()` + `orchestrator.produce()`'s `RETRY_DEADLINE_MS`-gated retry),
+which already treats a timeout or a dropped connection as recoverable
+rather than fatal. A school Wi-Fi handoff or a brief Inworld hiccup — the
+exact class of failure the model path was hardened against — permanently
+lost that turn's spoken reply or the learner's own transcript on the first
+bad packet. Both call sites already degrade gracefully one layer up
+(`voice/speech.ts`'s `synthesizeAndStore` turns a thrown error into
+silence; `ws/server.ts`'s `transcribe()` wrapper turns it into `null`), so
+the failure never crashed anything — it just silently spent the turn on
+nothing recoverable, the same "quietly worse, never loud" shape as every
+other finding this sweep's own name describes.
+
+**The fix matches the model path's STRUCTURE — a deadline-gated single
+retry, not a loop — without copying its NUMBER,** because the two calls
+sit in different places in a turn's own latency budget. A new
+`postWithRetry()` helper (`inworld.ts`) computes `retryDeadlineMs =
+Date.now() + VOICE_RETRY_DEADLINE_MS` (6 s, a new module constant) once
+per call, and retries exactly once, and only when the first attempt's
+`fetch` rejected (or our own `AbortSignal.timeout` fired) BEFORE that
+deadline — the signature of a genuine transport blip (refused connection,
+DNS hiccup, a dropped handoff), never of a provider that is genuinely
+struggling. An attempt that instead burned through most or all of its own
+`VOICE_TIMEOUT_MS` (15 s default) is NOT retried: `VOICE_TIMEOUT_MS` is
+already a meaningful fraction of the client's single 25 s
+"awaiting-reply" ceiling (`TutorExperience.tsx`, documented next to
+`RETRY_DEADLINE_MS` in `tutor/orchestrator.ts`) that the SAME turn also
+spends on a model call, and doubling an already-slow voice leg on top of
+that is pure cost on a turn the client may already have stopped waiting
+for — exactly the tradeoff `RETRY_DEADLINE_MS` already refuses on the
+model side. A fresh `AbortSignal.timeout` is created for each attempt
+(an already-fired one cannot be reused), which also preserves the
+existing fix documented right above this one in the file: `signal` is
+what actually cancels the request at the network layer, so a retried
+attempt never leaves the first one running in the background to be
+billed on Inworld's side, unseen by our own ledger.
+
+**Scoped to the TRANSPORT failure only, on purpose — nothing past the
+`fetch` call is retried.** A non-2xx response (`!response.ok`) and a 200
+that carries no usable content are left exactly as they were: an empty
+transcript is a FACT about what the learner said (or didn't) and was
+already returning normally, nowhere near this retry, both before and
+after this fix; a non-2xx or a bodyless "success" is a definite answer
+from the provider that a second identical request would very likely
+repeat verbatim — the historical webm/OGG_OPUS 500 documented earlier in
+this same file is exactly that shape, and retrying it blindly would have
+doubled the cost of every broken call while recovering none of them. This
+is also why the fix is scoped to `inworld.ts` alone: the STT_FAILED
+error-code discrimination at `ws/server.ts:1189` is a separate, sibling
+finding from the same sweep and is untouched here.
+
+**Verified red, then green.** Two new tests
+(`oracle/src/__tests__/voice.test.ts`, `recovers a transcription after
+ONE transient network failure` and `recovers a synthesis after ONE
+transient network failure`) mock `fetch` to reject once and then resolve,
+and assert the turn's own text/audio comes back rather than the call
+failing outright. `git stash push -- oracle/src/voice/inworld.ts` (fix
+withheld, tests kept) reproduced exactly the claimed failure — both new
+recovery tests failed with the first attempt's raw `fetch failed`, plus a
+third new test (`gives up after the SECOND transport failure`) failing on
+the WRONG rejection message, proving no retry had occurred — and `git
+stash pop` restored all three to green with no other change. Three more
+new tests lock in the boundary the fix must not cross: a 200 with an
+empty transcript and a 200 with no `audioContent` each still throw/return
+exactly as before with `fetch` called ONCE, never twice, and a non-2xx
+response is likewise never retried. `oracle/src/__tests__/voice.test.ts`:
+20 tests, all green (up from 14).
+
+`npm run type-check` (including `tsconfig.scripts.json` and
+`tsconfig.test.json`), `npm run lint` and `npm run build` all clean in
+`oracle/`. `npm run verify:tutor` green (privacy boundary sealed, canary
+corpus contained — unaffected by this change, run anyway since it
+touches the same service). Full `oracle/` suite, re-run during this
+review rather than trusting the WIP's own stale claim of an
+environment-local `live-session.test.ts` failure (§1.12): 28 of 28
+files green, 665 tests, `live-session.test.ts`'s all 42 real-websocket
+integration tests included — whatever caused that earlier failure did
+not reproduce in this session's environment.
+
+No `oracle/AGENTS.md` item beyond a short entry (item 78) recording the
+general lesson: a retry policy travels with the FAILURE CLASS it is meant
+to catch, not with the file it happened to be written in first — a
+"the model path already does this" gap is exactly the kind of asymmetry
+worth grepping for the next time a sibling call sits right next to a
+hardened one.
