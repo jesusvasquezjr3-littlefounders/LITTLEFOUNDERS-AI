@@ -247,6 +247,7 @@ export function OfferChips({
   token,
   onReplay,
   ready,
+  timedOut,
   character,
   nickname,
   map,
@@ -903,7 +904,17 @@ export function OfferChips({
 
   return (
     <>
-      {ready ? (
+      {/*
+        `ready && !timedOut`, NOT `ready` ALONE — found live, 2026-09-01,
+        the exact failure this branch's OWN comment below already worried
+        about ("with no projector running it never receives a position, so
+        it either stays hidden or... lands half off the top-left corner")
+        but did not yet have a signal to defend against: `ready` alone is
+        also true once `useStageAnnouncement`'s deadline fires with NO real
+        frame ever having rendered, which is precisely "no projector
+        running." See `StageLayerCommonProps.timedOut`'s own comment.
+      */}
+      {ready && !timedOut ? (
         <>
           {/*
             The greeting, above the character's head.

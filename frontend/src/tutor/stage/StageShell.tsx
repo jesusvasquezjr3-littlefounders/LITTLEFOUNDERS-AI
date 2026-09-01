@@ -230,6 +230,26 @@ export interface StageShellProps extends Omit<TutorStageProps, 'className' | 'on
    * is the guaranteed one, and this is the guaranteed one.
    */
   children?: ReactNode;
+  /**
+   * The veil opened on the deadline, not a real frame — see
+   * `useStageAnnouncement`'s own comment on why the gate cannot wait forever.
+   *
+   * Found live in this environment, 2026-09-01: `ready` (below, on every
+   * layer) going true on the timeout correctly lifts the VEIL (the thing this
+   * flag was built for) but says nothing to the ANCHOR PROJECTOR
+   * (`ScreenAnchor.tsx`), which is a separate, `useFrame`-driven system that
+   * starts every node `hidden`/`inert` and only ever un-hides one from
+   * INSIDE a render callback that, on a timeout, never once fires. A learner
+   * whose stage times out — no WebGL, a backgrounded tab, a slow device —
+   * got a lifted veil over a caption that stayed invisible for the entire
+   * session: the exact "tutor cannot speak" class /AGENTS.md §1.0 names as
+   * the worst outcome here, just on the TEXT channel instead of audio, which
+   * this flag's own sibling (the speech gate) already defends. A layer that
+   * positions anything via the anchor system must treat `ready && !timedOut`
+   * as its real "safe to project" signal, and fall back to the same
+   * no-projection rendering it already uses for `ready === false`.
+   */
+  onTimedOut?: () => void;
 }
 
 /**
@@ -316,6 +336,7 @@ function StageShellInner({
   mic,
   dockLabel,
   onReady,
+  onTimedOut,
   onSpeechBlocked,
   ...stage
 }: StageShellProps) {
@@ -378,7 +399,20 @@ function StageShellInner({
    * in `tutor/__tests__/stageAnnouncement.test.ts`'s "a second first-frame
    * signal" cases.
    */
-  const { ready, onFirstFrame: handleReady } = useStageAnnouncement(onReady, VEIL_TIMEOUT_MS);
+  const { ready, onFirstFrame: handleReady, timedOut } = useStageAnnouncement(onReady, VEIL_TIMEOUT_MS);
+
+  /*
+   * `timedOut` is reported to the caller the instant it flips, same shape as
+   * `onReady` above — a plain effect rather than folding this into
+   * `useStageAnnouncement` itself, because that hook's own job stops at
+   * deciding the fact; ANNOUNCING it outward (so a layer can stop trusting
+   * the anchor system — see `onTimedOut`'s own comment) belongs to whoever
+   * consumes the fact, the same separation `onReady`/`handleReady` already
+   * draw.
+   */
+  useEffect(() => {
+    if (timedOut) onTimedOut?.();
+  }, [timedOut, onTimedOut]);
 
   /*
    * WHETHER THE MATERIAL KEEPS ITS BLUR, decided by the same governor that
@@ -1035,13 +1069,29 @@ export interface StageLayerCommonProps {
   /** The phase this layer is the chrome for. */
   phase: StagePhase;
   /**
-   * True once the island AND the cast are actually on screen.
-   *
-   * Anything that speaks, animates or points at the scene waits for this.
-   * Handing over a line while the assets are still resolving plays audio at a
-   * blank canvas (/ORACLE.md §9.1).
+   * True once the veil has lifted — EITHER the island and cast are actually
+   * on screen, OR `useStageAnnouncement`'s deadline gave up waiting for
+   * them. The two are not the same fact: a layer that only needs to know
+   * whether it may show its OWN chrome (offer chips, the mic orb, an
+   * activity plate — anything DOM-positioned in the ordinary way) can treat
+   * this as "go." A layer that POSITIONS something via the anchor projector
+   * (`ScreenAnchor.tsx`'s `useAnchorSlot`, e.g. the speech caption above the
+   * speaker's crown) must additionally check `!timedOut` (below) before
+   * trusting a projected position — see `timedOut`'s own comment for why.
    */
   ready: boolean;
+  /**
+   * True when `ready` above came from the deadline, not a real frame — see
+   * `StageShellProps.onTimedOut`'s comment for the full story. The anchor
+   * projector never ran a single tick in this case (no frame, no
+   * `useFrame`), so every anchored node is still in its initial
+   * `hidden`/`inert` state and will STAY that way — there is no later event
+   * that will ever un-hide it. A layer using the anchor system must fall
+   * back to its own non-anchored rendering here, the same fallback it
+   * already owns for `ready === false`, rather than trusting a projection
+   * that will never arrive.
+   */
+  timedOut: boolean;
 }
 
 /**

@@ -83,12 +83,17 @@ function makeSocket(overrides: Partial<TutorSocket> = {}): TutorSocket {
 function conversation(
   socket: TutorSocket,
   ready: boolean,
-  overrides: { onDraftChange?: (hasDraft: boolean) => void } = {},
+  overrides: { onDraftChange?: (hasDraft: boolean) => void; timedOut?: boolean } = {},
 ) {
   return (
     <ConversationView
       phase="conversing"
       ready={ready}
+      // A real frame, never the deadline, by default — see `isAnchored`'s
+      // own tests below, which specifically need the anchored branch
+      // reachable. Override for the tests that specifically exercise the
+      // deadline instead (see the "the stage timed out" describe block).
+      timedOut={overrides.timedOut ?? false}
       session={SESSION}
       socket={socket}
       token="test-token"
@@ -108,9 +113,13 @@ function conversation(
 
 function renderConversation(
   socket: TutorSocket,
-  { ready = false, wrapper }: { ready?: boolean; wrapper?: (children: ReactNode) => ReactNode } = {},
+  {
+    ready = false,
+    timedOut,
+    wrapper,
+  }: { ready?: boolean; timedOut?: boolean; wrapper?: (children: ReactNode) => ReactNode } = {},
 ) {
-  const view = conversation(socket, ready);
+  const view = conversation(socket, ready, { timedOut });
   return render(<>{wrapper ? wrapper(view) : view}</>);
 }
 
@@ -356,6 +365,7 @@ describe('the composer refuses to submit while a reply is already pending', () =
       <ConversationView
         phase="conversing"
         ready={false}
+        timedOut={false}
         session={SESSION}
         socket={socket}
         token="test-token"
@@ -498,6 +508,7 @@ describe('Start over and Finish refuse to fire while a reply is already pending'
       <ConversationView
         phase="conversing"
         ready={false}
+        timedOut={false}
         session={SESSION}
         socket={socket}
         token="test-token"
@@ -866,6 +877,44 @@ describe('a conversation on a device that cannot draw the island', () => {
     );
     expect(rune).toBeDefined();
     expect(isAnchored(rune ?? null)).toBe(false);
+  });
+});
+
+/*
+ * Found live, 2026-09-01: `ready` alone answers "has the veil lifted",
+ * which a stage that TIMED OUT (no real frame ever rendered — no WebGL, a
+ * backgrounded tab, a slow device) ALSO satisfies, per
+ * `useStageAnnouncement`'s own deadline. The anchor projector
+ * (`ScreenAnchor.tsx`) is a SEPARATE, `useFrame`-driven system that never
+ * ran a single tick in that case, so every anchored node — including the
+ * caption, the tutor's ONLY channel for a deaf or hard-of-hearing learner
+ * (/ORACLE.md §1 step 4) — was stuck `hidden`/`inert` from its initial
+ * state, forever, with the veil itself already lifted and nothing on
+ * screen saying why. `timedOut` must therefore route this component to the
+ * SAME no-projection fallback `ready === false` already uses, not to the
+ * anchored branch `ready === true` normally selects.
+ */
+describe('the stage timed out rather than rendering a real frame', () => {
+  it('prints the tutor line through the no-projection fallback, not the (permanently hidden) anchor', () => {
+    const socket = makeSocket();
+    const { container } = renderConversation(socket, { ready: true, timedOut: true });
+
+    const line = Array.from(container.querySelectorAll<HTMLElement>('.lf-speech')).find((node) =>
+      node.textContent?.includes(TUTOR_LINE),
+    );
+    expect(line).toBeDefined();
+    expect(isAnchored(line ?? null)).toBe(false);
+  });
+
+  it('still uses the real anchor once a genuine frame arrives — timedOut alone is not what selects the fallback', () => {
+    const socket = makeSocket();
+    const { container } = renderConversation(socket, { ready: true, timedOut: false });
+
+    const line = Array.from(container.querySelectorAll<HTMLElement>('.lf-speech')).find((node) =>
+      node.textContent?.includes(TUTOR_LINE),
+    );
+    expect(line).toBeDefined();
+    expect(isAnchored(line ?? null)).toBe(true);
   });
 });
 

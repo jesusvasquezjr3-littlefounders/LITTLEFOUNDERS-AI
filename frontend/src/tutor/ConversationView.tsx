@@ -107,6 +107,10 @@ export function ConversationView({
   socket,
   token,
   ready,
+  // Renamed locally from the shared `timedOut` field: `replyTimedOut` below
+  // is an unrelated, pre-existing concern (a MODEL reply that took too
+  // long) and the two must never be confused at a glance.
+  timedOut: stageTimedOut,
   speaking,
   audioElement,
   awaitingReply,
@@ -636,7 +640,21 @@ export function ConversationView({
 
   return (
     <>
-      {ready ? (
+      {/*
+        `ready && !stageTimedOut`, NOT `ready` ALONE — found live, 2026-09-01.
+        `ready` alone answers "has the veil lifted", which a stage that timed
+        out (no WebGL, a backgrounded tab, a slow device) also satisfies —
+        see `StageLayerCommonProps.timedOut`'s own comment. Everything this
+        branch renders is positioned by the ANCHOR PROJECTOR
+        (`ScreenAnchor.tsx`), a separate system that only ever un-hides a
+        node from inside a render callback that a timed-out stage never
+        fires even once — so `ready` alone here would print a genuinely
+        correct caption INTO a node stuck `hidden`/`inert` forever: the
+        learner sees nothing, on the one channel (`ORACLE.md §1 step 4`)
+        that must never go silent for a deaf or hard-of-hearing learner, and
+        with no error anywhere to say why.
+      */}
+      {ready && !stageTimedOut ? (
         <>
           {/*
             THE ONE SURFACE THAT PRINTS WHAT THE TUTOR IS SAYING, and it carries

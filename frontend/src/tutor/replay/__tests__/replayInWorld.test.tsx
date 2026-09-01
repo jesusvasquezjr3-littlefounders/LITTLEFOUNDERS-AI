@@ -115,6 +115,7 @@ function renderReplay(director: ReplayDirector | null, over: { loading?: boolean
     <ReplayInWorld
       phase="replaying"
       ready={false}
+      timedOut={false}
       director={director}
       loading={over.loading ?? false}
       error={over.error ?? null}
@@ -256,6 +257,7 @@ describe('ReplayInWorld', () => {
       <ReplayInWorld
         phase="replaying"
         ready={false}
+        timedOut={false}
         director={directorAt(script, 0, { playing: true })}
         loading={false}
         error={null}

@@ -90,6 +90,7 @@ function renderChips(offers: Partial<TutorOffers> = {}, props: Record<string, un
       // to anchor to, and a test that asserted against culled chips would be
       // asserting against an empty screen.
       ready={false}
+      timedOut={false}
       offers={{ ...OFFERS, ...offers }}
       starting={false}
       startError={null}
@@ -555,6 +556,7 @@ describe('the chest cluster never paints over the dock (round 123 bug 2, root ca
         phase="introducing"
         map={null}
         ready
+        timedOut={false}
         offers={OFFERS}
         starting={false}
         startError="INTERNAL"
@@ -593,6 +595,7 @@ describe('the chest cluster never paints over the dock (round 123 bug 2, root ca
         phase="introducing"
         map={null}
         ready
+        timedOut={false}
         offers={OFFERS}
         starting={false}
         startError={null}
@@ -638,6 +641,7 @@ describe('the chest cluster never paints over the dock (round 123 bug 2, root ca
         phase="introducing"
         map={null}
         ready
+        timedOut={false}
         offers={OFFERS}
         starting={false}
         startError="INTERNAL"
@@ -705,6 +709,7 @@ describe('the learning map panel degrades gracefully at short viewports (round 1
         phase="introducing"
         map={MINIMAL_MAP}
         ready
+        timedOut={false}
         offers={OFFERS}
         starting={false}
         startError={null}

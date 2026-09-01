@@ -13517,3 +13517,114 @@ and a final full-repo re-verification of all three services together
 (not merely each lane against `main` individually), is the next step
 before this push moves on to the live, low-IQ-persona testing phase the
 owner asked for.
+
+## Round 136: the first live low-IQ-persona session found a real one — the tutor's own words, correctly generated and correctly persisted, rendered into a HUD node that stays hidden forever, 2026-09-01
+
+**Found by doing exactly what the owner asked, not by reading code.** This
+was the first session run in the mandated persona (a learner with low
+retention and low tolerance for friction) after the Round 135 merge closed
+all code. A live "Ask me anything" turn produced a correct reply — confirmed
+by a direct `SELECT` against `tutor_turns`, row present, `source='scripted'`,
+the exact text the model returned — and the screen showed nothing. No error,
+no console warning, no failed request: the turn simply never appeared to a
+learner sitting in front of it, which is the caption-channel twin of the
+"tutor cannot speak" failure this file's own culture (AGENTS.md §1.0 meta-
+rule 5) already treats as the worst class of defect this product can ship.
+
+**Root cause: two independently-correct systems, one boolean that conflated
+them.** `useStageAnnouncement.ts` reports `ready` as true through EITHER a
+real R3F first-frame callback OR a `VEIL_TIMEOUT_MS` deadline — a deliberate,
+already-shipped mechanism so a learner is never staring at a veil forever on
+a slow device or a backgrounded tab. Separately, `ScreenAnchor.tsx`'s anchor
+projector (`useAnchorSlot`, `src/tutor-scene/ScreenAnchor.tsx:429`) starts
+every HUD node `hidden`/`inert`/`display:none` the instant it registers
+(`hide(node, true)`, with its own comment: "a node whose slot is NEVER
+published stays there for good, which is exactly what `hide` exists to make
+true rather than merely intended") and un-hides it ONLY from inside the
+`useFrame` callback that drives the whole HUD
+(`src/tutor-scene/ScreenAnchor.tsx:506`) — a callback that, by construction,
+never fires even once if the Canvas never renders a real frame. Neither
+system is wrong on its own. The bug was in the two call sites that read
+`ready` as "safe to use the anchor system": `ConversationView.tsx` and
+`OfferChips.tsx` both gated `{ready ? <anchored caption/chips> : <fallback>}`
+on `ready` alone. Since `ready` is satisfiable by pure timeout with zero real
+frames ever rendered, the timeout case walked straight into the anchored
+branch — printing a perfectly correct string into a DOM node that the
+projector will never touch again. Both files' FALSE branches already
+contained complete, correct, non-anchored fallback UI (`HudPlate` +
+`TutorFace`, built for exactly "no WebGL" and already exercised by that
+case) — this was a wrong condition, not missing UI.
+
+**Fix: plumb `timedOut` from the one hook that knows it, through the one
+component that owns the stage, out to both call sites that must not
+conflate it with `ready`.** `useStageAnnouncement`'s existing `timedOut`
+field (previously computed and discarded) is now surfaced by
+`StageShell.tsx` via a new `onTimedOut` callback prop
+(`frontend/src/tutor/stage/StageShell.tsx:252`, wired at
+`StageShell.tsx:414`) and carried on `StageLayerCommonProps.timedOut`
+(`StageShell.tsx:1094`) alongside the existing `ready`, so every layer
+downstream receives both rather than only the one that cannot be trusted
+alone. `TutorExperience.tsx` and `TutorLabPage.tsx` each hold a
+`stageTimedOut` state flag and pass it through `common`. The two call sites
+changed their condition from `ready` to `ready && !stageTimedOut`
+(`ConversationView.tsx:657`) and `ready && !timedOut`
+(`OfferChips.tsx:917`) — each with an inline comment naming the exact
+failure this guards against, so the next person to touch this file does not
+re-derive it from scratch. No new rendering was written; the fallback branch
+in both files already did the right thing and was simply unreachable in the
+one state that needed it.
+
+**A near-miss while verifying, corrected within the same turn.** Proving the
+fix with a RED-before-GREEN test (temporarily reverting `ConversationView
+.tsx`'s condition, confirming the new test failed, then restoring it)
+involved an accidental `git checkout --` on that file to undo the temporary
+revert — which discarded the entire uncommitted fix, not just the one-line
+revert, since `checkout` does not distinguish "the change I just made" from
+"every change since the last commit." Caught immediately (`grep` for the
+fix's own marker returned zero matches), confirmed no other file was
+touched (`git status --short`), and the fix was reconstructed by hand and
+verified byte-identical via `git diff` against what had been written
+originally. Recorded here because this file's own house rule is to record
+the CLASS of a mistake, not just its resolution: `git checkout --` on a file
+with uncommitted work is a blunt instrument that cannot be scoped to "only
+the temporary part," and the safer move for undoing a small in-progress
+experiment is a targeted `Edit` back to the known-good text, never a
+destructive git command, even when the destructive command is faster to
+type.
+
+**A second, independent bug found while GATING this fix, not while making
+it.** AGENTS.md §5 requires `verify:tutor-ui` for any Tutor HUD change, and
+running it failed before a single line of this round's fix was in question
+— `scripts/verify-tutor-ui.mjs`'s own whiteboard-scenario loop (added by
+Round 133/`a7bfd86e`) pressed the lab panel's `lab` switch once to locate
+the activity selector, then pressed it AGAIN as the first action inside the
+per-scenario loop without ever closing the panel in between — so the second
+press searched for a button labeled `lab` while the panel was still open and
+the button read `hide`, and threw `lab switch not found`. Confirmed
+unrelated to this round's product change by diffing `TutorLabPage.tsx`
+against `HEAD`: the panel-open/`LabSwitch` code the script drives
+(`frontend/src/tutor/lab/TutorLabPage.tsx:538-666`) is untouched by this
+round's diff, which only adds a `stageTimedOut` state and a debug label
+several hundred lines away. This is the harness-not-the-product pattern
+AGENTS.md §1.14 already names — the fix belongs in the driver: one line,
+closing the panel again after the pre-loop lookup so each loop iteration's
+own open→set→hide sequence starts from the state it assumes
+(`frontend/scripts/verify-tutor-ui.mjs`, right before the `for` loop at what
+is now line 341). Re-run clean afterward, all three whiteboard kinds
+(`whiteboard`, `compare`, `marked-line`) reachable at all three required
+configurations.
+
+**Verification, independently re-run by the coordinator.** frontend: tsc
+clean, lint clean, 140 files / 1635 tests green (+2 — the RED-before-GREEN
+pair in `conversationView.test.tsx` proving the timeout branch specifically,
+plus the six other test files updated only to thread the new required
+`timedOut` prop through their existing render helpers), build clean,
+`verify:tutor-ui` OK (8 controls/0 unreachable at `desktop-en`; whiteboard,
+compare and marked-line each 6 controls/0 unreachable; 8/0 at
+`desktop-es-dark`; 8/0 at `mobile-es`) — the one gate that screenshots all
+three required breakpoint/theme combinations for a Tutor HUD change in one
+run, satisfying AGENTS.md §1.11 for this change without a separate manual
+pass. Root: `docs:check`, `secrets:check`, `i18n:check`, `paths:check`,
+`seo:check`, `provider:check`, `tools:test` (26/26) all green — no new
+strings, routes, or migrations in this round. oracle and backend untouched
+by this round — verification skipped for them, not silently forgotten.

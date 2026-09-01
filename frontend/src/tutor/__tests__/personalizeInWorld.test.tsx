@@ -96,6 +96,7 @@ function renderLayer(overrides: Partial<PersonalizeLayerProps> = {}) {
         <PersonalizeInWorld
           phase="personalizing"
           ready
+          timedOut={false}
           preferences={PREFERENCES}
           catalog={CATALOG}
           saving={false}
@@ -393,6 +394,7 @@ describe('the one plate', () => {
           <PersonalizeInWorld
             phase="personalizing"
             ready
+            timedOut={false}
             preferences={PREFERENCES}
             catalog={CATALOG}
             saving
@@ -474,6 +476,7 @@ describe('the one plate', () => {
           <PersonalizeInWorld
             phase="personalizing"
             ready
+            timedOut={false}
             preferences={PREFERENCES}
             catalog={CATALOG}
             saving={false}
@@ -534,6 +537,7 @@ describe('the one plate', () => {
           <PersonalizeInWorld
             phase="personalizing"
             ready
+            timedOut={false}
             preferences={PREFERENCES}
             catalog={CATALOG}
             saving={false}
@@ -578,6 +582,7 @@ describe('the one plate', () => {
           <PersonalizeInWorld
             phase="personalizing"
             ready
+            timedOut={false}
             preferences={PREFERENCES}
             catalog={CATALOG}
             saving={false}

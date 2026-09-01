@@ -318,6 +318,13 @@ export function TutorExperience() {
    */
   const [startErrorResetAt, setStartErrorResetAt] = useState<string | null>(null);
   const [stageReady, setStageReady] = useState(false);
+  /**
+   * True when `stageReady` above came from the veil's deadline rather than a
+   * real rendered frame — see `StageShellProps.onTimedOut`'s own comment.
+   * Threaded into `common` below so any layer that positions something via
+   * the anchor projector (`ScreenAnchor.tsx`) knows not to trust it.
+   */
+  const [stageTimedOut, setStageTimedOut] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   /**
    * The stage's own `<audio>` element, handed up once by `TutorStage` (see
@@ -1118,6 +1125,7 @@ export function TutorExperience() {
   });
 
   const handleReady = useCallback(() => setStageReady(true), []);
+  const handleStageTimedOut = useCallback(() => setStageTimedOut(true), []);
 
   /*
    * THE CLIP ENDED — and in a replay that is also the beat ending.
@@ -1141,7 +1149,10 @@ export function TutorExperience() {
    * these shapes in parallel; a prop quietly added at a call site is a contract
    * change nobody else sees.
    */
-  const common = useMemo(() => ({ phase, ready: stageReady }), [phase, stageReady]);
+  const common = useMemo(
+    () => ({ phase, ready: stageReady, timedOut: stageTimedOut }),
+    [phase, stageReady, stageTimedOut],
+  );
 
   const personalizeLayer: PersonalizeLayerProps | null =
     preferences && catalog
@@ -1423,6 +1434,7 @@ export function TutorExperience() {
       audioKey={audioKey}
       shot={shot}
       onReady={handleReady}
+      onTimedOut={handleStageTimedOut}
       onSpeechEnd={handleSpeechEnd}
       onSpeechBlocked={handleSpeechBlocked}
       onAudioElementReady={setAudioElement}

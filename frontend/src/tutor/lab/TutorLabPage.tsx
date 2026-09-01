@@ -330,6 +330,8 @@ export default function TutorLabPage() {
   const [speaking, setSpeaking] = useState(false);
   const [awaitingReply, setAwaitingReply] = useState(false);
   const [stageReady, setStageReady] = useState(false);
+  /** Also REAL, same reasoning as `stageReady` above — see `StageShellProps.onTimedOut`. */
+  const [stageTimedOut, setStageTimedOut] = useState(false);
 
   // Held in state, and patched optimistically, because that is what makes the
   // picker a picker: a choice has to reach the live island on the same tick.
@@ -463,7 +465,7 @@ export default function TutorLabPage() {
     onInterrupt: () => setSpeaking(false),
   };
 
-  const common = { phase, ready: stageReady };
+  const common = { phase, ready: stageReady, timedOut: stageTimedOut };
 
   const personalizeLayer: PersonalizeLayerProps = {
     ...common,
@@ -640,7 +642,7 @@ export default function TutorLabPage() {
               </>
             )}
             <span className="lf-caption self-center whitespace-nowrap px-1 text-content-muted">
-              {stageReady ? 'stage ready' : 'no first frame'}
+              {stageTimedOut ? 'stage ready (timed out)' : stageReady ? 'stage ready' : 'no first frame'}
             </span>
           </div>
 
@@ -724,6 +726,7 @@ export default function TutorLabPage() {
         audioKey={director?.beatKey ?? socket.turn?.seq ?? 0}
         shot={shot}
         onReady={() => setStageReady(true)}
+        onTimedOut={() => setStageTimedOut(true)}
         onSpeechEnd={() => setSpeaking(false)}
       >
         {/*

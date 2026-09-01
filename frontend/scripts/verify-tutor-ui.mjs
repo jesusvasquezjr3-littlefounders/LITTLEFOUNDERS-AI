@@ -331,6 +331,11 @@ try {
         failures += 1
         console.log('  MISSING: the lab activity switch — cannot drive the whiteboard scenarios')
       }
+      // Close it again: the loop below opens it fresh each iteration (its own
+      // "flip the fixture, hide again" sequence), and without this the panel
+      // is still open from the press above, so iteration 1's own `pressSwitch
+      // (page, 'lab')` finds a "hide" button where it expects "lab" and throws.
+      await pressSwitch(page, 'hide')
 
       for (const activityId of activitySelect ? ['whiteboard', 'compare', 'marked-line'] : []) {
         await pressSwitch(page, 'lab')

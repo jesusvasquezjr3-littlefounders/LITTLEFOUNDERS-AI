@@ -290,6 +290,7 @@ function SessionLimitHarness({ token, userId }: { token: string; userId: string 
       phase="introducing"
       map={null}
       ready={false}
+      timedOut={false}
       offers={offers}
       starting={starting || !offers.canStart || startError === 'SESSION_LIMIT'}
       startError={startError}
