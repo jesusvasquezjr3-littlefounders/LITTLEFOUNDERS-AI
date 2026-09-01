@@ -133,39 +133,77 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
     i === 0 ? t('tutor.whiteboard.start') : t(`tutor.whiteboard.step.${board.unit}`, { n: i });
 
   return (
-    <div
-      data-tutor-whiteboard
-      role="img"
-      aria-label={`${board.label}. ${board.values
-        .slice(0, shown)
-        .map((value, i) => `${captionFor(i)}: ${format(value)}`)
-        .join(', ')}`}
-      className={cn('flex min-h-0 flex-col gap-3', className)}
-    >
-      <p className="lf-caption shrink-0 text-content-muted">{board.label}</p>
-      <div className="flex min-h-0 flex-1 items-end gap-2 overflow-x-auto px-1 pb-1">
-        {board.values.map((value, i) => {
-          const grown = i < shown;
-          const heightPct = value <= ZERO_EPSILON ? 0 : Math.max(6, Math.round((value / max) * 100));
-          return (
-            <div key={i} className="flex min-w-[3.5rem] flex-1 flex-col items-center gap-1">
-              <span className="lf-number lf-title text-content" aria-hidden="true">
-                {grown ? format(value) : ''}
-              </span>
-              <div
-                className={cn(
-                  'w-full rounded-t-md bg-[color:var(--lf-accent)]/70 transition-[height] duration-500 ease-out',
-                  !grown && 'opacity-0',
-                )}
-                style={{ height: grown ? `${heightPct}%` : '0%' }}
-              />
-              <span className="lf-caption text-content-muted" aria-hidden="true">
-                {captionFor(i)}
-              </span>
-            </div>
-          );
-        })}
+    <>
+      {/*
+        THE MISSING LIVE ANNOUNCEMENT (round 101, HIGH — review sweep
+        tutor-review-sweep-101, whiteboard-at-scale dimension). Until this
+        round, the ONLY accessibility surface this component had was the
+        static `aria-label` below, and an `aria-label` mutating on a node
+        that is neither removed nor re-inserted is not reliably announced by
+        assistive tech — a screen-reader user who had already met the board
+        once got no notice that a NEW turn had redrawn the SAME node with
+        new values. That is exactly the "something changed, tell the
+        assistive-tech user" event this codebase already has a convention
+        for: `LiveSegmentPanel.tsx`'s round-87 fix, a `key`-remounted
+        `role="status" aria-live="polite"` span, announcing an activity's
+        arrival regardless of breakpoint.
+
+        `key={seq}` reuses the SAME turn-boundary signal the growth
+        animation above already resets on (`seq` is bumped once per turn
+        specifically so the same board never re-plays for an unrelated
+        re-render) — giving the identical guarantee `LiveSegmentPanel` gets
+        from `live.segmentId`: announce once per genuinely NEW board, never
+        on a re-render of the one already on screen.
+
+        Deliberately a SIBLING of the `role="img"` node below, not a
+        descendant of it — an element with `role="img"` presents its
+        subtree to assistive tech as the image's own replaced content,
+        which would swallow a nested live region rather than let it
+        announce on its own.
+
+        Deliberately a GENERIC message, not the board's own label/values —
+        that content is owned by a sibling fix to the `aria-label` below
+        (this round's scope is the missing MECHANISM only). `LiveSegmentPanel`
+        took the identical posture in round 87: its live region announces
+        "an activity is ready," never the activity's own prompt text.
+      */}
+      <span key={seq} role="status" aria-live="polite" className="sr-only">
+        {t('tutor.whiteboard.updated')}
+      </span>
+      <div
+        data-tutor-whiteboard
+        role="img"
+        aria-label={`${board.label}. ${board.values
+          .slice(0, shown)
+          .map((value, i) => `${captionFor(i)}: ${format(value)}`)
+          .join(', ')}`}
+        className={cn('flex min-h-0 flex-col gap-3', className)}
+      >
+        <p className="lf-caption shrink-0 text-content-muted">{board.label}</p>
+        <div className="flex min-h-0 flex-1 items-end gap-2 overflow-x-auto px-1 pb-1">
+          {board.values.map((value, i) => {
+            const grown = i < shown;
+            const heightPct = value <= ZERO_EPSILON ? 0 : Math.max(6, Math.round((value / max) * 100));
+            return (
+              <div key={i} className="flex min-w-[3.5rem] flex-1 flex-col items-center gap-1">
+                <span className="lf-number lf-title text-content" aria-hidden="true">
+                  {grown ? format(value) : ''}
+                </span>
+                <div
+                  className={cn(
+                    'w-full rounded-t-md bg-[color:var(--lf-accent)]/70 transition-[height] duration-500 ease-out',
+                    !grown && 'opacity-0',
+                  )}
+                  style={{ height: grown ? `${heightPct}%` : '0%' }}
+                />
+                <span className="lf-caption text-content-muted" aria-hidden="true">
+                  {captionFor(i)}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -155,3 +155,60 @@ describe('the growth animation', () => {
     expect(screen.getByRole('img').getAttribute('aria-label')).toBe('Otra historia. Start: MX$20');
   });
 });
+
+/*
+ * THE MISSING LIVE ANNOUNCEMENT (round 101, HIGH — review sweep
+ * tutor-review-sweep-101, whiteboard-at-scale dimension). Before this round,
+ * the board's only accessibility surface was a static `aria-label` on a node
+ * that is never removed or re-inserted between turns — so a screen-reader
+ * user who had already encountered the board once got NO notice that a new
+ * turn had redrawn it with new values. Mirrors `LiveSegmentPanel.tsx`'s own
+ * round-87 fix for the identical class of gap: a `key`-remounted
+ * `role="status" aria-live="polite"` span, proven here the same way that one
+ * was — announced on mount, untouched by a re-render of the SAME turn,
+ * remounted (and re-announced) by a genuinely NEW one.
+ */
+describe('TutorWhiteboard — a screen reader is told when a NEW turn redraws the board', () => {
+  it('announces once, in words, the moment the board first mounts', () => {
+    stubMatchMedia(true);
+    render(<TutorWhiteboard board={BOARD} seq={1} />);
+    // `getByRole` is accessibility-aware: it would refuse to resolve to a
+    // single node if this span were hidden, which is exactly the property
+    // this fix adds.
+    expect(screen.getByRole('status')).toHaveTextContent('The whiteboard updated.');
+  });
+
+  it('does not re-announce a re-render of the SAME turn, only a genuinely new one', () => {
+    stubMatchMedia(true);
+    const { rerender, container } = render(<TutorWhiteboard board={BOARD} seq={1} />);
+    const firstNode = container.querySelector('[role="status"][aria-live="polite"]');
+    expect(firstNode).not.toBeNull();
+
+    // A re-render carrying the identical `seq` — a fresh `board` object
+    // reference, exactly what an ancestor re-rendering for an unrelated
+    // reason produces — must leave this exact DOM node in place. `key={seq}`
+    // is what gives this guarantee; without it a naive implementation could
+    // recreate the node (and re-announce) on every unrelated re-render.
+    rerender(<TutorWhiteboard board={{ ...BOARD }} seq={1} />);
+    expect(container.querySelector('[role="status"][aria-live="polite"]')).toBe(firstNode);
+
+    // A GENUINELY new turn, by contrast, must remount the node — this is the
+    // mechanism the announcement actually relies on to reach assistive tech
+    // for the next redraw, proven rather than assumed.
+    const nextBoard = { ...BOARD, start: 20, values: [20, 23], label: 'Otra historia' };
+    rerender(<TutorWhiteboard board={nextBoard} seq={2} />);
+    const secondNode = container.querySelector('[role="status"][aria-live="polite"]');
+    expect(secondNode).not.toBeNull();
+    expect(secondNode).not.toBe(firstNode);
+    expect(secondNode).toHaveTextContent('The whiteboard updated.');
+  });
+
+  it('does not nest the live region inside the role="img" node, which would swallow its semantics', () => {
+    stubMatchMedia(true);
+    const { container } = render(<TutorWhiteboard board={BOARD} seq={1} />);
+    const status = container.querySelector('[role="status"][aria-live="polite"]');
+    const img = screen.getByRole('img');
+    expect(status).not.toBeNull();
+    expect(img.contains(status)).toBe(false);
+  });
+});
