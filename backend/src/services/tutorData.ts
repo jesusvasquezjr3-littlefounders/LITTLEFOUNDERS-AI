@@ -779,6 +779,92 @@ export interface TutorTurnRow {
   whiteboard: TutorTurnWhiteboard | null;
 }
 
+/** The same row, before `whiteboard` has been runtime-checked. See `readTurnWhiteboard`. */
+type TutorTurnRawRow = Omit<TutorTurnRow, 'whiteboard'> & { whiteboard: unknown };
+
+const WhiteboardStepRowSchema = z
+  .object({
+    op: z.enum(['add', 'subtract', 'multiply_percent']),
+    value: z.number().positive().max(100_000),
+  })
+  .strict();
+
+/**
+ * Re-derives oracle's `WhiteboardSchema` (`oracle/src/tutor/turnSchema.ts`)
+ * plus the extra bounds `computeSequence` (`oracle/src/tutor/whiteboard.ts`)
+ * enforces on top of it, applied to the ALREADY-COMPUTED `values` this
+ * package persists — see `TutorTurnWhiteboard`'s own comment on why the two
+ * packages duplicate the shape rather than share it.
+ *
+ * Found by adversarial review sweep tutor-review-sweep-101 (whiteboard-at-
+ * scale dimension), MEDIUM: `listTutorTurns` forwarded the JSONB column
+ * straight through with only `TutorTurnRow.whiteboard: TutorTurnWhiteboard |
+ * null` standing guard — a TypeScript type ASSERTION on whatever
+ * `supabaseRest.ts`'s `rest<T>` handed back from `JSON.parse`, not a runtime
+ * check. Migration 0058 added the column with no DB-level CHECK constraint
+ * either, so a malformed or historically-stale row (from before a schema
+ * tightening, or from a bug in an earlier write path — `insertTutorTurn`
+ * itself validates nothing on the way in) would otherwise reach the
+ * transcript/replay endpoint (`GET /sessions/:id`) exactly as if it had been
+ * checked.
+ *
+ * Deliberately validates SHAPE and BOUNDS rather than re-running
+ * `computeSequence`'s arithmetic: Oracle already computes and validates
+ * these numbers TWICE before they are ever persisted (once at
+ * `parseTurn`-time, once again at the wire in `ws/server.ts`, /ORACLE.md
+ * §20.5) — this read path's job is to refuse a row that is no longer a
+ * well-formed whiteboard by construction, not to become a third copy of the
+ * arithmetic that produced it.
+ */
+const TutorTurnWhiteboardRowSchema = z
+  .object({
+    kind: z.literal('sequence'),
+    start: z.number().min(0).max(1_000_000),
+    steps: z.array(WhiteboardStepRowSchema).min(1).max(8),
+    unit: z.enum(['day', 'week', 'month', 'year']),
+    /** `computeSequence`'s own running-value ceiling — see whiteboard.ts's `MAX_VALUE`. */
+    values: z.array(z.number().min(0).max(10_000_000)).min(2).max(9),
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict()
+  .refine((board) => board.values.length === board.steps.length + 1, {
+    message: 'values must carry exactly one entry per step plus the starting value',
+    path: ['values'],
+  })
+  .refine(
+    (board) => board.steps.every((step) => step.op !== 'multiply_percent' || step.value <= 500),
+    {
+      message: "a multiply_percent step must not exceed 500 — computeSequence's own percentage ceiling",
+      path: ['steps'],
+    },
+  );
+
+/**
+ * A malformed board on this DISPLAY-ONLY read degrades to no board rather
+ * than failing the whole transcript fetch (§1.14: "defaulting is acceptable
+ * only for display-only reads" — this data is never read, modified and
+ * written back; a replay simply shows no board, exactly as it already does
+ * for any row written before migration 0058). Logged loudly rather than
+ * swallowed: a row that fails this check is either real storage-level
+ * corruption or a write-path regression, and either is worth knowing about
+ * even though the transcript viewer looks identical to a turn that never
+ * drew a board at all.
+ */
+function readTurnWhiteboard(raw: unknown, turnId: string): TutorTurnWhiteboard | null {
+  if (raw === null || raw === undefined) return null;
+  const parsed = TutorTurnWhiteboardRowSchema.safeParse(raw);
+  if (!parsed.success) {
+    console.warn(
+      `[tutor] tutor_turns.id=${turnId} carries a whiteboard that failed runtime validation — ` +
+        'degrading to null rather than forwarding it to the transcript client: ' +
+        parsed.error.issues.map((i) => `${i.path.join('.') || '(root)'}: ${i.message}`).join('; '),
+    );
+    return null;
+  }
+  return parsed.data;
+}
+
 export interface InsertTurnInput {
   sessionId: string;
   seq: number;
@@ -821,9 +907,11 @@ export async function insertTutorTurn(input: InsertTurnInput): Promise<boolean> 
 }
 
 export async function listTutorTurns(sessionId: string): Promise<TutorTurnRow[] | null> {
-  return serviceRest<TutorTurnRow[]>(
+  const rows = await serviceRest<TutorTurnRawRow[]>(
     `/tutor_turns?session_id=eq.${eu(sessionId)}&select=id,session_id,seq,speaker,text,emotion,action,audio_path,source,created_at,whiteboard&order=seq.asc`,
   );
+  if (rows === null) return null;
+  return rows.map((row) => ({ ...row, whiteboard: readTurnWhiteboard(row.whiteboard, row.id) }));
 }
 
 // ── Segments ────────────────────────────────────────────────────────────────

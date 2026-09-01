@@ -10157,7 +10157,6 @@ with a real browser should re-run both before this ships.
 No `frontend/AGENTS.md` item: LESSON_ENGINE.md §9.1 and TUTOR_3D.md §6.2
 already state the invariants this closes a gap in; the gap was in the
 Tutor's OWN tree never wiring up to them, not in either document's rule.
-`oracle/AGENTS.md` item 72 records the investigation and the corollary.
 
 ## Round 101: the whiteboard's accessible name dropped every time-step caption a sighted user reads under each bar — found by adversarial review sweep tutor-review-sweep-101 (whiteboard-at-scale dimension), MEDIUM, closed 2026-08-31
 
@@ -11609,3 +11608,113 @@ failure was found, not a parallel defect needing its own round.
 No `oracle/AGENTS.md`/`/ORACLE.md` item: nothing in `oracle/` changed,
 and this is a CI credential-plumbing fix to two Core-facing automation
 scripts, not a Tutor behaviour, prompt, or content-ladder change.
+
+## Round 113: a stored whiteboard was forwarded to the transcript client on a TypeScript assertion, never a runtime check — found by adversarial review sweep tutor-review-sweep-101 (whiteboard-at-scale dimension), MEDIUM, closed 2026-08-31
+
+`backend/src/services/tutorData.ts`'s `listTutorTurns` — the read path
+behind `GET /sessions/:id`, the transcript/replay endpoint (`/ORACLE.md`
+§12) — selected `tutor_turns.whiteboard` and handed it to the client with
+only `TutorTurnRow.whiteboard: TutorTurnWhiteboard | null` standing guard.
+That is a TypeScript type ASSERTION on whatever `supabaseRest.ts`'s
+`rest<T>` produced from `JSON.parse(text) as T` — true at compile time,
+proves nothing at runtime. Migration `0058`, which added the column,
+added no DB-level CHECK constraint either (`jsonb NULL`, nothing more), so
+a malformed or historically-stale row — from before a schema tightening,
+or from a bug in an earlier write path — would reach `TutorWhiteboard.tsx`
+exactly as if it had been validated, leaving the frontend to defend
+against garbage shape with no upstream guarantee. `oracle`'s own write
+path (`turnSchema.ts`'s `WhiteboardSchema`, `whiteboard.ts`'s
+`computeSequence`) is careful about this in both directions — the model's
+proposal is Zod-checked and its arithmetic is recomputed server-side,
+twice, before anything is persisted (/ORACLE.md §20.5) — but none of that
+care survived the trip through `tutor_turns` and back out a second
+service's read path.
+
+**Confirmed the authoritative shape first, per this fix's own instructions,
+rather than guessing at it.** `oracle/src/tutor/turnSchema.ts`'s
+`WhiteboardSchema` (`kind: 'sequence'`, `start` 0–1,000,000, 1–8 `steps`
+each `{op: add|subtract|multiply_percent, value: positive, ≤100,000}`,
+`unit` day|week|month|year, `label` 1–60 chars, `currency`
+MXN|USD|BRL|null, `.strict()`) is what `ws/server.ts` validates a model's
+proposal against before ever writing a turn — confirmed live in the
+source, not assumed. `whiteboard.ts`'s `computeSequence()` then re-derives
+the running `values` from that proposal and refuses (drops the whole
+board) on anything non-finite, negative beyond its own `ZERO_EPSILON`, past
+`MAX_VALUE` (10,000,000), or a `multiply_percent` step over 500 — the exact
+extra business rule the schema's own bounds do not express. `values` is
+what actually lands in `tutor_turns.whiteboard` alongside the rest, per
+`TutorTurnWhiteboard`'s own comment in `tutorData.ts` ("Mirrors
+`oracle/src/ws/protocol.ts`'s `WireWhiteboard`; the two packages share no
+types, so the shape is duplicated deliberately rather than imported") —
+confirmed against `oracle/src/ws/protocol.ts`'s `WireWhiteboard` directly,
+field for field.
+
+**The fix: a second, independent Zod schema at the READ side of that same
+deliberate duplication, not an import — `backend` and `oracle` share no
+types by design, and this is one more instance of the same posture, not a
+new one.** `TutorTurnWhiteboardRowSchema` re-derives `WhiteboardSchema`'s
+shape and bounds, plus the `values` field it never carries but
+`computeSequence` produces (bounded the same way, length checked against
+`steps.length + 1`), plus the one business rule the schema's own type
+cannot express — a `multiply_percent` step over 500. It deliberately does
+NOT re-run `computeSequence`'s arithmetic to confirm `values` was actually
+derived correctly from `start`/`steps`: that arithmetic is already
+computed and validated twice by Oracle before anything is persisted
+(`parseTurn`-time and again at the wire), and re-deriving it a third time
+in a second package would be validating Oracle's own already-checked work
+rather than defending against what can actually go wrong on THIS side of
+the boundary — a row whose SHAPE no longer matches the schema, because it
+predates a tightening or a write-path bug skipped validation entirely.
+
+**Degrade-vs-refuse, decided by §1.14's own line for it:** "defaulting is
+acceptable only for display-only reads." `listTutorTurns`'s whiteboard is
+read, never modified, and never written back — a malformed board on
+replay is display-only in the strictest sense the guideline names. Failing
+the entire transcript fetch over one corrupt visual on one turn would take
+a family's whole conversation history down with it; degrading that one
+turn's `whiteboard` to `null` costs exactly what an old, pre-migration-0058
+row already costs today (no board shown, the caption still there) and
+touches nothing else in the response. The read failure this file already
+distinguishes elsewhere — `serviceRest` returning `null` because the QUERY
+itself failed — is untouched: `listTutorTurns` still returns `null` for
+that case, and the new per-row degrade only applies once rows have
+actually come back. The one thing degrading must never be is silent:
+`readTurnWhiteboard` logs a `console.warn` naming the turn id and the
+Zod issue path/message before returning `null`, so a genuine corruption
+is discoverable in the logs rather than indistinguishable from a turn
+that simply never drew a board.
+
+**Proof, test-first — confirmed against the actual unfixed code, not
+assumed.** `backend/src/__tests__/tutorData.test.ts` gained a new describe
+block with 6 cases; four were run against the pre-fix `tutorData.ts`
+first and observed to FAIL exactly as the finding predicts — a value past
+`computeSequence`'s ceiling, a stray field from before a schema
+tightening, a `multiply_percent` step over 500, and a `values` array that
+does not match `steps.length + 1` were all forwarded to the caller
+verbatim instead of degrading to `null`. All four pass after the fix,
+alongside a fifth confirming a well-formed board still round-trips exactly
+as before (the existing round-35 test covering this same path continues
+to pass unchanged) and a sixth confirming a genuinely absent board (`null`
+in the row) stays `null` without logging anything — the ordinary case
+must not become log noise.
+
+Backend: `npm run type-check` (including the test tree), `npm run lint`,
+`npm test` — 42 files, 732 tests green (6 new), `npm run build` clean. No
+`oracle/` change was made — `WhiteboardSchema` and `computeSequence` were
+read to confirm the shape, never edited — so `npm run verify:tutor` and
+`npm run verify:pedagogy` do not apply, and no `/ORACLE.md` update is
+needed: this closes a gap in Core's OWN read path, not in the model
+context or the ladder. No migration was added (no DB-level CHECK
+constraint was introduced — the JSONB column stays exactly as `0058` left
+it, and a schema-only guard at the read layer was judged sufficient for a
+display-only surface), so `database/AGENTS.md` is untouched and `npm run
+tools:test`'s migration-ledger check needed nothing new to verify. Root
+`npm run docs:check`, `npm run secrets:check`, `npm run i18n:check` (no
+new user-facing strings — this is a server log line, not UI copy), `npm
+run paths:check`, `npm run provider:check`, `npm run seo:check`, and `npm
+run tools:test` (26/26) all green. No frontend file was touched, so none
+of the Tutor's `verify:*` browser gates (`rig`, `placement`,
+`lesson-engine`, `tutor-ui`) apply, and no in-browser screenshot pass was
+needed — this is a backend-only data-validation fix with no UI surface of
+its own.
+

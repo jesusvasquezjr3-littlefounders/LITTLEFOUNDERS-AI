@@ -263,6 +263,125 @@ describe('the whiteboard survives the round trip through Core’s own data layer
 });
 
 /*
+ * Found by adversarial review sweep tutor-review-sweep-101 (whiteboard-at-
+ * scale dimension), MEDIUM: `listTutorTurns` forwarded `tutor_turns.
+ * whiteboard` straight through with only `TutorTurnRow.whiteboard:
+ * TutorTurnWhiteboard | null` standing guard — a TypeScript type ASSERTION
+ * on whatever `JSON.parse` in `supabaseRest.ts`'s `rest<T>` produced, never a
+ * runtime check. Migration 0058 added the column with no DB-level CHECK
+ * constraint either, so a malformed or historically-stale row (from before a
+ * schema tightening, or from a bug in an earlier write path) would reach
+ * `GET /sessions/:id` — the transcript/replay endpoint — exactly as if it
+ * had been validated, leaving `TutorWhiteboard.tsx` to defend against
+ * garbage shape with no upstream guarantee.
+ */
+describe('listTutorTurns re-validates the whiteboard JSONB at read time, not merely at write time', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const GOOD_BOARD = {
+    kind: 'sequence' as const,
+    start: 10,
+    steps: [{ op: 'add' as const, value: 2 }],
+    unit: 'day' as const,
+    values: [10, 12],
+    label: 'Cada día te dan 2 más',
+    currency: 'MXN' as const,
+  };
+
+  const TURN_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+
+  function rowsResponse(whiteboard: unknown): Response {
+    return new Response(
+      JSON.stringify([
+        {
+          id: TURN_ID,
+          session_id: '22222222-2222-4222-8222-222222222222',
+          seq: 3,
+          speaker: 'tutor',
+          text: 'Imaginemos que guardas 10 pesos y cada día te dan 2 más.',
+          emotion: 'happy',
+          action: 'nod',
+          audio_path: null,
+          source: 'model',
+          created_at: '2026-08-31T00:00:00.000Z',
+          whiteboard,
+        },
+      ]),
+      { status: 200 },
+    );
+  }
+
+  it('still returns a well-formed board verbatim — the fix must not regress the happy path', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(GOOD_BOARD))));
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+    expect(rows?.[0]?.whiteboard).toEqual(GOOD_BOARD);
+  });
+
+  it('degrades a whiteboard with a value past computeSequence\'s own ceiling to null, and logs it loudly', async () => {
+    const malformed = { ...GOOD_BOARD, values: [10, 50_000_000] };
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(malformed))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.whiteboard).toBeNull();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining(TURN_ID));
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('whiteboard'));
+    warnSpy.mockRestore();
+  });
+
+  it('degrades a whiteboard carrying a stray field from before a schema tightening to null', async () => {
+    const stale = { ...GOOD_BOARD, legacyDayLabel: 'Día 1' };
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(stale))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.whiteboard).toBeNull();
+    warnSpy.mockRestore();
+  });
+
+  it("degrades a whiteboard whose multiply_percent step exceeds computeSequence's own 500% ceiling", async () => {
+    const wild = {
+      ...GOOD_BOARD,
+      steps: [{ op: 'multiply_percent' as const, value: 900 }],
+      values: [10, 100],
+    };
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(wild))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.whiteboard).toBeNull();
+    warnSpy.mockRestore();
+  });
+
+  it('degrades a whiteboard whose values array does not match steps.length + 1 to null', async () => {
+    const truncated = { ...GOOD_BOARD, values: [10] };
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(truncated))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.whiteboard).toBeNull();
+    warnSpy.mockRestore();
+  });
+
+  it('leaves a genuinely absent board as null, without logging anything', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(null))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.whiteboard).toBeNull();
+    expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
+});
+
+/*
  * FOUND BY ADVERSARIAL REVIEW SWEEP tutor-review-sweep-92 (onboarding
  * dimension), HIGH: `tutor_preferences.companion` (migration 0047) carried
  * no DEFAULT, unlike `character` (`DEFAULT 'rho'`). `upsertTutorPreferences`
