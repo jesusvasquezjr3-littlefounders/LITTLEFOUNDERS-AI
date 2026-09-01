@@ -86,6 +86,20 @@ beforeEach(() => {
   vi.stubGlobal('WebSocket', FakeSocket as unknown as typeof WebSocket);
 });
 
+/**
+ * `useTutorSocket`'s connecting effect defers the real `new WebSocket()` one
+ * microtask (see that file's own comment — RUNBOOK.md Round 81/82: it is
+ * what stops a React StrictMode double-invoke from ever dialling out twice
+ * with one single-use token). Every test below that reaches for
+ * `FakeSocket.last`/`.sent` right after `renderHook` needs this flushed
+ * first, or the socket it is looking for does not exist yet.
+ */
+async function flushSocketConnect(): Promise<void> {
+  await act(async () => {
+    await Promise.resolve();
+  });
+}
+
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
@@ -94,8 +108,9 @@ afterEach(() => {
 });
 
 describe('useTutorSocket', () => {
-  it('opens exactly one socket for a URL', () => {
+  it('opens exactly one socket for a URL', async () => {
     renderHook(() => useTutorSocket('ws://oracle.test/ws/tutor?token=v1.abc.def'));
+    await flushSocketConnect();
     expect(FakeSocket.last?.url).toContain('/ws/tutor?token=');
   });
 
@@ -104,8 +119,9 @@ describe('useTutorSocket', () => {
     expect(FakeSocket.last).toBeNull();
   });
 
-  it('surfaces a turn and appends it to the transcript', () => {
+  it('surfaces a turn and appends it to the transcript', async () => {
     const { result } = renderHook(() => useTutorSocket('ws://oracle.test/ws'));
+    await flushSocketConnect();
     act(() => FakeSocket.last?.emit(TURN));
 
     expect(result.current.turn?.text).toBe(TURN.type === 'turn' ? TURN.say : '');
@@ -123,8 +139,9 @@ describe('useTutorSocket', () => {
    * own seq-based filter still hid that turn, but printing the same
    * sentence twice once the NEXT turn changed which seq that filter hides.
    */
-  it('does not duplicate the redrawn turn that a resume already put in history', () => {
+  it('does not duplicate the redrawn turn that a resume already put in history', async () => {
     const { result } = renderHook(() => useTutorSocket('ws://oracle.test/ws'));
+    await flushSocketConnect();
     act(() =>
       FakeSocket.last?.emit({
         type: 'history',
@@ -169,8 +186,9 @@ describe('useTutorSocket', () => {
     expect(result.current.history).toHaveLength(3);
   });
 
-  it('IGNORES a malformed frame instead of crashing the session', () => {
+  it('IGNORES a malformed frame instead of crashing the session', async () => {
     const { result } = renderHook(() => useTutorSocket('ws://oracle.test/ws'));
+    await flushSocketConnect();
     act(() => FakeSocket.last?.onmessage?.({ data: 'not json at all' }));
     act(() => FakeSocket.last?.onmessage?.({ data: '{"type":"nonsense"}' }));
 
@@ -178,8 +196,9 @@ describe('useTutorSocket', () => {
     expect(result.current.connection).not.toBe('failed');
   });
 
-  it('turns the microphone off when consent is revoked mid-session', () => {
+  it('turns the microphone off when consent is revoked mid-session', async () => {
     const { result } = renderHook(() => useTutorSocket('ws://oracle.test/ws'));
+    await flushSocketConnect();
     act(() => FakeSocket.last?.emit(READY));
     expect(result.current.microphone).toBe(true);
 
@@ -195,8 +214,9 @@ describe('useTutorSocket', () => {
     expect(result.current.microphone).toBe(false);
   });
 
-  it('clears the activity panel as soon as a result is reported', () => {
+  it('clears the activity panel as soon as a result is reported', async () => {
     const { result } = renderHook(() => useTutorSocket('ws://oracle.test/ws'));
+    await flushSocketConnect();
     act(() =>
       FakeSocket.last?.emit({
         type: 'segment',
@@ -216,8 +236,9 @@ describe('useTutorSocket', () => {
     expect(result.current.segment).toBeNull();
   });
 
-  it('echoes typed text locally so typing never feels broken on a slow link', () => {
+  it('echoes typed text locally so typing never feels broken on a slow link', async () => {
     const { result } = renderHook(() => useTutorSocket('ws://oracle.test/ws'));
+    await flushSocketConnect();
     act(() => result.current.sendText('  hola  '));
 
     expect(result.current.history.at(-1)).toMatchObject({ speaker: 'learner', text: 'hola' });
@@ -228,8 +249,9 @@ describe('useTutorSocket', () => {
     });
   });
 
-  it('sends nothing for whitespace', () => {
+  it('sends nothing for whitespace', async () => {
     const { result } = renderHook(() => useTutorSocket('ws://oracle.test/ws'));
+    await flushSocketConnect();
     act(() => result.current.sendText('   '));
     expect(FakeSocket.last?.sent).toHaveLength(0);
   });
@@ -245,9 +267,10 @@ describe('useTutorSocket', () => {
    * delivered; the tutor never received it and never replied, with nothing
    * to explain why.
    */
-  it('queues a message sent before the handshake completes, instead of silently dropping it', () => {
+  it('queues a message sent before the handshake completes, instead of silently dropping it', async () => {
     FakeSocket.startConnecting = true;
     const { result } = renderHook(() => useTutorSocket('ws://oracle.test/ws'));
+    await flushSocketConnect();
     expect(result.current.connection).toBe('connecting');
 
     act(() => result.current.sendText('mi respuesta es 7'));
@@ -265,8 +288,9 @@ describe('useTutorSocket', () => {
     });
   });
 
-  it('closes the socket when the component unmounts', () => {
+  it('closes the socket when the component unmounts', async () => {
     const { unmount } = renderHook(() => useTutorSocket('ws://oracle.test/ws'));
+    await flushSocketConnect();
     const socket = FakeSocket.last;
     unmount();
     expect(socket?.closed).toBe(true);
@@ -286,10 +310,11 @@ describe('useTutorSocket', () => {
    * cannot fix it: a guard that ignores a stale reason cannot tell it apart
    * from a genuine close.
    */
-  it('starts a second session clean, with no trace of the first', () => {
+  it('starts a second session clean, with no trace of the first', async () => {
     const { result, rerender } = renderHook(({ url }: { url: string | null }) => useTutorSocket(url), {
       initialProps: { url: 'ws://oracle.test/ws?token=first' } as { url: string | null },
     });
+    await flushSocketConnect();
 
     const first = FakeSocket.last;
     act(() => FakeSocket.last?.emit(READY));
@@ -306,6 +331,7 @@ describe('useTutorSocket', () => {
     expect(result.current.closedReason).toBeNull();
 
     rerender({ url: 'ws://oracle.test/ws?token=second' });
+    await flushSocketConnect();
 
     // A SECOND SOCKET IS ACTUALLY OPEN, on the new token. Clearing the state
     // would be worth nothing if the second session never got a connection, and

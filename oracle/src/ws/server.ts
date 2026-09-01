@@ -596,7 +596,29 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
 
   const verdict = verifySessionToken(raw);
   if (!verdict.ok) {
-    socket.close(CLOSE_CODES.UNAUTHORIZED, `session token ${verdict.reason}`);
+    /*
+     * `replayed` IS `ALREADY_CONNECTED`, ONE CONNECTION EARLIER — chased down
+     * during RUNBOOK.md's Round 81/82 cold-mount investigation. A replayed
+     * token means a DIFFERENT socket already spent this exact single-use
+     * nonce (`token.ts`'s `nonceLedger`) and, being first, is the one Oracle
+     * is actually talking to — the SEVENTH GATE below refuses a second
+     * socket on THOSE terms once `liveSessions` has an entry, but a nonce
+     * replay is caught earlier, before that map is ever touched, and used to
+     * fall into the same generic `UNAUTHORIZED`/4001 bucket as a malformed,
+     * unsigned or genuinely expired token. Verified against this exact
+     * server with two real sockets racing one real token: the loser closes
+     * 4001 "session token replayed" while the winner is mid-conversation —
+     * and the client's own `closeCodeToReason` reads 4001 as `SESSION_EXPIRED`
+     * unconditionally, so whichever socket a mounted component is actually
+     * listening to reported a session that was never close to expiring as
+     * "expired," with nothing to do about it. `ALREADY_CONNECTED` is the
+     * honest reason — someone/something else already claimed this token —
+     * and it already carries its own translated copy in all three locales
+     * naming exactly this shape ("You're already talking to me somewhere
+     * else"), so this reuses that vocabulary instead of inventing a fourth.
+     */
+    const code = verdict.reason === 'replayed' ? CLOSE_CODES.ALREADY_CONNECTED : CLOSE_CODES.UNAUTHORIZED;
+    socket.close(code, `session token ${verdict.reason}`);
     return;
   }
 
