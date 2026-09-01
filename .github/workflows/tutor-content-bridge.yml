@@ -85,10 +85,18 @@ jobs:
       - name: Install the Railway CLI
         run: npm i -g @railway/cli@5.43.1
 
-      # Same five variables, same `read_var` shape as tutor-deploy.yml's
-      # `seed-kc` step — this reads the CURRENT `kc` table (getActiveKcs()),
-      # never the seed file, so it needs nothing beyond what that step
-      # already proves is sufficient for a plain PostgREST-over-HTTPS run.
+      # RUNBOOK.md Round 112: this comment used to claim "same five variables
+      # ... needs nothing beyond what that step already proves is sufficient"
+      # — wrong, and unverifiable until now because GitHub Actions was
+      # billing-blocked repo-wide for the entire time this workflow existed
+      # (RUNBOOK.md's earlier rounds). `backend/src/config.ts`'s env schema
+      # has SIX required-with-no-default fields, not five: it also requires
+      # `TUTOR_SESSION_SECRET` (any script that imports the backend's config
+      # module triggers Zod validation of the WHOLE schema, whether or not
+      # that script's own code path reads the field). The first real run of
+      # this workflow, once billing cleared, failed immediately on exactly
+      # that — proving the "verified" claim in the commit that introduced
+      # this file was made without ever actually running it.
       - name: Read production credentials and run the audit
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
@@ -103,7 +111,8 @@ jobs:
           export SUPABASE_SERVICE_ROLE_KEY="$(read_var SUPABASE_SERVICE_ROLE_KEY)"
           export SUPABASE_JWT_SECRET="$(read_var SUPABASE_JWT_SECRET)"
           export INTERNAL_API_KEY="$(read_var INTERNAL_API_KEY)"
-          for v in SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY SUPABASE_JWT_SECRET INTERNAL_API_KEY; do
+          export TUTOR_SESSION_SECRET="$(read_var TUTOR_SESSION_SECRET)"
+          for v in SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY SUPABASE_JWT_SECRET INTERNAL_API_KEY TUTOR_SESSION_SECRET; do
             [ -n "${!v}" ] || { echo "::error::backend variable $v is empty"; exit 1; }
           done
           echo "Auditing the content bridge against $SUPABASE_URL"
