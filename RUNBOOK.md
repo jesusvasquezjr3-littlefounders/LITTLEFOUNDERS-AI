@@ -12256,3 +12256,85 @@ suite unaffected by this change. Root gates `docs:check`,
 `oracle/AGENTS.md` item: this applies an already-documented technique
 (`orchestrator.ts`'s own `visibleText` combining pattern) to a second
 call site, rather than establishing a new general lesson.
+
+## Round 121: the Tutor's #1 suggested action — "continue where you left off" — 400ed for the overwhelming majority of returning kids, found live, CRITICAL, closed 2026-08-31
+
+**CRITICAL, FIXED.** Found by genuine live testing (a real browser session,
+the low-retention persona the project's own standing mandate requires):
+tapping the "Keep going with <topic>" chip — the offers screen's own
+highest-priority suggestion — 400ed with `VALIDATION_ERROR "skillKey
+does not name a real skill"`, every time, for any topic outside a
+narrow 23-row allowlist.
+
+**Root cause: two unrelated `skill_key` namespaces were conflated.**
+`memoryDigest`'s `skillKeys[]` (`backend/src/routes/tutor.ts`) come
+from `segment.provenance.skill_key` — the CONTENT LADDER's own bridge
+identifier, `lower(courseSlug/topicSlug)` (migration `0036`,
+`tutorLadder.ts`'s `resolveSkill`), stamped on every tier-1/tier-2
+segment regardless of the session's own intent. `courseId`/`topicId`
+(the digest's other two fields) come from something else entirely: the
+session's START-TIME intent parameters, null for `diagnostic`, `open`,
+and any course-less `weak_skill` start. So the ordinary case — a
+session that started with neither and was then taught real published
+content — closed with a `skillKey` and no ids, and `OfferChips.tsx`
+read "no ids" as "this must be a KC-level resume," sending the
+content-ladder identifier as `{ intent: 'weak_skill', skillKey }`.
+`POST /sessions` checks that shape against the `kc` table
+(`getKcBySkillKey`, correctly — `weak_skill` promises a real
+pedagogy-graph target) — and only 23 of several hundred published
+topics carry a `kc.skill_key` at all
+(`database/seeds/kc_graph.v1.json`). Reproduced live on
+`financial-education/cobrar-y-dar-cambio`, which is in fact one of the
+23 mapped skills and would have been accepted; the defect is that most
+topics are not so lucky.
+
+**Fix.** A new `resolveLastSessionOffer()` (`backend/src/routes/tutor.ts`)
+verifies the digest's `skillKey` the same way the content ladder itself
+does, BEFORE it ever reaches the client — reusing the two mechanisms
+this file already trusts rather than inventing a third. If
+`courseId`/`topicId` are already present, they pass through unchanged
+(that shape was never broken). Otherwise `resolveSkill()` — the SAME
+function the ladder uses — turns the identifier back into a real,
+published course/topic pair, which needs no KC at all and mirrors what
+a fresh `course_topic` start already does successfully. Only when no
+real course/topic remains (the topic was archived since — the
+2026-08-21 catalog prune did this to 771 lessons) does it fall back to
+`getKcBySkillKey()` — the SAME check `POST /sessions` performs — so a
+genuine KC-only resume still works. If neither check names anything
+real, the skill key is dropped rather than handed to the client as a
+value guaranteed to 400: `OfferChips.tsx`'s existing guard (`last.topic
+|| last.skillKey`) already hides the whole opening when both come back
+null (§1.14: nothing offered beats an offer that 400s the instant it
+is accepted). No frontend change was needed — `OfferChips.tsx`'s
+existing branch logic simply now receives correct data.
+
+**Proof, TDD.** Three new INTEGRATION-shaped tests
+(`backend/src/__tests__/tutor.test.ts`, "GET /offers → POST /sessions
+— the 'continue' chip must resume somewhere POST /sessions actually
+accepts") — deliberately spanning both endpoints, because the defect
+never lived in either one alone: `GET /offers` and `POST /sessions`
+each already had their own passing tests, and the gap between two
+individually-correct components is exactly what a unit test of either
+side in isolation cannot see. Confirmed RED against the pre-fix route
+(reverted to `HEAD`, tests 1 and 3 failed exactly as claimed, test 2
+passed on both since that path was never broken), then GREEN restored.
+Covers: a resolvable content-ladder skillKey routing through
+`course_topic` (the shape already proven to work), an archived-topic
+skillKey falling back to a genuine KC match, and the honest
+"drop it" case when neither resolves — proving `OfferChips.tsx`'s
+existing guard now receives the null it needs rather than a value
+guaranteed to fail.
+
+**Verification.** `npm run type-check` (including `tsconfig.test.json`
+— one explicit `string | null` annotation needed; `skillKeys[0] ?? null`
+without `noUncheckedIndexedAccess` silently narrows to plain `string`,
+which TS then rejects reassigning `null` to), `npm run lint`, `npm run
+build` all clean in `backend/`. Full `backend/` suite: 43/43 files,
+751/751 tests (3 new), independently re-run and confirmed. Root
+`docs:check`, `secrets:check` green. Frontend contract sanity-checked
+(no frontend files touched; `OfferChips.test.tsx` +
+`adaptationOfferStale.test.tsx`, 22/22, confirm the existing branch
+logic already does the right thing once fed correct data). No
+`oracle/AGENTS.md`/`/ORACLE.md` item: this is a Core-only data-shape
+fix between two of Core's own routes, not a Tutor runtime, prompt, or
+content-ladder change.

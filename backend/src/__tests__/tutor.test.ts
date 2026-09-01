@@ -988,6 +988,180 @@ describe('GET /api/v1/tutor/offers — the daily cap the offer screen used to be
   });
 });
 
+/*
+ * INTEGRATION-SHAPED, ON PURPOSE: the live-reproduced bug this closes was
+ * never a defect in either endpoint alone. `GET /offers` and `POST /sessions`
+ * each had their own passing tests (see `REAL_SKILL_KEY` above, and "offers
+ * 'continue where you left off' from the latest digest" below) — the defect
+ * only existed in the GAP between them: `GET /offers` promised a `skillKey`
+ * that `POST /sessions` then rejected. A unit test of either side in
+ * isolation cannot see that gap; only feeding one endpoint's real response
+ * into the other's real request can.
+ *
+ * Root cause: `memoryDigest` (this file, above) collects `skillKeys` from
+ * `segment.provenance.skill_key` — the CONTENT LADDER's bridge identifier
+ * (`courseSlug/topicSlug`, migration 0036), stamped on every tier-1/tier-2
+ * segment regardless of the session's own intent — while `courseId`/`topicId`
+ * come from the session's START-TIME intent parameters, null for
+ * `diagnostic`, `open`, and any course-less `weak_skill` start. A session
+ * that started with neither and was then taught real catalog content closed
+ * with a `skillKey` and no ids, and `OfferChips.tsx` read "no ids" as "resume
+ * as `weak_skill`" — sending a content-ladder topic identifier to a check
+ * (`getKcBySkillKey`) that only 23 of several hundred published topics can
+ * ever pass (`database/seeds/kc_graph.v1.json`). `resolveLastSessionOffer`
+ * (`routes/tutor.ts`) is the fix: it verifies the digest's `skillKey` the
+ * same way the ladder itself does before ever handing it to the client.
+ */
+describe('GET /offers → POST /sessions — the "continue" chip must resume somewhere POST /sessions actually accepts', () => {
+  const RESOLVABLE_COURSE = { id: '99999999-9999-4999-8999-999999999999', slug: 'financial-education' };
+  const RESOLVABLE_TOPIC = { id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', slug: 'cobrar-y-dar-cambio' };
+
+  /** Exactly `OfferChips.tsx`'s own branch for the `continue` opening's `input`. */
+  function continueInputFrom(lastSession: { courseId: string | null; topicId: string | null; skillKey: string | null }) {
+    return lastSession.courseId || lastSession.topicId
+      ? { intent: 'course_topic', courseId: lastSession.courseId, topicId: lastSession.topicId }
+      : { intent: 'weak_skill', skillKey: lastSession.skillKey };
+  }
+
+  it('resolves a content-ladder skillKey to the real course/topic it names, so "continue" resumes via course_topic — the shape already proven to work', async () => {
+    // The exact value from the live incident: a real, PUBLISHED topic, with
+    // no courseId/topicId recorded on the digest — the shape any
+    // `diagnostic`/`open`/course-less `weak_skill` session leaves behind
+    // once it actually teaches something.
+    stub({
+      sessions: [
+        {
+          summary: {
+            topic: null,
+            courseId: null,
+            topicId: null,
+            skillKeys: ['financial-education/cobrar-y-dar-cambio'],
+            outcome: 'left',
+            gradedCorrect: 1,
+            gradedTotal: 2,
+          },
+          ended_at: new Date(Date.now() - 86_400_000).toISOString(),
+        },
+      ],
+      courses: [RESOLVABLE_COURSE],
+      topics: [RESOLVABLE_TOPIC],
+    });
+
+    const offers = await request(createApp())
+      .get('/api/v1/tutor/offers')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+    expect(offers.status).toBe(200);
+
+    const lastSession = offers.body.data.lastSession;
+    // The bug: this used to still be `null`, with the raw content-ladder
+    // string sitting in `skillKey` instead — which is exactly the shape that
+    // sends `weak_skill` below and 400s.
+    expect(lastSession.courseId).toBe(RESOLVABLE_COURSE.id);
+    expect(lastSession.topicId).toBe(RESOLVABLE_TOPIC.id);
+
+    const started = await request(createApp())
+      .post('/api/v1/tutor/sessions')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send(continueInputFrom(lastSession));
+
+    expect(started.status).toBe(201);
+  });
+
+  it('falls back to the KC graph itself when the topic is no longer published, so a genuine KC resume still works', async () => {
+    const KC_SKILL_KEY = 'financial-education/an-archived-topic';
+    const ARCHIVED_KC = {
+      id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+      key: 'money.archived-example',
+      strand: 'money_math',
+      title: { 'es-MX': 'Ejemplo archivado' },
+      objective: { 'es-MX': 'Practicar un ejemplo archivado' },
+      tier_min: 1,
+      p_l0: 0.3,
+      p_t: 0.2,
+      p_g: 0.2,
+      p_s: 0.1,
+      skill_key: KC_SKILL_KEY,
+    };
+    stub({
+      sessions: [
+        {
+          summary: {
+            topic: null,
+            courseId: null,
+            topicId: null,
+            skillKeys: [KC_SKILL_KEY],
+            outcome: 'completed',
+            gradedCorrect: 2,
+            gradedTotal: 2,
+          },
+          ended_at: new Date(Date.now() - 86_400_000).toISOString(),
+        },
+      ],
+      // The catalog prune (2026-08-21) archived the topic itself: `courses`
+      // resolves, but no PUBLISHED topic remains for `resolveSkill` to find.
+      courses: [RESOLVABLE_COURSE],
+      topics: [],
+      kcs: [ARCHIVED_KC],
+    });
+
+    const offers = await request(createApp())
+      .get('/api/v1/tutor/offers')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+    expect(offers.status).toBe(200);
+
+    const lastSession = offers.body.data.lastSession;
+    expect(lastSession.courseId).toBeNull();
+    expect(lastSession.topicId).toBeNull();
+    expect(lastSession.skillKey).toBe(KC_SKILL_KEY);
+
+    const started = await request(createApp())
+      .post('/api/v1/tutor/sessions')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
+      .send(continueInputFrom(lastSession));
+
+    expect(started.status).toBe(201);
+  });
+
+  it('drops the skillKey rather than hand the client a value POST /sessions is guaranteed to reject', async () => {
+    stub({
+      sessions: [
+        {
+          summary: {
+            topic: null,
+            courseId: null,
+            topicId: null,
+            // Names neither a published topic nor a KC — e.g. stale data
+            // left over from before a prune, or the model-invented shape
+            // `tutorLadder.ts`'s own `resolveSkill` comment describes.
+            skillKeys: ['financial-education/nothing-real-here'],
+            outcome: 'left',
+            gradedCorrect: 0,
+            gradedTotal: 1,
+          },
+          ended_at: new Date(Date.now() - 86_400_000).toISOString(),
+        },
+      ],
+      courses: [],
+      kcs: [],
+    });
+
+    const offers = await request(createApp())
+      .get('/api/v1/tutor/offers')
+      .set('Authorization', `Bearer ${mintToken({ sub: KID })}`);
+
+    expect(offers.status).toBe(200);
+    const lastSession = offers.body.data.lastSession;
+    expect(lastSession.skillKey).toBeNull();
+    expect(lastSession.courseId).toBeNull();
+    expect(lastSession.topicId).toBeNull();
+    // With `topic` also null (no course/topic link at session start —
+    // see the digest close handler), `OfferChips.tsx`'s own guard
+    // (`last.topic || last.skillKey`) now correctly omits the opening
+    // instead of offering a resume that was always going to 400.
+    expect(lastSession.topic).toBeNull();
+  });
+});
+
 describe('POST /api/v1/tutor/sessions/:id/resume', () => {
   it('mints a FRESH single-use socket URL for the owner of a still-open session', async () => {
     stub();

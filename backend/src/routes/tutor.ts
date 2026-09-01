@@ -1326,6 +1326,111 @@ function daysAgo(iso: string, now = Date.now()): number {
   return Math.max(0, Math.min(90, Math.floor((now - new Date(iso).getTime()) / 86_400_000)));
 }
 
+/**
+ * `GET /offers`'s "continue where you left off" target, VERIFIED rather than
+ * echoed straight from the digest.
+ *
+ * Found live (2026-08-31, CRITICAL): `last.summary.skillKeys[0]` used to
+ * travel into `lastSession.skillKey` unchecked. `memoryDigest`'s `skillKeys`
+ * come from `segment.provenance.skill_key` — the CONTENT LADDER's own bridge
+ * identifier, `lower(courseSlug/topicSlug)` (migration 0036,
+ * `tutorLadder.ts`'s `resolveSkill`) — stamped on every tier-1/tier-2 segment
+ * REGARDLESS of the session's own intent. `courseId`/`topicId` (the digest's
+ * OTHER two fields) are a different thing entirely: the intent's own
+ * start-time parameters, null for `diagnostic`, `open`, and any `weak_skill`
+ * start with no course/topic link (`OfferChips.tsx`'s map-driven `pickNode`,
+ * among others). So the ordinary case — a session that started with neither
+ * and then got taught real published content — closes with a `skillKey` and
+ * NO `courseId`/`topicId`, and `OfferChips.tsx` reads "no ids" as "this must
+ * be a KC-level resume", sending the content-ladder identifier as `{
+ * intent: 'weak_skill', skillKey }`. `POST /sessions` checks THAT shape
+ * against the `kc` table (`getKcBySkillKey`, correctly — `weak_skill`
+ * promises a real pedagogy-graph target), and only 23 of several hundred
+ * published topics carry a `kc.skill_key` at all
+ * (`database/seeds/kc_graph.v1.json`): the overwhelming majority of
+ * "continue" taps landed on `400 VALIDATION_ERROR "skillKey does not name a
+ * real skill"` the instant the last session's topic was not one of those 23
+ * — reproduced live on `financial-education/cobrar-y-dar-cambio`, which is
+ * in fact a real, mapped `kc.skill_key` (`money.make-change-counting-up`)
+ * and would have been ACCEPTED had it reached `POST /sessions` as a
+ * `weak_skill` skillKey; the defect is that most topics are not so lucky.
+ *
+ * THE FIX REUSES THE PATH ALREADY PROVEN TO WORK rather than inventing a
+ * third (per the incident's own instruction): `resolveSkill` is the SAME
+ * function the ladder itself uses to turn this identifier back into a real,
+ * PUBLISHED course/topic pair — it names one BY CONSTRUCTION, being
+ * `courseSlug/topicSlug`. When it resolves, this returns a
+ * `course_topic`-shaped target, which needs no KC at all, exactly mirroring
+ * what a fresh `course_topic` start already does successfully. Only when NO
+ * real course/topic remains (the topic was archived since — the catalog
+ * prune of 2026-08-21 did this to 771 lessons) does this fall back to
+ * checking the value against the KC graph itself (`getKcBySkillKey`, the
+ * SAME check `POST /sessions` performs), so a genuine KC-only resume still
+ * works. If NEITHER check names anything real, the skill key is dropped
+ * (never a value `POST /sessions` is left to reject) — `OfferChips.tsx`
+ * already hides the whole opening when both `topic` and `skillKey` come back
+ * null (/AGENTS.md §1.14: nothing offered beats an offer that 400s the
+ * instant it is accepted).
+ *
+ * Already-present `courseId`/`topicId` (an ordinary `course_topic` close, or
+ * a `weak_skill` close that WAS given a course/topic link) are left exactly
+ * as they were: that shape was never the broken one — `OfferChips.tsx`
+ * already resumes it via `course_topic` without ever reading `skillKey` — so
+ * resolving it a second time here would only spend a request confirming
+ * what is already known to work.
+ *
+ * A `resolveSkill` miss and a transient read failure are indistinguishable
+ * by construction (`resolveSkill` itself collapses them, exactly as its
+ * other callers in this file already treat it) — acceptable here because
+ * this endpoint is advisory only and never writes (the same posture
+ * `sessionCapReached` above already takes): a real KC skillKey survives via
+ * the `getKcBySkillKey` fallback either way, and the rare transient miss
+ * costs one hidden chip, not a wrong answer. `getKcBySkillKey`'s OWN
+ * `'error'` is kept apart from `'not_found'`, though: an unverifiable key is
+ * passed through rather than guessed at, so a genuine backend blip surfaces
+ * as the same honest failure `POST /sessions` would give it, never a
+ * silently dropped offer.
+ */
+async function resolveLastSessionOffer(last: {
+  summary: SessionSummaryDigest;
+  ended_at: string;
+}): Promise<{
+  topic: string | null;
+  courseId: string | null;
+  topicId: string | null;
+  skillKey: string | null;
+  outcome: SessionSummaryDigest['outcome'];
+  daysAgo: number;
+}> {
+  const { summary } = last;
+  let courseId: string | null = summary.courseId;
+  let topicId: string | null = summary.topicId;
+  // Annotated explicitly: `skillKeys[0]` types as plain `string` (no
+  // `noUncheckedIndexedAccess`), so without this TS collapses `?? null` out
+  // of the inferred type and then rejects reassigning `null` to it below.
+  let skillKey: string | null = summary.skillKeys[0] ?? null;
+
+  if (!courseId && !topicId && skillKey) {
+    const resolved = await resolveSkill(skillKey);
+    if (resolved) {
+      courseId = resolved.courseId;
+      topicId = resolved.topicId;
+    } else {
+      const lookup = await getKcBySkillKey(skillKey);
+      if (lookup.status === 'not_found') skillKey = null;
+    }
+  }
+
+  return {
+    topic: summary.topic,
+    courseId,
+    topicId,
+    skillKey,
+    outcome: summary.outcome,
+    daysAgo: daysAgo(last.ended_at),
+  };
+}
+
 /** Hash a uuid into a small non-negative integer, for stable rotation. */
 function hashSeed(value: string): number {
   let hash = 0;
@@ -1715,6 +1820,7 @@ export function tutorRouter(): Router {
      */
     const recent = await listRecentSummaries(user.id);
     const last = recent?.[0] ?? null;
+    const lastSession = last ? await resolveLastSessionOffer(last) : null;
 
     /*
      * The flagged skill's HUMAN title, for the one chip that shows it. The
@@ -1732,16 +1838,7 @@ export function tutorRouter(): Router {
 
     return ok(res, {
       locale,
-      lastSession: last
-        ? {
-            topic: last.summary.topic,
-            courseId: last.summary.courseId,
-            topicId: last.summary.topicId,
-            skillKey: last.summary.skillKeys[0] ?? null,
-            outcome: last.summary.outcome,
-            daysAgo: daysAgo(last.ended_at),
-          }
-        : null,
+      lastSession,
       intelDegraded: states === null,
       /**
        * Whether a session can be started at all right now — Oracle's own
