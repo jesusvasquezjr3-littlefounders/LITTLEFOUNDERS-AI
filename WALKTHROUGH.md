@@ -40,7 +40,14 @@ session failed on its own core promise ("let's try it on the screen") 3 out
 of 3 times. That gap between what the suites say and what a real
 conversation does is the thing this session is closing, one live-reproduced
 defect at a time; treat any percentage here as dated the moment it was
-measured, not as a live figure.
+measured, not as a live figure. No later formal re-assessment has been run
+as of Round 141 — inventing an updated number here without one would be
+exactly the fabricated-specific AGENTS.md §1.12 forbids — but the list below has
+grown to 8 rounds of independently-verified, live-reproduced fixes in
+this run alone (plus Round 124, already shipped before it, and two more
+items resolved outright by investigation) since that 38/100 measurement,
+so treat the figure as a floor from several rounds ago, not a current
+estimate in either direction.
 
 **Fixed and shipped this run, each found by genuine live testing and
 independently re-verified (gates re-run personally, diff re-read) before
@@ -113,20 +120,31 @@ pattern: one `aria-hidden` typewriter span (386×88px, really on screen)
 paired with one genuinely-clipped `sr-only` span (1×1px,
 `overflow:hidden`) for a screen reader. A page-text-extraction tool
 reports both because the `sr-only` clipping technique doesn't use
-`display:none`; a sighted learner sees the sentence exactly once. Also
-observed live, continuing the same session past Round 141: the "Lesson ·
-step N of M" badge DOES advance correctly (1→2, confirmed) as a real
-plan progresses through graded activities, and a full lesson closed
-cleanly (`close_reason: 'completed'`) after genuine mastery-demonstrating
-turns — contradicting the simplest form of "always frozen" as a general
-description. The ORIGINAL, narrower hypothesis this item was opened for —
-whether the badge specifically sticks once a session's turn count runs
-past what its plan anticipated, while the conversation keeps going rather
-than closing — was not reproduced or ruled out either way in this pass;
-reaching it needs a session that runs a genuinely struggling learner far
-enough past a short plan's step count without ending, which this pass's
-ordinary-competence persona did not produce. Left open, more precisely
-described, rather than closed on partial evidence.
+`display:none`; a sighted learner sees the sentence exactly once.
+
+**Also resolved, and already shipped BEFORE this pass — a stale entry on
+this file's own open list, not a live gap.** The "Lesson · step N of M"
+progress-badge item above was root-caused, at the time that bullet was
+written, to `TutorOrchestrator.lessonThread` counting `plan.ts`'s fixed
+macro arc with no awareness of `controller.ts`'s own, independent
+knowledge-component cursor — two progress cursors feeding one badge,
+capped the moment either ran out regardless of what the other was still
+doing. **`RUNBOOK.md` Round 124 (2026-08-31, HIGH) already closed this**
+— `lessonThread` now counts by the controller's own `kcProgress`
+whenever it is active, falling back to the macro arc only once the
+controller is dormant, and `plan.ts` separately tracks
+`finalStepRoundsCompleted` so the model gets a one-time "the arc is
+complete, wrap up" instruction once the macro arc is genuinely exhausted
+AND the controller is also dormant (`oracle/AGENTS.md` item 81 has the
+general lesson). This bullet simply never got moved out of "in progress"
+into "fixed and shipped" when Round 124 landed. Continuing live testing
+past Round 141 in this same session exercised the fixed path end to end
+anyway: the badge correctly advanced (1→2) as a real plan progressed
+through graded activities, and the full lesson closed cleanly
+(`close_reason: 'completed'`) after genuine mastery-demonstrating turns,
+with the badge never sticking at any point — independent live
+confirmation of a fix that shipped two days before this session began.
+This item is off the open list.
 
 **Observed live, not a defect: two independent third-party API calls
 failed transiently in one short session and both recovered correctly on
@@ -160,6 +178,22 @@ reach the map (RUNBOOK Round 141 has the full investigation). The
 broader `/ORACLE.md` §15.2 scale gaps (no platform-wide spend ceiling, no
 admission control, an unrated websocket handshake) remain known and
 explicitly deprioritized behind live-verified functional fixes.
+
+**Found incidentally while verifying a documentation fact for this
+update, not investigated further: `database/seeds/kc_graph.v1.json`
+carries 32 misconception ROWS but only 31 DISTINCT `code` values** —
+`counts-coins-not-value` appears twice, once on `money.count-like-coins`
+(same-denomination coins) and once on `money.count-mixed-coins` (mixed
+denominations), each with its own tailored description and remediation
+hint. ROADMAP.md's "32 misconceptions" figure is correct as a row count
+and needs no change. Whether a repeated `code` across two KCs is an
+intentional modeling choice or a real collision depends on whether
+anything downstream treats `code` as a unique key (a `Record`/`Map`
+keyed by it would silently keep only one row) — `curate-tutor-skills.ts`
+reports 31 distinct codes and raised nothing actionable, which does not
+by itself rule that out. Not chased further: this surfaced while
+verifying a documentation number, not from a live-testing pass, and
+tracing every consumer of `misconceptions[].code` is its own task.
 
 ## Tutor v3 — production migration handoff closed, v2's design reopening carried through to a real deploy (2026-08-29)
 
