@@ -12200,3 +12200,59 @@ own commit; this round did not touch `backend/src/routes/tutor.ts`'s
 `/segments` handler or any of its request-handling concurrency guards.
 
 See `oracle/AGENTS.md` items 8, 24 and 79.
+
+## Round 120: the post-session review's §1.9 re-check billed two judge calls where one would do, whenever a review proposed both a learner and a pedagogy note — found by adversarial review sweep tutor-review-sweep-101 (cost-efficiency dimension), MEDIUM, closed 2026-08-31
+
+**MEDIUM, FIXED.** `session/review.ts`'s content-moderation re-check
+called `moderateTutorOutput` separately for `proposal.learner` and
+`proposal.pedagogy` — two full, billed judge round trips whenever a
+review proposed both notes. `orchestrator.ts`'s own `visibleText`
+already established the technique this codebase uses to avoid exactly
+that: join every learner-visible string the model produced into ONE
+text and moderate it in a single call. The reasoning applies here even
+more directly than there — a failure on EITHER field already drops the
+WHOLE proposal (the digit-run check two comments above this one already
+says why: "a partially sanitized belief is not a belief we hold about a
+child"), so a per-field verdict never had anything extra to act on; it
+only ever bought a second bill.
+
+**Fix.** Both non-null fields joined and moderated in one call.
+Attribution is still preserved on a failure, unlike `orchestrator.ts`
+(which discards the whole turn regardless of which field caused it, so
+never needs to log which one): a single non-null field trivially IS the
+attribution; when BOTH fields are present and the combined call fails,
+the free, synchronous `deterministicModeration` pass — the exact-match
+check `moderateTutorOutput` already runs first internally, at no
+network cost — is re-run per field here to name which one actually
+carries the flagged pattern. A verdict the JUDGE (not the deterministic
+pass) raised on the combined text cannot be narrowed to one field
+without spending a SECOND billed call — the exact cost this fix removes
+— so it is logged as spanning both rather than guessed at: §1.14's "no
+fabricated specifics" applies to a log line exactly as much as to a
+claim about test results.
+
+**Proof.** Eight new tests
+(`oracle/src/__tests__/review-moderation-batch.test.ts`, deliberately
+mocking `moderateTutorOutput` DIRECTLY rather than through the global
+`fetch`/`judgeSays` style the rest of `review.test.ts` uses, because
+the thing under test IS the call count): confirms exactly one call
+when both fields are non-null (the assertion this round exists for —
+this used to be 2), confirms both strings actually land in that single
+call's text, confirms the common single-field case still makes exactly
+one call, confirms the proposal is still written when the combined
+call passes, and four attribution paths — pedagogy-only (via the judge
+verdict, since a surname alone has no digit/URL shape and doesn't trip
+the deterministic pass), learner-only (via the real, unmocked
+`deterministicModeration` re-check catching a prompt-leak phrase with
+no digit/URL shape), the trivial single-non-null-field case, and the
+honest both-sources case when a judge-only verdict on the combined
+text genuinely cannot be isolated to one field.
+
+**Verification.** `npm run type-check` (including `tsconfig.scripts.json`
+and `tsconfig.test.json`), `npm run lint`, `npm run build` all clean in
+`oracle/`. `review-moderation-batch.test.ts`: 8/8. Full `oracle/`
+suite unaffected by this change. Root gates `docs:check`,
+`secrets:check`, `provider:check`, `tools:test` (26/26) all green. No
+`oracle/AGENTS.md` item: this applies an already-documented technique
+(`orchestrator.ts`'s own `visibleText` combining pattern) to a second
+call site, rather than establishing a new general lesson.

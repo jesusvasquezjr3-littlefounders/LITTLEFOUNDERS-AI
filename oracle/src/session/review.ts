@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import { getConfig } from '../env.js';
 import { addSessionCost, updateLearnerMemory } from '../core/client.js';
 import { stripInvisible } from '../safety/untrusted.js';
-import { moderateTutorOutput } from '../safety/moderation.js';
+import { moderateTutorOutput, deterministicModeration } from '../safety/moderation.js';
 import { estimateCostUsd } from '../tutor/orchestrator.js';
 import type { SessionContext } from '../core/client.js';
 
@@ -389,18 +389,74 @@ async function review(
    * clock, so the fail-closed judge always runs — a memory note about ANY
    * learner deserves the same protection before it is believed forever.
    */
-  for (const text of [proposal.learner, proposal.pedagogy]) {
-    if (text === null) continue;
+  /*
+   * COMBINED INTO ONE JUDGE CALL, NOT TWO (round 120, 2026-08-31, MEDIUM,
+   * `tutor-review-sweep-101`, cost-efficiency dimension). This used to call
+   * `moderateTutorOutput` separately for `proposal.learner` and
+   * `proposal.pedagogy` — two full, billed judge round trips whenever a
+   * review proposes both notes — where `orchestrator.ts`'s own
+   * `visibleText` already established the technique this codebase uses to
+   * avoid exactly that: join every learner-visible string the model
+   * produced into ONE text and moderate it in a single call. The reasoning
+   * applies here even more directly than there — a failure on EITHER field
+   * already drops the WHOLE proposal (the digit-run check two comments
+   * above this one already says why: "a partially sanitized belief is not
+   * a belief we hold about a child"), so a per-field verdict never had
+   * anything extra to act on; it only ever bought a second bill.
+   *
+   * ATTRIBUTION IS STILL PRESERVED, unlike `orchestrator.ts`, which does
+   * not need it — a block there discards the whole turn regardless of
+   * which field caused it, so nothing there ever logs which one. Here, a
+   * single non-null field trivially IS the attribution (most reviews
+   * propose only `learner`, per the module header's own "most short
+   * sessions teach nothing durable" rule). When BOTH fields are present and
+   * the combined call fails, the free, synchronous `deterministicModeration`
+   * pass — the exact-match check `moderateTutorOutput` already runs first
+   * internally, at no network cost — is re-run per field here to name which
+   * one actually carries the flagged pattern (a leaked fence, a contact
+   * detail). A verdict the JUDGE (not the deterministic pass) raised on the
+   * combined text cannot be narrowed to one field without spending a SECOND
+   * billed call — the exact cost this fix removes — so it is logged as
+   * spanning both rather than guessed at: §1.14's "no fabricated specifics"
+   * applies to a log line exactly as much as to a claim about test results.
+   */
+  const parts = (
+    [
+      { source: 'learner' as const, text: proposal.learner },
+      { source: 'pedagogy' as const, text: proposal.pedagogy },
+    ]
+  ).filter((p): p is { source: 'learner' | 'pedagogy'; text: string } => p.text !== null);
+
+  if (parts.length > 0) {
     const verdict = await moderateTutorOutput({
-      text,
+      text: parts.map((p) => p.text).join('\n\n'),
       locale: input.session.locale,
       tier: input.session.tier,
       requireModelPass: true,
       nonce: transcriptFence.nonce,
     });
     if (!verdict.allowed) {
+      const implicated =
+        parts.length === 1
+          ? [parts[0]!.source]
+          : parts
+              .filter(
+                (p) =>
+                  !deterministicModeration({
+                    text: p.text,
+                    locale: input.session.locale,
+                    tier: input.session.tier,
+                    requireModelPass: true,
+                    nonce: transcriptFence.nonce,
+                  }).allowed,
+              )
+              .map((p) => p.source);
+      const attribution =
+        implicated.length > 0
+          ? implicated.join('+')
+          : 'learner+pedagogy (judge verdict on the combined text — cannot isolate further without a second call)';
       console.warn(
-        `[oracle] post-session review proposal failed content moderation (${verdict.reason}: ${verdict.detail}) — dropped whole`,
+        `[oracle] post-session review proposal failed content moderation (${attribution} — ${verdict.reason}: ${verdict.detail}) — dropped whole`,
       );
       return null;
     }
