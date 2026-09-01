@@ -13183,3 +13183,131 @@ full oracle suite 739/739 across 32 files, including three tests that
 directly exercise the merged behavior (the distributed-claim-only
 refusal, the SIGTERM clean-close, and the two-simultaneous-connections
 `ALREADY_CONNECTED` case). Every root gate green.
+
+## Round 133: the whiteboard's fourth kind, `categories` — and a live, silent persistence gap in the two kinds shipped just before it, found while merging it, 2026-09-01
+
+Backlog lane `oracle-generative-whiteboard-canvas`: `categories`, a
+comparison across 2-6 named things at one moment (blueprint §10.4's "UI
+generativa acotada", first bounded slice), joining `sequence`/`compare`/
+`marked_line` as WhiteboardSchema's fourth member. Unremarkable on its
+own — the real story of this round is what merging it into a sibling
+lane's work exposed.
+
+**The merge itself was the most file-overlap-heavy of the whole Phase 2
+effort**, sharing near-total surface with the already-merged
+`whiteboard-additional-kinds` lane (Round 8e8703db, `compare`/
+`marked_line`) that this branch predates and never saw. 8 of 14
+conflicted files were straightforward one-side-or-combine resolutions;
+the remaining work was reconciling two independently-designed answers to
+the same question. Naming was unified onto the already-shipped
+convention rather than picked arbitrarily: `Whiteboard<Kind>Schema`
+(`turnSchema.ts`) over this lane's parallel `<Kind>BoardSchema` names for
+the identical concepts, and this lane's own `computeWhiteboardValues()`
+dispatch function was deleted outright after confirming it was DEAD at
+both real call sites (`ws/server.ts`'s two `send()` calls only ever read
+`wireBoard`, never the value this function computed) — the already-
+established `whiteboardComputesOk`/`toWireWhiteboard`/
+`whiteboardVisibleText` switches were extended with a `categories` case
+each instead of carrying two competing dispatch mechanisms forward.
+
+**Frontend architecture: `categories` earned its own component rather
+than reusing `sequence`'s reveal animation, on evidence rather than by
+inheriting this lane's original choice.** This lane's own
+`TutorWhiteboard.tsx` rendered `categories` through the exact same
+grow-in-bars mechanism as `sequence` — because at the time it was
+written, `compare`/`marked_line` did not exist yet, so `sequence`'s
+reveal was the only whiteboard visual there was to reuse, conceptual fit
+notwithstanding. `oracle/src/tutor/prompt.ts`'s OWN instructions (which
+this lane itself wrote) describe `categories` as "several DIFFERENT
+named things compared side by side at the SAME moment" — the `compare`
+category (a snapshot), not the `sequence` one (a value changing over
+TIME) — and `compare`'s own doc comment already explains why a snapshot
+renders immediately with no grow-in reveal to pace against. Gave
+`categories` its own `CategoriesBoard` function, following `compare`'s
+posture exactly: no reveal state, all bars rendered at their real height
+immediately. `tutorWhiteboard.test.tsx`'s categories suite was rewritten
+to match (a `describe('categories — several named things at one
+moment...')` block modeled on the `compare` suite), not ported unchanged
+from this lane's reveal-based originals, which would have asserted
+behavior the shipped component no longer has.
+
+**Two documentation defects, found incidental to reading the merge
+region and fixed rather than carried forward.** First: a ~160-line
+byte-for-byte duplicate of ORACLE.md's "Two more kinds" section
+(`compare`/`marked_line`'s full writeup) sitting at the very end of the
+file, after §20.7 — an artifact of an earlier round's hand-reconstruction
+of this same document when two large conflicting sides had to be
+reassembled in the right logical order (Round 8e8703db's own merge, and
+the trajectory/gym lane's before it). Deleted the redundant copy; the
+surviving one sits where it always belonged, immediately after §20.5.
+Second: ORACLE.md and oracle/AGENTS.md both said `categories` is bounded
+"2-8" — this lane's own pre-existing text, copied forward uncritically
+into my first draft of the merged section before being checked against
+the actual schema. `turnSchema.ts`'s `WhiteboardCategoriesSchema` reads
+`z.array(WhiteboardCategorySchema).min(2).max(6)` — "2-6", not "2-8".
+Corrected both doc references. Neither defect was mine to have caused,
+but both were mine to have caught before committing them a second time.
+
+**The real functional fix — not a merge nicety, a live gap.**
+`backend/src/routes/tutor.ts`'s `POST /turns` body schema and
+`backend/src/services/tutorData.ts`'s `TutorTurnWhiteboard`/
+`TutorTurnWhiteboardRowSchema` had NEVER been extended for `compare`/
+`marked_line` when THOSE kinds shipped in the immediately-preceding
+merge. This lane's own (older) base commit had only ever added
+`sequence`/`categories` to these two files — it could not have known to
+extend them for kinds that did not exist yet in its world — and nothing
+in the `compare`/`marked_line` lane's own scope touched Core's
+persistence layer at all. Discovered by checking `git show HEAD:...` on
+`tutorData.ts` while investigating why it auto-merged with zero
+conflicts (a clean auto-merge only means the two diffs did not overlap
+on the same LINES, never that the merged result is semantically
+complete): `TutorTurnWhiteboard` was still `TutorTurnSequenceBoard |
+TutorTurnCategoriesBoard`, full stop. Left as shipped, a live `compare`/
+`marked_line` turn would fail `POST /turns`'s `.safeParse` outright on
+the write side, and — had it somehow reached the column by some other
+path — would fail `TutorTurnWhiteboardRowSchema` on every subsequent
+read and silently degrade to `null` (`readTurnWhiteboard`'s own,
+correct, "malformed row degrades rather than fails the transcript"
+posture, working exactly as designed against data it was never told to
+recognize). This is the identical round-35 class of bug
+(`TutorTurnCompareBoard`'s own new doc comment names it explicitly) —
+a whiteboard kind added without its matching backend persistence update
+— for two kinds that were already live in production-bound code, not a
+hypothetical. Closed by adding `TutorTurnCompareBoard`/
+`TutorTurnMarkedLineBoard` (mirroring oracle's `WireWhiteboard` exactly,
+server-computed `difference`/`greater`/`position` included),
+`CompareBoardRowSchema`/`MarkedLineBoardRowSchema` (with `max > min` and
+every-mark-within-`[min,max]` `superRefine` checks — structural
+relationships oracle's own schema cannot express either, for the same
+`z.discriminatedUnion`-cannot-carry-a-per-member-`.refine()` reason
+`SequenceBoardRowSchema`'s own comment already documents — deliberately
+NOT re-deriving `difference`/`greater`/`position` themselves, the same
+restraint already shown toward `computeSequence`'s arithmetic), and the
+matching `CompareWhiteboardBody`/`MarkedLineWhiteboardBody` route-level
+schemas. 11 new `tutorData.test.ts` cases prove both the write-side
+round-trip (`insertTutorTurn` sends the board unmodified) and the
+read-side degradation paths (ceiling violation, inverted min/max,
+out-of-range mark, cross-kind `.strict()` field) for both kinds — the
+route layer's OWN `POST /turns` body validation has zero test coverage
+for ANY whiteboard kind, sequence included, a pre-existing gap flagged
+as a follow-up rather than fixed here (out of scope: fixing it properly
+means building coverage for a kind this round did not touch either).
+
+**Verification, independently re-run by the coordinator after every
+file's resolution, not assumed from a clean merge.** oracle: tsc clean
+across all 3 tsconfigs, lint clean, 35 files / 834 tests green, build
+clean, `verify:tutor` OK (all 4 sections), `verify:pedagogy` OK (all 6
+learner profiles). frontend: tsc clean, lint clean, 138 files / 1608
+tests green (up from 1586 pre-merge — 22 net new, including the
+rewritten categories suite), build clean. backend: tsc clean on both
+tsconfigs, lint clean, 45 files / 823 tests green (54 in
+`tutorData.test.ts` alone — 43 pre-existing + 11 from the compare/
+marked_line persistence fix), build clean. Root: `docs:check`,
+`secrets:check`, `i18n:check`, `paths:check`, `seo:check`,
+`provider:check` all green on first run; `tools:test` failed once
+(25/26) on first run — ROADMAP.md's declared pending-migration range
+still read `` `0065`–`0065` ``, stale since the trajectory/gym lane
+shipped `0066_tutor_trajectory.sql` in the merge immediately before this
+one and nobody had updated the declared range to match — fixed by
+extending it to `` `0065`–`0066` `` and describing `0066`'s own content,
+confirmed 26/26 green after.
