@@ -1429,6 +1429,62 @@ describe('the turn pipeline is split, acknowledged, and interruptible', () => {
     }
   }, 10_000);
 
+  /*
+   * oracle/AGENTS.md item 71's own follow-up, closed here. The test above
+   * already proves `finalizeParked` winning this race is not silently
+   * reported as a success by `finish()`'s losing one; this proves the cost
+   * half of the SAME finding — that the win no longer ALSO pays for a
+   * second, redundant `runPostSessionReview` model call on top of the one
+   * `finish()` is guaranteed to run once the busy turn actually settles.
+   *
+   * Two learner turns are needed before the race, not one: `review()`
+   * (`session/review.ts`) skips entirely under two learner turns, and this
+   * test's whole point is counting REAL attempted model calls — with only
+   * the one slow turn in history, both the pre-fix and post-fix code would
+   * report zero calls, and the assertion below would pass for a reason that
+   * proves nothing about the dedup this test exists to catch.
+   */
+  it('runs the post-session review exactly once when finalizeParked wins the close race, not twice', async () => {
+    freshJournal();
+    slowTurnDelayMs = 3_500;
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const firstAnswered = collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'hola' }));
+    await firstAnswered;
+
+    // Past MIN_TURN_GAP_MS (700ms) — otherwise the slow turn below is
+    // refused outright as `too-soon` rather than claimed, and the whole
+    // race this test exists to reproduce never happens: no busy floor, no
+    // park, `end_session` succeeds immediately (`attemptEndSession` claims
+    // with `enforceFloor=false`), and `learnerTurns` never reaches 2 either.
+    await new Promise((r) => setTimeout(r, 750));
+
+    // The same mechanism as the test above: this turn's OWN processing —
+    // no farewell involved — outlasts the 1.5s `SESSION_RESUME_GRACE_MS`
+    // on its own, so `finalizeParked` wins the close race against the
+    // deferred farewell that follows it.
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'cuentamelotodomuydespacio' }));
+    await new Promise((r) => setTimeout(r, 100));
+    socket.send(JSON.stringify({ type: 'end_session' }));
+    socket.close();
+    await closed();
+
+    // Long enough for: `finalizeParked`'s 1.5s timer to fire (and, post-fix,
+    // defer rather than review); the slow turn to resolve at ~3.5s; the
+    // farewell and `finish()` to run; and `finish()`'s OWN review call to
+    // reach the fake model server — which is ALSO delayed 3.5s by the same
+    // `slowTurnDelayMs` mechanism, since its transcript still carries the
+    // phrase that triggers it. Comfortably covers the PRE-fix timing too,
+    // where `finalizeParked`'s own (stale) review would have resolved
+    // around the 5s mark.
+    await new Promise((r) => setTimeout(r, 8_000));
+
+    const reviewCalls = modelJournal.bodies.filter((b) => b.includes('reflection pass'));
+    expect(reviewCalls).toHaveLength(1);
+  }, 12_000);
+
   it('holds the streamed-audio doors to the same gates as the whole clip', async () => {
     freshJournal();
     const { socket } = open(await socketUrl());
@@ -1825,6 +1881,34 @@ describe('the socket refuses what it must', () => {
       process.env.JUDGE_API_KEY = judgeKey;
       resetConfigCache();
       sessionIsMinor = false;
+    }
+  });
+});
+
+/*
+ * /ORACLE.md §15.2 item 1: nothing previously bounded what the PROCESS
+ * spends in total, only what one session or one learner could cost. This
+ * proves the WIRING — that `handleConnection` actually asks
+ * `session/spend-guard.ts` and actually refuses — not just the guard class's
+ * own arithmetic, which `session.test.ts` covers in isolation.
+ */
+describe('the platform-wide spend circuit breaker (/ORACLE.md §15.2 item 1)', () => {
+  it('refuses a brand-new connection — before even a token is read — once the daily ceiling is reached', async () => {
+    const { spendGuard } = await import('../session/spend-guard.js');
+    const before = spendGuard.check();
+    try {
+      // Push spend past whatever the ceiling is configured to right now,
+      // rather than assuming a specific number here.
+      spendGuard.record(before.ceilingUsd - before.spentUsd + 1);
+
+      // No token at all. If this closes with SPEND_CEILING rather than 4001
+      // (missing token, `describe('the socket refuses what it must')`'s own
+      // first test), the check is proven to run BEFORE every auth gate —
+      // the whole reason it costs nothing to apply.
+      const { closed } = open(`ws://127.0.0.1:${oraclePort}/ws/tutor`);
+      expect(await closed()).toBe(4029);
+    } finally {
+      spendGuard.reset();
     }
   });
 });

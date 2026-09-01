@@ -213,6 +213,44 @@ const Env = z.object({
    * convinces an operator the fraction is set when it is not. Removed
    * 2026-08-28; set the rate in Core.
    */
+
+  /**
+   * THE PLATFORM-WIDE SPEND CIRCUIT BREAKER (/ORACLE.md §15.2 item 1).
+   *
+   * Every OTHER limit in §15 bounds what ONE session or ONE learner can cost
+   * (turn caps, budget clocks, the per-day session cap). None of them bounds
+   * what the PROCESS spends in total, so a provider incident that makes
+   * retries pile up across many sessions at once, or a bug that multiplies
+   * calls, had nothing between it and the invoice — "we would notice on the
+   * bill" is not a control.
+   *
+   * $20/day is a deliberately conservative FIRST default, not a modelled
+   * budget: /ORACLE.md's own measurement puts an ordinary session at
+   * fractions of a cent and even a pathological 120-turn one at "cents", so
+   * this ceiling exists to catch a MULTIPLIER-shaped bug — a retry storm, a
+   * loop — rather than to cap realistic legitimate usage. Raise it
+   * deliberately as real paid usage grows; a ceiling that trips on ordinary
+   * Tuesday traffic is as useless as one that never trips at all.
+   *
+   * In-process and reset on a rolling 24h window (`session/spend-guard.ts`),
+   * exactly like the token nonce ledger and the session park: Oracle is
+   * explicitly single-replica today (/ORACLE.md §16), so a cross-replica
+   * store would buy nothing but a dependency this circuit breaker cannot
+   * afford to depend on (§1.14 — liveness, and now spend safety, must not
+   * ride on optional infrastructure). A process restart forgets today's
+   * running total; the worst that allows is one extra day at full exposure
+   * on the day of a deploy, which is a fair trade against a Redis outage
+   * silently disabling the breaker entirely.
+   */
+  DAILY_SPEND_CEILING_USD: z.coerce.number().positive().default(20),
+  /**
+   * The fraction of the ceiling that triggers a LOUD warning instead of a
+   * refusal — "an alert well below it", per §15.2, so an operator has room to
+   * react before a learner is ever turned away. Expressed as a fraction of
+   * the ceiling rather than a second absolute dollar figure so the two stay
+   * in proportion when the ceiling itself is retuned.
+   */
+  DAILY_SPEND_ALERT_FRACTION: z.coerce.number().positive().max(1).default(0.5),
 });
 
 export type Config = Readonly<z.infer<typeof Env>>;

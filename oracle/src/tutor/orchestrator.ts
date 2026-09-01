@@ -26,6 +26,7 @@ import {
   type ChatMessage,
 } from '../model/provider.js';
 import { evaluateBudget, WRAP_UP_INSTRUCTION, type BudgetVerdict } from '../session/budget.js';
+import { spendGuard } from '../session/spend-guard.js';
 import {
   buildContextMessage,
   praiseContradictsAnswer,
@@ -511,7 +512,25 @@ export class TutorOrchestrator {
    * error pointing at the gap.
    */
   noteGenerationCost(usd: number): void {
+    this.addModelCost(usd);
+  }
+
+  /**
+   * The ONE place `modelUsd` is ever incremented, so the platform-wide
+   * circuit breaker (`session/spend-guard.ts`, /ORACLE.md §15.2 item 1) sees
+   * every dollar this session's own ledger sees, with no second call site to
+   * forget the next time one is added — `noteGenerationCost` used to be that
+   * second site, found missing entirely (round 64's own comment above).
+   */
+  private addModelCost(usd: number): void {
     this.modelUsd += usd;
+    spendGuard.record(usd);
+  }
+
+  /** The voice-side twin of `addModelCost`, for the same reason. */
+  private addVoiceCost(usd: number): void {
+    this.voiceUsd += usd;
+    spendGuard.record(usd);
   }
 
   /**
@@ -1731,7 +1750,7 @@ export class TutorOrchestrator {
             temperature: attempt === 0 ? 0.6 : 0.2,
             signal: opts.signal,
           });
-          this.modelUsd += estimateCostUsd(result.promptTokens, result.completionTokens);
+          this.addModelCost(estimateCostUsd(result.promptTokens, result.completionTokens));
           transportFailure = null;
 
           const parsed = parseTurn(result.text);
@@ -2332,7 +2351,7 @@ export class TutorOrchestrator {
     }
 
     if (result.billedChars > 0) {
-      this.voiceUsd += estimateVoiceCostUsd(result.billedChars);
+      this.addVoiceCost(estimateVoiceCostUsd(result.billedChars));
       this.paidSyntheses += 1;
     } else if (result.url !== null) {
       this.freeSyntheses += 1;

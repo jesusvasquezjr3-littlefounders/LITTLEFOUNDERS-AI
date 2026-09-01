@@ -298,5 +298,18 @@ export const CLOSE_CODES = {
   BUDGET_EXHAUSTED: 4008,
   ALREADY_CONNECTED: 4009,
   SERVICE_DEGRADED: 4013,
+  /**
+   * The platform-wide spend circuit breaker refused a NEW session
+   * (/ORACLE.md §15.2 item 1, `session/spend-guard.ts`). Deliberately its
+   * own code rather than reusing `SERVICE_DEGRADED` — an on-call engineer
+   * grepping close codes needs "cost control tripped" to be instantly
+   * distinguishable from "moderation is down"; the two have nothing in
+   * common and nothing in common to fix. The learner still sees the same
+   * honest, generic message either way (`closeCodeToReason` maps both to
+   * `SERVICE_DEGRADED`) — a business-side cost ceiling is not something to
+   * explain to a child, and "try again soon" is the correct thing to tell
+   * them in both cases.
+   */
+  SPEND_CEILING: 4029,
   NORMAL: 1000,
 } as const;

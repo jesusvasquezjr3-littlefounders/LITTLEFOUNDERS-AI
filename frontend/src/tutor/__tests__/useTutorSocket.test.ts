@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { createElement, StrictMode, type ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { useTutorSocket } from '../useTutorSocket';
+import { closeCodeToReason, useTutorSocket } from '../useTutorSocket';
 
 /*
  * Found live, testing as a real logged-in kid account in the browser,
@@ -129,5 +129,26 @@ describe('a StrictMode double-invoke of the connecting effect', () => {
         data: JSON.stringify({ type: 'turn', seq: 1, say: 'Good to see you.', emotion: 'happy', action: 'wave' }),
       });
     });
+  });
+});
+
+/*
+ * /ORACLE.md §15.2 item 1: 4029 is the platform-wide spend circuit breaker's
+ * OWN close code (`oracle/src/ws/protocol.ts`'s `CLOSE_CODES.SPEND_CEILING`),
+ * kept numerically distinct from 4013 so an operator's logs can tell "cost
+ * control tripped" apart from "moderation is down" — but it maps to the SAME
+ * learner-facing reason, since a business-side cost ceiling is not something
+ * to explain to a child.
+ */
+describe('closeCodeToReason', () => {
+  it('maps the spend-ceiling code to the same generic reason as SERVICE_DEGRADED', () => {
+    expect(closeCodeToReason(4029)).toBe('SERVICE_DEGRADED');
+    expect(closeCodeToReason(4013)).toBe('SERVICE_DEGRADED');
+  });
+
+  it('still falls back to CONNECTION_LOST for an unrecognised code', () => {
+    // 1006 above all — "closed abnormally, no close frame" — must never be
+    // read as a server fault.
+    expect(closeCodeToReason(1006)).toBe('CONNECTION_LOST');
   });
 });

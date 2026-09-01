@@ -15,6 +15,7 @@ import {
 } from '../core/client.js';
 import { verifyGradeEcho } from '../session/gradeEcho.js';
 import { runPostSessionReview } from '../session/review.js';
+import { spendGuard } from '../session/spend-guard.js';
 import { getVoiceProvider } from '../voice/index.js';
 import { newSpeechScope, speakLine, type SpeechScope } from '../voice/speech.js';
 import { generateSegment } from '../content/generate.js';
@@ -284,6 +285,21 @@ interface ParkedSession {
   transcriptSeq: number;
   /** Carried across the park so a resume can redraw the open activity, if any. */
   lastSegmentFrame: Extract<ServerMessage, { type: 'segment' }> | null;
+  /**
+   * A copy of `Live.endSessionRequested`, taken at the moment this session
+   * was parked — see that field's own comment for what sets it and why.
+   *
+   * This is what lets `finalizeParked` tell apart the two shapes of park
+   * (item 71 / round 98, closed here): a genuinely dropped connection, where
+   * NOTHING else will ever call `runPostSessionReview` for this session, from
+   * one that raced an in-flight `attemptEndSession` that WILL still reach
+   * `finish()` — guaranteed, by construction, since `releaseTurn` (the one
+   * place every turn's own `finally` already funnels through) re-fires
+   * `attemptEndSession` the instant the busy turn frees the floor, and that
+   * function's `try` always reaches `finish()` after the scripted, model-free
+   * `farewell()`. See `finalizeParked`'s own comment for what this buys.
+   */
+  endSessionRequested: boolean;
 }
 
 const parkedSessions = new Map<string, ParkedSession>();
@@ -321,6 +337,7 @@ function parkSession(sessionId: string, live: Live): void {
     lastTurnAtMs: live.lastTurnAtMs,
     transcriptSeq: live.transcriptSeq,
     lastSegmentFrame: live.lastSegmentFrame,
+    endSessionRequested: live.endSessionRequested,
     timer: setTimeout(() => finalizeParked(sessionId), getConfig().SESSION_RESUME_GRACE_MS),
   };
   entry.timer.unref();
@@ -335,8 +352,14 @@ function takeParked(sessionId: string): ParkedSession | null {
   return entry;
 }
 
-/** The park expired (or the process is shutting down): the session really ended. */
-function finalizeParked(sessionId: string): void {
+/**
+ * The park expired (or the process is shutting down): the session really
+ * ended.
+ *
+ * `opts.forceReview` exists for exactly one caller, `finalizeAllParked` —
+ * see its own comment for why the deferral below must never apply there.
+ */
+function finalizeParked(sessionId: string, opts: { forceReview?: boolean } = {}): void {
   const entry = parkedSessions.get(sessionId);
   if (!entry) return;
   clearTimeout(entry.timer);
@@ -364,6 +387,48 @@ function finalizeParked(sessionId: string): void {
    * indistinguishable from a session with nothing worth writing. Fired the
    * same fire-and-forget way `finish()` fires it.
    */
+
+  /*
+   * DEFER TO THE GRACEFUL CLOSE THAT IS STILL COMING (item 71 / round 98,
+   * closed here — was left open on purpose, see `finish()`'s own comment on
+   * its unconditional review call for the other half of this fix).
+   *
+   * `entry.endSessionRequested` being true means this park raced an
+   * in-flight `attemptEndSession`: the busy turn ahead of the farewell
+   * outlasted `SESSION_RESUME_GRACE_MS` ON ITS OWN, this timer won the close
+   * against `finish()`'s later attempt, and `finish()` is GUARANTEED to
+   * still run — `entry.endSessionRequested`'s own doc comment names the
+   * `finally`-chain that makes that a certainty, not a hope.
+   *
+   * The naive fix here would be "the loser of the close race skips its own
+   * review" — and it would be WRONG, because the loser in this race is
+   * `finish()`, and `entry.orchestrator` is the exact same object `finish()`
+   * reads from: `resumeSnapshot.turns` is a snapshot taken AT CALL TIME
+   * (`orchestrator.ts`'s own `.map()`), so THIS call, firing the instant the
+   * grace window expires, is the STALE one — missing exactly the busy turn's
+   * own reply, which is what made this race reachable in the first place.
+   * Skipping the loser would keep only that stale review and silently
+   * discard the complete one forever. So this defers instead: the review
+   * that was about to run on incomplete data is skipped HERE, in favour of
+   * the one `finish()` is guaranteed to run on the complete conversation —
+   * the double-pay is closed without losing the more complete write either
+   * way, which is what "left open for a follow-up" in the old comment here
+   * used to mean.
+   *
+   * `opts.forceReview` overrides this for exactly one caller: process
+   * shutdown. A finally-chain guarantee is only as good as there being an
+   * event loop left to run it on, and `finalizeAllParked` exists precisely
+   * because there is about to not be one — deferring there would mean this
+   * review NEVER fires, the one outcome worse than paying for it twice.
+   */
+  if (entry.endSessionRequested && opts.forceReview !== true) {
+    console.log(
+      `[oracle] session ${sessionId} parked with a graceful close already in flight — ` +
+        `deferring its post-session review to that close's own, more complete one.`,
+    );
+    return;
+  }
+
   void runPostSessionReview({
     session: entry.orchestrator.sessionContext,
     history: entry.orchestrator.resumeSnapshot.turns,
@@ -372,9 +437,18 @@ function finalizeParked(sessionId: string): void {
   );
 }
 
-/** Every parked session, finalized. Called on shutdown so no close is lost. */
+/**
+ * Every parked session, finalized. Called on shutdown so no close is lost.
+ *
+ * `forceReview: true` on every one of them: `finalizeParked`'s own deferral
+ * (item 71) trusts a `finally`-chain elsewhere in this process to still call
+ * `finish()` later, and shutdown is precisely the moment that trust runs out
+ * — there is no "later" left to defer to. Skipping the review here on that
+ * same trust would make it never run at all, for a session that had a real
+ * conversation in it.
+ */
 export function finalizeAllParked(): void {
-  for (const sessionId of [...parkedSessions.keys()]) finalizeParked(sessionId);
+  for (const sessionId of [...parkedSessions.keys()]) finalizeParked(sessionId, { forceReview: true });
 }
 
 /**
@@ -580,6 +654,26 @@ export function attachTutorSocket(httpServer: Server): WebSocketServer {
 }
 
 async function handleConnection(socket: WebSocket, request: IncomingMessage): Promise<void> {
+  /*
+   * THE SPEND CIRCUIT BREAKER, CHECKED BEFORE ANYTHING ELSE (/ORACLE.md
+   * §15.2 item 1). Deliberately ahead of every auth gate below rather than
+   * threaded in as an eighth one: when the platform has already decided to
+   * refuse every new session, WHO is asking is not a question worth a token
+   * parse, a signature check or a Core round-trip to answer — every one of
+   * those gates below costs real work this socket is about to be refused
+   * regardless of how it comes out. This is the one check in the whole
+   * function that touches nothing but this process's own memory.
+   */
+  const admission = spendGuard.check();
+  if (!admission.admitting) {
+    console.error(
+      `[oracle] refusing a new session — platform spend ceiling reached: ` +
+        `$${admission.spentUsd.toFixed(4)} spent against a $${admission.ceilingUsd.toFixed(2)} daily ceiling`,
+    );
+    socket.close(CLOSE_CODES.SPEND_CEILING, 'daily spend ceiling reached');
+    return;
+  }
+
   const raw = tokenFrom(request);
   if (!raw) {
     socket.close(CLOSE_CODES.UNAUTHORIZED, 'missing session token');
@@ -1888,14 +1982,22 @@ async function finish(
    * that just ended and rewrites the two curated memory stores — which is
    * what makes the NEXT session start where a human tutor would start.
    *
-   * Deliberately NOT skipped when `closeOutcome === 'already-closed'` above:
-   * `finalizeParked` already ran this same review once, on a snapshot from
-   * mid-turn — missing exactly the reply this function is closing out — and
-   * suppressing the more complete run here would leave ONLY the stale one as
-   * this session's lasting memory, which is worse than paying for both.
-   * Running both IS a real, avoidable extra model call (§1.0's "directly"
-   * cost) with no dedup between them; left open for a follow-up round rather
-   * than resolved by guessing at which of the two writes should win.
+   * ALWAYS fires here, even when `closeOutcome === 'already-closed'` above —
+   * this call's own snapshot is the MORE complete one in exactly that race:
+   * this function only reaches this point after the busy turn ahead of the
+   * farewell has settled, while `finalizeParked`'s own snapshot (when it
+   * wins that race) is taken mid-turn, missing exactly the reply this
+   * function is closing out. Round 98 found this and correctly declined to
+   * suppress it — running both was a real, avoidable extra model call
+   * (§1.0's "directly" cost), but suppressing THIS one would have kept only
+   * the stale review as this session's lasting memory, which is worse.
+   *
+   * Item 71 closes that follow-up on the OTHER side: `finalizeParked` now
+   * checks `Live.endSessionRequested` (copied onto its `ParkedSession` entry
+   * at park time) before it fires ITS OWN review — a guaranteed sign, by
+   * construction of `releaseTurn`'s own `finally`-chain, that a call exactly
+   * like this one is still coming — and defers to it instead of paying for a
+   * redundant one on stale data. See `finalizeParked`'s own comment.
    */
   void runPostSessionReview({
     session: live.session,

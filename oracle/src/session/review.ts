@@ -4,6 +4,7 @@ import { addSessionCost, updateLearnerMemory } from '../core/client.js';
 import { stripInvisible } from '../safety/untrusted.js';
 import { moderateTutorOutput, deterministicModeration } from '../safety/moderation.js';
 import { estimateCostUsd } from '../tutor/orchestrator.js';
+import { spendGuard } from './spend-guard.js';
 import type { SessionContext } from '../core/client.js';
 
 /*
@@ -194,6 +195,16 @@ async function reportReviewCost(sessionId: string, spend: ReviewSpend): Promise<
   }
   const costUsd = estimateCostUsd(promptTokens, completionTokens);
   if (!(costUsd > 0)) return;
+  /*
+   * Recorded to the PLATFORM-wide ledger before the Core write below is even
+   * attempted, same as this function already records the SESSION's cost as
+   * spent the moment the completion answers (see `review()`'s own "THE MONEY
+   * IS SPENT HERE" comment) — a Core write that fails must not also make this
+   * real, already-billed call invisible to the circuit breaker that exists
+   * specifically to catch spend Core never heard about (/ORACLE.md §15.2
+   * item 1).
+   */
+  spendGuard.record(costUsd);
   const recorded = await addSessionCost({ sessionId, costUsd, reason: 'post_session_review' });
   if (!recorded) {
     console.warn(

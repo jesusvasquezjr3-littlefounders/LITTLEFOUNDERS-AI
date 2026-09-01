@@ -89,7 +89,7 @@ it.
 
 ## Environment
 
-See [`.env.example`](./.env.example). Three that catch people out:
+See [`.env.example`](./.env.example). Five that catch people out:
 
 - `TUTOR_SESSION_SECRET` must **differ** from `INTERNAL_API_KEY`.
 - `SESSION_HARD_BUDGET_MS` must exceed `SESSION_SOFT_BUDGET_MS`, or startup
@@ -102,6 +102,11 @@ See [`.env.example`](./.env.example). Three that catch people out:
 - `SPEECH_CACHE_SCOPE=scripted` is the default and the safe one. `all` shares
   model-generated audio between learners, which outlives the 90-day retention
   window — an owner decision, not a tuning knob.
+- `DAILY_SPEND_CEILING_USD` (default `20`) is the platform-wide spend circuit
+  breaker (/ORACLE.md §15.2 item 1) — a new session is refused outright once
+  the rolling 24h total reaches it. `DAILY_SPEND_ALERT_FRACTION` (default
+  `0.5`) is when it warns instead of refusing. Both are conservative starting
+  points, not a modelled budget — raise the ceiling as real paid usage grows.
 
 ## Deployment
 
