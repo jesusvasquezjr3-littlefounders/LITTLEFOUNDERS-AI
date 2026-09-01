@@ -11718,3 +11718,47 @@ of the Tutor's `verify:*` browser gates (`rig`, `placement`,
 needed — this is a backend-only data-validation fix with no UI surface of
 its own.
 
+## Round 114: the whiteboard's redraw carried no live-region announcement for assistive tech, so a screen-reader user who had already met the board once got no notice a new turn had redrawn it — found by adversarial review sweep tutor-review-sweep-101 (whiteboard-at-scale dimension), HIGH, closed 2026-08-31
+
+**HIGH, FIXED.** `TutorWhiteboard.tsx`'s only accessibility surface was a
+static `aria-label` mutating on a node that is neither removed nor
+re-inserted between turns — an `aria-label` changing on an otherwise
+stable node is not reliably announced by assistive tech. A screen-reader
+user who had already met the board once (turn N) got no notice that
+turn N+1 had redrawn the SAME node with new values; the accessible name
+was technically correct on inspection but silent on the one event —
+"the story moved forward" — this feature exists to convey.
+
+**Fix.** A `key={seq}`-remounted `role="status" aria-live="polite"` span,
+sibling to (never descendant of) the `role="img"` node, announcing once
+per genuinely new board. `key={seq}` reuses the exact turn-boundary
+signal the growth animation already resets on, giving the identical
+guarantee `LiveSegmentPanel.tsx`'s round-87 fix already established for
+this codebase's "something changed, tell assistive tech" convention:
+announce once per genuinely new arrival, never on an unrelated
+re-render of what is already on screen. The message is deliberately
+GENERIC ("The whiteboard updated."), not the board's own label/values —
+`LiveSegmentPanel` took the identical posture in round 87, announcing
+"an activity is ready" rather than the activity's own prompt text; this
+round's scope is the missing mechanism, not the announced content. i18n:
+`tutor.whiteboard.updated` added to `en-US`, `es-MX` and `pt-BR` in the
+same commit (§1.8).
+
+Merged on top of round 101 (the `aria-label`'s own per-step captions,
+`captionFor`) and round 107 (the true-zero visibility floor,
+`ZERO_EPSILON`) — both already-merged siblings to this same render
+block. This round adds the missing live-region MECHANISM alongside
+those; it does not touch the `aria-label` content or the height
+calculation either one already fixed.
+
+**Verification.** `npm run type-check`, `npm run lint`, `npm run build`
+all clean in `frontend/`. `tutorWhiteboard.test.tsx`: 12/12, including
+this round's new assertions that the live region's text content is
+`key`-scoped to `seq` (a re-render with the SAME `seq` does not remount
+the announcement, a genuinely new `seq` does) and that it renders as a
+sibling of, never nested inside, the `role="img"` element. Root gates
+`docs:check`, `secrets:check`, `i18n:check` (3-locale parity), `tools:test`
+(26/26) all green. No `oracle/AGENTS.md`/`/ORACLE.md` item: nothing in
+`oracle/` changed, and this is a client-side accessibility fix to an
+existing render, not a change to what the whiteboard displays or why.
+

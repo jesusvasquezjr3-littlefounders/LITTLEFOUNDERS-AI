@@ -369,6 +369,7 @@
       "week": "Week {{n}}",
       "month": "Month {{n}}",
       "year": "Year {{n}}"
-    }
+    },
+    "updated": "The whiteboard updated."
   }
 }

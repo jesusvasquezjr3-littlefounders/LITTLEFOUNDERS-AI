@@ -369,6 +369,7 @@
       "week": "Semana {{n}}",
       "month": "Mes {{n}}",
       "year": "Año {{n}}"
-    }
+    },
+    "updated": "El pizarrón se actualizó."
   }
 }
