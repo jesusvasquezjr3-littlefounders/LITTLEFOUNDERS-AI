@@ -13395,3 +13395,125 @@ replay/conversation-view suites), build clean. Root: `docs:check`,
 time — the ROADMAP.md pending-delta range was extended to account for
 `0067` proactively, before running `tools:test`, having paid for that
 lesson the round immediately before this one.
+
+## Round 135: word-level caption highlighting (gated, unshipped) and full-duplex barge-in (investigated, written up) — the 9th and final Phase 2 lane, closing the two-phase full-completion push, 2026-09-01
+
+`oracle-tutor-backlog`. Real, tested, end-to-end infrastructure for
+highlighting the word a caption is currently speaking — Inworld's
+`timestampType: 'WORD'` on the exact `/tts/v1/voice` endpoint this
+codebase already calls (documented to add `wordAlignment` to the SAME
+response, no transport change, verified against Inworld's own docs rather
+than assumed), `WireWhiteboard`'s sibling `wordTimings` riding
+`turn_audio`, and `SpeechCaption.tsx`'s reveal boundary doubling as the
+highlight so a synced-but-one-beat-behind caption reads as ordinary rather
+than broken. **Deliberately not turned on**: that timing capability is
+documented ONLY for `inworld-tts-2`/`inworld-tts-2-flash`, and every
+production `.env` runs `inworld-tts-1` — a model this codebase has never
+sent that field to and has not measured against, on the same
+"measured, not read off a documentation page" standard this file holds
+every other vendor claim to. `supportsWordTimings` gates the request on
+the configured model naming itself TTS-2-family, so `inworld-tts-1`'s
+request body is byte-for-byte unchanged, pinned by a test. Flipping the
+model is its own owner-scale decision — voice quality and latency for
+every session, and it invalidates the entire speech cache since
+`voiceFingerprint()` keys on the model name — properly out of scope for
+an agent working alone in an isolated worktree with no production
+credentials to measure against.
+
+**Full-duplex VAD/barge-in: investigated on the premise that the
+interrupt MECHANISM might be missing, found not to be.**
+`TutorExperience.tsx`'s `onInterrupt` already does both halves (local
+squelch, server-side abort) and the microphone already re-opens
+automatically once it lands — zero code needed there. What is actually
+missing, and harder, is a voice-detected TRIGGER for that existing
+mechanism, which needs a live microphone OPEN WHILE THE TUTOR'S OWN AUDIO
+IS PLAYING — the literal shape of "always-listening" this codebase has
+independently and explicitly rejected, in writing, in three separate
+places, for §1.9 reasons (a child's room, captured audio from anyone
+nearby who never consented) rather than engineering ones. Also has a
+real, unmeasured technical failure mode this product's audience makes
+routine rather than rare: a shared tablet with no headphones means the
+device's own speaker feeds its own microphone, which naive
+amplitude-based VAD reads as "the learner started talking" the instant
+the tutor's voice begins. The provider's own genuinely full-duplex
+product was investigated as an alternative and found to be a materially
+different integration (a persistent bidirectional socket in place of
+today's two independent REST calls — the "voice-provider project" this
+file's own architecture section already anticipated as a rewrite, not an
+increment) that makes the privacy question WORSE, not better: continuous
+ambient audio to a third party for the length of every turn, rather than
+local analysis, a materially different processing activity than the
+existing consent gate and DPA scope cover. Written up as ORACLE.md §19.6
+rather than built as a shallow version, per this push's own instruction
+that a project needing capabilities the codebase does not have wired up
+at all gets a design finding, not faked code.
+
+**Three of the five merge conflicts were the "diff clustered unrelated
+adjacent content" pattern this two-phase effort has now hit more times
+than any other single issue.** `useTutorSocket.ts` was the sharpest
+instance: this lane's base commit predates the round-81/82
+queueMicrotask fix for the double-connection bug ENTIRELY — a plain
+synchronous `new WebSocket(socketUrl)` with `socket.onopen`/`onmessage`,
+never the deferred `ws.` version HEAD has carried since that round. Git
+aligned HEAD's `ws.onopen` block against this lane's entire `onmessage`
+switch as one merge hunk, because the true, tiny diff (two lines adding
+`wordTimings`) sat buried deep inside an otherwise-identical switch that
+happened to share no adjacent unchanged lines with HEAD's differently-
+shaped scaffolding. Resolved the only reliable way, as in prior rounds:
+pulled both sides' COMPLETE clean files via `git show`, confirmed by
+direct diff that exactly two lines actually differed (`wordTimings: null`
+on a fresh turn; `wordTimings: message.wordTimings ?? null` on
+`turn_audio`), discarded the lane's outdated pre-fix structure entirely,
+and hand-applied just those two lines onto HEAD's real, current
+`queueMicrotask` version — never regressing a correctness fix to accept a
+feature. ORACLE.md's §19.5/§19.6 conflict needed the same kind of
+judgment call beyond a mechanical merge: reconciling the deferred-items
+list correctly meant not just removing the two items THIS lane closed
+(caption highlighting, VAD/barge-in), but also removing two OTHER items
+(step dots, `demonstrate` replay) that shipped in the immediately prior
+two rounds of this same session and would otherwise sit stale in a list
+being edited in the same breath. Two remaining conflicts were trivial
+import-list combinations.
+
+**Found and fixed, incidental to the merge, not part of this lane's own
+scope:** `labFixtures.ts` auto-merged with zero conflicts — and left the
+`compare`/`marked_line`/`categories` whiteboard fixtures (added in this
+session's two EARLIER merges, which this lane's own base commit never
+saw) missing the new `wordTimings` field `TutorTurnState` now requires. A
+clean auto-merge only proves the two diffs did not overlap on the same
+LINES, never that the merged result is semantically complete — the same
+lesson the compare/marked_line backend-persistence gap (two rounds
+earlier in this same session) already taught, recurring here in miniature
+and caught the same way: by actually running `tsc`, which failed with
+three real "Property 'wordTimings' is missing" errors rather than
+passing on a technicality. Fixed by adding the field to all three
+fixtures.
+
+**Verification, independently re-run by the coordinator after every
+file's resolution.** oracle: tsc clean across all 3 tsconfigs, lint
+clean, 35 files / 843 tests green (+7, this lane's own `voice.test.ts`/
+`speech.test.ts` word-timing coverage), build clean, `verify:tutor` OK,
+`verify:pedagogy` OK. frontend: tsc clean (only after the labFixtures.ts
+fix above — the FIRST run genuinely failed, correctly), lint clean, 140
+files / 1633 tests green (+1 file — the new `speechCaptionWordSync.
+test.tsx`, 8 tests), build clean. backend untouched by this lane —
+verification skipped for it, not silently forgotten. Root: `docs:check`,
+`secrets:check`, `i18n:check`, `paths:check`, `seo:check`,
+`provider:check`, `tools:test` (26/26) all green on the first run — no
+migration in this lane, so no ROADMAP.md delta range to keep in sync this
+time.
+
+**This closes the two-phase full-completion push.** All 8 Phase 1 lanes
+(Rounds 125–132) and all 9 Phase 2 lanes (Rounds 133–135, this one being
+the third of three commits covering all nine — 133 and 134 each covered
+one lane, this entry is the ninth and final one) are merged into `main`,
+locally, per the owner's own explicit instruction to complete all code
+before any live testing pass begins. `repo_map.md` was resolved
+`--ours` (a placeholder) at every one of these merges rather than
+hand-merged, per this session's own established practice that it is
+cheaper to regenerate fresh once at the very end than to reconcile an
+auto-generated file's conflicts nine separate times; that regeneration,
+and a final full-repo re-verification of all three services together
+(not merely each lane against `main` individually), is the next step
+before this push moves on to the live, low-IQ-persona testing phase the
+owner asked for.
