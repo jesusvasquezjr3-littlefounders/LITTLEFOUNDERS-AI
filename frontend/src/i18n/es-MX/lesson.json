@@ -142,7 +142,8 @@
         "hiddenCard": "Carta oculta"
       },
       "sortBuckets": {
-        "placeHere": "Ponlo aquí"
+        "placeHere": "Ponlo aquí",
+        "groupLabel": "Grupo: {{label}}"
       },
       "groupSets": {
         "both": "Los dos",

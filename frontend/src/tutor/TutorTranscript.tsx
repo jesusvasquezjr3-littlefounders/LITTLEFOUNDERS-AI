@@ -173,7 +173,27 @@ export function TutorTranscript({
     >
       <div
         ref={scrollRef}
+        // `role="log"` before `aria-label`, not incidental: axe-core's own
+        // `aria-prohibited-attr` rule flags `aria-label` on a bare `<div>` as
+        // "not well supported" — a role-less generic element has no ARIA node
+        // some assistive tech guarantees to expose a name for. `log` is also
+        // the semantically CORRECT role for this element regardless (a region
+        // where new items append in order and old ones may scroll away, which
+        // is exactly what a conversation transcript is), so this is not a
+        // workaround bolted on to satisfy a linter — it names what the div
+        // already does. `log` also implies `aria-live="polite"`, kept
+        // explicit anyway so the behaviour does not depend on a browser
+        // correctly inferring it from the role.
+        role="log"
         aria-label={label}
+        // Found by an axe-core re-run, 2026-09-01 (ORACLE.md §16.1, "re-run
+        // axe before launch"): a scrollable region with no focusable
+        // descendant (no activity in play, or a learner who has not yet
+        // pressed the edit affordance) was reachable by mouse wheel or touch
+        // but never by keyboard — `scrollable-region-focusable`. `tabIndex=0`
+        // puts it in the tab order without taking focus on mount, so arrow
+        // keys / Page Up / Page Down scroll it exactly as a mouse would.
+        tabIndex={0}
         className="min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pr-1"
         // The transcript is a log: announce additions, but do not steal focus
         // from whatever the learner is doing in the activity panel. It is also

@@ -2071,22 +2071,47 @@ the build session of 2026-08-21; unticked ones block enabling this for minors.
       `/glb/` source exports, which are outside the repository.
 - [x] Verified in-browser at 375 px, 720 px and 1280 px, light and dark,
       screenshots taken, no horizontal overflow at any width (§1.11).
-- [~] **Accessibility audited with axe-core** (WCAG 2.0/2.1 A and AA) across
-      all four Tutor surfaces in both themes: zero violations — **proven
-      2026-08-21, and NOT re-run since the caption, the plate and the replay
-      transport were rebuilt** (§16.1). Marked `~` rather than `[x]` because a
-      tick here was contradicted by §16.1 two hundred lines below, and a
-      child-safety checklist that disagrees with itself is worse than one with
-      an honest gap in it. **Re-run axe before a minor uses this.** What
-      follows is what the 08-21 run established. Every
-      interactive element is tabbable, carries an accessible name and can take
-      focus; the caption and transcript both announce politely. One real
-      failure was found and fixed — the consent status line used a faint colour
-      at 2.56:1 against a 4.5:1 requirement, on the exact sentence that tells a
-      parent whether their child's microphone is on. The same token fails
-      wherever it carries text elsewhere in the app (~124 places); that is
-      pre-existing and tracked separately rather than rewritten inside a Tutor
-      change.
+- [x] **Accessibility audited with axe-core** (WCAG 2.0/2.1 A and AA) across
+      all four Tutor surfaces in both themes: zero violations — **re-run
+      2026-09-01** (the re-run this file itself demanded, twice: here and at
+      §16.1 below), against the conversing phase, `SpeechCaption.tsx`, the
+      HUD plates and `ReplayInWorld.tsx`'s transport, after all four were
+      rebuilt. Unlike the 08-21 pass, this one is not a one-off: it is
+      `npm run verify:tutor-a11y` (`frontend/scripts/verify-tutor-a11y.mjs`),
+      injecting axe-core into `/dev/tutor-lab` across desktop light en-US,
+      desktop dark es-MX and mobile light es-MX — the same three
+      configurations `verify-tutor-ui.mjs` already drives — so the next
+      rebuild gets a gate instead of a memory. Two real violations found and
+      fixed, both on `TutorTranscript.tsx`'s scroll region:
+      `scrollable-region-focusable` (an `overflow-y-auto` log with no
+      focusable descendant was reachable by mouse wheel or touch, never by
+      keyboard — fixed with `tabIndex={0}`) and `aria-prohibited-attr`
+      (`aria-label` on a bare, role-less `<div>`, which axe calls "not well
+      supported" — fixed with `role="log"`, which is also just the correct
+      role for a running transcript, not a workaround). Live-testing
+      separately flagged `sort_buckets`'s group/drop-zone buttons as having no
+      accessible name at all; that specific claim did not reproduce
+      (`zone.label` is real, non-empty text — Zod's `idLabel` schema enforces
+      `min(1)` — so the browser's name-from-content rule already gave each
+      button a name), but the bare category word ("Save", alone) told a
+      screen-reader user less than the grid of boxes tells a sighted one, so
+      each button now carries an explicit `aria-label` ("Group: Save"),
+      composed from the segment's own data through the same i18n key in all
+      three locales — regression-checked by the same gate on every run, not
+      only found once and trusted to stay fixed. One `color-contrast`
+      false positive is worth naming so it is not rediscovered as a mystery:
+      `PersonalizeInWorld`'s "I'm ready" action, scanned mid-`lf-settle`
+      entrance animation (opacity ~0.22 of a 300ms transition), reads as a
+      violation; scanned at rest it is a solid `bg-accent`/`text-on-accent`
+      pairing at 6.29:1, comfortably past 4.5:1. The gate waits out the
+      settle before scanning specifically so this does not recur as a false
+      alarm on every future run. Every interactive element is tabbable,
+      carries an accessible name and can take focus; the caption and
+      transcript both announce politely. The 08-21 run's own finding — the
+      consent status line's faint colour at 2.56:1 — was not re-broken; the
+      same token still fails wherever it carries text elsewhere in the app
+      (~124 places), which remains pre-existing and tracked separately rather
+      than rewritten inside a Tutor change.
 - [x] Owner sign-off recorded for the §1.5 exception (§3.2).
 - [x] **Adversarial security audit, 2026-08-23.** Six surfaces attacked
       independently (injection stack, socket auth, the PII boundary,
@@ -2191,17 +2216,20 @@ items are unticked because they were not proven, and each one says why.
       a software rasteriser — which is what a headless machine has — say
       nothing about a real GPU, and there is no real one here. It needs a
       device.
-- [ ] **Text over the render is measurable.** **HALF SUPERSEDED, half not
-      re-run, and saying which is the point.** The first half — "every plate
-      carrying body text stands on the opaque `bg-surface` floor" — was
-      superseded on 2026-08-22 when the Lumen material took that job over and
-      the last opaque core was removed (`LessonPlate`'s `floor="none"`); the
-      contrast bound it protected is now derived in `HudPlate.test.tsx`
-      (4.96:1 light, 7.2:1 dark for muted body text). The second half —
-      axe-core reporting zero violations across all Tutor surfaces in both
-      themes — was proven on 2026-08-21 and has NOT been re-run since the
-      caption, the plate and the replay transport were rebuilt. **Re-run axe
-      before launch.**
+- [x] **Text over the render is measurable.** **HALF SUPERSEDED, half
+      RE-RUN — 2026-09-01.** The first half — "every plate carrying body text
+      stands on the opaque `bg-surface` floor" — was superseded on 2026-08-22
+      when the Lumen material took that job over and the last opaque core was
+      removed (`LessonPlate`'s `floor="none"`); the contrast bound it
+      protected is now derived in `HudPlate.test.tsx` (4.96:1 light, 7.2:1
+      dark for muted body text). The second half — axe-core reporting zero
+      violations across all Tutor surfaces in both themes — was proven on
+      2026-08-21, then genuinely re-run after the caption, the plate and the
+      replay transport were all rebuilt: see §16 above for what the re-run
+      found (two real fixes on `TutorTranscript.tsx`, one confirmed false
+      positive on a `personalizing` action mid-entrance-animation) and
+      `npm run verify:tutor-a11y` for the gate that makes the NEXT rebuild
+      re-run this on its own rather than waiting for someone to remember.
 
 ### §16.2 Known limitations, in plain language — 2026-08-23
 
