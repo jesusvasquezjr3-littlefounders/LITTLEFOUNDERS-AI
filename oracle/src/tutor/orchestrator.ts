@@ -44,8 +44,8 @@ import {
 } from './prompt.js';
 import { selectSkill } from './skills.js';
 import { recallOwnHistory } from '../core/client.js';
-import { parseTurn, type TutorTurn } from './turnSchema.js';
-import { computeSequence } from './whiteboard.js';
+import { parseTurn, whiteboardVisibleText, type TutorTurn } from './turnSchema.js';
+import { whiteboardComputesOk } from './whiteboard.js';
 import {
   closingResponse,
   consentRevokedResponse,
@@ -1759,8 +1759,8 @@ export class TutorOrchestrator {
                  */
                 console.warn('[oracle] whiteboard set while an activity is still open and ungraded — dropped');
                 parsed.turn.whiteboard = null;
-              } else if (computeSequence(parsed.turn.whiteboard) === null) {
-                console.warn('[oracle] whiteboard did not compute to a sane sequence — dropped');
+              } else if (!whiteboardComputesOk(parsed.turn.whiteboard)) {
+                console.warn(`[oracle] whiteboard (${parsed.turn.whiteboard.kind}) did not compute to sane values — dropped`);
                 parsed.turn.whiteboard = null;
               }
             }
@@ -1781,7 +1781,7 @@ export class TutorOrchestrator {
             const visible = [
               parsed.turn.say,
               parsed.turn.segmentRequest?.framing,
-              parsed.turn.whiteboard?.label,
+              ...whiteboardVisibleText(parsed.turn.whiteboard),
             ]
               .filter((s): s is string => typeof s === 'string')
               .join(' ');
@@ -1838,8 +1838,20 @@ export class TutorOrchestrator {
              * this file: a rule the model is only TOLD does not hold; a rule
              * it is CHECKED on does.
              */
+            /*
+             * `whiteboardUnitMismatch`/`whiteboardNumberMismatch`/
+             * `whiteboardDoubledPeriodSteps` below are ALL specific to a
+             * `sequence` board's own period-by-period story — narrowed here,
+             * once, rather than inside each of the three, so a `compare` or
+             * `marked_line` board (V4 backlog) is simply never handed to a
+             * check written for a shape it does not have. `missedWhiteboard`
+             * stays on the FULL `whiteboard`, unnarrowed: "a growth story told
+             * with no board at all" is true regardless of which kind a board
+             * would have been.
+             */
+            const sequenceBoard = parsed.turn.whiteboard?.kind === 'sequence' ? parsed.turn.whiteboard : null;
             const missedWhiteboard = narratesUnshownGrowth(parsed.turn.say, parsed.turn.whiteboard);
-            const wrongUnit = whiteboardUnitMismatch(parsed.turn.say, parsed.turn.whiteboard);
+            const wrongUnit = whiteboardUnitMismatch(parsed.turn.say, sequenceBoard);
             /*
              * THE BOARD'S OWN NUMBERS CONTRADICTING WHAT WAS JUST SAID
              * (round 65, 2026-08-30, HIGH). `missedWhiteboard`/`wrongUnit`
@@ -1862,7 +1874,7 @@ export class TutorOrchestrator {
              * comment (prompt.ts) for both reproductions and the
              * false-positive analysis behind each pattern's narrow scope.
              */
-            const numberMismatch = whiteboardNumberMismatch(parsed.turn.say, parsed.turn.whiteboard);
+            const numberMismatch = whiteboardNumberMismatch(parsed.turn.say, sequenceBoard);
             /*
              * ONE STEP PER OPERATION INSTEAD OF ONE STEP PER PERIOD — a
              * growth story with BOTH an income and an expense every period
@@ -1876,7 +1888,7 @@ export class TutorOrchestrator {
              * mislabelled SHAPE — twice as many periods drawn as real ones —
              * not a wrong fact a child could be taught.
              */
-            const doubledSteps = whiteboardDoubledPeriodSteps(parsed.turn.whiteboard);
+            const doubledSteps = whiteboardDoubledPeriodSteps(sequenceBoard);
             /*
              * §9.4 of the blueprint, stated as a hard rule: never give the
              * final answer while asking. Detected by computing the question's
@@ -2199,7 +2211,7 @@ export class TutorOrchestrator {
      * The separator is a blank line so the judge reads two sentences rather
      * than one run-on, which is what it would otherwise score.
      */
-    const visibleText = [turn.say, turn.segmentRequest?.framing, turn.whiteboard?.label]
+    const visibleText = [turn.say, turn.segmentRequest?.framing, ...whiteboardVisibleText(turn.whiteboard)]
       .filter((s): s is string => typeof s === 'string')
       .join('\n\n');
 

@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
+import type { TutorWhiteboardWire } from './types';
 
 /*
  * THE TUTOR'S WHITEBOARD (V4).
@@ -18,27 +19,35 @@ import { cn } from '@/lib/utils';
  * owned entirely by the tutor surface (LESSON_ENGINE.md §4's family-boundary
  * convention: a family's files are its own, and this is not a family).
  *
- * `values` ARE NEVER RECOMPUTED HERE. Oracle already ran the same arithmetic
- * server-side (`whiteboard.ts`) before this ever reached the wire — the
- * client's job is to draw the numbers it was given, not to re-derive them,
- * exactly the posture the rest of the Tutor takes with a spoken verdict.
+ * THREE KINDS (/ORACLE.md §20.5): `sequence` (SHIPPED — a value that changes
+ * over time), `compare` and `marked_line` (backlog: "same schema family,
+ * straightforward once sequence is proven live"). `TutorWhiteboardWire`
+ * (`./types`) is the single source for the wire shape of all three.
+ *
+ * `values`/`difference`+`greater`/each mark's `position` ARE NEVER
+ * RECOMPUTED HERE. Oracle already ran the same arithmetic server-side
+ * (`whiteboard.ts`) before this ever reached the wire — the client's job is
+ * to draw the numbers it was given, not to re-derive them, exactly the
+ * posture the rest of the Tutor takes with a spoken verdict.
+ *
+ * EACH KIND OWNS ITS WHOLE RENDER, wrapper included — deliberately NOT one
+ * shared wrapper with the visual swapped out underneath. `sequence` is the
+ * only kind with a reveal animation, and that animation's own state (how
+ * many bars are grown in) is also exactly what the accessible name needs to
+ * stay in step with. A first draft of this file hoisted the wrapper (and
+ * therefore the aria-label) to a shared parent while leaving the reveal
+ * timer inside the kind-specific component — TWO independent copies of "how
+ * far has this reveal gotten", ticking on two separate effects, with no
+ * mechanism keeping them in agreement. That is the exact shape of bug this
+ * file's own history (RUNBOOK.md round 101) already cost a round on, for
+ * `shown` vs. a stale `seq` — never introduce a second live copy of a value
+ * a component's own state already owns. Each kind function below is
+ * therefore self-contained: it renders its own announcement span, its own
+ * `role="img"` wrapper, and computes its own aria-label from whatever state
+ * it alone holds.
  */
 
-export interface TutorWhiteboardData {
-  kind: 'sequence';
-  start: number;
-  values: number[];
-  /**
-   * What one step represents in time. Found missing from a real session:
-   * the tutor's own story said "cada semana" three times and the board, with
-   * no notion of a unit, drew "Día 1/2/3" — a label that CONTRADICTED the
-   * story it was supposed to match, on the one feature whose entire purpose
-   * is that match. Server-set, from the model's own cadence word.
-   */
-  unit: 'day' | 'week' | 'month' | 'year';
-  label: string;
-  currency: 'MXN' | 'USD' | 'BRL' | null;
-}
+export type TutorWhiteboardData = TutorWhiteboardWire;
 
 export interface TutorWhiteboardProps {
   board: TutorWhiteboardData;
@@ -51,15 +60,18 @@ export interface TutorWhiteboardProps {
  * How long each bar takes to grow in, one at a time.
  *
  * Exported so `replayScript.ts` can compute how long a replayed beat that
- * drew a whiteboard must stay on screen at minimum — the reveal this
- * constant paces is real work this component does AFTER the beat has
+ * drew a SEQUENCE whiteboard must stay on screen at minimum — the reveal
+ * this constant paces is real work `SequenceBoard` does AFTER the beat has
  * already started, and nothing else in the replay knew how long it takes.
  * Found by adversarial review (see RUNBOOK.md): a replayed beat's duration
  * was driven purely by the tutor's spoken word count, with zero awareness
  * of this number, so a short `say` paired with a many-step board — the
  * DESIGNED usage, per /ORACLE.md's whiteboard section, not a rare one —
  * could end the beat, and unmount this component, before the bars had
- * finished growing.
+ * finished growing. Meaningless for `compare`/`marked_line`, which render
+ * fully immediately (see those components' own doc comments) —
+ * `replayScript.ts`'s own `whiteboardMinMs` only ever multiplies this by a
+ * `sequence` board's step count.
  */
 export const GROW_STEP_MS = 550;
 
@@ -69,18 +81,18 @@ export const GROW_STEP_MS = 550;
  *
  * Mirrors `oracle/src/tutor/whiteboard.ts`'s own `ZERO_EPSILON` (same value,
  * duplicated rather than imported — this package has no dependency on
- * `oracle/`, same posture as `TutorWhiteboardData` above hand-mirroring the
- * wire shape instead of importing it). That module clamps a running value
- * NEGATIVE by a hair of floating-point noise up to exact `0`, for a
- * legitimate "spend it down to zero" sequence — a designed case, not an edge
- * case. It does not clamp noise on the POSITIVE side (e.g. `1e-16` from a
- * different step ordering), so a value can still arrive here a hair above
- * zero. Found by adversarial review, round 107, RUNBOOK.md: this component's
- * `Math.max(6, …)` visibility floor — added so a genuinely small nonzero bar
- * stays visible — did not carve out true zero, so a value the label above it
- * showed as "$0" still drew a bar with real height, contradicting its own
- * label on exactly the story beat ("spend it down to zero") this feature was
- * built to narrate correctly.
+ * `oracle/`, same posture as `TutorWhiteboardWire` (`./types`) hand-mirroring
+ * the wire shape instead of importing it across the service boundary). That
+ * module clamps a running value NEGATIVE by a hair of floating-point noise
+ * up to exact `0`, for a legitimate "spend it down to zero" sequence — a
+ * designed case, not an edge case. It does not clamp noise on the POSITIVE
+ * side (e.g. `1e-16` from a different step ordering), so a value can still
+ * arrive here a hair above zero. Found by adversarial review, round 107,
+ * RUNBOOK.md: this component's `Math.max(6, …)` visibility floor — added so
+ * a genuinely small nonzero bar stays visible — did not carve out true zero,
+ * so a value the label above it showed as "$0" still drew a bar with real
+ * height, contradicting its own label on exactly the story beat ("spend it
+ * down to zero") this feature was built to narrate correctly.
  */
 const ZERO_EPSILON = 1e-9;
 
@@ -94,7 +106,91 @@ function useValueFormat(currency: string | null): (n: number) => string {
   }, [i18n.language, currency]);
 }
 
-export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps) {
+/** A locale-neutral "min–max" range, an en dash rather than a translated connector word — reads fine in all three shipped locales with no new i18n key. */
+function formatRange(min: string, max: string): string {
+  return `${min}–${max}`;
+}
+
+/**
+ * The announcement + `role="img"` wrapper every kind shares byte-for-byte —
+ * factored out so the three kind-specific components below differ ONLY in
+ * their inner visual and their own aria-label, never in this shell. See
+ * `key={seq}`'s own comment for why the announcement is generic and kind-
+ * agnostic on purpose.
+ */
+function WhiteboardShell({
+  seq,
+  ariaLabel,
+  label,
+  className,
+  children,
+}: {
+  seq: number;
+  ariaLabel: string;
+  label: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  const { t } = useTranslation();
+  return (
+    <>
+      {/*
+        THE MISSING LIVE ANNOUNCEMENT (round 101, HIGH — review sweep
+        tutor-review-sweep-101, whiteboard-at-scale dimension). Until this
+        round, the ONLY accessibility surface this component had was the
+        static `aria-label` below, and an `aria-label` mutating on a node
+        that is neither removed nor re-inserted is not reliably announced by
+        assistive tech — a screen-reader user who had already met the board
+        once got no notice that a NEW turn had redrawn the SAME node with
+        new values. That is exactly the "something changed, tell the
+        assistive-tech user" event this codebase already has a convention
+        for: `LiveSegmentPanel.tsx`'s round-87 fix, a `key`-remounted
+        `role="status" aria-live="polite"` span, announcing an activity's
+        arrival regardless of breakpoint.
+
+        `key={seq}` reuses the SAME turn-boundary signal the growth
+        animation on a `sequence` board already resets on (`seq` is bumped
+        once per turn specifically so the same board never re-plays for an
+        unrelated re-render) — giving the identical guarantee `LiveSegmentPanel`
+        gets from `live.segmentId`: announce once per genuinely NEW board,
+        never on a re-render of the one already on screen.
+
+        Deliberately a SIBLING of the `role="img"` node below, not a
+        descendant of it — an element with `role="img"` presents its
+        subtree to assistive tech as the image's own replaced content,
+        which would swallow a nested live region rather than let it
+        announce on its own.
+
+        Deliberately a GENERIC message, not the board's own label/values —
+        that content is owned by the `aria-label` below (this round's scope
+        was the missing MECHANISM only). `LiveSegmentPanel` took the
+        identical posture in round 87: its live region announces "an
+        activity is ready," never the activity's own prompt text. Kind-
+        agnostic on purpose: it announces that SOMETHING new arrived, which
+        is equally true of `sequence`, `compare` and `marked_line`.
+      */}
+      <span key={seq} role="status" aria-live="polite" className="sr-only">
+        {t('tutor.whiteboard.updated')}
+      </span>
+      <div data-tutor-whiteboard role="img" aria-label={ariaLabel} className={cn('flex min-h-0 flex-col gap-3', className)}>
+        <p className="lf-caption shrink-0 text-content-muted">{label}</p>
+        {children}
+      </div>
+    </>
+  );
+}
+
+type SequenceWire = Extract<TutorWhiteboardWire, { kind: 'sequence' }>;
+type CompareWire = Extract<TutorWhiteboardWire, { kind: 'compare' }>;
+type MarkedLineWire = Extract<TutorWhiteboardWire, { kind: 'marked_line' }>;
+
+/**
+ * `kind: 'sequence'` — a value that changes over time, drawn as bars that
+ * grow in one at a time while the tutor speaks (the ORIGINAL, proven
+ * whiteboard visual; unchanged in substance from before this file learned
+ * two more kinds — only moved into its own function).
+ */
+function SequenceBoard({ board, seq, className }: { board: SequenceWire; seq: number; className?: string }) {
   const { t } = useTranslation();
   const format = useValueFormat(board.currency);
   const reducedMotion = useMemo(
@@ -167,78 +263,202 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
   const captionFor = (i: number) =>
     i === 0 ? t('tutor.whiteboard.start') : t(`tutor.whiteboard.step.${board.unit}`, { n: i });
 
+  const ariaLabel = `${board.label}. ${board.values
+    .slice(0, safeShown)
+    .map((value, i) => `${captionFor(i)}: ${format(value)}`)
+    .join(', ')}`;
+
   return (
-    <>
-      {/*
-        THE MISSING LIVE ANNOUNCEMENT (round 101, HIGH — review sweep
-        tutor-review-sweep-101, whiteboard-at-scale dimension). Until this
-        round, the ONLY accessibility surface this component had was the
-        static `aria-label` below, and an `aria-label` mutating on a node
-        that is neither removed nor re-inserted is not reliably announced by
-        assistive tech — a screen-reader user who had already met the board
-        once got no notice that a NEW turn had redrawn the SAME node with
-        new values. That is exactly the "something changed, tell the
-        assistive-tech user" event this codebase already has a convention
-        for: `LiveSegmentPanel.tsx`'s round-87 fix, a `key`-remounted
-        `role="status" aria-live="polite"` span, announcing an activity's
-        arrival regardless of breakpoint.
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 gap-2 overflow-x-auto px-1 pb-1">
+        {board.values.map((value, i) => {
+          const grown = i < safeShown;
+          const heightPct = value <= ZERO_EPSILON ? 0 : Math.max(6, Math.round((value / max) * 100));
+          return (
+            <div key={i} className="flex min-w-[3.5rem] flex-1 flex-col items-center gap-1">
+              <span className="lf-number lf-title text-content" aria-hidden="true">
+                {grown ? format(value) : ''}
+              </span>
+              {/*
+                THE BAR TRACK — `flex-1 min-h-0` so it (not the bar itself)
+                is what carries the ROW's stretched, DEFINITE height down to
+                a real pixel value, with `items-end` moved HERE so the bar
+                grows from a shared bottom baseline. TWO defects found live,
+                verifying THIS file in a real browser while building the
+                `compare`/`marked_line` kinds — neither one jsdom (which
+                never lays anything out) or any existing unit test here
+                could have caught, exactly the class of bug this task's own
+                brief warned about:
 
-        `key={seq}` reuses the SAME turn-boundary signal the growth
-        animation above already resets on (`seq` is bumped once per turn
-        specifically so the same board never re-plays for an unrelated
-        re-render) — giving the identical guarantee `LiveSegmentPanel` gets
-        from `live.segmentId`: announce once per genuinely NEW board, never
-        on a re-render of the one already on screen.
+                (1) HEIGHT: `items-end` on the ROW itself (the ORIGINAL,
+                pre-existing structure) leaves each COLUMN's own height
+                auto/content-sized, which is not a definite containing
+                block — a CSS percentage-height cannot resolve against an
+                ancestor whose own height is still being derived FROM that
+                same percentage, so it behaves as `height: auto` and the
+                bar renders at ZERO pixels in every real browser, always,
+                regardless of `heightPct`. Every existing test here only
+                ever asserted the INLINE STYLE VALUE ("71%"), never the
+                rendered box.
 
-        Deliberately a SIBLING of the `role="img"` node below, not a
-        descendant of it — an element with `role="img"` presents its
-        subtree to assistive tech as the image's own replaced content,
-        which would swallow a nested live region rather than let it
-        announce on its own.
-
-        Deliberately a GENERIC message, not the board's own label/values —
-        that content is owned by a sibling fix to the `aria-label` below
-        (this round's scope is the missing MECHANISM only). `LiveSegmentPanel`
-        took the identical posture in round 87: its live region announces
-        "an activity is ready," never the activity's own prompt text.
-      */}
-      <span key={seq} role="status" aria-live="polite" className="sr-only">
-        {t('tutor.whiteboard.updated')}
-      </span>
-      <div
-        data-tutor-whiteboard
-        role="img"
-        aria-label={`${board.label}. ${board.values
-          .slice(0, safeShown)
-          .map((value, i) => `${captionFor(i)}: ${format(value)}`)
-          .join(', ')}`}
-        className={cn('flex min-h-0 flex-col gap-3', className)}
-      >
-        <p className="lf-caption shrink-0 text-content-muted">{board.label}</p>
-        <div className="flex min-h-0 flex-1 items-end gap-2 overflow-x-auto px-1 pb-1">
-          {board.values.map((value, i) => {
-            const grown = i < safeShown;
-            const heightPct = value <= ZERO_EPSILON ? 0 : Math.max(6, Math.round((value / max) * 100));
-            return (
-              <div key={i} className="flex min-w-[3.5rem] flex-1 flex-col items-center gap-1">
-                <span className="lf-number lf-title text-content" aria-hidden="true">
-                  {grown ? format(value) : ''}
-                </span>
+                (2) COLOR (see the class list below): the ORIGINAL fill was
+                `bg-[color:var(--lf-accent)]/70` — an arbitrary-value
+                utility referencing a design-token CSS variable that is
+                itself a bare "R G B" triple (`--lf-accent: 79 70 229`,
+                `index.css`), meant to be used inside `rgb(var(...) /
+                <alpha>)` (which is exactly what `tailwind.config.js`'s OWN
+                `accent` token does). Tailwind cannot decompose an opaque
+                `var()` reference at build time, so it emitted
+                `background-color: var(--lf-accent)` with NO `rgb()`
+                wrapper and NO alpha applied — an invalid color value a
+                browser silently discards, leaving the property at its
+                initial `transparent`. `bg-accent/70` (the CONFIGURED
+                token, below) is what correctly threads the opacity
+                modifier through. BOTH defects left the bar fully invisible
+                since the feature shipped — only the value number and the
+                caption below it were ever seen.
+              */}
+              <div className="flex w-full min-h-0 flex-1 items-end">
                 <div
                   className={cn(
-                    'w-full rounded-t-md bg-[color:var(--lf-accent)]/70 transition-[height] duration-500 ease-out',
+                    'w-full rounded-t-md bg-accent/70 transition-[height] duration-500 ease-out',
                     !grown && 'opacity-0',
                   )}
                   style={{ height: grown ? `${heightPct}%` : '0%' }}
                 />
-                <span className="lf-caption text-content-muted" aria-hidden="true">
-                  {captionFor(i)}
+              </div>
+              <span className="lf-caption text-content-muted" aria-hidden="true">
+                {captionFor(i)}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+/**
+ * `kind: 'compare'` — two SEPARATE, static quantities side by side (V4,
+ * /ORACLE.md §20.5 backlog). Renders immediately, no grow-in reveal: unlike
+ * a `sequence`, there is no story unfolding over steps for an animation to
+ * pace against — this is a snapshot, not a process, and the fastest way to
+ * show a snapshot is to just show it. `difference`/`greater` are
+ * SERVER-COMPUTED (`whiteboard.ts`'s `computeComparison`) — the schema gives
+ * the model no field to assert either directly, so neither is ever the
+ * model's own claim.
+ */
+function CompareBoard({ board, seq, className }: { board: CompareWire; seq: number; className?: string }) {
+  const { t } = useTranslation();
+  const format = useValueFormat(board.currency);
+  const max = Math.max(board.left.value, board.right.value, 1);
+  const sides = [board.left, board.right];
+
+  const ariaLabel = `${board.label}. ${board.left.label}: ${format(board.left.value)}, ${board.right.label}: ${format(board.right.value)}${
+    board.greater === 'tie' ? '' : `. ${t('tutor.whiteboard.compare.difference', { amount: format(board.difference) })}`
+  }`;
+
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col gap-2">
+        <div className="flex min-h-0 flex-1 justify-center gap-6 overflow-x-auto px-1 pb-1">
+          {sides.map((side, i) => {
+            const heightPct = side.value <= ZERO_EPSILON ? 0 : Math.max(6, Math.round((side.value / max) * 100));
+            return (
+              <div key={i} className="flex min-w-[5rem] max-w-[9rem] flex-1 flex-col items-center gap-1">
+                <span className="lf-number lf-title text-content" aria-hidden="true">
+                  {format(side.value)}
+                </span>
+                {/* The bar TRACK — see `SequenceBoard`'s own comment on why the bar itself cannot carry `flex-1`/`items-end`. */}
+                <div className="flex w-full min-h-0 flex-1 items-end">
+                  <div className="w-full rounded-t-md bg-accent/70" style={{ height: `${heightPct}%` }} />
+                </div>
+                <span className="lf-caption text-content-muted text-center" aria-hidden="true">
+                  {side.label}
                 </span>
               </div>
             );
           })}
         </div>
+        {board.greater !== 'tie' && (
+          <p className="lf-caption shrink-0 text-center text-content-muted" aria-hidden="true">
+            {t('tutor.whiteboard.compare.difference', { amount: format(board.difference) })}
+          </p>
+        )}
       </div>
-    </>
+    </WhiteboardShell>
   );
+}
+
+/**
+ * `kind: 'marked_line'` — one or more values placed on a line between two
+ * references (V4, /ORACLE.md §20.5 backlog). Renders immediately, same
+ * reasoning as `CompareBoard` above. Each mark's `position` (0..1) is
+ * SERVER-COMPUTED (`whiteboard.ts`'s `computeMarkedLine`) from the model's
+ * raw `value`/`min`/`max` — this component only ever reads `position`
+ * directly, never re-deriving it from the raw numbers, the same "the server
+ * computes it once, the client only draws it" rule `values` already follows
+ * for `sequence`.
+ *
+ * Each mark's own VALUE is drawn ON the track, directly above its dot — a
+ * short number, safe at any position including the two ends. Each mark's
+ * LABEL (free text, up to 60 characters) is drawn in an ordinary wrapping
+ * row BELOW the track instead of position-anchored on it, precisely to
+ * avoid a label near either end overflowing the plate — a position-anchored
+ * label has no such protection. KNOWN, ACCEPTED LIMITATION: two marks
+ * positioned very close together can still crowd each other's VALUE text
+ * above the track — undefended for now, the same as this file's other
+ * kinds are undefended against a pathologically long `label`, because no
+ * real session has shown it is a problem worth a layout algorithm for yet.
+ */
+function MarkedLineBoard({ board, seq, className }: { board: MarkedLineWire; seq: number; className?: string }) {
+  const format = useValueFormat(board.currency);
+  const range = formatRange(format(board.min), format(board.max));
+  const marksText = board.marks.map((m) => `${m.label}: ${format(m.value)}`).join(', ');
+  const ariaLabel = `${board.label}. ${range}. ${marksText}`;
+
+  return (
+    <WhiteboardShell seq={seq} ariaLabel={ariaLabel} label={board.label} className={className}>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-4 px-6">
+        <div className="relative mx-2 h-1.5 rounded-full bg-accent-soft">
+          {board.marks.map((mark, i) => (
+            <div
+              key={i}
+              className="absolute top-1/2 flex flex-col items-center gap-1.5"
+              style={{
+                left: `${Math.min(100, Math.max(0, mark.position * 100))}%`,
+                transform: 'translate(-50%, -50%)',
+              }}
+              aria-hidden="true"
+            >
+              <span className="lf-number lf-title text-content whitespace-nowrap">{format(mark.value)}</span>
+              <span className="h-3.5 w-3.5 shrink-0 rounded-full bg-accent ring-2 ring-surface" />
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1" aria-hidden="true">
+          {board.marks.map((mark, i) => (
+            <span key={i} className="lf-caption text-content-muted">
+              {mark.label}
+            </span>
+          ))}
+        </div>
+        <div className="flex justify-between px-1" aria-hidden="true">
+          <span className="lf-caption text-content-muted">{format(board.min)}</span>
+          <span className="lf-caption text-content-muted">{format(board.max)}</span>
+        </div>
+      </div>
+    </WhiteboardShell>
+  );
+}
+
+export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps) {
+  switch (board.kind) {
+    case 'sequence':
+      return <SequenceBoard board={board} seq={seq} className={className} />;
+    case 'compare':
+      return <CompareBoard board={board} seq={seq} className={className} />;
+    case 'marked_line':
+      return <MarkedLineBoard board={board} seq={seq} className={className} />;
+  }
 }

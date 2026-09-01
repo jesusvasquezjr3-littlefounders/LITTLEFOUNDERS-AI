@@ -32,6 +32,15 @@ import { GROW_STEP_MS, TutorWhiteboard } from '../TutorWhiteboard';
 const BOARD_A = {
   kind: 'sequence' as const,
   start: 10,
+  // Irrelevant to what this component draws (it renders `values`, computed
+  // server-side, never redoing the arithmetic) but part of the honest wire
+  // shape (`TutorWhiteboardWire`) all the same.
+  steps: [
+    { op: 'add' as const, value: 2 },
+    { op: 'add' as const, value: 2 },
+    { op: 'add' as const, value: 2 },
+    { op: 'add' as const, value: 2 },
+  ],
   unit: 'day' as const,
   values: [10, 12, 14, 16, 18],
   label: 'Historia A',
@@ -41,6 +50,7 @@ const BOARD_A = {
 const BOARD_B = {
   kind: 'sequence' as const,
   start: 20,
+  steps: [{ op: 'add' as const, value: 3 }],
   unit: 'day' as const,
   values: [20, 23],
   label: 'Historia B',

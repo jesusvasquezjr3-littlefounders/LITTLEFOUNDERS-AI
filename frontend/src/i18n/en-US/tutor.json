@@ -370,6 +370,9 @@
       "month": "Month {{n}}",
       "year": "Year {{n}}"
     },
-    "updated": "The whiteboard updated."
+    "updated": "The whiteboard updated.",
+    "compare": {
+      "difference": "Difference: {{amount}}"
+    }
   }
 }

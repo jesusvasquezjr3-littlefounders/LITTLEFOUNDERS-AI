@@ -370,6 +370,9 @@
       "month": "Mes {{n}}",
       "year": "Año {{n}}"
     },
-    "updated": "El pizarrón se actualizó."
+    "updated": "El pizarrón se actualizó.",
+    "compare": {
+      "difference": "Diferencia: {{amount}}"
+    }
   }
 }

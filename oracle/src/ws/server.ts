@@ -27,8 +27,8 @@ import {
   type ServerMessage,
   type WireWhiteboard,
 } from './protocol.js';
-import { computeSequence } from '../tutor/whiteboard.js';
-import { sanitizePreferredTypes } from '../tutor/turnSchema.js';
+import { computeComparison, computeMarkedLine, computeSequence } from '../tutor/whiteboard.js';
+import { sanitizePreferredTypes, type Whiteboard } from '../tutor/turnSchema.js';
 import { assembleClip, decodeChunk } from './audioAssembly.js';
 
 /*
@@ -566,6 +566,33 @@ function tokenFrom(request: IncomingMessage): string | null {
   }
 }
 
+/**
+ * THE WHITEBOARD, RECOMPUTED AT THE WIRE — never trusted from wherever it
+ * was last computed, dispatched to the right pure function for its `kind`
+ * (`tutor/whiteboard.ts`). The ONE place both call sites that put a board on
+ * the wire (the normal `deliver()` path and a reconnect's resume redraw,
+ * below) go through, so the two can never verify a new kind two different
+ * ways — the exact drift `computeSequence` being called out twice, by hand,
+ * used to risk before this existed.
+ */
+function toWireWhiteboard(board: Whiteboard | null | undefined): WireWhiteboard | null {
+  if (board == null) return null;
+  switch (board.kind) {
+    case 'sequence': {
+      const values = computeSequence(board);
+      return values === null ? null : { ...board, values };
+    }
+    case 'compare': {
+      const result = computeComparison(board);
+      return result === null ? null : { ...board, ...result };
+    }
+    case 'marked_line': {
+      const marks = computeMarkedLine(board);
+      return marks === null ? null : { ...board, marks };
+    }
+  }
+}
+
 export function attachTutorSocket(httpServer: Server): WebSocketServer {
   const wss = new WebSocketServer({ server: httpServer, path: '/ws/tutor', maxPayload: 2 * 1024 * 1024 });
 
@@ -817,8 +844,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
        * was on screen left the learner staring at narration for a board that
        * had simply vanished.
        */
-      const board = snapshot.lastTurn.turn.whiteboard;
-      const boardValues = board ? computeSequence(board) : null;
+      const wireBoard = toWireWhiteboard(snapshot.lastTurn.turn.whiteboard);
       send(socket, {
         type: 'turn',
         seq: snapshot.lastTurn.seq,
@@ -831,7 +857,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
         // closed forever.
         audioPending: false,
         next: snapshot.lastTurn.turn.next === 'close' ? 'ask' : snapshot.lastTurn.turn.next,
-        ...(boardValues !== null && board ? { whiteboard: { ...board, values: boardValues } } : {}),
+        ...(wireBoard !== null ? { whiteboard: wireBoard } : {}),
       });
     }
     /*
@@ -1435,7 +1461,6 @@ async function deliver(
    */
   const idleNudgeMs = live.orchestrator.idleNudgeMs;
   const listenSilenceMs = live.orchestrator.listenSilenceMs;
-  const boardValues = emission.turn.whiteboard ? computeSequence(emission.turn.whiteboard) : null;
   /*
    * Captured ONCE, used for both the wire send below and the persisted
    * transcript row further down — the same object either way, never
@@ -1444,8 +1469,7 @@ async function deliver(
    * and nowhere else, so replay and the guardian transcript viewer lost it
    * silently.
    */
-  const wireBoard: WireWhiteboard | null =
-    boardValues !== null && emission.turn.whiteboard ? { ...emission.turn.whiteboard, values: boardValues } : null;
+  const wireBoard: WireWhiteboard | null = toWireWhiteboard(emission.turn.whiteboard);
   send(live.socket, {
     type: 'turn',
     seq: emission.seq,

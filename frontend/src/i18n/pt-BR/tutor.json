@@ -370,6 +370,9 @@
       "month": "Mês {{n}}",
       "year": "Ano {{n}}"
     },
-    "updated": "O quadro foi atualizado."
+    "updated": "O quadro foi atualizado.",
+    "compare": {
+      "difference": "Diferença: {{amount}}"
+    }
   }
 }

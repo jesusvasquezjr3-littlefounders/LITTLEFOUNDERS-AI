@@ -1,6 +1,13 @@
 import { z } from 'zod';
 import { ADAPTATIONS } from '../context/schema.js';
-import { ACTIONS, EMOTIONS } from '../tutor/turnSchema.js';
+import {
+  ACTIONS,
+  EMOTIONS,
+  type WhiteboardCompare,
+  type WhiteboardMark,
+  type WhiteboardMarkedLine,
+  type WhiteboardSequence,
+} from '../tutor/turnSchema.js';
 
 /*
  * The websocket wire format.
@@ -121,23 +128,26 @@ export type ClientMessage = z.infer<typeof ClientMessageSchema>;
 export type BudgetState = 'running' | 'wrapping' | 'ended';
 
 /**
- * V4's live sequence board, exactly as it reaches the wire — the model's
- * `start`/`steps`/`unit`/`label`/`currency` plus the server-COMPUTED
- * `values` (`ws/server.ts`'s `computeSequence`). Named and exported so
- * `core/client.ts`'s `PersistTurnInput` can persist the SAME object a
- * learner actually saw rather than a second, driftable shape — a board
- * replay must show, per /ORACLE.md §12, is the one that was drawn, never
- * one recomputed later against arithmetic that could disagree with it.
+ * V4's live whiteboard, exactly as it reaches the wire — the model's own
+ * fields for whichever `kind` it set, plus the server-COMPUTED fields
+ * `ws/server.ts`'s `toWireWhiteboard` attaches (`computeSequence` /
+ * `computeComparison` / `computeMarkedLine`, `tutor/whiteboard.ts`). Named
+ * and exported so `core/client.ts`'s `PersistTurnInput` can persist the SAME
+ * object a learner actually saw rather than a second, driftable shape — a
+ * board replay must show, per /ORACLE.md §12, is the one that was drawn,
+ * never one recomputed later against arithmetic that could disagree with it.
+ *
+ * A discriminated union on `kind`, mirroring `Whiteboard` (turnSchema.ts)
+ * exactly — each member is that kind's own model-facing fields intersected
+ * with the ONE thing only the server ever adds. Still a plain TYPE, not a
+ * schema: this file validates INBOUND, never outbound (see the header
+ * comment above), because outbound is ours to author correctly, not a
+ * client's claim to police.
  */
-export interface WireWhiteboard {
-  kind: 'sequence';
-  start: number;
-  steps: Array<{ op: 'add' | 'subtract' | 'multiply_percent'; value: number }>;
-  unit: 'day' | 'week' | 'month' | 'year';
-  values: number[];
-  label: string;
-  currency: 'MXN' | 'USD' | 'BRL' | null;
-}
+export type WireWhiteboard =
+  | (WhiteboardSequence & { values: number[] })
+  | (WhiteboardCompare & { difference: number; greater: 'left' | 'right' | 'tie' })
+  | (WhiteboardMarkedLine & { marks: Array<WhiteboardMark & { position: number }> });
 
 export type ServerMessage =
   | {

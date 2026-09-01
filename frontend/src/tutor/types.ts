@@ -148,21 +148,11 @@ export type ServerMessage =
       /** V4: the lesson thread — child-facing topic + step N of M. Absent in open chat. */
       lesson?: { topic: string | null; step: number; of: number };
       /**
-       * V4: a live sequence board synced to this turn's story. `values` are
-       * SERVER-COMPUTED — the running quantity after each step, `values[0]`
-       * being `start` itself — and are what gets rendered; the client never
-       * redoes the arithmetic (/ORACLE.md §20.5).
+       * V4: a live whiteboard synced to this turn's story — SERVER-COMPUTED
+       * fields included, never redone client-side (/ORACLE.md §20.5). See
+       * `TutorWhiteboardWire`, below, for the three shapes.
        */
-      whiteboard?: {
-        kind: 'sequence';
-        start: number;
-        steps: { op: 'add' | 'subtract' | 'multiply_percent'; value: number }[];
-        /** What one step represents in time — must match the story's own cadence word. */
-        unit: 'day' | 'week' | 'month' | 'year';
-        values: number[];
-        label: string;
-        currency: 'MXN' | 'USD' | 'BRL' | null;
-      };
+      whiteboard?: TutorWhiteboardWire;
     }
   | { type: 'turn_audio'; seq: number; audioUrl: string | null }
   | { type: 'thinking' }
@@ -192,6 +182,53 @@ export interface TrayDemoStep {
   denomination?: number;
   ms?: number;
 }
+
+/**
+ * V4's live whiteboard, exactly as it reaches the wire — mirrors Oracle's
+ * `WireWhiteboard` (`ws/protocol.ts`). A discriminated union on `kind`, one
+ * member per shape (/ORACLE.md §20.5): `sequence` (SHIPPED), `compare` and
+ * `marked_line` (backlog, same schema family). Every field the model itself
+ * sets, plus the ONE thing only the server ever adds per kind (`values` /
+ * `difference`+`greater` / each mark's `position`) — the client renders
+ * these as given and never redoes the arithmetic, exactly the posture
+ * `checkAnswer`'s verdict already takes with a spoken answer.
+ *
+ * Defined ONCE here rather than duplicated a second time inside
+ * `TutorWhiteboard.tsx` — that component imports this type directly. (The
+ * hand-mirroring this file's own header comment describes is about NOT
+ * depending on `oracle/` across the service boundary; there is no such
+ * boundary between this file and a sibling component in the same package.)
+ */
+export type TutorWhiteboardWire =
+  | {
+      kind: 'sequence';
+      start: number;
+      steps: { op: 'add' | 'subtract' | 'multiply_percent'; value: number }[];
+      /** What one step represents in time — must match the story's own cadence word. */
+      unit: 'day' | 'week' | 'month' | 'year';
+      values: number[];
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'compare';
+      left: { label: string; value: number };
+      right: { label: string; value: number };
+      /** SERVER-COMPUTED — never taken from the model's own claim. */
+      difference: number;
+      greater: 'left' | 'right' | 'tie';
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    }
+  | {
+      kind: 'marked_line';
+      min: number;
+      max: number;
+      /** `position` (0..1 along the line) is SERVER-COMPUTED from `value`/`min`/`max`. */
+      marks: { value: number; label: string; position: number }[];
+      label: string;
+      currency: 'MXN' | 'USD' | 'BRL' | null;
+    };
 
 // ── Wire messages, outbound ─────────────────────────────────────────────────
 
@@ -244,22 +281,13 @@ export interface TranscriptTurn {
   source: string;
   created_at: string;
   /**
-   * V4's live sequence board, exactly as it was shown — never recomputed.
-   * Null on every row that never drew one, including every row written
-   * before this field existed. Found by adversarial review, round 35
-   * (2026-08-30, HIGH): a session that used the whiteboard lost it
-   * silently on replay (see `TutorWhiteboardData` in `TutorWhiteboard.tsx`,
-   * the same shape this mirrors).
+   * V4's live whiteboard, exactly as it was shown — never recomputed. Null
+   * on every row that never drew one, including every row written before
+   * this field existed. Found by adversarial review, round 35 (2026-08-30,
+   * HIGH): a session that used the whiteboard lost it silently on replay
+   * (see `TutorWhiteboardWire`, above, the same shape this mirrors).
    */
-  whiteboard: {
-    kind: 'sequence';
-    start: number;
-    steps: { op: 'add' | 'subtract' | 'multiply_percent'; value: number }[];
-    unit: 'day' | 'week' | 'month' | 'year';
-    values: number[];
-    label: string;
-    currency: 'MXN' | 'USD' | 'BRL' | null;
-  } | null;
+  whiteboard: TutorWhiteboardWire | null;
 }
 
 export interface TranscriptSegment {

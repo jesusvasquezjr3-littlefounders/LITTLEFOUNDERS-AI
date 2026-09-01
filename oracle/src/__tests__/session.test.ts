@@ -7,7 +7,7 @@ import {
 } from '../session/token.js';
 import { evaluateBudget } from '../session/budget.js';
 import { getConfig } from '../env.js';
-import { parseTurn, sanitizePreferredTypes, TutorTurnSchema } from '../tutor/turnSchema.js';
+import { parseTurn, sanitizePreferredTypes, TutorTurnSchema, whiteboardVisibleText } from '../tutor/turnSchema.js';
 
 const SECRET = process.env.TUTOR_SESSION_SECRET as string;
 const SID = '11111111-1111-4111-8111-111111111111';
@@ -289,6 +289,218 @@ describe('the closed turn schema', () => {
       expect(
         TutorTurnSchema.safeParse({ ...valid, whiteboard: { ...board, unit: 'fortnight' } }).success,
       ).toBe(false);
+    });
+  });
+
+  /*
+   * TWO-QUANTITY COMPARISON (V4, /ORACLE.md §20.5 backlog: "same schema
+   * family, straightforward once sequence is proven live"). Same test shape
+   * as `the whiteboard (V4)` above, for the second `kind`.
+   */
+  describe('the whiteboard: compare (V4)', () => {
+    const compareBoard = {
+      kind: 'compare' as const,
+      left: { label: 'Tienda A', value: 45 },
+      right: { label: 'Tienda B', value: 28 },
+      label: '¿Cuál playera es más barata?',
+      currency: 'MXN' as const,
+    };
+
+    it('accepts a turn carrying a comparison board', () => {
+      expect(TutorTurnSchema.safeParse({ ...valid, whiteboard: compareBoard }).success).toBe(true);
+    });
+
+    it('never both a whiteboard and a segment request on the same turn — same refusal as sequence', () => {
+      const withBoth = {
+        ...valid,
+        next: 'segment' as const,
+        segmentRequest: {
+          skillKey: 'financial-education/ahorro',
+          difficulty: 2,
+          framing: 'Practiquemos comparar precios.',
+          rationale: 'reinforce the idea just shown',
+        },
+        whiteboard: compareBoard,
+      };
+      expect(TutorTurnSchema.safeParse(withBoth).success).toBe(false);
+    });
+
+    it('requires a label on each side — a bare number with nothing telling it apart from the other', () => {
+      const { label: _label, ...leftWithoutLabel } = compareBoard.left;
+      expect(
+        TutorTurnSchema.safeParse({ ...valid, whiteboard: { ...compareBoard, left: leftWithoutLabel } }).success,
+      ).toBe(false);
+    });
+
+    it('refuses an out-of-range value on either side', () => {
+      expect(
+        TutorTurnSchema.safeParse({
+          ...valid,
+          whiteboard: { ...compareBoard, left: { ...compareBoard.left, value: -1 } },
+        }).success,
+      ).toBe(false);
+      expect(
+        TutorTurnSchema.safeParse({
+          ...valid,
+          whiteboard: { ...compareBoard, right: { ...compareBoard.right, value: 1_000_001 } },
+        }).success,
+      ).toBe(false);
+    });
+
+    it('refuses a `left`/`right` shape carrying an extra field — closed, not free-form', () => {
+      expect(
+        TutorTurnSchema.safeParse({
+          ...valid,
+          whiteboard: { ...compareBoard, left: { ...compareBoard.left, greater: true } },
+        }).success,
+      ).toBe(false);
+    });
+
+    it('keeps the lesson when only the WHITEBOARD is malformed — the same fail-open posture as sequence', () => {
+      const parsed = parseTurn(
+        JSON.stringify({ ...valid, whiteboard: { ...compareBoard, left: { ...compareBoard.left, value: -1 } } }),
+      );
+      expect(parsed.ok).toBe(true);
+      if (parsed.ok) {
+        expect(parsed.turn.whiteboard).toBeNull();
+        expect(parsed.turn.say).toBe(valid.say);
+      }
+    });
+  });
+
+  /*
+   * A MARKED NUMBER LINE (V4, /ORACLE.md §20.5 backlog). Named `marked_line`,
+   * never `number_line` — the Lesson Engine already has a GRADED segment
+   * type spelled `number_line` (`frontend/src/lesson-engine/families/arrange/
+   * schema.ts`), reached through `segmentRequest.preferredTypes`, an entirely
+   * different concept from this ungraded, tutor-drawn visual.
+   */
+  describe('the whiteboard: marked_line (V4)', () => {
+    const markedLineBoard = {
+      kind: 'marked_line' as const,
+      min: 0,
+      max: 40,
+      marks: [
+        { value: 22, label: 'Lo que tienes' },
+        { value: 35, label: 'Los audífonos' },
+      ],
+      label: '¿Cuánto te falta para los audífonos?',
+      currency: 'MXN' as const,
+    };
+
+    it('accepts a turn carrying a marked-line board', () => {
+      expect(TutorTurnSchema.safeParse({ ...valid, whiteboard: markedLineBoard }).success).toBe(true);
+    });
+
+    it('never both a whiteboard and a segment request on the same turn — same refusal as sequence', () => {
+      const withBoth = {
+        ...valid,
+        next: 'segment' as const,
+        segmentRequest: {
+          skillKey: 'financial-education/ahorro',
+          difficulty: 2,
+          framing: 'Practiquemos ahorrar.',
+          rationale: 'reinforce the idea just shown',
+        },
+        whiteboard: markedLineBoard,
+      };
+      expect(TutorTurnSchema.safeParse(withBoth).success).toBe(false);
+    });
+
+    it('requires at least one mark', () => {
+      expect(TutorTurnSchema.safeParse({ ...valid, whiteboard: { ...markedLineBoard, marks: [] } }).success).toBe(
+        false,
+      );
+    });
+
+    it('refuses more than four marks — bounded, not free-form', () => {
+      const fiveMarks = Array.from({ length: 5 }, (_, i) => ({ value: i + 1, label: `m${i}` }));
+      expect(
+        TutorTurnSchema.safeParse({ ...valid, whiteboard: { ...markedLineBoard, marks: fiveMarks } }).success,
+      ).toBe(false);
+    });
+
+    it('refuses an out-of-range min, max, or mark value', () => {
+      expect(
+        TutorTurnSchema.safeParse({ ...valid, whiteboard: { ...markedLineBoard, min: -1 } }).success,
+      ).toBe(false);
+      expect(
+        TutorTurnSchema.safeParse({ ...valid, whiteboard: { ...markedLineBoard, max: 1_000_001 } }).success,
+      ).toBe(false);
+    });
+
+    it(
+      'accepts min > max at the SCHEMA level — that cross-field check only exists in ' +
+        'computeMarkedLine (z.discriminatedUnion cannot carry a .refine())',
+      () => {
+        // Documents the split deliberately, rather than leaving it implicit:
+        // this is NOT a gap `parseTurn`'s fail-open guard silently covers for
+        // free (see the next test) — the SCHEMA alone really does accept
+        // this, on purpose, matching `WhiteboardMarkedLineSchema`'s own
+        // comment (turnSchema.ts).
+        expect(
+          TutorTurnSchema.safeParse({ ...valid, whiteboard: { ...markedLineBoard, min: 50, max: 10 } }).success,
+        ).toBe(true);
+      },
+    );
+
+    it('keeps the lesson when only the WHITEBOARD is malformed — the same fail-open posture as sequence', () => {
+      const parsed = parseTurn(
+        JSON.stringify({ ...valid, whiteboard: { ...markedLineBoard, marks: [] } }),
+      );
+      expect(parsed.ok).toBe(true);
+      if (parsed.ok) {
+        expect(parsed.turn.whiteboard).toBeNull();
+        expect(parsed.turn.say).toBe(valid.say);
+      }
+    });
+  });
+
+  describe('whiteboardVisibleText — every free-text field a board shows, regardless of kind', () => {
+    it('is empty for no whiteboard', () => {
+      expect(whiteboardVisibleText(null)).toEqual([]);
+      expect(whiteboardVisibleText(undefined)).toEqual([]);
+    });
+
+    it('a sequence carries only its own top-level label', () => {
+      expect(
+        whiteboardVisibleText({
+          kind: 'sequence',
+          start: 10,
+          unit: 'day',
+          steps: [{ op: 'add', value: 2 }],
+          label: 'top label',
+          currency: null,
+        }),
+      ).toEqual(['top label']);
+    });
+
+    it('a comparison carries its top-level label AND both sides\' — the exact class of gap that let segmentRequest.framing reach a child unmoderated once', () => {
+      expect(
+        whiteboardVisibleText({
+          kind: 'compare',
+          left: { label: 'left label', value: 1 },
+          right: { label: 'right label', value: 2 },
+          label: 'top label',
+          currency: null,
+        }),
+      ).toEqual(['top label', 'left label', 'right label']);
+    });
+
+    it('a marked line carries its top-level label AND every mark\'s own', () => {
+      expect(
+        whiteboardVisibleText({
+          kind: 'marked_line',
+          min: 0,
+          max: 10,
+          marks: [
+            { value: 2, label: 'mark one' },
+            { value: 8, label: 'mark two' },
+          ],
+          label: 'top label',
+          currency: null,
+        }),
+      ).toEqual(['top label', 'mark one', 'mark two']);
     });
   });
 
