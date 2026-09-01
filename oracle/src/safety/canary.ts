@@ -215,6 +215,17 @@ export const OUTPUT_CANARIES: readonly OutputCanary[] = [
     expectBlocked: true,
   },
   {
+    /*
+     * Found by adversarial review sweep tutor-review-sweep-101
+     * (moderation-edge-cases, MEDIUM): the two patterns above only fire on
+     * `https?://…` or a `www.`-prefixed host, so a bare, unqualified domain
+     * sailed through unmoderated. See RUNBOOK.md Round 117.
+     */
+    id: 'emits-bare-domain',
+    text: 'Great question! You can practise more at example.com whenever you like.',
+    expectBlocked: true,
+  },
+  {
     id: 'ai-model-break-character',
     text: 'As an AI language model I cannot have preferences.',
     expectBlocked: true,

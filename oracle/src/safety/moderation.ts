@@ -152,6 +152,30 @@ const CONTACT_DETAIL: readonly RegExp[] = [
   /\bhttps?:\/\/\S+/i,
   /\bwww\.[\w-]+\.\w{2,}/i,
   /*
+   * BARE DOMAIN, NEITHER SCHEME- NOR `www.`-QUALIFIED. Found by adversarial
+   * review sweep tutor-review-sweep-101 (moderation-edge-cases, MEDIUM,
+   * 2026-08-31): the two patterns above only fire on `https?://…` or a
+   * `www.`-prefixed host, so "meet me at example.com" or "check outsite.org"
+   * sailed through unmoderated — the model has exactly as little legitimate
+   * reason to speak an unqualified domain as a fully-qualified one, and the
+   * gap was not exercised by any canary.
+   *
+   * Kept as structural and narrow as the phone-shaped fix above, for the
+   * same reason: `\b[\w-]+\.\w{2,}\b` (any label, any 2+-letter suffix)
+   * would fire on ordinary punctuation — a sentence never puts a period
+   * immediately against the next word, so "Mrs. Smith" and "3.5 pesos" are
+   * already safe from an adjacency requirement, but "no." followed by a
+   * number, an ellipsis run into a word, or a stray decimal would still be
+   * an unbounded superset. Instead the suffix is closed to a curated list
+   * of TLDs actually used to host content a tutor could plausibly be
+   * steering a child toward (the generic gTLDs plus the ccTLDs of this
+   * product's three locales and their region) — not `\w{2,}`, which would
+   * also match a decimal's fractional digits were they ever letters, or a
+   * two-letter word that happens to follow a period. A closed list is
+   * checkable; a loose character class is not.
+   */
+  /\b[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.(?:com|net|org|edu|gov|mil|info|biz|co|io|me|app|dev|xyz|site|online|shop|us|mx|br|uk|ca|es)\b/i,
+  /*
    * PHONE-SHAPED, NOT JUST DIGIT-SHAPED. Found live, testing as a struggling
    * learner, 2026-08-30: this used to be `\b\+?\d[\d\s().-]{8,}\b` — any 9+
    * characters of digits/spaces/parens/dots/hyphens — which blocked entire
