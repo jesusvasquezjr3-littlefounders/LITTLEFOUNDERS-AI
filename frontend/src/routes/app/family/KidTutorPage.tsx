@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
@@ -6,6 +6,7 @@ import { Button, Card, Icon, LoadingOverlay } from '@/components/ui';
 import { MarkdownLite } from '@/lesson-engine/core/MarkdownLite';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { buildReplayScript } from '@/tutor/replay/replayScript';
+import { TutorWhiteboard } from '@/tutor/TutorWhiteboard';
 import { getKidTutorHistory, getTranscript, type KidTutorHistory } from '@/tutor/tutorApi';
 import type { SessionTranscript } from '@/tutor/types';
 
@@ -32,6 +33,22 @@ import type { SessionTranscript } from '@/tutor/types';
  * already uses. The answer key never travels with it: `TranscriptSegment` has
  * no `answer` field on the wire (/ORACLE.md §8, migration 0047), so there is
  * nothing here to accidentally show.
+ *
+ * THE WHITEBOARD IS PART OF THE TRANSCRIPT TOO, FOR THE SAME REASON. Found by
+ * adversarial review sweep tutor-review-sweep-101 (guardian-dashboard-depth,
+ * HIGH): `buildReplayScript` already computes `beat.whiteboard` for every
+ * tutor beat — the SAME field the learner's own live view (`ConversationView`)
+ * and replay (`ReplayInWorld`) draw with `TutorWhiteboard` — and this file
+ * never once rendered it. A parent could read the tutor's caption narrating a
+ * growth or spending story ("empiezas con 10 y cada semana...") with no board
+ * underneath it, while the learner's own screen showed the actual worked
+ * numbers (/ORACLE.md §20.5). Fixed by reusing `TutorWhiteboard` unmodified —
+ * no second component, no re-derived numbers (§20.5: "values ARE NEVER
+ * RECOMPUTED HERE") — directly below the tutor's line, the same beat it
+ * belongs to. `TutorWhiteboard`'s chart area is `flex-1` and needs a real
+ * height from its parent; the live and replay call sites get one for free
+ * from the 3D stage's fixed-height plate, which this plain scrolling page
+ * does not have, so a fixed-height well is given here instead.
  *
  * Safety flags are surfaced FIRST and deliberately prominently. A child
  * disclosing distress to a tutor is precisely the case where a parent must
@@ -365,18 +382,32 @@ function Transcript({
 
         const isFlagged = highlightSeq !== null && beat.seq === highlightSeq;
         return (
-          <p
-            key={beat.id}
-            ref={isFlagged ? highlightRef : undefined}
-            className={
-              (beat.kind === 'tutor'
-                ? 'lf-body rounded-md bg-surface-sunken px-3 py-2 text-content'
-                : 'lf-body ml-auto max-w-[85%] rounded-md bg-accent-soft px-3 py-2 text-content') +
-              (isFlagged ? ' ring-2 ring-warning' : '')
-            }
-          >
-            {beat.text}
-          </p>
+          <Fragment key={beat.id}>
+            <p
+              ref={isFlagged ? highlightRef : undefined}
+              className={
+                (beat.kind === 'tutor'
+                  ? 'lf-body rounded-md bg-surface-sunken px-3 py-2 text-content'
+                  : 'lf-body ml-auto max-w-[85%] rounded-md bg-accent-soft px-3 py-2 text-content') +
+                (isFlagged ? ' ring-2 ring-warning' : '')
+              }
+            >
+              {beat.text}
+            </p>
+            {/*
+             * V4's whiteboard, exactly as drawn — never recomputed here
+             * (/ORACLE.md §20.5). Present only on a `tutor` beat that set one
+             * (`buildReplayScript`'s own contract). A fixed height stands in
+             * for the flex-parent height `TutorWhiteboard` gets for free on
+             * the 3D stage's own plate, which this plain scrolling transcript
+             * has no equivalent of.
+             */}
+            {beat.kind === 'tutor' && beat.whiteboard && (
+              <div className="h-40 rounded-md bg-surface-sunken px-3 py-2">
+                <TutorWhiteboard board={beat.whiteboard} seq={beat.seq} className="h-full" />
+              </div>
+            )}
+          </Fragment>
         );
       })}
     </div>
