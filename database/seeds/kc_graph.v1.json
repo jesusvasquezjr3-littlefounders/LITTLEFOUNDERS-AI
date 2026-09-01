@@ -140,7 +140,7 @@
         "es-MX": "Encontrar cuánto dinero queda después de gastar una parte.",
         "pt-BR": "Descobrir quanto dinheiro sobra depois de gastar uma parte."
       },
-      "skill_key": null
+      "skill_key": "financial-education/si-me-sobra-que-me-doy"
     },
     {
       "key": "money.make-change-counting-up",

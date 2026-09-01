@@ -18,10 +18,27 @@
  * CURRENTLY live rather than this seed file — see `npm run
  * audit:content-bridge` (scripts/audit-content-bridge.ts) and
  * `.github/workflows/tutor-content-bridge.yml`.
+ *
+ * `main()` runs only when THIS FILE is the process entrypoint (see the guard
+ * below, `verify-placement.ts`'s own established idiom in this same
+ * directory) — never merely because something imported this module. Found
+ * live during the per-KC content-pools authoring pass (kc.skill_key mapping
+ * coverage, 2026-09-01): a standalone verification script imported this file
+ * ONLY for its exported pure helpers (`SeedSchema`, `assertAcyclic`,
+ * `assertTierOrder`), to validate an edited seed against production
+ * read-only — and the bare import ALSO re-ran the real upsert against
+ * production as an unguarded side effect, merely because evaluating this
+ * module's top level unconditionally called `main()`. The write happened to
+ * be idempotent and land the already-reviewed, correct seed content, so no
+ * harm followed — but the hazard is real and this module invites exactly the
+ * import that triggers it, since `seedKcGraph.test.ts` already imports these
+ * same helpers on every `npm test` run (safe only because the test env's
+ * `SUPABASE_URL` is the unroutable `http://supabase.test` sentinel — a
+ * property of the test environment, not of this file).
  */
 
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 import { z } from 'zod';
 import { serviceRest } from '../services/supabaseRest.js';
@@ -191,7 +208,9 @@ async function main(): Promise<void> {
   await auditContentBridge(seed.kcs.map((k) => ({ key: k.key, skill_key: k.skill_key ?? null })));
 }
 
-main().catch((err) => {
-  console.error(`::error::seed:kc FAILED: ${err instanceof Error ? err.message : String(err)}`);
-  process.exitCode = 1;
-});
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
+  main().catch((err) => {
+    console.error(`::error::seed:kc FAILED: ${err instanceof Error ? err.message : String(err)}`);
+    process.exitCode = 1;
+  });
+}
