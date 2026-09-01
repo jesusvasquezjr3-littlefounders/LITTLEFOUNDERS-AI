@@ -242,6 +242,26 @@ export interface StageShellProps extends Omit<TutorStageProps, 'className' | 'on
  * waits for it forever covers the very message that explains what happened. So
  * it lifts on a timer as well, and what is underneath is then whatever is
  * actually true.
+ *
+ * INVESTIGATED, NOT CHANGED. RUNBOOK.md Round 111 flagged this deadline as
+ * a risk without reproducing why it was ever needed, and the leading
+ * hypothesis chased here was that `TutorScene` renders its diorama and its
+ * two principals as three unwrapped `useLoader` calls — siblings across
+ * nested Suspense boundaries — and that React abandons a boundary's
+ * not-yet-reached siblings the instant an earlier one throws, which would
+ * serialize three assets that could load at once. A faithful,
+ * nested reproduction of that exact shape
+ * (`tutor-scene/__tests__/suspenseLoadOrdering.test.tsx`) disproves it:
+ * React 18 discovers every pending suspend in ONE synchronous pass
+ * regardless of nesting, so all three fetches already start together today,
+ * and staggering their delays showed no duplicate fetch and no
+ * re-triggering either. There is therefore no confirmed architectural
+ * reason to shrink this number — what is left is ordinary network/decode
+ * latency for real .glb + KTX2 assets on a slow connection or a cold cache,
+ * which is not a code defect, and this codebase has no production
+ * telemetry (the Tutor's event vocabulary is closed by design, /ORACLE.md
+ * §13) on how often 8s is actually needed versus merely available. Changing
+ * it without either would be a guess wearing a number.
  */
 const VEIL_TIMEOUT_MS = 8000;
 
@@ -342,6 +362,21 @@ function StageShellInner({
    * `useStageAnnouncement` for why the gate cannot wait on the first frame
    * forever — a tutor that is silent for a whole session, and a microphone that
    * opens at the wrong moment because of it, was the cost of that wait.
+   *
+   * `ready` NEVER GOES BACK TO FALSE ONCE TRUE, and that is what makes this
+   * ONE hook call safe for the whole route rather than only for the first
+   * mount. RUNBOOK.md Round 111 flagged a hypothetical: a mid-conversation
+   * stage remount (a character-cue swap) reopening the veil for up to
+   * `VEIL_TIMEOUT_MS`. Reading `TutorScene.tsx` end to end finds no such
+   * path today — a swap only ever suspends the ONE new character's own
+   * Suspense boundary (TUTOR_3D.md §5.2), never the shared one `Reveal`
+   * sits in, and `PrincipalModels` stops rendering entirely once `ready` is
+   * true. The one REAL remount this codebase has (`SceneCanvas`'s `<Canvas
+   * key={contextEpoch}>`, recreated after a lost WebGL context) would
+   * produce a brand-new `Reveal` calling `onFirstFrame` a SECOND time into
+   * this SAME, never-remounted instance — proved harmless, not assumed so,
+   * in `tutor/__tests__/stageAnnouncement.test.ts`'s "a second first-frame
+   * signal" cases.
    */
   const { ready, onFirstFrame: handleReady } = useStageAnnouncement(onReady, VEIL_TIMEOUT_MS);
 
@@ -854,7 +889,24 @@ function StageShellInner({
             The class is gone rather than left to imply a hierarchy the
             stylesheet refuses to draw.
           */}
+          {/*
+            THE RING, ALONGSIDE THE LINE. Text alone reads identically whether
+            the stage is loading or has simply stopped — the exact ambiguity
+            AGENTS.md §1.14 calls out generally ("a taps-do-nothing period"
+            indistinguishable from a frozen app). Same markup as the only other
+            bare spinner in the product (`AuthCallbackPage.tsx`), not a new
+            component: one ring, this route does not need a second. Decorative
+            (`aria-hidden`) because the adjacent `role="status"` line already
+            carries the announcement, and plain `animate-spin` with no
+            `motion-safe:` guard because it reports PROGRESS rather than
+            performing decoration — the same reasoning a native browser spinner
+            is not suppressed under reduced motion.
+          */}
           <HudPlate shape="plate">
+            <span
+              aria-hidden="true"
+              className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-outline border-t-primary"
+            />
             <span className="lf-body" role="status">
               {t('tutor.page.loading')}
             </span>
