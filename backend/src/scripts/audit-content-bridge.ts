@@ -24,8 +24,16 @@
  *
  * Operator tool, not CI, same posture as seed:kc and placement:verify:
  *   SUPABASE_URL=… SUPABASE_ANON_KEY=… SUPABASE_SERVICE_ROLE_KEY=… npm run audit:content-bridge
+ *
+ * `main()` runs only when THIS FILE is the process entrypoint (see the guard
+ * below, `verify-placement.ts`'s own established idiom) — never merely
+ * because something imported this module. Without it, a future caller
+ * importing this file for any reason, with real credentials in the
+ * environment, would trigger a live read against whatever `SUPABASE_URL`
+ * happens to be configured, as a side effect of the import alone.
  */
 
+import { pathToFileURL } from 'node:url';
 import { getActiveKcs } from '../services/pedagogy/kcData.js';
 import { auditContentBridge } from '../services/contentBridgeAudit.js';
 
@@ -46,7 +54,9 @@ async function main(): Promise<void> {
   );
 }
 
-main().catch((err) => {
-  console.error(`::error::audit:content-bridge FAILED: ${err instanceof Error ? err.message : String(err)}`);
-  process.exitCode = 1;
-});
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
+  main().catch((err) => {
+    console.error(`::error::audit:content-bridge FAILED: ${err instanceof Error ? err.message : String(err)}`);
+    process.exitCode = 1;
+  });
+}

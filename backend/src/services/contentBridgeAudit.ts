@@ -59,19 +59,62 @@ export async function auditContentBridge(kcs: readonly ContentBridgeKc[]): Promi
   console.log(`\nContent bridge — ${mapped.length} mapped, ${unmapped} deliberately unmapped:`);
   if (unmapped > 0) {
     /*
-     * SEARCHED, AND THE ANSWER WAS NO — recorded so nobody repeats it.
+     * SEARCHED MORE THAN ONCE — WHAT WAS FOUND, RECORDED SO THE NEXT PASS
+     * DOES NOT REPEAT EITHER THE GAP OR THE METHOD THAT MISSED ONE.
      *
-     * On 2026-08-29 all sixty published topics that have lessons and are not
-     * already spoken for were read against these five. Nothing teaches them.
-     * The nearest misses are false friends worth naming: `si-no-me-alcanza-que-cambio`
-     * and `es-un-buen-cambio` are "cambio" as in BARTER, not as in money
-     * returned, and mapping either to `money.subtract-money` would serve a
-     * lesson about swapping toys to a child asking what is left from fifty
-     * pesos.
+     * On 2026-08-29 sixty published topics that had lessons and were not
+     * already spoken for were read against these FIVE, at the blueprint level
+     * (`concept_md`/`learning_objective`), and none looked like a match. A
+     * wider per-KC content-pools pass on 2026-09-01 read all 327 published
+     * financial-education topics — not just sixty — and this time verified
+     * every real candidate against its actual `lesson_documents` segments
+     * instead of the blueprint summary alone. That caught one the first pass
+     * missed: `si-me-sobra-que-me-doy`'s blueprint frames it as a spending
+     * DECISION ("choose a small treat with what's left"), but both of its
+     * published lessons carry an explicit `number_input` segment computing
+     * the remainder — "Rho paid 7 of the 10 he had, how many are left?" and
+     * "Zara had 10, spent 4 then 3, how much is left?" — exactly
+     * `money.subtract-money`'s objective. It is mapped now.
      *
-     * So this is a CONTENT gap, not a mapping one, and closing it means
-     * authoring. Until then these fall through to live generation on every
-     * request, which is exactly what the null is admitting.
+     * The remaining FOUR were RE-verified this pass, not re-asserted: each
+     * one's strongest textual lead was read at the real-lesson level and
+     * ruled out on substance.
+     * `money.fraction-of-amount`'s best lead (`celebro-cuando-ahorro` /
+     * its `llegue-a-la-mitad` lesson) uses "halfway" only as a milestone
+     * comparison — the learner sorts savers as below/at/above a GIVEN
+     * halfway point, and separately makes a GIVEN coin amount; nothing asks
+     * for half/a third/a quarter of an amount to be computed.
+     * `money.percent-intro` has zero occurrences of "percent" / "porcentaje"
+     * / "%" / "porcentagem" anywhere in any topic's slug, three-locale title,
+     * `concept_md`, three-locale `learning_objective`, or `key_vocabulary` —
+     * the concept is not authored anywhere in the catalog yet.
+     * `biz.goods-vs-services`'s best lead (`servicios-publicos-y-su-costo`)
+     * is entirely about PUBLIC-service/tax funding (streetlights, clean
+     * water, trash pickup), not the commercial "does this business sell a
+     * thing, or sell help/work" distinction the KC actually asks for.
+     * `biz.risk-and-reward`'s best financial-education lead
+     * (`comparo-dos-metas-de-ahorro`) prioritizes between two CERTAIN savings
+     * goals — no chance of loss involved — and entrepreneurship's own
+     * `radar-de-riesgos` adventure was also read end to end (all 30 topics)
+     * despite its name: tier4 (ages 12-18, a different audience from every
+     * other mapping in this graph, which is exclusively financial-education
+     * tier1/tier2), and about contract literacy and business ethics, not
+     * probabilistic risk-versus-reward tradeoffs — ruled out on substance,
+     * not only on age band.
+     *
+     * The false friends already on record still stand:
+     * `si-no-me-alcanza-que-cambio` and `es-un-buen-cambio` are "cambio" as
+     * in BARTER, not as in money returned, and mapping either to
+     * `money.subtract-money` would have served a lesson about swapping toys
+     * to a child asking what is left from fifty pesos.
+     *
+     * So the remaining four are a CONTENT gap, not a mapping one, and closing
+     * them means authoring new topics. Until then they fall through to live
+     * generation on every request, which is exactly what the null admits.
+     * THE METHOD LESSON: a blueprint's `concept_md`/`learning_objective` is a
+     * narrative summary, never the graded activity — verify a candidate
+     * against its real `lesson_documents` segments before ruling it in OR
+     * out, because the summary can misdescribe either direction.
      */
     console.log(`  (${unmappedKcs.map((k) => k.key).join(', ')} — no published topic teaches these)`);
   }
