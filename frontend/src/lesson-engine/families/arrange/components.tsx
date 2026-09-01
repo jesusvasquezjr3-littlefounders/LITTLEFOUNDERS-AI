@@ -688,6 +688,20 @@ function SortingBoard({
                 type="button"
                 disabled={disabled || !selected}
                 onClick={() => selected && onAssign(selected, zone.id)}
+                /*
+                 * `zone.label` alone ("Save", "Spend"...) already gives this
+                 * button a non-empty accessible name via the browser's
+                 * name-from-content rule — `aria-label`/`title` being absent is
+                 * not itself a gap. But "Save, button" tells a screen-reader
+                 * user the WORD, not that this is a drop TARGET one of several,
+                 * which a sighted user gets for free from the grid of boxes
+                 * around it. `aria-label` wins over content per the accname
+                 * spec, so this REPLACES rather than duplicates the visible
+                 * label — composed from the segment's own data (never a
+                 * hardcoded English string) through the same i18n key in all
+                 * three locales.
+                 */
+                aria-label={t('lesson.families.arrange.sortBuckets.groupLabel', { label: zone.label })}
                 className={cn(
                   'min-h-12 w-full rounded-sm px-2 text-center transition-colors',
                   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
@@ -695,7 +709,7 @@ function SortingBoard({
                   selected ? 'bg-primary-soft text-primary' : 'text-content',
                 )}
               >
-                <span className="lf-title">{zone.label}</span>
+                <span className="lf-title" aria-hidden="true">{zone.label}</span>
                 {selected || drag ? (
                   <span className="block lf-caption">{t('lesson.families.arrange.sortBuckets.placeHere')}</span>
                 ) : null}

@@ -1097,6 +1097,30 @@ describe('the tutor says it once', () => {
     expect(withActivity).toContain('shrink-[999]');
     expect(without).not.toContain('max-h-24');
   });
+
+  /*
+   * Found by an axe-core re-run against `/dev/tutor-lab` (ORACLE.md §16.1,
+   * "re-run axe before launch"), 2026-09-01: `scrollable-region-focusable`
+   * and `aria-prohibited-attr` both fired on this exact node. `getByLabelText`
+   * above already proves the accessible NAME survives; this proves the two
+   * things that name was sitting on top of without either — a role-less
+   * `<div>` whose `aria-label` axe calls "not well supported", reachable only
+   * by mouse wheel or touch, never by keyboard.
+   */
+  it('makes the conversation log a real log, and puts it in the tab order', () => {
+    // A bare `makeSocket()` filters its one history entry out (its `seq`
+    // matches the LIVE turn spoken in the caption), leaving `TutorTranscript`
+    // with nothing and rendering nothing at all — same two-entry shape the
+    // "yield to an activity" test above uses, so the log has something in it.
+    const earlier = [
+      { speaker: 'tutor' as const, text: 'Shall we count some coins?', seq: 0 },
+      { speaker: 'tutor' as const, text: TUTOR_LINE, seq: 1 },
+    ];
+    renderConversation(makeSocket({ history: earlier }), { ready: true });
+    const log = screen.getByLabelText('Everything said so far');
+    expect(log.getAttribute('role')).toBe('log');
+    expect(log.tabIndex).toBe(0);
+  });
 });
 
 /*

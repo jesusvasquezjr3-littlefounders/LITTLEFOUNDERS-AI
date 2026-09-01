@@ -142,7 +142,8 @@
         "hiddenCard": "Hidden card"
       },
       "sortBuckets": {
-        "placeHere": "Place here"
+        "placeHere": "Place here",
+        "groupLabel": "Group: {{label}}"
       },
       "groupSets": {
         "both": "Both",
