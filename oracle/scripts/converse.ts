@@ -28,7 +28,7 @@ import process from 'node:process';
 import { getConfig } from '../src/env.js';
 import { TutorOrchestrator } from '../src/tutor/orchestrator.js';
 import { tierVocabularyViolation, promisesAnActivity } from '../src/tutor/prompt.js';
-import { computeSequence } from '../src/tutor/whiteboard.js';
+import { computeWhiteboardValues } from '../src/tutor/whiteboard.js';
 import type { SessionContext, SessionPlanEntry, KcState } from '../src/core/client.js';
 import type { SpeechResult } from '../src/voice/speech.js';
 
@@ -298,11 +298,13 @@ interface Beat {
    */
   kind: 'said' | 'activity';
   /**
-   * V4: the live whiteboard, when this turn drew one. `null` covers the
-   * common case (most turns tell no growth story); a check can therefore
-   * assert something PRESENT rather than merely absent-and-fine.
+   * V4: the live whiteboard, when this turn drew one — either kind, since
+   * this harness reports on what was SHOWN rather than how it was computed.
+   * `null` covers the common case (most turns tell no growth or comparison
+   * story); a check can therefore assert something PRESENT rather than
+   * merely absent-and-fine.
    */
-  whiteboard: { start: number; values: number[]; label: string } | null;
+  whiteboard: { kind: 'sequence' | 'categories'; values: number[]; label: string } | null;
 }
 
 /** Normalised for comparison: accents, case and punctuation removed. */
@@ -744,9 +746,10 @@ async function main(): Promise<void> {
       );
       if (turn.whiteboard) {
         const board = turn.whiteboard;
-        const values = computeSequence(board);
-        // `values[0]` IS `start` — printing both would double it.
-        console.log(`           [whiteboard "${board.label}" — ${(values ?? []).join(' → ')}]`);
+        const values = computeWhiteboardValues(board);
+        // `values[0]` IS `start` for a sequence board — printing both would
+        // double it; a categories board has no separate "start" to double.
+        console.log(`           [whiteboard(${board.kind}) "${board.label}" — ${(values ?? []).join(' → ')}]`);
       }
       beats.push({
         learner: line,
@@ -756,7 +759,7 @@ async function main(): Promise<void> {
         requestedActivity: turn.segmentRequest != null,
         kind: 'said',
         whiteboard: turn.whiteboard
-          ? { start: turn.whiteboard.start, values: computeSequence(turn.whiteboard) ?? [], label: turn.whiteboard.label }
+          ? { kind: turn.whiteboard.kind, values: computeWhiteboardValues(turn.whiteboard) ?? [], label: turn.whiteboard.label }
           : null,
       });
 

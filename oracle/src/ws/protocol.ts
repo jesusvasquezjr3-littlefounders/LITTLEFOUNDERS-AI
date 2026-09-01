@@ -129,7 +129,7 @@ export type BudgetState = 'running' | 'wrapping' | 'ended';
  * replay must show, per /ORACLE.md §12, is the one that was drawn, never
  * one recomputed later against arithmetic that could disagree with it.
  */
-export interface WireWhiteboard {
+export interface WireSequenceBoard {
   kind: 'sequence';
   start: number;
   steps: Array<{ op: 'add' | 'subtract' | 'multiply_percent'; value: number }>;
@@ -138,6 +138,24 @@ export interface WireWhiteboard {
   label: string;
   currency: 'MXN' | 'USD' | 'BRL' | null;
 }
+
+/**
+ * A live categories comparison, exactly as it reaches the wire — the
+ * model's `categories`/`label`/`currency` plus the server-COMPUTED `values`
+ * (`ws/server.ts`'s `computeCategories`), one entry per `categories[i]` in
+ * the same order. Same reasoning as `WireSequenceBoard` above for why
+ * `values` rides along rather than being re-derived client-side.
+ */
+export interface WireCategoriesBoard {
+  kind: 'categories';
+  categories: Array<{ label: string; value: number }>;
+  values: number[];
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
+/** Every kind a turn's `whiteboard` frame may carry — see `WireSequenceBoard`/`WireCategoriesBoard`. */
+export type WireWhiteboard = WireSequenceBoard | WireCategoriesBoard;
 
 export type ServerMessage =
   | {

@@ -47,19 +47,30 @@ export interface TutorTurnState {
   /** v3: tray demonstration steps to animate concurrently with the speech. */
   demonstrate: import('./types').TrayDemoStep[] | null;
   /**
-   * V4: a live sequence board synced to this turn's story. `values` are
-   * server-computed. Null when this turn tells no growth/spending story.
+   * V4: a live visual synced to this turn's story — a value sequence over
+   * time, or a comparison across named categories (the first bounded slice
+   * of "UI generativa acotada", blueprint §10.4, ORACLE.md §20.5). `values`
+   * are server-computed in both kinds. Null when this turn draws neither.
    */
-  whiteboard: {
-    kind: 'sequence';
-    start: number;
-    steps: { op: 'add' | 'subtract' | 'multiply_percent'; value: number }[];
-    /** What one step represents in time — must match the story's own cadence word. */
-    unit: 'day' | 'week' | 'month' | 'year';
-    values: number[];
-    label: string;
-    currency: 'MXN' | 'USD' | 'BRL' | null;
-  } | null;
+  whiteboard:
+    | {
+        kind: 'sequence';
+        start: number;
+        steps: { op: 'add' | 'subtract' | 'multiply_percent'; value: number }[];
+        /** What one step represents in time — must match the story's own cadence word. */
+        unit: 'day' | 'week' | 'month' | 'year';
+        values: number[];
+        label: string;
+        currency: 'MXN' | 'USD' | 'BRL' | null;
+      }
+    | {
+        kind: 'categories';
+        categories: { label: string; value: number }[];
+        values: number[];
+        label: string;
+        currency: 'MXN' | 'USD' | 'BRL' | null;
+      }
+    | null;
 }
 
 export interface LiveSegmentState {

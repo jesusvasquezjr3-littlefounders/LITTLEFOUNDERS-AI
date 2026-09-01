@@ -688,7 +688,7 @@ describe('the whiteboard (V4)', () => {
 
     const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
     expect(retryBody).toContain('ALSO set');
-    expect(outcome?.emission.turn.whiteboard?.start).toBe(10);
+    expect(outcome?.emission.turn.whiteboard).toMatchObject({ kind: 'sequence', start: 10 });
   });
 });
 
@@ -729,7 +729,7 @@ describe('the whiteboard (V4) — unit mismatch repair', () => {
 
     const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
     expect(retryBody).toContain('does not match the cadence word');
-    expect(outcome?.emission.turn.whiteboard?.unit).toBe('week');
+    expect(outcome?.emission.turn.whiteboard).toMatchObject({ kind: 'sequence', unit: 'week' });
   });
 });
 
@@ -783,7 +783,9 @@ describe('the whiteboard (V4) — doubled step-per-period repair', () => {
 
     const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
     expect(retryBody).toContain('ONE step for that period');
-    expect(outcome?.emission.turn.whiteboard?.steps).toHaveLength(3);
+    const board = outcome?.emission.turn.whiteboard;
+    expect(board?.kind).toBe('sequence');
+    if (board?.kind === 'sequence') expect(board.steps).toHaveLength(3);
     expect(outcome?.emission.source).toBe('model');
   });
 
@@ -803,7 +805,9 @@ describe('the whiteboard (V4) — doubled step-per-period repair', () => {
     // `numberMismatch`'s own bucket.
     expect(outcome?.emission.source).toBe('model');
     expect(outcome?.emission.turn.say).toBe('attempt one, still doubled');
-    expect(outcome?.emission.turn.whiteboard?.steps).toHaveLength(6);
+    const doubledResultBoard = outcome?.emission.turn.whiteboard;
+    expect(doubledResultBoard?.kind).toBe('sequence');
+    if (doubledResultBoard?.kind === 'sequence') expect(doubledResultBoard.steps).toHaveLength(6);
   });
 });
 
@@ -852,7 +856,7 @@ describe('the whiteboard (V4) — spoken numbers vs. the board\'s own arithmetic
 
     const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
     expect(retryBody).toContain('does NOT match what');
-    expect(outcome?.emission.turn.whiteboard?.start).toBe(0);
+    expect(outcome?.emission.turn.whiteboard).toMatchObject({ kind: 'sequence', start: 0 });
     expect(outcome?.emission.source).toBe('model');
   });
 
@@ -944,7 +948,7 @@ describe('the whiteboard (V4) — a "for N periods ... so $X" conclusion vs. the
 
     const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
     expect(retryBody).toContain('does NOT match what');
-    expect(outcome?.emission.turn.whiteboard?.start).toBe(0);
+    expect(outcome?.emission.turn.whiteboard).toMatchObject({ kind: 'sequence', start: 0 });
     expect(outcome?.emission.source).toBe('model');
   });
 
@@ -997,8 +1001,9 @@ describe('the whiteboard (V4) — verification and delivery', () => {
       )
       .mockResolvedValueOnce(judgeSays(true));
     const outcome = (await orchestrator.handleLearnerText('hola', Date.now()))!;
-    expect(outcome?.emission.turn.whiteboard?.start).toBe(10);
-    expect(outcome?.emission.turn.whiteboard?.steps).toHaveLength(1);
+    const survivingBoard = outcome?.emission.turn.whiteboard;
+    expect(survivingBoard).toMatchObject({ kind: 'sequence', start: 10 });
+    if (survivingBoard?.kind === 'sequence') expect(survivingBoard.steps).toHaveLength(1);
   });
 
   it('a whiteboard whose own arithmetic goes negative is dropped, and the turn still delivers', async () => {
@@ -1044,6 +1049,92 @@ describe('the whiteboard (V4) — verification and delivery', () => {
     await orchestrator.handleLearnerText('hola', Date.now());
     const judgeBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
     expect(judgeBody).toContain('Cada día te dan 2 más');
+  });
+
+  /*
+   * `categories` — the first bounded slice of "UI generativa acotada"
+   * (blueprint §10.4, ORACLE.md §20.5). Same verification-and-delivery
+   * contract as `sequence` above: computed/re-verified server-side, dropped
+   * whole on any doubt, and — the one genuinely NEW safety surface a second
+   * kind introduces — every per-category label is free text reaching a
+   * child's screen, so it must reach the SAME moderation call `say` and the
+   * board's own top-level `label` already go through.
+   */
+  it('a valid categories whiteboard reaches the turn untouched', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          whiteboard: {
+            kind: 'categories',
+            categories: [
+              { label: 'Necesito', value: 40 },
+              { label: 'Quiero', value: 35 },
+              { label: 'Ahorré', value: 25 },
+            ],
+            label: 'Cómo repartiste tus 100 pesos',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = (await orchestrator.handleLearnerText('hola', Date.now()))!;
+    const survivingBoard = outcome?.emission.turn.whiteboard;
+    expect(survivingBoard).toMatchObject({ kind: 'categories', label: 'Cómo repartiste tus 100 pesos' });
+    if (survivingBoard?.kind === 'categories') expect(survivingBoard.categories).toHaveLength(3);
+  });
+
+  it('a categories board whose own shape does not check out (two bars sharing a label) is dropped, and the turn still delivers', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          whiteboard: {
+            kind: 'categories',
+            categories: [
+              { label: 'Renta', value: 40 },
+              { label: 'Renta', value: 20 },
+            ],
+            label: 'Gastos del mes',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = (await orchestrator.handleLearnerText('hola', Date.now()))!;
+    // Fail-open, same posture as a sequence whose own arithmetic is invalid:
+    // the turn is not thrown away, only the board.
+    expect(outcome).not.toBeNull();
+    expect(outcome?.emission.turn.whiteboard).toBeNull();
+  });
+
+  it("a categories board's own per-category labels are moderated in the same call as say, not left unchecked", async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          whiteboard: {
+            kind: 'categories',
+            categories: [
+              { label: 'Necesito clasificado unico', value: 40 },
+              { label: 'Quiero clasificado unico', value: 35 },
+            ],
+            label: 'Cómo repartiste tus 100 pesos',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('hola', Date.now());
+    const judgeBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    // Both per-category labels, not only the board's own top-level label —
+    // an injection that reaches a category label must not have an easier
+    // ride than one that reaches `say` or the board's own caption.
+    expect(judgeBody).toContain('Necesito clasificado unico');
+    expect(judgeBody).toContain('Quiero clasificado unico');
   });
 
   /*
@@ -1105,7 +1196,7 @@ describe('the whiteboard (V4) — verification and delivery', () => {
       )
       .mockResolvedValueOnce(judgeSays(true));
     const outcome = (await orchestrator.handleLearnerText('¿y si ahorro cada semana?', Date.now()))!;
-    expect(outcome?.emission.turn.whiteboard?.start).toBe(10);
+    expect(outcome?.emission.turn.whiteboard).toMatchObject({ kind: 'sequence', start: 10 });
   });
 });
 

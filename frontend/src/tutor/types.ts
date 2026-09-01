@@ -148,21 +148,30 @@ export type ServerMessage =
       /** V4: the lesson thread — child-facing topic + step N of M. Absent in open chat. */
       lesson?: { topic: string | null; step: number; of: number };
       /**
-       * V4: a live sequence board synced to this turn's story. `values` are
-       * SERVER-COMPUTED — the running quantity after each step, `values[0]`
-       * being `start` itself — and are what gets rendered; the client never
-       * redoes the arithmetic (/ORACLE.md §20.5).
+       * V4: a live visual synced to this turn's story — a value sequence
+       * over time, or a comparison across named categories (the first
+       * bounded slice of "UI generativa acotada", blueprint §10.4,
+       * ORACLE.md §20.5). `values` are SERVER-COMPUTED in both kinds — the
+       * client never redoes the arithmetic (/ORACLE.md §20.5).
        */
-      whiteboard?: {
-        kind: 'sequence';
-        start: number;
-        steps: { op: 'add' | 'subtract' | 'multiply_percent'; value: number }[];
-        /** What one step represents in time — must match the story's own cadence word. */
-        unit: 'day' | 'week' | 'month' | 'year';
-        values: number[];
-        label: string;
-        currency: 'MXN' | 'USD' | 'BRL' | null;
-      };
+      whiteboard?:
+        | {
+            kind: 'sequence';
+            start: number;
+            steps: { op: 'add' | 'subtract' | 'multiply_percent'; value: number }[];
+            /** What one step represents in time — must match the story's own cadence word. */
+            unit: 'day' | 'week' | 'month' | 'year';
+            values: number[];
+            label: string;
+            currency: 'MXN' | 'USD' | 'BRL' | null;
+          }
+        | {
+            kind: 'categories';
+            categories: { label: string; value: number }[];
+            values: number[];
+            label: string;
+            currency: 'MXN' | 'USD' | 'BRL' | null;
+          };
     }
   | { type: 'turn_audio'; seq: number; audioUrl: string | null }
   | { type: 'thinking' }
@@ -244,22 +253,32 @@ export interface TranscriptTurn {
   source: string;
   created_at: string;
   /**
-   * V4's live sequence board, exactly as it was shown — never recomputed.
-   * Null on every row that never drew one, including every row written
-   * before this field existed. Found by adversarial review, round 35
-   * (2026-08-30, HIGH): a session that used the whiteboard lost it
-   * silently on replay (see `TutorWhiteboardData` in `TutorWhiteboard.tsx`,
-   * the same shape this mirrors).
+   * V4's live visual, exactly as it was shown — never recomputed. Null on
+   * every row that never drew one, including every row written before this
+   * field existed. Found by adversarial review, round 35 (2026-08-30,
+   * HIGH): a session that used the whiteboard lost it silently on replay
+   * (see `TutorWhiteboardData` in `TutorWhiteboard.tsx`, the same shape
+   * this mirrors). `categories` is the first bounded slice of "UI
+   * generativa acotada" (blueprint §10.4, ORACLE.md §20.5).
    */
-  whiteboard: {
-    kind: 'sequence';
-    start: number;
-    steps: { op: 'add' | 'subtract' | 'multiply_percent'; value: number }[];
-    unit: 'day' | 'week' | 'month' | 'year';
-    values: number[];
-    label: string;
-    currency: 'MXN' | 'USD' | 'BRL' | null;
-  } | null;
+  whiteboard:
+    | {
+        kind: 'sequence';
+        start: number;
+        steps: { op: 'add' | 'subtract' | 'multiply_percent'; value: number }[];
+        unit: 'day' | 'week' | 'month' | 'year';
+        values: number[];
+        label: string;
+        currency: 'MXN' | 'USD' | 'BRL' | null;
+      }
+    | {
+        kind: 'categories';
+        categories: { label: string; value: number }[];
+        values: number[];
+        label: string;
+        currency: 'MXN' | 'USD' | 'BRL' | null;
+      }
+    | null;
 }
 
 export interface TranscriptSegment {

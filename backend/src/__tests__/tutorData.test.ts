@@ -260,6 +260,72 @@ describe('the whiteboard survives the round trip through Core’s own data layer
     const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
     expect(rows?.[0]?.whiteboard).toEqual(BOARD);
   });
+
+  /*
+   * `categories` — the first bounded slice of "UI generativa acotada"
+   * (blueprint §10.4, ORACLE.md §20.5): same round-trip contract as
+   * `sequence` above, proven independently rather than assumed to follow
+   * from it.
+   */
+  const CATEGORIES_BOARD = {
+    kind: 'categories' as const,
+    categories: [
+      { label: 'Necesito', value: 40 },
+      { label: 'Quiero', value: 35 },
+      { label: 'Ahorré', value: 25 },
+    ],
+    values: [40, 35, 25],
+    label: 'Cómo repartiste tus 100 pesos',
+    currency: 'MXN' as const,
+  };
+
+  it('insertTutorTurn sends a categories board exactly as given, not re-derived', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve(new Response(null, { status: 204 })),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await insertTutorTurn({
+      sessionId: '22222222-2222-4222-8222-222222222222',
+      seq: 5,
+      speaker: 'tutor',
+      text: 'Imaginemos que repartes 100 pesos entre lo que necesitas, lo que quieres y lo que ahorras.',
+      source: 'model',
+      whiteboard: CATEGORIES_BOARD,
+    });
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as { whiteboard?: unknown };
+    expect(body.whiteboard).toEqual(CATEGORIES_BOARD);
+  });
+
+  it('listTutorTurns returns a stored categories board, not only a sequence one', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve(
+        new Response(
+          JSON.stringify([
+            {
+              id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+              session_id: '22222222-2222-4222-8222-222222222222',
+              seq: 5,
+              speaker: 'tutor',
+              text: 'Imaginemos que repartes 100 pesos...',
+              emotion: 'happy',
+              action: 'nod',
+              audio_path: null,
+              source: 'model',
+              created_at: '2026-08-31T00:00:00.000Z',
+              whiteboard: CATEGORIES_BOARD,
+            },
+          ]),
+          { status: 200 },
+        ),
+      ),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+    expect(rows?.[0]?.whiteboard).toEqual(CATEGORIES_BOARD);
+  });
 });
 
 /*
@@ -377,6 +443,62 @@ describe('listTutorTurns re-validates the whiteboard JSONB at read time, not mer
 
     expect(rows?.[0]?.whiteboard).toBeNull();
     expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
+
+  /*
+   * `categories` — same read-time re-validation contract as `sequence`
+   * above, proven independently (the first bounded slice of "UI generativa
+   * acotada", blueprint §10.4, ORACLE.md §20.5).
+   */
+  const GOOD_CATEGORIES_BOARD = {
+    kind: 'categories' as const,
+    categories: [
+      { label: 'Necesito', value: 40 },
+      { label: 'Quiero', value: 35 },
+    ],
+    values: [40, 35],
+    label: 'Cómo repartiste tu dinero',
+    currency: 'MXN' as const,
+  };
+
+  it('still returns a well-formed categories board verbatim', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(GOOD_CATEGORIES_BOARD))));
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+    expect(rows?.[0]?.whiteboard).toEqual(GOOD_CATEGORIES_BOARD);
+  });
+
+  it('degrades a categories board with fewer than 2 categories to null', async () => {
+    const tooFew = { ...GOOD_CATEGORIES_BOARD, categories: [GOOD_CATEGORIES_BOARD.categories[0]], values: [40] };
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(tooFew))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.whiteboard).toBeNull();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('whiteboard'));
+    warnSpy.mockRestore();
+  });
+
+  it('degrades a categories board whose values array does not match categories.length to null', async () => {
+    const mismatched = { ...GOOD_CATEGORIES_BOARD, values: [40] };
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(mismatched))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.whiteboard).toBeNull();
+    warnSpy.mockRestore();
+  });
+
+  it('degrades a categories board carrying a sequence-only field to null — .strict() per kind', async () => {
+    const crossed = { ...GOOD_CATEGORIES_BOARD, unit: 'week' };
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(crossed))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.whiteboard).toBeNull();
     warnSpy.mockRestore();
   });
 });

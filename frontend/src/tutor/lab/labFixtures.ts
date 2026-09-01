@@ -391,12 +391,36 @@ const LAB_WHITEBOARD_TEXT: Readonly<Record<Locale, { say: string; label: string 
   },
 };
 
+/** A category-comparison story, for the `whiteboard-categories` lab activity (V4 backlog slice). */
+const LAB_CATEGORIES_TEXT: Readonly<Record<Locale, { say: string; label: string; categories: [string, string, string] }>> = {
+  'en-US': {
+    say: 'Imagine you got $100. You spend $40 on something you need, $35 on something you want, and save the rest.',
+    label: 'How you split your $100',
+    categories: ['Need', 'Want', 'Saved'],
+  },
+  'es-MX': {
+    say: 'Imagina que te dieron 100 pesos. Gastas 40 en algo que necesitas, 35 en algo que quieres, y guardas el resto.',
+    label: 'Cómo repartiste tus 100 pesos',
+    categories: ['Necesito', 'Quiero', 'Ahorré'],
+  },
+  'pt-BR': {
+    say: 'Imagine que você ganhou 100 reais. Gasta 40 em algo que precisa, 35 em algo que quer, e guarda o resto.',
+    label: 'Como você dividiu seus 100 reais',
+    categories: ['Preciso', 'Quero', 'Guardei'],
+  },
+};
+
 /**
  * `activity === 'whiteboard'` (V4) swaps the scripted "here is an exercise"
  * turn for one that draws a live sequence board instead — the surface added
  * to close the owner's reported defect: a growth story narrated in pure text
  * beside an unrelated activity. `verify-tutor-ui.mjs` opens this scenario to
  * audit the board for overlaps the same way it already does for a segment.
+ *
+ * `activity === 'whiteboard-categories'` is the SAME idea for the
+ * `categories` kind (the first bounded slice of "UI generativa acotada",
+ * blueprint §10.4, ORACLE.md §20.5) — a comparison across named things at
+ * one moment, rather than one quantity over time.
  */
 export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY): TutorTurnState {
   if (activity === 'whiteboard') {
@@ -422,6 +446,31 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
         // the lab reproduces the exact defect it exists to catch.
         unit: 'week',
         values: [10, 12, 14],
+        label: text.label,
+        currency: locale === 'en-US' ? 'USD' : locale === 'pt-BR' ? 'BRL' : 'MXN',
+      },
+    };
+  }
+  if (activity === 'whiteboard-categories') {
+    const text = LAB_CATEGORIES_TEXT[locale];
+    return {
+      seq: 4,
+      text: text.say,
+      emotion: 'happy',
+      action: 'nod',
+      audioUrl: null,
+      audioPending: false,
+      next: 'ask',
+      policy: null,
+      demonstrate: null,
+      whiteboard: {
+        kind: 'categories',
+        categories: [
+          { label: text.categories[0], value: 40 },
+          { label: text.categories[1], value: 35 },
+          { label: text.categories[2], value: 25 },
+        ],
+        values: [40, 35, 25],
         label: text.label,
         currency: locale === 'en-US' ? 'USD' : locale === 'pt-BR' ? 'BRL' : 'MXN',
       },
@@ -470,6 +519,7 @@ export const LAB_ACTIVITIES: readonly string[] = [
   'script',
   'none',
   'whiteboard',
+  'whiteboard-categories',
   // The TYPE LIST is locale-independent by construction (registry.test.tsx
   // proves it), so building it from one locale is not a choice with a
   // consequence — it is the same list in all three.
@@ -480,7 +530,7 @@ export const DEFAULT_LAB_ACTIVITY = 'script';
 
 /** The activity the plate should hold, for whatever the switch is on. */
 export function labActivity(locale: Locale, activity: string): LiveSegmentState | null {
-  if (activity === 'none' || activity === 'whiteboard') return null;
+  if (activity === 'none' || activity === 'whiteboard' || activity === 'whiteboard-categories') return null;
   if (activity === 'script') return labSegment(locale);
   const fixture = fixtureByType(locale)[activity];
   if (!fixture) return labSegment(locale);

@@ -212,3 +212,72 @@ describe('TutorWhiteboard — a screen reader is told when a NEW turn redraws th
     expect(img.contains(status)).toBe(false);
   });
 });
+
+/*
+ * `categories` — the first bounded slice of "UI generativa acotada"
+ * (blueprint §10.4, ORACLE.md §20.5): a comparison across named things at
+ * one moment, rendered by the SAME component and reusing every mechanism
+ * proven above (reveal race, live announcement, zero-height floor) — the
+ * one thing genuinely different is where each bar's own caption comes
+ * from: the model's own per-category label, not a translated time-axis word.
+ */
+const CATEGORIES_BOARD = {
+  kind: 'categories' as const,
+  categories: [
+    { label: 'Necesito', value: 40 },
+    { label: 'Quiero', value: 35 },
+    { label: 'Ahorré', value: 25 },
+  ],
+  values: [40, 35, 25],
+  label: 'Cómo repartiste tus 100 pesos',
+  currency: 'MXN' as const,
+};
+
+describe('the categories kind (V4 backlog slice)', () => {
+  it('shows the board label and one bar per category, never more than the server sent', () => {
+    stubMatchMedia(true);
+    const { container } = render(<TutorWhiteboard board={CATEGORIES_BOARD} seq={1} />);
+    expect(screen.getByText('Cómo repartiste tus 100 pesos')).toBeInTheDocument();
+    const bars = container.querySelectorAll('.rounded-t-md');
+    expect(bars).toHaveLength(3);
+  });
+
+  it("captions each bar with the category's OWN label, never a translated time-axis word", () => {
+    stubMatchMedia(true);
+    render(<TutorWhiteboard board={CATEGORIES_BOARD} seq={1} />);
+    const label = screen.getByRole('img').getAttribute('aria-label');
+    // The old sequence-only caption source ("Start", "Week 1"...) must not
+    // leak in here — a categories board has no time axis at all.
+    expect(label).toContain('Necesito: MX$40');
+    expect(label).toContain('Quiero: MX$35');
+    expect(label).toContain('Ahorré: MX$25');
+    expect(label).not.toContain('Start');
+    expect(label).not.toMatch(/Week \d/);
+  });
+
+  it('reveals one bar at a time under normal motion, same mechanism as sequence', () => {
+    stubMatchMedia(false);
+    render(<TutorWhiteboard board={CATEGORIES_BOARD} seq={1} />);
+    // Only the FIRST category is announced at first — the shared reveal
+    // machinery, exercised through the new kind rather than duplicated for it.
+    expect(screen.getByRole('img').getAttribute('aria-label')).toBe(
+      'Cómo repartiste tus 100 pesos. Necesito: MX$40',
+    );
+  });
+
+  it('announces a genuinely new categories turn the same way a sequence turn is announced', () => {
+    stubMatchMedia(true);
+    const { rerender, container } = render(<TutorWhiteboard board={CATEGORIES_BOARD} seq={1} />);
+    const firstNode = container.querySelector('[role="status"][aria-live="polite"]');
+    const nextBoard = {
+      ...CATEGORIES_BOARD,
+      categories: [{ label: 'Renta', value: 10 }, { label: 'Comida', value: 20 }],
+      values: [10, 20],
+      label: 'Otro reparto',
+    };
+    rerender(<TutorWhiteboard board={nextBoard} seq={2} />);
+    const secondNode = container.querySelector('[role="status"][aria-live="polite"]');
+    expect(secondNode).not.toBe(firstNode);
+    expect(secondNode).toHaveTextContent('The whiteboard updated.');
+  });
+});

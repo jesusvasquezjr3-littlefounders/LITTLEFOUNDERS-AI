@@ -1,5 +1,5 @@
 import type { TutorContext, Locale } from '../context/schema.js';
-import { EMOTIONS, ACTIONS, type Whiteboard } from './turnSchema.js';
+import { EMOTIONS, ACTIONS, type SequenceBoard } from './turnSchema.js';
 import { computeSequence } from './whiteboard.js';
 import { fenceActivityContent } from '../safety/untrusted.js';
 
@@ -387,6 +387,14 @@ export function narratesUnshownGrowth(say: string, whiteboard: unknown): boolean
   return numbers.length >= 2;
 }
 
+/*
+ * SEQUENCE-ONLY, same as `whiteboardNumberMismatch`/`whiteboardDoubledPeriodSteps`
+ * below — a `categories` board has no time axis for a unit to be wrong
+ * about. The caller (`orchestrator.ts`) narrows to a sequence board before
+ * calling any of these three; this one keeps its original loose parameter
+ * shape (just `unit`, not the whole board) since that is all it has ever
+ * needed.
+ */
 export function whiteboardUnitMismatch(
   say: string,
   whiteboard: { unit?: unknown } | null | undefined,
@@ -726,9 +734,29 @@ function periodCountThenTotalMismatch(say: string, values: readonly number[]): b
   return false;
 }
 
+/*
+ * SEQUENCE-ONLY, deliberately not generalized to `categories` yet. Every
+ * drift detector in this file — this one included — was written AFTER a
+ * real production session showed the model's spoken words disagreeing with
+ * its own board in one specific, reproduced way; none of them were
+ * theorized ahead of evidence. `categories` has no live sessions behind it
+ * yet, so there is no reproduced failure shape to detect — writing one now
+ * would be guessing at a defect that may not be the one that actually
+ * occurs, or may occur in a shape this guess does not cover. Once
+ * `categories` is proven live (the same bar this file's own comments hold
+ * `sequence`'s remaining backlog to), the right next step is the same one
+ * that built every check below: run it, read the transcripts, detect the
+ * ACTUAL drift.
+ *
+ * SEQUENCE-ONLY by parameter type, not just by an internal check — the
+ * caller (`orchestrator.ts`) narrows `parsed.turn.whiteboard` to a sequence
+ * board before calling any detector in this family, so this keeps its
+ * original `Pick`, now pointed at `SequenceBoard` specifically rather than
+ * the wider `Whiteboard` union `categories` added.
+ */
 export function whiteboardNumberMismatch(
   say: string,
-  whiteboard: Pick<Whiteboard, 'start' | 'steps'> | null | undefined,
+  whiteboard: Pick<SequenceBoard, 'start' | 'steps'> | null | undefined,
 ): boolean {
   if (whiteboard == null) return false;
   const values = computeSequence(whiteboard);
@@ -831,8 +859,12 @@ export function whiteboardNumberMismatch(
 const INFLOW_WORD = /\b(get|earn|gana|ganas|gano|ganha|ganhar)\b/i;
 const OUTFLOW_WORD = /\b(spend|pay|gasta|gastas|gasto|paga|pagas)\b/i;
 
+// SEQUENCE-ONLY — see `whiteboardNumberMismatch`'s doc comment above for why
+// a `categories` counterpart is deferred rather than guessed at, and doubled
+// PERIOD steps specifically is a concept that only exists for a board with a
+// time axis at all. Same narrowed-at-the-call-site posture as that function.
 export function whiteboardDoubledPeriodSteps(
-  whiteboard: Pick<Whiteboard, 'steps' | 'label'> | null | undefined,
+  whiteboard: Pick<SequenceBoard, 'steps' | 'label'> | null | undefined,
 ): boolean {
   if (whiteboard == null) return false;
   const { steps, label } = whiteboard;
@@ -1118,7 +1150,8 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '  "offerAdaptation": null or one of slower_pacing | more_examples | less_text | more_visual | repeat_before_advancing,',
   '  "demonstrate": null or 1-8 steps of { "kind": "add"|"remove"|"pause", "denomination"?, "ms"? },',
   '  "whiteboard": null or { "kind": "sequence", "start", "unit": "day"|"week"|"month"|"year",'
-    + ' "steps": 1-8 of { "op": "add"|"subtract"|"multiply_percent", "value" }, "label", "currency" }',
+    + ' "steps": 1-8 of { "op": "add"|"subtract"|"multiply_percent", "value" }, "label", "currency" }'
+    + ' or { "kind": "categories", "categories": 2-6 of { "label", "value" }, "label", "currency" }',
   '}',
   '',
   'Use "demonstrate" ONLY while a coin/money activity is on screen and a small',
@@ -1234,6 +1267,20 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '  operation that happened inside it.',
   '  Never set BOTH `whiteboard` and `segmentRequest` on the same turn — the',
   '  schema refuses it. Choose one surface for this turn.',
+  '  Use `kind:"categories"` instead when the story is not one quantity',
+  '  changing over TIME, but several DIFFERENT named things compared side by',
+  '  side at the SAME moment — what you spent on rent vs. food vs. fun, two',
+  '  savings goals, three products\' prices. 2 to 6 categories, each a short',
+  '  `label` (a few words, never a full sentence) and its own `value`. Example:',
+  '  you say "imagina que te dieron 100 pesos de domingo. gastaste 40 en algo',
+  '  que necesitabas, 35 en algo que querías, y guardaste el resto" and set',
+  '  `whiteboard: {kind:"categories", categories:[{label:"Necesito",value:40},',
+  '  {label:"Quiero",value:35},{label:"Ahorré",value:25}], label:"Cómo',
+  '  repartiste tus 100 pesos", currency:"MXN"}` — invent your OWN names and',
+  '  amounts every time, the same rule as the sequence example above. If your',
+  '  story is instead ONE quantity growing or shrinking over several',
+  '  days/weeks/months/years, use `kind:"sequence"` above, never `categories`',
+  '  — a changing quantity over time is a sequence, not a set of named things.',
   '- A wrong answer is information, never a failure. Say what was right about',
   '  the thinking before correcting the result. Never mock, never sigh, never',
   '  say "wrong".',

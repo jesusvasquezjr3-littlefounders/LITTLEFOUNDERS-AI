@@ -27,7 +27,7 @@ import {
   type ServerMessage,
   type WireWhiteboard,
 } from './protocol.js';
-import { computeSequence } from '../tutor/whiteboard.js';
+import { computeWhiteboardValues } from '../tutor/whiteboard.js';
 import { sanitizePreferredTypes } from '../tutor/turnSchema.js';
 import { assembleClip, decodeChunk } from './audioAssembly.js';
 
@@ -818,7 +818,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
        * had simply vanished.
        */
       const board = snapshot.lastTurn.turn.whiteboard;
-      const boardValues = board ? computeSequence(board) : null;
+      const boardValues = board ? computeWhiteboardValues(board) : null;
       send(socket, {
         type: 'turn',
         seq: snapshot.lastTurn.seq,
@@ -1435,7 +1435,7 @@ async function deliver(
    */
   const idleNudgeMs = live.orchestrator.idleNudgeMs;
   const listenSilenceMs = live.orchestrator.listenSilenceMs;
-  const boardValues = emission.turn.whiteboard ? computeSequence(emission.turn.whiteboard) : null;
+  const boardValues = emission.turn.whiteboard ? computeWhiteboardValues(emission.turn.whiteboard) : null;
   /*
    * Captured ONCE, used for both the wire send below and the persisted
    * transcript row further down — the same object either way, never

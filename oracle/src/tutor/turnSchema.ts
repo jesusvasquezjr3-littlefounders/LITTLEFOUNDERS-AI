@@ -179,7 +179,7 @@ export const WhiteboardStepSchema = z
  * exactly the `checkAnswer`/verdict philosophy already applied to spoken
  * answers, extended to what gets drawn.
  */
-export const WhiteboardSchema = z
+export const SequenceBoardSchema = z
   .object({
     kind: z.literal('sequence'),
     /** The starting quantity. */
@@ -203,6 +203,57 @@ export const WhiteboardSchema = z
     currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
   })
   .strict();
+
+/**
+ * ONE NAMED BAR OF A `categories` BOARD.
+ *
+ * `label` is free text — a few words naming what this bar IS ("Renta",
+ * "Ahorro"), never a full sentence — so it joins `say` and the board's own
+ * top-level `label` in the same moderation call (orchestrator.ts) exactly
+ * like `SequenceBoardSchema.label` already does. `value` is the bar's own
+ * bounded number; there is no arithmetic relating one category to another
+ * for the model to get wrong the way a running sequence total can be.
+ */
+export const WhiteboardCategorySchema = z
+  .object({
+    label: z.string().min(1).max(40),
+    value: z.number().min(0).max(1_000_000),
+  })
+  .strict();
+
+/**
+ * A LIVE VISUAL COMPARING SEVERAL NAMED THINGS AT ONE MOMENT (V4 backlog,
+ * ROADMAP.md "UI generativa acotada" / blueprint §10.4 — the first bounded
+ * slice of it, scoped deliberately narrow; see that section's own comment
+ * for what remains explicitly out of scope).
+ *
+ * `sequence` covers ONE quantity moving through TIME; it has no way to draw
+ * "how did 100 pesos split across three things" without inventing a fake
+ * time axis for what is really a comparison at a single instant. This is
+ * that second, narrowly-scoped shape — same closed-vocabulary posture as
+ * every other field in this file: a bounded count of named, bounded-number
+ * bars, no free-form layout, no image, nothing the server does not
+ * independently re-verify before it reaches a child's screen
+ * (`whiteboard.ts`'s `computeCategories`, the same "never taken on the
+ * model's word" rule `computeSequence` already applies).
+ */
+export const CategoriesBoardSchema = z
+  .object({
+    kind: z.literal('categories'),
+    /** 2-6 named bars — one is not a comparison, and past 6 stops being a glance. */
+    categories: z.array(WhiteboardCategorySchema).min(2).max(6),
+    /** A short caption above the board — see `SequenceBoardSchema.label`. */
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/**
+ * V4's live visual field. A discriminated union so a NEW bounded kind can be
+ * added the same way `categories` was — one more closed schema, dispatched
+ * by `kind` — without touching the shape of any kind already shipped.
+ */
+export const WhiteboardSchema = z.discriminatedUnion('kind', [SequenceBoardSchema, CategoriesBoardSchema]);
 
 export const TutorTurnSchema = z
   .object({
@@ -235,10 +286,11 @@ export const TutorTurnSchema = z
      */
     demonstrate: z.array(DemoStepSchema).min(1).max(8).nullable().optional(),
     /**
-     * V4: a live sequence board synced to this turn's story. See
-     * `WhiteboardSchema`. Never both this AND a segment request in the same
-     * turn — a board and a graded activity competing for the plate in one
-     * turn is exactly the disconnected-surfaces bug this exists to close.
+     * V4: a live visual synced to this turn's story — a value sequence over
+     * time, or a comparison across named categories. See `WhiteboardSchema`.
+     * Never both this AND a segment request in the same turn — a board and a
+     * graded activity competing for the plate in one turn is exactly the
+     * disconnected-surfaces bug this exists to close.
      */
     whiteboard: WhiteboardSchema.nullable().optional(),
   })
@@ -260,6 +312,10 @@ export type TutorTurn = z.infer<typeof TutorTurnSchema>;
 export type SegmentRequest = z.infer<typeof SegmentRequestSchema>;
 export type DemoStep = z.infer<typeof DemoStepSchema>;
 export type WhiteboardStep = z.infer<typeof WhiteboardStepSchema>;
+export type WhiteboardCategory = z.infer<typeof WhiteboardCategorySchema>;
+export type SequenceBoard = z.infer<typeof SequenceBoardSchema>;
+export type CategoriesBoard = z.infer<typeof CategoriesBoardSchema>;
+/** Every kind a turn's `whiteboard` field may carry — see `WhiteboardSchema`. */
 export type Whiteboard = z.infer<typeof WhiteboardSchema>;
 
 export type TurnParse =

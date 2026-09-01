@@ -2763,12 +2763,83 @@ which band the NEXT request asks for, and never enters the sealed context, so
 deploy order load-bearing: **Oracle before Core**, or an old Oracle rejects
 the new key and every activity becomes `NO_SEGMENT`.
 
-**Still out of scope, backlog, not silently dropped:** a general free-form
-canvas ("UI generativa acotada", blueprint §10.4) — a multi-week
-content-pipeline feature (schema, CAS verifier, age classifier, content bank)
-needing its own scoping pass. Additional whiteboard `kind` values
-(two-quantity comparison, a marked number line) — same schema family,
-straightforward once `sequence` is proven live.
+**`categories` — a second bounded kind, the first slice of "UI generativa
+acotada" (SHIPPED).** Blueprint §10.4 and this section's own backlog note
+called for a general free-form canvas — a multi-week content-pipeline
+feature (schema, CAS verifier, age classifier, content bank) that a scoping
+pass (below) concluded is not buildable responsibly in one slice, because
+"free-form" at that scope means the model choosing an open-ended VISUAL
+LAYOUT, not merely open-ended numbers inside a fixed layout — a materially
+different, and materially riskier, kind of generation than anything else
+`whiteboard` does. What IS a genuinely bounded, closed-schema, useful-today
+next step is narrower: most of what a tutor narrates that `sequence` cannot
+draw is not a second TIME axis, it is a comparison across a handful of
+NAMED things at one instant — an allowance split across needs/wants/savings,
+three products' prices, two savings goals. `WhiteboardSchema`
+(`turnSchema.ts`) is now a `z.discriminatedUnion('kind', [...])` and gained
+`{kind:'categories', categories: [{label, value}] (2-8), label, currency}` —
+the exact same closed-vocabulary posture `sequence` already uses: a bounded
+count, a bounded number per bar, one moderated short label per bar (folded
+into the SAME `orchestrator.ts` moderation call `say` and the board's own
+top-level `label` already join), and a server-side recompute-and-verify step
+(`whiteboard.ts`'s `computeCategories`, dispatched by `whiteboard.ts`'s new
+`computeWhiteboardValues(board)` alongside `computeSequence`) that drops the
+WHOLE board — never partially trusts it — on any doubt, including the one
+thing a single category's own schema cannot see: two bars sharing a label.
+No new field reaches the model's sealed input context (§4.1 untouched, same
+posture as `sequence`); this is exclusively an OUTPUT-side turn field.
+**Frontend:** `TutorWhiteboard.tsx` renders both kinds with the SAME
+component rather than a new one — the reveal-race fix, the live
+announcement, the zero-height floor, reduced-motion handling and the
+currency formatter are all shared code, exercised through a second kind
+rather than re-earned for it; only the per-bar CAPTION source branches
+(`categories[i].label`, a plain moderated string — no i18n key, unlike
+`sequence`'s translated day/week/month/year captions). Core's `POST /turns`
+body schema and `listTutorTurns`'s read-time re-validation (`backend/src/
+routes/tutor.ts`, `backend/src/services/tutorData.ts`) were widened the same
+way, so a categories board is not the ONE thing round 35's fix (below) was
+about all over again — reaching the learner's screen and nowhere else.
+**Deliberately NOT built in this slice, and why:** drift detectors analogous
+to `narratesUnshownGrowth`/`whiteboardNumberMismatch`/
+`whiteboardDoubledPeriodSteps` — every one of those was written AFTER a real
+production session showed a SPECIFIC, reproduced way the model's words
+disagreed with its own board; none were theorized ahead of evidence.
+`categories` has no live sessions behind it yet, so writing one now would be
+guessing at a defect that may not be the one that actually occurs. The right
+next step, once this is proven live, is the same one that built every
+existing detector: run it, read the transcripts, detect the ACTUAL drift. A
+dedicated `verify-tutor-ui.mjs` E2E lab scenario for this kind was also not
+added — the existing `whiteboard` lab scenario's overlap/hit-test coverage
+already exercises the shared container/DOM shape this kind renders into
+unchanged, and a `/dev/tutor-lab` `whiteboard-categories` activity exists for
+manual verification, but the dedicated automated scenario is a reasonable,
+explicitly-flagged gap rather than a silently dropped requirement.
+
+**Scoping note on the remaining "general free-form canvas" (still backlog,
+blueprint §10.4).** Before building further along this axis, three product
+decisions need a human answer, not an agent's guess: (1) does "free-form"
+ever mean the model choosing among a small library of FIXED layout
+templates (closer to what `categories` already is, just more of them —
+e.g. the still-backlogged two-quantity comparison and marked number line),
+or does it mean genuinely arbitrary visual composition (node/edge diagrams,
+icons, arbitrary positioning) — and if the latter, is that something this
+product wants for a minor's screen AT ALL, given §1.14's "generated content
+must be verified for SUBJECT, not only form" already describes exactly the
+failure mode an open-ended layout invites; (2) if any part of this ever
+involves an actual GENERATED IMAGE rather than a chart drawn from numbers,
+that is `picturegen`'s domain (the only image-generation path, §1.5) and
+needs its own art-director-judge + cache design, not a new one grown inside
+Oracle; (3) "CAS verifier, age classifier, content bank" in the original
+backlog line describes infrastructure that makes sense once there is a
+CONCRETE schema it verifies, classifies and banks — building it first, ahead
+of that schema, is the speculative-abstraction trap `/AGENTS.md`'s own
+philosophy warns against, so the next slice (if there is one) should again
+start from one narrow, closed schema, proven live, before any shared
+pipeline is built to serve it. Still backlog, not silently dropped: a marked
+number line and a two-quantity comparison (`kind` values, same schema family
+`categories` demonstrates is straightforward to add) — and, pending the
+three decisions above, whatever "free-form" turns out to responsibly mean
+beyond that.
 
 **A valid decimal sequence could compute to "negative" by a hair and lose
 the whole board — found by adversarial review, 2026-08-30 (MEDIUM).**

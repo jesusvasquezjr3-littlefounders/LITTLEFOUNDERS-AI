@@ -45,7 +45,7 @@ import {
 import { selectSkill } from './skills.js';
 import { recallOwnHistory } from '../core/client.js';
 import { parseTurn, type TutorTurn } from './turnSchema.js';
-import { computeSequence } from './whiteboard.js';
+import { computeWhiteboardValues } from './whiteboard.js';
 import {
   closingResponse,
   consentRevokedResponse,
@@ -1759,8 +1759,8 @@ export class TutorOrchestrator {
                  */
                 console.warn('[oracle] whiteboard set while an activity is still open and ungraded — dropped');
                 parsed.turn.whiteboard = null;
-              } else if (computeSequence(parsed.turn.whiteboard) === null) {
-                console.warn('[oracle] whiteboard did not compute to a sane sequence — dropped');
+              } else if (computeWhiteboardValues(parsed.turn.whiteboard) === null) {
+                console.warn('[oracle] whiteboard did not compute to a sane board — dropped');
                 parsed.turn.whiteboard = null;
               }
             }
@@ -1839,7 +1839,16 @@ export class TutorOrchestrator {
              * it is CHECKED on does.
              */
             const missedWhiteboard = narratesUnshownGrowth(parsed.turn.say, parsed.turn.whiteboard);
-            const wrongUnit = whiteboardUnitMismatch(parsed.turn.say, parsed.turn.whiteboard);
+            /*
+             * Every detector below this point is SEQUENCE-ONLY (a `categories`
+             * board has no time axis for any of them to check against — see
+             * `whiteboardNumberMismatch`'s own doc comment in prompt.ts) and
+             * narrowed here once, rather than inside each function, so a
+             * `categories` board's own fields never need to satisfy a
+             * sequence-shaped parameter type.
+             */
+            const sequenceBoard = parsed.turn.whiteboard?.kind === 'sequence' ? parsed.turn.whiteboard : null;
+            const wrongUnit = whiteboardUnitMismatch(parsed.turn.say, sequenceBoard);
             /*
              * THE BOARD'S OWN NUMBERS CONTRADICTING WHAT WAS JUST SAID
              * (round 65, 2026-08-30, HIGH). `missedWhiteboard`/`wrongUnit`
@@ -1862,7 +1871,7 @@ export class TutorOrchestrator {
              * comment (prompt.ts) for both reproductions and the
              * false-positive analysis behind each pattern's narrow scope.
              */
-            const numberMismatch = whiteboardNumberMismatch(parsed.turn.say, parsed.turn.whiteboard);
+            const numberMismatch = whiteboardNumberMismatch(parsed.turn.say, sequenceBoard);
             /*
              * ONE STEP PER OPERATION INSTEAD OF ONE STEP PER PERIOD — a
              * growth story with BOTH an income and an expense every period
@@ -1876,7 +1885,7 @@ export class TutorOrchestrator {
              * mislabelled SHAPE — twice as many periods drawn as real ones —
              * not a wrong fact a child could be taught.
              */
-            const doubledSteps = whiteboardDoubledPeriodSteps(parsed.turn.whiteboard);
+            const doubledSteps = whiteboardDoubledPeriodSteps(sequenceBoard);
             /*
              * §9.4 of the blueprint, stated as a hard rule: never give the
              * final answer while asking. Detected by computing the question's
@@ -2199,7 +2208,18 @@ export class TutorOrchestrator {
      * The separator is a blank line so the judge reads two sentences rather
      * than one run-on, which is what it would otherwise score.
      */
-    const visibleText = [turn.say, turn.segmentRequest?.framing, turn.whiteboard?.label]
+    const visibleText = [
+      turn.say,
+      turn.segmentRequest?.framing,
+      turn.whiteboard?.label,
+      // A `categories` board's own per-bar labels are free text too (a few
+      // words each, but still model-authored prose reaching a child's
+      // screen) — folded into the SAME call for the same reason
+      // `segmentRequest.framing` was folded in above: a field moderated
+      // nowhere is a field an injection can use as freely as an unmoderated
+      // one, regardless of how short it is expected to stay.
+      ...(turn.whiteboard?.kind === 'categories' ? turn.whiteboard.categories.map((c) => c.label) : []),
+    ]
       .filter((s): s is string => typeof s === 'string')
       .join('\n\n');
 

@@ -24,7 +24,7 @@ import { cn } from '@/lib/utils';
  * exactly the posture the rest of the Tutor takes with a spoken verdict.
  */
 
-export interface TutorWhiteboardData {
+export interface TutorSequenceBoardData {
   kind: 'sequence';
   start: number;
   values: number[];
@@ -39,6 +39,23 @@ export interface TutorWhiteboardData {
   label: string;
   currency: 'MXN' | 'USD' | 'BRL' | null;
 }
+
+/**
+ * A live comparison across named things at one moment — the first bounded
+ * slice of "UI generativa acotada" (blueprint §10.4, ORACLE.md §20.5).
+ * `values[i]` is `categories[i].value`, server-recomputed the same way a
+ * sequence's `values` are; this component never redoes that either.
+ */
+export interface TutorCategoriesBoardData {
+  kind: 'categories';
+  categories: { label: string; value: number }[];
+  values: number[];
+  label: string;
+  currency: 'MXN' | 'USD' | 'BRL' | null;
+}
+
+/** Every kind this component can draw. See `TutorSequenceBoardData`/`TutorCategoriesBoardData`. */
+export type TutorWhiteboardData = TutorSequenceBoardData | TutorCategoriesBoardData;
 
 export interface TutorWhiteboardProps {
   board: TutorWhiteboardData;
@@ -163,9 +180,17 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
    * field (§20.5) was added specifically to guarantee. The caption is exactly
    * what makes the board answer "what story is this", so leaving it out of
    * the accessible name loses the one thing this feature exists to convey.
+   *
+   * `categories` needs no i18n key here at all — each bar's own caption IS
+   * `categories[i].label`, the model's own (moderated) name for that bar,
+   * never a translated time-axis word.
    */
   const captionFor = (i: number) =>
-    i === 0 ? t('tutor.whiteboard.start') : t(`tutor.whiteboard.step.${board.unit}`, { n: i });
+    board.kind === 'sequence'
+      ? i === 0
+        ? t('tutor.whiteboard.start')
+        : t(`tutor.whiteboard.step.${board.unit}`, { n: i })
+      : board.categories[i]!.label;
 
   return (
     <>

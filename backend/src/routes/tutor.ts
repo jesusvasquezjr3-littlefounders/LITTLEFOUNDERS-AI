@@ -512,12 +512,12 @@ function internalRouter(): Router {
   /**
    * V4's live sequence board, exactly as Oracle computed it. Validated at
    * the edge like everything else here (§1.6) — a `.strict()` closed shape,
-   * mirroring `oracle/src/ws/protocol.ts`'s `WireWhiteboard`. Found by
+   * mirroring `oracle/src/ws/protocol.ts`'s `WireSequenceBoard`. Found by
    * adversarial review, round 35 (2026-08-30, HIGH): no field for this
    * existed at all, so a session that drew a board lost it silently on
    * replay and on the guardian transcript viewer (migration 0058).
    */
-  const WhiteboardBody = z
+  const SequenceWhiteboardBody = z
     .object({
       kind: z.literal('sequence'),
       start: z.number(),
@@ -531,6 +531,29 @@ function internalRouter(): Router {
       currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
     })
     .strict();
+
+  /**
+   * The `categories` kind — a comparison across named things at one moment
+   * rather than one quantity over time (the first bounded slice of "UI
+   * generativa acotada", blueprint §10.4 — ORACLE.md §20.5), mirroring
+   * `oracle/src/ws/protocol.ts`'s `WireCategoriesBoard`. Same rigor as
+   * `SequenceWhiteboardBody` above: a `.strict()` closed shape, so this
+   * endpoint refuses a malformed board rather than silently persisting one.
+   */
+  const CategoriesWhiteboardBody = z
+    .object({
+      kind: z.literal('categories'),
+      categories: z
+        .array(z.object({ label: z.string().max(40), value: z.number() }).strict())
+        .min(2)
+        .max(6),
+      values: z.array(z.number()),
+      label: z.string().max(60),
+      currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+    })
+    .strict();
+
+  const WhiteboardBody = z.discriminatedUnion('kind', [SequenceWhiteboardBody, CategoriesWhiteboardBody]);
 
   const TurnBody = z.object({
     sessionId: z.string().uuid(),
