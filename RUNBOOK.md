@@ -12338,3 +12338,79 @@ logic already does the right thing once fed correct data). No
 `oracle/AGENTS.md`/`/ORACLE.md` item: this is a Core-only data-shape
 fix between two of Core's own routes, not a Tutor runtime, prompt, or
 content-ladder change.
+
+## Round 122: an unkept activity promise that survived its retry was still delivered to the learner, found live, HIGH, closed 2026-08-31
+
+**HIGH, FIXED.** Found by genuine live testing (a real browser session,
+real oracle server logs, real model calls): reproduced twice in one
+~15-turn conversation, a turn whose own retry STILL announces an
+activity ("vamos a intentarlo en la pantalla" / "ahora sí, vamos a
+intentarlo en la pantalla") while `next` never becomes `"segment"`
+left the learner with an announcement and nothing behind it — no
+game, no coins, no acknowledgement anything is different. The first
+occurrence in the session produced literally nothing; a later one in
+the same conversation went through cleanly, which is what made it
+read as intermittent rather than obviously broken.
+
+**Root cause: `brokenPromise` was the one violation class this repair
+loop gave up on.** `produce()`'s one-retry repair loop already treats
+false praise, a false correction, forbidden vocabulary, language
+drift, and a self-contradicting number as content the learner must
+never actually receive — a second failure on any of them falls back
+to a scripted line rather than delivering the flawed turn.
+`brokenPromise` was excluded from that check at both of its two sites
+(`oracle/src/tutor/orchestrator.ts`: the point where `repairable` is
+captured from attempt 0, and the point where the retry's own result
+is judged), so it fell through to the loop's OTHER rule — "a clumsy
+real sentence beats a scripted apology," true for a vocabulary slip
+or a missing whiteboard, because the delivered turn is imperfect but
+still teaches something NEW. `oracle/AGENTS.md` item 21 itself named
+"an unkept promise" as a textbook example of that safe-to-deliver
+bucket, and the example was wrong: unlike a vocabulary slip, an
+activity promised twice with nothing ever requested is ZERO value to
+the learner, the same reasoning a wrong-language turn already gets in
+the same comment, not a degraded-but-real sentence.
+
+**Fix.** `brokenPromise` now joins `repairableIsFalseVerdict` at BOTH
+sites — attempt 0's own capture (protects a broken promise at attempt
+0 whose retry then transport-fails outright, an empty completion, the
+same DeepSeek failure mode round 55 hit for forbidden vocabulary) and
+the retry-result judgment (a retry that ALSO breaks its promise now
+falls back rather than being delivered). No new scripted content was
+needed: `brokenPromise` reuses the exact same shared line
+(`modelDownResponse()`, already trilingual) every sibling violation in
+this bucket already falls back to — only the routing changed, per
+`oracle/AGENTS.md` §2.2's own convention that this bucket has one
+scripted line, not one per violation type. `oracle/AGENTS.md` item 21
+was also corrected to drop "an unkept promise" and (separately) "a
+vocabulary slip" — the latter moved to the false-verdict bucket at
+round 55 but item 21's own worked-example list was never updated to
+match, missed on that fix and only caught now; general lesson added
+as item 80: a worked example inside a comment is a claim like any
+other and goes stale the same way code does — when a repair reason
+changes buckets, grep every place that named it as an example of the
+OLD bucket, not just the line of code that decided it.
+
+**Proof, TDD.** Two new tests
+(`oracle/src/__tests__/orchestrator.test.ts`, "the tutor cannot
+promise an activity it did not request"): one where the retry also
+breaks its promise, one where the retry for a broken promise comes
+back empty (mirroring round 55's forbidden-vocabulary incident
+exactly). Both assert `outcome.emission.source === 'scripted'` and
+that the delivered text does not contain the broken promise. Verified
+rigorously: stashed only the orchestrator.ts fix (keeping the new
+tests), reran, and both new tests failed exactly as expected while
+the other 115 tests in the file were unaffected; restored the fix and
+all 117 tests in the file passed.
+
+**Verification.** Independently re-run, not just taken on the fixing
+agent's word: `npm run type-check` (all three configs — src, scripts,
+test), `npm run lint`, `npm run build` all clean in `oracle/`. Full
+`oracle/` suite: 29/29 files, 676/676 tests. `npm run verify:tutor`
+(privacy boundary sealed, canary corpus contained) and `npm run
+verify:pedagogy` (all 6 learner-profile sequences clean, no thrash)
+both green. Root `docs:check`, `secrets:check` green. No i18n keys
+needed or added: `oracle/src/tutor/scripted.ts`'s own scripted lines
+live in code, not frontend i18n, and `brokenPromise` reuses an
+existing, already-trilingual line — there is no new user-facing
+string in any locale.

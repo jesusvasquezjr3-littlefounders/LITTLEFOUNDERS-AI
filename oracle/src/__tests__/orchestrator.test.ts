@@ -2187,6 +2187,67 @@ describe('the tutor cannot promise an activity it did not request', () => {
     expect(retry).toContain('did not request one');
   });
 
+  /*
+   * CONFIRMED LIVE (real browser session, real oracle server logs, real
+   * model calls), reproduced twice in one ~15-turn conversation: the first
+   * "let's try it on the screen" utterance in the session hit this and
+   * produced literally nothing, while a later one in the same conversation
+   * went through cleanly — which is what made it read as intermittent
+   * rather than obviously broken. Pre-fix, `brokenPromise` was the one
+   * violation class this repair loop gave up on: once the retry ALSO broke
+   * its promise, `produce()` fell through to its generic "deliver the
+   * clumsy original anyway" path — correct for a vocabulary slip or a
+   * missing whiteboard, wrong here, because the learner gets an activity
+   * announced twice with nothing ever behind it, not a degraded-but-real
+   * sentence. Every sibling violation (false praise, a false correction,
+   * forbidden vocabulary, language drift) already routes a second failure
+   * to the scripted line instead; this proves `brokenPromise` now does too.
+   */
+  it('falls back to the scripted line if the retry also breaks its promise', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({ ...GOOD_TURN, say: 'Vamos a practicar con monedas en la pantalla.', next: 'ask' }),
+      )
+      .mockResolvedValueOnce(
+        modelReplies({ ...GOOD_TURN, say: 'Ahora sí, vamos a intentarlo en la pantalla.', next: 'ask' }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('otra vez', Date.now()))!;
+
+    // The scripted line, never either broken promise.
+    expect(outcome.emission.source).toBe('scripted');
+    expect(outcome.emission.turn.say).not.toContain('pantalla');
+  });
+
+  /*
+   * The other half of the same fix: `repairableIsFalseVerdict` must also be
+   * true from attempt 0's OWN capture, not only from the retry's result —
+   * otherwise a broken promise at attempt 0 whose retry transport-fails
+   * outright (an empty completion, the same measured DeepSeek failure mode
+   * that motivated round 55's identical fix for forbidden vocabulary) still
+   * falls through to `repairable`, delivering attempt 0's broken promise
+   * verbatim instead of the scripted line.
+   */
+  it('falls back to the scripted line — never the original — when the retry for a broken promise comes back empty', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({ ...GOOD_TURN, say: 'Vamos a practicar con monedas en la pantalla.', next: 'ask' }),
+      )
+      .mockResolvedValueOnce(modelReplies(''))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('otra vez', Date.now()))!;
+
+    // Pre-fix this delivered `repairable` — the attempt-0 turn that broke
+    // its promise — verbatim, the same shape as the forbidden-vocabulary
+    // incident this mirrors.
+    expect(outcome.emission.source).toBe('scripted');
+    expect(outcome.emission.turn.say).not.toContain('pantalla');
+  });
+
   it('leaves the promise alone when the turn actually requests the activity', async () => {
     const keeping = {
       ...GOOD_TURN,

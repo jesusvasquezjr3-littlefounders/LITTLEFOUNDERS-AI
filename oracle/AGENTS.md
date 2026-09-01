@@ -504,13 +504,13 @@ everything passes the blocked half perfectly and destroys the product.
    fallback is not safe for every repair reason it covers.** `produce()`'s
    repair loop keeps `repairable` (attempt 0's turn) so a failed retry
    delivers it rather than a scripted apology — "a clumsy real sentence
-   beats a scripted apology every time," true for a vocabulary slip, a
-   self-answered question, an unkept promise, because the delivered turn is
-   imperfect but still teaches something NEW. Found live, testing as a
-   struggling learner, 2026-08-30: it is the WRONG rule for a REPEAT
-   specifically, because delivering `repairable` there delivers the repeat
-   ITSELF, with 100% certainty — not a degraded turn, the exact defect the
-   check exists to catch. Confirmed via a temporary debug trace on a real
+   beats a scripted apology every time," true for a self-answered question
+   or a missing whiteboard, because the delivered turn is imperfect but
+   still teaches something NEW. Found live, testing as a struggling
+   learner, 2026-08-30: it is the WRONG rule for a REPEAT specifically,
+   because delivering `repairable` there delivers the repeat ITSELF, with
+   100% certainty — not a degraded turn, the exact defect the check exists
+   to catch. Confirmed via a temporary debug trace on a real
    `tutor:converse` run: `repeated` was correctly non-null at attempt 0
    (the checker worked), the retry came back an empty completion (a
    measured, common DeepSeek failure mode — not a rare edge case, see the
@@ -526,7 +526,11 @@ everything passes the blocked half perfectly and destroys the product.
    item originally also listed "false praise" among the safe-to-deliver
    reasons — item 29 found that claim wrong and the item text above has
    been corrected; the two repair reasons share the exact defect this item
-   describes, not two different ones.)
+   describes, not two different ones. It also originally listed "a
+   vocabulary slip" and "an unkept promise" as safe-to-deliver examples —
+   round 55 and item 80 respectively moved each into the same false-verdict
+   bucket for the same reason, and the text above has been corrected to
+   drop both.)
 22. **A refused-and-fell-back result needs to say WHY it fell back, or every
    refusal reason collapses into the same object.** `placementIntake.ts`'s
    `runPlacementIntake` correctly classifies the learner's text and refuses
@@ -2388,6 +2392,37 @@ everything passes the blocked half perfectly and destroys the product.
    fix does become due, ask what an existing helper's failure semantics
    were built for before reusing it for something with different stakes.
    See `RUNBOOK.md` Round 119.
+
+80. **"Imperfect but still teaches something new" is not true of a promise
+   with nothing behind it — item 21's own list of safe-to-deliver examples
+   named "an unkept promise," and that example was wrong.** `brokenPromise`
+   fires when the tutor's own words announce an activity ("vamos a
+   intentarlo en la pantalla") while `next` never becomes `"segment"` —
+   prose and intent disagreeing. The one retry asks the model to pick a
+   side, and until now a retry that ALSO disagreed fell through to
+   `produce()`'s general "deliver the clumsy original anyway" path, the
+   same path that is correct for a vocabulary slip or a missing whiteboard.
+   It is not correct here: unlike those, the learner gets nothing on screen
+   AND nothing of the sentence that promised it — no game, no coins, no
+   acknowledgement anything is different — twice, in the same turn's two
+   attempts. Confirmed live (real browser session, real oracle server logs,
+   real model calls), reproduced twice in one ~15-turn conversation: the
+   first "let's try it on the screen" utterance in the session hit this and
+   delivered literally nothing, and a later one in the same conversation
+   went through cleanly, which is what made it read as intermittent rather
+   than obviously broken. Fixed the same way item 29 fixed false praise:
+   `brokenPromise` joins the `repairableIsFalseVerdict` check, at BOTH the
+   point where `repairable` is captured from attempt 0 and the point where
+   the retry's own result is judged, so a promise that survives the retry
+   now falls back to the scripted line instead of being delivered — the
+   SAME shared scripted line (`modelDownResponse`) every other member of
+   this bucket already falls back to, so no new scripted content was
+   needed, only the routing. General lesson: a worked example inside a
+   comment is a claim like any other and goes stale the same way code
+   does — when a repair reason changes buckets, grep every place that
+   named it as an example of the OLD bucket, not just the line of code that
+   decided it; item 21's own text still named "a vocabulary slip" from
+   before round 55 moved it, missed on that fix and only caught now.
 
 ---
 

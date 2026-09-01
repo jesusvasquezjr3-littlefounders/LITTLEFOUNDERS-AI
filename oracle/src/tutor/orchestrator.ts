@@ -1608,6 +1608,19 @@ export class TutorOrchestrator {
      * can still learn from — it is the exact age-inappropriate content this
      * whole mechanism was built to keep out, delivered anyway. It belongs
      * with false praise and false correction, not with a missing board.
+     *
+     * AN UNKEPT PROMISE JOINS THE SAME BUCKET (2026-08-31) — this file's own
+     * paragraph above once named it as the textbook example of "imperfect
+     * but still teaches something new," and that example was wrong. Live
+     * testing (real browser session, real oracle server logs, real model
+     * calls) reproduced it twice in one ~15-turn conversation: a turn whose
+     * RETRY still says an activity is coming ("vamos a intentarlo en la
+     * pantalla") while `next` never becomes `"segment"` leaves the learner
+     * with an announcement and nothing behind it — no game, no coins, no
+     * acknowledgement anything is different — twice in the same turn's two
+     * attempts. That is not a degraded-but-real sentence a child can still
+     * use, the same reasoning a wrong-language turn already got above: zero
+     * value, not merely imperfect value. It belongs in this bucket too.
      */
     let repairableIsFalseVerdict = false;
     try {
@@ -1910,9 +1923,9 @@ export class TutorOrchestrator {
                * Same content-safety stakes as false praise/correction, so
                * it gets the same flag. A turn in the WRONG LANGUAGE (round
                * 58) joins it for the same reason: unlike a missing
-               * whiteboard or an unkept promise, a child who does not speak
-               * the wrong language gets ZERO value from the turn, not a
-               * "clumsy but still teaches something" one.
+               * whiteboard, a child who does not speak the wrong language
+               * gets ZERO value from the turn, not a "clumsy but still
+               * teaches something" one.
                *
                * `numberMismatch` (round 65) joins the same bucket for the
                * same reason falseCorrection does: a wrong number taught to
@@ -1920,9 +1933,26 @@ export class TutorOrchestrator {
                * stylistic imperfection a child can still learn from — the
                * board and the sentence next to it disagree about the exact
                * thing this turn exists to teach.
+               *
+               * `brokenPromise` (2026-08-31) joins for the same reason as
+               * the wrong-language case, not the vocabulary/number one: an
+               * activity announced twice with nothing ever requested is
+               * ZERO value to the learner, not a clumsy-but-real sentence —
+               * see `repairableIsFalseVerdict`'s own doc comment above for
+               * the live reproduction. This is also the SAME flag this
+               * turn's `repairable` capture needs: if attempt 0 broke its
+               * promise and the retry then transport-failed outright (an
+               * empty completion, the same failure mode round 55 hit),
+               * `repairable` — the broken-promise turn itself — must not
+               * be the thing delivered.
                */
               repairableIsFalseVerdict =
-                falsePraise || falseCorrection || violation !== null || langDrift !== null || numberMismatch;
+                falsePraise ||
+                falseCorrection ||
+                violation !== null ||
+                langDrift !== null ||
+                numberMismatch ||
+                brokenPromise;
             }
 
             if (violation !== null && attempt === 0) {
@@ -1979,9 +2009,6 @@ export class TutorOrchestrator {
                 'told the learner an activity was coming but did not request one. Either set "next":"segment" with a segmentRequest, or say something that does not promise anything on screen';
               console.warn('[oracle] turn promised an activity without requesting one — asking again');
             } else {
-              if (brokenPromise) {
-                console.warn('[oracle] unkept activity promise SURVIVED the retry — delivered');
-              }
               if (missedWhiteboard) {
                 console.warn('[oracle] growth story with no whiteboard SURVIVED the retry — delivered as text only');
               }
@@ -1997,12 +2024,20 @@ export class TutorOrchestrator {
               if (repeated !== null) {
                 console.warn('[oracle] repeated sentence SURVIVED the retry — delivered');
               }
-              if (falsePraise || falseCorrection || violation !== null || langDrift !== null || numberMismatch) {
+              if (
+                falsePraise ||
+                falseCorrection ||
+                violation !== null ||
+                langDrift !== null ||
+                numberMismatch ||
+                brokenPromise
+              ) {
                 // See `repairableIsFalseVerdict`'s doc comment: false praise,
                 // a false correction, forbidden vocabulary, a wrong-language
-                // turn, and a board that contradicts its own narration are
-                // each content the child must never actually receive, not a
-                // merely-imperfect turn, so none of them gets delivered.
+                // turn, a board that contradicts its own narration, and an
+                // activity promised but never requested are each content the
+                // child must never actually receive, not a merely-imperfect
+                // turn, so none of them gets delivered.
                 if (falsePraise) {
                   console.warn('[oracle] praise of a wrong answer SURVIVED the retry — scripted line instead');
                 }
@@ -2025,6 +2060,9 @@ export class TutorOrchestrator {
                   console.warn(
                     `[oracle] language drift (${langDrift}) SURVIVED the retry — scripted line instead`,
                   );
+                }
+                if (brokenPromise) {
+                  console.warn('[oracle] unkept activity promise SURVIVED the retry — scripted line instead');
                 }
                 repairableIsFalseVerdict = true;
               } else {
