@@ -271,10 +271,18 @@ jobs:
       # loader — idempotent upsert by kc.key, cycle-checked, so re-dispatching
       # is always safe (/ORACLE.md §19). It runs HERE for the same reason
       # migrate does: the credentials live as Railway service variables and
-      # nowhere else. The five env values are read straight into the
+      # nowhere else. The six env values are read straight into the
       # environment and never printed; SUPABASE_URL is the public gateway
       # (database/DEPLOYMENT.md), which is what makes a runner able to reach
       # PostgREST at all.
+      #
+      # RUNBOOK.md Round 112: this used to read only FIVE variables, missing
+      # `TUTOR_SESSION_SECRET` — `backend/src/config.ts`'s env schema has six
+      # required-with-no-default fields, and importing the backend's config
+      # module (which `npm run seed:kc` does transitively) validates all six
+      # regardless of which ones the script's own code path touches. This
+      # step was never actually exercised end-to-end before now: GitHub
+      # Actions was billing-blocked repo-wide for as long as it existed.
       - name: Seed the KC graph
         if: inputs.step == 'seed-kc'
         run: |
@@ -288,7 +296,8 @@ jobs:
           export SUPABASE_SERVICE_ROLE_KEY="$(read_var SUPABASE_SERVICE_ROLE_KEY)"
           export SUPABASE_JWT_SECRET="$(read_var SUPABASE_JWT_SECRET)"
           export INTERNAL_API_KEY="$(read_var INTERNAL_API_KEY)"
-          for v in SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY SUPABASE_JWT_SECRET INTERNAL_API_KEY; do
+          export TUTOR_SESSION_SECRET="$(read_var TUTOR_SESSION_SECRET)"
+          for v in SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY SUPABASE_JWT_SECRET INTERNAL_API_KEY TUTOR_SESSION_SECRET; do
             [ -n "${!v}" ] || { echo "::error::backend variable $v is empty"; exit 1; }
           done
           echo "Seeding the KC graph against $SUPABASE_URL"

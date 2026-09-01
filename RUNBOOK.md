@@ -11515,3 +11515,97 @@ waiting for stage ready" round 100 already documented — consistent with
 that round's own finding that this environment cannot reliably
 initialize WebGL, and reported here rather than silently skipped or
 claimed green.
+
+## Round 112: two CI workflows that read the backend's Railway credentials exported five of the six required env vars, so both had been broken since the day they were written — invisible the whole time because GitHub Actions was billing-blocked repo-wide, closed 2026-08-31
+
+**HIGH, FIXED.** GitHub Actions' repo-wide billing block (recorded earlier
+this session: "recent account payments have failed or your spending limit
+needs to be increased") cleared sometime during this session without
+anyone here changing anything about it. The first real proof came from
+manually dispatching `tutor-content-bridge.yml` (Round 105's own
+automation) to confirm the block's status — it actually ran, past
+checkout and `npm ci`, and failed immediately on:
+
+```
+audit:content-bridge FAILED: [
+  { "expected": "string", "code": "invalid_type",
+    "path": ["TUTOR_SESSION_SECRET"],
+    "message": "Invalid input: expected string, received undefined" }
+]
+```
+
+`backend/src/config.ts`'s Zod env schema has exactly six
+required-with-no-default fields: `SUPABASE_URL`, `SUPABASE_ANON_KEY`,
+`SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`, `INTERNAL_API_KEY`,
+and `TUTOR_SESSION_SECRET`. `getConfig()` validates the WHOLE schema on
+first call, so any script that imports the backend's config module —
+directly or transitively — fails at that call regardless of whether its
+own code path ever reads the missing field. Both
+`.github/workflows/tutor-content-bridge.yml`'s `audit` job and
+`.github/workflows/tutor-deploy.yml`'s `seed-kc` step read exactly five
+of the six from Railway (`SUPABASE_URL`, `SUPABASE_ANON_KEY`,
+`SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`, `INTERNAL_API_KEY`)
+and exported them to the runner's environment — `TUTOR_SESSION_SECRET`
+was missing from both, independently, because both were authored by
+copying the same incomplete five-variable shape.
+
+**Why this survived review.** `tutor-content-bridge.yml`'s own comment
+claimed "same five variables ... needs nothing beyond what
+[`seed-kc`] already proves is sufficient for a plain
+PostgREST-over-HTTPS run" — an appeal to a sibling step that was making
+the identical, equally unverified claim about itself. Neither step had
+ever actually run: `tutor-content-bridge.yml` was introduced by Round
+105 (2026-08-31, PR #90) and `seed-kc` predates this session, and GitHub
+Actions has been billing-blocked for the entirety of this session
+(RUNBOOK.md's own earlier rounds record it as a known, standing
+blocker). A local `npm run audit:content-bridge` run against production
+credentials — the verification Round 105 actually performed — sets
+`TUTOR_SESSION_SECRET` from a developer's own `.env`, so it never
+exercised the code path that reads Railway service variables one at a
+time, which is the ONLY path that was actually missing the field.
+"Verified end-to-end" in that PR's own commit message was true of the
+audit's LOGIC and false of its AUTOMATION, and the difference was
+invisible until GitHub Actions could run it for real.
+
+**Fix.** Both workflows now also `read_var TUTOR_SESSION_SECRET`,
+`export` it, and include it in the empty-check loop, matching the
+pattern `tutor-deploy.yml`'s `converse`/`probe-empty` oracle-credential
+step already uses for `TUTOR_SESSION_SECRET` on the Oracle side (line
+414 of that same file) — this was never a case of not knowing the
+variable existed, only of the backend-credential copy never being
+checked against the schema it was meant to satisfy. Both files' stale
+comments claiming "five variables" are corrected to six, and
+`tutor-content-bridge.yml`'s comment crediting the (also-incomplete)
+sibling step as proof of sufficiency is replaced with the actual
+provenance of the bug.
+
+**Verification.** `npm run docs:check`, `npm run secrets:check` and
+`npm run tools:test` (26/26) all green — no application code changed,
+only two workflow YAML files and this entry, so no service's
+`type-check`/`lint`/`test`/`build` gates apply. Live-verified against
+production the way the earlier "verified" claim should have been: after
+merge, `gh workflow run tutor-content-bridge.yml` was re-dispatched and
+completed successfully end-to-end against the real KC graph and catalog
+— GitHub's own run log is the proof, not a claim about what the fix
+should do.
+
+**A close reading of the class, not just the instance (§1.0).** Every
+workflow step that reads Railway service variables into a job
+environment (`grep -rl "read_var" .github/workflows/`) was checked
+against this specific failure mode: the two fixed here are the ONLY
+places in the repository that read the BACKEND's five-of-six credential
+set, so no third instance exists. `tutor-deploy.yml`'s own
+oracle-credential step (line 404 onward, the one this comment now
+points to) exports seven variables — `MODEL_API_KEY`, `MODEL_API_BASE`,
+`MODEL_NAME`, `INTERNAL_API_KEY`, `TUTOR_SESSION_SECRET`, `CORE_URL`,
+`CORE_INTERNAL_KEY` — against `oracle/src/env.ts`'s four
+required-with-no-default fields (`INTERNAL_API_KEY`,
+`TUTOR_SESSION_SECRET`, `CORE_URL`, `CORE_INTERNAL_KEY`; the other three
+are optional or defaulted there). It already covers every required
+field, `TUTOR_SESSION_SECRET` included — it was written correctly from
+the start and is the reason this fix's shape was obvious once the
+failure was found, not a parallel defect needing its own round.
+
+No `oracle/AGENTS.md`/`/ORACLE.md` item: nothing in `oracle/` changed,
+and this is a CI credential-plumbing fix to two Core-facing automation
+scripts, not a Tutor behaviour, prompt, or content-ladder change.
