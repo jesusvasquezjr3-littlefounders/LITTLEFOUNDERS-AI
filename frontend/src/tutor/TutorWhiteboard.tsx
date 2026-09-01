@@ -102,17 +102,52 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
     [],
   );
   /** How many bars are grown-in so far. All of them immediately for a replayed seq or reduced motion. */
-  const [shown, setShown] = useState(reducedMotion ? board.values.length : 1);
+  const [shown, setShown] = useState(() => (reducedMotion ? board.values.length : Math.min(1, board.values.length)));
 
-  useEffect(() => {
+  /**
+   * A NEW turn (bumped `seq`, often-SHORTER `board.values`) can arrive while
+   * the PREVIOUS turn's bars are still counting up. Resetting `shown` only
+   * from a `useEffect` keyed on `seq` fixed the wrong render: an effect runs
+   * AFTER React commits, so the render that paired the OLD, larger `shown`
+   * with the NEW, shorter `board.values` committed and PAINTED FIRST —
+   * every bar of the new sequence showed fully grown for one frame, then
+   * visibly collapsed back to one bar and re-grew correctly a tick later.
+   * Found by adversarial review, round 101 (RUNBOOK.md).
+   *
+   * The fix is React's own documented pattern for this exact shape of bug —
+   * "adjust state during render, don't wait for an effect" — rather than the
+   * general clamp-at-render-time advice, because the bad value here is not
+   * merely `shown` OVERSHOOTING the new array's length (a plain
+   * `Math.min(shown, board.values.length)` would still start a brand-new
+   * turn's board pre-grown whenever the old count happened to fit the new,
+   * shorter length); it is `shown` belonging to the WRONG turn entirely. So
+   * this tracks which `seq` the current `shown` was computed for, and the
+   * moment they disagree, corrects BOTH synchronously, in the render itself.
+   * React discards the mismatched render and retries immediately, before
+   * anything commits to the screen — the bad frame is never painted, rather
+   * than painted and corrected one frame later.
+   */
+  const [revealedSeq, setRevealedSeq] = useState(seq);
+  if (seq !== revealedSeq) {
+    setRevealedSeq(seq);
     setShown(reducedMotion ? board.values.length : Math.min(1, board.values.length));
-  }, [seq, reducedMotion, board.values.length]);
+  }
 
   useEffect(() => {
     if (reducedMotion || shown >= board.values.length) return;
     const id = window.setTimeout(() => setShown((n) => Math.min(n + 1, board.values.length)), GROW_STEP_MS);
     return () => window.clearTimeout(id);
   }, [shown, reducedMotion, board.values.length]);
+
+  /**
+   * Defense in depth, for the SAME class of bug at the point of use: `shown`
+   * must never be read against `board.values` without being bounded by its
+   * CURRENT length, even though the guard above already keeps it in range
+   * for every seq this component has actually seen (AGENTS.md §1.14, "a
+   * measurement of a shared object must not depend on where it is
+   * attached" — the sibling rule, applied to a counter instead of a Box3).
+   */
+  const safeShown = Math.min(shown, board.values.length);
 
   const max = Math.max(...board.values, 1);
 
@@ -174,7 +209,7 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
         data-tutor-whiteboard
         role="img"
         aria-label={`${board.label}. ${board.values
-          .slice(0, shown)
+          .slice(0, safeShown)
           .map((value, i) => `${captionFor(i)}: ${format(value)}`)
           .join(', ')}`}
         className={cn('flex min-h-0 flex-col gap-3', className)}
@@ -182,7 +217,7 @@ export function TutorWhiteboard({ board, seq, className }: TutorWhiteboardProps)
         <p className="lf-caption shrink-0 text-content-muted">{board.label}</p>
         <div className="flex min-h-0 flex-1 items-end gap-2 overflow-x-auto px-1 pb-1">
           {board.values.map((value, i) => {
-            const grown = i < shown;
+            const grown = i < safeShown;
             const heightPct = value <= ZERO_EPSILON ? 0 : Math.max(6, Math.round((value / max) * 100));
             return (
               <div key={i} className="flex min-w-[3.5rem] flex-1 flex-col items-center gap-1">

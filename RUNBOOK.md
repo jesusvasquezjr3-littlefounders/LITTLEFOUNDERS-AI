@@ -11762,3 +11762,65 @@ sibling of, never nested inside, the `role="img"` element. Root gates
 `oracle/` changed, and this is a client-side accessibility fix to an
 existing render, not a change to what the whiteboard displays or why.
 
+## Round 115: a new whiteboard turn briefly painted fully-grown before its own reveal began, because the stale bar count from the previous turn was corrected one frame too late — found by adversarial review sweep tutor-review-sweep-101 (whiteboard-at-scale dimension), MEDIUM, closed 2026-08-31
+
+**MEDIUM, FIXED.** A new turn (bumped `seq`, often-SHORTER
+`board.values`) arriving while the previous turn's bar-by-bar reveal
+was still counting up committed and PAINTED one bad frame first: the
+render pairing the OLD, larger `shown` with the NEW, shorter
+`board.values` happened before the `useEffect` keyed on `seq` could
+reset it — an effect runs after React commits, never before. Every bar
+of the new sequence showed fully grown for one frame, then visibly
+collapsed back to one bar and re-grew correctly a tick later. A
+jarring glitch, exactly when a child is trying to follow a fast-moving
+story.
+
+**Fix.** React's own documented pattern for this exact shape of bug —
+adjust state during render, don't wait for an effect — rather than a
+plain clamp at render time. A plain `Math.min(shown, board.values.length)`
+would still start a brand-new turn's board pre-grown whenever the old
+count happened to fit the new, shorter length; the bad value here is
+`shown` belonging to the WRONG turn entirely, not merely overshooting
+the new array's bounds. A new `revealedSeq` state tracks which `seq`
+the current `shown` was computed for, and the moment they disagree,
+corrects BOTH synchronously in the render itself — React discards the
+mismatched render and retries immediately, before anything commits to
+the screen. A second, independent guard — `safeShown =
+Math.min(shown, board.values.length)`, applied everywhere `shown` was
+previously read for rendering — is defense in depth for the same class
+of bug at the point of use (§1.14, "a measurement of a shared object
+must not depend on where it is attached" — the sibling rule, applied to
+a counter instead of a `Box3`).
+
+**Proof.** `whiteboardRevealRace.test.tsx` (deliberately separate from
+`tutorWhiteboard.test.tsx`'s fake-renderer suite, which settles on the
+final DOM state and would never see a transient bad frame) spies on
+`Element.prototype.setAttribute` to record every `aria-label` value
+this component EVER commits, in commit order — including one the test
+expects to be immediately overwritten by a corrective second commit,
+which a post-hoc DOM query could never observe. It drives board A's
+reveal genuinely mid-way (3 of 5 bars grown), interrupts it with a
+shorter board B, and asserts the full-board label ("Historia B. Start:
+20, Day 1: 23") is never among the committed frames — proving the bad
+frame is never painted, not merely that the settled state is
+eventually correct.
+
+Merged on top of round 101 (per-step `aria-label` captions,
+`captionFor`), round 107 (the true-zero visibility floor,
+`ZERO_EPSILON`) and round 114 (the live-region announcement) — all four
+already-merged/this-batch changes to the same render block, none of
+which touch the `shown`/`revealedSeq` reveal-timing logic this round
+fixes. `safeShown` (this round) now stands in for `shown` everywhere
+those other rounds render a bar or build the caption string.
+
+**Verification.** `npm run type-check`, `npm run lint`, `npm run build`
+all clean in `frontend/`. `whiteboardRevealRace.test.tsx`: 1/1.
+`tutorWhiteboard.test.tsx`: 12/12 (its own pre-existing aria-label
+assertions are unaffected — `safeShown` and `shown` agree on every
+input those tests exercise, since none of them interrupt an
+in-progress reveal). Root gates `docs:check`, `secrets:check`,
+`i18n:check`, `tools:test` (26/26) all green. No `oracle/AGENTS.md`/
+`/ORACLE.md` item: nothing in `oracle/` changed, and this is a
+client-side render-timing fix to an existing component, not a change to
+what the whiteboard displays or why.
+
