@@ -779,9 +779,18 @@ const MINIMAL_MAP: TutorMapResponse = {
  * never quietly reverting to the flat value that caused it (the same
  * arbitrary-value regression style `conversationView.test.tsx` and
  * `personalizeInWorld.test.tsx` already use for their own CSS-driven fixes).
+ *
+ * `clamp(11rem,27vh,15rem)` → `clamp(18rem,27vh,20rem)`, round 140: that
+ * first measurement was taken without `secondary` (My island / Past
+ * conversations) populated in the dock's `above` slot, and `secondary` rides
+ * that slot precisely when this map panel is also showing — the two share
+ * `chipsIn`. A live re-measurement (`OfferChips.tsx`'s own comment on this
+ * wrapper has the three data points) found the dock's real need 32-68px past
+ * the old 240px ceiling at every breakpoint checked, which is what this test
+ * now pins instead.
  */
-describe('the learning map panel degrades gracefully at short viewports (round 123 follow-up)', () => {
-  it('reserves a bottom inset that shrinks with viewport height, never the flat 240px that clipped it to 37px', () => {
+describe('the learning map panel degrades gracefully at short viewports (round 123 follow-up, round 140 re-measurement)', () => {
+  it('reserves a bottom inset that shrinks with viewport height, comfortably past the dock\'s real need with secondary populated', () => {
     vi.useFakeTimers();
     const { container } = render(
       <OfferChips
@@ -811,7 +820,47 @@ describe('the learning map panel degrades gracefully at short viewports (round 1
 
     const wrap = container.querySelector('.fixed.inset-x-0.z-20.flex.justify-center');
     expect(wrap).not.toBeNull();
-    expect(wrap?.className).toContain('bottom-[clamp(11rem,27vh,15rem)]');
+    expect(wrap?.className).toContain('bottom-[clamp(18rem,27vh,20rem)]');
     expect(wrap?.className).not.toContain('bottom-60');
+    expect(wrap?.className).not.toContain('bottom-[clamp(11rem,27vh,15rem)]');
+  });
+
+  /*
+   * WITHOUT this floor, the raised reservation above computes a NEGATIVE
+   * available height at 863x349 specifically (72px top + 288px bottom is
+   * already past the full 349px viewport) — flexbox clamps a negative
+   * max-height to zero, which would silently reintroduce the exact
+   * "entirely unreachable" failure round 123 fixed, just at 0px instead of
+   * 37px. jsdom cannot compute that this floor actually wins the arithmetic
+   * in a real browser, only that the class asking for it is present.
+   */
+  it('never lets the sheet collapse to zero at the shortest viewports: the inner wrapper carries a min-height floor', () => {
+    vi.useFakeTimers();
+    const { container } = render(
+      <OfferChips
+        phase="introducing"
+        map={MINIMAL_MAP}
+        ready
+        timedOut={false}
+        offers={OFFERS}
+        starting={false}
+        startError={null}
+        startErrorResetAt={null}
+        onRetryOffers={vi.fn()}
+        onStart={vi.fn()}
+        onPersonalize={vi.fn()}
+        onReplay={vi.fn()}
+        token="test-token"
+        character="rho"
+        nickname="Robi"
+      />,
+    );
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    const inner = container.querySelector('.pointer-events-auto.flex.max-h-full');
+    expect(inner).not.toBeNull();
+    expect(inner?.className).toContain('min-h-[110px]');
   });
 });

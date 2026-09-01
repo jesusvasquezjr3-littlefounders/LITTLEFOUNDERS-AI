@@ -1121,21 +1121,69 @@ export function OfferChips({
             `100vh - 72 - 240 = 37px` tall — its own CONTINUE chip, review
             count and every graph node clipped away, present in the DOM and
             entirely unreachable. §1.11 names this exact failure shape: mobile
-            HEIGHT, not only width. `clamp(11rem, 27vh, 15rem)` keeps the
-            CEILING (240px) on anything tall enough to afford it — measured
-            live, the dock itself is 152px + a 12px rest inset below `lg:`
-            (row layout, both 375 and 863 wide) and 168px + 24px at `lg:` and
-            up (column layout, 1280 wide): 164px and 192px of real need,
-            comfortably inside the FLOOR (176px) this never drops below. At
-            349px tall the reservation becomes 176px instead of 240 — still
-            clear of the dock — and the sheet grows from an unusable 37px to
-            a scrollable ~101px. Neither breakpoint's real dock need is a
-            magic number here: both were read off `getBoundingClientRect()`
-            on this exact route, not assumed.
+            HEIGHT, not only width.
+
+            `clamp(18rem, 27vh, 20rem)` — RAISED from `clamp(11rem, 27vh,
+            15rem)`, round 123's own values. That round measured the dock
+            WITHOUT `secondary` (My island / Past conversations) populated —
+            correct for the phases it was checking, wrong for THIS one:
+            `secondary` rides the dock's `above` slot (`StageDockValue`)
+            precisely when `chipsIn` is true, which is the SAME flag that
+            gates this map panel, so the two are never seen apart from each
+            other in practice. Found live, 2026-09-01, three real breakpoints,
+            `getBoundingClientRect()` on both the dock and this wrapper, not
+            assumed: the dock's real "clear from here down" need is 244px at
+            863x349, 264px at 375x812, and 272px at 1280x900 — all comfortably
+            past the OLD 240px ceiling, which is why the sheet's own bottom
+            edge measurably overlapped the dock's top edge by 32-68px at every
+            one of the three, with `secondary`'s two chips squeezed against
+            the map's own last visible row. `18rem` (288px) clears the largest
+            (272px) with the same ~16px margin round 123's own comment used
+            for ITS measurement; `20rem` (320px) keeps the ceiling above the
+            new floor so `27vh` still has room to matter on a genuinely tall
+            viewport, exactly as before.
+
+            NOT SOLVED HERE: opening "Past conversations" (`archive`, riding
+            the SAME `above` slot, ABOVE `secondary`) while this map is also
+            open grows the dock further, by an amount `archive`'s own
+            `max-h-[52vh]` makes unbounded rather than a second constant to
+            measure. Left as a follow-up rather than folded in — reaching for
+            `StageDockValue.keepClearOf`'s existing ResizeObserver (built for
+            exactly "a surface that simply HAS a height rather than
+            publishing one," today used in the other direction — the dock
+            clearing a bottom sheet) would be the right shape for a live
+            measurement, not another hand-tuned constant.
           */}
           {chipsIn && mapPanel && (
-            <div className="pointer-events-none fixed inset-x-0 top-[max(4.5rem,9vh)] bottom-[clamp(11rem,27vh,15rem)] z-20 flex justify-center px-4">
-              <div className="pointer-events-auto flex max-h-full w-[min(94vw,58rem)] justify-center">
+            <div className="pointer-events-none fixed inset-x-0 top-[max(4.5rem,9vh)] bottom-[clamp(18rem,27vh,20rem)] z-20 flex justify-center px-4">
+              {/*
+                `min-h-[110px]` — the same floor Round 137 measured for the
+                answers panel's own "never quite collapse to zero" problem,
+                reused rather than re-derived: enough for the greeting line
+                plus the CONTINUE chip to stay usable. WITHOUT it, the raised
+                bottom reservation above, combined with the 349px-tall case
+                that motivated round 123 in the first place, computes a
+                NEGATIVE available height (72px top + 288px bottom > 349px
+                total) — flexbox clamps that to zero rather than negative,
+                which would silently reproduce the exact "entirely
+                unreachable" failure this whole wrapper exists to prevent, at
+                0px instead of 37px.
+
+                HONESTLY: at that ONE extreme height the floor does not shrink
+                the overlap versus the pre-round-140 baseline — measured live,
+                77px with the floor against 68px before this round, roughly
+                the same collision, not a smaller one. What it changes is the
+                FAILURE MODE: the sheet stays at a usable 110px (greeting plus
+                the CONTINUE chip, both real DOM and reachable, per this
+                file's own "never quite collapse to zero" precedent) instead
+                of silently going to zero and taking the CONTINUE chip and
+                review count with it. Both breakpoints §1.11 actually mandates
+                — 375x812 and 1280x900 — measured CLEAN with real margin
+                (24px, 16px) live in this same round; 349px is this testing
+                pane's own native size, not one of them, and is left exactly
+                as imperfect as it already was rather than pretended fixed.
+              */}
+              <div className="pointer-events-auto flex max-h-full w-[min(94vw,58rem)] min-h-[110px] justify-center">
                 {mapPanel}
               </div>
             </div>

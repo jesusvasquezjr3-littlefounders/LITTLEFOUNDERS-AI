@@ -14178,3 +14178,135 @@ clean, `test` 140 files / 1640 tests green, `build` clean. Root:
 backend: unaffected by any of the four fixes — `curate:tutor-skills`
 was run live as fix 2's own verification, not because backend's code
 changed.
+
+## Round 141: continuing the standing live-testing mandate on the introduce phase's own learning map — round 123's bottom reservation was measured without the ONE row that shares its trigger, and overlaps the dock by 32-68px at every breakpoint checked, live, 2026-09-01
+
+**MEDIUM, FIXED, two of two mandated breakpoints verified clean; the
+one viewport this reproduces WORST at is this testing pane's own
+native size, not one AGENTS.md §1.11 requires, and is left honestly
+unimproved there rather than claimed fixed.** Continuing the same live,
+mandated low-retention-persona testing this whole session has used,
+opened a fresh session at the Browser pane's own native 863×349 size
+(the same size Round 138/139 already treated as real) and found the
+"Start a conversation" map/greeting sheet visually fused with the "My
+island" / "Past conversations" row directly below it — no gap, both
+translucent Lumen surfaces reading as one merged card.
+
+**Confirmed as a real, measured overlap before writing anything, at
+three real breakpoints, not one.** `getBoundingClientRect()` on both
+the sheet's own fixed positioning wrapper
+([OfferChips.tsx:1158](frontend/src/tutor/OfferChips.tsx:1158)) and the
+dock's `"Talk to your tutor"` aria-group (`StageShell.tsx`'s own bottom
+cluster) found the dock's real "clear from here down" need is **244px
+at 863×349, 264px at 375×812, and 272px at 1280×900** — all three past
+the existing `bottom-[clamp(11rem,27vh,15rem)]`'s 240px ceiling, which
+is exactly why the sheet's own bottom edge measurably overlapped the
+dock's top edge by 68px, 45px and 32px respectively at the three sizes.
+375×812 and 1280×900 are not edge cases — they are the two sizes
+AGENTS.md §1.11 names outright.
+
+**Root cause: round 123's own measurement (the comment right above this
+code, `OfferChips.tsx:1109-1134`) was correct for what it measured and
+wrong for what actually renders here.** That round measured the
+dock's height WITHOUT `secondary` (My island / Past conversations)
+populated in its `above` slot — a reasonable measurement for the
+phases it was checking, but `secondary` rides that exact slot
+(`StageDockValue.above`, a portal target `StageShell.tsx` publishes)
+precisely when `chipsIn` is true, which is the SAME flag that gates
+this map panel — the two are never seen apart from each other in the
+phase this code actually runs in. The 176px floor / 240px ceiling
+comfortably covered the dock ALONE (152-192px, per round 123's own
+numbers); it never covered the dock WITH the row this file's own
+`secondary` constant renders into it.
+
+**Fixed by raising the reservation to the real, live-measured need,
+plus a floor so the fix cannot recreate round 123's own original
+failure at the shortest height.**
+[OfferChips.tsx:1158](frontend/src/tutor/OfferChips.tsx:1158):
+`clamp(11rem,27vh,15rem)` → `clamp(18rem,27vh,20rem)` (176-240px →
+288-320px) — the new floor (288px) clears the largest measured need
+(272px) with the same ~16px margin round 123's own comment used, and
+the new ceiling (320px) stays above the new floor so `27vh` still has
+room to matter on a genuinely tall viewport. Verified live afterward,
+not just computed: 24px clear margin at 375×812, 16px at 1280×900 —
+both a visibly separated card in a screenshot, not merely a passing
+number.
+
+**The floor alone would have reintroduced round 123's own bug, at 0px
+instead of 37px, so a second, independent floor protects the sheet
+itself.** At 863×349 specifically, `72px top + 288px bottom` already
+exceeds the full `349px` viewport — a negative available height, which
+flexbox clamps to zero rather than negative. Caught live, not by
+inspection: after the reservation change, the OUTER wrapper's own
+`getBoundingClientRect()` measured `h: 0` at that exact size, which
+would have silently taken the CONTINUE chip and the whole map back
+below the fold at 0px — the identical failure shape round 123 fixed,
+recreated one layer up. Fixed by adding
+`min-h-[110px]` ([OfferChips.tsx:1186](frontend/src/tutor/OfferChips.tsx:1186))
+to the inner flex wrapper — the same floor value Round 137 measured
+for an unrelated panel's own "never quite collapse to zero" problem,
+reused rather than re-derived. Confirmed live that a flex child's
+`min-height` does win against a zero-height, `overflow:visible` parent
+computed via `top`+`bottom` arithmetic: the inner wrapper and the sheet
+both rendered at a real 110px after the fix, where before this specific
+check they would have rendered at 0.
+
+**Written up honestly rather than claimed solved everywhere: the
+349px case does not actually get smaller.** Measured live after both
+fixes landed: 77px of overlap at 863×349, against 68px before this
+round — not an improvement in overlap size, because the dock itself
+did not move, only the sheet's floor did. What changed is the FAILURE
+MODE, not the collision: the sheet now stays at a usable 110px
+(greeting plus the CONTINUE chip, both real and reachable) instead of
+silently collapsing to zero and taking them with it. The in-code
+comment says this plainly (`OfferChips.tsx:1172`, "HONESTLY: at that
+ONE extreme height...") rather than rounding it up to a claimed fix,
+per AGENTS.md §1.12 — 863×349 is this testing pane's own native size,
+not a size §1.11 requires, and is left exactly as imperfect as it
+already was rather than pretended fixed.
+
+**A second, real defect investigated the same session and explicitly
+NOT reported as confirmed, per the same honesty standard.** While
+diagnosing the overlap, a `computer.scroll` gesture squarely over the
+sheet's own live content (confirmed via `elementFromPoint`, not
+assumed) never scrolled it and never even fired a `wheel` DOM event
+detectable at `window`-capture — at ANY coordinate tested on this
+route, including over the plain "Leave the tutor" button, nothing
+3D-adjacent at all. A control test on this exact same tool, same
+session, against an ordinary long page confirmed the tool DOES
+dispatch real, positioned `wheel` events that a page can observe and
+that natively scroll (`deltaY: 300`, `scrollY` moved to match) — so
+this is not the tool failing generally. But `touch-action` computed to
+`auto` (unrestricted) on every ancestor checked, and `scrollIntoView()`
+on a node inside the same sheet DID move it (`scrollTop` 0 → 344.5)
+— proving the sheet is not structurally unscrollable, only that this
+one input path (mouse-wheel-shaped scroll, as this tool generates it)
+never reaches the DOM as an event anywhere on this specific route. This
+product's actual audience scrolls by touch, not mouse wheel, and
+nothing found here shows touch scrolling is affected — extending this
+finding to "the map is unreachable" would be exactly the class of
+mistake AGENTS.md §1.14 already names ("a harness that cannot operate a
+surface reports the product as broken"), just for a scroll gesture
+instead of a click. Left unreported as a confirmed defect and unfixed
+on purpose; worth a real touch-capable re-test before either dismissing
+it or escalating it further.
+
+**Regression coverage**, `frontend/src/tutor/__tests__/offerChips.test.tsx`:
+the existing round-123 test's assertion updated to the new clamp value
+(jsdom cannot compute real overlap pixels, same limitation that test's
+own comment already names — what it CAN hold the line on is the exact
+class string, both that it now asks for the new value and that it
+never reverts to either the original flat `bottom-60` or the
+under-measured round-123 clamp); one new test pins the `min-h-[110px]`
+floor's class is present, for the same jsdom-cannot-compute-real-layout
+reason.
+
+**Verification, independently re-run by the coordinator.** frontend:
+`type-check` clean, `lint` clean, `test` 140 files / 1641 tests green
+(+1, the new min-height regression test), `build` clean,
+`verify:tutor-ui` OK (8 controls / 0 unreachable at all three required
+desktop/dark/mobile configurations, all three whiteboard kinds
+included). Root: `docs:check`, `secrets:check`, `i18n:check`,
+`paths:check`, `seo:check`, `provider:check`, `tools:test` (26/26) all
+green — no new strings, routes, or migrations this round. oracle and
+backend untouched.
