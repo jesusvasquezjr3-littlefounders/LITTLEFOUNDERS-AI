@@ -816,10 +816,21 @@ export async function revokeAdminPermission(userId: string, permission: string):
   return res.ok;
 }
 
-/** Append-only audit entry (no PII in detail — booleans/ids only). Returns
+/**
+ * Append-only audit entry (no PII in detail — booleans/ids only). Returns
  * whether the row landed: audit_logs is the only record of staff actions, so
- * high-stakes callers must be able to detect (and loudly log) a lost trail. */
-export async function insertAuditLog(actorId: string, action: string, subject: string, detail: Record<string, unknown>): Promise<boolean> {
+ * high-stakes callers must be able to detect (and loudly log) a lost trail.
+ *
+ * `actorId` accepts `null` for a SYSTEM action — a scheduled job with no human
+ * behind it (the tutor retention sweep, `routes/tutor.ts`'s
+ * `/retention/purge`), rather than a staff member's own click. `audit_logs.
+ * actor_id` has always been nullable (`0001_identity.sql`: `REFERENCES
+ * auth.users(id) ON DELETE SET NULL`) for exactly this reason; fabricating an
+ * id that names no real user would violate the foreign key, and attributing a
+ * system action to whichever staff member happened to trigger the workflow
+ * dispatch would misrepresent who did it.
+ */
+export async function insertAuditLog(actorId: string | null, action: string, subject: string, detail: Record<string, unknown>): Promise<boolean> {
   const res = await rest<unknown>('/audit_logs', serviceToken(), {
     method: 'POST',
     headers: { Prefer: 'return=minimal' },

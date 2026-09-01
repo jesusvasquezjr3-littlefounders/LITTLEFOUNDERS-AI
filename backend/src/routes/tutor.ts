@@ -7,6 +7,7 @@ import { getRolesForGate } from '../services/insights.js';
 import {
   getFullOwnProfile,
   getVerifiedKidLinks,
+  insertAuditLog,
   serviceRest,
   type FullProfileRow,
 } from '../services/supabaseRest.js';
@@ -40,6 +41,7 @@ import {
   listTutorTurns,
   markSegmentVoiceChecked,
   recordSegmentResult,
+  RETENTION_SWEEP_AUDIT_ACTION,
   revokeVoiceConsent,
   setSessionSummary,
   upsertTutorPreferences,
@@ -790,6 +792,27 @@ function internalRouter(): Router {
         `[tutor-retention] ${result.audioFailed} audio file(s) survived their session:`,
         result.orphanedPaths,
       );
+    }
+    /*
+     * ORACLE.md §15.2 item 4 (closed 2026-08-31): the sweep's own monitoring.
+     * Written on every reply that reaches here — INCLUDING a batch that
+     * deletes zero sessions — because "ran and found nothing due" and "never
+     * ran" must stay distinguishable (§1.14); only the absence of this row
+     * for too long (`getTutorRetentionStatus`, services/tutorData.ts) means
+     * the workflow itself has stopped firing. `actorId: null` because this is
+     * a scheduled job, not a staff click — see `insertAuditLog`'s own comment.
+     */
+    const audited = await insertAuditLog(null, RETENTION_SWEEP_AUDIT_ACTION, 'tutor_sessions', {
+      sessionsDeleted: result.sessionsDeleted,
+      audioDeleted: result.audioDeleted,
+      audioFailed: result.audioFailed,
+      audioRetained: result.audioRetained,
+    });
+    if (!audited) {
+      // The purge already committed, so this must not become a caller-facing
+      // failure — but a sweep with no audit row is invisible to the very
+      // staleness check this exists to feed. audit_logs is the only record.
+      console.error('[tutor-retention] audit write FAILED — the sweep ran but will not show as having run');
     }
     return ok(res, result);
   });

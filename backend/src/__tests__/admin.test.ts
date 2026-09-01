@@ -576,6 +576,56 @@ describe('the tutor live-content review queue (/ORACLE.md §7.3)', () => {
   });
 });
 
+describe('GET /api/v1/admin/tutor/retention-status (/ORACLE.md §15.2 item 4)', () => {
+  function stubRetentionStatus(row: { created_at: string; detail: Record<string, unknown> } | null | 'db-down') {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'admin' }]));
+        if (url.includes('/rest/v1/audit_logs')) {
+          if (row === 'db-down') return Promise.resolve(new Response(null, { status: 500 }));
+          return Promise.resolve(jsonResponse(200, row ? [row] : []));
+        }
+        return Promise.resolve(jsonResponse(200, []));
+      }),
+    );
+  }
+
+  it('reports the last run as fresh, not stale, the morning after an ordinary nightly sweep', async () => {
+    stubRetentionStatus({
+      created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+      detail: { sessionsDeleted: 3 },
+    });
+    const res = await request(createApp())
+      .get('/api/v1/admin/tutor/retention-status')
+      .set('Authorization', authed());
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({ stale: false, lastRunDetail: { sessionsDeleted: 3 } });
+  });
+
+  it('reports stale when the sweep has never recorded a run at all', async () => {
+    stubRetentionStatus(null);
+    const res = await request(createApp())
+      .get('/api/v1/admin/tutor/retention-status')
+      .set('Authorization', authed());
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({ stale: true, lastRunAt: null });
+  });
+
+  it('answers 502, not a stale 200, when the status read itself cannot reach the database', async () => {
+    // The two failure shapes must stay distinguishable (§1.14): a database
+    // outage is not the same claim as "the sweep has genuinely never run",
+    // and collapsing them would make an outage LOOK like a legal-risk finding.
+    stubRetentionStatus('db-down');
+    const res = await request(createApp())
+      .get('/api/v1/admin/tutor/retention-status')
+      .set('Authorization', authed());
+    expect(res.status).toBe(502);
+    expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
+  });
+});
+
 describe('GET /api/v1/admin/audit', () => {
   it('returns audit entries newest-first', async () => {
     stubData('admin');

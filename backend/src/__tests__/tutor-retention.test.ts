@@ -18,7 +18,9 @@ interface StubOpts {
   purged?: { session_id: string; audio_paths: string[] }[];
   rpcStatus?: number;
   depotStatus?: number;
-  calls?: { url: string; method: string }[];
+  /** Simulates `audit_logs` refusing the write, without failing the sweep itself. */
+  auditStatus?: number;
+  calls?: { url: string; method: string; body?: string }[];
 }
 
 function stub(opts: StubOpts = {}) {
@@ -28,7 +30,7 @@ function stub(opts: StubOpts = {}) {
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
       const method = init?.method ?? 'GET';
-      calls.push({ url, method });
+      calls.push({ url, method, body: init?.body as string | undefined });
 
       if (url.includes('/rpc/purge_expired_tutor_sessions')) {
         if (opts.rpcStatus && opts.rpcStatus >= 400) {
@@ -38,6 +40,9 @@ function stub(opts: StubOpts = {}) {
       }
       if (url.includes('/api/v1/files/')) {
         return Promise.resolve(new Response(null, { status: opts.depotStatus ?? 204 }));
+      }
+      if (url.includes('/audit_logs') && opts.auditStatus && opts.auditStatus >= 400) {
+        return Promise.resolve(new Response(null, { status: opts.auditStatus }));
       }
       return Promise.resolve(jsonResponse(200, []));
     }),
@@ -192,5 +197,67 @@ describe('POST /api/v1/tutor/internal/retention/purge', () => {
       .set('x-internal-api-key', key())
       .send({ limit: 999999 });
     expect(response.status).toBe(400);
+  });
+});
+
+describe('the sweep records its own last-successful-run (/ORACLE.md §15.2 item 4)', () => {
+  const key = () => process.env.INTERNAL_API_KEY as string;
+
+  /*
+   * Before this existed, a run that silently stopped firing was invisible:
+   * the sweep reported what it deleted to its own caller (a GitHub Actions
+   * runner nobody watches) and nowhere else. This asserts the row that makes
+   * staleness checkable actually gets written, on the exact path production
+   * uses — the internal route, not `purgeExpiredTutorSessions` called
+   * directly, since the audit write lives in the ROUTE handler.
+   */
+  it('writes an audit_logs row with a null actor (a system job, not a staff click)', async () => {
+    const calls = stub({ purged: [{ session_id: '1', audio_paths: ['tutor-speech/a.mp3'] }] });
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/retention/purge')
+      .set('x-internal-api-key', key())
+      .send({ limit: 10 });
+
+    expect(response.status).toBe(200);
+    const audit = calls.find((c) => c.method === 'POST' && c.url.includes('/audit_logs'));
+    expect(audit).toBeDefined();
+    const body = JSON.parse(audit?.body ?? '{}') as Record<string, unknown>;
+    expect(body).toMatchObject({
+      actor_id: null,
+      action: 'tutor.retention.swept',
+      subject: 'tutor_sessions',
+      detail: { sessionsDeleted: 1, audioDeleted: 1, audioFailed: 0 },
+    });
+  });
+
+  it('writes the row even when the batch deletes zero sessions — "ran and found nothing due" must not look like "never ran"', async () => {
+    const calls = stub({ purged: [] });
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/retention/purge')
+      .set('x-internal-api-key', key())
+      .send({});
+
+    expect(response.status).toBe(200);
+    const audit = calls.find((c) => c.method === 'POST' && c.url.includes('/audit_logs'));
+    expect(audit).toBeDefined();
+    expect(JSON.parse(audit?.body ?? '{}')).toMatchObject({ detail: { sessionsDeleted: 0 } });
+  });
+
+  it('still reports the sweep as successful when ONLY the audit write fails — the purge already committed', async () => {
+    // The row is already deleted; refusing to answer 200 here would tell the
+    // caller (and a retry loop) that the sweep itself failed when it did not.
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    stub({ purged: [{ session_id: '1', audio_paths: [] }], auditStatus: 500 });
+    const response = await request(createApp())
+      .post('/api/v1/tutor/internal/retention/purge')
+      .set('x-internal-api-key', key())
+      .send({});
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toMatchObject({ sessionsDeleted: 1 });
+    // Silent would mean an invisible audit trail with no operator signal at
+    // all — the loud half of "must not become a caller-facing failure".
+    expect(consoleError).toHaveBeenCalledWith(expect.stringContaining('audit write FAILED'));
+    consoleError.mockRestore();
   });
 });

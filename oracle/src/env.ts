@@ -200,6 +200,44 @@ const Env = z.object({
   /** Per-turn learner input cap, in characters (§5 bounds). */
   TURN_MAX_INPUT_CHARS: z.coerce.number().int().positive().default(600),
 
+  /**
+   * ORACLE.md §15.2 item 2 (narrow scope — the horizontal-scale half of that
+   * item is a separate, larger, architecturally-undecided piece of work).
+   *
+   * Hard per-process ceiling on live tutor sessions. Before this existed,
+   * `oracle/` accepted every authenticated socket unconditionally: nothing
+   * counted how many were open, and each one holds a full orchestrator, its
+   * transcript and (mid microphone turn) up to the streamed-audio ceiling in
+   * memory for as long as it stays connected. The failure at saturation is
+   * memory pressure and a slowing event loop for EVERYONE already connected —
+   * the worst shape of failure, since it degrades every existing learner
+   * rather than merely refusing a new one.
+   *
+   * The default is a conservative STARTING POINT, not a measured capacity
+   * figure — this codebase has no production memory profile for a live
+   * session yet (§15.2's own "unmeasured" caveat applies here too). Raise it
+   * per deployment once real load is observed.
+   */
+  ORACLE_MAX_CONCURRENT_SESSIONS: z.coerce.number().int().positive().default(200),
+
+  /**
+   * ORACLE.md §15.2 item 3 — the websocket handshake has no rate limit of its
+   * own, because the WebSocketServer in `ws/server.ts` is attached directly
+   * to the raw HTTP server and Express's `globalRateLimiter`
+   * (`middleware/rateLimit.ts`) never sees the upgrade. See
+   * `ws/handshakeRateLimit.ts` for the enforcement and why it is not simply
+   * that same limiter reused.
+   *
+   * Per IP, not per user: the handshake is rate-limited before the token is
+   * even read, so nothing about the caller's identity is known yet. Defaults
+   * are generous on purpose — a household of siblings reconnecting through
+   * one NAT'd IP on a flaky connection is the ordinary case this must not
+   * catch, and this is defence in depth behind a control that already works
+   * (Core's token minting) rather than the primary defence.
+   */
+  ORACLE_WS_HANDSHAKE_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(100),
+  ORACLE_WS_HANDSHAKE_RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60_000),
+
   /** Upstream call timeouts. A tutor that hangs is worse than one that fails. */
   MODEL_TIMEOUT_MS: z.coerce.number().int().positive().default(20_000),
   VOICE_TIMEOUT_MS: z.coerce.number().int().positive().default(15_000),
