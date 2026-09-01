@@ -28149,6 +28149,26 @@ import type { LiveSegmentState } from '../useTutorSocket';
  * (`families/story/components.tsx`), rendered inside the REAL
 ```
 
+### frontend/src/tutor/__tests__/LiveSegmentPanel.numberPadDraft.test.tsx
+
+```
+import { useState } from 'react';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+import { LiveSegmentPanel } from '../LiveSegmentPanel';
+import type { LiveSegmentPanelProps } from '../LiveSegmentPanel';
+import type { LiveSegmentState } from '../useTutorSocket';
+
+/*
+ * A LIVE-SESSION REPRODUCTION ATTEMPT FOR A REPORTED "THE NUMBER PAD DOES NOT
+ * RESPOND" DEFECT — deliberately using the REAL, unmocked `registry` (unlike
+ * this directory's other `LiveSegmentPanel` suites, which stand in a
+ * minimal fake renderer because their own question is about the staleness
+ * guard, not about a real exercise). This one is about a real `number_input`
+ * screen's draft state specifically, so a fake renderer would prove nothing.
+ *
+```
+
 ### frontend/src/tutor/__tests__/LiveSegmentPanel.test.tsx
 
 ```
