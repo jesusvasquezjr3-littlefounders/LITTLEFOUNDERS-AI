@@ -64,6 +64,18 @@ beforeEach(() => {
   vi.stubGlobal('WebSocket', FakeSocket as unknown as typeof WebSocket);
 });
 
+/**
+ * The connecting effect defers its real `new WebSocket()` one microtask
+ * (RUNBOOK.md Round 81/82 — see that file's own comment): flushed here
+ * before reaching for whichever socket a given render is expected to have
+ * opened, FIRST or SECOND.
+ */
+async function flushSocketConnect(): Promise<void> {
+  await act(async () => {
+    await Promise.resolve();
+  });
+}
+
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
@@ -129,6 +141,7 @@ describe('the resume-driving effect does not tear down its own successful resume
     });
 
     const { getByTestId } = render(<ResumeHarness token="tok" sessionId="sess-1" />);
+    await flushSocketConnect();
     const first = FakeSocket.last!;
     act(() => first.open());
     act(() => first.emit({ type: 'turn', seq: 1, say: 'hola', emotion: 'happy', action: 'nod', audioUrl: null, next: 'ask' }));
@@ -141,6 +154,9 @@ describe('the resume-driving effect does not tear down its own successful resume
       await Promise.resolve();
       await Promise.resolve();
     });
+    // One more flush for the SECOND socket's own deferred construction —
+    // the state update above (`setSocketUrl`) is what schedules it.
+    await flushSocketConnect();
 
     // A SECOND socket was opened for the resume.
     const second = FakeSocket.last!;

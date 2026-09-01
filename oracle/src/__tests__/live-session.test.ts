@@ -1666,9 +1666,16 @@ describe('a dropped session can be resumed on a fresh token', () => {
     first.socket.terminate();
     await first.closed();
 
-    // Re-dialling the ORIGINAL url is a replay, parked session or not.
+    // Re-dialling the ORIGINAL url is a replay, parked session or not — and
+    // reads as ALREADY_CONNECTED (4009), not UNAUTHORIZED (4001): the token
+    // was never malformed, unsigned or expired, it was simply spent by a
+    // socket that (from Oracle's side) is still the live one. RUNBOOK.md's
+    // Round 81/82 cold-mount investigation traced the client-visible half of
+    // this: 4001 maps to `SESSION_EXPIRED` unconditionally, which told a
+    // learner their session had expired when it had done nothing of the
+    // sort — the real session was mid-conversation on the socket that won.
     const replayed = open(url);
-    expect(await replayed.closed()).toBe(4001);
+    expect(await replayed.closed()).toBe(4009);
   });
 
   /*
@@ -1796,9 +1803,63 @@ describe('the socket refuses what it must', () => {
     await collect(first.socket, (m) => m.some((x) => x.type === 'ready'));
     first.socket.close();
 
-    // Single-use: a URL captured from a screen recording is already dead.
+    // Single-use: a URL captured from a screen recording is already dead —
+    // and closes 4009 (ALREADY_CONNECTED), not 4001, for the same reason as
+    // the resume test above: a spent token is not a malformed or expired
+    // one, and the client has an honest, already-translated line for
+    // exactly this shape ("You're already talking to me somewhere else").
     const replay = open(url);
-    expect(await replay.closed()).toBe(4001);
+    expect(await replay.closed()).toBe(4009);
+  });
+
+  /*
+   * RUNBOOK.md Round 81/82's root cause, reproduced directly against the
+   * server rather than waited for from a browser: two connections dialled
+   * with the IDENTICAL single-use token, fired back to back with no `await`
+   * between them — the exact shape a real browser was independently
+   * confirmed to produce for one cold mount of the Tutor route (round 82's
+   * own `window.WebSocket` instrumentation). The two tests above already
+   * cover a token replayed SEQUENTIALLY, after the first socket is known to
+   * be closed; this one is the harder, actually-reported case: the winner
+   * is not decided by anything this test controls (whichever connection's
+   * own `fetchSessionContext` round trip to Core happens to resolve first),
+   * so the assertion is on the INVARIANT the fix guarantees rather than on
+   * which side wins — exactly one full conversation, and the other side
+   * closed 4009 naming a replayed token, never both and never neither.
+   */
+  it('two near-simultaneous connections sharing one fresh token: exactly one gets the conversation, the other is refused as ALREADY_CONNECTED', async () => {
+    freshJournal();
+    const url = await socketUrl();
+    const first = open(url);
+    const second = open(url);
+
+    const outcomeOf = (tracked: TrackedSocket): Promise<'turn' | 'collect-timed-out' | `closed:${number}`> => {
+      // `Promise.race` does not cancel its losing input — the LOSER side's
+      // `collect()` keeps running after `closed()` has already settled this
+      // race, and rejects on its own ~3s timeout regardless. Caught right
+      // here, on the promise that actually owns that timeout, so it cannot
+      // surface as an unhandled rejection once this test has already moved
+      // on; the sentinel it resolves to can never win a race that
+      // `closed()` already settled within milliseconds.
+      const turn = collect(tracked.socket, (m) => m.some((x) => x.type === 'turn'))
+        .then(() => 'turn' as const)
+        .catch(() => 'collect-timed-out' as const);
+      const closed = tracked.closed().then((code) => `closed:${code}` as const);
+      return Promise.race([turn, closed]);
+    };
+
+    const [firstOutcome, secondOutcome] = await Promise.all([outcomeOf(first), outcomeOf(second)]);
+    const outcomes = [firstOutcome, secondOutcome];
+
+    expect(outcomes.filter((o) => o === 'turn')).toHaveLength(1);
+    expect(outcomes.filter((o) => o !== 'turn')).toEqual(['closed:4009']);
+
+    // Whichever socket won stays open (mid-conversation) — close it so the
+    // shared SESSION_ID this suite reuses is not still "live" for the next
+    // test's own fresh token.
+    for (const tracked of [first, second]) {
+      if (tracked.socket.readyState === tracked.socket.OPEN) tracked.socket.close();
+    }
   });
 
   it('closes a connection whose token names a different user than the session', async () => {

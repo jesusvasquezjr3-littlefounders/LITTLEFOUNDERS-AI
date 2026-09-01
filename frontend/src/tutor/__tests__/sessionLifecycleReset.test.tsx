@@ -104,6 +104,18 @@ beforeEach(() => {
   vi.stubGlobal('WebSocket', FakeSocket as unknown as typeof WebSocket);
 });
 
+/**
+ * The connecting effect defers its real `new WebSocket()` one microtask
+ * (RUNBOOK.md Round 81/82 — see that file's own comment): flushed here
+ * before reaching for whichever socket a given render is expected to have
+ * opened, FIRST or SECOND.
+ */
+async function flushSocketConnect(): Promise<void> {
+  await act(async () => {
+    await Promise.resolve();
+  });
+}
+
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
@@ -204,6 +216,7 @@ describe('a stale resume refusal does not close the phase of a session it was no
     );
 
     const { getByText, getByTestId } = render(<ResumeVsRestartHarness token="tok" />);
+    await flushSocketConnect();
     const first = FakeSocket.last!;
     act(() => first.open());
     act(() => first.emit({ type: 'turn', seq: 1, say: 'hola', emotion: 'happy', action: 'nod', audioUrl: null, next: 'ask' }));
@@ -217,6 +230,7 @@ describe('a stale resume refusal does not close the phase of a session it was no
     // BRAND NEW session — sess-2 — which opens cleanly and gets its own turn.
     act(() => getByText('restart').click());
     expect(getByTestId('session-id').textContent).toBe('sess-2');
+    await flushSocketConnect();
     const second = FakeSocket.last!;
     expect(second).not.toBe(first);
     act(() => second.open());

@@ -54,6 +54,17 @@ beforeEach(() => {
   vi.stubGlobal('WebSocket', FakeSocket as unknown as typeof WebSocket);
 });
 
+/**
+ * The connecting effect defers its real `new WebSocket()` one microtask
+ * (RUNBOOK.md Round 81/82 — see that file's own comment). Flushed here
+ * before either test below reaches for `FakeSocket.last`.
+ */
+async function flushSocketConnect(): Promise<void> {
+  await act(async () => {
+    await Promise.resolve();
+  });
+}
+
 afterEach(() => {
   vi.unstubAllGlobals();
   FakeSocket.last = null;
@@ -67,8 +78,9 @@ function SocketHarness({ url }: { url: string }) {
 }
 
 describe('useTutorSocket clears a stale adaptation offer on the tutor’s NEXT turn', () => {
-  it('drops the offer once an ordinary turn arrives without re-offering it', () => {
+  it('drops the offer once an ordinary turn arrives without re-offering it', async () => {
     const { getByTestId } = render(<SocketHarness url="ws://oracle.test/ws?token=v1" />);
+    await flushSocketConnect();
     const socket = FakeSocket.last!;
     act(() => socket.open());
     act(() => socket.emit({ type: 'ready', microphone: true, intelDegraded: false }));
@@ -83,8 +95,9 @@ describe('useTutorSocket clears a stale adaptation offer on the tutor’s NEXT t
     expect(getByTestId('offer').textContent).toBe('null');
   });
 
-  it('does not clear a FRESH offer for the same turn — turn always arrives before its own offer', () => {
+  it('does not clear a FRESH offer for the same turn — turn always arrives before its own offer', async () => {
     const { getByTestId } = render(<SocketHarness url="ws://oracle.test/ws?token=v1" />);
+    await flushSocketConnect();
     const socket = FakeSocket.last!;
     act(() => socket.open());
     act(() => socket.emit({ type: 'ready', microphone: true, intelDegraded: false }));

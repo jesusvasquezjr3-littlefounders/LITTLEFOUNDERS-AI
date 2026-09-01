@@ -56,6 +56,17 @@ beforeEach(() => {
   vi.stubGlobal('WebSocket', FakeSocket as unknown as typeof WebSocket);
 });
 
+/**
+ * The connecting effect defers its real `new WebSocket()` one microtask
+ * (RUNBOOK.md Round 81/82 — see that file's own comment). Flushed here
+ * before either test below reaches for `FakeSocket.last`.
+ */
+async function flushSocketConnect(): Promise<void> {
+  await act(async () => {
+    await Promise.resolve();
+  });
+}
+
 afterEach(() => {
   vi.unstubAllGlobals();
   FakeSocket.last = null;
@@ -75,6 +86,7 @@ function SocketHarness({ url }: { url: string }) {
 describe('useTutorSocket tracks a live consent revocation persistently', () => {
   it('sets micRevoked on CONSENT_REVOKED, and it survives past the next turn', async () => {
     const { getByTestId } = render(<SocketHarness url="ws://oracle.test/ws?token=v1" />);
+    await flushSocketConnect();
     const socket = FakeSocket.last!;
     act(() => socket.open());
     act(() =>
@@ -98,6 +110,7 @@ describe('useTutorSocket tracks a live consent revocation persistently', () => {
 
   it('resets on a fresh ready frame — a genuinely new session starts clean', async () => {
     const { getByTestId } = render(<SocketHarness url="ws://oracle.test/ws?token=v1" />);
+    await flushSocketConnect();
     const socket = FakeSocket.last!;
     act(() => socket.open());
     act(() => socket.emit({ type: 'ready', microphone: true, intelDegraded: false }));
