@@ -89,7 +89,7 @@ it.
 
 ## Environment
 
-See [`.env.example`](./.env.example). Five that catch people out:
+See [`.env.example`](./.env.example). Six that catch people out:
 
 - `TUTOR_SESSION_SECRET` must **differ** from `INTERNAL_API_KEY`.
 - `SESSION_HARD_BUDGET_MS` must exceed `SESSION_SOFT_BUDGET_MS`, or startup
@@ -107,6 +107,11 @@ See [`.env.example`](./.env.example). Five that catch people out:
   the rolling 24h total reaches it. `DAILY_SPEND_ALERT_FRACTION` (default
   `0.5`) is when it warns instead of refusing. Both are conservative starting
   points, not a modelled budget — raise the ceiling as real paid usage grows.
+- `REDIS_URL` is optional for the rate limiter and the speech cache, but **not**
+  for the tutor socket's cross-replica session lock and jti replay ledger
+  (`src/lib/lock.ts`, item 79 / `RUNBOOK.md` Round 119) — that lock fails
+  CLOSED in production, on purpose. `npm run dev` and the test suite are
+  unaffected either way; see `.env.example`'s own comment on this line.
 
 ## Deployment
 

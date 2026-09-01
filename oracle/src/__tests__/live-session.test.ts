@@ -1840,6 +1840,113 @@ describe('a dropped session can be resumed on a fresh token', () => {
   });
 });
 
+/*
+ * `oracle/AGENTS.md` item 79 / `RUNBOOK.md` Round 119 — THE finding this
+ * migration exists to close. Every OTHER "already connected" test in this
+ * file (see above) proves the pre-existing `liveSessions.has()` guard, which
+ * is local to this ONE process and was always correct for a single replica.
+ * None of them could ever have failed against the pre-migration code, because
+ * within one test process `liveSessions` genuinely IS shared state.
+ *
+ * This test proves the NEW half: a claim that exists ONLY in the distributed
+ * store — never touching `liveSessions` at all — still refuses a socket.
+ * That is precisely the scenario Round 119 found unreachable-but-real: a
+ * SECOND replica's socket for the same session, landing on a process whose
+ * OWN `liveSessions` has never heard of it. Pre-migration, this exact
+ * sequence would have connected successfully (nothing but `liveSessions.has()`
+ * gated it), which is the regression this test is written against.
+ */
+describe('the exclusivity gate also honors a claim NO local Map ever recorded', () => {
+  it('refuses a socket when only the DISTRIBUTED claim — not liveSessions — already holds this session', async () => {
+    freshJournal();
+    const { acquireLock, releaseLock } = await import('../lib/lock.js');
+    const { sessionLockKey } = await import('../ws/server.js');
+
+    // Simulates a DIFFERENT Oracle replica's socket already holding this
+    // session — acquired directly against the shared claim store, with
+    // liveSessions (this process's own Map) never touched.
+    const foreignClaim = await acquireLock(sessionLockKey(SESSION_ID), 60_000);
+    if (!foreignClaim.ok) throw new Error('setup failed to seed the foreign claim');
+
+    try {
+      const attempt = open(await socketUrl());
+      expect(await attempt.closed()).toBe(4009); // ALREADY_CONNECTED
+    } finally {
+      // Release what THIS test seeded, so no later test in this file — which
+      // all share SESSION_ID — inherits a claim nobody will ever free.
+      await releaseLock(sessionLockKey(SESSION_ID), foreignClaim.owner);
+    }
+
+    // And with the foreign claim released, an ordinary connection for the
+    // same session succeeds normally — proving the refusal above was really
+    // about the claim, not some other side effect of this test.
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+    const ending = collect(socket, (m) => m.some((x) => x.type === 'closed'));
+    socket.send(JSON.stringify({ type: 'end_session' }));
+    await ending;
+    await closed();
+  });
+});
+
+/*
+ * `oracle/AGENTS.md` item 79 / `RUNBOOK.md` Round 119 point 5. The OLD
+ * `closeAllSockets` called `.close()` on every socket and, in the SAME
+ * synchronous breath, finalized every ALREADY-parked session — which only
+ * ever caught a session parked from an EARLIER drop, because a `ws` socket's
+ * own `close` event (the thing that calls `parkSession`) fires once the
+ * closing handshake actually completes, asynchronously, not synchronously
+ * with `.close()` being called. A session still live at the exact moment
+ * `SIGTERM` arrived had nothing in `parkedSessions` yet — neither parked nor
+ * closed — and by the time its socket's `close` event might eventually have
+ * fired, `index.ts`'s `shutdown()` had already called `process.exit(0)`.
+ *
+ * A SEPARATE, throwaway server (not the shared one every other test in this
+ * file depends on) — `closeAllSockets` really does call `wss.close()`, which
+ * would tear down every other test's fixture if run against the shared one.
+ */
+describe('a shutdown mid-session gets a clean park-or-close attempt, not silence', () => {
+  it('records a real close for a session that is still LIVE at the moment of shutdown', async () => {
+    freshJournal();
+    const { attachTutorSocket, closeAllSockets } = await import('../ws/server.js');
+    const { mintSessionToken } = await import('../session/token.js');
+
+    const shutdownServer = createServer();
+    const shutdownWss = attachTutorSocket(shutdownServer);
+    await listen(shutdownServer);
+    const shutdownPort = portOf(shutdownServer);
+
+    try {
+      const token = mintSessionToken(
+        { sid: SESSION_ID, uid: USER_ID, exp: Math.floor(Date.now() / 1000) + 60 },
+        process.env.TUTOR_SESSION_SECRET as string,
+      );
+      const { socket } = open(`ws://127.0.0.1:${shutdownPort}/ws/tutor?token=${encodeURIComponent(token)}`);
+      await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+      // Genuinely live right now: nothing has parked or closed it.
+      expect(journal.closes).toHaveLength(0);
+
+      closeAllSockets(shutdownWss);
+
+      /*
+       * The SAME 150ms settling window this file already uses everywhere
+       * else for a fire-and-forget write to land (e.g. the persisted-turn
+       * assertions above) — nowhere near `SESSION_RESUME_GRACE_MS` (1500ms
+       * in this suite's config), which is exactly the point: the pre-fix
+       * code would still show ZERO closes here, because the session would
+       * merely be sitting PARKED with a live 1500ms timer that nothing in
+       * production would ever be left running to fire.
+       */
+      await new Promise((r) => setTimeout(r, 150));
+      expect(journal.closes).toHaveLength(1);
+      expect(journal.closes[0]).toMatchObject({ closeReason: 'abandoned' });
+    } finally {
+      await new Promise<void>((resolve) => shutdownServer.close(() => resolve()));
+    }
+  });
+});
+
 describe('the socket refuses what it must', () => {
   it('closes a connection with no token', async () => {
     const { closed } = open(`ws://127.0.0.1:${oraclePort}/ws/tutor`);

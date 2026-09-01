@@ -2,6 +2,7 @@ import type { IncomingMessage, Server } from 'http';
 import { getConfig } from '../env.js';
 import { WebSocketServer, type WebSocket } from 'ws';
 import { looksLikeSupabaseJwt, verifySessionToken } from '../session/token.js';
+import { acquireLock, releaseLock, renewLock } from '../lib/lock.js';
 import {
   checkVoiceConsent,
   closeSession,
@@ -11,6 +12,7 @@ import {
   requestSegment,
   verifyGeneratedSegment,
   voiceCheck,
+  type CloseReason,
   type SessionContext,
 } from '../core/client.js';
 import { verifyGradeEcho } from '../session/gradeEcho.js';
@@ -194,6 +196,15 @@ interface Live {
    * its transcript) in memory until the hard budget notices.
    */
   lastActivityAtMs: number;
+  /**
+   * This connection's own owner token for the distributed session-exclusivity
+   * claim (item 79 / RUNBOOK Round 119) — opaque, minted by `acquireLock` at
+   * connection time. Carried so the heartbeat can RENEW the claim (keeping it
+   * alive for the session's whole life without holding it forever — see
+   * `SESSION_LOCK_TTL_MS`) and the close handler can RELEASE exactly the
+   * claim this socket acquired, never a later connection's.
+   */
+  lockOwner: string;
 }
 
 /** Minimum gap between learner turns. Not a rate limit — a sanity floor. */
@@ -270,6 +281,39 @@ const CONSENT_RECHECK_MINOR_MIC_TURNS = 1;
 const CONSENT_RECHECK_EVERY_TURNS = 5;
 
 const HEARTBEAT_INTERVAL_MS = 30_000;
+
+/**
+ * How long this socket's distributed session-exclusivity claim (item 79 /
+ * RUNBOOK Round 119) survives without a renewal. Derived from the heartbeat
+ * cadence, not chosen independently: it must outlive at least two missed
+ * renewal ticks (a single transient Redis hiccup must not drop a claim out
+ * from under a perfectly healthy, ongoing conversation — see the heartbeat's
+ * own renewal comment for why a failed renewal never kills the socket), while
+ * staying short enough that a crashed process's claim frees itself in a
+ * bounded time rather than outliving the crash it was meant to survive
+ * (Round 119 point 4 — this service's `restartPolicyMaxRetries: 10` treats
+ * crash-and-restart as routine, and a claim that outlives it for long would
+ * regress today's actual behavior: a legitimate resume against a
+ * freshly-restarted, necessarily-empty process succeeding immediately).
+ * Happens to land near `SESSION_RESUME_GRACE_MS`'s own default (90s) — a
+ * sanity check that the order of magnitude is right, not a shared constant;
+ * the two guard different things (a claim's cross-process validity vs. how
+ * long a DROPPED socket's conversation waits to be reclaimed) and should stay
+ * free to diverge.
+ */
+const SESSION_LOCK_TTL_MS = HEARTBEAT_INTERVAL_MS * 3;
+
+/**
+ * Namespaced so `lib/lock.ts`'s test-mode `clearLocalClaims` can scope a
+ * sweep to exactly this caller — see that function's own comment. Exported
+ * (like `send`/`finalizeAllParked` above it) so `live-session.test.ts` can
+ * simulate a DIFFERENT replica already holding a session's claim — the one
+ * scenario a bare `liveSessions.has()` can never be made to see from a test
+ * in this same process, since `liveSessions` itself is only ever local.
+ */
+export function sessionLockKey(sessionId: string): string {
+  return `oracle:lock:session:${sessionId}`;
+}
 
 /*
  * DROPPED SESSIONS, PARKED FOR RESUME (owner sign-off 2026-08-28).
@@ -373,12 +417,19 @@ function takeParked(sessionId: string): ParkedSession | null {
 
 /**
  * The park expired (or the process is shutting down): the session really
- * ended.
+ * ended. `closeReason` defaults to the ordinary grace-window-timeout meaning
+ * ("nobody came back") — `closeAllSockets` passes `'abandoned'` explicitly
+ * for the shutdown case, where that is not true: the PROCESS is what is
+ * leaving, not the learner.
  *
  * `opts.forceReview` exists for exactly one caller, `finalizeAllParked` —
  * see its own comment for why the deferral below must never apply there.
  */
-function finalizeParked(sessionId: string, opts: { forceReview?: boolean } = {}): void {
+function finalizeParked(
+  sessionId: string,
+  closeReason: CloseReason = 'learner_left',
+  opts: { forceReview?: boolean } = {},
+): void {
   const entry = parkedSessions.get(sessionId);
   if (!entry) return;
   clearTimeout(entry.timer);
@@ -386,7 +437,7 @@ function finalizeParked(sessionId: string, opts: { forceReview?: boolean } = {})
   entry.speech.memo.clear();
   void closeSession({
     sessionId,
-    closeReason: 'learner_left',
+    closeReason,
     // The transcript's own row count, not the model-turn count — see
     // `CloseSessionInput.turnCount`'s comment.
     turnCount: entry.transcriptSeq,
@@ -457,7 +508,8 @@ function finalizeParked(sessionId: string, opts: { forceReview?: boolean } = {})
 }
 
 /**
- * Every parked session, finalized. Called on shutdown so no close is lost.
+ * Every parked session, finalized. Called on shutdown so no close is lost —
+ * the only caller is the SIGTERM handler below, always with `'abandoned'`.
  *
  * `forceReview: true` on every one of them: `finalizeParked`'s own deferral
  * (item 71) trusts a `finally`-chain elsewhere in this process to still call
@@ -466,8 +518,10 @@ function finalizeParked(sessionId: string, opts: { forceReview?: boolean } = {})
  * same trust would make it never run at all, for a session that had a real
  * conversation in it.
  */
-export function finalizeAllParked(): void {
-  for (const sessionId of [...parkedSessions.keys()]) finalizeParked(sessionId, { forceReview: true });
+export function finalizeAllParked(closeReason: CloseReason = 'abandoned'): void {
+  for (const sessionId of [...parkedSessions.keys()]) {
+    finalizeParked(sessionId, closeReason, { forceReview: true });
+  }
 }
 
 /**
@@ -750,7 +804,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
     return;
   }
 
-  const verdict = verifySessionToken(raw);
+  const verdict = await verifySessionToken(raw);
   if (!verdict.ok) {
     /*
      * `replayed` IS `ALREADY_CONNECTED`, ONE CONNECTION EARLIER — chased down
@@ -772,8 +826,22 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
      * and it already carries its own translated copy in all three locales
      * naming exactly this shape ("You're already talking to me somewhere
      * else"), so this reuses that vocabulary instead of inventing a fourth.
+     *
+     * `store_unreachable` is a THIRD, distinct shape, and not an auth failure
+     * at all — it is the SAME `nonceLedger`'s shared store (item 79 / RUNBOOK
+     * Round 119) failing CLOSED because it could not confirm this token
+     * unused, most likely a Redis outage. Every other reason here really is
+     * the client's fault; this one is ours, and the client already has a
+     * close code and a copy for exactly that distinction (`SERVICE_DEGRADED`
+     * — "The tutor is resting. Try again soon.") from the
+     * moderation-unavailable refusal a few lines down.
      */
-    const code = verdict.reason === 'replayed' ? CLOSE_CODES.ALREADY_CONNECTED : CLOSE_CODES.UNAUTHORIZED;
+    const code =
+      verdict.reason === 'replayed'
+        ? CLOSE_CODES.ALREADY_CONNECTED
+        : verdict.reason === 'store_unreachable'
+          ? CLOSE_CODES.SERVICE_DEGRADED
+          : CLOSE_CODES.UNAUTHORIZED;
     socket.close(code, `session token ${verdict.reason}`);
     return;
   }
@@ -818,9 +886,79 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
    * handler has already removed it from `liveSessions` (and parked the
    * orchestrator, below) — so a session that is still here is not a dropped
    * connection being reclaimed, it is a second socket racing the first one.
+   *
+   * TWO checks, cheapest first. `liveSessions.has()` is the original,
+   * zero-latency, same-process guard — unchanged, and still what catches the
+   * overwhelming majority of real "second socket" attempts, since Oracle runs
+   * as a single replica today. The distributed claim below is what makes this
+   * gate ACTUALLY hold once that stops being true (`oracle/AGENTS.md` item 79
+   * / `RUNBOOK.md` Round 119): a second socket for this session landing on a
+   * DIFFERENT process would find this process's `liveSessions` empty and sail
+   * through with no second check at all — which is exactly the gap Round 119
+   * investigated, found real, and deliberately left open pending this work.
    */
   if (liveSessions.has(session.sessionId)) {
     socket.close(CLOSE_CODES.ALREADY_CONNECTED, 'this session already has an active connection');
+    return;
+  }
+
+  /*
+   * THE FAIL-CLOSED DECISION — written here because this is the call site,
+   * per `oracle/AGENTS.md` item 79's own instruction that it be recorded
+   * "prominently... exactly the way this repo's other architecture decisions
+   * are documented."
+   *
+   * `acquireLock` (`lib/lock.ts`) is deliberately neutral: it reports `held`
+   * or `unreachable` and leaves the decision to each call site. This one
+   * chooses FAIL CLOSED — refuse the connection when the shared store cannot
+   * confirm exclusivity — rather than fail OPEN (`lib/lock.ts` unreachable →
+   * treat as acquired). Reasoning, weighed against this repo's own existing
+   * precedent rather than assumed:
+   *
+   *   - §1.14 already has a fail-OPEN control — the rate limiter — and its
+   *     own comment states why: "a degraded limiter must never be able to
+   *     take the platform down." That reasoning applies to an AVAILABILITY
+   *     control, where the failure being guarded against (a flood) is
+   *     symmetric with the failure fail-open risks (an outage) — both are
+   *     "the platform stops working." THIS lock's job is different in kind:
+   *     it is what keeps two orchestrators from running the SAME session
+   *     concurrently, and the failure it exists to prevent — a second,
+   *     independent `TutorOrchestrator` racing the first (the exact bug item
+   *     8 fixed on 2026-08-30, and the one this whole migration exists to
+   *     keep fixed once a second replica exists) — is duplicate paid
+   *     model/judge/TTS calls and a corrupted transcript row count, not a
+   *     brief unavailability. Failing open here would not degrade the
+   *     platform; it would silently REMOVE the protection during exactly the
+   *     infrastructure instability (a Redis blip, a redeploy) it exists for
+   *     — RUNBOOK Round 119's own §3 named this precisely.
+   *   - Failing closed does NOT touch `GET /health`, which has never
+   *     consulted Redis and still does not — so a Redis outage degrades
+   *     Oracle's ability to START or RESUME a session, specifically, and
+   *     nothing else. An already-live session is completely unaffected (this
+   *     gate runs once, at connection time; see the heartbeat's renewal
+   *     below for what an outage during an ONGOING session does instead —
+   *     deliberately NOT this).
+   *   - The crash-and-restart regression Round 119 point 4 warned about (a
+   *     durable claim outliving the crashed process that held it) is why the
+   *     claim carries a bounded TTL and is renewed periodically rather than
+   *     held forever — see `SESSION_LOCK_TTL_MS` below — not a reason to
+   *     fail open on an ordinary blip.
+   *
+   * One bounded retry already happened inside `acquireLock` itself before
+   * this ever sees `ok: false` — see `lib/lock.ts`'s `RETRY_DELAY_MS`
+   * comment for exactly which race that closes (our own just-closed socket's
+   * not-yet-landed release) and which one it does not (a genuine conflict or
+   * a real outage).
+   */
+  const lockKey = sessionLockKey(session.sessionId);
+  const claimed = await acquireLock(lockKey, SESSION_LOCK_TTL_MS);
+  if (!claimed.ok) {
+    socket.close(
+      claimed.reason === 'held' ? CLOSE_CODES.ALREADY_CONNECTED : CLOSE_CODES.SERVICE_DEGRADED,
+      claimed.reason === 'held'
+        ? 'this session already has an active connection'
+        : 'could not confirm session exclusivity',
+    );
     return;
   }
 
@@ -920,9 +1058,26 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
         return;
       }
       socket.ping();
+      /*
+       * RENEW, NEVER REVOKE. A failed renewal (a Redis blip mid-session)
+       * deliberately does NOT close or otherwise punish this socket — the
+       * lock's only job is refusing a SECOND connection at the door
+       * (the SEVENTH GATE above), and this conversation already cleared that
+       * gate once. Tearing down a healthy, ongoing session over a transient
+       * renewal miss would trade a narrow, bounded exclusivity gap (another
+       * connection attempt slipping through before the claim's TTL expires)
+       * for a much worse, certain one (an active lesson cut off mid-turn) —
+       * the wrong side of this file's own §1.0 cost accounting. Logged, not
+       * silent, so a sustained outage is visible in the logs even though no
+       * single session acts on it.
+       */
+      void renewLock(sessionLockKey(session.sessionId), live.lockOwner, SESSION_LOCK_TTL_MS).then((renewed) => {
+        if (!renewed) console.warn(`[oracle] session ${session.sessionId}: could not renew the exclusivity claim`);
+      });
     }, HEARTBEAT_INTERVAL_MS),
     lastPongAtMs: Date.now(),
     lastActivityAtMs: Date.now(),
+    lockOwner: claimed.owner,
   };
 
   liveSessions.set(session.sessionId, live);
@@ -953,6 +1108,17 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
   socket.on('close', () => {
     clearInterval(live.heartbeat);
     liveSessions.delete(session.sessionId);
+    /*
+     * Fire-and-forget, exactly like `finalizeParked`'s own `closeSession`
+     * call a few lines below — a `close` event handler cannot make its
+     * emitter await it. Releasing (rather than waiting out the TTL) is what
+     * lets a GENUINE resume re-acquire immediately instead of waiting up to
+     * `SESSION_LOCK_TTL_MS`; the narrow race this leaves (a resume landing
+     * before this specific release lands) is exactly what `acquireLock`'s own
+     * one bounded retry exists to absorb — see `lib/lock.ts`'s
+     * `RETRY_DELAY_MS` comment.
+     */
+    void releaseLock(sessionLockKey(session.sessionId), live.lockOwner);
     if (!live.closing) {
       // The socket died without a farewell. The session is PARKED, not ended:
       // a sleeping phone or a proxy timeout should cost the connection, never
@@ -2131,13 +2297,68 @@ async function transcribe(
 
 export const WS_PATH = '/ws/tutor';
 
-/** Lets index.ts shut the socket layer down without importing `ws` itself. */
+/**
+ * Lets index.ts shut the socket layer down without importing `ws` itself.
+ *
+ * `oracle/AGENTS.md` item 79 / `RUNBOOK.md` Round 119 point 5: a `ws` socket's
+ * `close` EVENT — the thing that calls `parkSession`, a few hundred lines up
+ * — fires once the closing handshake actually completes, which is NOT
+ * synchronous with `.close()` being called below. The OLD version of this
+ * function called `client.close()` on everything and then, in the SAME
+ * synchronous breath, finalized every ALREADY-parked session — which only
+ * ever caught sessions parked from an EARLIER drop. A session still live at
+ * the exact moment `SIGTERM` arrived had nothing in `parkedSessions` yet, so
+ * it was silently abandoned: neither parked (its socket had not finished
+ * closing) nor closed (`finalizeAllParked` had already run and returned) —
+ * and by the time that socket's own `close` event might eventually have
+ * fired, `index.ts`'s `shutdown()` had already called `process.exit(0)`.
+ * Core's ledger kept that session open (`ended_at IS NULL`) forever, with no
+ * process left that would ever call `closeSession` for it.
+ *
+ * Fixed by doing, SYNCHRONOUSLY and up front, exactly what each of those
+ * sockets' own `close` handler would eventually have done anyway: park every
+ * session that is still live right now, directly from its in-memory `Live`
+ * object, and release its exclusivity claim (item 79) immediately rather than
+ * leaving it to expire on `SESSION_LOCK_TTL_MS` — freeing it for whichever
+ * instance answers next during a rolling redeploy, without that instance
+ * waiting out the claim's TTL first. `parkSession` is the SAME function an
+ * ordinary dropped connection already uses; this is not a new code path, only
+ * the existing one invoked from a place that cannot wait for an event to
+ * fire, within the same bounded ~250ms grace period `index.ts`'s `shutdown()`
+ * already budgets before it exits.
+ */
 export function closeAllSockets(wss: WebSocketServer): void {
+  for (const live of [...liveSessions.values()]) {
+    parkSession(live.session.sessionId, live);
+    void releaseLock(sessionLockKey(live.session.sessionId), live.lockOwner);
+    /*
+     * Deleted here rather than left for the socket's own (still-pending)
+     * `close` handler to do: a new connection attempt for this SAME session
+     * landing back on THIS process in the ~250ms before `index.ts`'s
+     * `shutdown()` calls `process.exit(0)` — a redeploy's load balancer
+     * racing its own drain — would otherwise see a STALE `liveSessions.has()`
+     * true and be wrongly refused as `ALREADY_CONNECTED`, even though the
+     * distributed claim above has already been correctly released. The
+     * eventual async `close` event still runs its own (now redundant, and
+     * harmless — see `parkSession`'s "stale park" guard) delete/park; nothing
+     * here depends on this running exactly once.
+     */
+    liveSessions.delete(live.session.sessionId);
+  }
   for (const client of wss.clients) {
     client.close(CLOSE_CODES.NORMAL, 'server shutting down');
   }
-  // Parked sessions have no socket to close, but they DO have a close to
-  // record — a shutdown must not orphan them into sessions that never ended.
-  finalizeAllParked();
+  /*
+   * Every session parked above (by THIS shutdown) or already parked earlier
+   * (an ordinary dropped connection still inside its resume grace window) is
+   * finalized NOW rather than waiting out `SESSION_RESUME_GRACE_MS` — there
+   * is no process left for anyone to resume into once this one exits.
+   * `'abandoned'` ("The connection dropped and was never resumed" —
+   * `tutor.json`'s existing, already-translated guardian copy for exactly
+   * this reason) is accurate here in a way the park's own default,
+   * `learner_left`, is not: nobody chose to leave: the deploy pulled the
+   * socket out from under them.
+   */
+  finalizeAllParked('abandoned');
   wss.close();
 }
