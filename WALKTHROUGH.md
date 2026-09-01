@@ -43,8 +43,8 @@ defect at a time; treat any percentage here as dated the moment it was
 measured, not as a live figure.
 
 **Fixed and shipped this run, each found by genuine live testing and
-independently re-verified (gates re-run personally, diff re-read, push
-confirmed against `origin/main`) before being called done:**
+independently re-verified (gates re-run personally, diff re-read) before
+being called done:**
 - **RUNBOOK Round 121** (`5150b165`) — the offers screen's #1 suggested
   action, "continue where you left off," 400ed for most returning kids: two
   unrelated `skill_key` namespaces (the content ladder's bridge identifier
@@ -60,30 +60,106 @@ confirmed against `origin/main`) before being called done:**
   worked example of what is safe to deliver. Joined the same false-verdict
   bucket every sibling violation (false praise, forbidden vocabulary,
   language drift) already falls back from.
+- **RUNBOOK Round 136** — the tutor's own words, correctly generated and
+  persisted, rendered into a HUD node `ScreenAnchor`'s projector never
+  un-hides when the stage times out with no real frame ever rendered.
+  `ready && !timedOut` now gates both the caption and the offer chips,
+  never `ready` alone.
+- **RUNBOOK Round 137** — a graded activity's answer options, present and
+  measurable, reachable by nothing: the header above them had no floor on
+  its own shrink, so ordinary-length framing + prompt text pushed the
+  answers region to `height: 0` at a common phone/sheet-detent
+  combination. Fixed with a shrinkable header and a `min-h-[110px]` floor
+  on the answers region.
+- **RUNBOOK Round 138** — a session "stuck" after a failed resume was one
+  layer deeper than reported: `refreshOffersAndMap()`'s one-time snapshot
+  never re-checked itself once oracle recovered, so `canStart: false` could
+  sit stale forever. Fixed with a learner-driven "Try again" chip — plus a
+  second, independent z-index tie between the offer cluster and the map
+  panel, found only by verifying the fix at the OS's actual native pane
+  size rather than trusting green tests.
+- **RUNBOOK Round 139** — an indirect self-harm disclosure ("a veces
+  quiero desaparecer...") reached the model twice, two different ways,
+  because `classifyLearnerInput`'s deterministic layer 4 named only
+  explicit-act phrasing. Six new patterns across all three locales, plus
+  the output-blocked path now recognizes when the judge itself named
+  `self_harm` and routes to the hand-written safety line instead of the
+  generic "let me say that differently" fallback.
+- **RUNBOOK Round 140** — four items already on this session's own pending
+  list, closed by direct re-investigation rather than trusted from their
+  titles: a CSS custom property (`--lf-muted`) that never existed anywhere
+  in `index.css`; two misconception codes in a skill's frontmatter the
+  catalog does not contain; a difficulty-computation regression the
+  pedagogy gym itself had caught and named; and a latency-median
+  self-contamination bug, fixed at its root with a partial, honestly
+  incomplete resolution of the gym scenario that found it (see the round
+  for the un-mechanized "should mastery ever be reconsidered" question
+  this surfaced and deliberately left open).
+- **RUNBOOK Round 141** — the SAME "on-screen mic-status panel
+  overlapping the composer and opening chips" item queued below turned out
+  to be the learning map's own bottom-clamp reservation, measured against
+  the dock WITHOUT `secondary` (My island / Past conversations) populated
+  — the two are never seen apart in the phase this code runs in. Raised
+  the reservation to the real, three-breakpoint-measured need; both
+  375×812 and 1280×900 (what §1.11 actually mandates) now show clean
+  margin. The pane's own extreme 349px-tall native size is left honestly
+  as imperfect as before — see the round for why a floor could not fully
+  fix that one size without a bigger, cross-component measurement change.
 
-**In progress at the time of this entry** (dispatched, not yet reviewed or
-shipped — do not treat as done until a later entry says so): a fix for the
-on-screen mic-status panel overlapping the composer and opening chips at
-short viewport heights, a fix for two opening-chip rows painting at
-identical coordinates after a failed session start, a check on whether
-every tutor line appearing twice in the page's text content is a real
-duplication bug or the correct sr-only/visible-caption pattern used
-elsewhere; and a fix for the "Lesson · step 4 of 4" progress badge freezing
-permanently once a session's plan (`oracle/src/tutor/plan.ts`) reaches its
-last step — root-caused (read-only investigation, static evidence only) to
-`buildPlan()` running exactly once per session and never being told about
-the V4 controller's own independent progress through later knowledge
-components, plus no prompt-level signal telling the model the planned arc
-is complete. Whether this is a real content stall, a purely cosmetic HUD
-staleness over otherwise-healthy teaching, or both, was not yet
-live-confirmed as of this writing.
+**Resolved by live investigation, no code change needed:** "every tutor
+line appearing twice in the page's text content" — confirmed, via
+`getComputedStyle` on both matches live, to be exactly the documented
+pattern: one `aria-hidden` typewriter span (386×88px, really on screen)
+paired with one genuinely-clipped `sr-only` span (1×1px,
+`overflow:hidden`) for a screen reader. A page-text-extraction tool
+reports both because the `sr-only` clipping technique doesn't use
+`display:none`; a sighted learner sees the sentence exactly once. Also
+observed live, continuing the same session past Round 141: the "Lesson ·
+step N of M" badge DOES advance correctly (1→2, confirmed) as a real
+plan progresses through graded activities, and a full lesson closed
+cleanly (`close_reason: 'completed'`) after genuine mastery-demonstrating
+turns — contradicting the simplest form of "always frozen" as a general
+description. The ORIGINAL, narrower hypothesis this item was opened for —
+whether the badge specifically sticks once a session's turn count runs
+past what its plan anticipated, while the conversation keeps going rather
+than closing — was not reproduced or ruled out either way in this pass;
+reaching it needs a session that runs a genuinely struggling learner far
+enough past a short plan's step count without ending, which this pass's
+ordinary-competence persona did not produce. Left open, more precisely
+described, rather than closed on partial evidence.
 
-**Known, deliberately not yet addressed:** the two UI-overlap items above
-were first found in the same live-test pass that found Rounds 121 and 122
-and were queued behind the higher-severity fixes; the broader `/ORACLE.md`
-§15.2 scale gaps (no platform-wide spend ceiling, no admission control, an
-unrated websocket handshake) are known and explicitly deprioritized behind
-live-verified functional fixes per this session's own stated ordering.
+**Observed live, not a defect: two independent third-party API calls
+failed transiently in one short session and both recovered correctly on
+the very next turn**, exercising fail-safe paths this codebase already
+built and reasoned through rather than finding new gaps. The output
+moderator (Qwen/DashScope) returned `{"reason": "moderator_unavailable",
+"detail": "fetch failed"}` on one turn — confirmed, via
+`tutor_turns.moderation`, to be the network call itself failing, not a
+content judgment — and correctly fell back to the generic scripted line
+for a KID session specifically because `requireModelPass` is
+unconditional for minors (`moderation.ts`'s own documented policy,
+already written up after a 2026-08-28 incident). A separate turn hit
+`MODEL_DOWN` ("my thoughts got tangled") from the DeepSeek call itself.
+Both were followed immediately by a normal, correct model turn on retry.
+Not escalated further: this codebase cannot fix a third party's transient
+unavailability, and the thing actually worth verifying — does the product
+degrade safely and recover — was directly confirmed, twice, live.
+
+**Still open, not attempted this pass:** two opening-chip rows painting
+at identical coordinates after a failed session start (queued since the
+original Round 121/122 live-test pass; not re-attempted this round).
+Investigated live but explicitly NOT escalated to a confirmed defect,
+pending a real touch-capable re-test: a `computer.scroll` gesture over
+the learning map's own scrollable sheet never fires a `wheel` DOM event
+anywhere on the Tutor route, while the identical tool dispatches real,
+observable wheel events elsewhere on this same app — `touch-action`
+computed to `auto` everywhere checked and `scrollIntoView()` did move the
+sheet, so this looks isolated to mouse-wheel-shaped input specifically
+rather than proof this product's actual touch-based audience cannot
+reach the map (RUNBOOK Round 141 has the full investigation). The
+broader `/ORACLE.md` §15.2 scale gaps (no platform-wide spend ceiling, no
+admission control, an unrated websocket handshake) remain known and
+explicitly deprioritized behind live-verified functional fixes.
 
 ## Tutor v3 — production migration handoff closed, v2's design reopening carried through to a real deploy (2026-08-29)
 
