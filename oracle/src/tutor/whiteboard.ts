@@ -1,21 +1,37 @@
-import type { Whiteboard } from './turnSchema.js';
+import type { Whiteboard, WhiteboardCompare, WhiteboardMarkedLine, WhiteboardSequence } from './turnSchema.js';
 
 /*
  * THE NUMBERS ON THE BOARD ARE COMPUTED, NEVER TAKEN ON THE MODEL'S WORD.
  *
  * This is the same rule `arithmetic.ts` applies to a spoken answer, extended
- * to what gets DRAWN: the model proposes `start` and `steps` as part of its
- * story, and this function is the only thing that turns that proposal into
- * the values a child actually sees. A drawn number that turned out to be
- * wrong would be worse than a spoken one — a wrong picture is remembered
- * longer than a wrong sentence.
+ * to what gets DRAWN: the model proposes the raw shape of a board as part of
+ * its story, and the functions in this file are the only thing that turn
+ * that proposal into the values a child actually sees. A drawn number that
+ * turned out to be wrong would be worse than a spoken one — a wrong picture
+ * is remembered longer than a wrong sentence.
  *
- * DELIBERATELY NARROW, same posture as the rest of §5: one operation per
- * step from a three-item vocabulary, whole numbers in, a ceiling on every
- * intermediate. Anything that would produce a non-finite, negative, or
- * absurd running value returns null — and null means "drop the whiteboard
- * from this turn, exactly as if the model had not set one", never "show
- * whatever came out."
+ * DELIBERATELY NARROW, same posture as the rest of §5: closed vocabularies,
+ * bounded numbers, a ceiling on every intermediate or derived value.
+ * Anything that would produce a non-finite, negative, or absurd value
+ * returns null — and null means "drop the whiteboard from this turn,
+ * exactly as if the model had not set one", never "show whatever came out."
+ *
+ * ONE FUNCTION PER `kind` (`computeSequence`, `computeComparison`,
+ * `computeMarkedLine`), because each verifies a DIFFERENT thing a schema
+ * alone cannot: `computeSequence` re-folds a multi-step running total no
+ * per-field bound could catch; `computeMarkedLine` checks a relationship
+ * BETWEEN fields (`max > min`, a mark actually inside the line) that
+ * `z.discriminatedUnion` cannot carry a `.refine()` for (see
+ * `WhiteboardMarkedLineSchema`'s own comment, turnSchema.ts); `computeComparison`
+ * has no fold and no cross-field bound to check — both its inputs are
+ * already fully bounded by the schema — so its own null path is pure
+ * defense-in-depth against a value reaching it OUTSIDE a fresh, schema-
+ * validated model turn (a resumed snapshot written by a different schema
+ * version), the same reason `computeSequence`'s own `start` re-check below
+ * is redundant with the schema for THAT one field and exists anyway. What
+ * `computeComparison` genuinely adds is `difference`/`greater` — DERIVED
+ * facts the schema gives the model no field to assert in the first place,
+ * computed here so the client never does that arithmetic itself.
  */
 
 /** No intermediate or final value may exceed this — a board is a story aid, not a ledger. */
@@ -35,7 +51,7 @@ const ZERO_EPSILON = 1e-9;
  * The running value after each step, `values[0]` being `start` itself. Null
  * if the proposal does not compute to a sane sequence.
  */
-export function computeSequence(board: Pick<Whiteboard, 'start' | 'steps'>): number[] | null {
+export function computeSequence(board: Pick<WhiteboardSequence, 'start' | 'steps'>): number[] | null {
   const values: number[] = [board.start];
   if (!Number.isFinite(board.start) || board.start < 0 || board.start > MAX_VALUE) return null;
 
@@ -61,4 +77,92 @@ export function computeSequence(board: Pick<Whiteboard, 'start' | 'steps'>): num
     values.push(current);
   }
   return values;
+}
+
+/** The two facts a `compare` board draws beyond its own two raw values — see this file's header comment. */
+export interface ComparisonResult {
+  difference: number;
+  greater: 'left' | 'right' | 'tie';
+}
+
+/**
+ * Verifies a `compare` board's two quantities and derives the two facts
+ * about them the schema gives the model no field to assert directly:
+ * how far apart they are, and which is larger. Null on anything that could
+ * only reach here from outside a schema-validated turn (see this file's
+ * header comment) — never on a value a real model turn can actually carry,
+ * both of which are already bounded by `WhiteboardCompareSideSchema`.
+ */
+export function computeComparison(board: Pick<WhiteboardCompare, 'left' | 'right'>): ComparisonResult | null {
+  const { left, right } = board;
+  if (!Number.isFinite(left.value) || left.value < 0 || left.value > MAX_VALUE) return null;
+  if (!Number.isFinite(right.value) || right.value < 0 || right.value > MAX_VALUE) return null;
+  const difference = Math.abs(right.value - left.value);
+  const greater: ComparisonResult['greater'] =
+    Math.abs(left.value - right.value) <= ZERO_EPSILON ? 'tie' : left.value > right.value ? 'left' : 'right';
+  return { difference, greater };
+}
+
+/** One mark on a `marked_line` board, positioned along it — see `computeMarkedLine`. */
+export interface MarkedLinePoint {
+  value: number;
+  label: string;
+  /** Where this mark sits between `min` (0) and `max` (1) — the client draws from this, never from `value`/`min`/`max` directly. */
+  position: number;
+}
+
+/**
+ * Verifies a `marked_line` board and positions every mark along it.
+ *
+ * `max > min` and "every mark actually falls within [min, max]" are exactly
+ * the kind of cross-field relationship `WhiteboardMarkedLineSchema` cannot
+ * enforce itself (see that schema's own comment) — a model can set
+ * `min: 50, max: 10` and pass every individual field bound, and this is the
+ * only thing that then catches it and drops the whole board, fail-open,
+ * the same posture `computeSequence` already gives a sequence whose own
+ * running total goes out of range.
+ *
+ * `position` is the derived fact the client renders from — never `value`
+ * relative to `min`/`max` computed again on the client, the same "the
+ * server computes it once, the client only draws it" rule `values` already
+ * follows for `sequence`.
+ */
+export function computeMarkedLine(
+  board: Pick<WhiteboardMarkedLine, 'min' | 'max' | 'marks'>,
+): MarkedLinePoint[] | null {
+  const { min, max, marks } = board;
+  if (!Number.isFinite(min) || min < 0 || min > MAX_VALUE) return null;
+  if (!Number.isFinite(max) || max < 0 || max > MAX_VALUE) return null;
+  // A real range, never zero-width or inverted — see the doc comment above.
+  if (max - min <= ZERO_EPSILON) return null;
+
+  const span = max - min;
+  const points: MarkedLinePoint[] = [];
+  for (const mark of marks) {
+    if (!Number.isFinite(mark.value)) return null;
+    if (mark.value < min - ZERO_EPSILON || mark.value > max + ZERO_EPSILON) return null;
+    const clamped = Math.min(max, Math.max(min, mark.value));
+    points.push({ value: clamped, label: mark.label, position: (clamped - min) / span });
+  }
+  return points;
+}
+
+/**
+ * True when a whiteboard's own numbers compute to something sane, dispatched
+ * to the right function above for its `kind`. The single "is this board
+ * valid at all" gate every kind must pass before it can reach a child's
+ * screen — used at BOTH the authoring-time check (orchestrator.ts) and,
+ * via the kind-specific functions directly, at the wire (ws/server.ts) — so
+ * a new kind is never checked one way when authored and a different way
+ * when served.
+ */
+export function whiteboardComputesOk(board: Whiteboard): boolean {
+  switch (board.kind) {
+    case 'sequence':
+      return computeSequence(board) !== null;
+    case 'compare':
+      return computeComparison(board) !== null;
+    case 'marked_line':
+      return computeMarkedLine(board) !== null;
+  }
 }

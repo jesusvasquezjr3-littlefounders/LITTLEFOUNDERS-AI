@@ -311,47 +311,59 @@ try {
       }
 
       /*
-       * THE WHITEBOARD (V4). The owner's own defect: a growth story narrated
-       * in pure text beside an unrelated activity. The activity switch lives
-       * in the same chrome panel `hide` just unmounted (`panelOpen` gates the
-       * whole panel, not just its visibility), so briefly reopen it — the
-       * `lab` switch is the same one used to open the panel at the very start
-       * of this run — flip the fixture, and hide again before measuring, so
-       * the chrome is absent from the screenshot exactly like every other tag.
+       * THE WHITEBOARD (V4) — all THREE kinds (`sequence` via the lab's own
+       * `'whiteboard'` activity id, `compare`, `marked_line` — /ORACLE.md
+       * §20.5 backlog: "same schema family, straightforward once sequence is
+       * proven live"). The owner's own defect: a growth story narrated in
+       * pure text beside an unrelated activity. The activity switch lives in
+       * the same chrome panel `hide` just unmounted (`panelOpen` gates the
+       * whole panel, not just its visibility), so briefly reopen it for EACH
+       * kind — the `lab` switch is the same one used to open the panel at the
+       * very start of this run — flip the fixture, and hide again before
+       * measuring, so the chrome is absent from the screenshot exactly like
+       * every other tag.
        */
-      let whiteboardScenario = false
       await pressSwitch(page, 'lab')
       const activitySelect = await page.evaluate(
         centerOf(`document.querySelector('select[aria-label="activity on the plate"]')`),
       )
-      if (activitySelect) {
+      if (!activitySelect) {
+        failures += 1
+        console.log('  MISSING: the lab activity switch — cannot drive the whiteboard scenarios')
+      }
+
+      for (const activityId of activitySelect ? ['whiteboard', 'compare', 'marked-line'] : []) {
+        await pressSwitch(page, 'lab')
         await page.evaluate(
           `(() => { const s = document.querySelector('select[aria-label="activity on the plate"]');` +
-            ` s.value = 'whiteboard'; s.dispatchEvent(new Event('change', { bubbles: true })) })()`,
+            ` s.value = ${JSON.stringify(activityId)}; s.dispatchEvent(new Event('change', { bubbles: true })) })()`,
         )
         await pressSwitch(page, 'hide')
         await sleep(300)
-        whiteboardScenario = true
-      } else {
-        failures += 1
-        console.log('  MISSING: the lab activity switch — cannot drive the whiteboard scenario')
-      }
 
-      if (whiteboardScenario) {
-        await waitFor(page, '!!document.querySelector("[data-tutor-whiteboard]")', 10_000, 'the whiteboard to mount')
-        await sleep(2_500) // let the bars grow in before measuring
+        await waitFor(
+          page,
+          '!!document.querySelector("[data-tutor-whiteboard]")',
+          10_000,
+          `the ${activityId} whiteboard to mount`,
+        )
+        // Lets a `sequence` board's bars grow in before measuring; a no-op
+        // wait for `compare`/`marked_line`, which render fully immediately
+        // (TutorWhiteboard.tsx — there is no story unfolding over steps for
+        // either to pace an animation against).
+        await sleep(2_500)
 
         const boardControls = await page.evaluate(SWEEP)
         const boardUnreachable = boardControls.filter((c) => !c.reaches)
-        console.log(`  [whiteboard] ${boardControls.length} controls, ${boardUnreachable.length} unreachable`)
+        console.log(`  [${activityId}] ${boardControls.length} controls, ${boardUnreachable.length} unreachable`)
         for (const c of boardUnreachable) {
           failures += 1
-          console.log(`  UNREACHABLE WITH BOARD OPEN: "${c.name}" — topmost ${c.topmost}`)
+          console.log(`  UNREACHABLE WITH ${activityId} BOARD OPEN: "${c.name}" — topmost ${c.topmost}`)
         }
         const boardOverlaps = await page.evaluate(OVERLAPS)
         for (const o of boardOverlaps) {
           failures += 1
-          console.log(`  OVERLAP WITH BOARD OPEN: ${o}`)
+          console.log(`  OVERLAP WITH ${activityId} BOARD OPEN: ${o}`)
         }
         const captionUnderBoard = await page.evaluate(
           '(() => { const cap = document.querySelector(".lf-speech");' +
@@ -364,9 +376,35 @@ try {
         )
         if (captionUnderBoard) {
           failures += 1
-          console.log("  CAPTION UNDER BOARD: the tutor's words are painted over by the whiteboard")
+          console.log(`  CAPTION UNDER ${activityId} BOARD: the tutor's words are painted over by the whiteboard`)
         }
-        await shoot(page, 'tutor-ui-desktop-en-whiteboard')
+
+        /*
+         * A PERCENTAGE-HEIGHT BAR MUST HAVE REAL PIXELS, not just a CSS
+         * value that never resolves. Found live (2026-09-01, building the
+         * `compare`/`marked_line` kinds): `sequence`'s own bars — an
+         * ALREADY-SHIPPED surface — had rendered at ZERO height in every
+         * real browser since the feature launched, because their track was
+         * a flex item under `items-end` (auto/content-sized, not a definite
+         * containing block a CSS percentage can resolve against). Every
+         * existing test only ever asserted the inline STYLE VALUE ("71%"),
+         * and jsdom never lays anything out at all — a real browser,
+         * measuring the actual box, is the only thing that can see this
+         * class of defect at all, which is exactly why this check lives
+         * here and not in a unit test.
+         */
+        const barHeights = await page.evaluate(
+          '[...document.querySelectorAll(\'[data-tutor-whiteboard] [style*="height:"]\')].map((el) => el.getBoundingClientRect().height)',
+        )
+        const zeroHeightBars = barHeights.filter((h) => h <= 0)
+        if (zeroHeightBars.length > 0) {
+          failures += 1
+          console.log(
+            `  ${activityId}: ${zeroHeightBars.length}/${barHeights.length} percentage-height bar(s) rendered at ZERO pixels`,
+          )
+        }
+
+        await shoot(page, `tutor-ui-${tag}-${activityId}`)
       }
     }
     if (page.errors.length > 0) {

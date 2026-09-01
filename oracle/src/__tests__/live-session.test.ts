@@ -276,6 +276,12 @@ function startFakeModel(): Promise<Server> {
       // and gets a turn carrying a whiteboard — proving the FRAME (not just
       // the orchestrator) delivers server-computed values over a real socket.
       const wantsBoard = !isJudge && body.includes('quieropizarron');
+      // V4 (/ORACLE.md §20.5 backlog): the same proof, for the two ADDITIONAL
+      // whiteboard kinds — a real socket frame, not just the orchestrator's
+      // own in-process object, carries the server-COMPUTED derived fields
+      // (`difference`/`greater`, each mark's `position`).
+      const wantsCompare = !isJudge && body.includes('quierocomparar');
+      const wantsMarkedLine = !isJudge && body.includes('quierorecta');
       /*
        * A DIFFERENT sentence, for a test that needs two model turns on one
        * orchestrator. The tutor repeating itself verbatim is a real defect
@@ -289,11 +295,15 @@ function startFakeModel(): Promise<Server> {
         : JSON.stringify({
             say: wantsBoard
               ? 'Imaginemos que guardas 10 pesos y cada día te dan 2 más.'
-              : wantsActivity
-                ? '¡Vamos a intentarlo!'
-                : wantsSecondLine
-                  ? 'Perfecto. ¿Y qué harías con ese dinero al final del mes?'
-                  : '¡Buena pregunta! ¿Cuánto crees que juntarías?',
+              : wantsCompare
+                ? 'Una playera en la Tienda A cuesta 45 pesos, y en la Tienda B cuesta 28 pesos.'
+                : wantsMarkedLine
+                  ? 'Tienes 22 pesos ahorrados, y unos audífonos cuestan 35 pesos.'
+                  : wantsActivity
+                    ? '¡Vamos a intentarlo!'
+                    : wantsSecondLine
+                      ? 'Perfecto. ¿Y qué harías con ese dinero al final del mes?'
+                      : '¡Buena pregunta! ¿Cuánto crees que juntarías?',
             emotion: 'happy',
             action: 'nod',
             next: wantsActivity ? 'segment' : 'ask',
@@ -313,7 +323,27 @@ function startFakeModel(): Promise<Server> {
                   label: 'Cada día te dan 2 más',
                   currency: 'MXN',
                 }
-              : null,
+              : wantsCompare
+                ? {
+                    kind: 'compare',
+                    left: { label: 'Tienda A', value: 45 },
+                    right: { label: 'Tienda B', value: 28 },
+                    label: '¿Cuál playera es más barata?',
+                    currency: 'MXN',
+                  }
+                : wantsMarkedLine
+                  ? {
+                      kind: 'marked_line',
+                      min: 0,
+                      max: 40,
+                      marks: [
+                        { value: 22, label: 'Lo que tienes' },
+                        { value: 35, label: 'Los audífonos' },
+                      ],
+                      label: '¿Cuánto te falta para los audífonos?',
+                      currency: 'MXN',
+                    }
+                  : null,
           });
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(
@@ -691,6 +721,68 @@ describe('a real live session over a real websocket', () => {
     // 10 → 12 → 14, computed by Oracle from the model's own start/steps — not
     // asserted anywhere in the model's completion body.
     expect(board?.values).toEqual([10, 12, 14]);
+
+    socket.close();
+    await closed();
+  });
+
+  /*
+   * THE SAME PROOF, FOR THE TWO ADDITIONAL BOARD KINDS (V4, /ORACLE.md
+   * §20.5 backlog). `difference`/`greater` and each mark's `position` are
+   * SERVER-COMPUTED fields with no counterpart anywhere in the model's own
+   * completion body above (`wantsCompare`/`wantsMarkedLine`) — a real wire
+   * frame carrying them is the only thing that proves the wire, not just
+   * the orchestrator's in-process object, attaches them.
+   */
+  it('the comparison board reaches the client with SERVER-COMPUTED difference/greater (V4)', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const answered = collect(socket, (m) => m.some((x) => x.type === 'turn' && x.whiteboard != null));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quierocomparar, cuentame una historia' }));
+    const board = (await answered).find((m) => m.type === 'turn')?.whiteboard as
+      | {
+          kind: string;
+          left: { label: string; value: number };
+          right: { label: string; value: number };
+          difference: number;
+          greater: string;
+        }
+      | undefined;
+
+    expect(board).toMatchObject({
+      kind: 'compare',
+      left: { label: 'Tienda A', value: 45 },
+      right: { label: 'Tienda B', value: 28 },
+    });
+    // Neither field is anywhere in the model's own completion body above —
+    // both are computed by Oracle from the model's raw left/right values.
+    expect(board?.difference).toBe(17);
+    expect(board?.greater).toBe('left');
+
+    socket.close();
+    await closed();
+  });
+
+  it('the marked-line board reaches the client with each mark\'s SERVER-COMPUTED position (V4)', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const answered = collect(socket, (m) => m.some((x) => x.type === 'turn' && x.whiteboard != null));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'quierorecta, cuentame una historia' }));
+    const board = (await answered).find((m) => m.type === 'turn')?.whiteboard as
+      | { kind: string; min: number; max: number; marks: { value: number; label: string; position: number }[] }
+      | undefined;
+
+    expect(board).toMatchObject({ kind: 'marked_line', min: 0, max: 40 });
+    // `position` is nowhere in the model's own completion body above — it is
+    // computed by Oracle from the model's raw min/max/value.
+    expect(board?.marks).toEqual([
+      { value: 22, label: 'Lo que tienes', position: 0.55 },
+      { value: 35, label: 'Los audífonos', position: 0.875 },
+    ]);
 
     socket.close();
     await closed();

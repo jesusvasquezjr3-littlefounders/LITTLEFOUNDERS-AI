@@ -178,8 +178,14 @@ export const WhiteboardStepSchema = z
  * (`whiteboard.ts`) and never taken from the model's own arithmetic —
  * exactly the `checkAnswer`/verdict philosophy already applied to spoken
  * answers, extended to what gets drawn.
+ *
+ * THIS IS `kind: 'sequence'` — one of three board shapes `WhiteboardSchema`
+ * (below) now accepts. Kept as its own named schema, rather than inlined
+ * into the union, because it is the proven reference implementation
+ * (/ORACLE.md §20.5) the other two follow: nothing about ITS shape changed
+ * to make room for them.
  */
-export const WhiteboardSchema = z
+export const WhiteboardSequenceSchema = z
   .object({
     kind: z.literal('sequence'),
     /** The starting quantity. */
@@ -203,6 +209,128 @@ export const WhiteboardSchema = z
     currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
   })
   .strict();
+
+/**
+ * ONE SIDE OF A TWO-QUANTITY COMPARISON (V4, /ORACLE.md §20.5 backlog).
+ *
+ * A bare bounded number plus the short label that says WHICH quantity it is
+ * ("Tienda A", "Ahorro de Ana") — without a label, two bars are just two
+ * numbers with nothing to tell them apart. `value` is bounded exactly like
+ * `WhiteboardSequenceSchema.start`, the same closed-numeric posture §5
+ * already applies everywhere on this turn.
+ */
+export const WhiteboardCompareSideSchema = z
+  .object({
+    label: z.string().min(1).max(60),
+    value: z.number().min(0).max(1_000_000),
+  })
+  .strict();
+
+/**
+ * `kind: 'compare'` — TWO QUANTITIES, SIDE BY SIDE (V4, /ORACLE.md §20.5
+ * backlog: "same schema family, straightforward once sequence is proven
+ * live"). For a story that puts two things next to each other for the
+ * learner to weigh — two prices, two ways to save, two options in a budget
+ * decision — rather than one quantity that moves over time (`sequence`).
+ *
+ * Deliberately NOT two nested sequences: the backlog line asks for "two
+ * values/quantities side by side," not two growth stories side by side, and
+ * this codebase's own operating rules are explicit against building for a
+ * need nobody has asked for yet. If a real session ever needs to compare two
+ * quantities that EACH grow over time, that is a follow-up scoped from a
+ * live example, the same way `sequence` itself grew its `unit` field only
+ * after a real session showed the gap.
+ *
+ * `left`/`right` are never taken as "which is bigger" — the schema has no
+ * field for that claim at all, so the model cannot assert it. The server
+ * derives `difference`/`greater` from the two raw values (`whiteboard.ts`'s
+ * `computeComparison`) and attaches them only on the wire, exactly the
+ * posture `values` already has for `sequence`.
+ */
+export const WhiteboardCompareSchema = z
+  .object({
+    kind: z.literal('compare'),
+    left: WhiteboardCompareSideSchema,
+    right: WhiteboardCompareSideSchema,
+    /**
+     * The question itself — "¿Cuál playera es más barata?" — not either
+     * quantity (each side carries its own label). Free text, moderated
+     * alongside `say` the same way `WhiteboardSequenceSchema.label` is.
+     */
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/**
+ * ONE MARKED POINT ON A `marked_line` BOARD (V4, /ORACLE.md §20.5 backlog).
+ *
+ * A bounded value plus the short label naming what it represents ("Lo que
+ * tienes", "La bicicleta") — the value alone is a dot with no story.
+ */
+export const WhiteboardMarkSchema = z
+  .object({
+    value: z.number().min(0).max(1_000_000),
+    label: z.string().min(1).max(60),
+  })
+  .strict();
+
+/**
+ * `kind: 'marked_line'` — ONE OR MORE VALUES PLACED ON A LINE BETWEEN TWO
+ * REFERENCES (V4, /ORACLE.md §20.5 backlog). For a story about WHERE a
+ * number sits — a savings amount against a price, a value inside a budget
+ * range — rather than a quantity that moves over time (`sequence`) or two
+ * quantities weighed against each other with no shared line (`compare`).
+ *
+ * `min`/`max` are NOT cross-checked here (`max > min`) — `z.discriminatedUnion`
+ * (below) requires every member to be a plain `ZodObject` it can read the
+ * `kind` literal off of directly, and a `.refine()` on this schema would
+ * turn it into a `ZodEffects` that breaks that. This is not a gap: it is
+ * the SAME split `WhiteboardSequenceSchema` already has between what the
+ * schema bounds (one field at a time) and what only a real computation can
+ * catch (a relationship BETWEEN fields, or an accumulation across several) —
+ * `whiteboard.ts`'s `computeMarkedLine` is where `max > min`, and every
+ * mark actually falling inside `[min, max]`, is verified, at authoring time
+ * and again at the wire, exactly like a sequence's running total is.
+ * NAMED `marked_line`, never `number_line`: the Lesson Engine already has a
+ * GRADED segment type spelled `number_line` (`frontend/src/lesson-engine/
+ * families/arrange/schema.ts`) — an entirely different, pre-authored,
+ * scored activity reached through `segmentRequest.preferredTypes`, not
+ * through this field. Reusing that exact string for an ungraded, live,
+ * tutor-drawn visual would make two unrelated concepts share one name in
+ * the same prompt and the same doc section (/ORACLE.md §20.5 already
+ * discusses both `preferredTypes` and `whiteboard.kind` side by side).
+ */
+export const WhiteboardMarkedLineSchema = z
+  .object({
+    kind: z.literal('marked_line'),
+    /** The line's two ends. */
+    min: z.number().min(0).max(1_000_000),
+    max: z.number().min(0).max(1_000_000),
+    marks: z.array(WhiteboardMarkSchema).min(1).max(4),
+    /**
+     * The question itself — "¿Te alcanza para el cine?" — not any one mark
+     * (each carries its own label). Free text, moderated alongside `say`.
+     */
+    label: z.string().min(1).max(60),
+    currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
+  })
+  .strict();
+
+/**
+ * THE CLOSED SET OF BOARD SHAPES (V4). A discriminated union on `kind`,
+ * never free-form — the same §5 discipline every other model-facing schema
+ * on this turn already follows. `parseTurn`'s own fail-open guard
+ * (`WhiteboardSchema.safeParse`, below) validates whichever member `kind`
+ * names and nulls the whole board on anything else, so an unrecognised
+ * `kind` degrades exactly like a malformed `sequence` already does — never
+ * a discarded turn.
+ */
+export const WhiteboardSchema = z.discriminatedUnion('kind', [
+  WhiteboardSequenceSchema,
+  WhiteboardCompareSchema,
+  WhiteboardMarkedLineSchema,
+]);
 
 export const TutorTurnSchema = z
   .object({
@@ -260,7 +388,37 @@ export type TutorTurn = z.infer<typeof TutorTurnSchema>;
 export type SegmentRequest = z.infer<typeof SegmentRequestSchema>;
 export type DemoStep = z.infer<typeof DemoStepSchema>;
 export type WhiteboardStep = z.infer<typeof WhiteboardStepSchema>;
+export type WhiteboardSequence = z.infer<typeof WhiteboardSequenceSchema>;
+export type WhiteboardCompareSide = z.infer<typeof WhiteboardCompareSideSchema>;
+export type WhiteboardCompare = z.infer<typeof WhiteboardCompareSchema>;
+export type WhiteboardMark = z.infer<typeof WhiteboardMarkSchema>;
+export type WhiteboardMarkedLine = z.infer<typeof WhiteboardMarkedLineSchema>;
+/** Any of the three closed board shapes — see `WhiteboardSchema`'s own comment. */
 export type Whiteboard = z.infer<typeof WhiteboardSchema>;
+
+/**
+ * Every free-text string a whiteboard shows a learner, regardless of `kind`
+ * — the top-level caption plus any per-item label (a comparison's two
+ * sides, a marked line's own marks). A single source of what "the board's
+ * visible text" means, used everywhere a turn's learner-facing strings are
+ * gathered for a check: the moderation call (orchestrator.ts) and the tier-
+ * vocabulary/language-drift checks right beside it. Without this, adding a
+ * new label field to a new `kind` is exactly the class of gap that let
+ * `segmentRequest.framing` reach a child unmoderated for one day — a field
+ * that existed and was learner-facing, just not listed at the one call site
+ * that mattered.
+ */
+export function whiteboardVisibleText(whiteboard: Whiteboard | null | undefined): string[] {
+  if (whiteboard == null) return [];
+  switch (whiteboard.kind) {
+    case 'sequence':
+      return [whiteboard.label];
+    case 'compare':
+      return [whiteboard.label, whiteboard.left.label, whiteboard.right.label];
+    case 'marked_line':
+      return [whiteboard.label, ...whiteboard.marks.map((m) => m.label)];
+  }
+}
 
 export type TurnParse =
   | { ok: true; turn: TutorTurn }

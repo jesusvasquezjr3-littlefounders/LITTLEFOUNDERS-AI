@@ -218,7 +218,10 @@ export function estimateBeatMs(text: string, kind: ReplayBeatKind): number {
  * the point of the whole exercise — had ever drawn.
  */
 function whiteboardMinMs(whiteboard: TranscriptTurn['whiteboard']): number {
-  if (!whiteboard) return 0;
+  // Only `sequence` reveals incrementally (`TutorWhiteboard.tsx`'s own
+  // `SequenceBoard`) — `compare`/`marked_line` (V4 backlog) render fully
+  // immediately, so neither needs a floor beyond the caption's own pace.
+  if (!whiteboard || whiteboard.kind !== 'sequence') return 0;
   return Math.max(0, whiteboard.values.length - 1) * GROW_STEP_MS;
 }
 

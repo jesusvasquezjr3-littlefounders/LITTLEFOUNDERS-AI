@@ -71,19 +71,21 @@ decisions. There is no field for a link, a script or an exfiltrated context.
 
 **Never add a free-form field to that schema.** If a new capability needs one,
 it needs a design conversation, not a property. `whiteboard` (V4) is the
-precedent for how a real capability clears that bar without breaking it: its
-`start`/`steps` are a closed operator enum plus bounded numbers — no freer than
-`demonstrate` already was — and its ONE prose sub-field, `label`, joins the
-moderation call below rather than inventing a fourth free-text channel.
+precedent for how a real capability clears that bar without breaking it: every
+one of its three `kind`s (`sequence`; `compare` and `marked_line`, added once
+`sequence` was proven live) is a closed operator enum plus bounded numbers —
+no freer than `demonstrate` already was — and its handful of prose sub-fields
+join the moderation call below rather than inventing a new free-text channel
+per kind.
 
-**Three of its fields are learner-facing prose, and ALL THREE are on screen.**
-`say` always was. `segmentRequest.framing` is the second — its own schema
-comment defines it as *"a short, learner-facing framing for the activity,
-moderated like `say`"*, `z.string().min(1).max(240)` — and until the 2026-08-21
-Tutor rebuild it was generated, moderated, sent over the wire, stored by the
-client and **rendered nowhere**. The tutor wrote a sentence introducing every
-single activity and no learner ever saw one. It is now the lead-in line above
-the segment prompt (`/ORACLE.md` §9.3).
+**A growing set of fields is learner-facing prose, and ALL of them are on
+screen.** `say` always was. `segmentRequest.framing` is the second — its own
+schema comment defines it as *"a short, learner-facing framing for the
+activity, moderated like `say`"*, `z.string().min(1).max(240)` — and until the
+2026-08-21 Tutor rebuild it was generated, moderated, sent over the wire,
+stored by the client and **rendered nowhere**. The tutor wrote a sentence
+introducing every single activity and no learner ever saw one. It is now the
+lead-in line above the segment prompt (`/ORACLE.md` §9.3).
 
 The consequence for this service: **`framing` is a rendered contract, so
 changing what it means is a breaking change, not a refactor.** It may not be
@@ -93,9 +95,15 @@ learner — that is why the two exist separately, and the distinction is now
 load-bearing rather than documentary. `whiteboard.label` (V4) joined this
 group the same way `framing` should have from the start: added to the SAME
 moderation call as `say` in the turn it ships (orchestrator.ts), not bolted on
-after the gap `framing` sat in for a day was found. All three remain subject
-to §2.4: the whole turn is moderated before any part of it is spoken or
-shown.
+after the gap `framing` sat in for a day was found. **Every NEW prose field a
+future `kind` adds must join it too** — `compare`'s `left.label`/`right.label`
+and `marked_line`'s per-mark `label`s (up to four) are not hand-listed at the
+moderation call site; `turnSchema.ts`'s `whiteboardVisibleText(whiteboard)` is
+the one place that knows every prose field for every kind, called from BOTH
+the moderation call and the tier-vocabulary/language-drift checks right beside
+it, so a field a new kind adds is never the one thing a hand-written list at
+one of two call sites forgot. All prose fields remain subject to §2.4: the
+whole turn is moderated before any part of it is spoken or shown.
 
 ### §2.4 Moderation is per-turn and fails closed
 

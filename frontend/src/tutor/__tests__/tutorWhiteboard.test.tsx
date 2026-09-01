@@ -14,6 +14,13 @@ import { TutorWhiteboard } from '../TutorWhiteboard';
 const BOARD = {
   kind: 'sequence' as const,
   start: 10,
+  // Irrelevant to what this component draws (it renders `values`, computed
+  // server-side, never redoing the arithmetic) but part of the honest wire
+  // shape (`TutorWhiteboardWire`) all the same.
+  steps: [
+    { op: 'add' as const, value: 2 },
+    { op: 'add' as const, value: 2 },
+  ],
   unit: 'day' as const,
   values: [10, 12, 14],
   label: 'Cada día te dan 2 más',
@@ -210,5 +217,137 @@ describe('TutorWhiteboard — a screen reader is told when a NEW turn redraws th
     const img = screen.getByRole('img');
     expect(status).not.toBeNull();
     expect(img.contains(status)).toBe(false);
+  });
+});
+
+/*
+ * COMPARE AND MARKED_LINE (V4, /ORACLE.md §20.5 backlog: "same schema
+ * family, straightforward once sequence is proven live"). Same care as the
+ * `sequence` tests above: the numbers drawn are EXACTLY the server-computed
+ * fields (`difference`/`greater`, each mark's `position`) — this component
+ * never redoes that arithmetic — and both render fully immediately rather
+ * than through `sequence`'s grow-in reveal (see `CompareBoard`'s and
+ * `MarkedLineBoard`'s own doc comments for why: there is no story unfolding
+ * over steps for an animation to pace against).
+ */
+const COMPARE_BOARD = {
+  kind: 'compare' as const,
+  left: { label: 'Tienda A', value: 45 },
+  right: { label: 'Tienda B', value: 28 },
+  difference: 17,
+  greater: 'left' as const,
+  label: '¿Cuál playera es más barata?',
+  currency: 'MXN' as const,
+};
+
+describe('compare — two quantities side by side (V4 backlog)', () => {
+  it('shows the top label and both sides\' own labels', () => {
+    render(<TutorWhiteboard board={COMPARE_BOARD} seq={1} />);
+    expect(screen.getByText('¿Cuál playera es más barata?')).toBeInTheDocument();
+    expect(screen.getByText('Tienda A')).toBeInTheDocument();
+    expect(screen.getByText('Tienda B')).toBeInTheDocument();
+  });
+
+  it("the accessible name carries both sides' values and the SERVER-COMPUTED difference — never asserted anywhere in a schema field the model can set", () => {
+    render(<TutorWhiteboard board={COMPARE_BOARD} seq={1} />);
+    const label = screen.getByRole('img').getAttribute('aria-label');
+    expect(label).toContain('Tienda A: MX$45');
+    expect(label).toContain('Tienda B: MX$28');
+    expect(label).toContain('Difference: MX$17');
+  });
+
+  it('omits a difference caption for a genuine tie — a difference of zero is not "different by zero"', () => {
+    const tie = { ...COMPARE_BOARD, left: { ...COMPARE_BOARD.left, value: 30 }, right: { ...COMPARE_BOARD.right, value: 30 }, difference: 0, greater: 'tie' as const };
+    render(<TutorWhiteboard board={tie} seq={1} />);
+    const label = screen.getByRole('img').getAttribute('aria-label');
+    expect(label).not.toContain('Difference');
+  });
+
+  it('draws BOTH bars proportional to their own value, tallest first regardless of side', () => {
+    const { container } = render(<TutorWhiteboard board={COMPARE_BOARD} seq={1} />);
+    const bars = container.querySelectorAll('.rounded-t-md');
+    expect(bars).toHaveLength(2);
+    // left=45 (the max of the two) is drawn at 100%, right=28 proportionally lower.
+    expect(bars[0]).toHaveStyle({ height: '100%' });
+    expect(bars[1]).toHaveStyle({ height: `${Math.round((28 / 45) * 100)}%` });
+  });
+
+  it('renders immediately with no grow-in reveal — a snapshot, not a process', () => {
+    // Normal motion (not reduced) still shows both values at once: unlike
+    // `sequence`, `compare` has no `GROW_STEP_MS` reveal to skip.
+    render(<TutorWhiteboard board={COMPARE_BOARD} seq={1} />);
+    const label = screen.getByRole('img').getAttribute('aria-label');
+    expect(label).toContain('MX$45');
+    expect(label).toContain('MX$28');
+  });
+});
+
+const MARKED_LINE_BOARD = {
+  kind: 'marked_line' as const,
+  min: 0,
+  max: 40,
+  marks: [
+    { value: 22, label: 'Lo que tienes', position: 0.55 },
+    { value: 35, label: 'Los audífonos', position: 0.875 },
+  ],
+  label: '¿Cuánto te falta para los audífonos?',
+  currency: 'MXN' as const,
+};
+
+describe('marked_line — one or more values placed on a line (V4 backlog)', () => {
+  it('shows the top label and every mark\'s own label', () => {
+    render(<TutorWhiteboard board={MARKED_LINE_BOARD} seq={1} />);
+    expect(screen.getByText('¿Cuánto te falta para los audífonos?')).toBeInTheDocument();
+    expect(screen.getByText('Lo que tienes')).toBeInTheDocument();
+    expect(screen.getByText('Los audífonos')).toBeInTheDocument();
+  });
+
+  it('the accessible name carries the range and every mark\'s value, from the SERVER-COMPUTED shape — never re-deriving position from value/min/max itself', () => {
+    render(<TutorWhiteboard board={MARKED_LINE_BOARD} seq={1} />);
+    const label = screen.getByRole('img').getAttribute('aria-label');
+    expect(label).toContain('MX$0');
+    expect(label).toContain('MX$40');
+    expect(label).toContain('Lo que tienes: MX$22');
+    expect(label).toContain('Los audífonos: MX$35');
+  });
+
+  it("positions each mark's dot at the SERVER-computed `position`, not a client-recomputed fraction", () => {
+    // A deliberately WRONG position (0.5 for a mark whose true value/min/max
+    // would compute to something else) proves this component trusts the
+    // given `position` rather than re-deriving it — the same "never redo
+    // the arithmetic" contract `values` already has for `sequence`.
+    const wired = {
+      ...MARKED_LINE_BOARD,
+      marks: [{ value: 22, label: 'Lo que tienes', position: 0.5 }],
+    };
+    const { container } = render(<TutorWhiteboard board={wired} seq={1} />);
+    const dot = container.querySelector('[style*="left"]') as HTMLElement | null;
+    expect(dot?.style.left).toBe('50%');
+  });
+
+  it('clamps a position outside [0, 1] to the visible track, rather than drawing off-screen', () => {
+    const outOfRange = { ...MARKED_LINE_BOARD, marks: [{ value: 999, label: 'x', position: 1.4 }] };
+    const { container } = render(<TutorWhiteboard board={outOfRange} seq={1} />);
+    const dot = container.querySelector('[style*="left"]') as HTMLElement | null;
+    expect(dot?.style.left).toBe('100%');
+  });
+
+  it('renders immediately with no grow-in reveal — a snapshot, not a process', () => {
+    render(<TutorWhiteboard board={MARKED_LINE_BOARD} seq={1} />);
+    const label = screen.getByRole('img').getAttribute('aria-label');
+    expect(label).toContain('MX$22');
+    expect(label).toContain('MX$35');
+  });
+});
+
+describe('the live announcement fires for compare and marked_line too — the mechanism is kind-agnostic', () => {
+  it('announces once on mount for a compare board', () => {
+    render(<TutorWhiteboard board={COMPARE_BOARD} seq={1} />);
+    expect(screen.getByRole('status')).toHaveTextContent('The whiteboard updated.');
+  });
+
+  it('announces once on mount for a marked_line board', () => {
+    render(<TutorWhiteboard board={MARKED_LINE_BOARD} seq={1} />);
+    expect(screen.getByRole('status')).toHaveTextContent('The whiteboard updated.');
   });
 });

@@ -658,6 +658,20 @@ describe('when the model misbehaves', () => {
   });
 });
 
+/**
+ * Every whiteboard fixture in this file's own describe blocks below sets
+ * `kind: 'sequence'` — this narrows the turn's (now three-`kind`) union
+ * back to that one shape so an assertion can read `start`/`steps`/`unit`
+ * directly, the same way `live-session.test.ts` already casts the WIRE
+ * shape for the identical reason: a test asserting on one specific kind's
+ * fields, not on the union in general.
+ */
+function asSequenceBoard(
+  whiteboard: unknown,
+): { start: number; unit: string; label: string; currency: string | null; steps: unknown[] } | null | undefined {
+  return whiteboard as never;
+}
+
 describe('the whiteboard (V4)', () => {
   it('asks again when a growth story is told in words with no board — the measured production gap', async () => {
     const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
@@ -688,7 +702,7 @@ describe('the whiteboard (V4)', () => {
 
     const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
     expect(retryBody).toContain('ALSO set');
-    expect(outcome?.emission.turn.whiteboard?.start).toBe(10);
+    expect(asSequenceBoard(outcome?.emission.turn.whiteboard)?.start).toBe(10);
   });
 });
 
@@ -729,7 +743,7 @@ describe('the whiteboard (V4) — unit mismatch repair', () => {
 
     const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
     expect(retryBody).toContain('does not match the cadence word');
-    expect(outcome?.emission.turn.whiteboard?.unit).toBe('week');
+    expect(asSequenceBoard(outcome?.emission.turn.whiteboard)?.unit).toBe('week');
   });
 });
 
@@ -783,7 +797,7 @@ describe('the whiteboard (V4) — doubled step-per-period repair', () => {
 
     const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
     expect(retryBody).toContain('ONE step for that period');
-    expect(outcome?.emission.turn.whiteboard?.steps).toHaveLength(3);
+    expect(asSequenceBoard(outcome?.emission.turn.whiteboard)?.steps).toHaveLength(3);
     expect(outcome?.emission.source).toBe('model');
   });
 
@@ -803,7 +817,7 @@ describe('the whiteboard (V4) — doubled step-per-period repair', () => {
     // `numberMismatch`'s own bucket.
     expect(outcome?.emission.source).toBe('model');
     expect(outcome?.emission.turn.say).toBe('attempt one, still doubled');
-    expect(outcome?.emission.turn.whiteboard?.steps).toHaveLength(6);
+    expect(asSequenceBoard(outcome?.emission.turn.whiteboard)?.steps).toHaveLength(6);
   });
 });
 
@@ -852,7 +866,7 @@ describe('the whiteboard (V4) — spoken numbers vs. the board\'s own arithmetic
 
     const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
     expect(retryBody).toContain('does NOT match what');
-    expect(outcome?.emission.turn.whiteboard?.start).toBe(0);
+    expect(asSequenceBoard(outcome?.emission.turn.whiteboard)?.start).toBe(0);
     expect(outcome?.emission.source).toBe('model');
   });
 
@@ -944,7 +958,7 @@ describe('the whiteboard (V4) — a "for N periods ... so $X" conclusion vs. the
 
     const retryBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
     expect(retryBody).toContain('does NOT match what');
-    expect(outcome?.emission.turn.whiteboard?.start).toBe(0);
+    expect(asSequenceBoard(outcome?.emission.turn.whiteboard)?.start).toBe(0);
     expect(outcome?.emission.source).toBe('model');
   });
 
@@ -997,8 +1011,8 @@ describe('the whiteboard (V4) — verification and delivery', () => {
       )
       .mockResolvedValueOnce(judgeSays(true));
     const outcome = (await orchestrator.handleLearnerText('hola', Date.now()))!;
-    expect(outcome?.emission.turn.whiteboard?.start).toBe(10);
-    expect(outcome?.emission.turn.whiteboard?.steps).toHaveLength(1);
+    expect(asSequenceBoard(outcome?.emission.turn.whiteboard)?.start).toBe(10);
+    expect(asSequenceBoard(outcome?.emission.turn.whiteboard)?.steps).toHaveLength(1);
   });
 
   it('a whiteboard whose own arithmetic goes negative is dropped, and the turn still delivers', async () => {
@@ -1105,7 +1119,160 @@ describe('the whiteboard (V4) — verification and delivery', () => {
       )
       .mockResolvedValueOnce(judgeSays(true));
     const outcome = (await orchestrator.handleLearnerText('¿y si ahorro cada semana?', Date.now()))!;
-    expect(outcome?.emission.turn.whiteboard?.start).toBe(10);
+    expect(asSequenceBoard(outcome?.emission.turn.whiteboard)?.start).toBe(10);
+  });
+});
+
+/*
+ * COMPARE AND MARKED_LINE (V4, /ORACLE.md §20.5 backlog) — the same
+ * verification-and-delivery and moderation-inclusion proofs the `sequence`
+ * kind already has above, for the two ADDITIONAL board shapes. The
+ * sequence-specific narrative-consistency repairs just above this block
+ * (missed board, wrong unit, doubled steps, spoken-number mismatch) are
+ * deliberately NOT reproduced here: those all react to defects OBSERVED on
+ * a real model over real sessions, and no such observation exists yet for
+ * either new kind — building speculative detectors for defects nobody has
+ * seen would be exactly the guessing this codebase's own operating rules
+ * warn against. What IS reproduced is the part of the safety story that
+ * does not depend on having watched a real model misuse the field yet: the
+ * schema's own bounds are re-verified rather than trusted, and every
+ * learner-facing string on the board reaches moderation.
+ */
+describe('the whiteboard (V4) — compare and marked_line verification and delivery', () => {
+  it('a valid comparison board reaches the turn untouched', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          whiteboard: {
+            kind: 'compare',
+            left: { label: 'Tienda A', value: 45 },
+            right: { label: 'Tienda B', value: 28 },
+            label: '¿Cuál playera es más barata?',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = (await orchestrator.handleLearnerText('hola', Date.now()))!;
+    expect(outcome?.emission.turn.whiteboard).toMatchObject({
+      kind: 'compare',
+      left: { label: 'Tienda A', value: 45 },
+      right: { label: 'Tienda B', value: 28 },
+    });
+  });
+
+  it("a comparison board's per-side labels are moderated in the same call as say", async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          whiteboard: {
+            kind: 'compare',
+            left: { label: 'Camiseta de la tiendita del barrio', value: 45 },
+            right: { label: 'Camiseta de la tienda del centro', value: 28 },
+            label: '¿Cuál playera es más barata?',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('hola', Date.now());
+    const judgeBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    // The exact class of gap this file's own history already paid for once:
+    // `segmentRequest.framing` existed and was learner-facing, but reached a
+    // child unmoderated for a day because no call site listed it. Proving
+    // BOTH sides reach the SAME moderation call, not just the top label.
+    expect(judgeBody).toContain('Camiseta de la tiendita del barrio');
+    expect(judgeBody).toContain('Camiseta de la tienda del centro');
+    expect(judgeBody).toContain('¿Cuál playera es más barata?');
+  });
+
+  it('a valid marked-line board reaches the turn untouched', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          whiteboard: {
+            kind: 'marked_line',
+            min: 0,
+            max: 40,
+            marks: [
+              { value: 22, label: 'Lo que tienes' },
+              { value: 35, label: 'Los audífonos' },
+            ],
+            label: '¿Cuánto te falta para los audífonos?',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    const outcome = (await orchestrator.handleLearnerText('hola', Date.now()))!;
+    expect(outcome?.emission.turn.whiteboard).toMatchObject({
+      kind: 'marked_line',
+      min: 0,
+      max: 40,
+      marks: [
+        { value: 22, label: 'Lo que tienes' },
+        { value: 35, label: 'Los audífonos' },
+      ],
+    });
+  });
+
+  it(
+    "a marked-line board with an inverted min/max is dropped, and the turn still delivers — the exact cross-field " +
+      'mistake the schema cannot catch on its own (z.discriminatedUnion cannot carry a .refine())',
+    async () => {
+      const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+      fetchMock
+        .mockResolvedValueOnce(
+          modelReplies({
+            ...GOOD_TURN,
+            whiteboard: {
+              kind: 'marked_line',
+              min: 50,
+              max: 10,
+              marks: [{ value: 30, label: 'x' }],
+              label: 'a nonsense line',
+              currency: 'MXN',
+            },
+          }),
+        )
+        .mockResolvedValueOnce(judgeSays(true));
+      const outcome = (await orchestrator.handleLearnerText('hola', Date.now()))!;
+      // Fail-open, same posture as a sequence whose own arithmetic is invalid.
+      expect(outcome).not.toBeNull();
+      expect(outcome?.emission.turn.whiteboard).toBeNull();
+    },
+  );
+
+  it("a marked-line board's per-mark labels are moderated in the same call as say", async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          whiteboard: {
+            kind: 'marked_line',
+            min: 0,
+            max: 40,
+            marks: [
+              { value: 22, label: 'El dinero guardado en tu alcancía' },
+              { value: 35, label: 'El precio de los audífonos nuevos' },
+            ],
+            label: '¿Cuánto te falta para los audífonos?',
+            currency: 'MXN',
+          },
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('hola', Date.now());
+    const judgeBody = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(judgeBody).toContain('El dinero guardado en tu alcancía');
+    expect(judgeBody).toContain('El precio de los audífonos nuevos');
   });
 });
 

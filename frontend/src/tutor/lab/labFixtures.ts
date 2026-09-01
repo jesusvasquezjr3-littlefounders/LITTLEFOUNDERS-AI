@@ -392,11 +392,69 @@ const LAB_WHITEBOARD_TEXT: Readonly<Record<Locale, { say: string; label: string 
 };
 
 /**
+ * `activity === 'compare'` (V4 backlog: "same schema family, straightforward
+ * once sequence is proven live") — the lab's own fixture for the SECOND
+ * whiteboard kind, same reason `LAB_WHITEBOARD_TEXT` exists for the first:
+ * `verify-tutor-ui.mjs` needs a real board on screen to audit, without a
+ * live model turn.
+ */
+const LAB_COMPARE_TEXT: Readonly<Record<Locale, { say: string; label: string; left: string; right: string }>> = {
+  'en-US': {
+    say: 'A shirt at Store A costs $45, and the same shirt at Store B costs $28.',
+    label: 'Which shirt is cheaper?',
+    left: 'Store A',
+    right: 'Store B',
+  },
+  'es-MX': {
+    say: 'Una playera en la Tienda A cuesta 45 pesos, y en la Tienda B cuesta 28 pesos.',
+    label: '¿Cuál playera es más barata?',
+    left: 'Tienda A',
+    right: 'Tienda B',
+  },
+  'pt-BR': {
+    say: 'Uma camiseta na Loja A custa 45 reais, e na Loja B custa 28 reais.',
+    label: 'Qual camiseta é mais barata?',
+    left: 'Loja A',
+    right: 'Loja B',
+  },
+};
+
+/** `activity === 'marked-line'` (V4 backlog) — the lab's own fixture for the THIRD whiteboard kind. */
+const LAB_MARKED_LINE_TEXT: Readonly<Record<Locale, { say: string; label: string; have: string; goal: string }>> = {
+  'en-US': {
+    say: 'You have $22 saved, and headphones cost $35.',
+    label: 'How much more do you need for the headphones?',
+    have: 'What you have',
+    goal: 'The headphones',
+  },
+  'es-MX': {
+    say: 'Tienes 22 pesos ahorrados, y unos audífonos cuestan 35 pesos.',
+    label: '¿Cuánto te falta para los audífonos?',
+    have: 'Lo que tienes',
+    goal: 'Los audífonos',
+  },
+  'pt-BR': {
+    say: 'Você tem 22 reais guardados, e um fone de ouvido custa 35 reais.',
+    label: 'Quanto falta para o fone de ouvido?',
+    have: 'O que você tem',
+    goal: 'O fone de ouvido',
+  },
+};
+
+const LAB_CURRENCY: Readonly<Record<Locale, 'USD' | 'MXN' | 'BRL'>> = {
+  'en-US': 'USD',
+  'es-MX': 'MXN',
+  'pt-BR': 'BRL',
+};
+
+/**
  * `activity === 'whiteboard'` (V4) swaps the scripted "here is an exercise"
  * turn for one that draws a live sequence board instead — the surface added
  * to close the owner's reported defect: a growth story narrated in pure text
  * beside an unrelated activity. `verify-tutor-ui.mjs` opens this scenario to
  * audit the board for overlaps the same way it already does for a segment.
+ * `'compare'`/`'marked-line'` are the same idea for the two ADDITIONAL
+ * whiteboard kinds (V4 backlog).
  */
 export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY): TutorTurnState {
   if (activity === 'whiteboard') {
@@ -424,6 +482,58 @@ export function labTurn(locale: Locale, activity: string = DEFAULT_LAB_ACTIVITY)
         values: [10, 12, 14],
         label: text.label,
         currency: locale === 'en-US' ? 'USD' : locale === 'pt-BR' ? 'BRL' : 'MXN',
+      },
+    };
+  }
+  if (activity === 'compare') {
+    const text = LAB_COMPARE_TEXT[locale];
+    return {
+      seq: 4,
+      text: text.say,
+      emotion: 'happy',
+      action: 'nod',
+      audioUrl: null,
+      audioPending: false,
+      next: 'ask',
+      policy: null,
+      demonstrate: null,
+      whiteboard: {
+        kind: 'compare',
+        left: { label: text.left, value: 45 },
+        right: { label: text.right, value: 28 },
+        // Server-computed on the real wire (`whiteboard.ts`'s
+        // `computeComparison`) — hand-set here since the lab has no server.
+        difference: 17,
+        greater: 'left',
+        label: text.label,
+        currency: LAB_CURRENCY[locale],
+      },
+    };
+  }
+  if (activity === 'marked-line') {
+    const text = LAB_MARKED_LINE_TEXT[locale];
+    return {
+      seq: 4,
+      text: text.say,
+      emotion: 'happy',
+      action: 'nod',
+      audioUrl: null,
+      audioPending: false,
+      next: 'ask',
+      policy: null,
+      demonstrate: null,
+      whiteboard: {
+        kind: 'marked_line',
+        min: 0,
+        max: 40,
+        marks: [
+          // Server-computed `position` on the real wire
+          // (`whiteboard.ts`'s `computeMarkedLine`) — hand-set here.
+          { value: 22, label: text.have, position: 0.55 },
+          { value: 35, label: text.goal, position: 0.875 },
+        ],
+        label: text.label,
+        currency: LAB_CURRENCY[locale],
       },
     };
   }
@@ -470,6 +580,10 @@ export const LAB_ACTIVITIES: readonly string[] = [
   'script',
   'none',
   'whiteboard',
+  // V4 backlog: the same lab-fixture treatment for the two ADDITIONAL
+  // whiteboard kinds (/ORACLE.md §20.5).
+  'compare',
+  'marked-line',
   // The TYPE LIST is locale-independent by construction (registry.test.tsx
   // proves it), so building it from one locale is not a choice with a
   // consequence — it is the same list in all three.
@@ -480,7 +594,9 @@ export const DEFAULT_LAB_ACTIVITY = 'script';
 
 /** The activity the plate should hold, for whatever the switch is on. */
 export function labActivity(locale: Locale, activity: string): LiveSegmentState | null {
-  if (activity === 'none' || activity === 'whiteboard') return null;
+  if (activity === 'none' || activity === 'whiteboard' || activity === 'compare' || activity === 'marked-line') {
+    return null;
+  }
   if (activity === 'script') return labSegment(locale);
   const fixture = fixtureByType(locale)[activity];
   if (!fixture) return labSegment(locale);

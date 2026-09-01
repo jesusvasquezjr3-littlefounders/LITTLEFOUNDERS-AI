@@ -28,7 +28,8 @@ import process from 'node:process';
 import { getConfig } from '../src/env.js';
 import { TutorOrchestrator } from '../src/tutor/orchestrator.js';
 import { tierVocabularyViolation, promisesAnActivity } from '../src/tutor/prompt.js';
-import { computeSequence } from '../src/tutor/whiteboard.js';
+import { computeComparison, computeMarkedLine, computeSequence } from '../src/tutor/whiteboard.js';
+import type { Whiteboard } from '../src/tutor/turnSchema.js';
 import type { SessionContext, SessionPlanEntry, KcState } from '../src/core/client.js';
 import type { SpeechResult } from '../src/voice/speech.js';
 
@@ -299,10 +300,47 @@ interface Beat {
   kind: 'said' | 'activity';
   /**
    * V4: the live whiteboard, when this turn drew one. `null` covers the
-   * common case (most turns tell no growth story); a check can therefore
-   * assert something PRESENT rather than merely absent-and-fine.
+   * common case (most turns tell no board); a check can therefore assert
+   * something PRESENT rather than merely absent-and-fine. `summary` is a
+   * kind-specific, human-readable rendering of the SAME server-computed
+   * values a real session would show (`summarizeWhiteboard`, below) — this
+   * harness prints and greps text, so one string covers all three kinds
+   * without every downstream check needing its own `kind` switch.
    */
-  whiteboard: { start: number; values: number[]; label: string } | null;
+  whiteboard: { label: string; summary: string } | null;
+}
+
+/**
+ * A whiteboard, rendered exactly the way this harness's own transcript log
+ * already prints one — one line, kind-agnostic, computed the SAME way a real
+ * session computes it (never the model's own claim). `null` when the
+ * board's numbers do not check out, printed rather than hidden: an invalid
+ * board reaching this point would itself be worth seeing in the transcript.
+ */
+function summarizeWhiteboard(board: NonNullable<Whiteboard>): { label: string; summary: string } {
+  switch (board.kind) {
+    case 'sequence': {
+      const values = computeSequence(board);
+      return { label: board.label, summary: values ? values.join(' → ') : 'INVALID' };
+    }
+    case 'compare': {
+      const result = computeComparison(board);
+      const sides = `${board.left.label}=${board.left.value} vs ${board.right.label}=${board.right.value}`;
+      return {
+        label: board.label,
+        summary: result ? `${sides} (diff ${result.difference}, greater: ${result.greater})` : `${sides} (INVALID)`,
+      };
+    }
+    case 'marked_line': {
+      const points = computeMarkedLine(board);
+      return {
+        label: board.label,
+        summary: points
+          ? `[${board.min}..${board.max}] ${points.map((p) => `${p.label}=${p.value} (${Math.round(p.position * 100)}%)`).join(', ')}`
+          : 'INVALID',
+      };
+    }
+  }
 }
 
 /** Normalised for comparison: accents, case and punctuation removed. */
@@ -742,11 +780,9 @@ async function main(): Promise<void> {
           `${turn.segmentRequest ? ` · asks for ${turn.segmentRequest.skillKey}` : ''}` +
           `${orchestrator.activeStrategy ? ` · strategy=${orchestrator.activeStrategy}` : ''}]`,
       );
-      if (turn.whiteboard) {
-        const board = turn.whiteboard;
-        const values = computeSequence(board);
-        // `values[0]` IS `start` — printing both would double it.
-        console.log(`           [whiteboard "${board.label}" — ${(values ?? []).join(' → ')}]`);
+      const whiteboardSummary = turn.whiteboard ? summarizeWhiteboard(turn.whiteboard) : null;
+      if (whiteboardSummary) {
+        console.log(`           [whiteboard "${whiteboardSummary.label}" — ${whiteboardSummary.summary}]`);
       }
       beats.push({
         learner: line,
@@ -755,9 +791,7 @@ async function main(): Promise<void> {
         next: turn.next,
         requestedActivity: turn.segmentRequest != null,
         kind: 'said',
-        whiteboard: turn.whiteboard
-          ? { start: turn.whiteboard.start, values: computeSequence(turn.whiteboard) ?? [], label: turn.whiteboard.label }
-          : null,
+        whiteboard: whiteboardSummary,
       });
 
       /*
@@ -856,7 +890,7 @@ async function main(): Promise<void> {
     );
   } else {
     for (const b of boards) {
-      console.log(`  whiteboard: "${b.whiteboard!.label}" — ${b.whiteboard!.values.join(' → ')}`);
+      console.log(`  whiteboard: "${b.whiteboard!.label}" — ${b.whiteboard!.summary}`);
     }
   }
 

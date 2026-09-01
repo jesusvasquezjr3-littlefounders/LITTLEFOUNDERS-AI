@@ -1,5 +1,5 @@
 import type { TutorContext, Locale } from '../context/schema.js';
-import { EMOTIONS, ACTIONS, type Whiteboard } from './turnSchema.js';
+import { EMOTIONS, ACTIONS, type WhiteboardSequence } from './turnSchema.js';
 import { computeSequence } from './whiteboard.js';
 import { fenceActivityContent } from '../safety/untrusted.js';
 
@@ -422,11 +422,19 @@ export function narratesUnshownGrowth(say: string, whiteboard: unknown): boolean
   return numbers.length >= 2;
 }
 
+/**
+ * SEQUENCE-ONLY BY CONTRACT — `unit` (a cadence over TIME) exists on no
+ * other `kind`. Callers narrow `Whiteboard` down to `WhiteboardSequence`
+ * before calling this (orchestrator.ts's own `kind === 'sequence'` check),
+ * the same way they already decide whether to call `computeSequence` at
+ * all — this function was never meant to learn about every kind that gets
+ * added to the union, only to keep checking the one it was written for.
+ */
 export function whiteboardUnitMismatch(
   say: string,
-  whiteboard: { unit?: unknown } | null | undefined,
+  whiteboard: Pick<WhiteboardSequence, 'unit'> | null | undefined,
 ): boolean {
-  if (whiteboard == null || typeof whiteboard.unit !== 'string') return false;
+  if (whiteboard == null) return false;
   const named = UNIT_WORD.find(([re]) => re.test(say));
   if (!named) return false;
   return named[1] !== whiteboard.unit;
@@ -761,9 +769,14 @@ function periodCountThenTotalMismatch(say: string, values: readonly number[]): b
   return false;
 }
 
+/**
+ * SEQUENCE-ONLY BY CONTRACT — a `compare`/`marked_line` board has no running
+ * total to contradict. See `whiteboardUnitMismatch`'s own comment: callers
+ * narrow to `WhiteboardSequence` before calling this.
+ */
 export function whiteboardNumberMismatch(
   say: string,
-  whiteboard: Pick<Whiteboard, 'start' | 'steps'> | null | undefined,
+  whiteboard: Pick<WhiteboardSequence, 'start' | 'steps'> | null | undefined,
 ): boolean {
   if (whiteboard == null) return false;
   const values = computeSequence(whiteboard);
@@ -866,8 +879,14 @@ export function whiteboardNumberMismatch(
 const INFLOW_WORD = /\b(get|earn|gana|ganas|gano|ganha|ganhar)\b/i;
 const OUTFLOW_WORD = /\b(spend|pay|gasta|gastas|gasto|paga|pagas)\b/i;
 
+/**
+ * SEQUENCE-ONLY BY CONTRACT — "one step per period" has no meaning for
+ * `compare`/`marked_line`, neither of which has `steps` at all. See
+ * `whiteboardUnitMismatch`'s own comment: callers narrow to
+ * `WhiteboardSequence` before calling this.
+ */
 export function whiteboardDoubledPeriodSteps(
-  whiteboard: Pick<Whiteboard, 'steps' | 'label'> | null | undefined,
+  whiteboard: Pick<WhiteboardSequence, 'steps' | 'label'> | null | undefined,
 ): boolean {
   if (whiteboard == null) return false;
   const { steps, label } = whiteboard;
@@ -1152,8 +1171,11 @@ export const TUTOR_SYSTEM_PROMPT: string = [
       ].join('\n  '),
   '  "offerAdaptation": null or one of slower_pacing | more_examples | less_text | more_visual | repeat_before_advancing,',
   '  "demonstrate": null or 1-8 steps of { "kind": "add"|"remove"|"pause", "denomination"?, "ms"? },',
-  '  "whiteboard": null or { "kind": "sequence", "start", "unit": "day"|"week"|"month"|"year",'
+  '  "whiteboard": null or ONE of:',
+  '    { "kind": "sequence", "start", "unit": "day"|"week"|"month"|"year",'
     + ' "steps": 1-8 of { "op": "add"|"subtract"|"multiply_percent", "value" }, "label", "currency" }',
+  '    { "kind": "compare", "left": { "label", "value" }, "right": { "label", "value" }, "label", "currency" }',
+  '    { "kind": "marked_line", "min", "max", "marks": 1-4 of { "value", "label" }, "label", "currency" },',
   '}',
   '',
   'Use "demonstrate" ONLY while a coin/money activity is on screen and a small',
@@ -1269,6 +1291,36 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '  operation that happened inside it.',
   '  Never set BOTH `whiteboard` and `segmentRequest` on the same turn — the',
   '  schema refuses it. Choose one surface for this turn.',
+  '- COMPARE TWO THINGS SIDE BY SIDE. When your story puts two amounts next to',
+  '  each other for the learner to weigh — two prices, two ways to save, two',
+  '  choices in a budget — set `whiteboard` to `{kind:"compare", left:',
+  '  {label, value}, right:{label, value}, label, currency}` instead of only',
+  '  describing both numbers in `say`. `left` and `right` each need their OWN',
+  '  short label ("Tienda A", "Ahorro de Ana") so the board says WHICH number',
+  '  is which; the top-level `label` is the question itself ("¿Cuál te',
+  '  conviene más?"). Use `compare` only for two SEPARATE, static amounts —',
+  '  never for one quantity that grows or shrinks over time (that is',
+  '  `sequence`), and never a single amount against a range (that is',
+  '  `marked_line`, next).',
+  '  Example: you say "una playera en la Tienda A cuesta 45 pesos, y la misma',
+  '  playera en la Tienda B cuesta 28 pesos — ¿cuál te conviene más?" and set',
+  '  `whiteboard: {kind:"compare", left:{label:"Tienda A", value:45},',
+  '  right:{label:"Tienda B", value:28}, label:"¿Cuál playera es más',
+  '  barata?", currency:"MXN"}`.',
+  '- MARK A VALUE ON A LINE. When your story is about WHERE a number sits',
+  '  relative to one or two references — savings against a price, an amount',
+  '  inside a budget range — set `whiteboard` to `{kind:"marked_line", min,',
+  '  max, marks: 1-4 of {value, label}, label, currency}` instead of only',
+  '  describing the position in words. `min`/`max` are the two ends of the',
+  '  line; each mark is one value on it, with its own short label ("Lo que',
+  '  tienes", "El precio"). Never use `marked_line` for a story that changes',
+  '  over time (`sequence`) or for two options with no shared line between',
+  '  them (`compare`, above).',
+  '  Example: you say "tienes 22 pesos ahorrados, y unos audífonos cuestan 35',
+  '  pesos — ¿cuánto te falta?" and set `whiteboard: {kind:"marked_line",',
+  '  min:0, max:40, marks:[{value:22, label:"Lo que tienes"},{value:35,',
+  '  label:"Los audífonos"}], label:"¿Cuánto te falta para los audífonos?",',
+  '  currency:"MXN"}`.',
   '- A wrong answer is information, never a failure. Say what was right about',
   '  the thinking before correcting the result. Never mock, never sigh, never',
   '  say "wrong".',

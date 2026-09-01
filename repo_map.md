@@ -28172,9 +28172,10 @@ import { useScrollEdges } from './hud/useScrollEdges';
 ### frontend/src/tutor/TutorWhiteboard.tsx
 
 ```
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
+import type { TutorWhiteboardWire } from './types';
 
 /*
  * THE TUTOR'S WHITEBOARD (V4).
@@ -28186,7 +28187,6 @@ import { cn } from '@/lib/utils';
  * numbers the tutor is already inventing for its story (oracle/prompt.ts's
  * "invented numbers" rule), live, as the turn arrives.
  *
- * DELIBERATELY NOT A LESSON-ENGINE COMPONENT. `LiveSegmentPanel` reuses the
 ```
 
 ### frontend/src/tutor/VoiceConsentControl.tsx
@@ -29518,6 +29518,7 @@ import type {
   BudgetState,
   ClientMessage,
   ServerMessage,
+  TutorWhiteboardWire,
 } from './types';
 import type { CharacterAction, CharacterEmotion } from '@/components/characters/control/types';
 
@@ -29526,7 +29527,6 @@ import type { CharacterAction, CharacterEmotion } from '@/components/characters/
  *
  * ONE SOCKET, ONE SESSION, NO RECONNECT — and that last part is deliberate.
  * The token Core minted is single-use and expires in sixty seconds, so a
- * reconnect could not authenticate even if we tried; and a tutoring session
 ```
 
 ### frontend/src/vite-env.d.ts
@@ -30779,7 +30779,7 @@ import {
 } from '../session/token.js';
 import { evaluateBudget } from '../session/budget.js';
 import { getConfig } from '../env.js';
-import { parseTurn, sanitizePreferredTypes, TutorTurnSchema } from '../tutor/turnSchema.js';
+import { parseTurn, sanitizePreferredTypes, TutorTurnSchema, whiteboardVisibleText } from '../tutor/turnSchema.js';
 
 const SECRET = process.env.TUTOR_SESSION_SECRET as string;
 const SID = '11111111-1111-4111-8111-111111111111';
@@ -30911,7 +30911,12 @@ import { resetConfigCache } from '../env.js';
 
 ```
 import { describe, expect, it } from 'vitest';
-import { computeSequence } from '../tutor/whiteboard.js';
+import {
+  computeComparison,
+  computeMarkedLine,
+  computeSequence,
+  whiteboardComputesOk,
+} from '../tutor/whiteboard.js';
 
 /*
  * THE BOARD'S NUMBERS ARE COMPUTED, NEVER TAKEN ON THE MODEL'S WORD — the same
@@ -30920,11 +30925,6 @@ import { computeSequence } from '../tutor/whiteboard.js';
  * empezaras con 20 y cada día 3") or a bound that must hold no matter what a
  * model proposes.
  */
-
-describe('a real sequence', () => {
-  it('matches the owner\'s own example: 10, +2 each day', () => {
-    expect(computeSequence({ start: 10, steps: [{ op: 'add', value: 2 }] })).toEqual([10, 12]);
-  });
 ```
 
 ### oracle/src/app.ts
@@ -31489,7 +31489,7 @@ import { ADAPTATIONS, PLAN_STEPS } from '../context/schema.js';
 
 ```
 import type { TutorContext, Locale } from '../context/schema.js';
-import { EMOTIONS, ACTIONS, type Whiteboard } from './turnSchema.js';
+import { EMOTIONS, ACTIONS, type WhiteboardSequence } from './turnSchema.js';
 import { computeSequence } from './whiteboard.js';
 import { fenceActivityContent } from '../safety/untrusted.js';
 
@@ -31568,21 +31568,21 @@ import { z } from 'zod';
 ### oracle/src/tutor/whiteboard.ts
 
 ```
-import type { Whiteboard } from './turnSchema.js';
+import type { Whiteboard, WhiteboardCompare, WhiteboardMarkedLine, WhiteboardSequence } from './turnSchema.js';
 
 /*
  * THE NUMBERS ON THE BOARD ARE COMPUTED, NEVER TAKEN ON THE MODEL'S WORD.
  *
  * This is the same rule `arithmetic.ts` applies to a spoken answer, extended
- * to what gets DRAWN: the model proposes `start` and `steps` as part of its
- * story, and this function is the only thing that turns that proposal into
- * the values a child actually sees. A drawn number that turned out to be
- * wrong would be worse than a spoken one — a wrong picture is remembered
- * longer than a wrong sentence.
+ * to what gets DRAWN: the model proposes the raw shape of a board as part of
+ * its story, and the functions in this file are the only thing that turn
+ * that proposal into the values a child actually sees. A drawn number that
+ * turned out to be wrong would be worse than a spoken one — a wrong picture
+ * is remembered longer than a wrong sentence.
  *
- * DELIBERATELY NARROW, same posture as the rest of §5: one operation per
- * step from a three-item vocabulary, whole numbers in, a ceiling on every
- * intermediate. Anything that would produce a non-finite, negative, or
+ * DELIBERATELY NARROW, same posture as the rest of §5: closed vocabularies,
+ * bounded numbers, a ceiling on every intermediate or derived value.
+ * Anything that would produce a non-finite, negative, or absurd value
 ```
 
 ### oracle/src/voice/cache.ts
@@ -31730,19 +31730,19 @@ import { pregeneratedUrl } from './pregenerated.js';
 ```
 import { z } from 'zod';
 import { ADAPTATIONS } from '../context/schema.js';
-import { ACTIONS, EMOTIONS } from '../tutor/turnSchema.js';
+import {
+  ACTIONS,
+  EMOTIONS,
+  type WhiteboardCompare,
+  type WhiteboardMark,
+  type WhiteboardMarkedLine,
+  type WhiteboardSequence,
+} from '../tutor/turnSchema.js';
 
 /*
  * The websocket wire format.
  *
  * INBOUND IS UNTRUSTED. Every client message is parsed with a `.strict()`
- * discriminated union before anything touches it — the socket is open to a
- * browser, and a browser is a place where anyone can type. An unparseable
- * frame is answered with an error and dropped; it never reaches the
- * orchestrator, the model, or Core.
- *
- * OUTBOUND IS A PLAIN TYPE, not a schema. We author it, so validating our own
- * output on the way out would be theatre. What we DO validate is the model's
 ```
 
 ### oracle/src/ws/server.ts
