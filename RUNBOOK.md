@@ -12491,3 +12491,143 @@ lint`, `npm run build` all clean in `frontend/`. Tutor-scoped suite
 1569/1569 tests. Root `docs:check`, `secrets:check`, `i18n:check` all
 green (no i18n-relevant changes made). `oracle/` and `backend/` were
 not touched by this fix.
+
+## Round 124: the Tutor's "step X of Y" HUD badge froze indefinitely mid-session, in two distinct ways, found live, HIGH, closed 2026-08-31
+
+**HIGH, FIXED — two related defects, both confirmed live before either
+was touched.** A prior read-only investigation had root-caused the
+badge (`frontend/src/i18n/en-US/tutor.json`'s `tutor.lessonThread`,
+fed every turn by `TutorOrchestrator.lessonThread`) freezing at "step
+4 of 4" and staying there for the rest of a session, and named two
+plausible, not-yet-live-confirmed failure modes. This round
+live-confirmed both, using a direct drive of the REAL orchestrator
+against the REAL model and the REAL moderation judge — the same
+technique `oracle/scripts/converse.ts` uses, run from a throwaway,
+never-committed script rather than the browser, because the browser
+was, at the time, actively fought over by a concurrent session doing
+unrelated live QA on the exact frontend component (`OfferChips.tsx`)
+this session's own path to a Tutor conversation runs through — every
+click raced that session's own Vite HMR reloads of the same file and
+lost more often than it won. One real websocket-driven browser
+conversation (logged into the seeded `kid@email.com` account, session
+cap reset by hand via direct Postgres timestamps on that account's own
+`tutor_sessions` rows — the account had already spent both of its
+daily sessions on the two live-tested fixes immediately preceding this
+one) did corroborate the badge's on-screen text and its "step 1 of
+3" → "step 2 of 3" macro-arc advance before the shared-browser
+contention made further turns unreliable.
+
+**Root cause: two independent progress cursors feed the SAME badge,
+with zero cross-references between them.** `oracle/src/tutor/plan.ts`
+builds a short, fixed macro-phase arc exactly ONCE per session
+(`buildPlan()`, 3-5 steps: warmup/explain/practice/check/stretch), and
+`TutorOrchestrator.lessonThread` exposed it, unchanged, as the badge's
+entire notion of progress. `oracle/src/tutor/controller.ts` runs an
+entirely independent knowledge-component cursor over Core's own
+session plan (`advanceEntry()`, up to 8 entries) — a session can be
+teaching its second or third knowledge component while the macro arc,
+built for a single topic, has already run out of steps to advance
+through. The direct-orchestrator drive showed both resulting failure
+modes on the real model:
+
+- **Controller dormant** (no `sessionPlan` at all — a cold or
+  unseeded session): the badge capped at "step 3 of 3" and stayed
+  there, and with nothing telling the model the arc was done, it spent
+  the remaining four turns of the script re-announcing the identical
+  never-delivered activity invitation, in slightly different words
+  each time, never varying its substance and never once choosing
+  `next: "close"`.
+- **Controller active**, seeded with two knowledge components: a
+  single mastery event on the first (seeded high on purpose to fire
+  immediately, isolating the wiring question from "does the model ask
+  for activities readily") moved `activeKcId` to a brand-new knowledge
+  component — confirmed by the model's own reply pivoting to new
+  material ("You nailed 2+2... want to see what we can build with
+  that?") — in the SAME turn `plan.stepIndex` happened to reach its
+  own cap. The badge never moved again for the rest of the run despite
+  the controller going on to run a full, varied teaching interaction
+  on the new topic (FADED, an empty-completion retry recovered
+  mid-conversation, then RESCUE, then FADED again).
+
+**Fix, matched to what each mode actually needed.**
+`TutorOrchestrator.lessonThread` (`oracle/src/tutor/orchestrator.ts`)
+now counts by the controller's OWN knowledge-component plan
+(`PedagogicalController.kcProgress`, a new getter in
+`oracle/src/tutor/controller.ts`) whenever the controller is active,
+falling back to `plan.ts`'s macro arc only once the controller is
+dormant — the one case that arc is still the sole teaching unit to
+describe (`kcProgress` and `active` turn false together, by
+construction, needing no separate check). Separately,
+`oracle/src/tutor/plan.ts` now counts how many ordinary turn-cycles
+complete AFTER the macro arc is genuinely exhausted
+(`finalStepRoundsCompleted`, incremented inside `advance()`'s existing
+no-op branch, exposed through `planState()`, added to
+`PlanStateSchema` in `oracle/src/context/schema.ts`), and
+`oracle/src/tutor/prompt.ts`'s `buildContextMessage` reads it to add a
+ONE-TIME "the planned arc is complete — offer one last activity or
+start closing" instruction once it is nonzero. That instruction is
+gated on the controller ALSO being dormant (`context.pedagogy ===
+null`): an active controller has its own, real, still-progressing
+reason to keep teaching, and telling it to wind down there would be
+wrong, not merely redundant — proven directly in
+`prompt.test.ts` (the instruction fires with the plan alone, and does
+NOT fire when a `pedagogy` block is also present, same plan state
+otherwise unchanged).
+
+**Deliberately NOT changed.** The frontend HUD's own presentation
+(`frontend/src/tutor/ConversationView.tsx`) was left untouched: the
+investigation's third candidate direction — giving the badge a
+distinct "complete" visual treatment — was for a scenario where the
+plan genuinely completes correctly and only the badge's styling
+misleads. That is not what the evidence showed in either mode; both
+modes had a real, server-side signal-flow gap, now closed, and a
+badge sitting at its own honest final value for the one or two turns
+before a now-genuinely-closing session ends is not a separate defect
+to layer a UI treatment onto.
+
+**Proof, TDD.** Four new tests in `oracle/src/__tests__/plan.test.ts`
+("the final step counts how long it has been exhausted") prove
+`finalStepRoundsCompleted` stays zero through the whole first pass and
+increments once per exhausted cycle after, including via a graded
+activity and via `planState`'s own clamp. Five new tests in
+`oracle/src/__tests__/controller.test.ts` ("kcProgress") prove the new
+getter is null while dormant, starts at "1 of N" the instant a plan is
+seeded, advances to "2 of N" on the exact same `decide()` call that
+moves `activeKcId`, goes null again the moment every KC is mastered,
+and holds still during a prerequisite probe. Four new tests in
+`oracle/src/__tests__/prompt.test.ts` ("the final step earns a
+one-time 'wrap up' nudge") prove the escalation is silent on the
+plan's first turn on its final step, silent while short of the final
+step however high the counter, fires once genuinely exhausted with the
+controller dormant, and stays silent when the controller is active
+with the identical plan state. Four new tests in
+`oracle/src/__tests__/orchestrator.test.ts` ("lessonThread counts by
+the controller's own plan while it steers") reproduce the live
+incident directly end to end: the badge starts at "1 of 2" for a
+two-KC plan, advances to "2 of 2" on the same `handleSegmentResult`
+call that moves `activeKcId` to the second KC, falls back to the
+5-step `course_topic` macro arc for a session with no `sessionPlan` at
+all, and returns to that same macro-arc counting once a single-KC plan
+is fully mastered mid-session.
+
+**Verification.** Independently re-run after the fact, not taken on
+the fixing agent's report: `npm run type-check` (all three configs —
+src, scripts, test), `npm run lint`, `npm run build` all clean in
+`oracle/`. Full `oracle/` suite: 29/29 files, 693/693 tests. `npm run
+verify:tutor` (privacy boundary sealed, canary corpus contained) and
+`npm run verify:pedagogy` (all 6 learner-profile sequences clean, no
+thrash, including the "simply getting it" profile whose own
+plan-completion path — CELEBRATE, TRANSFER, controller dormant — is
+exactly the boundary this fix's fallback depends on) both green. Root
+`docs:check`, `secrets:check` green — and, given this change touches
+the sealed model-context schema and two legal-facing documents, root
+`tools:test` as well (26/26), beyond what this fix strictly required.
+`i18n:check` not run: no frontend file and no i18n key was touched by
+this fix. `LEGAL/AI_TUTOR_LEGAL_REVIEW.md` and `ORACLE.md`'s §4.1
+context table were both updated in the same change to describe the
+one new field reaching the model (`finalStepRoundsCompleted` — a
+bounded turn count, disclosing nothing about the learner that the
+table's existing counters do not already disclose in kind) — not a new
+top-level field, so `privacy-contract-docs.test.ts`'s own hard-coded
+fourteen-field count correctly did not move; confirmed by reading that
+test directly rather than inferring it from a green run.

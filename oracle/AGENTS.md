@@ -2424,6 +2424,57 @@ everything passes the blocked half perfectly and destroys the product.
    decided it; item 21's own text still named "a vocabulary slip" from
    before round 55 moved it, missed on that fix and only caught now.
 
+81. **Two independent progress cursors that both feed the SAME on-screen
+   "step X of Y" badge will disagree the moment either one is fed by the
+   other's blind spot — and the badge, not the teaching underneath it, is
+   the thing a parent is actually watching.** `tutor/plan.ts` builds a
+   short, fixed macro-phase arc exactly ONCE per session (`buildPlan()`,
+   3-5 steps: warmup/explain/practice/check/stretch) and
+   `TutorOrchestrator.lessonThread` exposed it, unchanged, as the HUD's
+   whole notion of lesson progress. `tutor/controller.ts` runs an entirely
+   independent knowledge-component cursor over Core's own session plan
+   (`advanceEntry()`, up to 8 entries) — with ZERO cross-references between
+   the two files. A direct drive of the real orchestrator against the real
+   model (bypassing the browser and, for the KC transition specifically,
+   the model's own text too — it was forced via `handleSegmentResult`
+   rather than requested, to isolate the wiring from "does the model ask
+   for activities readily") showed both halves of the resulting bug live.
+   Controller dormant (no `sessionPlan` at all): the badge capped at "step
+   3 of 3" and stayed there, and the model — told the IDENTICAL step
+   guidance every turn thereafter, with nothing signalling the arc was
+   done — spent the remaining four turns of the script reiterating the
+   same never-delivered activity invitation in slightly different words
+   each time, never varying its substance and never once choosing
+   `next: "close"`. Controller ACTIVE, seeded with two knowledge
+   components: a single mastery event on the first (seeded high on purpose
+   to fire immediately) moved `activeKcId` to a brand-new knowledge
+   component — confirmed by the model's own reply pivoting to new material
+   ("You nailed 2+2... want to see what we can build with that?") — in the
+   SAME turn `plan.stepIndex` happened to reach its own cap, after which
+   the badge never moved again despite the controller going on to run a
+   full, varied teaching interaction on the new topic (FADED, an
+   empty-completion retry recovered mid-conversation, then RESCUE, then
+   FADED again). Fixed two ways, matched to what each mode actually needed:
+   `TutorOrchestrator.lessonThread` now counts by the controller's OWN
+   knowledge-component plan (`PedagogicalController.kcProgress`) whenever
+   it is active, falling back to `plan.ts`'s macro arc only once the
+   controller is dormant — the one case where that arc is still the sole
+   teaching unit to describe (`kcProgress` and `active` turn false
+   together, by construction, so the fallback needs no separate check).
+   And `plan.ts` now counts how many turn-cycles complete after the macro
+   arc is genuinely exhausted (`finalStepRoundsCompleted`), which
+   `prompt.ts`'s `buildContextMessage` reads to add a ONE-TIME "the arc is
+   complete, wrap up" instruction — gated on the controller ALSO being
+   dormant, because an active controller's own reason to keep teaching is
+   real, and telling it to close there would be wrong, not merely
+   redundant. General lesson: when a UI value is computed from ONE
+   component that has a SIBLING doing closely related work nobody wired
+   together, check what the sibling knows before trusting the value's own
+   arithmetic is the whole story — the arithmetic here
+   (`Math.min(stepIndex + 1, steps.length)`) was correct on its own terms
+   the entire time; the bug was that a second, more-authoritative source of
+   progress existed and was never consulted.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:

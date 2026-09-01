@@ -391,13 +391,34 @@ export class TutorOrchestrator {
    */
   get lessonThread(): { topic: string | null; step: number; of: number } | null {
     if (this.plan.steps.length === 0) return null;
+    /*
+     * WHILE THE V3/V4 CONTROLLER IS STEERING, IT OWNS THE UNIT THIS BADGE
+     * SHOULD COUNT — a knowledge component, not a macro-phase step.
+     *
+     * Found live, 2026-08-31 (AGENTS.md item 81): `plan.ts`'s own short,
+     * fixed arc (3-5 steps: warmup/explain/practice/check/stretch) is built
+     * ONCE per session and has no cross-reference to `controller.ts`'s
+     * independent knowledge-component cursor (`advanceEntry()`) at all. A
+     * direct drive of the real orchestrator against the real model showed
+     * `activeKcId` change to a brand-new knowledge component — genuine
+     * teaching progress, confirmed by the model's own reply pivoting to new
+     * content — in the SAME turn `plan.stepIndex` happened to cap out at
+     * its own final value, after which the badge never moved again for the
+     * rest of the session while the controller went on to teach an entirely
+     * different idea. So: while the controller is active, count by ITS
+     * plan instead — the unit actually advancing — and fall back to the
+     * macro-phase arc only once the controller is dormant, which is exactly
+     * when that arc is the only teaching unit left to describe (no session
+     * plan at all, or every planned knowledge component already mastered).
+     */
+    const kcProgress = this.controller.kcProgress;
     return {
       // The child-facing name only. The plan's `objective` is the MODEL's
       // instruction, written in English — a HUD that printed it would leak
       // internal prose onto a child's screen in the wrong language.
       topic: this.session.courseContext?.topicTitle ?? null,
-      step: Math.min(this.plan.stepIndex + 1, this.plan.steps.length),
-      of: this.plan.steps.length,
+      step: kcProgress ? kcProgress.index : Math.min(this.plan.stepIndex + 1, this.plan.steps.length),
+      of: kcProgress ? kcProgress.of : this.plan.steps.length,
     };
   }
 

@@ -3086,3 +3086,113 @@ describe('the served band reaches the controller through noteSegmentServed', () 
     expect(serve(undefined).activeDifficulty).toBe(4);
   });
 });
+
+/*
+ * Found live, 2026-08-31 (AGENTS.md item 81): the HUD's "step X of Y" badge
+ * (`lessonThread`) used to be computed ENTIRELY from `plan.ts`'s own fixed
+ * macro-phase arc (3-5 steps, built once per session), with zero awareness
+ * of the v3 controller's independent knowledge-component cursor. A direct
+ * drive of the real orchestrator against the real model showed the bug live:
+ * `activeKcId` moved to a brand-new knowledge component on a CELEBRATE — the
+ * model's own reply pivoting to new material — in the SAME turn
+ * `plan.stepIndex` happened to cap out at its own final value, after which
+ * the badge never moved again for the rest of the session even as the
+ * controller went on to teach something entirely different. See
+ * `controller.test.ts`'s `kcProgress` block for the same claim proven at the
+ * controller level in isolation; this reproduces it through the
+ * orchestrator's actual wire-facing getter, the thing `ws/server.ts` reads
+ * for the `turn` frame's `lesson` field.
+ */
+describe('lessonThread counts by the controller\'s own plan while it steers (V4)', () => {
+  const KC_A = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeee01';
+  const KC_B = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeee02';
+  const TWO_KCS: SessionContext = {
+    ...KID,
+    sessionPlan: [
+      {
+        kcId: KC_A,
+        kcKey: 'demo.kc-a',
+        skillKey: null,
+        reason: 'frontier',
+        pKnown: 0.9,
+        targetDifficulty: 3,
+        objective: 'Learn concept A until it is second nature.',
+        prereqKcIds: [],
+        misconceptions: [],
+      } satisfies SessionPlanEntry,
+      {
+        kcId: KC_B,
+        kcKey: 'demo.kc-b',
+        skillKey: null,
+        reason: 'frontier',
+        pKnown: 0.5,
+        targetDifficulty: 2,
+        objective: 'Learn concept B, a brand new idea.',
+        prereqKcIds: [],
+        misconceptions: [],
+      } satisfies SessionPlanEntry,
+    ],
+    kcStates: [
+      { kcId: KC_A, kcKey: 'demo.kc-a', pKnown: 0.9, attempts: 3 } satisfies KcState,
+      { kcId: KC_B, kcKey: 'demo.kc-b', pKnown: 0.5, attempts: 0 } satisfies KcState,
+    ],
+  };
+
+  it('counts knowledge components, not macro-phase steps, from the very first read', () => {
+    const orchestrator = new TutorOrchestrator(TWO_KCS, Date.now(), silent);
+    expect(orchestrator.pedagogyActive).toBe(true);
+    expect(orchestrator.lessonThread).toEqual({ topic: null, step: 1, of: 2 });
+  });
+
+  it('advances the badge on the SAME mastery event that moves activeKcId — the incident, reproduced', async () => {
+    const orchestrator = new TutorOrchestrator(TWO_KCS, Date.now(), silent);
+    orchestrator.noteSegmentServed('seg-1', 'demo-skill-a', 'number_input', 'What is 2 + 2?', 3);
+
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: 'You nailed it — want to see what is next?' }))
+      .mockResolvedValueOnce(judgeSays(true));
+    // Seeded (pKnown 0.9, 3 prior attempts) to cross both the mastery bar and
+    // MASTERY_MIN_OPPORTUNITIES on this FIRST graded result — mirrors the
+    // live incident's own forced repro exactly (see AGENTS.md item 81).
+    await orchestrator.handleSegmentResult('seg-1', 100, true, Date.now(), undefined, {
+      misconceptionCode: null,
+      attemptNumber: 1,
+    });
+
+    expect(orchestrator.activeKcId).toBe(KC_B); // the controller moved on...
+    expect(orchestrator.lessonThread).toEqual({ topic: null, step: 2, of: 2 }); // ...and now so does the badge
+  });
+
+  it('falls back to the macro-phase arc once the controller is dormant — no session plan at all', async () => {
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent); // KID carries no sessionPlan
+    expect(orchestrator.pedagogyActive).toBe(false);
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleLearnerText('hola', Date.now());
+    // `course_topic`'s own arc (`plan.ts`'s SEQUENCES): explain, practice,
+    // check, practice, stretch — 5 steps, exactly the pre-fix behaviour,
+    // unaffected for every session the controller never steers.
+    expect(orchestrator.lessonThread).toEqual({ topic: null, step: 1, of: 5 });
+  });
+
+  it('goes dormant (and so does the badge\'s KC counting) once every planned KC is mastered', async () => {
+    const ONE_KC: SessionContext = {
+      ...KID,
+      sessionPlan: [TWO_KCS.sessionPlan![0]!],
+      kcStates: [TWO_KCS.kcStates![0]!],
+    };
+    const orchestrator = new TutorOrchestrator(ONE_KC, Date.now(), silent);
+    orchestrator.noteSegmentServed('seg-1', 'demo-skill-a', 'number_input', 'What is 2 + 2?', 3);
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));
+    await orchestrator.handleSegmentResult('seg-1', 100, true, Date.now(), undefined, {
+      misconceptionCode: null,
+      attemptNumber: 1,
+    });
+
+    expect(orchestrator.pedagogyActive).toBe(false); // the only entry — CELEBRATE ended the plan
+    expect(orchestrator.activeKcId).toBeNull();
+    // `course_topic`'s own macro arc (inherited from KID): explain, practice,
+    // check, practice, stretch — a graded correct result advances it by one,
+    // from step 1 to step 2, same as any v2 grade.
+    expect(orchestrator.lessonThread).toEqual({ topic: null, step: 2, of: 5 });
+  });
+});

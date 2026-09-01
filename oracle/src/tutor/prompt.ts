@@ -1424,6 +1424,35 @@ export function buildContextMessage(context: TutorContext): string {
             : ''),
       );
     }
+    /*
+     * THE FINAL STEP HAD NO "WE'RE DONE" SIGNAL WITHOUT THIS (V4, found live
+     * 2026-08-31, AGENTS.md item 81). `plan.ts`'s `advance()` intentionally
+     * stops moving `stepIndex` once it reaches the plan's last step —
+     * correct, and already unit-tested — but nothing ever told the MODEL
+     * that: it kept receiving the IDENTICAL step guidance forever, and a
+     * direct drive of the real orchestrator against the real model showed
+     * exactly the failure that predicts — four straight turns
+     * re-announcing the same never-delivered activity, never varying, never
+     * once choosing `next: "close"`.
+     *
+     * Fires only once the model has already had one full ordinary turn ON
+     * the final step (`finalStepRoundsCompleted >= 1`) — the FIRST turn to
+     * land there must still be allowed to actually perform it, not be told
+     * to leave before it started. And only while the v3 controller is
+     * dormant (`context.pedagogy === null`): an ACTIVE controller has its
+     * own, still-progressing reason to keep teaching — a fresh knowledge
+     * component this fixed, short macro-arc never hears about at all (see
+     * `TutorOrchestrator.lessonThread`'s own comment for the sibling HUD
+     * fix) — and telling the model to wind down there would be wrong, not
+     * merely redundant.
+     */
+    if (
+      plan.stepIndex === plan.steps.length - 1 &&
+      plan.finalStepRoundsCompleted >= 1 &&
+      context.pedagogy === null
+    ) {
+      lines.push('', FINAL_STEP_ESCALATION);
+    }
   }
 
   /*
@@ -1540,6 +1569,21 @@ const PLAN_STEP_GUIDANCE: Record<string, string> = {
   stretch:
     'stretch. One step further: a twist, a harder case, or a connection to something bigger. Keep it playful — this step is a bonus, not a test.',
 };
+
+/**
+ * The one-time nudge `buildContextMessage` appends once a cold (v3-dormant)
+ * session's plan has genuinely run out of scripted arc — see that call
+ * site's own comment for the full incident and why this is gated the way it
+ * is. Deliberately offers a choice (one last activity, or start closing)
+ * rather than commanding a close outright: the model still knows the
+ * conversation's own shape better than a fixed rule can, and a `check`-only
+ * arc (e.g. `faq`) may never have served an activity at all.
+ */
+const FINAL_STEP_ESCALATION =
+  'The planned arc for this session is complete — there is nothing further scripted to teach toward. If ' +
+  'there is one natural activity left worth offering, request it now via next="segment". Otherwise, start ' +
+  'winding the conversation down warmly: sum up what they explored today in one short sentence, and move ' +
+  'toward next="close" within the next turn or two instead of continuing to ask open questions indefinitely.';
 
 /**
  * `diagnostic`'s own version of the `check` step (round 48, 2026-08-30):

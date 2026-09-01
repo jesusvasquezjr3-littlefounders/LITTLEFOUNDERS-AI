@@ -83,7 +83,12 @@ constraint.
     counters over skill identifiers item 4 already discloses. It contains no
     learner-derived data the other items do not already contain; it exists so
     the model is told which step of the lesson it is performing instead of
-    guessing from the transcript.
+    guessing from the transcript. **One more counter added 2026-08-31**
+    (`finalStepRoundsCompleted`, bounded 0-10): how many turns have passed
+    since the plan's own arithmetic reached its last scripted step, used only
+    to tell the model once the arc is complete. It is a count of TURNS, not a
+    fact about the learner, and discloses nothing item 4 does not already
+    disclose in kind.
 11. **Previous-session digests** (`previousSessions`) — **added 2026-08-28,
     owner sign-off.** Up to three prior conversations, each reduced to: the
     published topic title (or nothing), at most five skill identifiers, one of

@@ -346,6 +346,30 @@ export class PedagogicalController {
     return this.activeEntry?.skillKey ?? null;
   }
 
+  /**
+   * Where the learner is in THIS session's knowledge-component plan,
+   * 1-based — the unit `TutorOrchestrator.lessonThread` (the HUD's "step X
+   * of Y" badge) counts by while this controller is steering, instead of
+   * `plan.ts`'s own fixed macro-phase arc (warmup/explain/practice/…),
+   * which has no idea a knowledge component ever changed.
+   *
+   * Found live, 2026-08-31 (AGENTS.md item 81): a direct drive of the real
+   * orchestrator showed `activeKcId` change to a brand-new knowledge
+   * component on a CELEBRATE — genuine teaching progress — in the very same
+   * turn `plan.ts`'s own step counter happened to cap out, and the badge
+   * never moved again for the rest of the session even though this
+   * controller went on to teach something entirely new. Null while dormant
+   * (see `active`), which is exactly when `lessonThread` falls back to the
+   * macro-phase arc instead — the only teaching unit left to describe once
+   * there is no session plan, or once every planned KC has already been
+   * mastered (`active` and this getter turn false together: `advanceEntry`
+   * moving `entryIndex` to `plan.length` is what ends both).
+   */
+  get kcProgress(): { index: number; of: number } | null {
+    if (!this.active) return null;
+    return { index: this.entryIndex + 1, of: this.plan.length };
+  }
+
   /** The kcId a served activity should be stamped with right now. */
   get activeKcId(): string | null {
     return this.activeEntry?.kcId ?? null;

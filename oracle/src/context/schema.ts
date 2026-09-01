@@ -185,6 +185,15 @@ export const PlanStateSchema = z
     stuckCount: z.number().int().min(0).max(10),
     /** Explanation styles already tried against the stuck skill. */
     stylesTried: z.array(z.enum(ADAPTATIONS)).max(ADAPTATIONS.length),
+    /**
+     * How many ordinary turn-cycles completed AFTER the plan already reached
+     * its final step (`plan.ts`'s `advance()`) — zero until the arc is
+     * genuinely exhausted. Added 2026-08-31: used only to gate a one-time
+     * "the plan is complete, wrap up" instruction once the model has had one
+     * real turn on the last step, never before, and only while the v3
+     * controller is dormant. See `prompt.ts`'s `buildContextMessage`.
+     */
+    finalStepRoundsCompleted: z.number().int().min(0).max(10),
   })
   .strict();
 

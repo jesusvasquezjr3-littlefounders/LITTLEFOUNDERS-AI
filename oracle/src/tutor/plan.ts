@@ -33,6 +33,26 @@ export interface LessonPlan {
   stepIndex: number;
   /** Learner turns spent on the current step, so talk-only steps still move. */
   turnsOnStep: number;
+  /**
+   * How many ordinary turn-cycles have completed AFTER the plan already
+   * reached its final step — i.e. `advance()` was called while `stepIndex`
+   * was already `steps.length - 1`, so the call was a no-op for the step
+   * pointer itself. Zero for the whole first pass through the final step;
+   * every increment past that is a turn spent with the IDENTICAL "you are on
+   * step N of N" guidance repeating, because nothing downstream was ever
+   * told the arc was done.
+   *
+   * Found live, 2026-08-31 (AGENTS.md item 81): a direct drive of the real
+   * orchestrator against the real model showed the badge-facing symptom
+   * (`TutorOrchestrator.lessonThread` frozen at "step 3 of 3") accompanied
+   * by a genuine content stall on a controller-dormant session — four
+   * straight turns re-announcing the same never-delivered activity, never
+   * varying, never once choosing `next: "close"`. `prompt.ts`'s
+   * `buildContextMessage` reads this counter to add a one-time "the arc is
+   * complete, wrap up" instruction once it is nonzero — see that file's own
+   * comment for why it is gated on the v3 controller being dormant too.
+   */
+  finalStepRoundsCompleted: number;
   /** Consecutive failures per skill, this session. */
   failures: Map<string, number>;
   stuckSkillKey: string | null;
@@ -117,6 +137,7 @@ export function buildPlan(
     steps: SEQUENCES[intent],
     stepIndex: 0,
     turnsOnStep: 0,
+    finalStepRoundsCompleted: 0,
     failures: new Map(),
     stuckSkillKey: null,
     stylesTried: [],
@@ -151,7 +172,14 @@ export function recordGrade(plan: LessonPlan, skillKey: string, correct: boolean
 
 /** The conversation moved on without an activity (a `check` answered in words). */
 export function advance(plan: LessonPlan): void {
-  if (plan.stepIndex < plan.steps.length - 1) plan.stepIndex += 1;
+  if (plan.stepIndex < plan.steps.length - 1) {
+    plan.stepIndex += 1;
+  } else {
+    // Already on the last step — this call was a no-op for the pointer
+    // itself. Counted so the model can eventually be told so; see the
+    // field's own doc comment.
+    plan.finalStepRoundsCompleted += 1;
+  }
   plan.turnsOnStep = 0;
 }
 
@@ -196,6 +224,7 @@ export function planState(plan: LessonPlan): PlanState {
     stuckSkillKey: plan.stuckSkillKey,
     stuckCount: Math.min(stuckCount, 10),
     stylesTried: [...plan.stylesTried],
+    finalStepRoundsCompleted: Math.min(plan.finalStepRoundsCompleted, 10),
   };
 }
 

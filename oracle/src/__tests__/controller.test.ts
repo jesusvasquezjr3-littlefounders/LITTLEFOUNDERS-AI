@@ -452,6 +452,65 @@ describe('PedagogicalController', () => {
     expect(c.currentStrategy).toBe('DIRECT'); // fresh entry, low mastery band
   });
 
+  /*
+   * Found live, 2026-08-31 (AGENTS.md item 81): `TutorOrchestrator.lessonThread`
+   * (the HUD's "step X of Y" badge) used to be blind to everything this
+   * controller does — a direct drive of the real orchestrator against the
+   * real model showed `activeKcId` change to a brand-new knowledge component
+   * on exactly this CELEBRATE, while the badge's own counter (driven by
+   * `tutor/plan.ts`'s unrelated macro arc) had already capped and never
+   * moved again. `kcProgress` is the fix's other half: a KC-scoped counter
+   * `lessonThread` can read instead.
+   */
+  describe('kcProgress — the unit lessonThread counts by while this controller steers', () => {
+    it('is null while dormant, exactly like activeKcId', () => {
+      const c = new PedagogicalController([]);
+      expect(c.kcProgress).toBeNull();
+    });
+
+    it('starts at "1 of N" the moment a plan is seeded, before any turn', () => {
+      const c = new PedagogicalController([entry(), entry({ kcId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2' })]);
+      expect(c.kcProgress).toEqual({ index: 1, of: 2 });
+    });
+
+    it('advances to "2 of N" on the SAME mastery event that moves activeKcId', () => {
+      const KC_B = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2';
+      const c = new PedagogicalController([
+        entry({ pKnown: 0.8, prereqKcIds: [] }),
+        entry({ kcId: KC_B, kcKey: 'biz.profit', pKnown: 0.2, prereqKcIds: [] }),
+      ]);
+      const right = { kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1 } as const;
+      expect(c.kcProgress).toEqual({ index: 1, of: 2 });
+
+      c.decide(right, NOW);
+      c.decide(right, NOW + 40_000);
+      expect(c.kcProgress).toEqual({ index: 1, of: 2 }); // not yet — only 2 opportunities
+
+      c.decide(right, NOW + 80_000); // CELEBRATE fires here
+      expect(c.activeKcId).toBe(KC_B);
+      expect(c.kcProgress).toEqual({ index: 2, of: 2 });
+    });
+
+    it('goes dormant (null) once every planned KC is mastered, the same turn activeKcId does', () => {
+      const c = new PedagogicalController([entry({ pKnown: 0.8, prereqKcIds: [] })]);
+      const right = { kind: 'activity_result', correct: true, misconceptionCode: null, attemptNumber: 1 } as const;
+      c.decide(right, NOW);
+      c.decide(right, NOW + 40_000);
+      c.decide(right, NOW + 80_000); // the only entry — CELEBRATE ends the plan
+      expect(c.active).toBe(false);
+      expect(c.activeKcId).toBeNull();
+      expect(c.kcProgress).toBeNull();
+    });
+
+    it('holds still while probing a prerequisite — a probe is a detour, not a new unit', () => {
+      const c = new PedagogicalController([entry({ pKnown: 0.7 })]);
+      expect(c.kcProgress).toEqual({ index: 1, of: 1 });
+      c.decide({ kind: 'activity_result', correct: false, misconceptionCode: null, attemptNumber: 1 }, NOW);
+      expect(c.activeKcId).toBe(KC_PREREQ); // now probing
+      expect(c.kcProgress).toEqual({ index: 1, of: 1 }); // unchanged
+    });
+  });
+
   describe('a guess is not a diagnosis (§8.3)', () => {
     /*
      * Our content playbook requires every wrong option to encode a specific

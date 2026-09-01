@@ -164,6 +164,68 @@ describe('a diagnostic session\'s "check" step probes, it does not confirm', () 
 });
 
 /*
+ * Found live, 2026-08-31 (AGENTS.md item 81): `plan.ts`'s `advance()`
+ * correctly stops moving `stepIndex` once it reaches the plan's final step —
+ * but nothing ever told the MODEL that, so it kept receiving the IDENTICAL
+ * step guidance forever. A direct drive of the real orchestrator against the
+ * real model showed the predicted failure: four straight turns
+ * re-announcing the same never-delivered activity, never varying, never
+ * choosing `next: "close"`. `finalStepRoundsCompleted` (`plan.ts`) is the
+ * counter; this is the one-time nudge it earns, gated so it never contradicts
+ * an ACTIVE v3 controller that has its own, still-progressing reason to keep
+ * teaching (see `orchestrator.ts`'s `lessonThread`'s sibling fix for the HUD
+ * half of this same incident).
+ */
+describe('the final step earns a one-time "wrap up" nudge once it is genuinely exhausted', () => {
+  it('says nothing on the very first turn to land on the final step', () => {
+    const plan = buildPlan('open', null, null); // explain, practice, check
+    plan.stepIndex = plan.steps.length - 1;
+    plan.finalStepRoundsCompleted = 0;
+
+    const message = buildContextMessage({ ...BASE_CONTEXT, intent: 'open', planState: planState(plan) });
+    expect(message).not.toContain('planned arc for this session is complete');
+  });
+
+  it('says nothing while still short of the final step, however high the counter', () => {
+    const plan = buildPlan('open', null, null);
+    plan.stepIndex = 0;
+    plan.finalStepRoundsCompleted = 5; // should not happen in practice; the gate must still hold
+    const message = buildContextMessage({ ...BASE_CONTEXT, intent: 'open', planState: planState(plan) });
+    expect(message).not.toContain('planned arc for this session is complete');
+  });
+
+  it('fires once a full ordinary turn-cycle has completed past the final step, controller dormant', () => {
+    const plan = buildPlan('open', null, null);
+    plan.stepIndex = plan.steps.length - 1;
+    plan.finalStepRoundsCompleted = 1;
+
+    const message = buildContextMessage({ ...BASE_CONTEXT, intent: 'open', planState: planState(plan) });
+    expect(message).toContain('planned arc for this session is complete');
+    expect(message).toContain('next="close"');
+  });
+
+  it('stays silent while the v3 controller is ACTIVE — it has its own reason to keep teaching', () => {
+    const plan = buildPlan('open', null, null);
+    plan.stepIndex = plan.steps.length - 1;
+    plan.finalStepRoundsCompleted = 3; // well past exhausted by the macro arc's own count
+
+    const message = buildContextMessage({
+      ...BASE_CONTEXT,
+      intent: 'open',
+      planState: planState(plan),
+      pedagogy: {
+        strategy: 'FADED',
+        scaffolding: 2,
+        kcObjective: 'Learn a brand-new idea the macro arc never heard about.',
+        mode: 'new',
+        misconceptionHint: null,
+      },
+    });
+    expect(message).not.toContain('planned arc for this session is complete');
+  });
+});
+
+/*
  * Found by adversarial review sweep `tutor-review-sweep-101`
  * (moderation-edge-cases), 2026-08-31 (HIGH): `openActivity.prompt` is the
  * content ladder's own answer — human-authored catalog text for tier 1/2,

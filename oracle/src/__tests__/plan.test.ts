@@ -220,3 +220,53 @@ describe('talk-only steps still move', () => {
     expect(plan.stepIndex).toBe(plan.steps.length - 1);
   });
 });
+
+/*
+ * Found live, 2026-08-31 (AGENTS.md item 81): once `stepIndex` reaches the
+ * plan's final step, `advance()` correctly stops moving it — and, before
+ * this counter existed, nothing else ever changed either, so the model kept
+ * receiving the IDENTICAL step guidance forever with no signal the arc was
+ * done. A direct drive of the real orchestrator against the real model
+ * showed exactly the predicted failure: four straight turns re-announcing
+ * the same never-delivered activity. This counter is what `prompt.ts` reads
+ * to add a one-time escalation once the arc is genuinely exhausted.
+ */
+describe('the final step counts how long it has been exhausted', () => {
+  it('stays zero for the whole first pass through the final step', () => {
+    const plan = buildPlan('faq', null, null); // explain, check, practice
+    while (plan.stepIndex < plan.steps.length - 1) noteConversationTurn(plan);
+    expect(plan.finalStepRoundsCompleted).toBe(0);
+  });
+
+  it('increments once per ordinary turn-cycle completed AFTER the arc is exhausted', () => {
+    // 'open' ends on 'check' (limit 2), unlike 'faq' (ends on 'practice',
+    // limit 3) — picked so the two-calls-per-cycle math below is exact.
+    const plan = buildPlan('open', null, null);
+    while (plan.stepIndex < plan.steps.length - 1) noteConversationTurn(plan);
+    expect(plan.finalStepRoundsCompleted).toBe(0);
+
+    // One more full cycle on the (talk-only) final step.
+    noteConversationTurn(plan);
+    noteConversationTurn(plan);
+    expect(plan.stepIndex).toBe(plan.steps.length - 1); // still capped
+    expect(plan.finalStepRoundsCompleted).toBe(1);
+
+    noteConversationTurn(plan);
+    noteConversationTurn(plan);
+    expect(plan.finalStepRoundsCompleted).toBe(2);
+  });
+
+  it('also counts a graded activity that lands after the arc is exhausted', () => {
+    const plan = buildPlan('course_topic', COURSE, null); // 5 steps
+    for (let i = 0; i < 20; i += 1) recordGrade(plan, 'money.saving', true);
+    expect(plan.stepIndex).toBe(plan.steps.length - 1);
+    expect(plan.finalStepRoundsCompleted).toBeGreaterThan(0);
+  });
+
+  it('is exposed through planState, clamped the same way stuckCount is', () => {
+    const plan = buildPlan('faq', null, null);
+    for (let i = 0; i < 40; i += 1) noteConversationTurn(plan);
+    expect(plan.finalStepRoundsCompleted).toBeGreaterThan(10);
+    expect(planState(plan).finalStepRoundsCompleted).toBe(10);
+  });
+});
