@@ -59,11 +59,20 @@ import {
   verifyGeneratedSegment,
   type LadderCandidate,
 } from '../services/tutorLadder.js';
-import { getActiveKcs, getKcEdges, getKcBySkillKey, type KcRow } from '../services/pedagogy/kcData.js';
+import {
+  getActiveKcs,
+  getKcEdges,
+  getKcBySkillKey,
+  getKcAttemptsForSessions,
+  getKcTitlesByIds,
+  type KcRow,
+  type Localized,
+} from '../services/pedagogy/kcData.js';
 import { purgeExpiredTutorSessions } from '../services/tutorRetention.js';
 import { buildSessionPlan } from '../services/pedagogy/sessionPlan.js';
 import { buildTutorMap } from '../services/pedagogy/tutorMap.js';
 import { recordAttempt, type AttemptOutcome } from '../services/pedagogy/recordAttempt.js';
+import { buildSessionNarrative, type SessionNarrative } from '../services/pedagogy/sessionNarrative.js';
 import { normalizeSpokenNumber } from '../services/pedagogy/normalizeSpoken.js';
 import { GRADERS, KEYLESS_GRADERS } from '../lesson-contract/registry.js';
 import type { SegmentBase } from '../lesson-contract/core/types.js';
@@ -2516,17 +2525,78 @@ export function tutorRouter(): Router {
     if (guardian === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify guardianship');
     if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
 
-    const [page, flags, placementFlags] = await Promise.all([
+    const [page, flags, placementFlags, guardianProfile] = await Promise.all([
       listTutorSessions(kidUserId.data, query.data),
       listSafetyFlags(kidUserId.data),
       listPlacementSafetyFlags(kidUserId.data),
+      profileOf(user.accessToken, user.id),
     ]);
     if (page === null || flags === null || placementFlags === null) {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the child’s tutor history');
     }
 
+    /*
+     * The "what is happening" narrative (/ORACLE.md §12, 2026-09-01) —
+     * closes the §19.5 v3-tail item of the same name. Entirely
+     * deterministic (sessionNarrative.ts's own header explains why a model
+     * call is not needed): `kc_attempt` (migration 0052) already names
+     * which Knowledge Component each graded attempt evidenced and whether
+     * it was correct; `tutor_sessions.summary` (migration 0051) already
+     * digests a topic and graded fraction for a session the v3 brain never
+     * touched. No new table, no new field reaching a model, no new consent.
+     *
+     * Titles are resolved in the GUARDIAN's own profile locale, not the
+     * child's session locale — a bilingual family should not have to read a
+     * topic name in a language they did not choose. `profileOf` is the same
+     * "caller's own row" accessor this file already uses for the learner
+     * elsewhere (RLS: an access token reads only its own profile) — here the
+     * caller is the guardian, so this reads the GUARDIAN's locale.
+     */
+    const narrativeLocale = normalizeLocale(guardianProfile?.locale);
+    const sessionIds = page.sessions.map((s) => s.id);
+    const attemptRows = (await getKcAttemptsForSessions(sessionIds)) ?? [];
+    const kcIds = [...new Set(attemptRows.map((a) => a.kc_id))];
+    const kcTitleRows = kcIds.length > 0 ? ((await getKcTitlesByIds(kcIds)) ?? []) : [];
+    const titleById = new Map<string, string>();
+    for (const row of kcTitleRows) {
+      const title = pickTitle(row.title, narrativeLocale);
+      if (title) titleById.set(row.id, title);
+    }
+
+    const attemptsBySession = new Map<
+      string,
+      { kcId: string; kcTitle: string; correct: boolean; createdAt: string }[]
+    >();
+    for (const row of attemptRows) {
+      // `session_id` is nullable on the wire (ON DELETE SET NULL) though
+      // every row this query can match has one, by construction of the
+      // `in.(...)` filter; an unresolvable title names nothing worth
+      // putting in a sentence, so both are skipped rather than guessed at.
+      if (!row.session_id) continue;
+      const title = titleById.get(row.kc_id);
+      if (!title) continue;
+      const list = attemptsBySession.get(row.session_id) ?? [];
+      list.push({ kcId: row.kc_id, kcTitle: title, correct: row.correct, createdAt: row.created_at });
+      attemptsBySession.set(row.session_id, list);
+    }
+
+    const narrativeById = new Map<string, SessionNarrative | null>(
+      page.sessions.map((s) => [
+        s.id,
+        buildSessionNarrative({
+          attempts: attemptsBySession.get(s.id) ?? [],
+          fallbackTopic: s.summary?.topic ?? null,
+          gradedCorrect: s.summary?.gradedCorrect ?? null,
+          gradedTotal: s.summary?.gradedTotal ?? null,
+        }),
+      ]),
+    );
+
     return ok(res, {
-      sessions: page.sessions.map(summarizeSession),
+      sessions: page.sessions.map((s) => ({
+        ...summarizeSession(s),
+        narrative: narrativeById.get(s.id) ?? null,
+      })),
       hasMore: page.hasMore,
       // Guardian-visible on purpose: a child disclosing distress to a tutor is
       // precisely the case where a parent must find out.
@@ -2547,6 +2617,17 @@ export function tutorRouter(): Router {
   });
 
   return router;
+}
+
+/**
+ * Locale -> es-MX (authoring locale) -> whatever's there — the same
+ * fallback order `resolveCourseContext`'s own `pick` already established
+ * above for localized catalog JSONB, kept as a separate small function
+ * rather than shared: the two operate on different (structurally similar
+ * but independently typed) row shapes, and this is the only other call site.
+ */
+function pickTitle(title: Localized, locale: 'en-US' | 'es-MX' | 'pt-BR'): string | null {
+  return title[locale] ?? title['es-MX'] ?? Object.values(title)[0] ?? null;
 }
 
 function summarizeSession(session: {

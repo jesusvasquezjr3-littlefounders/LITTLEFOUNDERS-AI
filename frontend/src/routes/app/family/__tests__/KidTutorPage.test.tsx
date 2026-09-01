@@ -54,6 +54,11 @@ const BASE_SESSION = {
   turnCount: 2,
   segmentCount: 0,
   xpAwarded: 0,
+  // The "what is happening" narrative (/ORACLE.md §12, 2026-09-01) is a
+  // required field on the wire; `null` here means "none of these existing
+  // fixtures are testing it" — see the dedicated describe block below for
+  // the tests that set a real one.
+  narrative: null,
 };
 
 beforeEach(() => {
@@ -570,5 +575,143 @@ describe('KidTutorPage — a tutor turn that drew a whiteboard shows it to the p
 
     await waitFor(() => screen.getByText('Cada semana te dan 2 pesos más.'));
     expect(document.querySelector('[data-tutor-whiteboard]')).toBeNull();
+  });
+});
+
+/*
+ * The "what is happening" narrative (/ORACLE.md §12, 2026-09-01) — closing
+ * the §19.5 v3-tail item of the same name. `narrative` is structured data
+ * from Core; this component is the ONLY place that turns it into a sentence
+ * (/AGENTS.md §1.8), so these tests exercise the actual composed text a
+ * parent reads, not the structured object alone (already covered server-side
+ * by `sessionNarrative.test.ts`).
+ */
+describe('KidTutorPage — the "what is happening" narrative', () => {
+  it('names one topic with no struggle clause', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValue({
+      data: {
+        sessions: [
+          {
+            ...BASE_SESSION,
+            narrative: {
+              topics: ['Making Change'],
+              struggledTopic: null,
+              struggleResolved: false,
+              gradedCorrect: null,
+              gradedTotal: null,
+            },
+          },
+        ],
+        hasMore: false,
+        safetyFlags: [],
+      },
+      error: null,
+    });
+
+    renderPage();
+
+    await waitFor(() => screen.getByText('Practiced Making Change with the tutor.'));
+  });
+
+  it('names two topics and reports a struggle that was worked through, as one paragraph', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValue({
+      data: {
+        sessions: [
+          {
+            ...BASE_SESSION,
+            narrative: {
+              topics: ['Making Change', 'Saving for a Goal'],
+              struggledTopic: 'Subtracting Money',
+              struggleResolved: true,
+              gradedCorrect: 4,
+              gradedTotal: 5,
+            },
+          },
+        ],
+        hasMore: false,
+        safetyFlags: [],
+      },
+      error: null,
+    });
+
+    renderPage();
+
+    await waitFor(() =>
+      screen.getByText(
+        'Practiced Making Change and Saving for a Goal with the tutor. Found Subtracting Money tricky at first, but worked through it with the tutor’s help.',
+      ),
+    );
+    await waitFor(() => screen.getByText('Answered 4 of 5 activities correctly.'));
+  });
+
+  it('reports an ongoing struggle in different words than a resolved one', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValue({
+      data: {
+        sessions: [
+          {
+            ...BASE_SESSION,
+            narrative: {
+              topics: [],
+              struggledTopic: 'Subtracting Money',
+              struggleResolved: false,
+              gradedCorrect: 0,
+              gradedTotal: 2,
+            },
+          },
+        ],
+        hasMore: false,
+        safetyFlags: [],
+      },
+      error: null,
+    });
+
+    renderPage();
+
+    await waitFor(() => screen.getByText('Is still working on Subtracting Money — more practice is coming.'));
+    expect(screen.queryByText(/worked through it/)).toBeNull();
+  });
+
+  it('renders nothing extra when narrative is null — the ordinary session card, unchanged', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValue({
+      data: {
+        sessions: [{ ...BASE_SESSION, narrative: null }],
+        hasMore: false,
+        safetyFlags: [],
+      },
+      error: null,
+    });
+
+    renderPage();
+
+    await waitFor(() => screen.getByText(/2 messages/));
+    expect(screen.queryByText(/Practiced/)).toBeNull();
+    expect(screen.queryByText(/activities correctly/)).toBeNull();
+  });
+
+  it('does not show a score caption when gradedTotal is null (session still open)', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValue({
+      data: {
+        sessions: [
+          {
+            ...BASE_SESSION,
+            narrative: {
+              topics: ['Making Change'],
+              struggledTopic: null,
+              struggleResolved: false,
+              gradedCorrect: null,
+              gradedTotal: null,
+            },
+          },
+        ],
+        hasMore: false,
+        safetyFlags: [],
+      },
+      error: null,
+    });
+
+    renderPage();
+
+    await waitFor(() => screen.getByText('Practiced Making Change with the tutor.'));
+    expect(screen.queryByText(/activities correctly/)).toBeNull();
   });
 });

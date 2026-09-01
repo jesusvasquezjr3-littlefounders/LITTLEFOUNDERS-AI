@@ -7287,6 +7287,26 @@ import { SeedSchema, assertAcyclic, assertTierOrder } from '../scripts/seed-kc-g
  * does nothing) while a tier-2/3 learner gets a simpler concept gated behind
 ```
 
+### backend/src/__tests__/sessionNarrative.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { buildSessionNarrative, type KcAttemptForNarrative } from '../services/pedagogy/sessionNarrative.js';
+
+/*
+ * The guardian "what is happening" narrative (/ORACLE.md §12, 2026-09-01).
+ * Pure and deterministic — these are the fixtures a real `kc_attempt` page
+ * would produce, not implementation-detail probes.
+ */
+
+function attempt(over: Partial<KcAttemptForNarrative> & { kcId: string; correct: boolean }): KcAttemptForNarrative {
+  return { kcTitle: over.kcId, createdAt: '2026-08-30T10:00:00Z', ...over };
+}
+
+describe('buildSessionNarrative', () => {
+  it('returns null when there is nothing topic-specific or numeric to report', () => {
+```
+
 ### backend/src/__tests__/streak.test.ts
 
 ```
@@ -8505,6 +8525,26 @@ const eu = (v: string): string => encodeURIComponent(v);
  */
 
 import crypto from 'crypto';
+```
+
+### backend/src/services/pedagogy/sessionNarrative.ts
+
+```
+/*
+ * The guardian "what is happening" narrative (/ORACLE.md §12, 2026-09-01) —
+ * closing the §19.5 v3-tail item of the same name.
+ *
+ * Pure and deterministic, on purpose: everything it needs already exists as
+ * structured data Core computed for another reason —
+ *   - `kc_attempt` (migration 0052): every graded attempt this session, with
+ *     the Knowledge Component it evidences and whether it was correct.
+ *   - `tutor_sessions.summary` (migration 0051): the cross-session memory
+ *     digest, already computed once at close (topic, graded fraction,
+ *     outcome) for the NEXT session's own model context.
+ * No model call reads or writes anything here. That is a deliberate design
+ * choice, not a placeholder for one: the evidence above is rich enough to
+ * say something true and specific without inventing prose, and skipping a
+ * call avoids new cost, new latency, and a new privacy-review surface for a
 ```
 
 ### backend/src/services/pedagogy/sessionPlan.ts
@@ -29375,6 +29415,7 @@ import type { TrayDemoStep } from './types';
 import { api, type ApiResult } from '@/lib/api';
 import type {
   Adaptation,
+  SessionNarrative,
   SessionSummary,
   SessionTranscript,
   StartedSession,
@@ -29386,7 +29427,6 @@ import type {
 
 /*
  * Core is the only service the browser calls for Tutor DATA (/AGENTS.md §1.5).
- *
 ```
 
 ### frontend/src/tutor/types.ts

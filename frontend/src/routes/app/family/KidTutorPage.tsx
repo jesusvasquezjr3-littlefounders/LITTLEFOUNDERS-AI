@@ -59,6 +59,18 @@ import type { SessionTranscript } from '@/tutor/types';
  *
  * Core re-checks the verified guardian link on every request here; this page
  * cannot show anything the server would not already hand over.
+ *
+ * THE NARRATIVE, ADDED 2026-09-01, DOES NOT CONTRADICT "NOT A SUMMARY"
+ * ABOVE — it sits ON TOP of the full transcript, never in place of it. This
+ * closes the §19.5 v3-tail item ("the parent-portal 'what is happening'
+ * narrative"): a one- or two-sentence gist of what a session was actually
+ * about — topics practiced, a struggle worked through — so a guardian does
+ * not have to open and read every conversation end to end just to learn
+ * that much. `session.narrative` (`GET /kids/:kidUserId/sessions`) is
+ * entirely deterministic, built server-side from `kc_attempt` evidence and
+ * the session's own memory digest (/ORACLE.md §12) — no model call, no new
+ * data collected. The "Read it" transcript below is unchanged and one tap
+ * away for anyone who wants the receipt itself.
  */
 
 type State =
@@ -252,12 +264,56 @@ export function KidTutorPage() {
                     <p className="lf-title text-content">
                       {t(`tutor.intent.${session.intent}`, { defaultValue: session.intent })}
                     </p>
+                    {/*
+                     * The "what is happening" narrative (/ORACLE.md §12,
+                     * 2026-09-01) — a human sentence in place of the
+                     * transcript a parent would otherwise have to open and
+                     * read end to end to find out what this conversation
+                     * was actually about. `narrative` is structured data;
+                     * this is the ONLY place that turns it into a sentence
+                     * (/AGENTS.md §1.8 — no backend-composed strings), by
+                     * joining up to two already-complete translated
+                     * sentences, the same way a person would say them one
+                     * after another.
+                     */}
+                    {session.narrative && (session.narrative.topics.length > 0 || session.narrative.struggledTopic) && (
+                      <p className="lf-body mt-1 text-content">
+                        {session.narrative.topics.length === 1 &&
+                          t('tutor.guardian.narrative.practicedOne', { topic: session.narrative.topics[0] })}
+                        {session.narrative.topics.length === 2 &&
+                          t('tutor.guardian.narrative.practicedTwo', {
+                            topic1: session.narrative.topics[0],
+                            topic2: session.narrative.topics[1],
+                          })}
+                        {session.narrative.struggledTopic && (
+                          <>
+                            {session.narrative.topics.length > 0 ? ' ' : ''}
+                            {t(
+                              session.narrative.struggleResolved
+                                ? 'tutor.guardian.narrative.struggledResolved'
+                                : 'tutor.guardian.narrative.struggledOngoing',
+                              { topic: session.narrative.struggledTopic },
+                            )}
+                          </>
+                        )}
+                      </p>
+                    )}
                     <p className="lf-caption text-content-muted">
                       {formatter.format(new Date(session.startedAt))} ·{' '}
                       {session.endedAt === null
                         ? t('tutor.guardian.ongoing')
                         : t('tutor.guardian.turns', { count: session.turnCount })}
                     </p>
+                    {session.narrative?.gradedTotal !== null &&
+                      session.narrative?.gradedTotal !== undefined &&
+                      session.narrative.gradedTotal > 0 && (
+                        <p className="lf-caption text-content-muted">
+                          {t('tutor.guardian.narrative.score', {
+                            correct: session.narrative.gradedCorrect ?? 0,
+                            total: session.narrative.gradedTotal,
+                          })}
+                        </p>
+                      )}
                     {/*
                      * Found by adversarial review, round 54 (2026-08-30,
                      * MEDIUM): `closeReason` reached this component on every

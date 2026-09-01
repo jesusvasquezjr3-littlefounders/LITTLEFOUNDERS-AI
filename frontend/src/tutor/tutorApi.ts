@@ -1,6 +1,7 @@
 import { api, type ApiResult } from '@/lib/api';
 import type {
   Adaptation,
+  SessionNarrative,
   SessionSummary,
   SessionTranscript,
   StartedSession,
@@ -196,7 +197,7 @@ export function revokeVoiceConsent(token: string, userId: string): Promise<ApiRe
 }
 
 export interface KidTutorHistory {
-  sessions: SessionSummary[];
+  sessions: (SessionSummary & { narrative: SessionNarrative | null })[];
   /**
    * True when at least one more session exists past this page (round 110,
    * 2026-08-31) — the guardian list used to hardcode 30 sessions with no way
