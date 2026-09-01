@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   looksLikeSupabaseJwt,
   mintSessionToken,
@@ -20,8 +20,8 @@ function future(seconds = 60): number {
 describe('the live-session token', () => {
   beforeEach(() => nonceLedger.clear());
 
-  it('round-trips a freshly minted token', () => {
-    const verdict = verifySessionToken(mintSessionToken({ sid: SID, uid: UID, exp: future() }, SECRET));
+  it('round-trips a freshly minted token', async () => {
+    const verdict = await verifySessionToken(mintSessionToken({ sid: SID, uid: UID, exp: future() }, SECRET));
     expect(verdict.ok).toBe(true);
     if (verdict.ok) {
       expect(verdict.payload.sid).toBe(SID);
@@ -29,33 +29,33 @@ describe('the live-session token', () => {
     }
   });
 
-  it('works exactly ONCE — a replay is refused', () => {
+  it('works exactly ONCE — a replay is refused', async () => {
     const token = mintSessionToken({ sid: SID, uid: UID, exp: future() }, SECRET);
-    expect(verifySessionToken(token).ok).toBe(true);
-    const second = verifySessionToken(token);
+    expect((await verifySessionToken(token)).ok).toBe(true);
+    const second = await verifySessionToken(token);
     expect(second.ok).toBe(false);
     if (!second.ok) expect(second.reason).toBe('replayed');
   });
 
-  it('refuses a token signed with a different secret', () => {
+  it('refuses a token signed with a different secret', async () => {
     const forged = mintSessionToken({ sid: SID, uid: UID, exp: future() }, 'test-not-the-real-secret-000000');
-    const verdict = verifySessionToken(forged);
+    const verdict = await verifySessionToken(forged);
     expect(verdict.ok).toBe(false);
     if (!verdict.ok) expect(verdict.reason).toBe('bad_signature');
   });
 
-  it('refuses an expired token', () => {
+  it('refuses an expired token', async () => {
     const token = mintSessionToken({ sid: SID, uid: UID, exp: future(-1) }, SECRET);
-    const verdict = verifySessionToken(token);
+    const verdict = await verifySessionToken(token);
     expect(verdict.ok).toBe(false);
     if (!verdict.ok) expect(verdict.reason).toBe('expired');
   });
 
-  it('does not throw on a signature carrying multi-byte characters', () => {
+  it('does not throw (reject) on a signature carrying multi-byte characters', async () => {
     // §1.14: a String.length pre-check before timingSafeEqual turns a forged
     // token into a RangeError — a 500 where a 401 belongs. Digest comparison
     // makes the byte width irrelevant.
-    expect(() => verifySessionToken('v1.eyJhIjoxfQ.ñññññññññññ')).not.toThrow();
+    await expect(verifySessionToken('v1.eyJhIjoxfQ.ñññññññññññ')).resolves.toMatchObject({ ok: false });
   });
 
   it.each([
@@ -63,14 +63,46 @@ describe('the live-session token', () => {
     ['one part', 'v1'],
     ['wrong prefix', 'v2.abc.def'],
     ['not base64 payload', 'v1.!!!!.def'],
-  ])('refuses a %s token without throwing', (_label, token) => {
-    expect(() => verifySessionToken(token)).not.toThrow();
-    expect(verifySessionToken(token).ok).toBe(false);
+  ])('refuses a %s token without throwing (rejecting)', async (_label, token) => {
+    const verdict = await verifySessionToken(token);
+    expect(verdict.ok).toBe(false);
   });
 
   it('recognises a Supabase JWT so the error can say what to fix', () => {
     expect(looksLikeSupabaseJwt('eyJhbGciOiJIUzI1NiJ9.e30.sig')).toBe(true);
     expect(looksLikeSupabaseJwt(mintSessionToken({ sid: SID, uid: UID, exp: future() }, SECRET))).toBe(false);
+  });
+
+  /*
+   * `oracle/AGENTS.md` item 79 / `RUNBOOK.md` Round 119: the jti ledger now
+   * fails CLOSED when its shared store cannot confirm a nonce is unused,
+   * rather than silently treating "can't tell" as "unused" (see
+   * `consumeNonce`'s header comment in `token.ts`). Proven here by forcing
+   * `lib/lock.ts`'s `acquireLock` to report `unreachable` — the one outcome
+   * `isTestOrDev`'s local Map can never produce on its own, since a plain
+   * JS Map call has no network to fail on.
+   */
+  it('fails CLOSED — not open — when the shared store cannot confirm the nonce, and says so distinctly from a real replay', async () => {
+    vi.doMock('../lib/lock.js', () => ({
+      acquireLock: async () => ({ ok: false, reason: 'unreachable' as const }),
+      clearLocalClaims: () => {},
+    }));
+    vi.resetModules();
+    try {
+      const fresh = await import('../session/token.js');
+      const token = fresh.mintSessionToken({ sid: SID, uid: UID, exp: future() }, SECRET);
+      const verdict = await fresh.verifySessionToken(token);
+      expect(verdict.ok).toBe(false);
+      if (!verdict.ok) {
+        // NOT `false` (which would silently let the token through) and NOT
+        // reported as `replayed` (which would misname a Redis outage as an
+        // attack in every log line reading it).
+        expect(verdict.reason).toBe('store_unreachable');
+      }
+    } finally {
+      vi.doUnmock('../lib/lock.js');
+      vi.resetModules();
+    }
   });
 });
 

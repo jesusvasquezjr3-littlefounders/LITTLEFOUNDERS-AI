@@ -89,7 +89,7 @@ it.
 
 ## Environment
 
-See [`.env.example`](./.env.example). Three that catch people out:
+See [`.env.example`](./.env.example). Four that catch people out:
 
 - `TUTOR_SESSION_SECRET` must **differ** from `INTERNAL_API_KEY`.
 - `SESSION_HARD_BUDGET_MS` must exceed `SESSION_SOFT_BUDGET_MS`, or startup
@@ -102,6 +102,11 @@ See [`.env.example`](./.env.example). Three that catch people out:
 - `SPEECH_CACHE_SCOPE=scripted` is the default and the safe one. `all` shares
   model-generated audio between learners, which outlives the 90-day retention
   window — an owner decision, not a tuning knob.
+- `REDIS_URL` is optional for the rate limiter and the speech cache, but **not**
+  for the tutor socket's cross-replica session lock and jti replay ledger
+  (`src/lib/lock.ts`, item 79 / `RUNBOOK.md` Round 119) — that lock fails
+  CLOSED in production, on purpose. `npm run dev` and the test suite are
+  unaffected either way; see `.env.example`'s own comment on this line.
 
 ## Deployment
 

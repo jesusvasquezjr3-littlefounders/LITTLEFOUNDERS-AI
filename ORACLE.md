@@ -2110,10 +2110,25 @@ the build session of 2026-08-21; unticked ones block enabling this for minors.
       **What the audit did not cover** is recorded honestly in
       `/SECURITY_AUDIT_2026-08-23.md` — no live provider calls, no
       dependency review, no multi-instance analysis, no load testing.
-- [ ] **Oracle runs as a SINGLE Railway replica.** The `jti` ledger that makes
-      a session token single-use is in-process, so on two replicas a token
-      burned on one is still fresh on the other. Verify before scaling, not
-      after — and if this is ever untrue, move the ledger to Redis first.
+- [ ] **Oracle runs as a SINGLE Railway replica — partially closed.** Two of
+      the four in-process, per-session structures `oracle/AGENTS.md` item 79 /
+      `RUNBOOK.md` Round 119 named now sit on a shared, Redis-backed
+      distributed lock (`oracle/src/lib/lock.ts`) instead of a bare in-process
+      Map: the `jti` replay ledger (`session/token.ts`) and the live-session
+      exclusivity guard (`liveSessions`, `ws/server.ts`'s SEVENTH GATE). Both
+      fail CLOSED — refuse the connection — when the shared store cannot
+      confirm exclusivity, a deliberate choice written down at each call site
+      and in `RUNBOOK.md` Round 119's follow-up. **STILL in-process, and
+      STILL a blocker to scaling past one replica:** `parkedSessions` (a
+      resumed session's live `TutorOrchestrator` and `SpeechScope`
+      instances — closures and private class state, not serializable data;
+      see the same round's own accounting of why this is a materially larger
+      piece of work) and item 24's speech in-flight-coalescing maps
+      (`inFlightShared`/`SpeechScope.inFlight` in `voice/speech.ts` — the
+      underlying cache they sit in front of is ALREADY Redis-backed and
+      shared; only the same-instant race-avoidance layer on top of it is
+      still per-process). Verify before scaling, not after — and finish
+      moving BOTH remaining structures before ever running N>1 replicas.
 
 ### §16.1 The immersion gates — added 2026-08-21, measured 2026-08-23
 

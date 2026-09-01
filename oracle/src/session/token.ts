@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { z } from 'zod';
 import { getConfig } from '../env.js';
+import { acquireLock, clearLocalClaims, type LockAcquireOutcome } from '../lib/lock.js';
 
 /*
  * The live-session token (/ORACLE.md §3.2, /AGENTS.md §1.5 Oracle exception).
@@ -38,7 +39,7 @@ export type SessionTokenPayload = z.infer<typeof PayloadSchema>;
 
 export type TokenVerdict =
   | { ok: true; payload: SessionTokenPayload }
-  | { ok: false; reason: 'malformed' | 'bad_signature' | 'expired' | 'replayed' };
+  | { ok: false; reason: 'malformed' | 'bad_signature' | 'expired' | 'replayed' | 'store_unreachable' };
 
 const PREFIX = 'v1';
 
@@ -64,40 +65,61 @@ export function mintSessionToken(
 }
 
 /**
- * Tracks spent nonces so a token works exactly once.
+ * Tracks spent nonces so a token works exactly once — on a SHARED store, not
+ * a process-local Map, per `oracle/AGENTS.md` item 79 / `RUNBOOK.md` Round
+ * 119: a websocket is pinned to one process for its whole life, but the
+ * VERIFICATION that burns the nonce happens at connection time, before that
+ * pinning exists — on N>1 replicas a second socket for a replayed token could
+ * land on a DIFFERENT process than the first and find an empty local Map.
  *
- * In-memory on purpose. A session token lives for a minute and a websocket is
- * pinned to one process for its whole life, so a shared store would buy
- * nothing but a dependency — and §1.14's rule is that liveness must not depend
- * on optional infrastructure. A process restart forgets spent nonces, and the
- * worst that allows is replaying a token that has not yet expired, into a
- * session whose socket is already gone.
+ * ── WHY THIS FAILS CLOSED ON "THE STORE COULD NOT CONFIRM EITHER WAY" ───────
+ *
+ * `lib/lock.ts` reports `unreachable` neutrally and leaves the decision here,
+ * on purpose (see that file's header comment). This call site chooses the
+ * SAME posture as `ws/server.ts`'s session-exclusivity lock, for the same
+ * reason, and the two are meant to be read together: a jti that might already
+ * be spent is exactly the kind of ambiguity that feeds the failure this whole
+ * migration exists to prevent (a second, independent `TutorOrchestrator` for
+ * one session — duplicate paid model calls, a corrupted transcript row
+ * count). Treating "can't confirm" as "assume unused" would silently accept
+ * that risk. §1.14's own precedent points the other way for a CORRECTNESS
+ * control: `getLearningStatsForUpdate` returning zeros on a transient failure
+ * (instead of refusing) is the exact shape of bug this guards against —
+ * defaulting toward "proceed" on an unconfirmed read. The cost is a session
+ * that cannot START or RESUME during a genuine Redis outage — not a session
+ * that drops or a healthcheck that fails; `GET /health` has never depended on
+ * Redis and still does not (§1.14's "Liveness must not depend on optional
+ * infrastructure").
+ *
+ * ── WHY THIS IS SAFE TO CALL ON EVERY CONNECTION, NOT JUST WHEN N>1 ─────────
+ *
+ * In test/dev (`isTestOrDev`), `lib/lock.ts` backs this with a real in-process
+ * Map — semantically identical to the old `NonceLedger`, so single-replica
+ * behavior (today's actual deployment) is completely unchanged. Only
+ * production, with Redis actually reachable, gets the cross-process
+ * guarantee; only a genuine production Redis outage gets the refusal.
  */
-class NonceLedger {
-  private readonly spent = new Map<string, number>();
+const NONCE_KEY_PREFIX = 'oracle:lock:jti:';
 
-  /** Returns false if this nonce was already used. */
-  consume(jti: string, expiresAtMs: number, now: number): boolean {
-    this.sweep(now);
-    if (this.spent.has(jti)) return false;
-    this.spent.set(jti, expiresAtMs);
-    return true;
-  }
-
-  private sweep(now: number): void {
-    if (this.spent.size < 512) return;
-    for (const [jti, expiry] of this.spent) {
-      if (expiry <= now) this.spent.delete(jti);
-    }
-  }
-
-  /** Test seam. */
-  clear(): void {
-    this.spent.clear();
-  }
+/** Returns false if this nonce was already used OR the store could not confirm it was not — see the header comment for why those are the same answer here. */
+async function consumeNonce(jti: string, expiresAtMs: number, now: number): Promise<LockAcquireOutcome> {
+  // The claim's own TTL is the nonce's remaining validity: once the token
+  // itself has expired, replaying it is refused by `exp` above regardless,
+  // so nothing is lost by letting the claim expire on the same clock instead
+  // of tracking it forever. Floored at 1s so an already-expired-by-the-time-
+  // -we-get-here token (a slow request, a clock skew) never asks for a
+  // zero-or-negative TTL.
+  const ttlMs = Math.max(1_000, expiresAtMs - now);
+  return acquireLock(NONCE_KEY_PREFIX + jti, ttlMs);
 }
 
-export const nonceLedger = new NonceLedger();
+export const nonceLedger = {
+  consume: consumeNonce,
+  /** Test seam — see `clearLocalClaims`'s own comment for why this is scoped and LOCAL-only. */
+  clear(): void {
+    clearLocalClaims(NONCE_KEY_PREFIX);
+  },
+};
 
 /**
  * Verifies and burns a token.
@@ -106,7 +128,7 @@ export const nonceLedger = new NonceLedger();
  * §1.14 reason: a length pre-check on a raw string throws RangeError on any
  * multi-byte character, turning a forged token into a 500 instead of a 401.
  */
-export function verifySessionToken(token: string, now = Date.now()): TokenVerdict {
+export async function verifySessionToken(token: string, now = Date.now()): Promise<TokenVerdict> {
   const parts = token.split('.');
   if (parts.length !== 3 || parts[0] !== PREFIX) return { ok: false, reason: 'malformed' };
   const [, encoded, signature] = parts;
@@ -131,8 +153,15 @@ export function verifySessionToken(token: string, now = Date.now()): TokenVerdic
   if (!payload.success) return { ok: false, reason: 'malformed' };
   if (payload.data.exp * 1000 <= now) return { ok: false, reason: 'expired' };
 
-  if (!nonceLedger.consume(payload.data.jti, payload.data.exp * 1000, now)) {
-    return { ok: false, reason: 'replayed' };
+  const claimed: LockAcquireOutcome = await nonceLedger.consume(payload.data.jti, payload.data.exp * 1000, now);
+  if (!claimed.ok) {
+    // `held` is a genuine replay: something already burned this exact jti.
+    // `unreachable` is a DIFFERENT fact — the store could not say either way
+    // — and reusing "replayed" for it would misreport a Redis outage as an
+    // attack in every log line. See `consumeNonce`'s header comment for why
+    // both still refuse the connection (fail closed), just under distinct,
+    // honest names.
+    return { ok: false, reason: claimed.reason === 'unreachable' ? 'store_unreachable' : 'replayed' };
   }
 
   return { ok: true, payload: payload.data };

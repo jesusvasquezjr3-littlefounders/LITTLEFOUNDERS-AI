@@ -122,7 +122,11 @@ redisClient
 function shutdown(): void {
   console.log(`[${SERVICE}] shutting down...`);
   // Sockets first: a live session gets a close frame and a reason rather than
-  // a connection that simply stops answering mid-sentence.
+  // a connection that simply stops answering mid-sentence. `closeAllSockets`
+  // itself (item 79 / RUNBOOK Round 119) parks and immediately finalizes
+  // every session that is still live at this exact instant, synchronously —
+  // it does not wait for each socket's own close handshake, which this
+  // function's remaining ~250ms budget below is too short to guarantee.
   closeAllSockets(wss);
   httpServer.close();
   redisClient.disconnect().catch(() => {});
