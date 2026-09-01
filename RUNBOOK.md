@@ -12023,3 +12023,180 @@ only a reuse of an existing one. No `oracle/AGENTS.md`/`/ORACLE.md`
 item: nothing in `oracle/` changed, and this is a Core-facing display
 fix reusing an existing field and an existing component, not a change
 to what the Tutor produces or why.
+
+## Round 119: the live-session guard's only protection is a plain in-process `Map` — investigated for cross-replica reach, found gated behind a precondition that does not hold today, deliberately not fixed, 2026-08-31
+
+**MEDIUM, found by adversarial review sweep `tutor-review-sweep-101`
+(content-ladder-correctness dimension), independently verified.
+Investigated end to end; NO code change made this round — the reasoning
+below is the deliverable.**
+
+**The finding.** `ws/server.ts:644`'s `liveSessions.has(session.sessionId)`
+is the ONLY guard against two concurrent turn-processing flows for one
+Tutor session, and it is a plain `Map` scoped to one Node process. On
+two Oracle replicas, or during a rolling-redeploy overlap where an old
+and a new instance briefly coexist, a second socket for the same session
+landing on a DIFFERENT process would find that Map empty and sail
+through — reopening, via a network-topology door instead of the
+resume-endpoint gap item 8 already closed, the exact bug item 8 fixed on
+2026-08-30: a second, fully independent `TutorOrchestrator` for one
+session, its own budget clock and turn cap, running in parallel. The
+finding is real AS FAR AS IT GOES; the question this round asked is
+whether its precondition — a session's turn-processing flow actually
+spanning two processes — is reachable in Oracle's ACTUAL deployment
+today, or only in a future one.
+
+**1. Oracle's current topology is confirmed single-replica, by
+construction, not by assumption.** `oracle/railway.json` sets no replica
+count or scaling policy (`{"build":{"builder":"NIXPACKS"},"deploy":
+{"startCommand":"npm run start","healthcheckPath":"/health",
+"healthcheckTimeout":100,"restartPolicyType":"ON_FAILURE",
+"restartPolicyMaxRetries":10}}` — nothing else). `.github/workflows/
+oracle-cd.yml` deploys with a plain `railway up oracle --path-as-root
+--service oracle --ci`; no workflow anywhere calls `railway scale` for
+the `oracle` service. `DEPLOYMENT.md` §6's own scaling-levers table names
+Core, Kong, `rest`, `db`, backend, Redis, Depot/filebase and
+parent-id-check as the services `railway scale --service <name>
+<region>=<N>` applies to when load arrives — Oracle is not in that table
+at all. And this is not merely an absence of scale-up so far: it is a
+written, explicit, three-times-independently-stated architecture
+invariant. `ROADMAP.md`'s security section: "**Oracle must run as a
+SINGLE Railway replica** until the in-process `jti` ledger moves to
+Redis." `/ORACLE.md` §16's own launch checklist carries this as an OPEN,
+deliberately unticked item with the same wording and an explicit trigger
+condition: "Verify before scaling, not after — and if this is ever
+untrue, move the ledger to Redis first." And `oracle/AGENTS.md` item 8
+already names `liveSessions`'s own sibling — `parkedSessions`, the
+resume park — as sharing "the nonce ledger's single-replica constraint,"
+and calls `liveSessions` itself "one more thing that holds Oracle at a
+SINGLE replica." All three documents, written independently over the
+2026-08-21 to 2026-08-30 span, agree: Oracle is deliberately kept at one
+replica, and scaling past that is gated behind moving this exact class of
+in-process state, not assumed away.
+
+**2. The WebSocket's own nature does most of the work, but not all of
+it.** A single OPEN socket cannot literally span two processes — the
+TCP connection is accepted by one process and lives in that process's
+memory for its whole life, so an ordinary turn (one socket, one
+in-flight request) can never itself straddle two replicas. The finding's
+own reachable shape, and the one the code's comment at line 638-643
+already names, is narrower and real IF replicas exist: a SECOND,
+independent socket for the SAME session id, opened against a DIFFERENT
+process while the first socket is still live on the first one — a resume
+race, or simply a client that opens two connections. `liveSessions` on
+the second process has never heard of the first process's session, so
+it would allow the connection and spin up a second orchestrator, exactly
+as item 8's original bug did before the resume endpoint learned to check
+`liveSessions` at all. This is a correct description of what WOULD
+happen on N>1 replicas — it is just not what happens today, because
+there is only one process to land on.
+
+**3. Redis is already present in Oracle, and that changes what a fix
+would cost — but not whether one is warranted, because of what its
+existing helpers deliberately do NOT guarantee.** `oracle/src/lib/
+redis.ts` is a real, already-wired, already-optional Redis client
+(`redisGet`/`redisSetEx`), used today by the rate limiter and the speech
+cache (`voice/cache.ts`). Its own header comment states the contract
+every caller relies on: "**Nothing here throws. Both helpers answer 'no'
+on any failure, and every caller must treat 'no' as a MISS rather than as
+an error.**" That contract is exactly right for a cache (a miss costs one
+extra paid TTS call) and for a rate limiter (§1.14: fails OPEN on a store
+error, an availability control, never an authorization one). It is the
+WRONG contract for a mutual-exclusion lock, whose entire job is to be
+trustworthy on failure — and "trustworthy" has no single right answer
+here: failing OPEN (Redis unreachable → treat as "acquired") gives zero
+protection in precisely the condition — infra instability, a Redis
+blip during a redeploy — the lock exists for; failing CLOSED (Redis
+unreachable → refuse the connection) turns an optional dependency into
+a hard one for the single highest-latency-sensitive feature this
+platform has, which is the exact coupling §1.14's "Liveness must not
+depend on optional infrastructure" rule exists to prevent. Retrofitting
+`redisGet`/`redisSetEx` as-is into a lock would silently inherit
+"unreachable → miss → proceed," i.e. fail OPEN, without anyone having
+actually decided that is the right trade-off for THIS control. Deciding
+it properly is a real design question — the kind this task was right to
+flag as needing "real infrastructure judgment" rather than a mechanical
+patch — and rushing it under a MEDIUM finding whose precondition does not
+hold today is disproportionate.
+
+**4. A durable cross-process claim would very likely regress the common
+case this service actually has: crash-and-restart.** `railway.json`'s
+`restartPolicyType: "ON_FAILURE"` with `restartPolicyMaxRetries: 10` on
+THIS exact service treats a crash-and-restart as an anticipated,
+survivable, routine event, not a rare edge case. Today, a crash simply
+erases the crashed process's `liveSessions` and `parkedSessions` Maps
+along with the process itself, so a legitimate resume against the
+freshly-restarted (necessarily empty) process succeeds immediately —
+there is nothing left in memory to conflict with it. Any durable,
+TTL-based cross-process claim (Redis or otherwise) would by construction
+outlive the crashed process that held it, meaning a legitimate resume
+after an ORDINARY crash could be refused for up to the claim's TTL — a
+regression on the routine path, introduced to guard a rarer scenario
+whose own blast radius is already bounded (next point). That is the
+wrong trade under §1.0's "prefer the boring, cheap, verifiable path."
+
+**5. The redeploy-overlap window this finding worries about looks
+narrower, on inspection, than "old and new instance both serving live
+traffic."** `index.ts`'s `shutdown()` (SIGTERM/SIGINT handler) calls
+`closeAllSockets(wss)` — which issues `client.close(...)` on every open
+socket and then, in the SAME synchronous call, `finalizeAllParked()` —
+and then exits the process 250 ms later
+(`setTimeout(() => process.exit(0), 250).unref()`). A `ws` socket's
+actual `'close'` event (the thing that calls `parkSession`, per
+`socket.on('close', ...)` a few hundred lines up) fires as part of the
+closing handshake completing, which is not synchronous with `.close()`
+being called — so on an ordinary SIGTERM, Oracle does not appear to hold
+sessions open through a long graceful drain; it initiates closes on
+everything essentially immediately and exits shortly after, regardless
+of whether those closes actually finished parking their sessions first.
+This narrows, rather than widens, the window in which "an old instance
+is still mid-turn on a session while a new instance is also live" could
+actually occur — it looks more like a hard cutover than a drain. **This
+observation is not a fix and not a confirmed root cause of anything**;
+it reads as a separate, real-looking gap (a live session killed by a
+redeploy may end up neither cleanly parked nor cleanly closed in Core's
+ledger) that this round did not chase further because it is not the
+finding assigned to it. Flagged for its own look, not fixed here.
+
+**Decision: NOT FIXED. No change to `ws/server.ts`.** The scenario the
+finding describes — two live sockets for one session, each in its own
+process, each driving an independent `TutorOrchestrator` — requires N>1
+Oracle replicas actually running concurrently. That is not Oracle's
+current deployment, and scaling past one replica is explicitly,
+repeatedly documented (§1 above) as gated behind moving an entire CLASS
+of in-process, per-session state to a shared store together: the `jti`
+nonce ledger, `parkedSessions`, `liveSessions`, and — per
+`oracle/AGENTS.md` item 24, closed 2026-08-30 on the identical reasoning
+for the speech de-dup/in-flight-coalescing maps — "a process-level map
+genuinely covers every session that could race \[because] Oracle is a
+single replica." Hardening `liveSessions` alone now would (a) not
+actually make Oracle safe to run at N>1 replicas, since the other three
+structures would still break instantly the moment a second replica
+existed; (b) require deciding a lock failure-mode question that cuts
+against this codebase's own deliberate, written "Redis is optional and
+every caller treats absence as a miss" contract, without that decision
+having actually been made; and (c) risk a real regression on the
+routine crash-restart path per point 4. This is the "do NOT force a
+distributed-locking mechanism onto a single-instance service for a risk
+that doesn't exist yet" outcome this task's own instructions anticipated
+as a legitimate result of the investigation.
+
+**Revisit trigger, stated concretely so it is checkable rather than
+vibes-based:** the moment anyone runs `railway scale --service oracle
+<region>=N` with `N>1` for this service, or otherwise puts Oracle behind
+a topology where a session's socket could land on more than one live
+process, is the moment `liveSessions`, `parkedSessions`, the `jti` nonce
+ledger and the speech de-dup maps ALL need to move to a shared store
+together, before that scale-up ships — exactly what `/ORACLE.md` §16's
+own unticked checklist item already commits to. Whoever does that
+migration should decide the lock failure-mode question in point 3
+explicitly, in writing, rather than inheriting the cache/rate-limiter's
+existing "miss is safe" semantics by default just because the same
+Redis client is closest to hand.
+
+**Scope note:** the sibling `/segments` selection race this same review
+sweep also raised is a separate finding being fixed independently in its
+own commit; this round did not touch `backend/src/routes/tutor.ts`'s
+`/segments` handler or any of its request-handling concurrency guards.
+
+See `oracle/AGENTS.md` items 8, 24 and 79.
