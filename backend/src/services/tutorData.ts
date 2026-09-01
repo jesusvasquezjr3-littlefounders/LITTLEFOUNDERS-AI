@@ -299,10 +299,38 @@ export async function getTutorSession(sessionId: string): Promise<TutorSessionRo
   return rows?.[0] ?? null;
 }
 
-export async function listTutorSessions(userId: string, limit = 30): Promise<TutorSessionRow[] | null> {
-  return serviceRest<TutorSessionRow[]>(
-    `/tutor_sessions?user_id=eq.${eu(userId)}&select=*&order=started_at.desc&limit=${Math.min(limit, 100)}`,
+export interface TutorSessionsPage {
+  sessions: TutorSessionRow[];
+  /** True when at least one more session exists past this page's `offset + limit`. */
+  hasMore: boolean;
+}
+
+/**
+ * Newest-first, paginated (/ORACLE.md §12, guardian visibility).
+ *
+ * Found by adversarial review, round 110 (2026-08-31, MEDIUM,
+ * guardian-dashboard-depth): this hardcoded `limit=30` with no `offset` at
+ * all, so nothing upstream could EVER ask for session #31 — a family that
+ * did not open the Tutor page in the last ~30 sessions lost UI access to
+ * every older, non-flagged one, even though the row is still there and
+ * still inside the 90-day retention window (§1.9). `limit`/`offset` follow
+ * the same convention `listAudit` already established in `adminData.ts`.
+ * `hasMore` is derived by requesting one row past `limit` rather than a
+ * second exact COUNT query — cheaper for a list this size, and it never
+ * needs to be exact, only "is there at least one more".
+ */
+export async function listTutorSessions(
+  userId: string,
+  opts: { limit?: number; offset?: number } = {},
+): Promise<TutorSessionsPage | null> {
+  const limit = Math.min(Math.max(opts.limit ?? 30, 1), 100);
+  const offset = Math.max(opts.offset ?? 0, 0);
+  const rows = await serviceRest<TutorSessionRow[]>(
+    `/tutor_sessions?user_id=eq.${eu(userId)}&select=*&order=started_at.desc&limit=${limit + 1}&offset=${offset}`,
   );
+  if (rows === null) return null;
+  const hasMore = rows.length > limit;
+  return { sessions: hasMore ? rows.slice(0, limit) : rows, hasMore };
 }
 
 /**

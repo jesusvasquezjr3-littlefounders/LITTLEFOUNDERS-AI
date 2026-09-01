@@ -326,7 +326,10 @@
       "safety_stop": "The tutor stopped the conversation for a safety reason",
       "error": "Ended early because of a technical problem, not something your child did"
     },
-    "retentionNote": "Conversations are kept for 90 days and then deleted automatically."
+    "retentionNote": "Conversations are kept for 90 days and then deleted automatically.",
+    "loadMore": "Load older conversations",
+    "loadingMore": "Loading…",
+    "loadMoreFailed": "We couldn’t load more conversations. Try again."
   },
   "conversationError": {
     "ALREADY_CONNECTED": "You're already talking to me somewhere else — check your other tab or device!",

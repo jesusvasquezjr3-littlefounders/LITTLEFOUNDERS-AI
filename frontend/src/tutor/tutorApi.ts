@@ -197,6 +197,13 @@ export function revokeVoiceConsent(token: string, userId: string): Promise<ApiRe
 
 export interface KidTutorHistory {
   sessions: SessionSummary[];
+  /**
+   * True when at least one more session exists past this page (round 110,
+   * 2026-08-31) — the guardian list used to hardcode 30 sessions with no way
+   * back to anything older, even though the row was still there and still
+   * inside the 90-day retention window.
+   */
+  hasMore: boolean;
   safetyFlags: {
     id: string;
     session_id: string;
@@ -208,8 +215,15 @@ export interface KidTutorHistory {
   }[];
 }
 
-export function getKidTutorHistory(token: string, kidUserId: string): Promise<ApiResult<KidTutorHistory>> {
-  return api<KidTutorHistory>(`/tutor/kids/${kidUserId}/sessions`, { token });
+export function getKidTutorHistory(
+  token: string,
+  kidUserId: string,
+  opts: { offset?: number } = {},
+): Promise<ApiResult<KidTutorHistory>> {
+  const params = new URLSearchParams();
+  if (opts.offset) params.set('offset', String(opts.offset));
+  const qs = params.toString();
+  return api<KidTutorHistory>(`/tutor/kids/${kidUserId}/sessions${qs ? `?${qs}` : ''}`, { token });
 }
 
 export const ADAPTATION_KEYS: readonly Adaptation[] = [

@@ -1947,9 +1947,9 @@ export function tutorRouter(): Router {
 
   router.get('/sessions', async (_req, res) => {
     const user = authedUser(res);
-    const sessions = await listTutorSessions(user.id);
-    if (sessions === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read sessions');
-    return ok(res, { sessions: sessions.map(summarizeSession) });
+    const page = await listTutorSessions(user.id);
+    if (page === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read sessions');
+    return ok(res, { sessions: page.sessions.map(summarizeSession) });
   });
 
   /**
@@ -2370,25 +2370,42 @@ export function tutorRouter(): Router {
 
   // ── Guardian visibility (/ORACLE.md §12) ──────────────────────────────────
 
+  /**
+   * Round 110 (2026-08-31, MEDIUM): `limit`/`offset` so a guardian who has
+   * not opened this page in a while can still page back to an older,
+   * non-flagged session rather than losing UI access to it once more than
+   * one page has accumulated since their last visit. Same shape `listAudit`
+   * (`admin.ts`) already uses.
+   */
+  const GuardianSessionsQuery = z
+    .object({
+      limit: z.coerce.number().int().min(1).max(100).default(30),
+      offset: z.coerce.number().int().min(0).default(0),
+    })
+    .strict();
+
   router.get('/kids/:kidUserId/sessions', async (req, res) => {
     const kidUserId = z.string().uuid().safeParse(req.params.kidUserId);
     if (!kidUserId.success) return fail(res, 400, VALIDATION, 'Invalid user id');
+    const query = GuardianSessionsQuery.safeParse(req.query);
+    if (!query.success) return fail(res, 400, VALIDATION, 'limit must be 1-100 and offset must be >= 0');
     const user = authedUser(res);
 
     const guardian = await isVerifiedGuardian(user.id, kidUserId.data);
     if (guardian === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify guardianship');
     if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
 
-    const [sessions, flags] = await Promise.all([
-      listTutorSessions(kidUserId.data),
+    const [page, flags] = await Promise.all([
+      listTutorSessions(kidUserId.data, query.data),
       listSafetyFlags(kidUserId.data),
     ]);
-    if (sessions === null || flags === null) {
+    if (page === null || flags === null) {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the child’s tutor history');
     }
 
     return ok(res, {
-      sessions: sessions.map(summarizeSession),
+      sessions: page.sessions.map(summarizeSession),
+      hasMore: page.hasMore,
       // Guardian-visible on purpose: a child disclosing distress to a tutor is
       // precisely the case where a parent must find out.
       safetyFlags: flags,

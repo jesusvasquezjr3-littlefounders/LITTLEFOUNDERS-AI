@@ -326,7 +326,10 @@
       "safety_stop": "O tutor parou a conversa por um motivo de segurança",
       "error": "Terminou antes da hora por um problema técnico, não por algo que seu filho ou filha fez"
     },
-    "retentionNote": "As conversas ficam guardadas por 90 dias e depois são apagadas automaticamente."
+    "retentionNote": "As conversas ficam guardadas por 90 dias e depois são apagadas automaticamente.",
+    "loadMore": "Ver conversas mais antigas",
+    "loadingMore": "Carregando…",
+    "loadMoreFailed": "Não conseguimos carregar mais conversas. Tente novamente."
   },
   "conversationError": {
     "ALREADY_CONNECTED": "Você já está conversando comigo em outro lugar — confira sua outra aba ou dispositivo!",
