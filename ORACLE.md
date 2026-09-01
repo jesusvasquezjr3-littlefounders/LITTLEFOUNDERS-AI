@@ -1954,24 +1954,73 @@ open, deliberately, because it is an availability control (§1.14).
    accumulation, the alert latch firing once per window, the 24h roll) and
    `live-session.test.ts` (a real connection actually refused by the running
    websocket server, ahead of every auth gate).
-2. **There is no admission control on concurrent sessions.** `oracle/` accepts
-   every authenticated socket; nothing counts how many are open, and one
-   process holds each live orchestrator and transcript in memory. The failure
-   at saturation is memory pressure and a slowing event loop for *everyone*,
-   which is the worst shape of failure. **Before a real cohort: a per-instance
-   session cap that turns the next learner away politely — the product already
-   has an honest "the tutor is resting" surface for exactly this — plus a
-   horizontal-scale plan, which is easy because sessions share no state.**
-3. **The websocket handshake is not rate limited.** It is attached to the HTTP
-   server directly, so Express's limiter never sees it. It is protected by a
-   single-use, session-scoped, short-lived token minted by Core, and Core's own
-   limiter and the 2/day cap sit in front of minting — so this is defence in
-   depth that is missing, not an open door.
-4. **The retention sweep has no monitoring of its own.** It runs nightly, it
-   deletes rows AND the audio in Depot, and it refuses to report success on an
-   unreachable database. Nothing alerts if the workflow stops running. A
-   90-day promise that quietly stops being kept is the one failure here with
-   legal weight. **Before a real cohort: alert on the sweep not reporting.**
+2. **There is no admission control on concurrent sessions — the PER-INSTANCE
+   half CLOSED 2026-08-31, the horizontal-scale half deliberately left open.**
+   `oracle/` used to accept every authenticated socket unconditionally; now a
+   configurable ceiling (`ORACLE_MAX_CONCURRENT_SESSIONS`, default 200 — a
+   conservative starting point, not a measured capacity figure) refuses the
+   next connection once `ws/server.ts`'s own `liveSessions` map is full,
+   closing with the SAME `CLOSE_CODES.SERVICE_DEGRADED` (and the frontend's
+   existing "the tutor is resting" copy) gate 7's moderation refusal already
+   uses — a learner does not need to know which internal control declined the
+   connection. Checked FIRST, before the token is even read, so a saturated
+   process sheds load for the price of one `Map.size` read rather than a
+   signature verification or a round trip to Core. Proven end-to-end by
+   `oracle/src/__tests__/admission-control.test.ts`: the (N+1)th attempt is
+   refused with a real close frame while the N already-live sessions stay
+   untouched, and freeing a slot admits the next attempt — the ceiling is
+   dynamic, not a one-shot lockout. **What remains open, deliberately: the
+   horizontal-scale plan.** Sessions share no state beyond this one process's
+   memory (the token nonce ledger, `liveSessions`, `parkedSessions` are all
+   in-process maps — this file's own single-replica constraint, §16), so
+   scaling out is easy in the sense that nothing needs to migrate — but a
+   per-instance cap alone does not become admission control ACROSS instances,
+   and that is a separate, larger, architecturally-undecided piece of work.
+3. **The websocket handshake is not rate limited — CLOSED 2026-08-31.** It is
+   still attached to the HTTP server directly, so Express's
+   `globalRateLimiter` still never sees it — that has not changed and could
+   not without moving the whole socket behind Express. What changed is a
+   purpose-built limiter in front of `handleConnection` itself
+   (`ws/handshakeRateLimit.ts`), keyed per IP and checked before the token is
+   even read: memory-backed in test/dev (so it is exercised by a real test
+   without a live Redis), Redis-backed in production on the connection
+   `lib/redis.ts` already owns, and it FAILS OPEN on any store error — the
+   same discipline `middleware/rateLimit.ts`'s `passOnStoreError: true`
+   already uses, because this remains defence in depth behind a control that
+   already works (Core's token minting), never the primary defence. It is
+   protected by a single-use, session-scoped, short-lived token minted by
+   Core, and Core's own limiter and the 2/day cap sit in front of minting —
+   that sentence was true before this closed and still is; what this adds is
+   a bound on the PATH itself, independent of whether an attempt would even
+   authenticate. Configurable via `ORACLE_WS_HANDSHAKE_RATE_LIMIT_MAX` /
+   `_WINDOW_MS` (default 100 attempts per 60s per IP — a reasonable starting
+   point generous enough for a household reconnecting through one NAT'd IP on
+   a flaky connection, not a measured threshold). Proven by
+   `admission-control.test.ts` (a burst past the budget is refused with a
+   real close frame carrying a distinguishable reason, not silently dropped)
+   and `handshakeRateLimit.test.ts` (per-IP keying, window expiry, and the
+   Redis-unreachable fail-open path exercised directly against the actual
+   production code branch, not merely the test fallback).
+4. **The retention sweep has no monitoring of its own — CLOSED 2026-08-31.**
+   It still runs nightly and still refuses to report success on an
+   unreachable database (unchanged, and correct). What was missing is now
+   built: every reply from `POST /api/v1/tutor/internal/retention/purge` that
+   reaches the database — INCLUDING a batch that deletes zero sessions,
+   deliberately, so "ran and found nothing due" can never be confused with
+   "never ran" (§1.14) — writes a `tutor.retention.swept` row to `audit_logs`
+   (a SYSTEM action, `actor_id: null`; no new migration needed, since that
+   column has always accepted NULL). `GET /api/v1/admin/tutor/retention-status`
+   reads the most recent one back and reports `stale: true` once it is more
+   than 36 hours old — a day plus slack for an ordinary late run, not so much
+   slack that an actually-missed night goes unnoticed — or when no run has
+   ever been recorded at all, and a failed READ (database unreachable) is a
+   502, never a falsely-reassuring 200. Proven by
+   `backend/src/__tests__/tutorData.test.ts` and `admin.test.ts`. **What
+   remains owner-side: something that actually polls this route on a
+   schedule and alerts** — a Pulse/Uptime Kuma JSON-query monitor is the
+   natural fit, since the route is a plain, unauthenticated-by-nothing-but-
+   staff-role HTTP+JSON target built for exactly that — the data and the
+   verdict exist now; a human or a cron watching them does not yet.
 5. **Third-party rate limits are unmeasured.** We do not know what DeepSeek or
    Inworld will do to us at a thousand concurrent sessions, and the answer is
    not knowable from here. The failure posture is already correct (§14 — a
@@ -1994,12 +2043,21 @@ open, deliberately, because it is an availability control (§1.14).
    `backend/src/__tests__/admin.test.ts` → "the tutor live-content review
    queue". **What remains owner-side: a named person who reads it.**
 
-Items 2 through 5 are not defects in what was built; they are the difference
-between a product that is correct and a service that has been operated. Item 6
-WAS a defect — a control this document asserted and the code did not have.
-Item 1 is a different shape of closure: it was accurately described as absent,
-and is now a genuine, working circuit breaker where none existed — a control
-built, not a false claim corrected.
+Items 1 through 4 and 6 are now CLOSED; item 5 remains open. None of the six
+was a defect in what was built — they are the difference between a product
+that is correct and a service that has been operated — with one exception:
+item 6 WAS a defect, a control this document asserted and the code did not
+have, unlike the five-day gap this section opens with (the boxed note above
+item 1), where the same shape of error repeated. Item 1 (the spend ceiling)
+and item 2's per-instance half, item 3 (handshake rate limiting) and item 4
+(retention-sweep monitoring) are each a genuine, working control built where
+none existed, proven by a real test against the actual gate rather than
+merely written down — read each item's own closure note for exactly what
+changed and, where one remains, what is still owner-side. Item 2's
+horizontal-scale half is still open, deliberately, and is not a defect
+either — it is a separate, larger, architecturally-undecided piece of work.
+Item 5 is likewise still open and not a defect — it is a scale question this
+product has not yet been operated at.
 
 ---
 

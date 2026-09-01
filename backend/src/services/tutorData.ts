@@ -996,6 +996,90 @@ export async function setTutorReviewStatus(
   return res !== null;
 }
 
+/*
+ * THE RETENTION SWEEP'S OWN MONITORING (/ORACLE.md §15.2 item 4, closed
+ * 2026-08-31).
+ *
+ * The nightly sweep (`routes/tutor.ts`'s `/retention/purge`, called by
+ * `.github/workflows/tutor-retention.yml`) always reported what it deleted TO
+ * ITS CALLER — but its caller is a GitHub Actions runner nobody watches, and
+ * if the workflow's own schedule silently stopped firing (a token expiring, a
+ * repo setting, GitHub's own scheduler being late — all of which have
+ * happened to OTHER cron workflows in this project), nothing here would ever
+ * have noticed. A 90-day deletion promise that quietly stops being kept is,
+ * in this table's own words, "the one failure here with legal weight."
+ *
+ * `audit_logs` is the durable record, not a new table: it is already the
+ * established place a completed action leaves a permanent, append-only trace
+ * (`insertAuditLog`, `services/supabaseRest.ts`) that nothing else can rewrite
+ * out from under it, and it needs no new migration to carry a system action —
+ * `actor_id` has always accepted NULL. `getTutorRetentionStatus` reads the
+ * single most recent row back and computes how stale it is, so an operator (or
+ * a future automated check hitting this route) can tell "ran last night" from
+ * "has not run in three days" without grepping Railway logs by hand.
+ */
+
+/** Written by `routes/tutor.ts` after every purge that reaches the database —
+ * even one that deletes zero sessions, because "the sweep ran and found
+ * nothing due" and "the sweep never ran" must be distinguishable (§1.14). */
+export const RETENTION_SWEEP_AUDIT_ACTION = 'tutor.retention.swept';
+
+export interface TutorRetentionStatus {
+  lastRunAt: string | null;
+  /** Null only when the sweep has NEVER recorded a run — see `stale` below. */
+  hoursSinceLastRun: number | null;
+  /**
+   * True when the most recent run is older than `RETENTION_STALE_HOURS`, OR
+   * when there is no recorded run at all. The two are deliberately the SAME
+   * verdict: an operator checking this does not need "how would I even know
+   * how long it's been broken" as a separate question from "is it broken" —
+   * both mean the 90-day promise is not currently being kept.
+   */
+  stale: boolean;
+  lastRunDetail: Record<string, unknown> | null;
+}
+
+/**
+ * The workflow runs once nightly (`0 3 * * *` UTC). 36 hours is a day plus a
+ * half-day of slack for an ordinary late run — a retried GitHub Actions queue,
+ * a long batch that ran past midnight — without hiding an ACTUALLY missed
+ * night, which is the one thing this exists to catch.
+ */
+const RETENTION_STALE_HOURS = 36;
+
+interface AuditLogRow {
+  created_at: string;
+  detail: Record<string, unknown>;
+}
+
+/**
+ * Reads the most recent recorded sweep. `null` means the READ itself failed
+ * (an unreachable database) — distinct from a `stale: true` result, which
+ * means the read succeeded and found nothing recent. Collapsing those two
+ * would be exactly the "upstream did not answer" defaulting §1.14 forbids: a
+ * database outage would report as "the sweep has never run," which is a
+ * different, and differently alarming, claim than the one that would actually
+ * be true.
+ */
+export async function getTutorRetentionStatus(): Promise<TutorRetentionStatus | null> {
+  const rows = await serviceRest<AuditLogRow[]>(
+    `/audit_logs?action=eq.${es(RETENTION_SWEEP_AUDIT_ACTION)}` +
+      `&select=created_at,detail&order=created_at.desc&limit=1`,
+  );
+  if (rows === null) return null;
+
+  const last = rows[0];
+  if (!last) return { lastRunAt: null, hoursSinceLastRun: null, stale: true, lastRunDetail: null };
+
+  const hoursSinceLastRun = (Date.now() - new Date(last.created_at).getTime()) / (1000 * 60 * 60);
+  return {
+    lastRunAt: last.created_at,
+    hoursSinceLastRun,
+    stale: hoursSinceLastRun > RETENTION_STALE_HOURS,
+    lastRunDetail: last.detail,
+  };
+}
+
 /**
  * `'conflict'` — a concurrent request already claimed the identical
  * candidate for this session; the caller must re-run its own ladder

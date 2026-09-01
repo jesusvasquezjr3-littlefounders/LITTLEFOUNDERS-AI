@@ -31,7 +31,7 @@ import {
   readAnonAcquisition,
 } from '../services/audience.js';
 import { renderAnalyticsReportPdf, REPORT_LOCALES, type ReportLocale } from '../services/analyticsReport.js';
-import { listTutorReviewQueue, setTutorReviewStatus } from '../services/tutorData.js';
+import { getTutorRetentionStatus, listTutorReviewQueue, setTutorReviewStatus } from '../services/tutorData.js';
 import {
   renderAnalyticsReportCsv,
   renderAnalyticsReportXlsx,
@@ -1141,6 +1141,25 @@ export function adminRouter(): Router {
     const done = await setTutorReviewStatus(segmentId.data, status.data);
     if (!done) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the review');
     ok(res, { id: segmentId.data, status: status.data });
+  });
+
+  // ── Tutor retention sweep health (/ORACLE.md §15.2 item 4, closed 2026-08-31) ─
+  /*
+   * The nightly 90-day sweep reports what IT deleted to its own caller (a
+   * GitHub Actions runner), but nobody was watching whether the workflow
+   * itself kept firing. `getTutorRetentionStatus` reads the durable trail the
+   * sweep now leaves in `audit_logs` (`routes/tutor.ts`'s `/retention/purge`)
+   * and computes staleness from it — this route is the admin-visible surface
+   * for that, and equally a plain HTTP+JSON target a future automated check
+   * could poll.
+   */
+  router.get('/tutor/retention-status', async (_req, res) => {
+    const status = await getTutorRetentionStatus();
+    // A failed READ (database unreachable) is not the same claim as "the
+    // sweep has never run" (§1.14) — the former is a 502, the latter is a 200
+    // whose own `stale: true` says so.
+    if (!status) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the retention sweep status');
+    ok(res, status);
   });
 
   // ── Audit log ──────────────────────────────────────────────────────────────

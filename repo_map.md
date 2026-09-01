@@ -7374,17 +7374,17 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   getLearnerMemory,
   getTutorPreferences,
+  getTutorRetentionStatus,
   grantVoiceConsent,
   insertTutorTurn,
   listTutorSessions,
   listTutorTurns,
+  RETENTION_SWEEP_AUDIT_ACTION,
   searchOwnTurns,
   upsertTutorPreferences,
   writeLearnerMemoryPair,
 } from '../services/tutorData.js';
 
-/*
- * Found by adversarial review, round 28 (2026-08-30, HIGH): `getLearnerMemory`
 ```
 
 ### backend/src/__tests__/tutorLadder.test.ts
@@ -8039,12 +8039,12 @@ import { getRolesForGate } from '../services/insights.js';
 import {
   getFullOwnProfile,
   getVerifiedKidLinks,
+  insertAuditLog,
   serviceRest,
   type FullProfileRow,
 } from '../services/supabaseRest.js';
 import { getOwnLearnerIntelligence } from '../services/learningIntel.js';
 import { tutorSocketUrl } from '../services/tutorToken.js';
-import {
 ```
 
 ### backend/src/routes/verification.ts
@@ -18297,26 +18297,6 @@ export const spotError = segmentSchema(
 )
 
 export const causeEffect = segmentSchema(
-```
-
-### frontend/src/lesson-engine/families/arrange/components.test.tsx
-
-```
-// sort_buckets group buttons — accessible name (production incident 2026-09-01).
-//
-// Live-testing found the two/three group boxes in the Tutor's drag-and-drop
-// sorting activity carried neither `aria-label` nor `title`, confirmed by
-// `document.querySelectorAll('button')` + `getAttribute` checks that came
-// back null on every one. A screen-reader user tabbing onto a bucket heard
-// nothing that said which group it was. `zone.label` is real, non-empty
-// text (Zod's `idLabel` enforces `min(1)`), so the browser's name-from-
-// content rule was never actually silent — the accessible name WAS the bare
-// category word ("Save", "Spend"...). That is thinner than it looks: out of
-// context, "Save, button" does not say this is a place you PUT something,
-// the way the grid of boxes and the on-screen instruction do for a sighted
-// learner. This asserts the richer, data-sourced label a screen reader
-// actually needs, not merely that SOME name exists.
-
 ```
 
 ### frontend/src/lesson-engine/families/arrange/components.tsx
@@ -28675,7 +28655,7 @@ import {
 import { act, renderHook } from '@testing-library/react';
 import { createElement, StrictMode, type ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { closeCodeToReason, useTutorSocket } from '../useTutorSocket';
+import { useTutorSocket } from '../useTutorSocket';
 
 /*
  * Found live, testing as a real logged-in kid account in the browser,
@@ -30227,6 +30207,26 @@ The learner can see WHAT you did from the numbers; what they cannot see is WHY.
     "",
 ```
 
+### oracle/src/__tests__/admission-control.test.ts
+
+```
+import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
+import type { AddressInfo } from 'node:net';
+import { WebSocket } from 'ws';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { CLOSE_CODES } from '../ws/protocol.js';
+
+/*
+ * ORACLE.md §15.2 items 2 and 3 — end-to-end proof, through the REAL socket
+ * server, of the two per-process admission controls that protect the single
+ * Oracle process from being overwhelmed:
+ *
+ *   - a hard ceiling on concurrent LIVE sessions (item 2, narrow single-
+ *     process scope — the horizontal-scale half of that item is a separate,
+ *     larger, architecturally-undecided piece of work)
+ *   - a rate limit on the handshake PATH itself (item 3), which
+```
+
 ### oracle/src/__tests__/arithmetic.test.ts
 
 ```
@@ -30425,6 +30425,26 @@ import { estimateCostUsd } from '../tutor/orchestrator.js';
  * harm-category vocabulary the safety stack enforces everywhere else). These
  * tests pin the fix: a candidate that passes the quality judge cleanly but
  * carries a contact detail in its learner-visible text must still be
+```
+
+### oracle/src/__tests__/handshakeRateLimit.test.ts
+
+```
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { isHandshakeRateLimited, resetHandshakeRateLimitForTests } from '../ws/handshakeRateLimit.js';
+
+/*
+ * ORACLE.md §15.2 item 3 — unit-level coverage for the counter itself, ahead
+ * of `admission-control.test.ts`'s end-to-end proof through the real socket
+ * server. These run against the in-memory fallback (`isTestOrDev` is true
+ * throughout this suite — `test-setup.ts` pins `NODE_ENV=test`), which is the
+ * SAME code path a real deployment falls back to if Redis is ever
+ * unconfigured — see the file's own comment for why that is a deliberate,
+ * supported degradation rather than a test-only shortcut.
+ */
+
+afterEach(() => {
+  resetHandshakeRateLimitForTests();
 ```
 
 ### oracle/src/__tests__/hardening.test.ts
@@ -30670,7 +30690,7 @@ import {
 ### oracle/src/__tests__/session.test.ts
 
 ```
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
   looksLikeSupabaseJwt,
   mintSessionToken,
@@ -30678,13 +30698,13 @@ import {
   verifySessionToken,
 } from '../session/token.js';
 import { evaluateBudget } from '../session/budget.js';
-import { spendGuard } from '../session/spend-guard.js';
-import { getConfig, resetConfigCache } from '../env.js';
+import { getConfig } from '../env.js';
 import { parseTurn, sanitizePreferredTypes, TutorTurnSchema } from '../tutor/turnSchema.js';
 
 const SECRET = process.env.TUTOR_SESSION_SECRET as string;
 const SID = '11111111-1111-4111-8111-111111111111';
 const UID = '22222222-2222-4222-8222-222222222222';
+
 ```
 
 ### oracle/src/__tests__/skills.test.ts
@@ -30817,7 +30837,6 @@ import { runtimeRouter } from './routes/runtime.js';
 import { modelConfigured } from './model/provider.js';
 import { getVoiceProvider } from './voice/index.js';
 import { moderationReadiness } from './safety/moderation.js';
-import { spendGuard } from './session/spend-guard.js';
 
 export const SERVICE = 'oracle';
 export const VERSION = '0.1.0';
@@ -30825,6 +30844,7 @@ export const VERSION = '0.1.0';
 /**
  * @param liveSessions how many websocket sessions are currently open. Injected
  * rather than imported so `createApp()` stays constructible in a test without
+ * standing up a websocket server.
 ```
 
 ### oracle/src/content/generate.ts
@@ -31176,7 +31196,6 @@ import { addSessionCost, updateLearnerMemory } from '../core/client.js';
 import { stripInvisible } from '../safety/untrusted.js';
 import { moderateTutorOutput, deterministicModeration } from '../safety/moderation.js';
 import { estimateCostUsd } from '../tutor/orchestrator.js';
-import { spendGuard } from './spend-guard.js';
 import type { SessionContext } from '../core/client.js';
 
 /*
@@ -31185,26 +31204,7 @@ import type { SessionContext } from '../core/client.js';
  * A human tutor's real edge accrues BETWEEN sessions: they walk away thinking
  * "she needs to see it before she hears it", and next week's session starts
  * from that. This is that walk. After a session closes, one cheap model call
-```
-
-### oracle/src/session/spend-guard.ts
-
-```
-import { getConfig } from '../env.js';
-
-/*
- * THE PLATFORM-WIDE SPEND CIRCUIT BREAKER (/ORACLE.md §15.2 item 1).
- *
- * Every cost control that existed before this one bounds a SINGLE session or
- * a single learner (the turn cap, the budget clocks, `MAX_SESSIONS_PER_DAY`
- * in Core). None of them notices that the PROCESS, across every session it is
- * currently holding, is spending an abnormal total — a provider incident that
- * makes retries pile up everywhere at once, or a bug that silently doubles a
- * call site, looks identical to ordinary load from inside any one session's
- * own ledger. This is the thing that watches the total instead.
- *
- * IN-PROCESS AND ROLLING, on purpose, matching `session/token.ts`'s
- * `NonceLedger` and `ws/server.ts`'s `parkedSessions`: Oracle is explicitly
+ * reads the conversation that just happened plus what we already believed,
 ```
 
 ### oracle/src/session/token.ts
@@ -31583,6 +31583,26 @@ import { pregeneratedUrl } from './pregenerated.js';
  * complete document, so any chunk whose byte length is not a multiple of three
  * ends in `=` padding, and joining puts that padding in the middle. Decoders
  * stop there. Two four-byte chunks joined that way decode to four bytes.
+```
+
+### oracle/src/ws/handshakeRateLimit.ts
+
+```
+import { getConfig, isTestOrDev } from '../env.js';
+import { redisClient } from '../lib/redis.js';
+import { withTimeout } from '../lib/http.js';
+
+/*
+ * ORACLE.md §15.2 item 3 — the websocket handshake has no rate limit of its
+ * own.
+ *
+ * `middleware/rateLimit.ts`'s `globalRateLimiter` never sees this path: the
+ * `WebSocketServer` in `ws/server.ts`'s `attachTutorSocket` is attached
+ * directly to the raw HTTP server (`{ server: httpServer, path: '/ws/tutor' }`),
+ * so the upgrade never enters Express at all. Token minting (Core-side,
+ * ORACLE.md §15's "what holds" list) already bounds an UNAUTHENTICATED flood —
+ * nothing without a valid, unused, unexpired session token gets past gate 3 in
+ * `handleConnection` — but that leaves the handshake PATH itself unbounded:
 ```
 
 ### oracle/src/ws/protocol.ts

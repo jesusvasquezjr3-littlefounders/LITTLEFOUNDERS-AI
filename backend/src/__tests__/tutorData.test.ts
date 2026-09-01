@@ -2,10 +2,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   getLearnerMemory,
   getTutorPreferences,
+  getTutorRetentionStatus,
   grantVoiceConsent,
   insertTutorTurn,
   listTutorSessions,
   listTutorTurns,
+  RETENTION_SWEEP_AUDIT_ACTION,
   searchOwnTurns,
   upsertTutorPreferences,
   writeLearnerMemoryPair,
@@ -836,5 +838,76 @@ describe('listTutorSessions pages past the old hardcoded 30-row ceiling', () => 
   it('returns null — not an empty page — when the read itself fails (§1.14)', async () => {
     vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(new Response(null, { status: 500 }))));
     await expect(listTutorSessions(USER)).resolves.toBeNull();
+  });
+});
+
+describe('getTutorRetentionStatus distinguishes "never run", "ran recently" and "the read itself failed" (/ORACLE.md §15.2 item 4)', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  function jsonResponse(body: unknown, status = 200): Response {
+    return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+  }
+
+  function stubAuditRow(row: { created_at: string; detail: Record<string, unknown> } | null) {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL) => {
+        const url = String(input);
+        // Only the sweep's own action name must ever come back — a filter
+        // this function trusts the database to have already applied, so the
+        // stub asserting it here also proves the query actually filters.
+        expect(url).toContain(`action=eq.${encodeURIComponent(RETENTION_SWEEP_AUDIT_ACTION)}`);
+        return Promise.resolve(jsonResponse(row ? [row] : []));
+      }),
+    );
+  }
+
+  it('returns null — not "never run" — when the read itself fails, because those are different claims (§1.14)', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(new Response(null, { status: 500 }))));
+    await expect(getTutorRetentionStatus()).resolves.toBeNull();
+  });
+
+  it('reports stale with no lastRunAt when the sweep has never once recorded a run', async () => {
+    stubAuditRow(null);
+    await expect(getTutorRetentionStatus()).resolves.toEqual({
+      lastRunAt: null,
+      hoursSinceLastRun: null,
+      stale: true,
+      lastRunDetail: null,
+    });
+  });
+
+  it('is not stale the morning after an ordinary nightly run', async () => {
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(new Date('2026-08-31T09:00:00Z')); // ~6h after the 03:00 UTC cron
+      stubAuditRow({
+        created_at: '2026-08-31T03:00:12Z',
+        detail: { sessionsDeleted: 4, audioDeleted: 4, audioFailed: 0 },
+      });
+      const status = await getTutorRetentionStatus();
+      expect(status?.stale).toBe(false);
+      expect(status?.lastRunAt).toBe('2026-08-31T03:00:12Z');
+      expect(status?.hoursSinceLastRun).toBeCloseTo(5.999, 1);
+      expect(status?.lastRunDetail).toMatchObject({ sessionsDeleted: 4 });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('goes stale once the workflow has missed a full scheduled night, not merely run a little late', async () => {
+    vi.useFakeTimers();
+    try {
+      // 40h since the last recorded run: the nightly cron fired once in that
+      // window (24h later) and this run is not it — a real missed night, not
+      // ordinary GitHub Actions queue lateness (the 36h threshold's slack).
+      vi.setSystemTime(new Date('2026-09-01T19:00:00Z'));
+      stubAuditRow({ created_at: '2026-08-31T03:00:00Z', detail: {} });
+      const status = await getTutorRetentionStatus();
+      expect(status?.stale).toBe(true);
+      expect(status?.hoursSinceLastRun).toBeCloseTo(40, 0);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

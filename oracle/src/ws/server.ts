@@ -31,22 +31,41 @@ import {
 import { computeSequence } from '../tutor/whiteboard.js';
 import { sanitizePreferredTypes } from '../tutor/turnSchema.js';
 import { assembleClip, decodeChunk } from './audioAssembly.js';
+import { isHandshakeRateLimited } from './handshakeRateLimit.js';
 
 /*
  * The one browser-facing socket (/AGENTS.md §1.5 Oracle exception).
  *
- * Everything defensive about this file is in the first forty lines of
- * `handleConnection`, and it is ordered cheapest-first so that an unauthorized
- * connection costs us a signature check rather than a round trip to Core:
+ * Everything defensive about this file is in the first lines of
+ * `handleConnection`, and it is ordered cheapest-first so that an unwanted
+ * connection costs us the least expensive check that can refuse it — a
+ * Map.size read before a Redis round trip, either before a signature check,
+ * every one of those before a round trip to Core:
  *
- *   1. a token is present at all
- *   2. it is not a Supabase JWT (named explicitly, so the log says what to fix)
- *   3. the signature verifies, it has not expired, it has not been used before
- *   4. Core recognises the session and it belongs to the token's user
- *   5. moderation is available for the audience this session serves
- *   6. the microphone is refused unless consent is active RIGHT NOW
+ *   1. this process is not already at its concurrent-session ceiling
+ *      (ORACLE.md §15.2 item 2 — per-process admission control; a plain
+ *      `liveSessions.size` read, no I/O at all)
+ *   2. this IP has not exceeded the handshake rate limit (§15.2 item 3 — see
+ *      `handshakeRateLimit.ts`; one Redis round trip, fails open on an outage)
+ *   3. a token is present at all
+ *   4. it is not a Supabase JWT (named explicitly, so the log says what to fix)
+ *   5. the signature verifies, it has not expired, it has not been used before
+ *   6. Core recognises the session and it belongs to the token's user
+ *   7. moderation is available for the audience this session serves
+ *   8. the microphone is refused unless consent is active RIGHT NOW
  *
- * Only after all six does a socket become a session.
+ * Only after all eight does a socket become a session — and even then, a
+ * NINTH gate (this exact session id is not already live, below) still guards
+ * a resume racing a fresh connection for the same session.
+ *
+ * Gates 1 and 2 close with `CLOSE_CODES.SERVICE_DEGRADED` — the SAME code
+ * gate 7 (moderation) already uses, deliberately: ORACLE.md's own text calls
+ * the frontend's existing "the tutor is resting" copy for that code the
+ * honest surface for exactly this family of refusal, and a child does not
+ * need to know WHICH internal control declined the connection. The `reason`
+ * string passed to `socket.close()` still differs per gate — logged, never
+ * rendered (see `useTutorSocket.ts`'s own comment) — so an operator reading
+ * Railway logs can tell them apart even though the learner sees one message.
  */
 
 interface Live {
@@ -640,6 +659,21 @@ function tokenFrom(request: IncomingMessage): string | null {
   }
 }
 
+/**
+ * The caller's address, for the handshake rate limit — read BEFORE the token,
+ * so it is available even for a request the token gates would refuse anyway.
+ *
+ * Mirrors `app.ts`'s `trust proxy: 1`: Railway terminates in front of this
+ * process, so the raw socket's own `remoteAddress` is the proxy's address,
+ * not the caller's. `x-forwarded-for` may carry a chain of proxies; the FIRST
+ * entry is the original client, the same hop `trust proxy: 1` trusts.
+ */
+function handshakeIp(request: IncomingMessage): string {
+  const forwarded = request.headers['x-forwarded-for'];
+  const first = Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(',')[0]?.trim();
+  return first || request.socket.remoteAddress || 'unknown';
+}
+
 export function attachTutorSocket(httpServer: Server): WebSocketServer {
   const wss = new WebSocketServer({ server: httpServer, path: '/ws/tutor', maxPayload: 2 * 1024 * 1024 });
 
@@ -655,14 +689,18 @@ export function attachTutorSocket(httpServer: Server): WebSocketServer {
 
 async function handleConnection(socket: WebSocket, request: IncomingMessage): Promise<void> {
   /*
-   * THE SPEND CIRCUIT BREAKER, CHECKED BEFORE ANYTHING ELSE (/ORACLE.md
-   * §15.2 item 1). Deliberately ahead of every auth gate below rather than
-   * threaded in as an eighth one: when the platform has already decided to
-   * refuse every new session, WHO is asking is not a question worth a token
-   * parse, a signature check or a Core round-trip to answer — every one of
-   * those gates below costs real work this socket is about to be refused
-   * regardless of how it comes out. This is the one check in the whole
-   * function that touches nothing but this process's own memory.
+   * THREE GATES, IN COST ORDER, ALL AHEAD OF EVERY AUTH CHECK BELOW rather
+   * than threaded in as more items on that list: when any one of them has
+   * already decided to refuse the connection, WHO is asking is not a
+   * question worth a token parse, a signature check or a Core round-trip to
+   * answer — that work is about to be thrown away regardless of how it
+   * comes out. Ordered cheapest-first, each one a strict subset of the
+   * remaining budget the next one would otherwise spend:
+   *
+   * GATE 1 — THE SPEND CIRCUIT BREAKER (/ORACLE.md §15.2 item 1). Touches
+   * nothing but this process's own in-memory ledger — the cheapest possible
+   * check, and the one most worth failing on first, since a tripped spend
+   * ceiling means every other gate's work is certain to be wasted.
    */
   const admission = spendGuard.check();
   if (!admission.admitting) {
@@ -671,6 +709,30 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
         `$${admission.spentUsd.toFixed(4)} spent against a $${admission.ceilingUsd.toFixed(2)} daily ceiling`,
     );
     socket.close(CLOSE_CODES.SPEND_CEILING, 'daily spend ceiling reached');
+    return;
+  }
+
+  /*
+   * GATE 2: this process is not already holding its configured ceiling of
+   * live sessions (ORACLE.md §15.2 item 2). Still a single `Map.size` read —
+   * no I/O — so it stays ahead of gate 3, which can genuinely reach Redis.
+   */
+  if (liveSessions.size >= getConfig().ORACLE_MAX_CONCURRENT_SESSIONS) {
+    socket.close(CLOSE_CODES.SERVICE_DEGRADED, 'at capacity — try again shortly');
+    return;
+  }
+
+  /*
+   * GATE 3: this IP has not exceeded the handshake rate limit (§15.2 item 3).
+   * The one gate of the three that is genuinely async — memory-backed in
+   * test/dev, Redis-backed in production — so it runs last among these
+   * three despite still running ahead of every token/auth check below.
+   * See `handshakeRateLimit.ts` for why this is not simply
+   * `middleware/rateLimit.ts`'s `globalRateLimiter` reused — that limiter is
+   * Express-only and never sees this path in the first place.
+   */
+  if (await isHandshakeRateLimited(handshakeIp(request))) {
+    socket.close(CLOSE_CODES.SERVICE_DEGRADED, 'too many connection attempts — try again in a moment');
     return;
   }
 
@@ -751,7 +813,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
   const microphone = voice && (!session.isMinor || (session.voiceConsent && minorVoiceAllowed));
 
   /*
-   * SEVENTH GATE: the session must not already have a live socket. A genuine
+   * NINTH GATE: the session must not already have a live socket. A genuine
    * resume only ever reaches this point after the ORIGINAL socket's `close`
    * handler has already removed it from `liveSessions` (and parked the
    * orchestrator, below) — so a session that is still here is not a dropped
