@@ -2084,6 +2084,25 @@ everything passes the blocked half perfectly and destroys the product.
    UPDATE and an unconditional one return the identical transport-level
    success. The fix is never a lock; it is asking the write itself how
    many rows it actually touched. See `RUNBOOK.md` Round 98.
+   **The double-review half RESOLVED, 2026-09-01 — the naive fix
+   ("the loser skips") would have been WRONG.** The cost-reconciliation
+   half above is unchanged, still not attempted. But the loser of the
+   `closeSession` race is `finish()`, and `finish()`'s snapshot is the
+   MORE complete one here — `finalizeParked` fires the instant its timer
+   expires, `finish()` only reaches this point after the busy turn has
+   already settled — so "the loser skips its own review" would have kept
+   the stale one and silently lost the complete one forever, the exact
+   outcome this item already named as worse than paying twice. The fix
+   runs the other direction: `finalizeParked` now carries a copy of
+   `Live.endSessionRequested` on its parked entry, and when it is true —
+   a guaranteed sign, by construction of `releaseTurn`'s own
+   `finally`-chain, that a call exactly like `finish()`'s is still
+   coming — it defers its OWN review to that one instead of firing an
+   eager one on incomplete data. `finalizeAllParked` (process shutdown)
+   forces the review anyway on every one of its calls, because shutdown
+   is precisely the moment that `finally`-chain guarantee runs out of
+   event loop to keep. See `ws/server.ts`'s `finalizeParked`/`finish()`
+   and the round-98 tests in `live-session.test.ts`.
 
 72. **A surface with no character-rendering layer of its own does not get
    to borrow one — it has to be TOLD who to portray, by whatever

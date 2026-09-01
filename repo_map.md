@@ -28675,7 +28675,7 @@ import {
 import { act, renderHook } from '@testing-library/react';
 import { createElement, StrictMode, type ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { useTutorSocket } from '../useTutorSocket';
+import { closeCodeToReason, useTutorSocket } from '../useTutorSocket';
 
 /*
  * Found live, testing as a real logged-in kid account in the browser,
@@ -30670,7 +30670,7 @@ import {
 ### oracle/src/__tests__/session.test.ts
 
 ```
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   looksLikeSupabaseJwt,
   mintSessionToken,
@@ -30678,13 +30678,13 @@ import {
   verifySessionToken,
 } from '../session/token.js';
 import { evaluateBudget } from '../session/budget.js';
-import { getConfig } from '../env.js';
+import { spendGuard } from '../session/spend-guard.js';
+import { getConfig, resetConfigCache } from '../env.js';
 import { parseTurn, sanitizePreferredTypes, TutorTurnSchema } from '../tutor/turnSchema.js';
 
 const SECRET = process.env.TUTOR_SESSION_SECRET as string;
 const SID = '11111111-1111-4111-8111-111111111111';
 const UID = '22222222-2222-4222-8222-222222222222';
-
 ```
 
 ### oracle/src/__tests__/skills.test.ts
@@ -30817,6 +30817,7 @@ import { runtimeRouter } from './routes/runtime.js';
 import { modelConfigured } from './model/provider.js';
 import { getVoiceProvider } from './voice/index.js';
 import { moderationReadiness } from './safety/moderation.js';
+import { spendGuard } from './session/spend-guard.js';
 
 export const SERVICE = 'oracle';
 export const VERSION = '0.1.0';
@@ -30824,7 +30825,6 @@ export const VERSION = '0.1.0';
 /**
  * @param liveSessions how many websocket sessions are currently open. Injected
  * rather than imported so `createApp()` stays constructible in a test without
- * standing up a websocket server.
 ```
 
 ### oracle/src/content/generate.ts
@@ -31176,6 +31176,7 @@ import { addSessionCost, updateLearnerMemory } from '../core/client.js';
 import { stripInvisible } from '../safety/untrusted.js';
 import { moderateTutorOutput, deterministicModeration } from '../safety/moderation.js';
 import { estimateCostUsd } from '../tutor/orchestrator.js';
+import { spendGuard } from './spend-guard.js';
 import type { SessionContext } from '../core/client.js';
 
 /*
@@ -31184,7 +31185,26 @@ import type { SessionContext } from '../core/client.js';
  * A human tutor's real edge accrues BETWEEN sessions: they walk away thinking
  * "she needs to see it before she hears it", and next week's session starts
  * from that. This is that walk. After a session closes, one cheap model call
- * reads the conversation that just happened plus what we already believed,
+```
+
+### oracle/src/session/spend-guard.ts
+
+```
+import { getConfig } from '../env.js';
+
+/*
+ * THE PLATFORM-WIDE SPEND CIRCUIT BREAKER (/ORACLE.md §15.2 item 1).
+ *
+ * Every cost control that existed before this one bounds a SINGLE session or
+ * a single learner (the turn cap, the budget clocks, `MAX_SESSIONS_PER_DAY`
+ * in Core). None of them notices that the PROCESS, across every session it is
+ * currently holding, is spending an abnormal total — a provider incident that
+ * makes retries pile up everywhere at once, or a bug that silently doubles a
+ * call site, looks identical to ordinary load from inside any one session's
+ * own ledger. This is the thing that watches the total instead.
+ *
+ * IN-PROCESS AND ROLLING, on purpose, matching `session/token.ts`'s
+ * `NonceLedger` and `ws/server.ts`'s `parkedSessions`: Oracle is explicitly
 ```
 
 ### oracle/src/session/token.ts

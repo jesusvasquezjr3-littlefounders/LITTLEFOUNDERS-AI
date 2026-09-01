@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   looksLikeSupabaseJwt,
   mintSessionToken,
@@ -6,7 +6,8 @@ import {
   verifySessionToken,
 } from '../session/token.js';
 import { evaluateBudget } from '../session/budget.js';
-import { getConfig } from '../env.js';
+import { spendGuard } from '../session/spend-guard.js';
+import { getConfig, resetConfigCache } from '../env.js';
 import { parseTurn, sanitizePreferredTypes, TutorTurnSchema } from '../tutor/turnSchema.js';
 
 const SECRET = process.env.TUTOR_SESSION_SECRET as string;
@@ -378,5 +379,101 @@ describe('the closed turn schema', () => {
     const parsed = parseTurn(JSON.stringify({ ...valid, whiteboard: board }));
     expect(parsed.ok).toBe(true);
     if (parsed.ok) expect(parsed.turn.whiteboard).toBeNull();
+  });
+});
+
+/*
+ * /ORACLE.md §15.2 item 1 — the class in isolation. `live-session.test.ts`
+ * separately proves `ws/server.ts` actually WIRES a new connection to this
+ * guard; these prove the guard's own arithmetic, deterministically and
+ * without a real websocket, the same split `evaluateBudget` above gets.
+ */
+describe('the platform-wide spend circuit breaker (/ORACLE.md §15.2 item 1)', () => {
+  const originalCeiling = process.env.DAILY_SPEND_CEILING_USD;
+  const originalAlert = process.env.DAILY_SPEND_ALERT_FRACTION;
+
+  beforeEach(() => {
+    // A known, round ceiling for every test in this block, rather than
+    // whatever DAILY_SPEND_CEILING_USD's own default happens to be —
+    // §5's own default rests deliberately on §15.2's real-world reasoning
+    // ($20, conservative-and-tunable), which is orthogonal to what this
+    // arithmetic is being asked to prove.
+    process.env.DAILY_SPEND_CEILING_USD = '10';
+    process.env.DAILY_SPEND_ALERT_FRACTION = '0.5';
+    resetConfigCache();
+    spendGuard.reset();
+  });
+
+  afterEach(() => {
+    if (originalCeiling === undefined) delete process.env.DAILY_SPEND_CEILING_USD;
+    else process.env.DAILY_SPEND_CEILING_USD = originalCeiling;
+    if (originalAlert === undefined) delete process.env.DAILY_SPEND_ALERT_FRACTION;
+    else process.env.DAILY_SPEND_ALERT_FRACTION = originalAlert;
+    resetConfigCache();
+    spendGuard.reset();
+    vi.restoreAllMocks();
+  });
+
+  it('admits a new session while spend is under the ceiling', () => {
+    expect(spendGuard.check().admitting).toBe(true);
+  });
+
+  it('accumulates every recorded cost', () => {
+    spendGuard.record(1);
+    spendGuard.record(2.5);
+    expect(spendGuard.check().spentUsd).toBeCloseTo(3.5, 10);
+  });
+
+  it('ignores a non-positive amount rather than corrupting the ledger', () => {
+    // The four call sites already guard their own estimateCostUsd/
+    // estimateVoiceCostUsd results before calling this — this is the
+    // backstop, not the primary defence, for the reason `record`'s own doc
+    // comment gives.
+    spendGuard.record(0);
+    spendGuard.record(-5);
+    expect(spendGuard.check().spentUsd).toBe(0);
+  });
+
+  it('stops admitting once spend reaches the ceiling', () => {
+    spendGuard.record(10);
+    const after = spendGuard.check();
+    expect(after.admitting).toBe(false);
+    expect(after.spentUsd).toBe(10);
+    expect(after.ceilingUsd).toBe(10);
+  });
+
+  it('warns exactly once when spend crosses the alert fraction, not on every call past it', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    spendGuard.record(4); // under the 50% alert line ($5 of a $10 ceiling)
+    expect(warnSpy).not.toHaveBeenCalled();
+    spendGuard.record(2); // now $6 — past the alert line
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    spendGuard.record(1); // $7 — still past it, must not re-alert
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('rolls the window after 24h — spend and the alert latch both reset', () => {
+    const start = 1_000_000;
+    spendGuard.reset(start);
+    spendGuard.record(9, start); // past the alert line, short of the ceiling
+    expect(spendGuard.check(start).admitting).toBe(true);
+
+    const dayLater = start + 24 * 60 * 60 * 1000;
+    expect(spendGuard.check(dayLater).spentUsd).toBe(0);
+    expect(spendGuard.check(dayLater).admitting).toBe(true);
+
+    // The alert fires again in the NEW window rather than staying latched
+    // from the one that just closed.
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    spendGuard.record(6, dayLater + 1);
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not roll the window a moment before 24h has actually elapsed', () => {
+    const start = 1_000_000;
+    spendGuard.reset(start);
+    spendGuard.record(9, start);
+    const almostADay = start + 24 * 60 * 60 * 1000 - 1;
+    expect(spendGuard.check(almostADay).spentUsd).toBe(9);
   });
 });

@@ -119,6 +119,18 @@ export function closeCodeToReason(code: number): CloseReasonCode {
     case 4013:
       return 'SERVICE_DEGRADED';
     /*
+     * The platform-wide spend circuit breaker (/ORACLE.md §15.2 item 1) —
+     * deliberately its OWN numeric code server-side (`CLOSE_CODES.
+     * SPEND_CEILING`, `oracle/src/ws/protocol.ts`) so an operator's logs can
+     * tell "cost control tripped" apart from "moderation is down" at a
+     * glance, but mapped to the SAME learner-facing reason as 4013: a
+     * business-side cost ceiling is not something to explain to a child, and
+     * the honest, generic "try again soon" is the correct thing to tell them
+     * either way.
+     */
+    case 4029:
+      return 'SERVICE_DEGRADED';
+    /*
      * 1006 is the one that matters most in the field: "closed abnormally, no
      * close frame" — a dropped connection, a sleeping phone, a proxy timeout.
      * It is not a server fault and must not be described as one.

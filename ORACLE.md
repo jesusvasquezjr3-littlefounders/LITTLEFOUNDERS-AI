@@ -1927,13 +1927,33 @@ open, deliberately, because it is an availability control (§1.14).
 
 **What does not hold, and would be noticed at a thousand concurrent learners.**
 
-1. **There is no platform-wide spend ceiling and no circuit breaker.** Cost is
-   *recorded* per session; nothing *stops* on a total. The arithmetic is
-   reassuring — the observed ledger for a real three-turn session is
-   `model=$0.00005`, and even a pathological 120-turn session is cents — so the
-   exposure is a runaway loop or a pricing change rather than ordinary use. But
-   "we would notice on the invoice" is not a control. **Before a real cohort:
-   a daily spend total with a hard stop, and an alert well below it.**
+1. **There is no platform-wide spend ceiling and no circuit breaker — CLOSED
+   2026-09-01.** Cost used to be *recorded* per session with nothing that
+   *stopped* on a total — the arithmetic was reassuring (a real three-turn
+   session is `model=$0.00005`, even a pathological 120-turn one is cents),
+   but "we would notice on the invoice" was never a control, only an autopsy.
+   `oracle/src/session/spend-guard.ts` now tracks every real, already-incurred
+   cost this process causes — the per-turn model call, tier-3 live generation,
+   synthesized speech, and the post-session review's own paid call, all four
+   recorded at the SAME moment they add to their session's own ledger, not at
+   close — against a configurable rolling 24h ceiling
+   (`DAILY_SPEND_CEILING_USD`, $20 default: deliberately conservative and
+   meant to be raised as real paid usage grows, not a modelled budget for
+   ordinary traffic). Once the ceiling is reached, every NEW connection is
+   refused OUTRIGHT — before a token is even read, since there is no point
+   validating a signature for a socket about to be refused regardless — with
+   its own close code (`CLOSE_CODES.SPEND_CEILING`, 4029) kept numerically
+   distinct from 4013 (`SERVICE_DEGRADED`) so an operator's logs can tell
+   "cost control tripped" apart from "moderation is down" at a glance, while
+   the learner sees the same honest, generic "try again soon" either way — a
+   business-side cost ceiling is not something to explain to a child.
+   `DAILY_SPEND_ALERT_FRACTION` (50% default) warns loudly well before the
+   refusal, and both numbers are visible continuously on `GET /health`'s
+   `spend` field, not only in a log line when something goes wrong. Proven by
+   `oracle/src/__tests__/session.test.ts` (the guard's own arithmetic —
+   accumulation, the alert latch firing once per window, the 24h roll) and
+   `live-session.test.ts` (a real connection actually refused by the running
+   websocket server, ahead of every auth gate).
 2. **There is no admission control on concurrent sessions.** `oracle/` accepts
    every authenticated socket; nothing counts how many are open, and one
    process holds each live orchestrator and transcript in memory. The failure
@@ -1974,10 +1994,12 @@ open, deliberately, because it is an availability control (§1.14).
    `backend/src/__tests__/admin.test.ts` → "the tutor live-content review
    queue". **What remains owner-side: a named person who reads it.**
 
-None of the first five is a defect in what was built; they are the difference
-between a product that is correct and a service that has been operated. The
-sixth WAS a defect — a control this document asserted and the code did not
-have — and it is the one now closed.
+Items 2 through 5 are not defects in what was built; they are the difference
+between a product that is correct and a service that has been operated. Item 6
+WAS a defect — a control this document asserted and the code did not have.
+Item 1 is a different shape of closure: it was accurately described as absent,
+and is now a genuine, working circuit breaker where none existed — a control
+built, not a false claim corrected.
 
 ---
 

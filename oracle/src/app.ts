@@ -5,6 +5,7 @@ import { runtimeRouter } from './routes/runtime.js';
 import { modelConfigured } from './model/provider.js';
 import { getVoiceProvider } from './voice/index.js';
 import { moderationReadiness } from './safety/moderation.js';
+import { spendGuard } from './session/spend-guard.js';
 
 export const SERVICE = 'oracle';
 export const VERSION = '0.1.0';
@@ -29,6 +30,12 @@ export function createApp(liveSessions: () => number = () => 0): express.Express
    * The components block reports degradation without ever failing on it.
    */
   app.get('/health', (_req, res) => {
+    // A pure in-memory read (§1.14 — never coupled to anything optional, same
+    // as every other field in this block), so it belongs beside them rather
+    // than only in a log line: an operator watching this endpoint sees the
+    // spend ceiling trip in the same place they already watch everything
+    // else (/ORACLE.md §15.2 item 1).
+    const spend = spendGuard.snapshot();
     res.json({
       data: {
         service: SERVICE,
@@ -40,6 +47,11 @@ export function createApp(liveSessions: () => number = () => 0): express.Express
           moderation: moderationReadiness(true).ready ? 'up' : 'down',
         },
         liveSessions: liveSessions(),
+        spend: {
+          todayUsd: Number(spend.spentUsd.toFixed(6)),
+          ceilingUsd: spend.ceilingUsd,
+          admittingNewSessions: spend.admitting,
+        },
       },
       error: null,
     });
