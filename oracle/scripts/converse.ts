@@ -38,6 +38,7 @@ const silent = async (): Promise<SpeechResult> => ({
   url: null,
   source: 'unavailable',
   billedChars: 0,
+  wordTimings: null,
 });
 
 const SESSION: SessionContext = {

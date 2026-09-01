@@ -1872,8 +1872,19 @@ async function deliver(
    */
   const tutorRowSeq = nextTranscriptSeq(live);
 
-  void emission.audio.then((audioUrl) => {
-    send(live.socket, { type: 'turn_audio', seq: emission.seq, audioUrl });
+  void emission.audio.then(({ url: audioUrl, wordTimings }) => {
+    send(live.socket, {
+      type: 'turn_audio',
+      seq: emission.seq,
+      audioUrl,
+      // Omitted rather than sent `null`/`[]` — see this field's own comment
+      // on `ws/protocol.ts`. Never persisted: `wordTimings` is live-playback
+      // metadata for the clip currently in the learner's speaker, not
+      // conversation content, and a resume redraw already sends no
+      // `turn_audio` at all (the comment above `audioUrl: null` on the
+      // resume path), so there is nothing to replay it FROM even if it were.
+      ...(wordTimings && wordTimings.length > 0 ? { wordTimings } : {}),
+    });
     // The transcript row waits for the clip so it records where the audio
     // actually lives; the write was always fire-and-forget. `seq` here is the
     // TRANSCRIPT's row number, never the model-turn seq on the wire above —

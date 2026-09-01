@@ -9,6 +9,7 @@ import {
   type WhiteboardMarkedLine,
   type WhiteboardSequence,
 } from '../tutor/turnSchema.js';
+import type { WordTiming } from '../voice/provider.js';
 
 /*
  * The websocket wire format.
@@ -258,6 +259,17 @@ export type ServerMessage =
       type: 'turn_audio';
       seq: number;
       audioUrl: string | null;
+      /**
+       * Word-level timing for THIS clip, present only when the voice
+       * provider actually returned it for these exact bytes (ORACLE.md
+       * §19.5 — gated on the configured TTS model, which nothing in
+       * production requests today, so this is absent on every turn until
+       * that changes; see the voice adapter's own comment in `src/voice/`).
+       * Omitted rather than sent empty/null: the caption treats "no
+       * highlighting for this turn" and "the field was never sent" as the
+       * same thing, so there is no reason to spend wire bytes saying so.
+       */
+      wordTimings?: WordTiming[];
     }
   | {
       /**

@@ -34,6 +34,7 @@ afterEach(() => {
   for (const v of VOICE_VARS) delete process.env[v];
   delete process.env.INWORLD_API_KEY;
   delete process.env.VOICE_PROVIDER;
+  delete process.env.INWORLD_TTS_MODEL;
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
   resetVoiceProvider();
@@ -147,6 +148,177 @@ describe('an unenrolled character is SILENT, never substituted', () => {
     const signal = fetchSpy.mock.calls[0]?.[1]?.signal;
     expect(signal).toBeInstanceOf(AbortSignal);
     expect(signal?.aborted).toBe(false);
+  });
+});
+
+/*
+ * WORD-LEVEL CAPTION TIMING (ORACLE.md §19.5).
+ *
+ * The docs this gate is built against describe the SAME endpoint this file
+ * already calls (`/tts/v1/voice`) and the SAME response fields this file
+ * already parses (`audioContent`, `usage`) — see `inworld.ts`'s own comment
+ * for the citation — but nobody has run live traffic against a TTS-2-family
+ * model to confirm the timing fields actually arrive that way. So every test
+ * here is deliberately about the GATE and the DEFENSIVE parsing, not about
+ * trusting the shape: byte-for-byte silence for the model production
+ * actually uses, and "no timing" rather than a thrown error or an invented
+ * number the moment the response looks even slightly different from what
+ * the docs promised.
+ */
+describe('word-level caption timing', () => {
+  beforeEach(() => {
+    process.env.INWORLD_API_KEY = 'test-inworld-key-0123';
+    process.env.INWORLD_VOICE_RHO_ES_MX = 'workspace__lf-rho-es-mx';
+  });
+
+  it('never asks for timing on the model production actually runs — the request is untouched', async () => {
+    // No INWORLD_TTS_MODEL set: DEFAULT_TTS_MODEL (inworld-tts-1) applies,
+    // exactly as every production .env does today.
+    resetConfigCache();
+    const fetchSpy = vi.fn((_url: string, _init?: RequestInit) =>
+      Promise.resolve(
+        new Response(JSON.stringify({ audioContent: Buffer.from('x').toString('base64') }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      ),
+    );
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const result = await new InworldVoiceProvider().synthesize({
+      text: 'Muy bien pensado.',
+      locale: 'es-MX',
+      character: 'rho',
+    });
+
+    const body = JSON.parse(String(fetchSpy.mock.calls[0]?.[1]?.body)) as Record<string, unknown>;
+    // The whole point: adding this feature must not add a field to the ONE
+    // request every learner's turn actually sends today.
+    expect(body).not.toHaveProperty('timestampType');
+    expect(result.wordTimings).toBeNull();
+  });
+
+  it('asks for WORD timing only once the configured model is TTS-2-family', async () => {
+    process.env.INWORLD_TTS_MODEL = 'inworld-tts-2-flash';
+    resetConfigCache();
+    const fetchSpy = vi.fn((_url: string, _init?: RequestInit) =>
+      Promise.resolve(
+        new Response(JSON.stringify({ audioContent: Buffer.from('x').toString('base64') }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      ),
+    );
+    vi.stubGlobal('fetch', fetchSpy);
+
+    await new InworldVoiceProvider().synthesize({ text: 'hola', locale: 'es-MX', character: 'rho' });
+
+    const body = JSON.parse(String(fetchSpy.mock.calls[0]?.[1]?.body)) as Record<string, unknown>;
+    expect(body.timestampType).toBe('WORD');
+  });
+
+  it('turns a well-formed wordAlignment into millisecond timings', async () => {
+    process.env.INWORLD_TTS_MODEL = 'inworld-tts-2';
+    resetConfigCache();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify({
+              audioContent: Buffer.from('x').toString('base64'),
+              timestampInfo: {
+                wordAlignment: {
+                  words: ['Muy', 'bien', 'pensado.'],
+                  wordStartTimeSeconds: [0, 0.3, 0.62],
+                  wordEndTimeSeconds: [0.28, 0.6, 1.1],
+                },
+              },
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
+          ),
+        ),
+      ),
+    );
+
+    const result = await new InworldVoiceProvider().synthesize({
+      text: 'Muy bien pensado.',
+      locale: 'es-MX',
+      character: 'rho',
+    });
+
+    expect(result.wordTimings).toEqual([
+      { word: 'Muy', startMs: 0, endMs: 280 },
+      { word: 'bien', startMs: 300, endMs: 600 },
+      { word: 'pensado.', startMs: 620, endMs: 1100 },
+    ]);
+  });
+
+  it('degrades to null when the response carries no timing at all — never throws', async () => {
+    process.env.INWORLD_TTS_MODEL = 'inworld-tts-2';
+    resetConfigCache();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve(
+          new Response(JSON.stringify({ audioContent: Buffer.from('x').toString('base64') }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        ),
+      ),
+    );
+
+    const result = await new InworldVoiceProvider().synthesize({
+      text: 'hola',
+      locale: 'es-MX',
+      character: 'rho',
+    });
+
+    expect(result.wordTimings).toBeNull();
+    // A missing timing must never cost the CLIP: silence on the highlight,
+    // not on the tutor's voice.
+    expect(result.audio.length).toBeGreaterThan(0);
+  });
+
+  /*
+   * §1.14: a confident wrong number is worse than none. If the live service
+   * ever answers with mismatched array lengths (a partial response, a
+   * provider-side bug, a future schema change this file has not seen), the
+   * defensive parser must refuse to guess which word a stray timestamp
+   * belongs to.
+   */
+  it('degrades to null on a malformed alignment — mismatched array lengths', async () => {
+    process.env.INWORLD_TTS_MODEL = 'inworld-tts-2';
+    resetConfigCache();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify({
+              audioContent: Buffer.from('x').toString('base64'),
+              timestampInfo: {
+                wordAlignment: {
+                  words: ['uno', 'dos'],
+                  wordStartTimeSeconds: [0],
+                  wordEndTimeSeconds: [0.3],
+                },
+              },
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
+          ),
+        ),
+      ),
+    );
+
+    const result = await new InworldVoiceProvider().synthesize({
+      text: 'uno dos',
+      locale: 'es-MX',
+      character: 'rho',
+    });
+
+    expect(result.wordTimings).toBeNull();
   });
 });
 

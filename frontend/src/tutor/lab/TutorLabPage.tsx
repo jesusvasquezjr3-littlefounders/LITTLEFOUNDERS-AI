@@ -498,6 +498,10 @@ export default function TutorLabPage() {
     socket,
     token: LAB_TOKEN,
     speaking,
+    // The lab drives fixtures, not a real voice provider — there is no
+    // `<audio>` element here to read a playback position from, so the
+    // caption correctly falls back to its ordinary typewriter reveal.
+    audioElement: null,
     awaitingReply,
     onAwaitReply: () => setAwaitingReply(true),
     // The lab has no hands-free listener to gate — there is no real turn

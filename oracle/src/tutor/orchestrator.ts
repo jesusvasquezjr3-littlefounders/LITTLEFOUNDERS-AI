@@ -59,6 +59,7 @@ import {
 } from './scripted.js';
 import type { SpeechResult } from '../voice/speech.js';
 import type { SessionContext, TrajectoryStepInput } from '../core/client.js';
+import type { WordTiming } from '../voice/provider.js';
 
 /*
  * One live session, as a state machine over turns.
@@ -164,18 +165,33 @@ export const RECALL_TRIGGER =
 
 const TURN_HISTORY_WINDOW = 20;
 
+/**
+ * What `speak()` resolves to: the clip's URL and, when the provider and the
+ * cache path both allow it, its word-level timing.
+ *
+ * `wordTimings` is `null` on every path except a fresh `synthesized` result
+ * from a provider that actually returned timing for these bytes — see
+ * `SpeechResult.wordTimings`'s own comment. It travels beside the URL rather
+ * than as a separate frame because the two describe the SAME clip: a caption
+ * that received one without the other would not know whether to wait.
+ */
+export interface SpokenAudio {
+  url: string | null;
+  wordTimings: WordTiming[] | null;
+}
+
 export interface TurnEmission {
   turn: TutorTurn;
   seq: number;
   source: 'model' | 'scripted';
   /**
-   * The turn's voice, still arriving. Resolves to a Depot URL, or to null
-   * when the turn stays captioned and silent. Never rejects — `speak()`
-   * swallows synthesis failures into null, because a lost voice costs the
-   * sound and not the lesson. The caller delivers the text immediately and
-   * the audio when this settles.
+   * The turn's voice, still arriving. Resolves to a Depot URL (plus word
+   * timing when available), or to a null URL when the turn stays captioned
+   * and silent. Never rejects — `speak()` swallows synthesis failures into a
+   * null URL, because a lost voice costs the sound and not the lesson. The
+   * caller delivers the text immediately and the audio when this settles.
    */
-  audio: Promise<string | null>;
+  audio: Promise<SpokenAudio>;
   moderation: Record<string, unknown>;
 }
 
@@ -2368,7 +2384,7 @@ export class TutorOrchestrator {
      * so it has nothing to overlap with. The clip is DELIVERED only on a pass;
      * on a block it is discarded and counted, never referenced.
      */
-    let audio: Promise<string | null>;
+    let audio: Promise<SpokenAudio>;
     if (source === 'model') {
       const speculative = this.speak(turn);
       const verdict = await moderateTutorOutput({
@@ -2481,13 +2497,13 @@ export class TutorOrchestrator {
    * sessions with the same turn count and very different voice costs is the
    * signal, and it was invisible while `speak()` recorded nothing at all.
    */
-  private async speak(turn: TutorTurn): Promise<string | null> {
+  private async speak(turn: TutorTurn): Promise<SpokenAudio> {
     let result: SpeechResult;
     try {
       result = await this.synthesize(turn, this.session);
     } catch (error) {
       console.warn('[oracle] synthesis failed:', error instanceof Error ? error.message : error);
-      return null;
+      return { url: null, wordTimings: null };
     }
 
     if (result.billedChars > 0) {
@@ -2496,7 +2512,7 @@ export class TutorOrchestrator {
     } else if (result.url !== null) {
       this.freeSyntheses += 1;
     }
-    return result.url;
+    return { url: result.url, wordTimings: result.wordTimings };
   }
 
   private async scriptedOutcome(

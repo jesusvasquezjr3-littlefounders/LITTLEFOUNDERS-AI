@@ -319,6 +319,19 @@ export function TutorExperience() {
   const [startErrorResetAt, setStartErrorResetAt] = useState<string | null>(null);
   const [stageReady, setStageReady] = useState(false);
   const [speaking, setSpeaking] = useState(false);
+  /**
+   * The stage's own `<audio>` element, handed up once by `TutorStage` (see
+   * `TutorStageProps.onAudioElementReady`) so the conversation layer's
+   * caption can read live playback position for word-highlighting.
+   *
+   * State, not a ref: it is set once (the stage mounts exactly once for the
+   * whole route — `StageShell`'s own "ONE MOUNT, NEVER A REMOUNT" rule), so
+   * one extra render here is the same one-time cost `stageReady` already
+   * pays, never a per-frame one. `SpeechCaption` does its OWN frame-rate
+   * polling of `.currentTime` internally; nothing here re-renders while
+   * audio plays.
+   */
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
   /*
    * The wait between a learner's turn and the tutor's answer.
    *
@@ -1215,6 +1228,7 @@ export function TutorExperience() {
           socket,
           token,
           speaking,
+          audioElement,
           awaitingReply,
           onAwaitReply: () => setAwaitingReply(true),
           onDraftChange: setHasComposerDraft,
@@ -1411,6 +1425,7 @@ export function TutorExperience() {
       onReady={handleReady}
       onSpeechEnd={handleSpeechEnd}
       onSpeechBlocked={handleSpeechBlocked}
+      onAudioElementReady={setAudioElement}
     >
       {/*
         Exactly one layer is on top at a time, and the island is underneath all

@@ -11,6 +11,18 @@ import type { CharacterAction, CharacterEmotion, CharacterId } from '@/component
 
 export type TutorIntent = 'course_topic' | 'weak_skill' | 'faq' | 'open' | 'diagnostic';
 
+/**
+ * One spoken word's position in a `turn_audio` clip, in milliseconds from
+ * its own start. Mirrors Oracle's `voice/provider.ts` `WordTiming` — see
+ * that file for why it is deliberately this narrow (no phoneme/viseme
+ * detail, no provider field names).
+ */
+export interface WordTiming {
+  word: string;
+  startMs: number;
+  endMs: number;
+}
+
 export type Adaptation =
   | 'slower_pacing'
   | 'more_examples'
@@ -154,7 +166,13 @@ export type ServerMessage =
        */
       whiteboard?: TutorWhiteboardWire;
     }
-  | { type: 'turn_audio'; seq: number; audioUrl: string | null }
+  | {
+      type: 'turn_audio';
+      seq: number;
+      audioUrl: string | null;
+      /** Present only when the voice provider returned timing for this clip. */
+      wordTimings?: WordTiming[];
+    }
   | { type: 'thinking' }
   | {
       /** The conversation so far — sent only when a dropped session resumes. */

@@ -40,9 +40,34 @@ export interface SynthesisRequest {
   character: 'dina' | 'liruf' | 'rho' | 'zara';
 }
 
+/**
+ * One spoken word's position in the audio, in milliseconds from the clip's
+ * own start. `endMs` is exclusive — the word after it starts there.
+ *
+ * Provider-agnostic on purpose (no phoneme/viseme detail, no provider field
+ * names): the caption only ever needs "which word is playing right now",
+ * and a narrower contract is a narrower thing to keep true across a future
+ * provider swap (/AGENTS.md §1.2 — this seam is explicitly interim).
+ */
+export interface WordTiming {
+  word: string;
+  startMs: number;
+  endMs: number;
+}
+
 export interface SynthesisResult {
   audio: Buffer;
   mimeType: string;
+  /**
+   * Word-level timing for this exact clip, or `null` when the provider did
+   * not supply any — an unsupported model, a locale it does not cover, or a
+   * provider that never sends it at all. `null` is a fact ("no timing for
+   * this clip"), never an estimate: a caption that cannot highlight in sync
+   * with the real audio must fall back to prose, not to a guess dressed up
+   * as measured timing (/AGENTS.md §1.14 — confident-wrong beats absent
+   * only when it is not actually wrong).
+   */
+  wordTimings: WordTiming[] | null;
 }
 
 export interface VoiceProvider {

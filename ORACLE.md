@@ -2605,16 +2605,140 @@ Core + Oracle + frontend in any order.
 ### §19.5 Deferred, explicitly (the v3 tail)
 
 Not built this pass, recorded here rather than dropped: the conversing-phase
-screen-state machine and step dots; the input-bar consolidation; the
-"un poco más" extend-twice cap (subsumed today by the 2-sessions/day server
-cap, which is the stronger control); word-level caption highlighting (needs
-provider timestamps); full-duplex VAD/barge-in (a voice-provider project);
-per-KC content pools (`kc.skill_key` authoring pass); per-learner BKT
-parameters; replaying `demonstrate` animations; the teacher console. Each is
-an increment on the organs above, none is a rearchitecture.
+screen-state machine; the input-bar consolidation; the "un poco más"
+extend-twice cap (subsumed today by the 2-sessions/day server cap, which is
+the stronger control); per-KC content pools (`kc.skill_key` authoring pass);
+per-learner BKT parameters; the teacher console. Each is an increment on the
+organs above, none is a rearchitecture.
 
 **The parent-portal "what is happening" narrative shipped 2026-09-01** —
 moved out of this list into §12, where the rest of parent visibility lives.
+**Step dots and replaying `demonstrate` animations also shipped 2026-09-01**
+— the latter is §20.8, below; step dots is `lessonStepDots.ts` +
+`ConversationView.tsx`, a small HUD affordance with no dedicated write-up of
+its own here. Word-level caption highlighting and full-duplex VAD/barge-in —
+the other two items this list used to carry — were investigated and closed
+one each way; see §19.6.
+
+### §19.6 The v3-tail investigation, closed one each way (2026-09-01)
+
+Both items §19.5 named tersely ("needs provider timestamps" / "a
+voice-provider project") turned out to have real, different answers once
+actually investigated against Inworld's documented API rather than assumed
+from the one-line backlog description.
+
+**Word-level caption highlighting — BUILT, gated on a model switch nobody has
+made.** Inworld's own docs (`docs.inworld.ai/api-reference/ttsAPI/
+texttospeech/synthesize-speech`, checked 2026-09-01) describe `POST
+/tts/v1/voice` — the EXACT endpoint `voice/inworld.ts` already calls, whose
+documented response fields (`audioContent`, `usage`) already match this
+adapter's existing parsing byte for byte, which is why the citation is
+trusted rather than treated as one more unverified vendor claim. Sending
+`timestampType: 'WORD'` there is documented to add
+`timestampInfo.wordAlignment` (three parallel arrays: `words`,
+`wordStartTimeSeconds`, `wordEndTimeSeconds`) to that SAME response — no
+streaming, no transport change. The catch, and the reason this is gated
+rather than shipped hot: that capability is documented ONLY for the
+`inworld-tts-2`/`inworld-tts-2-flash` family, and `DEFAULT_TTS_MODEL` (every
+production `.env` today) is `inworld-tts-1` — a model this codebase has never
+sent that field to, on the "measured, not read off a documentation page"
+standard this same file's header sets for itself. Nobody has run live
+traffic to confirm an unsupported model politely ignores the field rather
+than 400ing the whole request, and guessing wrong there risks the tutor's
+entire VOICE for every learner, not merely a caption — the exact class of
+defect `voice/inworld.ts` already paid for once (the OGG_OPUS outage
+documented in that same file). So `voice/inworld.ts`'s `supportsWordTimings`
+sends the field ONLY when the configured model already names itself
+TTS-2-family, which nothing in production requests today: the request body
+`inworld-tts-1` sends is byte-for-byte unchanged, pinned by a test
+(`oracle/src/__tests__/voice.test.ts`). The rest of the pipe is real and
+tested end to end — `voice/speech.ts` (timing rides a fresh synthesis only,
+never a cache/pregenerated hit, which never fabricates a number for a clip
+it did not just make), `TurnEmission`/`ws/protocol.ts`'s `turn_audio.
+wordTimings` (omitted, never sent as `null`, when absent), and
+`SpeechCaption.tsx` on the frontend, where the reveal boundary itself IS the
+highlight — no separate highlight colour, because a synced reveal that is a
+beat behind reads as an ordinary caption catching up and a highlighted PAST
+word one beat behind the real audio would read as broken. It falls back to
+the untouched pre-existing typewriter whenever timing is absent (every turn
+today), whenever `audioElement` is unavailable, and — the accessibility
+floor — whenever the clip is not ACTUALLY playing (blocked autoplay,
+not-yet-started, already ended), because a caption that trusts a
+`currentTime` stuck at zero is a caption that never reveals a word for the
+one learner who has no sound to fall back on. **Remaining before this is
+observable to a single learner:** a deliberate `INWORLD_TTS_MODEL` switch,
+which is an owner-scale decision on its own — it changes voice quality and
+latency for every session, and `voiceFingerprint()` keys the speech cache on
+the model name, so flipping it invalidates and re-buys every cached and
+pre-generated clip in `inworld-tts-1`'s name. That switch should be preceded
+by the same live measurement this file's own culture always demands before
+trusting a vendor claim: a `voices:verify`-style check that TTS-2 actually
+returns timing for our enrolled voices, in all three locales, without
+degrading voice-clone fidelity — none of which this pass could do, since
+Inworld credentials do not exist in an isolated worktree and spending
+against a model production does not use is not this lane's call to make
+alone.
+
+**Full-duplex VAD/barge-in — investigated, NOT built, and should not be
+attempted as a shallow version.** The premise in the task that opened this
+investigation was that the interrupt MECHANISM might be the missing piece;
+it is not. `TutorExperience.tsx`'s `onInterrupt` already does both halves —
+local squelch (`setInterruptedSeq` blanks `speechUrl`, which `TutorStage`
+turns into an actual `pause()`) AND a server-side abort
+(`socket.interrupt()` → `ws/server.ts`'s `case 'interrupt'` →
+`live.abort?.abort()`, idempotent outside an in-flight turn) — and
+`useHandsFreeTurn`'s own gate (`!speaking && !awaitingReply && !audioPending`)
+means the microphone re-opens automatically the instant that interrupt
+lands, with no code change needed. What is actually missing is narrower and
+harder: a VOICE-DETECTED trigger for that same `onInterrupt`, in place of
+the orb tap that fires it today. Producing that trigger needs a live
+microphone stream OPEN WHILE THE TUTOR'S OWN AUDIO IS PLAYING, which this
+codebase has independently and explicitly designed against, in writing, in
+THREE separate places, for §1.9 reasons rather than engineering ones:
+`useMicrophone.ts`'s own header ("Push-to-talk, deliberately... NOT open-mic
+voice activity detection, and the reason is §1.9 rather than engineering
+taste: an always-listening microphone in a child's room captures everything
+said near it, including by people who never agreed to anything"),
+`useHandsFreeTurn.ts`'s own header ("it is not an always-on microphone... it
+never opens while the tutor is talking"), and the mic-in-use browser
+indicator concern `useMicrophone.ts`'s `release()` documents as "a promise we
+break" if left lit past its purpose. Building client-side VAD during
+playback would mean an open mic, in a child's physical space, for the
+DURATION of every tutor turn — not merely a wider consent SCOPE than
+today's (which covers only audio captured while the learner is understood to
+be answering), but the literal shape of "always-listening" these three
+comments independently reject. It also has a real, unmeasured technical
+failure mode this codebase has not needed to solve before: the SAME device's
+own speaker output reaching the SAME device's microphone, on a shared
+tablet with no headphones — the ordinary case for this product's audience —
+which naive amplitude-based VAD reads as "the learner started talking" the
+instant the tutor's own voice begins. Investigated whether the PROVIDER
+could carry this instead: Inworld does sell a genuinely full-duplex product
+with built-in, no-custom-logic barge-in and semantic VAD
+(`docs.inworld.ai/realtime/overview`, "Speech-to-Speech API: Full-Duplex,
+Sub-Second, Model-Agnostic") — but it is a DIFFERENT product from the one
+this codebase integrates: a persistent bidirectional WebSocket/WebRTC/SIP
+session (the OpenAI Realtime wire shape) in place of today's two independent
+REST calls (`/tts/v1/voice`, `/stt/v1/transcribe`), which is the
+ground-up voice-pipeline rewrite ORACLE.md's own architecture section
+already anticipates as "a voice-provider project" rather than an increment.
+Routing through it would also make the PRIVACY question strictly worse, not
+better, than the client-side version: continuous ambient audio would stream
+to a THIRD PARTY for the length of every tutor turn, not merely get analysed
+locally — a materially larger and different processing activity than the
+one `/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` and the existing consent gate cover,
+and the DPA blocking rollout (/AGENTS.md §1.9, §16) was scoped to today's
+capture-on-demand shape, not continuous streaming. Both paths cross the same
+line for the same reason, so a scoped increment does not exist here — this
+is left as a design finding rather than code, per this push's own
+instruction that a project needing capabilities this codebase does not have
+wired up at all should be written up rather than faked. Any future attempt
+needs, at minimum: an explicit owner decision to relax the "not an
+always-on microphone" posture (§1.9-adjacent, the same weight as the
+existing carve-out in §0); a measured answer to the same-device echo
+question BEFORE writing a line of client VAD code; and, if the
+provider-side path is ever preferred, its own full privacy/consent/DPA
+review as a second, separate carve-out — not a rider on the existing one.
 
 ## 20. V4 — the bicameral tutor (harness architecture)
 

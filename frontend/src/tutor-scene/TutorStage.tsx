@@ -140,6 +140,21 @@ export interface TutorStageProps {
    * that is just quiet is a bug report.
    */
   onSpeechBlocked?: (blocked: boolean) => void;
+  /**
+   * Fires once, when the `<audio>` element this stage owns is attached (and
+   * again with `null` if it is ever detached).
+   *
+   * A raw element, not a URL or a playback position: this stage stays
+   * deliberately ignorant of what is IN the audio (§ above, "knows NOTHING
+   * about DeepSeek, Qwen, retrieval, transcripts or turn-taking") — reading
+   * `.currentTime` against word-level timing is a conversational-layer
+   * concern, not a rendering one. The element is handed out rather than
+   * duplicated because `useLipSync` (via `captureOnce`) already permanently
+   * routes this SAME element through one shared Web Audio graph — a second
+   * `<audio>` for a second consumer would need its own such capture, or
+   * silence.
+   */
+  onAudioElementReady?: (element: HTMLAudioElement | null) => void;
 }
 
 export function TutorStage({
@@ -162,6 +177,7 @@ export function TutorStage({
   onReady,
   onQuality,
   onSpeechBlocked,
+  onAudioElementReady,
 }: TutorStageProps) {
   const audio = useRef<HTMLAudioElement | null>(null);
   const [element, setElement] = useState<HTMLAudioElement | null>(null);
@@ -246,6 +262,7 @@ export function TutorStage({
            */
           if (node && node.crossOrigin !== 'anonymous') node.crossOrigin = 'anonymous';
           audio.current = node;
+          onAudioElementReady?.(node);
         }}
         src={speechUrl ?? undefined}
         preload="auto"

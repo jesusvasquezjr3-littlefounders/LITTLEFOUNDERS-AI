@@ -53,7 +53,7 @@ const TUTOR_LINE = 'A goal is easier to reach when you can see it.';
 function makeSocket(overrides: Partial<TutorSocket> = {}): TutorSocket {
   return {
     connection: 'open',
-    turn: { seq: 1, text: TUTOR_LINE, emotion: 'happy', action: 'nod', audioUrl: null, audioPending: false, next: 'ask', policy: null, demonstrate: null, whiteboard: null },
+    turn: { seq: 1, text: TUTOR_LINE, emotion: 'happy', action: 'nod', audioUrl: null, audioPending: false, wordTimings: null, next: 'ask', policy: null, demonstrate: null, whiteboard: null },
     history: [{ speaker: 'tutor', text: TUTOR_LINE, seq: 1 }],
     segment: null,
     lesson: null,
@@ -93,6 +93,7 @@ function conversation(
       socket={socket}
       token="test-token"
       speaking={false}
+      audioElement={null}
       awaitingReply={false}
       onAwaitReply={vi.fn()}
       onDraftChange={overrides.onDraftChange ?? vi.fn()}
@@ -229,6 +230,7 @@ const WHITEBOARD_TURN = {
   action: 'nod' as const,
   audioUrl: null,
   audioPending: false,
+  wordTimings: null,
   next: 'ask' as const,
   policy: null,
   demonstrate: null,
@@ -358,6 +360,7 @@ describe('the composer refuses to submit while a reply is already pending', () =
         socket={socket}
         token="test-token"
         speaking={false}
+        audioElement={null}
         awaitingReply
         onAwaitReply={vi.fn()}
         onDraftChange={vi.fn()}
@@ -499,6 +502,7 @@ describe('Start over and Finish refuse to fire while a reply is already pending'
         socket={socket}
         token="test-token"
         speaking={false}
+        audioElement={null}
         awaitingReply
         onAwaitReply={vi.fn()}
         onDraftChange={vi.fn()}
