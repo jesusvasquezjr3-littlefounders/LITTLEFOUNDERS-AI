@@ -614,6 +614,29 @@ function internalRouter(): Router {
     CategoriesWhiteboardBody,
   ]);
 
+  /**
+   * v3's tray-demonstration steps, exactly as it was validated before ever
+   * reaching a turn (`oracle/src/tutor/turnSchema.ts`'s `DemoStepSchema`) —
+   * mirroring `WhiteboardBody` immediately above, edge-validated the same
+   * way every request body is (§1.6). Found while investigating ORACLE.md
+   * §19.5's "replaying `demonstrate` animations" backlog item, 2026-09-01:
+   * no field for this existed at all, so a session where the tutor
+   * demonstrated on the money tray lost that fact silently on replay and on
+   * the guardian transcript viewer (migration 0067).
+   */
+  const DemonstrateBody = z
+    .array(
+      z
+        .object({
+          kind: z.enum(['add', 'remove', 'pause']),
+          denomination: z.number().positive().max(10_000).optional(),
+          ms: z.number().int().min(100).max(2_000).optional(),
+        })
+        .strict(),
+    )
+    .min(1)
+    .max(8);
+
   const TurnBody = z.object({
     sessionId: z.string().uuid(),
     seq: z.number().int().nonnegative(),
@@ -625,6 +648,7 @@ function internalRouter(): Router {
     source: z.enum(['model', 'scripted', 'stt']),
     moderation: z.record(z.string(), z.unknown()).optional(),
     whiteboard: WhiteboardBody.nullish(),
+    demonstrate: DemonstrateBody.nullish(),
   });
 
   router.post('/turns', async (req, res) => {

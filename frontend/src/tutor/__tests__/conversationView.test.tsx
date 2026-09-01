@@ -1231,6 +1231,39 @@ describe('the lesson-thread chip yields the top band to the docked caption at FU
   });
 });
 
+/*
+ * ORACLE.md §19.5 — the step dots half of "the conversing-phase screen-state
+ * machine and step dots". A purely visual companion beside the lessonThread
+ * text above: the arithmetic itself is `lessonStepDots.test.ts`'s job, so
+ * this only has to prove the dots actually reach the DOM, in the right
+ * count, hidden from assistive tech (the sentence beside them already
+ * announces "step X of Y" — a screen reader must not hear it twice).
+ */
+describe('the lesson-thread chip draws one step dot per plan step', () => {
+  it('draws exactly `of` dots, marking the current one distinctly from what is done and upcoming', () => {
+    const { container } = render(conversation(makeSocket({ lesson: { topic: 'Ahorro', step: 2, of: 4 } }), true));
+    const dots = container.querySelectorAll('[data-lesson-step]');
+    expect(dots).toHaveLength(4);
+    expect(Array.from(dots).map((dot) => dot.getAttribute('data-lesson-step'))).toEqual([
+      'done',
+      'current',
+      'upcoming',
+      'upcoming',
+    ]);
+  });
+
+  it('hides the dot row from assistive tech, since the chip text already announces the step', () => {
+    const { container } = render(conversation(makeSocket({ lesson: { topic: 'Ahorro', step: 2, of: 4 } }), true));
+    const row = container.querySelector('[data-lesson-step]')?.parentElement;
+    expect(row?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('draws no dots at all while there is no active lesson thread', () => {
+    const { container } = render(conversation(makeSocket({ lesson: null }), true));
+    expect(container.querySelectorAll('[data-lesson-step]')).toHaveLength(0);
+  });
+});
+
 describe('the bottom edge the sheet and the microphone share', () => {
   it('lifts the dock over the resting sheet, and hands the edge back when the sheet goes', () => {
     /*

@@ -3417,3 +3417,44 @@ did. The gym's own population is deliberately small (four archetypes, one
 plan shape, one starting mastery each); a cross-product over starting
 mastery, plan shape and multi-attempt dynamics is a real, larger follow-up
 once this first slice earns it, not built speculatively now.
+
+### 20.8 Replaying `demonstrate` animations — SHIPPED (narrow, deliberately)
+
+**§19.5's own "v3 tail" backlog item, investigated and closed to the extent
+that is responsible, 2026-09-01.** `demonstrate` (§19.3's "the tutor's
+hands") was a LIVE-ONLY wire field: `ws/server.ts` sent it on the `turn`
+frame, but `tutor_turns` had no column for it, `PersistTurnInput` had no
+field for it, and neither tutor-turn `persistTurn` call site passed one —
+the IDENTICAL gap round 35 already found and fixed for the whiteboard
+(§20.5), on this feature's OWN sibling v3 visual field. The result was the
+same shape: a session where the tutor's hands moved a coin on the money
+tray lost that fact silently on replay and on the guardian transcript
+viewer the instant the live socket closed. Migration `0067` adds the
+column; `PersistTurnInput`, `TranscriptTurn` and `ReplayBeat` now carry the
+steps the identical distance `whiteboard` already travels.
+
+**Deliberately NOT a re-animated tray, and this is a scope decision, not an
+oversight.** `runTrayDemo` (`trayDemo.ts`) only knows how to move a REAL,
+interactive Lesson Engine renderer's own draft state — the same one a real
+tap changes — and `mayDemonstrate` itself refuses to run against an
+activity that has already been answered correctly, which every replayed
+activity, by definition, already has (`ActivityDetail`'s own comment in
+`ReplayInWorld.tsx` already explains why a replayed activity never mounts
+the real interactive renderer at all: doing so would let a learner
+re-answer a graded, paid exercise wearing the clothes of a memory).
+Mounting that renderer read-only to re-drive the exact coin animation would
+mean building a SECOND tray-rendering surface with its own accessibility
+and hit-testing burden (§1.14) — a fix considerably larger than the gap it
+closes, for a beat that is otherwise a plain caption. `ReplayInWorld.tsx`'s
+`DemoStepsSummary` instead states what the steps WERE — which denominations
+were added or removed, in order, via `Intl.NumberFormat`'s `signDisplay`
+and `Intl.ListFormat` — as a small caption beneath the tutor beat that
+narrated them. The steps are real and now visible again; the animation
+itself is not reconstructed.
+
+**Still out of scope, not silently dropped:** a genuine read-only replica of
+the tray's own visual (coins actually appearing/disappearing in sequence,
+timed against the beat) would need that second renderer and its own full
+accessibility/responsive verification pass — a real next step, scoped
+separately, if the plain-text summary above turns out not to be enough for
+a parent or learner reviewing a replay.

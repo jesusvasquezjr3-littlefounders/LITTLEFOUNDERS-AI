@@ -44,6 +44,7 @@ function turn(over: Partial<TranscriptTurn> & Pick<TranscriptTurn, 'id' | 'seq' 
     source: 'model',
     created_at: '2026-08-14T16:20:00.000Z',
     whiteboard: null,
+    demonstrate: null,
     ...over,
   };
 }
@@ -255,6 +256,50 @@ describe('buildReplayScript', () => {
       transcript([turn({ id: 't1', seq: 1, speaker: 'learner', text: 'quiero un pizarrón' })]),
     );
     expect(script.beats[0]?.whiteboard).toBeNull();
+  });
+
+  /*
+   * Found while investigating ORACLE.md §19.5's "replaying `demonstrate`
+   * animations" backlog item, 2026-09-01 — the identical gap round 35 found
+   * for the whiteboard above, on the tutor's OTHER v3 turn-schema visual
+   * field: a tutor turn that demonstrated on the money tray had no path
+   * into a replay beat at all, so a replay silently dropped the tutor's
+   * hands moving a coin even though the stored row now carries it
+   * (migration 0067).
+   */
+  it('carries the stored demonstration steps through to the tutor beat that drew them', () => {
+    const STEPS = [
+      { kind: 'add' as const, denomination: 10 },
+      { kind: 'add' as const, denomination: 5 },
+    ];
+    const script = buildReplayScript(
+      transcript([
+        turn({
+          id: 't1',
+          seq: 1,
+          speaker: 'tutor',
+          text: 'Mira, si agrego esta moneda de 10 y esta de 5…',
+          demonstrate: STEPS,
+        }),
+      ]),
+    );
+    expect(script.beats[0]?.demonstrate).toEqual(STEPS);
+  });
+
+  it('never puts a demonstration on an activity, learner or note beat — nothing was ever recorded for those', () => {
+    const script = buildReplayScript(
+      transcript(
+        [
+          turn({ id: 't1', seq: 1, speaker: 'tutor', text: 'Aquí tienes la actividad.' }),
+          turn({ id: 't2', seq: 2, speaker: 'learner', text: 'no entendí' }),
+        ],
+        [segment({ segmentId: 's1', seq: 1 })],
+      ),
+    );
+    expect(script.beats).toHaveLength(3);
+    for (const beat of script.beats) {
+      expect(beat.demonstrate).toBeNull();
+    }
   });
 
   it('never attributes audio to the learner, because no such recording exists', () => {

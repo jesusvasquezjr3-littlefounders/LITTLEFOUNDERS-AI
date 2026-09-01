@@ -820,6 +820,19 @@ export type TutorTurnWhiteboard =
   | TutorTurnMarkedLineBoard
   | TutorTurnCategoriesBoard;
 
+/**
+ * One closed step of a tray demonstration, exactly as it was sent over the
+ * wire and persisted — mirrors `oracle/src/ws/protocol.ts`'s `WireDemoStep`
+ * (itself mirroring `oracle/src/tutor/turnSchema.ts`'s `DemoStepSchema`).
+ * `backend` and `oracle` share no types by design (see `TutorTurnWhiteboard`'s
+ * own comment on this exact posture) — duplicated deliberately, not imported.
+ */
+export interface TutorTurnDemonstrateStep {
+  kind: 'add' | 'remove' | 'pause';
+  denomination?: number;
+  ms?: number;
+}
+
 export interface TutorTurnRow {
   id: string;
   session_id: string;
@@ -833,10 +846,24 @@ export interface TutorTurnRow {
   created_at: string;
   /** Null on every row that never drew a board — see migration 0058. */
   whiteboard: TutorTurnWhiteboard | null;
+  /**
+   * Null on every row that never demonstrated on the money tray — see
+   * migration 0067. Found while investigating ORACLE.md §19.5's "replaying
+   * `demonstrate` animations" backlog item, 2026-09-01: the identical gap
+   * round 35 found for `whiteboard` above, on the tutor's OTHER v3 turn-
+   * schema visual field.
+   */
+  demonstrate: TutorTurnDemonstrateStep[] | null;
 }
 
-/** The same row, before `whiteboard` has been runtime-checked. See `readTurnWhiteboard`. */
-type TutorTurnRawRow = Omit<TutorTurnRow, 'whiteboard'> & { whiteboard: unknown };
+/**
+ * The same row, before `whiteboard`/`demonstrate` have been runtime-checked.
+ * See `readTurnWhiteboard`/`readTurnDemonstrate`.
+ */
+type TutorTurnRawRow = Omit<TutorTurnRow, 'whiteboard' | 'demonstrate'> & {
+  whiteboard: unknown;
+  demonstrate: unknown;
+};
 
 const WhiteboardStepRowSchema = z
   .object({
@@ -1051,6 +1078,49 @@ function readTurnWhiteboard(raw: unknown, turnId: string): TutorTurnWhiteboard |
   return parsed.data;
 }
 
+/**
+ * Re-derives oracle's `DemoStepSchema` (`oracle/src/tutor/turnSchema.ts`),
+ * one closed step of a tray demonstration, plus the array-level 1-8 bound
+ * `TutorTurnSchema` enforces on `demonstrate` as a whole — the same posture
+ * `TutorTurnWhiteboardRowSchema` above uses for the sibling v3 visual field,
+ * and for the same reason: this package and `oracle` share no types, and a
+ * malformed or historically-stale row must be caught at THIS side of that
+ * duplication rather than trusted on a TypeScript assertion alone (round 35 /
+ * round 113's own lesson, applied here before the identical gap could repeat
+ * it under a different field name).
+ */
+const DemonstrateStepRowSchema = z
+  .object({
+    kind: z.enum(['add', 'remove', 'pause']),
+    denomination: z.number().positive().max(10_000).optional(),
+    ms: z.number().int().min(100).max(2_000).optional(),
+  })
+  .strict();
+
+const TutorTurnDemonstrateRowSchema = z.array(DemonstrateStepRowSchema).min(1).max(8);
+
+/**
+ * A malformed demonstration on this DISPLAY-ONLY read degrades to none
+ * rather than failing the whole transcript fetch — the identical §1.14
+ * reasoning `readTurnWhiteboard` above already documents in full: this data
+ * is read, never modified or written back, and a family's whole conversation
+ * history must not go down over one corrupt row. Logged loudly rather than
+ * swallowed, for the same reason.
+ */
+function readTurnDemonstrate(raw: unknown, turnId: string): TutorTurnDemonstrateStep[] | null {
+  if (raw === null || raw === undefined) return null;
+  const parsed = TutorTurnDemonstrateRowSchema.safeParse(raw);
+  if (!parsed.success) {
+    console.warn(
+      `[tutor] tutor_turns.id=${turnId} carries demonstration steps that failed runtime validation — ` +
+        'degrading to null rather than forwarding them to the transcript client: ' +
+        parsed.error.issues.map((i) => `${i.path.join('.') || '(root)'}: ${i.message}`).join('; '),
+    );
+    return null;
+  }
+  return parsed.data;
+}
+
 export interface InsertTurnInput {
   sessionId: string;
   seq: number;
@@ -1068,6 +1138,15 @@ export interface InsertTurnInput {
    * 0058).
    */
   whiteboard?: TutorTurnWhiteboard | null;
+  /**
+   * Found while investigating ORACLE.md §19.5's "replaying `demonstrate`
+   * animations" backlog item, 2026-09-01 — the identical gap round 35 found
+   * for `whiteboard` above, on the tutor's OTHER v3 turn-schema visual
+   * field: this field did not exist at all, so a session where the tutor
+   * demonstrated on the money tray lost that fact silently on replay and on
+   * the guardian transcript viewer (migration 0067).
+   */
+  demonstrate?: TutorTurnDemonstrateStep[] | null;
 }
 
 export async function insertTutorTurn(input: InsertTurnInput): Promise<boolean> {
@@ -1087,6 +1166,7 @@ export async function insertTutorTurn(input: InsertTurnInput): Promise<boolean> 
       source: input.source,
       moderation: input.moderation ?? {},
       whiteboard: input.whiteboard ?? null,
+      demonstrate: input.demonstrate ?? null,
     }),
   });
   return res !== null;
@@ -1094,10 +1174,14 @@ export async function insertTutorTurn(input: InsertTurnInput): Promise<boolean> 
 
 export async function listTutorTurns(sessionId: string): Promise<TutorTurnRow[] | null> {
   const rows = await serviceRest<TutorTurnRawRow[]>(
-    `/tutor_turns?session_id=eq.${eu(sessionId)}&select=id,session_id,seq,speaker,text,emotion,action,audio_path,source,created_at,whiteboard&order=seq.asc`,
+    `/tutor_turns?session_id=eq.${eu(sessionId)}&select=id,session_id,seq,speaker,text,emotion,action,audio_path,source,created_at,whiteboard,demonstrate&order=seq.asc`,
   );
   if (rows === null) return null;
-  return rows.map((row) => ({ ...row, whiteboard: readTurnWhiteboard(row.whiteboard, row.id) }));
+  return rows.map((row) => ({
+    ...row,
+    whiteboard: readTurnWhiteboard(row.whiteboard, row.id),
+    demonstrate: readTurnDemonstrate(row.demonstrate, row.id),
+  }));
 }
 
 // ── Segments ────────────────────────────────────────────────────────────────

@@ -735,6 +735,209 @@ describe('listTutorTurns re-validates the whiteboard JSONB at read time, not mer
 });
 
 /*
+ * Found while investigating ORACLE.md §19.5's "replaying `demonstrate`
+ * animations" backlog item, 2026-09-01 — the identical gap round 35 found
+ * for the whiteboard above, on the tutor's OTHER v3 turn-schema visual
+ * field: `InsertTurnInput` had no field for it and `listTutorTurns`'s
+ * SELECT did not name the column, so a session where the tutor demonstrated
+ * on the money tray lost that fact silently on replay and on the guardian
+ * transcript viewer (migration 0067).
+ */
+describe('the tray-demonstration steps survive the round trip through Core’s own data layer', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const STEPS = [
+    { kind: 'add' as const, denomination: 10 },
+    { kind: 'add' as const, denomination: 5 },
+  ];
+
+  it('insertTutorTurn sends the steps exactly as given, not re-derived', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve(new Response(null, { status: 204 })),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await insertTutorTurn({
+      sessionId: '22222222-2222-4222-8222-222222222222',
+      seq: 3,
+      speaker: 'tutor',
+      text: 'Mira, si agrego esta moneda de 10 y esta de 5…',
+      source: 'model',
+      demonstrate: STEPS,
+    });
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as { demonstrate?: unknown };
+    expect(body.demonstrate).toEqual(STEPS);
+  });
+
+  it('a turn with no demonstration sends demonstrate: null, not an absent field', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve(new Response(null, { status: 204 })),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await insertTutorTurn({
+      sessionId: '22222222-2222-4222-8222-222222222222',
+      seq: 1,
+      speaker: 'tutor',
+      text: 'Hola, ¿en qué trabajamos hoy?',
+      source: 'model',
+    });
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as { demonstrate?: unknown };
+    expect(body.demonstrate).toBeNull();
+  });
+
+  it('listTutorTurns selects the demonstrate column, so stored steps actually come back', async () => {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>((url) => {
+      expect(String(url)).toContain('demonstrate');
+      return Promise.resolve(
+        new Response(
+          JSON.stringify([
+            {
+              id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+              session_id: '22222222-2222-4222-8222-222222222222',
+              seq: 3,
+              speaker: 'tutor',
+              text: 'Mira, si agrego esta moneda de 10 y esta de 5…',
+              emotion: 'happy',
+              action: 'nod',
+              audio_path: null,
+              source: 'model',
+              created_at: '2026-09-01T00:00:00.000Z',
+              whiteboard: null,
+              demonstrate: STEPS,
+            },
+          ]),
+          { status: 200 },
+        ),
+      );
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+    expect(rows?.[0]?.demonstrate).toEqual(STEPS);
+  });
+});
+
+/*
+ * The identical read-time re-validation `readTurnWhiteboard` above already
+ * needed (round 35 / round 113) — applied here so the SAME class of gap
+ * cannot reopen under `demonstrate`'s own name: a TypeScript assertion on a
+ * JSONB column proves nothing at runtime, and `0067` adds no DB-level CHECK
+ * constraint either.
+ */
+describe('listTutorTurns re-validates the demonstrate JSONB at read time, not merely at write time', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const GOOD_STEPS = [
+    { kind: 'add' as const, denomination: 10 },
+    { kind: 'pause' as const, ms: 500 },
+  ];
+
+  const TURN_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+
+  function rowsResponse(demonstrate: unknown): Response {
+    return new Response(
+      JSON.stringify([
+        {
+          id: TURN_ID,
+          session_id: '22222222-2222-4222-8222-222222222222',
+          seq: 3,
+          speaker: 'tutor',
+          text: 'Mira, si agrego esta moneda de 10 y esta de 5…',
+          emotion: 'happy',
+          action: 'nod',
+          audio_path: null,
+          source: 'model',
+          created_at: '2026-09-01T00:00:00.000Z',
+          whiteboard: null,
+          demonstrate,
+        },
+      ]),
+      { status: 200 },
+    );
+  }
+
+  it('still returns well-formed steps verbatim — the fix must not regress the happy path', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(GOOD_STEPS))));
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+    expect(rows?.[0]?.demonstrate).toEqual(GOOD_STEPS);
+  });
+
+  it('degrades a denomination past DemoStepSchema’s own 10,000 ceiling to null, and logs it loudly', async () => {
+    const malformed = [{ kind: 'add', denomination: 50_000 }];
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(malformed))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.demonstrate).toBeNull();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining(TURN_ID));
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('demonstration'));
+    warnSpy.mockRestore();
+  });
+
+  it('degrades a step naming a kind outside the closed add/remove/pause vocabulary', async () => {
+    const stray = [{ kind: 'shake', denomination: 10 }];
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(stray))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.demonstrate).toBeNull();
+    warnSpy.mockRestore();
+  });
+
+  it('degrades a pause step whose ms falls below DemoStepSchema’s own 100ms floor', async () => {
+    const tooFast = [{ kind: 'pause', ms: 10 }];
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(tooFast))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.demonstrate).toBeNull();
+    warnSpy.mockRestore();
+  });
+
+  it('degrades an empty steps array — the turn schema requires at least one', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse([]))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.demonstrate).toBeNull();
+    warnSpy.mockRestore();
+  });
+
+  it('degrades a steps array past the turn schema’s own 8-step ceiling', async () => {
+    const tooMany = Array.from({ length: 9 }, () => ({ kind: 'add', denomination: 1 }));
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(tooMany))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.demonstrate).toBeNull();
+    warnSpy.mockRestore();
+  });
+
+  it('leaves a genuinely absent demonstration as null, without logging anything', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(rowsResponse(null))));
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const rows = await listTutorTurns('22222222-2222-4222-8222-222222222222');
+
+    expect(rows?.[0]?.demonstrate).toBeNull();
+    expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
+});
+
+/*
  * FOUND BY ADVERSARIAL REVIEW SWEEP tutor-review-sweep-92 (onboarding
  * dimension), HIGH: `tutor_preferences.companion` (migration 0047) carried
  * no DEFAULT, unlike `character` (`DEFAULT 'rho'`). `upsertTutorPreferences`

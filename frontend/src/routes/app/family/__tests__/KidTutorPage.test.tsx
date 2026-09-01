@@ -309,8 +309,8 @@ describe('KidTutorPage — a safety flag opens the exact transcript it happened 
       data: {
         session: { ...BASE_SESSION, id: 'old-session' },
         turns: [
-          { id: 't1', seq: 2, speaker: 'tutor', text: 'How are you feeling today?', emotion: null, action: null, audio_path: null, source: 'model', created_at: '2026-08-20T09:00:00Z', whiteboard: null },
-          { id: 't2', seq: 3, speaker: 'learner', text: 'the flagged words', emotion: null, action: null, audio_path: null, source: 'learner', created_at: '2026-08-20T09:00:01Z', whiteboard: null },
+          { id: 't1', seq: 2, speaker: 'tutor', text: 'How are you feeling today?', emotion: null, action: null, audio_path: null, source: 'model', created_at: '2026-08-20T09:00:00Z', whiteboard: null, demonstrate: null },
+          { id: 't2', seq: 3, speaker: 'learner', text: 'the flagged words', emotion: null, action: null, audio_path: null, source: 'learner', created_at: '2026-08-20T09:00:01Z', whiteboard: null, demonstrate: null },
         ],
         segments: [],
       },
@@ -355,8 +355,8 @@ describe('KidTutorPage — a graded activity is part of the transcript, not invi
       data: {
         session: BASE_SESSION,
         turns: [
-          { id: 't1', seq: 1, speaker: 'tutor', text: 'Let’s try one.', emotion: null, action: null, audio_path: null, source: 'model', created_at: '2026-08-30T10:00:00Z', whiteboard: null },
-          { id: 't2', seq: 2, speaker: 'tutor', text: 'Nicely done.', emotion: null, action: null, audio_path: null, source: 'model', created_at: '2026-08-30T10:02:00Z', whiteboard: null },
+          { id: 't1', seq: 1, speaker: 'tutor', text: 'Let’s try one.', emotion: null, action: null, audio_path: null, source: 'model', created_at: '2026-08-30T10:00:00Z', whiteboard: null, demonstrate: null },
+          { id: 't2', seq: 2, speaker: 'tutor', text: 'Nicely done.', emotion: null, action: null, audio_path: null, source: 'model', created_at: '2026-08-30T10:02:00Z', whiteboard: null, demonstrate: null },
         ],
         segments: [
           {
@@ -528,6 +528,7 @@ describe('KidTutorPage — a tutor turn that drew a whiteboard shows it to the p
       label: 'Ahorros de Ana',
       currency: 'MXN' as const,
     },
+    demonstrate: null,
   };
 
   it('renders the whiteboard beside the tutor line that drew it', async () => {

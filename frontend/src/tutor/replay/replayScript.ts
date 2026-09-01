@@ -130,6 +130,16 @@ export interface ReplayBeat {
    * used the whiteboard lost it silently on replay.
    */
   whiteboard: TranscriptTurn['whiteboard'];
+  /**
+   * Tutor v3's tray-demonstration steps, when this turn narrated one over
+   * the open money tray — the SAME steps shown live, never re-derived.
+   * Present only on a `tutor` beat, mirroring `whiteboard` immediately
+   * above. Found while investigating ORACLE.md §19.5's "replaying
+   * `demonstrate` animations" backlog item, 2026-09-01: migration 0067 is
+   * what makes this reachable at all — before it, `TranscriptTurn` itself
+   * carried no such field to read.
+   */
+  demonstrate: TranscriptTurn['demonstrate'];
 }
 
 export interface ReplayScript {
@@ -374,6 +384,10 @@ export function buildReplayScript(transcript: SessionTranscript): ReplayScript {
         // own turn (never both `whiteboard` and `segmentRequest`), and this
         // beat itself IS the activity — nothing to draw here.
         whiteboard: null,
+        // A demonstration narrates OVER an already-open activity (the turn
+        // schema refuses one on the SAME turn that requests a segment) — it
+        // is never the segment's own row, so this beat carries none either.
+        demonstrate: null,
       };
     }
 
@@ -400,6 +414,7 @@ export function buildReplayScript(transcript: SessionTranscript): ReplayScript {
         durationMs: Math.max(estimateBeatMs(row.text, kind), whiteboardMinMs(row.whiteboard)),
         activity: null,
         whiteboard: row.whiteboard,
+        demonstrate: row.demonstrate,
       };
     }
 
@@ -415,9 +430,10 @@ export function buildReplayScript(transcript: SessionTranscript): ReplayScript {
       audioUrl: null,
       durationMs: estimateBeatMs(row.text, kind),
       activity: null,
-      // A learner/note row's column is NULL by schema — the board is a
-      // performance the tutor alone gives.
+      // A learner/note row's column is NULL by schema — the board and a
+      // demonstration are both performances the tutor alone gives.
       whiteboard: null,
+      demonstrate: null,
     };
   });
 

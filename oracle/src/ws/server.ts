@@ -1889,6 +1889,12 @@ async function deliver(
       source: emission.source,
       moderation: emission.moderation,
       whiteboard: wireBoard,
+      // Tutor v3's tray-demonstration steps, the same ones just sent on the
+      // wire frame above — migration 0067 closes the exact gap round 35
+      // found for `whiteboard`: unpersisted, this animation existed only for
+      // the length of the live socket and vanished from replay and from the
+      // guardian transcript viewer the instant the session ended.
+      demonstrate: emission.turn.demonstrate ?? null,
     }).then((recorded) => notePersist(live, recorded));
   });
 

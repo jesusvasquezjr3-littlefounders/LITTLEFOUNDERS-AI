@@ -259,7 +259,8 @@
     "note": "Note",
     "activity": "Activity",
     "activityScored": "You scored {{score}} out of 100",
-    "activityUnanswered": "You didn't answer this one"
+    "activityUnanswered": "You didn't answer this one",
+    "demonstrated": "The tutor showed: {{steps}}"
   },
   "startError": {
     "CONSENT_REQUIRED": "You need a grown-up's permission for the microphone. You can still type.",

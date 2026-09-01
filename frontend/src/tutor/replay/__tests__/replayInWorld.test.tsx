@@ -56,6 +56,7 @@ function turn(over: Pick<TranscriptTurn, 'id' | 'seq' | 'speaker' | 'text'> & Pa
     source: 'model',
     created_at: `2026-08-14T16:2${over.seq}:00.000Z`,
     whiteboard: null,
+    demonstrate: null,
     ...over,
   };
 }
@@ -204,6 +205,43 @@ describe('ReplayInWorld', () => {
   it('draws no board for a beat that never recorded one', () => {
     renderReplay(directorAt(script, 0));
     expect(document.querySelector('[data-tutor-whiteboard]')).toBeNull();
+  });
+
+  /*
+   * Found while investigating ORACLE.md §19.5's "replaying `demonstrate`
+   * animations" backlog item, 2026-09-01 — the identical gap round 35 found
+   * for the whiteboard above, on the tutor's OTHER v3 visual field: a tutor
+   * turn that demonstrated on the money tray live had no path into replay
+   * at all, silently, even once the transcript row started carrying it
+   * (migration 0067).
+   */
+  it('summarizes the stored demonstration steps on the tutor beat that recorded them', () => {
+    const demoed: SessionTranscript = {
+      session: SESSION,
+      turns: [
+        turn({
+          id: 'td1',
+          seq: 1,
+          speaker: 'tutor',
+          text: 'Mira, si agrego esta moneda de 10 y esta de 5…',
+          demonstrate: [
+            { kind: 'add', denomination: 10 },
+            { kind: 'add', denomination: 5 },
+          ],
+        }),
+      ],
+      segments: [],
+    };
+    const demoScript = buildReplayScript(demoed);
+    renderReplay(directorAt(demoScript, 0));
+
+    expect(screen.getByText(/\+10/)).toBeInTheDocument();
+    expect(screen.getByText(/\+5/)).toBeInTheDocument();
+  });
+
+  it('draws no demonstration summary for a beat that never recorded one', () => {
+    renderReplay(directorAt(script, 0));
+    expect(screen.queryByText(/The tutor showed/i)).toBeNull();
   });
 
   it('gives every transport control a name, and the play button the name of what it does', () => {

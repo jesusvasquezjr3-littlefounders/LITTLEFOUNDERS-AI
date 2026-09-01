@@ -317,6 +317,17 @@ export interface TranscriptTurn {
    * (see `TutorWhiteboardWire`, above, the same shape this mirrors).
    */
   whiteboard: TutorWhiteboardWire | null;
+  /**
+   * Tutor v3's tray-demonstration steps, exactly as they were shown — never
+   * recomputed. Null on every row that never demonstrated, including every
+   * row written before migration 0067 added the column. Found while
+   * investigating ORACLE.md §19.5's "replaying `demonstrate` animations"
+   * backlog item, 2026-09-01 — the identical gap round 35 found for
+   * `whiteboard` above, on the tutor's OTHER v3 turn-schema visual field.
+   * Reuses `TrayDemoStep` above (the same live-wire shape) rather than a
+   * third copy of the same three fields.
+   */
+  demonstrate: TrayDemoStep[] | null;
 }
 
 export interface TranscriptSegment {

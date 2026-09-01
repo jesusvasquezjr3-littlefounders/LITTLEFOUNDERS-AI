@@ -259,7 +259,8 @@
     "note": "Observação",
     "activity": "Atividade",
     "activityScored": "Você fez {{score}} de 100",
-    "activityUnanswered": "Esta você não respondeu"
+    "activityUnanswered": "Esta você não respondeu",
+    "demonstrated": "O tutor te mostrou: {{steps}}"
   },
   "startError": {
     "CONSENT_REQUIRED": "Você precisa da permissão de um adulto para o microfone. Você ainda pode escrever.",
