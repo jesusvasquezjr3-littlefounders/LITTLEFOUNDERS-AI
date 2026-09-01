@@ -3,6 +3,25 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import i18n from '@/i18n';
 import { OfferChips } from '../OfferChips';
 import type { TutorOffers } from '../types';
+import type { TutorMapResponse } from '../tutorApi';
+
+/*
+ * `useSafeArea` alone, mocked — every OTHER consumer of `SafeAreaContext`
+ * (`AnchorProjector`) lives inside the `<Canvas>` this component's own tests
+ * never mount, so this is the only seam that needs one. `vi.hoisted` is what
+ * makes a MUTABLE value safe to close over from inside `vi.mock`'s factory,
+ * which Vitest hoists above these very imports.
+ */
+const { getMockSafeArea, setMockSafeArea } = vi.hoisted(() => {
+  let current: unknown = null;
+  return {
+    getMockSafeArea: () => current,
+    setMockSafeArea: (value: unknown) => {
+      current = value;
+    },
+  };
+});
+vi.mock('@/tutor-scene/SafeAreaContext', () => ({ useSafeArea: () => getMockSafeArea() }));
 
 /*
  * The arrival screen, which the owner has rejected twice.
@@ -106,6 +125,10 @@ afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
+  // The default every OTHER test in this file already runs under: no shell,
+  // so the dock-ceiling correction's own `safeArea?.` reads resolve to
+  // nothing and it is a no-op — exactly today's pre-fix behaviour.
+  setMockSafeArea(null);
 });
 
 describe('the openings', () => {
@@ -481,5 +504,229 @@ describe('the arrival, once the island is on screen', () => {
     expect(chipsGroup).not.toBeNull();
     expect(secondaryGroup?.contains(chipsGroup as Node)).toBe(false);
     expect(chipsGroup?.contains(secondaryGroup as Node)).toBe(false);
+  });
+});
+
+/*
+ * ROUND 123 BUG 2, ROOT-CAUSED. Live on `/dev/tutor-lab` at 863x349
+ * (introducing, v2 openings, `dockAbove` truthy throughout): forcing
+ * `startError` produced FIVE measured overlaps between this cluster and the
+ * dock's own contents, none of them caused by `dockAbove` going false — the
+ * chest-anchored cluster simply has no ceiling above the fixed mic dock, and
+ * a failed start's own error plate is exactly the kind of content that grows
+ * it. See `CLUSTER_DOCK_GAP_PX`'s comment in `OfferChips.tsx` for the fix.
+ *
+ * `getBoundingClientRect` is mocked rather than exercised through real chip
+ * text and CSS, because jsdom has no layout engine — a real browser already
+ * PROVED the shape of the failure and the shape of the fix above; what a unit
+ * test can prove instead, precisely, is the ARITHMETIC: given a cluster and a
+ * dock rect that overlap, does the correction clear them, leave untouched
+ * geometry untouched, and fall back to a scrollable cap only once nudging
+ * alone genuinely cannot reach.
+ */
+describe('the chest cluster never paints over the dock (round 123 bug 2, root cause)', () => {
+  function clusterContent(container: HTMLElement): HTMLElement {
+    // The one node `left-1/2` AND `top-2` both name — see `OfferChips.tsx`'s
+    // own comment on why it, and not `clusterRef`'s zero-sized wrapper, is
+    // what the correction has to measure and style.
+    const matches = Array.from(container.getElementsByClassName('left-1/2')).filter((el) =>
+      el.classList.contains('top-2'),
+    );
+    expect(matches).toHaveLength(1);
+    return matches[0] as HTMLElement;
+  }
+
+  function stubRect(top: number, height: number): DOMRect {
+    return { top, height, bottom: top + height, left: 0, right: 300, width: 300, x: 0, y: top, toJSON() {} };
+  }
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  it('nudges the cluster clear of the dock when a small shift is enough', () => {
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(stubRect(200, 100));
+    setMockSafeArea({
+      chromeRef: { current: new Map([['mic', { left: 0, top: 250, width: 300, height: 100 }]]) },
+    });
+
+    const { container } = render(
+      <OfferChips
+        phase="introducing"
+        map={null}
+        ready
+        offers={OFFERS}
+        starting={false}
+        startError="INTERNAL"
+        startErrorResetAt={null}
+        onStart={vi.fn()}
+        onPersonalize={vi.fn()}
+        onReplay={vi.fn()}
+        token="test-token"
+        character="rho"
+        nickname="Robi"
+      />,
+    );
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+
+    // Natural box (200..300) reaches 58px into the dock's own top (250 - the
+    // 8px gap = 242): the whole excess fits inside the budget the way-out
+    // chip leaves (no `exit` rect published here, so the floor is the top of
+    // the viewport itself), so a pure upward nudge is the entire correction —
+    // no clipping, and the `-50%` centring the node's own class provides is
+    // preserved in the SAME string, not silently dropped by the override.
+    const content = clusterContent(container);
+    expect(content.style.transform).toBe('translateX(-50%) translateY(-58px)');
+    expect(content.style.maxHeight).toBe('');
+  });
+
+  it('leaves an already-clear cluster pixel-identical to today', () => {
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(stubRect(50, 50));
+    setMockSafeArea({
+      chromeRef: { current: new Map([['mic', { left: 0, top: 250, width: 300, height: 100 }]]) },
+    });
+
+    const { container } = render(
+      <OfferChips
+        phase="introducing"
+        map={null}
+        ready
+        offers={OFFERS}
+        starting={false}
+        startError={null}
+        startErrorResetAt={null}
+        onStart={vi.fn()}
+        onPersonalize={vi.fn()}
+        onReplay={vi.fn()}
+        token="test-token"
+        character="rho"
+        nickname="Robi"
+      />,
+    );
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+
+    // Bottom edge (100) sits well clear of the dock's ceiling (242): the
+    // correction must be provably a no-op here, the same way `seo:live`
+    // proves a declaration rather than assuming one — this is the common
+    // case at every viewport the route actually ships at.
+    const content = clusterContent(container);
+    expect(content.style.transform).toBe('');
+    expect(content.style.maxHeight).toBe('');
+    expect(content.style.overflowY).toBe('');
+  });
+
+  it('falls back to a scrollable cap once even a full run to the top of the screen is not enough', () => {
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(stubRect(200, 300));
+    setMockSafeArea({
+      chromeRef: {
+        current: new Map([
+          ['mic', { left: 0, top: 250, width: 300, height: 100 }],
+          // Published close enough to the cluster's own natural top (200)
+          // that the nudge has ZERO budget before it would climb past the
+          // way-out chip itself — the one case a shift may never resolve.
+          ['exit', { left: 16, top: 180, width: 48, height: 20 }],
+        ]),
+      },
+    });
+
+    const { container } = render(
+      <OfferChips
+        phase="introducing"
+        map={null}
+        ready
+        offers={OFFERS}
+        starting={false}
+        startError="INTERNAL"
+        startErrorResetAt={null}
+        onStart={vi.fn()}
+        onPersonalize={vi.fn()}
+        onReplay={vi.fn()}
+        token="test-token"
+        character="rho"
+        nickname="Robi"
+      />,
+    );
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+
+    // Zero shift budget (200 - (180+20+8) < 0, clamped to 0): the entire
+    // 258px overflow becomes a clip, floored so a learner still has a
+    // ~2-line plate to read and scroll rather than nothing at all.
+    const content = clusterContent(container);
+    expect(content.style.transform).toBe('');
+    expect(content.style.maxHeight).toBe('96px');
+    expect(content.style.overflowY).toBe('auto');
+  });
+});
+
+/**
+ * A minimal, valid learning-map fixture — just enough to make `mapPanel`
+ * truthy (`map.nodes.length > 0`) and nothing else this test cares about.
+ */
+const MINIMAL_MAP: TutorMapResponse = {
+  nodes: [
+    {
+      kcId: '00000000-0000-4000-a000-000000000001',
+      kcKey: 'money.count-mixed-coins',
+      strand: 'money_math',
+      title: 'Count mixed money',
+      state: 'available',
+      mastery: null,
+      attempts: 0,
+      skillKey: null,
+    },
+  ],
+  edges: [],
+  continueTarget: null,
+  review: { count: 0 },
+};
+
+/*
+ * A live browser measured a FLAT `bottom-60` (240px) leaving this wrapper
+ * exactly `100vh - 72 - 240 = 37px` tall at 863x349 — a landscape phone's own
+ * height — clipping the map's CONTINUE chip, review count and every graph
+ * node out of view while they stayed present, and unreachable, in the DOM.
+ * jsdom has no layout engine, so this cannot re-measure the clipped pixels a
+ * real browser already did; what it CAN hold the line on is the class itself
+ * never quietly reverting to the flat value that caused it (the same
+ * arbitrary-value regression style `conversationView.test.tsx` and
+ * `personalizeInWorld.test.tsx` already use for their own CSS-driven fixes).
+ */
+describe('the learning map panel degrades gracefully at short viewports (round 123 follow-up)', () => {
+  it('reserves a bottom inset that shrinks with viewport height, never the flat 240px that clipped it to 37px', () => {
+    vi.useFakeTimers();
+    const { container } = render(
+      <OfferChips
+        phase="introducing"
+        map={MINIMAL_MAP}
+        ready
+        offers={OFFERS}
+        starting={false}
+        startError={null}
+        startErrorResetAt={null}
+        onStart={vi.fn()}
+        onPersonalize={vi.fn()}
+        onReplay={vi.fn()}
+        token="test-token"
+        character="rho"
+        nickname="Robi"
+      />,
+    );
+    // The map panel is gated behind the same reveal delay the openings are
+    // (`chipsIn`) — unlike the cluster-ceiling tests above, this wrapper does
+    // not exist in the DOM at all until that timer fires.
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    const wrap = container.querySelector('.fixed.inset-x-0.z-20.flex.justify-center');
+    expect(wrap).not.toBeNull();
+    expect(wrap?.className).toContain('bottom-[clamp(11rem,27vh,15rem)]');
+    expect(wrap?.className).not.toContain('bottom-60');
   });
 });

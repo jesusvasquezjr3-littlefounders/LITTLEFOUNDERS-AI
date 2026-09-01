@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/ui';
@@ -6,6 +6,7 @@ import type { CharacterId } from '@/components/characters/control/types';
 import { cn } from '@/lib/utils';
 import { playPlatformSound } from '@/lib/sound';
 import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
+import { useSafeArea } from '@/tutor-scene/SafeAreaContext';
 import { HudPlate } from './hud/HudPlate';
 import { micBlockedReason } from './mic';
 import { SessionHistory } from './SessionHistory';
@@ -74,6 +75,78 @@ const OFFERS_AFTER_GREETING_MS = 900;
 const SETTLE_STEPS = ['', 'lf-settle-2', 'lf-settle-3'] as const;
 
 const settleStep = (index: number): string => SETTLE_STEPS[Math.min(index, SETTLE_STEPS.length - 1)] ?? '';
+
+/*
+ * THE CLUSTER'S OWN CEILING ABOVE THE DOCK — round 123 bug 2, root-caused
+ * rather than merely re-mitigated.
+ *
+ * Round 123 named the trigger ("right after a failed session-start attempt")
+ * but could not reproduce it and guessed the mechanism was `ready &&
+ * !dockAbove` letting the fallback pair join `chips` as bare siblings. That
+ * guess was tested directly (this file's own regression test forces exactly
+ * that combination) and held up as a real, separate hazard — but it is NOT
+ * what round 123 actually saw, and chasing `dockAbove`'s truthiness alone
+ * would have shipped a fix for the wrong bug.
+ *
+ * REPRODUCED LIVE, on `/dev/tutor-lab` at 863x349 (introducing, v2 openings,
+ * `dockAbove` TRUTHY throughout — confirmed by watching `StageShell.tsx`'s own
+ * `attachAbove` ref callback, which never fired with `null` once): forcing
+ * `startError` non-null (a failed start's own aftermath) produced FIVE
+ * measured overlaps, all between this cluster and the DOCK's own contents —
+ * "Something went wrong. Try again." (the error plate `status` adds to the
+ * TOP of this column) against "My island", "Past conversations" AND the mic
+ * orb's own "Start talking" idle label; two of the four real openings against
+ * that same idle label. `dockAbove` was never false. The dock's rect
+ * (`SafeAreaContext`'s `mic` slot, published by `StageShell.tsx` regardless of
+ * whether anything is portalled into `above`) never moved. What moved was
+ * THIS cluster's own height: `status` inserts a whole new plate the moment a
+ * start fails, ABOVE `chips` in the same unbounded flex column, and a column
+ * that hangs downward from a camera-projected point with no ceiling will
+ * eventually reach whatever is fixed to the bottom of the viewport — exactly
+ * the "two layout systems that cannot see each other's rect" the file header
+ * above already names, just not the half of it round 123 checked.
+ *
+ * THE FIX READS THE DOCK'S REAL RECT RATHER THAN GUESSING A CONSTANT — the
+ * same `SafeAreaContext` the camera and `WorldChip` already trust, consumed
+ * exactly the way `AnchorProjector`'s own `escapeReserved` call consumes it:
+ * read-only, never published to. This cluster still may never REGISTER a rect
+ * of its own (see `clusterRef`'s comment on why that specific direction is a
+ * feedback loop) — reading the DOCK's already-published one is the opposite,
+ * safe direction, the same one `SpeechCaption`'s `avoid` option already takes
+ * for the very same dock.
+ *
+ * A max-height plus scroll, not a shove upward: the anchor point stays exactly
+ * where the camera puts it — nudging the whole cluster would either detach it
+ * visibly from the chest it names or fight the projector's own per-frame
+ * transform on the ANCESTOR node — and content that does not fit is content a
+ * finger can still reach by scrolling, which is strictly better than content
+ * sitting invisibly under the dock's own controls.
+ */
+const CLUSTER_DOCK_GAP_PX = 8;
+/**
+ * The smallest this cluster may ever be capped to, however little room the
+ * dock has left above it.
+ *
+ * A floor rather than letting the computed ceiling go to zero (or negative,
+ * when the anchor itself projects at or below the dock — a degenerate shot
+ * this cannot rule out): a learner can still read and scroll a ~2-line-tall
+ * plate, and `overflow-y-auto` makes the rest reachable. A collapsed-to-zero
+ * cluster would instead be indistinguishable from the tutor saying nothing.
+ */
+const CLUSTER_MIN_HEIGHT_PX = 96;
+/**
+ * How often the cluster's own height is checked against the dock's current
+ * rect, in ms.
+ *
+ * A poll, not a `useFrame` subscription: unlike the caption or the picker's
+ * name plates, this correction only has to react to THIS component's own
+ * content changing shape (a status plate arriving, the reveal timer firing,
+ * the dock growing a blocked-reason line) — none of which happens faster than
+ * a render, and all of which are still well inside a learner's reaction time
+ * at this cadence. The same order of cost as `HudOverlapReadout`'s own
+ * 400 ms lab instrument, spent here in every build rather than only in dev.
+ */
+const CLUSTER_HEIGHT_CHECK_MS = 250;
 
 /**
  * "In about N hours/minutes" for the SESSION_LIMIT refusal (§1.9 clarity —
@@ -180,6 +253,8 @@ export function OfferChips({
 }: OfferChipsProps) {
   const { t, i18n } = useTranslation();
   const dock = useStageDock();
+  /** Read-only: the dock's own published rect, never a registration of ours — see `CLUSTER_DOCK_GAP_PX` above. */
+  const safeArea = useSafeArea();
 
   /*
    * ONE anchored node for the whole cluster, rather than one `WorldChip` per
@@ -211,6 +286,13 @@ export function OfferChips({
    * new rect, forever. The rule and its reasoning live on `SafeAreaSlot`.
    */
   const clusterRef = useAnchorSlot('lead.chest');
+  /**
+   * The cluster's REAL, sized content — as opposed to `clusterRef`'s own
+   * deliberately zero-sized wrapper (see its comment). This is what actually
+   * grows when `status` gains a plate or `chips` gains a row, and therefore
+   * the node the dock-ceiling correction below has to measure.
+   */
+  const clusterContentRef = useRef<HTMLDivElement | null>(null);
 
   const [chipsIn, setChipsIn] = useState(false);
   const [replaysOpen, setReplaysOpen] = useState(false);
@@ -240,6 +322,117 @@ export function OfferChips({
     }, OFFERS_AFTER_GREETING_MS);
     return () => window.clearTimeout(timer);
   }, [ready]);
+
+  /*
+   * THE DOCK-CEILING CORRECTION — see `CLUSTER_DOCK_GAP_PX`'s comment above
+   * for the live reproduction this closes.
+   *
+   * Polled rather than derived from props: what can make this cluster grow
+   * (a status plate, a fourth opening wrapping to two lines in es-MX, the
+   * dock itself gaining a blocked-reason row and therefore rising) is spread
+   * across this component, `micForPhase`, and `StageShell.tsx`, and listing
+   * every one of them as a dependency is exactly the kind of list this whole
+   * mechanism exists to make unnecessary — `SafeAreaContext`'s `mic` rect and
+   * a `getBoundingClientRect()` on this cluster's own content are the two
+   * facts this correction actually needs, and both are cheap to re-read on a
+   * quarter-second cadence rather than threaded through as props.
+   */
+  useEffect(() => {
+    const content = clusterContentRef.current;
+    if (!content) return;
+
+    const sync = () => {
+      /*
+       * RESET BEFORE MEASURING, ALWAYS. `getBoundingClientRect()` reports
+       * this node's CURRENT painted box, which after a PREVIOUS tick's own
+       * `transform`/`maxHeight` is no longer this cluster's natural size or
+       * position — measuring it without resetting first would compound the
+       * previous correction into the next one, walking the cluster further
+       * from the chest on every single tick it stayed non-zero.
+       */
+      content.style.transform = '';
+      content.style.maxHeight = '';
+      content.style.overflowY = '';
+
+      const dockRect = safeArea?.chromeRef.current.get('mic');
+      // No dock published (the scene lab without a shell, a unit test, or a
+      // route where the dock has not mounted yet): nothing to clear against.
+      if (!dockRect) return;
+
+      const rect = content.getBoundingClientRect();
+      const ceiling = dockRect.top - CLUSTER_DOCK_GAP_PX;
+      const overflow = rect.top + rect.height - ceiling;
+      // Already clear at its natural size and position: leave it exactly as
+      // authored. This is the common case at every viewport this route
+      // actually ships at, and it must stay pixel-identical to today.
+      if (overflow <= 0) return;
+
+      /*
+       * AN UPWARD NUDGE FIRST, BOUNDED BY THE WAY-OUT CHIP RATHER THAN A
+       * SMALL FIXED BUDGET — a height cap ALONE was tried and measured wrong.
+       * At 863x349 with a failed-start error plate showing, the whole
+       * cluster's NATURAL height was 88px — already under any reasonable
+       * floor — and it still overlapped the dock by ~130px, because the
+       * CHEST ANCHOR ITSELF was projecting close enough to the dock that no
+       * amount of clipping the cluster's OWN bottom edge could keep its
+       * unclipped remainder off it: capping the height of an already-short
+       * block changes nothing. A small FIXED shift budget was tried next and
+       * ALSO measured wrong, for the identical reason one level up — 64px
+       * covered part of that same 130px gap and the height cap still could
+       * not close the rest, since `Math.max(floor, natural - remaining)`
+       * cannot shrink a block whose natural height is already under the
+       * floor. So the shift is bounded by the one thing that actually limits
+       * how far this cluster may honestly move: the "Leave the tutor" chip's
+       * own real, published rect (`SafeAreaContext`'s `exit` slot) — the same
+       * top-of-screen landmark `top-[max(4.5rem,9vh)]` on the map's own
+       * wrapper below protects by a flat guess. `top-2`'s offset from the
+       * anchor is a cosmetic gap, not a physical attachment, so closing it
+       * down to nothing is a smaller, less disruptive move than pushing a
+       * child's tutor further from the character it names would be — used
+       * only when it is the shift that clears the dock, never past it.
+       */
+      const exitRect = safeArea?.chromeRef.current.get('exit');
+      const topFloor = exitRect ? exitRect.top + exitRect.height + CLUSTER_DOCK_GAP_PX : 0;
+      const maxShift = Math.max(0, rect.top - topFloor);
+      const shift = Math.min(overflow, maxShift);
+      /*
+       * `translateX(-50%)` IS NOT OPTIONAL HERE — it is this node's OWN
+       * `-translate-x-1/2` CLASS (centring it under `left-1/2`), and an
+       * inline `style.transform` REPLACES a class's transform outright
+       * rather than composing with it. Dropping it measured live: the whole
+       * cluster centred a half-width too far right the instant any shift
+       * applied, cropping the second column of chips off a 375 px screen.
+       */
+      if (shift > 0) content.style.transform = `translateX(-50%) translateY(-${shift}px)`;
+
+      /*
+       * STILL NOT CLEAR EVEN PRESSED AGAINST THE WAY OUT: now it genuinely is
+       * a "too tall for the room available" problem — four openings plus a
+       * status plate, on a viewport short enough that even the full run from
+       * the chest to the top of the screen is not enough room — and clipping
+       * plus a scrollbar is the right answer FOR THAT SHAPE OF PROBLEM, the
+       * same remedy the map panel and the archive sheet already use for it.
+       */
+      const remaining = overflow - shift;
+      if (remaining > 0) {
+        content.style.maxHeight = `${Math.max(CLUSTER_MIN_HEIGHT_PX, rect.height - remaining)}px`;
+        content.style.overflowY = 'auto';
+      }
+    };
+
+    sync();
+    const timer = window.setInterval(sync, CLUSTER_HEIGHT_CHECK_MS);
+    return () => window.clearInterval(timer);
+    // `safeArea` is the provider's own stable value (see `SafeAreaContext.tsx`
+    // → its `useMemo`); the interval's own tick is what re-reads the REFS
+    // inside it, so neither it nor `dock` needs to be in this list for the
+    // CORRECTION to stay current. `ready` DOES belong here — `clusterContentRef`
+    // only exists inside the `ready` branch below, so the effect that fires on
+    // the FIRST render (`ready` still false, `content` still null) would
+    // otherwise return immediately and never run again: an effect's own
+    // dependency array is what makes it re-attach once the node it needs
+    // actually mounts, and a ref alone does not trigger that on its own.
+  }, [safeArea, ready]);
 
   const tutorName = t(`tutor.character.${character}.name`);
 
@@ -751,6 +944,7 @@ export function OfferChips({
             className="pointer-events-none fixed left-0 top-0 z-20 h-0 w-0 will-change-transform"
           >
             <div
+              ref={clusterContentRef}
               /*
                * Hanging FROM the chest point rather than centred on it, and
                * WIDER on desktop so the openings sit in one row across the
@@ -786,23 +980,20 @@ export function OfferChips({
                 THAN JOINING `chips` AS A PLAIN `flex-col` SIBLING.
                 A live browser test measured `chips` (the openings) and this
                 pair painting at IDENTICAL y-coordinates, text interleaved and
-                unreadable, immediately after a failed session-start attempt —
-                exactly the `ready && !dockAbove` combination round 27's own
-                comment below says "nothing enforces" stays unreached. The
-                dock (StageShell.tsx) is anchored by CSS against the viewport
-                and this cluster is anchored by the CAMERA against a point on
-                the character's chest — two independent layout systems that
-                cannot see each other's rect — so a `flex-col gap-2` on its
-                own only keeps them apart WITHIN one render; it says nothing
-                about whether this whole cluster's chest-projected position
-                happens to coincide with the dock's fixed one at a given
-                camera shot and viewport. A visible rule plus its own top
-                margin is the same belt-and-braces this file already applies
-                elsewhere (see `HudPlate`'s `floor="none"` sheets): even if
-                the two groups are ever pushed to occupy the same band again,
-                a rule between them keeps the SECOND group legible and
-                unambiguously "a different list", never text laid directly
-                over text with no seam.
+                unreadable, immediately after a failed session-start attempt.
+                Round 123 guessed the trigger was `ready && !dockAbove`
+                specifically; round-123-follow-up REPRODUCED the collision
+                live and found `dockAbove` truthy throughout — see
+                `CLUSTER_DOCK_GAP_PX`'s comment above this component for the
+                actual mechanism and its fix (this cluster now caps its own
+                height against the dock's real, published rect). This divider
+                stays regardless, as belt-and-braces for the STRUCTURAL case
+                this comment block is actually about: when `!dockAbove` DOES
+                hold (no shell, or the dock genuinely absent), the fallback
+                pair joins this same flex column as a real sibling of `chips`
+                rather than a bare one, so even an unanticipated future
+                collision between the two groups reads as "a different list"
+                and never as text laid directly over text with no seam.
               */}
               {chipsIn && !dockAbove && (secondary || archive) && (
                 <div
@@ -832,13 +1023,16 @@ export function OfferChips({
                    * below) actually has it either. No live caller was PROVEN to
                    * hit `ready && !dockAbove` when this was first written (the
                    * dock's portal target mounts before `chipsIn`'s reveal delay
-                   * elapses) — a live test now has a measured collision that is
-                   * most consistent with exactly this combination, though the
-                   * precise trigger (a remount, a race, or simple camera-shot
-                   * coincidence with the dock's own rect) was not reproducible
-                   * on demand. The divider above is the mitigation that holds
-                   * either way; see StageShell.tsx's own dock-pointer-events fix
-                   * for the sibling defect this same live test found close by.
+                   * elapses); a later live test found a real collision in this
+                   * area but traced it to the cluster's own unbounded height
+                   * against the dock's real rect, NOT to `dockAbove` going false
+                   * (see `CLUSTER_DOCK_GAP_PX`'s comment above this component) —
+                   * `dockAbove` itself was never observed false outside a unit
+                   * test that sets it that way on purpose. The divider above is
+                   * still the right belt-and-braces for THIS branch, structural
+                   * rather than load-bearing for that other bug; see
+                   * StageShell.tsx's own dock-pointer-events fix for the sibling
+                   * defect the same original live test found close by.
                    */}
                   {archive}
                 </div>
@@ -869,9 +1063,28 @@ export function OfferChips({
             behind it, and the bottom offset keeps the microphone dock clear —
             the anchored-cluster version measurably covered the dock, the
             archive chips and the orb.
+
+            THE BOTTOM RESERVATION SCALES WITH VIEWPORT HEIGHT, and a flat
+            `bottom-60` (240px) did not. Found live at 863x349 (a landscape
+            phone's own height, not a fabricated number): `top-[max(4.5rem,
+            9vh)]` (72px there) plus a flat 240px left the sheet exactly
+            `100vh - 72 - 240 = 37px` tall — its own CONTINUE chip, review
+            count and every graph node clipped away, present in the DOM and
+            entirely unreachable. §1.11 names this exact failure shape: mobile
+            HEIGHT, not only width. `clamp(11rem, 27vh, 15rem)` keeps the
+            CEILING (240px) on anything tall enough to afford it — measured
+            live, the dock itself is 152px + a 12px rest inset below `lg:`
+            (row layout, both 375 and 863 wide) and 168px + 24px at `lg:` and
+            up (column layout, 1280 wide): 164px and 192px of real need,
+            comfortably inside the FLOOR (176px) this never drops below. At
+            349px tall the reservation becomes 176px instead of 240 — still
+            clear of the dock — and the sheet grows from an unusable 37px to
+            a scrollable ~101px. Neither breakpoint's real dock need is a
+            magic number here: both were read off `getBoundingClientRect()`
+            on this exact route, not assumed.
           */}
           {chipsIn && mapPanel && (
-            <div className="pointer-events-none fixed inset-x-0 top-[max(4.5rem,9vh)] bottom-60 z-20 flex justify-center px-4">
+            <div className="pointer-events-none fixed inset-x-0 top-[max(4.5rem,9vh)] bottom-[clamp(11rem,27vh,15rem)] z-20 flex justify-center px-4">
               <div className="pointer-events-auto flex max-h-full w-[min(94vw,58rem)] justify-center">
                 {mapPanel}
               </div>
