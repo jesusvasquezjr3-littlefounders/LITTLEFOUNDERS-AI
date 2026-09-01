@@ -267,6 +267,41 @@ export function promisesAnActivity(say: string): boolean {
 }
 
 /**
+ * TRUE when a turn's spoken text asks more than one distinct question —
+ * counted as more than one sentence ending in "?".
+ *
+ * NOT a general "a turn may only ask one question" rule, and that scope is
+ * deliberate rather than a shortcut. `questionAsked` (arithmetic.ts) already
+ * assumes the opposite for ordinary teaching prose: a correction that works
+ * through a sub-calculation with a rhetorical question before asking the
+ * real next one is normal, good teaching, and it carries two "?"s doing it —
+ * "Casi, Explorer. Piensa: el lápiz cuesta 5, tú tienes 3. Si juntas 3 y 2,
+ * ¿cuánto da? 3 más 2 es 5. Entonces te faltan 2 pesos, no 8. Ahora tú: una
+ * goma cuesta 7 pesos y tienes 4. ¿Cuánto te falta?" is a REAL turn used
+ * elsewhere in this codebase (`prompt.test.ts`) to represent genuine teaching
+ * prose, and THIS function correctly reports it as two questions (proven
+ * directly in `prompt.test.ts`, not merely reasoned about) — it does not try
+ * to tell a rhetorical sub-question apart from a real one. Wiring it to fire
+ * unconditionally on every turn would therefore have retried this exact
+ * shape, and turns like it, for no gain — nobody is left unable to answer,
+ * because the ordinary typing box (or the mic) is still on screen.
+ *
+ * So this is exported for the ONE place a second question actually is a
+ * defect (/ORACLE.md §11): `orchestrator.ts` gates it on `offerAdaptation`
+ * being set, because that is the one turn shape where a second question is
+ * NOT merely untidy — the frontend hides the typing box while an offer is
+ * open (`ConversationView.tsx`), so a question beyond the offer's own has no
+ * control left that could ever answer it, for a learner with no voice
+ * provider configured (§12).
+ */
+export function asksMultipleQuestions(say: string): boolean {
+  const questionSentences = say
+    .split(/(?<=[.!?])\s+/)
+    .filter((sentence) => sentence.trim().endsWith('?'));
+  return questionSentences.length >= 2;
+}
+
+/**
  * PRAISE THAT CONTRADICTS ITSELF.
  *
  * Observed three times in scripted lessons on 2026-08-29, and the prompt rule

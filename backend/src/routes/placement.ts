@@ -29,6 +29,7 @@ import {
   insertPlacementCredits,
   patchOwnProfile,
 } from '../services/supabaseRest.js';
+import { insertPlacementSafetyFlag } from '../services/tutorData.js';
 
 /*
  * /api/v1/placement — the per-course placement flow (COURSE_ENGINE.md §3.2).
@@ -245,6 +246,31 @@ export function placementRouter(): Router {
         `[core] placement intake blocked a flagged utterance for user ${user.id}: ` +
           `${outcome.flagged.category} (${outcome.flagged.severity})`,
       );
+      /*
+       * /ORACLE.md §4.1b's own "not yet done" note, closed by migration 0065:
+       * the log line above is the loud FLOOR, never the ceiling — a guardian
+       * could not previously see this anywhere. `course.id` is real request
+       * context this handler already has (the ONE place in the whole path
+       * that does), so it travels as CONTEXT, never as the reason the flag
+       * exists. Awaited, not fire-and-forget: this request is not on a live
+       * voice turn's latency budget, and a silent write failure here would
+       * quietly recreate the exact "loud log only" gap this migration
+       * exists to close — so a failed write gets its OWN loud line, never a
+       * response the client can distinguish from success (§1.9: the client
+       * answer is unconditionally the innocuous one, come what may).
+       */
+      const persisted = await insertPlacementSafetyFlag({
+        userId: user.id,
+        courseId: course.id,
+        category: outcome.flagged.category,
+        severity: outcome.flagged.severity,
+      });
+      if (!persisted) {
+        console.error(
+          `[core] placement intake flag for user ${user.id} was logged above but NOT persisted — ` +
+            'a guardian will not see it. Check tutor_placement_safety_flags / Vault connectivity.',
+        );
+      }
     }
     return ok(res, { available: true, priorFraction: outcome.priorFraction, reflection: outcome.reflection });
   });
