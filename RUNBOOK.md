@@ -12631,3 +12631,555 @@ table's existing counters do not already disclose in kind) — not a new
 top-level field, so `privacy-contract-docs.test.ts`'s own hard-coded
 fourteen-field count correctly did not move; confirmed by reading that
 test directly rather than inferring it from a green run.
+
+## Rounds 125–132: the full-completion push — 8 parallel worktree lanes, merged and independently re-verified, 2026-09-01
+
+**Context.** Following the owner's explicit pivot to complete all
+remaining Tutor IA code before resuming live testing, a full audit of
+ROADMAP.md, ORACLE.md, oracle/AGENTS.md and RUNBOOK.md's own open
+items produced a concrete gap list. Eight lanes were dispatched in
+parallel, each in its own isolated git worktree to allow genuinely
+concurrent work without file-conflict risk between agents; each
+committed locally to its own branch without pushing, per the owner's
+request to conserve CI/CD spend until a complete batch is ready. All
+eight completed; every lane's own gate suite was green (one lane's
+`tools:test` failure was the exact, anticipated `ROADMAP.md` migration
+ledger gap, closed below). The eight branches were then merged into
+`main` one at a time by the coordinating session, resolving every
+conflict by hand — several were genuine, since four lanes independently
+touched `oracle/src/ws/server.ts` and five touched `ORACLE.md` — and
+the complete, merged result was independently re-verified end to end
+before any of it is called done: every package's type-check, lint,
+full test suite and build; `verify:tutor`, `verify:pedagogy`,
+`verify:tutor-ui` and the new `verify:tutor-a11y` in oracle/frontend;
+and every root gate (`docs:check`, `secrets:check`, `i18n:check`,
+`paths:check`, `seo:check`, `provider:check`, `tools:test`). Final
+state: oracle 739/739 tests across 32 files, frontend 1586/1586 across
+138 files, backend 765/765 across 43 files, database's own gate suite
+green, root `tools:test` 26/26 — all confirmed by the coordinator
+personally re-running them after every merge, not taken on any lane's
+own report.
+
+### Round 125 — the mic-status dock's tap-collision bug was mis-diagnosed at the time, and two more live findings closed alongside it
+
+Round 123's own Bug 2 write-up guessed the trigger was `ready &&
+!dockAbove` letting the offer-chip fallback pair join `chips` as bare
+siblings — and the guess was wrong. Reproduced live on `/dev/tutor-lab`
+at a real short viewport (863×349): `dockAbove` never went false in
+this session at all — `StageShell.tsx`'s `attachAbove` ref callback
+was watched directly across the whole reproduction and never fired
+with `null`. The actual mechanism: the chest-anchored openings cluster
+(`OfferChips.tsx`'s `clusterRef`) hangs downward from a camera-projected
+point with no ceiling, and a failed session-start attempt inserts a new
+"Something went wrong. Try again." status plate at the TOP of that same
+unbounded flex column — five measured overlaps resulted between the
+cluster and the dock's own contents (the mic orb's idle label, "My
+island", "Past conversations"), regardless of `dockAbove`'s value.
+
+Fixed by having the cluster read the dock's own already-published rect
+from `SafeAreaContext` (the same read-only pattern `SpeechCaption`
+already uses to avoid this same dock) and nudge itself upward first,
+bounded by the "Leave the tutor" exit chip's own rect, falling back to
+a scrollable height cap only once the nudge is fully spent. Two earlier
+fix attempts (a height cap alone; a small fixed 64px shift) were tried
+and measured wrong before this one, since the cluster's natural height
+was already under any reasonable floor and the fixed budget covered
+only part of the real ~130px gap. A real bug was caught mid-fix:
+overriding the node's `transform` style directly was silently dropping
+its own `-translate-x-1/2` centring class, cropping the second column
+of chips off a 375px screen.
+
+**Two more findings, same live-test pass.** The v3 learning-map panel
+clipped to ~37px tall at short viewport heights — `OfferChips.tsx`'s
+map sheet used a flat `bottom-60` (240px) reservation regardless of
+viewport height, leaving `100vh - 72 - 240 = 37px` at 349px tall, its
+own continue chip and every graph node present in the DOM and entirely
+unreachable. Replaced with `bottom-[clamp(11rem,27vh,15rem)]`: unchanged
+down to ~889px tall, shrinking gracefully below that. And: a live
+automated collision check that had flagged `SpeechCaption` possibly
+overlapping the "Leave the tutor" exit chip at 1280×900 was swept
+again — all four characters, all four stage phases, 1280×900 and
+375×812, rapid polling through phase transitions — and found zero
+overlaps in every configuration; left untouched as a confirmed false
+alarm rather than a reproducible regression.
+
+**Verification.** `frontend/`: type-check, lint, full suite (136 files,
+1573 tests at the time, 4 new), build all green; `verify:tutor-ui`
+green. New regression tests in `offerChips.test.tsx` confirmed RED
+against the pre-fix `OfferChips.tsx` via `git stash`, GREEN restored.
+Independently re-confirmed by the coordinator after merging alongside
+the other seven lanes: full suite 1586/1586 across 138 files, clean.
+
+### Round 126 — the 8-second tap-blocking veil: one hypothesis refuted, the real gap was a missing loading indicator, not a timing bug
+
+Round 111 left open whether a mid-conversation 3D-stage remount could
+reopen the veil that swallows taps for up to `VEIL_TIMEOUT_MS` (8s) on
+a cold mount. The leading hypothesis — that `TutorScene`'s diorama and
+two principals load sequentially rather than concurrently, because
+`useLoader` throws inside nested Suspense boundaries — was built
+against, and then TESTED before being kept, per this file's own "verify
+your own work" discipline. A faithful jsdom reproduction of the real
+nested-boundary shape disproves it: React 18 discovers every pending
+suspend across both boundaries in one synchronous pass regardless of
+nesting, so all three assets already load concurrently today, confirmed
+with both matched and staggered artificial delays. The preload fix
+built against the wrong theory was reverted rather than shipped for a
+defect that does not exist. `VEIL_TIMEOUT_MS` stays at 8000 — no
+production telemetry exists to justify a smaller number, and the
+timeout's other real reasons (no WebGL, a backgrounded tab) never
+resolve regardless of asset speed.
+
+The remount question was answered by reading `TutorScene.tsx`, `Cast`
+and `StageShell.tsx` end to end rather than assumed: no code path lets
+a character-cue swap re-fire the shared `onReady` (every character has
+had its own Suspense boundary since 2026-08-22), and the one REAL
+remount this codebase has — `SceneCanvas`'s `<Canvas
+key={contextEpoch}>` recreation after a lost WebGL context — was
+exercised directly, including live in a real browser via a synthetic
+`webglcontextlost`/`webglcontextrestored` cycle dispatched on the actual
+canvas, with real `elementFromPoint` hit-testing before and after: the
+veil stayed lifted and the mic orb stayed reachable through the
+remount.
+
+The one real fix: the veil's loading plate carried only a static line,
+reading identically whether the stage was genuinely loading or had
+silently stopped — exactly the indistinguishable-from-frozen shape
+§1.14 names generally. Added a spinner ring (`AuthCallbackPage.tsx`'s
+own existing markup, no new component), `aria-hidden` since the
+adjacent `role="status"` line already carries the announcement.
+
+**Verification.** Two new tests in `stageAnnouncement.test.ts` prove a
+second `onFirstFrame` call into the same hook instance neither
+re-announces nor reopens the gate. `type-check`, `lint`, `build`, full
+frontend suite green. The lane's own `verify:tutor-ui` run did not
+complete in its sandbox (a headless-chrome timeout on a heavily
+CPU-contended shared machine, unrelated to WebGL); the coordinator's
+own post-merge `verify:tutor-ui` run, combined with all seven sibling
+lanes, completed clean.
+
+### Round 127 — the cold-mount lost-turn bug, continued: a real, different-from-guessed root cause found and closed; the historical trigger still not pinned down
+
+Continuation of Round 81/82. Round 82's own recommended next step —
+reproduce with real devtools, watch the WS frames directly — was taken
+through the real running server rather than a browser: a throwaway
+script minted one real single-use session token and opened two real
+`ws` connections with it back to back, no `await` between them. Both
+completed their handshake (confirming round 82's own caveat that
+`close()` on a `CONNECTING` socket does not reliably stop it), but the
+server's single-use nonce ledger let only the first one through to a
+real conversation — the second was closed `4001` "session token
+replayed" within milliseconds.
+
+That `4001` was the actual bug, and it was silent on both ends:
+`verifySessionToken`'s failure path used the same generic `UNAUTHORIZED`
+code for `malformed`, `bad_signature`, `expired` AND `replayed` alike,
+and the client's `closeCodeToReason` maps `4001` unconditionally to
+`SESSION_EXPIRED` — so a session that was not expiring, mid-conversation
+on the socket that actually won, was reported to whichever socket lost
+the race as "expired," with nothing actionable to do. This is a
+precise, sufficient explanation of all three of Round 81's original
+symptoms at once: `tutor_turns` gets a real row (the winner's),
+`liveSessions` never exceeds 1 (the loser never registers — the nonce
+check runs before that map is touched), and the screen shows nothing
+legible (the loser's own socket state is what the mounted component
+reads).
+
+**Fixed both halves.** `oracle/src/ws/server.ts` now maps
+`verdict.reason === 'replayed'` to the ALREADY-translated,
+already-honest `CLOSE_CODES.ALREADY_CONNECTED` (4009) instead of
+`UNAUTHORIZED`. `frontend/src/tutor/useTutorSocket.ts`'s connecting
+effect now defers the real `new WebSocket(...)` call one microtask
+behind a `cancelled` flag flipped by cleanup — a run torn down before
+its deferred callback fires never constructs a real socket at all,
+proven by a dedicated test to be exactly what happens whenever React
+StrictMode's mount-cleanup-mount finds a dependency already non-null on
+a component's true first render. `send()` was widened to queue rather
+than drop a message sent during this now-real pre-construction window.
+
+**What this round could NOT confirm, said honestly.** Round 82's own
+proposed trigger — an ordinary topic-offer click on a cold mount
+causing StrictMode to double-invoke the connecting effect — does not
+hold against the current code: `TutorExperience.tsx`'s `phase`/`session`
+both start `null`, and `socketUrl` only ever becomes non-null via a
+LATER update on an already-mounted component, never present on the
+first render, which a dedicated React-semantics probe (thrown away
+after use) proved is exactly the shape StrictMode does NOT
+double-invoke. Four live cold-mount reproductions against the real
+running stack, WebSocket-Proxy-instrumented, produced zero hangs. The
+exact historical trigger remains unidentified — but the shipped fix
+closes the failure mode structurally for every shape of "a torn-down
+effect run still dials out," including the one shape proven to
+double-invoke, so it does not depend on the unconfirmed trigger being
+correctly guessed.
+
+**Proof, TDD.** `useTutorSocket.test.ts` proves the guarantee directly
+in both the app's real null-then-real shape and the
+proven-to-double-invoke non-null-on-mount shape, plus a queueing test
+for the widened pre-construction window; five other frontend test files
+needed the same one-microtask flush added. `live-session.test.ts` gained
+a live, real-socket regression test firing two connections sharing one
+token and asserting the invariant (exactly one wins, the other closes
+4009) rather than which side wins, with its two existing sequential
+tests updated from the old `4001` to the new `4009`. Every new
+assertion confirmed RED via `git stash` before the fix, GREEN after.
+
+**Verification.** Independently re-run by the coordinator after
+merging alongside the other seven lanes, including resolving three
+genuine conflicts in `oracle/src/ws/server.ts` where lanes 125's
+sibling networking/cost/lock fixes also touch `handleConnection` and
+the token-verdict branch (see Round 132's own note on the combined
+three-gate ordering and the combined replay/store-unreachable close
+codes) — full oracle suite 739/739 across 32 files, full frontend suite
+1586/1586 across 138 files, both builds, `verify:tutor`,
+`verify:pedagogy`, and every root gate green.
+
+### Round 128 — accessibility: one live-test report did not reproduce as described, a genuine axe-core re-run was two years overdue in doc-time, both closed
+
+**The sort_buckets report did not reproduce as literally stated.**
+Live-testing reported the Tutor's drag-and-drop sorting activity's
+group buttons as carrying no visible text content at all. Investigated
+directly rather than taken on the report: `zone.label` has rendered as
+ordinary visible text inside the button since the component was written
+(2026-07-23), confirmed by `git blame` on the exact lines — and
+`frontend/src/lesson-engine/families/arrange/schema.ts`'s own Zod schema
+enforces a non-empty label, so an empty-label bucket cannot even pass
+validation. axe-core's own `button-name` rule reports zero violations
+on this exact screen across three configurations. The underlying
+concern was real anyway: "Save, button" out of context does not tell a
+screen-reader user this is a drop TARGET the way the grid and the
+on-screen instruction tell a sighted learner for free. `SortingBoard`'s
+zone button now carries an explicit, i18n'd `aria-label` ("Group:
+Save" / "Grupo: Save") composed from the segment's own data, with the
+visible span kept and marked `aria-hidden` to avoid a redundant
+accessible name.
+
+**The real, overdue item: ORACLE.md had recorded "re-run axe before
+launch" twice, 200 lines apart, since the caption/plate/replay-transport
+rebuild, and it was never done.** Rather than a one-off manual pass, the
+re-run is now `npm run verify:tutor-a11y` — a permanent gate mirroring
+`verify-tutor-ui.mjs`'s own headless-Chrome rig, scanning the conversing
+phase (with a live `sort_buckets` activity, so a future regression on
+the item above fails a gate) and the replaying phase, across the same
+three configurations `verify-tutor-ui` already drives. It found two
+real, confirmed violations on `TutorTranscript.tsx`'s scroll region —
+`scrollable-region-focusable` (reachable by mouse/touch, never by
+keyboard) and `aria-prohibited-attr` (`aria-label` on a bare, role-less
+`div`) — fixed together with `role="log"` (the semantically correct
+role for a running transcript) and `tabIndex={0}`. One genuine false
+positive was caught and verified rather than trusted: a "ready" button
+scanned mid-mount-animation read as a contrast violation at ~22% of its
+transition; re-scanned after settling it measured a stable 6.29:1,
+comfortably past the 4.5:1 threshold — the gate now pays a fixed
+settle-wait after every phase switch so this transient artifact cannot
+resurface as a mystery.
+
+**Proof, TDD.** `arrange/components.test.tsx` (new) renders with
+non-English bucket labels on purpose — a hardcoded-English `aria-label`
+would still pass a naive check while lying to a non-English-speaking
+learner — confirmed RED then GREEN via stash/pop. A new
+`conversationView.test.tsx` test asserts the log role and tab index,
+same discipline.
+
+**Verification.** `frontend/`: type-check, lint, full suite, build all
+green (one unrelated marketing-page test's 5000ms timeout under heavy
+concurrent-worktree CPU load was confirmed non-reproducing in
+isolation). `verify:tutor-ui` and the new `verify:tutor-a11y` both
+green. Root gates green; `axe-core` added as the sole new
+devDependency (checked first that no a11y tooling already existed).
+**Coordinator follow-up:** the lane deliberately did not wire
+`verify:tutor-a11y` into root AGENTS.md/CLAUDE.md's own §5 checklist,
+to avoid a merge-conflict surface while seven sibling lanes were also
+active — added by the coordinator after all eight merged, mirrored
+byte-identically per the sync rule, confirmed with `docs:check`.
+Independently re-confirmed post-merge: full frontend suite 1586/1586
+across 138 files.
+
+### Round 129 — two independent Tutor cost gaps closed together: no platform-wide spend ceiling, and a documented double-billing race
+
+**No platform-wide spend ceiling existed.** Every limit in ORACLE.md
+§15 bounded one session or one learner; nothing bounded what the
+PROCESS spent in total, so a provider incident causing retries to pile
+up across many concurrent sessions looked identical to ordinary load
+from inside any single session's own ledger. New
+`oracle/src/session/spend-guard.ts`, an in-process singleton (Oracle is
+explicitly single-replica, so no cross-replica store is needed here),
+tracks every real, already-incurred cost — the per-turn model call,
+tier-3 generation, synthesized speech, and the post-session review's own
+paid call, all four now funneled through two new private helpers so a
+future fifth site cannot forget to feed the platform ledger — against a
+configurable rolling 24h ceiling (`DAILY_SPEND_CEILING_USD`, $20
+default). `handleConnection()` checks it as literally the first gate,
+before a token is even read, closing with a dedicated code
+(`CLOSE_CODES.SPEND_CEILING`, 4029) kept numerically distinct from 4013
+so an operator's logs can tell "cost control tripped" apart from
+"moderation is down," while the learner sees the same honest, generic
+"try again soon" either way. Both the ceiling and current spend are
+visible continuously on `GET /health`'s new `spend` field.
+
+**oracle/AGENTS.md item 71's own named follow-up, closed.** When
+`finish()` loses the `ended_at IS NULL` close race to `finalizeParked`'s
+grace-window timer, the resulting double `runPostSessionReview` call was
+a real, measured double-billing of a paid judge call — left open
+because the obvious fix ("the loser skips its own review") was wrong
+and unresolved. Verified against the actual code rather than the first
+intuition: the LOSER of the race is `finish()`, not `finalizeParked`,
+and `finish()`'s snapshot is the MORE complete one in exactly this race
+(`resumeSnapshot` takes a fresh copy at call time; `finalizeParked`
+fires the instant its grace timer expires, mid-turn, before the slow
+turn's own reply lands). Confirmed live by temporarily reverting the
+fix: the reproduction then shows 2 review calls, not 0, proving both
+that the bug is real and that a naive loser-skip would have kept the
+WRONG one. `ParkedSession` now carries a copy of `endSessionRequested`
+taken at park time; when true, `finalizeParked` defers its own review to
+the guaranteed-still-coming `finish()` call instead of firing an eager
+one on incomplete data. `finalizeAllParked` (process shutdown) forces
+the review on every call regardless, since the `finally`-chain guarantee
+needs an event loop left to keep it and shutdown is precisely when that
+runs out.
+
+**Proof.** New `session.test.ts` block unit-tests the spend guard in
+isolation (accumulation, the alert latch firing once per window, the
+24h roll, admission flipping exactly at the ceiling). Two new
+`live-session.test.ts` integration tests against the real running
+server: one proving a connection is refused with 4029 ahead of every
+auth gate; one reproducing item 71's exact race, asserting exactly one
+review call reaches the fake provider, confirmed RED (2 calls) against
+the pre-fix code and GREEN (1 call) after.
+
+**Verification.** Independently re-run by the coordinator after merging
+alongside the other seven lanes and resolving three genuine
+`handleConnection`/`ORACLE.md` conflicts (Round 132's note): full oracle
+suite 739/739 across 32 files, `verify:tutor`, `verify:pedagogy`, full
+frontend suite 1586/1586, both builds, every root gate green.
+
+### Round 130 — three Oracle safety/networking gaps closed: a per-instance session cap, a handshake rate limit, and retention-sweep monitoring
+
+ORACLE.md §15.2 named three places the single Oracle process had no
+protection against being overwhelmed. This closes the single-process
+slice of the first two and the full third; the cross-replica half of
+the concurrent-session item is separate, larger, architecturally-
+undecided work and was explicitly out of scope (Round 119 already
+confirmed Oracle single-replica today, in three independent documents).
+
+**A configurable ceiling on concurrent live sessions.** A new gate,
+checked before the token is even read, refuses a new connection once
+`liveSessions.size >= ORACLE_MAX_CONCURRENT_SESSIONS` (default 200 — a
+conservative starting point, not a measured capacity figure), closing
+with the SAME `SERVICE_DEGRADED` (4013) code and "the tutor is resting"
+copy the existing moderation-unavailable gate already uses in all three
+locales — deliberate reuse rather than a second phrasing for the same
+"you can't connect right now" family. The ceiling is dynamic, proven
+directly: freeing a slot admits the next attempt.
+
+**A rate limit on the handshake path itself.** The websocket upgrade is
+wired straight onto the raw HTTP server, so Express's rate limiter never
+sees it — confirmed by reading `app.ts`, not assumed. New
+`oracle/src/ws/handshakeRateLimit.ts` adds a purpose-built, per-IP
+fixed-window counter: memory-backed in test/dev, Redis-backed in
+production, and FAILS OPEN on any store error, matching
+`middleware/rateLimit.ts`'s own `passOnStoreError: true` discipline —
+this is defence in depth behind a control that already works (Core's
+token minting), never the primary defence, so an outage here must never
+be able to refuse every connection to the one process serving everybody.
+Default 100 attempts per 60s per IP — deliberately generous, since a
+household reconnecting through one NAT'd IP on a flaky connection is the
+ordinary case this must not catch.
+
+**The retention sweep now leaves a durable, queryable trace of its own
+runs.** The nightly purge already refused to report success on an
+unreachable database; what was missing is whether the WORKFLOW itself
+kept firing at all. Every reply that reaches the database now writes a
+`tutor.retention.swept` row to `audit_logs` — including a batch that
+deletes zero sessions, deliberately, so "ran and found nothing due" can
+never collapse into the same signal as "never ran" (§1.14). No new
+migration needed (`audit_logs.actor_id` has always accepted NULL, used
+here for the first genuine SYSTEM action). `GET
+/api/v1/admin/tutor/retention-status` reads the most recent row back and
+reports `stale: true` past 36 hours or when none was ever recorded, and
+a failed READ is a 502, never a falsely-reassuring 200. What remains
+owner-side: something that actually polls this route on a schedule and
+alerts.
+
+**Proof, TDD, all three.** Every new gate confirmed to FAIL against the
+pre-fix code (stashed, tests kept, re-run) before being confirmed to
+pass restored. New `admission-control.test.ts` (end-to-end through a
+real socket server and a minimal fake Core), `handshakeRateLimit.test.ts`
+(per-IP keying, window expiry, and the Redis-unreachable fail-open path
+exercised against the actual production branch, not merely the test
+fallback), `tutorData.test.ts`'s retention-status coverage,
+`tutor-retention.test.ts`'s audit-write coverage, `admin.test.ts`'s new
+route end to end.
+
+**Verification.** Independently re-run by the coordinator after merging
+and resolving the three-way `handleConnection`/`ORACLE.md` conflicts
+this lane shares with Rounds 127 and 129 (see Round 132's note): the
+combined gate ordering is spend ceiling → admission control → handshake
+rate limit, cheapest-and-most-local-first, and ORACLE.md's §15.2 list
+now shows all of items 1–4 and 6 closed with item 5 still open, rather
+than either lane's closure silently overwriting the other's. Full
+oracle suite 739/739 across 32 files, full backend suite 765/765 across
+43 files, both builds, every root gate green.
+
+### Round 131 — two content-safety completeness gaps closed: crisis-flag visibility at pre-signup placement, and a deterministic "one question per turn" check
+
+**A flagged placement-intake utterance had nowhere to go.** Crisis
+language a learner types into the course-placement quiz's conversational
+opener, caught by `classifyLearnerInput` before it ever reaches the
+model, was a loud `console.error` and nothing else — ORACLE.md §4.1b
+had already named the schema gap: `tutor_safety_flags` requires a
+session FK, and placement has no session to attach one to. Closed by
+migration `0065_tutor_placement_safety_flags.sql`: a SEPARATE table, not
+a nullable FK, because the two provenances genuinely differ in shape —
+placement carries no `turn_seq` (no transcript to point a guardian's
+"read it in context" control into) and no meaningful `handled` value.
+Written from `backend/src/routes/placement.ts`'s intake handler, awaited
+rather than fire-and-forget so a write failure gets a loud line instead
+of quietly recreating the exact gap this closes, and read back through
+the same guardian-visibility route the live-session flags already use,
+as a new `placementSafetyFlags` field — never merged into the existing
+`safetyFlags`, since the row shapes genuinely differ. **Not yet done,
+stated rather than silently claimed complete:** the guardian-facing
+`/family/:kidId/tutor` page's own "surfaced first, severity-sorted"
+treatment has not been extended to this second array yet — the data is
+real, RLS-protected and reachable today, but has no dedicated card.
+
+**"The offer must stand alone in its turn" was prompt-only, with no
+deterministic check — ORACLE.md §11 said so explicitly.** Closed by
+`asksMultipleQuestions`, a deterministic, keyless sentence-counter —
+deliberately NOT wired to fire on every turn, since ordinary corrective
+teaching prose legitimately carries a rhetorical sub-question before the
+real one, proven against a real fixture already used elsewhere in this
+codebase for exactly that pattern. Gated on `offerAdaptation` being set
+— the one turn shape where a second question truly has no answerer,
+since the frontend hides the composer while an offer is open. Joins
+`repairableIsFalseVerdict` at both sites Round 122 established for a new
+violation class entering that bucket, so a stacked question surviving
+the retry falls back to the scripted line rather than being delivered.
+
+**Proof, TDD, both parts.** Reverted each production file to its
+pre-fix state, kept the new tests, confirmed RED for the expected
+reason, restored the fix, confirmed GREEN — Round 122's own discipline.
+New `orchestrator.test.ts` block (6 tests, including the scoping
+boundary: real two-question teaching prose with no offer open is left
+alone), `prompt.test.ts` unit tests of the detector directly,
+`placement.test.ts` and `tutor.test.ts` coverage for the new flag path.
+
+**Verification.** `database`'s own gate suite green, including the
+phase-header self-check re-deriving `expand` from the new migration's
+own SQL. Neither fix touches `TutorContextSchema` — no new field
+reaches any model, so `privacy-contract-docs.test.ts` and
+`/LEGAL/AI_TUTOR_LEGAL_REVIEW.md` are correctly untouched.
+**Coordinator follow-up:** this lane's own `tools:test` correctly failed
+on `repo-consistency.test.mjs` — migration 0065 undeclared in
+ROADMAP.md's ledger — exactly as anticipated, since the lane was
+deliberately told not to touch that document to avoid cross-lane
+numbering collisions (no collision occurred; this was the only lane
+that added a migration). Declared pending by the coordinator after
+merging, confirmed with `npm run tools:test` (26/26). Independently
+re-confirmed post-merge: oracle 739/739 across 32 files, backend
+765/765 across 43 files.
+
+### Round 132 — cross-replica session-lock safety, partially closed by owner request ahead of any actual second replica
+
+oracle/AGENTS.md item 79 / Round 119's own revisit trigger — move
+`liveSessions`, `parkedSessions`, the `jti` nonce ledger and item 24's
+speech de-dup maps to a shared store together, and decide the lock's
+fail-open-vs-fail-closed question explicitly — fired deliberately, ahead
+of any actual need, by owner request. Two of the four structures are now
+on a shared, Redis-backed distributed lock; two remain in-process, named
+below with the specific reason each is materially harder rather than
+merely unstarted.
+
+**The fail-open-vs-fail-closed decision, made and documented at both
+call sites it governs.** New `oracle/src/lib/lock.ts` stays neutral on
+purpose — it reports `held` or `unreachable` and leaves the choice to
+each caller, since silently inheriting the existing Redis helpers' "miss
+is safe" contract would be choosing fail-open without anyone deciding
+it. Both callers here chose FAIL CLOSED, reasoned from this repo's own
+existing precedent rather than assumed: §1.14's rate limiter fails OPEN
+because it is an AVAILABILITY control where the failure it guards
+against (a flood) is symmetric with the failure fail-open risks (an
+outage); this lock is a CORRECTNESS control — the failure it prevents (a
+second, independent `TutorOrchestrator` for one session — duplicate
+paid model/judge/TTS calls, a corrupted transcript count) is not a brief
+unavailability, so failing open would silently remove the protection
+during exactly the instability (a Redis blip, a redeploy) it exists for.
+`GET /health` was never touched: it has never consulted Redis, so the
+consequence of an outage is specifically that Oracle cannot START or
+RESUME a session, not that it looks unhealthy or that an
+already-live session is affected.
+
+**Mechanism.** `acquireLock`/`renewLock`/`releaseLock`, backed by `SET
+... NX PX` for acquire and one Lua script (GET-compare then
+PEXPIRE-or-DEL) for renew/release, since a plain GET-then-SET/DEL from
+JS has a window where a different owner's legitimate claim gets silently
+overwritten — verified against a real, throwaway Redis container before
+shipping. `acquireLock` retries once after 150ms, closing two races for
+free: a just-closed socket's release landing just after a resume's first
+attempt, and a millisecond-scale Redis blip. `session/token.ts`'s
+`NonceLedger` now claims a Redis key per jti instead of sweeping a
+process-local Map, and a genuine store outage reports `store_unreachable`
+distinct from `replayed`, closing with `SERVICE_DEGRADED` rather than
+misreporting an outage as a replay attack.
+
+**The smaller, same-round SIGTERM gap, closed in the same commit.** A
+session still live at the EXACT moment SIGTERM arrived had nothing in
+`parkedSessions` yet — a `ws` socket's `close` event fires asynchronously,
+after the closing handshake completes, and `shutdown()` calls
+`process.exit(0)` roughly 250ms later, well before that event was
+guaranteed to land. Core's ledger kept such a session open forever, with
+no process left to ever close it. Fixed by having the shutdown path
+synchronously do, up front, exactly what each socket's eventual `close`
+handler would have done anyway — park every still-live session directly,
+release its exclusivity claim immediately, and drop it from the local
+map — then run the finalization immediately with a new `'abandoned'`
+close reason (rather than the default `'learner_left'`, which would
+misattribute the deploy's own action to the child choosing to leave).
+
+**What is still in-process, named rather than silently dropped.**
+`parkedSessions` holds a resumed session's live `TutorOrchestrator` and
+`SpeechScope` INSTANCES — over 20 private fields including Maps/Sets and
+a nested controller with its own 14, plus a `synthesize` closure bound
+to the connection — none of it JSON-serializable; migrating it needs a
+real `toJSON`/`fromJSON` pair and a redesigned `Synthesizer`
+reconstructable on a different process, not a drop-in store swap. Item
+24's speech in-flight-coalescing maps sit in front of a cache that is
+ALREADY Redis-backed and shared — what is missing is the same-instant
+race-avoidance layer on top, and a Promise cannot cross a process
+boundary, so the real fix needs a distributed claim plus a bounded poll
+with a documented give-up point. Both are real, scoped follow-ups,
+deliberately not attempted this round rather than rushed. ORACLE.md
+§16's checklist item was updated in place, left unticked, naming exactly
+these two by file and symbol.
+
+**Proof, TDD.** New `lock.test.ts` (15 tests: acquire/held/unreachable,
+the compare-and-act never touching a different owner's claim, the
+retry-once policy). Two cross-cutting claims proven RED-before-GREEN
+against the real end-to-end suite: a claim seeded directly against the
+shared lock with `liveSessions` never touched (simulating a genuinely
+different replica) refuses a fresh socket; a session live at the instant
+of shutdown gets a real, recorded close within 150ms, reproduced failing
+against the pre-fix shutdown path first.
+
+**Verification and merge.** This was the most conflict-heavy of the
+eight lanes to integrate, sharing `handleConnection` in
+`oracle/src/ws/server.ts` with Rounds 127, 129 and 130. Three genuine
+conflicts, resolved by the coordinator rather than picked one-sided: (1)
+`finalizeParked`'s signature — this lane's new `closeReason` parameter
+and the pre-existing `opts.forceReview` (item 71/Round 129, which this
+lane's own isolated worktree branched before) both needed to survive,
+combined since `finalizeAllParked` is the only caller and can safely
+always pass both; (2) the token-verification failure branch — this
+lane's `store_unreachable` → `SERVICE_DEGRADED` and Round 127's
+`replayed` → `ALREADY_CONNECTED` are two distinct sub-cases of the same
+branch, combined into one three-way conditional; (3) the three-gate
+handshake ordering already established resolving Round 130's own merge
+was verified to still hold with this lane's lock check layered in
+afterward, where it belongs — after a token is confirmed valid, since
+the lock needs the session id that only becomes available then. All
+three resolutions independently type-checked and test-verified by the
+coordinator, not assumed correct from the merge succeeding cleanly:
+full oracle suite 739/739 across 32 files, including three tests that
+directly exercise the merged behavior (the distributed-claim-only
+refusal, the SIGTERM clean-close, and the two-simultaneous-connections
+`ALREADY_CONNECTED` case). Every root gate green.
