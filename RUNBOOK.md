@@ -13628,3 +13628,94 @@ pass. Root: `docs:check`, `secrets:check`, `i18n:check`, `paths:check`,
 `seo:check`, `provider:check`, `tools:test` (26/26) all green — no new
 strings, routes, or migrations in this round. oracle and backend untouched
 by this round — verification skipped for them, not silently forgotten.
+
+## Round 137: the same live-testing session, continuing on the very lesson the last fix reached — a graded activity's answer options, present, measurable, and reachable by nothing, 2026-09-01
+
+**The activity, not the caption channel this time.** Continuing the exact
+low-IQ-persona session Round 136 opened — same lesson ("Know coins and
+bills"), now past the greeting and into a real graded exercise the tutor
+served mid-conversation. The learner answers two open questions correctly,
+the tutor introduces a multiple-choice check ("a toy car costs 7 pesos, you
+pay with a 10-peso coin — how many pesos do you get back?", four options),
+and the screenshot at the sheet's default HALF detent on a 375px phone shows
+the question text, then nothing, then a "Check" button. No options row
+anywhere on screen.
+
+**Confirmed as a real defect, not a screenshot artifact, before touching any
+code.** `document.elementFromPoint` at the CENTER of every one of the four
+`button[role="radio"]` elements' own `getBoundingClientRect()` — the exact
+hit-testing discipline AGENTS.md §1.14 already requires — resolved to the
+disabled Check button's wrapper `<div>`, never to the option itself, for all
+four options. `getComputedStyle` on the answers region
+(`LiveSegmentPanel.tsx`'s `<div className="lf-scroll-edge ... flex-auto ...">`
+wrapping the `role="radiogroup"`) read `height: 0`, `overflow-y: hidden`.
+The options were real DOM nodes with real (if uselessly-positioned) rects;
+nothing painted them, and nothing could reach them — a graded activity a
+learner cannot answer, indistinguishable from a working one to every gate
+that checks for the CONTROL's existence rather than its reachability.
+
+**Root cause: one rigid sibling, one floor-less one, ordinary content.**
+`LiveSegmentPanel.tsx`'s `<header className="shrink-0 space-y-1">` holds
+`live.framing` (the tutor's up-to-240-char lead-in, moderated free prose)
+and `segment.prompt_md` (the question, also free prose) with NO cap on its
+own height and no ability to shrink. The answers region beside it
+(`flex-auto`, `min-h-0`, no floor of its own) absorbs 100% of whatever
+deficit that leaves. Measured on this activity at HALF (375×812, matching
+Round 136's own viewport): header 208px alone, against a section box of
+273px — before the answers region or the Check button get anything. This
+was not an extreme edge case: framing (~150 chars) and prompt_md (~110
+chars) together are ordinary-length model output, and es-MX/pt-BR routinely
+run longer than en-US for the same content, so this was always going to
+recur, not a one-off.
+
+**Fix: give the header a way to lose the argument for space, and give the
+answers region a floor that does not depend on it.**
+`frontend/src/tutor/LiveSegmentPanel.tsx`: the header's class changed from
+`shrink-0 space-y-1` to `min-h-0 shrink space-y-1 overflow-y-auto` — able to
+shrink below its own content height (flexbox's default `min-height: auto`
+otherwise refuses that) and, once shrunk, still fully reachable by scrolling
+within itself. The answers wrapper's class gained `min-h-[110px]` — enough
+for one full option row (48-52px measured) plus a peek of the next, sized
+off the real minimum rather than a round number, so even a single-row
+activity always shows enough to register as "there's a list here, scroll
+it." Flexbox resolves a min-height as a hard floor during shrink
+distribution: once the answers region hits 110px, every further pixel of
+deficit lands on the now-shrinkable header, never below it. An ordinary
+short header is unaffected either way — shrinking below natural size only
+happens under the same pressure that used to reach zero.
+
+**Live-reproduced at the EXACT original height, not merely inspected.**
+Rather than trust a visual "looks fixed" pass, the original 309px content-
+box height (`[data-plate-body]`'s HALF-detent box, matching Round 136's own
+309px reading before this fix) was reproduced by dispatching real
+`PointerEvent`s (`pointerdown`/`pointermove`×N/`pointerup`) against the
+"Resize this panel" handle — a raw `.click()` on it steps between fixed
+detents, never lands mid-drag, so hitting this exact pixel height needed a
+real drag gesture, matching how `LessonPlate.tsx`'s own handler expects to
+be driven. At that exact height post-fix: header compressed to 34px
+(scrollable, not clipped), answers region held its 110px floor, and two of
+the four options hit-tested successfully at their own centers with the
+other two reachable one scroll away — confirmed by scrolling the answers
+list to its end and re-hit-testing, at which point the other two (including
+the correct answer, "3 pesos") resolved correctly. Completed the activity
+for real afterward — selected the correct option, clicked Check, and the
+server graded it correct and the tutor asked a metacognitive follow-up
+("what did you do to find the 3?") — the full round trip, not just the
+layout.
+
+**Regression coverage added**, `frontend/src/tutor/__tests__/
+LiveSegmentPanel.test.tsx`: jsdom has no layout engine, so the actual
+pixel collapse cannot be asserted the way the live repro proved it — what
+the new test pins is the mechanism, so a future edit cannot silently drop
+either class and reopen this: the header's className must not match
+`shrink-0`, must match both `min-h-0` and `shrink`, and must match
+`overflow-y-auto`; the answers wrapper's className must match
+`min-h-\[110px\]`.
+
+**Verification, independently re-run by the coordinator.** frontend: tsc
+clean, lint clean, 140 files / 1636 tests green (+1, the new regression
+test), build clean, `verify:tutor-ui` OK (unchanged from Round 136's own
+run — this activity's fixtures were not the ones the gate drives, so the
+gate's job here was confirming no regression, not reproducing the find).
+Root: `docs:check`, `secrets:check`, `i18n:check` all green — no new
+strings, routes, or migrations. oracle and backend untouched.

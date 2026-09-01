@@ -362,7 +362,30 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, onCharacterCue, 
         {t('tutor.conversation.peekActivityWaiting')}
       </span>
 
-      <header className="shrink-0 space-y-1">
+      <header className="min-h-0 shrink space-y-1 overflow-y-auto">
+        {/*
+          NOT `shrink-0` — found live, 2026-09-01, testing a real "give
+          change" activity at the HALF detent on a 375px phone. `framing`
+          (up to 240 chars) plus `segment.prompt_md` together rendered at
+          208px, and a rigid, unshrinkable header left the answers region
+          below (`flex-auto`, `min-h-0`, no floor of its own) exactly zero
+          height: `overflow: hidden` on an `h: 0` box, so all four options
+          were in the DOM, individually measurable, and reached by NOTHING —
+          `elementFromPoint` at every option's own center landed on the
+          disabled Check button sitting where the collapsed list should have
+          been. Nothing this ordinary-length should be able to erase an
+          entire answer list with no error anywhere.
+
+          This is not a rare length: `framing` and `prompt_md` are free
+          model prose (moderated, not otherwise bounded) and es-MX/pt-BR
+          routinely run longer than en-US for the same content. `shrink`
+          plus `min-h-0` plus its own scroll means a verbose framing+prompt
+          pair scrolls WITHIN the header instead of refusing to yield space
+          — flexbox only pulls from a shrinkable item once the items with a
+          floor (the answers region, given one below this change) have
+          already hit theirs, so an ordinary-length header is completely
+          unaffected and still renders at full height.
+        */}
         {/*
           "TRY THIS" IS GONE, AND IT WAS THE ONLY UPPERCASE LABEL ON THE ROUTE
           (/DESIGN.md §Lumen → What to delete). The exercise IS the try: a
@@ -409,8 +432,16 @@ export function LiveSegmentPanel({ live, token, onGraded, demo, onCharacterCue, 
         left and right edge of every option's shadow — and its 2 px state ring —
         was being shaved off by the scroller. `overscroll-contain` stops a flick
         at the end of the options from scrolling the page behind the island.
+
+        `min-h-[110px]` is the floor `header`'s own comment refers to: one
+        answer row measures 48-52px tall (`min-h-12` plus padding), so this
+        guarantees at least one full option AND a peek of the next — enough
+        for a learner to see there is a reachable list at all — no matter how
+        much the header above needs to shrink. Sized off the real minimum, not
+        a round number: smaller than this and a single-row activity could
+        still show a peek too thin to register as "there's more, scroll."
       */}
-      <div className="lf-scroll-edge -mx-2 flex min-h-0 flex-auto flex-col">
+      <div className="lf-scroll-edge -mx-2 flex min-h-[110px] flex-auto flex-col">
         <div ref={answersRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2">
           <Component
             segment={segment}

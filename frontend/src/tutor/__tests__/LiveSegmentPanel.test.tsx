@@ -271,3 +271,55 @@ describe('LiveSegmentPanel — the arrival announcement reaches a screen reader 
     expect(secondNode).toHaveTextContent('An activity is ready.');
   });
 });
+
+/*
+ * Found live, 2026-09-01: testing a real "give change" activity, in the
+ * browser, at the HALF sheet detent on a 375px phone. `framing` (up to 240
+ * moderated chars) plus `segment.prompt_md` rendered at 208px against a
+ * `header` that was `shrink-0` — refuses to shrink no matter how little room
+ * is left — so the answers region below it (`flex-auto`, `min-h-0`, no floor
+ * of its own) was squeezed to exactly zero height. `overflow: hidden` on an
+ * `h: 0` box: all four options existed in the DOM, each individually
+ * measurable via `getBoundingClientRect`, and `elementFromPoint` at every one
+ * of their own centers landed on the disabled Check button sitting where the
+ * list should have been. No error anywhere; a learner just saw a question
+ * with no way to answer it. jsdom has no layout engine, so this cannot assert
+ * the actual collapse in pixels the way the live repro did — what it CAN
+ * pin, so nobody re-introduces the bug by quietly dropping a class, is the
+ * mechanism itself: the header must be able to shrink and scroll internally,
+ * and the answers region must carry an explicit floor that does not depend on
+ * how much the header needs.
+ */
+describe('LiveSegmentPanel — a long framing+prompt must not be able to collapse the answers region', () => {
+  it('lets the header shrink and scroll instead of refusing to yield space to the answers below it', () => {
+    const live: LiveSegmentState = {
+      segmentId: 'segment-long',
+      seq: 1,
+      origin: 'live',
+      segment: { type: 'test_input', prompt_md: 'Question for segment-long', payload: {} },
+      scoresXp: true,
+      framing:
+        'Explorer is learning to give change with coins. '.repeat(4) +
+        'Let’s practise with a pretend store where they pay with a 10-peso coin and figure out the change.',
+    };
+    const { container } = render(<LiveSegmentPanel live={live} token="tok" onGraded={vi.fn()} />);
+
+    const header = container.querySelector('header');
+    expect(header).not.toBeNull();
+    // NOT shrink-0 — a header that refuses to shrink is what pushed the
+    // answers region below it to zero. min-h-0 is what lets a flex item
+    // shrink below its own content size at all; overflow-y-auto is what
+    // keeps the framing+prompt text reachable once it does.
+    expect(header?.className).not.toMatch(/(^|\s)shrink-0(\s|$)/);
+    expect(header?.className).toMatch(/(^|\s)min-h-0(\s|$)/);
+    expect(header?.className).toMatch(/(^|\s)shrink(\s|$)/);
+    expect(header?.className).toMatch(/overflow-y-auto/);
+
+    // The answers region's own floor — enough for one full option row plus a
+    // peek of the next — so it can never again be squeezed all the way to
+    // the zero height that made every option unreachable.
+    const answersWrapper = container.querySelector('.lf-scroll-edge');
+    expect(answersWrapper).not.toBeNull();
+    expect(answersWrapper?.className).toMatch(/min-h-\[110px\]/);
+  });
+});
