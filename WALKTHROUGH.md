@@ -1,6 +1,101 @@
 # WALKTHROUGH.md — Current State & Decision Log
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
+>
+> **This file went stale for several real working sessions** — it still opened
+> on "Tutor v2" dated 2026-08-28 while `main` had moved through a full v3
+> production closure and the entire v4 bicameral rewrite beneath it,
+> undetected by every gate because staleness in prose is not a type error.
+> The section below restores it; the v2 log stays underneath as the
+> historical record it already was, not because it is still current.
+
+## Tutor V4 — the bicameral pedagogical brain, and the live-test-driven hardening run in progress (2026-08-29 → present)
+
+**Architecture.** `30d93a88` recorded the v4 decision: a bicameral split
+between a fast conversational voice and a slower pedagogical brain that
+decides what to teach next, documented in `/ORACLE.md` and `oracle/AGENTS.md`.
+Built in three blocks the same day: **block A** (`eeec41b9`) replaced
+one-line skill labels with the brain actually hearing the conversation;
+**block B** (`6dc48a63`, the Preceptor) gave it learner memory — a dossier
+plus episodic recall; **block C** (`7389e3ac`) made the floating lesson plan
+visible to the content gate that had been blind to it. **Sprint 2**
+(`a7bfd86e`) added the whiteboard, a live visual kept in sync with the
+tutor's own narration — followed by a long, still-ongoing tail of live-found
+whiteboard defects (axis mismatches, locale gaps, persistence across
+reconnects, a worked example the model was teaching as real content instead
+of reading as a template) fixed through 2026-08-30 and into 2026-08-31. This
+tail is itself the pattern this whole file should have been recording as it
+happened.
+
+**This session's standing mandate:** develop the Tutor to 100%
+functional/efficient/conversational/guided-learning completion, verified
+personally through real browser sessions playing a low-retention,
+low-IQ learner persona — not through gates alone — because gates and live
+behavior have repeatedly disagreed here (§1.14's own catalogue of instances
+is mostly Tutor incidents). A workflow-orchestrated progress assessment
+mid-session, deliberately weighted toward live-test evidence over
+gate-passing, put the Tutor at **38/100** against that bar — down from an
+earlier, gate-influenced informal estimate of 55/100 — after a real live
+session failed on its own core promise ("let's try it on the screen") 3 out
+of 3 times. That gap between what the suites say and what a real
+conversation does is the thing this session is closing, one live-reproduced
+defect at a time; treat any percentage here as dated the moment it was
+measured, not as a live figure.
+
+**Fixed and shipped this run, each found by genuine live testing and
+independently re-verified (gates re-run personally, diff re-read, push
+confirmed against `origin/main`) before being called done:**
+- **RUNBOOK Round 121** (`5150b165`) — the offers screen's #1 suggested
+  action, "continue where you left off," 400ed for most returning kids: two
+  unrelated `skill_key` namespaces (the content ladder's bridge identifier
+  vs. the KC graph's) were conflated in `memoryDigest`, and only 23 of
+  several hundred published topics had a KC mapping. Fixed in
+  `backend/src/routes/tutor.ts` by verifying the digest server-side before
+  it ever reaches the client, reusing the two mechanisms already trusted for
+  this rather than inventing a third.
+- **RUNBOOK Round 122** (`06152990`) — an activity announced by the tutor's
+  own words, twice, with nothing ever placed on screen either time: the one
+  violation class `produce()`'s repair loop still delivered anyway when a
+  retry didn't fix it, contradicting `oracle/AGENTS.md` item 21's own
+  worked example of what is safe to deliver. Joined the same false-verdict
+  bucket every sibling violation (false praise, forbidden vocabulary,
+  language drift) already falls back from.
+
+**In progress at the time of this entry** (dispatched, not yet reviewed or
+shipped — do not treat as done until a later entry says so): a fix for the
+on-screen mic-status panel overlapping the composer and opening chips at
+short viewport heights, a fix for two opening-chip rows painting at
+identical coordinates after a failed session start, a check on whether
+every tutor line appearing twice in the page's text content is a real
+duplication bug or the correct sr-only/visible-caption pattern used
+elsewhere; and a fix for the "Lesson · step 4 of 4" progress badge freezing
+permanently once a session's plan (`oracle/src/tutor/plan.ts`) reaches its
+last step — root-caused (read-only investigation, static evidence only) to
+`buildPlan()` running exactly once per session and never being told about
+the V4 controller's own independent progress through later knowledge
+components, plus no prompt-level signal telling the model the planned arc
+is complete. Whether this is a real content stall, a purely cosmetic HUD
+staleness over otherwise-healthy teaching, or both, was not yet
+live-confirmed as of this writing.
+
+**Known, deliberately not yet addressed:** the two UI-overlap items above
+were first found in the same live-test pass that found Rounds 121 and 122
+and were queued behind the higher-severity fixes; the broader `/ORACLE.md`
+§15.2 scale gaps (no platform-wide spend ceiling, no admission control, an
+unrated websocket handshake) are known and explicitly deprioritized behind
+live-verified functional fixes per this session's own stated ordering.
+
+## Tutor v3 — production migration handoff closed, v2's design reopening carried through to a real deploy (2026-08-29)
+
+The four v2 design decisions above and their five increments shipped to
+production as v3: migrations through `0052` applied (database CD applies
+additive migrations automatically — no manual `migrate` step was needed),
+the KC graph seeded (28 knowledge components, 36 edges, 32 misconceptions —
+`ROADMAP.md` said 33 at the time; the seed was right and the doc was
+corrected), and an end-to-end live verification (real microphone upload,
+WebM and M4A, a real turn judged) went green in production. This is the
+handoff v4's blocks A–C and sprint 2 above then built on. See `ROADMAP.md`
+for the migration ledger and `RUNBOOK.md` for the closing verification round.
 
 ## Tutor v2 — the owner rejected the shipped Tutor, and four decisions reopened its design (2026-08-28)
 
