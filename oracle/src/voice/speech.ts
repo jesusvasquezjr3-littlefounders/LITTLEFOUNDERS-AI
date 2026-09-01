@@ -6,6 +6,7 @@ import { SHARED_SPEECH_BUCKET, SESSION_SPEECH_BUCKET, storeSpeechAudio } from '.
 import { getVoiceProvider } from './index.js';
 import { cachedSpeechUrl, rememberSpeechUrl } from './cache.js';
 import { pregeneratedUrl } from './pregenerated.js';
+import type { WordTiming } from './provider.js';
 
 /*
  * ONE function turns a sentence into something a child can hear, and it is the
@@ -71,9 +72,23 @@ export interface SpeechResult {
    * money (`npm run speaks:verify` exists for that one).
    */
   billedChars: number;
+  /**
+   * Word-level timing for THIS clip, or `null`.
+   *
+   * Deliberately `null` (never fabricated) on `pregenerated` and `cache`:
+   * both paths hand back a URL some EARLIER call already resolved, and
+   * neither the pre-generation script's manifest nor the Redis cache (see
+   * `cache.ts` — it stores a bare URL string, nothing else) carries timing
+   * alongside it. A cache hit is therefore an honest "no timing for this
+   * clip", identical in shape to a provider that never supports it — the
+   * caption falls back to prose either way rather than guessing. Only a
+   * fresh `synthesized` result can ever carry real timings, straight from
+   * the provider's own response for these exact bytes.
+   */
+  wordTimings: WordTiming[] | null;
 }
 
-const SILENT: SpeechResult = { url: null, source: 'unavailable', billedChars: 0 };
+const SILENT: SpeechResult = { url: null, source: 'unavailable', billedChars: 0, wordTimings: null };
 
 /**
  * One live session's memo of what it has already paid to say.
@@ -131,6 +146,12 @@ interface SynthesisOutcome {
   url: string | null;
   /** Whether the provider call itself succeeded — true even if storage then failed (§15: billed and lost, never billed and free). */
   billed: boolean;
+  /**
+   * The provider's timing for these exact bytes, or `null`. Shared with every
+   * follower coalesced onto this same call — the audio is identical for all
+   * of them, so the timing that describes it is too.
+   */
+  wordTimings: WordTiming[] | null;
 }
 
 /**
@@ -171,15 +192,17 @@ export async function speakLine(text: string, scope: SpeechScope): Promise<Speec
   const reusable = isReusableText(text);
 
   // ── 1 + 2: the free paths ────────────────────────────────────────────────
+  // No timing on any of these: see `SpeechResult.wordTimings`'s own comment
+  // on why a cache hit is an honest "none", never a guess.
   if (reusable) {
     const stored = pregeneratedUrl(key);
-    if (stored) return { url: stored, source: 'pregenerated', billedChars: 0 };
+    if (stored) return { url: stored, source: 'pregenerated', billedChars: 0, wordTimings: null };
 
     const cached = await cachedSpeechUrl(key);
-    if (cached) return { url: cached, source: 'cache', billedChars: 0 };
+    if (cached) return { url: cached, source: 'cache', billedChars: 0, wordTimings: null };
   } else {
     const remembered = scope.memo.get(key);
-    if (remembered) return { url: remembered, source: 'cache', billedChars: 0 };
+    if (remembered) return { url: remembered, source: 'cache', billedChars: 0, wordTimings: null };
   }
 
   // ── 3: the paid path, COALESCED ──────────────────────────────────────────
@@ -204,14 +227,22 @@ export async function speakLine(text: string, scope: SpeechScope): Promise<Speec
   const outcome = await promise;
 
   if (!isLeader) {
-    // Somebody else's in-flight synthesis — this call spent nothing, whether
-    // it succeeded (a cache hit, effectively) or failed (silent, same as them).
-    return outcome.url ? { url: outcome.url, source: 'cache', billedChars: 0 } : SILENT;
+    /*
+     * Somebody else's in-flight synthesis — this call spent nothing, whether
+     * it succeeded (a cache hit, effectively) or failed (silent, same as
+     * them). The timing rides along too: the bytes are identical for every
+     * caller coalesced onto the same promise, so a follower's caption can
+     * highlight exactly as the leader's can, not merely play the same audio.
+     */
+    return outcome.url
+      ? { url: outcome.url, source: 'cache', billedChars: 0, wordTimings: outcome.wordTimings }
+      : SILENT;
   }
   return {
     url: outcome.url,
     source: outcome.billed ? 'synthesized' : 'unavailable',
     billedChars: outcome.billed ? text.length : 0,
+    wordTimings: outcome.wordTimings,
   };
 }
 
@@ -223,12 +254,12 @@ async function synthesizeAndStore(
   key: string,
 ): Promise<SynthesisOutcome> {
   const provider = getVoiceProvider();
-  let audio: { audio: Buffer; mimeType: string };
+  let audio: { audio: Buffer; mimeType: string; wordTimings: WordTiming[] | null };
   try {
     audio = await provider.synthesize({ text, locale: scope.locale, character: scope.character });
   } catch (error) {
     console.warn('[oracle] synthesis failed:', error instanceof Error ? error.message : error);
-    return { url: null, billed: false };
+    return { url: null, billed: false, wordTimings: null };
   }
 
   const stored = await storeSpeechAudio(audio.audio, audio.mimeType, {
@@ -242,11 +273,11 @@ async function synthesizeAndStore(
   if (!stored) {
     // Billed and lost. Say so in the ledger rather than reporting it free.
     console.warn('[oracle] synthesized audio could not be stored — the turn will be captioned and silent');
-    return { url: null, billed: true };
+    return { url: null, billed: true, wordTimings: null };
   }
 
   if (reusable) await rememberSpeechUrl(key, stored.url);
   else scope.memo.set(key, stored.url);
 
-  return { url: stored.url, billed: true };
+  return { url: stored.url, billed: true, wordTimings: audio.wordTimings };
 }

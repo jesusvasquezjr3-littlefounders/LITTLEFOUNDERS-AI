@@ -83,6 +83,7 @@ const silent = async (): Promise<SpeechResult> => ({
   url: null,
   source: 'unavailable',
   billedChars: 0,
+  wordTimings: null,
 });
 
 let fetchMock: ReturnType<typeof vi.fn>;
@@ -288,17 +289,22 @@ describe('output moderation', () => {
     const spoken: string[] = [];
     const orchestrator = new TutorOrchestrator(KID, Date.now(), async (turn) => {
       spoken.push(turn.say);
-      return { url: `http://depot.test/${spoken.length}.mp3`, source: 'synthesized' as const, billedChars: turn.say.length };
+      return {
+        url: `http://depot.test/${spoken.length}.mp3`,
+        source: 'synthesized' as const,
+        billedChars: turn.say.length,
+        wordTimings: null,
+      };
     });
     const outcome = (await orchestrator.handleLearnerText('cuéntame algo', Date.now()))!;
-    const audioUrl = await outcome?.emission.audio;
+    const audio = await outcome?.emission.audio;
 
     // The blocked line WAS synthesized (concurrently with the judge) and its
     // clip is not the one delivered: the emission's audio is the scripted
     // replacement's, and the gamble is visible in the discard count.
     expect(spoken[0]).toBe(GOOD_TURN.say);
     expect(spoken).toHaveLength(2);
-    expect(audioUrl).toBe('http://depot.test/2.mp3');
+    expect(audio?.url).toBe('http://depot.test/2.mp3');
     expect(orchestrator.speechCounts.discarded).toBe(1);
     // Both syntheses were paid for. Honesty over tidiness in the ledger.
     expect(orchestrator.speechCounts.paid).toBe(2);
@@ -329,7 +335,12 @@ describe('output moderation', () => {
         // than the replacement, exactly as a real second TTS call can be.
         await new Promise((resolve) => setTimeout(resolve, 30));
       }
-      return { url: `http://depot.test/${calls}.mp3`, source: 'synthesized' as const, billedChars: turn.say.length };
+      return {
+        url: `http://depot.test/${calls}.mp3`,
+        source: 'synthesized' as const,
+        billedChars: turn.say.length,
+        wordTimings: null,
+      };
     });
 
     const outcome = (await orchestrator.handleLearnerText('cuéntame algo', Date.now()))!;
@@ -361,7 +372,7 @@ describe('output moderation', () => {
     const spoken: string[] = [];
     const orchestrator = new TutorOrchestrator(KID, Date.now(), async (turn) => {
       spoken.push(turn.say);
-      return { url: null, source: 'unavailable' as const, billedChars: 0 };
+      return { url: null, source: 'unavailable' as const, billedChars: 0, wordTimings: null };
     });
     const controller = new AbortController();
     const inFlight = orchestrator.handleLearnerText('cuéntame un cuento largo', Date.now(), controller.signal);

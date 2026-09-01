@@ -1090,6 +1090,18 @@ export interface ConversationLayerProps extends StageLayerCommonProps {
    * and a rejected clip must not leave a mouth open over silence.
    */
   speaking: boolean;
+  /**
+   * The stage's own `<audio>` element, for word-highlighting — the SAME
+   * object `TutorStage`'s `useLipSync` drives the mouth from.
+   *
+   * Supplied for the same reason `speaking` is: playback lives in the stage,
+   * and a caption that wants to read `.currentTime` needs the real element
+   * rather than a second copy of it (there is no second copy to have — see
+   * `TutorStageProps.onAudioElementReady`). `null` until the stage has
+   * mounted one, which this layer must treat exactly like "no timing yet",
+   * never as an error.
+   */
+  audioElement: HTMLAudioElement | null;
   /*
    * `onInterrupt` is deliberately NOT here. Pressing the microphone while the
    * tutor is still talking has to stop the clip, and the only control that can

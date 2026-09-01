@@ -8,6 +8,7 @@ import {
   type TranscriptionRequest,
   type TranscriptionResult,
   type VoiceProvider,
+  type WordTiming,
 } from './provider.js';
 
 /*
@@ -65,6 +66,83 @@ const STT_MODEL = 'inworld/inworld-stt-1';
  * Do not reintroduce a MIME→enum table here — that is this defect, exactly.
  */
 const AUDIO_ENCODING = 'AUTO_DETECT';
+
+/*
+ * WORD-LEVEL CAPTION TIMING — GATED ON THE MODEL, NEVER MEASURED LIVE.
+ *
+ * ORACLE.md §19.5 deferred word-level caption highlighting as "needs
+ * provider timestamps". It does not need them; Inworld already has them, on
+ * the EXACT endpoint this file already calls (`POST /tts/v1/voice`,
+ * confirmed against `docs.inworld.ai/api-reference/ttsAPI/texttospeech/
+ * synthesize-speech` on 2026-09-01 — same path, and its documented response
+ * fields `audioContent`/`usage` already match `SynthesizeResponse` below
+ * byte for byte, which is why this citation is trusted rather than treated
+ * as one more unverified vendor claim). Sending `timestampType: 'WORD'`
+ * there is documented to add `timestampInfo.wordAlignment` — three parallel
+ * arrays (`words`, `wordStartTimeSeconds`, `wordEndTimeSeconds`) — to the
+ * SAME response shape, no transport change and no streaming required.
+ *
+ * THE CATCH, AND WHY THIS IS GATED RATHER THAN ALWAYS SENT: the timestamps
+ * capability is documented ONLY for the `inworld-tts-2`/`inworld-tts-2-flash`
+ * family. `DEFAULT_TTS_MODEL` above, and every production `.env`, is
+ * `inworld-tts-1` — a model this file has never asked for a timestamp on, on
+ * the reasoning this whole file otherwise lives by: "measured, not read off
+ * a documentation page" (see this file's OWN header comment). Nobody has run
+ * `voices:verify`-style live traffic against `inworld-tts-1` WITH
+ * `timestampType` set to find out whether an unsupported model politely
+ * ignores the field or answers a 400 for the whole request — and guessing
+ * wrong there would not lose a caption, it would lose the TUTOR'S VOICE for
+ * every learner, the exact §1.14 class of defect this codebase has already
+ * paid for once (the OGG_OPUS outage this file documents below). So the
+ * field is sent ONLY when the CONFIGURED model already names itself
+ * TTS-2-family — a model nothing in production requests today — which makes
+ * this code inert on every request `inworld-tts-1` ever sends, byte for
+ * byte, until a human deliberately changes `INWORLD_TTS_MODEL`. That switch
+ * is its own decision (voice-clone compatibility across model families and
+ * the resulting cache invalidation are both unverified — see
+ * `voiceFingerprint`'s own comment on what a model change already does to
+ * the cache) and does not happen as a side effect of this file existing.
+ */
+function supportsWordTimings(modelId: string): boolean {
+  return modelId.startsWith('inworld-tts-2');
+}
+
+/**
+ * Turns Inworld's documented `timestampInfo.wordAlignment` — three parallel
+ * arrays — into this file's own per-word shape, or `null` when any part of
+ * it is missing, mismatched, or not finite.
+ *
+ * DEFENSIVE ON PURPOSE, not tidiness: this exact response shape has never
+ * been observed against the live API from this codebase (docs-only, see
+ * `supportsWordTimings` above). A field the docs promise but the live
+ * service omits for some model/locale pairing, or sends with mismatched
+ * array lengths, must degrade to "no timing for this clip" — silence on the
+ * highlight, never a highlight computed from a guess.
+ */
+function parseWordTimings(alignment: {
+  words?: string[];
+  wordStartTimeSeconds?: number[];
+  wordEndTimeSeconds?: number[];
+} | undefined): WordTiming[] | null {
+  const words = alignment?.words;
+  const starts = alignment?.wordStartTimeSeconds;
+  const ends = alignment?.wordEndTimeSeconds;
+  if (!words || !starts || !ends) return null;
+  if (words.length === 0 || words.length !== starts.length || words.length !== ends.length) return null;
+
+  const timings: WordTiming[] = [];
+  for (let i = 0; i < words.length; i += 1) {
+    const word = words[i];
+    const start = starts[i];
+    const end = ends[i];
+    if (word === undefined || start === undefined || end === undefined) return null;
+    const startMs = start * 1000;
+    const endMs = end * 1000;
+    if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs < startMs) return null;
+    timings.push({ word, startMs, endMs });
+  }
+  return timings;
+}
 
 /*
  * THE CHARACTER VOICES ARE THE WHOLE POINT.
@@ -204,6 +282,14 @@ interface RecognizeResponse {
 interface SynthesizeResponse {
   audioContent?: string;
   usage?: { processedCharactersCount?: number; modelId?: string };
+  /** Present only when the request set `timestampType` — see `supportsWordTimings`. */
+  timestampInfo?: {
+    wordAlignment?: {
+      words?: string[];
+      wordStartTimeSeconds?: number[];
+      wordEndTimeSeconds?: number[];
+    };
+  };
 }
 
 export class InworldVoiceProvider implements VoiceProvider {
@@ -304,6 +390,8 @@ export class InworldVoiceProvider implements VoiceProvider {
       );
     }
 
+    const modelId = config.INWORLD_TTS_MODEL || DEFAULT_TTS_MODEL;
+
     let response: Response;
     try {
       response = await postWithRetry(
@@ -314,9 +402,12 @@ export class InworldVoiceProvider implements VoiceProvider {
           body: JSON.stringify({
             text: request.text,
             voiceId,
-            modelId: config.INWORLD_TTS_MODEL || DEFAULT_TTS_MODEL,
+            modelId,
             language: request.locale,
             audioConfig: { audioEncoding: 'MP3' },
+            // See `supportsWordTimings` above: sent ONLY for a TTS-2-family
+            // model, so an `inworld-tts-1` request is byte-for-byte unchanged.
+            ...(supportsWordTimings(modelId) ? { timestampType: 'WORD' } : {}),
           }),
         },
         config.VOICE_TIMEOUT_MS,
@@ -337,7 +428,11 @@ export class InworldVoiceProvider implements VoiceProvider {
       throw new VoiceUnavailableError('inworld tts returned no audioContent');
     }
 
-    return { audio: Buffer.from(body.audioContent, 'base64'), mimeType: 'audio/mpeg' };
+    return {
+      audio: Buffer.from(body.audioContent, 'base64'),
+      mimeType: 'audio/mpeg',
+      wordTimings: parseWordTimings(body.timestampInfo?.wordAlignment),
+    };
   }
 }
 

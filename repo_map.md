@@ -853,7 +853,7 @@ on:
 name: Tutor content bridge audit
 
 # DOES THE KNOWLEDGE-COMPONENT GRAPH STILL REACH PUBLISHED CONTENT?
-# (RUNBOOK.md Round 101, oracle/AGENTS.md #73)
+# (RUNBOOK.md Round 105, oracle/AGENTS.md #73)
 #
 # `backend/src/services/contentBridgeAudit.ts` is the ONLY thing that answers
 # this — it proves every mapped `kc.skill_key` still resolves to a published
@@ -1333,18 +1333,18 @@ untracked by default; a skill the team wants versioned gets a scoped
 # WALKTHROUGH.md — Current State & Decision Log
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
+>
+> **This file went stale for several real working sessions** — it still opened
+> on "Tutor v2" dated 2026-08-28 while `main` had moved through a full v3
+> production closure and the entire v4 bicameral rewrite beneath it,
+> undetected by every gate because staleness in prose is not a type error.
+> The section below restores it; the v2 log stays underneath as the
+> historical record it already was, not because it is still current.
 
-## Tutor v2 — the owner rejected the shipped Tutor, and four decisions reopened its design (2026-08-28)
+## Tutor V4 — the bicameral pedagogical brain, and the live-test-driven hardening run in progress (2026-08-29 → present)
 
-**The verdict, owner's words:** the shipped Tutor is below MVP — slow,
-disorganized, unintuitive, not adaptive, narration effectively non-functional,
-no way to restart or interrupt, and it does not teach live off what the learner
-says. The session goal is a finished product, and `feat/tutor-v2` is the branch.
-
-**Exploration confirmed the complaints as mechanisms**, not impressions: a
-voice turn was 5 sequential network hops with nothing shown until all of them
-finished; `speech.pregenerated.json` is empty (0/144), so even the scripted
-greeting paid and waited; `awaitingReply` had no timeout; skill states were
+**Architecture.** `30d93a88` recorded the v4 decision: a bicameral split
+between a fast conversational voice and a slower pedagogical brain that
 ```
 
 ### agent/README.md
@@ -6875,7 +6875,7 @@ import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
 import { auditContentBridge } from '../services/contentBridgeAudit.js';
 
 /*
- * RUNBOOK.md Round 101 (adversarial review sweep tutor-review-sweep-101,
+ * RUNBOOK.md Round 105 (adversarial review sweep tutor-review-sweep-101,
  * content-ladder-correctness dimension, MEDIUM): the bridge audit that
  * catches "a mapped skill_key no longer reaches published content" — the
  * EXACT class of defect that made the tutor unable to reach any published
@@ -7376,6 +7376,7 @@ import {
   getTutorPreferences,
   grantVoiceConsent,
   insertTutorTurn,
+  listTutorSessions,
   listTutorTurns,
   searchOwnTurns,
   upsertTutorPreferences,
@@ -7384,7 +7385,6 @@ import {
 
 /*
  * Found by adversarial review, round 28 (2026-08-30, HIGH): `getLearnerMemory`
- * used to collapse "the read failed" and "this learner genuinely has no
 ```
 
 ### backend/src/__tests__/tutorLadder.test.ts
@@ -8076,7 +8076,7 @@ import {
  * (`../services/contentBridgeAudit.ts`) against whatever is CURRENTLY live in
  * Vault, independent of `database/seeds/kc_graph.v1.json`.
  *
- * WHY THIS EXISTS SEPARATELY FROM `seed:kc`. Until RUNBOOK.md Round 101 the
+ * WHY THIS EXISTS SEPARATELY FROM `seed:kc`. Until RUNBOOK.md Round 105 the
  * bridge audit only ever ran as a side effect of a human dispatching
  * `tutor-deploy.yml`'s `seed-kc` step — the ONLY trigger for the exact defect
  * this audit exists to catch (a `kc.skill_key` that no longer reaches
@@ -24825,7 +24825,7 @@ import { type CourseTree } from '@/routes/app/learn/types';
 ### frontend/src/routes/app/family/KidTutorPage.tsx
 
 ```
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
@@ -24833,13 +24833,13 @@ import { Button, Card, Icon, LoadingOverlay } from '@/components/ui';
 import { MarkdownLite } from '@/lesson-engine/core/MarkdownLite';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { buildReplayScript } from '@/tutor/replay/replayScript';
+import { TutorWhiteboard } from '@/tutor/TutorWhiteboard';
 import { getKidTutorHistory, getTranscript, type KidTutorHistory } from '@/tutor/tutorApi';
 import type { SessionTranscript } from '@/tutor/types';
 
 /*
  * `/family/:kidId/tutor` — a child's tutor conversations, through the parent's
  * eyes.
- *
 ```
 
 ### frontend/src/routes/app/family/ManageKidPanel.tsx
@@ -28018,6 +28018,7 @@ import type { AnchorId } from '@/tutor-scene/anchors';
 import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
 import { HudPlate } from './hud/HudPlate';
 import { TutorFace, type TutorFaceProps } from './TutorFace';
+import type { WordTiming } from './types';
 
 /*
  * The tutor's words, ABOVE the character's head.
@@ -28026,7 +28027,6 @@ import { TutorFace, type TutorFaceProps } from './TutorFace';
  * A deaf or hard-of-hearing learner must get the whole lesson, and a caption
  * that lives in a side panel makes them choose between watching the character
  * and reading what it said. Above the head, they are the same glance.
- *
 ```
 
 ### frontend/src/tutor/TutorExperience.tsx
@@ -28509,6 +28509,26 @@ import { describe, expect, it, vi } from 'vitest';
  * adaptation question up, the two-shot's stand-off clamped the tutor's spoken
 ```
 
+### frontend/src/tutor/__tests__/speechCaptionWordSync.test.tsx
+
+```
+import { act, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { SpeechCaption } from '../SpeechCaption';
+import type { WordTiming } from '../types';
+
+/*
+ * WORD-LEVEL CAPTION HIGHLIGHTING (ORACLE.md §19.5).
+ *
+ * The reveal boundary IS the highlight (see `SpeechCaptionProps.wordTimings`'s
+ * own comment): there is no separate highlight colour, so every assertion
+ * here is about WHICH PREFIX of the sentence is visible at a given simulated
+ * playback position, not about a CSS class.
+ *
+ * `requestAnimationFrame` is stubbed to capture its callback rather than
+ * auto-run it, so a test can step "playback" forward one frame at a time on
+```
+
 ### frontend/src/tutor/__tests__/stageAnnouncement.test.ts
 
 ```
@@ -28687,6 +28707,26 @@ import { getVoiceConsent, grantVoiceConsent, revokeVoiceConsent } from '../tutor
 
 vi.mock('../tutorApi', async () => {
   const actual = await vi.importActual<typeof import('../tutorApi')>('../tutorApi');
+```
+
+### frontend/src/tutor/__tests__/whiteboardRevealRace.test.tsx
+
+```
+import { act, render } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { GROW_STEP_MS, TutorWhiteboard } from '../TutorWhiteboard';
+
+/*
+ * Confirmed by adversarial review sweep tutor-review-sweep-101
+ * (whiteboard-at-scale dimension), MEDIUM, closed round 101 (RUNBOOK.md):
+ * when a NEW whiteboard turn (`seq` bumped, `board.values` often shorter)
+ * arrived before the PREVIOUS turn's bar-by-bar reveal had finished, the
+ * stale `shown` count was reset only by a `useEffect` keyed on `seq` — which
+ * runs AFTER React commits a render, never before. The render that used the
+ * NEW, shorter `board.values` together with the OLD, larger `shown` value
+ * committed and PAINTED FIRST: every one of the new sequence's bars showed
+ * fully grown in one frame, then visibly collapsed back to one bar and
+ * re-grew correctly once the effect fired a tick later. A jarring glitch,
 ```
 
 ### frontend/src/tutor/hud/HudPlate.tsx
@@ -29365,8 +29405,8 @@ import type { CharacterAction, CharacterEmotion, CharacterId } from '@/component
 
 export type TutorIntent = 'course_topic' | 'weak_skill' | 'faq' | 'open' | 'diagnostic';
 
-export type Adaptation =
-  | 'slower_pacing'
+/**
+ * One spoken word's position in a `turn_audio` clip, in milliseconds from
 ```
 
 ### frontend/src/tutor/useHandsFreeTurn.ts
@@ -29418,6 +29458,7 @@ import type {
   BudgetState,
   ClientMessage,
   ServerMessage,
+  WordTiming,
 } from './types';
 import type { CharacterAction, CharacterEmotion } from '@/components/characters/control/types';
 
@@ -29426,7 +29467,6 @@ import type { CharacterAction, CharacterEmotion } from '@/components/characters/
  *
  * ONE SOCKET, ONE SESSION, NO RECONNECT — and that last part is deliberate.
  * The token Core minted is single-use and expires in sixty seconds, so a
- * reconnect could not authenticate even if we tried; and a tutoring session
 ```
 
 ### frontend/src/vite-env.d.ts
@@ -30314,17 +30354,17 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   IDLE_NUDGE_MS,
   LISTEN_SILENCE_MS,
+  listenSilenceMsFor,
   MASTERY_MIN_OPPORTUNITIES,
   mirrorBktUpdate,
+  NEW_TO_SKILL_OPPORTUNITIES,
+  NEW_TO_SKILL_SILENCE_GRACE,
   PedagogicalController,
 } from '../tutor/controller.js';
-import type { SessionPlanEntry } from '../core/client.js';
+import type { KcState, SessionPlanEntry } from '../core/client.js';
 import { mintGradeEcho, verifyGradeEcho } from '../session/gradeEcho.js';
 
 /*
- * The v3 strategy controller: every guardrail is a rule a parent could be
- * shown, so every guardrail gets a test with a name a parent could read.
- */
 ```
 
 ### oracle/src/__tests__/coreClient.test.ts
@@ -30567,6 +30607,26 @@ import type { TutorContext } from '../context/schema.js';
 describe('the whiteboard example tells the model not to copy its own numbers', () => {
 ```
 
+### oracle/src/__tests__/review-moderation-batch.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { runPostSessionReview } from '../session/review.js';
+import type { SessionContext } from '../core/client.js';
+
+/*
+ * ROUND 120 (2026-08-31, MEDIUM, `tutor-review-sweep-101`, cost-efficiency
+ * dimension). `review()`'s own §1.9 re-check used to call
+ * `moderateTutorOutput` SEPARATELY for `proposal.learner` and
+ * `proposal.pedagogy` — two full, billed judge round trips whenever a review
+ * proposed both notes, where `orchestrator.ts`'s own `visibleText` already
+ * established the technique this codebase uses to avoid exactly that: join
+ * every learner-visible string into ONE text and moderate it once. See
+ * `review.ts`'s own comment directly above the loop this test targets for
+ * the full reasoning, including why per-field attribution is still possible
+ * without paying for a second call.
+```
+
 ### oracle/src/__tests__/review.test.ts
 
 ```
@@ -30592,7 +30652,7 @@ const SESSION = {
 ```
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { classifyLearnerInput } from '../safety/classifier.js';
-import { fenceUntrusted, stripInvisible } from '../safety/untrusted.js';
+import { fenceActivityContent, fenceUntrusted, stripInvisible } from '../safety/untrusted.js';
 import { deterministicModeration, moderateTutorOutput } from '../safety/moderation.js';
 import {
   BENIGN_CANARIES,
@@ -31114,7 +31174,7 @@ import crypto from 'crypto';
 import { getConfig } from '../env.js';
 import { addSessionCost, updateLearnerMemory } from '../core/client.js';
 import { stripInvisible } from '../safety/untrusted.js';
-import { moderateTutorOutput } from '../safety/moderation.js';
+import { moderateTutorOutput, deterministicModeration } from '../safety/moderation.js';
 import { estimateCostUsd } from '../tutor/orchestrator.js';
 import type { SessionContext } from '../core/client.js';
 
@@ -31271,6 +31331,7 @@ import { ADAPTATIONS, PLAN_STEPS } from '../context/schema.js';
 import type { TutorContext, Locale } from '../context/schema.js';
 import { EMOTIONS, ACTIONS, type Whiteboard } from './turnSchema.js';
 import { computeSequence } from './whiteboard.js';
+import { fenceActivityContent } from '../safety/untrusted.js';
 
 /*
  * The pedagogical system prompt.
@@ -31282,7 +31343,6 @@ import { computeSequence } from './whiteboard.js';
  *    are byte-identical across calls, and a prompt that interpolates the
  *    learner's nickname into paragraph one defeats it on every single turn.
  *    Everything learner-specific lives in the second message.
- * 2. NOTHING FROM THE LEARNER IS INTERPOLATED HERE. Not the nickname, not a
 ```
 
 ### oracle/src/tutor/scripted.ts
@@ -31418,11 +31478,11 @@ import {
   type TranscriptionRequest,
   type TranscriptionResult,
   type VoiceProvider,
+  type WordTiming,
 } from './provider.js';
 
 /*
  * The Inworld adapter — the ONLY file in the repository that names the
- * provider or knows its wire format.
 ```
 
 ### oracle/src/voice/pregenerated.ts
@@ -31476,13 +31536,13 @@ import { SHARED_SPEECH_BUCKET, SESSION_SPEECH_BUCKET, storeSpeechAudio } from '.
 import { getVoiceProvider } from './index.js';
 import { cachedSpeechUrl, rememberSpeechUrl } from './cache.js';
 import { pregeneratedUrl } from './pregenerated.js';
+import type { WordTiming } from './provider.js';
 
 /*
  * ONE function turns a sentence into something a child can hear, and it is the
  * only place in the service that can spend money on speech.
  *
  * THE ORDER IS THE WHOLE POINT — cheapest first, paid last:
- *
 ```
 
 ### oracle/src/ws/audioAssembly.ts
@@ -31511,6 +31571,7 @@ import { pregeneratedUrl } from './pregenerated.js';
 import { z } from 'zod';
 import { ADAPTATIONS } from '../context/schema.js';
 import { ACTIONS, EMOTIONS } from '../tutor/turnSchema.js';
+import type { WordTiming } from '../voice/provider.js';
 
 /*
  * The websocket wire format.
@@ -31522,7 +31583,6 @@ import { ACTIONS, EMOTIONS } from '../tutor/turnSchema.js';
  * orchestrator, the model, or Core.
  *
  * OUTBOUND IS A PLAIN TYPE, not a schema. We author it, so validating our own
- * output on the way out would be theatre. What we DO validate is the model's
 ```
 
 ### oracle/src/ws/server.ts

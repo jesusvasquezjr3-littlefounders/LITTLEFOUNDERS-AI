@@ -4,6 +4,7 @@ import type {
   BudgetState,
   ClientMessage,
   ServerMessage,
+  WordTiming,
 } from './types';
 import type { CharacterAction, CharacterEmotion } from '@/components/characters/control/types';
 
@@ -36,6 +37,14 @@ export interface TutorTurnState {
    * distinction to know when it is safe to open the microphone again.
    */
   audioPending: boolean;
+  /**
+   * Word-level timing for `audioUrl`, or `null` when this clip has none —
+   * the common case today (ORACLE.md §19.5): absent on every path except a
+   * fresh synthesis from a voice-provider model that actually returned it.
+   * Reset to `null` on every new `turn`, same as `audioUrl` itself, so a
+   * highlight can never survive into the WRONG line.
+   */
+  wordTimings: WordTiming[] | null;
   next: 'ask' | 'segment' | 'close';
   /**
    * v3 turn policy, per pedagogical strategy. `idleNudgeMs` is how long to let
@@ -337,6 +346,9 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
             action: message.action,
             audioUrl: message.audioUrl,
             audioPending: message.audioPending,
+            // Null on delivery, same as `audioUrl` — a new turn's caption
+            // must never highlight against the PREVIOUS line's timing.
+            wordTimings: null,
             next: message.next,
             policy: message.policy ?? null,
             demonstrate: message.demonstrate ?? null,
@@ -389,7 +401,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
           // synthesis can never talk over a newer turn.
           setTurn((prev) =>
             prev && prev.seq === message.seq
-              ? { ...prev, audioUrl: message.audioUrl, audioPending: false }
+              ? { ...prev, audioUrl: message.audioUrl, audioPending: false, wordTimings: message.wordTimings ?? null }
               : prev,
           );
           break;

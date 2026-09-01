@@ -4,6 +4,7 @@ import type { AnchorId } from '@/tutor-scene/anchors';
 import { useAnchorSlot } from '@/tutor-scene/ScreenAnchor';
 import { HudPlate } from './hud/HudPlate';
 import { TutorFace, type TutorFaceProps } from './TutorFace';
+import type { WordTiming } from './types';
 
 /*
  * The tutor's words, ABOVE the character's head.
@@ -111,6 +112,43 @@ export interface SpeechCaptionProps {
    * avatar — see `TutorFace`.
    */
   face?: TutorFaceProps | null;
+  /**
+   * Word-level timing for THIS turn's clip, or `null`/absent — the common
+   * case (ORACLE.md §19.5): absent whenever the voice provider did not
+   * return timing for this exact clip, which is every turn in production
+   * today. `null` is a fact, never estimated — see `oracle/src/voice/
+   * provider.ts`'s own `WordTiming` comment.
+   *
+   * When present (and `audioElement` is too), the reveal below tracks the
+   * REAL playback position instead of the fixed-rate typewriter: the boundary
+   * of what is shown IS the highlight — the last word revealed is the word
+   * being said right now. No separate highlight colour is drawn on top of
+   * already-shown words, for the same reason the typewriter never draws one:
+   * a synced reveal that is occasionally a beat off (a network stall, a
+   * decode delay) reads as a caption catching up, exactly like every caption
+   * track a learner has ever seen; a highlighted PAST word sitting one beat
+   * behind the actual audio would read as broken.
+   */
+  wordTimings?: WordTiming[] | null;
+  /**
+   * The stage's own `<audio>` element — see `TutorStageProps
+   * .onAudioElementReady`. Required (alongside `wordTimings`) for the synced
+   * reveal; without it this component cannot read a playback position at
+   * all, and falls back to the typewriter exactly as if `wordTimings` were
+   * absent.
+   */
+  audioElement?: HTMLAudioElement | null;
+  /**
+   * True only while this turn's clip is ACTUALLY playing — not merely
+   * requested. `false` covers three different reasons (the clip has not
+   * started, the browser blocked autoplay, the clip already ended) and all
+   * three get the SAME treatment here: show the complete sentence rather
+   * than trust a `currentTime` that is not actually advancing. A caption
+   * that went silent because playback was blocked is the §1 step 4
+   * accessibility promise broken for the one learner who has no other way
+   * to read what was said.
+   */
+  speaking?: boolean;
 }
 
 /** Fast enough to keep up with speech, slow enough to read as "being said". */
@@ -145,9 +183,28 @@ export function SpeechCaption({
   instant = false,
   face = null,
   docked = null,
+  wordTimings = null,
+  audioElement = null,
+  speaking = false,
  }: SpeechCaptionProps) {
   const [shown, setShown] = useState('');
   const timerRef = useRef<number | null>(null);
+
+  const reducedMotion =
+    instant || (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
+  /*
+   * WHETHER THIS TURN HAS SOMETHING REAL TO SYNC TO.
+   *
+   * All three conditions are load-bearing: no timing (the common case today
+   * — ORACLE.md §19.5), no element (the stage has not mounted one, or this
+   * caller is one of the two with no stage at all), or reduced motion (the
+   * boundary of a synced reveal moves exactly like the typewriter's does,
+   * and a learner who asked for less motion gets the same instant full
+   * sentence either way) all fall back to the UNTOUCHED typewriter effect
+   * below — not a variant of the synced path, the literal same code that
+   * already ran before this feature existed.
+   */
+  const hasWordSync = Boolean(wordTimings && wordTimings.length > 0 && audioElement) && !reducedMotion;
   /*
    * ABOVE the crown, and OUT OF THE WAY of the fixed chrome.
    *
@@ -189,11 +246,12 @@ export function SpeechCaption({
       setShown('');
       return;
     }
+    // The synced effect below owns `shown` for this turn instead — see its
+    // own comment. Every line under this point is UNCHANGED from before
+    // word timing existed, for every turn that still has none.
+    if (hasWordSync) return;
 
-    const reduced =
-      instant ||
-      (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
-    if (reduced) {
+    if (reducedMotion) {
       setShown(text);
       return;
     }
@@ -215,7 +273,65 @@ export function SpeechCaption({
     };
     // turnSeq is in the deps on purpose: the same sentence said twice must
     // replay, and text alone would not change.
-  }, [text, turnSeq, instant]);
+  }, [text, turnSeq, instant, hasWordSync, reducedMotion]);
+
+  /*
+   * THE SYNCED REVEAL. Runs only while `hasWordSync` is true (see its own
+   * comment) — inert, start to finish, on every turn that has no word
+   * timing, which is every turn in production today.
+   *
+   * The reveal boundary IS the highlight: `shown` is always an exact prefix
+   * of the joined tokens, so the last token in it is the word being said
+   * right now. No word is ever coloured differently from another — see
+   * `SpeechCaptionProps.wordTimings`'s own comment on why a synced reveal
+   * beats a persistent highlight sitting on top of already-visible text.
+   *
+   * `!speaking` is the escape hatch, checked BEFORE reading `currentTime` at
+   * all: it covers three different reasons audio might not be advancing
+   * (not started yet, blocked by the browser's autoplay policy, already
+   * ended) and every one of them gets the same answer — show the complete
+   * sentence NOW. The alternative (trusting a `currentTime` stuck at 0
+   * because `play()` was silently refused) is a caption that never reveals
+   * a single word for the one learner who has no sound to fall back on.
+   */
+  useEffect(() => {
+    if (!hasWordSync || !wordTimings || !audioElement) return;
+
+    if (!speaking) {
+      setShown(wordTimings.map((token) => token.word).join(''));
+      return;
+    }
+
+    let frame = 0;
+    // -2: distinct from every real index (-1 = nothing yet, 0..n-1 = a word),
+    // so the FIRST tick always writes, including the "nothing yet" case.
+    let lastIndex = -2;
+
+    const tick = () => {
+      frame = requestAnimationFrame(tick);
+      const nowMs = audioElement.currentTime * 1000;
+
+      // The last token whose own start has already passed. `for...of` over
+      // `.entries()` rather than indexing by `i`, so `noUncheckedIndexedAccess`
+      // cannot make this the same defensive-parsing bug `inworld.ts` guards
+      // against on the way IN — here it would silently mis-highlight instead.
+      let index = -1;
+      for (const [i, token] of wordTimings.entries()) {
+        if (token.startMs <= nowMs) index = i;
+        else break;
+      }
+
+      if (index !== lastIndex) {
+        lastIndex = index;
+        setShown(
+          index === -1 ? '' : wordTimings.slice(0, index + 1).map((token) => token.word).join(''),
+        );
+      }
+    };
+    tick();
+
+    return () => cancelAnimationFrame(frame);
+  }, [hasWordSync, wordTimings, audioElement, speaking]);
 
   if (!text) return null;
 

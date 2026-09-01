@@ -334,6 +334,71 @@ describe('the cache sits BEFORE the paid call', () => {
   });
 });
 
+/*
+ * WORD-LEVEL CAPTION TIMING, at the layer that actually pays for the clip.
+ * `inworld.ts`'s own tests cover the parsing; this covers `speakLine` NOT
+ * dropping what the provider handed back, and NOT inventing it on a path
+ * that never asked the provider anything at all.
+ */
+describe('word-level caption timing rides along with a fresh synthesis, never a cache hit', () => {
+  afterEach(() => {
+    delete process.env.INWORLD_TTS_MODEL;
+  });
+
+  it('surfaces the provider’s timing on a freshly synthesized line', async () => {
+    process.env.INWORLD_TTS_MODEL = 'inworld-tts-2';
+    withVoice();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes('/tts/v1/voice')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                audioContent: Buffer.from('fake-mp3-bytes').toString('base64'),
+                timestampInfo: {
+                  wordAlignment: {
+                    words: ['hola'],
+                    wordStartTimeSeconds: [0],
+                    wordEndTimeSeconds: [0.4],
+                  },
+                },
+              }),
+              { status: 200, headers: { 'Content-Type': 'application/json' } },
+            ),
+          );
+        }
+        if (url.includes('/api/v1/files')) return Promise.resolve(depotAccepts('http://depot.test/files/x.mp3'));
+        return Promise.resolve(new Response(null, { status: 404 }));
+      }),
+    );
+
+    const result = await speakLine(SCRIPTED_LINE, newSpeechScope(SESSION));
+    expect(result.source).toBe('synthesized');
+    expect(result.wordTimings).toEqual([{ word: 'hola', startMs: 0, endMs: 400 }]);
+  });
+
+  it('never fabricates timing for a line served from cache or the pregenerated manifest', async () => {
+    // No timestampInfo in the FIRST response, and no INWORLD_TTS_MODEL set —
+    // the default model never even asks. The SECOND call for the identical
+    // line, in the same process, is a memo hit and must not invent timing
+    // for a clip it never re-synthesized.
+    const spy = withVoice();
+    const scope = newSpeechScope(SESSION);
+    const GENERATED_LINE = 'Una línea generada, no del catálogo cerrado.';
+
+    const first = await speakLine(GENERATED_LINE, scope);
+    expect(first.source).toBe('synthesized');
+    expect(first.wordTimings).toBeNull();
+
+    const second = await speakLine(GENERATED_LINE, scope);
+    expect(second.source).toBe('cache');
+    expect(second.wordTimings).toBeNull();
+    expect(ttsCalls(spy)).toBe(1);
+  });
+});
+
 describe('an unenrolled or absent voice never reaches the paid path', () => {
   it('is silent, with no network call at all, when the character has no voice', async () => {
     process.env.VOICE_PROVIDER = 'inworld';
@@ -344,7 +409,7 @@ describe('an unenrolled or absent voice never reaches the paid path', () => {
     vi.stubGlobal('fetch', spy);
 
     const result = await speakLine(SCRIPTED_LINE, newSpeechScope(SESSION));
-    expect(result).toEqual({ url: null, source: 'unavailable', billedChars: 0 });
+    expect(result).toEqual({ url: null, source: 'unavailable', billedChars: 0, wordTimings: null });
     expect(spy).not.toHaveBeenCalled();
   });
 
@@ -352,7 +417,7 @@ describe('an unenrolled or absent voice never reaches the paid path', () => {
     resetConfigCache();
     resetVoiceProvider();
     const result = await speakLine(SCRIPTED_LINE, newSpeechScope(SESSION));
-    expect(result).toEqual({ url: null, source: 'unavailable', billedChars: 0 });
+    expect(result).toEqual({ url: null, source: 'unavailable', billedChars: 0, wordTimings: null });
   });
 });
 
@@ -368,6 +433,7 @@ describe('voice cost reaches the session ledger', () => {
       url: 'http://depot.test/files/tutor-speech/a.mp3',
       source: 'synthesized' as const,
       billedChars: 120,
+      wordTimings: null,
     }));
     await paid.greet(Date.now());
     expect(paid.voiceCostUsd).toBeGreaterThan(0);
@@ -378,6 +444,7 @@ describe('voice cost reaches the session ledger', () => {
       url: 'http://depot.test/files/tutor-speech-shared/a.mp3',
       source: 'pregenerated' as const,
       billedChars: 0,
+      wordTimings: null,
     }));
     await free.greet(Date.now());
     // The whole point, in one assertion: the greeting is spoken and costs nil.

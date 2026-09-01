@@ -107,6 +107,7 @@ export function ConversationView({
   token,
   ready,
   speaking,
+  audioElement,
   awaitingReply,
   onAwaitReply,
   resuming,
@@ -689,7 +690,15 @@ export function ConversationView({
             </div>
           )}
 
-          <SpeechCaption text={turn?.text ?? null} turnSeq={turnSeq} face={face} docked={docked} />
+          <SpeechCaption
+            text={turn?.text ?? null}
+            turnSeq={turnSeq}
+            face={face}
+            docked={docked}
+            wordTimings={turn?.wordTimings ?? null}
+            audioElement={audioElement}
+            speaking={speaking}
+          />
 
           {/*
             Time is a rune over the island, not a chip in a header bar, because
