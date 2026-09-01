@@ -1,5 +1,5 @@
 import { getConfig } from '../env.js';
-import { sealContext, type SkillState, type TutorContext } from '../context/schema.js';
+import { sealContext, type SkillState, type Strategy, type TutorContext } from '../context/schema.js';
 import {
   buildPlan,
   noteConversationTurn,
@@ -13,6 +13,7 @@ import {
   IDLE_NUDGE_MS,
   LISTEN_SILENCE_MS,
   PedagogicalController,
+  type ControllerDecision,
   type PedagogyEvent,
 } from './controller.js';
 import { answersItsOwnQuestion, checkAnswer } from './arithmetic.js';
@@ -55,7 +56,7 @@ import {
   safetyResponse,
 } from './scripted.js';
 import type { SpeechResult } from '../voice/speech.js';
-import type { SessionContext } from '../core/client.js';
+import type { SessionContext, TrajectoryStepInput } from '../core/client.js';
 
 /*
  * One live session, as a state machine over turns.
@@ -278,6 +279,17 @@ export class TutorOrchestrator {
    * already returned.
    */
   private readonly usedSkillNames = new Set<string>();
+  /**
+   * The V4 harness backlog's TRAJECTORY LOG (ROADMAP.md "Remaining harness
+   * phases", /ORACLE.md §20): one entry per real `controller.decide()` call
+   * this session, in order. A plain in-memory push, no I/O — see
+   * `recordTrajectoryStep`. Flushed as ONE batch by `session/trajectory.ts`,
+   * fire-and-forget, from the same seam `runPostSessionReview` already uses
+   * (`ws/server.ts`'s `finish()`/`finalizeParked()`), never on the live turn
+   * path. A session where the V4 brain never activates (no plan seeded)
+   * leaves this empty, and flushing an empty log is a no-op.
+   */
+  private readonly trajectoryLog: TrajectoryStepInput[] = [];
   /**
    * The session's LIVE copy of the skill estimates. The handshake snapshot
    * used to be frozen for the whole session, so the model was told "very
@@ -547,6 +559,15 @@ export class TutorOrchestrator {
 
   get servedSegments(): number {
     return this.segmentCount;
+  }
+
+  /**
+   * The whole session's trajectory log so far — see `trajectoryLog`'s own
+   * comment. A copy, so a caller (`ws/server.ts`'s `finish()`/
+   * `finalizeParked()`) cannot reach the live array.
+   */
+  get trajectorySteps(): readonly TrajectoryStepInput[] {
+    return [...this.trajectoryLog];
   }
 
   /**
@@ -1039,6 +1060,9 @@ export class TutorOrchestrator {
   ): { text: string | null; skillName: string | null } {
     if (!this.controller.active) return { text: legacy ? legacy() : null, skillName: null };
 
+    // Captured BEFORE `decide()` mutates it — the trajectory log's own
+    // "state the decision was made FROM", not the decision's own result.
+    const strategyBefore = this.controller.currentStrategy;
     const decision = this.controller.decide(event, nowMs);
     const skill = selectSkill({
       strategy: decision.strategy,
@@ -1047,6 +1071,7 @@ export class TutorOrchestrator {
       misconceptionCode: decision.misconceptionCode,
       usedSkillNames: this.usedSkillNames,
     });
+    this.recordTrajectoryStep(event.kind, strategyBefore, decision, skill?.name ?? null);
     if (skill === null) return { text: decision.instruction, skillName: null };
     /*
      * The catalogued misconception hint still travels with the skill: the
@@ -1058,6 +1083,46 @@ export class TutorOrchestrator {
         ? decision.instruction.match(/The specific wrong idea[^\n]*/)?.[0]
         : undefined;
     return { text: hint ? `${skill.body}\n\n${hint}` : skill.body, skillName: skill.name };
+  }
+
+  /**
+   * Appends one decision to this session's trajectory log — a plain
+   * in-memory push, no I/O (see `trajectoryLog`'s own comment for why this
+   * must stay that way; §2.7 of oracle/AGENTS.md is the rule this obeys).
+   *
+   * Recorded unconditionally, unlike `usedSkillNames` (`commitSkillUse`'s own
+   * "committed only once truly DELIVERED" rule): the controller's internal
+   * state already moved the instant `decide()` returned, whether or not the
+   * turn it feeds is ever produced, interrupted, or falls back to a scripted
+   * line — so a trajectory log that only recorded delivered turns would
+   * silently disagree with the controller's own state machine, which this
+   * log exists to describe faithfully.
+   *
+   * `turnSeq` is this log's OWN ordinal — deliberately neither `this.seq`
+   * (the orchestrator's model-turn counter, not yet advanced at this point
+   * in a turn — see `produce()`) nor `tutor_turns`'s transcript row number.
+   * This log answers one question only, "the Nth decision this controller
+   * made this session," and needs no other counter's timing to be correct.
+   */
+  private recordTrajectoryStep(
+    eventKind: PedagogyEvent['kind'],
+    strategyBefore: Strategy,
+    decision: ControllerDecision,
+    skillName: string | null,
+  ): void {
+    this.trajectoryLog.push({
+      turnSeq: this.trajectoryLog.length + 1,
+      eventKind,
+      strategyBefore,
+      strategy: decision.strategy,
+      skillName,
+      scaffolding: decision.scaffolding,
+      difficulty: decision.difficulty,
+      pKnown: decision.pKnown,
+      misconceptionCode: decision.misconceptionCode,
+      kcId: this.controller.activeKcId,
+      kcMode: this.controller.state()?.mode ?? null,
+    });
   }
 
   /** Commits a proposed skill use — see `strategyInstruction`'s own comment. */

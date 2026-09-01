@@ -588,6 +588,60 @@ export async function updateLearnerMemory(input: {
 }
 
 /**
+ * One `PedagogicalController.decide()` outcome, shaped for the wire — the
+ * V4 harness backlog's TRAJECTORY EMISSION (ROADMAP.md "Remaining harness
+ * phases", /ORACLE.md §20, migration `0065`). See
+ * `oracle/src/session/trajectory.ts` for where these are accumulated and
+ * flushed.
+ *
+ * Every field here is exactly what already crosses the `.strict()` model
+ * boundary's SIBLING concern — never the sealed context itself, and never
+ * free text: this is a record of what the DETERMINISTIC controller decided,
+ * for offline study, not a new input to anything.
+ */
+export interface TrajectoryStepInput {
+  turnSeq: number;
+  eventKind: 'activity_result' | 'voice_result' | 'conversation_turn' | 'entry_opened';
+  /** Never null: the controller always seeds a real strategy before `decide()` can be called at all. */
+  strategyBefore: string;
+  strategy: string;
+  skillName: string | null;
+  scaffolding: 0 | 1 | 2 | 3;
+  difficulty: 1 | 2 | 3 | 4 | 5;
+  pKnown: number | null;
+  misconceptionCode: string | null;
+  kcId: string | null;
+  kcMode: 'new' | 'review' | 'probe' | 'remediation' | null;
+}
+
+/**
+ * Bulk-persists one session's worth of trajectory steps in ONE call.
+ * Fire-and-forget, called only from `session/trajectory.ts` AFTER a session
+ * has ended — never on the live turn path (§2.7 of oracle/AGENTS.md: nothing
+ * here claims the socket's turn slot, because nothing here needs to).
+ *
+ * Same best-effort posture as every other write in this file: `false` means
+ * the batch did not land, and the caller logs it rather than retrying — a
+ * lost trajectory batch costs the harness a data point, never a session.
+ */
+export async function persistTutorTrajectory(input: {
+  userId: string;
+  sessionId: string;
+  steps: readonly TrajectoryStepInput[];
+}): Promise<boolean> {
+  try {
+    const body = await coreFetch('/tutor/internal/trajectory', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    });
+    const parsed = Envelope(z.object({ recorded: z.boolean() })).safeParse(body);
+    return parsed.success && parsed.data.data?.recorded === true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * V4 episodic recall: literal excerpts from this learner's own past sessions.
  * Failure degrades to an empty list — recall garnishes a turn, never blocks one.
  *

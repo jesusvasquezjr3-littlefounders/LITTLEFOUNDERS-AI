@@ -298,6 +298,17 @@ in the wild gets added to `src/safety/canary.ts` after it is fixed, so it can
 never come back. It asserts **both directions** — a classifier that blocks
 everything passes the blocked half perfectly and destroys the product.
 
+**`npm run gym:pedagogy`** (V4 harness backlog, /ORACLE.md §20.6) is not in
+the list above — it is exploratory tooling for iterating on pedagogy, not a
+required pre-commit gate yet. It drives the real controller against REACTIVE
+simulated-student archetypes (each answers based on the strategy the
+controller just chose, unlike `verify:pedagogy`'s fixed scripts) and costs
+nothing — no network, no model. Run it after touching `controller.ts`,
+`skills.ts` or a skill file, alongside `verify:pedagogy`. It currently
+reports two genuine, already-documented findings (`pedagogyGym.test.ts`'s own
+`KNOWN_GAPS`, /ORACLE.md §20.6) — a nonzero exit today is expected until those
+land a fix, not a sign something in THIS run broke.
+
 ---
 
 ## §5 Things that will bite whoever touches this next
@@ -2504,4 +2515,5 @@ with `emission.source === 'model'`. See `RUNBOOK.md`.
 - **Episodic recall** triggers on a CLOSED phrase list only — no model ever decides whether to look — and failure degrades to the turn we had before.
 - **The grace turn** (`closeGraceUsed`) is minted exactly once per session; the turn after it closes scripted no matter what the model did.
 - **The whiteboard** (`src/tutor/whiteboard.ts`) — `values` are ALWAYS server-computed from the model's own `start`/`steps`, recomputed a second time at the wire (`ws/server.ts`) rather than trusted from wherever they were last computed, and dropped WHOLE (fail-open) on a non-finite/negative/out-of-range result — never shown as authored. A turn may never carry both `whiteboard` and `segmentRequest`; the schema refuses it. `whiteboard.unit` (`day`/`week`/`month`/`year`, closed vocabulary) must agree with whichever cadence word the model's own `say` used — found live, drawing "Día 1/2" under a story that said "cada semana" three times. `narratesUnshownGrowth()`, `whiteboardUnitMismatch()` and `whiteboardNumberMismatch()` in `src/tutor/prompt.ts` are deterministic checks feeding the standard repair loop (§9), same pattern as `falsePraise` — the instruction alone did not reliably get the real model to set the field at all. `whiteboardNumberMismatch()` catches the narrowest of the three: `say` and `whiteboard` each individually well-formed, but disagreeing on the actual running totals — `start` silently absorbing a period's worth of growth the narration had already attributed to "after the first period" (item 56), or to a later concluding "so"/"entonces"/"então" total following an explicit period count, the same defect confirmed live again under a different phrasing the next day (item 58).
+- **Trajectory emission and the simulated-student gym** (2026-09-01, /ORACLE.md §20.6) — `TutorOrchestrator.trajectorySteps` accumulates one entry per real `decide()` call (plain in-memory push, no I/O), flushed as ONE batch by `session/trajectory.ts` from the same fire-and-forget seam `runPostSessionReview` uses. New table `tutor_trajectory_step` (migration `0065`), new route `POST /tutor/internal/trajectory` (backend), service-role-only RLS (no client reader exists). `npm run gym:pedagogy` (`src/tutor/pedagogyGym.ts`) drives the real controller against REACTIVE simulated students — each reacts to the strategy the controller just chose, unlike `verify:pedagogy`'s fixed scripts — and found two real, documented, not-yet-fixed gaps in the shipped controller on its first run (`pedagogyGym.test.ts`'s `KNOWN_GAPS`): difficulty can rise the turn right after a failure when the recovery strategy is an ordinary one rather than a support strategy, and a persistently (but consistently) slow-and-correct learner is eventually promoted because `answeredHesitantly`'s median is unbounded and self-inclusive. Both are named, not silently tolerated; neither is fixed in this change (a `controller.ts` behavior change needs its own pass, and the second needs a genuine product decision about what "the learner's own median" should mean).
 

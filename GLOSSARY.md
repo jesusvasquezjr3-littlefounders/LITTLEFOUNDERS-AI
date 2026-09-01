@@ -179,3 +179,9 @@ The Tutor's slow chamber: asynchronous jobs (post-session review, memory writing
 
 ### Grace turn (V4)
 The single model turn an ended session budget grants when the tutor's own last turn left a question or activity open, so a session never ends mid-question. See /ORACLE.md §20.3.
+
+### Trajectory step (V4)
+One row of `tutor_trajectory_step` (migration `0065`): a single real `PedagogicalController.decide()` outcome — the strategy before and after, the skill delivered, mastery and misconception at decision time, the KC. Batched and flushed fire-and-forget after a session ends; backstage-only, never read back into a session. See /ORACLE.md §20.6.
+
+### Simulated-student gym (V4)
+`npm run gym:pedagogy` (`oracle/src/tutor/pedagogyGym.ts`): reactive simulated-student archetypes driven against the REAL controller — never a model, never a live session — to explore pedagogy behaviour across many turns before a change ships. Distinct from `verify:pedagogy` (fixed scripts, a regression gate) and `tutor:converse` (the real, billed orchestrator, judging prose). See /ORACLE.md §20.6.

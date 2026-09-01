@@ -853,7 +853,7 @@ on:
 name: Tutor content bridge audit
 
 # DOES THE KNOWLEDGE-COMPONENT GRAPH STILL REACH PUBLISHED CONTENT?
-# (RUNBOOK.md Round 101, oracle/AGENTS.md #73)
+# (RUNBOOK.md Round 105, oracle/AGENTS.md #73)
 #
 # `backend/src/services/contentBridgeAudit.ts` is the ONLY thing that answers
 # this — it proves every mapped `kc.skill_key` still resolves to a published
@@ -1333,18 +1333,18 @@ untracked by default; a skill the team wants versioned gets a scoped
 # WALKTHROUGH.md — Current State & Decision Log
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
+>
+> **This file went stale for several real working sessions** — it still opened
+> on "Tutor v2" dated 2026-08-28 while `main` had moved through a full v3
+> production closure and the entire v4 bicameral rewrite beneath it,
+> undetected by every gate because staleness in prose is not a type error.
+> The section below restores it; the v2 log stays underneath as the
+> historical record it already was, not because it is still current.
 
-## Tutor v2 — the owner rejected the shipped Tutor, and four decisions reopened its design (2026-08-28)
+## Tutor V4 — the bicameral pedagogical brain, and the live-test-driven hardening run in progress (2026-08-29 → present)
 
-**The verdict, owner's words:** the shipped Tutor is below MVP — slow,
-disorganized, unintuitive, not adaptive, narration effectively non-functional,
-no way to restart or interrupt, and it does not teach live off what the learner
-says. The session goal is a finished product, and `feat/tutor-v2` is the branch.
-
-**Exploration confirmed the complaints as mechanisms**, not impressions: a
-voice turn was 5 sequential network hops with nothing shown until all of them
-finished; `speech.pregenerated.json` is empty (0/144), so even the scripted
-greeting paid and waited; `awaitingReply` had no timeout; skill states were
+**Architecture.** `30d93a88` recorded the v4 decision: a bicameral split
+between a fast conversational voice and a slower pedagogical brain that
 ```
 
 ### agent/README.md
@@ -6875,7 +6875,7 @@ import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
 import { auditContentBridge } from '../services/contentBridgeAudit.js';
 
 /*
- * RUNBOOK.md Round 101 (adversarial review sweep tutor-review-sweep-101,
+ * RUNBOOK.md Round 105 (adversarial review sweep tutor-review-sweep-101,
  * content-ladder-correctness dimension, MEDIUM): the bridge audit that
  * catches "a mapped skill_key no longer reaches published content" — the
  * EXACT class of defect that made the tutor unable to reach any published
@@ -7376,6 +7376,7 @@ import {
   getTutorPreferences,
   grantVoiceConsent,
   insertTutorTurn,
+  listTutorSessions,
   listTutorTurns,
   searchOwnTurns,
   upsertTutorPreferences,
@@ -7384,7 +7385,6 @@ import {
 
 /*
  * Found by adversarial review, round 28 (2026-08-30, HIGH): `getLearnerMemory`
- * used to collapse "the read failed" and "this learner genuinely has no
 ```
 
 ### backend/src/__tests__/tutorLadder.test.ts
@@ -8076,7 +8076,7 @@ import {
  * (`../services/contentBridgeAudit.ts`) against whatever is CURRENTLY live in
  * Vault, independent of `database/seeds/kc_graph.v1.json`.
  *
- * WHY THIS EXISTS SEPARATELY FROM `seed:kc`. Until RUNBOOK.md Round 101 the
+ * WHY THIS EXISTS SEPARATELY FROM `seed:kc`. Until RUNBOOK.md Round 105 the
  * bridge audit only ever ran as a side effect of a human dispatching
  * `tutor-deploy.yml`'s `seed-kc` step — the ONLY trigger for the exact defect
  * this audit exists to catch (a `kc.skill_key` that no longer reaches
@@ -13251,6 +13251,26 @@ BEGIN
 -- with a SEPARATE, unconditional POST carrying the stale `seq`. Two
 -- concurrent segment requests for the same session — a double-tap on the
 -- "next activity" control, a flaky-connection retry, or Oracle re-requesting
+```
+
+### database/migrations/0065_tutor_trajectory.sql
+
+```
+-- @phase: expand
+-- 0065_tutor_trajectory.sql — the Tutor V4 harness backlog, first slice:
+-- TRAJECTORY EMISSION. A durable, queryable, per-turn record of what the
+-- deterministic pedagogical controller (oracle/src/tutor/controller.ts)
+-- actually decided during a real session, so it can be studied offline.
+--
+-- Authoritative design: /ORACLE.md §20 (V4, the bicameral tutor). ROADMAP.md's
+-- "Remaining harness phases" line names trajectory emission as backlog, gated
+-- on the harness doc's own §15.1: "nothing autonomous reaches a child." This
+-- migration adds NO new reach to a model and NO new surface a learner sees —
+-- it is backstage-only, a record OF the controller, never an input TO it.
+--
+-- WHAT THIS ADDS AND WHY.
+--
+--   tutor_trajectory_step   One row per `PedagogicalController.decide()` call
 ```
 
 ### database/package.json
@@ -24825,7 +24845,7 @@ import { type CourseTree } from '@/routes/app/learn/types';
 ### frontend/src/routes/app/family/KidTutorPage.tsx
 
 ```
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
@@ -24833,13 +24853,13 @@ import { Button, Card, Icon, LoadingOverlay } from '@/components/ui';
 import { MarkdownLite } from '@/lesson-engine/core/MarkdownLite';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { buildReplayScript } from '@/tutor/replay/replayScript';
+import { TutorWhiteboard } from '@/tutor/TutorWhiteboard';
 import { getKidTutorHistory, getTranscript, type KidTutorHistory } from '@/tutor/tutorApi';
 import type { SessionTranscript } from '@/tutor/types';
 
 /*
  * `/family/:kidId/tutor` — a child's tutor conversations, through the parent's
  * eyes.
- *
 ```
 
 ### frontend/src/routes/app/family/ManageKidPanel.tsx
@@ -28689,6 +28709,26 @@ vi.mock('../tutorApi', async () => {
   const actual = await vi.importActual<typeof import('../tutorApi')>('../tutorApi');
 ```
 
+### frontend/src/tutor/__tests__/whiteboardRevealRace.test.tsx
+
+```
+import { act, render } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { GROW_STEP_MS, TutorWhiteboard } from '../TutorWhiteboard';
+
+/*
+ * Confirmed by adversarial review sweep tutor-review-sweep-101
+ * (whiteboard-at-scale dimension), MEDIUM, closed round 101 (RUNBOOK.md):
+ * when a NEW whiteboard turn (`seq` bumped, `board.values` often shorter)
+ * arrived before the PREVIOUS turn's bar-by-bar reveal had finished, the
+ * stale `shown` count was reset only by a `useEffect` keyed on `seq` — which
+ * runs AFTER React commits a render, never before. The render that used the
+ * NEW, shorter `board.values` together with the OLD, larger `shown` value
+ * committed and PAINTED FIRST: every one of the new sequence's bars showed
+ * fully grown in one frame, then visibly collapsed back to one bar and
+ * re-grew correctly once the effect fired a tick later. A jarring glitch,
+```
+
 ### frontend/src/tutor/hud/HudPlate.tsx
 
 ```
@@ -29667,6 +29707,26 @@ export default tseslint.config(
  * the same parse, the same moderation, the same conversation history a learner
 ```
 
+### oracle/scripts/pedagogy-gym.ts
+
+```
+/*
+ * `npm run gym:pedagogy` — RUN REACTIVE SIMULATED STUDENTS AGAINST THE REAL
+ * CONTROLLER (V4 harness backlog, ROADMAP.md "Remaining harness phases").
+ *
+ * This is a thin CLI shell. All the real logic — the student archetypes, the
+ * driving loop, the checks — lives in `src/tutor/pedagogyGym.ts` (a real
+ * `src/` module, unlike `verify-pedagogy.ts`'s all-in-one script) so it has
+ * an actual vitest suite (`src/__tests__/pedagogyGym.test.ts`) rather than
+ * being provable only by running the CLI and reading its output.
+ *
+ * `--json` prints a machine-readable report instead of the human one — for a
+ * future consumer that wants to diff two runs (before/after a threshold
+ * change) rather than read a transcript.
+ */
+
+```
+
 ### oracle/scripts/pregenerate-guided-voice.ts
 
 ```
@@ -30314,24 +30374,25 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   IDLE_NUDGE_MS,
   LISTEN_SILENCE_MS,
+  listenSilenceMsFor,
   MASTERY_MIN_OPPORTUNITIES,
   mirrorBktUpdate,
+  NEW_TO_SKILL_OPPORTUNITIES,
+  NEW_TO_SKILL_SILENCE_GRACE,
   PedagogicalController,
 } from '../tutor/controller.js';
-import type { SessionPlanEntry } from '../core/client.js';
+import type { KcState, SessionPlanEntry } from '../core/client.js';
 import { mintGradeEcho, verifyGradeEcho } from '../session/gradeEcho.js';
 
 /*
- * The v3 strategy controller: every guardrail is a rule a parent could be
- * shown, so every guardrail gets a test with a name a parent could read.
- */
 ```
 
 ### oracle/src/__tests__/coreClient.test.ts
 
 ```
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { recallOwnHistory, updateLearnerMemory } from '../core/client.js';
+import { persistTutorTrajectory, recallOwnHistory, updateLearnerMemory } from '../core/client.js';
+import type { TrajectoryStepInput } from '../core/client.js';
 
 /*
  * Found by adversarial review, round 28 (2026-08-30, HIGH): Core answers a
@@ -30344,7 +30405,6 @@ import { recallOwnHistory, updateLearnerMemory } from '../core/client.js';
  * file's own doc comment promises "a false return means did not land",
  * which `session/review.ts` relies on to retry via the NEXT session's
  * review; silently returning true instead meant a curated memory note could
- * fail to persist with no retry and no warning, forever.
 ```
 
 ### oracle/src/__tests__/env-example.test.ts
@@ -30467,6 +30527,26 @@ const KID: SessionContext = {
   sessionId: '11111111-1111-4111-8111-111111111111',
 ```
 
+### oracle/src/__tests__/pedagogyGym.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import {
+  checkGymScenario,
+  GYM_SCENARIOS,
+  runGymScenario,
+  runPedagogyGym,
+  sequenceProblems,
+  STUDENT_ARCHETYPES,
+  type GymRunResult,
+  type GymScenario,
+} from '../tutor/pedagogyGym.js';
+import type { PedagogyEvent } from '../tutor/controller.js';
+import type { SessionPlanEntry } from '../core/client.js';
+
+/*
+```
+
 ### oracle/src/__tests__/placementIntake.test.ts
 
 ```
@@ -30567,6 +30647,26 @@ import type { TutorContext } from '../context/schema.js';
 describe('the whiteboard example tells the model not to copy its own numbers', () => {
 ```
 
+### oracle/src/__tests__/review-moderation-batch.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { runPostSessionReview } from '../session/review.js';
+import type { SessionContext } from '../core/client.js';
+
+/*
+ * ROUND 120 (2026-08-31, MEDIUM, `tutor-review-sweep-101`, cost-efficiency
+ * dimension). `review()`'s own §1.9 re-check used to call
+ * `moderateTutorOutput` SEPARATELY for `proposal.learner` and
+ * `proposal.pedagogy` — two full, billed judge round trips whenever a review
+ * proposed both notes, where `orchestrator.ts`'s own `visibleText` already
+ * established the technique this codebase uses to avoid exactly that: join
+ * every learner-visible string into ONE text and moderate it once. See
+ * `review.ts`'s own comment directly above the loop this test targets for
+ * the full reasoning, including why per-field attribution is still possible
+ * without paying for a second call.
+```
+
 ### oracle/src/__tests__/review.test.ts
 
 ```
@@ -30592,7 +30692,7 @@ const SESSION = {
 ```
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { classifyLearnerInput } from '../safety/classifier.js';
-import { fenceUntrusted, stripInvisible } from '../safety/untrusted.js';
+import { fenceActivityContent, fenceUntrusted, stripInvisible } from '../safety/untrusted.js';
 import { deterministicModeration, moderateTutorOutput } from '../safety/moderation.js';
 import {
   BENIGN_CANARIES,
@@ -30705,6 +30805,26 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
  * and none of them had gotten the fix.
  *
  * These tests assert only what a `git stash` of the fix can decisively
+```
+
+### oracle/src/__tests__/trajectory.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { emitTutorTrajectory } from '../session/trajectory.js';
+import type { TrajectoryStepInput } from '../core/client.js';
+
+/*
+ * V4 harness backlog: TRAJECTORY EMISSION (/ORACLE.md §20, ROADMAP.md
+ * "Remaining harness phases"). This is the fire-and-forget wrapper
+ * `ws/server.ts` calls from `finish()`/`finalizeParked()` — the sibling of
+ * `runPostSessionReview` for the CONTROLLER's own decisions rather than the
+ * learner's. Tested through the real `persistTutorTrajectory`, mocking only
+ * the network boundary (this suite's own house style — see `review.test.ts`).
+ */
+describe('emitTutorTrajectory', () => {
+  const fetchMock = vi.fn();
+
 ```
 
 ### oracle/src/__tests__/voice.test.ts
@@ -31114,7 +31234,7 @@ import crypto from 'crypto';
 import { getConfig } from '../env.js';
 import { addSessionCost, updateLearnerMemory } from '../core/client.js';
 import { stripInvisible } from '../safety/untrusted.js';
-import { moderateTutorOutput } from '../safety/moderation.js';
+import { moderateTutorOutput, deterministicModeration } from '../safety/moderation.js';
 import { estimateCostUsd } from '../tutor/orchestrator.js';
 import type { SessionContext } from '../core/client.js';
 
@@ -31145,6 +31265,26 @@ import { getConfig } from '../env.js';
  * - It is single-use. A replayed token is a rejected token, so a URL captured
  *   from a screen recording or a shared link is already dead.
  * - It names a session id, so a token cannot be pointed at someone else's
+```
+
+### oracle/src/session/trajectory.ts
+
+```
+import { persistTutorTrajectory, type TrajectoryStepInput } from '../core/client.js';
+
+/*
+ * TRAJECTORY EMISSION — the V4 harness backlog's first slice (ROADMAP.md
+ * "Remaining harness phases", /ORACLE.md §20).
+ *
+ * WHAT THIS IS. A durable, queryable record of what
+ * `PedagogicalController.decide()` actually chose across a real session —
+ * which strategy fired, on which mastery estimate, which skill delivered it,
+ * which knowledge component it was about — so the Tutor's own pedagogy can
+ * be studied OFFLINE. This is the sibling of `session/review.ts`: that organ
+ * writes what a session taught US about the LEARNER; this one writes what it
+ * taught us about the CONTROLLER.
+ *
+ * WHY THIS IS BACKSTAGE-ONLY, BY CONSTRUCTION. Governance (the harness doc's
 ```
 
 ### oracle/src/test-setup.ts
@@ -31209,7 +31349,7 @@ import type { KcState, SessionPlanEntry } from '../core/client.js';
 
 ```
 import { getConfig } from '../env.js';
-import { sealContext, type SkillState, type TutorContext } from '../context/schema.js';
+import { sealContext, type SkillState, type Strategy, type TutorContext } from '../context/schema.js';
 import {
   buildPlan,
   noteConversationTurn,
@@ -31223,6 +31363,26 @@ import {
   IDLE_NUDGE_MS,
   LISTEN_SILENCE_MS,
   PedagogicalController,
+```
+
+### oracle/src/tutor/pedagogyGym.ts
+
+```
+import { PedagogicalController, type PedagogyEvent } from './controller.js';
+import { selectSkill } from './skills.js';
+import type { Strategy } from '../context/schema.js';
+import type { SessionPlanEntry } from '../core/client.js';
+
+/*
+ * THE SIMULATED-STUDENT GYM — V4 harness backlog (ROADMAP.md "Remaining
+ * harness phases", /ORACLE.md §20). Governance: the harness doc's own §15.1,
+ * "nothing autonomous reaches a child" — this module is BACKSTAGE ONLY. It
+ * never runs against a real learner, never writes anything, and has no
+ * caller anywhere in the live session path (`ws/`, `orchestrator.ts`'s
+ * per-turn methods never import it). It exists to let a person iterating on
+ * pedagogy (a threshold, a new strategy, a skill file) see the effect on a
+ * POPULATION of learner behaviours before any of it ships.
+ *
 ```
 
 ### oracle/src/tutor/placementIntake.ts
@@ -31271,6 +31431,7 @@ import { ADAPTATIONS, PLAN_STEPS } from '../context/schema.js';
 import type { TutorContext, Locale } from '../context/schema.js';
 import { EMOTIONS, ACTIONS, type Whiteboard } from './turnSchema.js';
 import { computeSequence } from './whiteboard.js';
+import { fenceActivityContent } from '../safety/untrusted.js';
 
 /*
  * The pedagogical system prompt.
@@ -31282,7 +31443,6 @@ import { computeSequence } from './whiteboard.js';
  *    are byte-identical across calls, and a prompt that interpolates the
  *    learner's nickname into paragraph one defeats it on every single turn.
  *    Everything learner-specific lives in the second message.
- * 2. NOTHING FROM THE LEARNER IS INTERPOLATED HERE. Not the nickname, not a
 ```
 
 ### oracle/src/tutor/scripted.ts

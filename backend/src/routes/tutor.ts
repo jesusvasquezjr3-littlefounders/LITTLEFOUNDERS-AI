@@ -29,6 +29,7 @@ import {
   grantVoiceConsent,
   insertSafetyFlag,
   insertTutorSegmentChecked,
+  insertTutorTrajectory,
   insertTutorTurn,
   listRecentSummaries,
   getLearnerMemory,
@@ -655,6 +656,80 @@ function internalRouter(): Router {
     const session = await getTutorSession(parsed.data.sessionId);
     if (!session) return fail(res, 404, NOT_FOUND, 'No such session');
     const recorded = await insertSafetyFlag({ ...parsed.data, userId: session.user_id });
+    return ok(res, { recorded });
+  });
+
+  /*
+   * V4 HARNESS BACKLOG: TRAJECTORY EMISSION (/ORACLE.md §20, ROADMAP.md
+   * "Remaining harness phases", migration 0065). A durable, queryable record
+   * of what the deterministic pedagogical controller
+   * (`oracle/src/tutor/controller.ts`) actually decided across a real
+   * session — which strategy fired, on what mastery estimate, over which
+   * skill — for OFFLINE study of the Tutor's own pedagogy. Backstage only:
+   * nothing here reaches a model, a screen, or a parent view, and this
+   * endpoint changes nothing about what a live session does.
+   *
+   * Same closed-vocabulary posture as `/flags` and `/turns`: every field is a
+   * bounded enum, number or identifier (§13 of /ORACLE.md — never a
+   * free-text or arbitrary-JSON channel). Oracle sends the WHOLE session's
+   * steps in one call, fire-and-forget after the session ends
+   * (`oracle/src/session/trajectory.ts`), so this route is never on a live
+   * turn's critical path.
+   */
+  const STRATEGY_VALUES = [
+    'DIRECT',
+    'WORKED',
+    'FADED',
+    'SOCRATIC',
+    'FLUENCY',
+    'SPACED',
+    'PROBE',
+    'REMEDIATE',
+    'RESCUE',
+    'ELABORATE',
+    'TRANSFER',
+    'CELEBRATE',
+  ] as const;
+
+  const TrajectoryStepBody = z
+    .object({
+      turnSeq: z.number().int().min(1),
+      eventKind: z.enum(['activity_result', 'voice_result', 'conversation_turn', 'entry_opened']),
+      // Never null in practice — the controller always seeds a real strategy
+      // before `decide()` can be called at all — but the wire shape is not
+      // where that invariant should be enforced twice; Zod validates the
+      // vocabulary, the DB's NOT NULL is the actual guarantee.
+      strategyBefore: z.enum(STRATEGY_VALUES),
+      strategy: z.enum(STRATEGY_VALUES),
+      skillName: z.string().min(1).max(64).nullable(),
+      scaffolding: z.number().int().min(0).max(3),
+      difficulty: z.number().int().min(1).max(5),
+      pKnown: z.number().min(0).max(1).nullable(),
+      misconceptionCode: z.string().min(1).max(64).nullable(),
+      kcId: z.uuid().nullable(),
+      kcMode: z.enum(['new', 'review', 'probe', 'remediation']).nullable(),
+    })
+    .strict();
+
+  // Capped generously above anything a real 25-minute session budget could
+  // ever produce (idle-nudge/listen-silence floors alone put real sessions
+  // in the low dozens of turns) — high enough to never clip a real batch,
+  // low enough that a malformed caller cannot force an unbounded insert.
+  const TrajectoryBody = z
+    .object({
+      userId: z.uuid(),
+      sessionId: z.uuid(),
+      steps: z.array(TrajectoryStepBody).min(1).max(200),
+    })
+    .strict();
+
+  router.post('/trajectory', async (req, res) => {
+    const parsed = TrajectoryBody.safeParse(req.body);
+    if (!parsed.success) {
+      return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid trajectory batch');
+    }
+    const { userId, sessionId, steps } = parsed.data;
+    const recorded = await insertTutorTrajectory(userId, sessionId, steps);
     return ok(res, { recorded });
   });
 
