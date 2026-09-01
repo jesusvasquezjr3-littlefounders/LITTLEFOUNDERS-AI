@@ -13719,3 +13719,153 @@ run — this activity's fixtures were not the ones the gate drives, so the
 gate's job here was confirming no regression, not reproducing the find).
 Root: `docs:check`, `secrets:check`, `i18n:check` all green — no new
 strings, routes, or migrations. oracle and backend untouched.
+
+## Round 138: a reported "stuck after a failed resume" was asked to be re-tested for a coordinate-miscalibration false positive — it was neither a false positive nor the bug as reported, it was a real defect one layer deeper, plus a second real defect found only by verifying the fix at the OS's actual native pane size, 2026-09-01
+
+**The ask, precisely.** A prior finding — a session getting "stuck" after a
+resume attempt failed with 401 — was suspected of being the SAME testing-
+tooling artifact Round 136 documented (accessibility-tree-reported click
+coordinates measurably wrong on a manually-resized viewport). The
+instruction was explicit: re-test at the Browser pane's NATIVE size, verify
+every click with `elementFromPoint`, and report honestly which way it
+went — false positive, or confirmed defect to fix.
+
+**Neither answer was quite right, because the premise undersold the
+mechanism.** The 401 does not happen where the obvious reading of "resume
+fails" suggests. `TutorExperience.tsx`'s own resume-on-drop effect
+(`useEffect` at `phase !== 'conversing'` guard, `resumeSession` call) sets
+`phase: 'closing'` on ANY resume failure, 401 included, and that transition
+was already correct and already live-verified in Round 136's own session —
+the closing screen's "Start again"/"Past conversations" buttons hit-tested
+fine. The REAL defect is one step later: `onStartAnother`/`onRestart` call
+`refreshOffersAndMap()` — a ONE-TIME refetch of `GET /tutor/offers`, whose
+`canStart`/`startBlockedBy` pair is a correctness-tested, well-designed
+distinction (round 99) between "the daily cap is spent" and "Oracle is
+down" — but the refetch itself has no retry, no timer, and nothing that
+re-checks once the condition it captured has actually changed. Tap "Start
+again" the instant a real outage clears and the snapshot is stale FOREVER:
+`canStart: false` sits in React state with nothing left to correct it
+short of a full page reload, which is not a control this product's own
+target user — a struggling child — is expected to reach for.
+
+**Confirmed as real, not a coordinate artifact, before writing a line of
+fix code.** Reproduced with a genuinely controlled repro rather than a
+guess: a real conversation held open (`socket.history.length > 0`, a
+required guard on the resume-attempt path), `window.fetch` monkey-patched
+to intercept only `/resume` and return a synthetic, envelope-shaped 401
+(`{data: null, error: {code: 'UNAUTHORIZED', ...}}`, matching §1.6) — every
+OTHER request untouched, so the real access token, the real other
+endpoints, and the real UI logic were all exercised exactly as in
+production. `preview_stop`/`preview_start` on the oracle service produced a
+GENUINE abnormal websocket closure (code 1006, `CONNECTION_LOST` — a
+synthetic `.close()` call can never produce this code; it required an
+actual dead TCP connection) rather than simulating one. `window.
+__debugChips`, a temporary diagnostic assignment inside the render path
+(removed before commit — see the code diff), sampled `starting`/`offers.
+canStart`/`startError`/`phase` every few hundred milliseconds across the
+whole sequence, catching the exact moment `canStart` flipped to `false` on
+"Start again" and confirming it then held `false` for 9+ seconds AFTER
+oracle was already back up and healthy, with zero automatic re-checks —
+the stuck state, reproduced on demand, not inferred.
+
+**Fix: a visible, learner-driven ask-again, never a background timer.**
+`onRetryOffers` (new prop, `StageShell.tsx`'s `OfferLayerProps`) wires
+`TutorExperience.tsx`'s existing `refreshOffersAndMap` — moved earlier in
+the component so `offerLayer` can reference it before its OTHER two call
+sites — into `OfferChips.tsx`'s `status` block: a "Try again" chip, shown
+ONLY when `cannotServe && !sessionCapReached` (asking again cannot clear
+the daily cap — round 99's own distinction, reused rather than
+re-litigated) and using the SAME `HudPlate as="button" shape="chip"`
+pattern every other chip on this route already uses, so it inherits the
+correct tap-target size and pointer-events handling by construction rather
+than by a new one-off. No polling, no retry loop, no cost until a learner
+who is already looking at "the tutor is resting" chooses to press
+something — matching AGENTS.md §1.0's own concern that a careless retry
+mechanism spends real money forever, by simply not building one.
+
+**A second, independent, more severe defect found ONLY by verifying the
+fix live rather than trusting green tests.** The new button existed,
+called the right function, and was completely unreachable on any account
+with a seeded knowledge map: 15 sample points across its own
+`getBoundingClientRect()` all resolved to a map-graph node instead, at a
+perfectly ordinary 375×812 viewport — not the short native pane, ruling
+out a repeat of Round 136's own coordinate story outright. Root cause,
+found by walking the full ancestor chain of whatever `elementFromPoint`
+actually returned: the chest-anchored cluster's wrapper
+(`OfferChips.tsx`, `ref={clusterRef}`, `z-20`) and the map panel's own
+wrapper (`chipsIn && mapPanel`, also `z-20`, later in the DOM) are two
+SEPARATE stacking contexts tied at the same z-index — a tie resolves by
+paint order, the map panel is written later, and it wins regardless of
+which one a learner needs. This is not new: it is PRE-EXISTING —
+confirmed by hiding the new button entirely (`display: none`) and
+re-measuring, at which point the plain status TEXT, with no button at
+all, already sat inside the map panel's own vertical band. The button
+made an already-real defect easier to hit (an interactive control fully
+obscured, versus unreadable overlapping text), not a new class of one.
+
+**Fixed narrowly, not by touching the documented z-20/z-30 convention.**
+`secondary`'s own comment in this file already states the contract in
+writing: "the dock is z-30 and world chrome is z-20" — a boundary this
+exact file's Round 123 work measured and hardened (`CLUSTER_DOCK_GAP_PX`,
+the dock-ceiling correction). Raising the cluster's z-index unconditionally
+would have reopened that exact, already-closed problem. Instead the bump
+is conditional — `cannotServe ? 'z-[21]' : 'z-20'` — applying only in the
+one state that needs it, and landing one level above the map panel's tie
+while staying nowhere near the dock's z-30, so the ordinary, no-error case
+is provably unchanged (asserted directly in the new test below, not
+merely reasoned about).
+
+**Two dead ends on the way to that fix, kept here because both looked
+plausible before measuring.** Making the status plate `flex-wrap` instead
+of `flex-col` (button beside the text instead of below it) was tried
+first, on the theory that a shorter block would clear the map panel's
+band — measured live and it did not: the message text alone already
+forced a wrap at this width, so the block's height barely changed and the
+overlap persisted, `t: 477` → `t: 480`. Bumping the WHOLE cluster's
+z-index unconditionally was the second dead end, rejected on inspection
+of `secondary`'s own comment before ever being tried live — it would have
+traded a map-panel collision for a dock collision, the exact regression
+Round 123 exists to prevent.
+
+**Regression coverage, `frontend/src/tutor/__tests__/offerChips.test.tsx`**
+(+4 tests): the retry chip appears for a genuine outage and calls
+`onRetryOffers` on press; it does NOT appear for `SESSION_LIMIT` (asking
+again cannot clear the cap) or when the tutor can serve normally; the
+cluster wrapper's class carries `z-[21]` while `cannotServe` and plain
+`z-20` otherwise, with an explicit assertion that neither state carries
+the other's class. jsdom has no layout engine and cannot compute real
+paint order — these pin the MECHANISM the live repro actually proved,
+the same posture Round 137's own regression test took for an analogous
+jsdom limitation. The z-index test needed `ready: true` explicitly
+(`renderChips`'s own default is `ready: false`, the guaranteed
+no-WebGL-yet arrangement — the anchored cluster this fix lives on does
+not exist in that branch at all) and a compound selector
+(`.h-0.w-0.will-change-transform`) rather than the more obvious
+`.will-change-transform` alone, which also matches `SpeechCaption`'s own
+wrapper and silently asserted against the wrong node — both mistakes
+caught by running the test and reading why it failed rather than trusting
+first attempts.
+
+**A near-miss while red/green-proving the z-index test, corrected within
+the same command.** Reverting the fix to check the test actually catches
+it used `sed -i.bak` rather than the Edit tool, which the harness flagged
+as an out-of-band file change on the next read — correctly so, since Edit
+could not have tracked a Bash-made edit. Diffed the `.bak` against the
+live file before doing anything else, confirmed it was exactly the one
+line intended and nothing else, then restored from the `.bak` and deleted
+it, rather than trusting memory of what `sed` had changed.
+
+**Verification, independently re-run by the coordinator.** frontend: tsc
+clean, lint clean, 140 files / 1640 tests green (+4), build clean,
+`verify:tutor-ui` OK. Root: `docs:check`, `secrets:check`, `i18n:check`
+all green (two new keys, `tutor.page.tutorUnavailableRetry`, real
+translations in all three locales — "Try again" / "Intentar de nuevo" /
+"Tentar novamente", the last two matching this codebase's own established
+`lesson.json` precedent for the identical concept rather than inventing
+new phrasing). Live-verified end to end, twice: the retry chip correctly
+re-fetches and reflects whichever true state comes back (a persisting
+outage, the daily cap once the session budget used by testing itself ran
+out, and full recovery once both oracle and the cap were clear), and,
+separately, all 15 sample points across the button's own rect resolved to
+the button itself post-fix, at the exact 375×812 viewport that failed
+15-for-15 before it. oracle and backend untouched by this round.

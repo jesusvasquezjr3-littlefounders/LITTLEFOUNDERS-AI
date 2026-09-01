@@ -486,6 +486,9 @@ export default function TutorLabPage() {
     starting: false,
     startError: null,
     startErrorResetAt: null,
+    // No real backend here — the fixture never actually goes stale, so this
+    // is a no-op rather than a real refetch.
+    onRetryOffers: () => {},
     onStart: () => setSurface('conversing'),
     onPersonalize: () => setSurface('personalizing'),
     // The lab's stand-in token. It never leaves the page — the shim in

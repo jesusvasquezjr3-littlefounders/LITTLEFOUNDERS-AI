@@ -242,6 +242,7 @@ export function OfferChips({
   starting,
   startError,
   startErrorResetAt,
+  onRetryOffers,
   onStart,
   onPersonalize,
   token,
@@ -616,7 +617,7 @@ export function OfferChips({
   const status = (
     <>
       {cannotServe && (
-        <HudPlate shape="plate" className="pointer-events-none self-center">
+        <HudPlate shape="plate" className="pointer-events-none flex flex-col items-center gap-2 self-center">
           <span className="lf-body" role="status">
             {sessionCapReached
               ? t('tutor.startError.SESSION_LIMIT', {
@@ -628,6 +629,23 @@ export function OfferChips({
                 })
               : t('tutor.page.tutorUnavailable')}
           </span>
+          {/*
+            NOT shown for `sessionCapReached`: the cap does not clear itself by
+            asking again, so a retry here would just repeat the same refusal —
+            the wait in the sentence above is the only true answer for that
+            case. For a genuine outage, this is the ask-again `onRetryOffers`
+            exists for (see its own comment): `offers` is a snapshot, taken
+            once, that never rechecks itself — found live, 2026-09-01, a
+            dropped connection whose resume failed left exactly this message
+            on screen with Oracle already back up seconds later and nothing in
+            the app ever asking again.
+          */}
+          {!sessionCapReached && (
+            <HudPlate as="button" shape="chip" onClick={onRetryOffers} className="pointer-events-auto">
+              <Icon name="refresh" />
+              <span className="lf-action">{t('tutor.page.tutorUnavailableRetry')}</span>
+            </HudPlate>
+          )}
         </HudPlate>
       )}
       {startError && (
@@ -952,7 +970,28 @@ export function OfferChips({
              * the child below is free to hang off it without fighting that
              * centring. Nothing here may add a transform of its own.
              */
-            className="pointer-events-none fixed left-0 top-0 z-20 h-0 w-0 will-change-transform"
+            className={cn(
+              'pointer-events-none fixed left-0 top-0 h-0 w-0 will-change-transform',
+              /*
+               * `z-20`, matching "world chrome is z-20" (`secondary`'s own
+               * comment) — EXCEPT while `cannotServe`, when this cluster is
+               * the only thing carrying the status message (and now a retry
+               * control) a learner needs to see and reach. Found live,
+               * 2026-09-01: the map panel is ALSO `z-20`
+               * (`chipsIn && mapPanel`'s wrapper, below) and later in the DOM,
+               * so on any account with a seeded map, a tie at the SAME
+               * z-index resolves by paint order and the map's own node strip
+               * painted over the status message and the new retry button
+               * both — not merely obscured but, for the button, completely
+               * unreachable: fifteen sampled points across its own rect all
+               * hit a map node instead. `z-[21]` is the minimum nudge that
+               * wins the tie; it stays well clear of the dock's `z-30`
+               * (round 88/91's own hard-won boundary — see `secondary`'s
+               * comment), so nothing about the cluster-vs-dock relationship
+               * this file already measured changes in the ordinary case.
+               */
+              cannotServe ? 'z-[21]' : 'z-20',
+            )}
           >
             <div
               ref={clusterContentRef}

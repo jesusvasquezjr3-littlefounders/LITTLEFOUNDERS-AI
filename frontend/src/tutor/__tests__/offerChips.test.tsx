@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import i18n from '@/i18n';
 import { OfferChips } from '../OfferChips';
@@ -95,6 +95,7 @@ function renderChips(offers: Partial<TutorOffers> = {}, props: Record<string, un
       starting={false}
       startError={null}
       startErrorResetAt={null}
+      onRetryOffers={vi.fn()}
       onStart={onStart}
       onPersonalize={vi.fn()}
       onReplay={vi.fn()}
@@ -403,6 +404,81 @@ describe('refusals', () => {
   });
 });
 
+/*
+ * Found live, 2026-09-01: `offers` (and the `canStart`/`startBlockedBy` pair
+ * it carries) is a snapshot, refreshed only at specific moments — mount,
+ * "Start Another" — never on a timer and never because the outage it
+ * describes has actually cleared. A dropped connection whose resume failed
+ * left exactly this screen on-screen with Oracle already back up seconds
+ * later: "The tutor is resting. Try again soon," every chip disabled, and
+ * nothing anywhere that could act on "try again" — the only way out was a
+ * full page reload, not a control a struggling learner reaches for.
+ * `onRetryOffers` is the fix: a visible, learner-driven ask-again, shown only
+ * for a genuine outage and never for the daily cap (which does not clear by
+ * asking again — see the SESSION_LIMIT tests above, whose distinction this
+ * reuses rather than duplicates).
+ */
+describe('OfferChips — a genuine outage offers a way to ask again; the daily cap does not', () => {
+  it('shows a retry action for an ordinary Oracle outage, and pressing it asks again', () => {
+    const onRetryOffers = vi.fn();
+    renderChips({ canStart: false, startBlockedBy: 'MODEL_UNAVAILABLE' }, { starting: true, onRetryOffers });
+
+    const retry = screen.getByRole('button', { name: 'Try again' });
+    fireEvent.click(retry);
+    expect(onRetryOffers).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not offer a retry for the daily cap — asking again cannot clear it', () => {
+    renderChips(
+      { canStart: false, startBlockedBy: 'SESSION_LIMIT' },
+      { starting: true, onRetryOffers: vi.fn() },
+    );
+
+    expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
+  });
+
+  it('does not offer a retry when the tutor can serve normally', () => {
+    renderChips({ canStart: true, startBlockedBy: null }, { starting: false, onRetryOffers: vi.fn() });
+
+    expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
+  });
+
+  /*
+   * Found live WHILE VERIFYING the fix above, 2026-09-01, same session: the
+   * new retry button existed and called the right function, but on any
+   * account with a seeded knowledge map it was completely unreachable — 15
+   * sampled points across its own rect all resolved to a map node instead.
+   * Root cause: this cluster's wrapper and the map panel's own wrapper
+   * (`chipsIn && mapPanel`, below) are BOTH `z-20` and separate stacking
+   * contexts, so a tie resolves by DOM order — the map panel renders later
+   * and wins, regardless of which one a learner actually needs to reach.
+   * jsdom has no layout engine and cannot compute real paint order (the live
+   * repro is what actually proved the collision and the fix); what this
+   * pins is the mechanism: the bump applies ONLY while `cannotServe`, and
+   * only just past the tie (`z-[21]`) — never as far as the microphone
+   * dock's own `z-30` (round 88/91's boundary — see `secondary`'s comment),
+   * so the ordinary, most-common case is provably unchanged.
+   */
+  it('lifts the cluster just past the map panel\'s tie only while blocked, never near the dock', () => {
+    // The anchored (real-frame) branch, NOT the default `ready: false`
+    // fallback — the cluster this z-index lives on only exists there; the
+    // fallback is a plain scrolling column with no map-panel collision to
+    // resolve in the first place.
+    const { container: blocked } = renderChips(
+      { canStart: false, startBlockedBy: 'MODEL_UNAVAILABLE' },
+      { starting: true, ready: true },
+    );
+    const blockedCluster = blocked.querySelector('.h-0.w-0.will-change-transform');
+    expect(blockedCluster?.className).toMatch(/(^|\s)z-\[21\](\s|$)/);
+    expect(blockedCluster?.className).not.toMatch(/(^|\s)z-20(\s|$)/);
+
+    const { container: normal } = renderChips({ canStart: true, startBlockedBy: null }, { starting: false, ready: true });
+    const normalCluster = normal.querySelector('.h-0.w-0.will-change-transform');
+    expect(normalCluster?.className).toMatch(/(^|\s)z-20(\s|$)/);
+    expect(normalCluster?.className).not.toMatch(/z-\[21\]/);
+  });
+});
+
 describe('the arrival, once the island is on screen', () => {
   it('holds the openings back until the tutor has begun speaking, then lets them in', () => {
     vi.useFakeTimers();
@@ -561,6 +637,7 @@ describe('the chest cluster never paints over the dock (round 123 bug 2, root ca
         starting={false}
         startError="INTERNAL"
         startErrorResetAt={null}
+        onRetryOffers={vi.fn()}
         onStart={vi.fn()}
         onPersonalize={vi.fn()}
         onReplay={vi.fn()}
@@ -600,6 +677,7 @@ describe('the chest cluster never paints over the dock (round 123 bug 2, root ca
         starting={false}
         startError={null}
         startErrorResetAt={null}
+        onRetryOffers={vi.fn()}
         onStart={vi.fn()}
         onPersonalize={vi.fn()}
         onReplay={vi.fn()}
@@ -646,6 +724,7 @@ describe('the chest cluster never paints over the dock (round 123 bug 2, root ca
         starting={false}
         startError="INTERNAL"
         startErrorResetAt={null}
+        onRetryOffers={vi.fn()}
         onStart={vi.fn()}
         onPersonalize={vi.fn()}
         onReplay={vi.fn()}
@@ -714,6 +793,7 @@ describe('the learning map panel degrades gracefully at short viewports (round 1
         starting={false}
         startError={null}
         startErrorResetAt={null}
+        onRetryOffers={vi.fn()}
         onStart={vi.fn()}
         onPersonalize={vi.fn()}
         onReplay={vi.fn()}

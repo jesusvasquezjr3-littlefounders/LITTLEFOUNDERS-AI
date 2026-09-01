@@ -295,6 +295,7 @@ function SessionLimitHarness({ token, userId }: { token: string; userId: string 
       starting={starting || !offers.canStart || startError === 'SESSION_LIMIT'}
       startError={startError}
       startErrorResetAt={startErrorResetAt}
+      onRetryOffers={() => {}}
       onStart={begin}
       onPersonalize={() => {}}
       onReplay={() => {}}

@@ -1162,6 +1162,23 @@ export interface OfferLayerProps extends StageLayerCommonProps {
    * the list can only hand a session upward. This is that hand-off.
    */
   onReplay: (session: SessionSummary) => void;
+  /**
+   * Re-checks whether Oracle can serve, on demand.
+   *
+   * `offers` (and the `canStart`/`startBlockedBy` pair it carries) is a
+   * SNAPSHOT, refreshed only at specific moments (mount, "Start Another") —
+   * never on a timer, never on the outage itself resolving. A snapshot taken
+   * WHILE Oracle happens to be down reads `canStart: false` correctly at the
+   * time, and then never rechecks itself: found live, 2026-09-01, a dropped
+   * connection whose resume failed left the chips disabled with "the tutor is
+   * resting" on screen, oracle recovering seconds later, and nothing in the
+   * app ever asking again — a full reload was the only way out, which is not
+   * a control a struggling learner is expected to reach for. This is that
+   * ask-again, wired to a visible retry rather than a background timer: it
+   * costs nothing until a learner who is already looking at the message
+   * chooses to press it.
+   */
+  onRetryOffers: () => void;
 }
 
 /**

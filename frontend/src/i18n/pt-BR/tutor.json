@@ -48,6 +48,7 @@
   "page": {
     "loading": "Sua ilha está chegando…",
     "tutorUnavailable": "Seu tutor está descansando. Volte em breve.",
+    "tutorUnavailableRetry": "Tentar novamente",
     "changeStage": "Minha ilha",
     "seeYouSoon": "Até logo!",
     "sessionSaved": "Salva. Você pode ouvir quando quiser.",
