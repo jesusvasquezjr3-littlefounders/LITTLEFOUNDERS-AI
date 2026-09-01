@@ -186,6 +186,63 @@ describe('under React.StrictMode (frontend/src/main.tsx wraps the whole app in i
   });
 });
 
+describe('a second first-frame signal into the SAME, still-mounted instance', () => {
+  // RUNBOOK.md Round 111 left an open question rather than a reproduction: a
+  // FUTURE mid-conversation stage remount (a character-cue change) "would
+  // reopen [the veil] for as long as 8 seconds". Reading `TutorScene.tsx` end
+  // to end finds no path that fires `onReady` a second time from a character
+  // or companion swap — `PrincipalModels` stops rendering once `ready` is
+  // true, and `Cast` gives every character its own Suspense boundary
+  // (TUTOR_3D.md §5.2), so a swap can only ever suspend the ONE new
+  // character's own boundary, never the shared one `Reveal` sits in. The one
+  // REAL remount this codebase does have — `SceneCanvas`'s `<Canvas
+  // key={contextEpoch}>`, recreated after a lost WebGL context — lives INSIDE
+  // the canvas and would produce a brand-new `Reveal`, which would call this
+  // SAME, never-remounted hook's `onFirstFrame` a second time. Either way, the
+  // question that actually matters is answered here rather than assumed: does
+  // a second call reopen anything.
+  it('does not reopen the gate, re-announce, or touch timedOut', () => {
+    const onReady = vi.fn();
+    const { result } = renderHook(() => useStageAnnouncement(onReady, TIMEOUT));
+
+    act(() => result.current.onFirstFrame());
+    expect(onReady).toHaveBeenCalledTimes(1);
+    expect(result.current.ready).toBe(true);
+    expect(result.current.timedOut).toBe(false);
+
+    // A second "first frame" — the shape a Canvas-context-loss remount's
+    // fresh `Reveal` would produce into this same instance.
+    act(() => result.current.onFirstFrame());
+    expect(onReady).toHaveBeenCalledTimes(1); // not called again
+    expect(result.current.ready).toBe(true); // never flickered back to false first
+    expect(result.current.timedOut).toBe(false); // still opened by a frame, not the clock
+
+    // And the still-pending deadline from the ORIGINAL mount, now moot,
+    // must not retroactively relabel this as a timeout.
+    act(() => void vi.advanceTimersByTime(TIMEOUT + 1));
+    expect(onReady).toHaveBeenCalledTimes(1);
+    expect(result.current.timedOut).toBe(false);
+  });
+
+  it('a late frame after the DEADLINE already opened the gate is equally inert', () => {
+    // The mirror image: the timeout fires first (a slow load), and only
+    // afterwards does the scene's own frame arrive. The learner must not see
+    // the loading plate's `role="status"` line change, or the veil's opacity
+    // transition replay, for a signal that is now irrelevant.
+    const onReady = vi.fn();
+    const { result } = renderHook(() => useStageAnnouncement(onReady, TIMEOUT));
+
+    act(() => void vi.advanceTimersByTime(TIMEOUT + 1));
+    expect(onReady).toHaveBeenCalledTimes(1);
+    expect(result.current.timedOut).toBe(true);
+
+    act(() => result.current.onFirstFrame());
+    expect(onReady).toHaveBeenCalledTimes(1);
+    expect(result.current.ready).toBe(true);
+    expect(result.current.timedOut).toBe(true); // stays attributed to the clock
+  });
+});
+
 describe('the gate does not depend on who is listening', () => {
   it('survives the callback identity changing every render', () => {
     // `onReady` is an inline arrow in the shell's parent. Keying the timer on
