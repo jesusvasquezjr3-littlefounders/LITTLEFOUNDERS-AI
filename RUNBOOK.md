@@ -11959,3 +11959,67 @@ Root gates `docs:check`, `secrets:check`, `provider:check`,
 a gap in an existing, already-documented pattern (the phone-shaped fix
 this file's own comment already explains) rather than establishing a
 new general lesson.
+
+## Round 118: a parent reading a growth or spending story in the Tutor transcript saw the tutor's own caption with no board underneath it, while the learner's own screen showed the actual worked numbers — found by adversarial review sweep tutor-review-sweep-101 (guardian-dashboard-depth dimension), HIGH, closed 2026-08-31
+
+**HIGH, FIXED.** `KidTutorPage.tsx`'s `Transcript` renders every `beat`
+`buildReplayScript` produces, but only ever read `beat.text` — never
+`beat.whiteboard`, a field that same function already computes for
+every tutor beat that carries a growth/spending story (`/ORACLE.md`
+§20.5). The learner's own live view (`ConversationView.tsx`) and 3D
+replay (`ReplayInWorld.tsx`) both draw that field with `TutorWhiteboard`
+already; a parent reading the transcript of the SAME session saw the
+tutor's caption ("empiezas con 10 pesos y cada semana te dan 2 más")
+with no board beneath it, one of the two surfaces this codebase already
+built specifically to convey the worked numbers, silently missing.
+
+**Fix.** `TutorWhiteboard` reused unmodified, directly below the tutor
+line whose beat carries a `whiteboard`, never a second component and
+never re-derived numbers (§20.5: "values ARE NEVER RECOMPUTED HERE").
+`TutorWhiteboard`'s chart area is `flex-1` and needs a real height from
+its parent; the live and replay call sites get one for free from the
+3D stage's fixed-height plate, which this plain scrolling page has no
+equivalent of, so a fixed `h-40` well stands in here. The beat's `<p>`
+and its (possible) whiteboard are now siblings inside a `key`-stable
+`Fragment`, replacing the bare `<p key={beat.id}>` — `key` moved from
+the `<p>` to the `Fragment` so React still tracks the pair as one unit
+across re-renders.
+
+**Proof.** Two new tests in
+`KidTutorPage.test.tsx` (`KidTutorPage — a tutor turn that drew a
+whiteboard shows it to the parent too`): one confirms the well and the
+board's own label render for a turn carrying `whiteboard`, the other
+confirms NO well renders for an ordinary turn with `whiteboard: null` —
+proving the conditional render, not just the happy path.
+
+**Verification.** `npm run type-check`, `npm run lint`, `npm run build`
+all clean in `frontend/`. `KidTutorPage.test.tsx`: 19/19 (2 new). Full
+`frontend/` suite: 136/136 files, 1568 tests, 2 new. Root gates
+`docs:check`, `secrets:check`, `i18n:check` (no new user-facing
+strings — this reuses `TutorWhiteboard`'s own, already-i18n'd copy),
+`tools:test` (26/26) all green.
+
+**Not run: in-browser mobile/desktop screenshot verification (§1.11).**
+The same documented gap this page has carried across multiple prior
+rounds (67, 71, 72, and PR #96's own round 110) — no seeded
+authenticated guardian session over a verified-kid link exists in this
+environment, and a temporary dev-only preview route (built during this
+review specifically to get a real screenshot, reusing this page's exact
+JSX/Tailwind and a real `TutorWhiteboard`) could not reach a live dev
+server in this sandbox either (port 5173 already held by another
+process, and `vite.config.ts`'s hardcoded port bypasses `autoPort`) —
+removed before this commit rather than shipped as dead scaffolding.
+Mitigating facts, not a substitute for the real check: the new markup
+reuses ONLY the already-verified `TutorWhiteboard` component (its own
+suite, rounds 101/107/113/114/115, covers its rendering directly) and
+a fixed-height well pattern already proven at both breakpoints wherever
+`TutorWhiteboard` is embedded outside the 3D stage's own plate; no new
+grid, no new fixed width beyond the `h-40` well, and the page's own
+responsive shell is untouched. A person with a real browser and a
+seeded guardian/kid pair with a whiteboard-carrying session should
+verify this at ~375px and ~1280px before it ships. No
+`frontend/AGENTS.md` item: no new responsive pattern was introduced,
+only a reuse of an existing one. No `oracle/AGENTS.md`/`/ORACLE.md`
+item: nothing in `oracle/` changed, and this is a Core-facing display
+fix reusing an existing field and an existing component, not a change
+to what the Tutor produces or why.

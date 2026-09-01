@@ -492,3 +492,83 @@ describe('KidTutorPage — paging past the first page of sessions', () => {
     expect(screen.getByText('Load older conversations')).toBeInTheDocument();
   });
 });
+
+
+/*
+ * Confirmed HIGH finding from adversarial review sweep tutor-review-sweep-101
+ * (guardian-dashboard-depth dimension): `beat.whiteboard` was computed by
+ * `buildReplayScript` — the SAME function this file already trusts for the
+ * activity beats above — and simply never read in the JSX. A parent could
+ * read the tutor narrating a growth story with no board underneath it, while
+ * the learner's own live and replay views (`ConversationView.tsx`,
+ * `ReplayInWorld.tsx`) drew the exact same numbers with `TutorWhiteboard`.
+ */
+describe('KidTutorPage — a tutor turn that drew a whiteboard shows it to the parent too', () => {
+  const WHITEBOARD_TURN = {
+    id: 't-board',
+    seq: 3,
+    speaker: 'tutor' as const,
+    text: 'Cada semana te dan 2 pesos más.',
+    emotion: null,
+    action: null,
+    audio_path: null,
+    source: 'model',
+    created_at: '2026-08-31T10:00:00Z',
+    whiteboard: {
+      kind: 'sequence' as const,
+      start: 10,
+      steps: [{ op: 'add' as const, value: 2 }],
+      unit: 'week' as const,
+      values: [10, 12],
+      label: 'Ahorros de Ana',
+      currency: 'MXN' as const,
+    },
+  };
+
+  it('renders the whiteboard beside the tutor line that drew it', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValue({
+      data: { sessions: [{ ...BASE_SESSION }], safetyFlags: [], hasMore: false },
+      error: null,
+    });
+    vi.mocked(getTranscript).mockResolvedValue({
+      data: {
+        session: BASE_SESSION,
+        turns: [WHITEBOARD_TURN],
+        segments: [],
+      },
+      error: null,
+    });
+
+    renderPage();
+    await waitFor(() => screen.getByText(/2 messages/));
+
+    fireEvent.click(screen.getByText('Read it'));
+
+    await waitFor(() => screen.getByText('Cada semana te dan 2 pesos más.'));
+    expect(document.querySelector('[data-tutor-whiteboard]')).not.toBeNull();
+    expect(screen.getByText('Ahorros de Ana')).toBeInTheDocument();
+  });
+
+  it('renders no whiteboard well for a tutor turn that never drew one', async () => {
+    vi.mocked(getKidTutorHistory).mockResolvedValue({
+      data: { sessions: [{ ...BASE_SESSION }], safetyFlags: [], hasMore: false },
+      error: null,
+    });
+    vi.mocked(getTranscript).mockResolvedValue({
+      data: {
+        session: BASE_SESSION,
+        turns: [{ ...WHITEBOARD_TURN, id: 't-plain', seq: 4, whiteboard: null }],
+        segments: [],
+      },
+      error: null,
+    });
+
+    renderPage();
+    await waitFor(() => screen.getByText(/2 messages/));
+
+    fireEvent.click(screen.getByText('Read it'));
+
+    await waitFor(() => screen.getByText('Cada semana te dan 2 pesos más.'));
+    expect(document.querySelector('[data-tutor-whiteboard]')).toBeNull();
+  });
+});
