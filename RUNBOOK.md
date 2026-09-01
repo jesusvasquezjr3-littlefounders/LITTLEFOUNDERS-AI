@@ -14016,3 +14016,165 @@ than new mock plumbing), build clean, `verify:tutor` OK (all prior
 canaries plus the 3 new `self-harm-indirect-*` ones), `verify:pedagogy`
 OK (unaffected, run for completeness). frontend and backend untouched by
 this round.
+
+## Round 140: four items already sitting on this session's own pending list, closed by directly investigating each rather than trusting its stale title — a CSS token that never existed, two dead misconception codes, and two controller gaps the pedagogy gym had already caught and named the same day, 2026-09-01
+
+**MEDIUM. Three of four fixed and independently verified; the fourth's
+real, deeper mechanism was found, a genuine partial fix landed, and the
+part that remains was re-diagnosed rather than forced closed on a
+guess.** None of these four came from a new live-testing finding — each
+was already on this session's own list of pending, agent-actionable work
+toward the standing 100%-completion goal, described until now only by a
+short title carried over from an earlier round. Per AGENTS.md §1.12
+("verify before asserting… no fabricated specifics"), each title was
+re-investigated from the live code and the live tooling before being
+called anything, rather than assumed correct from memory.
+
+**1. `frontend/src/tutor/ConversationView.tsx` — the lesson-thread
+chip's text color, and its own step-dots, referenced a CSS custom
+property that has never existed anywhere in `index.css`.**
+[ConversationView.tsx:716](frontend/src/tutor/ConversationView.tsx:716)
+(the chip's own `text-[color:…]`) and
+[ConversationView.tsx:739-742](frontend/src/tutor/ConversationView.tsx:739)
+(the three step-dot states) all read `var(--lf-muted)`. The real token,
+used by every other muted surface on this route, is
+`--lf-content-muted`. An undefined custom property with no fallback
+does not make the declaration an error — it makes `color` /
+`background-color` INVALID, which the cascade resolves to whatever the
+ANCESTOR already painted. That is why this was never uniformly "just
+broken": depending on what sat above it in the tree, the chip and its
+dots could land close enough to correct to pass a glance, or could
+land the same tone as the 3D backdrop behind them — which is what an
+earlier round's "invisible lesson-thread chip" phrasing actually meant.
+Fixed by switching all four occurrences to the real token — no visual
+redesign, the color was always meant to be exactly this one.
+
+**2. `oracle/skills/moves/counterexample-confront.md` — frontmatter
+named two misconception codes the catalog does not contain.** Its
+`misconceptions:` list carried `more-parts-means-more` and
+`longer-number-is-bigger` alongside the one real, cataloged code
+(`adds-instead-of-counts-up`) — both unreachable, since
+`backend/src/scripts/curate-tutor-skills.ts` (the PROPOSE-ONLY tool
+built specifically to catch exactly this drift between skills and
+`database/seeds/kc_graph.v1.json`) can only ever route a turn to a
+skill through a misconception code the catalog actually has. Confirmed
+directly by running the tool live, twice: before this fix it named
+both codes explicitly ("2 unreachable code(s): more-parts-means-more,
+longer-number-is-bigger (not among 31 cataloged code(s))"); re-run
+after the fix, in this same round, it reports "0 proposed action(s)
+across 28 KC(s) and 15 skill(s)." — the tool's own before/after output
+is the verification, not a claim about it. Fixed by trimming the
+frontmatter to the one real code.
+
+**3. `oracle/src/tutor/controller.ts` — a difficulty-computation
+regression the pedagogy gym caught the same day it was built, already
+named in `pedagogyGym.test.ts`'s `KNOWN_GAPS` as a real, tracked,
+NOT-yet-fixed finding.** `decide()`'s default difficulty case
+unconditionally reset to `entry.targetDifficulty` — the KC's AUTHORED
+target — on any turn that was correct but resolved to an ordinary
+strategy (neither a support strategy nor high-mastery). Every OTHER
+branch in the same function treats `lastDifficulty` as this
+controller's own memory of where the learner currently sits and moves
+it RELATIVE to that memory; this was the one branch that instead threw
+the memory away. Concretely: two wrong answers correctly held
+difficulty down, and the very next correct answer — nowhere near the
+mastery bar required to justify raising it — visibly jumped difficulty
+back up, one turn later, to the exact effect the failure branch's own
+comment already says must never happen ("never raise difficulty after
+a failure"). Fixed at
+[controller.ts:623](oracle/src/tutor/controller.ts:623): the default
+case now reads `this.lastDifficultyFromContent ? band(entry.targetDifficulty)
+: this.lastDifficulty`. The added indirection is required, not
+decorative — a plain "always hold at `lastDifficulty`" would have
+broken an existing, deliberately-protected test
+("does not pin the learner: the plan's own target still drives the
+next turn"), because `reconcileServedDifficulty` (content-ladder
+substitution, e.g. "asked for band 4, the topic only has band 1-2")
+legitimately needs the OPPOSITE behavior: climb back to the plan's own
+target next turn, not hold at the substituted band forever. The new
+`lastDifficultyFromContent` field
+([controller.ts:221](oracle/src/tutor/controller.ts:221), set `true`
+at [controller.ts:390](oracle/src/tutor/controller.ts:390) inside
+`reconcileServedDifficulty`, read at line 623, reset to `false` at
+[controller.ts:634](oracle/src/tutor/controller.ts:634) once `decide()`
+has made its own fresh call) is what lets the same default case tell a
+content fact from a pedagogical one, instead of picking one legitimate
+behavior at the expense of the other. `npm run gym:pedagogy` no longer
+reports this scenario; `KNOWN_GAPS` no longer names it — its continued
+absence from a future run is the regression proof, per that map's own
+documented convention.
+
+**4. `oracle/src/tutor/controller.ts` — a latency-median
+self-contamination bug, also already caught and named by the gym the
+same day: fixed at its root, but only PARTIALLY closes the scenario
+that found it, and the remainder is a different, bigger question than
+first described.** `correctLatencies` grew without bound, and both
+`answeredHesitantly` and `answeredWithoutReading` compare a fresh
+latency against its median — so a SUSTAINED run of consistently-paced
+correct answers (however unusually slow, or unusually fast) eventually
+makes that pace itself the median, at which point `latency > median *
+FACTOR` becomes mathematically unsatisfiable for that pace, regardless
+of how extreme the original gap was. Fixed at the shared root: a new
+`LATENCY_BASELINE_SIZE = 3` constant
+([controller.ts:146](oracle/src/tutor/controller.ts:146)) freezes each
+KC's baseline at its first 3 correct-latency measurements
+([controller.ts:529-534](oracle/src/tutor/controller.ts:529)) — no
+later run of similarly-paced answers, hesitant or fluent, can move the
+yardstick again. Proven with a genuine red-before-green cycle: a new
+test in `controller.test.ts` ("a long run of slow (but correct)
+answers afterward does not drag the baseline toward it") drives 3 fast
+correct answers, then 5 more correct answers at roughly 4.4× that
+pace, each preceded by a wrong answer to hold the BKT mirror's
+posterior in the 0.7–0.85 band (verified numerically beforehand: 2-3
+STRAIGHT correct answers cross the 0.85 mastery bar from nearly any
+starting point, which would otherwise complete the KC long before the
+slow run even starts) — then probes with a fast wrong answer that
+reads as a guess against a hypothetical contaminated ~40,000ms median
+but not against the real, frozen 9,000ms one. Temporarily reverting
+just the freeze (via the Edit tool, restored exactly afterward)
+reproduced the old failure (`expected 'WORKED' to be 'REMEDIATE'`)
+before the real fix was confirmed to pass it. However: this same fix,
+applied to the gym's own "fragile hesitant" archetype (the scenario
+that originally found this mechanism), did NOT turn that scenario
+clean. Instrumenting the real controller turn-by-turn during this
+investigation (a temporary `console.error` inside `answeredHesitantly`,
+removed once the diagnosis was confirmed) showed why: that archetype's
+`MASTERY_MIN_OPPORTUNITIES` (3) is satisfied by its first three turns,
+which are ALL fast by construction, so CELEBRATE fires honestly on the
+only evidence that exists at that moment, the KC completes, and the
+archetype's entire slow phase (turnIndex 3+) never reaches a live KC
+for `answeredHesitantly` to evaluate at all. That is not the
+self-contamination mechanism just fixed — it is a different, larger
+question with no mechanism anywhere in this codebase today: whether a
+mastery decision should ever be RECONSIDERED once later evidence
+contradicts it. Raising `MASTERY_MIN_OPPORTUNITIES` to dodge it was
+considered and rejected: the constant already sits at the top of the
+blueprint's own cited range ("2–3 ítems de sondeo"), so raising it
+further would contradict the source spec rather than fix a bug in this
+codebase's reading of it. Left open deliberately, per AGENTS.md §1.12
+("surface uncertainty, don't paper over it") rather than guessed at —
+`KNOWN_GAPS` keeps exactly one entry now (`'fragile hesitant'`),
+reworded to the more precise mechanism; `pedagogyGym.ts`'s own comment
+on both archetypes was rewritten to match what is now known, so the
+next reader sees the real mechanism instead of the original, partially
+wrong, hypothesis.
+
+**Verification, independently re-run by the coordinator, across every
+service touched.** oracle: `type-check` clean across all 3 tsconfigs,
+`lint` clean, `test` 35 files / 849 tests green (+1, the new
+freeze-regression test), `build` clean, `gym:pedagogy` 3 of 4 scenarios
+`ok` ("needs directness", "guesses under pressure", "steady improver" —
+the last now clean, confirming fix 3) and the fourth reporting only the
+one, now-more-precisely-described, tracked gap from fix 4 — expected,
+since `gym:pedagogy` is a diagnostic script, not a formal §5 gate
+(confirmed via grep: zero references in AGENTS.md), and the FORMAL
+regression protection is `pedagogyGym.test.ts`, which passes with
+exactly the one named gap present, `verify:tutor` OK, `verify:pedagogy`
+OK ("no thrash, no repeated rescue, no endless questioning" across all
+6 scripted learner profiles). frontend: `type-check` clean, `lint`
+clean, `test` 140 files / 1640 tests green, `build` clean. Root:
+`docs:check`, `secrets:check`, `i18n:check`, `paths:check`,
+`seo:check`, `provider:check`, and `tools:test` (26/26) all green.
+backend: unaffected by any of the four fixes — `curate:tutor-skills`
+was run live as fix 2's own verification, not because backend's code
+changed.

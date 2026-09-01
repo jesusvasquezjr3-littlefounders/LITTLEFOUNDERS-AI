@@ -2,7 +2,7 @@
 name: counterexample-confront
 description: Let a wrong rule collide with a case where it visibly fails
 strategies: [REMEDIATE]
-misconceptions: [adds-instead-of-counts-up, more-parts-means-more, longer-number-is-bigger]
+misconceptions: [adds-instead-of-counts-up]
 mastery_min: 0.25
 mastery_max: 0.7
 tiers: [1, 2, 3]

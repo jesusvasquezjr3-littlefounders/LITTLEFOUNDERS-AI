@@ -99,16 +99,17 @@ export const STUDENT_ARCHETYPES: Record<string, StudentModel> = {
    * A baseline/control: wrong twice, then reliably correct, regardless of
    * strategy — an ordinary session should simply complete.
    *
-   * FOUND BY THIS ARCHETYPE, 2026-09-01 (a real gap in the shipped
-   * controller, not fixed here — see `pedagogyGym.test.ts`'s own
-   * `KNOWN_GAPS` for the full mechanism and why it is out of this lane's
-   * scope): `decide()`'s difficulty computation resets to
-   * `entry.targetDifficulty` on any turn that is correct but resolves to an
-   * ORDINARY strategy (neither a support strategy nor high-mastery) — so
-   * this archetype's very first correct answer, arriving right after two
-   * wrong ones held difficulty down, visibly jumps difficulty back up.
-   * `npm run gym:pedagogy` reports this every run, by design; it is a real,
-   * named, tracked finding, not noise to silence.
+   * FOUND BY THIS ARCHETYPE, 2026-09-01, AND FIXED THE SAME DAY
+   * (`controller.ts`'s `decide()`): the difficulty computation's default
+   * case reset to `entry.targetDifficulty` on any turn that was correct but
+   * resolved to an ORDINARY strategy (neither a support strategy nor
+   * high-mastery) — so this archetype's very first correct answer, arriving
+   * right after two wrong ones held difficulty down, visibly jumped
+   * difficulty back up. Now holds at `lastDifficulty` instead, UNLESS the
+   * most recent change was a content-ladder substitution rather than a
+   * pedagogical one (`lastDifficultyFromContent` — see its own comment; a
+   * separate, already-tested design constraint that a blanket "always hold"
+   * would have broken). `npm run gym:pedagogy` no longer reports this.
    */
   'steady improver': ({ turnIndex }) => activityResult(turnIndex >= 2, NORMAL_LATENCY_MS),
   /**
@@ -119,14 +120,33 @@ export const STUDENT_ARCHETYPES: Record<string, StudentModel> = {
    * pace, to show whether mastery is EVER wrongly declared on fragile
    * evidence — this archetype is built specifically to test that.
    *
-   * FOUND BY THIS ARCHETYPE, 2026-09-01 (a real gap, not fixed here — see
-   * `pedagogyGym.test.ts`'s `KNOWN_GAPS`): it IS eventually promoted.
-   * `answeredHesitantly` compares against an UNBOUNDED, self-inclusive
-   * median of every correct latency ever seen for the KC, so once enough
-   * turns at this archetype's consistent slow pace accumulate, that pace
-   * itself becomes the median and the 2x-median check can no longer fire —
-   * mathematically guaranteed for ANY constant-latency slow phase run long
-   * enough, independent of how extreme the original fast/slow gap was.
+   * FOUND BY THIS ARCHETYPE, 2026-09-01. PARTIALLY FIXED THE SAME DAY, AND
+   * THE REMAINING PART RE-DIAGNOSED RATHER THAN LEFT AS FIRST DESCRIBED.
+   * The original hypothesis here was that `answeredHesitantly`'s UNBOUNDED,
+   * self-inclusive median of every correct latency ever seen would, given
+   * enough turns at this archetype's constant slow pace, converge toward
+   * that pace and defeat its own 2x-median check. That mechanism IS real
+   * and IS now fixed (`LATENCY_BASELINE_SIZE` freezes the baseline at the
+   * first 3 measurements — see its own comment) — but instrumenting the
+   * real controller turn by turn (`console.error` inside `answeredHesitantly`
+   * during this investigation, since removed) showed the GYM's own
+   * archetype never actually exercises that path at all: `MASTERY_MIN_
+   * OPPORTUNITIES` (3) is satisfied by this archetype's first 3 turns —
+   * which are ALL fast by construction (`turnIndex < 3`) — so CELEBRATE
+   * fires using only-ever-fast evidence, the KC completes, and turnIndex 3+
+   * (the slow phase) never reaches a live KC for `answeredHesitantly` to
+   * evaluate at all. The failure is not "the check gets defeated over time";
+   * it is "mastery is evaluated once, on whatever evidence exists at that
+   * moment, with nothing that revisits the decision if slower evidence
+   * follows" — a materially different, and materially bigger, question
+   * (does mastery ever get RECONSIDERED) that this codebase has no
+   * mechanism for anywhere today. Raising `MASTERY_MIN_OPPORTUNITIES` was
+   * considered and rejected: that constant already sits at the TOP of the
+   * blueprint's own cited range ("2-3 ítems de sondeo" — see its own
+   * comment in `controller.ts`), so raising it further contradicts the
+   * source spec rather than fixing a bug in this codebase's reading of it.
+   * Left open deliberately rather than guessed at further — see
+   * `pedagogyGym.test.ts`'s `KNOWN_GAPS` for the tracked, precise wording.
    */
   'fragile hesitant': ({ turnIndex }) =>
     activityResult(true, turnIndex < 3 ? CONFIDENT_LATENCY_MS : HESITANT_LATENCY_MS),

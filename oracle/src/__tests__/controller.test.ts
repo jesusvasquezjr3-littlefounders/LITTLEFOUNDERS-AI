@@ -556,6 +556,60 @@ describe('PedagogicalController', () => {
       const c = paced();
       expect(c.decide(wrong(null), NOW + 80_000).strategy).toBe('REMEDIATE');
     });
+
+    /*
+     * Found by the pedagogy gym's "fragile hesitant" archetype, 2026-09-01
+     * (`pedagogyGym.ts`'s own comment on that archetype has the full
+     * mechanism): `correctLatencies` used to grow without bound, so a
+     * SUSTAINED run of unusually slow (but correct) answers would eventually
+     * drag the comparison median toward that slow pace itself — at which
+     * point a WRONG, genuinely-fast answer stops looking fast BY COMPARISON,
+     * and `answeredWithoutReading` silently stops firing. This targets the
+     * shared root cause (`correctLatencies`'s own append site, now capped at
+     * `LATENCY_BASELINE_SIZE`) through its OTHER consumer, deliberately —
+     * `answeredHesitantly`'s own equivalent scenario is entangled with the
+     * mastery/opportunity gate (three correct answers alone are usually
+     * enough to satisfy both at once, leaving no room to observe a SUSTAINED
+     * slow run before the KC completes), where this one is not.
+     */
+    it("a long run of slow (but correct) answers afterward does not drag the baseline toward it", () => {
+      const c = new PedagogicalController([entry({ pKnown: 0.3, prereqKcIds: [] })]);
+      // A wrong answer between every correct one, throughout — otherwise the
+      // mirror's own BKT update crosses the mastery bar within two or three
+      // STRAIGHT correct answers regardless of starting point (textbook BKT
+      // is simply that steep), which would complete this single-entry plan
+      // and make it dormant long before the slow run this test needs even
+      // starts. Alternating holds the posterior in the 0.7-0.85 band
+      // indefinitely (verified numerically before writing this), so the ONLY
+      // thing being exercised turn to turn is the latency history — not an
+      // accidental race against mastery.
+      let t = NOW;
+      const tick = () => (t += 40_000);
+      // Three fast correct answers — AT `LATENCY_BASELINE_SIZE` — establish,
+      // and freeze, this learner's baseline pace.
+      c.decide(right(9_000), tick());
+      c.decide(wrong(9_000), tick());
+      c.decide(right(9_000), tick());
+      c.decide(wrong(9_000), tick());
+      c.decide(right(9_000), tick());
+      // Five MORE correct answers, all unusually slow. An unfrozen history
+      // would let these outnumber the original three and pull the median
+      // from 9,000 toward 40,000.
+      for (let i = 0; i < 5; i++) {
+        c.decide(wrong(9_000), tick());
+        c.decide(right(40_000), tick());
+      }
+      // The probe: a wrong answer at 5,000ms. Genuinely fast against the
+      // FROZEN 9,000ms baseline (5,000 * GUESS_FACTOR = 15,000, which is NOT
+      // under 9,000 — not a guess) but would read as a guess against a
+      // contaminated ~40,000ms one (15,000 IS under that) — the two
+      // baselines disagree on this exact input on purpose, so this proves
+      // which one the controller is actually using rather than merely being
+      // consistent with either.
+      const decision = c.decide(wrong(5_000), tick());
+      expect(decision.strategy).toBe('REMEDIATE');
+      expect(decision.instruction).not.toContain('disengagement');
+    });
   });
 
   describe('a right answer that took too long is not mastery (§8.3)', () => {

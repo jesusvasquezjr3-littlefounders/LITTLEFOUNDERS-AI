@@ -92,11 +92,14 @@ describe('runGymScenario drives the REAL controller reactively', () => {
 });
 
 /*
- * FOUND BY THIS GYM, 2026-09-01 — a genuine finding about the SHIPPED
- * controller, not a defect in the gym itself.
+ * FOUND BY THIS GYM, 2026-09-01, AND FIXED THE SAME DAY (`controller.ts`) —
+ * kept here as history rather than deleted, since `runPedagogyGym()`'s own
+ * regression proof (below) is only meaningful if a reader can see what it
+ * used to catch. A genuine finding about the SHIPPED controller, not a
+ * defect in the gym itself.
  *
  * `controller.ts`'s difficulty computation (`decide()`, the block right
- * after `applyStrategy`) resets to `entry.targetDifficulty` on any turn
+ * after `applyStrategy`) used to reset to `entry.targetDifficulty` on any turn
  * that does not ALSO independently qualify for its own hold/lower branch
  * (this turn failed, or its strategy is RESCUE/REMEDIATE/PROBE) or its
  * raise branch (`p >= 0.85`). So a turn immediately following a
@@ -113,37 +116,57 @@ describe('runGymScenario drives the REAL controller reactively', () => {
  * on exactly that turn. This is precisely the class of thing a reactive
  * gym exists to surface that a fixed script structurally cannot.
  *
- * NOT fixed here: a `controller.ts` difficulty-computation change is a
- * pedagogy change with real stakes (oracle/AGENTS.md's own gate table), and
- * this lane's scope is the HARNESS TOOLING, not a drive-by edit to the
- * controller it drives. NOT suppressed either — named explicitly below, so
- * this assertion documents exactly what is known today rather than either
- * lying about it or silently tolerating an unlabelled gap. If this ever
- * stops reproducing (the controller was fixed) or a genuinely NEW problem
- * appears alongside it, this test fails and says which — that is the
- * point of naming it rather than filtering broadly.
+ * FIXED THE SAME DAY: `decide()`'s default case now holds at
+ * `lastDifficulty` — "this controller's memory of where the learner
+ * currently is" per that field's own doc comment — instead of resetting to
+ * the plan's authored target, UNLESS the most recent change to
+ * `lastDifficulty` was a content-ladder substitution rather than a
+ * pedagogical one (`lastDifficultyFromContent`), in which case it still
+ * climbs back to the target exactly as the existing, deliberately-protected
+ * "does not pin the learner" test (`controller.test.ts`) already requires.
+ * `gym:pedagogy` no longer reports this scenario; `KNOWN_GAPS` below no
+ * longer names it, on purpose — its continued ABSENCE from a future
+ * `report.problems` is itself the regression proof.
  */
 /*
- * FOUND BY THIS GYM, 2026-09-01, SECOND FINDING — also real, also not fixed
- * here. `answeredHesitantly` (controller.ts) compares a correct answer's
- * latency against the MEDIAN of `correctLatencies`, an UNBOUNDED history
- * that already includes the CURRENT turn's own measurement (pushed earlier
- * in the same `decide()` call, before this check runs) and is never
- * windowed or decayed. For any learner whose slow phase is CONSISTENT
- * (the same latency, repeated) rather than variable, the median
- * mathematically converges toward that slow value once slow measurements
- * outnumber the earlier fast ones — at which point `latency > median * 2`
- * can no longer be true, REGARDLESS of how extreme the original fast/slow
- * ratio was. 'fragile hesitant' is promoted (CELEBRATE) on exactly this
- * mechanism, not because it ever became genuinely fluent. Whether "the
- * learner's own median" should instead be a fixed early baseline, a
- * decaying window, or something else entirely is a real PEDAGOGY DESIGN
- * question with no documented answer — squarely outside this lane's scope
- * (harness tooling, not a mastery-detection redesign) — so it is named
- * here rather than guessed at.
+ * FOUND BY THIS GYM, 2026-09-01, SECOND FINDING — PARTIALLY FIXED THE SAME
+ * DAY, remainder RE-DIAGNOSED rather than left under its original
+ * (incomplete) description.
+ *
+ * The mechanism as first hypothesized: `answeredHesitantly` (controller.ts)
+ * compares a correct answer's latency against the MEDIAN of
+ * `correctLatencies`, an UNBOUNDED history that already includes the
+ * CURRENT turn's own measurement and is never windowed. For a learner whose
+ * slow phase is CONSISTENT, the median would converge toward that slow
+ * value once slow measurements outnumber the earlier fast ones, defeating
+ * `latency > median * 2` regardless of the original fast/slow gap. THIS
+ * PART IS REAL AND IS NOW FIXED: `LATENCY_BASELINE_SIZE` freezes the
+ * baseline at the first 3 correct-latency measurements per KC, so no later
+ * run of similar-paced answers — hesitant or fluent — can move the
+ * yardstick they are judged against again.
+ *
+ * The fix did not turn this scenario clean, and instrumenting the real
+ * controller turn-by-turn (temporarily, during this investigation) showed
+ * why: 'fragile hesitant' is promoted using ONLY its first three, genuinely
+ * fast turns — `MASTERY_MIN_OPPORTUNITIES` (3) is satisfied there, all
+ * three answers really are fast, so CELEBRATE fires honestly on the
+ * evidence that exists at that moment, the KC completes, and `turnIndex`
+ * 3+ — this archetype's whole slow phase — never reaches a live KC for
+ * `answeredHesitantly` to evaluate. That is a DIFFERENT, bigger question
+ * than the one just fixed: not "does the check get defeated by accumulated
+ * data" but "can a mastery decision ever be RECONSIDERED once later
+ * evidence contradicts it" — a mechanism this codebase does not have
+ * anywhere today. Raising `MASTERY_MIN_OPPORTUNITIES` was considered and
+ * rejected: it already sits at the top of the blueprint's own cited range
+ * ("2-3 ítems de sondeo" — see its own comment in controller.ts), so
+ * raising it further would contradict the source spec rather than fix a
+ * bug in this codebase's reading of it. Whether mastery should ever be
+ * reconsidered, and on what evidence, is a real PEDAGOGY DESIGN question
+ * with no documented answer — squarely outside this lane's scope (harness
+ * tooling, not a mastery-detection redesign) — so it stays named here,
+ * more precisely than before, rather than guessed at further.
  */
 const KNOWN_GAPS: Readonly<Record<string, string>> = {
-  'steady improver': 'difficulty rose from 1 to 2 after a failure (turn 3)',
   'fragile hesitant':
     'a persistently hesitant-but-correct learner was promoted (CELEBRATE/TRANSFER) — mastery should stay withheld while every correct answer is slow (blueprint §8.3: "correcto + latencia alta → dominio frágil, no promover")',
 };

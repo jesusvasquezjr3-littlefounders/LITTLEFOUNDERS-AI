@@ -120,6 +120,32 @@ const HESITATION_FACTOR = 2;
 const GUESS_FACTOR = 3;
 
 /**
+ * How many correct-latency measurements establish a KC's baseline pace,
+ * after which the baseline FREEZES — no further correct answer, however
+ * slow or fast, moves it again.
+ *
+ * Found by the pedagogy gym's "fragile hesitant" archetype, 2026-09-01: with
+ * an unbounded, ever-growing history, a learner who answers correctly at a
+ * CONSTANT slow pace eventually makes that pace itself the median, and
+ * `latency > median * HESITATION_FACTOR` becomes `L > L * 2`, which is false
+ * for every positive `L` — mathematically guaranteed for any constant-pace
+ * run long enough, regardless of how extreme the original fast/slow gap
+ * was. The identical shape, in the opposite direction, would eventually
+ * understate `answeredWithoutReading`'s own guess threshold too, since both
+ * read the same `correctLatencies` history.
+ *
+ * Three is the smallest number a median is more than a single point (two
+ * measurements average two numbers; three has an actual middle) and matches
+ * the gym archetype's own construction — three fast, confident answers
+ * before the slow phase begins. Once frozen, a GENUINE, lasting change in
+ * pace (a KC that got easier for real, a learner who matured) is read
+ * through `targetDifficulty`/`pKnown` moving instead — which is what those
+ * signals are for — rather than through silently moving the very yardstick
+ * a symptom is measured against.
+ */
+const LATENCY_BASELINE_SIZE = 3;
+
+/**
  * Every ordinary teaching strategy the no-progress counter watches.
  *
  * Originally just SOCRATIC and FLUENCY — "the strategies that ASK rather than
@@ -175,6 +201,24 @@ export class PedagogicalController {
   private strategy: Strategy;
   private consecutiveFailures = 0;
   private lastDifficulty: 1 | 2 | 3 | 4 | 5;
+  /**
+   * Whether `lastDifficulty`'s CURRENT value was set by a content-availability
+   * substitution (`reconcileServedDifficulty`) rather than by `decide()`'s own
+   * pedagogical judgment — the two legitimate reasons this field ever moves,
+   * and `decide()`'s default case needs to tell them apart (added alongside
+   * the fix below; see that fix's own comment for why one flag was not
+   * enough on its own).
+   *
+   * A content substitution is the ladder doing its job on a topic that does
+   * not cover every band — no opinion about the learner — so `decide()`'s
+   * default case climbs back toward the PLAN's own target (this is what
+   * `reconcileServedDifficulty`'s own comment already documents: "a reconcile
+   * down to 1 does not pin a learner at 1"). A pedagogical adjustment (the
+   * failure branch lowering it, most commonly) IS an opinion about the
+   * learner and must persist until something changes it again — which is
+   * exactly the case the flag being `false` protects.
+   */
+  private lastDifficultyFromContent = false;
   private misconceptionCode: string | null = null;
   private strategyChangesAt: number[] = [];
   /**
@@ -339,6 +383,11 @@ export class PedagogicalController {
       );
     }
     this.lastDifficulty = band(served);
+    // See `lastDifficultyFromContent`'s own comment: this correction is a
+    // content-availability fact, not a pedagogical one, and `decide()`'s
+    // default case needs to know that to climb back toward the plan's own
+    // target rather than holding here indefinitely.
+    this.lastDifficultyFromContent = true;
   }
 
   /** The content-pool bridge for the active KC, when the catalog mapped one. */
@@ -477,7 +526,13 @@ export class PedagogicalController {
           // Only correct answers set the pace. A wrong answer's timing measures
           // confusion, not fluency, and mixing them makes every learner look
           // slow exactly when they are struggling.
-          this.correctLatencies.set(kcId, [...(this.correctLatencies.get(kcId) ?? []), latency]);
+          const priorLatencies = this.correctLatencies.get(kcId) ?? [];
+          // FROZEN once the baseline is established — see
+          // `LATENCY_BASELINE_SIZE`'s own comment for why a still-growing
+          // history can defeat the exact signals it exists to compute.
+          if (priorLatencies.length < LATENCY_BASELINE_SIZE) {
+            this.correctLatencies.set(kcId, [...priorLatencies, latency]);
+          }
         }
       }
       this.pKnown.set(kcId, mirrorBktUpdate(this.pKnown.get(kcId) ?? entry.pKnown, event.correct));
@@ -532,7 +587,40 @@ export class PedagogicalController {
     this.applyStrategy(strategy, nowMs);
 
     const p = this.pKnown.get(entry.kcId) ?? entry.pKnown;
-    let difficulty = band(entry.targetDifficulty);
+    /*
+     * `this.lastDifficulty`, NOT `entry.targetDifficulty` — found by the
+     * pedagogy gym's "steady improver" archetype, 2026-09-01 (see
+     * `pedagogyGym.ts`'s own comment on that archetype for the full
+     * mechanism). Every OTHER line in this function treats `lastDifficulty`
+     * as "this controller's memory of where the learner currently is" (see
+     * that field's own doc comment above) and adjusts RELATIVE to it — this
+     * default was the one place that instead reset to the KC's AUTHORED
+     * target, so a turn that was neither a fresh failure/support-strategy
+     * NOR high-mastery silently undid however far the failure branch had
+     * just lowered difficulty. Two wrong answers correctly held difficulty
+     * down; the very next correct one — still well short of the mastery
+     * bar to justify raising it — visibly jumped it back up, one turn late,
+     * to the identical effect the failure branch's own comment says never
+     * to have: "never raise difficulty after a failure." `this.lastDifficulty`
+     * is already correctly seeded to the KC's target the moment a KC is
+     * entered (both at construction and wherever `lastDifficulty` is reset
+     * on a KC change), so this is a no-op on a genuinely fresh KC and only
+     * changes behavior once an adaptive move has actually happened.
+     *
+     * ONE EXCEPTION, and it needed a second flag rather than reading as a
+     * blanket rule: `reconcileServedDifficulty`'s own comment already
+     * documents, correctly, that a content-ladder substitution ("asked for
+     * band 4, the topic only has band 1-2 content") must NOT pin a learner
+     * at the substituted band forever — that correction is about content
+     * AVAILABILITY, not the learner's ability, and the existing test
+     * "does not pin the learner: the plan's own target still drives the
+     * next turn" exists specifically to protect it. `lastDifficultyFromContent`
+     * (set by that method, cleared below) is what lets this default case
+     * tell the two apart: climb back to the plan's own target when the
+     * last move was a content fact, hold in place when it was a pedagogical
+     * one.
+     */
+    let difficulty = this.lastDifficultyFromContent ? band(entry.targetDifficulty) : this.lastDifficulty;
     if (failedNow || strategy === 'RESCUE' || strategy === 'REMEDIATE' || strategy === 'PROBE') {
       // Never raise difficulty after a failure — only hold or lower.
       difficulty = band(Math.min(difficulty, Math.max(1, this.lastDifficulty - (failedNow ? 1 : 0))));
@@ -540,6 +628,10 @@ export class PedagogicalController {
       difficulty = band(this.lastDifficulty + 1);
     }
     this.lastDifficulty = difficulty;
+    // Whatever this call decided, it is now the authoritative "why" behind
+    // `lastDifficulty` — a content fact from before this turn must not keep
+    // pinning a decision this function has already made fresh.
+    this.lastDifficultyFromContent = false;
 
     return {
       strategy,

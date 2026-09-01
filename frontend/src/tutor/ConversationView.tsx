@@ -701,9 +701,19 @@ export function ConversationView({
             which this chip carries. Same resolution as round 43: the chip
             yields to the caption whenever the caption is docked to ANY
             fixed-offset surface, not only the sheet.
+
+            `var(--lf-content-muted)`, not `var(--lf-muted)` — that token has
+            never existed anywhere in `index.css`. An undefined custom
+            property with no fallback makes `color`/`background-color`
+            invalid, which resolves to whatever the ANCESTOR already painted
+            — sometimes close enough to look right by accident, sometimes
+            the same tone as the 3D backdrop behind it, which is what
+            "invisible lesson-thread chip" actually meant: not hidden, just
+            never actually given the muted-slate color every other `-muted`
+            surface on this route uses on purpose.
           */}
           {socket.lesson !== null && docked === null && (
-            <div className="lf-caption pointer-events-none fixed left-4 top-16 z-20 flex max-w-[60vw] items-center gap-1.5 rounded-full bg-[color:var(--lf-surface)]/70 px-3 py-1 text-[color:var(--lf-muted)] backdrop-blur-sm">
+            <div className="lf-caption pointer-events-none fixed left-4 top-16 z-20 flex max-w-[60vw] items-center gap-1.5 rounded-full bg-[color:var(--lf-surface)]/70 px-3 py-1 text-[color:var(--lf-content-muted)] backdrop-blur-sm">
               <span className="truncate">
                 {socket.lesson.topic !== null ? `${socket.lesson.topic} — ` : ''}
                 {t('tutor.conversation.lessonThread', { step: socket.lesson.step, of: socket.lesson.of })}
@@ -726,10 +736,10 @@ export function ConversationView({
                     className={
                       'h-1.5 w-1.5 rounded-full transition-colors duration-150 ' +
                       (state === 'upcoming'
-                        ? 'bg-[color:var(--lf-muted)]/30'
+                        ? 'bg-[color:var(--lf-content-muted)]/30'
                         : state === 'done'
-                          ? 'bg-[color:var(--lf-muted)]/60'
-                          : 'bg-[color:var(--lf-muted)]')
+                          ? 'bg-[color:var(--lf-content-muted)]/60'
+                          : 'bg-[color:var(--lf-content-muted)]')
                     }
                   />
                 ))}
