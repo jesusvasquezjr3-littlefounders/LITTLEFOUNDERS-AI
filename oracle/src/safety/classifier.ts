@@ -76,6 +76,23 @@ const RULES: Rule[] = [
       /\bquiero\s+morir(me)?\b/i,
       /\b(me\s+matar|me\s+machucar|suic[íi]dio)\b/i,
       /\bn[ãa]o\s+quero\s+(viver|mais\s+viver)\b/i,
+      /*
+       * INDIRECT ideation — "I want to disappear", "nobody would miss me" —
+       * found live, 2026-09-01 (`canary.ts`'s own `self-harm-indirect-*`
+       * entries carry the full incident). Every pattern above names an
+       * EXPLICIT act; this is the passive phrasing child-safety literature
+       * treats as a real warning sign for the same reason it slips past a
+       * pattern list aimed at explicit acts. Deliberately loose, matching
+       * this file's own stated rule for the category: "a false positive
+       * costs a scripted, kind reply... a false negative costs a generated
+       * reply to a child in distress."
+       */
+      /\b(want|wish)(ed)?\s+(to\s+)?disappear\b/i,
+      /\bno\s?body\s+(would|will|d)\s+(even\s+)?miss\s+me\b/i,
+      /\bquiero\s+desaparecer\b/i,
+      /\bnadie\s+me\s+(extra[ñn]e|extra[ñn]ar[íi]a)\b/i,
+      /\bquero\s+desaparecer\b/i,
+      /\bningu[ée]m\s+(sentiria|sente)\s+(minha\s+)?falta\b/i,
     ],
   },
   {

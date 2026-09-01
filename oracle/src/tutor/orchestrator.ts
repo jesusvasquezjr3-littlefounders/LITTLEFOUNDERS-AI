@@ -2417,14 +2417,42 @@ export class TutorOrchestrator {
 
       if (!verdict.allowed) {
         console.warn(`[oracle] blocked tutor turn (${verdict.reason}): ${verdict.detail}`);
+        /*
+         * `self_harm` GETS THE HAND-WRITTEN LINE, NOT THE GENERIC REPAIR —
+         * found live, 2026-09-01, testing as the mandated struggling-learner
+         * persona. A message never explicit enough for `classifyLearnerInput`
+         * (layer 4, INPUT side) to catch reached the model; the model's own
+         * attempted reply engaged with it ("directly asking the child to
+         * elaborate... without appropriate safeguards" — the judge's own
+         * verbatim `detail`) and this OUTPUT judge correctly blocked it —
+         * but the repair below used to be the same "let me say that a
+         * different way, what part would you like explained again" line
+         * every other blocked category gets, unconditionally continuing the
+         * lesson (`next: 'ask'`) as if the child had merely been confusing.
+         * `SAFETY_LINES.self_harm` (`scripted.ts`) already exists for
+         * exactly this situation — validates the disclosure, names a
+         * trusted adult, ends the session (`next: 'close'`) — and is
+         * already used correctly when the INPUT classifier is the one that
+         * catches it (`safetyResponse` above, in the input-classification
+         * branch). `self_harm` is the ONE `HarmCategory` this judge names
+         * that is also a real `SafetyCategory`: the other eight have no
+         * hand-written line and keep today's generic behavior unchanged
+         * below, deliberately — inventing one for "violence" or "hate" on
+         * an unverified guess would be exactly the kind of un-measured
+         * fix AGENTS.md §1.0 warns costs more than no fix at all.
+         */
+        const isSelfHarm = verdict.category === 'self_harm';
+        if (isSelfHarm) this.stopped = true;
         safety = {
-          category: 'model_output_blocked' as SafetyCategory,
+          category: isSelfHarm ? 'self_harm' : ('model_output_blocked' as SafetyCategory),
           severity: verdict.reason === 'moderator_unavailable' ? 'medium' : 'high',
-          handled: 'turn_blocked',
+          handled: isSelfHarm ? 'session_stopped' : 'turn_blocked',
           turnSeq: this.seq,
         };
         moderationRecord = { allowed: false, reason: verdict.reason, detail: verdict.detail };
-        turn = moderationBlockedResponse(this.session.locale);
+        turn = isSelfHarm
+          ? safetyResponse('self_harm', this.session.locale)
+          : moderationBlockedResponse(this.session.locale);
         source = 'scripted';
         // The blocked line's clip: paid for (speak() bills it when it settles)
         // and delivered to nobody. Counted so the gamble stays visible, and
@@ -2472,13 +2500,26 @@ export class TutorOrchestrator {
     // comment for why a second read here would always agree with the first
     // and why an intervening disagreement would itself be the bug).
     const closeReason =
-      turn.next === 'close'
-        ? 'completed'
-        : afterBudget.state === 'ended'
-          ? afterBudget.reason === 'turn_cap'
-            ? 'turn_cap'
-            : 'hard_budget'
-          : null;
+      /*
+       * Checked BEFORE the generic `turn.next === 'close'` case, not after —
+       * the new output-blocked self_harm branch above also sets `next:
+       * 'close'` (via the same `safetyResponse` the input-classification
+       * path already uses), and this generic check alone would have reported
+       * that as `'completed'`: a session a child was told to leave because
+       * of something serious, logged identically to one that simply ran its
+       * course. `safety?.handled === 'session_stopped'` is set ONLY by that
+       * branch and by nothing else in this function, so this is exact, not
+       * a heuristic.
+       */
+      safety?.handled === 'session_stopped'
+        ? 'safety_stop'
+        : turn.next === 'close'
+          ? 'completed'
+          : afterBudget.state === 'ended'
+            ? afterBudget.reason === 'turn_cap'
+              ? 'turn_cap'
+              : 'hard_budget'
+            : null;
 
     return {
       emission: { turn, seq: this.seq, source, audio, moderation: moderationRecord },

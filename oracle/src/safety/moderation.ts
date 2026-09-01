@@ -26,7 +26,7 @@ import { stripInvisible } from './untrusted.js';
 
 export type ModerationVerdict =
   | { allowed: true }
-  | { allowed: false; reason: ModerationReason; detail: string };
+  | { allowed: false; reason: ModerationReason; detail: string; category?: HarmCategory };
 
 export type ModerationReason =
   | 'prompt_leak'
@@ -255,6 +255,19 @@ const HARM_CATEGORIES = [
   'off_platform',
 ] as const;
 
+/**
+ * Exported so a caller can react to WHICH harm the judge named — today, only
+ * `self_harm` has a caller that does (`orchestrator.ts`'s output-blocked
+ * branch, routing to the same hand-written `SAFETY_LINES.self_harm` the
+ * INPUT classifier uses, rather than the generic "let me say that a
+ * different way" line every other blocked category still gets). Deliberately
+ * the judge's own real, closed vocabulary — not `SafetyCategory` from
+ * `classifier.ts`, a DIFFERENT closed set for a different question (what the
+ * LEARNER said, not what the MODEL'S candidate reply contained) that only
+ * happens to share the one literal `self_harm` names in both.
+ */
+export type HarmCategory = (typeof HARM_CATEGORIES)[number];
+
 const JUDGE_SYSTEM = [
   'You are a child-safety reviewer for an educational product used by children',
   'as young as six. You are shown ONE new message a tutor character is about',
@@ -423,7 +436,16 @@ async function modelModeration(input: ModerationInput): Promise<ModerationVerdic
     console.warn(`[oracle] judge refused without a harm category (${rawCategory || 'none'}): ${detail}`);
     return { allowed: true };
   }
-  return { allowed: false, reason: 'unsafe_content', detail: `${category}: ${detail}` };
+  // Cast, not inferred: the `includes` check just above proves membership at
+  // runtime, but narrows the ARRAY's element type, never `category` itself
+  // (it was cast to `string[]` to perform that check against a value built
+  // by string ops, which TypeScript cannot otherwise relate to the tuple).
+  return {
+    allowed: false,
+    reason: 'unsafe_content',
+    detail: `${category}: ${detail}`,
+    category: category as HarmCategory,
+  };
 }
 
 /**

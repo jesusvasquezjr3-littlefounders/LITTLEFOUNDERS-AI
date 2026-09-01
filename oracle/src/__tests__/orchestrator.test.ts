@@ -283,6 +283,47 @@ describe('output moderation', () => {
     expect(outcome?.safety?.category).toBe('model_output_blocked');
   });
 
+  /*
+   * Found live, 2026-09-01, testing as the mandated struggling-learner
+   * persona: a message subtle enough to slip past `classifyLearnerInput`
+   * (layer 4, INPUT side — a deterministic pass that cannot enumerate every
+   * phrasing of distress, by its own file header's own admission) reached
+   * the model, whose attempted reply engaged with it and got correctly
+   * blocked here — but the repair used to be the SAME generic "let me say
+   * that differently" line every other blocked category gets, continuing
+   * the lesson as if the child had merely been confusing. `self_harm` is
+   * the one `HarmCategory` this judge names that also has a hand-written,
+   * safety-first `SAFETY_LINES` entry (already used correctly when the
+   * INPUT classifier is the one that catches it) — this proves the OUTPUT
+   * path now reaches it too, ends the session, and reports the real reason.
+   */
+  it('routes a self-harm-flagged OUTPUT (not just input) to the hand-written line, and ends the session', async () => {
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(false, 'self_harm'));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('a veces quiero desaparecer', Date.now()))!;
+
+    expect(outcome.emission.source).toBe('scripted');
+    expect(outcome.emission.turn.say).toContain('Por favor dile ahora mismo a una persona adulta');
+    expect(outcome.emission.turn.next).toBe('close');
+    expect(outcome.safety?.category).toBe('self_harm');
+    expect(outcome.safety?.handled).toBe('session_stopped');
+    expect(outcome.closeReason).toBe('safety_stop');
+  });
+
+  it('keeps the generic repair, unblocked to `ask`, for every other judge-named category', async () => {
+    fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(false, 'violence'));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('cuéntame algo', Date.now()))!;
+
+    expect(outcome.emission.turn.say).not.toContain('una persona adulta');
+    expect(outcome.emission.turn.next).toBe('ask');
+    expect(outcome.safety?.category).toBe('model_output_blocked');
+    expect(outcome.safety?.handled).toBe('turn_blocked');
+    expect(outcome.closeReason).toBeNull();
+  });
+
   it('discards the speculative clip of a blocked turn — billed, counted, never delivered', async () => {
     fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(false));
 
