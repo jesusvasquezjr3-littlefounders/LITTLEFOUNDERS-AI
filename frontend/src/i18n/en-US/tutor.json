@@ -326,6 +326,13 @@
       "safety_stop": "The tutor stopped the conversation for a safety reason",
       "error": "Ended early because of a technical problem, not something your child did"
     },
+    "narrative": {
+      "practicedOne": "Practiced {{topic}} with the tutor.",
+      "practicedTwo": "Practiced {{topic1}} and {{topic2}} with the tutor.",
+      "struggledResolved": "Found {{topic}} tricky at first, but worked through it with the tutor’s help.",
+      "struggledOngoing": "Is still working on {{topic}} — more practice is coming.",
+      "score": "Answered {{correct}} of {{total}} activities correctly."
+    },
     "retentionNote": "Conversations are kept for 90 days and then deleted automatically.",
     "loadMore": "Load older conversations",
     "loadingMore": "Loading…",

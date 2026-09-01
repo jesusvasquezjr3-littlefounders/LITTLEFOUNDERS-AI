@@ -233,6 +233,26 @@ export interface SessionSummary {
   xpAwarded: number;
 }
 
+/**
+ * The guardian "what is happening" narrative (/ORACLE.md §12, 2026-09-01) —
+ * structured data, not a pre-composed sentence: the CALLER picks the i18n
+ * template and grammar for its own locale (/AGENTS.md §1.8 — no user-facing
+ * string is ever backend-composed), the same convention `intent` and
+ * `closeReason` above already follow. Guardian-view only; the child's own
+ * `SessionSummary` reads (`listSessions`) never carry this field.
+ */
+export interface SessionNarrative {
+  /** Localized topic names practiced this session, in the order first attempted (0-2 entries). */
+  topics: string[];
+  /** A topic that was missed at least once. Null when nothing was ever missed. */
+  struggledTopic: string | null;
+  /** Whether the last attempt at `struggledTopic` this session was correct. Meaningless when `struggledTopic` is null. */
+  struggleResolved: boolean;
+  /** Null only while the session has not closed yet. */
+  gradedCorrect: number | null;
+  gradedTotal: number | null;
+}
+
 export interface TranscriptTurn {
   id: string;
   seq: number;

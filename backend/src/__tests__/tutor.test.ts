@@ -77,6 +77,8 @@ interface StubOpts {
   lessonDocuments?: unknown[];
   kcs?: unknown[];
   kcEdges?: unknown[];
+  /** `kc_attempt` rows for the guardian narrative (/ORACLE.md §12, 2026-09-01) — unfiltered, like `kcs` above. */
+  kcAttempts?: unknown[];
   /** The human-published bank (tier 2). Absent by default, matching the catalog's own "no content" default. */
   packs?: unknown[];
   roles?: { role: string }[];
@@ -194,6 +196,7 @@ function stub(opts: StubOpts = {}) {
         );
       }
       if (url.includes('/rest/v1/kc_edge')) return Promise.resolve(jsonResponse(200, opts.kcEdges ?? []));
+      if (url.includes('/rest/v1/kc_attempt')) return Promise.resolve(jsonResponse(200, opts.kcAttempts ?? []));
       if (url.includes('/rest/v1/kc?')) return Promise.resolve(jsonResponse(200, opts.kcs ?? []));
       if (url.includes('/rest/v1/tutor_packs')) {
         const want = /skill_key=eq\.([^&]+)/.exec(url)?.[1];
@@ -2335,6 +2338,126 @@ describe('guardian visibility', () => {
     expect(response.status).toBe(200);
     expect(response.body.data).toHaveProperty('sessions');
     expect(response.body.data).toHaveProperty('safetyFlags');
+  });
+
+  /*
+   * The "what is happening" narrative (/ORACLE.md §12, 2026-09-01), closing
+   * the §19.5 v3-tail item of the same name. Entirely deterministic — see
+   * `sessionNarrative.ts` for the pure logic these tests exercise through
+   * the real route and its real data joins (kc_attempt -> kc.title).
+   */
+  describe('the "what is happening" narrative', () => {
+    const KC_MAKING_CHANGE = {
+      id: 'aaaaaaaa-0000-4000-8000-000000000001',
+      title: { 'en-US': 'Making Change', 'es-MX': 'Dar cambio', 'pt-BR': 'Dar troco' },
+    };
+
+    it('names the topic and reports a resolved struggle from real kc_attempt evidence', async () => {
+      stub({
+        guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }],
+        sessions: [{ ...SESSION_ROW, ended_at: '2026-08-30T10:20:00Z', close_reason: 'completed' }],
+        kcs: [KC_MAKING_CHANGE],
+        kcAttempts: [
+          // Out of chronological order on purpose — the route must not trust array order.
+          { session_id: SESSION, kc_id: KC_MAKING_CHANGE.id, correct: true, created_at: '2026-08-30T10:10:00Z' },
+          { session_id: SESSION, kc_id: KC_MAKING_CHANGE.id, correct: false, created_at: '2026-08-30T10:05:00Z' },
+        ],
+      });
+      const response = await request(createApp())
+        .get(`/api/v1/tutor/kids/${KID}/sessions`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+      expect(response.status).toBe(200);
+      const [session] = response.body.data.sessions;
+      // Default profile fixture (KID_PROFILE) is es-MX, so the guardian's
+      // own resolved locale here is es-MX too — see the dedicated locale
+      // test below for the case where the two differ.
+      expect(session.narrative).toEqual({
+        topics: ['Dar cambio'],
+        struggledTopic: 'Dar cambio',
+        struggleResolved: true,
+        gradedCorrect: null,
+        gradedTotal: null,
+      });
+    });
+
+    it('falls back to the session digest topic when no kc_attempt evidence exists for this session', async () => {
+      stub({
+        guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }],
+        sessions: [
+          {
+            ...SESSION_ROW,
+            ended_at: '2026-08-30T10:20:00Z',
+            close_reason: 'completed',
+            summary: {
+              topic: 'Cobrar y dar cambio',
+              courseId: null,
+              topicId: null,
+              skillKeys: [],
+              outcome: 'completed',
+              gradedCorrect: 4,
+              gradedTotal: 5,
+            },
+          },
+        ],
+      });
+      const response = await request(createApp())
+        .get(`/api/v1/tutor/kids/${KID}/sessions`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+      expect(response.status).toBe(200);
+      const [session] = response.body.data.sessions;
+      expect(session.narrative).toEqual({
+        topics: ['Cobrar y dar cambio'],
+        struggledTopic: null,
+        struggleResolved: false,
+        gradedCorrect: 4,
+        gradedTotal: 5,
+      });
+    });
+
+    it('reports narrative: null when there is genuinely nothing to say — an ongoing session with no evidence yet', async () => {
+      stub({
+        guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }],
+        sessions: [{ ...SESSION_ROW, ended_at: null }],
+      });
+      const response = await request(createApp())
+        .get(`/api/v1/tutor/kids/${KID}/sessions`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+      expect(response.status).toBe(200);
+      const [session] = response.body.data.sessions;
+      expect(session.narrative).toBeNull();
+    });
+
+    it("resolves the topic title in the GUARDIAN's own profile locale, not the child's session locale", async () => {
+      stub({
+        guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }],
+        sessions: [{ ...SESSION_ROW, locale: 'es-MX', ended_at: '2026-08-30T10:20:00Z', close_reason: 'completed' }],
+        kcs: [KC_MAKING_CHANGE],
+        kcAttempts: [
+          { session_id: SESSION, kc_id: KC_MAKING_CHANGE.id, correct: true, created_at: '2026-08-30T10:05:00Z' },
+        ],
+        // The GUARDIAN's own profile — English — deliberately distinct from
+        // the CHILD's own session locale (es-MX) set above.
+        profile: { ...KID_PROFILE, locale: 'en-US' },
+      });
+      const response = await request(createApp())
+        .get(`/api/v1/tutor/kids/${KID}/sessions`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+      expect(response.status).toBe(200);
+      const [session] = response.body.data.sessions;
+      expect(session.narrative.topics).toEqual(['Making Change']);
+    });
+
+    it('still refuses a stranger before any narrative data is ever read', async () => {
+      stub({ guardianLinks: [], sessions: [SESSION_ROW], kcs: [KC_MAKING_CHANGE] });
+      const response = await request(createApp())
+        .get(`/api/v1/tutor/kids/${KID}/sessions`)
+        .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+      expect(response.status).toBe(403);
+    });
   });
 
   /*

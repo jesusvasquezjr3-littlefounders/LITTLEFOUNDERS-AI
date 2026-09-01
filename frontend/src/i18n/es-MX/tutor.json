@@ -326,6 +326,13 @@
       "safety_stop": "El tutor detuvo la conversación por un motivo de seguridad",
       "error": "Terminó antes de tiempo por un problema técnico, no por algo que tu hijo o hija hizo"
     },
+    "narrative": {
+      "practicedOne": "Practicó {{topic}} con el tutor.",
+      "practicedTwo": "Practicó {{topic1}} y {{topic2}} con el tutor.",
+      "struggledResolved": "Al principio se le dificultó {{topic}}, pero lo resolvió con la ayuda del tutor.",
+      "struggledOngoing": "Todavía está practicando {{topic}} — pronto vendrá más práctica.",
+      "score": "Respondió bien {{correct}} de {{total}} actividades."
+    },
     "retentionNote": "Las conversaciones se guardan 90 días y después se borran solas.",
     "loadMore": "Ver conversaciones más antiguas",
     "loadingMore": "Cargando…",

@@ -215,3 +215,41 @@ export async function insertKcAttempt(row: KcAttemptInsert): Promise<boolean> {
   });
   return res !== null;
 }
+
+export interface KcAttemptForSessions {
+  session_id: string | null;
+  kc_id: string;
+  correct: boolean;
+  created_at: string;
+}
+
+/**
+ * This page's own evidence rows, for the guardian "what is happening"
+ * narrative (/ORACLE.md §12, 2026-09-01). Bounded to the session ids the
+ * caller is already displaying — never a learner-wide scan — and capped
+ * defensively like every other list read in this file. `session_id` is
+ * nullable on the wire (the column is `ON DELETE SET NULL`, migration
+ * `0052`) even though every row THIS query can match necessarily has one,
+ * by construction of the `in.(...)` filter — kept honest rather than
+ * asserted away.
+ */
+export function getKcAttemptsForSessions(sessionIds: string[]): Promise<KcAttemptForSessions[] | null> {
+  if (sessionIds.length === 0) return Promise.resolve([]);
+  return serviceRest<KcAttemptForSessions[]>(
+    `/kc_attempt?session_id=in.(${sessionIds.map(eu).join(',')})` +
+      '&select=session_id,kc_id,correct,created_at&limit=1000',
+  );
+}
+
+/**
+ * Titles only, by id, for a small set already named by other evidence (the
+ * narrative above). Deliberately NOT status-filtered: a retired KC is a
+ * real, previously-taught skill, not injected text — the same reasoning
+ * `getKcBySkillKey` already established above (round 47).
+ */
+export function getKcTitlesByIds(kcIds: string[]): Promise<Array<{ id: string; title: Localized }> | null> {
+  if (kcIds.length === 0) return Promise.resolve([]);
+  return serviceRest<Array<{ id: string; title: Localized }>>(
+    `/kc?id=in.(${kcIds.map(eu).join(',')})&select=id,title&limit=1000`,
+  );
+}

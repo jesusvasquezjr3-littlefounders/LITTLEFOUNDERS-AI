@@ -1632,6 +1632,36 @@ from `tutor-speech` only, and that is asserted by a test rather than trusted.
   session always reporting "0 messages" (`tutor_sessions.turn_count` is
   only written at close, and the page had no "still talking" branch) —
   fixed with an explicit ongoing state keyed on `endedAt === null`.
+- **The "what is happening" narrative, added 2026-09-01** — closes the §19.5
+  v3-tail item of the same name. `GET /kids/:kidUserId/sessions` now carries
+  a `narrative` object per session — topics practiced, a struggle that was
+  worked through (or is still ongoing), the graded fraction — a human gist
+  in place of the transcript a parent otherwise has to open and read end to
+  end just to learn that much. It sits ON TOP of the full transcript, never
+  in place of it; "Read it" is unchanged.
+  Entirely deterministic (`backend/src/services/pedagogy/sessionNarrative.ts`
+  — Core, not Oracle; nothing here touches the live voice path) — built from
+  data Core already held: `kc_attempt`'s per-attempt evidence
+  (migration `0052`, joined to `kc.title`) for a session the v3 brain
+  reached, falling back to the session's own memory digest (migration
+  `0051`, `tutor_sessions.summary`) for one it never touched. No model
+  call — the structured evidence already says something true without
+  inventing prose, which also means no new cost, no new latency, and no new
+  field reaching a model (§4.1 untouched). This is a DIFFERENT privacy
+  surface than §4.1's, deliberately: a report ABOUT a closed session, read
+  only by an already-verified guardian, assembled from rows that guardian
+  could already read one at a time under their own existing RLS grants
+  (`kc_attempt_select_own`, this route's own `sessions`/`safetyFlags`) — not
+  a new fact collected, and nothing that reaches a live child session.
+  Topic titles are resolved in the GUARDIAN's own profile locale (the same
+  "caller's own row" pattern the rest of this route already uses), not the
+  child's session locale — a bilingual family should not read a topic name
+  in a language they did not choose. Known limitation: the digest fallback
+  (a session the brain never touched) still surfaces its topic string in the
+  CHILD's session locale, because that string was baked in at close time
+  (migration `0051`) rather than kept as a re-localizable id; left as a
+  documented gap rather than a second re-localization round-trip for a
+  fallback path, not the common case once the brain is seeded.
 - **Retention 90 days**, then automatic deletion, enforced by a scheduled job
   with its own test. A retention policy nobody runs is not a retention policy.
 - RLS from the first migration. Kid rows readable by verified guardians only.
@@ -2405,9 +2435,11 @@ screen-state machine and step dots; the input-bar consolidation; the
 cap, which is the stronger control); word-level caption highlighting (needs
 provider timestamps); full-duplex VAD/barge-in (a voice-provider project);
 per-KC content pools (`kc.skill_key` authoring pass); per-learner BKT
-parameters; replaying `demonstrate` animations; the parent-portal "what is
-happening" narrative; the teacher console. Each is an increment on the organs
-above, none is a rearchitecture.
+parameters; replaying `demonstrate` animations; the teacher console. Each is
+an increment on the organs above, none is a rearchitecture.
+
+**The parent-portal "what is happening" narrative shipped 2026-09-01** —
+moved out of this list into §12, where the rest of parent visibility lives.
 
 ## 20. V4 — the bicameral tutor (harness architecture)
 
