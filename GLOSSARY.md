@@ -179,3 +179,9 @@ The Tutor's slow chamber: asynchronous jobs (post-session review, memory writing
 
 ### Grace turn (V4)
 The single model turn an ended session budget grants when the tutor's own last turn left a question or activity open, so a session never ends mid-question. See /ORACLE.md §20.3.
+
+### Memory-write revision guard (V4)
+A free, deterministic check the Preceptor runs on itself: before a proposed memory-note replacement is written, it compares the old content against the new for a wholesale, unexplained drop in prior observations — logging a warning (never the note text) rather than blocking the write. The scoped, buildable piece of the "Honcho-style dialectic memory" backlog item. See /ORACLE.md §20.4.
+
+### Skill/KC curator (V4)
+The propose-only tool (`npm run curate:tutor-skills`) that cross-references the misconception catalog, real attempt evidence, and `oracle/skills/moves/*.md` to surface authoring gaps and dead references — never writes to the KC graph or the skill catalogue. The "skill distiller/curator loop" backlog item. See /ORACLE.md §20.6.
