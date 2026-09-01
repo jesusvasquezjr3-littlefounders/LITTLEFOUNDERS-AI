@@ -190,6 +190,58 @@ describe('POST /api/v1/placement/:courseSlug/intake — a flagged utterance is l
   });
 
   /*
+   * Migration 0065 (/ORACLE.md §4.1b), closing the gap the section named
+   * explicitly: "whether a flagged placement-intake utterance belongs in a
+   * guardian-visible record ... is a separate schema decision ... A loud log
+   * is the floor this fix guarantees, not the ceiling." Before this, a
+   * flagged utterance here left NOTHING a guardian could ever query — only
+   * the console.error the test above already covers. This proves the
+   * SECOND half: a real, RLS-protected row a verified guardian can read.
+   */
+  it('also persists a guardian-visible placement safety flag when the utterance is flagged', async () => {
+    stubFetchWithOracle({
+      available: true,
+      priorFraction: 0.3,
+      reflection: 'Perfecto, empecemos.',
+      source: 'fallback',
+      flagged: { category: 'self_harm', severity: 'high' },
+    });
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    const res = await auth(request(createApp()).post(`/api/v1/placement/${COURSE_SLUG}/intake`)).send({
+      learnerText: 'no se nada de esto, la verdad ya no quiero vivir',
+      neutralReflection: 'Perfecto, empecemos.',
+    });
+
+    expect(res.status).toBe(200);
+    expect(db.tutor_placement_safety_flags).toEqual([
+      expect.objectContaining({
+        user_id: USER_ID,
+        course_id: COURSE_ID,
+        category: 'self_harm',
+        severity: 'high',
+      }),
+    ]);
+  });
+
+  it('writes no placement safety flag for an ordinary, unflagged intake', async () => {
+    stubFetchWithOracle({
+      available: true,
+      priorFraction: 0.6,
+      reflection: 'Ya sabes bastante.',
+      source: 'model',
+      flagged: null,
+    });
+
+    await auth(request(createApp()).post(`/api/v1/placement/${COURSE_SLUG}/intake`)).send({
+      learnerText: 'ya llevo un presupuesto y ahorro cada mes',
+      neutralReflection: 'Perfecto, empecemos.',
+    });
+
+    expect(db.tutor_placement_safety_flags ?? []).toEqual([]);
+  });
+
+  /*
    * Found by adversarial review, round 40 (2026-08-30, HIGH): `IntakeBody`
    * used to accept a `birthDate` field that took priority over the profile's
    * own verified birth date — `parsed.data.birthDate ?? profiles[0]?.birth_date`.

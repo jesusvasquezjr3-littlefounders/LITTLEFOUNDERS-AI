@@ -38,6 +38,7 @@ import {
   echoesEarlierTurn,
   repeatsEarlierSentence,
   promisesAnActivity,
+  asksMultipleQuestions,
   tierVocabularyViolation,
   languageViolation,
   TUTOR_SYSTEM_PROMPT,
@@ -1661,6 +1662,17 @@ export class TutorOrchestrator {
      * attempts. That is not a degraded-but-real sentence a child can still
      * use, the same reasoning a wrong-language turn already got above: zero
      * value, not merely imperfect value. It belongs in this bucket too.
+     *
+     * AN OFFER STACKED WITH A SECOND QUESTION JOINS THE SAME BUCKET
+     * (2026-09-01) — the deterministic check /ORACLE.md §11 named as missing
+     * when this bucket was last written: "not yet backed by a deterministic
+     * check ... this one is prompt-only". Reasoning is the wrong-language/
+     * unkept-promise shape, not the vocabulary/number one: the frontend
+     * hides the typing box while `offerAdaptation` is open, so a second
+     * question surviving the retry is not delivered TO someone who merely
+     * gets a slightly worse turn — it is delivered to someone with no
+     * control left that could ever answer it. Zero value, not merely
+     * imperfect value, same as the two entries directly above it.
      */
     let repairableIsFalseVerdict = false;
     try {
@@ -1829,6 +1841,28 @@ export class TutorOrchestrator {
             const brokenPromise =
               parsed.turn.next !== 'segment' && promisesAnActivity(parsed.turn.say);
             /*
+             * THE OFFER MUST STAND ALONE IN ITS TURN (/ORACLE.md §11, found
+             * live 2026-08-29) — CHECKED rather than merely told, closing the
+             * gap that section named explicitly at the time: "not yet backed
+             * by a deterministic check ... this one is prompt-only until
+             * tutor:converse or a live session shows it surviving anyway." A
+             * real browser session set `offerAdaptation` and ALSO asked a
+             * brand-new arithmetic question in the same `say` ("¿te ayudaría
+             * otro ejemplo? Si tienes 9 monedas y das 4, ¿cuántas te
+             * quedan?"); the frontend deliberately hides the typing box while
+             * an offer is open, so a text-only learner (§12: typing is the
+             * ONLY channel with no voice provider configured) had no control
+             * that could ever answer the second half — only "sí"/"no" to the
+             * offer itself.
+             *
+             * Gated on `offerAdaptation` rather than made a general "at most
+             * one question per turn" rule — see `asksMultipleQuestions`'s own
+             * doc comment (prompt.ts) for the real teaching-prose fixture
+             * that broader rule would misfire on.
+             */
+            const offerStackedQuestion =
+              parsed.turn.offerAdaptation != null && asksMultipleQuestions(parsed.turn.say);
+            /*
              * The learner's own words for this turn — the raw text, not the
              * fenced block, because the fence wraps it in four lines of
              * instruction that would swamp a number comparison. A
@@ -1985,6 +2019,15 @@ export class TutorOrchestrator {
                * empty completion, the same failure mode round 55 hit),
                * `repairable` — the broken-promise turn itself — must not
                * be the thing delivered.
+               *
+               * `offerStackedQuestion` (2026-09-01) joins for the SAME
+               * reason as `brokenPromise`: a second question stacked onto an
+               * open adaptation offer has no control left that could ever
+               * answer it (the frontend hides the typing box while the offer
+               * is open), so attempt 0's own capture must not let it through
+               * either, the same "transport-failed retry must not deliver
+               * attempt 0's violation verbatim" guarantee every sibling in
+               * this bucket already gets.
                */
               repairableIsFalseVerdict =
                 falsePraise ||
@@ -1992,7 +2035,8 @@ export class TutorOrchestrator {
                 violation !== null ||
                 langDrift !== null ||
                 numberMismatch ||
-                brokenPromise;
+                brokenPromise ||
+                offerStackedQuestion;
             }
 
             if (violation !== null && attempt === 0) {
@@ -2048,6 +2092,10 @@ export class TutorOrchestrator {
               turnCorrection =
                 'told the learner an activity was coming but did not request one. Either set "next":"segment" with a segmentRequest, or say something that does not promise anything on screen';
               console.warn('[oracle] turn promised an activity without requesting one — asking again');
+            } else if (offerStackedQuestion && attempt === 0) {
+              turnCorrection =
+                'set "offerAdaptation" and then ALSO asked a new question in the same "say". When offerAdaptation is set, "say" must be ONLY the offer itself — the screen hides the typing box while an offer is open, so any question beyond the offer has no way to be answered. Say the offer alone this time, and wait for their accept or decline before asking anything else';
+              console.warn('[oracle] adaptation offer stacked a second question in the same turn — asking again');
             } else {
               if (missedWhiteboard) {
                 console.warn('[oracle] growth story with no whiteboard SURVIVED the retry — delivered as text only');
@@ -2070,14 +2118,16 @@ export class TutorOrchestrator {
                 violation !== null ||
                 langDrift !== null ||
                 numberMismatch ||
-                brokenPromise
+                brokenPromise ||
+                offerStackedQuestion
               ) {
                 // See `repairableIsFalseVerdict`'s doc comment: false praise,
                 // a false correction, forbidden vocabulary, a wrong-language
-                // turn, a board that contradicts its own narration, and an
-                // activity promised but never requested are each content the
-                // child must never actually receive, not a merely-imperfect
-                // turn, so none of them gets delivered.
+                // turn, a board that contradicts its own narration, an
+                // activity promised but never requested, and a second
+                // question stacked onto an open adaptation offer are each
+                // content the child must never actually receive, not a
+                // merely-imperfect turn, so none of them gets delivered.
                 if (falsePraise) {
                   console.warn('[oracle] praise of a wrong answer SURVIVED the retry — scripted line instead');
                 }
@@ -2103,6 +2153,11 @@ export class TutorOrchestrator {
                 }
                 if (brokenPromise) {
                   console.warn('[oracle] unkept activity promise SURVIVED the retry — scripted line instead');
+                }
+                if (offerStackedQuestion) {
+                  console.warn(
+                    '[oracle] adaptation offer stacked with a second question SURVIVED the retry — scripted line instead',
+                  );
                 }
                 repairableIsFalseVerdict = true;
               } else {

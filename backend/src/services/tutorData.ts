@@ -1272,5 +1272,54 @@ export async function listSafetyFlags(userId: string, limit = 50): Promise<Safet
   );
 }
 
+// ── Placement safety flags (0065) ────────────────────────────────────────────
+//
+// The SECOND, separate flags table /ORACLE.md §4.1b's own "not yet done" note
+// asked for: a flagged placement-intake utterance used to be a console.error
+// and nothing else, because placement runs before any `tutor_sessions` row
+// exists for `tutor_safety_flags.session_id` to name. Written from
+// `routes/placement.ts`'s intake handler (the one place in that whole path
+// with a real `user.id`/`course.id`), read from this file's own
+// `listSafetyFlags`-shaped sibling below so the guardian-visibility route in
+// `routes/tutor.ts` can surface both provenances without either learning the
+// other's shape.
+
+export async function insertPlacementSafetyFlag(input: {
+  userId: string;
+  courseId: string | null;
+  category: string;
+  severity: string;
+}): Promise<boolean> {
+  const res = await serviceRest<unknown>('/tutor_placement_safety_flags', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({
+      user_id: input.userId,
+      course_id: input.courseId,
+      category: input.category,
+      severity: input.severity,
+    }),
+  });
+  return res !== null;
+}
+
+export interface PlacementSafetyFlagRow {
+  id: string;
+  user_id: string;
+  course_id: string | null;
+  category: string;
+  severity: string;
+  created_at: string;
+}
+
+export async function listPlacementSafetyFlags(
+  userId: string,
+  limit = 50,
+): Promise<PlacementSafetyFlagRow[] | null> {
+  return serviceRest<PlacementSafetyFlagRow[]>(
+    `/tutor_placement_safety_flags?user_id=eq.${eu(userId)}&select=*&order=created_at.desc&limit=${Math.min(limit, 200)}`,
+  );
+}
+
 // ── Daily budget (/ORACLE.md §15) ───────────────────────────────────────────
 

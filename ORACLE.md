@@ -591,6 +591,36 @@ the way a live-session safety flag does is a separate schema decision —
 session to attach one to. A loud log is the floor this fix guarantees, not
 the ceiling.
 
+**That schema decision is made, 2026-09-01: a SECOND, separate flags
+table, not a nullable `tutor_safety_flags.session_id`.** Migration
+`0065_tutor_placement_safety_flags.sql` adds
+`public.tutor_placement_safety_flags` — `user_id`, `course_id` (context,
+`ON DELETE SET NULL`, never ownership), `category`/`severity` copied
+verbatim from `classifyLearnerInput`'s enum, `created_at`, and the
+identical `tutor_safety_flags_select_own`-shaped RLS policy
+(`user_id = auth.uid() OR is_verified_guardian_of(user_id)`). A separate
+table rather than widening the existing one because the two provenances
+are not the same shape with one optional field: placement has no
+`turn_seq` (no transcript to point a "read it in context" control into)
+and no meaningful `handled` value (`runPlacementIntake` takes exactly ONE
+path on a flag — the neutral fallback — never `turn_blocked`/
+`session_stopped`, which describe an in-session repair mechanism placement
+does not have). Written from `backend/src/routes/placement.ts`'s intake
+handler — the same place the loud log above already fires, now also
+calling `insertPlacementSafetyFlag` with `course.id` as context — and read
+back through the SAME guardian-visibility route the live-session flags
+already use, `GET /api/v1/tutor/kids/:kidUserId/sessions`, as a new
+`placementSafetyFlags` field alongside (never merged into) `safetyFlags`.
+**Not yet done, stated so rather than silently claimed complete:** the
+`/family/:kidId/tutor` page (§12: "safety flags surfaced FIRST... sorted
+severity-first") does not yet render this new array — it is real,
+RLS-protected, guardian-queryable data today, reachable by direct query or
+through the API, but the dedicated frontend treatment §12 already gives
+session-based flags (severity sort, a translated chip, "surfaced FIRST")
+has not been extended to this second provenance. The floor moved from "a
+log line" to "a guardian-queryable record reachable through the same API
+the live-session flags use"; the frontend card is the next floor to raise.
+
 ### §4.2 To the voice provider (Inworld)
 
 - **Inbound:** the learner's audio, for transcription. It transits, is never
@@ -1491,6 +1521,28 @@ backed by a deterministic check — a reliable "two questions in one turn"
 detector is the harder problem the whiteboard/robot-identity fixes did not
 have, so this one is prompt-only until `tutor:converse` or a live session
 shows it surviving anyway.
+
+**Now backed by a deterministic check, 2026-09-01 — scoped, not general.**
+`asksMultipleQuestions` (`oracle/src/tutor/prompt.ts`) counts sentences in
+`say` ending in "?"; two or more is a stacked question. It is deliberately
+NOT wired to fire on every turn: `questionAsked` (arithmetic.ts) already
+assumes the opposite for ordinary teaching prose, where a corrective
+walk-through with a rhetorical sub-question before the real one is normal
+and good — a real fixture elsewhere in this codebase for genuine tutor
+prose carries two "?"s doing exactly that, and a blanket rule would have
+retried it for nothing. `orchestrator.ts` gates the check on
+`offerAdaptation` being set — the one turn shape where a second question
+truly has no answerer, because the frontend hides the typing box while the
+offer is open. `offerStackedQuestion` joins `repairableIsFalseVerdict`, the
+SAME repair-loop bucket false praise, a false correction, forbidden
+vocabulary, language drift, a self-contradicting number and an unkept
+promise already occupy, at both the sites that bucket requires (attempt 0's
+own capture, and the retry's result): a first offence earns one corrective
+retry, and a turn that still stacks a second question after the retry falls
+back to the scripted line rather than being delivered. Proven in
+`oracle/src/__tests__/orchestrator.test.ts` against the real turn pair this
+section already quotes, plus the scoping boundary itself — the rhetorical-
+question fixture above, run with no offer open, is left alone.
 
 **"Never imposed" also means never accepted without an offer — found by
 adversarial review, 2026-08-30 (MEDIUM).** `applyAdaptation` (the WS

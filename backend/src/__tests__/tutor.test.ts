@@ -96,6 +96,8 @@ interface StubOpts {
    *  exhausted falls back to `segments`. */
   segmentsSequence?: unknown[][];
   guardianLinks?: unknown[];
+  /** Migration 0065 — a flag raised during placement, before any session existed. */
+  placementSafetyFlags?: unknown[];
   preferences?: unknown[];
   preflight?: unknown;
   insertedSession?: unknown[];
@@ -354,6 +356,12 @@ function stub(opts: StubOpts = {}) {
       }
       if (url.includes('/rest/v1/tutor_turns')) return Promise.resolve(jsonResponse(200, []));
       if (url.includes('/rest/v1/tutor_safety_flags')) return Promise.resolve(jsonResponse(200, []));
+      // Migration 0065 (/ORACLE.md §4.1b) — a SECOND, separate flags table,
+      // for a flag raised during placement before any `tutor_sessions` row
+      // existed for the branch above to name.
+      if (url.includes('/rest/v1/tutor_placement_safety_flags')) {
+        return Promise.resolve(jsonResponse(200, opts.placementSafetyFlags ?? []));
+      }
       if (url.includes('/rest/v1/guardian_links')) {
         return Promise.resolve(jsonResponse(200, opts.guardianLinks ?? []));
       }
@@ -2335,6 +2343,45 @@ describe('guardian visibility', () => {
     expect(response.status).toBe(200);
     expect(response.body.data).toHaveProperty('sessions');
     expect(response.body.data).toHaveProperty('safetyFlags');
+  });
+
+  /*
+   * Migration 0065 (/ORACLE.md §4.1b): a flag raised while a learner was
+   * CHOOSING a course, not one raised in a live session — its own field,
+   * never merged into `safetyFlags`, because the two row shapes genuinely
+   * differ (no `session_id`/`turn_seq` here). Before this migration a
+   * guardian had no way to see this at all, in this response or any other —
+   * it was a `console.error` and nothing else.
+   */
+  it('also gives a verified guardian the placement-intake safety flags, as their own field', async () => {
+    const placementFlag = {
+      id: 'p1111111-1111-4111-8111-111111111111',
+      user_id: KID,
+      course_id: 'c0000000-0000-4000-8000-000000000001',
+      category: 'self_harm',
+      severity: 'high',
+      created_at: '2026-08-30T00:00:00Z',
+    };
+    stub({
+      guardianLinks: [{ parent_user_id: PARENT, kid_user_id: KID, verification_status: 'verified' }],
+      placementSafetyFlags: [placementFlag],
+    });
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/kids/${KID}/sessions`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.placementSafetyFlags).toEqual([placementFlag]);
+    // Distinct from safetyFlags — never merged, never dropped into the wrong bucket.
+    expect(response.body.data.safetyFlags).toEqual([]);
+  });
+
+  it('refuses a stranger just as it does for the session/safety-flag read — placement flags do not open a side door', async () => {
+    stub({ guardianLinks: [], placementSafetyFlags: [{ id: 'x', user_id: KID, course_id: null, category: 'self_harm', severity: 'high', created_at: '2026-08-30T00:00:00Z' }] });
+    const response = await request(createApp())
+      .get(`/api/v1/tutor/kids/${KID}/sessions`)
+      .set('Authorization', `Bearer ${mintToken({ sub: PARENT })}`);
+    expect(response.status).toBe(403);
   });
 
   /*

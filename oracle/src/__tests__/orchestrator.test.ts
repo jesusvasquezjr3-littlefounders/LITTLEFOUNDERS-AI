@@ -1966,6 +1966,166 @@ describe('adaptation', () => {
   });
 });
 
+/*
+ * /ORACLE.md §11 — "the offer must stand ALONE in its turn." Found live,
+ * 2026-08-29: a real browser session set `offerAdaptation` and ALSO asked a
+ * brand-new arithmetic question in the same `say` ("¿te ayudaría otro
+ * ejemplo? ... si tienes 9 monedas y das 4, ¿cuántas te quedan?"); the
+ * frontend hides the typing box while an offer is open, so a text-only
+ * learner had no control that could ever answer the second half. Fixed by
+ * prompt instruction alone at the time, with §11 naming the exact gap this
+ * closes: "not yet backed by a deterministic check ... a reliable 'two
+ * questions in one turn' detector is the harder problem". These tests prove
+ * `asksMultipleQuestions` (prompt.ts), gated on `offerAdaptation`, joins the
+ * SAME repair-loop bucket `brokenPromise` joined in round 122 — both sites,
+ * the same shape.
+ */
+describe('the offer must stand alone in its turn (§11)', () => {
+  const STACKED = '¿Te ayudaría ver otro ejemplo? Si tienes 9 monedas y das 4, ¿cuántas te quedan?';
+
+  it('asks again when an adaptation offer stacks a second, brand-new question in the same turn', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({ ...GOOD_TURN, say: STACKED, next: 'ask', offerAdaptation: 'more_examples' }),
+      )
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          say: '¿Te ayudaría ver otro ejemplo?',
+          next: 'ask',
+          offerAdaptation: 'more_examples',
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('esto es difícil', Date.now()))!;
+
+    expect(outcome.emission.turn.say).toBe('¿Te ayudaría ver otro ejemplo?');
+    const retry = String(fetchMock.mock.calls[1]?.[1]?.body ?? '');
+    expect(retry).toContain('ONLY the offer itself');
+  });
+
+  /*
+   * Mirrors round 122's "falls back to the scripted line if the retry also
+   * breaks its promise" exactly: `brokenPromise` was the one violation class
+   * the repair loop gave up on before that fix, because a second failure fell
+   * through to "a clumsy real sentence beats a scripted apology" — right for
+   * a vocabulary slip, wrong here, because the SECOND question is exactly as
+   * unanswerable as the first attempt's, not a degraded-but-real sentence.
+   */
+  it('falls back to the scripted line if the retry ALSO stacks a second question', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({ ...GOOD_TURN, say: STACKED, next: 'ask', offerAdaptation: 'more_examples' }),
+      )
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          say: '¿Y si probamos otro ejemplo? Si tienes 6 monedas y das 2, ¿cuántas te quedan?',
+          next: 'ask',
+          offerAdaptation: 'more_examples',
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('esto es difícil', Date.now()))!;
+
+    // The scripted line, never either stacked-question turn.
+    expect(outcome.emission.source).toBe('scripted');
+    expect(outcome.emission.turn.say).not.toContain('monedas');
+  });
+
+  /*
+   * The other half of round 122's fix, mirrored: `repairableIsFalseVerdict`
+   * must also be set from attempt 0's OWN capture, not only from the retry's
+   * result — otherwise a stacked question at attempt 0 whose retry then
+   * transport-fails outright (an empty completion, the measured DeepSeek
+   * failure mode this file's own comments document at length) still falls
+   * through to `repairable`, delivering attempt 0's stacked question verbatim.
+   */
+  it('falls back to the scripted line — never the original — when the retry for a stacked question comes back empty', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({ ...GOOD_TURN, say: STACKED, next: 'ask', offerAdaptation: 'more_examples' }),
+      )
+      .mockResolvedValueOnce(modelReplies(''))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('esto es difícil', Date.now()))!;
+
+    expect(outcome.emission.source).toBe('scripted');
+    expect(outcome.emission.turn.say).not.toContain('monedas');
+  });
+
+  /*
+   * The COMPLIANT shape the prompt itself asks for: "say must be ONLY the
+   * offer itself (a short transition plus the question)". A transition
+   * sentence plus the offer's own question is ONE question, not two, and
+   * must never be retried — a detector that fired here would retry every
+   * correctly-formed offer this tutor makes.
+   */
+  it('leaves a well-formed offer alone — a short transition plus ONE question', async () => {
+    const wellFormed = 'Vamos muy bien. ¿Te ayudaría ver otro ejemplo?';
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({ ...GOOD_TURN, say: wellFormed, next: 'ask', offerAdaptation: 'more_examples' }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('esto es difícil', Date.now()))!;
+
+    expect(outcome.emission.turn.say).toBe(wellFormed);
+    expect(fetchMock).toHaveBeenCalledTimes(2); // one model call, no retry needed
+  });
+
+  it('leaves a bare single-question offer alone, with no transition at all', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        modelReplies({
+          ...GOOD_TURN,
+          say: '¿Te ayudaría ver otro ejemplo?',
+          next: 'ask',
+          offerAdaptation: 'more_examples',
+        }),
+      )
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('esto es difícil', Date.now()))!;
+
+    expect(outcome.emission.turn.say).toBe('¿Te ayudaría ver otro ejemplo?');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  /*
+   * THE SCOPING BOUNDARY, proven rather than assumed. `asksMultipleQuestions`
+   * is gated on `offerAdaptation` rather than made a general "one question
+   * per turn" rule precisely because ordinary teaching prose legitimately
+   * carries two "?"s — this is the REAL turn `prompt.test.ts` uses to prove
+   * `languageViolation` against genuine tutor prose, reused here to prove a
+   * broader "two questions is always a defect" rule would have retried it
+   * for nothing: no control disappears mid-turn when no offer is open.
+   */
+  it('does not fire on an ordinary two-question turn with no adaptation offer open', async () => {
+    const real =
+      'Casi, Explorer. Piensa: el lápiz cuesta 5, tú tienes 3. Si juntas 3 y 2, ¿cuánto da? ' +
+      '3 más 2 es 5. Entonces te faltan 2 pesos, no 8. Ahora tú: una goma cuesta 7 pesos y tienes 4. ¿Cuánto te falta?';
+    fetchMock
+      .mockResolvedValueOnce(modelReplies({ ...GOOD_TURN, say: real, next: 'ask', offerAdaptation: null }))
+      .mockResolvedValueOnce(judgeSays(true));
+
+    const orchestrator = new TutorOrchestrator(KID, Date.now(), silent);
+    const outcome = (await orchestrator.handleLearnerText('no entiendo', Date.now()))!;
+
+    expect(outcome.emission.turn.say).toBe(real);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+});
+
 describe('what actually reaches the provider', () => {
   it('never sends the learner’s user id, session id or any identifier', async () => {
     fetchMock.mockResolvedValueOnce(modelReplies(GOOD_TURN)).mockResolvedValueOnce(judgeSays(true));

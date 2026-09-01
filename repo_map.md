@@ -7374,17 +7374,17 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   getLearnerMemory,
   getTutorPreferences,
-  getTutorRetentionStatus,
   grantVoiceConsent,
   insertTutorTurn,
   listTutorSessions,
   listTutorTurns,
-  RETENTION_SWEEP_AUDIT_ACTION,
   searchOwnTurns,
   upsertTutorPreferences,
   writeLearnerMemoryPair,
 } from '../services/tutorData.js';
 
+/*
+ * Found by adversarial review, round 28 (2026-08-30, HIGH): `getLearnerMemory`
 ```
 
 ### backend/src/__tests__/tutorLadder.test.ts
@@ -8039,12 +8039,12 @@ import { getRolesForGate } from '../services/insights.js';
 import {
   getFullOwnProfile,
   getVerifiedKidLinks,
-  insertAuditLog,
   serviceRest,
   type FullProfileRow,
 } from '../services/supabaseRest.js';
 import { getOwnLearnerIntelligence } from '../services/learningIntel.js';
 import { tutorSocketUrl } from '../services/tutorToken.js';
+import {
 ```
 
 ### backend/src/routes/verification.ts
@@ -13251,6 +13251,26 @@ BEGIN
 -- with a SEPARATE, unconditional POST carrying the stale `seq`. Two
 -- concurrent segment requests for the same session — a double-tap on the
 -- "next activity" control, a flaky-connection retry, or Oracle re-requesting
+```
+
+### database/migrations/0065_tutor_placement_safety_flags.sql
+
+```
+-- 0065_tutor_placement_safety_flags.sql — a flagged placement-intake
+-- utterance was a loud server log and nothing else: no guardian could ever
+-- see it, because `tutor_safety_flags` requires a `session_id` and placement
+-- happens before any `tutor_sessions` row exists.
+-- @phase: expand
+--
+-- CLOSES THE GAP /ORACLE.md §4.1b NAMED EXPLICITLY (found by adversarial
+-- review, 2026-08-30, HIGH; left open on purpose): "whether a flagged
+-- placement-intake utterance belongs in a guardian-visible record the way a
+-- live-session safety flag does is a separate schema decision ...
+-- tutor_safety_flags requires a session_id FK and placement has no session
+-- to attach one to. A loud log is the floor this fix guarantees, not the
+-- ceiling." This migration is that schema decision.
+--
+-- WHY A SEPARATE TABLE RATHER THAN A NULLABLE `tutor_safety_flags.session_id`.
 ```
 
 ### database/package.json
@@ -30207,26 +30227,6 @@ The learner can see WHAT you did from the numbers; what they cannot see is WHY.
     "",
 ```
 
-### oracle/src/__tests__/admission-control.test.ts
-
-```
-import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
-import type { AddressInfo } from 'node:net';
-import { WebSocket } from 'ws';
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { CLOSE_CODES } from '../ws/protocol.js';
-
-/*
- * ORACLE.md §15.2 items 2 and 3 — end-to-end proof, through the REAL socket
- * server, of the two per-process admission controls that protect the single
- * Oracle process from being overwhelmed:
- *
- *   - a hard ceiling on concurrent LIVE sessions (item 2, narrow single-
- *     process scope — the horizontal-scale half of that item is a separate,
- *     larger, architecturally-undecided piece of work)
- *   - a rate limit on the handshake PATH itself (item 3), which
-```
-
 ### oracle/src/__tests__/arithmetic.test.ts
 
 ```
@@ -30427,26 +30427,6 @@ import { estimateCostUsd } from '../tutor/orchestrator.js';
  * carries a contact detail in its learner-visible text must still be
 ```
 
-### oracle/src/__tests__/handshakeRateLimit.test.ts
-
-```
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { isHandshakeRateLimited, resetHandshakeRateLimitForTests } from '../ws/handshakeRateLimit.js';
-
-/*
- * ORACLE.md §15.2 item 3 — unit-level coverage for the counter itself, ahead
- * of `admission-control.test.ts`'s end-to-end proof through the real socket
- * server. These run against the in-memory fallback (`isTestOrDev` is true
- * throughout this suite — `test-setup.ts` pins `NODE_ENV=test`), which is the
- * SAME code path a real deployment falls back to if Redis is ever
- * unconfigured — see the file's own comment for why that is a deliberate,
- * supported degradation rather than a test-only shortcut.
- */
-
-afterEach(() => {
-  resetHandshakeRateLimitForTests();
-```
-
 ### oracle/src/__tests__/hardening.test.ts
 
 ```
@@ -30611,7 +30591,7 @@ describe('what counts as announcing an activity', () => {
 
 ```
 import { describe, expect, it } from 'vitest';
-import { buildContextMessage, languageViolation, TUTOR_SYSTEM_PROMPT } from '../tutor/prompt.js';
+import { asksMultipleQuestions, buildContextMessage, languageViolation, TUTOR_SYSTEM_PROMPT } from '../tutor/prompt.js';
 import { buildPlan, planState } from '../tutor/plan.js';
 import type { TutorContext } from '../context/schema.js';
 
@@ -31583,26 +31563,6 @@ import { pregeneratedUrl } from './pregenerated.js';
  * complete document, so any chunk whose byte length is not a multiple of three
  * ends in `=` padding, and joining puts that padding in the middle. Decoders
  * stop there. Two four-byte chunks joined that way decode to four bytes.
-```
-
-### oracle/src/ws/handshakeRateLimit.ts
-
-```
-import { getConfig, isTestOrDev } from '../env.js';
-import { redisClient } from '../lib/redis.js';
-import { withTimeout } from '../lib/http.js';
-
-/*
- * ORACLE.md §15.2 item 3 — the websocket handshake has no rate limit of its
- * own.
- *
- * `middleware/rateLimit.ts`'s `globalRateLimiter` never sees this path: the
- * `WebSocketServer` in `ws/server.ts`'s `attachTutorSocket` is attached
- * directly to the raw HTTP server (`{ server: httpServer, path: '/ws/tutor' }`),
- * so the upgrade never enters Express at all. Token minting (Core-side,
- * ORACLE.md §15's "what holds" list) already bounds an UNAUTHENTICATED flood —
- * nothing without a valid, unused, unexpired session token gets past gate 3 in
- * `handleConnection` — but that leaves the handshake PATH itself unbounded:
 ```
 
 ### oracle/src/ws/protocol.ts

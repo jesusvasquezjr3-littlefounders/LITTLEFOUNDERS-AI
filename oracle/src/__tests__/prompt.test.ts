@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildContextMessage, languageViolation, TUTOR_SYSTEM_PROMPT } from '../tutor/prompt.js';
+import { asksMultipleQuestions, buildContextMessage, languageViolation, TUTOR_SYSTEM_PROMPT } from '../tutor/prompt.js';
 import { buildPlan, planState } from '../tutor/plan.js';
 import type { TutorContext } from '../context/schema.js';
 
@@ -66,6 +66,53 @@ describe('languageViolation catches a turn that drifted away from the session\'s
     expect(
       languageViolation('Muito bem! Se um lápis custa 5 reais e você tem 3, quantos faltam?', 'pt-BR'),
     ).toBeNull();
+  });
+});
+
+/*
+ * /ORACLE.md §11's own missing piece: "a reliable 'two questions in one
+ * turn' detector is the harder problem". `orchestrator.test.ts`'s "the offer
+ * must stand alone in its turn" block proves this wired into the repair
+ * loop; these are the pure-function cases underneath it, isolated from the
+ * model-call/retry machinery.
+ */
+describe('asksMultipleQuestions catches a turn that stacks a second, distinct question', () => {
+  it('catches the exact real turn that surfaced this — an offer plus a brand-new arithmetic question', () => {
+    const real = '¿te ayudaría otro ejemplo? si tienes 9 monedas y das 4, ¿cuántas te quedan?';
+    expect(asksMultipleQuestions(real)).toBe(true);
+  });
+
+  it('never flags an ordinary single question', () => {
+    expect(asksMultipleQuestions('¿Cuánto juntarías en cuatro semanas?')).toBe(false);
+  });
+
+  it('never flags a question plus a statement, in either order', () => {
+    // The COMPLIANT offer shape the prompt itself asks for: "a short
+    // transition plus the question" — exactly one question mark.
+    expect(asksMultipleQuestions('Vamos muy bien. ¿Te ayudaría ver otro ejemplo?')).toBe(false);
+    expect(asksMultipleQuestions('¿Seguimos con el siguiente paso? Vamos muy bien.')).toBe(false);
+  });
+
+  /*
+   * DELIBERATELY `true` HERE, and that is the point of this test. This
+   * function does not try to tell a rhetorical sub-question apart from a
+   * real one — it just counts. The real fixture this file already uses
+   * (above) to represent GENUINE tutor prose for `languageViolation` works
+   * through a sub-calculation with a rhetorical "¿cuánto da?" before asking
+   * the real next question, and this function correctly says "two questions"
+   * about it, same as it would about the actual defect. The safety is
+   * entirely in WHERE `orchestrator.ts` calls this — gated on
+   * `offerAdaptation` (see `offerStackedQuestion`'s own comment there) —
+   * never in this function pretending to understand rhetoric it cannot. A
+   * future "fix" that makes this return `false` for prose like this would
+   * quietly widen it into exactly the false-positive machine its own doc
+   * comment warns against.
+   */
+  it('returns true even for a rhetorical sub-question inside genuine teaching prose — the safety is in the caller, not here', () => {
+    const real =
+      'Casi, Explorer. Piensa: el lápiz cuesta 5, tú tienes 3. Si juntas 3 y 2, ¿cuánto da? ' +
+      '3 más 2 es 5. Entonces te faltan 2 pesos, no 8. Ahora tú: una goma cuesta 7 pesos y tienes 4. ¿Cuánto te falta?';
+    expect(asksMultipleQuestions(real)).toBe(true);
   });
 });
 

@@ -2349,6 +2349,63 @@ export type Database = {
           },
         ]
       }
+      /*
+       * HAND-AUTHORED, not machine-generated — migration 0065. `npm run
+       * db:types` needs the local Supabase stack (`local-stack.sh db-url`);
+       * this worktree deliberately did not touch it (a live, non-worktree-
+       * scoped Docker Supabase stack was already running on this machine,
+       * and database/AGENTS.md's own migration protocol warns against
+       * nuking a shared development database). Shaped to match what the
+       * real generator produces elsewhere in this file: an `auth.users`
+       * FK renders as `dataintel_users_sync`/`user_id` (see every other
+       * `user_id` Relationship in this file — a generator artifact, not a
+       * real second target), and `course_id` mirrors `course_placements`'
+       * own `courses`/`id` entry above. Re-run `npm run db:types` for real
+       * once this migration is applied somewhere the generator can reach,
+       * and diff against this block rather than trusting it blindly.
+       */
+      tutor_placement_safety_flags: {
+        Row: {
+          category: string
+          course_id: string | null
+          created_at: string
+          id: string
+          severity: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          course_id?: string | null
+          created_at?: string
+          id?: string
+          severity: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          course_id?: string | null
+          created_at?: string
+          id?: string
+          severity?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutor_placement_safety_flags_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tutor_placement_safety_flags_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       tutor_preferences: {
         Row: {
           adaptations: string[]

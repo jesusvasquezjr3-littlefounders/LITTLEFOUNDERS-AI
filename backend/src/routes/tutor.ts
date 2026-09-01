@@ -36,6 +36,7 @@ import {
   writeLearnerMemoryPair,
   searchOwnTurns,
   listSafetyFlags,
+  listPlacementSafetyFlags,
   listTutorSegments,
   listTutorSessions,
   listTutorTurns,
@@ -2515,11 +2516,12 @@ export function tutorRouter(): Router {
     if (guardian === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not verify guardianship');
     if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Not your dependant');
 
-    const [page, flags] = await Promise.all([
+    const [page, flags, placementFlags] = await Promise.all([
       listTutorSessions(kidUserId.data, query.data),
       listSafetyFlags(kidUserId.data),
+      listPlacementSafetyFlags(kidUserId.data),
     ]);
-    if (page === null || flags === null) {
+    if (page === null || flags === null || placementFlags === null) {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the child’s tutor history');
     }
 
@@ -2529,6 +2531,18 @@ export function tutorRouter(): Router {
       // Guardian-visible on purpose: a child disclosing distress to a tutor is
       // precisely the case where a parent must find out.
       safetyFlags: flags,
+      /*
+       * A SECOND, separate provenance (migration 0065, /ORACLE.md §4.1b): a
+       * flag raised while the learner was choosing a course, before any
+       * `tutor_sessions` row existed for `safetyFlags` above to reference.
+       * Kept as its own field rather than merged into `safetyFlags` — the
+       * two row shapes genuinely differ (no `session_id`/`turn_seq` to open
+       * a transcript with, a `course_id` instead) and a caller that already
+       * assumes every `safetyFlags` row has a session would silently break
+       * on one that does not. The frontend does not render this array yet;
+       * it is real, RLS-protected, guardian-queryable data either way.
+       */
+      placementSafetyFlags: placementFlags,
     });
   });
 
