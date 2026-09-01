@@ -13311,3 +13311,87 @@ shipped `0066_tutor_trajectory.sql` in the merge immediately before this
 one and nobody had updated the declared range to match — fixed by
 extending it to `` `0065`–`0066` `` and describing `0066`'s own content,
 confirmed 26/26 green after.
+
+## Round 134: V4 tail — step dots, `demonstrate` replay, BKT calibration audit — and a third migration-number collision, anticipated by its own author, 2026-09-01
+
+`oracle-v4-tail-backlog`, the 8th of 9 Phase 2 lanes. Three independent
+additions in one branch: a lesson step-dots HUD affordance
+(`lessonStepDots.ts`), a BKT-calibration operator audit
+(`bktCalibration.ts` / `npm run audit:bkt-calibration`, comparing the
+model's own `p_known_before` predictions against actual outcomes), and —
+the one with a real production-fidelity consequence — persistence and
+replay for the tutor's tray-`demonstrate` animations.
+
+**The `demonstrate` gap was the whiteboard's round-35 bug, recurring on
+its sibling field, found by the same investigation method rather than by
+accident.** `demonstrate` (Tutor v3, add/remove/pause steps over the open
+coin tray) was LIVE-ONLY: `ws/server.ts` sent it on the `turn` wire frame,
+but `tutor_turns` had no column for it, `PersistTurnInput` had no field,
+and neither `persistTurn` call site passed one. A session where the
+tutor's hands moved a coin lost that fact silently on replay and on the
+guardian transcript viewer the instant the socket closed — structurally
+identical to the whiteboard gap round 35 closed, on the tutor's OTHER v3
+visual field, closed here by the SAME shape of fix: one additive nullable
+JSONB column, a persistence type on both sides of the `backend`/`oracle`
+boundary (duplicated by design, not imported — the established posture),
+and read-time re-validation degrading a malformed row to `null` rather
+than failing the whole transcript fetch. Deliberately NOT a re-animated
+tray on replay, and written down as a scope decision rather than an
+oversight: `runTrayDemo` only knows how to drive a REAL, interactive
+Lesson Engine renderer, and `mayDemonstrate` refuses to run against an
+activity already answered correctly — which every replayed activity, by
+definition, already has. Building a second read-only tray-rendering
+surface to re-animate the coins would be considerably larger than the gap
+it closes for what is otherwise a plain caption; `ReplayInWorld.tsx`'s new
+`DemoStepsSummary` states what the steps WERE (which denominations were
+added or removed, in order) instead.
+
+**A third instance of the SAME migration-number collision this merge
+effort keeps producing — anticipated in writing by the lane's own
+author, this time.** This branch's `database/migrations/` topped out at
+0064 when it was created; `0065_tutor_placement_safety_flags.sql` was
+observed to already exist elsewhere, so this lane picked `0066` for its
+own `tutor_turns.demonstrate` column deliberately rather than reusing
+0065 — the identical reasoning the trajectory/gym lane (merged one round
+earlier) used to ALSO pick 0066, for an unrelated table. The migration
+file's own header comment already carried a note for exactly this
+outcome: "if another concurrently-developed lane ALSO claimed 0066,
+renumber one of the two at merge time — the two migrations are
+independent... and either ordering is safe." Renumbered to `0067`,
+confirming that note's own claim. Eight code/test comments across
+backend, oracle and frontend cited "migration 0066" for the demonstrate
+column specifically and needed the same fix; left untouched were the
+several correct references to trajectory's own, actual 0066 (GLOSSARY.md,
+ROADMAP.md, oracle/AGENTS.md, database/AGENTS.md) — the two migrations'
+comments read almost identically ("closes the identical gap round 35
+found for `whiteboard`" appears in both), so each reference was checked
+against ITS OWN surrounding context (does this file/function touch
+`demonstrate` or `tutor_trajectory_step`?) rather than pattern-matched on
+the bare digits.
+
+**ORACLE.md's conflict was the same "adjacent unrelated content"
+shape this merge effort has now hit three times** (Round `8e8703db`'s
+merge, the categories merge immediately before this one, and now this
+one): this lane's single new subsection — authored as its own "§20.6" —
+collided textually with the ALREADY-MERGED §20.6 (curator) and §20.7
+(trajectory/gym) sections sitting physically adjacent to its insertion
+point, because this branch was created before either existed. Resolved
+by keeping the merged content intact in full and appending this lane's
+section as §20.8, the next free number.
+
+**Verification, independently re-run by the coordinator after every
+file's resolution.** oracle: tsc clean across all 3 tsconfigs, lint
+clean, 35 files / 836 tests green (+2 from this lane's own
+`live-session.test.ts` additions), build clean, `verify:tutor` OK,
+`verify:pedagogy` OK. backend: tsc clean on both tsconfigs, lint clean,
+46 files / 843 tests green (+1 file — the new `bktCalibration.test.ts`,
+10 tests — and `tutorData.test.ts` 54→64, +10 for the demonstrate
+round-trip and read-time-degradation coverage), build clean. frontend:
+tsc clean, lint clean, 139 files / 1625 tests green (+1 file — the new
+`lessonStepDots.test.ts`, 10 tests — plus 7 more across the touched
+replay/conversation-view suites), build clean. Root: `docs:check`,
+`secrets:check`, `i18n:check`, `paths:check`, `seo:check`,
+`provider:check`, `tools:test` (26/26) all green on the FIRST run this
+time — the ROADMAP.md pending-delta range was extended to account for
+`0067` proactively, before running `tools:test`, having paid for that
+lesson the round immediately before this one.
