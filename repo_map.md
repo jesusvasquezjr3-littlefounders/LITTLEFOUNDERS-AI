@@ -13233,6 +13233,26 @@ BEGIN
 -- That collides with the SERVICE layer's own documented default:
 ```
 
+### database/migrations/0064_atomic_tutor_segment_claim.sql
+
+```
+-- 0064_atomic_tutor_segment_claim.sql — the content ladder's seq claim and
+-- duplicate-serve check were a plain, non-atomic read, so a concurrent
+-- winner's perfectly valid catalog hit was discarded as a manufactured 502.
+-- @phase: expand
+--
+-- FOUND BY ADVERSARIAL REVIEW SWEEP tutor-review-sweep-101
+-- (content-ladder-correctness dimension), 2026-08-31 (HIGH), independently
+-- verified. `POST /api/v1/tutor/segments` (backend/src/routes/tutor.ts) read
+-- "segments already served" with a plain SELECT, computed the next `seq` as
+-- `served.length` in application code, ran the ENTIRE three-tier content
+-- ladder (catalog -> bank -> KC-prerequisite fallback -> frontier fallback)
+-- against that one snapshot, and only THEN inserted the chosen candidate
+-- with a SEPARATE, unconditional POST carrying the stale `seq`. Two
+-- concurrent segment requests for the same session — a double-tap on the
+-- "next activity" control, a flaky-connection retry, or Oracle re-requesting
+```
+
 ### database/package.json
 
 ```

@@ -880,9 +880,40 @@ export async function setTutorReviewStatus(
   return res !== null;
 }
 
-export async function insertTutorSegment(input: {
+/**
+ * `'conflict'` — a concurrent request already claimed the identical
+ * candidate for this session; the caller must re-run its own ladder
+ * selection against a fresh read and retry, never treat this as a hard
+ * failure. `null` — a genuine transport/DB failure (§1.14: distinguishable
+ * from an ordinary "someone else got there first").
+ *
+ * FOUND BY ADVERSARIAL REVIEW SWEEP tutor-review-sweep-101
+ * (content-ladder-correctness dimension, HIGH). This used to be a plain
+ * unconditional `POST /tutor_segments` carrying a `seq` the CALLER computed
+ * from a snapshot taken before the whole content ladder ran — so two
+ * concurrent requests for the same session, both reading the same
+ * "already served" state, both deterministically chose the SAME candidate
+ * (the tier-1 rotation is seeded on the session id, not on wall-clock time)
+ * and both tried to insert at the SAME `seq`. `tutor_segments` has carried
+ * `UNIQUE (session_id, seq)` since `0047_tutor_oracle.sql`, so the loser's
+ * insert was rejected by PostgREST — and this function returned `null`
+ * exactly as it does on any other transport failure, so the route answered
+ * a perfectly valid, correctly-selected catalog hit with a manufactured
+ * `502 DATA_UNAVAILABLE`.
+ *
+ * `insert_tutor_segment_checked` (migration 0064) recomputes the next `seq`
+ * AND re-checks "has this exact segment already been served to this
+ * session" fresh, inside a `pg_advisory_xact_lock` keyed on the SESSION (a
+ * fourth, distinct salt from `award_tutor_xp` (0), `start_tutor_session_checked`
+ * (1) and the learner-memory pair (2) — this invariant is per-session, not
+ * per-learner, and must never contend with any of those three). An empty
+ * result set is the conflict signal; the route's own retry loop is what
+ * turns that into "the next distinct candidate" rather than a 502. See
+ * `RUNBOOK.md` Round 109.
+ */
+export async function insertTutorSegmentChecked(input: {
   sessionId: string;
-  seq: number;
+  sourceKey: string | null;
   origin: 'catalog' | 'bank' | 'live';
   lessonId: string | null;
   segmentType: string;
@@ -891,24 +922,24 @@ export async function insertTutorSegment(input: {
   keyVerified: boolean;
   provenance: Record<string, unknown>;
   reviewStatus: 'pending' | null;
-}): Promise<TutorSegmentRow | null> {
-  const rows = await serviceRest<TutorSegmentRow[]>('/tutor_segments', {
+}): Promise<TutorSegmentRow | 'conflict' | null> {
+  const rows = await serviceRest<TutorSegmentRow[]>('/rpc/insert_tutor_segment_checked', {
     method: 'POST',
-    headers: { Prefer: 'return=representation' },
     body: JSON.stringify({
-      session_id: input.sessionId,
-      seq: input.seq,
-      origin: input.origin,
-      lesson_id: input.lessonId,
-      segment_type: input.segmentType,
-      payload: input.payload,
-      answer: input.answer,
-      key_verified: input.keyVerified,
-      provenance: input.provenance,
-      review_status: input.reviewStatus,
+      p_session_id: input.sessionId,
+      p_source_key: input.sourceKey,
+      p_origin: input.origin,
+      p_lesson_id: input.lessonId,
+      p_segment_type: input.segmentType,
+      p_payload: input.payload,
+      p_answer: input.answer,
+      p_key_verified: input.keyVerified,
+      p_provenance: input.provenance,
+      p_review_status: input.reviewStatus,
     }),
   });
-  return rows?.[0] ?? null;
+  if (rows === null) return null;
+  return rows.length > 0 ? rows[0]! : 'conflict';
 }
 
 export async function getTutorSegment(segmentId: string): Promise<TutorSegmentRow | null> {
@@ -968,14 +999,6 @@ export async function markSegmentVoiceChecked(segmentId: string): Promise<boolea
     body: JSON.stringify({ voice_checked_at: new Date().toISOString() }),
   });
   return res !== null;
-}
-
-export async function countSessionSegments(sessionId: string): Promise<number | null> {
-  const rows = await serviceRest<{ seq: number }[]>(
-    `/tutor_segments?session_id=eq.${eu(sessionId)}&select=seq&order=seq.desc&limit=1`,
-  );
-  if (rows === null) return null;
-  return rows[0] === undefined ? 0 : rows[0].seq + 1;
 }
 
 // ── Packs (ladder tier 2) ───────────────────────────────────────────────────
