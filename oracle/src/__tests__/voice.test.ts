@@ -310,6 +310,135 @@ describe('the transcription request', () => {
   });
 });
 
+describe('one bounded retry for a transport failure', () => {
+  /*
+   * tutor-review-sweep-101, voice-audio-quality, MEDIUM: `transcribe()` and
+   * `synthesize()` each made exactly one network attempt, unlike the
+   * pedagogical model path (`orchestrator.produce`'s `RETRY_DEADLINE_MS`),
+   * which already treats a transient failure as recoverable. A single
+   * dropped packet — a school Wi-Fi handoff, a brief Inworld hiccup —
+   * permanently lost that turn's voice or transcript with no second chance.
+   */
+  beforeEach(() => {
+    process.env.INWORLD_API_KEY = 'test-inworld-key-0123';
+    process.env.INWORLD_VOICE_RHO_ES_MX = 'workspace__lf-rho-es-mx';
+    resetConfigCache();
+  });
+
+  it('recovers a transcription after ONE transient network failure', async () => {
+    const fetchSpy = vi
+      .fn()
+      .mockRejectedValueOnce(new TypeError('fetch failed'))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ transcription: { transcript: 'quiero ahorrar dinero' } }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      );
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const result = await new InworldVoiceProvider().transcribe({
+      audio: Buffer.from('audio'),
+      mimeType: 'audio/webm;codecs=opus',
+      locale: 'es-MX',
+    });
+
+    // The turn survived: the second attempt's transcript is what came back,
+    // not a permanently lost turn.
+    expect(result.text).toBe('quiero ahorrar dinero');
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('recovers a synthesis after ONE transient network failure', async () => {
+    const fetchSpy = vi
+      .fn()
+      .mockRejectedValueOnce(new TypeError('fetch failed'))
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({ audioContent: Buffer.from('fake-mp3-bytes').toString('base64') }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        ),
+      );
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const result = await new InworldVoiceProvider().synthesize({
+      text: 'Muy bien pensado.',
+      locale: 'es-MX',
+      character: 'rho',
+    });
+
+    expect(result.mimeType).toBe('audio/mpeg');
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('gives up after the SECOND transport failure — bounded to one extra attempt', async () => {
+    const fetchSpy = vi
+      .fn()
+      .mockRejectedValueOnce(new TypeError('fetch failed'))
+      .mockRejectedValueOnce(new TypeError('fetch failed again'));
+    vi.stubGlobal('fetch', fetchSpy);
+
+    await expect(
+      new InworldVoiceProvider().transcribe({
+        audio: Buffer.from('audio'),
+        mimeType: 'audio/webm;codecs=opus',
+        locale: 'es-MX',
+      }),
+    ).rejects.toThrow(/fetch failed again/);
+    // Exactly two attempts, never three: an outage costs one retry, not a loop.
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('does NOT retry a genuinely empty transcript — silence is a fact, not a failure', async () => {
+    const fetchSpy = vi.fn().mockResolvedValueOnce(
+      new Response(JSON.stringify({ transcription: { transcript: '' } }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const result = await new InworldVoiceProvider().transcribe({
+      audio: Buffer.from('audio'),
+      mimeType: 'audio/webm;codecs=opus',
+      locale: 'es-MX',
+    });
+
+    expect(result.text).toBe('');
+    // A 200 with an empty transcript is a successful call, not an error, so
+    // it never enters the retry path at all: ONE call, not two.
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('does NOT retry a 200 with no audioContent — a definite answer, not a transient blip', async () => {
+    const fetchSpy = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({}), { status: 200 }));
+    vi.stubGlobal('fetch', fetchSpy);
+
+    await expect(
+      new InworldVoiceProvider().synthesize({ text: 'hola', locale: 'es-MX', character: 'rho' }),
+    ).rejects.toThrow(/returned no audioContent/);
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('does NOT retry a non-2xx response — a deterministic rejection is not a network blip', async () => {
+    const fetchSpy = vi
+      .fn()
+      .mockResolvedValueOnce(new Response('{"code":13,"message":"proxy failed"}', { status: 500 }));
+    vi.stubGlobal('fetch', fetchSpy);
+
+    await expect(
+      new InworldVoiceProvider().transcribe({
+        audio: Buffer.from('audio'),
+        mimeType: 'audio/webm;codecs=opus',
+        locale: 'es-MX',
+      }),
+    ).rejects.toThrow(/inworld stt responded 500/);
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('the silent provider', () => {
   it('is the DEFAULT, and is a real posture rather than a stub', async () => {
     resetConfigCache();

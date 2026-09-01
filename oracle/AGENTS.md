@@ -2320,6 +2320,33 @@ everything passes the blocked half perfectly and destroys the product.
    answering a real question, just never this one, and their silence on
    it is not an opinion. See `RUNBOOK.md` Round 106.
 
+78. **A retry policy travels with the FAILURE CLASS it exists to catch, not
+   with the file it was first written in.** Found by adversarial review
+   (tutor-review-sweep-101, voice-audio-quality, MEDIUM): `transcribe()`
+   and `synthesize()` (`voice/inworld.ts`) each made exactly one network
+   attempt, while the pedagogical model call right next to them in the
+   same turn (`model/provider.ts` + `orchestrator.produce()`'s
+   `RETRY_DEADLINE_MS`) already treats a timeout or a dropped connection
+   as recoverable. A school Wi-Fi handoff or an Inworld hiccup — the
+   identical failure class the model path was hardened against —
+   permanently lost that turn's voice or transcript with no second
+   chance. Fixed with a new `postWithRetry()` helper: one bounded retry,
+   gated by a deadline (`VOICE_RETRY_DEADLINE_MS`, 6 s) checked BEFORE the
+   retry rather than baked into a longer single timeout, mirroring
+   `RETRY_DEADLINE_MS`'s shape without copying its number — the two calls
+   sit in different places in a turn's own 25 s client-side budget, so
+   each needed its own reasoned value, not a shared constant. Scoped
+   strictly to the TRANSPORT failure (a rejected `fetch`, our own
+   `AbortSignal.timeout` firing): a non-2xx response and a 200 with no
+   usable content are NOT retried, because both are a definite, likely
+   -reproducible answer from the provider, and an empty transcript in
+   particular is a FACT about what the learner said, never an error. The
+   general lesson: when auditing one call site for a hardening another
+   call site already has, grep for every OTHER caller of the same
+   provider-adapter pattern — a fix applied once tends to look, from the
+   outside, like a policy that was always going to apply everywhere, and
+   it rarely was. See `RUNBOOK.md` Round 116.
+
 ---
 
 `.env.example` is the reference. Three notes that are not obvious:
