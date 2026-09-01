@@ -10,7 +10,7 @@ import {
   SkillStateSchema,
   type Locale,
 } from '../context/schema.js';
-import type { WireWhiteboard } from '../ws/protocol.js';
+import type { WireDemoStep, WireWhiteboard } from '../ws/protocol.js';
 
 /*
  * Oracle talks to Core, and to nothing else that holds a learner's data.
@@ -209,6 +209,16 @@ export interface PersistTurnInput {
    * lost it silently on replay and on the guardian transcript viewer.
    */
   whiteboard?: WireWhiteboard | null;
+  /**
+   * Tutor v3's tray-demonstration steps, when this turn carried one — the
+   * SAME steps sent over the wire (`WireDemoStep`), never re-derived.
+   * Migration 0066 closed the identical gap round 35 found for `whiteboard`
+   * above: this field did not exist at all, so a session where the tutor
+   * demonstrated on the money tray lost that fact silently on replay and on
+   * the guardian transcript viewer (found while investigating ORACLE.md
+   * §19.5's "replaying `demonstrate` animations" backlog item, 2026-09-01).
+   */
+  demonstrate?: WireDemoStep[] | null;
 }
 
 /**

@@ -215,3 +215,24 @@ export async function insertKcAttempt(row: KcAttemptInsert): Promise<boolean> {
   });
   return res !== null;
 }
+
+export interface KcAttemptCalibrationRow {
+  kc_id: string;
+  user_id: string;
+  correct: boolean;
+  p_known_before: number;
+}
+
+/**
+ * The raw evidence `bktCalibration.ts`'s `calibrationReport()` scores —
+ * `npm run audit:bkt-calibration`'s only read. Bounded the same defensive
+ * way every bulk reader in this file is (`limit=1000` elsewhere); ordered
+ * most-recent-first so a caller with a tighter limit still sees the
+ * freshest evidence rather than an arbitrary early slice.
+ */
+export async function getKcAttemptsForCalibration(limit = 5000): Promise<KcAttemptCalibrationRow[] | null> {
+  const rows = await serviceRest<KcAttemptCalibrationRow[]>(
+    `/kc_attempt?select=kc_id,user_id,correct,p_known_before&order=created_at.desc&limit=${limit}`,
+  );
+  return rows === null ? null : rows.map((r) => ({ ...r, p_known_before: Number(r.p_known_before) }));
+}

@@ -38,6 +38,7 @@ interface CoreJournal {
     source: string;
     seq: number;
     whiteboard?: { values: number[] } | null;
+    demonstrate?: { kind: string; denomination?: number }[] | null;
   }[];
   flags: { category: string; handled: string; turnSeq: number | null }[];
   closes: { closeReason: string; turnCount: number }[];
@@ -277,6 +278,13 @@ function startFakeModel(): Promise<Server> {
       // the orchestrator) delivers server-computed values over a real socket.
       const wantsBoard = !isJudge && body.includes('quieropizarron');
       /*
+       * Found while investigating ORACLE.md §19.5's "replaying `demonstrate`
+       * animations" backlog item, 2026-09-01 — the same "prove the FRAME
+       * delivers it" reasoning `wantsBoard` above exists for, applied to the
+       * tutor's OTHER v3 turn-schema visual field.
+       */
+      const wantsDemo = !isJudge && body.includes('muestramelamoneda');
+      /*
        * A DIFFERENT sentence, for a test that needs two model turns on one
        * orchestrator. The tutor repeating itself verbatim is a real defect
        * this suite tests for elsewhere, and the repair it triggers would end
@@ -289,11 +297,13 @@ function startFakeModel(): Promise<Server> {
         : JSON.stringify({
             say: wantsBoard
               ? 'Imaginemos que guardas 10 pesos y cada día te dan 2 más.'
-              : wantsActivity
-                ? '¡Vamos a intentarlo!'
-                : wantsSecondLine
-                  ? 'Perfecto. ¿Y qué harías con ese dinero al final del mes?'
-                  : '¡Buena pregunta! ¿Cuánto crees que juntarías?',
+              : wantsDemo
+                ? 'Mira, si agrego esta moneda de 10 y esta de 5…'
+                : wantsActivity
+                  ? '¡Vamos a intentarlo!'
+                  : wantsSecondLine
+                    ? 'Perfecto. ¿Y qué harías con ese dinero al final del mes?'
+                    : '¡Buena pregunta! ¿Cuánto crees que juntarías?',
             emotion: 'happy',
             action: 'nod',
             next: wantsActivity ? 'segment' : 'ask',
@@ -313,6 +323,12 @@ function startFakeModel(): Promise<Server> {
                   label: 'Cada día te dan 2 más',
                   currency: 'MXN',
                 }
+              : null,
+            demonstrate: wantsDemo
+              ? [
+                  { kind: 'add', denomination: 10 },
+                  { kind: 'add', denomination: 5 },
+                ]
               : null,
           });
       res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -719,6 +735,57 @@ describe('a real live session over a real websocket', () => {
 
     const persisted = journal.turns.find((t) => t.speaker === 'tutor' && t.whiteboard != null);
     expect(persisted?.whiteboard).toMatchObject({ values: [10, 12, 14] });
+
+    socket.close();
+    await closed();
+  });
+
+  it('the tray-demonstration steps reach the client on the wire (v3)', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const answered = collect(socket, (m) => m.some((x) => x.type === 'turn' && x.demonstrate != null));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'muestramelamoneda, no entendi' }));
+    const steps = (await answered).find((m) => m.type === 'turn')?.demonstrate as
+      | { kind: string; denomination?: number }[]
+      | undefined;
+
+    expect(steps).toEqual([
+      { kind: 'add', denomination: 10 },
+      { kind: 'add', denomination: 5 },
+    ]);
+
+    socket.close();
+    await closed();
+  });
+
+  /*
+   * Found while investigating ORACLE.md §19.5's "replaying `demonstrate`
+   * animations" backlog item, 2026-09-01 — the identical shape round 35
+   * found for the whiteboard above, on the tutor's OTHER v3 visual field:
+   * `PersistTurnInput` had no field for `demonstrate` and neither tutor-turn
+   * `persistTurn` call site passed one, so a session where the tutor's hands
+   * moved a coin left no trace once the live socket closed. Migration 0066
+   * adds the column this proves the write path now actually uses.
+   */
+  it('persists the tray-demonstration steps on the transcript row, not only on the wire', async () => {
+    freshJournal();
+    const { socket, closed } = open(await socketUrl());
+    await collect(socket, (m) => m.some((x) => x.type === 'turn'));
+
+    const answered = collect(socket, (m) => m.some((x) => x.type === 'turn' && x.demonstrate != null));
+    socket.send(JSON.stringify({ type: 'learner_text', text: 'muestramelamoneda, no entendi' }));
+    await answered;
+    // Same settling window as the whiteboard persistence test above: the
+    // transcript write is fire-and-forget behind the audio synthesis promise.
+    await new Promise((r) => setTimeout(r, 150));
+
+    const persisted = journal.turns.find((t) => t.speaker === 'tutor' && t.demonstrate != null);
+    expect(persisted?.demonstrate).toEqual([
+      { kind: 'add', denomination: 10 },
+      { kind: 'add', denomination: 5 },
+    ]);
 
     socket.close();
     await closed();

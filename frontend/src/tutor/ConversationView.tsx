@@ -11,6 +11,7 @@ import { TutorFace } from './TutorFace';
 import { TutorTranscript } from './TutorTranscript';
 import { LiveSegmentPanel } from './LiveSegmentPanel';
 import { TutorWhiteboard } from './TutorWhiteboard';
+import { lessonStepDots } from './lessonStepDots';
 import { useStageDock, type ConversationLayerProps, type StageDockValue } from './stage/StageShell';
 
 /*
@@ -683,9 +684,37 @@ export function ConversationView({
             fixed-offset surface, not only the sheet.
           */}
           {socket.lesson !== null && docked === null && (
-            <div className="lf-caption pointer-events-none fixed left-4 top-16 z-20 max-w-[60vw] truncate rounded-full bg-[color:var(--lf-surface)]/70 px-3 py-1 text-[color:var(--lf-muted)] backdrop-blur-sm">
-              {socket.lesson.topic !== null ? `${socket.lesson.topic} — ` : ''}
-              {t('tutor.conversation.lessonThread', { step: socket.lesson.step, of: socket.lesson.of })}
+            <div className="lf-caption pointer-events-none fixed left-4 top-16 z-20 flex max-w-[60vw] items-center gap-1.5 rounded-full bg-[color:var(--lf-surface)]/70 px-3 py-1 text-[color:var(--lf-muted)] backdrop-blur-sm">
+              <span className="truncate">
+                {socket.lesson.topic !== null ? `${socket.lesson.topic} — ` : ''}
+                {t('tutor.conversation.lessonThread', { step: socket.lesson.step, of: socket.lesson.of })}
+              </span>
+              {/*
+                STEP DOTS (ORACLE.md §19.5): a purely visual companion to the
+                sentence above, never a second source of truth for it —
+                `aria-hidden` because that sentence already carries the
+                accessible name, and a screen reader hearing "step 2 of 4"
+                followed by an announced row of four dots would be told the
+                same fact twice. `shrink-0` so a long, truncating topic name
+                loses ITS OWN space first; the dots are the smaller, more
+                stable of the two and the one least useful to lose.
+              */}
+              <span className="flex shrink-0 items-center gap-1" aria-hidden="true">
+                {lessonStepDots(socket.lesson.step, socket.lesson.of).map((state, i) => (
+                  <span
+                    key={i}
+                    data-lesson-step={state}
+                    className={
+                      'h-1.5 w-1.5 rounded-full transition-colors duration-150 ' +
+                      (state === 'upcoming'
+                        ? 'bg-[color:var(--lf-muted)]/30'
+                        : state === 'done'
+                          ? 'bg-[color:var(--lf-muted)]/60'
+                          : 'bg-[color:var(--lf-muted)]')
+                    }
+                  />
+                ))}
+              </span>
             </div>
           )}
 

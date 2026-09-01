@@ -1,0 +1,32 @@
+-- 0066_tutor_turn_demonstrate.sql — the tutor's tray-demonstration steps had
+-- no path into persistence, so a replayed session silently dropped a live
+-- demonstration exactly the way migration 0058 found for the whiteboard.
+-- @phase: expand
+--
+-- FOUND WHILE INVESTIGATING ORACLE.md §19.5's "replaying `demonstrate`
+-- animations" backlog item, 2026-09-01. `demonstrate` (Tutor v3, "the
+-- tutor's hands" — `oracle/src/tutor/turnSchema.ts`'s `DemoStepSchema`,
+-- 1-8 closed add/remove/pause steps over the open coin/money tray) is a
+-- LIVE-ONLY wire field: `ws/server.ts` sends it on the `type: 'turn'` frame,
+-- but `tutor_turns` had no column for it, `PersistTurnInput` had no field
+-- for it, and neither tutor-turn `persistTurn` call site passed one. The
+-- result is the identical shape migration 0058 already closed for the
+-- whiteboard: every session where the tutor demonstrated on the tray lost
+-- that fact, silently, on replay AND on the guardian transcript viewer.
+--
+-- One additive, nullable JSONB column, same posture as 0058: populated only
+-- for a tutor turn that actually carried demonstration steps; NULL for
+-- every other row, including every row written before this migration — a
+-- replay of an old session simply shows no demonstration, exactly as it
+-- already does today, rather than backfilling a value nothing recorded.
+--
+-- NOTE FOR THE MERGING COORDINATOR: this worktree's own `database/migrations/`
+-- tops out at 0064 at the point this branch was created; `0065_tutor_
+-- placement_safety_flags.sql` was observed to already exist elsewhere
+-- (another lane's branch, or a newer `main`), so 0066 was chosen
+-- deliberately rather than reusing 0065. If another concurrently-developed
+-- lane ALSO claimed 0066, renumber one of the two at merge time — the two
+-- migrations are independent (this one only touches `tutor_turns`) and
+-- either ordering is safe.
+ALTER TABLE public.tutor_turns
+    ADD COLUMN IF NOT EXISTS demonstrate jsonb NULL;

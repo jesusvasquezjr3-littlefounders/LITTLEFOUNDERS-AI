@@ -19,7 +19,8 @@
     "lesson-contract:check": "tsx scripts/contract-check.ts",
     "placement:verify": "tsx --env-file-if-exists=.env src/scripts/verify-placement.ts",
     "seed:kc": "tsx --env-file-if-exists=.env src/scripts/seed-kc-graph.ts",
-    "audit:content-bridge": "tsx --env-file-if-exists=.env src/scripts/audit-content-bridge.ts"
+    "audit:content-bridge": "tsx --env-file-if-exists=.env src/scripts/audit-content-bridge.ts",
+    "audit:bkt-calibration": "tsx --env-file-if-exists=.env src/scripts/audit-bkt-calibration.ts"
   },
   "dependencies": {
     "exceljs": "^4.4.0",

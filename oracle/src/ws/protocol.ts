@@ -139,6 +139,18 @@ export interface WireWhiteboard {
   currency: 'MXN' | 'USD' | 'BRL' | null;
 }
 
+/**
+ * One closed step of a tray demonstration — mirrors `oracle/src/tutor/
+ * turnSchema.ts`'s `DemoStepSchema`. Named and exported for the same reason
+ * `WireWhiteboard` is: `core/client.ts`'s `PersistTurnInput` needs a type to
+ * persist the SAME steps the wire carried, not a second, driftable shape.
+ */
+export interface WireDemoStep {
+  kind: 'add' | 'remove' | 'pause';
+  denomination?: number;
+  ms?: number;
+}
+
 export type ServerMessage =
   | {
       type: 'ready';
@@ -202,7 +214,7 @@ export type ServerMessage =
        * by the closed turn schema. The client animates them concurrently with
        * the speech and drops any denomination the payload lacks.
        */
-      demonstrate?: Array<{ kind: 'add' | 'remove' | 'pause'; denomination?: number; ms?: number }>;
+      demonstrate?: WireDemoStep[];
       /**
        * V4: the lesson thread — child-facing topic + step N of M, our own plan
        * text. Absent while there is no active plan (open chat).

@@ -259,7 +259,8 @@
     "note": "Nota",
     "activity": "Actividad",
     "activityScored": "Sacaste {{score}} de 100",
-    "activityUnanswered": "Esta no la contestaste"
+    "activityUnanswered": "Esta no la contestaste",
+    "demonstrated": "El tutor te mostró: {{steps}}"
   },
   "startError": {
     "CONSENT_REQUIRED": "Necesitas el permiso de un adulto para el micrófono. Aún puedes escribir.",
